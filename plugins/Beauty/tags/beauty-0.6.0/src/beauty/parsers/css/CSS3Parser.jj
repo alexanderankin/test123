@@ -1,0 +1,1782 @@
+
+options {
+  //JAVA_UNICODE_ESCAPE = false;
+  //UNICODE_INPUT = false;
+  //ERROR_REPORTING = false;
+  //DEBUG_PARSER = true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(CSS3Parser)
+
+package beauty.parsers.css;
+
+import java.io.*;
+import java.util.*;
+
+import org.gjt.sp.jedit.jEdit;
+
+public class CSS3Parser
+{
+    Token t;
+    
+    // beautifier options
+    boolean padCombinators;
+    boolean padSelectors;
+    boolean padAttribs; // TODO
+    boolean padOperators;
+    boolean padPrio;    
+    boolean padTerm;    // TODO
+    boolean padParams;  // TODO
+    public void setPadCombinators(boolean b) {
+        padCombinators = b;   
+    }
+    public void setPadSelectors(boolean b) {
+        padSelectors = b;   
+    }
+    public void setPadAttribs(boolean b) {
+        padAttribs = b;   
+    }
+    public void setPadOperators(boolean b) {
+        padOperators = b;   
+    }
+    public void setPadPrio(boolean b) {
+        padPrio = b;   
+    }
+    public void setPadTerm(boolean b) {
+        padTerm = b;   
+    }
+    public void setPadParams(boolean b) {
+        padParams = b;   
+    }
+    
+    // shouldn't use this, a specific line separator should be set based on
+    // buffer settings.  Of course, it may be the same as what the buffer
+    // uses anyway.
+    String lineSep = System.getProperty("line.separator");
+
+    // one of these is inserted at every place in a line that qualifies as a
+    // good place to break a line if it needs wrapped.  You can't type one of
+    // these from the keyboard.
+    char wrapSep = '\u001c';
+    
+    // set the initial indent level.  This is useful when parsing styles contained
+    // within an html file, this lets the css get indented properly.
+    public void setInitialIndentLevel(int level) {
+        if (level >= 0) {
+            token_source.initialIndent = level;
+            token_source.level = level;   
+        }
+    }
+    
+    public void setIndentWidth(int i) {
+        token_source.setIndentWidth(i);
+    }
+
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+    }
+
+    public int getTabSize() {
+        // this really isn't necessary for this beautifier.  Setting the tab
+        // size on the input stream makes the token locations more accurate
+        // is all.
+        return jj_input_stream.getTabSize(0);
+    }
+
+    public void setUseSoftTabs(boolean b) {
+        token_source.setUseSoftTabs(b);
+    }
+  
+       
+    
+
+    public String getText() {
+        return token_source.getText();
+    }
+
+    public void resetTokenSource() {
+        token_source.reset();
+    }
+
+    private void add(Token t) {
+        token_source.add(t);
+    }
+
+    private void add(String s) {
+        token_source.add(s);
+    }
+
+    private void trim() {
+        token_source.trim();
+    }
+
+    private void trimWhitespace() {
+        token_source.trimWhitespace();
+    }
+
+    private void write() {
+        token_source.write();
+    }
+
+    private void writeln() {
+        token_source.writeln();
+    }
+
+    public void setLineSeparator(String le) {
+        lineSep = le;
+        token_source.setLineSeparator(le);
+    }
+    
+    public void addComment(Token t) {
+        token_source.addComment(t);   
+    }
+    
+    public void parse() throws Exception {
+        styleSheet();   
+    }
+
+   public CSS3Parser(String fileName)
+   {
+      this(System.in);
+      try { ReInit(new FileInputStream(new File(fileName))); }
+      catch(Exception e) { e.printStackTrace(); }
+   }
+}
+
+PARSER_END(CSS3Parser)
+
+/*
+    A lot of work happens in the token manager.  All code in this section is
+    added to a file named CSS3ParserTokenManager.java.  Some accessor are
+    duplicated in the PARSER section above to make it a little easier to write
+    code for the productions.
+    
+    I copied most of this from the Java parser, so there is probably extra
+    code here that isn't used for CSS.
+*/
+TOKEN_MGR_DECLS :
+{
+
+    // line buffer, text is accumulated here, then written to the output stream
+    // on end of line marker.
+    static StringBuilder b = new StringBuilder();
+
+    // all text is accumulated here.  When processing is complete, this buffer
+    // will contain the final beautified text.
+    static StringBuilder outputBuffer = new StringBuilder();
+
+    // accumulate pieces a token or string at a time.  The objects in this array
+    // will be ocnverted to strings, padded as appropriate, and added to the
+    // line buffer b.  This is the "accumulator".
+    static ArrayList a = new ArrayList();
+
+    // where to write the completely beautified code.
+    private static PrintWriter out = null;
+
+    // initial indentation level
+    static int initialIndent = 0;
+    
+    // level of indentation
+    static int level = 0;
+
+    // width of indent
+    static int indent_width = 4;
+    static String indent = "    ";
+    static String double_indent = indent + indent;
+
+    // the soft tab setting from jEdit, use soft tabs by default.
+    static boolean useSoftTabs = true;
+
+    // line separator, defaults to system line separator, but can be set to
+    // a specific separator
+    static String ls = System.getProperty("line.separator");
+
+    static void reset() {
+        b = new StringBuilder();
+        outputBuffer = new StringBuilder();
+        a.clear();
+        level = initialIndent;
+    }
+
+    static String getText() {
+        return outputBuffer.toString();
+    }
+
+    static void setLineSeparator(String le) {
+        ls = le;
+    }
+
+    static void setIndentWidth(int w) {
+        indent_width = w;
+        if (indent_width <= 0) {
+            indent_width = 4;
+        }
+        indent = "";
+        for (int i = 0; i < w; i++) {
+            indent += " ";
+        }
+        double_indent = indent + indent;
+    }
+
+    static void setUseSoftTabs(boolean b) {
+        useSoftTabs = b;
+        if (b) {
+            indent = "\t";
+            double_indent = "\t\t";
+        }
+        else {
+            setIndentWidth(indent_width);
+        }
+    }
+
+    // add a token to the accumulator
+    static void add(Token t) {
+        if (t != null) {
+            a.add(t);
+        }
+    }
+
+    // add a string to the accumulator
+    static void add(String s) {
+        if (s != null) {
+            a.add(s);
+        }
+    }
+
+    // trim spaces from the last item in the accumulator
+    static void trim() {
+        if (a.size() == 0)
+            return;
+        Object o = a.get(a.size() - 1);
+        StringBuilder sb = new StringBuilder();
+        if (o instanceof Token)
+            sb.append( ((Token)o).image );
+        else
+            sb.append((String)o);
+        while(sb.length() > 0 && sb.charAt(sb.length() - 1) == ' ')
+            sb.deleteCharAt(sb.length() - 1);
+        a.set(a.size() - 1, sb.toString() );
+    }
+
+    // trim a single new line from the end of the output buffer
+    static void trimNL() {
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\n')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\r')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+    }
+
+    // trim all \n and/or \r from the end of the given string
+    static void trimNL(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
+            sb.deleteCharAt(sb.length() - 1);
+    }
+
+    // trim all whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(0) == '\r'
+                || sb.charAt(0) == '\n'
+                || sb.charAt(0) == '\t'
+                || sb.charAt(0) == ' ')) {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
+    }
+
+    // trim up to max whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s, int max) {
+        StringBuilder sb = new StringBuilder(s);
+        int trimmed = 0;
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0)) && trimmed < max) {
+            sb.deleteCharAt(0);
+            ++trimmed;
+        }
+        return sb.toString();
+    }
+
+    // trims whitespace (\r, \n, space, \t) from the last items in the
+    // accumulator.  If the last item is all whitespace, continues on to the
+    // previous until a non-whitespace character is encountered.  If the
+    // entire accumulator is whitespace, continues to trim whitespace from the
+    // outputBuffer.
+    static void trimWhitespace() {
+        for (int i = a.size() - 1; i >= 0; i-- ) {
+            Object o = a.get(i);
+            StringBuilder sb = new StringBuilder();
+            if (o instanceof Token)
+                sb.append( ((Token)o).image );
+            else
+                sb.append((String)o);
+            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
+                    || sb.charAt(sb.length() - 1) == '\n'
+                    || sb.charAt(sb.length() - 1) == '\t'
+                    || sb.charAt(sb.length() - 1) == ' ')) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            if (sb.length() == 0) {
+                a.remove(i);
+            }
+            else {
+                a.set(i, sb.toString());
+                break;
+            }
+        }
+        if (a.size() == 0) {
+            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
+                outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+            }
+        }
+    }
+
+    // writes the contents of the accumulator to the outputBuffer.  The line
+    // buffer (b) is used to build the line.
+    static void write() {
+        try {
+            b.setLength(0); // clear the line buffer
+
+            // this next section builds the output string while protecting
+            // string literals.  All extra spaces are removed from the output
+            // string, except that string literals are left as is.
+            ArrayList list = new ArrayList();
+            String s = new String("");
+            for (int i = 0; i < a.size(); i++) {
+                Object o = a.get(i);
+                if (o instanceof Token) {
+                    Token token = (Token)o;
+                    if (token.kind == CSS3ParserConstants.STRING1 || token.kind == CSS3ParserConstants.COMMENT) {
+                        s = s.replaceAll("[ ]+", " ");
+                        list.add(s);
+                        s = new String("");
+                        list.add(token.image);
+                    }
+                    else {
+                        s += ((Token)o).image;
+                        s = s.replaceAll("[ ]+", " ");
+                    }
+                }
+                else {
+                    s += (String)o;
+                    s = s.replaceAll("[ ]+", " ");
+                }
+            }
+            for (int i = 0; i < list.size(); i++) {
+                b.append((String)list.get(i));
+            }
+
+            b.append(s);
+            s = b.toString();
+
+            // check for blank line(s)
+            String maybe_blank = new String(s);
+            if (maybe_blank.trim().isEmpty()) {
+                // yep, it's a blank, so just print out a line separator
+                outputBuffer.append(ls);
+                a.clear();
+                return;
+            }
+
+            // indent --
+            // most lines get indented
+            if (!s.startsWith(" {")) {
+                s = s.trim();
+                for (int i = 0; i < level; i++) {
+                    s = indent + s;
+                }
+            }
+
+            // check if the output buffer does NOT end with a new line.  If it
+            // doesn't, remove any leading whitespace from this line.
+            // Hmm, yeah, well, this fucks up the first line.  Added the length
+            // check.
+            if (outputBuffer.length() > 0 && !endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+                s = trimStart(s);
+            }
+
+            // check that there aren't extra spaces in the buffer already --
+            // this handles the case where the output buffer ends with a space
+            // and the new string starts with a space, don't want 2 spaces.
+            if (s.startsWith(" ") && endsWith(outputBuffer, " ")) {
+                s = s.substring(1);
+            }
+
+            // check that there is one space between the end of the output
+            // buffer and this line -- this handles the case where the output
+            // buffer does not end in a space and the new string does not start
+            // with a space, want one space in between.
+            if (!s.startsWith(" ")
+                    && !endsWith(outputBuffer, " ")
+                    && !endsWith(outputBuffer, "\r")
+                    && !endsWith(outputBuffer, "\n")
+                    && outputBuffer.length() > 0) {
+                outputBuffer.append(" ");
+            }
+
+            // by the Sun standard, there is no situation where '(' is followed
+            // by a space or ')' is preceded with by a space
+            s = s.replaceAll("[(][ ]", "(");
+            s = s.replaceAll("[ ][)]", ")");
+            
+            // there should be no situation where a comma is preceded by a space,
+            // although that seems to happen when formatting string arrays.
+            s = s.replaceAll("\\s+[,]", ",");
+
+            // finally! add the string to the output buffer
+            // check for line length, may need to wrap.  Sun says to avoid lines
+            // longer than 80 characters.  This doesn't work well yet, so I've 
+            // commented out the wrapping code.  Still need to clean out the
+            // wrapping markers.
+            //s = s.replaceAll("[\u001c]", "");
+            outputBuffer.append(s);
+            /*
+            int wrap_sep_count = countWrapSep(s);
+            if (s.length() - wrap_sep_count > 80) {
+                String[] lines = wrapLines(s);
+                if ( lines != null ) {
+                    for (int i = 0; i < lines.length; i++) {
+                        outputBuffer.append(lines[i]).append(ls);
+                    }
+                }
+                else {
+                    // whack any remaining \u001c characters
+                    s = s.replaceAll("[\u001c]", "");
+                    outputBuffer.append(s);
+                }
+            }
+            else {
+                // whack any remaining \u001c characters
+                s = s.replaceAll("[\u001c]", "");
+                outputBuffer.append(s);
+            }
+            */
+            // clear the accumulator for the next line
+            a.clear();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void writeln() {
+        write();
+        trimNL();
+        outputBuffer.append(ls);
+    }
+
+    static int countWrapSep(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\u001c') {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    // needs work, does a wrap, but not per spec
+    static String[] wrapLines(String s) {
+        if (s.length() <= 80) {
+            return new String[]{s};
+        }
+        int wc = countWrapSep(s);
+        if (wc > 0) {
+            int[] break_points = new int[wc];
+            int offset = 0;
+            for (int i = 0; i < wc; i++) {
+                int index = s.indexOf('\u001c', offset);
+                break_points[i] = index;
+                offset = index + 1;
+            }
+
+            int first_break = -1;
+            for (int i = 0; i < break_points.length; i++) {
+                int possible = break_points[i];
+                if (possible > 80) {
+                    break;
+                }
+                first_break = possible;
+            }
+            if ( first_break == -1 ) {
+                first_break = s.length();
+            }
+
+            int ws_length = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == ' ')
+                    ++ws_length;
+                else
+                    break;
+            }
+            String leading_ws = s.substring(0, ws_length);
+            String head = s.substring(0, first_break);
+            String tail = s.substring(first_break);
+            //head = head.replaceAll("[\u001c]", "");
+            //tail = tail.replaceAll("[\u001c]", "");
+            return new String[]{head, leading_ws + double_indent + tail};
+        }
+        return null;
+    }
+
+    // StringBuilder doesn't have an "endsWith" method
+    static boolean endsWith(StringBuilder sb, String s) {
+        if (sb == null && s == null)
+            return true;
+        if (sb == null && sb != null)
+            return false;
+        if (sb.length() < s.length())
+            return false;
+        String end = sb.substring(sb.length() - s.length());
+        return end.equals(s);
+    }
+    
+    static void addComment(Token t) {
+        if (t != null) {
+            add(t);
+        }
+    }
+
+}
+
+
+/*******************************************************************************
+ * The tokenizer
+ ******************************************************************************/
+<DEFAULT>
+TOKEN :
+{
+    // comments can occur between any two tokens
+    <COMMENT:  ("\n" |"\r" | "\r\n" | " " | "\t")* "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/" ("\n" |"\r" | "\r\n" | " " | "\t")*>
+        
+} 
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :/* basic tokens */
+
+ 
+{ 
+    <#H :
+    ["0"-"9", "a"-"f"] >
+  | <#NONASCII :
+    ["\200"-"\377"] >
+  | <#UNICODE : "\\" <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( "\r\n" |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )? >
+  | <#ESCAPE : <UNICODE> | ( "\\"
+    ~[ "\r", "\n", "\f", "0"-"9", "a"-"f" ] ) >
+  | <#NMSTART :
+    [ "a"-"z", "A"-"Z", "-", "_" ] | <NONASCII> | <ESCAPE> >
+  | <#NMCHAR :
+    ["a"-"z", "A"-"Z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
+  | <#STRING1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* "\"" >
+  | <#STRING2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* "\'" >
+  | <#INVALID1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#INVALID2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#_IDENT : ( <MINUS> )? <NMSTART> ( <NMCHAR> )* >
+  | <#NAME : ( <NMCHAR> )+ >
+  | <#NUM : (
+    ["0"-"9"] )+ | (
+    ["0"-"9"] )* "." (
+    ["0"-"9"] )+ >
+  | <#_STRING : <STRING1> | <STRING2> >
+  | <#_INVALID : <INVALID1> | <INVALID2> >
+  | <#_URL : (
+    [ "!", "#", "$", "%", "&", "*"-"[", "]"-"~" ] | <NONASCII> | <ESCAPE> )* >
+  | <#_S : (
+    [ " ", "\t" , "\n" , "\r", "\f" ] ) ( /*<COMMENT> |*/
+    [ " ", "\t" , "\n" , "\r", "\f" ] )* >
+  | <#_W : ( <_S> )? >
+  | <#NL : ( "\n" | "\r\n" | "\r" | "\f" ) >
+}
+
+/*
+ * The _S definition is not  ( [ " ", "\t" , "\n" , "\r", "\f" ] ) + as we need to add support
+ * for the unput(' ') (see http://www.w3.org/TR/CSS21/grammar.html#scanner )
+ */
+<DEFAULT>
+TOKEN :
+{
+    <S: ( <_S> ) >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CDO: "<!--" >
+  | <CDC: "-->" >
+  | <INCLUDES: <TILDE> "=" >
+  | <DASHMATCH: "|=" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <LBRACE: <_W> "{" >
+  | <PLUS: <_W> "+" >
+  | <GREATER: <_W> ">" >
+  | <COMMA: <_W> "," >
+  | <TILDE: <_W> "~" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <AND: "and" >
+} 
+
+<DEFAULT>
+TOKEN :
+{
+    <STRING: <_STRING> >
+  | <INVALID: <_INVALID> >
+  | <IDENT: <_IDENT> >
+  | <HASHIDENT: "#" <_IDENT> >
+  | <HASH: "#" <NAME> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <RBRACE: "}">
+  | <PREFIXMATCH: "^=" >
+  | <SUFFIXMATCH: "$=" >
+  | <SUBSTRINGMATCH: "*=" >
+  | <EQ: "=" >
+  | <MINUS: "-" >
+  | <SEMICOLON: ";" >
+  | <DIV: "/" >
+  | <LBRACKET: "[" >
+  | <RBRACKET: "]" >
+  | <ANY: "*" >
+  | <DOT: "." >
+  | <LPARAN: "(" >
+  | <RPARAN: ")">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <COLON: ":" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <MEDIARESTRICTOR: "only" | "not" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <URL: "url(" ( <S> )* ( <STRING> | <_URL> ) ( <S> )* ")" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <LENGTH: <NUM> "pt" 
+ | <NUM> "mm" | <NUM> "cm" | <NUM> "pc" | <NUM> "in" | <NUM> "gd" | <NUM> "px" >
+  | <EMS: <NUM> "em" >
+  | <EXS: <NUM> "ex" >
+  | <ANGLE: <NUM> ( "deg" | "grad" | "rad" ) >
+  | <TIME: <NUM> ( "ms" | "s" ) >
+  | <FREQ: <NUM> "Hz" | <NUM> "kHz" >
+  | <RESOLUTION: <NUM> "dpi" | <NUM> "dpcm" >
+  | <DATE: <NUM> "/" <NUM> "/" <NUM> >
+  | <DIMEN: <NUM> <NMSTART> ( <NMCHAR> )* >
+  | <PERCENTAGE: <NUM> "%" >
+  | <NUMBER: <NUM> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORTANT_SYM: "!" ( <_W> )* "important" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <PSEUDOELEMENT_SYM: "::" >
+}
+
+/* RESERVED ATRULE WORDS */
+<DEFAULT>
+TOKEN : 
+{
+    <CHARSET_SYM: "@charset" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORT_SYM: "@import">
+  | <NAMESPACE_SYM: "@namespace">
+  | <MEDIA_SYM: "@media" >
+  | <PAGE_SYM: "@page" >
+  | <FONT_FACE_SYM: "@font-face" >
+  | <PREF_SYM: "@preference" >
+  | <COLOR_PROFILE: "@color-profile" >
+  | <ATTOP: "@top" >
+  | <ATRIGHT: "@right" >
+  | <ATBOTTOM: "@bottom" >
+  | <ATLEFT: "@left" >
+  | <ATCOUNTER: "@counter" >
+  | <PHONETIC_ALPHABET_SYM: "@phonetic-alphabet" >
+  | <ATKEYWORD: "@" <IDENT> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <#RANGE0 : <H> <H> <H> <H> <H> <H> >
+  | <#RANGE1 : <H> <H> <H> <H> <H> ( "?" )? >
+  | <#RANGE2 : <H> <H> <H> <H> ( "?" )? ( "?" )? >
+  | <#RANGE3 : <H> <H> <H> ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE4 : <H> <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE5 : <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE6 : "?" ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE : <RANGE0> | <RANGE1> | <RANGE2> | <RANGE3> | <RANGE4> | <RANGE5> | <RANGE6> >
+  | <#UNI : <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? >
+  | <UNICODERANGE: "U+" <RANGE> | "U+" <UNI> "-" <UNI> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CLASS: "." <IDENT> >
+}
+
+/* FIXED, added a special case for lang pseudoclass */
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONLANG: "lang(" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONNOT: ":not(" >
+}
+
+
+<DEFAULT>
+TOKEN :
+{
+    <FUNCTION: <IDENT> "(" >
+}
+
+/* Quick and dirty way to catch HTML tags starting CSS documents
+(common mistake) */
+<DEFAULT>
+TOKEN :
+{
+    <HTMLSTARTTAG: "<" ( <S> )* <IDENT> ( <S> )* ( <IDENT> "=" ( <IDENT> | <STRING> ) ( <S> )* )* ">" >
+  | <HTMLENDTAG: "</" ( <S> )* <IDENT> ( <S> )* ">" >
+}
+
+//<DEFAULT, IN_COMMENT>
+//TOKEN :
+//{ /* avoid token manager error */
+//   < UNKNOWN : ~[] >
+//}
+
+
+/*******************************************************************************
+ * The grammar of CSS2 and CSS3 follows.
+ ******************************************************************************/
+
+/**
+ * The main entry for the parser.
+ *
+ * @exception ParseException exception during the parse
+ */
+void styleSheet() throws Exception :
+{
+}
+{
+    // used to capture html tags that might be surrounding a css block
+    (
+        (
+            t=<HTMLSTARTTAG> {add(t); }
+          | t=<HTMLENDTAG> {add(t); }
+        )
+    ) *
+    (
+        charset()
+    ) *
+
+    // * instead of ? to capture the reinit part
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+      | t=<CDO> {add(t); }
+      | t=<CDC> {add(t); }
+    ) *
+ 
+    (
+        importDeclaration()
+        (
+            ignoreStatement()
+        )
+    ) *
+ 
+    (
+        namespaceDeclaration()
+        (
+            ignoreStatement()
+        )
+    ) *
+ 
+    afterImportDeclaration()
+    <EOF> 
+            
+    {
+        write();
+    }
+}
+
+void charset() :
+{
+}
+{ 
+        t=<CHARSET_SYM>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        t=<STRING>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        t=<SEMICOLON> {add(t); }
+}
+
+void afterImportDeclaration() :
+{
+    String ret;
+}
+{
+    (
+        (
+            ruleSet()
+          | media()
+          | page()
+          | fontFace()
+          | preference()
+          | colorprofile()
+          | phoneticAlphabet()
+          | ret = skipStatement() {
+              // the parser steps into a tight loop if this block is removed
+              if (ret == null || ret.length() == 0) {
+                return;   
+              }
+            }
+        )
+        ignoreStatement()
+    ) *
+}
+
+void ignoreStatement() :
+{
+}
+{
+    (
+        (
+            t=<CDO> {add(t); }
+          | t=<CDC> {add(t); }
+          | atRuleDeclaration()
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    ) *
+}
+
+void namespaceDeclaration() :
+{
+
+}
+{
+    (
+        t=<NAMESPACE_SYM>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        (
+            t=<IDENT> {add(t); }
+            (
+                <S> | t=<COMMENT> { addComment(t); }
+            ) *
+        ) ?
+        (
+            t=<STRING> {add(t); }
+          | t=<URL> {add(t); }
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        t=<SEMICOLON>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    )
+}
+
+
+/**
+ * The import statement
+ *
+ * @exception ParseException exception during the parse
+ */
+void importDeclaration() :
+{
+}
+{
+    t=<IMPORT_SYM>  {add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        t=<STRING> {add(t); }
+      | t=<URL> {add(t); }
+    )
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        medium()
+        (
+            t=<COMMA>  {add(t); }
+            (
+                <S> | t=<COMMENT> { addComment(t); }
+            ) *
+            medium()
+        ) *
+    ) ?
+    t=<SEMICOLON>  {add(t); writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+
+void media() :
+{
+}
+{
+    t=<MEDIA_SYM>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        t=<MEDIARESTRICTOR> {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) +
+    ) ?
+    medium()
+    (
+        t=<COMMA>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        medium()
+    ) *
+    (
+        t=<AND>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        t=<LPARAN>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        mediadeclaration()
+        t=<RPARAN>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    ) *
+    t=<LBRACE>  {add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        ruleSet()
+    ) *
+    t=<RBRACE>  {add(t); --token_source.level; writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+
+void medium() :/* tv, projection, screen, ... */
+{
+
+}
+{
+    t=<IDENT>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void unused_production_generic_syntax() :
+{
+}
+{
+    "(" { add("("); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    term() 
+    ")" { add(")"); }
+}
+
+void definition() :
+{
+}
+{
+    "[" { add("["); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    term() 
+    "]" { add("]"); }
+}
+
+void page() :
+{
+}
+{
+    t=<PAGE_SYM>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        t=<IDENT> { add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    ) ?
+    (
+        pseudo_page()
+    ) ?
+    t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        pageContent()
+    )
+    t=<RBRACE>  { add(t); --token_source.level; writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void pageContent() :
+{
+}
+{
+    prefAtRule()
+  | declarations()
+}
+
+void prefAtRule() :
+{
+}
+{
+    (
+        t=<ATTOP> { add(t); }
+      | t=<ATBOTTOM> { add(t); }
+      | t=<ATLEFT> { add(t); }
+      | t=<ATRIGHT> { add(t); }
+    )
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level;  writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void pseudo_page() :
+{
+}
+{
+    ":" t=<IDENT>  { add(":"); add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void fontFace() :
+{
+}
+{
+    t=<FONT_FACE_SYM>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level; writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void colorprofile() :
+{
+}
+{
+    t=<COLOR_PROFILE>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level; writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+
+void preference() :
+{
+}
+{
+    t=<PREF_SYM>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level;  writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void phoneticAlphabet() :
+{
+}
+{
+    t=<PHONETIC_ALPHABET_SYM>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+
+    t=<STRING>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+
+    ";" { add(";"); writeln(); }
+}
+
+void atRuleDeclaration() :
+{
+}
+{
+    t=<ATKEYWORD> { add(t); }
+}
+
+void operator() :
+{
+}
+{
+    (
+        (
+            t=<DIV> { if (padOperators){trim();add(" ");}add(t);if(padOperators) add(" "); }
+          | t=<COMMA> { if (padOperators){trim();add(" ");}add(t);if(padOperators) add(" "); }
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    ) ?
+}
+
+
+void combinator() :
+{
+}
+{
+    (
+        (
+            <PLUS>  { if (padCombinators) {trim();add(" ");}add("+");if (padCombinators) add(" "); }
+          | <GREATER>  { if (padCombinators) {trim();add(" ");}add(">");if (padCombinators) add(" "); }
+          | <TILDE>  { if (padCombinators) {trim();add(" ");}add("~");if (padCombinators) add(" "); }
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+      | 
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) +
+    )
+}
+
+void unaryOperator() :
+{
+}
+{
+    "-"  { add("-"); }
+  | <PLUS>  { add("+"); }
+}
+
+void property() :
+{
+}
+{
+    t=<IDENT>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+
+void ruleSet() :
+{
+}
+{
+    selector()
+    (
+        t=<COMMA>  { add(t); add(" "); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        selector()
+    ) *
+    t=<LBRACE> { add(t); writeln(); ++token_source.level; }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level; writeln(); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void declarations() :
+{
+}
+{ 
+    (
+        declaration()
+    ) ?
+    (
+        ";" { add(";"); }
+        (
+            <S> | t=<COMMENT> { add(t); }
+        ) *
+        { writeln(); }
+ 
+        (
+            declaration()
+        ) ?
+    ) *
+}
+
+void selector() :
+{
+}
+{
+    simple_selector()
+    (
+        combinator() simple_selector()
+    ) *
+}
+
+/**
+ * I made this rule to parse a selector from a document. Combinator are avoid.
+ * @exception ParseException exception during the parse
+ */
+void externalSelector() :
+{
+}
+{
+    simple_selector() 
+    (
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) +
+        simple_selector()
+    ) *
+}
+
+
+void simple_selector() :
+{
+}
+{
+    element_name()
+    (
+        hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    ) *
+  | 
+    (
+        hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    ) +
+}
+
+
+void _class() :
+{
+}
+{
+    t=<CLASS> { add(t); }
+  | 
+    (
+        deprecated_class()
+    )
+}
+
+void deprecated_class() :
+{
+}
+{
+ 
+    (
+        t=<LENGTH> { add(t); }
+      | t=<EMS> { add(t); }
+      | t=<EXS> { add(t); }
+      | t=<ANGLE> { add(t); }
+      | t=<TIME> { add(t); }
+      | t=<FREQ> { add(t); }
+      | t=<RESOLUTION> { add(t); }
+      | t=<DIMEN> { add(t); }
+    )
+}
+
+
+void element_name() :
+{
+}
+{
+    (
+        LOOKAHEAD ( 2 )
+        (
+            t=<IDENT> { add(t); }
+          | t=<ANY> { add(t); }
+        ) ?
+        "|"  { add("|"); }
+    ) ?
+    (
+        t=<IDENT> { add(t); }
+      | t=<ANY> { add(t); }
+    )
+}
+
+void attrib() :
+{
+}
+{
+    t=<LBRACKET>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    t=<IDENT>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        (
+            t=<EQ> 
+          | t=<INCLUDES>
+          | t=<DASHMATCH> 
+          | t=<PREFIXMATCH>
+          | t=<SUFFIXMATCH>
+          | t=<SUBSTRINGMATCH> 
+        )
+        { if (padAttribs) {trim(); add(" ");} add(t);  if (padAttribs) add(" ");}
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        (
+            t=<IDENT> { add(t); }
+          | t=<STRING> { add(t); }
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    ) ?
+    t=<RBRACKET> { add(t); }
+}
+
+void negation() :
+{
+}
+{    // S* negation_arg S* ')'
+    // type_selector | universal | HASH | class | attrib | pseudo
+ 
+    t=<FUNCTIONNOT>  { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    (
+        element_name()
+      | hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    )
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+    t=<RPARAN>  { add(t); }
+}
+
+
+void pseudo() :
+{
+}
+{
+    t=<PSEUDOELEMENT_SYM>  { add(t); }
+    (
+        (
+            t=<IDENT> { add(t); }
+        )
+    )
+  | t=<COLON>  { add(t); }
+    (
+        (
+            t=<IDENT> { add(t); }
+        )
+      | 
+        (
+            (
+                t=<FUNCTIONLANG>  { add(t); }
+                (
+                    <S> | t=<COMMENT> { addComment(t); }
+                ) *
+                (
+                    t=<NUMBER> { add(t); }
+                  | t=<IDENT> { add(t); }
+                  | t=<STRING> { add(t); }
+                )
+                (
+                    <S> | t=<COMMENT> { addComment(t); }
+                ) *
+            )
+          | 
+            (
+                t=<FUNCTION>  { add(t); }
+                (
+                    <S> | t=<COMMENT> { addComment(t); }
+                ) *
+                expression()
+            )
+        )
+        t=<RPARAN> { add(t); }
+    )
+}
+
+
+void hash() :
+{
+}
+{
+    t=<HASHIDENT> { add(t); }
+  | t=<HASH> { add(t); }
+}
+
+
+void mediadeclaration() :
+{
+}
+{
+    property() 
+    (
+        ":" { add(": "); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        expr() 
+        (
+            prio()
+        ) ?
+    ) ?
+}
+
+
+void declaration() :
+{
+}
+{
+    property() 
+    ":" { trim(); add(": "); }
+    (
+        <S> | t=<COMMENT> { if(Character.isWhitespace(t.image.charAt(0))) trim(); addComment(t); }
+    ) *
+
+    expr()
+    (
+        prio()
+    ) ?
+}
+
+
+void prio() :
+{
+}
+{
+    t=<IMPORTANT_SYM>  { add(t); if (padPrio) add(" ");}
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+}
+
+void expression() :
+{
+}
+{
+    (
+        (
+            t=<PLUS> { add(t); }
+          | t=<MINUS> { add(t); }
+          | t=<NUMBER> { add(t); }
+          | t=<DIMEN> { add(t); }
+          | t=<STRING> { add(t); }
+          | t=<IDENT> { add(t); }
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    ) +
+} 
+
+
+void expr() :
+{
+}
+{
+    term()
+    (
+        operator() term()
+    ) *
+}
+
+
+void term() :
+{
+}
+{
+    (
+        (
+            unaryOperator()
+        ) ?
+        (
+            t=<NUMBER> { add(t); }
+          | t=<PERCENTAGE> { add(t); }
+          | t=<LENGTH> { add(t); }
+          | t=<EMS> { add(t); }
+          | t=<EXS> { add(t); }
+          | t=<ANGLE> { add(t); }
+          | t=<TIME> { add(t); }
+          | t=<FREQ> { add(t); }
+          | t=<RESOLUTION> { add(t); }
+          | t=<DATE> { add(t); }
+          | t=<DIMEN> { add(t); }
+          | function()
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    )
+  | 
+    (
+        (
+            t=<STRING> { add(t); }
+          | t=<IDENT> { add(t); }
+          | hexcolor()
+          | t=<URL> { add(t); }
+          | t=<UNICODERANGE> { add(t); }
+        )
+        (
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+    )
+}
+
+
+void function() :
+{
+}
+{
+    t=<FUNCTION> { add(t); }
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+    ) *
+
+    expr() 
+    ")" { add(")"); }
+}
+
+void hexcolor() :
+{
+}
+{
+    (
+        t=<HASHIDENT> { add(t); }
+      | t=<HASH> { add(t); }
+    )
+}
+
+
+JAVACODE String skipStatement() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok = getToken(0);
+    boolean first = true;
+
+    if ( tok.image != null) {
+
+
+        s.append(tok.image); 
+    }
+    /* FIXME here, two option, we skip during an error, or outside
+    an error, currently both can fail with a TokenMgrError, should
+    we catch all, or only when filling message for errors?
+    
+    -> taking the "always skip" approach.
+     */
+ 
+ 
+    while (true) {
+
+
+        try {
+
+
+            tok = getToken(1);
+            if ( tok.kind == EOF) {
+
+
+                if (first) {
+
+
+                    return null;
+                } else {
+
+
+                    break;
+                }
+            } 
+            s.append(tok.image);
+            if ( tok.kind == LBRACE) {
+
+
+                getNextToken();
+                s.append(skip_to_matching_brace());
+                getNextToken();
+                tok = getToken(1);
+                break;
+            } else if ( (tok.kind == RBRACE) || (tok.kind == SEMICOLON)) {
+
+
+                getNextToken();
+                tok = getToken(1);
+                break;
+            }
+            getNextToken();
+        } catch ( TokenMgrError tokenerror ) {
+
+
+            // read one char at a time, and loop
+            try {
+
+
+                s.append(jj_input_stream.readChar());
+                continue;
+            } catch ( java.io.IOException ioex ) {
+
+ 
+                return s.toString().trim();
+            }
+        }
+        first = false;
+    }
+ 
+    // skip white space
+    while ( tok.kind == S) {
+
+
+        getNextToken();
+        tok = getToken(1);
+    }
+    String statement = s.toString().trim();
+    return statement;
+}
+
+JAVACODE String skip_to_matching_brace() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok;
+    int nesting = 1;
+    /* FIXME
+    same as above */
+ 
+ 
+    while (true) {
+
+
+        tok = getToken(1);
+        if ( tok.kind == EOF) {
+
+
+            break;
+        }
+        s.append(tok.image);
+        if ( tok.kind == LBRACE) {
+
+
+            nesting++;
+        } else if ( tok.kind == RBRACE) {
+
+
+            nesting--;
+            if ( nesting == 0) {
+
+
+                break;
+            }
+        }
+        getNextToken();
+    }
+    return s.toString();
+}
+
