@@ -1,0 +1,128 @@
+<project name="svn_plugin_tests" default="test" basedir=".">
+    
+    <description>
+    This is an example build file to run unit tests.  This is the build file for
+    the unit tests for the SVN plugin.  It has comments to describe all the
+    necessary settings for getting unit tests to run.
+    
+    The SVNPlugin source directory looks like this:
+    SVNPlugin
+    |
+    +- lib
+    +- src
+    +- test
+       |
+       -- build.xml (this file)
+       +- test (holds the source code for the unit tests)
+       +- test_reports (holds the output from JUnit)
+       
+    It is assumed that the plugin is already built and deployed to the standard
+    ${install.dir} as is typical for plugins.  If the plugin is actually built
+    to some other directory, you'll need to change the directory for the 
+    'plugin.jars' file list below.
+    
+    There is no assumption made about the location of the test framework itself.
+    I have it installed in a directory at the same level as jEdit:
+    
+    /home/danson/src
+    |
+    +- jEdit
+    +- jEditTestFramework
+    +- plugins
+       |
+       -- build.properties
+       +- build-support
+       +- ...
+       +- SVNPlugin 
+       
+    The location of the test framework directory should be set in a property 
+    file.  A good place to set this property is in the same build.properties
+    used in general for plugin builds.
+    
+    -----
+    Runs junit tests on the plugin.  Assumes a normal build of the plugin
+    has already happened and been deployed to the standard ${install.dir}.  The
+    test framework assumes the jEdit source is installed.  It will do a clean
+    build of jEdit and use the resulting build directory as the jEdit settings
+    directory and the jEdit installation.  Jars required by the plugin are
+    specified in the plugin.jars filelist and will be copied into the jEdit
+    build directory in a jars subdirectory.
+    </description>
+
+    <!-- general properties for plugins from the plugins directory, in 
+    partcular, need the install.dir set to know where to find the plugin
+    jar files. -->
+    <property file="../../build.properties"/>
+    
+    <!-- location of the test framework, this should be set in the build.properties
+    file loaded above. -->
+    <property name="test.framework.home" location="/home/danson/src/jedit/test/Fest"/>
+    
+    <!-- test source and classes -->
+    <property name="project.test.src.dir" location="${basedir}/test"/>
+    <property name="project.test.classes.dir" location="${basedir}/test/classes"/>
+    <mkdir dir="${project.test.classes.dir}"/>
+
+    <!-- marker property to indicate to the test framework that plugin jars
+    need to be copied -->
+    <property name="copyPluginJars" value=""/>
+    
+    <!-- full list of all jar files necessary to let jEdit load and run
+    the plugin.  All of these files will be copied to the jedit_settings/jar
+    directory. -->
+    <filelist id="plugin.jars" dir="${install.dir}">
+        <file name="Beauty.jar"/>
+        <file name="CommonControls.jar"/>
+        <file name="kappalayout.jar"/>
+    </filelist>
+
+    <!-- include everything needed to let jEdit load the plugin and run the 
+    unit tests.  This should include all the jars listed in the plugin.jars 
+    file list defined above. -->
+    <path id="project.class.path">
+        <pathelement path="project.test.classes.dir"/>
+        <path>
+            <filelist refid="plugin.jars"/>
+        </path>
+    </path>
+    
+    <fileset id="project.resources" dir="resource">
+        <include name="**/*"/>
+    </fileset>
+
+    <!-- these are the actual test files to compile.  This is included so it
+    is easy to fine tune which tests are compiled and ran. --> 
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases.  This is optional. -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test.  This is optional. -->
+    <selector id="testcases.current">
+        <filename name="beauty/beautifiers/JavaBeautifierTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests,
+    or some other selector.  This is NOT optional, if this selector is not
+    defined, no tests will run. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+    
+    <!-- actually call the test framework to run the tests.  inheritRefs must
+    be true so that all of the things defined above are known to the test 
+    framework. -->
+    <target name="test">
+        <echo>${test.framework.home}</echo>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true"/>
+    </target>
+</project>
