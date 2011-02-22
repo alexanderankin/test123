@@ -42,6 +42,8 @@ public class JavaParserTokenManager implements JavaParserConstants
 
     static int bracketStyle = JavaParser.ATTACHED;
 
+    static boolean padParens = false;
+
     static void reset() {
         b = new StringBuilder();
         outputBuffer = new StringBuilder();
@@ -83,6 +85,10 @@ public class JavaParserTokenManager implements JavaParserConstants
             indent = "\u005ct";
             double_indent = "\u005ct\u005ct";
         }
+    }
+
+    static void setPadParens(boolean pad) {
+        padParens = pad;
     }
 
     // add a token to the accumulator
@@ -305,8 +311,11 @@ public class JavaParserTokenManager implements JavaParserConstants
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
             // TODO: make this a user setting, pad parens
-            s = s.replaceAll("[(][ ]", "(");
-            s = s.replaceAll("[ ][)]", ")");
+            String startParen = padParens ? "( " : "(";
+            String endParen = padParens ? " )" : ")";
+            s = s.replaceAll("[(][ ]", startParen);
+            s = s.replaceAll("[ ][)]", endParen);
+            s = s.replaceAll("[(]\u005c\u005cs+[)]", "()");
 
             // there should be no situation where a comma is preceded by a space,
             // although that seems to happen when formatting string arrays.

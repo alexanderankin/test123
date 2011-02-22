@@ -34,6 +34,8 @@ public class JavaParser implements JavaParserConstants {
 
     private int bracketStyle = ATTACHED;
 
+    private boolean padParens = false;
+
     public void setIndentWidth(int i) {
         token_source.setIndentWidth(i);
     }
@@ -116,6 +118,11 @@ public class JavaParser implements JavaParserConstants {
                 token_source.setBracketStyle(style);
                 break;
         }
+    }
+
+    public void setPadParens(boolean pad) {
+        padParens = pad;
+        token_source.setPadParens(pad);
     }
 
    public JavaParser(String fileName)
@@ -1024,7 +1031,7 @@ public class JavaParser implements JavaParserConstants {
   final public void FormalParameters() throws ParseException {
     boolean added = false;
     jj_consume_token(LPAREN);
-          trimWhitespace(); trim(); add("(");
+          trimWhitespace(); trim(); add("( ");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BOOLEAN:
     case BYTE:
@@ -1037,7 +1044,7 @@ public class JavaParser implements JavaParserConstants {
     case SHORT:
     case IDENTIFIER:
       FormalParameter();
-                                                                      added = true;
+                                                                       added = true;
       label_15:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1049,7 +1056,7 @@ public class JavaParser implements JavaParserConstants {
           break label_15;
         }
         jj_consume_token(COMMA);
-                                                                                              add(", ");
+                                                                                               add(", ");
         FormalParameter();
       }
       break;
@@ -1058,7 +1065,7 @@ public class JavaParser implements JavaParserConstants {
       ;
     }
     jj_consume_token(RPAREN);
-                                                                                                                                        if (!added) trim(); add(")");
+                                                                                                                                         if (!added) trim(); add(" )");
   }
 
   final public void FormalParameter() throws ParseException {
@@ -2064,19 +2071,19 @@ public class JavaParser implements JavaParserConstants {
   final public void CastExpression() throws ParseException {
     if (jj_2_24(2147483647)) {
       jj_consume_token(LPAREN);
-        add("(");
+        add("( ");
       Type();
       jj_consume_token(RPAREN);
-                                 trim(); add(") ");
+                                  trim(); add(" ) ");
       UnaryExpression();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LPAREN:
         jj_consume_token(LPAREN);
-        add("(");
+        add("( ");
         Type();
         jj_consume_token(RPAREN);
-                                 trim(); add(") ");
+                                  trim(); add(" ) ");
         UnaryExpressionNotPlusMinus();
         break;
       default:
@@ -2132,10 +2139,10 @@ public class JavaParser implements JavaParserConstants {
       break;
     case LPAREN:
       jj_consume_token(LPAREN);
-        add("(");
+        add("( ");
       Expression();
       jj_consume_token(RPAREN);
-                                       add(")");
+                                        add(" )");
       break;
     case NEW:
       AllocationExpression();
@@ -2255,7 +2262,7 @@ public class JavaParser implements JavaParserConstants {
   final public void Arguments() throws ParseException {
     boolean added = false;
     jj_consume_token(LPAREN);
-          trimWhitespace(); trim(); add("(");
+          trimWhitespace(); trim(); add("( ");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BOOLEAN:
     case BYTE:
@@ -2285,14 +2292,14 @@ public class JavaParser implements JavaParserConstants {
     case PLUS:
     case MINUS:
       ArgumentList();
-                                                                   added = true;
+                                                                    added = true;
       break;
     default:
       jj_la1[88] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
-                                                                                           if (!added) trim(); add(")");
+                                                                                            if (!added) trim(); add(" )");
   }
 
   final public void ArgumentList() throws ParseException {
@@ -2771,11 +2778,11 @@ public class JavaParser implements JavaParserConstants {
   final public void SwitchStatement() throws ParseException {
     jj_consume_token(SWITCH);
     jj_consume_token(LPAREN);
-                   add("switch (");
+                   add("switch ( ");
     Expression();
     jj_consume_token(RPAREN);
     jj_consume_token(LBRACE);
-                                                             add(") "); addStartBracket(); write(); ++token_source.level;
+                                                              add(" ) "); addStartBracket(); write(); ++token_source.level;
     label_40:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2872,10 +2879,10 @@ public class JavaParser implements JavaParserConstants {
     Token t;
     jj_consume_token(IF);
     jj_consume_token(LPAREN);
-        add("if (");
+        add("if ( ");
     Expression();
     jj_consume_token(RPAREN);
-        add(") ");
+        add(" ) ");
 
         // Sun's coding standard says there should always be a block following
         // an "if" statement, so add the brackets if they are missing
@@ -2961,10 +2968,10 @@ public class JavaParser implements JavaParserConstants {
     boolean no_block = false;
     jj_consume_token(WHILE);
     jj_consume_token(LPAREN);
-                  add("while (");
+                  add("while ( ");
     Expression();
     jj_consume_token(RPAREN);
-                                                       add(")");
+                                                        add(" )");
         // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
         // indeed a block written.
@@ -2989,18 +2996,18 @@ public class JavaParser implements JavaParserConstants {
     Statement();
     jj_consume_token(WHILE);
     jj_consume_token(LPAREN);
-                                                 trimWhitespace(); add(" ^while (");
+                                                 trimWhitespace(); add(" ^while ( ");
     Expression();
     jj_consume_token(RPAREN);
     jj_consume_token(SEMICOLON);
-                                                                                                              add(");"); write();
+                                                                                                               add(" );"); write();
   }
 
   final public void ForStatement() throws ParseException {
     boolean no_block = false;
     jj_consume_token(FOR);
     jj_consume_token(LPAREN);
-              add("for (");
+              add("for ( ");
     if (jj_2_36(2147483647)) {
       Type();
       t = jj_consume_token(IDENTIFIER);
@@ -3142,7 +3149,7 @@ public class JavaParser implements JavaParserConstants {
       }
     }
     jj_consume_token(RPAREN);
-        add(")");
+        add(" )");
         // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
         // indeed a block written.
@@ -3462,7 +3469,7 @@ public class JavaParser implements JavaParserConstants {
          add("@");
     Name();
     jj_consume_token(LPAREN);
-                                  add("(");
+                                  add("( ");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IDENTIFIER:
       MemberValuePairs();
@@ -3472,7 +3479,7 @@ public class JavaParser implements JavaParserConstants {
       ;
     }
     jj_consume_token(RPAREN);
-                                                                           trimWhitespace(); trim(); add(")"); write();
+                                                                            trimWhitespace(); trim(); add(" )"); write();
   }
 
   final public void MarkerAnnotation() throws ParseException {
@@ -3487,10 +3494,10 @@ public class JavaParser implements JavaParserConstants {
         add("@");
     Name();
     jj_consume_token(LPAREN);
-                                 add("(");
+                                 add("( ");
     MemberValue();
     jj_consume_token(RPAREN);
-                                                                 add(")"); write();
+                                                                  add(" )"); write();
   }
 
   final public void MemberValuePairs() throws ParseException {
@@ -4022,48 +4029,6 @@ public class JavaParser implements JavaParserConstants {
     try { return !jj_3_41(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(40, xla); }
-  }
-
-  private boolean jj_3R_233() {
-    if (jj_scan_token(BIT_OR)) return true;
-    if (jj_3R_211()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_234() {
-    if (jj_3R_240()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_253()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_239() {
-    if (jj_scan_token(XOR)) return true;
-    if (jj_3R_219()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_225() {
-    if (jj_scan_token(SC_AND)) return true;
-    if (jj_3R_196()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_226() {
-    if (jj_3R_234()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_250()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_218() {
-    if (jj_scan_token(SC_OR)) return true;
-    if (jj_3R_170()) return true;
-    return false;
   }
 
   private boolean jj_3R_210() {
@@ -6736,6 +6701,48 @@ public class JavaParser implements JavaParserConstants {
       xsp = jj_scanpos;
       if (jj_3R_259()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  private boolean jj_3R_233() {
+    if (jj_scan_token(BIT_OR)) return true;
+    if (jj_3R_211()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_234() {
+    if (jj_3R_240()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_253()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_239() {
+    if (jj_scan_token(XOR)) return true;
+    if (jj_3R_219()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_225() {
+    if (jj_scan_token(SC_AND)) return true;
+    if (jj_3R_196()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_226() {
+    if (jj_3R_234()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_250()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_218() {
+    if (jj_scan_token(SC_OR)) return true;
+    if (jj_3R_170()) return true;
     return false;
   }
 

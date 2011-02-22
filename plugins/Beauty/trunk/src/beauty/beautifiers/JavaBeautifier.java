@@ -11,6 +11,9 @@ import org.gjt.sp.jedit.jEdit;
 public class JavaBeautifier extends Beautifier {
 
     private static JavaParser parser = null;
+    
+    private int bracketStyle = jEdit.getIntegerProperty("beauty.java.bracketStyle", JavaParser.ATTACHED);
+    private boolean padParens = jEdit.getBooleanProperty("beauty.java.padParens", false);
 
     public String beautify( String text ) throws ParserException {
         //System.out.println(text);
@@ -32,7 +35,8 @@ public class JavaBeautifier extends Beautifier {
             parser.setIndentWidth(getIndentWidth());
             parser.setTabSize(getTabWidth());
             parser.setLineSeparator(getLineSeparator());
-            parser.setBracketStyle(jEdit.getIntegerProperty("beauty.java.bracketStyle", JavaParser.ATTACHED));
+            parser.setBracketStyle(bracketStyle);
+            parser.setPadParens(padParens);
 
             // do the parse
             parser.parse();
@@ -46,6 +50,14 @@ public class JavaBeautifier extends Beautifier {
         catch ( Exception e ) {
             throw new ParserException(e);
         }
+    }
+    
+    public void setBracketStyle(int style) {
+        bracketStyle = style;   
+    }
+    
+    public void setPadParens(boolean pad) {
+        padParens = pad;   
     }
 
 }
