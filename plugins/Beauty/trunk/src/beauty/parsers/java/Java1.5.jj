@@ -66,6 +66,8 @@ public class JavaParser
     public static final int BROKEN = 2;
     
     private int bracketStyle = ATTACHED;
+    
+    private boolean padParens = false;
 
     public void setIndentWidth(int i) {
         token_source.setIndentWidth(i);
@@ -149,6 +151,11 @@ public class JavaParser
                 token_source.setBracketStyle(style);
                 break;
         }
+    }
+    
+    public void setPadParens(boolean pad) {
+        padParens = pad; 
+        token_source.setPadParens(pad);
     }
 
    public JavaParser(String fileName)
@@ -242,6 +249,8 @@ TOKEN_MGR_DECLS :
     static char nbsp = '\u001d';
 
     static int bracketStyle = JavaParser.ATTACHED;
+    
+    static boolean padParens = false;
 
     static void reset() {
         b = new StringBuilder();
@@ -284,6 +293,10 @@ TOKEN_MGR_DECLS :
             indent = "\t";
             double_indent = "\t\t";
         }
+    }
+    
+    static void setPadParens(boolean pad) {
+        padParens = pad;   
     }
 
     // add a token to the accumulator
@@ -506,8 +519,11 @@ TOKEN_MGR_DECLS :
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
             // TODO: make this a user setting, pad parens
-            s = s.replaceAll("[(][ ]", "(");
-            s = s.replaceAll("[ ][)]", ")");
+            String startParen = padParens ? "( " : "(";
+            String endParen = padParens ? " )" : ")";
+            s = s.replaceAll("[(][ ]", startParen);
+            s = s.replaceAll("[ ][)]", endParen);
+            s = s.replaceAll("[(]\\s+[)]", "()");
             
             // there should be no situation where a comma is preceded by a space,
             // although that seems to happen when formatting string arrays.
@@ -1307,7 +1323,7 @@ void FormalParameters():
     boolean added = false;
 }
 {
-    "(" { trimWhitespace(); trim(); add("("); } [ FormalParameter() { added = true; } ( "," { add(", "); } FormalParameter() )* ] ")" { if (!added) trim(); add(")"); }
+    "(" { trimWhitespace(); trim(); add("( "); } [ FormalParameter() { added = true; } ( "," { add(", "); } FormalParameter() )* ] ")" { if (!added) trim(); add(" )"); }
 }
 
 void FormalParameter():
@@ -1612,9 +1628,9 @@ void CastExpression():
 {}
 {
   LOOKAHEAD("(" PrimitiveType())
-  "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpression()
+  "(" { add("( "); } Type() ")" { trim(); add(" ) "); } UnaryExpression()
 |
-  "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpressionNotPlusMinus()
+  "(" { add("( "); } Type() ")" { trim(); add(" ) "); } UnaryExpressionNotPlusMinus()
 }
 
 void PrimaryExpression():
@@ -1638,7 +1654,7 @@ void PrimaryPrefix():
 |
   "super" "." { add("super."); } t=<IDENTIFIER> { add(t); }
 |
-  "(" { add("("); } Expression() ")" { add(")"); }
+  "(" { add("( "); } Expression() ")" { add(" )"); }
 |
   AllocationExpression()
 |
@@ -1702,7 +1718,7 @@ void Arguments():
     boolean added = false;
 }
 {
-    "(" { trimWhitespace(); trim(); add("("); } [ ArgumentList() { added = true; } ] ")" { if (!added) trim(); add(")"); }
+    "(" { trimWhitespace(); trim(); add("( "); } [ ArgumentList() { added = true; } ] ")" { if (!added) trim(); add(" )"); }
 }
 
 void ArgumentList():
@@ -1854,7 +1870,7 @@ void StatementExpression():
 void SwitchStatement():
 {}
 {
-    "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") "); addStartBracket(); write(); ++token_source.level; }
+    "switch" "(" { add("switch ( "); } Expression() ")" "{" { add(" ) "); addStartBracket(); write(); ++token_source.level; }
         ( SwitchLabel() { ++token_source.level;} ( BlockStatement() )* { --token_source.level;} )*
     "}" { addEndBracket(); --token_source.level; write(); }
 }
@@ -1880,11 +1896,11 @@ void IfStatement():
 {
     "if" "("
     {
-        add("if (");
+        add("if ( ");
     }
     Expression() ")"
     { 
-        add(") ");
+        add(" ) ");
         
         // Sun's coding standard says there should always be a block following
         // an "if" statement, so add the brackets if they are missing
@@ -1979,7 +1995,7 @@ void WhileStatement():
     boolean no_block = false;
 }
 {
-    "while" "(" { add("while ("); } Expression() ")" { add(")"); }
+    "while" "(" { add("while ( "); } Expression() ")" { add(" )"); }
     {
         // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
@@ -2007,7 +2023,7 @@ void DoStatement():
 {
   // adding a ^ to the front of 'while' to differentiate it from 'while' at the
   // start of a 'while' loop.  This will be stripped off later.
-  "do" { add("do "); } Statement() "while" "(" { trimWhitespace(); add(" ^while ("); } Expression() ")" ";" { add(");"); write(); }
+  "do" { add("do "); } Statement() "while" "(" { trimWhitespace(); add(" ^while ( "); } Expression() ")" ";" { add(" );"); write(); }
 }
 
 void ForStatement():
@@ -2015,7 +2031,7 @@ void ForStatement():
     boolean no_block = false;
 }
 {
-  "for" "(" { add("for ("); }
+  "for" "(" { add("for ( "); }
 
   (
       LOOKAHEAD(Type() <IDENTIFIER> ":")
@@ -2024,7 +2040,7 @@ void ForStatement():
     [ ForInit() ] ";" { add("; "); } [ Expression() ] ";" { add("; "); } [ ForUpdate() ]
   )
 
-  ")" { add(")"); }
+  ")" { add(" )"); }
     {
         // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
@@ -2221,7 +2237,7 @@ void Annotation():
 void NormalAnnotation():
 {}
 {
-   "@" { add("@"); } Name() "(" { add("("); } [ MemberValuePairs() ] ")" { trimWhitespace(); trim(); add(")"); write();}
+   "@" { add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" { trimWhitespace(); trim(); add(" )"); write();}
 }
 
 void MarkerAnnotation():
@@ -2233,7 +2249,7 @@ void MarkerAnnotation():
 void SingleMemberAnnotation():
 {}
 {
-  "@" { add("@"); } Name() "(" { add("("); } MemberValue() ")" { add(")"); write(); }
+  "@" { add("@"); } Name() "(" { add("( "); } MemberValue() ")" { add(" )"); write(); }
 }
 
 void MemberValuePairs():

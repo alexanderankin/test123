@@ -26,6 +26,8 @@ public class JavaOptionPane extends AbstractOptionPane {
     private JRadioButton brokenBrackets;
     private int bracketStyle;
     
+    private JCheckBox padParens;
+    
     public JavaOptionPane() {
         super( "beauty.java" );
         bracketStyle = jEdit.getIntegerProperty("beauty.java.bracketStyle", JavaParser.ATTACHED);
@@ -76,12 +78,18 @@ public class JavaOptionPane extends AbstractOptionPane {
         attachedBrackets.addActionListener(al);
         brokenBrackets.addActionListener(al);
         
+        padParens = new JCheckBox("Pad parenthesis");
+        padParens.setSelected(jEdit.getBooleanProperty("beauty.java.padParens", false));
+        
+        
         add("0, 0, 1, 1, W, w, 3", description);
         add("0, 1, 1, 1, W, w, 3", attachedBrackets);
         add("0, 2, 1, 1, W, w, 3", brokenBrackets);
+        add("0, 3, 1, 1, W, w, 3", padParens);
     }
     
     public void _save() {
-        jEdit.setIntegerProperty("beauty.java.bracketStyle", bracketStyle);        
+        jEdit.setIntegerProperty("beauty.java.bracketStyle", bracketStyle); 
+        jEdit.setBooleanProperty("beauty.java.padParens", padParens.isSelected());
     }
 }

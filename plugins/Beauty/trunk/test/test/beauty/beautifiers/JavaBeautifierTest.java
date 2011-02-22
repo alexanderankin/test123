@@ -628,5 +628,79 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
+    
+    @Test
+    public void setPadParens1() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append("public class Test4 {\n");
+            before.append("    public method1() {\n");
+            before.append("        System.out.println();\n");
+            before.append("        System.out.println( \"some text\" );\n");
+            before.append("    }\n");
+            before.append("}\n");                                        
+                                                                         
+            StringBuilder answer = new StringBuilder();
+            answer.append("public class Test4 {\n");
+            answer.append("    public method1() {\n");
+            answer.append("        System.out.println();\n");
+            answer.append("        System.out.println(\"some text\");\n");
+            answer.append("    }\n");
+            answer.append("}\n");                                        
+
+            JavaBeautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            beautifier.setPadParens(false);
+            String after = beautifier.beautify(before.toString());
+
+            assertTrue("'padParens1' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void setPadParens2() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append("public class Test4 {\n");
+            before.append("    public method1() {\n");
+            before.append("        System.out.println();\n");
+            before.append("        System.out.println(\"some text\");\n");
+            before.append("    }\n");
+            before.append("}\n");                                        
+                                                                         
+            StringBuilder answer = new StringBuilder();
+            answer.append("public class Test4 {\n");
+            answer.append("    public method1() {\n");
+            answer.append("        System.out.println();\n");
+            answer.append("        System.out.println( \"some text\" );\n");
+            answer.append("    }\n");
+            answer.append("}\n");                                        
+
+            JavaBeautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            beautifier.setPadParens(true);
+            String after = beautifier.beautify(before.toString());
+
+            assertTrue("'padParens2' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
 
 }
