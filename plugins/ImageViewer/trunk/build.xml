@@ -17,6 +17,9 @@
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
     
+    <property name="compiler.target" value="1.5" />
+    <property name="compiler.source" value="1.5" />
+    
     <!-- where plugin dependencies are -->
     <property name="jedit.plugins.dir" value="${install.dir}" />
 
