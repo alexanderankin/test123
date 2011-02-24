@@ -1,10 +1,10 @@
 plugin.archive.ArchivePlugin.activate=defer
 plugin.archive.ArchivePlugin.name=Archive
-plugin.archive.ArchivePlugin.author=André Kaplan
+plugin.archive.ArchivePlugin.author=Andr\u00e9 Kaplan
 plugin.archive.ArchivePlugin.version=0.5.0
 plugin.archive.ArchivePlugin.docs=index.html
 plugin.archive.ArchivePlugin.description=The Archive plugin provides a jEdit VFS for browsing the contents of tar and zip archives and opening the files they contain as jEdit buffers.
-plugin.archive.ArchivePlugin.depend.0=jedit 04.03.10.00
+plugin.archive.ArchivePlugin.depend.0=jedit 04.03.99.00
 plugin.archive.ArchivePlugin.depend.1=jdk 1.5
 plugin.archive.ArchivePlugin.usePluginHome=true
 
