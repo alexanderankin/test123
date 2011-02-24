@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.VFSUpdate;
 import org.gjt.sp.util.Log;
 
-public class ArchivePlugin extends EBPlugin
+public class ArchivePlugin extends EditPlugin
 {
 	private static final Object tempLock = new Object();
 	private static String tempDirectory;
@@ -74,21 +74,20 @@ public class ArchivePlugin extends EBPlugin
 				pluginHome.mkdirs();
 			}
 		}
+		EditBus.addToBus(this);
 	}
 
 	public void stop()
 	{
+		EditBus.addToBus(this);
 		// Clear cached directory listings
 		ArchiveDirectoryCache.clearAllCachedDirectories();
 	}
 
-	public void handleMessage(EBMessage msg)
+	@EditBus.EBHandler
+	public void handleVFSUpdate(VFSUpdate vmsg)
 	{
-		if (msg instanceof VFSUpdate)
-		{
-			VFSUpdate vmsg = (VFSUpdate) msg;
-			ArchiveDirectoryCache.clearCachedDirectory(vmsg.getPath());
-		}
+		ArchiveDirectoryCache.clearCachedDirectory(vmsg.getPath());
 	}
 }
 
