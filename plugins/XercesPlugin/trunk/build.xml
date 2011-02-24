@@ -47,4 +47,10 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
     <delete failonerror="false" file="${install.dir}/xml-apis.jar" />
   </target>
   
+  <target name="clean">
+  </target>
+  
+  <target name="dist" depends="install">
+  </target>
+  
 </project>
