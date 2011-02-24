@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 
@@ -63,16 +64,7 @@ public class ArchiveDirectoryCache
                 }
                 finally
                 {
-                    if(in != null)
-                    {
-                        try
-                        {
-                            in.close();
-                        }
-                        catch(Exception e)
-                        {
-                        }
-                    }
+                    IOUtilities.closeQuietly(in);
                 }
             }
             else
@@ -114,16 +106,7 @@ public class ArchiveDirectoryCache
             }
             finally
             {
-                if(out != null)
-                {
-                    try
-                    {
-                        out.close();
-                    }
-                    catch(Exception e)
-                    {
-                    }
-                }
+                IOUtilities.closeQuietly(out);
             }
         }
     }
