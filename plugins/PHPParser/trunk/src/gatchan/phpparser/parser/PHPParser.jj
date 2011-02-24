@@ -6353,7 +6353,7 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 			elseIfList.add(elseifStatement);
 		}
 	)*
-	[ elseStatement = ElseStatementColon() ]
+	[ elseStatement = elseStatementColon() ]
 	
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
@@ -6496,18 +6496,30 @@ ElseIf ElseIfStatementColon():
 	stmtsArray[sizeList-1].getEndColumn());}
 } //}}}
 
-//{{{ ElseStatementColon()
-Else ElseStatementColon():
+//{{{ elseStatementColon()
+Else elseStatementColon():
 {
 	List<Statement> list;
 	Token elseToken;
+	Token colonToken;
 }
 {
-	elseToken = <ELSE> <COLON>
+	elseToken = <ELSE> colonToken = <COLON>
 	list = statementList()
 	{
 		int sizeList = list.size();
 		Statement[] stmtsArray = new Statement[sizeList];
+		if (sizeList == 0)
+		{
+			return new Else(stmtsArray,
+					elseToken.sourceStart,
+					colonToken.sourceEnd,
+					elseToken.beginLine,
+					colonToken.endLine,
+					elseToken.beginColumn,
+					colonToken.endColumn);
+		}
+		
 		list.toArray(stmtsArray);
 		return new Else(stmtsArray,
 			elseToken.sourceStart,
