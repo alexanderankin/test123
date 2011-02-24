@@ -21,6 +21,8 @@
 */
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+
+import java.beans.Beans;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -112,7 +114,7 @@ public class XScripter
   */
   public static void runMacro(View view, String name, String macro) {
     Log.log(Log.DEBUG, XScripter.class, "Running runMacro for item named = " + name);
-    BeanShell.eval(view, macro, false);
+    BeanShell.eval(view, BeanShell.getNameSpace(), macro);
     } //}}}
 
 //{{{ runNamedMacro method
@@ -138,7 +140,7 @@ public class XScripter
 		// NOTE: this is the alternative representation: the macro's full path
 		File macroFile = new File(path);
 		if(macroFile.exists()) {
-			BeanShell.runScript(view, path, true, false);
+			BeanShell.runScript(view, path, null, true);
 			}
 		else {
 			Log.log(Log.ERROR, XScripter.class,
