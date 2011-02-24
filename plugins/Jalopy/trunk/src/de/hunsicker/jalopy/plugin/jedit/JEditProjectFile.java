@@ -83,7 +83,8 @@ final class JEditProjectFile
      */
     public File getFile()
     {
-        return this.buffer.getFile();
+	// this will fail if the buffer is not local file system
+        return new File(this.buffer.getPath());
     }
 
 

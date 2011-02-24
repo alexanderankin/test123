@@ -149,7 +149,7 @@ public class JEditPlugin
         {
             String text = view.getTextArea().getText();
             Jalopy jalopy = _instance.getEngine();
-            jalopy.setInput(text, view.getBuffer().getFile().getAbsolutePath());
+            jalopy.setInput(text, view.getBuffer().getPath());
 
             return jalopy.parse();
         }
@@ -263,7 +263,7 @@ public class JEditPlugin
                      *       seems to be only set after the message is issued and
                      *       therefore the buffer is in 'text' mode
                      */
-                    if (buffer.getFile().getName().endsWith(".java" /* NOI18N */))
+                    if (buffer.getName().endsWith(".java" /* NOI18N */))
                     {
                         if (!_formatItem.isEnabled())
                         {
