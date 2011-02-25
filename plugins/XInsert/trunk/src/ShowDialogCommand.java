@@ -54,7 +54,7 @@ public class ShowDialogCommand extends Object implements Command {
     if(_command.startsWith("%set")) {
       _command = _command.substring(4).trim();
       if(_command.startsWith("$"))
-        node.addVariable(key, XScripter._getSubstituteFor(parent,_command, node));
+        node.addVariable(key, XScripter.getSubstituteFor(parent,_command, node));
       else {
         _command = Utilities.replace(_command, "\\$", "$");
         node.addVariable(key, _command);
@@ -78,11 +78,11 @@ public class ShowDialogCommand extends Object implements Command {
       _opts = new String[0];
       }
     if(_opts.length == 0)
-      node.addVariable(key, XScripter.showInputDialog(parent, message, key, XScripter._getSubstituteFor(parent, key, node)));
+      node.addVariable(key, XScripter.showInputDialog(parent, message, key, XScripter.getSubstituteFor(parent, key, node)));
     else if(_opts.length == 1)
       node.addVariable(key, XScripter.showInputDialog(parent, message, key, _opts[0]));
     else {
-      String val = XScripter.showComboDialog(parent, message, key, _opts, XScripter._getSubstituteFor(parent, key, node), giveOpt);
+      String val = XScripter.showComboDialog(parent, message, key, _opts, XScripter.getSubstituteFor(parent, key, node), giveOpt);
       // System.out.println("key=" + key + " value=" + val);
       node.addVariable(key, val);
       }
