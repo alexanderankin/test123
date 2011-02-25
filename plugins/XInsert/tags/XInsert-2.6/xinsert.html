@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+
+<title>XInsert Plugin</title>
+
+<style type="text/css">
+<!--
+.syntax0 {}
+
+.syntax1 {
+	color: #990033;
+	}
+
+.syntax2 {
+	color: #990033;
+	font-style: italic;
+	}
+
+.syntax3 {
+	color: #650099;
+	}
+
+.syntax4 {
+	color: #650099;
+	font-weight: bold;
+	}
+
+.syntax5 {
+	color: #3366ff;
+	font-weight: bold;
+	}
+
+.syntax6 {
+	color: #000000;
+	font-weight: bold;
+	}
+
+.syntax7 {
+	color: #0033ff;
+	}
+
+.syntax8 {
+	color: #009600;
+	}
+
+.syntax9 {
+	color: #990033;
+	}
+
+.syntax10 {
+	color: #5e5e5e;
+	font-weight: bold;
+	}
+
+.syntax11 {
+	color: #000000;
+	font-weight: bold;
+	}
+
+.syntax12 {
+	color: #009191;
+	}
+
+.syntax13 {
+	color: #ff0000;
+	font-weight: bold;
+	}
+
+.gutter {
+	background: #ffffff;
+	color: #8080c0;
+	width: 2em
+	}
+
+.gutterH {
+	background: #ffffff;
+	color: #000000;
+	}
+
+-->
+
+</style>
+</head>
+<body>
+<table style="background:#ccccff" border="0" width="100%" cellspacing="0" cellpadding="0">
+<tr width="100%">
+	<td><h1>XInsert Plugin</h1></td>
+	<td align="right">
+	<font size="-1">By Dominic Stolerman and Romain Guy<br>
+	<i>dstolerman@jedit.org and guy.romain@bigfoot.com</i></font>
+	</td>
+</tr>
+</table>
+
+<hr>
+<h2>Introduction</h2>
+
+<p>XInsert is a plugin that will insert a section of code/text
+from a library into the current buffer, using a graphical tree
+view. It also has the ability to run simple scripts in a native
+format as well as BeanShell scripts.</p>
+
+<p>XInsert started off as an adition to/part of the Jext text
+editor written by Romain Guy. It was then modified to form a
+plugin for jEdit by Romain as version 1.0.</p>
+
+<p>Since then it has evolved into a plugin that is has a much
+higher level of integration with jEdit through the work of
+Dominic Stolerman.</p>
+
+<p>Actions for easy navigation and inserting with the keyboard were
+added by Martin Raspe (hertzhaft@biblhertz.it). He added
+node references and re-styled the code. Martin is the current 
+maintainer of the plugin.</p>
+
+<h2>Inserting clips</h2>
+
+<p>XInsert clips can be added in two ways: Either double click on
+the desired item in the expanded branch, or select the desired
+item in the tree and hit Enter or Space while the XInsert pane is
+focused. For convenience two actions were added that can be bound to keystroke
+combinations using the Utilities/Global Options/Shortcuts menu (A+F12).</p>
+
+<ul>
+<li><b>Focus XInsert</b> - focuses the XInsert pane, allowing
+tree navigation by keyboard. Recommended shortcut:
+CS-Insert.</li>
+
+<li><b>Insert Selected Item</b> - Inserts the currently selected
+item from the XInsert tree. Multiple inserts of the
+same item are possible without having to re-enter the XInsert
+pane. This action works even if the XInsert pane is not visible
+or focused (it must be docked, though). Recommended shortcut: C-Insert 
+(if you don't use this key combination for pasting from the clipboard).</li>
+</ul>
+
+<p>This way you have to remember just one keyboard shortcut to insert an item
+or run a macro. Bring the XInsert pane into focus, then navigate
+to the desired clip using the arrow keys. Press Enter or Space to reset the 
+focus to the text area and insert the item. The selected item can be inserted
+over again using another keyboard shortcut.</p>
+
+<h2>XInsert Files</h2>
+
+<p>Some XInsert files are supplied with XInsert, these include
+Java, HTML, JavaScript and SSI inserts. These catagories appear
+in the tree view by default but can be turned off using the
+plugin options dialog box.Also all files with the name
+*.insert.xml are loaded from the directory specified in the
+plugin options. The default directory is .jedit/XInsert, although
+this can be changed from the plugin settings dialog.</p>
+
+<p><b>For settings set in the plugin options to take effect the
+reload button on the tree view must be pressed</b></p>
+
+<h2>Options</h2>
+
+<h3>From the Plugin Options--&gt;XInsert Dialog:</h3>
+
+<p><b>Display Default Inserts</b> - Enable/Disable displaying the
+inserts in the jar file. Pressing "None" will hide them all
+without losing your current settings.</p>
+
+<p><b>Inserts directory</b> - The directory that will be searched
+for additional insert files.</p>
+
+<p><b>Global Variables</b> - Variables that will be used
+throughout all of XInsert. I recomend you set these variables:
+author, email webaddress</p>
+
+<h3>On the XInsert Dialog</h3>
+
+<p><b>Carriage Return</b> - If selected will add a new line after
+all inserts.</p>
+
+<p><b>Execute Scripts</b> - If selected will cause all inserts
+with the <code>script</code> attribute to be executed. If it is
+not selected script source will be inserted.</p>
+
+<h2>XInsert File Format</h2>
+
+<pre><font color="#000000"><font color="#0099ff"><strong>&lt;?</strong></font><font color="#0099ff"><strong>xml</strong></font><font color="#0099ff"><strong> </strong></font><font color="#0099ff"><strong>version=</strong></font><font color="#0099ff"><strong> </strong></font><font color="#0099ff"><strong>&quot;1.0&quot;</strong></font><font color="#0099ff"><strong> </strong></font><font color="#0099ff"><strong>encoding=</strong></font><font color="#0099ff"><strong> </strong></font><font color="#0099ff"><strong>&quot;ISO-8859-1&quot;?</strong></font><font color="#0099ff"><strong>&gt;</strong></font>
+<font color="#009966"><strong>&lt;!</strong></font><font color="#009966"><strong>DOCTYPE</strong></font><font color="#009966"><strong> </strong></font><font color="#009966"><strong>xinsert</strong></font><font color="#009966"><strong> </strong></font><font color="#009966"><strong>SYSTEM</strong></font><font color="#009966"><strong> </strong></font><font color="#ff00cc">&quot;</font><font color="#ff00cc">jeditresource:/XInsert.jar!/xinsert.dtd</font><font color="#ff00cc">&quot;</font><font color="#009966"><strong>&gt;</strong></font>
+<font color="#0000ff">&lt;</font><font color="#0000ff">xinsert</font><font color="#0000ff">&gt;</font>
+  <font color="#0000ff">&lt;</font><font color="#0000ff">menu</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">[menu</font><font color="#ff00cc"> </font><font color="#ff00cc">name]</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">variable</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">foo</font><font color="#ff00cc">&quot;</font><font color="#0000ff"> </font><font color="#0000ff">value</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">bar</font><font color="#ff00cc">&quot;</font><font color="#0000ff">/</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">item</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">[Item</font><font color="#ff00cc"> </font><font color="#ff00cc">name]</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>[contents]<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">item</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">item</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">foo</font><font color="#ff00cc"> </font><font color="#ff00cc">value</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>$foo<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">item</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">item</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">[script</font><font color="#ff00cc"> </font><font color="#ff00cc">name]</font><font color="#ff00cc">&quot;</font><font color="#0000ff"> </font><font color="#0000ff">type</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">xinsert_script</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>[contents]<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">item</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">item</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">[macro</font><font color="#ff00cc"> </font><font color="#ff00cc">name]</font><font color="#ff00cc">&quot;</font><font color="#0000ff"> </font><font color="#0000ff">type</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">macro</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>[contents]<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">item</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">item</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">[macro</font><font color="#ff00cc"> </font><font color="#ff00cc">file</font><font color="#ff00cc"> </font><font color="#ff00cc">name]</font><font color="#ff00cc">&quot;</font><font color="#0000ff"> </font><font color="#0000ff">type</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">named_macro</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>[file_name]<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">item</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">menu</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">sub</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>
+      <font color="#0000ff">&lt;</font><font color="#0000ff">variable</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">foo</font><font color="#ff00cc">&quot;</font><font color="#0000ff"> </font><font color="#0000ff">value</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">bar2</font><font color="#ff00cc">&quot;</font><font color="#0000ff">/</font><font color="#0000ff">&gt;</font>
+      <font color="#0000ff">&lt;</font><font color="#0000ff">item</font><font color="#0000ff"> </font><font color="#0000ff">name</font><font color="#0000ff">=</font><font color="#ff00cc">&quot;</font><font color="#ff00cc">foo</font><font color="#ff00cc"> </font><font color="#ff00cc">value</font><font color="#ff00cc">&quot;</font><font color="#0000ff">&gt;</font>$foo<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">item</font><font color="#0000ff">&gt;</font>
+    <font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">menu</font><font color="#0000ff">&gt;</font>
+  <font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">menu</font><font color="#0000ff">&gt;</font>
+<font color="#0000ff">&lt;</font><font color="#0000ff">/</font><font color="#0000ff">xinsert</font><font color="#0000ff">&gt;</font> 
+</font></pre>
+
+<p>XInsert files can have more than one <code>&lt;menu&gt;</code>
+tag per file, can have <code>&lt;item&gt;</code> tags in the
+<code>&lt;menu&gt;</code> tag. Unlimited nesting of
+<code>&lt;menu&gt;</code> tags is supported.</p>
+
+<p>Menu tags can also contain "variable" tags. When variables are
+substituted into the insert the closest variable tag in the tree
+hierachy is used.</p>
+
+<p>Item tags can have one of five types (specified with the type
+attribute):</p>
+
+<dl compact>
+<dt>text (default)</dt>
+
+<dd>The text is inserted normally, with variable replacement etc.</dd>
+
+<dt>macro</dt>
+
+<dd>The content is run as a BeanShell macro script.</dd>
+
+<dt>named_macro</dt>
+
+<dd>The content is the name of a file that is run as a BeanShell script.</dd>
+
+<dt>xinsert_script</dt>
+
+<dd>The content is treated as an <a href="#script">xinsert script</a>.</dd>
+
+<dt>action</dt>
+
+<dd>The content is treated as the name of a jEdit action.</dd>
+
+<dt>reference</dt>
+
+<dd>The content is a path to another entry in the XInsert tree. It is constructed by 
+concatenating the node names with slashes. The tree root is represented by "/". 
+Example: "/Java/Javadoc/author". In this way you can reference a single item from plusieurs
+places in the hierarchy. Chained or circular references are detected and do not work.
+</dd>
+</dl>
+
+<p>When a named_macro item is encountered, XInsert searches for
+the script file using the following protocol:</p>
+
+<blockquote>
+<p>1.&nbsp; If the file name has no extension, XInsert adds the
+conventional BeanShell extension ".bsh";</p>
+
+<p>2.&nbsp; If the full path name is not specified, XInsert
+treats the file name as a relative path specification and looks
+for the file in (a) the current working directory, (b) the
+"macros" subdirectory of the jEdit home directory and (c) the
+"macros" subdirectory of the jEdit user settings directory.</p>
+</blockquote>
+
+<p>If you make your own XInsert files, or if you copy the default
+data files contained in the .jar file to the "Inserts Directory"
+specified in the "Options" dialog, you can add the following
+macro item to allow for easy editing of an XInsert file within
+jEdit:</p>
+
+<pre>
+<span class="gutter">&nbsp;1:</span> <span class="syntax11">&lt;</span>item name="Open XInsert file" type="macro"&gt;
+
+<span class="gutter">&nbsp;2:</span> jEdit.openFile(view,
+
+<span class="gutter">&nbsp;3:</span>               jEdit.getProperty("xinsert.inserts-directory")
+
+<span class="gutter">&nbsp;4:</span>                  + File.separator
+
+<span class="gutter">&nbsp;5:</span>                  + "foo.insert.xml");
+
+<span class="gutter">&nbsp;6:</span> <span class="syntax11">&lt;/</span>item&gt;
+
+</pre>
+
+<p>After making any changes to the file, save it within jEdit and
+press the reload button on the XInsert tree view.&nbsp; The
+changes will be immediately available.</p>
+
+<p>As the XInsert files are xml the item contents and names must
+not contain &lt; or &amp; symbols, but the HTML codescan be used,
+<code>&amp;lt;,&amp;amp;</code>. Some special characters can be
+used in the <code>ITEM_CONTENTS</code></p>
+
+<dl>
+<dt>\n</dt>
+
+<dd>Inserts a new line.</dd>
+
+<dt>\t</dt>
+
+<dd>Inserts a tab (or spaces) of length set in the buffer
+options.</dd>
+
+<dt>|</dt>
+
+<dd>Positions the cursor at this point, or inserts any text
+selected at this point. If text is selected but there is no |
+character then the selected text is replaced.</dd>
+
+<dt>||</dt>
+
+<dd>Inserts a | character.</dd>
+
+<dt>\$</dt>
+
+<dd>Inserts a $ character.</dd>
+
+<dt>$foo</dt>
+
+<dd>Inserts the variable neamed foo.</dd>
+
+<dd>
+<p>There are also some special variables:</p>
+
+<dl compact>
+<dt>$path</dt>
+
+<dd>The path of the current buffer.</dd>
+
+<dt>$filename</dt>
+
+<dd>The filname of the current buffer.</dd>
+
+<dt>$date</dt>
+
+<dd>The current date.</dd>
+
+<dt>$time</dt>
+
+<dd>The current time.</dd>
+
+<dt>$datetime</dt>
+
+<dd>The current date and time.</dd>
+
+<dt>$selected</dt>
+
+<dd>The currently selected text in the buffer.</dd>
+</dl>
+</dd>
+</dl>
+
+<h2>XInsert Scripts</h2>
+
+<p>XInsert has a built-in scripting language designed to add
+certain functionality to text inserts such as showing dialog
+boxes for inputs. It is not designed as a complete scripting
+language.</p>
+
+<p>All text in an &lt;item&gt; of type "xinsert_script" will be inserted
+into the active buffer, except for embedded commands. Commands are just run,
+their results are not inserted into the buffer.</p>
+
+<p>Commands are surrounded by curly braces. The opening brace 
+must be followed immediately by a "$", "@", "%", or "!", otherwise the text
+is inserted literally. If you need to use a closing brace 
+inside a command, escape it with a backslash. 
+If all you want is to execute a command without inserting any 
+additional text, be sure to leave no space between the &lt;item&gt; tags 
+and the braces.</p>
+
+<p>Note that all the commands are run in the order that
+they appear in the script. This means you must set any variables 
+before you attempt to use them.</p>
+
+<p>For more help with XInsert scripts look at the scripts used in
+the built-in insert files in
+$jEditHome/jars/xinsert/net/sourceforge/jedit/xinsert</p>
+
+<h3>Insert Variable <code>{$.....}</code></h3>
+
+<blockquote>
+<p>This command inserts variables similar to just
+<code>$[variable name]</code> in a plain text insert.</p>
+
+<p>This command has three forms:<br>
+ <code>{$$[variable name]}</code> - the variable value is
+inserted if found. Otherwise $[variable name] is inserted.<br>
+ <code>{$=[variable name]}</code> - the variable value is
+inserted if found. Otherwise nothing is inserted.<br>
+ <code>{$?[variable name]}</code> - the variable value is
+inserted if found. Otherwise a dialog box is displayed, prompting the
+user to enter a value.</p>
+</blockquote>
+
+<h3>Set Variable <code>{%.....}</code></h3>
+
+<blockquote>
+<p>This is used to set a variable valid for the &lt;item&gt; it
+is in. The general syntax is {%[variable name] ..... }. There are
+two main variations:</p>
+
+<p><code>{%[name] %set [value]}</code> - sets the variable to the
+variable [name] to [value].</p>
+
+<p>The other variation shows a prompt box to the user:<br>
+ <code>{%[name] [list]}</code> - where [list] is a list of terms
+in double quotes. The order and number of terms is important.</p>
+
+<blockquote>
+<table width="95%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="19%"><b>No Of Terms</b></td>
+<td width="81%"><b>Effect</b></td>
+</tr>
+
+<tr>
+<td width="19%">none</td>
+<td width="81%">Dialog box with default message shown</td>
+</tr>
+
+<tr>
+<td width="19%">one</td>
+<td width="81%">The term is used as a message to show the user
+(e.g "Enter email address:"). The first term is always used for
+this purpose if present.</td>
+</tr>
+
+<tr>
+<td width="19%">two</td>
+<td width="81%">The second term is used as a default value in the
+dialog box<br>
+ (e.g. "Enter email address:" "dds26@cam.ac.uk")</td>
+</tr>
+
+<tr>
+<td width="19%">more than two</td>
+<td width="81%">
+<p>A dialog box with a choice of values is shown.<br>
+ (e.g. "Enter email address:" "dds26@cam.ac.uk"
+"another@email.com" "another email")<br>
+ If after the last term there is a "?" then the user will be
+allowed to enter thier own value as well.<br>
+ (e.g. "Enter email address:" "dds26@cam.ac.uk"
+"another@email.com" "another email" ?)</p>
+</td>
+</tr>
+</table>
+</blockquote>
+</blockquote>
+
+<h3>Run BeanShell Macro Command
+<code>{@.....}</code></h1>
+
+<blockquote>
+<p>This runs the content of the braces as a BeanShell macro command.
+<code>{@ jEdit.getAction("plugin-manager").invoke(view) }</code>
+Multiple commands can be put into a single pair of braces, separated
+by semicolons, or chained, e.g.: 
+<code>{@ buffer.setMode("xml") }{@ textArea.setCaretPosition(0) }</code></p>
+
+<p>Note that as the commands are run in order you can use a macro
+command that will modify text inserted before it but not after
+it.</p>
+</blockquote>
+
+<h3>Run Java Method Command
+<code>{!.....}</code></h3>
+
+<blockquote>
+<p>This will run any <b>public static</b> java function in a
+class that is in the classpath when jEdit is run. If the function
+returns a string it will be inserted into the buffer. This
+command allows the scripts to become as complicated as you may
+wish, by writing the action you wish the script to perform in
+Java, using all the features of Java, then calling it from
+XInsert.</p>
+
+<p>e.g:<br>
+ <code>{!com.mypackage.MyClass.MyMethod()}</code> will invoke the
+method <i>MyMethod()</i> in class
+<i>com.mypackage.MyClass</i>.<br>
+ <code>{!com.mypackage.MyClass.MyMethod([some text})}</code> will
+invoke the method <i>MyMethod(String arg)</i> in class
+<i>com.mypackage.MyClass</i> where the argument is [some
+text].</p>
+</blockquote>
+
+<h2>Feedback</h2>
+
+<ul>
+<li>For bug reports use the Sourceforge Bug Tracker -
+<a href="http://www.sourceforge.net/bugs/?group_id=588">http://www.sourceforge.net/bugs/?group_id=588</a>,
+</li>
+
+<li>or email the current maintainer Martin Raspe
+(hertzhaft@biblhertz.it),
+</li>
+
+<li>or jEdit-users mailing-list
+&lt;jedit-users@lists.sourceforge.net&gt;,
+</li>
+
+<li>or jEdit-devel mailing.list
+&lt;jedit-devel@lists.sourceforge.net&gt;.
+</li>
+</ul>
+</body>
+</html>
+

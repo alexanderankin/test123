@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+  <menu name="HTML Tags">
+
+    <menu name="Html">
+      <item name="dtd 4.0 transitional">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"&gt;</item>
+			<item name="dtd 4.0 frameset">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN" "http://www.w3.org/TR/REC-html40/frameset.dtd"&gt;</item>
+			<item name="HTML">&lt;HTML&gt;\n&lt;HEAD&gt;\n|\n&lt;/HEAD&gt;&lt;BODY&gt;\n\n&lt;/BODY&gt;\n&lt;/HTML&gt;</item>
+      <item name="HEAD">&lt;HEAD&gt;\n|\n&lt;/HEAD&gt;</item>
+      <item name="BODY">&lt;BODY&gt;\n|\n&lt;/BODY&gt;</item>
+      <item name="FRAMESET">&lt;FRAMESET&gt;\n&lt;FRAME&gt;\n&lt;NOFRAMES&gt;&lt;/NOFRAMES&gt;\n&lt;/FRAMESET&gt;</item>
+    </menu>
+
+    <menu name="Head">
+      <item name="TITLE">&lt;TITLE&gt;|&lt;/TITLE&gt;</item>
+      <item name="ISINDEX">&lt;ISINDEX PROMPT="|"&gt;</item>
+      <item name="BASE">&lt;BASE HREF="|"&gt;</item>
+      <item name="META name">&lt;META name="|" CONTENT=""&gt;</item>
+			<item name="META http-equiv">&lt;META http-equiv="|" CONTENT=""&gt;</item>
+      <item name="Keywords">&lt;META name="keywords" CONTENT="|"&gt;</item>
+			<item name="Description">&lt;META name="description" CONTENT="|"&gt;</item>
+			<item name="content-type">&lt;META name="content-type" CONTENT="text/html; charset=iso-8859-1"&gt;</item>
+			<item name="refresh">&lt;META name="refresh" CONTENT=";http://"&gt;</item>
+			<item name="LINK">&lt;LINK HREF="|" REL=""&gt;</item>
+    </menu>
+
+    <menu name="Body">
+      <item name="H1">&lt;H1&gt;|&lt;/H1&gt;</item>
+      <item name="H2">&lt;H2&gt;|&lt;/H2&gt;</item>
+      <item name="H3">&lt;H3&gt;|&lt;/H3&gt;</item>
+      <item name="H4">&lt;H4&gt;|&lt;/H4&gt;</item>
+      <item name="H5">&lt;H5&gt;|&lt;/H5&gt;</item>
+      <item name="H6">&lt;H6&gt;|&lt;/H6&gt;</item>
+      <item name="P">&lt;P&gt;|&lt;/P&gt;</item>
+      <item name="BR">&lt;BR&gt;</item>
+      <item name="HR">&lt;HR&gt;</item>
+      <item name="UL">&lt;UL&gt;\n&lt;LI&gt;|\n&lt;/UL&gt;</item>
+      <item name="OL">&lt;OL&gt;\n&lt;LI&gt;|\n&lt;/OL&gt;</item>
+      <item name="LI">&lt;LI&gt;</item>
+      <item name="DL">&lt;DL&gt;\n&lt;DT&gt;|\n&lt;DD&gt;\n&lt;/DL&gt;</item>
+      <item name="DT">&lt;DT&gt;</item>
+      <item name="DD">&lt;DD&gt;</item>
+      <item name="PRE">&lt;PRE&gt;|&lt;/PRE&gt;</item>
+      <item name="BLOCKQUOTE">&lt;BLOCKQUOTE&gt;|&lt;/BLOCKQUOTE&gt;</item>
+      <item name="DIV">&lt;DIV ALIGN=""&gt;|&lt;/DIV&gt;</item>
+      <item name="CENTER">&lt;CENTER&gt;|&lt;/CENTER&gt;</item>
+      <item name="ADDRESS">&lt;ADDRESS&gt;|&lt;/ADDRESS&gt;</item>
+    </menu>
+
+    <menu name="Fonts">
+      <item name="FONT">&lt;FONT COLOR="|" SIZE=""&gt;&lt;/FONT&gt;</item>
+      <item name="BASEFONT">&lt;BASEFONT SIZE=|&gt;</item>
+      <item name="EM">&lt;EM&gt;|&lt;/EM&gt;</item>
+      <item name="CITE">&lt;CITE&gt;|&lt;/CITE&gt;</item>
+      <item name="VAR">&lt;VAR&gt;|&lt;/VAR&gt;</item>
+      <item name="STRONG">&lt;STRONG&gt;|&lt;/STRONG&gt;</item>
+      <item name="CODE">&lt;CODE&gt;|&lt;/CODE&gt;</item>
+      <item name="SAMP">&lt;SAMP&gt;|&lt;/SAMP&gt;</item>
+      <item name="KBD">&lt;KBD&gt;|&lt;/KBD&gt;</item>
+      <item name="DFN">&lt;DFN&gt;|&lt;/DFN&gt;</item>
+      <item name="I">&lt;I&gt;|&lt;/I&gt;</item>
+      <item name="B">&lt;B&gt;|&lt;/B&gt;</item>
+      <item name="U">&lt;U&gt;|&lt;/U&gt;</item>
+      <item name="TT">&lt;TT&gt;|&lt;/TT&gt;</item>
+      <item name="BIG">&lt;BIG&gt;|&lt;/BIG&gt;</item>
+      <item name="SMALL">&lt;SMALL&gt;|&lt;/SMALL&gt;</item>
+      <item name="STRIKE">&lt;STRIKE&gt;|&lt;/STRIKE&gt;</item>
+      <item name="SUB">&lt;sub&gt;|&lt;/sub&gt;</item>
+      <item name="SUP">&lt;SUP&gt;|&lt;/SUP&gt;</item>
+    </menu>
+
+    <menu name="Special">
+      <item name="(space)"><![CDATA[&nbsp;]]></item>
+      <item name="&lt;"><![CDATA[&lt;]]></item>
+      <item name="&gt;"><![CDATA[&gt;]]></item>
+      <item name="&amp;"><![CDATA[&amp;]]></item>
+      <item name="&quot;"><![CDATA[&quot;]]></item>
+    </menu>
+
+    <menu name="Images">
+      <item name="IMG">&lt;IMG SRC=| ALT=""&gt;</item>
+      <item name="MAP">&lt;MAP name=""&gt;\n|\n&lt;/MAP&gt;</item>
+      <item name="AREA">&lt;AREA SHAPE="|" COORDS="" HREF="" ALT=""&gt;</item>
+    </menu>
+
+    <menu name="Links">
+      <item name="A-(link)">&lt;A HREF=""&gt;|&lt;/A&gt;</item>
+      <item name="A-(name)">&lt;A name=""&gt;|&lt;/A&gt;</item>
+    </menu>
+
+    <menu name="Applets">
+      <item name="APPLET">&lt;APPLET CODE="" WIDTH= HEIGHT= ALT=""&gt;|&lt;/APPLET&gt;</item>
+      <item name="PARAM">&lt;PARAM name="|" VALUE=""&gt;</item>
+    </menu>
+
+    <menu name="Forms">
+      <item name="FORM">&lt;FORM ACTION="" METHOD=POST&gt;\n|\n&lt;/FORM&gt;</item>
+      <item name="INPUT">&lt;INPUT TYPE="|" name=""&gt;</item>
+      <item name="INPUT - TEXT">&lt;INPUT TYPE="text" name="|" value=""&gt;</item>
+      <item name="INPUT - BUTTON">&lt;INPUT TYPE="button" name="|" value=""&gt;</item>
+      <item name="INPUT - SUBMIT">&lt;INPUT TYPE="submit" name="|" value="Submit"&gt;</item>
+      <item name="SELECT">&lt;SELECT name=""&gt;\n|\n&lt;/SELECT&gt;</item>
+      <item name="OPTION">&lt;OPTION VALUE="|"&gt;</item>
+      <item name="TEXTAREA">&lt;TEXTAREA name="" ROWS= COLS=&gt;|&lt;/TEXTAREA&gt;</item>
+    </menu>
+
+    <menu name="Tables">
+      <item name="TABLE">&lt;TABLE&gt;\n&lt;TR&gt;\n&lt;TD&gt;|&lt;/TD&gt;\n&lt;/TR&gt;\n&lt;/TABLE&gt;</item>
+      <item name="CAPTION">&lt;CAPTION&gt;|&lt;/CAPTION&gt;</item>
+      <item name="TR">&lt;TR&gt;\n|\n&lt;/TR&gt;</item>
+      <item name="TD">&lt;TD&gt;|&lt;/TD&gt;</item>
+      <item name="TH">&lt;TH&gt;|&lt;/TH&gt;</item>
+    </menu>
+		<menu name="Script">
+		<item name="Javscript1.2">&lt;SCRIPT LANGUAGE=Javascript1.2&gt;\n&lt;!-- // hide\n|\n//--&gt;\n&lt;/SCRIPT&gt;</item>
+		<item name="Javscript1.1">&lt;SCRIPT LANGUAGE=Javascript1.1&gt;\n&lt;!-- // hide\n|\n//--&gt;\n&lt;/SCRIPT&gt;</item>
+		<item name="Javscript">&lt;SCRIPT LANGUAGE=Javascript&gt;\n&lt;!-- // hide\n|\n//--&gt;\n&lt;/SCRIPT&gt;</item>
+		</menu>
+		
+  </menu>

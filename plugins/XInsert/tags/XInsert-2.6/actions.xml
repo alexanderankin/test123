@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+ <ACTIONS>
+
+     <ACTION NAME="XInsert.toggle">
+         <CODE>
+             view.getDockableWindowManager()
+			 	.toggleDockableWindow(XInsertPlugin.NAME);
+         </CODE>
+         <IS_SELECTED>
+             return view.getDockableWindowManager()
+               .isDockableWindowVisible(XInsertPlugin.NAME);
+         </IS_SELECTED>
+     </ACTION>
+
+     <ACTION NAME="XInsert-to-front">
+         <CODE>
+		 	view.getDockableWindowManager()
+				.addDockableWindow(XInsertPlugin.NAME);
+         </CODE>
+     </ACTION>
+
+     <ACTION NAME="XInsert-focus">
+         <CODE>
+            XInsertActions.goToXInsert(view);
+         </CODE>
+     </ACTION>
+
+     <ACTION NAME="XInsert-insert-selected">
+         <CODE>
+            XInsertActions.insertSelected(view);
+         </CODE>
+     </ACTION>
+
+ </ACTIONS>
+

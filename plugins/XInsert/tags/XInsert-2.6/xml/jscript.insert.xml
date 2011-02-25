@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<menu name="Java Script">
+
+<menu name="Ready Scripts">
+
+<item name="No frames">
+&lt;script language="javascript"&gt;
+	&lt;!-- // Load me in a new window if caught in a frame
+	if (self != top)
+		top.location.href = self.location.href;
+	// --&gt;
+&lt;/script&gt;
+</item>
+
+<item name="Screen Resolution">
+&lt;script language="javascript"&gt;
+	&lt;!-- // Save screen width in x_res and screen height in y_res
+	var x_res = screen.width;
+	var y_res = screen.height;
+	// --&gt;
+&lt;/script&gt;
+</item>
+
+<item name="Image Preload" type="xinsert_script">
+	{%img "Enter image id:"}
+	var {$=img}_on = new Image();
+	{$=img}_on.src = "{$=img}_on.png";
+	var {$=img}_off = new Image();
+	{$=img}_off.src = "{$=img}_off.png";
+</item>
+
+<item name="Image Rollover">
+// register these functions as mouseover/mouseout handlers for the images
+function onMouseOver(evt){
+	img_file = this.id + '_on.png';
+	this.setAttribute('src', img_file);
+	}
+
+function onMouseOut(evt){
+	img_file = this.id + '_off.png';
+	this.setAttribute('src', img_file);
+	}
+</item>
+
+<item name="window.open (min)">
+	window.open("|","");
+</item>
+
+<item name="window.open (max)">
+window.open("|","","height=,width=,screenX=,screenY=,resizeable,scrollbars,dependent,hotkeys,location,menubar,toolbar,status,directories");
+</item>
+
+<item name="Statusbar messagee">
+function statusbar_message(content) {
+	status = content;
+	return true;
+	}
+</item>
+
+</menu>
+
+<menu name="Misc">
+
+<item name="write">document.write("|")</item>
+
+<item name="writeln">document.writeln("|")</item>
+
+<item name="Function">function |()\n{\n\t\n}</item>
+
+<item name="alert">alert("|")</item>
+
+<item name="confirm">if(confirm("|")){\n\t\n}</item>
+
+<item name="prompt"> = prompt("|",)</item>
+
+<item name="userAgent">navigator.userAgent</item>
+
+<item name="appName">navigator.appName</item>
+
+<item name="appVersion">navigator.appVersion</item>
+
+</menu>
+
+<menu name="HTML Links">
+
+<item name="void(0)">
+	&lt;a href=javascript:void(0) onClick="|"&gt;
+</item>
+
+<item name="back">
+	&lt;a href=javascript:history.go(-1)&gt;
+</item>
+
+<item name="forward">
+	&lt;a href=javascript:history.go(+1)&gt;
+</item>
+
+</menu>
+
+<menu name="Conditions">
+
+<item name="if (short)">
+	if (|)
+		;
+</item>
+
+<item name="if (brackets)">
+	if (|) {
+		}
+</item>
+
+<item name="else if (short)">
+	else if (|)
+		;
+</item>
+
+<item name="else if (brackets)">
+	else if (|) {
+		}
+</item>
+
+<item name="else (short)">
+	else
+		|;</item>
+
+<item name="else (brackets)">
+	else {
+		|
+		};
+</item>
+<item name="switch">
+	switch () {
+		case |:
+			break;
+		default:
+			break;
+		}
+</item>
+
+</menu>
+
+<menu name="Loops">
+
+<item name="for (infinate)">
+	for (;;) {
+		|
+		}
+</item>
+
+<item name="for (var i)">
+	for (var i = 0; i&lt;|; i++) {
+		}
+</item>
+
+<item name="while">
+	while (|) {
+		}
+</item>
+
+<item name="do ... while">
+	do {
+		|
+		} while ();
+</item>
+
+</menu>
+
+<menu name="objects">
+
+<item name="Array"> = new Array()</item>
+
+<item name="Date">= new Date()</item>
+
+<item name="document">document</item>
+
+<item name="history">history</item>
+
+<item name="Math">Math.</item>
+
+<item name="window">window</item>
+
+</menu>
+
+<menu name="Statements">
+
+<item name="break">break
+</item>
+
+<item name="continue">continue
+</item>
+
+<item name="return">return;
+</item>
+
+<item name="var">var | = ;
+</item>
+
+<item name="with">
+	with (|) {
+		}
+</item>
+
+</menu>
+
+</menu>
+
