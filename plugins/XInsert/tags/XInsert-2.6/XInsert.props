@@ -1,0 +1,99 @@
+# {{{ header
+# :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:
+#
+# XInsert.props - Properties file for the XInsert plugin
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# }}}
+
+#{{{ general plugin properites
+plugin.XInsertPlugin.name=XInsert
+plugin.XInsertPlugin.author=Romain Guy and Dominic Stolerman
+plugin.XInsertPlugin.description=Insert text clips and execute macros and scripts from a dockable tree.
+plugin.XInsertPlugin.version=2.6
+plugin.XInsertPlugin.docs=xinsert.html
+plugin.XInsertPlugin.activate=defer
+plugin.XInsertPlugin.option-pane=xinsert
+# }}}
+
+#{{{ dependencies
+plugin.xslt.XSLTPlugin.depend.1=jedit 04.03.99.01
+plugin.XInsertPlugin.depend.1=jdk 1.5
+# }}}
+
+#{{{ labels
+XInsert.toggle.label=Toggle XInsert
+XInsert-to-front.label=Bring XInsert to front
+XInsert-focus.label=Focus XInsert
+XInsert-insert-selected.label=Insert selected item
+# }}}
+
+#{{{ menu bar stuff
+plugin.XInsertPlugin.menu=XInsert.toggle
+plugin.XInsertPlugin.title=XInsert
+plugin.XInsertPlugin.label=XInsert
+XInsert.title=XInsert
+XInsert.label=XInsert
+XInsert.menu=XInsert.toggle
+# }}}
+
+#{{{ XInsert builtin categories
+xinsert.inserts.0=xinsert
+xinsert.inserts.1=htmltag
+xinsert.inserts.2=xhtmltag
+xinsert.inserts.3=htmlchar
+xinsert.inserts.4=ssi
+xinsert.inserts.5=java
+xinsert.inserts.6=jscript
+xinsert.inserts.7=jsptag
+xinsert.inserts.8=c
+xinsert.inserts.9=TeX
+xinsert.inserts.macros=macros
+# }}}
+
+#{{{ plugin options
+options.xinsert.label=XInsert
+options.xinsert.code=new XInsertOptionPane();
+options.xinsert.choose-directory=Choose Directory
+options.xinsert.inserts-directory=Inserts Directory:
+options.xinsert.display.title=Display Default Inserts
+options.xinsert.display.defaults=None
+options.xinsert.display.htmltag=HTML
+options.xinsert.display.java=Java
+options.xinsert.display.jscript=Javascript
+options.xinsert.display.xinsert=XInsert
+options.xinsert.display.htmlchar=HTML Characters
+options.xinsert.display.ssi=Server Side Includes
+options.xinsert.display.jsptag=JSP
+options.xinsert.display.c=C
+options.xinsert.display.TeX=TeX
+options.xinsert.display.macros=Macros
+options.xinsert.click.title=Insert on...\ 
+options.xinsert.click.one=Single Click
+options.xinsert.click.two=Double Click
+options.xinsert.click.change=Selection Changed
+# }}}
+
+#{{{ XTree panel
+xtree.expand.button=Expand
+xtree.collapse.button=Collapse
+xtree.reload.button=Reload
+#xtree.expand.mnemonic=E
+#xtree.collapse.mnemonic=C
+#xtree.reload.mnemonic=R
+xtree.carriage.label=Carriage Return
+xtree.execute.label=Execute Scripts
+xtree.loaded=XInsert file {0} successfully loaded
+# }}}

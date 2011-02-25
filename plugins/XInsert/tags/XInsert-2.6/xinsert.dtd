@@ -1,0 +1,20 @@
+<!ELEMENT xinsert ( menu | item)+ >
+
+<!ELEMENT menu  (variable*, (menu | item)*) >
+  <!ATTLIST menu
+       name   CDATA #REQUIRED >
+
+<!ELEMENT item (#PCDATA) >
+  <!ATTLIST item
+       name   CDATA #REQUIRED
+       type (text | macro | named_macro | xinsert_script | action | reference ) "text"
+       mode   CDATA #IMPLIED
+       abbrev CDATA #IMPLIED
+       shortcut CDATA #IMPLIED
+    >
+
+<!ELEMENT variable EMPTY >
+  <!ATTLIST variable
+       name   CDATA #REQUIRED
+       value  CDATA #REQUIRED >
+
