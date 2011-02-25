@@ -22,12 +22,8 @@
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
-import java.beans.Beans;
-import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.util.Vector;
-import java.util.Enumeration;
 import java.io.File;
 
 
@@ -46,6 +42,7 @@ public class XScripter
 /**
  * @deprecated use getSubstituteFor(View, String, XtreeNode) instead as it does exactly the same
  */
+  @Deprecated
   public static String _getSubstituteFor(View view, String in, XTreeNode node) {
     return getSubstituteFor(view, in, node);
     }
