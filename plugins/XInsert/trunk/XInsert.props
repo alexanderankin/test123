@@ -22,7 +22,7 @@
 plugin.XInsertPlugin.name=XInsert
 plugin.XInsertPlugin.author=Romain Guy and Dominic Stolerman
 plugin.XInsertPlugin.description=Insert text clips and execute macros and scripts from a dockable tree.
-plugin.XInsertPlugin.version=2.5
+plugin.XInsertPlugin.version=2.6
 plugin.XInsertPlugin.docs=xinsert.html
 plugin.XInsertPlugin.activate=defer
 plugin.XInsertPlugin.option-pane=xinsert
