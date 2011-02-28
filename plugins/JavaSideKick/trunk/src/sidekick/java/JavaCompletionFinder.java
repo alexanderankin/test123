@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import sidekick.SideKickParsedData;
+import sidekick.util.Location;
 
 /**
  * Finds 2 kinds of completions, word completions and method/field completions,
@@ -40,15 +41,15 @@ import sidekick.SideKickParsedData;
  * Valid tokens: NULL, OPERATOR, FUNCTION, DIGIT
  */
 public class JavaCompletionFinder {
-
+	
 	private JavaSideKickParsedData data = null;
 	private EditPane editPane = null;
 	private int caret = 0;
-
+	
 	public JavaCompletion complete( EditPane editPane, int caret ) {
 		this.editPane = editPane;
 		this.caret = caret;
-
+		
 		SideKickParsedData skpd = null;
 		if ( jEdit.getBooleanProperty("sidekick.java.parseOnComplete") ) {
 			skpd = (new sidekick.java.JavaParser()).parse();
@@ -94,7 +95,7 @@ public class JavaCompletionFinder {
 		//Log.log(Log.DEBUG, this, "time: " + (System.currentTimeMillis() - start));
 		return completion ;
 	}
-
+	
 	private String getWordAtCursor( Buffer buffer ) {
 		if ( caret <= 0 )
 			return "";
@@ -577,12 +578,7 @@ public class JavaCompletionFinder {
 	private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
 		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
 		word = word.substring(word.lastIndexOf("(")+1);
-		/*
-		String classTest = new String(word);
-		if (word.lastIndexOf("(") != -1) {
-			classTest = word.substring(word.lastIndexOf("(")+1);
-		}
-		*/
+		
 		ArrayList pkgs = new ArrayList(
 				Arrays.asList(Locator.getInstance().getClassName(word)));
 		if (pkgs != null && pkgs.size() > 0) {
@@ -596,25 +592,33 @@ public class JavaCompletionFinder {
 		// partialword
 		// find all fields/variables declarations, methods, and classes in scope
 		TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-		Set<JavaCompletionCandidate> choices = new HashSet<JavaCompletionCandidate>();
-		while ( true ) {
+		Set<JavaCompletionCandidate> choices = new TreeSet<JavaCompletionCandidate>();
+		while ( tn != null ) {
+			// If we're in a method, check its parameters
+			if (tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD) {
+				List params = ( ( Parameterizable ) tn ).getFormalParams();
+				for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
+					Parameter param = ( Parameter ) jt.next();
+					if ( param.getName().startsWith( word ) ) {
+						choices.add( new JavaCompletionCandidate(
+							param.getName(),
+							TigerLabeler.getFieldIcon() ));
+					}
+				}
+			}
+			
 			List children = tn.getChildren();
+			//Macros.message(jEdit.getActiveView(), tn.toString());
 			if ( children != null ) {
 				for ( Iterator it = children.iterator(); it.hasNext(); ) {
-					TigerNode child = ( TigerNode ) it.next();
+					TigerNode child = (TigerNode) it.next();
+					if (child.getOrdinal() == TigerNode.CLASS) {
+						//debug(child.dump());
+					}
 					Icon icon = null;
 					switch ( child.getOrdinal() ) {
 						case TigerNode.CONSTRUCTOR:
 						case TigerNode.METHOD:
-							List params = ( ( Parameterizable ) child ).getFormalParams();
-							for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
-								Parameter param = ( Parameter ) jt.next();
-								if ( param.getName().startsWith( word ) ) {
-									choices.add( new JavaCompletionCandidate(
-												param.getName(),
-												TigerLabeler.getFieldIcon() ));
-								}
-							}
 							if (icon == null)
 								icon = TigerLabeler.getMethodIcon();
 						case TigerNode.FIELD:
@@ -626,6 +630,7 @@ public class JavaCompletionFinder {
 						case TigerNode.INTERFACE:
 							if (icon == null)
 								icon = TigerLabeler.getClassIcon();
+							
 							if ( child.getName().startsWith( word ) ) {
 								choices.add( new JavaCompletionCandidate(
 									   child.getName(),
@@ -635,9 +640,10 @@ public class JavaCompletionFinder {
 					}
 				}
 			}
-			tn = tn.getParent();
-			if ( tn == null )                 //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
-				break;
+			do {
+				tn = tn.getParent();
+			} while (tn != null && (tn.getOrdinal() == TigerNode.FIELD || tn.getOrdinal() == TigerNode.VARIABLE));
+			//|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
 		}
 		List list = new ArrayList( choices.size() );
 		for ( JavaCompletionCandidate choice : choices ) {
@@ -1311,7 +1317,7 @@ public class JavaCompletionFinder {
 			return isProtected;
 		}
 
-		/**
+		/*
 		 * Pass comparison to the string values. The icons are irrelevant.
 		 */
 		public int compareTo(Object ob) {
@@ -1322,7 +1328,18 @@ public class JavaCompletionFinder {
 				return 0;
 			}
 		}
+		
+		/*
+		 * Override equals() to eliminate potential duplicates
+		 */
+		public boolean equals(Object ob) {
+			try {
+				JavaCompletionCandidate candid = (JavaCompletionCandidate) ob;
+				return text.equals(candid.toString());
+			} catch (ClassCastException e) {
+				return false;
+			}
+		}
 
 	}
-
 }
