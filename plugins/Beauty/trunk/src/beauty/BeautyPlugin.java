@@ -6,7 +6,6 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.ThreadUtilities;
 
 import java.io.*;
 import java.util.*;
@@ -227,8 +226,26 @@ public class BeautyPlugin extends EditPlugin {
         }
 
         // run the format routine synchronously on the AWT thread
-        ThreadUtilities.runInDispatchThread( new BeautyThread( buffer, view, showErrorDialogs, beautifier ) );
-
+        if (SwingUtilities.isEventDispatchThread()) {
+            new BeautyThread(buffer, view, showErrorDialogs, beautifier).run();   
+        }
+        else {
+            try {
+                SwingUtilities.invokeAndWait(new BeautyThread(buffer, view, showErrorDialogs, beautifier));   
+            }
+            catch(Exception e) {
+                if ( showErrorDialogs ) {
+                    JOptionPane.showMessageDialog( view, e.getMessage(),
+                            "Beauty Error", JOptionPane.ERROR_MESSAGE );
+                    return ;
+                }
+                else {
+                    Log.log( Log.NOTICE, BeautyPlugin.class, "buffer " + buffer.getName()
+                            + " not beautified.\n" + e.getMessage() );
+                    return ;
+                }
+            }
+        }
     }
 
     public static void indentLines( View view ) {
