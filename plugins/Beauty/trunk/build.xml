@@ -76,6 +76,7 @@
                 nowarn="on"
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
+                includeantruntime="false"
                 target="1.5"
                 source="1.5">
             <classpath refid="classpathref" />

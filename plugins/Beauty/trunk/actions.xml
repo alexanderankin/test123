@@ -3,7 +3,7 @@
 <ACTIONS>
     <ACTION NAME="make_it_pretty">
         <CODE>
-            beauty.BeautyPlugin.beautify(buffer, view, true);
+            beauty.BeautyPlugin.beautify(buffer, view);
         </CODE>
     </ACTION>
     <ACTION NAME="beauty.toggleSplitAttributes">
