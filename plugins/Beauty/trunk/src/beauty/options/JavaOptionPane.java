@@ -10,7 +10,6 @@ import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 
-import beauty.BeautyPlugin;
 import beauty.parsers.java.JavaParser;
 
 import ise.java.awt.*;
@@ -25,7 +24,7 @@ public class JavaOptionPane extends AbstractOptionPane {
     private JRadioButton attachedBrackets;
     private JRadioButton brokenBrackets;
     private int bracketStyle;
-    
+    private JCheckBox breakElse;
     private JCheckBox padParens;
     
     public JavaOptionPane() {
@@ -65,6 +64,13 @@ public class JavaOptionPane extends AbstractOptionPane {
         bg.add(attachedBrackets);
         bg.add(brokenBrackets);
         
+        breakElse = new JCheckBox("<html>Break 'else', 'catch', 'while', e.g.<br>}<br>else");
+        breakElse.setSelected(jEdit.getBooleanProperty("beauty.java.breakElse", false));
+        breakElse.setEnabled(bracketStyle == JavaParser.ATTACHED);
+        
+        padParens = new JCheckBox("Pad parenthesis, e.g. if ( i == 1 ) versus if (i == 1)");
+        padParens.setSelected(jEdit.getBooleanProperty("beauty.java.padParens", false));
+        
         ActionListener al = new ActionListener(){
             public void actionPerformed(ActionEvent ae) {
                 if (attachedBrackets.equals(ae.getSource())) {
@@ -73,23 +79,23 @@ public class JavaOptionPane extends AbstractOptionPane {
                 else if (brokenBrackets.equals(ae.getSource())) {
                     bracketStyle = JavaParser.BROKEN;   
                 }
+                breakElse.setEnabled(bracketStyle == JavaParser.ATTACHED);
             }
         };
         attachedBrackets.addActionListener(al);
         brokenBrackets.addActionListener(al);
         
-        padParens = new JCheckBox("Pad parenthesis");
-        padParens.setSelected(jEdit.getBooleanProperty("beauty.java.padParens", false));
-        
         
         add("0, 0, 1, 1, W, w, 3", description);
         add("0, 1, 1, 1, W, w, 3", attachedBrackets);
         add("0, 2, 1, 1, W, w, 3", brokenBrackets);
-        add("0, 3, 1, 1, W, w, 3", padParens);
+        add("0, 3, 1, 1, W, w, 3", breakElse);
+        add("0, 4, 1, 1, W, w, 3", padParens);
     }
     
     public void _save() {
         jEdit.setIntegerProperty("beauty.java.bracketStyle", bracketStyle); 
+        jEdit.setBooleanProperty("beauty.java.breakElse", breakElse.isSelected());
         jEdit.setBooleanProperty("beauty.java.padParens", padParens.isSelected());
     }
 }
