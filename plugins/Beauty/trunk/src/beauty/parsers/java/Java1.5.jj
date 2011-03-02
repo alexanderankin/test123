@@ -66,7 +66,7 @@ public class JavaParser
     public static final int BROKEN = 2;
     
     private int bracketStyle = ATTACHED;
-    
+    private boolean breakElse = false;
     private boolean padParens = false;
 
     public void setIndentWidth(int i) {
@@ -151,6 +151,11 @@ public class JavaParser
                 token_source.setBracketStyle(style);
                 break;
         }
+    }
+    
+    public void setBreakElse(boolean b) {
+        breakElse = b;
+        token_source.setBreakElse(b);
     }
     
     public void setPadParens(boolean pad) {
@@ -249,7 +254,7 @@ TOKEN_MGR_DECLS :
     static char nbsp = '\u001d';
 
     static int bracketStyle = JavaParser.ATTACHED;
-    
+    static boolean breakElse = false;
     static boolean padParens = false;
 
     static void reset() {
@@ -293,6 +298,10 @@ TOKEN_MGR_DECLS :
             indent = "\t";
             double_indent = "\t\t";
         }
+    }
+    
+    static void setBreakElse(boolean b) {
+        breakElse = b;   
     }
     
     static void setPadParens(boolean pad) {
@@ -1953,7 +1962,7 @@ void IfStatement():
             }
             trimWhitespace(); 
             trim(); 
-            if (ct != null || bracketStyle == BROKEN) {
+            if (ct != null || bracketStyle == BROKEN || breakElse) {
                 // have comment token preceding 'else', so start 'else' on new line
                 writeln();
                 add("else ");
@@ -2021,9 +2030,31 @@ void WhileStatement():
 void DoStatement():
 {}
 {
-  // adding a ^ to the front of 'while' to differentiate it from 'while' at the
-  // start of a 'while' loop.  This will be stripped off later.
-  "do" { add("do "); } Statement() "while" "(" { trimWhitespace(); add(" ^while ( "); } Expression() ")" ";" { add(" );"); write(); }
+    "do" 
+    { 
+        add("do "); 
+    } 
+    Statement() 
+    
+    "while" "(" 
+    { 
+        trimWhitespace(); 
+        if (breakElse) {
+            writeln();
+            add("while ( ");
+        }
+        else {
+            // adding a ^ to the front of 'while' to differentiate it from 'while' at the
+            // start of a 'while' loop.  This will be stripped off later.
+            add(" ^while ( ");
+        }
+    } 
+    Expression() 
+    ")" ";" 
+    { 
+        add(" );"); 
+        write(); 
+    }
 }
 
 void ForStatement():
@@ -2149,7 +2180,7 @@ void TryStatement():
             }
             trimWhitespace(); 
             trim(); 
-            if (ct != null || bracketStyle == BROKEN) {
+            if (ct != null || bracketStyle == BROKEN || breakElse) {
                 // have comment token preceding 'catch', so start 'catch' on new line
                 writeln();
                 add("catch ( ");
@@ -2185,7 +2216,7 @@ void TryStatement():
             }
             trimWhitespace(); 
             trim(); 
-            if (ct != null || bracketStyle == BROKEN) {
+            if (ct != null || bracketStyle == BROKEN || breakElse) {
                 // have comment token preceding 'finally', so start 'finally' on new line
                 writeln();
                 add("finally ");

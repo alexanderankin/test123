@@ -41,7 +41,7 @@ public class JavaParserTokenManager implements JavaParserConstants
     static char nbsp = '\u001d';
 
     static int bracketStyle = JavaParser.ATTACHED;
-
+    static boolean breakElse = false;
     static boolean padParens = false;
 
     static void reset() {
@@ -85,6 +85,10 @@ public class JavaParserTokenManager implements JavaParserConstants
             indent = "\u005ct";
             double_indent = "\u005ct\u005ct";
         }
+    }
+
+    static void setBreakElse(boolean b) {
+        breakElse = b;
     }
 
     static void setPadParens(boolean pad) {

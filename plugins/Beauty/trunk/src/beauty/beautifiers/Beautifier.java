@@ -26,6 +26,14 @@ public abstract class Beautifier {
     
     public static final String SERVICE_NAME = "beauty.beautifiers.Beautifier";
     
+    
+    /**
+     * Subclasses may override this method to initialize themselves. The jEdit
+     * ServiceManager only calls the constructor once, so this method is called
+     * each time prior to the beautify method.
+     */
+    public void init() {}
+    
     /**
      * Subclasses must have this method.
      * @param text The text to beautify.
