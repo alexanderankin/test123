@@ -64,7 +64,7 @@ public class RegisterDocument extends PlainDocument {
       }
       if ( text.equals( "NaN" ) || text.equals( "Infinity" ) || text.startsWith( "Error" ) ) {
          remove( 0, getLength() );
-         insertString( 0, text, attr );
+         ///insertString( 0, text, attr );
          return ;
       }
       if ( isNumber( text ) ) {
