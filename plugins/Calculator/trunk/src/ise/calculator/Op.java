@@ -52,7 +52,7 @@ public class Op {
             operation = "subtract";
         else if ( op.equals( "*" ) || op.equals( "x" ) )
             operation = "multiply";
-        else if ( op.equals( "/" ) || op.equals( "÷" ) )
+        else if ( op.equals( "/" ) ) //|| op.equals( "" ) )
             operation = "divide";
         else if ( op.equals( "%" ) || op.equals( "\\" ) )
             operation = "mod";

@@ -114,6 +114,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
 
     /** Constructor for CalculatorPanel  */
     public CalculatorPanel() {
+        setName("CalculatorPanel");
         setLayout( new BorderLayout() );
 
         loadFunctions();
@@ -163,6 +164,17 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
 
         float_mode.doClick();
         x_register.requestFocus();
+        x_register.addFocusListener(new FocusAdapter(){
+                public void focusLost(FocusEvent fe) {
+                    if (fe.getOppositeComponent() == null) {
+                        return;   
+                    }
+                    Container c = SwingUtilities.getAncestorNamed("CalculatorPanel", fe.getOppositeComponent());
+                    if (c != null) {
+                        x_register.requestFocus();   
+                    }
+                }
+        });
     }
 
     /**
@@ -1077,45 +1089,82 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
 
         number_panel.addActionListener( label_listener );
 
-        x_register.addKeyListener(
-            new KeyAdapter() {
-                public void keyPressed( KeyEvent ke ) {
-                    switch ( ke.getKeyCode() ) {
-                        case KeyEvent.VK_ENTER:
-                            enter.doClick();
-                            break;
-                        case KeyEvent.VK_PLUS:
-                            plus.doClick();
-                            break;
-                        case KeyEvent.VK_MINUS:
-                            minus.doClick();
-                            break;
-                        case KeyEvent.VK_ASTERISK:
-                            multiply.doClick();
-                            break;
-                        case KeyEvent.VK_SLASH:
-                            divide.doClick();
-                            break;
-                        case KeyEvent.VK_BACK_SLASH:
-                            if ( ke.isShiftDown() )
-                                or.doClick();
-                            else
-                                modulus.doClick();
-                            break;
-                        case KeyEvent.VK_AMPERSAND:
-                            and.doClick();
-                            break;
-                        case KeyEvent.VK_CIRCUMFLEX:
-                            xor.doClick();
-                            break;
-                        case KeyEvent.VK_DEAD_TILDE:
-                            not.doClick();
-                            break;
-                    }
+        // x-register actions
+        InputMap inputMap = x_register.getInputMap();
+        ActionMap actionMap = x_register.getActionMap();
+        setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, inputMap);
+        setActionMap(actionMap);
+        
+        inputMap.put(KeyStroke.getKeyStroke("ENTER"), "enter");
+        actionMap.put("enter", new AbstractAction("enter"){
+                public void actionPerformed(ActionEvent ae) {
+                    enter.doClick();   
                 }
-            }
-        );
-
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('+'), "plus");
+        actionMap.put("plus", new AbstractAction("plus"){
+                public void actionPerformed(ActionEvent ae) {
+                    plus.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('-'), "minus");
+        actionMap.put("minus", new AbstractAction("minus"){
+                public void actionPerformed(ActionEvent ae) {
+                    minus.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('*'), "multiply");
+        actionMap.put("multiply", new AbstractAction("multiply"){
+                public void actionPerformed(ActionEvent ae) {
+                    multiply.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('/'), "divide");
+        actionMap.put("divide", new AbstractAction("divide"){
+                public void actionPerformed(ActionEvent ae) {
+                    divide.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('\\'), "modulus");
+        actionMap.put("modulus", new AbstractAction("modulus"){
+                public void actionPerformed(ActionEvent ae) {
+                    modulus.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('|'), "or");
+        actionMap.put("or", new AbstractAction("or"){
+                public void actionPerformed(ActionEvent ae) {
+                    or.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('&'), "and");
+        actionMap.put("and", new AbstractAction("and"){
+                public void actionPerformed(ActionEvent ae) {
+                    and.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('^'), "xor");
+        actionMap.put("xor", new AbstractAction("xor"){
+                public void actionPerformed(ActionEvent ae) {
+                    xor.doClick();   
+                }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke('~'), "not");
+        actionMap.put("not", new AbstractAction("not"){
+                public void actionPerformed(ActionEvent ae) {
+                    not.doClick();   
+                }
+        });
+        
     }
 
     // action listener for those functions that take no parameters --
@@ -1331,6 +1380,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                         }
                         catch ( ArithmeticException e ) {
                             answer = "Error: " + e.getMessage();
+                            e.printStackTrace();
                         }
 
                         if ( !answer.startsWith( "Error" ) ) {
@@ -1363,6 +1413,9 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     protected void done() {
                         try {
                             String answer = get();
+                            if (answer.startsWith("Error")) {
+                                return;   
+                            }
                             RegisterDocument rd = new RegisterDocument( current_base, current_mode );
                             rd.insertString( 0, answer, null );
                             last_x_value = x_register.getText();

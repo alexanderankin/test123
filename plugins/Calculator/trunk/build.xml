@@ -74,7 +74,8 @@
         <echo>compiling</echo>
         <javac deprecation="on" 
                debug="on" 
-               nowarn="on" 
+               nowarn="on"
+               includeantruntime="false"
                destdir="${classes.dir}"
                srcdir="${src.dir}"
                source="${compiler.source}"
