@@ -7,22 +7,21 @@ concerns, or comments, please email the author.
 
 package ise.calculator;
 
-import java.util.Vector;
-import java.util.Enumeration;
+import java.util.ArrayList;
 
 /**
  * Represents a mathematical operation.
- * @author Dale Anson, danson@germane-software.com   
+ * @author Dale Anson, danson@germane-software.com
  */
 public class Op {
     // datatype for the result of this operation
     private String datatype = null;
 
     // storage for the numbers to execute the operation on
-    Vector nums = new Vector();
+    ArrayList<Num> nums = new ArrayList<Num>();
 
     // storage for nested Ops
-    Vector ops = new Vector();
+    ArrayList<Op> ops = new ArrayList<Op>();
 
     // storage for operation
     String operation = null;
@@ -33,118 +32,117 @@ public class Op {
     public Op() {
     }
 
-    public Op( String op ) {
-        setOp( op );
+    public Op(String op) {
+        setOp(op);
     }
 
-    public Op( String op, String type ) {
-        setOp( op );
-        setDatatype( type );
+    public Op(String op, String type) {
+        setOp(op);
+        setDatatype(type);
     }
 
     /**
-      * Set the operation.
-      */
-    public void setOp( String op ) {
-        if ( op.equals( "+" ) )
+     * Set the operation.
+     */
+    public void setOp(String op) {
+        if (op.equals("+")) {
             operation = "add";
-        else if ( op.equals( "-" ) )
+        }
+        else if (op.equals("-")) {
             operation = "subtract";
-        else if ( op.equals( "*" ) || op.equals( "x" ) )
+        }
+        else if (op.equals("*") || op.equals("x")) {
             operation = "multiply";
-        else if ( op.equals( "/" ) ) //|| op.equals( "" ) )
+        }
+        // || op.equals( "" ) )
+        else if (op.equals("/")) {
             operation = "divide";
-        else if ( op.equals( "%" ) || op.equals( "\\" ) )
+        }
+        else if (op.equals("%") || op.equals("\\")) {
             operation = "mod";
-        else
+        }
+        else {
             operation = op;
+        }
     }
 
     /**
      * Add a number to this operation. An operation can hold any number of
      * numbers to support formulas like 5 + 4 + 3 + 2 + 1.
-     * @param num a number to use in this operation   
+     * @param num a number to use in this operation
      */
-    public void addNum( Num num ) {
-        nums.addElement( num );
+    public void addNum(Num num) {
+        nums.add(num);
     }
 
     /**
      * Sets the datatype of this calculation. Allowed values are
-     * "int", "long", "float", or "double".    
+     * "int", "long", "float", or "double".
      */
-    public void setDatatype( String p ) {
-        if ( p.equals( "int" ) ||
-                p.equals( "long" ) ||
-                p.equals( "float" ) ||
-                p.equals( "double" ) ||
-                p.equals( "bigint" ) ||
-                p.equals( "bigdecimal" ) )
+    public void setDatatype(String p) {
+        if (p.equals("int") || p.equals("long") || p.equals("float") || p.equals("double") || p.equals("bigint") || p.equals("bigdecimal")) {
             datatype = p;
-        else
-            throw new IllegalArgumentException( "Invalid datatype: " + p +
-                    ". Must be one of int, long, float, double, bigint, or bigdouble." );
+        }
+        else {
+            throw new IllegalArgumentException("Invalid datatype: " + p + ". Must be one of int, long, float, double, bigint, or bigdouble.");
+        }
     }
 
     /**
      * Add a nested operation.
      * @param the operation to add.
      */
-    public void addConfiguredOp( Op op ) {
-        if ( datatype != null )
-            op.setDatatype( datatype );
-        ops.addElement( op );
+    public void addConfiguredOp(Op op) {
+        if (datatype != null) {
+            op.setDatatype(datatype);
+        }
+        ops.add(op);
     }
 
     /**
-     * Use the StrictMath library.   
+     * Use the StrictMath library.
      */
-    public void setStrict( boolean b ) {
+    public void setStrict(boolean b) {
         _strict = b;
     }
 
     /**
      * Perform this operation.
-     * @return the value resulting from the calculation as a Num.   
+     * @return the value resulting from the calculation as a Num.
      */
     public Num calculate() {
-        if ( operation == null )
-            throw new RuntimeException( "Operation not specified." );
+        if (operation == null) {
+            throw new ArithmeticException("Operation not specified.");
+        }
 
         // calculate nested Ops
-        Enumeration en = ops.elements();
-        while ( en.hasMoreElements() ) {
-            Op op = ( Op ) en.nextElement();
-            if ( datatype != null )
-                op.setDatatype( datatype );
-            nums.addElement( op.calculate() );
+        for (Op op : ops) {
+            if (datatype != null) {
+                op.setDatatype(datatype);
+            }
+            nums.add(op.calculate());
         }
 
         // make an array of operands
-        String[] operands = new String[ nums.size() ];
-        en = nums.elements();
-        int i = 0;
-        while ( en.hasMoreElements() ) {
-            Num num = ( Num ) en.nextElement();
-            if ( datatype != null )
-                num.setDatatype( datatype );
-            operands[ i++ ] = num.toString();
+        String[] operands = new String[nums.size()];
+        for (int i = 0; i < nums.size(); i++) {
+            Num num = nums.get(i);
+            if (datatype != null) {
+                num.setDatatype(datatype);
+            }
+            operands[i] = num.toString();
         }
 
-        Math math = new Math( _strict );
+        Math math = new Math(_strict);
 
         Number number = null;
-        try {
-            number = math.calculate( operation, datatype, operands );
+        number = math.calculate(operation, datatype, operands);
+        if (number == null) {
+            throw new ArithmeticException("Math error, no result.");
         }
-        catch ( ArithmeticException e ) {
-            throw e;
-        }
-        if ( number == null )
-            throw new ArithmeticException( "math error" );
         Num num = new Num();
-        num.setValue( number.toString() );
-        num.setDatatype( datatype );
+        num.setValue(number.toString());
+        num.setDatatype(datatype);
         return num;
 
     }

@@ -14,13 +14,13 @@ package ise.calculator;
  * @author Dale Anson, danson@germane-software.com
  */
 public interface Navable {
-   /**
-    * Sets the position of the Navable object. Generally, if a Navable
-    * object calls this method on itself, it should immediately call
-    * <code>Nav.update(o)</code>.
-    *
-    * @param o  The new position value
-    */
-   public void setPosition( Object o );
+    /**
+     * Sets the position of the Navable object. Generally, if a Navable
+     * object calls this method on itself, it should immediately call
+     * <code>Nav.update(o)</code>.
+     *
+     * @param o  The new position value
+     */
+    public void setPosition(Object o);
 }
 
