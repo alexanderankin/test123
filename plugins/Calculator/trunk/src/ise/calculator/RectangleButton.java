@@ -22,7 +22,7 @@ public class RectangleButton extends JButton {
         super(text);
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     }
-    
+
     public Dimension getPreferredSize() {
         return size;
     }
