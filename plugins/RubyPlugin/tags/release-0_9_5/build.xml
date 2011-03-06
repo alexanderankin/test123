@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+
+<!--
+     This is a build.xml file for building the Ruby plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+     Before running the 'dist' target, you will need to generate the
+     documentation using one of these two targets:
+
+
+     To use it for building your own plugin, make these changes:
+
+     - If necessary, addMembers any dependencies to the 'project.class.path'
+       definition
+     - If necessary, change the list of files in the 'dist' target
+       accordingly.
+-->
+
+<project name="RubyPlugin" default="jar" basedir=".">
+  <property file="../build.properties"/>
+  <property file="build.properties"/>
+
+  <property name="jar.file" value="${ant.project.name}.jar"/>
+  <property name="ri.dir" value="ri"/>
+  <property name="docs.dir" value="docs"/>
+  <property name="rdoc.dir" value="${ri.dir}/rdoc"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="install.dir" value=".."/>
+  <property name="jedit.install.dir"  value="../.."/>
+
+  <path id="project.class.path">
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="${install.dir}/jruby.jar"/>
+    <pathelement location="${install.dir}/SideKick.jar"/>
+    <pathelement location="${install.dir}/ErrorList.jar"/>
+    <pathelement location="."/>
+  </path>
+
+  <path id="test.class.path">
+    <path refid="project.class.path"/>
+    <pathelement location="${install.dir}/junit.jar"/>
+    <pathelement location="${build.dir}"/>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+    <copy file="${lib.dir}/jruby.jar" todir="${install.dir}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac debug="true"
+      deprecation="on"
+      destdir="${build.dir}"
+      excludes="org/jedit/ruby/test/**"
+      srcdir="${src.dir}">
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+  <target name="test" depends="compile">
+    <javac debug="true"
+      deprecation="on"
+      destdir="${build.dir}"
+      includes="org/jedit/ruby/test/**"
+      srcdir="${src.dir}">
+      <classpath refid="test.class.path"/>
+    </javac>
+    <junit>
+      <test name="org.jedit.ruby.test.RubyTestSuite"/>
+      <formatter type="plain" usefile="false"/>
+      <classpath refid="test.class.path"/>
+    </junit>
+  </target>
+
+  <target name="parse_rdoc" depends="compile">
+    <exec dir="ri" executable="convert.sh"/>
+  </target>
+
+  <target name="convert_rdoc">
+    <java classname="org.jedit.ruby.ri.XmlToBinary"
+      classpath="${build.dir}">
+        <arg path="/Users/x/apps/jedit/plugins/RubyPlugin/ri/java-xml"/>
+        <arg path="/Users/x/apps/jedit/plugins/RubyPlugin/ri/rdoc"/>
+    </java>
+  </target>
+
+  <target name="jar-rdoc">
+    <delete file="${ri.dir}/rdoc.jar"/>
+    <jar jarfile="${ri.dir}/rdoc.jar">
+      <fileset dir="${rdoc.dir}">
+        <include name="**/*.dat"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="unjar-rdoc">
+    <mkdir dir="${rdoc.dir}"/>
+    <unjar src="${ri.dir}/rdoc.jar" dest="${rdoc.dir}"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${install.dir}"/>
+    <jar jarfile="${install.dir}/${jar.file}">
+      <fileset dir="${docs.dir}" />
+      <fileset dir="${build.dir}"/>
+      <fileset dir="${src.dir}">
+        <include name="**/*.png"/>
+      </fileset>
+      <fileset dir=".">
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+        <include name="services.xml"/>
+        <include name="**/*.props"/>
+        <include name="**/*.html"/>
+        <include name="**/*.dat"/>
+        <include name="**/rdoc_to_java.rb"/>
+        <include name="**/cdesc.erb"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="dist" depends="unjar-rdoc, jar">
+  </target>
+
+  <target name="dist-dev" depends="jar">
+    <copy file="${install.dir}/${jar.file}" todir="/Users/x/.jedit/jars"/>
+  </target>
+
+  <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+  <target name="docs-xsltproc" depends="init">
+    <exec executable="xsltproc">
+      <arg value="--catalogs"/>
+      <arg value="users-guide.xsl"/>
+      <arg value="users-guide.xml"/>
+    </exec>
+  </target>
+
+  <!-- Generate docs with Xalan tool from xml.apache.org -->
+  <target name="docs-xalan" depends="init">
+    <style style="users-guide.xsl"
+        in="users-guide.xml"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete>
+      <fileset dir="." includes="**/*~" defaultexcludes="no"/>
+<!--       <fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+ -->
+     </delete>
+  </target>
+
+</project>
