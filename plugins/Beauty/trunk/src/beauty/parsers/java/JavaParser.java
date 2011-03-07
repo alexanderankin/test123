@@ -3277,7 +3277,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void ReturnStatement() throws ParseException {
     jj_consume_token(RETURN);
-             add("return");
+             add("return ");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BOOLEAN:
     case BYTE:
@@ -3313,7 +3313,7 @@ public class JavaParser implements JavaParserConstants {
       ;
     }
     jj_consume_token(SEMICOLON);
-                                                     add(";"); write();
+                                                      trim(); add(";"); write();
   }
 
   final public void ThrowStatement() throws ParseException {
@@ -4468,6 +4468,11 @@ public class JavaParser implements JavaParserConstants {
     return false;
   }
 
+  private boolean jj_3R_206() {
+    if (jj_3R_71()) return true;
+    return false;
+  }
+
   private boolean jj_3R_134() {
     if (jj_scan_token(IDENTIFIER)) return true;
     Token xsp;
@@ -4477,11 +4482,6 @@ public class JavaParser implements JavaParserConstants {
       xsp = jj_scanpos;
       if (jj_3_14()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_206() {
-    if (jj_3R_71()) return true;
     return false;
   }
 
