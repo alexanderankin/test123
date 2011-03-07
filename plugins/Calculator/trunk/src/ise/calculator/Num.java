@@ -9,7 +9,7 @@ package ise.calculator;
 
 /**
  * Represents a number.
- * @author Dale Anson, danson@germane-software.com
+ * @author Dale Anson, danson@grafidog.com
  */
 public class Num {
 

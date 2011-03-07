@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Represents a mathematical operation.
- * @author Dale Anson, danson@germane-software.com
+ * @author Dale Anson, danson@grafidog.com
  */
 public class Op {
     // datatype for the result of this operation
