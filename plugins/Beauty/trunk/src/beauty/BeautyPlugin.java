@@ -236,14 +236,10 @@ public class BeautyPlugin extends EditPlugin {
     }
 
     public static void indentLines(View view) {
-        // TODO: find out if it would be better to use Buffer.indentLines(int, int)
-        // rather than the jEdit action.
         JEditTextArea ta = view.getEditPane().getTextArea();
         int cp = ta.getCaretPosition();
-        ta.selectAll();
-        EditAction action = jEdit.getAction("indent-lines");
-        action.invoke(view);
-        ta.selectNone();
+        Buffer buffer = view.getBuffer();
+        buffer.indentLines(0, buffer.getLineCount() - 1);
         restoreCaretPosition(view.getEditPane(), cp);
     }
 
