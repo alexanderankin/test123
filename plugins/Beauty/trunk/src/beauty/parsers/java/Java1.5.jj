@@ -1887,7 +1887,7 @@ void SwitchStatement():
 void SwitchLabel():
 {}
 {
-"case" { add("case"); } Expression() ":" { add(":"); write(); }
+"case" { add("case "); } Expression() ":" { add(":"); write(); }
 |
 "default" ":" { add("default:"); write(); }
 }
@@ -2130,7 +2130,7 @@ void ContinueStatement():
 void ReturnStatement():
 {}
 {
-  "return" { add("return"); } [ Expression() ] ";" { add(";"); write(); }
+  "return" { add("return "); } [ Expression() ] ";" { trim(); add(";"); write(); }
 }
 
 void ThrowStatement():
