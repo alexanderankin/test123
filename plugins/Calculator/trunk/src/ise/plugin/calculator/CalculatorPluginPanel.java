@@ -17,9 +17,9 @@ import javax.swing.WindowConstants;
  * @author Dale Anson, Dec 2003
  */
 public class CalculatorPluginPanel extends JPanel {
-   public CalculatorPluginPanel() {
-      CalculatorPanel cp = new CalculatorPanel();
-      cp.setCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-      add( cp );
-   }
+    public CalculatorPluginPanel() {
+        CalculatorPanel cp = new CalculatorPanel();
+        cp.setCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        add(cp);
+    }
 }
