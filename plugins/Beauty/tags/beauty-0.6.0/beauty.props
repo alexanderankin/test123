@@ -1,0 +1,139 @@
+#
+# Plugin properties
+# borrowed some of this from AStyle
+#
+
+plugin.beauty.BeautyPlugin.activate=defer
+plugin.beauty.BeautyPlugin.name=Beauty
+plugin.beauty.BeautyPlugin.author=Dale Anson
+plugin.beauty.BeautyPlugin.version=0.6.0
+plugin.beauty.BeautyPlugin.docs=docs/index.html
+plugin.beauty.BeautyPlugin.depend.0=jdk 1.6
+plugin.beauty.BeautyPlugin.depend.1=jedit 04.03.99.00
+plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.beauty.BeautyPlugin.usePluginHome=true
+
+plugin.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.
+
+beautyplugin.label=Beauty
+
+#
+# Menu/Action properties
+#
+
+make_it_pretty.label=Beautify Buffer
+beauty.toggleSplitAttributes.label=Split/Unsplit Attributes
+
+#
+# Option pane properties
+#
+plugin.beauty.BeautyPlugin.option-group=beauty.general beauty.beautifiers beauty.custom beauty.css beauty.jsp beauty.java
+
+options.beauty.general.title=General
+options.beauty.general.label=General
+options.beauty.general.code=new beauty.options.GeneralOptionPane();
+
+options.beauty.beautifiers.title=Modes
+options.beauty.beautifiers.label=Modes
+options.beauty.beautifiers.code=new beauty.options.BeautifierOptionPane();
+options.beauty.beautifiers.mode=Mode
+options.beauty.beautifiers.beautifier=Beautifier
+
+options.beauty.custom.title=Custom Beautifier
+options.beauty.custom.label=Custom Beautifier
+options.beauty.custom.code=new beauty.options.CustomBeautifierOptionPane();
+
+options.beauty.css.title=CSS Beautifier
+options.beauty.css.label=CSS Beautifier
+options.beauty.css.code=new beauty.options.CSSOptionPane();
+
+options.beauty.jsp.title=JSP Beautifier
+options.beauty.jsp.label=JSP Beautifier
+options.beauty.jsp.code=new beauty.options.JspOptionPane();
+
+options.beauty.java.title=Java Beautifier
+options.beauty.java.label=Java Beautifier
+options.beauty.java.code=new beauty.options.JavaOptionPane();
+
+# mode handlers
+mode.html.beauty.beautifier=html
+mode.asp.beauty.beautifier=html
+mode.coldfusion.beauty.beautifier=html
+mode.jhtml.beauty.beautifier=html
+mode.php.beauty.beautifier=html
+mode.sgml.beauty.beautifier=html
+mode.xml.beauty.beautifier=html
+mode.jsp.beauty.beautifier=jsp
+mode.java.beauty.beautifier=java
+mode.javacc.beauty.beautifier=javacc
+
+
+# Menus
+plugin.beauty.BeautyPlugin.menu=make_it_pretty
+
+# Comma separated list of custom beautifier properties files
+plugin.beauty.beautifiers.custom=ada.properties,javascript.properties
+
+#
+# Error messages
+#
+
+beauty.confirm.mode.title=Beauty
+beauty.confirm.mode.message=\
+    The current buffer is not in a supported mode.\n\
+    \n\
+    The results may be unpredictable.\n\
+    \n\
+    Are you sure you want to beautify the current buffer?
+
+beauty.error.empty.title=Beauty Error
+beauty.error.empty.message=\
+    Beauty returned an empty result for the current buffer.\n\
+    I better leave the buffer untouched.
+
+beauty.error.other.title=Beauty Error
+beauty.error.other.message=\
+    Beauty was unable to reformat the current buffer, because an\n\
+    unhandled exception occurred:\n\
+    {0}\n\
+    \n\
+    See the activity log for any details.
+
+beauty.error.isReadOnly.title=Beauty Error
+beauty.error.isReadOnly.message=\
+    Cannot format the current buffer, because it is read-only.
+
+# random strings
+beauty.msg.<html><b>Assign_beautifiers_to_modes=<html><b>Assign beautifiers to modes
+beauty.msg.Use_jEdit_indenter_for_undefined_modes=Use jEdit indenter for undefined modes
+beauty.msg.<html><b>Create_a_custom_beautifier_for_a_mode=<html><b>Create a custom beautifier for a mode
+beauty.msg.Use_jEdit_indenter_for_this_mode=Use jEdit indenter for this mode
+beauty.msg.before=before
+beauty.msg.after=after
+beauty.msg.Label_on_separate_line=Label on separate line
+beauty.msg.Collapse_multiple_blank_lines=Collapse multiple blank lines
+beauty.msg.Mode>_=Mode: 
+beauty.msg.Pad_functions=Pad functions
+beauty.msg.Pad_operators=Pad operators
+beauty.msg.Pad_digits=Pad digits
+beauty.msg.Pad_keywords1=Pad keywords1
+beauty.msg.Pad_keywords2=Pad keywords2
+beauty.msg.Pad_keywords2=Pad keywords2
+beauty.msg.Pad_keywords4=Pad keywords4
+beauty.msg.Pad_before_these_characters>=Pad before these characters:
+beauty.msg.Pad_after_these_characters>=Pad after these characters:
+beauty.msg.Don't_pad_before_these_characters>=Don't pad before these characters:
+beauty.msg.Don't_pad_after_these_characters>=Don't pad after these characters:
+beauty.msg.Insert_line_separator_before_these_strings_(separate_with_comma)>=Insert line separator before these strings (separate with comma):
+beauty.msg.Insert_line_separator_after_these_strings_(separate_with_comma)>=Insert line separator after these strings (separate with comma):
+beauty.msg.Line_up_closing_bracket=Line up closing bracket
+beauty.msg.Double_bracket_indent=Double bracket indent
+beauty.msg.Indent_open_brackets>=Indent open brackets:
+beauty.msg.Indent_close_brackets>=Indent close brackets:
+beauty.msg.Unaligned_open_brackets>=Unaligned open brackets:
+beauty.msg.Unaligned_close_brackets>=Unaligned close brackets:
+beauty.msg.Indent_next_line>=Indent next line:
+beauty.msg.Unindent_this_line>=Unindent this line:
+beauty.msg.Electric_keys>=Electric keys:
+beauty.msg.Padding=Padding
+beauty.msg.Indenting=Indenting
