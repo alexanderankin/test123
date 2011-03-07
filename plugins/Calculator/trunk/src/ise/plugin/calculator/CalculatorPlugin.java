@@ -14,17 +14,18 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
 
 /**
- * A plugin to turn the rpn calculator into a jEdit plugin. 
+ * A plugin to turn the rpn calculator into a jEdit plugin.
  */
 public class CalculatorPlugin extends EditPlugin {
-   /** Name for plugin manager */
-   public final static String NAME = "Calculator";
-   
-   static {
+    /** Name for plugin manager */
+    public static final String NAME = "Calculator";
+
+    static {
         String dir = jEdit.getSettingsDirectory();
-        if (dir == null)
+        if (dir == null) {
             dir = System.getProperty("user.home");
+        }
         System.setProperty("calc.home", dir);
-   }
+    }
 }
 
