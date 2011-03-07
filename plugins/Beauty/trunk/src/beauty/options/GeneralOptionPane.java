@@ -14,7 +14,6 @@ import ise.java.awt.*;
 
 /**
  * General beautifier options.
- *
  */
 public class GeneralOptionPane extends AbstractOptionPane {
 
@@ -36,9 +35,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
         setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
         // create the components
-        JLabel description = new JLabel("<html><b>General Options");
+        JLabel description = new JLabel("<html><b>" + jEdit.getProperty("beauty.msg.General_Options", "General Options"));
 
-        showErrorDialogs = new JCheckBox("Show error dialogs");
+        showErrorDialogs = new JCheckBox(jEdit.getProperty("beauty.msg.Show_error_dialogs", "Show error dialogs"));
         showErrorDialogs.setSelected(jEdit.getBooleanProperty("beauty.general.showErrorDialogs", true));
 
         add("0, 0, 1, 1, W, w, 3", description);
