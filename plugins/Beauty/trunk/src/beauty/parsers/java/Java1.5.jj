@@ -527,7 +527,6 @@ TOKEN_MGR_DECLS :
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
-            // TODO: make this a user setting, pad parens
             String startParen = padParens ? "( " : "(";
             String endParen = padParens ? " )" : ")";
             s = s.replaceAll("[(][ ]", startParen);
