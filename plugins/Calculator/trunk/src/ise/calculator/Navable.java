@@ -11,7 +11,7 @@ package ise.calculator;
  * Objects implement this interface to be able to work with
  * Nav to add a navigation (web-browser-like back and forward) ability
  * to themselves.
- * @author Dale Anson, danson@germane-software.com
+ * @author Dale Anson, danson@grafidog.com
  */
 public interface Navable {
     /**

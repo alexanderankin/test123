@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Provides access to java.lang.Math and java.lang.StrictMath for Ant. Provides
  * add, subtract, multiply, divide and mod methods as well as access to all methods
  * java.lang.Math and java.lang.StrictMath via reflection.
- * @author Dale Anson, danson@germane-software.com
+ * @author Dale Anson, danson@grafidog.com
  */
 public class Math {
 
