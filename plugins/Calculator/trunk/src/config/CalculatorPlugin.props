@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.calculator.CalculatorPlugin.name=Calculator
 plugin.ise.plugin.calculator.CalculatorPlugin.author=Dale Anson
-plugin.ise.plugin.calculator.CalculatorPlugin.version=1.2.0
+plugin.ise.plugin.calculator.CalculatorPlugin.version=1.3.0
 plugin.ise.plugin.calculator.CalculatorPlugin.activate=defer
 
 # dependencies
