@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<article id="root-article" root="true" 
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<article id="root-article" root="true"
     xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation = 'http://slackerdoc.tigris.org/xsd/slackerdoc.xsd'
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -11,7 +11,7 @@
   <releaseinfo>@version@ </releaseinfo>
 </articleinfo>
 
-<abstract> <p>  Slacker's Docbook is yet another Docbook preprocessor. </p> 
+<abstract> <p>  Slacker's Docbook is yet another Docbook preprocessor. </p>
 </abstract>
 <p> This is a para </p>
 
