@@ -105,8 +105,9 @@
 
     <echo>project.class.path = ${toString:project.class.path}</echo>
 
-    <!-- Generate ant-complete.xml file with AntComplete task -->
-
+    <!-- Generate ant-complete.xml file with AntComplete task 
+         you may need commons-net-1.4.jar in your ~/.ant/lib dir for this to
+         work -->
     <target name="ant-complete" depends="compile"
          description="generate completion info for ant build files based on current version of ant">
         <taskdef name="antcomplete" classname="xml.completion.AntCompleteTask" classpath="${build.classes}"/>
