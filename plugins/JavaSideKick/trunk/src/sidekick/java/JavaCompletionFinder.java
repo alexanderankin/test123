@@ -1134,7 +1134,7 @@ public class JavaCompletionFinder {
 		if ( cn.getChildCount() == 0 )
 			return null;
 
-		Set members = new HashSet();
+		Set members = new TreeSet();
 		for ( Iterator it = cn.getChildren().iterator(); it.hasNext(); ) {
 			TigerNode child = ( TigerNode ) it.next();
 			String more = "";
@@ -1179,7 +1179,7 @@ public class JavaCompletionFinder {
 		if ( c == null )
 			return null;
 
-		Set list = new HashSet();
+		Set list = new TreeSet();
 
 		try {
 			while (c != null) {
@@ -1265,7 +1265,7 @@ public class JavaCompletionFinder {
 	}
 
 	private List getConstructorsForClass( Class c ) {
-		Set list = new HashSet();
+		Set list = new TreeSet();
 		try {
 			Constructor[] cons = c.getConstructors();
 			for (int i = 0; i < cons.length; i++) {
