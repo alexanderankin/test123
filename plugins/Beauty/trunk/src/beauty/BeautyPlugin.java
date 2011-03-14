@@ -180,6 +180,17 @@ public class BeautyPlugin extends EditPlugin {
     }
 
     /**
+     * For backward compatibility -- Beautify the current buffer using Beauty.
+     *
+     * @param buffer  The buffer to be beautified.
+     * @param view  The view; may be null, if there is no current view.
+     * @param showErrorDialogs not used, it's now a user setting.
+     */
+    public static void beautify(Buffer buffer, View view, boolean showErrorDialogs) {
+        beautify(buffer, view);
+    }
+    
+    /**
      * Beautify the current buffer using Beauty.
      *
      * @param buffer  The buffer to be beautified.
