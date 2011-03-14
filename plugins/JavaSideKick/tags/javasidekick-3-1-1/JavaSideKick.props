@@ -1,0 +1,252 @@
+#-----------------------------------
+# Properties for JavaSideKick Plugin
+#-----------------------------------
+
+# general plugin properites
+plugin.sidekick.java.JavaSideKickPlugin.activate=defer
+plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
+plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz, Damien Radtke
+plugin.sidekick.java.JavaSideKickPlugin.version=3.1.1
+plugin.sidekick.java.JavaSideKickPlugin.description=SideKick to browse java, javacc, and property files.
+
+# docs
+plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
+
+
+# dependencies
+plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.5.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.03.99.00
+plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.2
+plugin.sidekick.java.JavaSideKickPlugin.depend.5=plugin eclipseicons.EclipseIconsPlugin 1.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 3.0.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.7=optional plugin SuperAbbrevsPlugin 0.32
+
+
+Tiger2.title=JavaSideKick
+Tiger2.label=JavaSideKick
+
+# menu
+# Menu bar properties
+plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick.parser.java-switch javasidekick-insert-import \
+	javasidekick-refresh-global
+sidekick.parser.java-switch.label=Java SideKick
+javasidekick-insert-import.label=Insert Import for Class Under Cursor
+javasidekick-refresh-global.label=Refresh Global Classloader
+
+
+# action labels
+#javasidekick-check-imports.label=Check Imports
+javasidekick-gotodockable.label=Go to structure browser
+
+
+# registration with SideKick as a mode parser
+sidekick.parser.java.label=java
+sidekick.parser.javacc.label=javacc
+mode.java.sidekick.parser=java
+
+#--------------------------------
+# PropertySideKick properties
+#--------------------------------
+
+# menu
+plugin.sidekick.property.PropertySideKickPlugin.menu=sidekick-tree
+
+# action labels
+propertysidekick-gotodockable.label=Go to structure browser
+
+# registration with SideKick as a mode parser
+sidekick.parser.properties.label=properties
+mode.properties.sidekick.parser=properties
+
+
+
+#--------------------------------
+# JavaSideKick properties
+#--------------------------------
+
+# Messages
+sidekick.java.msg.wrongBuffer.title=Cannot Position in an inactive buffer
+sidekick.java.msg.wrongBuffer.message=\
+    JavaSideKick reflects the contents of a different buffer\n\
+    from the one that is currently selected.\n\n\
+    \ JavaSideKick buffer:\n   {0}\n\
+    Selected buffer:\n   {1}
+sidekick.java.msg.notAJavaBuffer.title=Not a java buffer
+sidekick.java.msg.notAJavaBuffer.message=\
+    The current buffer [{0}] is not a java buffer.
+sidekick.java.msg.bufferNotParsed.title=Buffer Not Parsed
+sidekick.java.msg.bufferNotParsed.message=The parsed data for this view \
+	was not parsed by JavaSideKick.\nCheck to make sure that java \
+	is set as the parser for this mode,\nand that the buffer has been parsed \
+	in the SideKick dockable.
+
+# Option pane properties
+plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
+	sidekick.java.filter \
+	sidekick.java.display \
+	sidekick.java.global
+
+options.sidekick.java.general.label=General
+options.sidekick.java.general.code=new sidekick.java.options.GeneralOptionPane();
+
+options.sidekick.java.filter.label=Filter
+options.sidekick.java.filter.code=new sidekick.java.options.FilterOptionPane();
+
+options.sidekick.java.display.label=Display
+options.sidekick.java.display.code=new sidekick.java.options.DisplayOptionPane();
+
+options.sidekick.java.global.label=Classpath
+options.sidekick.java.global.code=new sidekick.java.options.GlobalClasspathOptionPane();
+
+
+# Global Plugin Options - obsolete
+#options.sidekick.java.label=JavaSideKick
+#options.sidekick.java.code=new sidekick.java.options.JBrowseOptionPane()
+#options.sidekick.java.panel_label=Java SideKick Options
+
+# Session Plugin Options
+options.jbrowse_tree.label=Structure View
+options.jbrowse_options.label=Options
+options.jbrowse_options.panel_label=Current Options
+
+#general options
+options.sidekick.java.generalOptions=<html><b>General Options</b>
+# -- these are obsolete
+options.sidekick.java.showStatusBar=Display status bar
+options.sidekick.java.automaticParse=Automatic parse
+options.sidekick.java.sort=Sort by name
+options.sidekick.java.useFrame=Use Frame
+
+#filter options
+options.sidekick.java.filterOptions=<html><b>Filter Options:</b> What to include
+
+#member filters by type
+options.sidekick.java.showImports=Show imports
+options.sidekick.java.showAttr=Fields
+options.sidekick.java.showPrimAttr=include primitives
+options.sidekick.java.showVariables=Show local variables
+options.sidekick.java.showInitializers=Show static initializers
+options.sidekick.java.showGeneralizations=extends/implements
+options.sidekick.java.showThrows=Method throws type(s)
+
+#visibility level
+options.sidekick.java.visLevelLabel=Lowest Visibility Level to Show\ 
+options.sidekick.java.topLevelVis=Top-Level:\ 
+options.sidekick.java.memberVis=Member:\ 
+
+#display options
+options.sidekick.java.displayOptions=<html><b>Display Options:</b> How to display
+
+#general options
+options.sidekick.java.showArgs=Arguments
+options.sidekick.java.showArgNames=formal names
+options.sidekick.java.showTypeArgs=Show Generics type arguments
+options.sidekick.java.showNestedName=Qualify nested class/interface names
+options.sidekick.java.showIconKeywords=Keywords specified by icons
+options.sidekick.java.showMiscMod=Implementation detail modifiers
+options.sidekick.java.showIcons=Show icons
+options.sidekick.java.showIconsLikeEclipse=like Eclipse
+options.sidekick.java.showLineNums=Line Numbers
+options.sidekick.java.expandClasses=Expand inner classes
+options.sidekick.java.showErrors=Show parse errors in ErrorList
+options.sidekick.java.ignoreDirtyBuffers=Ignore dirty buffers
+options.sidekick.java.parseOnComplete=Parse buffer on code completion (may be slow on large files)
+options.sidekick.java.importPackage=Insert import statement on package completion
+
+options.sidekick.java.sortBy=Sort by
+options.sidekick.java.sortByLine=Line
+options.sidekick.java.sortByName=Name
+options.sidekick.java.sortByVisibility=Visibility
+
+
+#display style
+options.sidekick.java.display=Display
+options.sidekick.java.displayStyle=Display style:
+options.sidekick.java.umlStyle=UML
+options.sidekick.java.javaStyle=Java
+options.sidekick.java.customStyle=Custom
+
+# custom display style options
+options.sidekick.java.customOptions=Custom Display Options:
+options.sidekick.java.useVisibility=Use Visibility
+options.sidekick.java.custVisAsSymbol=Symbols
+options.sidekick.java.custVisAsWord=Words
+options.sidekick.java.custVisAsNone=None
+options.sidekick.java.custAbsAsItalic=Abstract in italics
+options.sidekick.java.custStaAsUlined=Static as underlined
+options.sidekick.java.custTypeIsSuffixed=Type identifier as a suffix
+
+options.sidekick.java.reparseWarning=You may need to reparse for changes to take effect.
+
+options.sidekick.java.ambiguousClass.title=Ambiguous Class
+options.sidekick.java.ambiguousClass.message=The class {0} is ambiguous. Use an \
+	import or the full class name to resolve the correct class.
+
+# Option values
+# general options
+sidekick.java.showStatusBar=true
+sidekick.java.automaticParse=false
+sidekick.java.sort=false
+sidekick.java.importPackage=false
+
+#member filters by type
+sidekick.java.showAttr=false
+sidekick.java.showPrimAttr=false
+sidekick.java.showVariables=false
+sidekick.java.showGeneralizations=false
+sidekick.java.showThrows=false
+
+#visibility level
+# 0 == RWModifier.TOPLEVEL_VIS_PACKAGE
+sidekick.java.topLevelVisIndex=0
+# 0 == RWModifier.MEMBER_VIS_PRIVATE
+sidekick.java.memberVisIndex=0
+
+#general options
+sidekick.java.showArgs=false
+sidekick.java.showArgNames=false
+sidekick.java.showNestedName=false
+sidekick.java.showIconKeywords=false
+sidekick.java.showMiscMod=false
+sidekick.java.showIcons=true
+sidekick.java.showIconsLikeEclipse=false
+sidekick.java.showLineNums=false
+sidekick.java.sortBy=Name
+sidekick.java.showErrors=true
+sidekick.java.ignoreDirtyBuffers=true
+sidekick.java.parseOnComplete=true
+
+#display style
+# 0 == Options.Display.STYLE_UML
+sidekick.java.displayStyle=0
+
+# custom display style options
+sidekick.java.custVisAsSymbol=false
+sidekick.java.custVisAsWord=false
+sidekick.java.custVisAsNone=false
+sidekick.java.custAbsAsItalic=false
+sidekick.java.custStaAsUlined=false
+sidekick.java.custTypeIsSuffixed=false
+
+# Global option pane
+sidekick.java.classpath=
+sidekick.java.classpathIncludePlugins.label=Include plugins and libraries
+sidekick.java.classpathIncludeSystem.label=Include system classpath
+sidekick.java.classpathIncludePlugins=true
+sidekick.java.classpathIncludeSystem=true
+
+# ProjectViewer option pane
+plugin.projectviewer.sidekick.java.JavaSideKickPlugin.option-pane=javasidekick.pv.options
+options.javasidekick.pv.options.label=Classpath
+options.javasidekick.pv.options.code=new sidekick.java.options.PVClasspathOptionPane()
+
+# ProjectViewer option pane labels
+sidekick.java.pv.desc=<html><b>JavaSideKick classpath settings</b></html>
+sidekick.java.pv.useJavaClasspath.label=Include global classpath (defined in Plugin Options)
+sidekick.java.pv.useJavaClasspath=true
+sidekick.java.pv.optionalClasspath.label=Classpath:
+sidekick.java.pv.optionalSourcepath.label=Source path:
+sidekick.java.pv.buildOutputPath.label=Build output path:
+
