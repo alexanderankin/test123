@@ -344,12 +344,19 @@ public final class Locator {
 		return allnames;
 	}
 	
+	/**
+	 * Reloads the global classpath
+	 */
 	private List<String> reloadGlobalClassNames() {
 		globalClassloader = new AntClassLoader();
 		File[] jars = getGlobalJars();
 		List<String> allnames = new ArrayList<String>();
+		
 		if (jars != null) {
 			for (File jar : jars) {
+				if (jar == null || !jar.exists())
+					continue;
+				
 				globalClassloader.addPathFile(jar);
 				List<String> names = null;
 				if (!jar.isDirectory()) names = getJarClassNames(jar);
@@ -359,10 +366,14 @@ public final class Locator {
 				}
 			}
 		}
+		
 		// Load system classpath
 		if (jEdit.getBooleanProperty("sidekick.java.classpathIncludeSystem")) {
 			jars = getClassPathJars();
 			for (File jar : jars) {
+				if (jar == null || !jar.exists())
+					continue;
+				
 				globalClassloader.addPathFile(jar);
 				List<String> names = null;
 				if (!jar.isDirectory()) names = getJarClassNames(jar);
@@ -371,7 +382,8 @@ public final class Locator {
 					allnames.addAll(names);
 				}
 			}
-		}	
+		}
+		
 		// Load jedit libraries and plugins
 		if (jEdit.getBooleanProperty("sidekick.java.classpathIncludePlugins")) {
 			// Load jars from settings
