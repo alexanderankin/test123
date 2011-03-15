@@ -82,7 +82,7 @@ public class JavaRegexCounter implements FoldCounter
 		while(endMatcher.find())
 		{
 			foldEnds++;
-			if(endMatcher.start() <= firstStart)
+			if(endMatcher.start() < firstStart)
 			{
 				leadingCloses++;
 			}

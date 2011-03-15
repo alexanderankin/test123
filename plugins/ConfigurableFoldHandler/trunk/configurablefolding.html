@@ -70,10 +70,10 @@
         These only work properly if tags aren't broken across multiple lines.
       <p>
         For Java, C and C++ code the following are useful to fold on
-        both brackets and range comments:
+        brackets, range comments and C/C++ compiler conditionals:
   <pre>
-  \{|/\*
-  \}|\*/</pre>
+  \{|/\*|#if|(?<=#els)e
+  \}|\*/|#end|#(?=else)</pre>
       </p>
       <p>
         If the start or end fold string is a substring of the other then
