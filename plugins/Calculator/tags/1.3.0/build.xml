@@ -1,0 +1,208 @@
+<project name="Calculator" default="dist" basedir=".">
+    <!-- $Id -->
+    
+    <!-- read build.props to override properties set below -->
+    <property file="build.props"/>
+    <property file="../build.properties"/>
+
+    <!-- default location of jedit.jar -->
+    <property name="jedit.install.dir"  value="../.."/> 
+    
+    <!-- jar name -->
+    <property name="jar.name" value="Calculator.jar"/>
+    
+    <!-- version number -->
+    <property name="build.num" value="1.2.0"/>
+    
+    <!-- JDK Version -->
+    <property name="compiler.source" value="1.6" />
+    <property name="compiler.target" value="1.6" />
+        
+    <!-- where to put the finished plugin -->
+    <property name="install.dir" value=".." />
+    
+    <!-- source code directory, this is where the .java files live -->
+    <property name="src.dir" location="src" />
+    
+    <!-- configuration directory, this is where the configuration files for the
+      plugin are placed for additional processing prior to getting jarred. -->
+    <property name="config.dir" location="config" />
+
+    <!-- documentation directory, this is where the plugin documentation
+      files live. Files in this directory will be distributed with the plugin -->
+    <property name="doc.dir" location="docs" />
+    
+    <!-- doc source -->
+    <property name="doc.src" location="${src.dir}/docs"/>
+
+    <!-- the directory for the compiled classes. Files in this directory will be
+      included in the finished jar file. -->
+    <property name="classes.dir" location="classes" />
+    
+    <!-- class name for 'main' to run as application -->
+    <property name="main.class" value="ise.calculator.Calculator"/>
+    
+    
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+   <target name="setClasspath">         
+      <path id="classpathref">
+         <!-- required locations/jars -->
+         <pathelement location="${classes.dir}" />
+         <pathelement path="${java.class.path}"/>
+         
+         <!-- required for jEdit plugin -->
+         <pathelement location="${jedit.install.dir}/jedit.jar" />
+      </path>
+   </target>
+
+   <!-- ========================================================================
+      Target: clean
+      deletes all files from the build directory
+   ========================================================================= -->
+    <target name="clean" description="Delete all files from the build directory.">
+        <delete dir="${classes.dir}" />
+    </target>
+    
+   <!-- ========================================================================
+      Target: compile
+   ========================================================================= -->
+    <target name="compile"
+            description="Compile"
+            depends="init,setClasspath">
+        <echo>compiling</echo>
+        <javac deprecation="on" 
+               debug="on" 
+               nowarn="on"
+               includeantruntime="false"
+               destdir="${classes.dir}"
+               srcdir="${src.dir}"
+               source="${compiler.source}"
+               target="${compiler.target}">
+            <classpath refid="classpathref" />
+        </javac>
+    </target>
+    
+   <!-- ======================================================================== 
+     TARGET: run
+     Runs the app
+   ========================================================================= -->
+   <target name="run" description="Runs the application">
+      <java classname="${main.class}" fork="true">
+         <classpath>
+            <pathelement path="${classpath}" />
+            <pathelement location="classes" />
+         </classpath>
+      </java>
+   </target>
+   
+   <!-- ========================================================================
+      Target: dist
+      creates jar file suitable for dropping into jEdit, and puts it up one
+      directory level
+   ========================================================================= -->
+    <target name="dist"
+            description="Compiles, jars, puts the jar in the jEdit jars directory."
+            depends="init,compile,prep_files,jar"/>
+        
+    <target name="jar">
+        <!-- make the plugin jar file -->
+        <tstamp/>
+        <jar jarfile="${install.dir}/${ant.project.name}.jar">
+            <manifest>
+                <attribute name="AppName" value="${ant.project.name}"/>
+                <attribute name="AppVersion" value="${build.num}"/>
+                <attribute name="Author" value="Dale Anson"/>
+                <attribute name="Created-By" value="${user.name}"/>
+                <attribute name="Created-On" value="${TODAY}"/>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+
+            <!-- include everything in the build directory -->
+            <fileset dir="${classes.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include everything in the config directory -->
+            <fileset dir="${config.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include everything in the doc directory -->
+            <fileset dir="${doc.dir}">
+                <include name="**/*" />
+            </fileset>
+        </jar>
+        
+    </target>
+
+   <!-- ========================================================================
+      Target: prep_files
+      prepares certain files for distribution by doing string replacement. 
+      Assumes that the configuration files and documentation files are ready.
+   ========================================================================= -->
+    <target name="prep_files">
+        <echo>preparing files</echo>
+        <!-- clean out the config and doc deployment directories -->
+        <delete>
+            <fileset dir="${config.dir}" includes="**/*"/>
+            <fileset dir="${doc.dir}" includes="**/*"/>
+        </delete>
+
+        <!-- copy the config  files to deployment directory -->
+        <copy todir="${config.dir}">
+            <fileset dir="${src.dir}/config" />
+        </copy>
+
+        <!-- copy the docs -->
+        <copy todir="${doc.dir}" overwrite="yes">
+            <fileset dir="${src.dir}/docs">
+               <include name="**/*"/>
+            </fileset>
+        </copy>
+        
+        <!-- copy the icons -->
+        <copy todir="${classes.dir}/images" overwrite="yes">
+            <fileset dir="${src.dir}/images">
+               <include name="**/*"/>
+            </fileset>
+        </copy>
+        
+        <!-- copy all.txt, has the 'built in' constants and functions -->
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}">
+               <include name="all.txt"/>
+            </fileset>
+        </copy>
+
+        <!-- insert the build number into the documentation and configuration
+        files -->
+        <replace dir="${config.dir}" token="@@build.num@@"
+            value="${build.num}" />
+        <replace dir="${doc.dir}" token="@@build.num@@"
+            value="${build.num}" />
+        <tstamp/>
+        <replace dir="${doc.dir}" token="@@tstamp@@"
+            value="${TODAY}" />
+            
+            
+    </target>
+   
+   <!-- ========================================================================
+      Target: init
+      this target creates the directories needed for this project and
+      only needs to be done once.
+   ========================================================================= -->
+    <target name="init" 
+            description="Create directory structure.">
+        <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
+        <mkdir dir="${src.dir}" />
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${classes.dir}/images"/>
+        <mkdir dir="${doc.dir}" /> 
+        <mkdir dir="${doc.src}"/>
+        <mkdir dir="${config.dir}" />
+    </target>
+    
+</project>
