@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="make_it_pretty">
+        <CODE>
+            beauty.BeautyPlugin.beautify(buffer, view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="beauty.toggleSplitAttributes">
+        <CODE>beauty.BeautyPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+</ACTIONS>
