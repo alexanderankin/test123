@@ -118,8 +118,6 @@ public class LambdaLayout extends KappaLayout implements LayoutManager2, Seriali
             int y = insets.top;
             int xfill = 0;            // how much extra space to put between components
             int yfill = 0;            // when stretching to fill entire container
-            boolean add_xfill = false;
-            boolean add_yfill = false;
 
             // make sure preferred size is known, a side effect is that countColumns
             // and countRows are automatically called.
