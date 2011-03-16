@@ -3,7 +3,7 @@ plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.name=Configurable F
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.author=C.J.Kent, Shlomy Reinstein
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.version=0.8
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.docs=configurablefolding.html
-plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.0=jedit 04.03.08.00
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.0=jedit 04.03.99.00
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.1=jdk 1.5
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.description=The ConfigurableFoldHandler plugin adds a new fold handler to jEdit that allows the user to specify the strings that define the start and end of a fold.
 
