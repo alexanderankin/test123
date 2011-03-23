@@ -292,7 +292,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     // is preferred over openFile since openTemporary won't send EditBus
                     // messages nor is the buffer added to the buffer list.
                     buffer = jEdit.openTemporary( jEdit.getActiveView(), null, path, false );
-                    Mode mode = TaskListPlugin.getMode( path );
+                    Mode mode = TaskListPlugin.getMode( path, buffer.getLineText(0) );
                     if ( mode == null ) {
                         continue;
                     }
