@@ -146,6 +146,11 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     private class Runner extends common.swingworker.SwingWorker<TreeModel, Object> {
 
         private JProgressBar progressBar = new JProgressBar( 0, 100 );
+        
+        public Runner() {
+            super();
+            TaskListPlugin.addRunner(this);
+        }
 
         @Override
         public TreeModel doInBackground() {
@@ -204,6 +209,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     }
                 );
             }
+            TaskListPlugin.removeRunner(this);
             return cancelled;
         }
 
@@ -240,6 +246,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     }
                 }
             );
+            TaskListPlugin.removeRunner(this);
             runner = null;
         }
 
