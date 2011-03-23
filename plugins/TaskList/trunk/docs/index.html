@@ -193,10 +193,23 @@ regular expression.<p>
 
 <p>The ability to change the comment type and tag from the TaskList table
 (using its context menu) depends upon the target comment type's regular
-expression being in the basic form of the default types:<p><programlisting>
-\s+(tag-name):\s+(.+)$</programlisting>
-<p>When using the current version, the name of the task type should match
-the tag name used in regular expression.<p>
+expression being in the basic form of the default types:<p>
+<code>
+\s+(task-type-name):\s+(comment-text)$
+</code>
+<p>
+It is expected that the regular expression contains two groups.  The first is the task type name, the second is the task comment.  Regular expression groups are not technically required, but it is best practice to do so.  If there are no groups or only one group defined, then the entire match will be considered to be the task type name.
+<p>
+Here are some examples to help you write your own task types:
+<code>\s(TODO)[:]?\s+(.+)$</code><br>
+This will match lines like:
+<ul>
+	<li>// TODO: clean this up</li>
+	<li>// TODO add documentation for this function</li>
+</ul>
+Notice that these regular expressions do contain two groups, as is recommended.  In this example, the regular expression requires that the task type name be preceded with and followed by whitespace.  This helps ensure that the task type name is not found inside another word.
+
+<p>When using the current version, the name of the task type is the tag name used in regular expression.<p>
 
 <p>You can reset the task patterns to those installed with the plugin by
 using the <code>Task List</code> -&gt; <code>Reset task patterns</code> command.<p>
