@@ -33,7 +33,7 @@ package tasklist;
  a TaskListener, but I've removed that implementation.
 }}}*/
 
-//{{{ imports
+// {{{ imports
 import java.awt.Color;
 import java.io.*;
 import java.net.*;
@@ -46,10 +46,11 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
+import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
-//}}}
+// }}}
 
 /**
  * The main plugin class for the TaskList plugin,
@@ -60,123 +61,121 @@ public class TaskListPlugin extends EditPlugin {
 
     private static Color highlightColor = Color.blue;
     private static boolean allowSingleClickSelection = false;
-    
+
     private static Set<common.swingworker.SwingWorker> runners = new HashSet<common.swingworker.SwingWorker>();
 
-    //{{{ start() method
+    // {{{ start() method
     /**
      * Adds TaskHighlights
      */
     public void start() {
-        DEBUG = jEdit.getBooleanProperty( "tasklist.debug", false );
+        DEBUG = jEdit.getBooleanProperty("tasklist.debug", false);
 
-        Log.log( Log.DEBUG, this, "adding TaskHighlights" );
+        Log.log(Log.DEBUG, this, "adding TaskHighlights");
 
         View view = jEdit.getFirstView();
-        while ( view != null ) {
+        while (view != null) {
             EditPane[] panes = view.getEditPanes();
-            for ( int i = 0; i < panes.length; i++ ) {
-                JEditTextArea textArea = panes[ i ].getTextArea();
-                initTextArea( textArea );
+            for (int i = 0; i < panes.length; i++) {
+                JEditTextArea textArea = panes[ i].getTextArea();
+                initTextArea(textArea);
             }
             view = view.getNext();
         }
 
         propertiesChanged();
-    } //}}}
+    }    // }}}
 
-    //{{{ stop() method
+    // {{{ stop() method
     /**
      * Unregister TaskHighlights
      */
     public void stop() {
-        Log.log( Log.DEBUG, this, "removing TaskHighlights" );
+        Log.log(Log.DEBUG, this, "removing TaskHighlights");
         View view = jEdit.getFirstView();
-        while ( view != null ) {
+        while (view != null) {
             EditPane[] panes = view.getEditPanes();
-            for ( int i = 0; i < panes.length; i++ ) {
-                JEditTextArea textArea = panes[ i ].getTextArea();
-                uninitTextArea( textArea );
+            for (int i = 0; i < panes.length; i++) {
+                JEditTextArea textArea = panes[ i].getTextArea();
+                uninitTextArea(textArea);
             }
             view = view.getNext();
         }
-        
-        for (common.swingworker.SwingWorker worker : runners) {
-            worker.cancel(true);   
-        }
-    } //}}}
 
-    public static void registerTaskList( TaskList taskList ) {
-        if ( taskList != null ) {
+        for (common.swingworker.SwingWorker worker : runners) {
+            worker.cancel(true);
+        }
+    }    // }}}
+
+    public static void registerTaskList(TaskList taskList) {
+        if (taskList != null) {
             View view = taskList.getView();
-            if ( view != null ) {
-                taskLists.put( view, taskList );
+            if (view != null) {
+                taskLists.put(view, taskList);
             }
         }
     }
 
-    public static TaskList getTaskList( View view ) {
-        return taskLists.get( view );
+    public static TaskList getTaskList(View view) {
+        return taskLists.get(view);
     }
 
     // Pass parse buffer messages on to task lists.  This is more specific than
     // using the edit bus since the message is only forwarded to the appropriate
     // task list rather than all of them.
-    public static void send( ParseBufferMessage message ) {
-        if ( message == null ) {
+    public static void send(ParseBufferMessage message) {
+        if (message == null) {
             return ;
         }
-        TaskList taskList = getTaskList( message.getView() );
-        if ( taskList == null ) {
+        TaskList taskList = getTaskList(message.getView());
+        if (taskList == null) {
             return ;
         }
-        taskList.send( message );
+        taskList.send(message);
     }
 
-    //{{{ initTextArea() method
+    // {{{ initTextArea() method
     /**
      * Adds TaskHighlights
      */
-    private void initTextArea( JEditTextArea textArea ) {
-        TaskHighlight highlight = new TaskHighlight( textArea );
-        textArea.getPainter().addExtension( highlight );
-        textArea.putClientProperty( TaskHighlight.class, highlight );
-    } //}}}
+    private void initTextArea(JEditTextArea textArea) {
+        TaskHighlight highlight = new TaskHighlight(textArea);
+        textArea.getPainter().addExtension(highlight);
+        textArea.putClientProperty(TaskHighlight.class, highlight);
+    }    // }}}
 
-    //{{{ uninitTextArea() method
+    // {{{ uninitTextArea() method
     /**
      * Removes TaskHighlights
      */
-    private void uninitTextArea( JEditTextArea textArea ) {
-        TaskHighlight highlight = ( TaskHighlight ) textArea.
-                getClientProperty( TaskHighlight.class );
-        if ( highlight != null ) {
-            textArea.getPainter().removeExtension( highlight );
-            textArea.putClientProperty( TaskHighlight.class, null );
+    private void uninitTextArea(JEditTextArea textArea) {
+        TaskHighlight highlight = (TaskHighlight) textArea.getClientProperty(TaskHighlight.class);
+        if (highlight != null) {
+            textArea.getPainter().removeExtension(highlight);
+            textArea.putClientProperty(TaskHighlight.class, null);
         }
-    } //}}}
+    }    // }}}
 
-    //{{{ toggleHighlights() method
+    // {{{ toggleHighlights() method
     /**
      * Enables/disables TaskHighlights
      */
-    private static void toggleHighlights( boolean enabled ) {
+    private static void toggleHighlights(boolean enabled) {
         View view = jEdit.getFirstView();
-        while ( view != null ) {
+        while (view != null) {
             EditPane[] panes = view.getEditPanes();
-            for ( int i = 0; i < panes.length; i++ ) {
-                JEditTextArea textArea = panes[ i ].getTextArea();
-                TaskHighlight highlight = ( TaskHighlight ) textArea
-                        .getClientProperty( TaskHighlight.class );
-                if ( highlight != null ) {
-                    highlight.setEnabled( enabled );
+            for (int i = 0; i < panes.length; i++) {
+                JEditTextArea textArea = panes[ i].getTextArea();
+                TaskHighlight highlight = (TaskHighlight) textArea.getClientProperty(TaskHighlight.class);
+                if (highlight != null) {
+                    highlight.setEnabled(enabled);
                 }
             }
             view = view.getNext();
         }
-    } //}}}
+    }    // }}}
 
-    //{{{ getHighlightColor() method
+    // {{{ getHighlightColor() method
     /**
      * Returns the user-specified color used for highlighting task items
      * in the current buffer.
@@ -184,26 +183,26 @@ public class TaskListPlugin extends EditPlugin {
      */
     public static Color getHighlightColor() {
         return highlightColor;
-    } //}}}
+    }    // }}}
 
-    //{{{ getAllowSingleClickSelection() method
+    // {{{ getAllowSingleClickSelection() method
     /**
-    * Returns whether single-clicks will display a task.
-    */
+     * Returns whether single-clicks will display a task.
+     */
     public static boolean getAllowSingleClickSelection() {
         return allowSingleClickSelection;
-    } //}}}
+    }    // }}}
 
-    //{{{ addTaskType() method
+    // {{{ addTaskType() method
     /**
      * Adds a TaskType object to the list maintained by the plugin object.
      * @param taskType the TaskType object to be added
      */
-    public static void addTaskType( TaskType taskType ) {
-        taskTypes.add( taskType );
-    } //}}}
+    public static void addTaskType(TaskType taskType) {
+        taskTypes.add(taskType);
+    }    // }}}
 
-    //{{{ loadTaskTypes() method
+    // {{{ loadTaskTypes() method
     /**
      * loads TaskType objects from data maintained in the Properties object
      * currently maintained by the application.
@@ -211,150 +210,142 @@ public class TaskListPlugin extends EditPlugin {
     private static void loadTaskTypes() {
         int i = 0;
         String pattern;
-        while ( ( pattern = jEdit.getProperty( "tasklist.tasktype." +
-                i + ".pattern" ) ) != null && !pattern.equals( "" ) ) {
-            String name = jEdit.getProperty(
-                        "tasklist.tasktype." + i + ".name" );
-            String iconPath = jEdit.getProperty(
-                        "tasklist.tasktype." + i + ".iconpath" );
-            String sample = jEdit.getProperty(
-                        "tasklist.tasktype." + i + ".sample" );
-            boolean ignoreCase = jEdit.getBooleanProperty(
-                        "tasklist.tasktype." + i + ".ignorecase" );
+        while ((pattern = jEdit.getProperty("tasklist.tasktype." + i + ".pattern")) != null && !pattern.equals("")) {
+            String name = jEdit.getProperty ("tasklist.tasktype." + i + ".name");
+            String iconPath = jEdit.getProperty ("tasklist.tasktype." + i + ".iconpath");
+            String sample = jEdit.getProperty ("tasklist.tasktype." + i + ".sample");
+            boolean ignoreCase = jEdit.getBooleanProperty ("tasklist.tasktype." + i + ".ignorecase");
 
-            taskTypes.add( new TaskType( name, pattern, sample, ignoreCase, iconPath ) );       // NOPMD
+            taskTypes.add(new TaskType(name, pattern, sample, ignoreCase, iconPath));            // NOPMD
 
             i++;
         }
-    } //}}}
+    }    // }}}
 
     public static void reloadTaskTypes() {
         clearTaskTypes();
         loadTaskTypes();
     }
 
-    public static Icon getIconForType( String typeName ) {
-        if ( typeName == null ) {
+    public static Icon getIconForType(String typeName) {
+        if (typeName == null) {
             return null;
         }
-        for ( TaskType type : taskTypes ) {
-            if ( typeName.equals( type.getName() ) ) {
+        for (TaskType type : taskTypes) {
+            if (typeName.equals(type.getName())) {
                 return type.getIcon();
             }
         }
         return null;
     }
 
-    public static TaskType getTaskType( Task task ) {
-        if ( task == null ) {
+    public static TaskType getTaskType(Task task) {
+        if (task == null) {
             return null;
         }
         String typeName = task.getIdentifier();
-        for ( TaskType type : taskTypes ) {
-            if ( typeName.equals( type.getName() ) ) {
+        for (TaskType type : taskTypes) {
+            if (typeName.equals(type.getName())) {
                 return type;
             }
         }
         return null;
     }
 
-    //{{{ resetPatterns() method
+    // {{{ resetPatterns() method
     /**
      * Clears existing task patterns and reloads default settings
      */
-    public static void resetPatterns( View view ) {
-        if ( JOptionPane.YES_OPTION == GUIUtilities.confirm( view, "tasklist.reset-query",
-                null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE ) ) {
+    public static void resetPatterns(View view) {
+        if (JOptionPane.YES_OPTION == GUIUtilities.confirm(view, "tasklist.reset-query", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
             reloadPatterns();
-            GUIUtilities.message( view, "tasklist.reset-complete", null );
-            TaskListPlugin.extractTasks( view.getBuffer() );
+            GUIUtilities.message(view, "tasklist.reset-complete", null);
+            TaskListPlugin.extractTasks(view.getBuffer());
         }
-    } //}}}
+    }    // }}}
 
-    //{{{ reloadPatterns() method
+    // {{{ reloadPatterns() method
     /**
      * Implements reloading of default task patterns
      */
     private static void reloadPatterns() {
         TaskListPlugin.clearTaskTypes();
 
-        jEdit.setProperty( "tasklist.tasktype.0.name", "DEBUG" );
-        jEdit.setProperty( "tasklist.tasktype.0.iconpath", "stock_preferences-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.0.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.0.pattern", "\\s(DEBUG)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.0.sample", " DEBUG: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.0.name", "DEBUG");
+        jEdit.setProperty("tasklist.tasktype.0.iconpath", "stock_preferences-16.png");
+        jEdit.setProperty("tasklist.tasktype.0.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.0.pattern", "\\s(DEBUG)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.0.sample", " DEBUG: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.1.name", "DONE" );
-        jEdit.setProperty( "tasklist.tasktype.1.iconpath", "stock_spellcheck-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.1.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.1.pattern", "\\s(DONE)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.1.sample", " DONE: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.1.name", "DONE");
+        jEdit.setProperty("tasklist.tasktype.1.iconpath", "stock_spellcheck-16.png");
+        jEdit.setProperty("tasklist.tasktype.1.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.1.pattern", "\\s(DONE)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.1.sample", " DONE: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.2.name", "FIXME" );
-        jEdit.setProperty( "tasklist.tasktype.2.iconpath", "stock_broken_image-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.2.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.2.pattern", "\\s(FIXME)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.2.sample", " FIXME: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.2.name", "FIXME");
+        jEdit.setProperty("tasklist.tasktype.2.iconpath", "stock_broken_image-16.png");
+        jEdit.setProperty("tasklist.tasktype.2.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.2.pattern", "\\s(FIXME)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.2.sample", " FIXME: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.3.name", "IDEA" );
-        jEdit.setProperty( "tasklist.tasktype.3.iconpath", "stock_about-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.3.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.3.pattern", "\\s(IDEA)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.3.sample", " IDEA: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.3.name", "IDEA");
+        jEdit.setProperty("tasklist.tasktype.3.iconpath", "stock_about-16.png");
+        jEdit.setProperty("tasklist.tasktype.3.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.3.pattern", "\\s(IDEA)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.3.sample", " IDEA: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.4.name", "NOTE" );
-        jEdit.setProperty( "tasklist.tasktype.4.iconpath", "stock_attach-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.4.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.4.pattern", "\\s(NOTE)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.4.sample", " NOTE: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.4.name", "NOTE");
+        jEdit.setProperty("tasklist.tasktype.4.iconpath", "stock_attach-16.png");
+        jEdit.setProperty("tasklist.tasktype.4.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.4.pattern", "\\s(NOTE)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.4.sample", " NOTE: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.5.name", "QUESTION" );
-        jEdit.setProperty( "tasklist.tasktype.5.iconpath", "stock_help-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.5.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.5.pattern", "\\s(QUESTION)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.5.sample", " QUESTION: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.5.name", "QUESTION");
+        jEdit.setProperty("tasklist.tasktype.5.iconpath", "stock_help-16.png");
+        jEdit.setProperty("tasklist.tasktype.5.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.5.pattern", "\\s(QUESTION)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.5.sample", " QUESTION: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.6.name", "TODO" );
-        jEdit.setProperty( "tasklist.tasktype.6.iconpath", "stock_jump-to-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.6.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.6.pattern", "\\s(TODO)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.6.sample", " TODO: [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.6.name", "TODO");
+        jEdit.setProperty("tasklist.tasktype.6.iconpath", "stock_jump-to-16.png");
+        jEdit.setProperty("tasklist.tasktype.6.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.6.pattern", "\\s(TODO)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.6.sample", " TODO: [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.7.name", "XXX" );
-        jEdit.setProperty( "tasklist.tasktype.7.iconpath", "stock_right-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.7.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.7.pattern", "\\s(XXX)[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.7.sample", " XXX [comment text]" );
+        jEdit.setProperty("tasklist.tasktype.7.name", "XXX");
+        jEdit.setProperty("tasklist.tasktype.7.iconpath", "stock_right-16.png");
+        jEdit.setProperty("tasklist.tasktype.7.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.7.pattern", "\\s(XXX)[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.7.sample", " XXX [comment text]");
 
-        jEdit.setProperty( "tasklist.tasktype.8.iconpath", "stock_help-16.png" );
-        jEdit.setProperty( "tasklist.tasktype.8.ignorecase", "false" );
-        jEdit.setProperty( "tasklist.tasktype.8.name", "???" );
-        jEdit.setProperty( "tasklist.tasktype.8.pattern", "\\s([?]{3})[:]?\\s+(.+)$" );
-        jEdit.setProperty( "tasklist.tasktype.8.sample", " ??? [commented text]" );
+        jEdit.setProperty("tasklist.tasktype.8.iconpath", "stock_help-16.png");
+        jEdit.setProperty("tasklist.tasktype.8.ignorecase", "false");
+        jEdit.setProperty("tasklist.tasktype.8.name", "???");
+        jEdit.setProperty("tasklist.tasktype.8.pattern", "\\s([?]{3})[:]?\\s+(.+)$");
+        jEdit.setProperty("tasklist.tasktype.8.sample", " ??? [commented text]");
 
-        pruneTaskListProperties( 9 );
+        pruneTaskListProperties(9);
         loadTaskTypes();
-    } //}}}
+    }    // }}}
 
-    //{{{ pruneTaskListProperties() method
+    // {{{ pruneTaskListProperties() method
     /**
-    * Removes all task patterns >= `start`.
-    * @param start the first task pattern to remove, all after will
-    * also be removed.
-    */
-    public static void pruneTaskListProperties( int start ) {
-        for ( int i = start;
-                jEdit.getProperty( "tasklist.tasktype." + i + ".pattern" ) != null;
-                i++ ) {
-            jEdit.unsetProperty( "tasklist.tasktype." + i + ".name" );
-            jEdit.unsetProperty( "tasklist.tasktype." + i + ".iconpath" );
-            jEdit.unsetProperty( "tasklist.tasktype." + i + ".ignorecase" );
-            jEdit.unsetProperty( "tasklist.tasktype." + i + ".pattern" );
-            jEdit.unsetProperty( "tasklist.tasktype." + i + ".sample" );
+     * Removes all task patterns >= `start`.
+     * @param start the first task pattern to remove, all after will
+     * also be removed.
+     */
+    public static void pruneTaskListProperties(int start) {
+        for (int i = start; jEdit.getProperty("tasklist.tasktype." + i + ".pattern") != null; i++) {
+            jEdit.unsetProperty("tasklist.tasktype." + i + ".name");
+            jEdit.unsetProperty("tasklist.tasktype." + i + ".iconpath");
+            jEdit.unsetProperty("tasklist.tasktype." + i + ".ignorecase");
+            jEdit.unsetProperty("tasklist.tasktype." + i + ".pattern");
+            jEdit.unsetProperty("tasklist.tasktype." + i + ".sample");
         }
-    } //}}}
+    }    // }}}
 
-    //{{{ propertiesChanged() method
+    // {{{ propertiesChanged() method
     /**
      * Causes an update of application data, typically after a change
      * in the plugin's user settings.
@@ -364,37 +355,35 @@ public class TaskListPlugin extends EditPlugin {
         TaskListPlugin.loadTaskTypes();
         TaskListPlugin.loadParseModes();
 
-        highlightColor = GUIUtilities.parseColor( jEdit.getProperty(
-                    "tasklist.highlight.color" ) );
+        highlightColor = GUIUtilities.parseColor(jEdit.getProperty ("tasklist.highlight.color"));
 
-        allowSingleClickSelection = jEdit.getBooleanProperty(
-                    "tasklist.single-click-selection", false );
+        allowSingleClickSelection = jEdit.getBooleanProperty ("tasklist.single-click-selection", false);
 
-        boolean highlightEnabled = jEdit.getBooleanProperty( "tasklist.highlight.tasks" );
-        toggleHighlights( highlightEnabled );
-    } //}}}
+        boolean highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
+        toggleHighlights(highlightEnabled);
+    }    // }}}
 
-    //{{{ loadParseModes() method
+    // {{{ loadParseModes() method
     /**
-    * Load which modes are to be parsed and which are not to be parsed.
-    */
+     * Load which modes are to be parsed and which are not to be parsed.
+     */
     public static void loadParseModes() {
         parseModes.clear();
         Mode[] modes = jEdit.getModes();
-        for ( Mode mode : modes ) {
-            parseModes.add( mode );
+        for (Mode mode : modes) {
+            parseModes.put(mode, mode);
         }
-    } //}}}
+    }    // }}}
 
-    //{{{ clearTaskTypes() method
+    // {{{ clearTaskTypes() method
     /**
      * Removes all TaskType data from the collection maintained by the plugin.
      */
     public static void clearTaskTypes() {
         taskTypes.clear();
-    } //}}}
+    }    // }}}
 
-    //{{{ private static members
+    // {{{ private static members
     /**
      * A collection of pending requests to parse buffers, maintained to
      * prevent unnecessary duplication.
@@ -415,44 +404,43 @@ public class TaskListPlugin extends EditPlugin {
      * Value is a HashMap with key of line number for Task, value is an actual Task.
      * DONE: replace reference to Buffer with String containing path for Buffer.
      */
-    private static Map < String, HashMap < Integer, Task >> bufferMap = new HashMap < String, HashMap < Integer, Task >> ();
-
+    private static Map<String, HashMap<Integer, Task>> bufferMap = new HashMap <String, HashMap <Integer, Task >>();
 
     /**
      * A collection to track which buffer modes to parse for tasks.  Modes not
      * in this list won't be parsed.
      */
-    private static Set<Mode> parseModes = new HashSet<Mode>();
-    //}}}
+    private static Map<Mode, Mode> parseModes = new HashMap<Mode, Mode>();
+    // }}}
 
     // view <=> task list map
     private static HashMap<View, TaskList> taskLists = new HashMap<View, TaskList>();
 
-    //{{{ requestTasksForBuffer() method
+    // {{{ requestTasksForBuffer() method
     /**
-    * Returns the current set of tasks for the buffer requested, if there is a
-    * set.  If there is no set, the buffer is parsed.
-    * <p>
-    * This method will not cause a re-parse of a buffer.
-    */
-    public synchronized static HashMap<Integer, Task>
-    requestTasksForBuffer( final Buffer buffer ) {
-        if ( buffer == null || buffer.isLoaded() == false ) {
+     * Returns the current set of tasks for the buffer requested, if there is a
+     * set.  If there is no set, the buffer is parsed.
+     * <p>
+     * This method will not cause a re-parse of a buffer.
+     */
+
+    public static synchronized HashMap<Integer, Task> requestTasksForBuffer(final Buffer buffer) {
+        if (buffer == null || buffer.isLoaded() == false) {
             return null;
         }
 
-        HashMap<Integer, Task> taskMap = bufferMap.get( buffer.getPath() );
+        HashMap<Integer, Task> taskMap = bufferMap.get(buffer.getPath());
 
         // taskMap should only be null if buffer has never been parsed
-        if ( taskMap == null ) {
-            extractTasks( buffer );
+        if (taskMap == null) {
+            extractTasks(buffer);
         }
 
         return taskMap;
 
-    } //}}}
+    }    // }}}
 
-    //{{{ extractTasks() method
+    // {{{ extractTasks() method
     /**
      * Directs the parsing of a buffer for task data if no request for parsing
      * that buffer is currently pending.
@@ -461,28 +449,28 @@ public class TaskListPlugin extends EditPlugin {
      * duplicate parse requests.
      * @param buffer the Buffer to be parsed for task data.
      */
-    public synchronized static void extractTasks( final Buffer buffer ) {
-        if ( buffer == null ) {
+    public static synchronized void extractTasks(final Buffer buffer) {
+        if (buffer == null) {
             return ;
         }
-        if ( buffer.isLoaded() == false ) {
+        if (buffer.isLoaded() == false) {
             return ;
         }
         // if buffer is already in the queue, return
-        if ( parseRequests.contains( buffer ) ) {
+        if (parseRequests.contains(buffer)) {
             return ;
         }
 
-        parseRequests.add( buffer );
-        SwingUtilities.invokeLater( new Runnable() {
-                    public void run() {
-                        TaskListPlugin.parseBuffer( buffer );
-                    }
-                }
-                                  );
-    } //}}}
+        parseRequests.add(buffer);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TaskListPlugin.parseBuffer(buffer);
+            }
+        }
+       );
+    }    // }}}
 
-    //{{{ parseBuffer() method
+    // {{{ parseBuffer() method
     /**
      * Parses a Buffer and extracts task item data to be stored in the plugin's
      * collection.
@@ -490,33 +478,33 @@ public class TaskListPlugin extends EditPlugin {
      * TODO: does this really need to be synchronized?  Should it be moved elsewhere and made non-static?
      * DONE: removed the synchronized.  No problems so far.
      */
-    public static void parseBuffer( Buffer buffer ) {
-        if ( buffer == null ) {
+    public static void parseBuffer(Buffer buffer) {
+        if (buffer == null) {
             return ;
         }
 
-        TaskListPlugin.clearTasks( buffer );
-        
+        TaskListPlugin.clearTasks(buffer);
+
         // if this file's mode is not to be parsed, skip it
-        if ( !parseModes.contains( buffer.getMode() ) ) {
+        if (!parseModes.containsKey(buffer.getMode())) {
             // fill with empty HashMap of tasks
-            bufferMap.put( buffer.getPath(), new HashMap<Integer, Task>() );
+            bufferMap.put(buffer.getPath(), new HashMap<Integer, Task>());
 
             // remove 'buffer' from parse queue
-            parseRequests.remove( buffer );
+            parseRequests.remove(buffer);
             return ;
         }
 
         int firstLine = 0;
         int lastLine = buffer.getLineCount();
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
-        for ( int lineNum = firstLine; lineNum < lastLine; lineNum++ ) {
+        for (int lineNum = firstLine; lineNum < lastLine; lineNum++) {
             tokenHandler.init();
 
-            int lineStart = buffer.getLineStartOffset( lineNum );
-            int lineEnd = buffer.getLineEndOffset( lineNum );
+            int lineStart = buffer.getLineStartOffset(lineNum);
+            int lineEnd = buffer.getLineEndOffset(lineNum);
             lineEnd = lineEnd >= buffer.getLength() ? buffer.getLength() - 1 : lineEnd;
-            buffer.markTokens( lineNum, tokenHandler );
+            buffer.markTokens(lineNum, tokenHandler);
             Token token = tokenHandler.getTokens();
             int tokenStart = lineStart;
             int chunkStart = -1;
@@ -524,10 +512,10 @@ public class TaskListPlugin extends EditPlugin {
             int type = -1;
             boolean foundTask = false;
 
-            while ( token.id != Token.END ) {
+            while (token.id != Token.END) {
                 // For 4.2 there are no longer TAB and WHITESPACE tokens
                 // but tokens are still broken up by word.
-                if ( Token.COMMENT1 <= token.id && token.id <= Token.COMMENT4 ) {
+                if (Token.COMMENT1 <= token.id && token.id <= Token.COMMENT4) {
                     type = token.id;
                     chunkStart = tokenStart;
                     chunkLength = token.length;
@@ -536,25 +524,22 @@ public class TaskListPlugin extends EditPlugin {
                     // The second check is to allow detecting tasks
                     // in PHPdoc, where @TODO is a label, so one might have
                     // ` * @TODO foo`.
-                    while ( token.next.id == type
-                            || ( token.next.id != Token.END
-                                 && token.next.id != Token.NULL
-                                 && token.next.next.id == type ) ) {
+                    while (token.next.id == type || (token.next.id != Token.END && token.next.id != Token.NULL && token.next.next.id == type)) {
                         token = token.next;
                         chunkLength += token.length;
                     }
-                    String text = buffer.getText( chunkStart, lineEnd - chunkStart );
-                    for ( TaskType taskType : taskTypes ) {
-                        Task task = taskType.extractTask( buffer, text, lineNum, chunkStart - lineStart );
-                        if ( task != null ) {
-                            TaskListPlugin.addTask( task );
+                    String text = buffer.getText(chunkStart, lineEnd - chunkStart);
+                    for (TaskType taskType : taskTypes) {
+                        Task task = taskType.extractTask(buffer, text, lineNum, chunkStart - lineStart);
+                        if (task != null) {
+                            TaskListPlugin.addTask(task);
                             foundTask = true;
-                            break;  
+                            break;
                         }
                     }
                 }
                 if (foundTask) {
-                    break;   
+                    break;
                 }
                 tokenStart += token.length;
                 token = token.next;
@@ -565,37 +550,35 @@ public class TaskListPlugin extends EditPlugin {
         // after a buffer has been parsed, bufferMap should contain
         // an empty set of tasks, if there are not, not a null set
         // (a null set is used to indicate the buffer has never been parsed)
-        if ( bufferMap.get( buffer.getPath() ) == null ) {
-            bufferMap.put( buffer.getPath(), new HashMap<Integer, Task>() );
+        if (bufferMap.get(buffer.getPath()) == null) {
+            bufferMap.put(buffer.getPath(), new HashMap<Integer, Task>());
         }
 
-        if ( TaskListPlugin.DEBUG ) {
-            Log.log( Log.DEBUG, TaskListPlugin.class,
-                    "TaskListPlugin.parseBuffer(...) DONE" );
+        if (TaskListPlugin.DEBUG) {
+            Log.log(Log.DEBUG, TaskListPlugin.class, "TaskListPlugin.parseBuffer(...) DONE");
         }
 
         // remove 'buffer' from parse queue
-        parseRequests.remove( buffer );
-    } //}}}
+        parseRequests.remove(buffer);
+    }    // }}}
 
-    //{{{ addTask() method
+    // {{{ addTask() method
     /**
-    * Add a Task to the collection maintained by the plugin.
-    * @param task the Task to be added.
-    */
-    private static void addTask( Task task ) {
-        if ( TaskListPlugin.DEBUG ) {
-            Log.log( Log.DEBUG, TaskListPlugin.class,
-                    "TaskListPlugin.addTask(" + task.toString() + ")" ); //##
+     * Add a Task to the collection maintained by the plugin.
+     * @param task the Task to be added.
+     */
+    private static void addTask(Task task) {
+        if (TaskListPlugin.DEBUG) {
+            Log.log(Log.DEBUG, TaskListPlugin.class, "TaskListPlugin.addTask(" + task.toString() + ")");            // ##
         }
 
-        HashMap<Integer, Task> taskMap = bufferMap.get( task.getBufferPath() );
+        HashMap<Integer, Task> taskMap = bufferMap.get(task.getBufferPath());
 
-        if ( taskMap == null ) {
-            bufferMap.put( task.getBufferPath(), new HashMap<Integer, Task>() );
+        if (taskMap == null) {
+            bufferMap.put(task.getBufferPath(), new HashMap<Integer, Task>());
         }
 
-        Integer _line = Integer.valueOf( task.getLineIndex() );
+        Integer _line = Integer.valueOf(task.getLineIndex());
         /* TODO: is this check necessary?
         if ( taskMap.get( _line ) != null ) {
             Task prevTask = taskMap.get(_line);
@@ -606,126 +589,102 @@ public class TaskListPlugin extends EditPlugin {
             //}
         }
         */
-        taskMap.put( _line, task );
-    } //}}}
+        taskMap.put(_line, task);
+    }    // }}}
 
-    //{{{ clearTasks() method
+    // {{{ clearTasks() method
     /**
-    * Remove all tasks relating to a given Buffer from the collection
-    * of Task objects maintained by the plugin.
-    *
-    * @param buffer the Buffer whose tasks are to be removed.
-    */
-    private static void clearTasks( Buffer buffer ) {
-        if ( TaskListPlugin.DEBUG ) {
-            Log.log( Log.DEBUG, TaskListPlugin.class,
-                    "TaskListPlugin.clearTasks(" + buffer.toString() + ")" ); //##
+     * Remove all tasks relating to a given Buffer from the collection
+     * of Task objects maintained by the plugin.
+     *
+     * @param buffer the Buffer whose tasks are to be removed.
+     */
+    private static void clearTasks(Buffer buffer) {
+        if (TaskListPlugin.DEBUG) {
+            Log.log(Log.DEBUG, TaskListPlugin.class, "TaskListPlugin.clearTasks(" + buffer.toString() + ")");            // ##
         }
 
-        HashMap<Integer, Task> taskMap = bufferMap.get( buffer.getPath() );
+        HashMap<Integer, Task> taskMap = bufferMap.get(buffer.getPath());
 
-        if ( taskMap == null ) {
-            bufferMap.put( buffer.getPath(), new HashMap<Integer, Task>() );
+        if (taskMap == null) {
+            bufferMap.put(buffer.getPath(), new HashMap<Integer, Task>());
             return ;
         }
         taskMap.clear();
-    } //}}}
+    }    // }}}
 
-    //{{{ removeTask method
-    public static void removeTask( View view, Buffer buffer, Task task ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null ) {
+    // {{{ removeTask method
+    public static void removeTask(View view, Buffer buffer, Task task) {
+        if (buffer == null || buffer.isReadOnly() || task == null) {
             view.getToolkit().beep();
             return ;
         }
 
-        String text = buffer.getText( task.getStartPosition().getOffset(), task.getText().length() );
-        if ( !task.getText().equals( text ) ) {
-            GUIUtilities.error( view, "tasklist.buffer-changed", null );
+        String text = buffer.getText(task.getStartPosition().getOffset(), task.getText().length());
+        if (!task.getText().equals(text)) {
+            GUIUtilities.error(view, "tasklist.buffer-changed", null);
             return ;
         }
-        buffer.remove( task.getStartPosition().getOffset(), task.getText().length() );
+        buffer.remove(task.getStartPosition().getOffset(), task.getText().length());
 
-        send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
-    } //}}}
+        send(new ParseBufferMessage(view, buffer, ParseBufferMessage.DO_PARSE));
+    }    // }}}
 
-    //{{{ removeTaskTag method
-    public static void removeTag( View view, Buffer buffer, Task task ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null ) {
+    // {{{ removeTaskTag method
+    public static void removeTag(View view, Buffer buffer, Task task) {
+        if (buffer == null || buffer.isReadOnly() || task == null) {
             view.getToolkit().beep();
             return ;
         }
 
-        String text = buffer.getText( task.getStartPosition().getOffset(),
-                task.getIdentifier().length() );
-        if ( !task.getIdentifier().equals( text ) ) {
-            GUIUtilities.error( view, "tasklist.buffer-changed", null );
+        String text = buffer.getText(task.getStartPosition().getOffset(), task.getIdentifier().length());
+        if (!task.getIdentifier().equals(text)) {
+            GUIUtilities.error(view, "tasklist.buffer-changed", null);
             return ;
         }
-        buffer.remove( task.getStartPosition().getOffset(), task.getIdentifier().length() );
+        buffer.remove(task.getStartPosition().getOffset(), task.getIdentifier().length());
 
-        send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
-    } //}}}
+        send(new ParseBufferMessage(view, buffer, ParseBufferMessage.DO_PARSE));
+    }    // }}}
 
-    //{{{ replaceTaskTag() method
-    public static void replaceTag( View view, Buffer buffer, Task task, String newTag ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null ) {
+    // {{{ replaceTaskTag() method
+    public static void replaceTag(View view, Buffer buffer, Task task, String newTag) {
+        if (buffer == null || buffer.isReadOnly() || task == null) {
             view.getToolkit().beep();
             return ;
         }
 
-        String text = buffer.getText( task.getStartPosition().getOffset(), task.getIdentifier().length() );
-        if ( !task.getIdentifier().equals( text ) ) {
-            GUIUtilities.error( view, "tasklist.buffer-changed", null );
+        String text = buffer.getText(task.getStartPosition().getOffset(), task.getIdentifier().length());
+        if (!task.getIdentifier().equals(text)) {
+            GUIUtilities.error(view, "tasklist.buffer-changed", null);
             return ;
         }
         buffer.beginCompoundEdit();
-        buffer.remove( task.getStartPosition().getOffset(), task.getIdentifier().length() );
-        buffer.insert( task.getStartPosition().getOffset(), newTag );
+        buffer.remove(task.getStartPosition().getOffset(), task.getIdentifier().length());
+        buffer.insert(task.getStartPosition().getOffset(), newTag);
         buffer.endCompoundEdit();
 
-        send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
-    } //}}}
+        send(new ParseBufferMessage(view, buffer, ParseBufferMessage.DO_PARSE));
+    }    // }}}
 
     /**
      * Helper method to find the mode for the given file.  This is intended for
      * finding the mode of a temporary buffer.  Actual opened buffers already
      * have a mode.
      * @param file The file for a buffer.
+     * @param firstLine The first line of the file.
      * @return the mode of the buffer or null if not found in our list of
      * nodes we are allowed to parse.
      */
-     public static Mode getMode( String file ) { //File file ) {
-        if ( file == null ) {
+    public static Mode getMode(String file, String firstLine) {
+        if (file == null || firstLine == null) {
             return null;
         }
-        try {
-            if ( parseModes.size() == 0 ) {
-                loadParseModes();
-            }
-            String firstLine = null;
-            for ( Mode mode : parseModes ) {
-                if (mode.acceptFilename( file ) ) {
-                    return mode;
-                }
-                if ( firstLine == null ) {
-                    URI uri = new URI(file);
-                    if (uri.getScheme() == null) {
-                        uri = new URI("file:" + file);   
-                    }
-                    URL url = uri.toURL();
-                    BufferedReader reader = new BufferedReader( new InputStreamReader(url.openStream()) );//new FileReader( file ) );       // NOPMD
-                    firstLine = reader.readLine();
-                    reader.close();
-                }
-                if ( mode.acceptFirstLine( firstLine ) ) {
-                    return mode;
-                }
-            }
+        if (parseModes.isEmpty()) {
+            loadParseModes();
         }
-        catch ( Exception e ) {         // NOPMD
-            //e.printStackTrace();
-        }       
-        return null;
+        Mode modeForFile = ModeProvider.instance.getModeForFile(file, firstLine);
+        return parseModes.containsKey(modeForFile) ? modeForFile : null;
     }
 
     /**
@@ -733,27 +692,27 @@ public class TaskListPlugin extends EditPlugin {
      * selected in VFSBrowser.  If the selected file is a directory, it will be
      * recursed.
      */
-    public static void parse( View view, VFSBrowser browser ) {
-        if ( view == null || browser == null ) {
+    public static void parse(View view, VFSBrowser browser) {
+        if (view == null || browser == null) {
             return ;
         }
-        TaskList taskList = taskLists.get( view );
-        if ( taskList == null ) {
+        TaskList taskList = taskLists.get(view);
+        if (taskList == null) {
             return ;
         }
         VFSFile[] files = browser.getSelectedFiles();
-        if ( files == null || files.length == 0 ) {
+        if (files == null || files.length == 0) {
             return ;
         }
-        taskList.addTab( files[ 0 ].getName(), new FileTaskList( view, files ) );
-        view.getDockableWindowManager().showDockableWindow( "tasklist" );
+        taskList.addTab(files[0].getName(), new FileTaskList(view, files));
+        view.getDockableWindowManager().showDockableWindow("tasklist");
     }
 
     public static void addRunner(common.swingworker.SwingWorker runner) {
-        runners.add(runner);   
+        runners.add(runner);
     }
-    
+
     public static void removeRunner(common.swingworker.SwingWorker runner) {
-        runners.remove(runner);   
+        runners.remove(runner);
     }
 }

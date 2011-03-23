@@ -27,7 +27,6 @@ package tasklist;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Enumeration;
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -251,7 +250,7 @@ public class TaskListPopup extends JPopupMenu {
             Buffer buffer = jEdit.getBuffer( bufferPath );
             if ( buffer == null ) {
                 buffer = jEdit.openTemporary( view, null, bufferPath, false );
-                buffer.setMode( TaskListPlugin.getMode( bufferPath ) );
+                buffer.setMode( TaskListPlugin.getMode( bufferPath, buffer.getLineText(0) ) );
             }
 
             if ( "parse-buffer".equals( cmd ) ) {
