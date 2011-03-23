@@ -194,5 +194,3 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 	private JButton highlightColor;
 	//}}}
 }
-
-// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

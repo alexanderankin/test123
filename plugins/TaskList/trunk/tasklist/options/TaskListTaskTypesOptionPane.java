@@ -406,6 +406,11 @@ class TaskTypeDialog extends EnhancedDialog {
                     "task.sample-doesnt-match", null );
             return ;
         }
+        if ( match.groupCount() != 2) {
+            GUIUtilities.error( JOptionPane.getFrameForComponent( this ),
+                    "task.regex-error2", null );
+            return ;
+        }
         
         _name = match.group(1);
         name.setText(_name);
@@ -534,5 +539,3 @@ class IconListEntry {
     Icon icon;
     String name;
 } //}}}
-
-// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:
