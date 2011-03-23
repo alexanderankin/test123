@@ -60,6 +60,8 @@ public class TaskListPlugin extends EditPlugin {
 
     private static Color highlightColor = Color.blue;
     private static boolean allowSingleClickSelection = false;
+    
+    private static Set<common.swingworker.SwingWorker> runners = new HashSet<common.swingworker.SwingWorker>();
 
     //{{{ start() method
     /**
@@ -97,6 +99,10 @@ public class TaskListPlugin extends EditPlugin {
                 uninitTextArea( textArea );
             }
             view = view.getNext();
+        }
+        
+        for (common.swingworker.SwingWorker worker : runners) {
+            worker.cancel(true);   
         }
     } //}}}
 
@@ -590,6 +596,7 @@ public class TaskListPlugin extends EditPlugin {
         }
 
         Integer _line = Integer.valueOf( task.getLineIndex() );
+        /* TODO: is this check necessary?
         if ( taskMap.get( _line ) != null ) {
             Task prevTask = taskMap.get(_line);
             //if (!task.equals(prevTask)) {
@@ -598,7 +605,7 @@ public class TaskListPlugin extends EditPlugin {
                     + " of buffer: " + task.getBufferPath() ); //##
             //}
         }
-
+        */
         taskMap.put( _line, task );
     } //}}}
 
@@ -742,4 +749,11 @@ public class TaskListPlugin extends EditPlugin {
         view.getDockableWindowManager().showDockableWindow( "tasklist" );
     }
 
+    public static void addRunner(common.swingworker.SwingWorker runner) {
+        runners.add(runner);   
+    }
+    
+    public static void removeRunner(common.swingworker.SwingWorker runner) {
+        runners.remove(runner);   
+    }
 }

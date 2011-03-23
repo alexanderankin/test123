@@ -130,10 +130,13 @@ task.not-filled-out.message=You must fill out all fields in this dialog box
 
 task.regex-error.title=Regular Expression Error
 task.regex-error.message=Error compiling regular expression: \n\n{0}
+task.regex-error2.title=Regular Expression Error
+task.regex-error2.message=Regular expression must contain 2 groups,\nfirst group is task name\nsecond group is task comment.	
 
 task.sample-doesnt-match.title=Pattern doesn't match sample
 task.sample-doesnt-match.message=Regular expression is valid, but doesn't \
 	match the sample text
+	
 	
 # toolbar text and tooltips
 tasklist.toolbar.refresh=Refresh
