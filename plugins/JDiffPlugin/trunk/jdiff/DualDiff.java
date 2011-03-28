@@ -696,7 +696,179 @@ public class DualDiff implements EBComponent {
             textArea1.getToolkit().beep();
         }
     }
+    
+    protected void firstDiff0() {
+        Diff.Change hunk = edits;
+        int line = hunk.first0;
+        
+        // move caret to start of diff hunk
+        int caret_position = textArea0.getLineStartOffset(line);
+        textArea0.setCaretPosition(caret_position, false);
+        
+        // scroll so line is visible
+        int visibleLines = textArea0.getVisibleLines();
+        int leftLineCount = textArea0.getLineCount();
+        int distance = 1;
+        if (line > leftLineCount - visibleLines) {
+            textArea0.setFirstLine(leftLineCount - visibleLines);
+            distance = line - (leftLineCount - visibleLines);
+        } else {
+            textArea0.setFirstLine(line - 1);
+        }
 
+        // move caret in other text area to start of diff hunk
+        // and scroll to it
+        caret_position = textArea1.getLineStartOffset(hunk.first1);
+        textArea1.setCaretPosition(caret_position, false);
+        textArea1.setFirstLine(hunk.first1 - distance);
+
+        // maybe move the caret to the first actual diff character
+        if (jEdit.getBooleanProperty(DualDiffManager.HORIZ_SCROLL)) {
+            DualDiffUtil.centerOnDiff(textArea0, textArea1);
+
+            // maybe select the first diff word
+            if (jEdit.getBooleanProperty(DualDiffManager.SELECT_WORD)) {
+                textArea0.selectWord();
+                textArea1.selectWord();
+            }
+        }
+
+        if (textArea0.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
+            textArea0.getToolkit().beep();
+        }
+    }
+    
+    protected void firstDiff1() {
+        Diff.Change hunk = edits;
+        int line = hunk.first1;
+        
+        // move caret to start of diff hunk
+        int caret_position = textArea1.getLineStartOffset(line);
+        textArea1.setCaretPosition(caret_position, false);
+        
+        // scroll so line is visible
+        int visibleLines = textArea1.getVisibleLines();
+        int leftLineCount = textArea1.getLineCount();
+        int distance = 1;
+        if (line > leftLineCount - visibleLines) {
+            textArea1.setFirstLine(leftLineCount - visibleLines);
+            distance = line - (leftLineCount - visibleLines);
+        } else {
+            textArea1.setFirstLine(line - 1);
+        }
+
+        // move caret in other text area to start of diff hunk
+        // and scroll to it
+        caret_position = textArea0.getLineStartOffset(hunk.first0);
+        textArea0.setCaretPosition(caret_position, false);
+        textArea0.setFirstLine(hunk.first0 - distance);
+
+        // maybe move the caret to the first actual diff character
+        if (jEdit.getBooleanProperty(DualDiffManager.HORIZ_SCROLL)) {
+            DualDiffUtil.centerOnDiff(textArea0, textArea1);
+
+            // maybe select the first diff word
+            if (jEdit.getBooleanProperty(DualDiffManager.SELECT_WORD)) {
+                textArea0.selectWord();
+                textArea1.selectWord();
+            }
+        }
+
+        if (textArea1.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
+            textArea1.getToolkit().beep();
+        }
+    }
+    
+    protected void lastDiff0() {
+        Diff.Change hunk = edits;
+        while(hunk.next != null) {
+            hunk = hunk.next;   
+        }
+        
+        int line = hunk.first0;
+        
+        // move caret to start of diff hunk
+        int caret_position = textArea0.getLineStartOffset(line);
+        textArea0.setCaretPosition(caret_position, false);
+        
+        // scroll so line is visible
+        int visibleLines = textArea0.getVisibleLines();
+        int leftLineCount = textArea0.getLineCount();
+        int distance = 1;
+        if (line > leftLineCount - visibleLines) {
+            textArea0.setFirstLine(leftLineCount - visibleLines);
+            distance = line - (leftLineCount - visibleLines);
+        } else {
+            textArea0.setFirstLine(line - 1);
+        }
+
+        // move caret in other text area to start of diff hunk
+        // and scroll to it
+        caret_position = textArea1.getLineStartOffset(hunk.first1);
+        textArea1.setCaretPosition(caret_position, false);
+        textArea1.setFirstLine(hunk.first1 - distance);
+
+        // maybe move the caret to the first actual diff character
+        if (jEdit.getBooleanProperty(DualDiffManager.HORIZ_SCROLL)) {
+            DualDiffUtil.centerOnDiff(textArea0, textArea1);
+
+            // maybe select the first diff word
+            if (jEdit.getBooleanProperty(DualDiffManager.SELECT_WORD)) {
+                textArea0.selectWord();
+                textArea1.selectWord();
+            }
+        }
+
+        if (textArea0.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
+            textArea0.getToolkit().beep();
+        }
+    }
+    
+    protected void lastDiff1() {
+        Diff.Change hunk = edits;
+        while(hunk.next != null) {
+            hunk = hunk.next;   
+        }
+        
+        int line = hunk.first1;
+        
+        // move caret to start of diff hunk
+        int caret_position = textArea1.getLineStartOffset(line);
+        textArea1.setCaretPosition(caret_position, false);
+        
+        // scroll so line is visible
+        int visibleLines = textArea1.getVisibleLines();
+        int leftLineCount = textArea1.getLineCount();
+        int distance = 1;
+        if (line > leftLineCount - visibleLines) {
+            textArea1.setFirstLine(leftLineCount - visibleLines);
+            distance = line - (leftLineCount - visibleLines);
+        } else {
+            textArea1.setFirstLine(line - 1);
+        }
+
+        // move caret in other text area to start of diff hunk
+        // and scroll to it
+        caret_position = textArea0.getLineStartOffset(hunk.first0);
+        textArea0.setCaretPosition(caret_position, false);
+        textArea0.setFirstLine(hunk.first0 - distance);
+
+        // maybe move the caret to the first actual diff character
+        if (jEdit.getBooleanProperty(DualDiffManager.HORIZ_SCROLL)) {
+            DualDiffUtil.centerOnDiff(textArea0, textArea1);
+
+            // maybe select the first diff word
+            if (jEdit.getBooleanProperty(DualDiffManager.SELECT_WORD)) {
+                textArea0.selectWord();
+                textArea1.selectWord();
+            }
+        }
+
+        if (textArea1.getFirstLine() != line && jEdit.getBooleanProperty(DualDiffManager.BEEP_ON_ERROR)) {
+            textArea1.getToolkit().beep();
+        }
+    }
+    
     /**
      * Using the given EditPane as a basis, moves the hunk corresponding to the
      * caret line of the given EditPane from the left text area to the right
