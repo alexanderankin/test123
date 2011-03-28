@@ -88,6 +88,19 @@
         </CODE>
     </ACTION>
 
+    <ACTION NAME="jdiff.first-diff">
+        <CODE>
+            jdiff.DualDiffManager.firstDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.last-diff">
+        <CODE>
+            jdiff.DualDiffManager.lastDiff(editPane);
+        </CODE>
+    </ACTION>
+
 
     <ACTION NAME="jdiff.diff-normal-output">
         <CODE>

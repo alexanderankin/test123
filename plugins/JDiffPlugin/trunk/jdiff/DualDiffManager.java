@@ -413,6 +413,62 @@ public class DualDiffManager {
             }
         }
     }
+    
+    /**
+     * Move to the first diff.    
+     */
+    public static void firstDiff(EditPane editPane) {
+        if ( editPane == null ) {
+            return ;
+        }
+        DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
+        if ( dualDiff == null ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
+                editPane.getToolkit().beep();
+            }
+            return ;
+        }
+
+        if ( editPane.equals( dualDiff.getEditPane0() ) ) {
+            dualDiff.firstDiff0();
+        }
+        else if ( editPane.equals( dualDiff.getEditPane1() ) ) {
+            dualDiff.firstDiff1();
+        }
+        else {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
+                editPane.getToolkit().beep();
+            }
+        }
+    }
+    
+    /**
+     * Move to the last diff.    
+     */
+    public static void lastDiff(EditPane editPane) {
+        if ( editPane == null ) {
+            return ;
+        }
+        DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
+        if ( dualDiff == null ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
+                editPane.getToolkit().beep();
+            }
+            return ;
+        }
+
+        if ( editPane.equals( dualDiff.getEditPane0() ) ) {
+            dualDiff.lastDiff0();
+        }
+        else if ( editPane.equals( dualDiff.getEditPane1() ) ) {
+            dualDiff.lastDiff1();
+        }
+        else {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
+                editPane.getToolkit().beep();
+            }
+        }
+    }
 
     /**
      * Moves the current diff hunk from the left text area to the right text area.
