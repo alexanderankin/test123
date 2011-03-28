@@ -55,7 +55,7 @@ public class OpenBuffersTaskList extends AbstractTreeTaskList {
     @Override
     protected List<String> getBuffersToScan() {
         // fetch all open buffers
-        List<String> openBuffers = new ArrayList<String>();
+        Set<String> openBuffers = new HashSet<String>();
         EditPane[] editPanes = view.getEditPanes();
         for ( EditPane editPane : editPanes ) {
             Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
@@ -63,6 +63,6 @@ public class OpenBuffersTaskList extends AbstractTreeTaskList {
                 openBuffers.add( buffer.getPath() );
             }
         }
-        return openBuffers;
+        return new ArrayList<String>(openBuffers);
     }
 }

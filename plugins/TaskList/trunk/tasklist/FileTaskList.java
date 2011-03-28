@@ -36,9 +36,10 @@ import common.swingworker.*;
 public class FileTaskList extends AbstractTreeTaskList {
 
     private VFSFile[] files = null;
-    public FileTaskList(View view, VFSFile[] files) {
+    public FileTaskList(View view, VFSFile[] vfsFiles) {
         super(view, jEdit.getProperty("tasklist.files.files", "Files:"));
-        this.files = files;
+        files = new VFSFile[vfsFiles.length];
+        System.arraycopy(vfsFiles, 0, files, 0, vfsFiles.length);
         loadFiles();
     }
 
@@ -48,17 +49,17 @@ public class FileTaskList extends AbstractTreeTaskList {
             return null;   
         }
 
-        List<String> paths = new ArrayList<String>();
+        Set<String> paths = new HashSet<String>();
         for (VFSFile file : files) {
             if (file != null) {
                 findPaths(file, paths);
             }
         }
 
-        return paths;
+        return new ArrayList<String>(paths);
     }
     
-    private void findPaths(VFSFile file, List<String> paths) {
+    private void findPaths(VFSFile file, Set<String> paths) {
         if (file.getType() == VFSFile.FILE) {
             paths.add(file.getPath());   
         }
