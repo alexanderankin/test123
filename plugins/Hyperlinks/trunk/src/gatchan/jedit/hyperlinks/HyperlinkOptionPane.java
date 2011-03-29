@@ -23,16 +23,14 @@
 package gatchan.jedit.hyperlinks;
 
 //{{{ Imports
-
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.StringList;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Arrays;
 //}}}
 
@@ -54,7 +52,7 @@ public class HyperlinkOptionPane extends AbstractOptionPane
 	{
 		hyperlinkColor = new ColorWellButton(jEdit.getColorProperty("options.hyperlink.color.value"));
 		String[] serviceNames = ServiceManager.getServiceNames(HyperlinkSource.SERVICE);
-		Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
+		Arrays.sort(serviceNames, new StandardUtilities.StringCompare(true));
 		StringList sl = new StringList();
 		sl.add(HyperlinkSource.NONE);
 		sl.addAll(serviceNames);
