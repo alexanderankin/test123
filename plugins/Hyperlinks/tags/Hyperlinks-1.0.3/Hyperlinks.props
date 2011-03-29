@@ -1,0 +1,29 @@
+# Hyperlinks jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.activate=startup
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.name=Hyperlinks
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.author=Matthieu Casanova
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.version=1.0.3
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.docs=docs/Hyperlinks.html
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.depend.0=jdk 1.5
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.depend.1=jedit 04.03.99.00
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.description=The hyperlink plugin will allow the textarea to have hyperlinks inside.
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.usePluginHome=true
+
+# Option pane
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.option-group=hyperlink hyperlink.source
+
+options.hyperlink.label=General
+options.hyperlink.code=new gatchan.jedit.hyperlinks.HyperlinkOptionPane();
+
+
+options.hyperlink.source.label=Sources
+options.hyperlink.source.code=new gatchan.jedit.hyperlinks.HyperlinkSourceOptionPane();
+options.hyperlink.source.source=Source
+
+options.hyperlink.color.label=Color
+options.hyperlink.color.value=#3333ff
+
+hyperlink.defaultSource.label=Default source
+hyperlink.defaultSource=None
