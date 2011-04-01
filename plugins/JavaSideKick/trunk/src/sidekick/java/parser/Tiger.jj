@@ -3501,8 +3501,8 @@ BlockNode ForStatement():
       start_t="for" "("
 
       (
-          LOOKAHEAD(Type() <IDENTIFIER> ":")
-          Type() <IDENTIFIER> ":" exp_a=Expression()
+          LOOKAHEAD([ "final" ] Type() <IDENTIFIER> ":")
+          [ "final" ] Type() <IDENTIFIER> ":" exp_a=Expression()
         |
          [ exp_a=ForInit() ] ";" [ exp_b=Expression() ] ";" [ ForUpdate() ]
       )
