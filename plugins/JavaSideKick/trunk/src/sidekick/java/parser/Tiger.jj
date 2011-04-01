@@ -2179,6 +2179,8 @@ Type ClassOrInterfaceType():
             s.setStartLocation(getLocation(t));
             s.setEndLocation(getEndLocation(t));
           }
+          // checks for types with package names, like com.whatever.MyClass as
+          // opposed to just MyClass, which is covered in the block above
           ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_args=TypeArguments() ]
               {
                 Type a = new Type();
@@ -2189,13 +2191,11 @@ Type ClassOrInterfaceType():
                 s.addChild(a);
                 s.setEndLocation(getEndLocation(t));
 
-                /*
                 s.type += "." + t.image;
                 if (type_args != null) {
                     s.typeArgs = "<" + toString(type_args) + ">";
                 }
                 s.setEndLocation(new Location(t.endLine, t.endColumn));
-                */
               }
           )*
         )
