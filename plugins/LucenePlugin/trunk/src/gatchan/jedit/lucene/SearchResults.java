@@ -67,6 +67,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private final JLabel maxResultsLabel;
 	private boolean shortLabels;
 	private ActionListener indexActionListener;
+	private JCheckBox extendedOptions;
+	private JPanel searchOptions;
 
 	public SearchResults(View v)
 	{
@@ -93,22 +95,36 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		indexModel = new IndexComboBoxModel(items);
 		indexes = new JComboBox(indexModel);
 		indexes.setToolTipText(jEdit.getProperty("lucene.index-combo.tooltip"));
+		extendedOptions = new JCheckBox(jEdit.getProperty("lucene.extendedoptions.long"));
+		extendedOptions.setSelected(jEdit.getBooleanProperty("lucene.extendedoptions"));
+		extendedOptions.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				searchOptions.setVisible(extendedOptions.isSelected());
+				jEdit.setBooleanProperty("lucene.extendedoptions", extendedOptions.isSelected());
+			}
+		});
 		indexActionListener = new ActionListener()
 		{
 			private Index prevIndex;
 			private ActivityListener listener = new ActivityListener()
 			{
+				@Override
 				public void indexingEnded(Index index)
 				{
 					indexStatus.setText(MESSAGE_IDLE);
 					indexStatus.setToolTipText(MESSAGE_IDLE);
 				}
+				@Override
 				public void indexingStarted(Index index)
 				{				 
 					indexStatus.setText(MESSAGE_INDEXING);
 					indexStatus.setToolTipText(jEdit.getProperty("task.progress.tooltip", "See Utilities - Troubleshooting - Task Monitor for progress"));
 				}
 			}; 
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				Index index = getSelectedIndex();
@@ -140,6 +156,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			"hypersearch-results.clear.label"));
 		clear.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				model.setFiles(Collections.emptyList());
@@ -151,6 +168,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			"hypersearch-results.multi.label"));
 		multi.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				toggleMultiStatus();
@@ -168,6 +186,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 		{
+			@Override
 			public void valueChanged(ListSelectionEvent e)
 			{
 				Object obj = list.getSelectedValue();
@@ -210,6 +229,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		maxResults.addChangeListener(new ChangeListener()
 		{
+			@Override
 			public void stateChanged(ChangeEvent e)
 			{
 				if (searchField.getText().length() != 0)
@@ -237,11 +257,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 					JMenuItem refresh = new JMenuItem("refresh");
 					refresh.addActionListener(new ActionListener()
 					{
+						@Override
 						public void actionPerformed(ActionEvent e)
 						{
 							String selectedIndex = (String) indexes.getSelectedItem();
 							Task task = new ReindexTask(selectedIndex, new Runnable()
 							{
+								@Override
 								public void run()
 								{
 									indexes.setEnabled(true);
@@ -273,7 +295,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		if (horizontal)
 		{
 			JPanel searchPanel = new JPanel(new BorderLayout());
-			add(searchPanel, BorderLayout.NORTH);
+
 			searchPanel.add(textLabel, BorderLayout.WEST);
 			JPanel searchFieldContainer = new JPanel();
 			searchFieldContainer.setLayout(new BoxLayout(searchFieldContainer,
@@ -284,61 +306,67 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			searchPanel.add(searchFieldContainer, BorderLayout.CENTER);
 			JPanel p = new JPanel();
 			searchPanel.add(BorderLayout.EAST, p);
-			p.add(fileTypeLabel);
-			p.add(type);
-			p.add(lineResults);
-			p.add(maxResultsLabel);
-			p.add(maxResults);
-			p.add(filterComments);
-			p.add(filterLiterals);
 			p.add(indexes);
 			p.add(clear);
 			p.add(multi);
 			p.add(indexStatus);
+
+			p.add(extendedOptions);
+			searchOptions = new JPanel(new FlowLayout(FlowLayout.LEADING));
+			searchOptions.add(lineResults);
+			searchOptions.add(fileTypeLabel);
+			searchOptions.add(type);
+			searchOptions.add(lineResults);
+			searchOptions.add(maxResultsLabel);
+			searchOptions.add(maxResults);
+			searchOptions.add(filterComments);
+			searchOptions.add(filterLiterals);
+			searchOptions.setVisible(extendedOptions.isSelected());
+			searchPanel.add(searchOptions, BorderLayout.SOUTH);
+			add(searchPanel, BorderLayout.NORTH);
 		}
 		else
 		{
-			JPanel searchPanel = new JPanel();
-			searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
-			add(searchPanel, BorderLayout.NORTH);
-			JPanel p = new JPanel(new BorderLayout());
-			searchPanel.add(p);
-			p.add(textLabel, BorderLayout.WEST);
-			p.add(searchField, BorderLayout.CENTER);
-			p = new JPanel(new BorderLayout());
-			searchPanel.add(p);
 			JPanel typePanel = new JPanel();
 			typePanel.add(fileTypeLabel, BorderLayout.WEST);
 			typePanel.add(type, BorderLayout.CENTER);
-			p.add(typePanel, BorderLayout.WEST);
-			p.add(new JPanel(), BorderLayout.CENTER);
-			p = new JPanel(new BorderLayout());
-			searchPanel.add(p, BorderLayout.CENTER);
-			p.add(lineResults);
-			p = new JPanel(new BorderLayout());
-			searchPanel.add(p);
+
 			JPanel maxResultsPanel = new JPanel();
 			maxResultsPanel.add(maxResultsLabel, BorderLayout.WEST);
 			maxResultsPanel.add(maxResults, BorderLayout.CENTER);
-			p.add(maxResultsPanel, BorderLayout.WEST);
-			p.add(new JPanel(), BorderLayout.CENTER);
-			JPanel filterPanel = new JPanel();
-			searchPanel.add(filterPanel);
+
+			JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
 			filterPanel.add(filterComments);
 			filterPanel.add(filterLiterals);
-			JPanel bottom = new JPanel(new BorderLayout());
-			searchPanel.add(bottom);
-			p = new JPanel();
-			bottom.add(p, BorderLayout.WEST);
-			p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
-			p.add(new JPanel());
-			p.add(indexes);
-			p.add(new JPanel());
-			p = new JPanel();
+
+			searchOptions = new JPanel();
+			searchOptions.setLayout(new BoxLayout(searchOptions, BoxLayout.Y_AXIS));
+
+			searchOptions.add(filterPanel);
+			searchOptions.add(typePanel);
+			searchOptions.add(lineResults);
+			searchOptions.add(maxResultsPanel);
+			searchOptions.setVisible(extendedOptions.isSelected());
+
+			JPanel searchPanel = new JPanel();
+			searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
+			add(searchPanel, BorderLayout.NORTH);
+
+			JPanel p = new JPanel(new BorderLayout());
+			p.add(textLabel, BorderLayout.WEST);
+			p.add(searchField, BorderLayout.CENTER);
+
+			searchPanel.add(p);
+
+			searchPanel.add(indexes);
+			p = new JPanel(new FlowLayout(FlowLayout.LEADING));
+
 			p.add(clear);
 			p.add(multi);
 			p.add(indexStatus);
-			bottom.add(p, BorderLayout.EAST);
+			p.add(extendedOptions);
+			searchPanel.add(p);
+			searchPanel.add(searchOptions);
 		}
 		revalidate();
 	}
