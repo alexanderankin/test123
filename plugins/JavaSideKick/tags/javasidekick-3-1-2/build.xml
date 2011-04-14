@@ -1,0 +1,278 @@
+<project name="JavaSideKick" default="dist" basedir=".">
+    <echo>${java.home}</echo>
+    <!-- read build.props to override properties set below -->
+
+    <property file="${user.home}/build.properties" />
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+    <property file="JavaSideKick.props"/>
+
+    <!-- default location of jedit.jar -->
+    <property name="jedit.install.dir"  value="../.."/>
+
+
+    <!-- jar name -->
+    <property name="jar.name" value="${ant.project.name}.jar"/>
+
+    <!-- version number -->
+    <property name="build.num" value="${plugin.sidekick.java.JavaSideKickPlugin.version}"/>
+
+    <!-- where to put the finished plugin -->
+    <property name="install.dir" value=".." />
+    
+    <!-- where plugin dependencies are -->
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+
+    <!-- source code directory, this is where the .java files live -->
+    <property name="src.dir" location="src" />
+
+    <!-- parser source code directory, this is where the .jj file lives -->
+    <property name="parser.src.dir" location="${src.dir}/sidekick/java/parser"/>
+
+    <!-- temporary directory for post-compile processing -->
+    <property name="temp" location="temp"/>
+
+    <!-- configuration directory, this is where the configuration files for the
+      plugin are placed for additional processing prior to getting jarred. -->
+    <property name="config.dir" location="${temp}/config" />
+
+    <!-- documentation directory, this is where the plugin documentation
+      files live. Files in this directory will be distributed with the plugin -->
+    <property name="doc.dir" location="${temp}/docs" />
+
+    <!-- the directory for the compiled classes. Files in this directory will be
+      included in the finished jar file. -->
+    <property name="classes.dir" location="${temp}/classes" />
+
+    <!-- partial path for icons, relative to src or classes directories -->
+    <property name="icons" value="sidekick/java/icons"/>
+
+
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
+    
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+   <target name="setClasspath">
+      <path id="classpathref">
+         <!-- required locations/jars -->
+         <pathelement location="${classes.dir}" />
+         <pathelement path="${java.class.path}"/>
+
+         <!-- required for jEdit plugin -->
+         <pathelement location="${jedit.install.dir}/jedit.jar" />
+
+         <!-- dependencies -->
+         <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+         <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+         <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+         <pathelement location="${jedit.plugins.dir}/SuperAbbrevs.jar"/>
+		 <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
+         <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+      </path>
+   </target>
+
+   <!-- ========================================================================
+      Target: compile
+   ========================================================================= -->
+    <target name="compile"
+            description="Compile"
+            depends="init,setClasspath">
+        <javac deprecation="on"
+               debug="on"
+               nowarn="on"
+               destdir="${classes.dir}"
+               srcdir="${src.dir}"
+               target="1.5"
+               source="1.5">
+            <!-- compilerarg value="-Xlint:unchecked"/ -->
+            <classpath refid="classpathref" />
+            <exclude name="**/obsolete/*"/>
+        </javac>
+         <copy todir="${classes.dir}/${icons}" overwrite="no">
+            <fileset dir="${src.dir}/${icons}">
+               <include name="**/*"/>
+            </fileset>
+         </copy>
+         <copy todir="${classes.dir}/docs" overwrite="no">
+            <fileset dir="${src.dir}/docs">
+               <include name="**/*"/>
+            </fileset>
+         </copy>
+    </target>
+
+   <!-- ========================================================================
+      Target: javacc clean and create
+   ========================================================================= -->
+  <target name="javacc_clean">
+    <delete>
+      <fileset dir="${parser.src.dir}">
+         <include name="JavaParser.java"/>
+         <include name="JavaParserTokenManager.java"/>
+         <include name="JavaParserConstants.java"/>
+         <include name="*CharStream*.java"/>
+         <include name="TokenMgrError.java"/>
+         <include name="ParseException.java"/>
+      </fileset>
+    </delete>
+  </target>
+
+   <target name="javacc" depends="javacc_clean" description="Run javacc">
+      <available file="${javacc}" property="javacc.present"/>
+      <fail unless="javacc.present" message="Javacc not found."/>
+
+      <exec dir="${parser.src.dir}" executable="${javacc}">
+         <arg value="${parser.src.dir}/Tiger.jj"/>
+      </exec>
+      <exec dir="${src.dir}/sidekick/property/parser/property" executable="${javacc}">
+         <arg value="${src.dir}/sidekick/property/parser/property/PropertyParser.jj"/>
+      </exec>
+
+   </target>
+
+
+   <!-- ========================================================================
+      Target: dist
+      creates jar file suitable for dropping into jEdit, and puts it up one
+      directory level
+   ========================================================================= -->
+    <target name="dist"
+            description="Compiles, jars, puts the jar in the jEdit jars directory."
+            depends="init,compile,prep_files">
+
+
+        <!-- make the plugin jar file -->
+        <tstamp/>
+        <jar jarfile="${install.dir}/${ant.project.name}.jar">
+            <manifest>
+                <attribute name="AppName" value="${ant.project.name}" />
+                <attribute name="AppVersion" value="${build.num}" />
+                <attribute name="Author" value="Dale Anson" />
+                <attribute name="Created-By" value="${user.name}" />
+                <attribute name="Created-On" value="${TODAY}"/>
+            </manifest>
+
+            <!-- include everything in the build directory -->
+            <fileset dir="${classes.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include everything in the config directory-->
+            <fileset dir="${config.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include everything in the doc directory -->
+            <fileset dir="${doc.dir}">
+                <include name="**/*" />
+            </fileset>
+        </jar>
+
+        <antcall target="reload"/>
+
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${ant.project.name}.jar</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
+    </target>
+
+   <!-- ========================================================================
+      Target: prep_files
+      prepares certain files for distribution by doing string replacement.
+      Assumes that the configuration files and documentation files are ready.
+   ========================================================================= -->
+    <target name="prep_files">
+        <echo>preparing files</echo>
+        <!-- clean out the config and doc deployment directories -->
+        <delete>
+            <fileset dir="${config.dir}" includes="**/*"/>
+            <fileset dir="${doc.dir}" includes="**/*"/>
+        </delete>
+
+        <!-- copy the config  files to deployment directory
+        CHANGED: apparently, having a 'src/config' directory to hold the configuration
+        files is too confusing, so now they are dumped in basedir, along with
+        any other crud that may or may not be part of the deployment package.
+        Now need to explicitly name the proper files, so we don't pick up the
+        crud.
+        -->
+        <copy todir="${config.dir}">
+            <fileset dir="${basedir}">
+                <include name="JavaSideKick.props"/>
+                <include name="actions.xml"/>
+                <include name="services.xml"/>
+            </fileset>
+        </copy>
+
+        <!-- copy the docs -->
+        <copy todir="${doc.dir}/docs" overwrite="yes">
+            <fileset dir="${src.dir}/docs">
+               <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <!-- insert the build number into the documentation and configuration
+        files -->
+        <!-- CHANGED: don't do this, the python build system for jEdit gets
+        confused if the build number isn't present BEFORE the build, so need
+        to change it by hand everytime there is a new release.
+        <replace dir="${config.dir}" token="@@build.num@@"
+            value="${build.num}" />
+        -->
+        <replace dir="${doc.dir}" token="@@build.num@@"
+            value="${build.num}" />
+        <tstamp/>
+        <replace dir="${doc.dir}" token="@@tstamp@@"
+            value="${TODAY}" />
+    </target>
+
+   <!-- ========================================================================
+      Target: clean
+      deletes all files from the temp directory
+   ========================================================================= -->
+   <target name="clean" description="Delete all files from the classes directory.">
+        <!-- delete old directories that may still be hanging around.  These
+        caused some confusion. -->
+        <delete dir="config"/>
+        <delete dir="docs"/>
+        <delete dir="${temp}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${doc.dir}" />
+        <mkdir dir="${config.dir}" />
+   </target>
+
+   <!-- ========================================================================
+      Target: init
+      this target creates the directories needed for this project and
+      only needs to be done once.
+   ========================================================================= -->
+    <target name="init"
+            description="Create directory structure.">
+        <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
+        <mkdir dir="${src.dir}" />
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${doc.dir}" />
+        <mkdir dir="${config.dir}" />
+        <mkdir dir="${install.dir}" />
+    </target>
+
+
+
+
+   <target name="run"
+           description="Run the application."
+           depends="setClasspath">
+      <java classname="sidekick.java.node.IconBlenderTest" fork="true">
+         <classpath refid="classpathref"/>
+      </java>
+   </target>
+
+
+</project>
