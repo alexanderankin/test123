@@ -45,7 +45,7 @@ public class JavaCompletionFinder {
 	private JavaSideKickParsedData data = null;
 	private EditPane editPane = null;
 	private int caret = 0;
-	
+
 	public JavaCompletion complete( EditPane editPane, int caret ) {
 		this.editPane = editPane;
 		this.caret = caret;
@@ -147,7 +147,7 @@ public class JavaCompletionFinder {
 					}
 				} else {
 					// Ignore special tokens, like "super" and "this"
-					if (!"super".equals(tokenText) && !"this".equals(tokenText)) {
+					if (!"super".equals(tokenText) && !"this".equals(tokenText) && !"class".equals(tokenText)) {
 						start = i+1;
 						break;
 					}
@@ -325,7 +325,13 @@ public class JavaCompletionFinder {
 		// Break it down into tokens to allow for completion off a return type
 		// e.g. sb.append("hello").append("world")
 		Class c = null;
+		TigerNode parent = null;
 		boolean static_only = false;
+
+		// Get the class node that contains this asset
+		parent = (TigerNode) data.getAssetAtOffset(caret);
+		while (parent.getParent() != null && parent.getOrdinal() != TigerNode.CLASS)
+			parent = parent.getParent();
 
 		// Tokenize by qualifications
 		// We create a temporary buffer object to make use of the findMatchingBracket() method
@@ -366,58 +372,37 @@ public class JavaCompletionFinder {
 		//    and use the return type instead
 		String token = "";
 
+		// if 'this' is the first token, pop it off.
+		// it should be ignored
+		if (list.get(0).equals("this"))
+			list.remove(0);
+
 		for (j = 0; j<list.size(); j++) {
 			if (j>0) token += ".";
 			String newToken = list.get(j);
 			if (newToken.equals("this")) {
 				if (c != null) {
+					// Switch from static methods to instance methods
 					static_only = false;
 					token += "this";
+					continue;
 				} else {
 					// If 'this' is not the first word,
 					// and no class has been found yet,
 					// do nothing. There is nothing to do.
-					if (token.length() > 0) {
-						return null;
-					}
-
-					if (c == null) {
-						// Check the class node
-						TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-						while ( tn.getOrdinal() != TigerNode.CLASS ) {
-							if ( tn.getParent() != null )
-								tn = tn.getParent();
-							else
-								continue; // shouldn't get here
-						}
-
-						// Advance past 'this' and get the next token
-						j++;
-						newToken = list.get(j);
-						// Search through the current class for the field/method called 'newToken'
-						for (int k = 0; k < tn.getChildCount(); k++) {
-							TigerNode child = tn.getChildAt(k);
-							if (newToken.equals(child.getName())) {
-								try {
-									if (child instanceof FieldNode) {
-										FieldNode field = (FieldNode) child;
-										c = getClassForType(field.getType(), (CUNode) data.root.getUserObject());
-									} else if (child instanceof MethodNode) {
-										MethodNode method = (MethodNode) child;
-										c = getClassForType(method.getReturnType().getName(),
-												(CUNode) data.root.getUserObject());
-									}
-								} catch (Exception e) {}
-							}
-						}
-						if (c == null) {
-							// This might fail with filtering; if the name isn't exact, c would be null
-							return null;
-						}
-					}
+					return null;
 				}
-				continue;
+			} else if (newToken.equals("class")) {
+				// Use 'Class'
+				try {
+					c = Class.forName("java.lang.Class");
+					static_only = false;
+					break;
+				} catch (ClassNotFoundException e) {
+					org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.ERROR, this, "Whoops! java.lang.Class does not exist!");
+				}
 			}
+
 			if (c == null) {
 				token += newToken;
 				// Class?
@@ -449,6 +434,11 @@ public class JavaCompletionFinder {
 							ClassNode classNode = getLocalClass(token);
 							if (classNode != null) {
 								c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
+							}
+
+							if (c == null && parent.getOrdinal() == TigerNode.CLASS) {
+								Class sc = getSuperclassForNode((ClassNode) parent);
+								c = getClassForToken(sc, token);
 							}
 
 							if (c == null) {
@@ -667,31 +657,61 @@ public class JavaCompletionFinder {
 		return null;
 	}
 
+	/**
+	 * Given a class node, return the first extends node, if any
+	 * @param cn the class node
+	 * @return an ExtendsNode object if one exists, otherwise null
+	 */
+	public ExtendsNode getExtendsNode(ClassNode cn) {
+		for (int i = 0; i<cn.getChildCount(); i++) {
+			TigerNode tn = cn.getChildAt(i);
+			if (tn.getOrdinal() == TigerNode.EXTENDS)
+				return (ExtendsNode) tn;
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the superclass Class object for the given class node
+	 * @param cn the class node
+	 * @return the Class object for cn's superclass; defaults to Object if none is found
+	 */
 	public Class getSuperclassForNode(ClassNode cn) {
 		Class c = null;
-		try {
-			ExtendsNode superclass = (ExtendsNode) cn.getChildAt(0);
+		ExtendsNode superclass = getExtendsNode(cn);
+		if (superclass != null)
 			c = getClassForType(superclass.getName(), (CUNode) data.root.getUserObject());
-		} catch (Exception e) {
-			// There either wasn't a child node, or it wasn't an extended class
-			// First, see if it can be located through getClassForType
-			c = getClassForType( cn.getName(), ( CUNode ) data.root.getUserObject() );
-			if (c != null) {
+		else {
+			c = getClassForType(cn.getName(), (CUNode) data.root.getUserObject());
+			if (c != null)
 				c = c.getSuperclass();
-			}
-			if (c == null) {
-				// Default to Object, since it's the all-powerful superclass
-				try {
-					c = Class.forName("java.lang.Object");
-				} catch (Exception e2) {
-					// Something went seriously wrong
-					e2.printStackTrace();
-					return null;
-				}
-			}
-		} finally {
-			return c;
 		}
+		
+		if (c == null) {
+			try {
+				c = Class.forName("java.lang.Object");
+			}
+			catch (Exception e) {
+				// Something went seriously wrong
+				e.printStackTrace();
+			}
+		}
+
+		return c;
+	}
+
+	/**
+	 * Returns the superclass' class node for the given node
+	 * @param cn the class node
+	 * @return the class node that the given node extends, if any
+	 */
+	public ClassNode getSuperclassNodeForNode(ClassNode cn) {
+		ExtendsNode en = getExtendsNode(cn);
+		if (en != null) {
+			// TODO: support completion on classes extending another parsed class
+			return null;
+		}
+		return null;
 	}
 
 	// returns a completion containing a list of fields and methods contained by
@@ -751,21 +771,39 @@ public class JavaCompletionFinder {
 				return null;    // shouldn't get here
 		}
 
+		Set members = new TreeSet();
+
 		// get the members (fields and methods) for the class node
 		List m = getMembersForClass( ( ClassNode ) tn, word );
-		if ( m == null || m.size() == 0 )
+		if ( m == null )
 			return null;
 		if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
 			return null;
 		}
 
-		for ( ListIterator it = m.listIterator(); it.hasNext(); ) {
+		members.addAll(m);
+
+		for (int i = 0; i<tn.getChildCount(); i++) {
+			TigerNode child = tn.getChildAt(i);
+			if (child.getOrdinal() == TigerNode.EXTENDS) {
+				// Add members of the superclass
+				Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject());
+				if (c != null)
+					members.addAll(getMembersForClass(c, word, false, false));
+			}
+		}
+
+		ArrayList list = new ArrayList(members.size());
+		list.addAll(members);
+		Collections.sort(list);
+
+		for ( ListIterator it = list.listIterator(); it.hasNext(); ) {
 			if ( !it.next().toString().startsWith( word ) ) {
 				it.remove();
 			}
 		}
 
-		return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
+		return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, list );
 	}
 
 
@@ -1120,6 +1158,47 @@ public class JavaCompletionFinder {
 		return c;
 	}
 
+	private Class getClassForToken(Class c, String token) {
+		try {
+			while (c != null) {
+				Method[] methods = c.getDeclaredMethods();
+				for (int i = 0; i<methods.length; i++) {
+					// skip private methods
+					if (Modifier.isPrivate(methods[i].getModifiers()))
+						continue;
+
+					int j = token.indexOf("(");
+					if (j>0)
+						token = token.substring(0, j).trim();
+
+					if (methods[i].getName().equals(token))
+						return methods[i].getReturnType();
+				}
+
+				Field[] fields = c.getDeclaredFields();
+				for (int i = 0; i<fields.length; i++) {
+					// skip private fields
+					if (Modifier.isPrivate(fields[i].getModifiers()))
+						continue;
+
+					if (fields[i].getName().equals(token))
+						return fields[i].getType();
+				}
+
+				// Climb up the inheritance tree
+				c = c.getSuperclass();
+			}
+		}
+		catch (Exception e) {
+			return null;
+		}
+		catch (NoClassDefFoundError e) {
+			GUIUtilities.error(jEdit.getActiveView(), "sidekick.java.msg.noClassDefFound",
+					new String[] { e.getMessage() });
+			return null;
+		}
+		return null;
+	}
 
 	// returns a list of TigerNodes that are immediate children of the given
 	// class node
@@ -1158,8 +1237,23 @@ public class JavaCompletionFinder {
 					if ( filter == null || child.getName().startsWith( filter ) ) {
 						members.add( new JavaCompletionCandidate(child.getName() + more, icon) );
 					}
+					break;
+				case TigerNode.EXTENDS:
+					Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject() );
+					if (c == null)
+						return null;
+					members.addAll(getMembersForClass(c, filter));
 			}
 		}
+
+		// Add members from Object
+		try {
+			Class c = Class.forName("java.lang.Object");
+			members.addAll(getMembersForClass(c, filter));
+		} catch (ClassNotFoundException e) {
+			org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.ERROR, this, "Whoops! java.lang.Object doesn't exist!");
+		}
+
 		ArrayList list = new ArrayList( members );
 		Collections.sort( list );
 		return list;
