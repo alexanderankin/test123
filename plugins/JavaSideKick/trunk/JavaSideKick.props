@@ -81,6 +81,8 @@ sidekick.java.msg.bufferNotParsed.message=The parsed data for this view \
 	was not parsed by JavaSideKick.\nCheck to make sure that java \
 	is set as the parser for this mode,\nand that the buffer has been parsed \
 	in the SideKick dockable.
+sidekick.java.msg.noClassDefFound.title=Class Definition Not Found
+sidekick.java.msg.noClassDefFound.message=Class not in classpath: {0}
 
 # Option pane properties
 plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
