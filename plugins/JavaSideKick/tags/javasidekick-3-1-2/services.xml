@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="java">
+		new sidekick.java.JavaParser();
+	</SERVICE>
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="javacc">
+		new sidekick.java.JavaParser(sidekick.java.JavaParser.JAVACC_PARSER);
+	</SERVICE>
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="properties">
+		new sidekick.property.PropertyParser();
+	</SERVICE>
+    <SERVICE CLASS="projectviewer.config.OptionsService" NAME="Classpath Settings">
+        new sidekick.java.options.PVOptionsService();
+    </SERVICE>
+</SERVICES>
