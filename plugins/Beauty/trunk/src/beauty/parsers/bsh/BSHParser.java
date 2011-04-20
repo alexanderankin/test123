@@ -384,10 +384,10 @@ public class BSHParser implements BSHParserConstants {
 
   final public void PackageDeclaration() throws ParseException {
     jj_consume_token(PACKAGE);
-                add("package");
+                add("package ");
     AmbiguousName();
     jj_consume_token(SEMICOLON);
-                                                        add(";"); write();
+                                                         add(";"); write();
   }
 
   final public void ImportDeclaration() throws ParseException {
@@ -720,7 +720,7 @@ void VariableDeclaratorId()  :
 
   final public void AmbiguousName() throws ParseException {
     t = jj_consume_token(IDENTIFIER);
-                     trimWhitespace(); add(t);
+                     add(t);
     label_5:
     while (true) {
       if (jj_2_8(2)) {
@@ -1586,7 +1586,7 @@ void VariableDeclaratorId()  :
       add("{"); write();
         Expression();
         jj_consume_token(RBRACE);
-                                              write(); add("}"); write();
+                                              trimWhitespace(); write(); add("}"); write();
 
         break;
       default:
@@ -2479,7 +2479,7 @@ void VariableDeclaratorId()  :
 
   final public void ReturnStatement() throws ParseException {
     jj_consume_token(RETURN);
-             add("return");
+             add("return ");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BOOLEAN:
     case BYTE:
@@ -2513,7 +2513,7 @@ void VariableDeclaratorId()  :
       ;
     }
     jj_consume_token(SEMICOLON);
-                                                     add(";"); writeln();
+                                                      add(";"); write();
   }
 
   final public void SynchronizedStatement() throws ParseException {
@@ -2921,6 +2921,11 @@ void VariableDeclaratorId()  :
     return false;
   }
 
+  private boolean jj_3R_229() {
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
   private boolean jj_3R_151() {
     if (jj_scan_token(TRY)) return true;
     if (jj_3R_50()) return true;
@@ -2931,11 +2936,6 @@ void VariableDeclaratorId()  :
     }
     xsp = jj_scanpos;
     if (jj_3R_231()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_229() {
-    if (jj_3R_51()) return true;
     return false;
   }
 

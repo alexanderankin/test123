@@ -632,7 +632,7 @@ void MethodDeclaration()  :
 void PackageDeclaration () :
 { }
 {
-    "package" { add("package"); } AmbiguousName() ";" { add(";"); write(); }
+    "package" { add("package "); } AmbiguousName() ";" { add(";"); write(); }
 }
 
 void ImportDeclaration()  :
@@ -743,7 +743,7 @@ void AmbiguousName()  :
 {
 }
 {
-    t=<IDENTIFIER> { trimWhitespace(); add(t); }
+    t=<IDENTIFIER> { add(t); }
   ( LOOKAHEAD(2) "." t=<IDENTIFIER> { add("."); add(t); } )* 
 }
 
@@ -1016,7 +1016,7 @@ void PrimarySuffix()  :
     "." { add("."); } t=<IDENTIFIER> { add(t); } [ Arguments() ] {
     }
 |
-"{" { add("{"); write(); } Expression() "}" { write(); add("}"); write(); } {
+"{" { add("{"); write(); } Expression() "}" { trimWhitespace(); write(); add("}"); write(); } {
     }
 /*
     For inner classes
@@ -1461,7 +1461,7 @@ void ContinueStatement()  :
 void ReturnStatement()  :
 {}
 {
-  "return" { add("return"); } [ Expression() ] ";" { add(";"); writeln(); }
+  "return" { add("return "); } [ Expression() ] ";" { add(";"); write(); }
 }
 
 void SynchronizedStatement()  :
