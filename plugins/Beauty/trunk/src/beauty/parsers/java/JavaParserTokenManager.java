@@ -314,7 +314,6 @@ public class JavaParserTokenManager implements JavaParserConstants
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
-            // TODO: make this a user setting, pad parens
             String startParen = padParens ? "( " : "(";
             String endParen = padParens ? " )" : ")";
             s = s.replaceAll("[(][ ]", startParen);
@@ -506,8 +505,13 @@ public class JavaParserTokenManager implements JavaParserConstants
     static void writeEndOfLineComment(String s) {
         String line = s.trim();
         if (line.startsWith("//")) {
-            line = line.substring(2).trim();
-            line = "// " + line;
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("(//+)(.*?)");
+            java.util.regex.Matcher m = p.matcher(line);
+            if (m.matches()) {
+                String start = m.group(1);
+                line = m.group(2).trim();
+                line = start + " " + line;
+            }
         }
         for (int j = 0; j < level; j++) {
             line = indent + line;
