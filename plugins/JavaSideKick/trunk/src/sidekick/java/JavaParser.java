@@ -136,7 +136,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        ByteArrayInputStream input = null;
+        Reader input = null;
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
@@ -154,7 +154,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // 1) a modifed buffer can be parsed without a save
             // 2) reading the buffer should be faster than reading from the file, and
             // 3) jEdit has that 'gzip file on disk' option which won't parse.
-            input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
+            String contents = buffer.getText(0, buffer.getLength());
+            input = new StringReader(contents);
             parser = new TigerParser( input );
             int tab_size = buffer.getTabSize();
             switch ( parser_type ) {
@@ -202,23 +203,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             // show constructors, fields, methods, etc
             addChildren( root, buffer, expansionModel );
-            /*
-            if ( compilationUnit.getChildren() != null ) {
-            Collections.sort( compilationUnit.getChildren(), nodeSorter );
-                for ( Iterator it = compilationUnit.getChildren().iterator(); it.hasNext(); ) {
-                    TigerNode child = ( TigerNode ) it.next();
-
-                    if ( canShow( child ) ) {
-                        child.setStart( ElementUtil.createStartPosition( buffer, child ) );
-                        child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
-                        DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
-                        root.add( cuChild );
-                        expansionModel.add();   // class node
-                        addChildren( buffer, cuChild, child, expansionModel );
-                    }
-                }
-                }
-                */
         }
         catch ( ParseException e ) {    // NOPMD
             // removed exception handling, all ParseExceptions are now caught
@@ -233,7 +217,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 input.close();
             }
             catch ( Exception e ) {     // NOPMD
-                // not to worry
+                // not to worry, StringReader won't actually throw an exception.
             }
         }
 
@@ -275,14 +259,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
 				// This is a fix for hard tabs
 				// Hard tabs mess up column counting, so this would occasionally cause out-of-index errors
 				int tab = (Integer) buffer.getMode().getProperty("tabSize");
-				String sub = "";
+				StringBuilder sub = new StringBuilder();
 				for (int i = 0; i < tab; i++) {
-					sub += " ";
+					sub.append(" ");
 				}
 				String startLineText = buffer.getLineText(range.startLine);
 				int index;
-				while ((index = startLineText.indexOf("\t")) != -1) {
-					startLineText = startLineText.replace("\t", sub);
+				while ((index = startLineText.indexOf('\t')) != -1) {
+					startLineText = startLineText.replace("\t", sub.toString());
 					if (range.startColumn > index) range.startColumn -= (tab-1);
 					if (range.endColumn > index) range.endColumn -= (tab-1);
 				}
