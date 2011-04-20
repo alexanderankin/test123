@@ -718,8 +718,13 @@ TOKEN_MGR_DECLS :
     static void writeEndOfLineComment(String s) {
         String line = s.trim();
         if (line.startsWith("//")) {
-            line = line.substring(2).trim();
-            line = "// " + line;
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("(//+)(.*?)");
+            java.util.regex.Matcher m = p.matcher(line);
+            if (m.matches()) {
+                String start = m.group(1);
+                line = m.group(2).trim();
+                line = start + " " + line;
+            }
         }
         for (int j = 0; j < level; j++) {
             line = indent + line;
@@ -1661,6 +1666,13 @@ void PrimaryPrefix():
   "this" { add("this"); }
 |
   "super" "." { add("super."); } t=<IDENTIFIER> { add(t); }
+|
+  LOOKAHEAD( ClassOrInterfaceType() "." <IDENTIFIER> )
+  ClassOrInterfaceType() "." { trimWhitespace(); add("."); } t=<IDENTIFIER> { add(t); }
+|
+  // fix for 1561502
+  LOOKAHEAD( ClassOrInterfaceType() "." "super" "." <IDENTIFIER> )
+  ClassOrInterfaceType()"." "super" "." { trimWhitespace(); add(".super."); } t=<IDENTIFIER> { add(t); }
 |
   "(" { add("( "); } Expression() ")" { add(" )"); }
 |
