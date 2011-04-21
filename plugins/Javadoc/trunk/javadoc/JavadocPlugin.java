@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
@@ -62,6 +63,7 @@ public class JavadocPlugin extends EBPlugin {
 	 */
 	public static void search(final View view, final String name) {
 		view.getStatus().setMessage("Searching ... ");
+		// TODO: re-write this to use ThreadUtilities
 		new Thread() {
 			public void run() {
 				String path = jEdit.getProperty("options.javadoc.path", "");
@@ -77,9 +79,11 @@ public class JavadocPlugin extends EBPlugin {
 					for (int i = 0; i<packageList.getLineCount(); i++) {
 						String pkg = packageList.getLineText(i).replace(".", File.separator);
 						File pkgDir = new File(dir, pkg);
-						File cls = new File(pkgDir, name+".html");
-						if (cls.exists()) {
-							pathList.add(cls.getPath());
+						String pkgDirPath = pkgDir.getPath();
+						String[] pages = pkgDir.list();
+						for (int j = 0; j<pages.length; j++) {
+							if (pages[j].equalsIgnoreCase(name+".html"))
+								pathList.add(MiscUtilities.constructPath(pkgDirPath, pages[j]));
 						}
 					}
 				}
