@@ -1,11 +1,9 @@
 <project name="Javadoc" default="build" basedir=".">
-	<property file="C:\Documents and Settings\E16145\workspace\plugins\build.properties" />
-	<!-- /mark:build.properties -->
-	<!-- <property file="build.properties" /> -->
-	<!-- <property file="../build.properties" /> -->
+	<property file="build.properties" />
+	<property file="../build.properties" />
 	<property name="compiler.source" value="1.5" />
 	<property name="compiler.target" value="1.5" />
-	<property name="src.dir" value="src" />
+	<property name="src.dir" value="javadoc" />
 	
 	<!-- Documentation process
 	none: if you supply your own html file as this template does.
@@ -14,12 +12,10 @@
 	<!-- <property name="docs-proc.target" value="none" /> -->
 	
 	<!-- jEdit installation properties. -->
-	<!-- mark:properties -->
-	<!-- /mark:properties -->
 	<import file="${build.support}/plugin-build.xml" />
 	
 	<path id="project.class.path">
-		<pathelement location="${jedit.plugins.dir}\CommonControls.jar" />
-		<pathelement location="${jedit.plugins.dir}\InfoViewer.jar" />
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
+		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
 	</path>
 </project>
