@@ -1,0 +1,35 @@
+plugin.javadoc.JavadocPlugin.activate=startup
+plugin.javadoc.JavadocPlugin.name=Javadoc
+plugin.javadoc.JavadocPlugin.author=Damien Radtke
+plugin.javadoc.JavadocPlugin.version=1.2
+plugin.javadoc.JavadocPlugin.description=The Javadoc plugin provides a user \
+	interface for accessing java api documentation. Api trees can be easily \
+	opened or searched through by class name.
+plugin.javadoc.JavadocPlugin.docs=index.html
+
+plugin.javadoc.JavadocPlugin.depend.0=jdk 1.5.0
+plugin.javadoc.JavadocPlugin.depend.1=jedit 04.03.99.00
+plugin.javadoc.JavadocPlugin.depend.2=plugin infoviewer.InfoViewerPlugin 1.6
+plugin.javadoc.JavadocPlugin.depend.3=plugin CommonControlsPlugin 1.2
+
+plugin.javadoc.JavadocPlugin.menu=- javadoc-search javadoc-search-sel - \
+	javadoc-settings
+plugin.javadoc.JavadocPlugin.menu.code=new javadoc.JavadocMenuProvider();
+javadoc-view.label=View
+javadoc-search.label=Search...
+javadoc-search-sel.label=Search word under cursor
+javadoc-settings.label=Add/Remove Api Trees...
+
+plugin.javadoc.JavadocPlugin.option-pane=javadoc
+options.javadoc.label=Javadoc
+options.javadoc.code=new javadoc.JavadocOptionPane();
+options.javadoc.path=
+options.javadoc.title=Javadoc Roots
+
+msg.javadoc.resolve-class.title=Ambiguous Class
+msg.javadoc.resolve-class.message=Open which doc file?
+msg.javadoc.search.title=Javadoc
+msg.javadoc.search.message=Search javadoc for class:
+
+msg.javadoc.searching=Javadoc: searching...
+msg.javadoc.not-found=Javadoc: class not found

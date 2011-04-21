@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<book>
+	<bookinfo>
+		<title>Javadoc Plugin</title>
+		<author>
+			<firstname>Damien</firstname><surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+	<para>
+		The Javadoc plugin provides an intuitive interface for accessing
+		java documentation. The list of available javadoc trees can be populated
+		in the plugin options pane (<guimenu>Plugins</guimenu> >
+		<guimenu>Javadoc</guimenu> > <guimenu>Add/Remove Api Trees...</guimenu>,
+		or <guimenu>Plugins</guimenu> > <guimenu>Plugin Options</guimenu> >
+		<guimenu>Javadoc</guimenu>). Once populated, the documentation
+		can be opened and searched through using the actions provided in the
+		Javadoc plugin menu.
+	</para>
+	<para>
+		The standard java documentation can be found at
+		http://java.sun.com/javase/downloads/index.jsp (under Additional
+		Resources, look for "Java SE 6 Documentation"), and the jEdit
+		api should have come with your jEdit installation.
+	</para>
+	<para>
+		To quickly search the api trees for a particular class, there are two
+		available actions: "Search...", which opens up a dialog requesting
+		the class name to search for, and the self-explanatory "Search word
+		under cursor". Both require unqualified class names.
+	</para>
+	<para>
+		This plugin uses the InfoViewer plugin to display the documentation,
+		which can be configured in <guimenu>Plugins</guimenu> > <guimenu>Plugin
+		Options</guimenu> > <guimenu>InfoViewer</guimenu>.
+	</para>
+	</chapter>
+</book>
