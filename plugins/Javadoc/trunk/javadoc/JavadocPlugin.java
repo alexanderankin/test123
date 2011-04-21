@@ -62,7 +62,7 @@ public class JavadocPlugin extends EBPlugin {
 	 * @param name the unqualified class name
 	 */
 	public static void search(final View view, final String name) {
-		view.getStatus().setMessage("Searching ... ");
+		view.getStatus().setMessage(jEdit.getProperty("msg.javadoc.searching"));
 		// TODO: re-write this to use ThreadUtilities
 		new Thread() {
 			public void run() {
@@ -88,7 +88,7 @@ public class JavadocPlugin extends EBPlugin {
 					}
 				}
 				if (pathList.size() == 0) {
-					view.getStatus().setMessageAndClear("Class "+name+" not found");
+					view.getStatus().setMessageAndClear(jEdit.getProperty("msg.javadoc.not-found"));
 					return;
 				}
 				String chosenDoc = null;

@@ -30,3 +30,6 @@ msg.javadoc.resolve-class.title=Ambiguous Class
 msg.javadoc.resolve-class.message=Open which doc file?
 msg.javadoc.search.title=Javadoc
 msg.javadoc.search.message=Search javadoc for class:
+
+msg.javadoc.searching=Javadoc: searching...
+msg.javadoc.not-found=Javadoc: class not found
