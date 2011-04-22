@@ -32,23 +32,24 @@ import java.awt.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.buffer.*;
+import classpath.*;
 import errorlist.*;
 import sidekick.*;
 import sidekick.java.util.*;
 import sidekick.java.node.*;
 //}}}
-public class JavaSideKickPlugin extends EditPlugin {
+public class JavaSideKickPlugin extends EBPlugin {
+
 	public final static String NAME = "sidekick.java";
 	public final static String OPTION_PREFIX = "options.sidekick.java.";
 	public final static String PROPERTY_PREFIX = "plugin.sidekick.java.";
 	public final static DefaultErrorSource ERROR_SOURCE = new DefaultErrorSource( "JavaSideKick" );
+
 	public void start() {
 		ErrorSource.registerErrorSource( ERROR_SOURCE );
-		// EditBus.addToBus(this);
 	}
 	public void stop() {
 		ErrorSource.unregisterErrorSource( ERROR_SOURCE );
-		// EditBus.removeFromBus(this);
 	}
 
 	public static void insertImportAtCursor(EditPane editPane) {
@@ -68,20 +69,21 @@ public class JavaSideKickPlugin extends EditPlugin {
 		if (end == -1) end = lineText.length();
 		// Get the word
 		String word = lineText.substring(start, end);
-		String[] classes = Locator.getInstance().getClassName(word);
-		if (classes.length == 0) {
+
+		List<String> classes = Locator.getInstance().getClassName(word);
+		if (classes.size() == 0) {
 			return;
 		}
 
-		List candids = new ArrayList(classes.length);
-		for (int i = 0; i < classes.length; i++) {
-			candids.add(new JavaCompletionFinder.JavaCompletionCandidate(
-						classes[i],
+		List candids = new ArrayList(classes.size());
+		for (String clazz : classes) {
+			candids.add(new JavaCompletionFinder.JavaCompletionCandidate(clazz,
 						TigerLabeler.getClassIcon()));
 		}
+
 		JavaImportCompletion complete = new JavaImportCompletion(view, word, candids);
 
-		if (classes.length == 1) {
+		if (classes.size() == 1) {
 			// Just insert it
 			complete.insert(0);
 		} else {
@@ -90,21 +92,10 @@ public class JavaSideKickPlugin extends EditPlugin {
 		}
 	}
 
-	/*
 	public void handleMessage(EBMessage message) {
-		if (PVHelper.isProjectViewerAvailable()) {
-			if (message instanceof projectviewer.event.ViewerUpdate) {
-				projectviewer.event.ViewerUpdate update = (projectviewer.event.ViewerUpdate) message;
-				if (update.getType() == projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED) {
-					if (update.getNode() instanceof projectviewer.vpt.VPTProject) {
-						projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) update.getNode();
-						Locator.getInstance().reloadProjectJars(proj);
-						Locator.getInstance().reloadProjectClassNames(proj);
-					}
-				}
-			}
+		if (message instanceof ClasspathUpdate) {
+			Locator.getInstance().refresh();
 		}
 	}
-	*/
 }
 

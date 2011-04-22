@@ -301,7 +301,6 @@ public class JavaCompletionFinder {
 		return list;
 	}
 
-
 	private JavaCompletion getPossibleQualifiedCompletions( String word ) {
 		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting qualified completions");
 
@@ -527,6 +526,7 @@ public class JavaCompletionFinder {
 				filter = null;
 			if (filter != null && filter.endsWith("("))
 				filter = filter.substring(0, filter.length()-1);
+
 			List members = getMembersForClass( c, filter, static_only, true );
 			if ( members != null && members.size() > 0 ) {
 				if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
@@ -537,17 +537,8 @@ public class JavaCompletionFinder {
 		}
 
 		// could have package.partialClass, e.g. javax.swing.tree.DefaultMu
-		List<String> possibles = null;
-		if (PVHelper.isProjectViewerAvailable()) {
-			possibles = Locator.getInstance().getProjectClasses(
-						PVHelper.getProject( editPane.getView() ), word );
-		}
-		if ( possibles == null || possibles.size() == 0 ) {
-			possibles = Locator.getInstance().getGlobalClasses( word );
-		}
-		if ( possibles == null || possibles.size() == 0 ) {
-			possibles = Locator.getInstance().getRuntimeClasses( word );
-		}
+		List<String> possibles = Locator.getInstance().getClasses(word);
+
 		if ( possibles != null && possibles.size() > 0 ) {
 			if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
 				return null;
@@ -569,14 +560,12 @@ public class JavaCompletionFinder {
 		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
 		word = word.substring(word.lastIndexOf("(")+1);
 		
-		ArrayList pkgs = new ArrayList(
-				Arrays.asList(Locator.getInstance().getClassName(word)));
+		List<String> pkgs = Locator.getInstance().getClassName(word);
 		if (pkgs != null && pkgs.size() > 0) {
 			ArrayList pkgCandidates = new ArrayList(pkgs.size());
-			for (int i = 0; i < pkgs.size(); i++) {
-				pkgCandidates.add(new JavaCompletionCandidate((String) pkgs.get(i),
-							TigerLabeler.getClassIcon()));
-			}
+			for (int i = 0; i < pkgs.size(); i++) 
+				pkgCandidates.add(new JavaCompletionCandidate(pkgs.get(i), TigerLabeler.getClassIcon()));
+
 			return new JavaCompletion(editPane.getView(), word, JavaCompletion.PACKAGE, pkgCandidates);
 		}
 		// partialword
@@ -1020,17 +1009,18 @@ public class JavaCompletionFinder {
 			return c;
 		}
 
-		String[] classNames = Locator.getInstance().getClassName( type );
-		if (classNames == null || classNames.length == 0) {
+		List<String> classNames = Locator.getInstance().getClassName( type );
+
+		if (classNames == null || classNames.size() == 0)
 			return null;
-		} else {
-			if (classNames.length > 1) {
+		else {
+			if (classNames.size() > 1) {
 				GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
 						new String[] { type });
 				return null;
 			}
 			else {
-				return validateClassName( classNames[0], type, filename );
+				return validateClassName( classNames.get(0), type, filename );
 			}
 		}
 		// check jars in project classpath. These are the jars and/or directories
@@ -1117,45 +1107,16 @@ public class JavaCompletionFinder {
 		catch ( ClassNotFoundException cnfe ) {     // NOPMD
 			try {
 				// check the project classloader
-				AntClassLoader classloader = Locator.getInstance().getProjectClassLoader();
+				AntClassLoader classloader = Locator.getInstance().getClassLoader();
 				if ( classloader == null ) {
 					throw new ClassNotFoundException();
 				}
 				return classloader.forceLoadClass( classname );
 			}
 			catch ( Exception pcnfe ) {
-				// check the project build output directory
-				return findClassInProject( classname, type, filename );
+				return null;
 			}
 		}
-	}
-
-	/**
-	 * Finds a class in the build output path for a project. Does not search
-	 * system classpath. These are loaded into a separate class loader since they
-	 * probably aren't loaded in any class loader available to jEdit.
-	 */
-	private Class findClassInProject( String classname, String type, String filename ) {
-		if ( filename == null || !PVHelper.isProjectViewerAvailable() ) {
-			return null;
-		}
-		projectviewer.vpt.VPTProject project = PVHelper.getProjectForFile( filename );
-		Class c = null;
-		if ( project != null ) {
-			String pc = PVHelper.getBuildOutputPathForProject( project );
-			AntClassLoader loader = new AntClassLoader( new Path( pc ), false );
-			try {
-				c = loader.findClass( type );
-			}
-			catch ( Exception e ) {
-				try {
-					c = loader.findClass( classname );
-				}
-				catch ( Exception ee ) {   // NOPMD
-				}
-			}
-		}
-		return c;
 	}
 
 	private Class getClassForToken(Class c, String token) {
@@ -1285,7 +1246,7 @@ public class JavaCompletionFinder {
 						continue;
 					}
 					// Is it public, or do we want protected?
-					if ( Modifier.isPrivate(modifiers) || (Modifier.isProtected(modifiers) && public_only) ) {
+					if ( Modifier.isPrivate(modifiers) || (!Modifier.isPublic(modifiers) && public_only) ) {
 						continue;
 					}
 					if ( filter == null || methods[ i ].getName().startsWith( filter ) ) {
