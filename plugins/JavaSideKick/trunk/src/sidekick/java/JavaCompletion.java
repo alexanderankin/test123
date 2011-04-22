@@ -105,11 +105,15 @@ public class JavaCompletion extends SideKickCompletion {
 		try {
 			buffer.beginCompoundEdit();
 			buffer.remove( start - to_replace.length(), to_replace.length() );
+
+			boolean useSuperAbbrevs = (jEdit.getPlugin("SuperAbbrevsPlugin") != null);
+			if (useSuperAbbrevs)
+				to_insert = to_insert.replace("$", "\\$");
+
 			// If the text to insert has parameters and superabbrevs is installed, use it
 			// Otherwise, insert up to the first parenthese (if any)
 			int popen, pclose;
-			if ((popen = to_insert.indexOf('(')) != -1 && (pclose = to_insert.indexOf(')')) != -1
-					&& jEdit.getPlugin("SuperAbbrevsPlugin") != null) {
+			if ((popen = to_insert.indexOf('(')) != -1 && (pclose = to_insert.indexOf(')')) != -1 && useSuperAbbrevs) {
 				String params = to_insert.substring(popen + 1, pclose);
 				to_insert = to_insert.substring(0, popen);
 				StringTokenizer tokenizer = new StringTokenizer(params, ",");

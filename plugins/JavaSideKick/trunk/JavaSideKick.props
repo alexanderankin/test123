@@ -20,7 +20,7 @@ plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugi
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.2
 plugin.sidekick.java.JavaSideKickPlugin.depend.5=plugin eclipseicons.EclipseIconsPlugin 1.0
-plugin.sidekick.java.JavaSideKickPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 3.0.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.6=plugin classpath.ClasspathPlugin 1.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.7=optional plugin SuperAbbrevsPlugin 0.32
 
 
@@ -87,8 +87,7 @@ sidekick.java.msg.noClassDefFound.message=Class not in classpath: {0}
 # Option pane properties
 plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
 	sidekick.java.filter \
-	sidekick.java.display \
-	sidekick.java.global
+	sidekick.java.display
 
 options.sidekick.java.general.label=General
 options.sidekick.java.general.code=new sidekick.java.options.GeneralOptionPane();
@@ -98,10 +97,6 @@ options.sidekick.java.filter.code=new sidekick.java.options.FilterOptionPane();
 
 options.sidekick.java.display.label=Display
 options.sidekick.java.display.code=new sidekick.java.options.DisplayOptionPane();
-
-options.sidekick.java.global.label=Classpath
-options.sidekick.java.global.code=new sidekick.java.options.GlobalClasspathOptionPane();
-
 
 # Global Plugin Options - obsolete
 #options.sidekick.java.label=JavaSideKick
