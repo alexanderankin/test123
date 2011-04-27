@@ -15,6 +15,7 @@
     <property file="../build.properties" />
     <property file="build.properties" />
     <property name="user-doc.xml" location = "users-guide.xml"/>
+    <property name="docs-proc.target" value="none" />
     <import file="${build.support}/plugin-build.xml" />
     
     <!-- Help is not build but exists as an html file -->
