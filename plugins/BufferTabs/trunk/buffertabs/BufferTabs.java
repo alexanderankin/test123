@@ -591,19 +591,30 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		Buffer buffer = editPane.getBufferSet().getBuffer(index);
 		String name = buffer.getName();
 
-		if (!ColorTabs.instance().isForegroundColorized())
+		/* Setting the background/foreground below may throw an
+		 * ArrayIndexOutOfBounds exception due to bugs in BasicTabbedPaneUI,
+		 * so catch it here to avoid interfering with the upper-level code.
+		 */
+		try
 		{
 			Color color = ColorTabs.instance().getDefaultColorFor(name);
-			setBackgroundAt(index, color);
-			setForegroundAt(index, null);
+			if (!ColorTabs.instance().isForegroundColorized())
+			{
+				setBackgroundAt(index, color);
+				setForegroundAt(index, null);
+			}
+			else
+			{
+				setForegroundAt(index, color);
+				setBackgroundAt(index, null);
+			}
 		}
-		else
+		catch (ArrayIndexOutOfBoundsException e)
 		{
-			Color color = ColorTabs.instance().getDefaultColorFor(name);
-			setForegroundAt(index, color);
-			setBackgroundAt(index, null);
+			// Log the exception, but ignore it, it's a JRE bug.
+			Log.log(Log.ERROR, this, "The following is a JRE bug:");
+			Log.log(Log.ERROR, this, e);
 		}
-
 		// this.updateHighlightAt(index);
 	}
 
