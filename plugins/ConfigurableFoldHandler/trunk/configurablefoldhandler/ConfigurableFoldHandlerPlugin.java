@@ -25,7 +25,6 @@ package configurablefoldhandler;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
@@ -41,7 +40,6 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 
@@ -81,15 +79,6 @@ public class ConfigurableFoldHandlerPlugin extends EditPlugin
 		readProperties();
 	}
 
-	@EBHandler
-	public void handleEditPaneUpdate(EditPaneUpdate epu)
-	{
-		// the only message I can see when a buffer is closed is this one
-		// so at this point check if the old buffer has closed
-		if (epu.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED))
-			checkBuffers();
-	}
-
 	private static String getFoldFileFor(Buffer buffer)
 	{
 		String path = buffer.getPath();
@@ -100,6 +89,7 @@ public class ConfigurableFoldHandlerPlugin extends EditPlugin
 
 	// Loads persistent manual folds for a loaded buffer, and saves
 	// persistent manual folds for a closed / saved buffer.
+	// Removes a closed buffer from bufferStrings.
 	@EBHandler
 	public void handleBufferUpdate(BufferUpdate bu)
 	{
@@ -132,30 +122,11 @@ public class ConfigurableFoldHandlerPlugin extends EditPlugin
 			if (mf != null)
 				mf.save(path);
 		}
+		// Remove a closed buffer from bufferStrings
+		if (what.equals(BufferUpdate.CLOSED))
+			bufferStrings.remove(buffer);
 	}
 
-	/**
-	 * checks if any of the buffers with their own fold strings have closed and
-	 * if so removes references to them from bufferStrings
-	 */
-	private void checkBuffers()
-	{
-		Buffer[] buffers = jEdit.getBuffers();
-		int i;
-		
-loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
-			iter.hasNext(); )
-		{
-			Buffer curBuffer = (Buffer)iter.next();
-			
-			for(i = 0; i < buffers.length; i++)
-				if(buffers[i] == curBuffer)
-					continue loop;
-			
-			bufferStrings.remove(curBuffer);
-		}
-	}
-	
 	public void start()
 	{
 		super.start();
