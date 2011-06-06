@@ -18,8 +18,9 @@ package xml;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.textarea.StructureMatcher;
 import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.jedit.Buffer;
 import sidekick.SideKickActions;
-import xml.parser.*;
+import xml.parser.javacc.TagParser;
 //}}}
 
 public class TagHighlight implements StructureMatcher
@@ -33,14 +34,15 @@ public class TagHighlight implements StructureMatcher
 
 		int caret = textArea.getCaretPosition();
 		String text = textArea.getText();
-		TagParser.Tag current = TagParser.getTagAtOffset(text,caret);
+		Buffer buffer = (Buffer)textArea.getBuffer();
+		TagParser.Tag current = TagParser.getTagAtOffset(buffer,text,caret);
 
 		if(current == null) {
 			return null;
 		}
 		else
 		{
-			TagParser.Tag tag = TagParser.getMatchingTag(text,current);
+			TagParser.Tag tag = TagParser.getMatchingTag(buffer,text,current);
 			if(tag != null)
 			{
 				tag.startLine = textArea.getLineOfOffset(tag.start);

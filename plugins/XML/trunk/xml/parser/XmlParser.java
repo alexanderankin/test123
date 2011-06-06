@@ -21,6 +21,7 @@ import java.util.*;
 import org.xml.sax.helpers.NamespaceSupport;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.*;
+import org.gjt.sp.jedit.textarea.StructureMatcher;
 import sidekick.*;
 import xml.completion.*;
 import xml.completion.ElementDecl.AttributeDecl;
@@ -41,7 +42,12 @@ public abstract class XmlParser extends SideKickParser
 	public XmlParser(String name)
 	{
 		super(name);
-		highlight = new TagHighlight();
+		String matcherName = jEdit.getProperty("xml.structure-matcher","old");
+		if("old".equals(matcherName)) {
+			highlight = new TagHighlight();
+		} else {
+			highlight = new SideKickTagHighlight();
+		}
 	} //}}}
 
 	//{{{ stop() method
@@ -361,6 +367,6 @@ public abstract class XmlParser extends SideKickParser
 	//}}}
 
 	//{{{ Private members
-	private TagHighlight highlight;
+	private StructureMatcher highlight;
 	//}}}
 }

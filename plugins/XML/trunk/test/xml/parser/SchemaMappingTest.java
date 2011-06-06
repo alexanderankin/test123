@@ -38,6 +38,7 @@ import java.net.*;
 import org.xml.sax.*;
 
 import static xml.parser.SchemaMapping.*;
+import static xml.parser.SchemaMapping.Rule;
 
 /**
  * $Id$
