@@ -69,6 +69,9 @@ public class NewIndexDialog extends JDialog
 		p.add(new JLabel(jEdit.getProperty(MESSAGE + "Analyzer")));
 		analyzer = new JComboBox(AnalyzerFactory.getAnalyzerNames());
 		p.add(analyzer);
+		String defaultAnalyzer = jEdit.getProperty(LucenePlugin.LUCENE_DEFAULT_ANALYZER);
+		if (defaultAnalyzer != null)
+			analyzer.setSelectedItem(defaultAnalyzer);
 		// Button panel
 		JPanel buttons = new JPanel();
 		add(buttons);

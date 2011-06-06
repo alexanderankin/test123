@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
  */
 public class LucenePlugin extends EditPlugin
 {
+	public static final String LUCENE_DEFAULT_ANALYZER = "lucene.default-analyzer";
 	static CentralIndex CENTRAL;
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
@@ -217,8 +218,8 @@ public class LucenePlugin extends EditPlugin
 			{
 				index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
 					dlg.getIndexAnalyzer());
+				jEdit.setProperty(LUCENE_DEFAULT_ANALYZER, dlg.getIndexAnalyzer());
 			}
-				
 		}
 		return index;
 	}
