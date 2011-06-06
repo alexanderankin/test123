@@ -63,7 +63,25 @@ indexing network files with very slow access.
 Select the analyzer to use for indexing. If you are not familiar with analyzers,
 use "Java identifier" for source code, which allows you to look for precise
 identifier occurrences, and "Standard" for text, or check the Lucene website for
-information about the other analyzers.
+information about the other analyzers. A brief description of the analyzers:
+	<ul>
+		<li>Standard: Most suitable for free text - uses a sophisticated grammar
+		to extract words, removes stop words and lowercases.
+		<li>Keyword: Treats entire text as a single token.
+		<li>Simple: Divides text at nonletter characters and lowercases.
+		<li>Java identifier: Suitable for source code - extracts identifier
+		names from the text and stores them without change.
+		<li>Whitespace: Splits tokens at whitespace.
+		<li>Stop: Divides text at nonletter characters, lowercases, and removes
+		stop words ("a", "an", "are" ...).
+	</ul>
+For more information, check the
+<a href="http://lucene.apache.org/java/3_0_2/api/core/org/apache/lucene/analysis/Analyzer.html">
+Analyzer documentation
+</a>, or more briefly
+<a href="http://www.javabeat.net/articles/332-using-the-built-in-analyzers-in-lucene-1.html">
+Using the Built-in Analyzers in Lucene
+</a>.
 </ol>
 <li>
 Click Ok to start creating the index.
