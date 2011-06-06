@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.View;
 import sidekick.SideKickParsedData;
 import sidekick.ExpansionModel;
 import sidekick.SideKickUpdate;
+import sidekick.IAsset;
 
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
@@ -261,7 +262,8 @@ public class XmlParsedData extends SideKickParsedData
 		}
 		return null;
 	}
-
+	//}}}
+	
 	//{{{ getElementDeclInternal(name, pos) method
 	/**
 	 * finds a global declaration of an element, returns it with correct prefix
@@ -478,7 +480,8 @@ public class XmlParsedData extends SideKickParsedData
 	/** @return a list containing Elements or Attributes */
 	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)
 	{
-		
+		IAsset asset = getAssetAtOffset(pos);
+		System.err.println("asset at "+pos+" is :"+asset+" ("+asset.getStart().getOffset()+","+asset.getEnd().getOffset()+")");
 		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
 
 		String text = buffer.getText(0,pos);
