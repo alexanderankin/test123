@@ -61,7 +61,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private boolean multiStatus;
 	private boolean horizontalLayout;
 	private boolean firstTimeLayout = true;
-//	private JTextPane preview;
+	// private JTextPane preview;
 	private final JLabel textLabel;
 	private final JLabel fileTypeLabel;
 	private final JLabel maxResultsLabel;
@@ -74,7 +74,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		super(new BorderLayout());
 		KeyListener kl = v.getDockableWindowManager().closeListener(DOCKABLE_NAME);
-		
+
 		lineResults = new JCheckBox(getLabel("lucene.line-based"));
 		lineResults.setToolTipText(jEdit.getProperty("lucene.results.line-based.tooltip"));
 		lineResults.setSelected(true);
@@ -94,7 +94,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		String[] items = LucenePlugin.instance.getIndexes();
 		indexModel = new IndexComboBoxModel(items);
 		indexes = new JComboBox(indexModel);
-		indexes.setToolTipText(jEdit.getProperty("lucene.index-combo.tooltip"));
+		setIndexesToolTipText(null);
 		extendedOptions = new JCheckBox(jEdit.getProperty("lucene.extendedoptions.long"));
 		extendedOptions.setSelected(jEdit.getBooleanProperty("lucene.extendedoptions"));
 		extendedOptions.addActionListener(new ActionListener()
@@ -117,13 +117,16 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 					indexStatus.setText(MESSAGE_IDLE);
 					indexStatus.setToolTipText(MESSAGE_IDLE);
 				}
+
 				@Override
 				public void indexingStarted(Index index)
-				{				 
+				{
 					indexStatus.setText(MESSAGE_INDEXING);
-					indexStatus.setToolTipText(jEdit.getProperty("task.progress.tooltip", "See Utilities - Troubleshooting - Task Monitor for progress"));
+					indexStatus.setToolTipText(jEdit.getProperty("task.progress.tooltip",
+						"See Utilities - Troubleshooting - Task Monitor for progress"));
 				}
-			}; 
+			};
+
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
@@ -136,6 +139,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
 				index.addActivityListener(listener);
 				jEdit.setProperty(LUCENE_SEARCH_INDEX, index.getName());
+				setIndexesToolTipText((String) indexes.getSelectedItem());
 			}
 		};
 		indexes.addActionListener(indexActionListener);
@@ -152,8 +156,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		type.addActionListener(actionListener);
 		clear = new RolloverButton(GUIUtilities.loadIcon(
 			jEdit.getProperty("hypersearch-results.clear.icon")));
-		clear.setToolTipText(jEdit.getProperty(
-			"hypersearch-results.clear.label"));
+		clear.setToolTipText(jEdit.getProperty("hypersearch-results.clear.label"));
 		clear.addActionListener(new ActionListener()
 		{
 			@Override
@@ -164,8 +167,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			}
 		});
 		multi = new RolloverButton();
-		multi.setToolTipText(jEdit.getProperty(
-			"hypersearch-results.multi.label"));
+		multi.setToolTipText(jEdit.getProperty("hypersearch-results.multi.label"));
 		multi.addActionListener(new ActionListener()
 		{
 			@Override
@@ -178,7 +180,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		updateMultiStatus();
 
 		setLayoutByGeometry();
-		
+
 		model = new MyModel();
 		list = new JList(model);
 		tree = new SourceLinkTree(jEdit.getActiveView());
@@ -202,9 +204,9 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				}
 			}
 		});
-//		HTMLDocument htmlDocument = new HTMLDocument();
-//		preview = new JTextPane(htmlDocument);
-//		preview.setContentType("text/html");
+		//HTMLDocument htmlDocument = new HTMLDocument();
+		//preview = new JTextPane(htmlDocument);
+		//preview.setContentType("text/html");
 		mainPanel = new JPanel(new CardLayout());
 		mainPanel.add(new JScrollPane(list), "list");
 		mainPanel.add(new JScrollPane(tree), "tree");
@@ -225,6 +227,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				}
 			}
 			indexes.setSelectedIndex(index);
+			setIndexesToolTipText((String) indexes.getSelectedItem());
 		}
 
 		maxResults.addChangeListener(new ChangeListener()
@@ -248,6 +251,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		indexes.addMouseListener(new MouseAdapter()
 		{
 			private JPopupMenu menu;
+
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
@@ -274,11 +278,29 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 						}
 					});
 					menu.add(refresh);
-					GUIUtilities.showPopupMenu(menu, indexes, e.getX(),  e.getY());
+					GUIUtilities.showPopupMenu(menu, indexes, e.getX(), e.getY());
 				}
 			}
 		});
 		propertiesChanged(true);
+	}
+
+	private void setIndexesToolTipText(String indexName)
+	{
+		Index index = null;
+		if (indexName != null)
+			index = LucenePlugin.instance.getIndex(indexName);
+		String tooltip;
+		if (index != null)
+		{
+			tooltip = jEdit.getProperty("lucene.index-combo-selected.tooltip",
+				new Object [] {indexName, AnalyzerFactory.getAnalyzerName(index.getAnalyzer())});
+		}
+		else
+		{
+			tooltip = jEdit.getProperty("lucene.index-combo.tooltip");
+		}
+		indexes.setToolTipText(tooltip);
 	}
 
 	private void setLayoutByGeometry()
@@ -288,8 +310,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			return;
 		firstTimeLayout = false;
 		horizontalLayout = horizontal;
-		Component c = ((BorderLayout)getLayout()).getLayoutComponent(
-			BorderLayout.NORTH);
+		Component c = ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.NORTH);
 		if (c != null)
 			remove(c);
 		if (horizontal)
@@ -411,16 +432,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			TemporaryIndex index = new TemporaryIndex(ALL_BUFFERS);
 			Buffer[] buffers = jEdit.getBuffers();
 			for (Buffer buffer : buffers)
-			{
 				index.addFile(buffer.getPath());
-			}
 			index.optimize();
 			index.commit();
 			return index;
 		}
 		return LucenePlugin.instance.getIndex(indexName);
 	}
-
 
 	public void setType(String fileType)
 	{
@@ -431,7 +449,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		searchField.setText(text);
 	}
-	
+
 	public void search(String text, String fileType)
 	{
 		Index index = getSelectedIndex();
@@ -595,7 +613,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 						rootNode.addChildCount(count);
 						TreeModel model = tree.getModel();
 						if (model instanceof DefaultTreeModel)
-							((DefaultTreeModel)model).nodeChanged(parent);
+							((DefaultTreeModel) model).nodeChanged(parent);
 						((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
 					}
 					else
@@ -701,17 +719,19 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private static class SearchRootNode implements SubtreePopupMenuProvider
 	{
 		private String text;
+
 		SearchRootNode(String searchText)
 		{
 			text = searchText;
 		}
+
 		public String toString()
 		{
 			return text;
 		}
+
 		public void addPopupMenuItemsFor(JPopupMenu popup,
-				final SourceLinkParentNode parent,
-				final DefaultMutableTreeNode node)
+			final SourceLinkParentNode parent, final DefaultMutableTreeNode node)
 		{
 			if (popup == null)
 				return;
@@ -725,6 +745,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				}
 			});
 		}
+
 		public void addChildCount(int count)
 		{
 			text = text + " (" + count + ")";
@@ -743,6 +764,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 	public void focusOnDefaultComponent()
 	{
-		searchField.requestFocusInWindow();		
+		searchField.requestFocusInWindow();
 	}
 }
