@@ -95,7 +95,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		indexModel = new IndexComboBoxModel(items);
 		indexes = new JComboBox(indexModel);
 		setIndexesToolTipText(null);
-		extendedOptions = new JCheckBox(jEdit.getProperty("lucene.extendedoptions.long"));
+		extendedOptions = new JCheckBox();
+		extendedOptions.setToolTipText(jEdit.getProperty("lucene.extendedoptions.tooltip"));
 		extendedOptions.setSelected(jEdit.getBooleanProperty("lucene.extendedoptions"));
 		extendedOptions.addActionListener(new ActionListener()
 		{

@@ -85,3 +85,5 @@ lucene.index-combo-selected.tooltip=\
 	<html><body>Choose Lucene Index<hr><b>{0}</b><br>Analyzer: <b>{1}</b></body></html>
 
 lucene.search-in-type.label=Search files of this type
+
+lucene.extendedoptions.tooltip=Additional Options
