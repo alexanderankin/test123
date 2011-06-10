@@ -373,5 +373,11 @@ public class SideKickPlugin extends EditPlugin
 			textArea.removeCaretListener(caretHandler);
 	} //}}}
 
+	public static void stop(View view) {
+		SideKick sidekick = sidekicks.get(view);
+		if (sidekick == null) return;
+		sidekick.getParser().stop();
+	}
+
 	//}}}
 }

@@ -99,6 +99,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 	//{{{ Instance variables
 	private RolloverButton parseBtn;
 	private RolloverButton propsBtn;
+	private RolloverButton stopBtn;
 
 	private JComboBox parserCombo;
 	protected JTree tree;
@@ -157,6 +158,11 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 		propsBtn.setToolTipText(jEdit.getProperty("sidekick-tree.mode-options"));
 		propsBtn.addActionListener(new SideKickProperties());
 
+		stopBtn = new RolloverButton(GUIUtilities.loadIcon(jEdit.getProperty(
+			"hypersearch-results.stop.icon")));
+		stopBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
+		stopBtn.addActionListener(ah);
+		
 		configMenu = new JPopupMenu("Parse");
 		followCaret = new JCheckBoxMenuItem("Follow Caret");
 
@@ -192,6 +198,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
 		buttonBox.add(parseBtn);
 		buttonBox.add(propsBtn);
+		buttonBox.add(stopBtn);
 		filterBox.add(search, BorderLayout.WEST);
 		filterBox.add(searchField, BorderLayout.CENTER);
 		filterBox.add(clearSearchBtn, BorderLayout.EAST);
@@ -779,7 +786,6 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 					return;
 				}
 			}
-
 			Buffer b = view.getBuffer();
 			jEdit.setIntegerProperty("sidekick.splitter.location", splitter.getDividerLocation());
 			if (evt.getSource() == onSave) {
@@ -829,6 +835,9 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				}
 				propertiesChanged();
 
+			}
+			else if (evt.getSource() == stopBtn) {
+				SideKickPlugin.stop(view);
 			}
 			if (evt.getSource() == parseBtn || evt.getSource() == parserCombo) {
 				level = 0;
