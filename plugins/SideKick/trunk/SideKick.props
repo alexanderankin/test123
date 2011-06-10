@@ -135,6 +135,7 @@ sidekick.complete-popup.insert-characters=\\
 sidekick-tree.title=Sidekick
 sidekick-tree.parse=Parse
 sidekick-tree.mode-options=Mode Options
+sidekick-tree.stop-parsing=Stop parsing
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
 
