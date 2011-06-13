@@ -88,10 +88,16 @@ public class ElementUtil {
                 Math.min(element.getEndLocation().line - 1, buffer.getLineCount() - 1)
             , 0));
         int[] totalVirtualWidth = new int[ 1 ];
-        int column_offset = buffer.getOffsetOfVirtualColumn(
+        int column_offset = -1;
+        try {
+            column_offset = buffer.getOffsetOfVirtualColumn(
                     Math.max( element.getEndLocation().line - 1, 0 ),
                     Math.max( element.getEndLocation().column - 1, 0 ),
                     totalVirtualWidth );
+        }
+        catch(ArrayIndexOutOfBoundsException e) {
+            column_offset = buffer.getLineEndOffset(Math.max( element.getEndLocation().line - 1, 0 ));
+        }
         if ( column_offset == -1 ) {
             column_offset = totalVirtualWidth[ 0 ];
         }
