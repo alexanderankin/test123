@@ -3895,6 +3895,9 @@ TigerNode AnnotationTypeDeclaration(Modifier m):
     }
     
     {
+        if (st == null || t == null) {
+            return null;   
+        }
         AnnotationTypeNode tn = new AnnotationTypeNode(t.image, m.modifiers);
         tn.setStartLocation(getLocation(t));
         TigerNode last = body.get(body.size() - 1);
