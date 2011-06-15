@@ -168,7 +168,7 @@ public class PHPParser implements PHPParserConstants {
                 StringReader stream = new StringReader(strEval);
                 if (jj_input_stream == null)
                 {
-                        jj_input_stream = new JavaCharStream(stream, 1, 1);
+                        jj_input_stream = new SimpleCharStream(stream, 1, 1);
                         token_source = new PHPParserTokenManager(jj_input_stream);
                 }
                 ReInit(new StringReader(strEval));
@@ -188,7 +188,7 @@ public class PHPParser implements PHPParserConstants {
                 Reader stream = new FileReader(fileName);
                 if (jj_input_stream == null)
                 {
-                        jj_input_stream = new JavaCharStream(stream, 1, 1);
+                        jj_input_stream = new SimpleCharStream(stream, 1, 1);
                         token_source = new PHPParserTokenManager(jj_input_stream);
                 }
                 ReInit(stream);
@@ -206,7 +206,7 @@ public class PHPParser implements PHPParserConstants {
                 StringReader stream = new StringReader(strEval);
                 if (jj_input_stream == null)
                 {
-                        jj_input_stream = new JavaCharStream(stream, 1, 1);
+                        jj_input_stream = new SimpleCharStream(stream, 1, 1);
                         token_source = new PHPParserTokenManager(jj_input_stream);
                 }
                 ReInit(stream);
@@ -275,7 +275,7 @@ public class PHPParser implements PHPParserConstants {
                 currentSegment = phpDocument;
                 if (jj_input_stream == null)
                 {
-                        jj_input_stream = new JavaCharStream(reader, 1, 1);
+                        jj_input_stream = new SimpleCharStream(reader, 1, 1);
                         jj_input_stream.setTabSize(1);
                         token_source = new PHPParserTokenManager(jj_input_stream);
                 }
@@ -12923,7 +12923,7 @@ Token arrayAssignToken;
 
   /** Generated Token Manager. */
   public PHPParserTokenManager token_source;
-  JavaCharStream jj_input_stream;
+  SimpleCharStream jj_input_stream;
   /** Current token. */
   public Token token;
   /** Next token. */
@@ -12975,7 +12975,7 @@ Token arrayAssignToken;
   }
   /** Constructor with InputStream and supplied encoding */
   public PHPParser(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream = new JavaCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new PHPParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -13001,7 +13001,7 @@ Token arrayAssignToken;
 
   /** Constructor. */
   public PHPParser(java.io.Reader stream) {
-    jj_input_stream = new JavaCharStream(stream, 1, 1);
+    jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new PHPParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;

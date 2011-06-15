@@ -28,8 +28,8 @@ options {
   DEBUG_LOOKAHEAD = false;
   DEBUG_TOKEN_MANAGER = false;
   ERROR_REPORTING = true;
-  JAVA_UNICODE_ESCAPE = true;
-  UNICODE_INPUT = false;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = true;
   IGNORE_CASE = true;
   USER_TOKEN_MANAGER = false;
   USER_CHAR_STREAM = false;
@@ -212,7 +212,7 @@ public class PHPParser
 		StringReader stream = new StringReader(strEval);
 		if (jj_input_stream == null)
 		{
-			jj_input_stream = new JavaCharStream(stream, 1, 1);
+			jj_input_stream = new SimpleCharStream(stream, 1, 1);
 			token_source = new PHPParserTokenManager(jj_input_stream);
 		}
 		ReInit(new StringReader(strEval));
@@ -232,7 +232,7 @@ public class PHPParser
 		Reader stream = new FileReader(fileName);
 		if (jj_input_stream == null)
 		{
-			jj_input_stream = new JavaCharStream(stream, 1, 1);
+			jj_input_stream = new SimpleCharStream(stream, 1, 1);
 			token_source = new PHPParserTokenManager(jj_input_stream);
 		}
 		ReInit(stream);
@@ -250,7 +250,7 @@ public class PHPParser
 		StringReader stream = new StringReader(strEval);
 		if (jj_input_stream == null)
 		{
-			jj_input_stream = new JavaCharStream(stream, 1, 1);
+			jj_input_stream = new SimpleCharStream(stream, 1, 1);
 			token_source = new PHPParserTokenManager(jj_input_stream);
 		}
 		ReInit(stream);
@@ -319,7 +319,7 @@ public class PHPParser
 		currentSegment = phpDocument;
 		if (jj_input_stream == null)
 		{
-			jj_input_stream = new JavaCharStream(reader, 1, 1);
+			jj_input_stream = new SimpleCharStream(reader, 1, 1);
 			jj_input_stream.setTabSize(1);
 			token_source = new PHPParserTokenManager(jj_input_stream);
 		}
