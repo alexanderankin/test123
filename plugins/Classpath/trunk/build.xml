@@ -9,7 +9,7 @@
 	none: if you supply your own html file as this template does.
 	xsltproc: if you plan on using docbook
 	-->
-	<!-- <property name="docs-proc.target" value="none" /> -->
+	<property name="docs-proc.target" value="none" />
 	
 	<!-- jEdit installation properties. -->
 	<import file="${build.support}/plugin-build.xml" />
