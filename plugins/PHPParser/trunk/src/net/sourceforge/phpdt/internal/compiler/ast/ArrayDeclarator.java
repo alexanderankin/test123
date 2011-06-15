@@ -108,6 +108,7 @@ public class ArrayDeclarator extends AbstractVariable
 	@Override
 	public void getOutsideVariable(List<VariableUsage> list)
 	{
+        prefix.getUsedVariable(list);
 	}
 
 	/**
