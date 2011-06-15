@@ -4,7 +4,7 @@
 plugin.gatchan.phpparser.PHPParserPlugin.activate=defer
 plugin.gatchan.phpparser.PHPParserPlugin.name=PHPParserPlugin
 plugin.gatchan.phpparser.PHPParserPlugin.author=Matthieu Casanova
-plugin.gatchan.phpparser.PHPParserPlugin.version=1.3.2
+plugin.gatchan.phpparser.PHPParserPlugin.version=1.3.3
 plugin.gatchan.phpparser.PHPParserPlugin.docs=docs/PHPParser.html
 plugin.gatchan.phpparser.PHPParserPlugin.usePluginHome=true
 plugin.gatchan.phpparser.PHPParserPlugin.description=PHPParser is a plugin that parses php buffer and helps you developing php

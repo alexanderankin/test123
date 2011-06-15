@@ -2656,7 +2656,7 @@ static final long[] jjtoSpecial = {
 static final long[] jjtoMore = {
    0x2000000L, 0x0L, 0x0L, 
 };
-protected JavaCharStream input_stream;
+protected SimpleCharStream input_stream;
 private final int[] jjrounds = new int[52];
 private final int[] jjstateSet = new int[104];
 private final StringBuilder jjimage = new StringBuilder();
@@ -2665,20 +2665,20 @@ private int jjimageLen;
 private int lengthOfMatch;
 protected char curChar;
 /** Constructor. */
-public PHPParserTokenManager(JavaCharStream stream){
-   if (JavaCharStream.staticFlag)
+public PHPParserTokenManager(SimpleCharStream stream){
+   if (SimpleCharStream.staticFlag)
       throw new Error("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
    input_stream = stream;
 }
 
 /** Constructor. */
-public PHPParserTokenManager(JavaCharStream stream, int lexState){
+public PHPParserTokenManager(SimpleCharStream stream, int lexState){
    this(stream);
    SwitchTo(lexState);
 }
 
 /** Reinitialise parser. */
-public void ReInit(JavaCharStream stream)
+public void ReInit(SimpleCharStream stream)
 {
    jjmatchedPos = jjnewStateCnt = 0;
    curLexState = defaultLexState;
@@ -2694,7 +2694,7 @@ private void ReInitRounds()
 }
 
 /** Reinitialise parser. */
-public void ReInit(JavaCharStream stream, int lexState)
+public void ReInit(SimpleCharStream stream, int lexState)
 {
    ReInit(stream);
    SwitchTo(lexState);
