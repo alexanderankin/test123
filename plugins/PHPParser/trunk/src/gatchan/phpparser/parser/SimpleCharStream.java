@@ -158,7 +158,7 @@ public class SimpleCharStream
     tokenBegin = -1;
     char c = readChar();
     tokenBegin = bufpos;
-
+    beginOffset = endOffset;
     return c;
   }
 
@@ -205,6 +205,7 @@ public class SimpleCharStream
 /** Read a character. */
   public char readChar() throws java.io.IOException
   {
+      endOffset++;
     if (inBuf > 0)
     {
       --inBuf;
