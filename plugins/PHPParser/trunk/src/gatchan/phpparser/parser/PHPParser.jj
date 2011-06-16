@@ -1036,7 +1036,7 @@ InterfaceDeclaration interfaceDeclaration():
 	MethodDeclaration methodDeclaration;
 	List<String> superInterfaces = null;
 	List<Modifier> modifiers = new ArrayList<Modifier>(1);
-	ClassConstant classConstant;
+	List<ClassConstant> classConstants;
 }
 {
 	//{{{ interface <IDENTIFIER>
@@ -1136,9 +1136,12 @@ InterfaceDeclaration interfaceDeclaration():
 			 interfaceDeclaration.add(methodDeclaration);
 		 }
 		 |
-		 classConstant = classConstant()
+		 classConstants = classConstant()
 		 {
-			 interfaceDeclaration.addConstant(classConstant);
+		 	 for (ClassConstant classConstant : classConstants)
+		 	 {
+		 	 	 interfaceDeclaration.addConstant(classConstant);
+		 	 }	 
 		 }
 	)*
 	try
@@ -1162,12 +1165,13 @@ InterfaceDeclaration interfaceDeclaration():
 } //}}}
 
 //{{{ ClassConstant()
-ClassConstant classConstant():
+List<ClassConstant> classConstant():
 {
 	Token constToken, token;
 	String constName = SYNTAX_ERROR_CHAR;
-	Expression initializer = null;
 	int end, endLine, endColumn;
+	List<ClassConstant> constants = new ArrayList<ClassConstant>();
+	ClassConstant classConstant;
 }
 {
 	constToken = <CONST>
@@ -1176,15 +1180,61 @@ ClassConstant classConstant():
 		endLine = constToken.endLine;
 		endColumn = constToken.endColumn;
 	}
-	//{{{ <IDENTIFIER>
+	classConstant = _classConstant(constToken)
+	{
+		constants.add(classConstant);
+	}
+	(
+		token = <COMMA>
+		classConstant = _classConstant(token)
+		{
+			constants.add(classConstant);
+		}
+	)*
+	//{{{ <SEMICOLON>
 	try
 	{
-		token = methodIdentifier()
+		token = <SEMICOLON>
 		{
-			constName = token.image;
 			end = token.sourceEnd;
 			endLine = token.endLine;
 			endColumn = token.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("';' expected",";",e.currentToken.next);
+	} //}}}
+	{
+		return constants;
+	}
+} //}}}
+
+//{{{ _classConstant() method
+ClassConstant _classConstant(Token startToken):
+{
+	Token identifier;
+	Token token;
+	String constName = SYNTAX_ERROR_CHAR;
+	Expression initializer = null;
+	int end, endLine, endColumn;
+}
+{
+	{
+		end = startToken.sourceEnd;
+		endLine = startToken.endLine;
+		endColumn = startToken.endColumn;
+	}
+	//{{{ <IDENTIFIER>
+	try
+	{
+		identifier = methodIdentifier()
+		{
+			startToken = identifier;
+			constName = identifier.image;
+			end = identifier.sourceEnd;
+			endLine = identifier.endLine;
+			endColumn = identifier.endColumn;
 		}
 	}
 	catch (ParseException e)
@@ -1219,37 +1269,23 @@ ClassConstant classConstant():
 	{
 		fireParseError("expression expected","expression",e.currentToken.next);
 	} //}}}
-	//{{{ <SEMICOLON>
-	try
-	{
-		token = <SEMICOLON>
-		{
-			end = token.sourceEnd;
-			endLine = token.endLine;
-			endColumn = token.endColumn;
-		}
-	}
-	catch (ParseException e)
-	{
-		fireParseError("';' expected",";",e.currentToken.next);
-	} //}}}
-
 	{
 		return new ClassConstant(namespace,
 			path,
 			currentSegment,
 			constName,
 			initializer,
-			constToken.sourceStart,
+			startToken.sourceStart,
 			end,
-			constToken.beginLine,
+			startToken.beginLine,
 			endLine,
-			constToken.beginColumn,
+			startToken.beginColumn,
 			endColumn);
 	}
 } //}}}
 
-//{{{ interfaceMethodDeclaration(List modifiers)
+
+//{{{ interfaceMethodDeclaration(Liscodifiers)
 /**
  * A Method Declaration.
  * <b>function</b> MetodDeclarator() Block()
@@ -1579,13 +1615,16 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration):
 	Modifier modifier;
 	List<Modifier> modifiers = new ArrayList<Modifier>();
 	List<FieldDeclaration> fields;
-	ClassConstant classConstant;
+	List<ClassConstant> classConstants;
 }
 {
 	(
-		classConstant = classConstant()
+		classConstants = classConstant()
 		{
-			classDeclaration.addConstant(classConstant);
+			for (ClassConstant classConstant:classConstants)
+			{
+				classDeclaration.addConstant(classConstant);
+			}
 		}
 	|
 		//{{{ modifiers
@@ -1692,12 +1731,15 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration):
 	Modifier modifier;
 	List<Modifier> modifiers = new ArrayList<Modifier>();
 	List<FieldDeclaration> fields;
-	ClassConstant classConstant;
+	List<ClassConstant> classConstants;
 }
 {
-	classConstant = classConstant()
+	classConstants = classConstant()
 	{
-		classDeclaration.addConstant(classConstant);
+		for (ClassConstant classConstant:classConstants)
+		{
+			classDeclaration.addConstant(classConstant);
+		}
 	}
 |
 	(
