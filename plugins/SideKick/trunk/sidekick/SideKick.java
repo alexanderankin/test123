@@ -517,7 +517,9 @@ public class SideKick
 
 		public void run()
 		{
+			buffer.readLock();
 			data[0] = parser.parse(buffer,errorSource);
+			buffer.readUnlock();
 			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY, data[0]);
 			EventQueue.invokeLater(new ParseAWTRequest(
 				parser, buffer, errorSource, data));
