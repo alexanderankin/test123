@@ -96,7 +96,7 @@ public class ElementUtil {
                     totalVirtualWidth );
         }
         catch(ArrayIndexOutOfBoundsException e) {
-            column_offset = buffer.getLineEndOffset(Math.max( element.getEndLocation().line - 1, 0 ));
+            column_offset = buffer.getLineEndOffset(buffer.getLineCount() - 1);
         }
         if ( column_offset == -1 ) {
             column_offset = totalVirtualWidth[ 0 ];
