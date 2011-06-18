@@ -33,7 +33,8 @@ public class SimpleCharStream
 /** Whether parser is static. */
   public static final boolean staticFlag = false;
   protected StringBuilder currentBuffer = new StringBuilder();
-  protected int beginOffset, endOffset;
+  int beginOffset;
+  int currentOffset;
   int bufsize;
   int available;
   int tokenBegin;
@@ -158,7 +159,7 @@ public class SimpleCharStream
     tokenBegin = -1;
     char c = readChar();
     tokenBegin = bufpos;
-    beginOffset = endOffset;
+    beginOffset = currentOffset;
     return c;
   }
 
@@ -205,7 +206,7 @@ public class SimpleCharStream
 /** Read a character. */
   public char readChar() throws java.io.IOException
   {
-      endOffset++;
+    currentOffset++;
     if (inBuf > 0)
     {
       --inBuf;
@@ -271,6 +272,7 @@ public class SimpleCharStream
     inBuf += amount;
     if ((bufpos -= amount) < 0)
       bufpos += bufsize;
+    currentOffset -= amount;
   }
 
   /** Constructor. */
@@ -321,7 +323,7 @@ public class SimpleCharStream
     bufpos = -1;
     currentBuffer.append(buffer);
     beginOffset = 0;
-    endOffset = 0;
+    currentOffset = 0;
   }
 
   /** Reinitialise. */
@@ -500,11 +502,11 @@ public class SimpleCharStream
 }
 
   public int getBeginOffset() {
-    return beginOffset;
+    return beginOffset - 1;
   }
 
   public int getEndOffset() {
-    return endOffset;
+    return currentOffset;
   }
 }
 /* JavaCC - OriginalChecksum=0242132d515f3c6ae2f3e7a66018341a (do not edit this line) */
