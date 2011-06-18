@@ -593,8 +593,6 @@ public class SideKick
 		{
 			if(buffer != SideKick.this.buffer)
 			{
-				Log.log(Log.ERROR,this,"We have " + SideKick.this.buffer
-					+ " but got event for " + buffer);
 				return;
 			}
 
