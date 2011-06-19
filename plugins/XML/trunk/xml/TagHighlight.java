@@ -19,6 +19,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.textarea.StructureMatcher;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.util.Log;
 import sidekick.SideKickActions;
 import xml.parser.javacc.TagParser;
 //}}}
@@ -28,13 +29,21 @@ public class TagHighlight implements StructureMatcher
 	//{{{ getMatch() method
 	public StructureMatcher.Match getMatch(TextArea textArea)
 	{
+		long start = System.currentTimeMillis();
+
 		if(XmlPlugin.isDelegated(textArea)) {
 			return null;
 		}
-
+		
+		// FIXME: should a readLock() be held ?
 		int caret = textArea.getCaretPosition();
-		String text = textArea.getText();
 		Buffer buffer = (Buffer)textArea.getBuffer();
+		CharSequence text = buffer.getSegment(0, buffer.getLength());
+		// too bad that we first retrieve the current tag, parsing the whole buffer
+		// and then reparse again to get the matching tag...
+		// Also, the first parse could get only the buffer up to caret or
+		// caret +1000 characters to get a full tag and then the relevant part of the buffer's content (before or after).
+		// this would speed up matching near the begining of a big buffer
 		TagParser.Tag current = TagParser.getTagAtOffset(buffer,text,caret);
 
 		if(current == null) {
@@ -49,6 +58,7 @@ public class TagHighlight implements StructureMatcher
 				tag.endLine = textArea.getLineOfOffset(tag.end);
 				tag.matcher = this;
 			}
+			Log.log(Log.DEBUG, TagHighlight.class, "matching tag parsing the full buffer has taken "+(System.currentTimeMillis()-start)+"ms");
 			return tag;
 		}
 	} //}}}

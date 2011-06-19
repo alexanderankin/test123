@@ -15,12 +15,14 @@
 package xml;
 
 //{{{ Imports
-import java.io.StringReader;
+import java.io.Reader;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.textarea.StructureMatcher;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.util.Log;
 import sidekick.SideKickActions;
 import sidekick.SideKickParsedData;
 import sidekick.IAsset;
@@ -34,6 +36,8 @@ public class SideKickTagHighlight implements StructureMatcher
 	//{{{ getMatch() method
 	public StructureMatcher.Match getMatch(TextArea textArea)
 	{
+		long startTime = System.currentTimeMillis();
+		
 		if(XmlPlugin.isDelegated(textArea)) {
 			return null;
 		}
@@ -59,18 +63,24 @@ public class SideKickTagHighlight implements StructureMatcher
 				 * one has to take care of '>' in attribute values, so it's better to simply
 				 * use the javacc parser.
 				 * */
-				/* FIXME: copy of a potentially big portion of the buffer.
-				 * It's consumed by a streaming client (javacc parser) or read char by char from the end.
+				/* FIXME: should a readlock() be held during the whole parsing since
+				 * it's not a copy of the buffer's content but the live content that we get ?
 				 * */
-				String toParse = textArea.getBuffer().getText(
-					asset.getStart().getOffset(),
-					asset.getEnd().getOffset()-asset.getStart().getOffset());
-				System.err.println(toParse);
-				System.err.println("-------------------");
-				int line = textArea.getLineOfOffset(asset.getStart().getOffset());
-				StringReader r = new StringReader(toParse);
+				JEditBuffer b =  textArea.getBuffer();
+				int max = b.getLength();
+				int sA = asset.getStart().getOffset();
+				int lA = asset.getEnd().getOffset()-sA;
+				if(sA < 0 || sA > max){
+					return null;
+				}
+				if(lA < 0 || sA+lA > max){
+					return null;
+				}
+				CharSequence toParse = b.getSegment(sA,lA);
+				int line = textArea.getLineOfOffset(sA);
+				Reader r = new CharSequenceReader(toParse);
 				XmlParser parser = new XmlParser(r,line+1,
-					asset.getStart().getOffset()-textArea.getLineStartOffset(line)+1);
+					sA-textArea.getLineStartOffset(line)+1);
 				try{
 					XmlDocument.XmlElement startTag = parser.Tag();
 					System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
@@ -102,6 +112,7 @@ public class SideKickTagHighlight implements StructureMatcher
 					throw new RuntimeException(pe);
 				}
 			}
+			Log.log(Log.DEBUG, SideKickTagHighlight.class, "highlighting matching tag has taken "+(System.currentTimeMillis()-startTime)+"ms");
 			return tag;
 		}
 	} //}}}

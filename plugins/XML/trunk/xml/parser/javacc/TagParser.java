@@ -26,6 +26,7 @@ import sidekick.util.Location;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 import java.io.StringReader;
+import java.io.Reader;
 //}}}
 
 public class TagParser
@@ -35,9 +36,9 @@ public class TagParser
 	public static final int T_END_TAG = 2;
 
 	//{{{ parse() method
-	private static XmlDocument parse(String text){
+	private static XmlDocument parse(CharSequence text){
 		try{
-			StringReader r = new StringReader(text);
+			Reader r = new xml.CharSequenceReader(text);
 			XmlParser parser = new XmlParser(r);
 			// FIXME: do sthing
 			parser.getParseErrors();
@@ -48,6 +49,12 @@ public class TagParser
 		}
 	}//}}}
 	
+	private static class FoundException extends RuntimeException{
+	}
+	private static final FoundException foundException = new FoundException();
+
+	// TODO: isn't it allowed to exit once a match has been found ?
+	// throw an exception of sthing
 	private static class LastSeenVisitor extends XmlVisitor{
 		XmlDocument.XmlElement lastSeen = null;
 		private Location loc;
@@ -64,6 +71,7 @@ public class TagParser
 			if(loc.compareTo(t.getStartLocation())>0
 				&& loc.compareTo(t.getEndLocation())<0){
 				lastSeen = t;
+				throw foundException;
 			}
 			// loc is before endLocation
 			// if(loc.compareTo(t.endLocation)<0){
@@ -76,13 +84,14 @@ public class TagParser
 			if(loc.compareTo(t.getStartLocation())>0
 				&& loc.compareTo(t.getEndLocation())<0){
 				lastSeen = t;
+				throw foundException;
 			}
 		}
 		
 	}
 	
 	//{{{ getTagAtOffset() method
-	public static Tag getTagAtOffset(Buffer buffer, String text, int pos)
+	public static Tag getTagAtOffset(Buffer buffer, CharSequence text, int pos)
 	{
 		if(pos < 0 || pos > text.length())
 			return null;
@@ -93,8 +102,10 @@ public class TagParser
 		int line = buffer.getLineOfOffset(pos);
 		int offset = pos - buffer.getLineStartOffset(line)+1;
 		LastSeenVisitor visitor = new LastSeenVisitor(line+1, offset);
-		visitor.visit(doc);
-		if(visitor.lastSeen != null){
+		try{
+			visitor.visit(doc);
+			return null;
+		}catch(FoundException f){
 			int tagType;
 			String tagName;
 			XmlDocument.AttributeList attrs;
@@ -123,13 +134,11 @@ public class TagParser
 			tag.attrs = attrs;
 			
 			return tag;
-		}else{
-			return null;
 		}
 	} //}}}
 
 	//{{{ getMatchingTag() method
-	public static Tag getMatchingTag(Buffer buffer, String text, Tag tag)
+	public static Tag getMatchingTag(Buffer buffer, CharSequence text, Tag tag)
 	{
 		if (tag.type == T_START_TAG)
 			return findEndTag(buffer, text, tag);
@@ -156,6 +165,8 @@ public class TagParser
 				if(!t.emptyTag){
 					elements.push(t);
 				}
+			}else{
+				throw foundException;
 			}
 		}
 		
@@ -171,11 +182,13 @@ public class TagParser
 						return;
 					}
 				}
+			}else{
+				throw foundException;
 			}
 		}
 	}
 
-	public static Tag findLastOpenTag(Buffer buffer, String text, int pos,
+	public static Tag findLastOpenTag(Buffer buffer, CharSequence text, int pos,
 		XmlParsedData data)
 	{
 		XmlDocument doc = parse(text);
@@ -184,7 +197,10 @@ public class TagParser
 		int line = buffer.getLineOfOffset(pos);
 		int offset = pos - buffer.getLineStartOffset(line)+1;
 		LastOpenTagVisitor visit = new LastOpenTagVisitor(line+1,offset);
-		visit.visit(doc);
+		try{
+			visit.visit(doc);
+		}catch(FoundException e){ //NOPMD: swallow it
+		}
 		if(visit.elements.isEmpty()){
 			return null;	
 		}else{
@@ -275,6 +291,8 @@ public class TagParser
 				if(!t.emptyTag){
 					elements.push(t);
 				}
+			}else{
+				throw foundException;
 			}
 		}
 		
@@ -286,10 +304,10 @@ public class TagParser
 				if(t.tagName.equals(startTag.tag)
 					&& elements.isEmpty())
 				{
-					// TODO: stop after that
 					if(lastSeen == null){
 						//System.err.println("found "+t);
 						lastSeen = t;
+						throw foundException;
 					}
 				}
 				else {
@@ -303,11 +321,13 @@ public class TagParser
 						}
 					}
 				}
+			}else{
+				throw foundException;
 			}
 		}
 	}
 
-	private static Tag findEndTag(Buffer buffer, String text, Tag startTag)
+	private static Tag findEndTag(Buffer buffer, CharSequence text, Tag startTag)
 	{
 		XmlDocument doc = parse(text);
 		//System.err.println("---------------------------------");
@@ -315,7 +335,11 @@ public class TagParser
 		int line = buffer.getLineOfOffset(startTag.start);
 		int offset = startTag.start - buffer.getLineStartOffset(line)+1;
 		FindEndTagVisitor visitor = new FindEndTagVisitor(line+1, offset, startTag);
-		visitor.visit(doc);
+		try{
+			visitor.visit(doc);
+		}catch(FoundException e){
+			//NOPMD: the exception is just a way of exiting quickly
+		}
 		if(visitor.lastSeen != null){
 			ElementUtil.createStartPosition(buffer, visitor.lastSeen);
 			ElementUtil.createEndPosition(buffer, visitor.lastSeen);
@@ -332,7 +356,7 @@ public class TagParser
 	} //}}}
 
 	//{{{ findStartTag() method
-	private static Tag findStartTag(Buffer buffer, String text, Tag endTag)
+	private static Tag findStartTag(Buffer buffer, CharSequence text, Tag endTag)
 	{
 		XmlDocument doc = parse(text);
 		//System.err.println("---------------------------------");
@@ -340,7 +364,11 @@ public class TagParser
 		int line = buffer.getLineOfOffset(endTag.start);
 		int offset = endTag.start - buffer.getLineStartOffset(line) + 1;
 		LastOpenTagVisitor visitor = new LastOpenTagVisitor(line+1,offset);
-		visitor.visit(doc);
+		try{
+			visitor.visit(doc);
+		}catch(FoundException e){
+			//NOPMD: the exception is just a way of exiting quickly
+		}
 		if(!visitor.elements.isEmpty()){
 			for(int i=visitor.elements.size()-1;i>=0;i--){
 				XmlDocument.Tag start = visitor.elements.get(i);

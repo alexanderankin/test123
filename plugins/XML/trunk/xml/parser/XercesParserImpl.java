@@ -4,6 +4,7 @@ package xml.parser;
 import java.net.URISyntaxException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 import xml.Resolver;
+import xml.CharSequenceReader;
 import xml.AntXmlParsedData;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
@@ -81,22 +83,17 @@ public class XercesParserImpl extends XmlParser
 	}
 	
 	//{{{ parse() method
+	/**
+	 * a buffer read lock is hold arround parse()
+	 */
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
 		long start = System.currentTimeMillis();
 		Log.log(Log.NOTICE,XercesParserImpl.class,"parsing started @"+start);
 		stopped = false;
-		String text;
-		try
-		{
-			buffer.readLock();
-			text = buffer.getText(0,buffer.getLength());
-		}
-		finally
-		{
-			buffer.readUnlock();
-		}
+		CharSequence text;
 
+		text = buffer.getSegment(0,buffer.getLength());
 		
 		XmlParsedData data = createXmlParsedData(buffer.getName(), buffer.getMode().toString(), false);
 		
@@ -225,7 +222,7 @@ public class XercesParserImpl extends XmlParser
 		}
 		else
 		{
-			source.setCharacterStream(new StringReader(text));
+			source.setCharacterStream(new CharSequenceReader(text));
 			source.setSystemId(buffer.getPath());
 		}
 
@@ -349,13 +346,13 @@ public class XercesParserImpl extends XmlParser
 
 		Buffer buffer = editPane.getBuffer();
 		
-		String text = buffer.getText(0,caret);
+		CharSequence text = buffer.getSegment(0,caret);
 
 		FastHandler handler = new FastHandler(buffer,data);
 
 		InputSource source = new InputSource();
 
-		source.setCharacterStream(new StringReader(text));
+		source.setCharacterStream(new CharSequenceReader(text));
 		source.setSystemId(buffer.getPath());
 
 		reader.setContentHandler(handler);
@@ -415,7 +412,7 @@ public class XercesParserImpl extends XmlParser
 		Buffer buffer;
 
 		ErrorListErrorHandler errorHandler;
-		String text;
+		CharSequence text;
 		XmlParsedData data;
 
 		HashMap<String, String> declaredPrefixes;
@@ -433,7 +430,7 @@ public class XercesParserImpl extends XmlParser
 		
 		// }}}
 		// {{{ Handler constructor
-		Handler(Buffer buffer, String text, ErrorListErrorHandler errorHandler,
+		Handler(Buffer buffer, CharSequence text, ErrorListErrorHandler errorHandler,
 			XmlParsedData data)
 		{
 			this.buffer = buffer;
@@ -1020,19 +1017,6 @@ public class XercesParserImpl extends XmlParser
 				throw new StoppedException();
 
 			empty = false;
-		} //}}}
-
-		//{{{ findTagStart() method
-		// TODO: this isn't used, remove?
-		private int findTagStart(int offset)
-		{
-			/*for(int i = offset; i >= 0; i--)
-			{
-				if(text.charAt(i) == '<')
-					return i;
-			}
-			*/
-			return 0;
 		} //}}}
 
 		// {{{
