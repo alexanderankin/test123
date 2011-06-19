@@ -263,6 +263,8 @@ public class XSDSchemaToCompletion{
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XSDSchemaToCompletion.class,"getCompletionInfoFromSchema("+location+","+schemaLocation+","+nonsSchemaLocation+","+buffer.getPath()+")");
 		String realLocation = null;
 		try{
+			Resolver r = Resolver.instance();
+			System.err.println("resolver is "+r);
 			realLocation = Resolver.instance().resolveEntityToPath(
 				null,//name
 				null,//public Id
