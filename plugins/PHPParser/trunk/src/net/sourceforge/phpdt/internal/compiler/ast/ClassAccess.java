@@ -167,4 +167,9 @@ public class ClassAccess extends AbstractVariable
 	{
 		return prefix;
 	}
+
+    public Expression getSuffix()
+    {
+        return suffix;
+    }
 }
