@@ -14,6 +14,7 @@ plugin.gatchan.phpparser.PHPParserPlugin.depend.1=jedit 04.03.99.00
 plugin.gatchan.phpparser.PHPParserPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.gatchan.phpparser.PHPParserPlugin.depend.3=plugin sidekick.SideKickPlugin 1.0
 plugin.gatchan.phpparser.PHPParserPlugin.depend.4=plugin CommonControlsPlugin 1.3
+plugin.gatchan.phpparser.PHPParserPlugin.depend.5=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 1.0.3
 gatchan-phpparser-parse.label=parse
 
 
@@ -96,3 +97,5 @@ gatchan-phpparser.itemfinder.searchLabel.class     = Type the searched class nam
 gatchan-phpparser.itemfinder.searchLabel.method    = Type the searched method name :
 gatchan-phpparser.itemfinder.searchLabel.field     = Type the searched field name :
 gatchan-phpparser.itemfinder.searchLabel.interface = Type the searched interface name :
+
+mode.php.hyperlink.source=php
