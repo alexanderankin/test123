@@ -239,6 +239,11 @@ public abstract class AstNode implements Serializable
 	 */
 	public static boolean isAt(AstNode node, int line, int column)
 	{
+        if (node.getBeginLine() == node.getEndLine())
+        {
+            return line == node.getBeginLine() && column >= node.getBeginColumn() &&
+                column < node.getEndColumn();
+        }
 		return (line == node.getBeginLine() && column > node.getBeginColumn()) ||
 			(line == node.getEndLine() && column < node.getEndColumn()) ||
 			(line > node.getBeginLine() && line < node.getEndLine());
