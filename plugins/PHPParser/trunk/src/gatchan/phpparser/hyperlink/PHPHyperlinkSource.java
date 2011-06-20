@@ -47,64 +47,74 @@ public class PHPHyperlinkSource implements HyperlinkSource
         }
         int line = buffer.getLineOfOffset(offset);
         int lineStartOffset = buffer.getLineStartOffset(line);
-        int lineoffset = offset - lineStartOffset;
+        int lineOffset = offset - lineStartOffset;
         Statement statement = phpDocument.getStatementAt(line + 1  /* +1 because first line in my parser is 1*/,
-            lineoffset);
+            lineOffset);
         if (statement == null)
             return null;
-        return processStatement(buffer, line, lineoffset, statement);
+        return processStatement(buffer, line, lineOffset, statement);
     }
 
-    private static Hyperlink processStatement(Buffer buffer, int line, int lineoffset, Statement statement)
+    private static Hyperlink processStatement(Buffer buffer, int line, int lineOffset, Statement statement)
     {
-        if (statement instanceof FunctionCall)
+        while (true)
         {
-            FunctionCall functionCall = (FunctionCall) statement;
-            if (functionCall.expressionAt(line, lineoffset) == functionCall.getFunctionName())
-                return processFunctionCall(functionCall, buffer, line, lineoffset);
-        }
-        else if (statement instanceof ClassAccess)
-        {
-            ClassAccess classAccess = (ClassAccess) statement;
-            Expression expression = classAccess.expressionAt(line+1, lineoffset);
-            if (expression == classAccess.getPrefix() ||expression == classAccess.getSuffix())
+            if (statement instanceof FunctionCall)
             {
-                return processClassAccess(classAccess, buffer, line, lineoffset);
+                FunctionCall functionCall = (FunctionCall) statement;
+                return processFunctionCall(functionCall, buffer, line, lineOffset);
             }
+            else if (statement instanceof ClassAccess)
+            {
+                ClassAccess classAccess = (ClassAccess) statement;
+                Expression expression = classAccess.expressionAt(line + 1, lineOffset);
+                if (expression == classAccess.getPrefix() || expression == classAccess.getSuffix())
+                {
+                    return processClassAccess(classAccess, buffer, line, lineOffset);
+                }
+            }
+            else if (statement instanceof ClassInstantiation)
+            {
+                ClassInstantiation classInstantiation = (ClassInstantiation) statement;
+                return processClassInstantiation(classInstantiation, buffer, line, lineOffset);
+            }
+            Expression expression = statement.expressionAt(line + 1, lineOffset);
+            if (expression == null || expression == statement)
+                return null;
+            statement = expression;
         }
-        else if (statement instanceof ClassInstantiation)
-        {
-            ClassInstantiation classInstantiation = (ClassInstantiation) statement;
-            return processClassInstantiation(classInstantiation, buffer, line, lineoffset);
-        }
-        Expression expression = statement.expressionAt(line + 1, lineoffset);
-        if (expression == null || expression == statement)
-            return null;
-        return processStatement(buffer, line, lineoffset, expression);
     }
 
-    private static Hyperlink processClassInstantiation(ClassInstantiation classInstantiation, Buffer buffer, int line, int lineoffset)
+    private static Hyperlink processClassInstantiation(ClassInstantiation classInstantiation, Buffer buffer, int line, int lineOffset)
     {
         String className = classInstantiation.getType().getClassName();
         if (className == null)
             return null;
-        ClassHeader classHeader = null;
+        ClassHeader classHeader;
         Project project = ProjectManager.getInstance().getProject();
         classHeader = project.getClass(className);
         if (classHeader == null)
             return null;
         CharSequence lineSegment = buffer.getLineSegment(line);
         String noWordSep = buffer.getStringProperty("noWordSep");
-        int wordStart = TextUtilities.findWordStart(lineSegment, lineoffset, noWordSep);
-        int wordEnd = TextUtilities.findWordEnd(lineSegment, lineoffset, noWordSep);
+        int wordStart = TextUtilities.findWordStart(lineSegment, lineOffset, noWordSep);
+        int wordEnd = TextUtilities.findWordEnd(lineSegment, lineOffset, noWordSep);
         int lineStartOffset = buffer.getLineStartOffset(line);
         Hyperlink hyperlink = new PHPHyperlink(classHeader.getName(), classHeader.getPath(), classHeader.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
         return hyperlink;
     }
 
-    private static Hyperlink processFunctionCall(FunctionCall functionCall, Buffer buffer, int line, int lineoffset)
+    private static Hyperlink processFunctionCall(FunctionCall functionCall, Buffer buffer, int line, int lineOffset)
     {
         Expression functionName = functionCall.getFunctionName();
+        Expression expressionAt = functionCall.expressionAt(line + 1, lineOffset);
+        if (expressionAt != functionName)
+        {
+            if (expressionAt == null)
+                return null;
+            // the cursor is not on the function name
+            return processStatement(buffer, line, lineOffset, expressionAt);
+        }
         String name = functionName.toString();
         Project project = ProjectManager.getInstance().getProject();
         Object o = project.getMethods().get(name);
@@ -126,19 +136,19 @@ public class PHPHyperlinkSource implements HyperlinkSource
         }
         CharSequence lineSegment = buffer.getLineSegment(line);
         String noWordSep = buffer.getStringProperty("noWordSep");
-        int wordStart = TextUtilities.findWordStart(lineSegment, lineoffset, noWordSep);
-        int wordEnd = TextUtilities.findWordEnd(lineSegment, lineoffset, noWordSep);
+        int wordStart = TextUtilities.findWordStart(lineSegment, lineOffset, noWordSep);
+        int wordEnd = TextUtilities.findWordEnd(lineSegment, lineOffset, noWordSep);
         int lineStartOffset = buffer.getLineStartOffset(line);
         Hyperlink hyperlink = new PHPHyperlink(header.getName(), header.getPath(), header.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
         return hyperlink;
     }
 
-    private static Hyperlink processClassAccess(ClassAccess classAccess, Buffer buffer, int line, int lineoffset)
+    private static Hyperlink processClassAccess(ClassAccess classAccess, Buffer buffer, int line, int lineOffset)
     {
         String noWordSep = buffer.getStringProperty("noWordSep");
         CharSequence lineSegment = buffer.getLineSegment(line);
-        int wordStart = TextUtilities.findWordStart(lineSegment, lineoffset, noWordSep);
-        int wordEnd = TextUtilities.findWordEnd(lineSegment, lineoffset, noWordSep);
+        int wordStart = TextUtilities.findWordStart(lineSegment, lineOffset, noWordSep);
+        int wordEnd = TextUtilities.findWordEnd(lineSegment, lineOffset, noWordSep);
 
         Expression prefix = classAccess.getPrefix();
         ClassHeader classHeader = null;
@@ -150,7 +160,7 @@ public class PHPHyperlinkSource implements HyperlinkSource
         if (classHeader == null)
             return null;
          int lineStartOffset = buffer.getLineStartOffset(line);
-        Expression expression = classAccess.expressionAt(line+1, lineoffset);
+        Expression expression = classAccess.expressionAt(line + 1, lineOffset);
         if (expression == classAccess.getPrefix())
         {
             Hyperlink hyperlink = new PHPHyperlink(classHeader.getName(), classHeader.getPath(), classHeader.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
