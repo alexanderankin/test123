@@ -35,7 +35,6 @@ import javax.swing.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 //}}}
 

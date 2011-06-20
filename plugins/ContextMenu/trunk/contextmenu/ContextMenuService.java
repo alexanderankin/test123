@@ -6,7 +6,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DynamicContextMenuService;
 import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
 import java.awt.event.MouseEvent;
 
 
