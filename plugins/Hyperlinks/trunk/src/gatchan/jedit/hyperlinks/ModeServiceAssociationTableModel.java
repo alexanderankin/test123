@@ -40,11 +40,11 @@ import java.awt.*;
  */
 public class ModeServiceAssociationTableModel extends AbstractTableModel
 {
-	private Vector<Entry> modes;
-	private String col1;
-	private String col2;
-	private String defaultOption;
-	private String propertySuffix;
+	private final Vector<Entry> modes;
+	private final String col1;
+	private final String col2;
+	private final String defaultOption;
+	private final String propertySuffix;
 
 	private ModeServiceAssociationTableModel(String col1, String col2, String defaultOption, String propertySuffix)
 	{
@@ -111,7 +111,8 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ getColumnClass() method
-	public Class getColumnClass(int col)
+	@Override
+    public Class getColumnClass(int col)
 	{
 		switch (col)
 		{
@@ -139,13 +140,15 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ isCellEditable() method
-	public boolean isCellEditable(int row, int col)
+	@Override
+    public boolean isCellEditable(int row, int col)
 	{
 		return col == 1;
 	} //}}}
 
 	//{{{ setValueAt() method
-	public void setValueAt(Object value, int row, int col)
+	@Override
+    public void setValueAt(Object value, int row, int col)
 	{
 		if (col == 0)
 			return;
@@ -164,7 +167,8 @@ public class ModeServiceAssociationTableModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ getColumnName() method
-	public String getColumnName(int index)
+	@Override
+    public String getColumnName(int index)
 	{
 		switch (index)
 		{

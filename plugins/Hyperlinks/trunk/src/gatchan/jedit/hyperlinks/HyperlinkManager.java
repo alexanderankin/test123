@@ -20,14 +20,15 @@
  */
 package gatchan.jedit.hyperlinks;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.OperatingSystem;
-import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import java.awt.event.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The hyperlink manager is the class that will handle the hyperlinks for the textarea.
@@ -37,7 +38,7 @@ import java.awt.event.*;
  */
 public class HyperlinkManager
 {
-	private JEditTextArea textArea;
+	private final JEditTextArea textArea;
 
 	private HyperlinkTextAreaPainter painter;
 
@@ -58,10 +59,22 @@ public class HyperlinkManager
 		textArea.getPainter().addMouseMotionListener(mouseMotionAdapter);
 		focusListener = new MyFocusListener();
 		textArea.addFocusListener(focusListener);
+        EditBus.addToBus(this);
 	}
+
+    @EditBus.EBHandler
+    public void handlerEditPaneUpdate(EditPaneUpdate epu)
+    {
+        if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED
+            && epu.getEditPane().getTextArea() == textArea)
+        {
+            painter.setHyperLink(null);
+        }
+    }
 
 	public void dispose()
 	{
+        EditBus.removeFromBus(this);
 		textArea.getPainter().removeExtension(painter);
 		textArea.getPainter().removeMouseListener(mouseAdapter);
 		textArea.getPainter().removeMouseMotionListener(mouseMotionAdapter);
@@ -145,7 +158,27 @@ public class HyperlinkManager
 			if (hyperlinkSourceName == null)
 				return null;
 
-			return (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName);
+            String[] split = hyperlinkSourceName.split(",");
+            if (split.length == 1)
+            {
+                return (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName);
+            }
+            List<HyperlinkSource> sources = new LinkedList<HyperlinkSource>();
+            for (String s : split)
+            {
+                HyperlinkSource source = (HyperlinkSource) ServiceManager.getService(HyperlinkSource.SERVICE, hyperlinkSourceName.trim());
+                if (source != null)
+                {
+                    sources.add(source);
+                }
+            }
+            if (sources.isEmpty())
+                return null;
+            if (sources.size() == 1)
+            {
+                return sources.get(0);
+            }
+            return new FallbackHyperlinkSource(sources);
 		}
 	}
 }

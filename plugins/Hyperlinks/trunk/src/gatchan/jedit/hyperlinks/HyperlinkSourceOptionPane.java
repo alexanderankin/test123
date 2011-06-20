@@ -46,7 +46,8 @@ public class HyperlinkSourceOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _init() method
-	public void _init()
+	@Override
+    public void _init()
 	{
 		setLayout(new BorderLayout());
 		JTable table = ModeServiceAssociationTableModel.getTable(HyperlinkSource.SERVICE,
@@ -62,7 +63,8 @@ public class HyperlinkSourceOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _save() method
-	public void _save()
+	@Override
+    public void _save()
 	{
 		tableModel.save();
 	} //}}}

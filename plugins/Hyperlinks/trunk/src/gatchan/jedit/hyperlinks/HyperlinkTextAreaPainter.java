@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007, 2009 Matthieu Casanova
+ * Copyright (C) 2007, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ import java.awt.*;
  */
 public class HyperlinkTextAreaPainter extends TextAreaExtension
 {
-	private JEditTextArea textArea;
+	private final JEditTextArea textArea;
 	private Hyperlink hyperLink;
 
 	static Color color;
@@ -41,22 +41,34 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 		this.textArea = textArea;
 	}
 
-	public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y)
+	@Override
+    public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y)
 	{
 		Hyperlink link = hyperLink;
 		if (link == null)
 			return;
 		if (link.getStartLine() != physicalLine)
 			return;
-		int startX = textArea.offsetToXY(link.getStartOffset()).x;
-		int endX = textArea.offsetToXY(link.getEndOffset()).x;
+        Point startPoint = textArea.offsetToXY(link.getStartOffset());
+        if (startPoint == null)
+        {
+            return;
+        }
+        int startX = startPoint.x;
+        Point endPoint = textArea.offsetToXY(link.getEndOffset());
+        if (endPoint == null)
+        {
+            return;
+        }
+        int endX = endPoint.x;
 		gfx.setColor(color);
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
 		y += fm.getAscent();
 		gfx.drawLine(startX, y + 1, endX, y + 1);
 	}
 
-	public String getToolTipText(int x, int y)
+	@Override
+    public String getToolTipText(int x, int y)
 	{
 		Hyperlink link = hyperLink;
 		if (link == null)

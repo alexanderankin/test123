@@ -48,7 +48,8 @@ public class HyperlinkOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _init() method
-	public void _init()
+	@Override
+    public void _init()
 	{
 		hyperlinkColor = new ColorWellButton(jEdit.getColorProperty("options.hyperlink.color.value"));
 		String[] serviceNames = ServiceManager.getServiceNames(HyperlinkSource.SERVICE);
@@ -66,7 +67,8 @@ public class HyperlinkOptionPane extends AbstractOptionPane
 
 
 	//{{{ _save() method
-	public void _save()
+	@Override
+    public void _save()
 	{
 		jEdit.setColorProperty("options.hyperlink.color.value", hyperlinkColor.getSelectedColor());
 		String selected = (String) defaultSource.getSelectedItem();

@@ -20,7 +20,6 @@
  */
 package gatchan.jedit.hyperlinks;
 
-import gatchan.jedit.hyperlinks.AbstractHyperlink;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -32,11 +31,11 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class jEditOpenFileHyperlink extends AbstractHyperlink
 {
-	private String path;
+	private final String path;
 	public jEditOpenFileHyperlink(int start, int end, int line, String url)
 	{
 		super(start, end, line, url);
-		this.path = url;
+		path = url;
 	}
 
 	public void click(View view)

@@ -29,10 +29,12 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
  * @author Matthieu Casanova
  * @version $Id: HighlightPlugin.java,v 1.20 2006/06/21 09:40:32 kpouer Exp $
  */
-public class HyperlinksPlugin extends EBPlugin
+public class HyperlinksPlugin extends EditPlugin
 {
-	public void start()
+	@Override
+    public void start()
 	{
+        EditBus.addToBus(this);
 		View view = jEdit.getFirstView();
 		while (view != null)
 		{
@@ -46,8 +48,10 @@ public class HyperlinksPlugin extends EBPlugin
 		}
 	}
 
-	public void stop()
+	@Override
+    public void stop()
 	{
+        EditBus.removeFromBus(this);
 		View view = jEdit.getFirstView();
 		while (view != null)
 		{
@@ -73,20 +77,14 @@ public class HyperlinksPlugin extends EBPlugin
 		textArea.putClientProperty(HyperlinkManager.class, new HyperlinkManager(textArea));
 	}
 
-
-	public void handleMessage(EBMessage message)
+    @EditBus.EBHandler
+	public void handlePropertiesChanged(PropertiesChanged message)
 	{
-		if (message instanceof EditPaneUpdate)
-		{
-			handleEditPaneMessage((EditPaneUpdate) message);
-		}
-		else if (message instanceof PropertiesChanged)
-		{
-			HyperlinkTextAreaPainter.color = jEdit.getColorProperty("options.hyperlink.color.value");
-		}
-	}
+        HyperlinkTextAreaPainter.color = jEdit.getColorProperty("options.hyperlink.color.value");
+    }
 
-	private static void handleEditPaneMessage(EditPaneUpdate message)
+    @EditBus.EBHandler
+	public void handleEditPaneMessage(EditPaneUpdate message)
 	{
 		JEditTextArea textArea = message.getEditPane().getTextArea();
 		Object what = message.getWhat();
