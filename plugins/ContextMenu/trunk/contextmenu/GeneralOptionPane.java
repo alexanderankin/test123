@@ -23,10 +23,9 @@
 package contextmenu;
 
 //{{{ Imports
-import javax.swing.*;
-import org.gjt.sp.jedit.*;
+import javax.swing.JCheckBox;
+import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-//}}}
 
 
 

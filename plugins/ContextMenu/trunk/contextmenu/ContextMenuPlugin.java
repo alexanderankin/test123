@@ -25,23 +25,29 @@ package contextmenu;
 
 
 //{{{ Imports
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.MenuElement;
-import org.gjt.sp.jedit.gui.DynamicContextMenuService;
-import org.gjt.sp.jedit.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.options.GlobalOptions;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.DynamicMenuChanged;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.options.PluginOptions;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
-//}}}
 
 
 public class ContextMenuPlugin extends EBPlugin {
