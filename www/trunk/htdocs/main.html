@@ -4,7 +4,45 @@
 
 <!-- for jEdit: :mode=html:tabSize=2:indentSize=2:noTabs=true: -->
 
-<p><img src="images/screenshot.png" width="256" height="191" class="screenshot" /> jEdit is a mature programmer's text editor with hundreds (counting the time developing plugins) of person-years of development behind it.  To <a href="index.php?page=download">download</a>, install, and set up jEdit as quickly and painlessly as possible,
+<table>
+<tr>
+<td valign="top">
+<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+<script>
+new TWTR.Widget({
+  version: 2,
+  type: 'search',
+  search: 'jEdit',
+  interval: 6000,
+  title: '',
+  subject: 'Tweets about jEdit',
+  width: 250,
+  height: 500,
+  theme: {
+    shell: {
+      background: '#8ec1da',
+      color: '#ffffff'
+    },
+    tweets: {
+      background: '#ffffff',
+      color: '#444444',
+      links: '#1985b5'
+    }
+  },
+  features: {
+    scrollbar: true,
+    loop: false,
+    live: true,
+    hashtags: true,
+    timestamp: true,
+    avatars: true,
+    toptweets: true,
+    behavior: 'all'
+  }
+}).render().start();
+</script>
+</td>
+<td valign="top"><p><img src="images/screenshot.png" width="256" height="191" class="screenshot" /> jEdit is a mature programmer's text editor with hundreds (counting the time developing plugins) of person-years of development behind it.  To <a href="index.php?page=download">download</a>, install, and set up jEdit as quickly and painlessly as possible,
 go to the <a href="index.php?page=quickstart">Quick Start</a> page.</p>
 
 <p>While jEdit beats many expensive development tools for features and ease of use, it is released as free software with full source code, provided under the terms of the <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</a>. </p>
@@ -31,13 +69,15 @@ for a full list.</li>
 
 <a href="http://creativecommons.org/licenses/GPL/2.0/">
 <img border="0" alt="GPL V2.0" src="http://creativecommons.org/images/public/cc-GPL-a.png"/>
-</a>
+</a></td>
+</tr>
+</table>
 
 
-<!-- <h2>News</h2>
+<?php /*<h2>News</h2>
 
 <?php
-  include("/home/groups/j/je/jedit-community/htdocs/get_articles.php");
-?> -->
+  include("/home/project-web/jedit-community/htdocs/get_articles.php");
+?>*/?>
 
 <!-- end main.text -->
