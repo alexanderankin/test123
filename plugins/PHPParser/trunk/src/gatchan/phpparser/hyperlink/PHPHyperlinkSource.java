@@ -67,11 +67,7 @@ public class PHPHyperlinkSource implements HyperlinkSource
             else if (statement instanceof ClassAccess)
             {
                 ClassAccess classAccess = (ClassAccess) statement;
-                Expression expression = classAccess.expressionAt(line + 1, lineOffset);
-                if (expression == classAccess.getPrefix() || expression == classAccess.getSuffix())
-                {
-                    return processClassAccess(classAccess, buffer, line, lineOffset);
-                }
+                return processClassAccess(classAccess, buffer, line, lineOffset);
             }
             else if (statement instanceof ClassInstantiation)
             {
@@ -90,9 +86,8 @@ public class PHPHyperlinkSource implements HyperlinkSource
         String className = classInstantiation.getType().getClassName();
         if (className == null)
             return null;
-        ClassHeader classHeader;
         Project project = ProjectManager.getInstance().getProject();
-        classHeader = project.getClass(className);
+        ClassHeader classHeader = project.getClass(className);
         if (classHeader == null)
             return null;
         CharSequence lineSegment = buffer.getLineSegment(line);
@@ -134,6 +129,8 @@ public class PHPHyperlinkSource implements HyperlinkSource
         {
             header = (MethodHeader) o;
         }
+        if (header == null)
+            return null;
         CharSequence lineSegment = buffer.getLineSegment(line);
         String noWordSep = buffer.getStringProperty("noWordSep");
         int wordStart = TextUtilities.findWordStart(lineSegment, lineOffset, noWordSep);
@@ -157,6 +154,17 @@ public class PHPHyperlinkSource implements HyperlinkSource
             Project project = ProjectManager.getInstance().getProject();
             classHeader = project.getClass(classAccess.getName());
         }
+        else if (prefix instanceof Variable)
+        {
+            Variable variable = (Variable) prefix;
+            Type type = variable.getType();
+            String className = type.getClassName();
+            if (className != null)
+            {
+                Project project = ProjectManager.getInstance().getProject();
+                classHeader = project.getClass(className);
+            }
+        }
         if (classHeader == null)
             return null;
          int lineStartOffset = buffer.getLineStartOffset(line);
@@ -170,11 +178,17 @@ public class PHPHyperlinkSource implements HyperlinkSource
         if (suffix instanceof FunctionCall)
         {
             FunctionCall functionCall = (FunctionCall) suffix;
+            Expression functionName = functionCall.getFunctionName();
+            Expression expr = functionCall.expressionAt(line + 1, lineOffset);
+            if (expr != functionName)
+            {
+                return processStatement(buffer, line, lineOffset, expr);
+            }
             List<MethodHeader> methodsHeaders = classHeader.getMethodsHeaders();
             MethodHeader header = null;
             for (MethodHeader methodsHeader : methodsHeaders)
             {
-                if (methodsHeader.getName().equals(functionCall.getFunctionName().toString()))
+                if (methodsHeader.getName().equals(functionName.toString()))
                 {
                     header = methodsHeader;
                     break;
