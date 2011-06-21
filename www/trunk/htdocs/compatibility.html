@@ -5,32 +5,34 @@
 <h1>Operating Systems and Java Versions</h1>
 
 <ul>
-<li><a href="#win">Windows</a>
-<li><a href="#unix">Unix</a>
-<li><a href="#macx">Mac OS X</a>
-<li><a href="#vms">VMS</a>
+<li><a href="#win">Windows</a></li>
+<li><a href="#unix">Unix</a></li>
+<li><a href="#macx">Mac OS X</a></li>
+<li><a href="#vms">VMS</a></li>
 </ul>
 
-<p> jEdit 4.3 recommends Sun's JDK 1.5.0 or later. </p>
+<p> jEdit 4.4 <b>requires</b> JDK 1.6.0 or later. </p>
+
 <p> Note: jEdit has <b>not</b> been tested on OpenJDK, gnu-gcj, or IBM Java, or other Java platforms. Your mileage may vary if you try using anything other than Sun or Apple Java. </p>
 
-<p> jEdit 4.2 is the last release to support Java 1.3 or 1.4.
+<p> jEdit 4.3.x are the last releases to support Sun's JDK 1.5 or later. </p>
+<p> jEdit 4.2final is the last release to support Java 1.3 or 1.4.
 </p>
 
-<h2><a name="win">Windows</a></h2>
+<h2><a name="win">Windows/Linux</a></h2>
 
-<p><a href="http://java.sun.com/products/j2se/1.5">Sun</a> provides
-a 1.5 VM for Windows.</p>
-
-<h2><a name="unix">Linux / Unix</a></h2>
-
-<p><a href="http://java.sun.com/products/j2se/1.5">Sun</a> provides
-a 1.5 VM for Linux and Solaris. These are the recommended versions. </p>
+<p><a href="http://java.com/en/download/index.jsp">Oracle</a> provides
+a 1.6 VM for Windows, Linux, and Solaris.</p
+>
 
 <p><a href="http://www.ibm.com/developerworks/java/">IBM</a> provides
-a 1.5 VM for Linux, AIX, and OS/390.  </p>
+a 1.6 VM for Linux, AIX, and OS/390.  </p>
 
-<p>Some Linux distributions (Debian, Ubuntu) make available in the "non-free" section of their repository packages like <tt>sun-java5-jdk</tt>. It may be installed in <tt>/usr/lib/jvm/java-1.5.0-sun</tt>. It is possible an older/different version of <tt>java</tt> is found first in your <tt>PATH</tt>. Therefore, it is important to choose the correct "default" version of java. </p>
+<p>Some Linux distributions (Debian, Ubuntu) make available in the "non-free" section of 
+their repository packages like <tt>sun-java6-jdk</tt>. It may be installed in
+<tt>/usr/lib/jvm/java-6-sun</tt>.
+It is possible an older/different version of <tt>java</tt> is found first in your
+<tt>PATH</tt>. Therefore, it is important to choose the correct "default" version of java. </p>
 
 <pre>
 sh-3.1$ <b>which java</b>
@@ -60,13 +62,12 @@ There are 4 alternatives which provide `java'.
 
 <h2><a name="macx">Mac OS X </a></h2>
 
-<p> Mac OS X 10.4.8 and later has JDK 1.5 included with the operating system. Since older versions are <i>also</i> installed, it is important that you set your <tt>PATH</tt> and <tt>JAVA_HOME</tt> environment variables to point to the correct version. </p>
-
-<p> The OS/X <tt>dmg</tt> installer includes the "Mac OSX Plugin" which is only needed if you are using Java 1.5. If you have Java 1.6 as your default JVM, you will need to <b>remove</b> the Mac OSX plugin for jEdit to work properly. </p>
-
+Go to the <a href="http://support.apple.com/kb/HT4141">Support.apple.com</a>
+grab the latest version of Java 1.6 that you can for your platfrm. 
+For example, at the time this website was last updated, you can get JDK 1.6.0_20. 
 
 <h2><a name="vms">VMS</a></h2>
 
 <p>Java virtual machines for VMS on Alpha can be downloaded from
-<a href="http://h18012.www1.hp.com/java/download/index.html">HP</a>; be sure to get the Java 1.5 version, and read and follow instructions about supported VMS versions and patches.</p>
+<a href="http://h18012.www1.hp.com/java/download/index.html">HP</a>; be sure to get the Java 1.6 version, and read and follow instructions about supported VMS versions and patches.</p>
 
