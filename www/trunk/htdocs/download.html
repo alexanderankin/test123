@@ -156,7 +156,7 @@ Before installing jEdit, make sure you have a compatible Java virtual machine; s
     echo ' class="hilite"';
 ?>>
 <td></td>
-<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.4.1/jedit_4.4.1_all.deb/download">Debian package</a></td>
+<td><a href="index.php?page=download&amp;platform=unix#option_two">Debian package</a></td>
 <td>3.7 MiB</td>
 <td></td>
 </tr>
@@ -238,6 +238,7 @@ browser's "Download Link" command on the above links.</p>
   }
 ?>
 
+<a name="option_two"/>
 <h2>Option 2 - easy install on some flavors of *nix</h2>
 
 <ul>
@@ -256,20 +257,27 @@ users can install jEdit from the portage tree by running
 </li>
 
 <li>To install jEdit via <a href="http://www.debian.org">Debian Linux</a>
-<code>apt-get</code>, add the following line to your
-<code>/etc/apt/sources.list</code>:</p>
+<code>apt-get</code> (this is also for any Debian based Distros like Ubuntu),
+add the following line to your <code>/etc/apt/sources.list</code>:</p>
 
 <pre>deb http://&lt;mirror&gt;.dl.sourceforge.net/project/jedit /
-<!--deb-src http://&lt;mirror&gt;.dl.sourceforge.net/project/jedit /--></pre>
+<?php/*<deb-src http://&lt;mirror&gt;.dl.sourceforge.net/project/jedit />*/?></pre>
 
 e. g.
 
 <pre>deb http://switch.dl.sourceforge.net/project/jedit /
-<!--deb-src http://switch.dl.sourceforge.net/project/jedit /--></pre>
+<?php/*<deb-src http://switch.dl.sourceforge.net/project/jedit />*/?></pre>
 
 <p>Then, just run <code>apt-get update</code>, followed by
-<code>apt-get install jedit</code><!--
-or <code>apt-get source jedit</code-->. </p>
+<code>apt-get install jedit</code><?php/*
+or <code>apt-get source jedit</code>*/?>.</p>
+<p>The repository is now also secured and signed. To verify the packages
+you have to install the public key with which the repository is signed.
+This can be done by invoking
+<code>apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E6A233DBE3AFBEFC</code></p>
+<p>If you prefer manual installation of .deb files you can also download the
+<a href="http://sourceforge.net/projects/jedit/files/jedit/4.4.1/jedit_4.4.1_all.deb/download">Debian package</a>
+manually.</p>
 </li>
 
 <li>
