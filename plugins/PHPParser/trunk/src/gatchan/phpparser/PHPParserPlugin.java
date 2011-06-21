@@ -25,7 +25,13 @@ import gatchan.phpparser.project.ProjectManager;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.project.itemfinder.PHPItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
+import net.sourceforge.phpdt.internal.compiler.ast.Expression;
+import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
+import net.sourceforge.phpdt.internal.compiler.ast.Statement;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.util.Log;
 
 import java.awt.*;
 
@@ -129,4 +135,29 @@ public class PHPParserPlugin extends EditPlugin
 		itemFinderWindow.setLocationRelativeTo(jEdit.getActiveView());
 		itemFinderWindow.setVisible(true);
 	}
+
+    public static void debugAtCaret(TextArea textArea, Buffer buffer)
+    {
+        PHPDocument phpDocument = (PHPDocument) buffer.getProperty(PHPSideKickParser.PHPDOCUMENT_PROPERTY);
+        if (phpDocument == null)
+        {
+            return;
+        }
+        int caretPosition = textArea.getCaretPosition();
+        int caretLine = textArea.getCaretLine();
+        int lineStartOffset = textArea.getLineStartOffset(caretLine);
+        int caretColumn = caretPosition - lineStartOffset;
+        Statement statement = phpDocument.getStatementAt(caretLine+1, caretColumn);
+        if (statement == null)
+            return;
+        Log.log(Log.DEBUG, PHPParserPlugin.class,"----------------------------------------------------");
+        Log.log(Log.DEBUG, PHPParserPlugin.class, statement);
+        Expression expression = statement.expressionAt(caretLine+1, caretColumn);
+        while (expression != null)
+        {
+            Log.log(Log.DEBUG, PHPParserPlugin.class, expression + " | " + expression.getType());
+            expression = expression.expressionAt(caretLine+1, caretColumn);
+        }
+        Log.log(Log.DEBUG, PHPParserPlugin.class,"----------------------------------------------------");
+    }
 }
