@@ -1164,22 +1164,16 @@ InterfaceDeclaration interfaceDeclaration():
 	}
 } //}}}
 
-//{{{ ClassConstant()
+//{{{ ClassConstant() method
 List<ClassConstant> classConstant():
 {
 	Token constToken, token;
 	String constName = SYNTAX_ERROR_CHAR;
-	int end, endLine, endColumn;
 	List<ClassConstant> constants = new ArrayList<ClassConstant>();
 	ClassConstant classConstant;
 }
 {
 	constToken = <CONST>
-	{
-		end = constToken.sourceEnd;
-		endLine = constToken.endLine;
-		endColumn = constToken.endColumn;
-	}
 	classConstant = _classConstant(constToken)
 	{
 		constants.add(classConstant);
@@ -1195,11 +1189,6 @@ List<ClassConstant> classConstant():
 	try
 	{
 		token = <SEMICOLON>
-		{
-			end = token.sourceEnd;
-			endLine = token.endLine;
-			endColumn = token.endColumn;
-		}
 	}
 	catch (ParseException e)
 	{
@@ -3877,6 +3866,7 @@ Expression refPrimaryExpression(Token bitAndToken):
 	}
 } //}}}
 
+//{{{ fullyQualifiedIdentifier() method
 Expression fullyQualifiedIdentifier():
 {
 	Token token;
@@ -3891,7 +3881,8 @@ Expression fullyQualifiedIdentifier():
 	 {
 	 	 return new ConstantIdentifier(token);
 	 }
-}
+} //}}}
+
 
 //{{{ instantiation()
 Expression instantiation(Token reference):
@@ -3919,6 +3910,7 @@ Expression instantiation(Token reference):
 	}
 	catch (ParseException e)
 	{
+		//{{{ Exception
 		Token token = error_skipto(SEMICOLON);
 		expr = new DummyExpression(newToken.sourceEnd,
 			token.sourceStart,
@@ -3937,7 +3929,8 @@ Expression instantiation(Token reference):
 			newToken.next.beginLine,
 			token.beginLine,
 			newToken.next.beginColumn,
-			token.beginColumn));
+			token.beginColumn)); //}}}
+
 	}
 	{
 		int start, beginLine, beginColumn;
@@ -4174,11 +4167,12 @@ ClassAccess staticClassAccess(Expression expr):
 //{{{ classAccess()
 ClassAccess classAccess(Expression prefix) :
 {
-	Token lbrace, rbrace, methodIdentifier, listToken;
+	Token lbrace, rbrace, listToken;
+	Token classAccess; 
 	Expression expression;
 }
 {
-	<CLASSACCESS>
+	classAccess = <CLASSACCESS>
 	try
 	{
 		(
@@ -4196,10 +4190,41 @@ ClassAccess classAccess(Expression prefix) :
 			 }
 			 //}}}
 		 |
-			 methodIdentifier = methodIdentifier()
-			 {
-				 expression = new ConstantIdentifier(methodIdentifier);
-			 }
+			 //{{{ method access
+			{
+				Expression arguments = null;
+				Token methodIdentifier;
+			}
+			try
+			{
+				methodIdentifier = methodIdentifier()
+				{
+					expression =  new ConstantIdentifier(methodIdentifier);
+				}
+				[ 
+					LOOKAHEAD(<LPAREN>)
+					{
+						ArgumentList args;
+					}
+					args = arguments()
+					{
+						expression = new FunctionCall(expression, args); 
+					}
+				]
+				{
+					expression.setType(new Type(Type.OBJECT_INT,prefix.toString()));
+				}
+			}
+			catch (ParseException e)
+			{
+				expression = new ClassAccess(prefix,
+				     null,
+				     CLASSACCESS,
+				     classAccess.sourceEnd,
+				     classAccess.endLine,
+				     classAccess.endColumn);
+				fireParseError("identifier expected","identifier",e.currentToken);
+			} //}}}
 		 |
 			 listToken = <LIST>
 			 {
