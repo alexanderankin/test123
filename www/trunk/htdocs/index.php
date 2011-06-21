@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php
-		$page = $_GET['page'];
+		$page = trim($_GET['page']);
 
 		if ($page == "")
 			$page = "main";
@@ -19,7 +19,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 03 February 2011 | Latest Version: <a class="header_text" href="CHANGES44.txt">4.4pre1</a> | Stable Version: <a class="header_text" href="CHANGES43.txt">4.3.2</a></p>
+      <p class="header_text">Last Site Update: 21 June 2011 | <?php /*Latest Version: <a class="header_text" href="CHANGES44.txt">4.4pre1</a> | */?>Stable Version: <a class="header_text" href="CHANGES44.txt">4.4.1</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
