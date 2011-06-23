@@ -1,9 +1,8 @@
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"><!-- jEdit buffer-local properties: -->
+<?xml version="1.0" encoding="utf-8"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+<!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true:folding=sidekick: -->
-<book>
-
   <bookinfo>
     <title>SideKick plugin user's guide</title>
 
