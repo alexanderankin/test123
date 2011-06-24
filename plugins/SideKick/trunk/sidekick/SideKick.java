@@ -28,13 +28,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
@@ -181,12 +181,13 @@ public class SideKick
 			sendUpdate();
 		} //}}}
 
-		DefaultErrorSource errorSource = new DefaultErrorSource("SideKick");
-		SideKickParsedData[] data = new SideKickParsedData[1];
+		///DefaultErrorSource errorSource = new DefaultErrorSource("SideKick");	/// why is this here? Why not have ParseRequest create it?
+		///SideKickParsedData[] data = new SideKickParsedData[1];		/// why is this an array? Why is this even here?
 
-		ParseRequest parseRequest = new ParseRequest(
-			parser, buffer, errorSource, data);
-		SideKickPlugin.execute(parseRequest);
+		///ParseRequest parseRequest = new ParseRequest(
+		///	parser, buffer, errorSource, data);
+		ParseRequestWorker parseRequest = new ParseRequestWorker(parser, buffer);
+		SideKickPlugin.execute(view, parseRequest);
 	} //}}}
 
 	//{{{ dispose() method
@@ -497,58 +498,46 @@ public class SideKick
 	
 	
 	//{{{ Inner classes
-
-	//{{{ ParseRequest class
-	class ParseRequest implements Runnable
+	
+	class ParseRequestWorker extends SwingWorker<SideKickParsedData, Object>
 	{
 		SideKickParser parser;
 		Buffer buffer;
 		DefaultErrorSource errorSource;
-		SideKickParsedData[] data;
 
-		ParseRequest(SideKickParser parser, Buffer buffer,
-			DefaultErrorSource errorSource, SideKickParsedData[] data)
+		ParseRequestWorker(SideKickParser parser, Buffer buffer)
 		{
 			this.parser = parser;
 			this.buffer = buffer;
-			this.errorSource = errorSource;
-			this.data = data;
+			errorSource = new DefaultErrorSource("SideKick");
 		}
-
-		public void run()
+		
+		@Override
+		public SideKickParsedData doInBackground()
 		{
+			SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
+			if (tree != null)
+			{
+				tree.showStopButton(true);	
+			}
 			buffer.readLock();
-			data[0] = parser.parse(buffer,errorSource);
+			SideKickParsedData data = parser.parse(buffer, errorSource);
 			buffer.readUnlock();
-			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY, data[0]);
-			EventQueue.invokeLater(new ParseAWTRequest(
-				parser, buffer, errorSource, data));
+			return data;
 		}
-	} //}}}
-
-	//{{{ ParseAWTRequest class
-	class ParseAWTRequest implements Runnable
-	{
-		SideKickParser parser;
-		Buffer buffer;
-		SideKickParsedData[] data;
-		DefaultErrorSource errorSource;
-
-		ParseAWTRequest(SideKickParser parser, Buffer buffer,
-			DefaultErrorSource errorSource, SideKickParsedData[] data)
-		{
-			this.parser = parser;
-			this.buffer = buffer;
-			this.data = data;
-			this.errorSource = errorSource;
-		}
-
-		public void run()
+		
+		@Override
+		public void done() 
 		{
 			try
 			{
-				Log.log(Log.DEBUG,this,"ParseAWTRequest");
-
+				if (isCancelled())
+				{
+					parser.stop();
+					return;
+				}
+				SideKickParsedData data = get();
+				
 				setErrorSource(errorSource);
 
 				int errorCount = errorSource.getErrorCount();
@@ -562,7 +551,7 @@ public class SideKick
 						"sidekick.parsing-complete",pp));
 				}
 
-				buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
+				buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY, data);
 				if(buffer.getProperty("folding").equals("sidekick"))
 					buffer.invalidateCachedFoldLevels();
 
@@ -570,18 +559,27 @@ public class SideKick
 				while(_view != null)
 				{
 					if(_view.getBuffer() == buffer)
-						SideKickParsedData.setParsedData(_view,data[0]);
+						SideKickParsedData.setParsedData(_view, data);
 					_view = _view.getNext();
 				}
 
 				sendUpdate();
 			}
+			catch(Exception ie) 
+			{
+				showNotParsedMessage();	
+			}
 			finally
 			{
 				SideKickPlugin.finishParsingBuffer(buffer);
+				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
+				if (tree != null)
+				{
+					tree.showStopButton(false);	
+				}
 			}
 		}
-	} //}}}
+	}
 
 	// {{{ BufferChangeListener class
 	/**
