@@ -3842,6 +3842,11 @@ Expression refPrimaryExpression(Token bitAndToken):
 				expr = new ConstantIdentifier(identifier);
 			}
 		|
+			identifier = <STATIC>
+			{
+				expr = new ConstantIdentifier(identifier);
+			}
+		|
 			expr = Variable()  //todo use the bitAndToken parameter ...
 		)
 		(
