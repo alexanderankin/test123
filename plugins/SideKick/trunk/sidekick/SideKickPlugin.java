@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import javax.swing.SwingWorker;
 //}}}
 
 /**
@@ -70,6 +71,7 @@ public class SideKickPlugin extends EditPlugin
 	private static Set<Buffer> parsedBufferSet;
 	private static Map<View, SideKickToolBar> toolBars;
 	private static boolean toolBarsEnabled;
+	private static Map<View, SwingWorker> workers;
 	
 	//{{{ start() method
 	public void start()
@@ -77,6 +79,7 @@ public class SideKickPlugin extends EditPlugin
 		BeanShell.getNameSpace().addCommandPath(MACRO_PATH, getClass());
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
+		workers = new HashMap<View, SwingWorker>();
 		parsedBufferSet = new HashSet<Buffer>();
 		toolBars = new HashMap<View, SideKickToolBar>();
 		toolBarsEnabled = jEdit.getBooleanProperty(SHOW_TOOL_BAR);
@@ -283,6 +286,14 @@ public class SideKickPlugin extends EditPlugin
 		}
 		executor.execute(runnable);
 	}
+	
+	public static void execute(View view, SwingWorker worker) 
+	{
+		// TODO: there should be only one worker per view. Is it possible
+		// there could be more than one?
+		workers.put(view, worker);
+		worker.execute();
+	}
 
 	//{{{ isParsingBuffer()
 	public static boolean isParsingBuffer(Buffer buffer)
@@ -374,9 +385,10 @@ public class SideKickPlugin extends EditPlugin
 	} //}}}
 
 	public static void stop(View view) {
-		SideKick sidekick = sidekicks.get(view);
-		if (sidekick == null) return;
-		sidekick.getParser().stop();
+		SwingWorker worker = workers.get(view);
+		if (worker != null && !worker.isCancelled() && !worker.isDone()) {
+			worker.cancel(true);	
+		}
 	}
 
 	//}}}
