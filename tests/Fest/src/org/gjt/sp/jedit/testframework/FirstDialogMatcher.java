@@ -53,7 +53,7 @@ public class FirstDialogMatcher implements ComponentMatcher{
 
 	public boolean matches(Component comp){
 		if(found)return false;
-		if(comp instanceof Dialog){
+		if(comp instanceof Dialog && comp.isVisible()){
 			//System.err.println("got this window : "+((JDialog)comp).getTitle());
 			found = title.equals(((Dialog)comp).getTitle());
 		}

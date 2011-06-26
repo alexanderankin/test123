@@ -154,7 +154,9 @@ public class EBFixture{
 		}
 		
 		public void handleMessage(EBMessage message){
-			if(condition.matches(message)){
+			// condition == null iff timeout or interrupted
+			// so the message will be discarded anyway
+			if(condition == null || condition.matches(message)){
 				synchronized(this){
 					msg=message;
 					this.notify();
