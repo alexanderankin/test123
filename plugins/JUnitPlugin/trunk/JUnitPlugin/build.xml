@@ -53,154 +53,95 @@
 
 <project name="JUnitPlugin" default="dist" basedir=".">
 
+
+
+	<!-- {{{ emulate propertycopy -->
+	<macrodef name="propertycopy">
+		<attribute name="name"/>
+		<attribute name="from"/>
+		<sequential>
+		<property name="@{name}" value="${@{from}}"/>
+		</sequential>
+	</macrodef><!-- }}} -->
+
 	<!-- {{{ Properties -->
+	<property file="JUnitPlugin.props"/>
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
-	<property name="jar.name" value="${ant.project.name}.jar"/>
-	<property name="docs-proc.target" value="xsltproc"/>
-    <property name="xsltproc" value="xsltproc" />
-	<property name="docbook.xsl" value="${docbook.xsl}"/>
+	<!-- You should set this property below in your ../build.properties to
+	     the location of the jedit's "build-support/trunk" project
+	     checked out from jEdit's SVN repository -->
+    <property name="build.support" value="../build-support" />
+    <property name="docs-proc.target" value="xsltproc"/>
+    <property name="user-doc.xml" location="users-guide.xml" />
+    <property name="user-doc.xsl" location="users-guide.xsl"/>
+    	
+	<!-- this it to avoid hardcoding the version in the user manual,
+	     since it's too easily forgotten -->
+	<property name="plugin.class" value="junit.JUnitPlugin" />
+	<propertycopy  name="plugin.version" from="plugin.${plugin.class}.version"/>
 
-	<property name="src.dir" value="."/>
-	<property name="install.dir" value="${jedit.install.dir}/jars"/>
-	<property name="build.dir" value="build"/>
-
-	<property name="compiler.deprecation" value="true"/>
-	<property name="compiler.optimize" value="false"/>
-	<property name="compiler.verbose" value="false"/>
-	<property name="compiler.debug" value="true"/>
-
-	<property name="junit.jar" value="${install.dir}/junit.jar"/>
-	<property name="ProjectViewer.jar" value="${install.dir}/ProjectViewer.jar"/>
+	<echo>plugin version  = ${plugin.version}</echo>
 	<!-- }}} -->
 
+	
+    	<import file="${build.support}/plugin-build.xml" />
+	
 	<!-- {{{ Patterns -->
 	<!--
 		Put patterns here that should be included in the plugin jar from
 		the source directory.
 	-->
-	<patternset id="include-from-source">
-		<include name="dockables.xml"/>
-		<include name="actions.xml"/>
-		<include name="docs/**/*.*"/>
-		<include name="**/*.properties"/>
-		<include name="**/*.props"/>
-		<include name="**/*.gif"/>
-		<include name="**/*.png"/>
-	</patternset>
+
+    <selector id="extraFiles">
+        <and>
+            <or>
+								<filename name="dockables.xml"/>
+								<filename name="actions.xml"/>
+								<filename name="services.xml"/>
+                <filename name="JUnitPlugin.props" />
+            </or>
+            <not>
+                <filename name="build/**/*"/>
+             </not>
+        </and>
+    </selector>
+
+    <selector id="packageFiles">
+            <or>
+								<filename name="docs/**/*.*"/>
+								<filename name="**/*.properties"/>
+								<filename name="**/*.props"/>
+								<filename name="**/*.gif"/>
+								<filename name="**/*.png"/>
+            </or>
+    </selector>
+
+
 	<!-- }}} -->
 
 	<!-- {{{ Paths -->
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${CommonControls.jar}"/>
-		<pathelement location="${ProjectViewer.jar}"/>
-		<pathelement location="${junit.jar}"/>
-		<pathelement location="${src.dir}"/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+		<pathelement location="${jedit.plugins.dir}/junit.jar"/>
+		<pathelement location="."/>
 	</path>
 	<!-- }}} -->
 
 	<!-- {{{ Targets -->
-	<!-- {{{ 'init' target -->
-	<target name="init" description="Initializes this project">
-		<mkdir dir="${build.dir}"/>
 
-		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
-			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;/xsl:stylesheet&gt;"/>
-
-		<available file="users-guide.xsl" property="users-guide.xsl" value="users-guide.xsl"/>
-		<antcall target="init-users-guide"/>
-		<property name="users-guide.xsl" value="default-users-guide.xsl"/>
-
-		<available file="users-guide.xml" property="call.docs"/>
-		<uptodate property="build-docs.not-required"
-				targetfile="${build.dir}/users-guide.html">
-			<srcfiles dir="." includes="users-guide.xml"/>
-		</uptodate>
+	<!-- {{{ 'build.prepare' target: install junit -->
+	<target name="build.prepare">
+		<copy todir="${install.dir}">
+			<fileset dir="lib" includes="*.jar" />
+		</copy>
 	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'init-users-guide' target -->
-	<target name="init-users-guide" unless="users-guide.xsl"
-			description="Create a users-guide.xsl if one doesn't exist">
-		<copy tofile="default-users-guide.xsl" file="../users-guide.xsl"/>
-	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'compile' target -->
-	<target name="compile" depends="init" description="Compile project files">
-		<javac srcdir="${src.dir}" destdir="${build.dir}"
-				includeJavaRuntime="yes" verbose="${compiler.verbose}"
-				optimize="${compiler.optimize}" debug="${compiler.debug}"
-				deprecation="${compiler.deprecation}">
-			<classpath refid="project.class.path"/>
-		</javac>
-	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'dist' target -->
-	<target name="dist" depends="compile, docs" description="Builds the plugin jar">
-		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}">
-			<fileset dir="${build.dir}"/>
-			<fileset dir="${src.dir}">
-				<patternset refid="include-from-source"/>
-			</fileset>
-		</jar>
-	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'docs' target -->
-	<target name="docs" depends="init" if="call.docs" unless="build-docs.not-required"
-			description="Builds users guide documentation">
-		<antcall target="docs-${docs-proc.target}"/>
-	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'docs-xsltproc' target -->
-	<target name="docs-xsltproc"
-			description="Generate docs with xsltproc tool from www.xmlsoft.org">
-		<exec executable="${xsltproc}">
-			<arg value="--output"/><arg value="${build.dir}/index.html"/>
-			<arg value="--catalogs"/>
-			<arg value="${users-guide.xsl}"/>
-			<arg value="users-guide.xml"/>
-		</exec>
-	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'docs-xalan' target -->
-	<target name="docs-xalan"
-			description="Generate docs with Xalan tool from xml.apache.org">
-		<style style="${users-guide.xsl}" in="users-guide.xml"
-				out="${build.dir}/index.html"/>
-	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'clean' target -->
-	<target name="clean" description="Clean project directory">
-		<delete dir="${build.dir}"/>
-		<delete>
-			<fileset dir="." defaultexcludes="no">
-				<include name="**/*~"/>
-				<include name="**/*.html"/>
-				<include name="docbook-wrapper.xsl"/>
-				<include name="default-users-guide.xsl"/>
-			</fileset>
-		</delete>
-	</target>
+					
 	<!-- }}} -->
 	<!-- }}} -->
 

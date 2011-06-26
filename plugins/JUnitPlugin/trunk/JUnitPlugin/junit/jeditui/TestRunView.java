@@ -21,7 +21,11 @@ package junit.jeditui;
 
 import java.awt.Component;
 import javax.swing.*;
-import junit.framework.*;
+
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.Result;
 
 /**
  * A TestRunView is shown as a page in a tabbed folder. It contributes the page
@@ -33,7 +37,7 @@ interface TestRunView {
         /**
          * Returns the currently selected Test in the View
          */
-        public Test getSelectedTest();
+        public Description getSelectedTest();
         
         /**
          * Activates the TestRunView
@@ -43,9 +47,9 @@ interface TestRunView {
         /**
          * Reveals the given failure
          */
-        public void revealFailure(Test failure);
+        public void revealFailure(Failure failure);
         
-        public void refresh(Test test, TestResult result);
+        public void refresh(Description test, RunNotifier rn, Result result);
         
         /**
          * Returns the component that represents this view.
@@ -55,12 +59,12 @@ interface TestRunView {
         /**
          * Informs that the suite is about to start
          */
-        public void aboutToStart(Test suite, TestResult result);
+        public void aboutToStart(Description suite, RunNotifier rn, Result result);
         
         /**
          * Informs that the run of the test suite has finished
          */
-        public void runFinished(Test suite, TestResult result);
+        public void runFinished(Description suite, RunNotifier rn, Result result);
         
         /**
          * Goto next failed test.

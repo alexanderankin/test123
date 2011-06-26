@@ -21,7 +21,7 @@
 package junit.jeditui;
 
 import javax.swing.ListModel;
-import junit.framework.Test;
+import org.junit.runner.Description;
 
 /**
  * The interface for accessing the Test run context. Test run views should use
@@ -32,12 +32,12 @@ public interface TestRunContext {
   /**
    * Run the current test.
    */
-  public void runSelectedTest(Test test);
+  public void runSelectedTest(Description test);
 
   /**
    * Handles the selection of a Test.
    */
-  public void handleTestSelected(Test test);
+  public void handleTestSelected(Description test);
 
   /**
    * Returns the failure model

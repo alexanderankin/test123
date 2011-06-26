@@ -3,26 +3,25 @@
 #     Java unit testing plugin.
 #
 # Long Description:
-#     The JUnit plugin provides a dockable JUnit test runner for running withing
+#     The JUnit plugin provides a dockable JUnit test runner for running within
 #     jEdit.
 #
 
 plugin.junit.JUnitPlugin.name=JUnit
-plugin.junit.JUnitPlugin.author=Denis Koryavov, Andre Kaplan, Calvin Yu
-plugin.junit.JUnitPlugin.version=0.5
+plugin.junit.JUnitPlugin.author=Denis Koryavov, Andre Kaplan, Calvin Yu, Eric Le Lay
+plugin.junit.JUnitPlugin.version=0.6
 plugin.junit.JUnitPlugin.docs=index.html
 
-plugin.junit.JUnitPlugin.depend.0=jdk 1.4
-plugin.junit.JUnitPlugin.depend.1=jedit 04.02.00.99
-plugin.junit.JUnitPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.4
+plugin.junit.JUnitPlugin.depend.0=jdk 1.6
+plugin.junit.JUnitPlugin.depend.1=jedit 04.03.00.99
+plugin.junit.JUnitPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.0.1
 plugin.junit.JUnitPlugin.jars=junit.jar
 plugin.junit.JUnitPlugin.activate=defer
 
+plugin.junit.JUnitPlugin.description=The JUnit plugin provides a dockable JUnit test runner for running within jEdit
+
 # ProjectViewer options
-plugin.projectviewer.junit.JUnitPlugin.pv-listeners=junit.jeditui.PVListener
-plugin.projectviewer.junit.JUnitPlugin.option-pane=junit.pconfig
 options.junit.pconfig.label=JUnit Classpath
-options.junit.pconfig.code=junit.JUnitPlugin.createPathBuilder();
 
 # Options
 plugin.junit.JUnitPlugin.option-pane=junit

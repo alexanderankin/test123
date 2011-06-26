@@ -1,6 +1,7 @@
 /*
  * FailureRunView.java 
  * Copyright (c) Tue Aug 01 23:38:52 MSD 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,9 +26,12 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import junit.framework.*;
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.Result;
 
-import junit.runner.BaseTestRunner;
+import junit.JUnitPlugin;
 
 /**
 * A view presenting the test failures as a list.
@@ -40,15 +44,6 @@ class FailureRunView implements TestRunView {
         public FailureRunView(TestRunContext context) {
                 fRunContext = context;
                 fFailureList = new JList(fRunContext.getFailures());
-                fFailureList.setPrototypeCellValue(
-                        new TestFailure(new TestCase("dummy") {
-                                        protected void runTest() {
-                                        }
-                                        
-                        },
-                        new AssertionFailedError("message"))
-                        );
-                
                 fFailureList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 fFailureList.setCellRenderer(new FailureListCellRenderer());
                 fFailureList.setToolTipText("Failure - grey X; Error - red X");
@@ -64,24 +59,27 @@ class FailureRunView implements TestRunView {
         //}}}
         
         //{{{ getSelectedTest method.
-        public Test getSelectedTest() {
+        @Override
+        public Description getSelectedTest() {
                 int index = fFailureList.getSelectedIndex();
                 if (index == -1)
                         return null;
                 ListModel model = fFailureList.getModel();
-                TestFailure failure = (TestFailure) model.getElementAt(index);
-                return failure.failedTest();
+                Failure failure = (Failure) model.getElementAt(index);
+                return failure.getDescription();
         } 
         //}}}
         
         //{{{ activate method.
+        @Override
         public void activate() {
                 testSelected();
         } 
         //}}}
         
         //{{{ refresh method.
-        public void refresh(Test test, TestResult result) {} //}}}
+        @Override
+        public void refresh(Description test, RunNotifier rn, Result result) {} //}}}
         
         //{{{ getComponent method.
         public Component getComponent() {
@@ -94,15 +92,18 @@ class FailureRunView implements TestRunView {
         //}}}
         
         //{{{ revealFailure method.
-        public void revealFailure(Test failure) {
+        @Override
+        public void revealFailure(Failure failure) {
                 fFailureList.setSelectedIndex(0);
         } 
         //}}}
         
         //{{{ aboutToStart and runFinished methods.
-        public void aboutToStart(Test suite, TestResult result) {}
+        @Override
+        public void aboutToStart(Description suite, RunNotifier rn, Result result) {}
         
-        public void runFinished(Test suite, TestResult result) {} 
+        @Override
+        public void runFinished(Description suite, RunNotifier rn, Result result) {} 
         //}}}
         
         //{{{ testSelected method.
@@ -112,6 +113,7 @@ class FailureRunView implements TestRunView {
         //}}}
         
         //{{{ nextFailure method.
+        @Override
         public void nextFailure() {
                 int index = fFailureList.getSelectedIndex();
                 int nextIndex = (index == -1) ? 0 : index + 1;
@@ -125,6 +127,7 @@ class FailureRunView implements TestRunView {
         //}}}
         
         //{{{ prevFailure method.
+        @Override
         public void prevFailure() {
                 int index = fFailureList.getSelectedIndex();
                 int nextIndex = (index == -1) ? 0 : index - 1;
@@ -169,15 +172,14 @@ class FailureRunView implements TestRunView {
                                  setForeground(list.getForeground());
                          }
                          
-                         TestFailure failure = (TestFailure) value;
-                         String text = failure.failedTest().toString();
-                         String msg = failure.thrownException().getMessage();
+                         Failure failure = (Failure) value;
+                         String text = failure.getTestHeader();
+                         String msg = failure.getException().getMessage();
                          
                          if (msg != null)
-                                 text += ":" + BaseTestRunner.truncate(msg);
+                                 text += ":" + msg;
                          
-                                 if (failure.thrownException() 
-                                         instanceof AssertionFailedError) 
+                                 if (JUnitPlugin.isFailure(failure)) 
                                  {
                                          setIcon(FAILURE_ICON);
                                  } else {
