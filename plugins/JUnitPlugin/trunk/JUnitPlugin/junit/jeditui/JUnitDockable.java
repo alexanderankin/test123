@@ -2,6 +2,7 @@
  * jUnitDockable.java
  * Copyright (c) 2003 Calvin Yu
  * Copyright (c) 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,15 +30,13 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import junit.framework.Test;
-import junit.framework.TestFailure;
-import junit.framework.TestResult;
+import org.junit.runner.Describable;
 
 import junit.JUnitPlugin;
+import junit.PluginTestCollector;
 
-import junit.runner.BaseTestRunner;
-import junit.runner.FailureDetailView;
-import junit.runner.TestCollector;
+import org.junit.runner.*;
+import org.junit.runner.notification.*;
 
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -72,7 +71,7 @@ class JUnitDockable extends JPanel {
         private HistoryTextField currentTest;
         private ProgressBar progressBar;
         private CounterPanel counter;
-        private FailureDetailView failureDetailView;
+        private DefaultFailureDetailView failureDetailView;
         
         private RolloverButton runButton;
         private RolloverButton stopButton;
@@ -241,15 +240,15 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ aboutToStart method.
-        public void aboutToStart(final Test testSuite) {
+        public void aboutToStart(Description testSuite, RunNotifier rn, Result r) {
                 for (Enumeration e = testRunViews.elements(); e.hasMoreElements();) {
                         TestRunView v = (TestRunView) e.nextElement();
-                        v.aboutToStart(testSuite, runner.getTestResult());
+                        v.aboutToStart(testSuite, rn, r);
                 }
         } //}}}
         
         //{{{ runFinished method.
-        public void runFinished(final Test testSuite) {
+        public void runFinished(final Description testSuite, final RunNotifier rn, final Result result) {
                 SwingUtilities
                 .invokeLater(
                         new Runnable() {
@@ -260,7 +259,7 @@ class JUnitDockable extends JPanel {
                                         animation.stop();
                                         for (Enumeration e = testRunViews.elements(); e.hasMoreElements();) {
                                                 TestRunView v = (TestRunView) e.nextElement();
-                                                v.runFinished(testSuite, runner.getTestResult());
+                                                v.runFinished(testSuite, rn, result);
                                         }
                                 }
                         });
@@ -268,14 +267,13 @@ class JUnitDockable extends JPanel {
         //}}}
         
         //{{{ showFailureDetail method.
-        public void showFailureDetail(Test test) {
+        public void showFailureDetail(Description test) {
                 Hashtable filters = (Hashtable)JUnitPlugin.getFilters(false);
-                
                 if (test != null) {
                         ListModel failures = runner.getFailures();
                         for (int i = 0; i < failures.getSize(); i++) {
-                                TestFailure failure = (TestFailure) failures.getElementAt(i);
-                                if (failure.failedTest() == test) {
+                                Failure failure = (Failure) failures.getElementAt(i);
+                                if (failure.getDescription().equals(test)) {
                                         failureDetailView.showFailure(failure);
                                         return;
                                 }
@@ -299,8 +297,8 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ repaintViews method.
-        public void repaintViews(Test test, TestResult result) {
-                hierarchyRunView.refresh(test, result);
+        public void repaintViews(Description test, RunNotifier rn, Result result) {
+                hierarchyRunView.refresh(test, rn, result);
                 // failureRunView.refresh(test, result);
         } 
         //}}}
@@ -313,7 +311,7 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ revealFailure method.
-        public void revealFailure(Test test) { 
+        public void revealFailure(Failure test) { 
                 for (Enumeration e = testRunViews.elements(); e.hasMoreElements();) {
                         TestRunView v = (TestRunView) e.nextElement();
                         v.revealFailure(test);
@@ -322,9 +320,9 @@ class JUnitDockable extends JPanel {
         
         //{{{ browseTestClasses method.
         public void browseTestClasses() {
-                TestCollector collector = runner.createTestCollector();
+                PluginTestCollector collector = runner.createTestCollector();
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                TestSelector selector = new TestSelector(runner.getView(), collector);
+                TestSelector selector = new TestSelector(runner.getView(), collector.collectTests());
                 setCursor(Cursor.getDefaultCursor());
                 if (selector.isEmpty()) {
                         JOptionPane.showMessageDialog(runner.getView(), 
@@ -354,7 +352,9 @@ class JUnitDockable extends JPanel {
                                 );
                         return;
                 }
-                ProjectOptions.run(pr, null, null, "junit.pconfig");
+                // is it possible to jump directly to a give panel
+                // of ProjectViewer's options ?
+                ProjectOptions.run(pr, false, null);
                 runner.setClassPath(JUnitPlugin.getClassPath());
         } 
         //}}}
@@ -510,19 +510,8 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ createFailureDetailView method.
-        private FailureDetailView createFailureDetailView() {
-                String className = BaseTestRunner.getPreference(FAILUREDETAILVIEW_KEY);
-                if (className != null) {
-                        Class viewClass = null;
-                        try {
-                                viewClass = Class.forName(className);
-                                return (FailureDetailView) viewClass.newInstance();
-                        } catch (Exception e) {
-                                JOptionPane.showMessageDialog(runner.getView(),
-                                        "Could not create Failure DetailView - using default view");
-                        }
-                }
-                
+        private DefaultFailureDetailView createFailureDetailView() {
+        	//removed the ability to specify a custom FailureDetailView
                 return new DefaultFailureDetailView();
         }
         //}}}

@@ -35,17 +35,22 @@ import projectviewer.config.*;
 import projectviewer.event.*;
 import org.gjt.sp.util.Log;
 
+import org.junit.runner.notification.Failure;
+
 /**
 * The plugin for jUnit.
 */
-public class JUnitPlugin extends EditPlugin {
+public class JUnitPlugin extends EBPlugin {
         private static final String INVOKE = "java.lang.reflect.Method.invoke*";
         private static final String ASSERT = "junit.framework.Assert(*)";
+        private static final String ORG_ASSERT = "org.junit.Assert*";
         private static final String TEST_CASE = "junit.framework.TestCase*";
         private static final String TEST_RESULT = "junit.framework.TestResult*";
         private static final String TEST_SUITE = "junit.framework.TestSuite*";
         private static final String SUN_REFLECT = "sun.reflect.*";
         private static final String JEDIT_TEST_RUNNER = "junit.jeditui.TestRunner$3*";
+        private static final String ORG_RUNNERS = "org.junit.runners.*";
+        private static final String ORG_INTERNAL = "org.junit.internal.*";
         
         private static final String SEP = System.getProperty("file.separator");
         
@@ -146,6 +151,9 @@ public class JUnitPlugin extends EditPlugin {
                 filters.setProperty(TEST_SUITE, "true");
                 filters.setProperty(SUN_REFLECT, "true");
                 filters.setProperty(JEDIT_TEST_RUNNER, "true");
+                filters.setProperty(ORG_ASSERT, "true");
+                filters.setProperty(ORG_RUNNERS, "true");
+                filters.setProperty(ORG_INTERNAL, "true");
                 return filters;
         } 
         //}}}
@@ -197,5 +205,21 @@ public class JUnitPlugin extends EditPlugin {
         } 
         //}}}
         
+        //{{{ EBPlugin.handleMessage method
+        @Override
+        public void handleMessage(EBMessage e) {
+        	if(e instanceof ViewerUpdate) {
+        		ViewerUpdate u = (ViewerUpdate)e;
+        		if(u.getType() == ViewerUpdate.Type.PROJECT_LOADED) {
+        			refresh((VPTProject)u.getNode(), u.getView());
+        		}
+        	}
+        }//}}}
+        
+        //{{{ isFailure method
+        public static boolean isFailure(Failure f) {
+        	return f.getException() instanceof AssertionError;
+        }
+        //}}}
         // :collapseFolds=1:tabSize=8:indentSize=8:folding=explicit:
 }

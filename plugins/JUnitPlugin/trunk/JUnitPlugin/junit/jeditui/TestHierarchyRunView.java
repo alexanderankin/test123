@@ -2,6 +2,7 @@
  * TestHierarchyRunView.java
  * Copyright (c) 2002 Calvin Yu
  * Copyright (c) 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +27,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.TreePath;
 import java.util.Vector;
-import junit.framework.*;
+
+import org.junit.runner.*;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.Result;
 
 /**
 * A hierarchical view of a test run. The contents of a test suite is shown as a
@@ -54,48 +59,60 @@ class TestHierarchyRunView implements TestRunView {
         //}}}
         
         //{{{ getComponent method.
+        @Override
         public Component getComponent() {
                 return fTreeBrowser;
         } //}}}
         
         //{{{ getSelectedTest method.
-        public Test getSelectedTest() {
+        @Override
+        public Description getSelectedTest() {
                 return fTreeBrowser.getSelectedTest();
         } //}}}
         
         //{{{ activate method.
+        @Override
         public void activate() {
                 testSelected();
         } //}}}
         
         //{{{ refresh method.
-        public void refresh(Test test, TestResult result) {
-                fTreeBrowser.refresh(test, result);
+        @Override
+        public void refresh(Description test, RunNotifier rn, Result result) {
+                fTreeBrowser.refresh(test, rn, result);
                 testSelected();
         } //}}}
         
         //{{{ nextFailure method.
+        @Override
         public void nextFailure() {
                 fTreeBrowser.nextFailure(true);
         } //}}}
         
         //{{{ prevFailure method.
+        @Override
         public void prevFailure() {
                 fTreeBrowser.nextFailure(false);
         } //}}}
         
         //{{{ revealFailure method.
-        public void revealFailure(Test failure) {
+        @Override
+        public void revealFailure(Failure failure) {
                 JTree tree = fTreeBrowser.getTree();
                 TestTreeModel model = (TestTreeModel) tree.getModel();
                 Vector vpath = new Vector();
-                int index = model.findTest(failure, (Test) model.getRoot(), vpath);
+                int index = model.findTest(failure.getDescription(), (Description) model.getRoot(), vpath);
                 
                 if (index >= 0) {
-                        Object[] path = new Object[vpath.size() + 1];
-                        vpath.copyInto(path);
-                        Object last = path[vpath.size() - 1];
-                        path[vpath.size()] = model.getChild(last, index);
+                	Object[] path;
+                	if(vpath.isEmpty()){
+                		path = new Object[]{failure.getDescription()};
+                	}else{
+				path = new Object[vpath.size() + 1];
+				vpath.copyInto(path);
+				Object last = path[vpath.size() - 1];
+				path[vpath.size()] = model.getChild(last, index);
+			}
                         TreePath selectionPath = new TreePath(path);
                         tree.setSelectionPath(selectionPath);
                         tree.makeVisible(selectionPath);
@@ -104,14 +121,16 @@ class TestHierarchyRunView implements TestRunView {
         //}}}
         
         //{{{ aboutToStart method.
-        public void aboutToStart(Test suite, TestResult result) {
+        @Override
+        public void aboutToStart(Description suite, RunNotifier rn, Result result) {
                 fTreeBrowser.showTestTree(suite);
-                result.addListener(fTreeBrowser);
+                rn.addListener(fTreeBrowser.getListener());
         } //}}}
         
         //{{{ runFinished method.
-        public void runFinished(Test suite, TestResult result) {
-                result.removeListener(fTreeBrowser);
+        @Override
+        public void runFinished(Description suite, RunNotifier rn, Result result) {
+        	rn.removeListener(fTreeBrowser.getListener());
         } //}}}
         
         //{{{ testSelected method.

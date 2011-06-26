@@ -2,6 +2,7 @@
  * DefaultFailureDetailView.java 
  * Copyright (c) 2001 - 2003 Andre Kaplan, Calvin Yu
  * Copyright (c) 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,16 +26,16 @@ import java.util.regex.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.JTextArea;
-import junit.framework.*;
 import junit.JUnitPlugin;
-import junit.runner.*;
+import org.junit.runner.*;
+import org.junit.runner.notification.*;
 
 import org.gjt.sp.jedit.jEdit;
 
 /**
  * A view that shows a stack trace of a failure
  */
-class DefaultFailureDetailView implements FailureDetailView {
+class DefaultFailureDetailView{
         JTextArea fTextArea;
         
         //{{{ getComponent method.
@@ -54,10 +55,10 @@ class DefaultFailureDetailView implements FailureDetailView {
         
         //{{{ showFailure method.
         /**
-         * Shows a TestFailure
+         * Shows a Failure
          */
-        public void showFailure(TestFailure failure) {
-                String text = BaseTestRunner.getFilteredTrace(failure.thrownException());
+        public void showFailure(Failure failure) {
+                String text = failure.getTrace();
                 boolean b = jEdit.getBooleanProperty("junit.filter-stack-trace");
                 Hashtable filters = JUnitPlugin.getFilters(false);
                 fTextArea.setText(getFilteredText(text, filters, b));

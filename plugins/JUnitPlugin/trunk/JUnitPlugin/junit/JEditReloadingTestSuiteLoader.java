@@ -1,12 +1,11 @@
 package junit;
 
-import junit.runner.TestCaseClassLoader;
-import junit.runner.TestSuiteLoader;
-
 /**
 * A TestSuite loader that can reload classes.
+* It's used by junit.jeditui.TestRunner.
+* TODO: verify that it is actually capable of loading a new version of the tests
 */
-public class JEditReloadingTestSuiteLoader implements TestSuiteLoader {
+public class JEditReloadingTestSuiteLoader  {
         private String classPath;
         
         public JEditReloadingTestSuiteLoader() {
@@ -18,12 +17,12 @@ public class JEditReloadingTestSuiteLoader implements TestSuiteLoader {
         }
         
         public Class load(String suiteClassName) throws ClassNotFoundException {
-                TestCaseClassLoader loader = new JEditTestCaseClassLoader(this.classPath);
+                JEditTestCaseClassLoader loader = new JEditTestCaseClassLoader(this.classPath);
                 return loader.loadClass(suiteClassName, true);
         }
         
         public Class reload(Class aClass) throws ClassNotFoundException {
-                TestCaseClassLoader loader = new JEditTestCaseClassLoader(this.classPath);
+                JEditTestCaseClassLoader loader = new JEditTestCaseClassLoader(this.classPath);
                 return loader.loadClass(aClass.getName(), true);
         }
 }

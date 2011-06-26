@@ -2,6 +2,7 @@
  * DefaultFailureDetailView.java 
  * Copyright (c) 2001 - 2003 Andre Kaplan, Calvin Yu
  * Copyright (c) 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,21 +29,26 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.*;
 
-import junit.framework.*;
-
-import junit.runner.*;
+import org.junit.runner.*;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.RunListener;
+import org.junit.runner.Result;
 
 import org.gjt.sp.jedit.gui.AnimatedIcon;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import junit.JUnitPlugin;
+
 /** 
  * A Panel showing a test suite as a tree.
  */
-class TestSuitePanel extends JPanel implements TestListener {
+class TestSuitePanel extends JPanel{
         private final static int EXTRA_INDEX = 2;
         private JTree fTree;
         private JScrollPane fScrollTree;
         private TestTreeModel fModel;
+        private RunListener listener;
         
         //{{{ constructor..
         public TestSuitePanel() {
@@ -55,53 +61,71 @@ class TestSuitePanel extends JPanel implements TestListener {
                 fTree.putClientProperty("JTree.lineStyle", "Angled");
                 fScrollTree = new JScrollPane(fTree);
                 add(fScrollTree, BorderLayout.CENTER);
+                listener = new RunListenerImpl();
         } 
         //}}}
         
-        //{{{ addError method.
-        public void addError(final Test test, final Throwable t) {
-                fModel.addError(test);
-                fireTestChanged(test, true);
-        } 
-        //}}}
+        public RunListener getListener(){
+        	return listener;
+        }
         
-        //{{{ addFailure method.
-        public void addFailure(final Test test, final AssertionFailedError t) {
-                fModel.addFailure(test);
-                fireTestChanged(test, true);
-        } 
-        //}}}
-        
-        //{{{ endTest method.
-        /**
-         * A test ended.
-         */
-        public void endTest(Test test) {
-                fModel.addRunTest(test);
-                fModel.setCurrentTest(null);
-                fireTestChanged(test, false);
-        } 
-        //}}}
-        
-        //{{{ startTest method.
-        /**
-         * A test started.
-         */
-        public void startTest(Test test) {
-                if (test == null) return;
-                fModel.setCurrentTest(test);
-                fireTestChanged(test, true);
-        } 
-        //}}}
+        private class RunListenerImpl extends RunListener {
+        	
+		//{{{ testFailure method.
+		@Override
+		public void testFailure(Failure f) {
+			Description test = f.getDescription();
+			if(JUnitPlugin.isFailure(f)){
+				fModel.addFailure(test);
+			}else{
+				fModel.addError(test);
+			}
+			fireTestChanged(test, true);
+		} 
+		//}}}
+		
+		//{{{ testAssumptionFailure method.
+		@Override
+		public void testAssumptionFailure(Failure f){
+				Description test = f.getDescription();
+				fModel.addError(test);
+				fireTestChanged(test, true);
+		}
+		//}}}
+		
+		//{{{ testFinished method.
+		/**
+		 * A test ended.
+		 */
+		@Override
+		public void testFinished(Description test) {
+			fModel.addRunTest(test);
+			fModel.setCurrentTest(null);
+			fireTestChanged(test, false);
+		} 
+		//}}}
+		
+		//{{{ startTest method.
+		/**
+		 * A test started.
+		 */
+		@Override
+		public void testStarted(Description test) {
+			if (test == null) return;
+			fModel.setCurrentTest(test);
+			fireTestChanged(test, true);
+		} 
+		//}}}
+        }
         
         //{{{ getSelectedTest method.
         /**
          * Returns the selected test or null if multiple or none is selected
          */
-        public Test getSelectedTest() {
+        public Description getSelectedTest() {
                 TreePath[] paths = fTree.getSelectionPaths();
                 if (paths != null && paths.length == 1)
-                        return (Test) paths[0].getLastPathComponent();
+                        return (Description) paths[0].getLastPathComponent();
                 return null;
         } 
         //}}}
@@ -119,8 +143,8 @@ class TestSuitePanel extends JPanel implements TestListener {
         public void nextFailure(boolean next) {
                 int index = -1; 
                 boolean flag = false;
-                Test nextTest = null;
-                Test selectedTest = getSelectedTest();
+                Description nextTest = null;
+                Description selectedTest = getSelectedTest();
                 
                 ArrayList tests = fModel.getRunTests(); 
                 if (selectedTest != null) {
@@ -129,7 +153,7 @@ class TestSuitePanel extends JPanel implements TestListener {
                 
                 if (next) {
                         for(int i = 0; i < tests.size(); i++) {
-                                Test t = (Test)tests.get(i);
+                                Description t = (Description)tests.get(i);
                                 if (fModel.isError(t) || fModel.isFailure(t)) {
                                         if (index < tests.indexOf(t)) {
                                                 nextTest = t;
@@ -140,7 +164,7 @@ class TestSuitePanel extends JPanel implements TestListener {
                         }
                 } else {
                         for(int i = tests.size(); 0 < i ; i--) {
-                                Test t = (Test)tests.get(i - 1);
+                                Description t = (Description)tests.get(i - 1);
                                 if (fModel.isError(t) || fModel.isFailure(t)) {
                                         if (tests.indexOf(t) < index) {
                                                 nextTest = t;
@@ -157,26 +181,26 @@ class TestSuitePanel extends JPanel implements TestListener {
         //}}}
         
         //{{{ refresh method.
-        public void refresh(Test test, TestResult result) {
-                Test t = getSelectedTest();
+        public void refresh(Description test, RunNotifier runNotifier, Result result) {
+                Description t = getSelectedTest();
                 if (result.wasSuccessful()) {
                         fModel.delFailure(t);
                         fModel.delError(t);
-                } else if (result.errorCount() == 1) {
-                        fModel.addError(t);
-                } else {
+                } else if (result.getFailureCount() == 1 && JUnitPlugin.isFailure(result.getFailures().get(0))) {
                         fModel.addFailure(t);
+                } else {
+                        fModel.addError(t);
                 }
                 TreePath path = fTree.getSelectionPath();
                 fModel.fireNodeChanged(path, 
-                        fModel.findTest(t, (Test)fModel.getRoot(), new Vector()));
+                        fModel.findTest(t, (Description)fModel.getRoot(), new Vector()));
         } //}}}
         
         //{{{ showTestTree method.
         /**
          * Shows the test hierarchy starting at the given test
          */
-        public void showTestTree(Test root) {
+        public void showTestTree(Description root) {
                 fModel = new TestTreeModel(root);
                 fTree.setModel(fModel);
                 fTree.setCellRenderer(new TestTreeCellRenderer());
@@ -184,15 +208,21 @@ class TestSuitePanel extends JPanel implements TestListener {
         //}}}
         
         //{{{ fireTestChanged method.
-        private void fireTestChanged(final Test test, final boolean expand) {
+        private void fireTestChanged(final Description test, final boolean expand) {
                 SwingUtilities.invokeLater(
                         new Runnable() {
                                 public void run() {
                                         Vector vpath = new Vector();
-                                        int index = fModel.findTest(test, (Test) fModel.getRoot(), vpath);
+                                        int index = fModel.findTest(test, (Description) fModel.getRoot(), vpath);
                                         if (index >= 0) {
-                                                Object[] path = new Object[vpath.size()];
-                                                vpath.copyInto(path);
+                                                Object[] path;
+                                                // when the root node has changed
+                                                if(vpath.isEmpty()){
+                                                	path = new Object[]{test};
+                                                }else{
+                                                	path = new Object[vpath.size()];
+                                                	vpath.copyInto(path);
+                                                }
                                                 TreePath treePath = new TreePath(path);
                                                 fModel.fireNodeChanged(treePath, index);
                                                 
@@ -215,9 +245,9 @@ class TestSuitePanel extends JPanel implements TestListener {
         //}}}
         
         //{{{ findTestForExpand method.
-        private void findTestForExpand(Test nextTest) {
+        private void findTestForExpand(Description nextTest) {
                 Vector vpath = new Vector();
-                int index = fModel.findTest(nextTest, (Test)fModel.getRoot(), vpath);
+                int index = fModel.findTest(nextTest, (Description)fModel.getRoot(), vpath);
                 Object[] path = new Object[vpath.size()];
                 vpath.copyInto(path);
                 expandPath(new TreePath(path), index, true);
@@ -277,7 +307,7 @@ class TestSuitePanel extends JPanel implements TestListener {
                         TreeModel model = tree.getModel();
                         if (model instanceof TestTreeModel) {
                                 TestTreeModel testModel = (TestTreeModel) model;
-                                Test t = (Test) value;
+                                Description t = (Description) value;
                                 String s = "";
                                 if (!testModel.isLeaf(t)) {
                                         setIcon(CLASS_ICON);

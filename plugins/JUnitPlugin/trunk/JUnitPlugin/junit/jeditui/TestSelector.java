@@ -2,6 +2,7 @@
  * TestSelector.java
  * Copyright (c) 2001 - 2003 Andre Kaplan, Calvin Yu
  * Copyright (c) 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,8 +26,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import junit.framework.*;
-import junit.runner.*;
+
+import org.junit.runner.*;
 
 /**
 * A test class selector. A simple dialog to pick the name of a test suite.
@@ -40,7 +41,7 @@ class TestSelector extends JDialog {
         private String fSelectedItem;
         
         //{{{ constructor.
-        public TestSelector(Frame parent, TestCollector testCollector) {
+        public TestSelector(Frame parent, Description testCollector) {
                 super(parent, true);
                 setSize(500, 400);
                 setLocationRelativeTo(parent);
@@ -196,40 +197,24 @@ class TestSelector extends JDialog {
         } //}}}
         
         //{{{ createTestList method.
-        private Vector createTestList(TestCollector collector) {
-                Enumeration each = collector.collectTests();
-                Vector v = new Vector(200);
+        private Vector createTestList(Description collector) {
+        	if(collector==null)return new Vector(0);
+                java.util.List<Description> l = collector.getChildren();
+                Vector v = new Vector(l.size());
                 Vector displayVector = new Vector(v.size());
-                while (each.hasMoreElements()) {
-                        String s = (String) each.nextElement();
+                for (Description cd: l) {
+                        String s = cd.getClassName();
                         v.addElement(s);
                         displayVector.addElement(TestCellRenderer.displayString(s));
                 }
-                if (v.size() > 0)
+                // TODO: tests are not sorted...
+                /*if (v.size() > 0)
                 Sorter.sortStrings(displayVector, 0, displayVector.size() - 1,
-                        new ParallelSwapper(v));
+                        new ParallelSwapper(v));*/
                 return v;
         } 
         //}}}
         
-        //{{{ ParallelSwapper method.
-        private class ParallelSwapper implements Sorter.Swapper {
-                Vector fOther;
-                ParallelSwapper(Vector other) {
-                        fOther = other;
-                }
-                
-                public void swap(Vector values, int left, int right) {
-                        Object tmp = values.elementAt(left);
-                        values.setElementAt(values.elementAt(right), left);
-                        values.setElementAt(tmp, right);
-                        Object tmp2 = fOther.elementAt(left);
-                        fOther.setElementAt(fOther.elementAt(right), left);
-                        fOther.setElementAt(tmp2, right);
-                }
-        } 
-        //}}}
-
         //{{{ TestCellRenderer class.
         /**
          * Renders TestFailures in a JList

@@ -2,6 +2,7 @@
 * TestRunner.java
 * Copyright (c) 2001 - 2003 Andre Kaplan
 * Copyright (c) 2006 Denis Koryavov
+* Copyright (c) 2011 Eric Le Lay
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -31,13 +32,15 @@ import java.util.Enumeration;
 
 import javax.swing.*;
 
-import junit.framework.*;
-
 import junit.JEditReloadingTestSuiteLoader;
 import junit.JUnitPlugin;
 import junit.PluginTestCollector;
 
-import junit.runner.*;
+import org.junit.runner.*;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runner.notification.RunListener;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 import org.gjt.sp.jedit.jEdit;
@@ -47,14 +50,16 @@ import org.gjt.sp.util.Log;
 /**
 * A test runner for jEdit.
 */
-public class TestRunner extends BaseTestRunner implements TestRunContext {
+public class TestRunner extends RunListener implements TestRunContext{
         private View fView;
         private DefaultListModel failures;
         private Thread runnerThread;
-        private TestResult fTestResult;
+        private RunNotifier fRunNotifier;
+        private Result fResult;
         private String classPath;
         private JUnitDockable dockable;
-        
+        private int fNbFailures;
+        private int fNbErrors;
         
         //{{{ TestRunner
         public TestRunner(View view) {
@@ -68,8 +73,8 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         } //}}}
         
         //{{{ getTestResult method.
-        public TestResult getTestResult() {
-                return fTestResult;
+        public Result getTestResult() {
+                return fResult;
         } //}}}
         
         //{{{ getClassPath method.
@@ -88,8 +93,13 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         //}}}
         
         //{{{ createTestCollector method.
-        public TestCollector createTestCollector() {
-                return new PluginTestCollector(getClassPath());
+        public PluginTestCollector createTestCollector() {
+        	String cp = getClassPath();
+                if (cp.length() == 0) {
+                	return new PluginTestCollector();
+                }else{
+                	return new PluginTestCollector(cp);
+                }
         } //}}}
         
         //{{{ getView method.
@@ -100,16 +110,19 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         //{{{ runSuite method.
         synchronized public void runSuite() {
                 if (runnerThread != null) {
-                        fTestResult.stop();
+                        fRunNotifier.pleaseStop();
                 } else {
                         reset();
                         dockable.showInfo("Loading Test Case...");
                         
                         final String suiteName = dockable.getCurrentTest();
-                        final Test testSuite = getTest(suiteName);
-                        
-                        if (testSuite != null) {
-                                doRunTest(testSuite);
+                        try{
+                        	// maybe this should be expanded to handle junit 3 test classes
+                        	// or test suites...
+                        	final Runner testSuite = Request.aClass(getLoader().load(suiteName)).getRunner();
+				doRunTest(testSuite);
+                        }catch(ClassNotFoundException e){
+                        	throw new NoClassDefFoundError(suiteName);
                         }
                 }
         } 
@@ -119,11 +132,11 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         /**
         * Run the current test.
         */
-        public void runSelectedTest(Test test) {
+        public void runSelectedTest(Description test) {
                 rerunTest(test);
         }
         
-        public void handleTestSelected(Test test) {
+        public void handleTestSelected(Description test) {
                 dockable.showFailureDetail(test);
         }
         
@@ -132,37 +145,41 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         }
         // }}}
         
-        // {{{ TestRunListener Methods
+        // {{{ RunListener Methods
         
-        public void testFailed(final int status, final Test test, final Throwable t) {
+        public void testFailure(final Failure failure) {
+        	final boolean isFailure = JUnitPlugin.isFailure(failure);
+		if(isFailure){
+			fNbFailures++;
+		}else{
+			fNbErrors++;
+		}
+		
                 SwingUtilities.invokeLater(
                         new Runnable() {
                                 public void run() {
-                                        switch (status) {
-                                        case TestRunListener.STATUS_ERROR:
-                                                dockable.setErrorCount(fTestResult.errorCount());
-                                                appendFailure("Error", test, t);
-                                                break;
-                                        case TestRunListener.STATUS_FAILURE:
-                                                dockable.setFailureCount(fTestResult.failureCount());
-                                                appendFailure("Failure", test, t);
-                                                break;
-                                        }
+                                	if(isFailure){
+                                		dockable.setFailureCount(fNbFailures);
+                                		appendFailure("Failure", failure);
+                                	}else{
+                                		dockable.setErrorCount(fNbErrors);
+                                		appendFailure("Error", failure);
+                                	}
                                 }
                         });
         }
         
-        public void testStarted(String testName) {
-                dockable.showInfo("Running: " + testName);
+        public void testStarted(Description description) {
+                dockable.showInfo("Running: " + description.getDisplayName());
         }
         
-        public void testEnded(String testName) {
+        public void testFinished(Description description) {
                 synchUI();
                 SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
-                                        if (fTestResult != null) {
-                                                dockable.setRunCount(fTestResult.runCount());
-                                                dockable.updateProgress(fTestResult.wasSuccessful());
+                                        if (fResult != null) {
+                                                 dockable.setRunCount(fResult.getRunCount());
+                                                 dockable.updateProgress(fResult.wasSuccessful());
                                         }
                                 }
                 });
@@ -170,7 +187,7 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         // }}}
         
         // {{{ BaseTestRunner Methods
-        public TestSuiteLoader getLoader() {
+        public JEditReloadingTestSuiteLoader getLoader() {
                 if (getClassPath().length() == 0) {
                         return new JEditReloadingTestSuiteLoader();
                 } else {
@@ -180,11 +197,6 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         
         protected void clearStatus() {
                 dockable.clearStatus();
-        }
-        
-        protected void runFailed(String message) {
-                dockable.showStatus(message);
-                runnerThread = null;
         }
         // }}}
         
@@ -201,13 +213,14 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         //}}}
         
         //{{{ createTestResult method.
-        protected TestResult createTestResult() {
-                return new TestResult();
+        protected RunNotifier createTestResult() {
+                return new RunNotifier();
         } //}}}
         
         //{{{ rerunTest method.
-        private void rerunTest(Test test) {
-                if (test instanceof TestSuite) {
+        private void rerunTest(Description test) {
+        	// FIXME: implement !
+                /*if (test instanceof TestSuite) {
                         TestSuite rerunTest = (TestSuite) test;
                         reset();
                         doRunTest(getTest(rerunTest.getName()));
@@ -219,7 +232,7 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
                         return;
                 }
                 
-                Test reloadedTest = null;
+                Request reloadedTest = null;
                 TestCase rerunTest = (TestCase) test;
                 try {
                         Class reloadedTestClass = getLoader().reload(test.getClass());
@@ -231,7 +244,7 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
                         return;
                 }
                 
-                TestResult result = createTestResult();
+                Result result = createTestResult();
                 reloadedTest.run(result);
                 String message = reloadedTest.toString();
                 
@@ -240,36 +253,30 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
                         removeFailure(rerunTest);
                 } else if (result.errorCount() == 1) {
                         Enumeration e = result.errors();
-                        TestFailure tf = (TestFailure)e.nextElement();
+                        Failure tf = (Failure)e.nextElement();
                         appendFailure("Error", test, tf.thrownException());
                         dockable.showStatus(message + " had an error");
                 } else {
                         Enumeration e = result.failures();
-                        TestFailure tf = (TestFailure)e.nextElement();
+                        Failure tf = (Failure)e.nextElement();
                         appendFailure("Failure", test, tf.thrownException());
                         dockable.showStatus(message + " had a failure");
                 }
                 dockable.repaintViews(reloadedTest, result);
+                */
         }
         //}}}
         
         //{{{ doRunTest method.
-        private void doRunTest(final Test testSuite) {
+        private void doRunTest(final Runner testSuite) {
                 runnerThread = new Thread("TestRunner-Thread") {
                         public void run() {
-                                dockable.startTesting(testSuite.countTestCases());
-                                long startTime = System.currentTimeMillis();
-                                testSuite.run(fTestResult);
-                                if (fTestResult.shouldStop()) {
-                                        dockable.showStatus("Stopped");
-                                } else {
-                                        long endTime = System.currentTimeMillis();
-                                        long runTime = endTime - startTime;
-                                        dockable.showInfo("Finished: " 
-                                                + elapsedTimeAsString(runTime)
-                                                + " seconds");
-                                }
-                                dockable.runFinished(testSuite);
+                                dockable.startTesting(testSuite.testCount());
+                                testSuite.run(fRunNotifier);
+                                dockable.showInfo("Finished: " 
+                                         + (fResult.getRunTime() / 1000)
+                                         + " seconds");
+                                dockable.runFinished(testSuite.getDescription(), fRunNotifier, fResult);
                                 runnerThread = null;
                                 System.gc();
                         }
@@ -278,9 +285,12 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
                 // make sure that the test result is created before we start the
                 // test runner thread so that listeners can register for it.
                 
-                fTestResult = createTestResult();
-                fTestResult.addListener(TestRunner.this);
-                dockable.aboutToStart(testSuite);
+                fRunNotifier = createTestResult();
+                fResult = new Result();
+                fNbErrors = fNbFailures = 0;
+                fRunNotifier.addListener(fResult.createListener());
+                fRunNotifier.addListener(TestRunner.this);
+                dockable.aboutToStart(testSuite.getDescription(), fRunNotifier, fResult);
                 runnerThread.start();
         }
         //}}}
@@ -309,18 +319,20 @@ public class TestRunner extends BaseTestRunner implements TestRunContext {
         //}}}
         
         //{{{ appendFailure method.
-        private void appendFailure(String kind, Test test, Throwable t) {
-                failures.addElement(new TestFailure(test, t));
+        private void appendFailure(String kind, Failure failure) {
+                failures.addElement(failure);
                 if (failures.size() == 1)
-                        dockable.revealFailure(test);
+                        dockable.revealFailure(failure);
         } 
         //}}}
         
         //{{{ removeFailure method.
-        private void removeFailure(Test test) {
+        private void removeFailure(Request r) {
+        	Description test = r.getRunner().getDescription();
                 for(int i = 0; i < failures.getSize(); i++) {
-                        TestFailure tf = (TestFailure)failures.getElementAt(i);
-                        if(tf.failedTest() == test) {
+                        Failure tf = (Failure)failures.getElementAt(i);
+			// physical equality won't work here
+                        if(tf.getDescription().equals(test)) {
                                 failures.removeElementAt(i);
                                 return; 
                         }

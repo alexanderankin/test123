@@ -2,6 +2,7 @@
  * TestTreeModel.java 
  * Copyright (c) 2001 - 2003 Andre Kaplan, Calvin Yu
  * Copyright (c) 2006 Denis Koryavov
+ * Copyright (c) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,15 +24,16 @@ package junit.jeditui;
 import java.util.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
-import junit.extensions.*;
-import junit.framework.*;
+
+import org.junit.runner.*;
+import org.junit.runner.notification.Failure;
 
 /**
- * A tree model for a Test.
+ * A tree model for a Description.
  */
 class TestTreeModel extends DefaultTreeModel {
-        private Test fRoot;
-        private Test currTest;
+        private Description fRoot;
+        private Description currTest;
         private Vector fModelListeners = new Vector();
         private Hashtable fFailures = new Hashtable();
         private Hashtable fErrors = new Hashtable();
@@ -41,7 +43,7 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Constructs a tree model with the given test as its root.
          */
-        public TestTreeModel(Test root) {
+        public TestTreeModel(Description root) {
                 super(null);
                 fRoot = root; 
         } //}}}
@@ -68,12 +70,12 @@ class TestTreeModel extends DefaultTreeModel {
          * Finds the path to a test. Returns the index of the test in its parent test
          * suite.
          */
-        public int findTest(Test target, Test node, Vector path) {
+        public int findTest(Description target, Description node, Vector path) {
                 if (target.equals(node))
                         return 0;
-                TestSuite suite = isTestSuite(node);
-                for (int i = 0; i < getChildCount(node); i++) {
-                        Test t = suite.testAt(i);
+                List<Description> l = node.getChildren();
+                for (int i = 0; i < l.size(); i++) {
+                        Description t = l.get(i);
                         int index = findTest(target, t, path);
                         if (index >= 0) {
                                 path.insertElementAt(node, 0);
@@ -108,9 +110,9 @@ class TestTreeModel extends DefaultTreeModel {
          * Gets the test at the given index
          */
         public Object getChild(Object parent, int index) {
-                TestSuite suite = isTestSuite(parent);
-                if (suite != null)
-                        return suite.testAt(index);
+                java.util.List<Description> children = ((Description)parent).getChildren();
+                if (children != null)
+                        return children.get(index);
                 return null;
         } //}}}
         
@@ -119,9 +121,9 @@ class TestTreeModel extends DefaultTreeModel {
          * Gets the number of tests.
          */
         public int getChildCount(Object parent) {
-                TestSuite suite = isTestSuite(parent);
-                if (suite != null)
-                        return suite.testCount();
+                java.util.List<Description> children = ((Description)parent).getChildren();
+                if (children != null)
+                        return children.size();
                 return 0;
         } 
         //}}}
@@ -139,14 +141,9 @@ class TestTreeModel extends DefaultTreeModel {
          * Gets the index of a test in a test suite
          */
         public int getIndexOfChild(Object parent, Object child) {
-                TestSuite suite = isTestSuite(parent);
-                if (suite != null) {
-                        int i = 0;
-                        for (Enumeration e = suite.tests(); e.hasMoreElements(); i++) {
-                                if (child.equals((Test) e.nextElement()))
-                                        return i;
-                        }
-                }
+                java.util.List<Description> children = ((Description)parent).getChildren();
+                if (children != null)
+                     return children.indexOf(child);
                 return -1;
         } 
         //}}}
@@ -164,23 +161,10 @@ class TestTreeModel extends DefaultTreeModel {
          * Tests if the test is a leaf.
          */
         public boolean isLeaf(Object node) {
-                return isTestSuite(node) == null;
+                java.util.List<Description> children = ((Description)node).getChildren();
+                if (children != null)return children.size()==0;
+                return true;
         } //}}}
-        
-        //{{{ isTestSuite method.
-        /**
-         * Tests if the node is a TestSuite.
-         */
-        TestSuite isTestSuite(Object node) {
-                if (node instanceof TestSuite)
-                        return (TestSuite) node;
-                        if (node instanceof TestDecorator) {
-                                Test baseTest = ((TestDecorator) node).getTest();
-                                return isTestSuite(baseTest);
-                        }
-                        return null;
-        } 
-        //}}}
         
         // {{{ valueForPathChanged method.
         /**
@@ -196,7 +180,7 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Remembers a test failure
          */
-        void addFailure(Test t) {
+        void addFailure(Description t) {
                 fFailures.put(t, t);
         } 
         //}}}
@@ -205,17 +189,17 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Remembers a test error
          */
-        void addError(Test t) {
+        void addError(Description t) {
                 fErrors.put(t, t);
         } //}}}
         
         //{{{ delFailure method.
-        void delFailure(Test t) {
+        void delFailure(Description t) {
                 fFailures.remove(t);
         } //}}}
         
         //{{{ delError method.
-        void delError(Test t) {
+        void delError(Description t) {
                 fErrors.remove(t);
         } //}}}
         
@@ -223,7 +207,7 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Remembers that a test was run.
          */
-        void addRunTest(Test t) {
+        void addRunTest(Description t) {
                 fRunTests.add(t);
         } //}}}
         
@@ -231,7 +215,7 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Returns whether a test was run.
          */
-        boolean wasRun(Test t) {
+        boolean wasRun(Description t) {
                 return fRunTests.contains(t);
         } //}}}
         
@@ -239,7 +223,7 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Tests whether a test was an error
          */
-        boolean isError(Test t) {
+        boolean isError(Description t) {
                 return (fErrors != null) && fErrors.get(t) != null;
         } //}}}
         
@@ -247,13 +231,13 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Tests whether a test was a failure
          */
-        boolean isFailure(Test t) {
+        boolean isFailure(Description t) {
                 return (fFailures != null) && fFailures.get(t) != null;
         } 
         //}}}
         
         //{{{ isRinning method.
-        boolean isRinning(Test t) {
+        boolean isRinning(Description t) {
                 return t.equals(currTest);
         } //}}}
         
@@ -262,10 +246,10 @@ class TestTreeModel extends DefaultTreeModel {
          * Tests whether a suite has failures or errors.
          */
         boolean hasFailures(Object parent) {
-                TestSuite suite = isTestSuite(parent);
-                if (suite != null) {
-                        for(int i = 0; i < suite.testCount() ; i++) {
-                                Test test = suite.testAt(i);
+                java.util.List<Description> children = ((Description)parent).getChildren();
+                if (children != null){
+                        for(int i = 0; i < children.size() ; i++) {
+                                Description test = children.get(i);
                                 if (isError(test) || isFailure(test)) 
                                         return true;
                         }
@@ -290,7 +274,7 @@ class TestTreeModel extends DefaultTreeModel {
         /**
          * Sets the current test.
          */
-        void setCurrentTest(Test t) {
+        void setCurrentTest(Description t) {
                 currTest = t;
         } 
         //}}}
