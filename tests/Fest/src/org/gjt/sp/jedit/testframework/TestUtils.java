@@ -83,44 +83,55 @@ public class TestUtils {
     // press Ctrl+Shift+A to abort running tests
     private static EmergencyAbortListener listener;
 
+    // will create a new instance of jEdit by default
+    private static boolean standaloneMode = true;
+    
+    public static void setStandaloneMode(boolean standaloneMode){
+    	assertTrue("can't switch mode while tests are running", robot == null);
+    	Log.log("switching to standalone? "+standaloneMode);
+    	TestUtils.standaloneMode = standaloneMode;
+    }
+    
     /**
      * Set up and start jEdit if necessary, or reuse an existing jEdit.    
      */
     public static void setUpjEdit() {
+    	if(standaloneMode){
+    		setupNewjEdit();
+    	}else{
+    		setupExistingjEdit(); 
+    	}
+    }
+    
+    /**
+     * Set up and start jEdit    
+     */
+    public static void setupNewjEdit(){
         assert( robot == null );
         Log.log( "Setting up jedit" );
-        if ( jEditFrame == null ) {
-            Log.log( "Starting a new jEdit" );
-            robot = BasicRobot.robotWithNewAwtHierarchy();
-            Log.log( "created robot" );
-            listener = EmergencyAbortListener.registerInToolkit();
+		Log.log( "Starting a new jEdit" );
+		robot = BasicRobot.robotWithNewAwtHierarchy();
+		Log.log( "created robot" );
+		listener = EmergencyAbortListener.registerInToolkit();
 
-            String settings = System.getProperty( ENV_JEDIT_SETTINGS );
-            Log.log( "checking settings" );
-            assertTrue( "Forgot to set env. variable '" + ENV_JEDIT_SETTINGS + "'", settings != null );
+		String settings = System.getProperty( ENV_JEDIT_SETTINGS );
+		Log.log( "checking settings" );
+		assertTrue( "Forgot to set env. variable '" + ENV_JEDIT_SETTINGS + "'", settings != null );
 
-            Log.log( "settings = " + settings );
-            final String[] args = {"-settings=" + settings, "-norestore", "-nobackground"};
-            Thread runJeditThread = new Thread() {
-                        public void run() {
-                            jEdit.main( args );
-                        }
-                    };
-            runJeditThread.start();
-            jEditFrame = WindowFinder.findFrame( View.class ).withTimeout( 40000 ).using( robot );
-        }
+		Log.log( "settings = " + settings );
+		final String[] args = {"-settings=" + settings, "-norestore", "-nobackground"};
+		Thread runJeditThread = new Thread() {
+					public void run() {
+						jEdit.main( args );
+					}
+				};
+		runJeditThread.start();
+		jEditFrame = WindowFinder.findFrame( View.class ).withTimeout( 40000 ).using( robot );
     }
 
-    public static Robot robot() {
-        return robot;
-    }
-
-    public static FrameFixture jEditFrame() {
-        return jEditFrame;
-    }
-
-    public static void tearDownjEdit() {
+    public static void tearDownNewjEdit() {
         listener.unregister();
+        // FIXME: how can jEditFrame not be null !
         if ( jEditFrame != null ) {
             robot.releaseMouseButtons();
             if (ScreenLock.instance().acquiredBy( robot ))
@@ -133,6 +144,48 @@ public class TestUtils {
         robot = null;
         jEditFrame = null;
 
+    }
+
+    /**
+     * reuse an existing jEdit.    
+     */
+    public static void setupExistingjEdit(){
+        assert( robot == null );
+        Log.log( "Setting up jedit" );
+		robot = BasicRobot.robotWithCurrentAwtHierarchy();
+        Log.log( "created robot" );
+        // FIXME: is this working reliably ?
+        listener = EmergencyAbortListener.registerInToolkit();
+
+		jEditFrame = WindowFinder.findFrame( View.class ).withTimeout( 40000 ).using( robot );
+    }
+
+    public static Robot robot() {
+        return robot;
+    }
+
+    public static FrameFixture jEditFrame() {
+        return jEditFrame;
+    }
+
+    public static void tearDownjEdit() {
+    	if(standaloneMode){
+    		tearDownNewjEdit();
+    	}else{
+    		tearDownExistingjEdit();
+    	}
+    }
+
+    public static void tearDownExistingjEdit() {
+        listener.unregister();
+		robot.releaseMouseButtons();
+		if (ScreenLock.instance().acquiredBy( robot ))
+			ScreenLock.instance().release( robot );
+
+		robot.cleanUpWithoutDisposingWindows();
+		Log.log( "tearDown done in jEdit" );
+        robot = null;
+        jEditFrame = null;
     }
 
     /**
@@ -290,17 +343,21 @@ public class TestUtils {
         TreePath returnPath = new TreePath( parent );
         for ( int i = 0;i < path.length;i++ ) {
             boolean found = false;
-            for ( int iChild = 0;!found && iChild < mdl.getChildCount( parent );iChild++ ) {
+            int nbChildren = mdl.getChildCount( parent );
+            String[] lbls = new String[nbChildren];
+            for ( int iChild = 0;!found && iChild < nbChildren;iChild++ ) {
                 Object val = mdl.getChild( parent, iChild );
                 String lbl = rdr.valueAt( tree, val );
                 if ( path[ i ].equals( lbl ) ) {
                     returnPath = returnPath.pathByAddingChild( val );
                     parent = val;
                     found = true;
+                }else{
+                	lbls[iChild] = lbl;
                 }
             }
             if ( !found ) {
-                throw new IllegalArgumentException( "Couldn't find path" + Arrays.asList( path ) + ", stopped at level " + i );
+                throw new IllegalArgumentException( "Couldn't find path" + Arrays.asList( path ) + ", stopped at level " + i + "\navailable values are "+Arrays.asList(lbls));
             }
         }
         Log.log("tree path = " + returnPath);
