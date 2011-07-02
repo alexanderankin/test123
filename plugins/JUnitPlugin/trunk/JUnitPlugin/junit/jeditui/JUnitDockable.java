@@ -443,6 +443,7 @@ class JUnitDockable extends JPanel {
                                 }
                 });
                 
+                field.setToolTipText(jEdit.getProperty("junit.type-test.tooltip"));
                 return field;
         }
         //}}}

@@ -41,6 +41,7 @@ junit.dock.label=JUnit
 junit.dock.title=JUnit
 
 # {{{ UI labels
+junit.type-test.tooltip=Type in a Test class to run
 junit.set-class-path.tooltip=Set JUnit classpath
 junit.class-path-dialog.title=JUnit Classpath
 junit.browse-tests.tooltip=Select a Test class
