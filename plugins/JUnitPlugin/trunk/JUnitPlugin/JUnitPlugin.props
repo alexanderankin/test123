@@ -48,9 +48,14 @@ junit.run-tests.tooltip=Run Tests
 junit.show-failures-only.tooltip=Show Failures Only
 junit.next-error.tooltip=Next Failed Test
 junit.previous-error.tooltip=Previous Failed Test
+junit.runs.label=Runs
 junit.runs.tooltip=Runs
+junit.errors.label=Errors
 junit.errors.tooltip=Errors
+junit.failures.label=Failures
 junit.failures.tooltip=Failures
+junit.assumptions.label=Assump.
+junit.assumptions.tooltip=Assumption Failures
 junit.test-run-view.popup.run.label=Run
 junit.stop.tooltip=Stop the current test
 

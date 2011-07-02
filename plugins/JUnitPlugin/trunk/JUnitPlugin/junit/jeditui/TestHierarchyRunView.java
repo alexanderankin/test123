@@ -31,7 +31,6 @@ import java.util.Vector;
 import org.junit.runner.*;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runner.Result;
 
 /**
 * A hierarchical view of a test run. The contents of a test suite is shown as a
@@ -78,7 +77,7 @@ class TestHierarchyRunView implements TestRunView {
         
         //{{{ refresh method.
         @Override
-        public void refresh(Description test, RunNotifier rn, Result result) {
+        public void refresh(Description test, RunNotifier rn, DetailedResult result) {
                 fTreeBrowser.refresh(test, rn, result);
                 testSelected();
         } //}}}
@@ -122,14 +121,14 @@ class TestHierarchyRunView implements TestRunView {
         
         //{{{ aboutToStart method.
         @Override
-        public void aboutToStart(Description suite, RunNotifier rn, Result result) {
+        public void aboutToStart(Description suite, RunNotifier rn, DetailedResult result) {
                 fTreeBrowser.showTestTree(suite);
                 rn.addListener(fTreeBrowser.getListener());
         } //}}}
         
         //{{{ runFinished method.
         @Override
-        public void runFinished(Description suite, RunNotifier rn, Result result) {
+        public void runFinished(Description suite, RunNotifier rn, DetailedResult result) {
         	rn.removeListener(fTreeBrowser.getListener());
         } //}}}
         

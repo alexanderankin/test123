@@ -29,7 +29,6 @@ import javax.swing.event.*;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runner.Result;
 
 import junit.JUnitPlugin;
 
@@ -79,7 +78,7 @@ class FailureRunView implements TestRunView {
         
         //{{{ refresh method.
         @Override
-        public void refresh(Description test, RunNotifier rn, Result result) {} //}}}
+        public void refresh(Description test, RunNotifier rn, DetailedResult result) {} //}}}
         
         //{{{ getComponent method.
         public Component getComponent() {
@@ -100,10 +99,10 @@ class FailureRunView implements TestRunView {
         
         //{{{ aboutToStart and runFinished methods.
         @Override
-        public void aboutToStart(Description suite, RunNotifier rn, Result result) {}
+        public void aboutToStart(Description suite, RunNotifier rn, DetailedResult result) {}
         
         @Override
-        public void runFinished(Description suite, RunNotifier rn, Result result) {} 
+        public void runFinished(Description suite, RunNotifier rn, DetailedResult result) {} 
         //}}}
         
         //{{{ testSelected method.

@@ -108,7 +108,9 @@ public class PluginTestCollector{
 						Class cl = loader.loadClass(className,false);
 						d.addChild(Description.createSuiteDescription(cl));
 					}catch(ClassNotFoundException e){
-						System.err.println("test class not found: "+className);
+						Log.log(Log.WARNING,PluginTestCollector.class,"test class not found: "+className);
+					}catch(ClassFormatError e){
+						Log.log(Log.WARNING,PluginTestCollector.class,"this is not a test class: "+className);
 					}
 				}
 			}

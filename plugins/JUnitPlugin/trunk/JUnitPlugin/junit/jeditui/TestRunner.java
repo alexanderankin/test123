@@ -41,6 +41,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.StoppedByUserException;
 
 import org.gjt.sp.jedit.gui.BeanShellErrorDialog;
 import org.gjt.sp.jedit.jEdit;
@@ -55,11 +56,9 @@ public class TestRunner extends RunListener implements TestRunContext{
         private DefaultListModel failures;
         private Thread runnerThread;
         private RunNotifier fRunNotifier;
-        private Result fResult;
+        private DetailedResult fResult;
         private String classPath;
         private JUnitDockable dockable;
-        private int fNbFailures;
-        private int fNbErrors;
         
         //{{{ TestRunner
         public TestRunner(View view) {
@@ -70,11 +69,6 @@ public class TestRunner extends RunListener implements TestRunContext{
         //{{{ _createUI method.
         public JPanel _createUI(String position, boolean selected) {
                 return dockable = new JUnitDockable(this, position, selected);
-        } //}}}
-        
-        //{{{ getTestResult method.
-        public Result getTestResult() {
-                return fResult;
         } //}}}
         
         //{{{ getClassPath method.
@@ -117,8 +111,6 @@ public class TestRunner extends RunListener implements TestRunContext{
                         
                         final String suiteName = dockable.getCurrentTest();
                         try{
-                        	// maybe this should be expanded to handle junit 3 test classes
-                        	// or test suites...
                         	final Runner testSuite = Request.aClass(getLoader().load(suiteName)).getRunner();
 				doRunTest(testSuite);
                         }catch(ClassNotFoundException e){
@@ -146,33 +138,41 @@ public class TestRunner extends RunListener implements TestRunContext{
         // }}}
         
         // {{{ RunListener Methods
-        
+        @Override
+        public void testAssumptionFailure(final Failure failure) {
+                
+        	SwingUtilities.invokeLater(
+                        new Runnable() {
+                                public void run() {
+					dockable.setAssumptionCount(fResult.getAssumptionCount());
+					appendFailure("Assumption", failure);
+                                }
+                        });
+        }
+
+        @Override
         public void testFailure(final Failure failure) {
         	final boolean isFailure = JUnitPlugin.isFailure(failure);
-		if(isFailure){
-			fNbFailures++;
-		}else{
-			fNbErrors++;
-		}
-		
                 SwingUtilities.invokeLater(
                         new Runnable() {
                                 public void run() {
                                 	if(isFailure){
-                                		dockable.setFailureCount(fNbFailures);
+                                		dockable.setFailureCount(fResult.getFailureCount());
                                 		appendFailure("Failure", failure);
                                 	}else{
-                                		dockable.setErrorCount(fNbErrors);
+                                		dockable.setErrorCount(fResult.getErrorCount());
                                 		appendFailure("Error", failure);
                                 	}
                                 }
                         });
         }
         
+        @Override
         public void testStarted(Description description) {
                 dockable.showInfo("Running: " + description.getDisplayName());
         }
         
+        @Override
         public void testFinished(Description description) {
                 synchUI();
                 SwingUtilities.invokeLater(new Runnable() {
@@ -184,9 +184,19 @@ public class TestRunner extends RunListener implements TestRunContext{
                                 }
                 });
         }
+        
+        @Override
+        public void testIgnored(Description d) {
+        	// let's say ignored tests don't change the status OK/KO of the tests
+        	dockable.updateProgress(true);
+        }
+
+        @Override
+        public void testRunFinished(Result result) {
+        	System.err.println("tests finished");
+        }
         // }}}
         
-        // {{{ BaseTestRunner Methods
         public JEditReloadingTestSuiteLoader getLoader() {
                 if (getClassPath().length() == 0) {
                         return new JEditReloadingTestSuiteLoader();
@@ -194,11 +204,6 @@ public class TestRunner extends RunListener implements TestRunContext{
                         return new JEditReloadingTestSuiteLoader(getClassPath());
                 }
         }
-        
-        protected void clearStatus() {
-                dockable.clearStatus();
-        }
-        // }}}
         
         //{{{ getIconResource method.
         static Icon getIconResource(Class c, String name) {
@@ -218,52 +223,63 @@ public class TestRunner extends RunListener implements TestRunContext{
         } //}}}
         
         //{{{ rerunTest method.
-        private void rerunTest(Description test) {
-        	// FIXME: implement !
-                /*if (test instanceof TestSuite) {
-                        TestSuite rerunTest = (TestSuite) test;
-                        reset();
-                        doRunTest(getTest(rerunTest.getName()));
-                        return;
-                }
+        /**
+         * rerun selected test case (can be 1 test of a class).
+         * code is very similar to doRunTest(), buy
+         * - the TestRunner is not registered as listener, so
+         *   run/error/failure counts are not updated
+         */
+        private void rerunTest(final Description test) {
+        	Log.log(Log.DEBUG,TestRunner.class,"Reruning test "+test);
+        	String suiteName = test.getClassName();
+        	Request rerunTest = null;
+        	try{
+        		rerunTest = Request.aClass(getLoader().load(suiteName));
+        	}catch(ClassNotFoundException e){
+        		Log.log(Log.WARNING,TestRunner.class, "test class not found "+suiteName);
+        		return;
+        	}
+        	if(!rerunTest.getRunner().getDescription().equals(test)){
+        		rerunTest = rerunTest.filterWith(test);
+        	}
+        	final Runner testSuite = rerunTest.getRunner();
+                fRunNotifier = createTestResult();
+                fResult = new DetailedResult();
+                fRunNotifier.addListener(fResult);
                 
-                if (!(test instanceof TestCase)) {
-                        dockable.showInfo("Could not reload " + test.toString());
-                        return;
-                }
+                runnerThread = new Thread("TestRunner-Thread") {
+                        public void run() {
+                                dockable.startTesting(testSuite.testCount());
+                                try{
+					fRunNotifier.fireTestRunStarted(testSuite.getDescription());
+					testSuite.run(fRunNotifier);
+					fRunNotifier.fireTestRunFinished(new Result());
+					String message = test.toString();
+					if (fResult.wasSuccessful()) {
+						dockable.showInfo(message + " was successful");
+						removeFailure(testSuite.getDescription());
+					} else if (fResult.getErrorCount() == 1) {
+						Failure tf = fResult.getFailures().get(0);
+						appendFailure("Error", tf);
+						dockable.showStatus(message + " had an error");
+					} else if(fResult.getFailureCount() == 1){
+						Failure tf = fResult.getFailures().get(0);
+						appendFailure("Failure", tf);
+						dockable.showStatus(message + " had a failure");
+					}
+					dockable.repaintViews(testSuite.getDescription(), fRunNotifier, fResult);
+                                }catch(StoppedByUserException e){
+                                	// notified like this that the user has stopped the test
+                                	dockable.showStatus("Stopped");
+                                }
+                                dockable.runFinished(testSuite.getDescription(), fRunNotifier, fResult);
+                                runnerThread = null;
+                                fRunNotifier = null;
+                                System.gc();
+                        }
+                };
                 
-                Request reloadedTest = null;
-                TestCase rerunTest = (TestCase) test;
-                try {
-                        Class reloadedTestClass = getLoader().reload(test.getClass());
-                        reloadedTest = TestSuite.createTest(reloadedTestClass, rerunTest
-                                .getName());
-                } catch (Exception e) {
-                        new BeanShellErrorDialog(fView, e);
-                        dockable.showInfo("Could not reload " + test.toString());
-                        return;
-                }
-                
-                Result result = createTestResult();
-                reloadedTest.run(result);
-                String message = reloadedTest.toString();
-                
-                if (result.wasSuccessful()) {
-                        dockable.showInfo(message + " was successful");
-                        removeFailure(rerunTest);
-                } else if (result.errorCount() == 1) {
-                        Enumeration e = result.errors();
-                        Failure tf = (Failure)e.nextElement();
-                        appendFailure("Error", test, tf.thrownException());
-                        dockable.showStatus(message + " had an error");
-                } else {
-                        Enumeration e = result.failures();
-                        Failure tf = (Failure)e.nextElement();
-                        appendFailure("Failure", test, tf.thrownException());
-                        dockable.showStatus(message + " had a failure");
-                }
-                dockable.repaintViews(reloadedTest, result);
-                */
+                runnerThread.start();
         }
         //}}}
         
@@ -272,10 +288,19 @@ public class TestRunner extends RunListener implements TestRunContext{
                 runnerThread = new Thread("TestRunner-Thread") {
                         public void run() {
                                 dockable.startTesting(testSuite.testCount());
-                                testSuite.run(fRunNotifier);
-                                dockable.showInfo("Finished: " 
-                                         + (fResult.getRunTime() / 1000)
-                                         + " seconds");
+                                try{
+                                	// fireTestRunStarted is not called by the runner, so testRunStarted was not called either in listener
+                                	fRunNotifier.fireTestRunStarted(testSuite.getDescription());
+                                	testSuite.run(fRunNotifier);
+                                	// fireTestRunFinished is not called by the runner, so testRunFinished was not called either in listener
+                                	fRunNotifier.fireTestRunFinished(new Result());
+					dockable.showInfo("Finished: " 
+						 + (fResult.getRunTime() / 1000)
+						 + " seconds");
+                                }catch(StoppedByUserException e){
+                                	// notified like this that the user has stopped the test
+                                	dockable.showStatus("Stopped");
+                                }
                                 dockable.runFinished(testSuite.getDescription(), fRunNotifier, fResult);
                                 runnerThread = null;
                                 System.gc();
@@ -286,9 +311,8 @@ public class TestRunner extends RunListener implements TestRunContext{
                 // test runner thread so that listeners can register for it.
                 
                 fRunNotifier = createTestResult();
-                fResult = new Result();
-                fNbErrors = fNbFailures = 0;
-                fRunNotifier.addListener(fResult.createListener());
+                fResult = new DetailedResult();
+                fRunNotifier.addListener(fResult);
                 fRunNotifier.addListener(TestRunner.this);
                 dockable.aboutToStart(testSuite.getDescription(), fRunNotifier, fResult);
                 runnerThread.start();
@@ -327,8 +351,7 @@ public class TestRunner extends RunListener implements TestRunContext{
         //}}}
         
         //{{{ removeFailure method.
-        private void removeFailure(Request r) {
-        	Description test = r.getRunner().getDescription();
+        private void removeFailure(Description test) {
                 for(int i = 0; i < failures.getSize(); i++) {
                         Failure tf = (Failure)failures.getElementAt(i);
 			// physical equality won't work here

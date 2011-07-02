@@ -240,7 +240,7 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ aboutToStart method.
-        public void aboutToStart(Description testSuite, RunNotifier rn, Result r) {
+        public void aboutToStart(Description testSuite, RunNotifier rn, DetailedResult r) {
                 for (Enumeration e = testRunViews.elements(); e.hasMoreElements();) {
                         TestRunView v = (TestRunView) e.nextElement();
                         v.aboutToStart(testSuite, rn, r);
@@ -248,7 +248,7 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ runFinished method.
-        public void runFinished(final Description testSuite, final RunNotifier rn, final Result result) {
+        public void runFinished(final Description testSuite, final RunNotifier rn, final DetailedResult result) {
                 SwingUtilities
                 .invokeLater(
                         new Runnable() {
@@ -297,7 +297,7 @@ class JUnitDockable extends JPanel {
         } //}}}
         
         //{{{ repaintViews method.
-        public void repaintViews(Description test, RunNotifier rn, Result result) {
+        public void repaintViews(Description test, RunNotifier rn, DetailedResult result) {
                 hierarchyRunView.refresh(test, rn, result);
                 // failureRunView.refresh(test, result);
         } 
@@ -372,6 +372,11 @@ class JUnitDockable extends JPanel {
         //{{{ setRunCount method.
         public void setRunCount(int count) {
                 counter.setRunValue(count);
+        } //}}}
+
+        //{{{ setAssumptionCount method.
+        public void setAssumptionCount(int count) {
+                counter.setAssumptionValue(count);
         } //}}}
         
         //{{{ showInfo method.

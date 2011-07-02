@@ -33,7 +33,7 @@ import org.junit.runner.*;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runner.notification.RunListener;
-import org.junit.runner.Result;
+import junit.jeditui.DetailedResult;
 
 import org.gjt.sp.jedit.gui.AnimatedIcon;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -181,19 +181,21 @@ class TestSuitePanel extends JPanel{
         //}}}
         
         //{{{ refresh method.
-        public void refresh(Description test, RunNotifier runNotifier, Result result) {
+        public void refresh(Description test, RunNotifier runNotifier, DetailedResult result) {
                 Description t = getSelectedTest();
+                if(t == null)return;
                 if (result.wasSuccessful()) {
                         fModel.delFailure(t);
                         fModel.delError(t);
-                } else if (result.getFailureCount() == 1 && JUnitPlugin.isFailure(result.getFailures().get(0))) {
+                } else if (result.getFailureCount() == 1) {
                         fModel.addFailure(t);
                 } else {
                         fModel.addError(t);
                 }
                 TreePath path = fTree.getSelectionPath();
-                fModel.fireNodeChanged(path, 
-                        fModel.findTest(t, (Description)fModel.getRoot(), new Vector()));
+                path = path.getParentPath();
+                int index = fModel.findTest(t, (Description)fModel.getRoot(), new Vector());
+                fModel.fireNodeChanged(path,  index);
         } //}}}
         
         //{{{ showTestTree method.
