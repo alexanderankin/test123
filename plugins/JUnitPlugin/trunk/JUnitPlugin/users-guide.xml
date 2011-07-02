@@ -75,6 +75,25 @@
     </para>
     <para>
     Unit tests are looked for in junit's classpath defined in the current project.
+    Selecting the test to run is done from the JUnit Dockable.
+    Type its class name in the text field or click on the 
+    <guibutton>Select a Test class</guibutton> button
+    and choose it from a list.
+    </para>
+    <para>The UI won't let you select multiple tests at once,
+    so you'd generally want to create test suites.
+    Here is how to do it using jUnit 4 :
+    <programlisting>
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import static org.junit.runners.Suite.*;
+
+@RunWith(Suite.class)
+@SuiteClasses({JUnit4Test.class, AnotherTest.class})
+public class JUnit4Suite{
+// yes, this class is empty
+}
+    </programlisting>
     </para>
   </chapter>
 
@@ -88,7 +107,7 @@
         requires jEdit 4.3 final+, JDK 1.6, and ProjectViewer 3.0.1+</para>
         <itemizedlist>
       <listitem><para>Now based on junit-4.8.2:
-      annotated junit-4 tests can be run(Eric Le Lay).</para></listitem>
+      annotated junit-4 tests can be run (Eric Le Lay).</para></listitem>
       </itemizedlist>
       </listitem>
     
