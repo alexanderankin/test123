@@ -25,7 +25,6 @@ import javax.swing.*;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runner.Result;
 
 /**
  * A TestRunView is shown as a page in a tabbed folder. It contributes the page
@@ -49,7 +48,7 @@ interface TestRunView {
          */
         public void revealFailure(Failure failure);
         
-        public void refresh(Description test, RunNotifier rn, Result result);
+        public void refresh(Description test, RunNotifier rn, DetailedResult result);
         
         /**
          * Returns the component that represents this view.
@@ -59,12 +58,12 @@ interface TestRunView {
         /**
          * Informs that the suite is about to start
          */
-        public void aboutToStart(Description suite, RunNotifier rn, Result result);
+        public void aboutToStart(Description suite, RunNotifier rn, DetailedResult result);
         
         /**
          * Informs that the run of the test suite has finished
          */
-        public void runFinished(Description suite, RunNotifier rn, Result result);
+        public void runFinished(Description suite, RunNotifier rn, DetailedResult result);
         
         /**
          * Goto next failed test.

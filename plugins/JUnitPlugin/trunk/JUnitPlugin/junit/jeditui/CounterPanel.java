@@ -36,7 +36,8 @@ import javax.swing.JPanel;
 import org.gjt.sp.jedit.jEdit;
 
 /**
- * A panel with test run counters
+ * A panel with test run counters.
+ * Doesn't show ignored tests for now.
  */
  public class CounterPanel extends JPanel {
          public static final Font PLAIN_FONT = new Font("dialog", Font.PLAIN, 12);
@@ -45,6 +46,7 @@ import org.gjt.sp.jedit.jEdit;
          private JLabel numErrors;
          private JLabel numFailures;
          private JLabel numRuns;
+         private JLabel numAssumptions;
          private int fTotal;
          
          //{{{ constructor.
@@ -52,13 +54,15 @@ import org.gjt.sp.jedit.jEdit;
          * Create a new <code>CounterPanel</code>.
          */
          public CounterPanel() {
-                 super(new FlowLayout(FlowLayout.LEFT, 5, 0));
+                 super(new FlowLayout(FlowLayout.LEFT, 10, 0));
                  add(createIconLabel("runs"));
                  add(numRuns = createOutputField());
                  add(createIconLabel("errors"));
                  add(numErrors = createOutputField());
                  add(createIconLabel("failures"));
                  add(numFailures = createOutputField());
+                 add(createIconLabel("assumptions"));
+                 add(numAssumptions = createOutputField());
          } 
          //}}}
          
@@ -87,6 +91,10 @@ import org.gjt.sp.jedit.jEdit;
                  setLabelValue(numFailures, value);
          }
          
+         public void setAssumptionValue(int value) {
+                 setLabelValue(numAssumptions, value);
+         }
+
          private JLabel createOutputField() {
                  JLabel field = new JLabel("0");
                  field.setFont(BOLD_FONT);
@@ -108,7 +116,7 @@ import org.gjt.sp.jedit.jEdit;
          private JLabel createIconLabel(String name) {
                  Icon icon = getIcon(name);
                  JLabel label = new JLabel(icon);
-                 label.setText(jEdit.getProperty("junit." + name + ".tooltip") + ": ");
+                 label.setText(jEdit.getProperty("junit." + name + ".label") + ": ");
                  label.setToolTipText(jEdit.getProperty("junit." + name + ".tooltip"));
                  return label;
          } 

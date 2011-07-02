@@ -38,7 +38,6 @@ import java.util.ArrayList;
  * JARClassLoader as a parent.
  * This grabs the new version of a class
  * after a plugin is reloaded.
- * FIXME: test this
  */
 public class JEditTestCaseClassLoader{
 	private ClassLoader loader;
