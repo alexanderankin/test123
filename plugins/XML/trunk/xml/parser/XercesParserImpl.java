@@ -218,12 +218,18 @@ public class XercesParserImpl extends XmlParser
 				+ "parsing " + rootDocument);
 			rootDocument = MiscUtilities.constructPath(
 				MiscUtilities.getParentOfPath(buffer.getPath()), rootDocument);
-			source.setSystemId(rootDocument);
+			// using an URL as systemId (see else block for details)
+			source.setSystemId(xml.PathUtilities.pathToURL(rootDocument));
 		}
 		else
 		{
 			source.setCharacterStream(new CharSequenceReader(text));
-			source.setSystemId(buffer.getPath());
+			// must set the systemId to an URL and not a path
+			// otherwise, get errors when opening a DTD specified as a relative path
+			// somehow, xerces doesn't call File.toURI.toURL and the URL
+			// is incorrect : file://server/share instead of file://///server/share
+			// and the DTD can't be found
+			source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
 		}
 
 		try
@@ -353,7 +359,7 @@ public class XercesParserImpl extends XmlParser
 		InputSource source = new InputSource();
 
 		source.setCharacterStream(new CharSequenceReader(text));
-		source.setSystemId(buffer.getPath());
+		source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
 
 		reader.setContentHandler(handler);
 		reader.setErrorHandler(handler);
