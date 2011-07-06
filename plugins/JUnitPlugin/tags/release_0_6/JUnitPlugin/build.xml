@@ -128,7 +128,7 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
-		<pathelement location="${jedit.plugins.dir}/junit.jar"/>
+		<pathelement location="${basedir}/lib/junit.jar"/>
 		<pathelement location="."/>
 	</path>
 	<!-- }}} -->
@@ -138,7 +138,7 @@
 	<!-- {{{ 'build.prepare' target: install junit -->
 	<target name="build.prepare">
 		<copy todir="${install.dir}">
-			<fileset dir="lib" includes="*.jar" />
+			<fileset dir="${basedir}/lib" includes="*.jar" />
 		</copy>
 	</target>
 					
