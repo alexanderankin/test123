@@ -137,7 +137,6 @@
 
 	<!-- {{{ 'build.prepare' target: install junit -->
 	<target name="build.prepare">
-		<echo>COPYING JUNIT JAR TO ${install.dir}</echo>
 		<copy todir="${install.dir}">
 			<fileset dir="${basedir}/lib" includes="*.jar" />
 		</copy>
