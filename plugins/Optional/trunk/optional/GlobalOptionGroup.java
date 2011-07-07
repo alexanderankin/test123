@@ -25,6 +25,7 @@
 package optional;
 
 import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.jEdit;
 
 // {{{ class GlobalOptionGroup
 /**
@@ -48,36 +49,37 @@ public class GlobalOptionGroup extends OptionGroup
 	{
 		super("Global Options");
 		root = rootGroup;
-		OptionGroup jedit = new OptionGroup("jedit");
-		
-		jedit.addOptionPane("general");
-		jedit.addOptionPane("textarea");
-		jedit.addOptionPane("abbrevs");
-		jedit.addOptionPane("appearance");
-		jedit.addOptionPane("context");
-		jedit.addOptionPane("docking");
-		jedit.addOptionPane("editing");
-		jedit.addOptionPane("encodings");
-		jedit.addOptionPane("gutter");
-		jedit.addOptionPane("mouse");
-		jedit.addOptionPane("plugin-manager");
-		jedit.addOptionPane("print");
-		jedit.addOptionPane("firewall");
-		jedit.addOptionPane("save-back");
-		jedit.addOptionPane("shortcuts");
-		jedit.addOptionPane("status");
-		jedit.addOptionPane("syntax");
-		jedit.addOptionPane("toolbar");
-		jedit.addOptionPane("view");
-		addGroup(jedit);
-		OptionGroup browserGroup = new OptionGroup("browser");
-		browserGroup.addOptionPane("browser.general");
-		browserGroup.addOptionPane("browser.colors");
-		addGroup(browserGroup);
+
+		String optionGroups = jEdit.getProperty("options.groups","jedit browser");
+		String[] groups = optionGroups.split(" ");
+		for (String group : groups)
+		{
+			OptionGroup optionGroup = new OptionGroup(group);
+			String paneList = "options.group." + group;
+			String def = "";
+			if ("jedit".equals(group))
+			{
+				def = "general abbrevs appearance context docking editing encodings gutter mouse " +
+					"plugin-manager print firewall save-back shortcuts status syntax textarea " +
+					"toolbar view";
+			}
+			else if ("browser".equals(group))
+			{
+				def = "browser.general browser.colors";
+			}
+			String optionPanes = jEdit.getProperty(paneList, def);
+			String[] panes = optionPanes.split(" ");
+			for (String pane : panes)
+			{
+				optionGroup.addOptionPane(pane);
+			}
+			addGroup(optionGroup);
+		}
 	} // }}}
 	
 	// {{{ addGroup() method
-	void addGroup(OptionGroup group) {
+	void addGroup(OptionGroup group)
+	{
 		if (root != null)
 		{
 			root.addOptionGroup(group);
