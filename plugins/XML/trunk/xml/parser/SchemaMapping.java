@@ -519,22 +519,24 @@ public final class SchemaMapping
 				if(m.matches()){
 						// prefix of the URI goes before
 					String result = m.group(1);
+					StringBuilder resultSb = new StringBuilder(result);
 					if(splitToPattern.length>0)
 					{
 						// then the first part of toPattern
-						result+=splitToPattern[0];
+						resultSb.append(splitToPattern[0]);
 						
 						// then replace the stars (ie the boundaries between splitToPattern
 						// elements) by the matched groups in the url
 						for(int i=0;i<starCount;i++){
 							//start at group(2)
-							result += m.group(i+2);
+							resultSb.append(m.group(i + 2));
 							
 							// should be OK, but better check
 							if(i+1 < splitToPattern.length)
-								result += splitToPattern[i+1];
+								resultSb.append(splitToPattern[i + 1]);
 						}
 					}
+					result = resultSb.toString();
 					URI resultURI;
 					if(getBaseURI() == null){
 						resultURI = new URI(result);
@@ -891,7 +893,7 @@ public final class SchemaMapping
 
 		if(output==null)throw new IllegalArgumentException("url can't be null");
 
-		URI resource = null;
+		final URI resource;
 		try{
 			resource = new URI(output);
 		}catch(URISyntaxException ue){
@@ -911,59 +913,50 @@ public final class SchemaMapping
 			public void run()
 			{
 				sessionArray[0] = vfs.createVFSSession(output,view);
+                Object session = sessionArray[0];
+                if(session != null)
+                {
+                    try
+                    {
+                        // urlToPath because the FileVFS wants a path and SFTPVFS wants an absolute URL
+                        // starting with ftp or sftp
+                        OutputStream vfsos = vfs._createOutputStream(session,
+                            PathUtilities.urlToPath(resource.toString()),view);
+                    
+                        Writer out = new OutputStreamWriter(vfsos,"UTF-8");
+                        out.write("<?xml version=\"1.0\" ?>\n");
+                        out.write("<locatingRules xmlns=\"http://thaiopensource.com/ns/locating-rules/1.0\">\n");
+                        for(Mapping r:rules)
+                        {
+                            out.write(r.toString());
+                        }
+                        for(TypeIdMapping tid:typeIds)
+                        {
+                            out.write(tid.toString());
+                        }
+                        out.write("</locatingRules>");
+                        out.close();
+        
+                    }
+                    catch(IOException ioe) {
+                        Log.log(Log.ERROR, SchemaMapping.class, "unable to write document: " + ioe.getMessage());   
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            vfs._endVFSSession(session,view);
+                        }
+                        catch(IOException ioe)
+                        {
+                            Log.log(Log.ERROR,SchemaMapping.class,"ending VFS session in toDocument("+output+")",ioe);
+                        }
+                    }
+        
+                }
 			}
 		};
-		
-		if(SwingUtilities.isEventDispatchThread())
-			run.run();
-		else
-		{
-			try
-			{
-				SwingUtilities.invokeAndWait(run);
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
-		
-		Object session = sessionArray[0];
-		if(session != null)
-		{
-			try{
-				// urlToPath because the FileVFS wants a path and SFTPVFS wants an absolute URL
-				// starting with ftp or sftp
-				OutputStream vfsos = vfs._createOutputStream(session,
-					PathUtilities.urlToPath(resource.toString()),view);
-			
-				Writer out = new OutputStreamWriter(vfsos,"UTF-8");
-				out.write("<?xml version=\"1.0\" ?>\n");
-				out.write("<locatingRules xmlns=\"http://thaiopensource.com/ns/locating-rules/1.0\">\n");
-				for(Mapping r:rules)
-				{
-					out.write(r.toString());
-				}
-				for(TypeIdMapping tid:typeIds)
-				{
-					out.write(tid.toString());
-				}
-				out.write("</locatingRules>");
-				out.close();
-
-			}finally{
-				try{
-					vfs._endVFSSession(session,view);
-				}catch(IOException ioe){
-					Log.log(Log.ERROR,SchemaMapping.class,"ending VFS session in toDocument("+output+")",ioe);
-				}
-			}
-
-		}
-		else
-		{
-			throw new IOException("can't create VFS session for "+output);
-		}
+		SwingUtilities.invokeLater(run);
 	}
 	
 	private static class MyHandler extends DefaultHandler
@@ -1313,18 +1306,19 @@ public final class SchemaMapping
 		}
 		
 		public String toString(){
-			String s = "<typeId id=\""+tid+"\" ";
+		    StringBuilder sb = new StringBuilder();
+		    sb.append("<typeId id=\"").append(tid).append("\" ");
 			if(targetIsTypeId)
 			{
 				/* points to a typeId */
-				s+="typeId";
+				sb.append("typeId");
 			}
 			else
 			{
-				s+="uri";
+				sb.append("uri");
 			}
-			s+="=\""+target+"\"/>\n";
-			return s;
+			sb.append("=\"").append(target).append("\"/>\n");
+			return sb.toString();
 		}
 	}
 	
@@ -1343,27 +1337,7 @@ public final class SchemaMapping
 		final Object[]sessionArray = new Object[1];
 		final View view = jEdit.getActiveView();
 		
-		Runnable run = new Runnable()
-		{
-			public void run()
-			{
-				sessionArray[0] = vfs.createVFSSession(resource.toString(),view);
-			}
-		};
-		
-		if(SwingUtilities.isEventDispatchThread())
-			run.run();
-		else
-		{
-			try
-			{
-				SwingUtilities.invokeAndWait(run);
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
+        sessionArray[0] = vfs.createVFSSession(resource.toString(),view);
 		
 		Object session = sessionArray[0];
 		if(session != null)
