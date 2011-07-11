@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
@@ -364,7 +365,7 @@ public class XmlParsedData extends SideKickParsedData
 		DefaultMutableTreeNode tn = (DefaultMutableTreeNode)path.getLastPathComponent();
 		TreeNode[]steps = tn.getPath();
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)steps[0];
-		String xpath = "";
+		StringBuilder xpath = new StringBuilder();
 		if(steps.length == 1)
 		{
 			//there is only the node with the file name
@@ -389,14 +390,14 @@ public class XmlParsedData extends SideKickParsedData
 			XmlTag curTag = (XmlTag)parent.getUserObject();
 			String lname = curTag.getLocalName();
 			String ns = curTag.namespace;
-			String prefix = curTag.getPrefix();
+			StringBuilder prefix = new StringBuilder(curTag.getPrefix());
 			
 			assert(ns != null);
 			
 			rootName = new Name(ns,lname);
 			
-			prefixToNS.put(prefix,ns);
-			nsToPrefix.put(ns,prefix);
+			prefixToNS.put(prefix.toString(), ns);
+			nsToPrefix.put(ns, prefix.toString());
 			
 			for(int i=2;i<steps.length;i++)
 			{
@@ -405,7 +406,7 @@ public class XmlParsedData extends SideKickParsedData
 				curTag = (XmlTag)cur.getUserObject();
 				ns = curTag.namespace;
 				lname = curTag.getLocalName();
-				prefix = curTag.getPrefix();
+				prefix = new StringBuilder(curTag.getPrefix());
 				
 				int jCur = parent.getIndex(cur);
 				int cntChild = 0;
@@ -443,36 +444,38 @@ public class XmlParsedData extends SideKickParsedData
 						// begin with a letter
 						if("".equals(prefix))
 						{
-							prefix+= "_";
+							prefix.append(' ');
 						}
-						while(prefixToNS.containsKey(prefix+String.valueOf(uniq)))
+						while(prefixToNS.containsKey(prefix.toString() + uniq))
 						{
 							uniq++;
 						}
-						prefix += String.valueOf(uniq);
+						prefix.append(uniq);
 					}
-					prefixToNS.put(prefix,ns);
-					nsToPrefix.put(ns,prefix);
+					prefixToNS.put(prefix.toString(), ns);
+					nsToPrefix.put(ns, prefix.toString());
 				}
 				
 				parent = cur;
 			}
 			
-			prefix = nsToPrefix.get(rootName.getNamespaceUri());
-			xpath = "/" ;
-			if(!"".equals(prefix)) xpath += prefix + ":";
-			xpath += rootName.getLocalName();
+			prefix = new StringBuilder(nsToPrefix.get(rootName.getNamespaceUri()));
+			xpath.append('/') ;
+			if(prefix.length() > 0) 
+				xpath.append(prefix).append(':');
+			xpath.append(rootName.getLocalName());
 			
 			for(int i=0;i<preXPath.length;i++)
 			{
-				prefix = nsToPrefix.get(preXPath[i].getNamespaceUri());
-				xpath += "/";
-				if(!"".equals(prefix))xpath+= prefix + ":";
-				xpath += preXPath[i].getLocalName();
-				xpath += "[" + preXPathIndexes[i] + "]"; 
+				prefix = new StringBuilder(nsToPrefix.get(preXPath[i].getNamespaceUri()));
+				xpath.append('/');
+				if(prefix.length() > 0)
+					xpath.append(prefix).append(':');
+				xpath.append(preXPath[i].getLocalName());
+				xpath.append('[').append(preXPathIndexes[i]).append(']'); 
 			}
 		}
-		return xpath;
+		return xpath == null ? null : xpath.toString();
 	}
 	//}}}
 	
@@ -484,8 +487,6 @@ public class XmlParsedData extends SideKickParsedData
 		System.err.println("asset at "+pos+" is :"+asset+" ("+asset.getStart().getOffset()+","+asset.getEnd().getOffset()+")");
 		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
 
-		String text = buffer.getText(0,pos);
-		
 		TagParser.Tag parentTag = null;
 		try
 		{
@@ -510,8 +511,8 @@ public class XmlParsedData extends SideKickParsedData
 		else
 		{
 			ElementDecl parentDecl = null;
-			String parentPrefix = getElementNamePrefix(parentTag.tag);
-			String parentLocalName = "".equals(parentPrefix) ? parentTag.tag : parentTag.tag.substring(parentPrefix.length()+1);
+			//String parentPrefix = getElementNamePrefix(parentTag.tag);
+			//String parentLocalName = "".equals(parentPrefix) ? parentTag.tag : parentTag.tag.substring(parentPrefix.length()+1);
 
 
 			if(html)
@@ -741,11 +742,15 @@ public class XmlParsedData extends SideKickParsedData
 	//}}}
 	
 	//{{{ sort(view) method
-	public void sort(View view) {
-		sortChildren((DefaultMutableTreeNode)root);
-		tree.reload();
-		expansionModel = createExpansionModel().getModel();
-		EditBus.send(new SideKickUpdate(view));
+	public void sort(final View view) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				sortChildren((DefaultMutableTreeNode)root);
+				tree.reload();
+				expansionModel = createExpansionModel().getModel();
+				EditBus.send(new SideKickUpdate(view));
+			}
+		} );
 	}
 	//}}}
 	
