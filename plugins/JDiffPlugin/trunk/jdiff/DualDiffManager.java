@@ -157,8 +157,8 @@ public class DualDiffManager {
                     int caret_position = Math.min(values.get( 0 ), max_caret);
                     int max_line = textArea.getLineCount() - 1;
                     int first_physical_line = Math.min(values.get( 1 ), max_line);
-                    textArea.setCaretPosition( caret_position );
-                    textArea.setFirstPhysicalLine( first_physical_line );
+                    textArea.setCaretPosition( Math.max(0, caret_position) );
+                    textArea.setFirstPhysicalLine( Math.max(0, first_physical_line) );
                 }
             }
             carets = null;
