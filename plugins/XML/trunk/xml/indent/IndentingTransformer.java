@@ -358,7 +358,6 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     private void populateAttributes( char[] chars, AttributesImpl attributes ) throws SAXException {
         StringBuffer qName = new StringBuffer();
         StringBuffer value = new StringBuffer();
-        boolean isLastSpace = false;
         char quote = '\"';
         int i = 0;
         boolean attributeOnNewLine;
@@ -368,6 +367,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
             qName.setLength( 0 );
             value.setLength( 0 );
 
+            // consume leading whitespace
             while ( i < chars.length && Character.isWhitespace( chars[ i ] ) ) {
                 if ( chars[ i ] == '\r' || chars[ i ] == '\n' ) {
                     attributeOnNewLine = true;
@@ -376,16 +376,19 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
             }
 
             if ( i < chars.length ) {
+                // consume attribute name
                 while ( i < chars.length && chars[ i ] != '=' ) {
                     qName.append( chars[ i ] );
                     i++;
                 }
                 i++; // get past equals
 
+                // consume whitespace between equals sign and start of attribute value
                 while ( i < chars.length && Character.isWhitespace( chars[ i ] ) ) {
                     i++; // get past whitespace before first quote
                 }
 
+                // consume attribute value start quote
                 if ( i < chars.length ) {
                     if ( chars[ i ] != '\"' && chars[ i ] != '\'' ) {
                         throw new SAXException( "value for attribute " + qName.toString().trim() + " must be in quotes" );
@@ -396,23 +399,9 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
                     }
                 }
 
+                // consume attribute value
                 while ( i < chars.length && chars[ i ] != quote ) {
-                    if ( Character.isWhitespace( chars[ i ] ) ) {
-                        if ( !isLastSpace ) {
-                            if ( chars[ i ] == '\f' || chars[ i ] == '\n' || chars[ i ] == '\r' || chars[ i ] == '\t' || chars[ i ] == ' ' ) {
-                                value.append( ' ' );
-                            }
-                            isLastSpace = true;
-                        }
-                        else {
-                            // don't add consecutive space
-                        }
-                    }
-                    else {
-                        value.append( chars[ i ] );
-                        isLastSpace = false;
-                    }
-
+                    value.append( chars[ i ] );
                     i++;
                 }
 
@@ -480,7 +469,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
         writeRemaining( start, end );
 
         if ( okToContinue ) {
-            int targetEnd = xml.indexOf( " ", start );
+            int targetEnd = xml.indexOf( ' ', start );
             String target = xml.substring( start + "<?".length(), targetEnd );
             String data = xml.substring( targetEnd + 1, end );
             processingInstruction( target, data );
