@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="SideKick" default="build" basedir=".">
+<!--
+     This is a build.xml file for building the SideKick plugin.
+-->
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+
+    <!-- Read optional properties from various places -->
+    <!-- Latter ones override previous properties. -->
+    <property name="javadoc.packagenames"	value="sidekick.*" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+    <property name="plugin.dependencies" 	value="ErrorList" />
+    <property name="dist.target" 			value="dist.complete" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    <property name="build.support" value="../build-support" />
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+
+
+    <import file="${build.support}/plugin-build.xml" />
+
+    <!-- must define project.class.path AFTER the import for plugin-build.xml.
+    Don't know why, other than plugin-build.xml will not find the jars listed
+    here if the import is listed later.  Ant bug, maybe? -->
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar" />
+        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+    </path>
+
+    <selector id="packageFiles">
+	  <or>
+		<filename name="macros/*.*" />
+	  </or>
+    </selector>
+
+</project>
