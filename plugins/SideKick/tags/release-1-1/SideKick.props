@@ -1,0 +1,162 @@
+# Plugin properties
+plugin.sidekick.SideKickPlugin.activate=startup
+
+plugin.sidekick.SideKickPlugin.name=SideKick
+plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust,Shlomy Reinstein
+plugin.sidekick.SideKickPlugin.version=1.1
+plugin.sidekick.SideKickPlugin.docs=index.html
+plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.99.00
+plugin.sidekick.SideKickPlugin.depend.1=jdk 1.5
+plugin.sidekick.SideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.sidekick.SideKickPlugin.description=The SideKick plugin provides a dockable window in which other plugins can display buffer structure in a tree view.
+plugin.sidekick.SideKickPlugin.usePluginHome=true
+
+# Menu bar stuff
+plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
+                                    - \
+                                    sidekick-prev-asset \
+                                    sidekick-next-asset \
+                                    sidekick-select-asset \
+                                    sidekick-narrow-asset \
+                                    - \
+                                    sidekick-complete \
+                                    - \
+                                    sidekick-parse \
+                                    sidekick-keystroke-parse \
+                                    - \
+                                    sidekick-toggle-markers-flag \
+                                    - \
+                                    sidekick-search-asset \
+                                    sidekick-search-asset-exact \
+                                    sidekick-jump-to-beginning-of-function \
+                                    sidekick-jump-to-end-of-function \
+                                    -
+									
+plugin.sidekick.SideKickPlugin.menu.code=new sidekick.SideKickMenuProvider();
+
+sidekick-enhanced-tree.label=Structure Browser
+sidekick-tree.label=Sidekick
+sidekick-prev-asset.label=Go to Previous Asset
+sidekick-next-asset.label=Go to Next Asset
+sidekick-select-asset.label=Select Asset at Caret
+sidekick-narrow-asset.label=Narrow to Asset at Caret
+sidekick-complete.label=Show Completion Popup
+sidekick-parse.label=Parse Buffer
+sidekick-keystroke-parse.label=Parse on Keystroke
+sidekick-search-asset.label=Search current asset for occurrences of selection
+sidekick-search-asset-exact.label=Search current asset for whole-word occurrences of selection
+sidekick-jump-to-beginning-of-function.label=Jump to beginning of function
+sidekick-jump-to-end-of-function.label=Jump to end of function
+
+# Tree popup menu
+# ( mode-specific menus can replace this default menu
+#   like this: sidekick-tree.{modename}.menu= ...
+# )
+sidekick-tree.menu=add-marker \
+                sidekick-remove-marker \
+                remove-all-markers \
+                sidekick-undirty-buffer
+# Action labels (see actions.xml)
+sidekick-remove-marker.label=Remove Marker
+sidekick-undirty-buffer.label=Undirty Buffer
+sidekick-toggle-markers-flag.label=Highlight Markers in Structure Browser
+
+# Option pane
+plugin.sidekick.SideKickPlugin.option-group=sidekick sidekick.parser
+
+options.sidekick.label=General
+options.sidekick.mode.label=SideKick
+options.mode.settings.title=Mode Properties
+options.sidekick.code=new sidekick.SideKickOptionPane();
+options.sidekick.parser.label=Parsers
+options.sidekick.parser.code=new sidekick.ParserOptionPane();
+options.sidekick.parser.mode=Mode
+options.sidekick.parser.parser=Parser
+options.sidekick.general.label=General Settings
+options.sidekick.code-completion.label=Code Completion Options
+options.sidekick.tree-follows-caret=Tree/combo-box selection follows caret position
+options.sidekick.auto-expand-tree-depth=Auto expand tree depth
+options.sidekick.buffer-change-parse=Parse on buffer switch
+options.sidekick.buffer-save-parse=Parse on buffer save
+options.sidekick.keystroke-parse=Parse on keystroke
+options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
+options.sidekick.complete-instant.toggle=Immediately complete if possible
+options.sidekick.complete-delay.toggle=Show completion popups where possible
+options.sidekick.auto-complete-popup-get-focus=Automatic completion popups get focus
+options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
+options.sidekick.complete-popup.accept-characters=Accept characters for completion popup
+options.sidekick.complete-popup.insert-characters=Accept characters to insert after completion
+options.sidekick.all=All
+
+options.sidekick.showToolTips.label=Show tool tips
+options.sidekick.showToolTips=true
+options.sidekick.showStatusWindow.label=Show status window
+options.sidekick.showStatusWindow=true
+
+options.sidekick.scrollToVisible.label=Scroll to make selection visible as much as possible
+options.sidekick.scrollToVisible=true
+
+options.sidekick.toolBar.label=Toolbar options
+options.sidekick.showToolBar.label=Show the toolbar (buffer structure in combo-boxes)
+sidekick.showToolBar=false
+options.sidekick.splitCombo.label=Use a separate combo-box for each level of the tree
+sidekick.splitCombo=false
+options.sidekick.singleIconInCombo.label=In single combo-box mode, hide icons of parent nodes
+sidekick.singleIconInCombo=true
+
+# Default parse on buffer change switch
+sidekick.buffer-change-parse=true
+sidekick.save-change-parse=true
+# Global parse on keystroke switch
+buffer.sidekick.keystroke-parse=false
+
+# Delay after typing ends before auto parse, in milliseconds
+sidekick.auto-parse-delay=500
+
+# Should the tree selection follow the caret position
+sidekick-tree.follows-caret=true
+
+# Enable completion
+sidekick.complete-delay.toggle=true
+sidekick.complete-instant.toggle=true
+
+# Initial focus of automatic completion popup
+sidekick.auto-complete-popup-get-focus=false
+
+# Delay after complete trigger before showing completion popup
+sidekick.complete-delay=500
+
+# Characters that accept the selected completion
+sidekick.complete-popup.accept-characters=\\ \\n\\t
+# Characters that are inserted after accepting the selected completion
+sidekick.complete-popup.insert-characters=\\ 
+
+# XML tree window
+sidekick-tree.title=Sidekick
+sidekick-tree.parse=Parse
+sidekick-tree.mode-options=Mode Options
+sidekick-tree.stop-parsing=Stop parsing
+sidekick-tree.parsing=Parsing
+sidekick-tree.not-parsed=Not parsed
+
+sidekick-tree.parsercombo.tooltip=Switches to another sidekick parser
+sidekick-tree.filter.label=Filter:
+sidekick-tree.filter.tooltip=Type some text to find nodes
+sidekick-tree.clear-filter.tooltip=Clear filter
+
+# Status bar
+sidekick.parsing-complete={0} parsing complete, {1} error(s)
+
+# Completion Popup
+sidekick-complete.none=No completions
+# Filter
+options.sidekick.showFilter.label=Show filter text box
+options.sidekick.persistentFilter.label=Filter persists after tree selection
+options.sidekick.persistentFilter=true
+# Only show expanded assets when filtering (default is to expandAll after
+# filtering).
+options.sidekick.filter-visible-assets.label=Limit filter results to include only currently expanded assets
+options.sidekcik.filter-visible-assets=false
+
+# Toolbar
+sidekick-toolbar.select=Select
