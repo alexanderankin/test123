@@ -41,7 +41,7 @@ import java.util.HashSet;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
+import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
@@ -52,7 +52,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.Timer;
@@ -71,7 +70,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.ServiceManager;
@@ -99,8 +97,9 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
         // {{{ Instance variables
         private RolloverButton parseBtn;
-        private RolloverButton propsBtn;
-        private RolloverButton stopBtn;
+        
+        private Icon parseIcon;
+        private Icon stopIcon;
 
         private JComboBox parserCombo;
         protected JTree tree;
@@ -125,9 +124,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         private JPanel toolBox;
         private JPanel parserPanel = null;
 
-        private JLabel search;
         private JTextField searchField;
-        private JButton clearSearchBtn;
         // }}}
 
         // {{{ SideKickTree constructor
@@ -146,22 +143,20 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 filterBox.setLayout(new BorderLayout());
                 filterBox.setFloatable(false);
 
-                parseBtn = new RolloverButton(GUIUtilities.loadIcon("Parse.png"));
-
+                parseIcon = GUIUtilities.loadIcon("Parse.png");
+		stopIcon = GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.stop.icon"));                
+                parseBtn = new RolloverButton(parseIcon);
+                
                 parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
                 parseBtn.setMargin(new Insets(0,0,0,0));
                 parseBtn.setRequestFocusEnabled(false);
                 parseBtn.setEnabled(true);
                 ActionListener ah = new ActionHandler();
                 parseBtn.addActionListener(ah);
-
-                propsBtn = new RolloverButton(GUIUtilities.loadIcon("ButtonProperties.png"));
+                
+                RolloverButton propsBtn = new RolloverButton(GUIUtilities.loadIcon("ButtonProperties.png"));
                 propsBtn.setToolTipText(jEdit.getProperty("sidekick-tree.mode-options"));
                 propsBtn.addActionListener(new SideKickProperties());
-
-                stopBtn = new RolloverButton(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.stop.icon")));
-                stopBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
-                stopBtn.addActionListener(ah);
 
                 configMenu = new JPopupMenu("Parse");
                 followCaret = new JCheckBoxMenuItem("Follow Caret");
@@ -182,10 +177,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 onChange.addActionListener(ah);
                 onSave.addActionListener(ah);
                 followCaret.addActionListener(ah);
-                search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
+                JLabel search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
                 searchField = new JTextField();
                 searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
-                clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
+                RolloverButton clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
                 clearSearchBtn.addActionListener(new ActionListener()
                 {
                         public void actionPerformed(ActionEvent ae)
@@ -199,7 +194,6 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
                 buttonBox.add(parseBtn);
                 buttonBox.add(propsBtn);
-                buttonBox.add(stopBtn);
                 filterBox.add(search, BorderLayout.WEST);
                 filterBox.add(searchField, BorderLayout.CENTER);
                 filterBox.add(clearSearchBtn, BorderLayout.EAST);
@@ -293,7 +287,17 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 {
                         public void run()
                         {
-                                stopBtn.setVisible(show);
+                        	if (show && parseIcon.equals(parseBtn.getIcon()))
+                        	{
+                        		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
+                        		parseBtn.setIcon(stopIcon);
+                        		
+                        	}
+                        	else 
+                        	{
+                        		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
+                        		parseBtn.setIcon(parseIcon);
+                        	}
                         }
                 }
                );
@@ -619,7 +623,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 if (currentParser != null)
                 {
                         String name = currentParser.getName();
-                        name = name == null ? SideKickPlugin.DEFAULT : name;
+                        if (name == null)
+                        {
+                        	name = SideKickPlugin.DEFAULT;	
+                        }
                         parserCombo.setSelectedItem(name);
                 }
                 else
@@ -692,7 +699,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         // caret position.
                                         if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
                                         {
-                                                if (searchField.getText().length() > 0)
+                                                if (searchField.getText().length() > 0)		// NOPMD
                                                 {
                                                         searchField.setText("");
                                                         updateFilter(false);
@@ -811,7 +818,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                                 }
                                                 if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
                                                 {
-                                                        if (searchField.getText().length() > 0)
+                                                        if (searchField.getText().length() > 0)		// NOPMD
                                                         {
                                                                 searchField.setText("");
                                                                 updateFilter(false);
@@ -947,12 +954,32 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 propertiesChanged();
 
                         }
-                        else if (evt.getSource() == stopBtn)
+                        else if (evt.getSource() == parseBtn && stopIcon.equals(parseBtn.getIcon()))
                         {
                                 SideKickPlugin.stop(view);
+                                SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						parseBtn.setIcon(parseIcon);
+						parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
+					}
+				});
                         }
                         if (evt.getSource() == parseBtn || evt.getSource() == parserCombo)
                         {
+                        	if (evt.getSource() == parseBtn) 
+                        	{
+                        		SwingUtilities.invokeLater(new Runnable()
+						{
+							public void run()
+							{
+								parseBtn.setIcon(stopIcon);
+								parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
+
+							}
+						});	
+                        	}
                                 level = 0;
                                 Object usermode = b.getProperty("usermode");
                                 if (usermode == null || usermode == Boolean.FALSE)
@@ -1299,7 +1326,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                                         {
                                                                 if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
                                                                 {
-                                                                        if (searchField.getText().length() > 0)
+                                                                        if (searchField.getText().length() > 0)		// NOPMD
                                                                         {
                                                                                 searchField.setText("");
                                                                                 updateFilter();
