@@ -289,8 +289,9 @@ public class SideKickPlugin extends EditPlugin
 	
 	public static void execute(View view, SwingWorker worker) 
 	{
-		// TODO: there should be only one worker per view. Is it possible
+		// QUESTION: there should be only one worker per view. Is it possible
 		// there could be more than one?
+		// ANSWER: No. 
 		workers.put(view, worker);
 		worker.execute();
 	}
