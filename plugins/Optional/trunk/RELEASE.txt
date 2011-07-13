@@ -1,5 +1,5 @@
 Announcement:
-    Optional Plugin 1.0.1
+    Optional Plugin 
 
 Requirements:
 	* jdk 1.5
@@ -32,3 +32,7 @@ History:
 1.0     Bug fixes, "Combined Options" remembers previous selected tab.
 1.0.1   Updated for jEdit 4.3pre17.
         Fixed # 3013717 - don't save optionpanes unless they are shown.
+1.0.2	Optional no longer hardcodes the list of options panes to create, so core
+        can add new ones without them being hidden by Optional (Matthieu Casanova)
+        
+       
