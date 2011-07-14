@@ -1,3 +1,17 @@
+/*
+ * XSDSchemaToCompletion.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2010-2011 Eric Le Lay
+ *
+ * The XML plugin is licensed under the GNU General Public License, with
+ * the following exception:
+ *
+ * "Permission is granted to link this code with software released under
+ * the Apache license version 1.1, for example used by the Xerces XML
+ * parser package."
+ */
 package xml.parser;
 
 // {{{ imports
@@ -54,7 +68,7 @@ public class XSDSchemaToCompletion{
 	
 	//{{{ xsElementToElementDecl() method
 	private static void xsElementToElementDecl(XSNamedMap elements, Map<String,CompletionInfo> infos,
-		XSElementDeclaration element, ElementDecl parent)
+		XSElementDeclaration element, ElementDecl parent, Map<XSComplexTypeDefinition, List<ElementDecl>> seenComplexTypes)
 	{
 		if(parent != null && parent.content == null)
 			parent.content = new HashSet<String>();
@@ -110,7 +124,7 @@ public class XSDSchemaToCompletion{
 					if (group != null && group.getName().equals(name)) {
 						// allows to handle elements which are themselves abstract
 						// see otherComment in abstract_substitution/comments.xsd
-						xsElementToElementDecl(elements, infos, decl, parent); 
+						xsElementToElementDecl(elements, infos, decl, parent, seenComplexTypes); 
 					}
 				}
 			}
@@ -123,15 +137,79 @@ public class XSDSchemaToCompletion{
 		}
 		else {
 			elementDecl = new ElementDecl(info, name, null);
+
+			/* prevent infinite recursion caused by complex types referencing themselves
+			    following code is awkward :
+			    - if element is of complex type and this complex type is being
+			      expandend (ie is in seenComplexTypes)
+			       - if it's used with the same name:
+			          - reuse the ElementDecl,
+			          - add the ElementDecl to parent
+			          - return
+			       - if it's used with a different name
+			          - copy its content into the new ElementDecl
+			          - add the new ElementDecl to parent and CompletionInfo as
+			            in the normal case
+			          - don't expand the complextype, since it's been already seen
+			    - otherwise add to parent and CompletionInfo, expand
+			*/
+			
+			XSTypeDefinition typedef = element.getTypeDefinition();
+			XSComplexTypeDefinition complex = null;
+			
+			boolean needToCalcContent = true;
+			
+			// {{{ prevent infinite recursion caused by complex types referencing themselves
+			if(typedef.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
+			{
+				complex = (XSComplexTypeDefinition)typedef;
+				
+				if(seenComplexTypes.containsKey(complex)){
+
+					ElementDecl same = null;
+					for(ElementDecl decl:seenComplexTypes.get(complex)){
+						if(decl.completionInfo == info
+							&& decl.name.equals(name))
+						{
+							same = decl;
+							break;
+						}
+					}
+					if(same == null){
+						// same complextype but different names
+						ElementDecl sameContent = seenComplexTypes.get(complex).get(0);
+						elementDecl.attributes = sameContent.attributes;
+						elementDecl.attributeHash = sameContent.attributeHash;
+						elementDecl.content = sameContent.content;
+						elementDecl.elementHash = sameContent.elementHash;
+						// don't need to expand, but need to be add it to parent and CompletionInfo
+						needToCalcContent = false;
+					} else {
+						// really same element
+						if (parent != null) {
+							parent.elementHash.put(name,same);
+							parent.content.add(name);
+						}
+						// it's already in CompletionInfo
+						return;
+					}
+				}
+			}// }}}
+			
+			// {{{ add new ElementDecl to parent and CompletionInfo
+
 			// don't let locally defined elements take precedence other global elements
 			// see test_data/multiple_name
 			if(element.getScope() == XSConstants.SCOPE_LOCAL)
-			{
-				for(ElementDecl e:info.elements){
-					if(e.name.equals(name)){
-						info.nameConflict = true;
-						Log.log(Log.DEBUG,XSDSchemaToCompletion.class,
-							"conflict in "+namespace+" between 2 "+name);
+			{ // FIXME: why not use a second elementHash (containing local elements) instead of looping through elements ?
+			  // yes, it's another data structure, but it would speed this up !
+				if(!info.nameConflict){
+					for(ElementDecl e:info.elements){
+						if(e.name.equals(name)){
+							info.nameConflict = true;
+							//Log.log(Log.DEBUG,XSDSchemaToCompletion.class,
+							//	"conflict in "+namespace+" between 2 "+name);
+						}
 					}
 				}
 				info.elements.add(elementDecl);
@@ -145,31 +223,41 @@ public class XSDSchemaToCompletion{
 				parent.elementHash.put(name,elementDecl);
 				parent.content.add(name);
 			}
-		}
-		XSTypeDefinition typedef = element.getTypeDefinition();
-
-		if(typedef.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
-		{
-			XSComplexTypeDefinition complex = (XSComplexTypeDefinition)typedef;
-
-			XSParticle particle = complex.getParticle();
-			if(particle != null)
+			//}}}
+			
+			// {{{ Expand complex type
+			if(complex != null && needToCalcContent)
 			{
-				XSTerm particleTerm = particle.getTerm();
-				if(particleTerm instanceof XSWildcard)
-					elementDecl.any = true;
-				else
-					xsTermToElementDecl(elements, infos,particleTerm,elementDecl);
-			}
+				// push seen complex type
+				List<ElementDecl> l = new ArrayList<ElementDecl>();
+				l.add(elementDecl);
+				seenComplexTypes.put(complex,l);
+				
+				XSParticle particle = complex.getParticle();
+				if(particle != null)
+				{
+					XSTerm particleTerm = particle.getTerm();
+					if(particleTerm instanceof XSWildcard)
+						elementDecl.any = true;
+					else
+						xsTermToElementDecl(elements, infos,particleTerm,elementDecl,seenComplexTypes);
+				}
+				
+				// FIXME: not removing from seenComplexTypes gives a smaller CompletionInfo
+				// but is it correct ?
 
-			XSObjectList attributes = complex.getAttributeUses();
-			for(int i = 0; i < attributes.getLength(); i++)
-			{
-				XSAttributeUse attr = (XSAttributeUse)
-					attributes.item(i);
-					xsAttributeToElementDecl(elementDecl,attr.getAttrDeclaration(),attr.getRequired());
-			}
-		}
+				XSObjectList attributes = complex.getAttributeUses();
+				for(int i = 0; i < attributes.getLength(); i++)
+				{
+					XSAttributeUse attr = (XSAttributeUse)
+						attributes.item(i);
+						xsAttributeToElementDecl(elementDecl,attr.getAttrDeclaration(),attr.getRequired());
+				}
+			} //}}}
+
+		} 
+		
+		
 	} //}}}
 
 	private static void xsAttributeToElementDecl(ElementDecl elementDecl,XSAttributeDeclaration decl, boolean required){
@@ -192,13 +280,13 @@ public class XSDSchemaToCompletion{
 	
 	//{{{ xsTermToElementDecl() method
 	private static void xsTermToElementDecl(XSNamedMap elements, Map<String,CompletionInfo> infos, XSTerm term,
-		ElementDecl parent)
+		ElementDecl parent, Map<XSComplexTypeDefinition, List<ElementDecl>> seenComplexTypes)
 	{
 
 		if(term instanceof XSElementDeclaration)
 		{
 			xsElementToElementDecl(elements, infos,
-				(XSElementDeclaration)term, parent);
+				(XSElementDeclaration)term, parent, seenComplexTypes);
 		}
 		else if(term instanceof XSModelGroup)
 		{
@@ -206,7 +294,7 @@ public class XSDSchemaToCompletion{
 			for(int i = 0; i < content.getLength(); i++)
 			{
 				XSTerm childTerm = ((XSParticleDecl)content.item(i)).getTerm();
-				xsTermToElementDecl(elements, infos,childTerm,parent);
+				xsTermToElementDecl(elements, infos,childTerm,parent, seenComplexTypes);
 			}
 		}
 	}
@@ -220,12 +308,13 @@ public class XSDSchemaToCompletion{
 		Map<String,CompletionInfo> infos = new HashMap<String,CompletionInfo>();
 
 		XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
+		Map<XSComplexTypeDefinition, List<ElementDecl>> seenComplexTypes = new HashMap<XSComplexTypeDefinition, List<ElementDecl>>();
 		for(int i = 0; i < elements.getLength(); i++)
 		{
 			XSElementDeclaration element = (XSElementDeclaration)
 				elements.item(i);
 
-			xsElementToElementDecl(elements, infos, element, null);
+			xsElementToElementDecl(elements, infos, element, null, seenComplexTypes);
 		}
 
 		/* // don't need them : they are declared for each element
@@ -263,8 +352,6 @@ public class XSDSchemaToCompletion{
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XSDSchemaToCompletion.class,"getCompletionInfoFromSchema("+location+","+schemaLocation+","+nonsSchemaLocation+","+buffer.getPath()+")");
 		String realLocation = null;
 		try{
-			Resolver r = Resolver.instance();
-			System.err.println("resolver is "+r);
 			realLocation = Resolver.instance().resolveEntityToPath(
 				null,//name
 				null,//public Id

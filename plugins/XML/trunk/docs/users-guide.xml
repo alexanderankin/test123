@@ -949,6 +949,8 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
  Requires jEdit 4.4pre1, Java 1.5, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
  </para>
  <itemizedlist>
+  <listitem><para>Fix issue with recursing XSD complex types,
+   as in the schema for NAnt (#3216494 - Eric Le Lay)</para></listitem>
   <listitem><para>Fix issue with an extra closing bracket being recorded
   in macros (#857802 - Eric Le Lay)</para></listitem>
  </itemizedlist>
