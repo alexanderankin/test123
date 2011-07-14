@@ -9,7 +9,7 @@
 
 plugin.junit.JUnitPlugin.name=JUnit
 plugin.junit.JUnitPlugin.author=Denis Koryavov, Andre Kaplan, Calvin Yu, Eric Le Lay
-plugin.junit.JUnitPlugin.version=0.6
+plugin.junit.JUnitPlugin.version=0.7
 plugin.junit.JUnitPlugin.docs=index.html
 
 plugin.junit.JUnitPlugin.depend.0=jdk 1.6
