@@ -173,6 +173,28 @@ public class XmlInsert extends JPanel implements EBComponent
 				update();
 		} //}}}
 	} //}}}
+	
+	
+	//{{{ openAndGo method
+	public static void openAndGo(View view, TextArea textArea, String uri, int gotoLine, int col)
+	{
+		Buffer buffer = jEdit.openFile(view,uri);
+		if(buffer == null)
+			return;
+		// waiting for complete loading of buffer seems
+		// to prevent the NullPointerException
+		VFSManager.waitForRequests();
+		int line = Math.min(buffer.getLineCount() - 1,gotoLine);
+		int column = Math.min(buffer.getLineLength(line),col);
+		int offset = buffer.getLineStartOffset(line) + column;
+		// TODO: follow best practice from Navigator plugin
+		try{
+			textArea.setCaretPosition(offset);
+		}catch(NullPointerException npe){
+			Log.log(Log.ERROR,XmlInsert.class,"FIXME : setCaretPosition("+offset+")");
+			Log.log(Log.ERROR,XmlInsert.class,npe);
+		}
+	}//}}}
 
 	//{{{ Private members
 
@@ -341,6 +363,8 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//}}}
+	
+	
 
 	//{{{ ArrayListModel class
 	static class ArrayListModel implements ListModel
@@ -500,22 +524,7 @@ public class XmlInsert extends JPanel implements EBComponent
 
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
-					Buffer buffer = jEdit.openFile(view,id.uri);
-					if(buffer == null)
-						return;
-					// waiting for complete loading of buffer seems
-					// to prevent the NullPointerException
-					VFSManager.waitForRequests();
-					int line = Math.min(buffer.getLineCount() - 1,id.line);
-					int column = Math.min(buffer.getLineLength(line),id.column);
-					int offset = buffer.getLineStartOffset(line) + column;
-					// TODO: follow best practice from Navigator plugin
-					try{
-					textArea.setCaretPosition(offset);
-					}catch(NullPointerException npe){
-						Log.log(Log.ERROR,XmlInsert.class,"FIXME : setCaretPosition("+offset+")");
-						Log.log(Log.ERROR,XmlInsert.class,npe);
-					}
+					openAndGo(view, textArea, id.uri, id.line, id.column);
 				}
 				else
 				{

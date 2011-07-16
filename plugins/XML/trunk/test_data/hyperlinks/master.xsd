@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<!-- master XSD schema -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" blockDefault="#all"
+           targetNamespace="urn:local"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="part.xsd"
+	xsi:schemaLocation="http://www.w3.org/2001/XMLSchema ../schema4schemas/schema4schemas.xsd">
+	
+        <xs:include schemaLocation="part.xsd"/>
+	<xs:include schemaLocation="part.xsd"/> <xs:import schemaLocation="part.xsd"/>
+	
+</xs:schema>
