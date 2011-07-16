@@ -1,6 +1,7 @@
 /*
 * HtmlDocument.java -- classes to represent HTML documents as parse trees
 * Copyright (C) 1999 Quiotix Corporation.  
+* Copyright (C) 2011 Eric Le Lay  
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License, version 2, as 
@@ -600,9 +601,10 @@ public class HtmlDocument {
         }
     }
 
-    public static class Attribute {
+    public static class Attribute extends HtmlElement {
         public String name, value;
         public boolean hasValue;
+        private Location valueStartLocation = new Location( 0, 0 );
 
         public Attribute( String n ) {
             name = n;
@@ -636,18 +638,32 @@ public class HtmlDocument {
         public String toString() {
             return ( hasValue ? name + "=" + value : name );
         }
+        
+        public void setValueStartLocation( int line, int column ) {
+            valueStartLocation = new Location( line, column );
+        }
+
+        public void setValueStartLocation( Location location ) {
+            valueStartLocation = location;
+        }
+        
+        public Location getValueStartLocation() {
+        	return valueStartLocation;
+        }
+
+        public void accept(HtmlVisitor visitor){ /*NOP*/ }
     }
 
     public static class AttributeList {
-        public List attributes = new ArrayList();
+        public List<Attribute> attributes = new ArrayList<Attribute>();
 
         public void addAttribute( Attribute a ) {
             attributes.add( a );
         }
 
         public boolean contains( String name ) {
-            for ( Iterator iterator = attributes.iterator(); iterator.hasNext(); ) {
-                Attribute attribute = ( Attribute ) iterator.next();
+            for ( Iterator<Attribute> iterator = attributes.iterator(); iterator.hasNext(); ) {
+                Attribute attribute = iterator.next();
                 if ( attribute.name.equalsIgnoreCase( name ) )
                     return true;
             }
@@ -655,8 +671,8 @@ public class HtmlDocument {
         }
 
         public boolean hasValue( String name ) {
-            for ( Iterator iterator = attributes.iterator(); iterator.hasNext(); ) {
-                Attribute attribute = ( Attribute ) iterator.next();
+            for ( Iterator<Attribute> iterator = attributes.iterator(); iterator.hasNext(); ) {
+                Attribute attribute = iterator.next();
                 if ( attribute.name.equalsIgnoreCase( name ) && attribute.hasValue )
                     return true;
             }
@@ -664,8 +680,8 @@ public class HtmlDocument {
         }
 
         public String getValue( String name ) {
-            for ( Iterator iterator = attributes.iterator(); iterator.hasNext(); ) {
-                Attribute attribute = ( Attribute ) iterator.next();
+            for ( Iterator<Attribute> iterator = attributes.iterator(); iterator.hasNext(); ) {
+                Attribute attribute = iterator.next();
                 if ( attribute.name.equalsIgnoreCase( name ) && attribute.hasValue )
                     return dequote( attribute.value );
             }

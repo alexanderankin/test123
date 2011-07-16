@@ -340,9 +340,14 @@ XmlDocument.Attribute Attribute() :
     
         if (t2 == null) {
           a = new XmlDocument.Attribute(t1.image);
-        }
+          a.setStartLocation(t1.beginLine, t1.beginColumn);
+          a.setEndLocation(t1.endLine, t1.endColumn + 1);
+      }
         else {
           a = new XmlDocument.Attribute(t1.image, t2.image);
+          a.setStartLocation(t1.beginLine, t1.beginColumn);
+          a.setValueStartLocation(t2.beginLine,t2.beginColumn);
+          a.setEndLocation(t2.endLine, t2.endColumn + 1);
           if (!isProperAttribute(t2.image)) {
            ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
            addException(e);

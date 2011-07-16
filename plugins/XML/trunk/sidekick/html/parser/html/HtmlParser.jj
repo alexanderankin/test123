@@ -1,6 +1,7 @@
 /*
  * HtmlParser.jj -- JavaCC grammar for HTML.
  * Copyright (C) 1999 Quiotix Corporation.
+ * Copyright (C) 2011 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -57,6 +58,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.*;
 import sidekick.util.*;
+import java.io.Reader;
 
 public class HtmlParser {
 
@@ -85,6 +87,16 @@ public class HtmlParser {
     return sb.toString();
   }
 
+  /**
+  * The line offset is used when the HTML to be parsed is only part of a file,
+  * @param lineOffset The line number of the first line of the fragment.
+  * @param columnOffset The column number of the first character of the fragment.
+  */
+  public HtmlParser(Reader in, int lineOffset, int columnOffset){
+  	this(in);
+  	jj_input_stream.ReInit(in,lineOffset,columnOffset);
+  }
+  
   public static void main(String[] args) throws ParseException {
     HtmlParser parser = new HtmlParser(System.in);
     HtmlDocument doc = parser.HtmlDocument();
@@ -373,9 +385,14 @@ HtmlDocument.Attribute Attribute() :
     
         if (t2 == null) {
           a = new HtmlDocument.Attribute(t1.image);
+          a.setStartLocation(t1.beginLine, t1.beginColumn);
+          a.setEndLocation(t1.endLine, t1.endColumn + 1);
         }
         else {
           a = new HtmlDocument.Attribute(t1.image, t2.image);
+          a.setStartLocation(t1.beginLine, t1.beginColumn);
+          a.setValueStartLocation(t2.beginLine,t2.beginColumn);
+          a.setEndLocation(t2.endLine, t2.endColumn + 1);
           if (!isProperAttribute(t2.image)) {
            ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
            addException(e);
@@ -386,7 +403,8 @@ HtmlDocument.Attribute Attribute() :
       }
     }
       catch(ParseException e) {
-        addException(e);          
+        addException(e);
+        return null;
       }
 }
 
