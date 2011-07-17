@@ -350,7 +350,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 				|| "data".equals(attLocalName)))
 		{
 			/* must resolve against codebase if present */
-			String href = resolveRelativeTo(m.group(0),
+			String href = resolveRelativeTo(attValue,
 				tag.getAttributeValue("codebase"));
 
 			href = resolve(href, buffer, offset, data);
@@ -395,7 +395,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		if(base == null || "".equals(base))return href;
 		
 		try{
-			return URI.create(codebase).resolve(href).toString();
+			return URI.create(base).resolve(href).toString();
 		}catch(IllegalArgumentException iae){
 			Log.log(Log.WARNING,HTMLHyperlinkSource.class,"error resolving against codebase",iae);
 			return href;
