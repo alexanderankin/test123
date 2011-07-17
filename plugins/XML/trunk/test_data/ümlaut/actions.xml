@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!DOCTYPE ACTIONS SYSTEM "myactions.dtd">
+
+<!--
+  - valid file
+  - the dtd is resolved by the built-in catalog
+  -->
+<ACTIONS>
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>

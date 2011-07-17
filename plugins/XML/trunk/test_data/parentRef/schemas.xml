@@ -1,5 +1,4 @@
 <?xml version="1.0" ?>
 <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
 	<uri resource="instance.xml" uri="actual_table.rng"/>
-	<include rules="file:/Users/elelay/Library/jEdit/plugins/xml.XmlPlugin/schemas.xml" />
 </locatingRules>
