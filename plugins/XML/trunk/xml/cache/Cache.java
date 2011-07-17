@@ -116,10 +116,12 @@ public final class Cache extends BufferAdapter
 	public void handleBufferUpdate(BufferUpdate message)
 	{
 		if(BufferUpdate.CLOSED.equals(message.getWhat())){
+			if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class,"buffer closed");
 			invalidateCacheEntriesFromPath(message.getBuffer().getPath());
 			invalidateCacheEntriesRequiredByBuffer(message.getBuffer());
 			message.getBuffer().removeBufferListener(this);
 		}else if(BufferUpdate.LOADED.equals(message.getWhat())){
+			if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class,"buffer opened");
 			invalidateCacheEntriesFromPath(message.getBuffer().getPath());
 			message.getBuffer().addBufferListener(this);
 		}
