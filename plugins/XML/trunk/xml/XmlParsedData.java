@@ -755,7 +755,8 @@ public class XmlParsedData extends SideKickParsedData
 				sortChildren((DefaultMutableTreeNode)root);
 				tree.reload();
 				expansionModel = createExpansionModel().getModel();
-				EditBus.send(new SideKickUpdate(view));
+				// commented out because it triggers infinite reparsing
+				//EditBus.send(new SideKickUpdate(view));
 			}
 		} );
 	}
