@@ -201,7 +201,7 @@ loop:			for(;;)
 		EditTagDialog dialog = new EditTagDialog(view,tag.tag,
 			elementDecl,attributes,empty,
 			elementDecl.completionInfo.entityHash,
-			data.ids,data.html);
+			data.getSortedIds(),data.html);
 
 		String newTag = dialog.getNewTag();
 
@@ -257,7 +257,7 @@ loop:			for(;;)
 			EditTagDialog dialog = new EditTagDialog(view,elementDecl.name,elementDecl,
 				new HashMap(),elementDecl.empty,
 				elementDecl.completionInfo.entityHash,
-				data.ids,data.html);
+				data.getSortedIds(),data.html);
 
 			newTag = dialog.getNewTag();
 			if(dialog.isEmpty())

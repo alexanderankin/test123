@@ -82,10 +82,11 @@ public class XmlParsedData extends SideKickParsedData
 	private Map<String, CompletionInfo> mappings;
 	
 	/**
-	 *  A list of all identifiers encountered during the parse.
+	 *  A map of all identifiers encountered during the parse,
+	 *  indexed by name.
 	 *  Used in XMLInsert IDs pane and for Hyperlinks navigation
 	 */
-	public List<IDDecl> ids;
+	public Map<String,IDDecl> ids;
 
 	public List<EntityDecl> entities;
 	public Map entityHash;
@@ -114,7 +115,7 @@ public class XmlParsedData extends SideKickParsedData
 		super(fileName);
 		this.html = html;
 		mappings = new HashMap<String, CompletionInfo>();
-		ids = new ArrayList<IDDecl>();
+		ids = new HashMap<String, IDDecl>();
 		allNamespacesBindingsAtTop = true;
 		entities = new ArrayList<EntityDecl>();
 		entityHash = new HashMap();
@@ -850,15 +851,16 @@ public class XmlParsedData extends SideKickParsedData
 	 * @return	found IDDecl or null
 	 */
 	public IDDecl getIDDecl(String id){
-		if(ids == null)return null;
-		
-		for(IDDecl idDecl : ids){
-			if(idDecl.id.equals(id)){
-				return idDecl;
-			}
-		}
-		return null;
+		return ids.get(id);
 	}//}}}
+	
+	//{{{ getSortedIds() method
+	public List<IDDecl> getSortedIds(){
+		List<IDDecl> idl = new ArrayList<IDDecl>(ids.values());
+		Collections.sort(idl,new IDDecl.Compare());
+		return idl;
+	}			
+	//}}}
 	
 	//{{{ Private members
 

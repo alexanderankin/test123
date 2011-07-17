@@ -291,7 +291,6 @@ public class XercesParserImpl extends XmlParser
 		     data = pd;
 		}
 
-		Collections.sort(data.ids,new IDDecl.Compare());
 		data.done(view);
 
 		long end = System.currentTimeMillis();
@@ -661,7 +660,7 @@ public class XercesParserImpl extends XmlParser
 						&& cDecl.getAttribute(attrs.getLocalName(i)) != null
 						&& "ID".equals(cDecl.getAttribute(attrs.getLocalName(i)).type)))
 				{
-					data.ids.add(new IDDecl(currentURI,
+					data.ids.put(attrs.getValue(i), new IDDecl(currentURI,
 						attrs.getValue(i),qName,
 						loc.getLineNumber() - 1,
 						loc.getColumnNumber() - 1));
