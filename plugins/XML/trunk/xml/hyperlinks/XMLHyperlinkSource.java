@@ -21,6 +21,9 @@
 package xml.hyperlinks;
 
 import java.io.Reader;
+import java.net.URI;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -62,6 +65,10 @@ import xml.completion.IDDecl;
  *	      eg. XSD include and import (&lt;xs:include schemaLocation="url"/&gt;).
  *	</li>
  * </ul>
+ *
+ * @todo	HTML attributes
+ * @todo	HTML BASE tag (beware: it's in HTML/HEAD)
+ *
  * @author Eric Le Lay
  * @version $Id$
  */
@@ -211,6 +218,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 					return null;
 				}else{
 					if("IDREF".equals(attDecl.type)){
+						System.err.println("found IDREF");
 						return getHyperlinkForIDREF(buffer, data, value, att);
 					}else if("anyURI".equals(attDecl.type)){
 						// FIXME: shall it use xml:base ?
@@ -218,6 +226,9 @@ public class XMLHyperlinkSource implements HyperlinkSource
 						if(href!=null){
 							return newJEditOpenFileHyperlink(buffer, att, href);
 						}
+					}else if("IDREFS".equals(attDecl.type)){
+						System.err.println("found IDREFS");
+						return getHyperlinkForIDREFS(buffer, offset, data, value, att);
 					}
 					System.err.println("attDecl.type="+attDecl.type);
 					return null;
@@ -231,7 +242,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	}
 	
 	/**
-	 * creates an hyperlink to the location of the element with id (in same or another buffer)/
+	 * creates an hyperlink to the location of the element with id (in same or another buffer).
 	 * @param	buffer	current buffer
 	 * @param	data		sidekick tree
 	 * @param	id		id we are looking for
@@ -240,18 +251,51 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	public Hyperlink getHyperlinkForIDREF(Buffer buffer,
 		XmlParsedData data, String id, XmlDocument.Attribute att)
 	{
-		if(data.ids == null)return null;
+		IDDecl idDecl = data.getIDDecl(id);
+		if(idDecl == null){
+			return null;
+		} else{
+			return newJEditOpenFileAndGotoHyperlink(buffer, att,
+			idDecl.uri, idDecl.line, idDecl.column);
+		}
+	}
+	
+	// {{{ getHyperlinkForIDREFS() method
+	private static final Pattern noWSPattern = Pattern.compile("[^\\s]+");
+	/**
+	 * creates an hyperlink to the location of the element with id (in same or another buffer)
+	 * @param	buffer	current buffer
+	 * @param	offset	offset of required hyperlink
+	 * @param	data		sidekick tree
+	 * @param	attValue		ids in the attribute
+	 * @param	att		parsed attribute (for hyperlink boundaries)
+	 */
+	public Hyperlink getHyperlinkForIDREFS(Buffer buffer, int offset,
+		XmlParsedData data, String attValue, XmlDocument.Attribute att)
+	{
+		int attStart = createOffset(buffer, att.getValueStartLocation());
 		
-		for(IDDecl idDecl : data.ids){
-			if(idDecl.id.equals(id)){
-				return newJEditOpenFileAndGotoHyperlink(buffer, att,
-				idDecl.uri, idDecl.line, idDecl.column);
+		Matcher m = noWSPattern.matcher(attValue);
+		while(m.find()){
+			// +1 for the quote around the attribute value
+			int st = m.start(0) + 1;
+			int nd = m.end(0)  + 1;
+			if(attStart + st <= offset && attStart + nd >= offset){
+				System.err.println("idref="+m.group(0));
+				System.err.println("ids="+data.ids);
+				IDDecl idDecl = data.getIDDecl(m.group(0));
+				if(idDecl==null)return null;
+				int start = attStart + st;
+				int end= attStart + nd;
+				int line = buffer.getLineOfOffset(start);
+				return new jEditOpenFileAndGotoHyperlink(start, end, line, idDecl.uri, idDecl.line, idDecl.column);
 			}
 		}
-		
 		return null;
-	}
-
+	}//}}}
+	
+	//{{{ getHyperlinkForAttribute(tagNS,tagName,attNS,attName) method
+	private static final Pattern nsURIPairsPattern = Pattern.compile("[^\\s]+\\s+([^\\s]+)");
 	/**
 	 * recognize hyperlink attributes by their parent element's
 	 * namespace:localname and/or their namespace:localname
@@ -281,7 +325,25 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		} else if("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
 			&& "schemaLocation".equals(attLocalName))
 		{
-			System.err.println("TODO: found xsi:schemaLocation");
+			System.err.println("found xsi:schemaLocation");
+			
+			int attStart = createOffset(buffer, att.getValueStartLocation());
+			
+			Matcher m = nsURIPairsPattern.matcher(attValue);
+			// find will accept unbalanced pairs of ns->uri
+			while(m.find()){
+				// +1 for the quote around the attribute value
+				int st = m.start(1) + 1;
+				int nd = m.end(1)  + 1;
+				if(attStart + st <= offset && attStart + nd >= offset){
+					href = resolve(m.group(1), buffer, offset, data, tag, false);
+					if(href==null)href=m.group(1);
+					int start = attStart + st;
+					int end= attStart + nd;
+					int line = buffer.getLineOfOffset(start);
+					return new jEditOpenFileHyperlink(start, end, line, href);
+				}
+			}
 		}
 		if(href==null){
 			return null;
@@ -289,7 +351,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			return newJEditOpenFileHyperlink(
 				buffer, att, href);
 		}
-	}
+	}//}}}
 	
 	/**
 	 * resolve a potentially relative uri using xml:base attributes,
@@ -303,20 +365,45 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	 * @param	offset	offset in current buffer where an hyperlink is required
 	 * @param	data		SideKick parsed data
 	 * @param	tag		SideKick asset
-	 * @param	useXmlBase	should xml:base attribute be used to resolve uri
+	 * @param	useXmlBase	should xml:base attribute be used to resolve uri (only for XML!)
 	 *
 	 * @return	resolved URL
 	 */
 	public String resolve(String uri, Buffer buffer, int offset, XmlParsedData data, XmlTag tag,
 		boolean useXmlBase)
 	{
-		//TODO: use xml:base
 		String href = null;
+		String base = xml.PathUtilities.pathToURL(buffer.getPath());
+		if(useXmlBase){
+			try {
+				URI baseURI = URI.create(base);
+				Object[] pathObjs = data.getObjectsTo(offset);
+				// go down the tree, resolving existing xml:base uri if they exist
+				for(int i=1; i<pathObjs.length;i++){  //first object (i==0) is a SourceAsset for the file
+					XmlTag t = (XmlTag)pathObjs[i];
+					String newBase = t.attributes.getValue("xml:base"); // xml is a reserved prefix
+					if(newBase!=null){
+						baseURI = baseURI.resolve(newBase);
+					}
+				}
+				if(!base.equals(baseURI.toString())){
+					// add a dummy component, otherwise xml.Resolver
+					// removes the last part of the xml:base
+					// FIXME: review xml.Resolver : it should only be used with URLs
+					// for current, now, so could use URI.resolve() instead of removing
+					// last part of the path to get the parent...
+					baseURI = baseURI.resolve("dummy");
+					base = baseURI.toString();
+				}
+			}catch(IllegalArgumentException e){
+				Log.log(Log.WARNING, XMLHyperlinkSource.class, "error resolving uri", e);
+			}
+		}
 		try{
 			href = Resolver.instance().resolveEntityToPath(
 				"", /*name*/
 				"", /*publicId*/
-				xml.PathUtilities.pathToURL(buffer.getPath()), /*current*/
+				base, /*current, augmented by xml:base */
 				uri);
 		}catch(java.io.IOException ioe){
 			Log.log(Log.ERROR,XMLHyperlinkSource.class,"error resolving href="+uri,ioe);

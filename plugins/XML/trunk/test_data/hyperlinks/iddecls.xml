@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
+<!-- example with IDREFS inside arearefs.
+       id1 and id2 are picked as separate hyperlinks and when clicking on one of them,
+       the cursor moves to the corresponding anchor
+    -->
+<article>
+    
+   <calloutlist>
+   <callout arearefs="id1 id2">
+   <para>blah</para>
+   </callout>
+   </calloutlist>
+    
+   <anchor id="id1"/>
+   
+   <anchor id="id2"/>
+
+</article>

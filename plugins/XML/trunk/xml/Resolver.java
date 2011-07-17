@@ -489,6 +489,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		String parent;
 		if(current != null)
 		{
+			// FIXME: if current is an xml:base, wrongly truncates last path component
 			parent = MiscUtilities.getParentOfPath(current);
 		}
 		else
