@@ -50,6 +50,16 @@ public class HtmlOptionPane extends AbstractOptionPane  /*implements ActionListe
     }
 
     public void _init() {
+    	    
+	JTextPane info = new JTextPane();
+	info.setEditorKit(info.createEditorKitForContentType("text/html"));	
+	info.setOpaque(false);
+	String text = jEdit.getProperty("options.sidekick.general.info");
+	info.setText(text);
+	info.setEditable(false);
+	addComponent(jEdit.getProperty("options.note", "NOTE: "), info);
+    	    
+    	    
         setBorder(new TitledBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(6, 6, 6, 6)), jEdit.getProperty("options.sidekick.html.panel_label")));
         
         // attribute display

@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JTextPane;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -63,8 +64,15 @@ public class GeneralOptionPane extends AbstractOptionPane
 	protected void _init()
 	{
 		
-		addSeparator("options.xml.general.validate-separator");
+		JTextPane info = new JTextPane();
+		info.setEditorKit(info.createEditorKitForContentType("text/html"));	
+		info.setOpaque(false);
+		String text = jEdit.getProperty("options.sidekick.general.info");
+		info.setText(text);
+		info.setEditable(false);
+		addComponent(jEdit.getProperty("options.note", "NOTE: "), info);
 		
+		addSeparator("options.xml.general.validate-separator");
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
