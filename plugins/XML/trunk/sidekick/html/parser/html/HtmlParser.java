@@ -433,20 +433,29 @@ public class HtmlParser implements HtmlParserConstants {
   final public HtmlDocument.HtmlElement ScriptBlock() throws ParseException {
   HtmlDocument.AttributeList alist;
   Token firstToken = getToken(1);
-  Token st, et;
+  Token st, et, ts, est;
   String contents = "";
     try {
       st = jj_consume_token(TAG_START);
-      jj_consume_token(TAG_SCRIPT);
+      ts = jj_consume_token(TAG_SCRIPT);
       alist = AttributeList();
-      jj_consume_token(TAG_END);
+      est = jj_consume_token(TAG_END);
       token_source.SwitchTo(LexScript);
       contents = ScriptBlockContents();
       et = jj_consume_token(SCRIPT_END);
+        HtmlDocument.Tag script = new HtmlDocument.Tag(ts.image, alist);
+        script.setStartLocation(st.beginLine, st.beginColumn);
+        script.setEndLocation(est.endLine, est.endColumn);
+
+        HtmlDocument.EndTag endScript = new HtmlDocument.EndTag( ts.image );
+        endScript.setStartLocation(et.beginLine, et.beginColumn);
+        endScript.setEndLocation(et.endLine, et.endColumn);
+
+
         HtmlDocument.Text text = new HtmlDocument.Text(contents);
         HtmlDocument.ElementSequence seq = new HtmlDocument.ElementSequence();
         seq.addElement(text);
-        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, seq);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock(script, seq, endScript);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn + 1);
         {if (true) return b;}
@@ -621,12 +630,6 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_8() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_STYLE)) return true;
-    return false;
-  }
-
   final private boolean jj_3_3() {
     if (jj_3R_8()) return true;
     return false;
@@ -635,6 +638,12 @@ public class HtmlParser implements HtmlParserConstants {
   final private boolean jj_3R_7() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_SCRIPT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_STYLE)) return true;
     return false;
   }
 

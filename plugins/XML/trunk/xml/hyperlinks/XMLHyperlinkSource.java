@@ -274,12 +274,13 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		XmlParsedData data, String attValue, XmlDocument.Attribute att)
 	{
 		int attStart = createOffset(buffer, att.getValueStartLocation());
+		// +1 for the quote around the attribute value
+		attStart++;
 		
 		Matcher m = noWSPattern.matcher(attValue);
 		while(m.find()){
-			// +1 for the quote around the attribute value
-			int st = m.start(0) + 1;
-			int nd = m.end(0)  + 1;
+			int st = m.start(0);
+			int nd = m.end(0);
 			if(attStart + st <= offset && attStart + nd >= offset){
 				System.err.println("idref="+m.group(0));
 				System.err.println("ids="+data.ids);
@@ -327,14 +328,14 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		{
 			System.err.println("found xsi:schemaLocation");
 			
-			int attStart = createOffset(buffer, att.getValueStartLocation());
+			// +1 for the quote around the attribute value
+			int attStart = createOffset(buffer, att.getValueStartLocation()) +1;
 			
 			Matcher m = nsURIPairsPattern.matcher(attValue);
 			// find will accept unbalanced pairs of ns->uri
 			while(m.find()){
-				// +1 for the quote around the attribute value
-				int st = m.start(1) + 1;
-				int nd = m.end(1)  + 1;
+				int st = m.start(1);
+				int nd = m.end(1);
 				if(attStart + st <= offset && attStart + nd >= offset){
 					href = resolve(m.group(1), buffer, offset, data, tag, false);
 					if(href==null)href=m.group(1);

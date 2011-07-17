@@ -25,4 +25,7 @@
     <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="xml:XMLPlugin">
         new xml.hyperlinks.XMLHyperlinkSource();
     </SERVICE>
+    <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="html:XMLPlugin">
+        new xml.hyperlinks.HTMLHyperlinkSource();
+    </SERVICE>
 </SERVICES>
