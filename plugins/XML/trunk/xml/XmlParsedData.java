@@ -82,8 +82,8 @@ public class XmlParsedData extends SideKickParsedData
 	private Map<String, CompletionInfo> mappings;
 	
 	/**
-	 *  A list of all identifiers encountered during the parse?
-	 * TODO: I can't find that this is actually used anywhere.
+	 *  A list of all identifiers encountered during the parse.
+	 *  Used in XMLInsert IDs pane and for Hyperlinks navigation
 	 */
 	public List<IDDecl> ids;
 
@@ -768,8 +768,9 @@ public class XmlParsedData extends SideKickParsedData
 			sortChildren(child);
 		}
 	}
-	//}}
+	//}}}
 
+	//{{{ getSorter() method
 	protected Comparator<DefaultMutableTreeNode> getSorter() {
 		return new Comparator<DefaultMutableTreeNode>() {
 			public int compare(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
@@ -797,7 +798,7 @@ public class XmlParsedData extends SideKickParsedData
 			    return my_name.compareTo(other_name) * (sortDown ? 1 : -1);
 			}
 		} ;
-	}
+	}//}}}
 	
 	//{{{ createExpansionModel() method
 	protected ExpansionModel createExpansionModel() {
@@ -826,9 +827,29 @@ public class XmlParsedData extends SideKickParsedData
 		}
 	} //}}}
 
+	//{{{ getObjectsTo(pos) method
+	public Object[] getObjectsTo(int pos){
+			TreePath path = getTreePathForPosition(pos);
+			if(path == null)return null;
+			
+			Object[] pathObjs = ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObjectPath();
+			return pathObjs;
+	}//}}}
+	
+	public IDDecl getIDDecl(String id){
+		if(ids == null)return null;
+		
+		for(IDDecl idDecl : ids){
+			if(idDecl.id.equals(id)){
+				return idDecl;
+			}
+		}
+		return null;
+	}
+	
 	//{{{ Private members
 
-	//{{{ getElementPrefix() method
+	//{{{ getElementNamePrefix() method
 	private static String getElementNamePrefix(String name)
 	{
 		int index = name.indexOf(':');
