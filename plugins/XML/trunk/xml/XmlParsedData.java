@@ -836,6 +836,11 @@ public class XmlParsedData extends SideKickParsedData
 			return pathObjs;
 	}//}}}
 	
+	//{{{ getIDDecl(id) method
+	/**
+	 * convenience method to find an IDDecl by name
+	 * @return	found IDDecl or null
+	 */
 	public IDDecl getIDDecl(String id){
 		if(ids == null)return null;
 		
@@ -845,7 +850,7 @@ public class XmlParsedData extends SideKickParsedData
 			}
 		}
 		return null;
-	}
+	}//}}}
 	
 	//{{{ Private members
 
