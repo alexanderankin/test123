@@ -105,7 +105,7 @@ options.xml.catalogs.code=new xml.options.CatalogsOptionPane();
 options.xml.catalogs.caption=Catalog files to import:
 options.xml.catalogs.add=Add
 options.xml.catalogs.remove=Remove
-
+options.sidekick.general.info=<p>See <b>Plugin Options - Sidekick - General</b> to configure options related to completion and parsing.</p>
 options.xml.general.label=XML
 options.xml.general.code=new xml.options.GeneralOptionPane();
 options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
@@ -431,6 +431,8 @@ xml.translate.choose-input-type.message=Please select the type of input...
 xml.gui.file.open.name=Open file
 xml.gui.file.open.short-desc=Open file
 xml.gui.file.open.small-icon=22x22/actions/document-open.png
+
+
 
 
 xml.translate.xml-inputs.label=Additional input Documents
