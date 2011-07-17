@@ -1,11 +1,13 @@
 <?xml version="1.0" ?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
 <!-- example with IDREFS inside arearefs.
        id1 and id2 are picked as separate hyperlinks and when clicking on one of them,
        the cursor moves to the corresponding anchor
-       ulink is picked by a special case in XMLHyperlinkSource because url has type CDATA in the DTD
+       ulink is picked by a special case in XMLHyperlinkSource because url has type anySimpleType in the XSD
     -->
-<article>
+<article
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'>
     
    <calloutlist>
    <callout arearefs="id1 id2">
