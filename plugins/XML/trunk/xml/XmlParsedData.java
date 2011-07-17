@@ -134,6 +134,12 @@ public class XmlParsedData extends SideKickParsedData
 		return info;
 	} //}}}
 
+	//{{{ getCompletionInfo(namespace) method
+	public CompletionInfo getCompletionInfo(String ns)
+	{
+		return mappings.get(ns);
+	} //}}}
+
 	//{{{ getElementDecl(String,int) method
 	// FIXME: pass buffer as parameter, 
 	public ElementDecl getElementDecl(String name, int pos)
@@ -484,7 +490,8 @@ public class XmlParsedData extends SideKickParsedData
 	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)
 	{
 		IAsset asset = getAssetAtOffset(pos);
-		System.err.println("asset at "+pos+" is :"+asset+" ("+asset.getStart().getOffset()+","+asset.getEnd().getOffset()+")");
+		if(Debug.DEBUG_COMPLETION && asset != null)Log.log(Log.DEBUG, XmlParsedData.class,
+			("asset at "+pos+" is :"+asset+" ("+asset.getStart().getOffset()+","+asset.getEnd().getOffset()+")"));
 		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
 
 		TagParser.Tag parentTag = null;

@@ -420,7 +420,12 @@ public class XercesParserImpl extends XmlParser
 		ErrorListErrorHandler errorHandler;
 		CharSequence text;
 		XmlParsedData data;
-
+		
+		/** used to access the type of attributes
+		 *  to know if they are IDs in case of XSD and RNG
+		 */
+		Stack<ElementDecl> elementDeclStack;
+		
 		HashMap<String, String> declaredPrefixes;
 		Stack<DefaultMutableTreeNode> currentNodeStack;
 		Locator loc;
@@ -444,6 +449,7 @@ public class XercesParserImpl extends XmlParser
 			this.errorHandler = errorHandler;
 			this.data = data;
 			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
+			this.elementDeclStack = new Stack<ElementDecl>();
 			this.empty = true;
 			this.schemaAutoLoader = null;
 			this.dtdCompletionInfo = null;
@@ -545,8 +551,6 @@ public class XercesParserImpl extends XmlParser
 					data.setCompletionInfo(uri,info);
 				}
 			}
-			// don't retrieve schema based on prefix mapping anymore (for XSD).
-			// see endElement(), where we use the PSVI
 		} //}}}
 
 		//{{{ endPrefixMapping() method
@@ -618,13 +622,44 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.WARNING,XercesParserImpl.class,"no location for "+qName);
 				return;
 			}
-
+			
+			ElementDecl cDecl = null;
+			
+			if(elementDeclStack.isEmpty()
+				|| elementDeclStack.peek() == null
+			   /* happens for DTD based elements */
+				|| elementDeclStack.peek().elementHash == null){
+				CompletionInfo i = data.getCompletionInfo(namespaceURI);
+				if(i == null){
+					if(schemaAutoLoader != null 
+						&& schemaAutoLoader.getCompletionInfo() != null
+							&& schemaAutoLoader.getCompletionInfo().containsKey(namespaceURI))
+					{
+						i = schemaAutoLoader.getCompletionInfo().get(namespaceURI);
+					}
+				}
+				
+				if(i != null){
+					cDecl  = i.elementHash.get(lName);
+					if(cDecl == null){
+						// fallback to any element ...
+						cDecl = i.getElementDeclLocal(lName);
+					}
+				}
+			}else{
+				cDecl = elementDeclStack.peek().elementHash.get(lName);
+			}
+			elementDeclStack.push(cDecl);
+			
 			// add all attributes with type "ID" to the ids vector
 			for(int i = 0; i < attrs.getLength(); i++)
 			{
 				if(attrs.getType(i).equals("ID")
 					// as in http://www.w3.org/TR/xml-id/
-					|| attrs.getQName(i).equals("xml:id"))
+					|| attrs.getQName(i).equals("xml:id")
+					|| (cDecl != null 
+						&& cDecl.getAttribute(attrs.getLocalName(i)) != null
+						&& "ID".equals(cDecl.getAttribute(attrs.getLocalName(i)).type)))
 				{
 					data.ids.add(new IDDecl(currentURI,
 						attrs.getValue(i),qName,
@@ -706,6 +741,8 @@ public class XercesParserImpl extends XmlParser
 			if(loc.getLineNumber() == -1)
 				return;
 
+			elementDeclStack.pop();
+			
 			buffer.readLock();
 
 			try

@@ -64,6 +64,7 @@ import xml.completion.IDDecl;
  *	<li>attributes with datatype anyURI
  *	      eg. XSD include and import (&lt;xs:include schemaLocation="url"/&gt;).
  *	</li>
+ *	<li>DocBook ulink (&lt;ulink url="..."&gt;)</li>
  * </ul>
  *
  * @todo	HTML attributes
@@ -150,8 +151,6 @@ public class XMLHyperlinkSource implements HyperlinkSource
 						        	System.err.println("inside attribute "+att.name+"="+att.value);
 						        	if(asset instanceof XmlTag) {
 						        		return getHyperlinkForAttribute(buffer, offset, data, asset, att);
-						        	} else {
-						        		System.err.println("TODO: hyperlinks for HTML attributes");
 						        	}
 						        }
 						}
@@ -322,6 +321,11 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			&& "noNamespaceSchemaLocation".equals(attLocalName))
 		{
 			System.err.println("found xsi:noNamespaceSchemaLocation");
+			href = resolve(attValue, buffer, offset, data, tag, false);
+		} else if("".equals(tagNS) && "ulink".equals(tagLocalName)
+				&& "url".equals(attLocalName))
+		{
+			System.err.println("found DocBook ulink");
 			href = resolve(attValue, buffer, offset, data, tag, false);
 		} else if("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
 			&& "schemaLocation".equals(attLocalName))
