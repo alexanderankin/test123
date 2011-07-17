@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<!DOCTYPE ACTIONS SYSTEM "../ümlaut/myactions.dtd">
+
+<!--
+  - valid file
+  -->
+<ACTIONS>
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>
