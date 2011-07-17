@@ -22,4 +22,7 @@
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="xml:XmlIndenter">
         new xml.indent.XmlBeautifier();
     </SERVICE>
+    <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="xml:XMLPlugin">
+        new xml.hyperlinks.XMLHyperlinkSource();
+    </SERVICE>
 </SERVICES>
