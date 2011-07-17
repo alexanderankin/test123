@@ -532,3 +532,8 @@ xml.translate.xsd.any-attribute-process-contents=skip
 # enable new features by default
 buffer.xml.xinclude=true
 buffer.xml.xinclude.fixup-base-uris=true
+
+# hyperlinks supports
+mode.xml.hyperlink.source=xml:XMLPlugin
+mode.xsl.hyperlink.source=xml:XMLPlugin
+mode.html.hyperlink.source=html:XMLPlugin
