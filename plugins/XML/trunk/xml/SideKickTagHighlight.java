@@ -87,6 +87,9 @@ public class SideKickTagHighlight implements StructureMatcher
 				parser.setTabSize( b.getTabSize() );
 				try{
 					XmlDocument.XmlElement startTag = parser.Tag();
+					// don't highlight self-closing tags : it flickers annoyingly when typing
+					if(startTag.isEmpty)return null;
+					
 					System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
 					// FIXME: switch back to ElementUtil when fixed
 					// int start = ElementUtil.createStartPosition((Buffer)textArea.getBuffer(),startTag).getOffset();
@@ -124,7 +127,7 @@ public class SideKickTagHighlight implements StructureMatcher
 					tag.matcher = this;
 					
 				}catch(ParseException pe){
-					Log.log(Log.DEBUG, SideKickTagHighlight.class, "error parsing tag",pe);
+					Log.log(Log.DEBUG, SideKickTagHighlight.class, "error parsing during matching tag highlight");
 				}
 			}
 			Log.log(Log.DEBUG, SideKickTagHighlight.class, "highlighting matching tag has taken "+(System.currentTimeMillis()-startTime)+"ms");
