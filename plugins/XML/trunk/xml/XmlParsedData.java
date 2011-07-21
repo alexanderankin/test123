@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -32,6 +33,7 @@ import javax.swing.tree.TreeNode;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.jedit.View;
 
 import sidekick.SideKickParsedData;
@@ -115,7 +117,11 @@ public class XmlParsedData extends SideKickParsedData
 		super(fileName);
 		this.html = html;
 		mappings = new HashMap<String, CompletionInfo>();
-		ids = new HashMap<String, IDDecl>();
+		ids = new TreeMap<String, IDDecl>(new Comparator<String>(){
+			public int compare(String s1,String s2){
+				return StandardUtilities.compareStrings(s1,s2,false);
+			}
+		});
 		allNamespacesBindingsAtTop = true;
 		entities = new ArrayList<EntityDecl>();
 		entityHash = new HashMap();
@@ -857,10 +863,8 @@ public class XmlParsedData extends SideKickParsedData
 	//{{{ getSortedIds() method
 	public List<IDDecl> getSortedIds(){
 		List<IDDecl> idl = new ArrayList<IDDecl>(ids.values());
-		Collections.sort(idl,new IDDecl.Compare());
 		return idl;
-	}			
-	//}}}
+	}//}}}
 	
 	//{{{ Private members
 
