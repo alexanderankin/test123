@@ -88,7 +88,7 @@ public class SideKickTagHighlight implements StructureMatcher
 				try{
 					XmlDocument.XmlElement startTag = parser.Tag();
 					// don't highlight self-closing tags : it flickers annoyingly when typing
-					if(startTag.isEmpty)return null;
+					if(startTag instanceof XmlDocument.Tag && ((XmlDocument.Tag)startTag).emptyTag)return null;
 					
 					System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
 					// FIXME: switch back to ElementUtil when fixed
