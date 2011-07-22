@@ -4,8 +4,7 @@
     <!-- read build.props to override the properties set below -->
     <property file="../build.properties" />
     <property file="./NavigatorPlugin.props" />
-    <property file="build.props"/>
-    
+    <property file="build.props"/>    
     
     <!-- jar name -->
     <property name="jar.name" value="Navigator.jar"/>
@@ -68,7 +67,15 @@
             description="Compile"
             depends="init,setClasspath">
         <echo>compiling</echo>
-        <javac debug="${compiler.debug}" deprecation="on" destdir="${build.dir}" nowarn="on" source="${compiler.source}" srcdir="${src.dir}" target="${compiler.target}">
+        <javac
+        	debug="${compiler.debug}"
+        	debuglevel="${compiler.debuglevel}"
+        	deprecation="on"
+        	destdir="${build.dir}"
+        	nowarn="on"
+        	source="${compiler.source}"
+        	srcdir="${src.dir}"
+        	target="${compiler.target}">
             <classpath refid="classpathref" />
         </javac>
     </target>

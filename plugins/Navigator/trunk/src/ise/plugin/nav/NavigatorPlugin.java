@@ -184,20 +184,25 @@ public class NavigatorPlugin extends EBPlugin {
                             if ( toolbar == null ) {
                                 // only add toolbar if there isn't one already
                                 Navigator nav = createNavigator( view );
-                                toolbar = new NavToolBar( nav );
                                 Container viewToolbar = view.getToolBar();
                                 if ( viewToolbar != null ) {
-                                    Component[] children = viewToolbar.getComponents();
-                                    for ( Component child : children ) {
-                                        if ( child instanceof JToolBar ) {
-                                            ( ( JToolBar ) child ).add( toolbar );
-                                            toolbarMap.put( view, toolbar );
-                                            break;
+                                    toolbar = new NavToolBar( nav );
+                                    JToolBar parent = null;
+                                    if (viewToolbar instanceof JToolBar) {
+                                    	parent = (JToolBar) viewToolbar;
+                                    } else {
+                                    	Component[] children = viewToolbar.getComponents();
+                                    	for ( Component child : children ) {
+                                    		if ( child instanceof JToolBar ) {
+                                    			parent = (JToolBar) child;
+                                    			break;
+                                    		}
                                         }
                                     }
-                                }
-                                else {
-                                    JOptionPane.showMessageDialog( null, "jEdit toolbar is not visible, can't add Navigator buttons.", "Error", JOptionPane.ERROR_MESSAGE );
+                                    if (parent != null) {
+                            			parent.add( toolbar );
+                                        toolbarMap.put( view, toolbar );
+                                    }
                                 }
                             }
                         }
