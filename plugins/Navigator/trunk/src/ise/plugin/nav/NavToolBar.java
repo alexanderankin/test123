@@ -71,6 +71,8 @@ public class NavToolBar extends JToolBar {
                         if ( me.getButton() == MouseEvent.BUTTON3 ) {
                             NavHistoryPopup popup = NavigatorPlugin.backList( view );
                             GUIUtilities.showPopupMenu(popup, back, me.getX(), me.getY());
+                        } else if ( me.getButton() == MouseEvent.BUTTON1 ) {
+                        	NavigatorPlugin.goBack( view );
                         }
                     }
                 }
@@ -80,6 +82,8 @@ public class NavToolBar extends JToolBar {
                         if ( me.getButton() == MouseEvent.BUTTON3 ) {
                             NavHistoryPopup popup = NavigatorPlugin.forwardList( view );
                             GUIUtilities.showPopupMenu(popup, forward, me.getX(), me.getY());
+                        } else if ( me.getButton() == MouseEvent.BUTTON1 ) {
+                        	NavigatorPlugin.goForward( view );
                         }
                     }
                 }
