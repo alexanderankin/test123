@@ -29,12 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.nav;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
@@ -159,54 +157,34 @@ public class NavigatorPlugin extends EBPlugin {
     }
 
     /**
-     * Revalidates the Views.  This is called after the Navigator buttons are
-     * added to or removed from the main toolbar for the Views.
-     */
-    private static void revalidateViews() {
-        View views[] = jEdit.getViews();
-        for ( int i = 0; i < views.length; ++i ) {
-            if ( views[ i ] != null ) {
-                views[ i ].getRootPane().revalidate();
-            }
-        }
-    }
-
-    /**
      * Actually add the Navigator buttons to the main toolbar of the view.
      */
+    private static final String BackAction = "navigator.back";
+    private static final String ForwardAction = "navigator.forward";
+    private static final Pattern BackActionRegex = Pattern.compile(
+    	"(^|\\s)navigator\\.back(\\s|$)");
+    private static final Pattern ForwardActionRegex = Pattern.compile(
+    	"(^|\\s)navigator\\.forward(\\s|$)");
+    private static final String ViewToolBarProperty = "view.toolbar";
     public static void setToolBars() {
         SwingUtilities.invokeLater(
             new Runnable() {
                 public void run() {
                     if ( showOnToolBars() ) {
-                        for ( View view : viewNavigatorMap.keySet() ) {
-                            JToolBar toolbar = toolbarMap.get( view );
-                            if ( toolbar == null ) {
-                                // only add toolbar if there isn't one already
-                                Navigator nav = createNavigator( view );
-                                Container viewToolbar = view.getToolBar();
-                                if ( viewToolbar != null ) {
-                                    toolbar = new NavToolBar( nav );
-                                    JToolBar parent = null;
-                                    if (viewToolbar instanceof JToolBar) {
-                                    	parent = (JToolBar) viewToolbar;
-                                    } else {
-                                    	Component[] children = viewToolbar.getComponents();
-                                    	for ( Component child : children ) {
-                                    		if ( child instanceof JToolBar ) {
-                                    			parent = (JToolBar) child;
-                                    			break;
-                                    		}
-                                        }
-                                    }
-                                    if (parent != null) {
-                            			parent.add( toolbar );
-                                        toolbarMap.put( view, toolbar );
-                                    }
-                                }
-                            }
-                        }
-                        revalidateViews();
+                    	String toolbar = jEdit.getProperty(ViewToolBarProperty);
+                    	String newToolbar = toolbar;
+                    	if (newToolbar != null) {
+                    		Matcher m = BackActionRegex.matcher(toolbar);
+                    		if (! m.find())
+                    			newToolbar = newToolbar + " " + BackAction;
+                    		m = ForwardActionRegex.matcher(toolbar);
+                    		if (! m.find())
+                    			newToolbar = newToolbar + " " + ForwardAction;
+                    		if (newToolbar.length() != toolbar.length()) {
+                    			jEdit.setProperty(ViewToolBarProperty, newToolbar);
+                    			jEdit.propertiesChanged();
+                    		}
+                    	}
                     }
                 }
             }
@@ -308,30 +286,15 @@ public class NavigatorPlugin extends EBPlugin {
      */
     public static void clearToolBars( boolean force ) {
         if ( force || !showOnToolBars() ) {
-            for ( View view : viewNavigatorMap.keySet() ) {
-                clearToolBar( view );
-            }
-            revalidateViews();
+        	String toolbar = jEdit.getProperty(ViewToolBarProperty);
+        	String newToolbar = toolbar;
+        	newToolbar = newToolbar.replaceFirst(BackActionRegex.pattern(), " ");
+        	newToolbar = newToolbar.replaceFirst(ForwardActionRegex.pattern(), " ");
+        	if (newToolbar.length() != toolbar.length()) {
+        		jEdit.setProperty(ViewToolBarProperty, newToolbar);
+        		jEdit.propertiesChanged();
+        	}
         }
-    }
-
-    /**
-     * Removes the Navigator buttons from the main toolbar for the given view.
-     */
-    private static void clearToolBar( View view ) {
-        JToolBar toolbar = toolbarMap.get( view );
-        if ( toolbar != null ) {
-            Container viewToolbar = view.getToolBar();
-            viewToolbar.remove( toolbar );
-            toolbarMap.remove( view );
-            revalidateViews();
-        }
-    }
-
-    public static JComponent getToolBar( View view ) {
-        Navigator nav = getNavigator( view );
-        NavToolBar toolBar = new NavToolBar( nav );
-        return toolBar;
     }
 
     /**
