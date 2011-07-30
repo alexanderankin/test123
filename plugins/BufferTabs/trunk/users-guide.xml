@@ -67,7 +67,8 @@
   <listitem><para>Buffer Tabs can be displayed on any of the four sides of the text area</para></listitem>
   <listitem><para>Buffer Tabs right-click popup menu can be enabled or disabled.</para></listitem>
   <listitem><para>Buffer Tabs can display colored backgrounds or colored titles</para></listitem>
-   <listitem><para>Closing a tab with a double left click or a single middle click can be enabled or disabled.</para></listitem>
+  <listitem><para>Closing a tab with a double left click or a single middle click can be enabled or disabled.</para></listitem>
+  <listitem><para>When there are many tabs, they can be wrapped into multiple rows, or use a single scrollable row.</para></listitem>
  </itemizedlist>
   </chapter>
 <chapter id="license">
