@@ -616,6 +616,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 						TreeModel model = tree.getModel();
 						if (model instanceof DefaultTreeModel)
 							((DefaultTreeModel) model).nodeChanged(parent);
+						tree.setExpandedOnly(parent);
 						((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
 					}
 					else
