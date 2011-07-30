@@ -69,10 +69,11 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private ActionListener indexActionListener;
 	private JCheckBox extendedOptions;
 	private JPanel searchOptions;
-
+	private View view;
 	public SearchResults(View v)
 	{
 		super(new BorderLayout());
+		this.view = v;	
 		KeyListener kl = v.getDockableWindowManager().closeListener(DOCKABLE_NAME);
 
 		lineResults = new JCheckBox(getLabel("lucene.line-based"));
@@ -193,7 +194,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			public void valueChanged(ListSelectionEvent e)
 			{
 				Object obj = list.getSelectedValue();
-				View view = jEdit.getActiveView();
 				if (obj instanceof String)
 				{
 					String path = (String) list.getSelectedValue();
