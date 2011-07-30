@@ -184,7 +184,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		model = new MyModel();
 		list = new JList(model);
-		tree = new SourceLinkTree(jEdit.getActiveView());
+		tree = new SourceLinkTree(v);
 
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.getSelectionModel().addListSelectionListener(new ListSelectionListener()
