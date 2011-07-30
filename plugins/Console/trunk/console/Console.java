@@ -122,7 +122,13 @@ implements EBComponent, DefaultFocusComponent
 		initGUI();
 
 		propertiesChanged();
-		Shell s = Shell.getShell("System");
+		String defShell = jEdit.getProperty("console.shell.default", "System");
+		if (defShell.equals(jEdit.getProperty("options.last-selected"))) {
+			defShell = jEdit.getProperty("console.shell");			
+		}
+		
+		Shell s = Shell.getShell(defShell);
+		if (s == null) s = Shell.getShell("System");
 		setShell(s);
 		load();
 		
@@ -225,7 +231,7 @@ implements EBComponent, DefaultFocusComponent
 			shell.printInfoMessage(shellState);
 			shell.printPrompt(this,shellState);
 		}
-
+		jEdit.setProperty("console.shell", name);
 		text.setDocument(shellState.scrollback);
 		if (shell != this.currentShell) {
 			shellCombo.setSelectedItem(name);
