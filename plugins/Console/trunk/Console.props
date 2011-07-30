@@ -91,6 +91,7 @@ options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
 options.console.general.infoColor=Information messages:
 options.console.general.changedir=Tree selection options:
+options.last-selected=Last Selected
 options.console.general.changedir.nodeselect=On VFS node select, cd to node dir
 options.console.general.changedir.pvchange=On Project change, cd to project root dir
 # options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
