@@ -58,6 +58,7 @@ buffertabs.color-selected-foreground=false
 options.buffertabs.enable.label=Enable BufferTabs by default
 options.buffertabs.icons.label=Use icons to show buffer modified status
 options.buffertabs.nostretch.label=Do not stretch tabs to fill rows
+options.buffertabs.wrap.label=Wrap tabs into multiple rows when they don't fit into a single visible row
 options.buffertabs.popup.label=Enable right-click popup menu
 options.buffertabs.closeButton.label=Show close button on tabs (only from Java 1.6)
 options.buffertabs.location.label=Location of BufferTabs:

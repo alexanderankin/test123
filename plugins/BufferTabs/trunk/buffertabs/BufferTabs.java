@@ -422,6 +422,9 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	public void propertiesChanged()
 	{
+		int layoutPolicy = BufferTabsOptionPane.getWrapTabsProperty() ?
+			JTabbedPane.WRAP_TAB_LAYOUT : JTabbedPane.SCROLL_TAB_LAYOUT;
+		setTabLayoutPolicy(layoutPolicy);
 		TabbedPaneUI currentUI = getUI();
 		boolean myUI = currentUI.getClass().getCanonicalName().endsWith("MyUI");
 		if (jEdit.getBooleanProperty("buffertabs.nostretch", false))
@@ -755,9 +758,9 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	@Override
 	public int indexOfComponent(Component component)
 	{
-		if (component instanceof BufferTabComponent)
-			return super.indexOfComponent(component);
-		return super.indexOfComponent(textArea);
+		if (component == null)
+			return super.indexOfComponent(textArea);
+		return super.indexOfComponent(component);
 	}
 
 
