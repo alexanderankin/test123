@@ -178,6 +178,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				toggleMultiStatus();
 			}
 		});
+		tree = new SourceLinkTree(v);
 		multiStatus = jEdit.getBooleanProperty("lucene.multipleresults", true);
 		updateMultiStatus();
 
@@ -185,7 +186,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		model = new MyModel();
 		list = new JList(model);
-		tree = new SourceLinkTree(v);
 
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -405,6 +405,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.multiple.icon")));
 		else
 			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.single.icon")));
+		tree.allowMultipleResults(multiStatus);
 	}
 
 	private void toggleMultiStatus()
@@ -412,7 +413,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		multiStatus = (! multiStatus);
 		jEdit.setBooleanProperty("lucene.multipleresults", multiStatus); 
 		updateMultiStatus();
-		tree.allowMultipleResults(multiStatus);
 	}
 
 	private Index getSelectedIndex()
