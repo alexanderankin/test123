@@ -177,7 +177,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				toggleMultiStatus();
 			}
 		});
-		multiStatus = true;
+		multiStatus = jEdit.getBooleanProperty("lucene.multipleresults", true);
 		updateMultiStatus();
 
 		setLayoutByGeometry();
@@ -410,6 +410,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private void toggleMultiStatus()
 	{
 		multiStatus = (! multiStatus);
+		jEdit.setBooleanProperty("lucene.multipleresults", multiStatus); 
 		updateMultiStatus();
 		tree.allowMultipleResults(multiStatus);
 	}
