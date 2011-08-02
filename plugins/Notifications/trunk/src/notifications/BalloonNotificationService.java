@@ -33,6 +33,7 @@ public class BalloonNotificationService extends NotificationService
 	static private final int BALLOON_TIME_MS_DEFAULT = 5000;
 	static private final String BALLOON_COLOR_PROP = "balloon.notification.color";
 	static private final Color BALLOON_COLOR_DEFAULT = Color.yellow;
+	private static final int MaxMessageLines = 2;
 	private Object errorLock = new Object();
 	private boolean error = false;
 	private BalloonFrame frame;
@@ -52,7 +53,6 @@ public class BalloonNotificationService extends NotificationService
 		public class Balloon extends JPanel
 		{
 			private Timer timer;
-			private static final int MaxMessageLines = 2;
 			Balloon(final ErrorParameters entry)
 			{
 				setBorder(BorderFactory.createEtchedBorder());
@@ -78,13 +78,9 @@ public class BalloonNotificationService extends NotificationService
 				top.add(path, BorderLayout.CENTER);
 				JTextArea ta = new JTextArea();
 				ta.setBackground(c);
-				for (int i = 0; i < MaxMessageLines; i++)
-				{
-					ta.append(entry.args[i].toString());
-					if (i < MaxMessageLines - 1)
-						ta.append("\n");
-				}
+				appendEntryString(entry, ta);
 				ta.setEditable(false);
+				ta.setCaretPosition(0);
 				add(ta, BorderLayout.CENTER);
 				int timeMs = jEdit.getIntegerProperty(BALLOON_TIME_MS_PROP,
 					BALLOON_TIME_MS_DEFAULT);
@@ -105,6 +101,18 @@ public class BalloonNotificationService extends NotificationService
 				});
 				timer.setRepeats(false);
 				timer.restart();
+			}
+			private void appendEntryString(final ErrorParameters entry, JTextArea ta)
+			{
+				String message = jEdit.getProperty(entry.messageProp, entry.args);
+				String [] lines = message.split("\\n");
+				int max = (MaxMessageLines > lines.length) ? lines.length : MaxMessageLines;
+				for (int i = 0; i < max; i++)
+				{
+					ta.append(lines[i]);
+					if (i < max - 1)
+						ta.append("\n");
+				}
 			}
 		}
 
