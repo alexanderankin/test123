@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+ This is the build.xml file for building the CodeHelper plugin.
+ It is based on the standard build.xml file for jEdit plugins.
+-->
+<project name="Notifications" default="build" basedir=".">
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="jar.name"  value="${ant.project.name}.jar"/>
+	<property name="src.dir" location="${basedir}/src"/>
+	<property name="build.dir" value="build"/>
+	<property name="docs-proc.target" value="none" />
+
+	<property file="build.support" value="../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
+
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+
+	<selector id="packageFiles">
+	  <or>
+		<filename name="*.html" />
+	  </or>
+	 </selector>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	</path>
+
+</project>
+
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
