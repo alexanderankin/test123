@@ -1,0 +1,23 @@
+plugin.notifications.NotificationsPlugin.activate=defer
+
+# general plugin information
+plugin.notifications.NotificationsPlugin.name=Notifications
+plugin.notifications.NotificationsPlugin.author=Shlomy Reinstein
+plugin.notifications.NotificationsPlugin.version=0.1
+plugin.notifications.NotificationsPlugin.description=Alternate notification types
+plugin.notifications.NotificationsPlugin.docs=index.html
+
+plugin.notifications.NotificationsPlugin.depend.0=jdk 1.5
+plugin.notifications.NotificationsPlugin.depend.1=jedit 04.05.00.00
+
+# menu items
+plugin.notifications.NotificationsPlugin.menu=\
+
+# option panes
+plugin.notifications.NotificationsPlugin.option-pane=notifications
+
+# docs
+#plugin.notifications.NotificationsPlugin.docs=index.html
+
+# options
+#options.CtagsInterface.ctags=ctags
