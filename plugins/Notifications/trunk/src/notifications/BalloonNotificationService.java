@@ -6,9 +6,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -23,6 +26,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.notification.DefaultNotificationService;
 import org.gjt.sp.jedit.gui.notification.NotificationService;
@@ -56,24 +60,20 @@ public class BalloonNotificationService extends NotificationService
 			Balloon(final ErrorParameters entry)
 			{
 				setBorder(BorderFactory.createEtchedBorder());
-				setLayout(new BorderLayout());
+				setLayout(new BorderLayout(0, 0));
 				Color c = jEdit.getColorProperty(BALLOON_COLOR_PROP, BALLOON_COLOR_DEFAULT);
-				JPanel top = new JPanel(new BorderLayout());
+				JPanel top = new JPanel(new BorderLayout(0, 0));
 				add(top, BorderLayout.NORTH);
-				JToolBar tb = new JToolBar();
-				top.add(tb, BorderLayout.WEST);
-				JButton extend = new JButton("+");
-				tb.add(extend);
-				extend.addActionListener(new ActionListener()
-				{
+				JLabel extend = new JLabel(GUIUtilities.loadIcon("Plus.png"));
+				top.add(extend, BorderLayout.WEST);
+				extend.addMouseListener(new MouseAdapter() {
 					@Override
-					public void actionPerformed(ActionEvent arg0)
-					{
+					public void mouseClicked(MouseEvent e) {
 						DefaultNotificationService.instance().notifyError(
-							entry.comp, entry.path, entry.messageProp, entry.args);
+								entry.comp, entry.path, entry.messageProp, entry.args);
 					}
 				});
-				JLabel path = new JLabel("<html><body><b>" + entry.path + "</b></html>");
+				JLabel path = new JLabel("<html><body><b>"+entry.path+"</b></html>");
 				path.setBorder(BorderFactory.createLineBorder(Color.black));
 				top.add(path, BorderLayout.CENTER);
 				JTextArea ta = new JTextArea();
@@ -102,7 +102,7 @@ public class BalloonNotificationService extends NotificationService
 				timer.setRepeats(false);
 				timer.restart();
 			}
-			private void appendEntryString(final ErrorParameters entry, JTextArea ta)
+			private void appendEntryString(ErrorParameters entry, JTextArea ta)
 			{
 				String message = jEdit.getProperty(entry.messageProp, entry.args);
 				String [] lines = message.split("\\n");
