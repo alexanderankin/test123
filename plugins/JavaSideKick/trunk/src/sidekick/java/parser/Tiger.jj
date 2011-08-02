@@ -1559,8 +1559,10 @@ String TypeParameters():
     try {
         (
             "<"
+            (
             a=TypeParameter()
             { s += a; }
+            )?
             (
                 ","
                 { s += ","; }
@@ -1571,6 +1573,7 @@ String TypeParameters():
         )
     }
     catch(ParseException pe) {
+        pe.printStackTrace();
         error_skipto(SEMICOLON);
     }
     {
@@ -1591,6 +1594,7 @@ String TypeParameter():
 
     }
     catch(ParseException pe) {
+        pe.printStackTrace();
         error_skipto(SEMICOLON);
     }
 
@@ -2228,12 +2232,17 @@ List<TigerNode> TypeArguments():
 {
     try {
         (
+         "<>"   
+        )
+        |
+        (
         "<" a=TypeArgument() { if (a != null) list.add(a); }
 
         ( "," b=TypeArgument() { if (b != null) list.add(b); } )* ">"
         )
     }
     catch(ParseException pe) {
+        pe.printStackTrace();
         error_skipto(SEMICOLON);
     }
     {
