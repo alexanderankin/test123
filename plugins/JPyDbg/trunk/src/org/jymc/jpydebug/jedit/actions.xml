@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="python-debug">
+		<CODE>
+                  org.jymc.jpydebug.jedit.JPYJeditPlugin.debug(view,buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="python-compile">
+		<CODE>
+                  org.jymc.jpydebug.jedit.JPYJeditPlugin.compile(view,buffer);
+		</CODE>
+	</ACTION>
+</ACTIONS>

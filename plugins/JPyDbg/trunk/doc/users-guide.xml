@@ -1,0 +1,911 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="file://localhost/F:/Morphon/XML-Editor%203.1.3/Examples/docbook/docbook.css" type="text/css"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>JpyDbg plugin for NETBEANS and JEDITuser's guide</title>
+    <authorgroup>
+      <author>
+        <firstname>Jean-Yves</firstname>
+        <surname>Mengant</surname>
+      </author>
+    </authorgroup>
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para> 
+      <figure>
+          <title></title>
+          <ulink url="http://sourceforge.net/projects/jpydbg"></ulink>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/jpydbg.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject>
+        </figure> 
+          <ulink url="http://jpydbg.blogspot.com/"></ulink>
+      </para>
+      <para> Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1 or any later version published by the Free Software Foundation; with no <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of the license can be found in the file <filename>COPYING.DOC.txt</filename> included with jEdit. </para>
+      <para> The JpyDbg plugin itself is released under the GNU General Public License. A copy of the GPL can be found in the jEdit online help. </para>
+    </legalnotice>
+  </bookinfo>
+  <chapter id="general-informations">
+    <title>What is JPyDbg for JEDIT and NETBEANS</title>
+    <epigraph>
+      <para> <figure>
+          <title></title>
+          <ulink url="http://www.sourceforge.net"></ulink>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/IMG720.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject>
+        </figure> </para>
+    </epigraph>
+    <para>JPyDbg is hosted and managed as a FSF sourceforge project. you can reach sourceforge JpyDebug project homepage and last news from <ulink url="http://sourceforge.net/projects/jpydbg">here</ulink></para>
+    <para>JpyDbg is a Multi Ide Python / Jython development environment which has been originally implemented inside JEdit as a JEdit plugin . Starting with version 0.0.14 most of JEdit Python Development Environment have been made available from inside the Netbeans IDE as well as a standard NBM package.</para>
+    <para>Starting with version 0.0.11 JPyDbg is able to debug CPYTHON and a JPYTHON(JYTHON) sources.</para>
+    <para>I Started working on JpyDbg since summer of 2002 and as time goes on I added numerous complementary functionalities to it since. By beeing maintained by a Python / Java daily developper (who is by the way the first user of JpyDbg) most annoyances should be fixed quickly... BTW version number is still 0.0.xx just because I consider that even if the debugger is pretty stable now, there is still on going improvement on it , which makes me keep the current version number starting with 0.0.</para>
+    <para>As far as I know JPydbg was the first python debugger which implements the Jython and CPython debugging facility, which by the way make it also a very powerfull tool for checking the portability of python code between CPython and Jython.</para>
+    <para>Installing and using either netbeans or jedit is a prerequisite for using JPyDbg : jedit and netbeans are both opensource projects.</para>
+    <para>Usually version found at jpydbg site and in jedit downloadable pluggins are in sync ; so you can pick it at both locations ; But sometimes the version found at jpydg site may be more recent.</para>
+    <para>I Try to provide only stable versions allthough some bugs may pass through my checks.</para>
+    <figure>
+      <title>JpyDbg clean client/server based debugging architecture </title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/jpydbgDesign.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>JPyDbg server side is a Python Module and the currently provided client side are written in Java , this implies that JPyDbg is platform independent and can be used on any platform where Python and Java are available. </para>
+    <para> <itemizedlist>
+        <listitem>
+          <para>JPyDbg BACKEND :</para>
+          <para> <itemizedlist>
+              <listitem>
+                <para>This part is a TCPIP socket based python module inheriting its basic debugging features from the bdb.py standard debugging module.</para>
+              </listitem>
+              <listitem>
+                <para>The socket layer is used to receive Debugging commands from the FRONTEND layer and populates debugging informations back using XML </para>
+              </listitem>
+            </itemizedlist> </para>
+        </listitem>
+        <listitem>
+          <para>JPyDbg FRONTEND :</para>
+          <para> <itemizedlist>
+              <listitem>
+                <para>This part is responsible of displaying the debugging informations to the end user. </para>
+              </listitem>
+              <listitem>
+                <para>The idea is that there may be more than one way to do it , since there is more than one IDE available to develop python projects. </para>
+              </listitem>
+              <listitem>
+                <para>A first one has been made available for <ulink url="http://www.jedit.org">JEdit</ulink> IDE environment , as a starting point</para>
+              </listitem>
+              <listitem>
+                <para>In january september 2006 a new implementation of JpyDbg for <ulink url="http://www.netbeans.org">netbeans</ulink> IDE environment has been dropped .netbeans IDE has the major advantage of beeing built using Swing GUI library like JEdit which provides good portability of some existing component panel used for Jedit</para>
+              </listitem>
+              <listitem>
+                <para>I'll try to maintain both version in sync in the future</para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+      </itemizedlist> </para>
+  </chapter>
+  <chapter id="folding">
+    <title>Installing and Customizing JpyDbg plugin</title>
+    <para>The jedit jpydbg plugin may be easily automatically installed from jedit plugin central using the jedit Plugin Manager from inside jEdit. The only problem is that the available jpydbg version available from plugin central may not be the most recent version of jpydbg. In that case use the following procedure to install</para>
+    <para>jpydbg pluggin jar must be installed as usual in the JEdit jar directory details follow for UNIX/MAC OSX and WINDOWS </para>
+    <example>
+      <title> manually installing jedit jpydebug plugin on UNIX / MAC OSX.</title>
+      <programlisting format="linespecific">
+    rm .jedit/jars/jpydebug*.jar                                      # remove any previous version of jpydbg jar
+    cp jpydebug-x.x.xx.jar .jedit/jars                                # copy last version of jpydebug jar under user .jedit home jars (visible for current user)
+ or cp jpydebug-x.x.xx.jar $JEDIT_HOME/jars                           # copy jpydebug jar under $JEDIT_HOME/jars path (visible to multiple users if  
+                                                                      # Jedit is under /usr/local + su root requested   
+    </programlisting>
+    </example>
+    <example>
+      <title> manually installing jedit jpydebug plugin WINDOWS.</title>
+      <programlisting format="linespecific">
+    delete C:\Documents and Settings\userid\.jedit\jars\jpydebug*.jar  # remove any previous version of jpydbg
+    copy jpydebug-x.x.xx.jar C:\Documents and Settings\userid\.jedit\jars\jpydebug.jar # copy jpydebug jar under user .jedit home jars (current user)
+ or copy jpydebug-x.x.xx.jar %JEDIT_HOME%\jars\                        # copy jpydebug jar under $JEDIT_HOME/jars path (visible to multiple users) 
+    </programlisting>
+    </example>
+    <tip>
+      <para> The Jedit Jython plugin may conflict with JpyDbg in the sidekick Structure Browser ; if you plan to install both pluggins its' important to use version 0.9.1 of the JythonInterpreter plugin ; higher version of Jython interpreter pluggin like 0.9.6 may have a sidekick conflict with jpydbg : check for a service.xml file inside the JythonInterpreter pluggin's jar and remove it : this should resolve the sidekick conflict.</para>
+      <para>JPYDBG : Starting with version 0.0.11 of jpydbg,the jython.jar Jython library is requested and must be installed under jedit jars subdirectory, this jar library is part of the standard Jython distribution which can be found at http://www.jython.org<ulink url="http://www.jython.org"></ulink></para>
+      <para>NETBEANS : for Netbean's users the jython jar is already packaged inside the nebeans NBM jpydbg package and populated accordingly by the automated NETBEANS instal process ; to install for netbeans , simply download the .NBM jpydbg file and jump to the NETBEANS tools / Update center wizard ; select 'install manually downloaded module' ; press next ; add the jpydbg .NBM downloaded file to the list and you're almost done.</para>
+      <para>A running version of CPython is requested (2.2 , 2.3 or 2.4 version are acceptable ) see <ulink url="http://www.python.org"></ulink> for details.</para>
+    </tip>
+    <para>A python counterpart module, used for the backend part of debugger is also provided in source format using a standard python module distribution , so a separate complementary jpydaemon-xxx.zip (where xxx represents the current version number of the module) is provided and need to be downloaded as well , unzipped into a work directory (/tmp). </para>
+    <tip>
+      <para> Starting with version 0.0.14 of jpydbg ; python modules are automatically installed during the first activation of jpydbg pluggin for Jedit or Netbeans ; you only need to install the python backend debugger package for remote python debuging on the remote machine only. So if you only plan python local debuggin you're done </para>
+    </tip>
+    <para></para>
+    <para>Next in order to install the python backend debugger stuff for remote debugging just proceed as follow on the remote machine: </para>
+    <example>
+      <title> installing jpydbg python modules </title>
+      <programlisting>
+    cd /tmp
+    unzip jpydaemon-xxx.zip
+    python setup.py install   # root priviledges may be requested here on unix 
+    </programlisting>
+    </example>
+    <para>A running version of Jython is only requested if you plan to use the Jython debugging framework. Even if you only use Jython ; a working version of CPython is still requested , since the Python syntax checker uses the CPython AST tree analyzer</para>
+    <para>JEDIT : JPyDbg customization panels are made accessible through the Global options-pluggin-python-debugger's option menu bar</para>
+    <para>NETBEANS : JpyDbgcustomization panels are made accessibles through the Tools / jpydbg configuration menu.</para>
+    <para>Next the layout of the misc configuration panels are almost the same for both IDE environments</para>
+    <variablelist>
+      <title>multiple customization subpanels are made available and described bellow :</title>
+      <varlistentry>
+        <term><filename>CPython options :</filename></term>
+        <listitem>
+          <para>specify informations about CPython framework.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>JPython options :</filename></term>
+        <listitem>
+          <para>specify informations about JPython environment.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>debugger's options :</filename></term>
+        <listitem>
+          <para>contains the python debugging configuration panel.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>program arguments :</filename></term>
+        <listitem>
+          <para>provide a simple way to define python debugging configuration key used to populate runtime command line arguments to debuggees before starting a debugging session</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>pylint options :</filename></term>
+        <listitem>
+          <para>Pylint customization options </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>profiler's options :</filename></term>
+        <listitem>
+          <para>Python profiler's usage options(UNDER DEVELOPMENT)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>Python shell options :</filename></term>
+        <listitem>
+          <para>provide customization color's choices for the Python shell window panel </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <figure>
+      <title>CPython options for JEDIT</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg00.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure>
+      <title>CPython options for NETBEANS</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg00netbeans.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <variablelist>
+      <title>configuration panel fields description</title>
+      <varlistentry>
+        <term><filename>python interpreter location</filename></term>
+        <listitem>
+          <para>define the full path location of the python interpreter program on your computer</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>Python PYTHONPATH tree management</filename></term>
+        <listitem>
+          <para>add or remove PYTHONPATH directories or jar file by selecting a node and right clicking to gain access to pythonpath popup menu </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>Press here to check your CPython configuration</filename></term>
+        <listitem>
+          <para>This button will launch a simple Python program and get green colored or red colored if launching failed , this is a convenient way for checking that your Python configuration is operational</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <figure>
+      <title>JPython options for JEDIT</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg01.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure>
+      <title>JPython options for NETBEANS</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg01netbeans.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <variablelist>
+      <title>configuration panel fields description</title>
+      <varlistentry>
+        <term><filename>Jython's JVM location</filename></term>
+        <listitem>
+          <para>define the full path location of the Java Virtual machine(java.exe or java unix binary program) location on your computer</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>Jython's Home path</filename></term>
+        <listitem>
+          <para>define the full path location of the Java Virtual machine(java.exe or java unix binary program) location on your computer</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>use Jython as default python environment</filename></term>
+        <listitem>
+          <para>JpyDbg default debugging to CPYTHON , toggle this checkbox to make Jython beeing the default debugging environment </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>Jython PYTHONPATH tree management</filename></term>
+        <listitem>
+          <para>add or remove PYTHONPATH directories or jar file by selecting a node and right clicking to gain access to pythonpath popup menu </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>Press here to check your jython configuration</filename></term>
+        <listitem>
+          <para>This button will launch a simple Jython Swing program and get green colored or red colored if launching failed , this is a convenient way tocheck that your Jython configuration is operational</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para>.</para>
+    <figure>
+      <title>Debugger's options for JEDIT</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg0.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure>
+      <title>Debugger's options for NETBEANS</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg0netbeans.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <variablelist>
+      <title>debugger's options fields description</title>
+      <varlistentry>
+        <term><filename>jpy daemon script startup arguments</filename></term>
+        <listitem>
+          <para>provide here extra argument to jpydaemon(usually left empty)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>listening port</filename></term>
+        <listitem>
+          <para>local listening port used by jpydbg pluggin to receive debugging events from jpydaemon.py</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>remote page code</filename></term>
+        <listitem>
+          <para>Unicode page code to be used for remote debugging if the remote machine is not ascii( CP037 = EBCDIC)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>activate jEdit debug trace</filename></term>
+        <listitem>
+          <para>checking this box enables debug jpydbg traces to be displayed inside jEdit standard log</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>debugging time editor mouse over expression evaluation</filename></term>
+        <listitem>
+          <para> starting with version 0.0.9 of jpydbg , python expression evaluation may be directly displayed inside inside the source by either pointing the mouse over the expression or selecting a given expression from the source and moving the mouse over the selected area. </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>dbg server host</filename></term>
+        <listitem>
+          <para>ip address hosting jpydaemon =&gt; localhost when debugging python module on local machine</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>connecting port</filename></term>
+        <listitem>
+          <para>port to connect when daemon is listening instead pluggin =&gt; set to -1 when listening port is specified for pluggin </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>current debug line debugging color </filename></term>
+        <listitem>
+          <para>Choose the border color of current debugging source line</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>breakpoint line color </filename></term>
+        <listitem>
+          <para>Choose the color of breakpoint set lines</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>activate autocompletion </filename></term>
+        <listitem>
+          <para>starting with version 0.0.10 checking this box will enable python autocompletion to be activated inside the editor</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>autocompletion delay </filename></term>
+        <listitem>
+          <para>requested delay before autocompletion request is activated when typing inside the editor</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para></para>
+    <figure>
+      <title>JpyDbg debuggee's program argument settings for JEDIT</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg10.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure>
+      <title>JpyDbg debuggee's program argument settings for NETBEANS</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg10netbeans.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <variablelist>
+      <title>program arguments settings fields description</title>
+      <varlistentry>
+        <term><filename>configuration name</filename></term>
+        <listitem>
+          <para>a short name identifying a given argv command line , this short name is populated in the command line combo box located on the debugging toolbar. Selecting a given short name keyword before launching a debug session will populate associated program argument values into the sys.argv python argument list</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>program argument value</filename></term>
+        <listitem>
+          <para>associated command line argument values</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <figure float="0">
+      <title>JpyDbg debuggee's PyLint options settings for JEDIT</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg30.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure float="0">
+      <title>JpyDbg debuggee's PyLint options settings for NETBEANS</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg30netbeans.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <variablelist>
+      <title>Pylint options settins</title>
+      <varlistentry>
+        <term><filename moreinfo="none">Use pylint</filename></term>
+        <listitem>
+          <para>Toggle button to indicate wether or not Pylint checking should be activated or not.(pylint needs to be downloaded and installed from official pylint site)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename moreinfo="none">Pylint location</filename></term>
+        <listitem>
+          <para>location of the pylint python module to use( usually lint.py)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename moreinfo="none">complementary arguments to pylint</filename></term>
+        <listitem>
+          <para>Compleme,tary pylint options to be set ; in order to avoid too many messages you may set :</para>
+          <para>--persistent=n --comment=n --disable-msg=W0103,W0131,C0103,W0312,W0511</para>
+          <para>as Pylint option complementary arguments.</para>
+          <para></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename moreinfo="none">Communicate FATAL , ERROR , WARNING , CONVENTION , REFACTOR</filename></term>
+        <listitem>
+          <para>List of Pylint message category to be set ; FATAL and ERRORS are displayed as Jeit ERRORS others are displayed as jEdit WARNINGS</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <figure>
+      <title>JpyDbg python shell coloring and font chooser settings for JEDIT</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg11.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure>
+      <title>JpyDbg python shell coloring and font chooser settings for NETBEANS</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg11netbeans.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <variablelist>
+      <title>Python shell coloring customization description</title>
+      <varlistentry>
+        <term><filename>Color/font choosing</filename></term>
+        <listitem>
+          <para>for each provided color or font choice just click on either the font chooser or color chooser button in order to pop up a color/font chooser , make the requested color/font change and press the apply button. This coloring group applies to the python shell command customization where user may enter dynamic python statements while debugging</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </chapter>
+  <chapter id="python-jython">
+    <title>Switching between CPython and Jython</title>
+    <para>Starting with V0.0.10 version, JPyDbg is both able to handle standard CPYTHON debugging session as before , but alsos JPython debugging session as well. (BTW AFAIK JpyDbg is the only debugger able to handle Cross Python debugging). </para>
+    <para>This feature is very usefull when you need to maintain Python module compatibility between both available Python environments </para>
+    <para>This feature is also possible because JpyDbg debugging kernel is fully written in Python and inherits the standard bdb.py debugging module as a starting point</para>
+    <para>Switching from CPython debugging To Jython debugging is straigforward and provided through a simple toggle button on JpyDbg toolbar</para>
+    <para>Since The Jython debugging feature is new in V 0.0.10, it may be less stable than the CPython debugging environment</para>
+    <para>The choice between a CPython debugging session and a Jython one must be made before the debugging session starts , as soon as the debugger is active the JPython/CPython toggle button is disabled until the end of the debugging session. </para>
+    <figure>
+      <title>JpyDbg Cpython debugging toggled</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg111.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <figure>
+      <title>JpyDbg Jython debugging toggled</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg112.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <tip>
+      <para>When debugging Jython / Swing modules , the bdb.py thread is unexpectly quiting allthough java AWT threads are still active. This prevents the capacity of debugging Awt events. This problem is not a JpyDebug bug either a jython / bdb one ; in order to workaround it you may use the tip provided below inside the main task of your Jython module </para>
+      <para> <example>
+          <title>JYTHON / SWING A way to prevent main bdb Thread to exit</title>
+          <programlisting>
+"""\
+Equivalent to the ../awt/simple.py example but using swing components
+instead of AWT ones.
+"""
+
+# This line will import the appropriate swing library for your system (jdk 1.1 or 1.2)
+import org.python.core
+from pawt import swing
+import java
+leaving =0
+
+def exit(e): 
+  leaving = 1 
+  java.lang.System.exit(0)
+
+frame = swing.JFrame('Swing Example', visible=1)
+button = swing.JButton('Close Me!', actionPerformed=exit)
+frame.contentPane.add(button)
+frame.pack()
+frame.show()
+
+import time
+while not leaving:
+  time.sleep(1)
+      </programlisting>
+        </example> </para>
+    </tip>
+  </chapter>
+  <chapter id="syntax-checking">
+    <title>Inspector Module/Class viewing and python syntax checking</title>
+    <para>Starting with V0.0.5 version of JPyDbg which integrates the SideKick plugging facility , JPyDbg automatically checks the current PythonSource view for Syntax errors and populates any python Syntax Error found inside the ErrorList as shown bellow. </para>
+    <para></para>
+    <figure>
+      <title>JpyDbg python syntax error checking </title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg16.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para>As soon as a given Python source is syntaxically correct the structure of the vurrent view Python source will be displayed inside a Jedit SideKick windows as shown on the following figure :</para>
+    <tip>
+      <para> starting with version 0.0.9 JEdit files loaded through the FTP plugin are also displayed inside the syntactic tree , imported nodes are also displayed inside the tree </para>
+    </tip>
+    <para></para>
+    <para> <figure>
+        <title>JpyDbg python syntax error checking </title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/dbg17.gif" format="GIF"/>
+          </imageobject>
+        </mediaobject>
+      </figure> </para>
+    <para>All the above syntax and semantic goodies are provided through the call of the inspector.py python module checker which is part of the jpydbg python package</para>
+    <para>Depending on the way you configured your JEdit environment the Sidekick window may be either floating or docked on left or right side of the jedit ; the python structure is provided to the JPyDbg Java browser through an xml file having the same name as the py file but with an .xml extension.</para>
+    <para>The sidekick Python syntax tree provides an interesting way to use JEdit to develop complex Python project. The figure below shows JpyDbg debug session over the Zope kernel.</para>
+    <para></para>
+    <para> <figure>
+        <title>a JpyDbg Debugging session of Zope kernel </title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/dbg18.gif" format="GIF"/>
+          </imageobject>
+        </mediaobject>
+      </figure> </para>
+  </chapter>
+  <chapter id="NETBEANSJEDIT-differences">
+    <title>NETBEANS / JEDIT differences</title>
+    <para>Inside This chapter , I will point out the most important usage diferences that you may encounter using jpydbg with NETBEANS or JEDIT</para>
+    <para>Since both NETBEANS and JEDIT have Java/Swing Based GUI A lot of panel are shared between both Plugin implementation ; this make the compatibility between both plugin easier to maintain as well ; By the way let me emphasize here about the nighmare it would have been to port this to the ECLIPSE / SWT framework ... Almost every GUI stuff should have been completely rewriten ... Don't bet on SWT/SWING compatibility box there ; it's just a Marketing toy !!!!</para>
+    <para>OK back to the JEDT/NETBEANS stuff : One of the main difference is the location of the debugging bar</para>
+    <para>WITH JEDIT : Since there is no Debugging standard framework defined for JEdit , the debugger toolbar is located in the 'NORTH area' of the 'Python Environment' window panel.</para>
+    <para>WITH NETBEANS : The debugging launcher bar has been integrated with the current selected Python source action bar ; and the Debugging actions follows the standard Netbean's debugger partern using the NETBEANS standard debugging bar. (On the first version ; the stack and variable debuger's frames are still hosted inside the JpyDbg panel as in jEdit ... But I plan to improve this topic in the near future.</para>
+    <para>The rest of the functionalities are the same for both IDE environments.</para>
+    <para> <figure>
+        <title>NETBEANS jpydbg python plugin overview</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/netbeans000.gif" format="GIF"/>
+          </imageobject>
+        </mediaobject>
+      </figure> </para>
+  </chapter>
+  <chapter id="debugging-primer">
+    <title>A debugging session primer</title>
+    <para>This chapter will describe a simple Python debugging session using JpyDbg pluggin. </para>
+    <para>Let's use the python source below as a sample source candidate for the debug session :</para>
+    <para> <example>
+        <title>A sample python program to illustrate a debugging session</title>
+        <programlisting>
+#
+# A sample List returning function
+#
+def buildList():
+    print "this will return a sample constant list back"
+    list=["dave" , "mark" , "ann" , "phil"]
+    return list
+#
+# A sample multiplication function
+#
+def multiply(  a , b ):
+    print "this shall add " , a , "times " , b
+    c = 0
+    for i in range ( 0, long(a) ):
+        c = c + long(b)
+    return c
+#
+# Unit testing startup
+#
+if __name__ == '__main__':
+    print "testing multiply = " , multiply ("5","6")
+    print "testing multiply = " , multiply (5,6)
+#    print "testing multiply = " , multiply (5,6,7)
+    print "testing buildlist = " , buildList()    
+        </programlisting>
+      </example> </para>
+    <para></para>
+    <para>First start JEdit environment as usual and load the firstsample.py python source : </para>
+    <tip>
+      <para>in order to dock jpydb plugin in the bottom of the screen use global option JEdit docking action</para>
+    </tip>
+    <para></para>
+    <figure>
+      <title>Jedit Python debugging integration overview</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg1.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para>Two prerequisites are necessary in order to start a debugging session : you must choose a python source candidate and setup the command line arguments which will be populated to the __main__ python entry.</para>
+    <para>In order to define a python source candidate just bring your python program as current Jedit edited buffer , this action will populate the full path name to jpydbg toolbar textfield as follow :</para>
+    <figure>
+      <title>candidate source to debugging session field</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg8.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <tip>
+      <para>If the above debugging session fields is blank A python shell session only will be launched and a WARNING :: no python debuggee provided message will be issued at the bottom of the jpydbg jedit pane. </para>
+      <para>In that case you can still start and test python command in the python shell area until you stop the python session using the red cross button , but the python debugger will not be active.</para>
+      <para>NON PYTHON suffixed files (not ending with .py) are not populated into the debugging session field area.</para>
+    </tip>
+    <para>Next in order to set the debuggee's command line argv you just need to select an argv configuration key using the argument combo box located on the jpydbg toolbar :</para>
+    <figure>
+      <title>combo box to be used to bind debuggee with an argument configuration</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg9.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para>The selected configuration bind will be saved for later debugging session with the selected source. </para>
+    <tip>
+      <para>pointing the mouse over the combo selected item will populate a tooltip over the combo indicating the current content of the selected configuration.</para>
+    </tip>
+    <para>Finallly in order to start debugging current source just push the green arrow located on the jpydbg toolbar.</para>
+    <para>The pluggin will then start the jpdaemon.py debuggin daemon and the debugging session will be active</para>
+    <para>The current source line will be highlited by a tiny arrow :</para>
+    <figure>
+      <title>stopped in source illustration</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg2.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>setting a breakpoint at a given line in the source is achieved by clicking in the corresponding line gutter ; a red circle indicates that the breakpoint has been set . set Breakpoints are saved on disk inside jpydbg user's configuration file.</para>
+    <figure>
+      <title>a breakpoint has been set</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg3.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>As soon as the debugger is active , the command field in the bottom of the debugging tabpane may be used to enter Python commands , corresponding results are populated inside the textarea panel above :</para>
+    <figure>
+      <title>python shell dynamic command input</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg4.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>On top of JPyDbg pluggin , a button bar is made available and contains misc debugging action buttons :</para>
+    <figure>
+      <title>debugging command button bar</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg5.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>from left to right corresponding button's actions are : Stop debugging session , Run , Step over , step into.</para>
+    <para>When clicking on the 'Variables' tabpane a view of the stack and the Global + Local variables values are displayed on the Screen inside the 'Python Object Memory Browser' panel ; Python Object instances are sorted 'by name' , object types icons are provided as a practical eye catcher between different object types and last but not least double clicking on final object nodes value provide the capalbility of changing the current object value. The call stack frame is also populated and stack positions are selectables from the corresponding combo box.</para>
+    <figure>
+      <title>stack selection + Python execution value display and modification</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg6.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para><tip>
+        <para>Starting with version 0.0.9 of jpydbg moving the mouse over a python variable inside Jedit python source editor at debug time , makes an immediate evaluation of the variable and the result of evaluation which shows up inside a tooltip close to the variable. In the same way if the expression you want to be evaluated inside the editor contains more tokens , just select the expression inside jedit editor and move your mouse over the selected area , this will proceed with the evaluation of the selected python expression inside a tootiptext..</para>
+      </tip></para>
+    <para>finally when you need to stop current python debugging session , just click on the red cross button , the current python debugding session will be terminated and following display will show up on the screen indicating that the socket connection with the debugger's daemon is now over .</para>
+    <figure>
+      <title>current python debugging session is over</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg7.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+  </chapter>
+  <chapter id="change-variables">
+    <title>modifying variable values during debugging</title>
+    <para>One of the fundamental debugging functionality consists in the capability of changing variables value content during a debugging session.</para>
+    <para>Jpydbg provides multiple ways of addressing this functionality.</para>
+    <para>first one is through the python command line shell, as shown below for changing dynamicaly the multiply a and b parameters value of the multiply method.</para>
+    <figure>
+      <title>changing a , b values thru python shell</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg14.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <tip>
+      <para>when multiple variables need to be modified , use the ;(semicolon) separator to populate them to the debugger.(YOU MUST POPULATE ALL VARIABLES IN A SINGLE COMMAND , ELSE PYTHON WILL RESET THE PREVIOUS CHANGES)</para>
+    </tip>
+    <para>second is through the variables tabpane, as shown below for changing dynamicaly the multiply a parameters value of the multiply method.</para>
+    <para>multiple values may be changed inside the table , the changes will be populated just before execution of next debugger instruction.</para>
+    <figure>
+      <title>changing a values by double clicking the value field of the variable table</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg15.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </chapter>
+  <chapter id="remote-debugging">
+    <title>Remotely debugging python programs</title>
+    <para>In this chapter will show how to start and operate remote debugging python sessions.</para>
+    <para>This functionality is not implemented yet for NETBEANS plugin ... It's in the todo list.</para>
+    <para>Beeing able to supervise and debug a remotely running Python program may be interesting when for instance you are not able to setup a GUI Jedit environment on the remote computer , or for debugging remotely runnnin daemons. We will now describe how to be able to use this functionality using jpydbg</para>
+    <para>Let's use the same python firstsample.py source as in previous chapter.</para>
+    <para>First we need to check that the configuration field 'temporary work directory' is pointing to en existing acceptable local work directory. This directory will be used to locally store the remote debugged python sources.</para>
+    <para>The first step will consist in pushing the yellow arrow button on the right of the toolbar in order to put the jpydbg in listening mode over an IP session ; the port used for listening on incoming connection is configured in the 'listening port' field of the jpydbg configuration panel.</para>
+    <para>As soon as the yellow arrow button has been pressed , jpydbg waits listening for incoming connections and the debug toolbar looks as follow :</para>
+    <figure>
+      <title>jpydbg listening for incoming remote debug connection</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg12.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para>Pressing the red cross will then terminate the listening state and return back to the inactive stopped state of the debugger.</para>
+    <para>Next action will consist in starting a jpydeamon.py debugging instance on the remote debugged station , in order to do that we only need to have a telnet or X11 session available , let's do that through a telnet jta windows plugging instance ( you may use also any external telnet or X11 window session to do that as well ):</para>
+    <figure>
+      <title>Launch of the jpydaemon from a telnet session</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg13.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para>the following parameters need to be provided at jpydaemon launch time:</para>
+    <para>jpydaemon.py desthostaddress destport debuggeesname [optional python debuggee's param]</para>
+    <variablelist>
+      <title>jpydaemon command line arguments</title>
+      <varlistentry>
+        <term><filename>desthostaddress</filename></term>
+        <listitem>
+          <para>define the IP address of the listening jedit/jpydbg debugger </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>desport</filename></term>
+        <listitem>
+          <para>define the IPportnumber of the listening jedit/jpydbg debugger</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>debuggees name</filename></term>
+        <listitem>
+          <para>python program debugging name (PYTHONPATH environment variable should be set accordingly)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>optional python debuggee's param</filename></term>
+        <listitem>
+          <para>provide here any command line parameters requested by the candidate debuggee </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </chapter>
+  <chapter id="python-import-navigator">
+    <title>using the import navigator panel</title>
+    <para></para>
+    <para> The python import navigator panel has been introduced in version 0.0.9 of jpydbg , in order to provide a practical way of both managing the PYTHONPATH location for jpydbg session, quickly checking that requested modules inside a project are loaded without any error , and finally providing a complementary semantic navigation tools accross the python source modules used by a given python module. </para>
+    <para> to activate the import navigator panel from the Jedit Python environment just click on the 'Python Environment tabpane button , the following panel will show up for the jedit current source </para>
+    <para></para>
+    <figure>
+      <title>initial view of the imports navigator pane</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg19.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para> The left part of the pane represents a tree containing the python modules requested to be imported by the current jedit python source. </para>
+    <para> The right part of the pane represents the list of the directories appended to sys.path by during a debugging session : the directories where Python will look for a requested python module. This panel is the same as the one available inside the CPython / Jpython configuration panels</para>
+    <para>Element of the list may be updated by double clicking on the element</para>
+    <para>after selecting a row inside the PYTHONPATH table, clicking on the left mouse button over this table will show up a complementary popup menu , which may be used to add or remove elements to the path relative to the current selected row, or save the list on disk</para>
+    <para></para>
+    <tip>
+      <para>The PYTHONPATH content must be saved before checking the left tree or starting a new debugging session in order for the current changes to be taken into account. </para>
+    </tip>
+    <para>The module tree on the left side of the pane may be used to recursively view the import semantics of a given python project , and to navigate between python module sources</para>
+    <para></para>
+    <itemizedlist>
+      <listitem>
+        <para>double clicking on the root node . <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/dbg21.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject> will reload the tree for the current python source </para>
+      </listitem>
+      <listitem>
+        <para> <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/dbg22.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject> represents a python source module , doubleclicking on it will bring the corresponding source inside jedit and expand a python subtree recursively showing imported modules of this newly loaded python source. </para>
+      </listitem>
+      <listitem>
+        <para> <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/dbg23.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject> represents a broken python imported module : the requested resource was not loadable using the provided PYTHONPATH tree on the right ; when this occurs, you need to review the path update it accordingly, save it back on disk using the right mouse popup, and retry the full load by doubleclicking on the parent node of the unresolved item or the root node itself. </para>
+      </listitem>
+      <listitem>
+        <para> <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/dbg24.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject> represents a python builtin imported module. </para>
+      </listitem>
+      <listitem>
+        <para> <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/dbg25.gif" format="GIF"/>
+            </imageobject>
+          </mediaobject> represents a python binary imported module. </para>
+      </listitem>
+    </itemizedlist>
+    <para>The picture bellow shows a more sophisticated view of a python imports expanded tree in action</para>
+    <figure>
+      <title>final overview of import navigator panel</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg26.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </chapter>
+  <chapter id="python-pylint-integration">
+    <title>using pylint</title>
+    <para></para>
+    <para>This chapter asumes that pylint has been previously installed as described on the pylint site http://www.logilab.org/projects/pylint</para>
+    <para>As soon as the use pylint option is toggled in the pylint option pane ; pylint module is called on python source load and save actions ; pylint messages are shown inside the jEdit error list as shown on the screen shot below</para>
+    <para>pylint ERRORS and FATAL are populated as jEdit errors and located inside the source as red underlined lines ; a tiny red marker is also visible on the right gutter of the editor as well ; pointing the mouse on the erroneous line will popup a tooltiptext with the associated pylint error message inside.</para>
+    <para>pylint WARNINGS , CONVENTION and REFACTOR are populated as jEdit warnings and located inside the source as yellow underlined lines ; a tiny yellow marker is also visible on the right gutter of the editor as well ; pointing the mouse on the erroneous line will popup a tooltiptext with the associated pylint error message inside</para>
+    <para>To correct an error just modify the erroneous line inside the editor and save the source ; this action will relaunch pylint to check youor correction.</para>
+    <para></para>
+    <figure float="0">
+      <title>Source with pylint messages </title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dbg31.gif" format="GIF"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para></para>
+    <para> The left part of the pane represents a tree containing the python modules requested to be imported by the current jedit python source. </para>
+    <para> The right part of the pane represents the list of the directories appended to sys.path by during a debugging session : the directories where Python will look for a requested python module. This panel is the same as the one available inside the CPython / Jpython configuration panels</para>
+    <para>Element of the list may be updated by double clicking on the element</para>
+    <para>after selecting a row inside the PYTHONPATH table, clicking on the left mouse button over this table will show up a complementary popup menu , which may be used to add or remove elements to the path relative to the current selected row, or save the list on disk</para>
+    <para></para>
+    <tip>
+      <para>JpyDbg pylint error reporting is using the Jedit ErrorList plugin to populate pylint errors and warnings to the console ; You can customize the ErrorList pluggin to automatically show up pylint errors through the ErrorList customization panel ( check the 'automatically display on error' checkbox ). </para>
+    </tip>
+    <para></para>
+  </chapter>
+  <appendix id="changes">
+    <title>Change log</title>
+	  <bridgehead> <ulink url="FIXES.TXT">fixes.txt</ulink> </bridgehead>
+  </appendix>
+</book>
