@@ -1547,6 +1547,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     <emphasis role="bold">Version 4.4.3</emphasis> Requires jEdit 4.4pre1, JDK 1.6, ErrorList 1.9,
     ProjectViewer 3.0 (optional). 
     <itemizedlist>
+        <listitem><para> API fixes for compatibility with jEdit 4.5. </para></listitem>
+        <listitem><para> New general option to set favorite shell, or remember previous selected shell. </para></listitem>
         <listitem><para> No longer generates hidden commandos in the dialog (available via combobox selector). </para></listitem>
         <listitem><para> Configurable command history size (#2648110 - Eric Le Lay). </para></listitem>
         <listitem><para> Avoided occasional performance down with large output when maximum scroll buffer size is not set. (Kazutoshi Satoda). </para></listitem>
