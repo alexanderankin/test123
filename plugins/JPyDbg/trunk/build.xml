@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+
+<!--
+     This is a build.xml file for building the jpydebug plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+
+     To use it for building your own plugin, make these changes:
+
+     - Change definition of 'jar.name' to the name of your plugin's JAR file
+     - If necessary, add any dependencies to the 'project.class.path'
+       definition
+     - If necessary, change the list of files in the 'dist' targtet
+     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
+       accordingly.
+-->
+
+<project name="JPyDebug" default="myinstall" basedir="./"   >
+	<description> The Jedit plugin for JPyDebug </description>
+
+	<property file="../build.properties" />
+	<property file="build.properties" />
+	<property name="src.dir" value="${basedir}/src"/>
+	<property name="docs.dir" value="${basedir}/doc" />
+	<property name="pythonsrc.dir" value="${src.dir}/python" />
+	<property name="jythonsrc.dir" value="${basedir}/lib" />
+	<property name="jedit.install.dir"  value="f:/jedit42"/>
+
+	<property name="jar.name"  value="JPyDebug.jar"/>
+	<property name="jarsrc.name"  value="jpydebugsrc.jar"/>
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="distrib.dir" value="${basedir}/dist" />
+	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${install.dir}/ErrorList.jar"/>
+		<pathelement location="${install.dir}/SideKick.jar"/>
+		<pathelement location="${install.dir}/jython.jar"/>
+	</path>
+
+    <target name="properties" if="eclipse.running">
+      <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+    </target>
+
+	<target name="init" depends="properties" >
+
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${distrib.dir}" />
+		<delete file="${build.dir}/docbook-wrapper.xsl" />
+		<echo file="${build.dir}/docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
+			message=" xsl:version='1.0'&gt;"/>
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+		<copy todir="${build.dir}">
+			<fileset dir="${basedir}" >
+				<include name="actions.xml"/>
+				<include name="dockables.xml"/>
+				<include name="services.xml"/>
+				<include name="*.props"/>
+			</fileset>
+                        <fileset dir="${src.dir}" >
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/>
+                        </fileset>
+			<fileset dir="${docs.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build.dir}/python">
+			<fileset dir="${pythonsrc.dir}" >
+				<include name="**/*.py"/>				
+                                <include name="**/MANIFEST"/>
+			</fileset>
+		</copy>	
+
+</target>
+
+
+	<target name="compile" depends="init">
+		<javac
+			srcdir="${src.dir}"
+                        target="1.4"
+                        source="1.4"
+			destdir="${build.dir}"
+			deprecation="on"
+			includejavaruntime="yes"
+                        debug="yes"
+		>
+		  <classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile, docs-xsltproc" description="make jar file">
+		<jar jarfile="${distrib.dir}/${jar.name}">
+			<fileset dir="${build.dir}">
+				<include name="**/*.*"/>
+                                <include name="**/MANIFEST"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- Generate Html pages  with xsltproc  -->
+	<target name="docs-xsltproc" depends="init">
+		<exec executable="xsltproc" dir="${build.dir}" >
+			<arg value="--catalogs"/>
+			<arg value="./users-guide.xsl"/>
+			<arg value="./users-guide.xml"/>
+		</exec>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+
+    <!-- practical way of populating build jar for test on my development machine -->
+    <target name="myinstall" depends="dist">
+		<mkdir dir="${install.dir}"/>
+		<copy  file="${distrib.dir}/${jar.name}"  todir="${install.dir}" /> 
+		<copy  file="${basedir}/jython.jar"  todir="${install.dir}" /> 
+    </target>
+
+	<!-- practical way of building the http documentations for webupdate on my development machine -->
+    <target name="httpdocs" depends="dist">
+		<mkdir dir="${httpdocs.dir}"/>
+		<mkdir dir="${httpdocs.dir}/build"/>
+		<copy   todir="${httpdocs.dir}/build" > 
+			<fileset dir="${src.dir}/jedit" >
+				<include name="presentation.html"/>
+				<include name="Images/*.*"/>
+			</fileset>
+		</copy>
+		<move file="${httpdocs.dir}/build/presentation.html" tofile="${httpdocs.dir}/build/index.html" />
+		<tar tarfile="${httpdocs.dir}/htdocs.tar" basedir="${httpdocs.dir}/build" includes="**/*" />
+    </target>
+
+    <!-- build a jar file with source too -->
+    <target name="jarsrc" depends="clean, init, dist"> 
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}" >
+				<include name="**/*.*"/>
+			</fileset>
+			<fileset dir="${basedir}" >
+			    <include name="build.*" />
+			</fileset>
+		</copy>
+
+		<!-- Run python source dist script -->
+		<exec executable="python"  dir="${build.dir}/python" >
+			<arg line="${build.dir}/python/setup.py sdist"/>
+		</exec>	
+
+		<jar jarfile="${distrib.dir}/${jarsrc.name}" basedir="${build.dir}" includes="**/*" />
+
+		</target>
+
+    
+
+</project>

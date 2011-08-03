@@ -1,0 +1,142 @@
+### Plugin properties
+
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.name=JPyDebug
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.version=0.18
+#starting with version 0.10 jython jar is resuested
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.jars=jython.jar
+
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.author=Jean-Yves Mengant
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.docs=index.html
+# using the Dynamic Pluggin loading
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.activate=defer
+
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.menu.code= org.jymc.jpydebug.jedit.JPYJeditPlugin.get_jpyMenu() ;
+
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.option-group= \
+    python.jpydebug-options \
+    python.cpython-options \
+    python.jpython-options \
+    python.jpydebug-arguments \
+    python.profiling-options \
+    python.pylint-options \
+    python.pythonshell-options  
+
+options.python.jpydebug-options.label=debugger's options
+options.python.cpython-options.label=CPython options
+options.python.jpython-options.label=JPython options
+options.python.profiling-options.label=profiler's options
+options.python.pylint-options.label=pylint's options
+options.python.jpydebug-arguments.label=program arguments
+options.python.pythonshell-options.label=python shell options
+  
+options.python.cpython-options.code=new org.jymc.jpydebug.jedit.CPythonOptionPane();
+options.python.jpython-options.code=new org.jymc.jpydebug.jedit.JythonOptionPane();
+options.python.profiling-options.code=new org.jymc.jpydebug.jedit.ProfilerOptionPane();
+options.python.pylint-options.code=new org.jymc.jpydebug.jedit.PylintOptionPane();
+options.python.jpydebug-options.code=new org.jymc.jpydebug.jedit.JPYJeditOptionPane();
+options.python.jpydebug-arguments.code=new org.jymc.jpydebug.jedit.JPYDebugArgsOptionPane();
+options.python.pythonshell-options.code=new org.jymc.jpydebug.jedit.JPyShellColoringOptionPane();
+
+# using the Dynamic Pluggin loading end
+
+pythonpanel.title=Python Environment
+pythonpanel.label=access to python pane
+step-into.label=step into
+step-over.label=step over
+continue.label=continue
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.depend.0=jdk 1.4
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.depend.1=jedit 04.02.03.00
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.depend.2=plugin xml.XmlPlugin 0.8
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.3
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.depend.4=plugin sidekick.SideKickPlugin 0.3
+
+plugin.org.jymc.jpydebug.jedit.JPYJeditPlugin.description=An interactive graphical debugger and SideKick parser for Python.
+
+python-menu.label=python debug tools & utilities
+python-menu= python-compile - python-debug
+python-debug.label=debug loaded source
+python-compile.label=check loaded source
+
+#SideKick parsers
+sidekick.parser.python.label=python
+mode.python.sidekick.parser=python
+
+# Python Option pane
+options.python.label=python
+options.jpydebug-options.label=debugger's options
+options.jpydebug-arguments.label=program arguments
+options.pythonshell-options.label=python shell options
+# following file is dynamically maintained
+options.jpydebug-arguments.propertyfile=pythonconfigurations.props
+options.jpydebug-dbgoptions.jpyshellFont=Shell used font
+jpydebug-dbgoptions.jpyshellFont=Monospaced
+jpydebug-dbgoptions.jpyshellFontsize=12
+jpydebug-dbgoptions.jpyshellFontstyle=0
+options.jpydebug-dbgoptions.jpyshellBackgroundColor=Shell background color
+jpydebug-dbgoptions.jpyshellBackgroundColor=#ffffff
+options.jpydebug-dbgoptions.jpyshellMsgColor=Shell Message color
+jpydebug-dbgoptions.jpyshellMsgColor=#009600
+options.jpydebug-dbgoptions.jpyshellWngColor=Shell Warning Color
+jpydebug-dbgoptions.jpyshellWngColor=#ffa800
+options.jpydebug-dbgoptions.jpyshellHeaderColor=Shell Header Color
+jpydebug-dbgoptions.jpyshellHeaderColor=#0000ff
+options.jpydebug-dbgoptions.jpyshellErrorColor=Shell Error Color
+jpydebug-dbgoptions.jpyshellErrorColor=#ff0000
+
+options.jpydebug-dbgoptions.pythoninterpreter=Python interpreter location
+jpydebug-dbgoptions.pythoninterpreter=
+options.jpydebug-dbgoptions.jythonjvm=Jython Jvm location(java.exe file)
+jpydebug-dbgoptions.jythonjvm=
+options.jpydebug-dbgoptions.jython=use Jython as default Python Debug environment
+jpydebug-dbgoptions.jython=false
+options.jpydebug-dbgoptions.jythonhome=Jython Home Path
+jpydebug-dbgoptions.jythonhome=
+options.jpydebug-dbgoptions.jpydebug=JpyDebug python script location
+jpydebug-dbgoptions.jpydebug=
+options.jpydebug-dbgoptions.jpydebugargs=jpy daemon script startup arguments
+jpydebug-dbgoptions.jpydebugargs=
+options.jpydebug-dbgoptions.hostname=dbg server host
+jpydebug-dbgoptions.hostname=localhost
+options.jpydebug-dbgoptions.connectingport=connecting port
+jpydebug-dbgoptions.connectingport=-1
+options.jpydebug-dbgoptions.callbackport=listening port
+jpydebug-dbgoptions.callbackport=29000
+options.jpydebug-dbgoptions.workdir=temporary work directory
+jpydebug-dbgoptions.workdir=./
+options.jpydebug-dbgoptions.breakpointcolor=breakpoint color
+options.jpydebug-dbgoptions.breakpointlinecolor=breakpoint line color
+jpydebug-dbgoptions.breakpointlinecolor=#ff0000
+options.jpydebug-dbgoptions.currentdebugline=Current debug line:
+jpydebug-dbgoptions.currentLineColor=#00FFFF
+options.jpydebug-dbgoptions.currentlinebordercolor=current line border color
+jpydebug-dbgoptions.currentlinebordercolor=#0000C0
+options.jpydebug-dbgoptions.autocompletion=autocompletion
+jpydebug-dbgoptions.autocompletion=true
+options.jpydebug-dbgoptions.autocompletion.delay=autocompletion delay
+jpydebug-dbgoptions.autocompletion.delay=500
+options.jpydebug-dbgoptions.debug=activate jEdit debug trace
+jpydebug-dbgoptions.debug=true
+jpydebug-dbgoptions.dynamicevaluation=true
+options.jpydebug-dbgoptions.dynamicevaluation=debugging time editor mouse over expression evaluation 
+options.jpydebug-dbgoptions.codepage=remote page code
+jpydebug-dbgoptions.codepage=
+#pylint option pane
+jpydebug-pylint.usepylint=false
+options.jpydebug-pylint.usepylint=Use pylint
+jpydebug-pylint.location=
+options.jpydebug-pylint.location=PyLint location(lint.py)
+jpydebug-pylint.fatal=false
+options.jpydebug-pylint.fatal=Communicate FATAL
+jpydebug-pylint.error=false
+options.jpydebug-pylint.error=Communicate ERROR
+jpydebug-pylint.warning=false
+options.jpydebug-pylint.warning=Communicate WARNING
+jpydebug-pylint.convention=false
+options.jpydebug-pylint.convention=Communicate CONVENTION
+jpydebug-pylint.refactor=false
+options.jpydebug-pylint.refactor=Communicate REFACTOR
+jpydebug-pylint.details=true
+options.jpydebug-pylint.details=show pylint rate and detail report
+jpydebug-pylint.arguments=
+options.jpydebug-pylint.arguments=Complementary arguments to PyLint
+

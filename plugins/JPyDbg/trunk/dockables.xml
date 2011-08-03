@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="pythonpanel">
+		new org.jymc.jpydebug.jedit.PythonJeditPanel( view , position  );
+	</DOCKABLE>
+</DOCKABLES>
