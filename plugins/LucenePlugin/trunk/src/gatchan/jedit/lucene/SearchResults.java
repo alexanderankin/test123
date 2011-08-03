@@ -522,6 +522,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		String [] names = new String[items.size()];
 		items.toArray(names);
 		indexModel.setIndexes(names);
+		if (msg.getWhat() == LuceneIndexUpdate.What.CREATED)
+			indexes.setSelectedItem(indexName);
 	}
 
 	@EBHandler
