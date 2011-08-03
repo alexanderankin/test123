@@ -1,0 +1,179 @@
+<?xml version="1.0" ?>
+
+<!-- This was based around Sun JRE 1.3.1. It will work with earlier Java
+     versions, or versions from other vendors, but some of the
+     non-standard options might not be supported. -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Application settings">
+
+		<ENTRY LABEL="Main class or JAR file" VARNAME="jar"
+			EVAL="console.ConsolePlugin.getClassName(buffer)"
+			/>
+		<ENTRY LABEL="Application parameters" VARNAME="args" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="VM settings">
+
+		<!-- <CHOICE LABEL="Virtual machine" VARNAME="vm" DEFAULT="client">
+			<OPTION LABEL="Client HotSpot" VALUE="client" />
+			<OPTION LABEL="Server HotSpot" VALUE="server" />
+			<OPTION LABEL="Classic" VALUE="classic" />
+		</CHOICE> -->
+
+		<ENTRY LABEL="Class path" VARNAME="classpath_env"
+			EVAL="jEdit.getProperty(&quot;CLASSPATH&quot;, &quot;&quot;);" />
+
+		<!-- <TOGGLE LABEL="Verbose class loading" VARNAME="verbose_class" />
+		<TOGGLE LABEL="Verbose garbage collection" VARNAME="verbose_gc" />
+		<TOGGLE LABEL="Verbose JNI calls" VARNAME="verbose_jni" /> -->
+
+		<!-- <CHOICE LABEL="Virtual machine type" VARNAME="vm_X" DEFAULT="mixed">
+			<OPTION LABEL="Mixed mode" VALUE="mixed" />
+			<OPTION LABEL="Interpreter only" VALUE="interp" />
+		</CHOICE>
+
+		<CHOICE LABEL="Boot class path mode" VARNAME="bootclasspath_mode">
+			<OPTION LABEL="Set" VALUE="set" />
+			<OPTION LABEL="Append" VALUE="append" />
+			<OPTION LABEL="Prepend" VALUE="prepend" />
+		</CHOICE>
+
+		<ENTRY LABEL="Boot class path" VARNAME="bootclasspath" />
+
+		<TOGGLE LABEL="Class garbage collection" VARNAME="classgc" />
+		<TOGGLE LABEL="Incremental garbage collection" VARNAME="incgc" />
+		<TOGGLE LABEL="Background compilation" VARNAME="nobatch"
+			DEFAULT="TRUE" />
+		<TOGGLE LABEL="Output profiling data" VARNAME="prof" />
+		<TOGGLE LABEL="Strict class format checks (-Xfuture)"
+			VARNAME="future" />
+		<TOGGLE LABEL="Reduce OS signal use (-Xrs)" VARNAME="rs" /> -->
+
+		<ENTRY LABEL="Initial heap size (Mb)" VARNAME="ms" DEFAULT="32" />
+		<ENTRY LABEL="Maximum heap size (Mb)" VARNAME="mx" DEFAULT="32" />
+		<ENTRY LABEL="Thread stack size (Kb)" VARNAME="ss" />
+
+		<ENTRY LABEL="Additional VM parameters" VARNAME="extra" />
+
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("java");
+			
+			jEdit.setProperty("CLASSPATH", classpath_env);
+			setenv("CLASSPATH", classpath_env);
+			classpath = getBufferClassPath(buffer);
+
+			/* if(vm.equals("client"))
+				; // default
+			else if(vm.equals("server"))
+				buf.append(" -server");
+			else if(vm.equals("classic"))
+				buf.append(" -classic"); */
+
+			if(!classpath.equals(""))
+			{
+				buf.append(" -classpath \"");
+				buf.append(classpath);
+				buf.append('"');
+			}
+
+			/* if(verbose_class)
+				buf.append(" -verbose:class");
+
+			if(verbose_gc)
+				buf.append(" -verbose:gc");
+
+			if(verbose_jni)
+				buf.append(" -verbose:jni");
+
+			if(vm_X.equals("interp"))
+				buf.append(" -Xint");
+
+			if(!bootclasspath.equals(""))
+			{
+				buf.append(" -Xbootclasspath");
+				if(bootclasspath_mode.equals("append"))
+					buf.append("/a");
+				else if(bootclasspath_mode.equals("prepend"))
+					buf.append("/p");
+				buf.append(':');
+				buf.append(bootclasspath);
+			}
+
+			if(classgc)
+				buf.append(" -Xclassgc");
+
+			if(incgc)
+				buf.append(" -Xincgc");
+
+			if(!nobatch)
+				buf.append(" -Xbatch");
+
+			if(prof)
+				buf.append(" -Xprof");
+
+			if(future)
+				buf.append(" -Xfuture");
+
+			if(rs)
+				buf.append(" -Xrs"); */
+
+			if(!ms.equals(""))
+			{
+				buf.append(" -ms");
+				buf.append(ms);
+				buf.append('m');
+			}
+
+			if(!mx.equals(""))
+			{
+				buf.append(" -mx");
+				buf.append(mx);
+				buf.append('m');
+			}
+
+			if(!ss.equals(""))
+			{
+				buf.append(" -ss");
+				buf.append(ss);
+				buf.append('k');
+			}
+
+			if(!extra.equals(""))
+			{
+				buf.append(' ');
+				buf.append(extra);
+			}
+
+			if(jar.endsWith(".jar"))
+			{
+				buf.append(" -jar \"");
+				buf.append(jar);
+				buf.append('"');
+			}
+			else
+			{
+				buf.append(' ');
+				buf.append(jar);
+			}
+
+			if(!args.equals(""))
+			{
+				buf.append(' ');
+				buf.append(args);
+			}
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>

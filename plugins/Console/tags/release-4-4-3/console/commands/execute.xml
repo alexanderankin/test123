@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Execute">
+
+		<FILE_ENTRY LABEL="Executable" VARNAME="source"
+			EVAL="n=buffer.getName();mode=buffer.getMode().getName();if ((mode.equals(&quot;c++&quot;) || mode.equals(&quot;c&quot;)) &amp;&amp; n.lastIndexOf('.') != -1) { n=n.substring(0, n.lastIndexOf('.')); };buffer.getDirectory()+n" />
+		<ENTRY LABEL="Parameters" VARNAME="params" />
+
+		</CAPTION>
+
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("\""+source+"\"");
+			
+			if (params.length() > 0)
+			{
+				buf.append(" "+params);
+			}
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
