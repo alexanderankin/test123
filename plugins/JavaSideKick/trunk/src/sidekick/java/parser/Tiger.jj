@@ -1553,9 +1553,6 @@ String TypeParameters():
     String a = "";
 }
 {
-    // TODO: Java 7 allows <> as type inference indicator, 
-    // e.g. Map<String> map = new HashMap<>();
-    // Need to allow empty type parameters.
     try {
         (
             "<"
@@ -2223,6 +2220,8 @@ Type ClassOrInterfaceType():
 
 /*
     for generics, returns a list of the things between the < and >.
+    DONE: Java 7 allows <> as type inference indicator, 
+    e.g. Map<String> map = new HashMap<>();
 */
 List<TigerNode> TypeArguments():
 {
@@ -3676,15 +3675,17 @@ BlockNode TryStatement():
  * Semantic check required here to make sure that at least one
  * finally/catch is present.
  */
- // TODO: Java 7 allows try with resources, where the resource implements Closeable.
+ // DONE: Java 7 allows try with resources, where the resource implements Closeable.
  // e.g.
  // try (BufferedReader br = new BufferedReader(new FileReader(path))) {
  //   return br.readLine();
  // }
  // Note that neither 'catch' nor 'finally' are required in this case.
  //
- // TODO: Java 7 allows 'catch' to handle more than one exception type, e.g.
+ // DONE: Java 7 allows 'catch' to handle more than one exception type, e.g.
  // catch (IOException|SQLException ex)
+ // TODO: Capture the LocalVariableDeclarations in 'try' and ClassOrInterfaceTypes
+ // and VariableDeclaratorId for code completion.
 {
     List<TigerNode> nodes = new ArrayList<TigerNode>();
     BlockNode bn = new BlockNode("try");
@@ -3695,12 +3696,47 @@ BlockNode TryStatement():
 }
 {
     try {
-        start_t="try" child=Block() { if (child != null) { child.setName("try"); nodes.add(child); last = child;}  }
-        ( "catch" "(" exception=FormalParameter() ")" child=Block() { if (child != null) { child.setName("catch"); nodes.add(child); if (exception != null) { child.addChild(exception); } last = child; } } )*
-        [ "finally" child=Block() { if (child != null) { child.setName("finally"); nodes.add(child); last = child; } } ]
+        start_t="try" ["(" LocalVariableDeclaration()(LOOKAHEAD(2) ";" LocalVariableDeclaration())* [";"] ")"]
+        child=Block() 
+        { 
+            if (child != null) { 
+                child.setName("try"); 
+                nodes.add(child); 
+                last = child;
+            }  
+        }
+        
+        ( "catch" "(" 
+                        (
+                            LOOKAHEAD(3)
+                            exception=FormalParameter() 
+                            |
+                            ClassOrInterfaceType()(LOOKAHEAD(2) "|" ClassOrInterfaceType())+ VariableDeclaratorId()
+                        )
+                  ")" 
+            child=Block() { 
+                if (child != null) { 
+                    child.setName("catch"); 
+                    nodes.add(child); 
+                    if (exception != null) { 
+                        child.addChild(exception); 
+                    } last = child; 
+                } 
+            } 
+        )*
+        
+        [ "finally" 
+            child=Block() { 
+                if (child != null) { 
+                    child.setName("finally"); 
+                    nodes.add(child); 
+                    last = child; 
+                } 
+            } 
+        ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(RBRACE);
     }
     {
         bn.addChildren(nodes);
