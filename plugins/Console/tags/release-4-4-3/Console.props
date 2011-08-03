@@ -1,0 +1,453 @@
+### Plugin properties
+
+# We provide a custom action set, so we must be activated at startup
+plugin.console.ConsolePlugin.activate=startup
+plugin.console.ConsolePlugin.name=Console
+plugin.console.ConsolePlugin.version=4.4.3
+
+# new jEdit 4.3 plugin API for short description.
+plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
+# points to a file relative to the root of the jar
+plugin.console.ConsolePlugin.longdescription=description.html
+plugin.console.ConsolePlugin.docs=index.html
+plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
+
+plugin.console.ConsolePlugin.depend.0=jedit 04.04.01.00
+plugin.console.ConsolePlugin.depend.1=jdk 1.6
+plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+# ProjectViewer is optional because Console only listens to events from it.
+plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.0
+
+# Menu
+plugin.console.ConsolePlugin.menu=console run-last-console-command - \
+	commando - commando-compile commando-run console-clear - \
+	browse-commando-directory rescan-commands - \
+    chdir-pv-selected chdir-pv-root -
+plugin.console.ConsolePlugin.menu.code=new console.ConsoleMenuProvider();
+console.label=Console
+run-last-console-command.label=Run Last Command
+commando.label=Commando...
+commando-compile.label=Compile Current Buffer...
+commando-run.label=Run Current Buffer...
+chdir-pv-selected.label=cd to ProjectViewer selected node dir
+chdir-pv-root.label=cd to ProjectViewer root dir
+
+browse-commando-directory.label=Browse Commando Directory
+rescan-commands.label=Regen dynamic menus
+console-clear.label=Clear console
+action-set.commando.label=Plugin: Console Commandos
+
+### Console component
+
+console.title=Console
+console.run=Run
+console.to-buffer=yourCommand > untitledjEditBuffer [Ctrl-Enter]
+console.stop=Stop
+console.clear=Clear
+
+console.font=Monospaced
+console.fontsize=12
+console.fontstyle=0
+
+console.encoding=ASCII
+
+console.bgColor=#ffffff
+console.plainColor=#000000
+console.caretColor=#000000
+console.infoColor=#009600
+console.warningColor=#ffa800
+console.errorColor=#ff0000
+
+console.completions=/-- Possible completions:
+console.completions-end=\\-- End of completions.
+console.prompt={0} ready.
+
+### Console option panes
+
+plugin.console.ConsolePlugin.option-group=	console.general \
+	console.system \
+    console.toolbar \
+	console.errors \
+    console.compile-run
+
+options.console.general.label=General
+options.console.general.code=new console.options.GeneralOptionPane();
+options.console.system.label=System Shell
+options.console.system.code=new console.options.SystemOptionPane();
+options.console.general.commando.toolbar=ToolBar enabled
+options.console.general.rememberCWD=Remember current working directory
+options.console.toolbar.buttons=Commando Buttons
+options.console.general.shellprefix=Shell Prefix:
+options.console.general.shellprefix.tooltip=(Experimental) - you can execute commands inside alternate shells with this option.
+options.console.general.font=Font:
+options.console.general.encoding=Character encoding:
+options.console.general.charlimit=Maximum scrollback buffer size (characters):
+options.console.general.historylimit=Maximum number of commands to remember:
+options.console.general.usejEditBgColor=Use jEdit bgColor
+options.console.general.bgColor=Console background:
+options.console.general.plainColor=Plain text:
+options.console.general.caretColor=Caret:
+options.console.general.warningColor=Warning messages:
+options.console.general.errorColor=Error messages:
+options.console.general.infoColor=Information messages:
+options.console.general.changedir=Tree selection options:
+options.last-selected=Last Selected
+options.console.general.changedir.nodeselect=On VFS node select, cd to node dir
+options.console.general.changedir.pvchange=On Project change, cd to project root dir
+# options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
+options.console.general.mergeError=Merge stdout and stderr
+options.console.general.welcome=Show welcome message
+options.console.general.showExitStatus=Show exit status
+options.console.general.mergeError.tooltip=for merging 'make Entering/Leaving <path>' stdout with stderr \
+stream - helps ErrorList get correct path information for multi-dir Makefiles
+options.console.general.pathdirs=Subshell extra PATH:
+options.console.general.pathdirs.tooltip=OS-dependent PATH string to be (pre|a)pended to subshells
+options.console.general.pathdirs.append=Append extra dirs to path
+options.console.toolbar.label=Toolbar Options
+options.console.toolbar.code = new console.options.ToolBarOptionPane();
+options.console.toolbarcaption=Toolbar Options:
+
+options.console.errors.label=Error Patterns
+options.console.errors.code=new console.options.ErrorsOptionPane();
+options.console.errors.caption=Error patterns:
+options.console.errors.edit=Edit
+options.console.errors.apply=Test/Commit
+options.console.errors.apply.tooltip=Test Regex and Commit changes if regex parses.
+options.console.errors.info=NOTE: Test/Commit each change to test the regex. \
+Otherwise, your changes are lost when you click "ok/apply".
+
+options.console.errors.reload=Reload
+options.console.errors.reload.tooltip=restore values from properties
+
+options.console.errors.checking.title=Checking Regular Expression
+options.console.errors.checking.message={0}
+
+options.console.errors.testarea.label=Test Area
+options.console.errors.testarea=controller.cpp: In constructor `Controller::Controller(int, char**)': \n\
+controller.cpp:33: error: syntax error before `=' token \n\
+controller.cpp: In member function `QMenu* \n\ Controller::fileMenu(QWidget*)': \n\
+controller.cpp:132: warning: unused parameter `QWidget*parent' \n\
+make: *** [.obj/controller.o] Error 1 \n
+
+options.console.errors.title=Edit Error Pattern
+options.console.errors.name=Name:
+options.console.errors.match=Error Regexp:
+options.console.errors.warning=Warning regexp:
+options.console.errors.extra=Extra lines regexp:
+options.console.errors.filename=Filename:
+options.console.errors.line=Line number:
+options.console.errors.message=Error message:
+
+console.not-filled-out.title=Fields not filled out
+console.not-filled-out.message=You must fill out all fields in this dialog box.
+
+options.console.compile-run.label=Compile & Run
+options.console.compile-run.code=new console.options.CompileRunOptionPane();
+options.console.compile-run.caption=Compilers and interpreters:
+options.console.compile-run.mode=Mode
+options.console.compile-run.compiler=Compiler
+options.console.compile-run.interpreter=Interpreter
+
+### SystemShell
+console.shell.info.toggle=true
+console.shell.info=This shell runs operating system processes.\n\
+	\n\
+	Press TAB with an empty command line to list built-in commands.\n\
+	Run built-in with --help argument to get a brief usage message.\n\
+	Run %help to view Console plugin online help.\n\
+	\n\
+	Errors generated by compilers and some other programs are listed\n\
+	for easy one-click access in the 'Plugins->Error List->Error List'\n\
+	window.
+
+console.shell.prompt={0}>
+console.shell.prefix.cmd=cmd /c
+console.shell.prefix.command=command /c
+console.shell.prefix.bash=bash -c
+console.shell.prefix.tcsh=csh -c
+
+console.shell.unknown-builtin=Built-in {0} not recognized.\n\
+	Press TAB with an empty command line to list built-in commands.
+
+console.shell.bad-opt-long=Unknown option --{0}. Try invoking with the --help parameter.
+console.shell.need-arg-long=Option --{0} requires an argument.
+console.shell.no-arg-long=Cannot have --no- prefix on option --{0}.
+console.shell.bad-opt=Unknown option -{0}. Try invoking with the --help parameter.
+console.shell.bad-args=Incorrect number of arguments. Try invoking with the --help \
+	parameter.
+console.shell.bad-regex=Bad {0} in error pattern {1}. Check Plugin Options-Console-Error Patterns
+console.shell.noproc=No process is currently running
+
+console.shell.not-found-win=Command not found: {0}
+
+console.shell.killed=Process {0} killed
+console.shell.detached=Process {0} detached
+
+console.shell.alias.usage=Usage: %alias <alias> <command>\n\
+	Makes <alias> do the same thing as <command>.\n\
+	Aliases are not persistent.
+
+console.shell.aliases.usage=Usage: %aliases\n\
+	Lists all defined aliases.\n\
+	Aliases are not persistent.
+
+console.shell.browse.usage=Usage: %browse [-n|--new-window] [<directory>]\n\
+	Opens specified directory in file system browser.\n\
+	If a directory is not specified, current directory is assumed.
+
+console.shell.cd.usage=Usage: %cd [<directory>]\n\
+	Sets working directory.
+console.shell.cd.error=The directory {0} does not exist
+console.shell.cd.file={0} is not a directory.
+
+console.shell.clear.usage=Usage: %clear\n\
+	Clears output area.
+
+console.shell.detach.usage=Usage: %detach\n\
+	Detaches the currently running process and runs it in the background.
+
+console.shell.dirstack.usage=Usage: %dirstack\n\
+	Prints the directory stack used by %pushd and %popd.
+
+console.shell.echo.usage=Usage: %echo <arguments> ...\n\
+	Prints arguments in console.
+
+console.shell.env.usage=Usage: %env\n\
+	Prints all environment variables in console.
+
+console.shell.edit.usage=Usage: %edit <files> ...\n\
+	Opens all specified files.
+
+console.shell.help.usage=Usage: %help [<command|URL>]\n\
+	If a built-in is specified, shows usage message.\n\
+	If a URL is specified, opens URL in the help viewer.\n\
+	If no arguments specified, opens console documentation in the help viewer.
+
+console.shell.kill.usage=Usage: %kill\n\
+	Stops the currently running process.
+
+console.shell.popd.usage=Usage: %popd\n\
+	Goes to the directory at the top of the directory stack.
+console.shell.popd.error=Directory stack is empty.
+
+console.shell.pushd.usage=Usage: %pushd\n\
+	Pushes current directory on to directory stack.
+console.shell.pushd.ok=Directory {0} pushed; use %popd to return.
+
+console.shell.pwd.usage=Usage: %pwd\n\
+	Prints current working directory.
+
+console.shell.run.usage=Usage: %run <scripts>...\n\
+	Runs specified script.\n\
+	You can run BeanShell scripts, or any script \
+	type supported by an installed plugin (for example you can run Python scripts \
+	if JythonInterpreter is installed).
+
+console.shell.set.usage=Usage: %set <variable> <value>\n\
+	Sets value of environment variable <variable> to <value>.
+
+console.shell.unalias.usage=Usage: %unalias <alias>\n\
+	Removes the specified alias.\n\
+	Aliases are not persistent.
+
+console.shell.unset.usage=Usage: %unset <variable>\n\
+	Clears value of environment variable <variable>.
+
+console.shell.version.usage=Usage: %version\n\
+	Prints console plugin version.
+console.shell.error=Error while running process: {0}
+console.shell.error.working-dir=Current working directory does not exist: {0}\n\
+	Use "cd" to change directories first.
+console.shell.exited=Process {0} exited with code {1}
+
+### BeanShell
+
+console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
+	interpreter. For example, try evaluating "2+2".\n\
+	\n\
+	In addition to the variables set by jEdit (view, editPane, textArea, \
+	buffer), the current console instance is stored in the variable \
+	named "console".\n
+
+console.beanshell.prompt=BeanShell>
+### Error parsing
+console.errors.default=generic perl ant python vhdl msvc q_assert msnet jade antemacs emacs
+
+console.error.make.entering=Entering directory `(.+)'
+console.error.make.leaving=Leaving directory `(.+)'
+
+console.error.vhdl.name=VHDL
+console.error.vhdl.match=(^:+):.(.+)\\.vhd\\((\\d+)\\):(.+)
+console.error.vhdl.filename=$2.vhd
+console.error.vhdl.line=$3
+console.error.vhdl.message=$4
+
+console.error.msvc.name=Microsoft Visual C++
+console.error.msvc.filename=$1
+console.error.msvc.line=$2
+console.error.msvc.message=$4
+console.error.msvc.match=([^\\(]*)[\\(](\\d+)[)].:.([^:]*):\\s*(.*)
+console.error.msvc.warning=([^\\(]*)[\\(](\\d+)[)].:.(warning[^:]*):\\s*(.+)
+console.error.msvc.extra=\\s+(.*)
+
+console.error.msnet.name=Microsoft.Net
+console.error.msnet.filename=$1
+console.error.msnet.line=$2
+console.error.msnet.message=$4
+console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\:\\s+(.+)$
+
+console.error.q_assert.message=$1
+console.error.q_assert.match=ASSERT\: "(.+)" in file ([^,]+), line (\\d+)
+console.error.q_assert.warning=
+console.error.q_assert.extra=
+console.error.q_assert.line=$3
+console.error.q_assert.filename=$2
+console.error.q_assert.name=Q_ASSERT
+console.error.q_assert.testtext=ASSERT\: "fn.toString() \=\= QString("t.mp3")" in file CPPPyWrapperExample.cpp, line 32
+
+console.error.perl.name=Perl
+console.error.perl.extra=\\s\\s(.*)
+console.error.perl.match=(.+) at ([^<>]+) line (\\d+)(\\.|, (.+))
+console.error.perl.message=$1 $4
+console.error.perl.filename=$2
+console.error.perl.line=$3
+console.error.perl.testtext=
+
+console.error.jade.name=Jade
+console.error.jade.match=(.*?)jade:(.+?):(\\d+?):\\d+(.+)
+console.error.jade.filename=$2
+console.error.jade.line=$3
+console.error.jade.message=$4
+
+console.error.antemacs.name=Ant Emacs
+console.error.antemacs.match=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.antemacs.warning=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
+	(?:Warning|warning|Caution|caution):\\s*(.+)
+console.error.antemacs.filename=$1
+console.error.antemacs.line=$2
+console.error.antemacs.message=$3
+
+console.error.ant.name=Ant
+console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
+console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)\
+		(?:Warning|warning|Caution|caution):\\s(.+)
+console.error.ant.extra=\\s*\\[javac\\]\\s*((?:symbol|location|found|required)\\s*:.*)
+console.error.ant.filename=$1
+console.error.ant.line=$2
+console.error.ant.message=$3
+
+console.error.emacs.name=Emacs
+console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.emacs.warning=(.+):(\\d+):\\d+:\\d+:\\d+: \
+	(?:Warning|warning|Caution|caution):\\s*(.+)
+console.error.emacs.filename=$1
+console.error.emacs.line=$2
+console.error.emacs.message=$3
+
+console.error.python.name=Python
+console.error.python.filename=$1
+console.error.python.line=$2
+console.error.python.message=$3
+console.error.python.match=\\s+File "([^"]+)", line (\\d+)\\s*(.*)
+console.error.python.extra=((\\w*Error\:|\\s{4})(.*))
+console.error.python.testtext=Traceback (most recent call last)\:\n  File "slackerxp.py", line 541, in ?\n    titleNode \= doc.title\nAttributeError\: 'TagWrapper' object has no attribute 'title'\n\n\n\n\n\n
+console.error.python.warning=
+
+console.error.generic.name=Generic
+console.error.generic.match=((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*(.+)
+console.error.generic.warning=((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*warning\:\\s*(.+)
+console.error.generic.extra=(\\s+(.*)|\\S+\\s*\:.*)
+console.error.generic.filename=$1
+console.error.generic.line=$2
+console.error.generic.message=$3
+
+### Commando
+
+commando.default=ant \
+    execute \
+    gcc \
+    groovy \
+	java \
+	javac \
+	javacc \
+	latex \
+	make \
+	perl \
+	python \
+	diff \
+	qmake \
+	yap \
+	jmk \
+	hugs \
+	jikes \
+	openjade_HTML \
+	openjade_PDF
+
+commando.toolbar.enabled=false
+commando.title=Commando
+commando.caption=Command:
+commando.settings=Settings
+commando.commands=Commands
+commando.copy=Copy
+commando.hide=Hide
+commando.customize=Customize
+commando.uncustomize=Un-Customize
+commando.xml-error.title=Parse Error
+commando.xml-error.message=An error occurred while parsing {0} at line {1}\n\
+	({2}).
+console.commando.button.tooltiptext=Right-click for menu
+console.commando.button.customized.tooltiptext=User-customized commando button
+commando.uncustomize.tooltiptext=Remove custom {0}.xml from settings directory
+commando.bad-shell.title=Unknown Shell
+commando.bad-shell.message=No such shell: {0}
+
+commando.exit-status.title=Command Failed
+commando.exit-status.message=Execution of the following command failed:\n\
+	{0}\n\
+	\n\
+	Move on to next command?
+
+commando.confirm.title=Confirmation Required
+commando.confirm.message=Do you want to run the following command?\n\
+	{0}
+
+commando.no-compiler.title=No Compiler Defined
+commando.no-compiler.message=There is no compiler associated with this buffer.\n\
+	You can specify compilers on a mode-specific basis in the\n\
+	Plugin Options -> Console -> Compile and Run option pane.
+	{0}
+
+commando.not-saved-compile.title=Save Changes
+commando.not-saved-compile.message=Save changes to {0} before compiling?
+
+commando.no-interpreter.title=No Interpreter Defined
+commando.no-interpreter.message=There is no interpreter associated with this buffer.\n\
+	You can specify interpreters on a mode-specific basis in the\n\
+	Utilities->Global Options dialog box.
+
+commando.not-saved-run.title=Save Changes
+commando.not-saved-run.message=Save changes to {0} before running?
+
+commando.no-command.title=Unknown Commando Panel
+commando.no-command.message=Unknown commando: {0}
+
+### Default compilers and interpreters
+
+mode.batch.commando.run=execute
+mode.java.commando.compile=javac
+mode.java.commando.run=java
+mode.jmk.commando.compile=jmk
+mode.jmk.commando.run=jmk
+mode.tex.commando.compile=latex
+mode.latex.commando.compile=latex
+mode.tex.commando.run=yap
+mode.javacc.commando.compile=javacc
+mode.c.commando.compile=gcc
+mode.c.commando.run=execute
+mode.c++.commando.compile=make
+mode.c++.commando.run=execute
+mode.python.commando.compile=python
+mode.perl.commando.compile=perl
+mode.shellscript.commando.run=execute
+mode.makefile.commando.compile=make
+

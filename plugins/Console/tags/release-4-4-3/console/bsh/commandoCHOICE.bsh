@@ -1,0 +1,26 @@
+commandoCHOICE(view,pane,ns,label,var,options)
+{
+	choice = new JComboBox(options);
+	value = ns.getVariable(var);
+	if(value != null)
+	{
+		for(int i = 0; i < options.size(); i++)
+		{
+			opt = options.elementAt(i);
+			if(value.equals(opt.value))
+			{
+				choice.setSelectedIndex(i);
+				break;
+			}
+		}
+	}
+
+	valueChanged()
+	{
+		ns.setVariable(var,choice.getSelectedItem().value);
+	}
+
+	pane.addComponent(label,choice);
+
+	return this;
+}
