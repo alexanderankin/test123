@@ -1,25 +1,35 @@
 
 /*
- * Copyright © 2002 Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * California 95054, U.S.A. All rights reserved.  Sun Microsystems, Inc. has
- * intellectual property rights relating to technology embodied in the product
- * that is described in this document. In particular, and without limitation,
- * these intellectual property rights may include one or more of the U.S.
- * patents listed at http://www.sun.com/patents and one or more additional
- * patents or pending patent applications in the U.S. and in other countries.
- * U.S. Government Rights - Commercial software. Government users are subject
- * to the Sun Microsystems, Inc. standard license agreement and applicable
- * provisions of the FAR and its supplements.  Use is subject to license terms.
- * Sun,  Sun Microsystems,  the Sun logo and  Java are trademarks or registered
- * trademarks of Sun Microsystems, Inc. in the U.S. and other countries.  This
- * product is covered and controlled by U.S. Export Control laws and may be
- * subject to the export or import laws in other countries.  Nuclear, missile,
- * chemical biological weapons or nuclear maritime end uses or end users,
- * whether direct or indirect, are strictly prohibited.  Export or reexport
- * to countries subject to U.S. embargo or to entities identified on U.S.
- * export exclusion lists, including, but not limited to, the denied persons
- * and specially designated nationals lists is strictly prohibited.
- */
+Per Sreenivasa Viswanadha (as posted on the javacc user mailing list), the
+original java 1.5 grammar is licensed under the BSD license, so this modified
+grammar is also.
+
+Copyright (c) 2005, Dale Anson
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+    * Neither the name of the <ORGANIZATION> nor the names of its contributors
+    may be used to endorse or promote products derived from this software without
+    specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 options {
   //JAVA_UNICODE_ESCAPE = false;
@@ -105,21 +115,29 @@ public class JavaParser
     }
      
     private void addStartBracket() {
+        addStartBracket("{");
+    }
+    
+    private void addStartBracket(String bracket) {
         switch(bracketStyle) {
             case BROKEN:
                 add(lineSep);
                 writeln();
-                add("{");
+                add(bracket);
                 break;
             case ATTACHED:
             default:
-                add(" {");
+                add(" " + bracket);
                 break;
         }
     }
     
     private void addEndBracket() {
-        add("}");
+        addEndBracket("}");
+    }
+    
+    private void addEndBracket(String bracket) {
+        add(bracket);   
     }
 
     private void trim() {
@@ -128,6 +146,16 @@ public class JavaParser
 
     private void trimWhitespace() {
         token_source.trimWhitespace();
+    }
+    
+    private void incLevel() {
+        ++token_source.level;   
+    }
+    
+    private void decLevel() {
+        if (token_source.level > 0) {
+            --token_source.level;   
+        }
     }
 
     private void write() {
@@ -362,10 +390,7 @@ TOKEN_MGR_DECLS :
     // trim all whitespace (\r, \n, space, \t) from the start of the given string
     static String trimStart(String s) {
         StringBuilder sb = new StringBuilder(s);
-        while(sb.length() > 0 && (sb.charAt(0) == '\r'
-                || sb.charAt(0) == '\n'
-                || sb.charAt(0) == '\t'
-                || sb.charAt(0) == ' ')) {
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
             sb.deleteCharAt(0);
         }
         return sb.toString();
@@ -395,11 +420,8 @@ TOKEN_MGR_DECLS :
                 sb.append( ((Token)o).image );
             else
                 sb.append((String)o);
-            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
-                    || sb.charAt(sb.length() - 1) == '\n'
-                    || sb.charAt(sb.length() - 1) == '\t'
-                    || sb.charAt(sb.length() - 1) == ' ')) {
-                sb.deleteCharAt(sb.length() - 1);
+            while(sb.length() > 0 && (Character.isWhitespace(sb.charAt(sb.length() - 1)))) {
+                sb.deleteCharAt(sb.length() - 1);   
             }
             if (sb.length() == 0) {
                 a.remove(i);
@@ -410,11 +432,8 @@ TOKEN_MGR_DECLS :
             }
         }
         if (a.size() == 0) {
-            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
-                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
-                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
-                    || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
-                outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+            while(outputBuffer.length() > 0 && (Character.isWhitespace(outputBuffer.charAt(outputBuffer.length() - 1)))) {
+                outputBuffer.deleteCharAt(outputBuffer.length() - 1);   
             }
         }
     }
@@ -516,8 +535,9 @@ TOKEN_MGR_DECLS :
             // check that there is one space between the end of the output
             // buffer and this line -- this handles the case where the output
             // buffer does not end in a space and the new string does not start
-            // with a space, want one space in between.
-            if (!s.startsWith(" ")
+            // with a space, want one space in between, unless, of course, the
+            // next character is ;.
+            if (!s.startsWith(" ") && !s.startsWith(";")
                     && !endsWith(outputBuffer, " ")
                     && !endsWith(outputBuffer, "\r")
                     && !endsWith(outputBuffer, "\n")
@@ -527,15 +547,21 @@ TOKEN_MGR_DECLS :
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
+            // -- Java 7 update: in "try with resources" there might be whitespace
+            // before the last')'. I'm marking these as "^)".
             String startParen = padParens ? "( " : "(";
             String endParen = padParens ? " )" : ")";
             s = s.replaceAll("[(][ ]", startParen);
             s = s.replaceAll("[ ][)]", endParen);
             s = s.replaceAll("[(]\\s+[)]", "()");
+            s = s.replaceAll("[\\^][)]", ")");
             
             // there should be no situation where a comma is preceded by a space,
             // although that seems to happen when formatting string arrays.
             s = s.replaceAll("\\s+[,]", ",");
+            
+            // there should be no situation where a semi-colon is preceded by a space.
+            s = s.replaceAll("\\s+[;]", ";");
             
             // finally! add the string to the output buffer
             // check for line length, may need to wrap.  Sun says to avoid lines
@@ -874,6 +900,7 @@ TOKEN :
   < INTEGER_LITERAL:
         <DECIMAL_LITERAL> (["l","L"])?
       | <HEX_LITERAL> (["l","L"])?
+      | <BINARY_LITERAL> (["l","L"])?
       | <OCTAL_LITERAL> (["l","L"])?
   >
 |
@@ -881,13 +908,15 @@ TOKEN :
 |
   < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
 |
+  < #BINARY_LITERAL: "0" ["b","B"] (["0"-"1"])((["_"])*["0"-"1"])* >   // new for Java 7
+|
   < #OCTAL_LITERAL: "0" (["0"-"7"])* >
 |
   < FLOATING_POINT_LITERAL:
-        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
-      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
-      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
-      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+        (["0"-"9"])((["_"])*(["0"-"9"]))* "." ((["0"-"9"])((["_"])*(["0"-"9"]))*)* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])((["_"])*(["0"-"9"]))* (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])((["_"])*(["0"-"9"]))* <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])((["_"])*(["0"-"9"]))* (<EXPONENT>)? ["f","F","d","D"]
   >
 |
   < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
@@ -1241,7 +1270,7 @@ void TypeBound():
 void ClassOrInterfaceBody(boolean isInterface):
 {}
 {
-    "{" { addStartBracket(); write(); ++token_source.level; } ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}" { addEndBracket(); --token_source.level; write(); }
+    "{" { addStartBracket(); write(); incLevel(); } ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}" { addEndBracket(); decLevel(); write(); }
 }
 
 void ClassOrInterfaceBodyDeclaration(boolean isInterface):
@@ -1352,10 +1381,10 @@ void ConstructorDeclaration(int modifiers):
 {
   [ TypeParameters() ]
   t=<IDENTIFIER> { add(t); } FormalParameters() [ "throws" { add("throws"); } NameList() ]
-  "{" { addStartBracket(); write(); ++token_source.level;}
+  "{" { addStartBracket(); write(); incLevel();}
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
     ( BlockStatement() )*
-  "}" { addEndBracket(); --token_source.level; write(); }
+  "}" { addEndBracket(); decLevel(); write(); }
 }
 
 void ExplicitConstructorInvocation():
@@ -1404,7 +1433,13 @@ void ClassOrInterfaceType():
 void TypeArguments():
 {}
 {
-   "<" { trim(); add("<"); } TypeArgument() ( "," { trim(); add(", "); } TypeArgument() )* ">" { trim(); add("> "); }
+    (
+        "<>" { trim(); add("<>"); }
+    )
+    |
+    (
+        "<" { trim(); add("<"); } TypeArgument() ( "," { trim(); add(", "); } TypeArgument() )* ">" { trim(); add("> "); }
+    )
 }
 
 void TypeArgument():
@@ -1832,9 +1867,9 @@ void Block():
 {
 }
 {
-    "{" { trimWhitespace(); addStartBracket(); write(); ++token_source.level; }
+    "{" { trimWhitespace(); addStartBracket(); write(); incLevel(); }
         ( BlockStatement() )*
-    "}" { addEndBracket(); --token_source.level; write(); }    // TODO: don't always want to do this, for example with an anonymous inner class
+    "}" { addEndBracket(); decLevel(); write(); }    // TODO: don't always want to do this, for example with an anonymous inner class
 }
 
 void BlockStatement():
@@ -1851,7 +1886,7 @@ void BlockStatement():
 void LocalVariableDeclaration():
 {}
 {
-  [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )*
+  [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* 
 }
 
 void EmptyStatement():
@@ -1890,9 +1925,9 @@ void StatementExpression():
 void SwitchStatement():
 {}
 {
-    "switch" "(" { add("switch ( "); } Expression() ")" "{" { add(" ) "); addStartBracket(); write(); ++token_source.level; }
-        ( SwitchLabel() { ++token_source.level;} ( BlockStatement() )* { --token_source.level;} )*
-    "}" { addEndBracket(); --token_source.level; write(); }
+    "switch" "(" { add("switch ( "); } Expression() ")" "{" { add(" ) "); addStartBracket(); write(); incLevel(); }
+        ( SwitchLabel() { incLevel();} ( BlockStatement() )* { decLevel();} )*
+    "}" { addEndBracket(); decLevel(); write(); }
 }
 
 void SwitchLabel():
@@ -1929,7 +1964,7 @@ void IfStatement():
             trim(); 
             addStartBracket();
             writeln();
-            ++token_source.level;
+            incLevel();
             no_block = true;
         }
     }
@@ -1937,7 +1972,7 @@ void IfStatement():
     {
         if (no_block) {
             writeln();
-            --token_source.level;
+            decLevel();
             addEndBracket();
             write();
         }
@@ -1994,7 +2029,7 @@ void IfStatement():
                 trim();
                 addStartBracket();
                 writeln();
-                ++token_source.level;
+                incLevel();
                 no_block = true;
             }
         }
@@ -2002,7 +2037,7 @@ void IfStatement():
         {
             if (no_block) {
                 writeln();
-                --token_source.level;
+                decLevel();
                 addEndBracket();
                 write();
             }
@@ -2023,7 +2058,7 @@ void WhileStatement():
         if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";")) {
             addStartBracket();
             writeln();
-            ++token_source.level;
+            incLevel();
             no_block = true;
         }
     }
@@ -2031,7 +2066,7 @@ void WhileStatement():
     {
         if (no_block) {
             writeln();
-            --token_source.level;
+            decLevel();
             addEndBracket();
             writeln();
         }
@@ -2090,7 +2125,7 @@ void ForStatement():
         if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";") ) {
             addStartBracket();
             writeln();
-            ++token_source.level;
+            incLevel();
             no_block = true;
         }
     }
@@ -2098,7 +2133,7 @@ void ForStatement():
     {
         if (no_block) {
             writeln();
-            --token_source.level;
+            decLevel();
             addEndBracket();
             writeln();
         }
@@ -2161,14 +2196,39 @@ void TryStatement():
  * Semantic check required here to make sure that at least one
  * finally/catch is present.
  */
-{}
 {
-  "try" { add("try "); } Block()
+    Token st;
+}
+{
+  "try" 
+  { 
+    add("try "); 
+  } 
+  // Java 7 supports "try with resources". Want to format like this:
+  // try (
+  //   java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zipFileName);
+  //   java.io.BufferedWriter writer = java.nio.file.Files.newBufferedWriter(outputFilePath, charset)
+  // ) {  
+  [
+    "(" 
+        { trimWhitespace(); addStartBracket("("); write(); incLevel(); }
+        LocalVariableDeclaration()
+        (
+            LOOKAHEAD(2) 
+            ";" { add(";"); writeln(); }
+            LocalVariableDeclaration()
+        )* 
+        [ ";" { add(";"); writeln(); } ] 
+        ")" { decLevel(); addEndBracket("^)"); write(); }
+  ]
+  
+  Block()
+  
   ( "catch" "(" 
       { 
           // DONE: check for comment preceding the 'catch'. See 'else' for how
           // to handle this. Don't forget to deal with 'finally' also.
-            Token st = t.specialToken;
+            st = t.specialToken;
             Token ct = null;    // comment token
             while (st != null && ct == null) {
                 switch(st.kind) {
@@ -2200,11 +2260,19 @@ void TryStatement():
                 add(" catch ( "); 
             }
       } 
-      FormalParameter() ")" { add(" ) "); } Block() )*
+      
+      (
+          LOOKAHEAD(3)
+          FormalParameter() 
+          |
+          ClassOrInterfaceType()(LOOKAHEAD(2) "|" { add(" | "); } ClassOrInterfaceType())+ VariableDeclaratorId()
+      )
+      ")" { add(" ) "); } Block() )*
+      
   [ 
     "finally" 
         { 
-            Token st = t.specialToken;
+            st = t.specialToken;
             Token ct = null;    // comment token
             while (st != null && ct == null) {
                 switch(st.kind) {
@@ -2336,7 +2404,7 @@ void AnnotationTypeDeclaration(int modifiers):
 void AnnotationTypeBody():
 {}
 {
-    "{" { addStartBracket(); write(); ++token_source.level; } ( AnnotationTypeMemberDeclaration() )* "}" { --token_source.level; addEndBracket(); write(); }
+    "{" { addStartBracket(); write(); incLevel(); } ( AnnotationTypeMemberDeclaration() )* "}" { decLevel(); addEndBracket(); write(); }
 }
 
 void AnnotationTypeMemberDeclaration():
