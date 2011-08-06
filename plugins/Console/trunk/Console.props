@@ -137,6 +137,7 @@ options.console.errors.extra=Extra lines regexp:
 options.console.errors.filename=Filename:
 options.console.errors.line=Line number:
 options.console.errors.message=Error message:
+options.console.general.defaultshell=Default Shell:
 
 console.not-filled-out.title=Fields not filled out
 console.not-filled-out.message=You must fill out all fields in this dialog box.
