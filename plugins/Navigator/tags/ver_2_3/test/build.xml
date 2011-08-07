@@ -1,0 +1,77 @@
+<project name="Navigator_tests" default="test" basedir=".">
+    
+
+    <!-- general properties for plugins from the plugins directory, in 
+    partcular, need the install.dir set to know where to find the plugin
+    jar files. -->
+    <property file="../../build.properties"/>
+    <property file="build.properties"/>
+    
+    <!-- location of the test framework, this should be set in the build.properties
+    file loaded above. -->
+    <property name="test.framework.home" location="/home/danson/src/jedit/tests/Fest"/>
+    
+    <!-- test source and classes -->
+    <property name="project.test.src.dir" location="${basedir}"/>
+    <property name="project.test.classes.dir" location="${basedir}/classes"/>
+    <mkdir dir="${project.test.classes.dir}"/>
+
+    <!-- marker property to indicate to the test framework that plugin jars
+    need to be copied -->
+    <property name="copyPluginJars" value=""/>
+    
+    <!-- full list of all jar files necessary to let jEdit load and run
+    the plugin.  All of these files will be copied to the jedit_settings/jar
+    directory. -->
+    <filelist id="plugin.jars" dir="${install.dir}">
+        <file name="Navigator.jar"/>
+        <file name="Code2HTML.jar"/>
+        <file name="CommonControls.jar"/>
+    </filelist>
+
+    <!-- include everything needed to let jEdit load the plugin and run the 
+    unit tests.  This should include all the jars listed in the plugin.jars 
+    file list defined above. -->
+    <path id="project.class.path">
+        <pathelement path="project.test.classes.dir"/>
+        <path>
+            <filelist refid="plugin.jars"/>
+        </path>
+    </path>
+
+    <!-- these are the actual test files to compile.  This is included so it
+    is easy to fine tune which tests are compiled and ran. --> 
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases.  This is optional. -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="test/**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test.  This is optional. -->
+    <selector id="testcases.current">
+        <filename name="test/NavigatorTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests,
+    or some other selector.  This is NOT optional, if this selector is not
+    defined, no tests will run. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+
+    <!-- actually call the test framework to run the tests.  inheritRefs must
+    be true so that all of the things defined above are known to the test 
+    framework. -->
+    <target name="test">
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+        </ant>
+    </target>
+</project>
