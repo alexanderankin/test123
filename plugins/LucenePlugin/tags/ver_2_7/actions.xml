@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="lucene.remove-index" NO_REPEAT="TRUE">
+		<CODE>
+            String indexName = gatchan.jedit.lucene.LucenePlugin.instance.chooseIndex();
+            if (indexName != null)
+				gatchan.jedit.lucene.LucenePlugin.instance.removeIndex(indexName);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="lucene.close-all-indexes" NO_REPEAT="TRUE">
+		<CODE>
+            		gatchan.jedit.lucene.LucenePlugin.instance.closeAllIndexes();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="lucene.search-word-at-caret" NO_REPEAT="TRUE">
+		<CODE>
+            gatchan.jedit.lucene.LucenePlugin.instance.searchWordAtCaret(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="lucene.go-to-next-result" NO_REPEAT="TRUE">
+		<CODE>
+            gatchan.jedit.lucene.LucenePlugin.instance.goToNextResult(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="lucene.go-to-prev-result" NO_REPEAT="TRUE">
+		<CODE>
+            gatchan.jedit.lucene.LucenePlugin.instance.goToPrevResult(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="lucene.search-in-type" NO_REPEAT="TRUE">
+	   <CODE>
+	       ea = jEdit.getAction("lucene-search");
+	       ea.invoke(view);
+	       dwm = view.getDockableWindowManager();
+	       search = dwm.getDockable("lucene-search");
+	       fileName = buffer.getName();
+	       ext = MiscUtilities.getFileExtension(fileName).substring(1);
+	       search.setType(ext);
+	       String word = gatchan.jedit.lucene.LucenePlugin.getWordAtCaret(view);
+	       search.setText(word);
+	   </CODE>
+	</ACTION>
+	  
+</ACTIONS>
+
