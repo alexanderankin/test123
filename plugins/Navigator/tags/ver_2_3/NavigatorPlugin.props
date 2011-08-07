@@ -1,0 +1,108 @@
+# $Id$
+#-----------------------------------
+# Properties for Navigator Plugin
+#-----------------------------------
+
+plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
+plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
+plugin.ise.plugin.nav.NavigatorPlugin.version=2.3
+plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
+plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
+    provides a set of "Back" and "Forward" actions similar to a web browser. \
+    This is surprisingly handy.
+
+# dependencies
+plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.5
+plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.99.00
+plugin.ise.plugin.nav.NavigatorPlugin.depend.2=plugin code2html.Code2HTMLPlugin 0.6
+plugin.ise.plugin.nav.NavigatorPlugin.depend.3=plugin CommonControlsPlugin 1.2
+
+
+# docs
+plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
+
+#option pane settings
+plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
+options.navigator.label=Navigator
+options.navigator.code=new ise.plugin.nav.OptionPanel();
+
+navigator.options.groupByFile.label=Group history items by file
+navigator.options.groupByLine.label=Group history items by line
+
+navigator.options.showLineText.label=Show line text in history list
+navigator.options.showLineTextSyntax.label=Show syntax highlighting in history list
+navigator.options.showStripes.label=Show stripes in history list
+
+navigator.options.showOnToolbar.label=Show Navigator on toolbar
+navigator.options.listSize.label=Visible rows in history list
+navigator.options.maxStackSize.label=Maximum history size:
+
+# title for DockableWindowManager
+Navigator.title=Navigator
+Navigator.label=Navigator
+
+#----------------
+# menu settings
+#----------------
+
+# this is the text that will be shown on the jEdit plugin
+# menu. It is read by jEdit via the createMenuItems method in
+# HelloPlugin. This line must start with the string passed to
+# the GUIUtilities.loadMenu method in createMenuItems.
+navigator.menu.label=Navigator
+
+# this setting describes the submenu. Each menu item is listed in the
+# order it is shown. The dash is a special character and will cause a
+# menu separator to be inserted. This line also must start with the string
+# passed to the GUIUtilities.loadMenu method in createMenuItems. The items
+# are the action names as set in the actions.xml file.
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable
+#navigator.toolbar
+
+# the next three items are the labels to add to a submenu on
+# the plugins menu for this plugin.
+navigator.back.label=Back
+navigator.back.icon=ArrowL.png
+
+navigator.backList.label=Show back list
+navigator.backList.icon=ArrowD.png
+
+navigator.hidebuttons.label=Add Navigator Buttons
+navigator.showbuttons.label=Remove Navigator Buttons
+navigator.showdockable.label=Show Navigator Dockable
+
+navigator.forward.label=Forward
+navigator.forward.icon=ArrowR.png
+
+navigator.forwardList.label=Show forward list
+navigator.forwardList.icon=ArrowU.png
+
+navigator.clearHistory.label=Clear history
+navigator.toggleScope.label=Toggle scope
+navigator.toggleGroupByFile.label=Toggle group by file
+navigator.toggleGroupByLine.label=Toggle group by line
+
+navigator.combinedList.label=Show combined list
+
+navigator.gotoLine.label=Go to line...
+navigator.useNavigatorGoToLine.label=Use Navigator's 'Go to line' dialog
+
+navigator.options.label=Options
+
+#navigator.toolbar.label=Show on toolbar
+
+navigator.options.scopeGlobal.label=Global Scope, history maintained across jEdit
+navigator.options.scopeView.label=View scope, history maintained per View (jEdit window)
+navigator.options.scopeEditPane.label=EditPane scope, history maintained per edit pane
+
+navigator.message.viewScope=Navigator switched to View scope.
+navigator.message.editPaneScope=Navigator switched to EditPane scope.
+navigator.message.No_backward_items=No backward items
+navigator.message.No_forward_items=No forward items
+navigator.message.Info=Info
+navigator.message.Navigator_history_cleared.=Navigator history cleared.
+
+mavigator.backlist.tooltip=Back history, click an item to jump to it.
+navigator.forwardlist.tooltip=Forward history, click an item to jump to it.
+navigator.current.tooltip=Current position
+navigator.removingPosition=Navigator: removing invalid position
