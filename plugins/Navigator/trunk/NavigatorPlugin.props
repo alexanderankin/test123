@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
-plugin.ise.plugin.nav.NavigatorPlugin.version=2.2
+plugin.ise.plugin.nav.NavigatorPlugin.version=2.3
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
     provides a set of "Back" and "Forward" actions similar to a web browser. \
