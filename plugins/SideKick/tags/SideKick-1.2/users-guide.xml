@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true:folding=sidekick: -->
+  <bookinfo>
+    <title>SideKick plugin user's guide</title>
+
+
+    <authorgroup>
+      <author>
+        <firstname>Slava</firstname>
+        <surname>Pestov</surname>
+      </author>
+      <author>
+        <firstname>Dale</firstname>
+        <surname>Anson</surname>
+      </author>
+      <author>
+        <firstname>Martin</firstname>
+        <surname>Raspe</surname>
+      </author>
+      <author>
+        <firstname>Alan</firstname>
+        <surname>Ezust</surname>
+      </author>
+      <author>
+        <firstname>Shlomy</firstname>
+        <surname>Reinstein</surname>
+      </author>
+    </authorgroup>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+      <para>
+   The SideKick plugin itself is released under the GNU General Public License.
+   A copy of the GPL can be found in the jEdit online help.
+  </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="browser">
+    <title>The SideKick dockable</title>
+
+    <para>
+  The SideKick plugin provides a dockable in which other plugins can
+  display buffer structure.
+ </para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>SideKick</guimenuitem> displays the current buffer's structure in a dockable window. This window is floating by default, but it can be docked into the view 2 ways.
+  </para>
+    <orderedlist>
+      <listitem>
+        <para> Choosing a docking area from the docking menu (a little arrow in the upper left corner of each floating dockable)</para>
+      </listitem>
+      <listitem>
+        <para> Go to the <guibutton>Docking</guibutton>
+  pane of the <guimenuitem>Global Options</guimenuitem> dialog box </para>
+      </listitem>
+    </orderedlist>
+
+    <para> On the top of the window, you will see a combobox which lists all installed SideKick parsers. You can switch to another parser temporarily for a buffer by selecting it from the combo box. </para>
+
+    <para>
+  The SideKick plugin can automatically parse your buffer depending on various events, such as: Buffer Switch, Buffer Save, or on the fly (after it is idle for a period of time). The last option is rarely used since it can eat up CPU time, so it is disabled by default. </para>
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly  parsing, for the current buffer only.
+ </para>
+
+
+    <para> You can also manually parse a buffer by clicking on the "Parse" button in the Sidekick dockable, or through a keyboard shortcut, if you bind Sidekick's "parse buffer" action to a keystroke. <footnote><para>
+  global options - jedit - Shortcuts - Plugin: Sidekick (combo) - Parse Buffer</para>
+      </footnote>
+    </para>
+
+    <para>
+  The current buffer can be parsed at any other time by clicking the parse
+  button in the <guimenuitem>Sidekick</guimenuitem> window, or by
+  invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  Buffer</guimenuitem> command.
+ </para>
+
+    <tip>
+      <title> Parse button menu </title>
+      <para> A popup menu is available in JDK 1.5 which
+ appears when you right-click the "Parse" button.
+ From there, you can set some auto-parse options
+ without going to the plugin options. </para>
+    </tip>
+
+    <tip>
+      <title> Mode Options </title>
+      <para> SideKick supports what are called "Mode Options". Certain properties can be set on an edit-mode basis, such as the SideKick parser, tree expansion depth, etc. Other plugins (such as CtagsSideKick) added their own optionpane to this dialog, via the
+ services API. </para>
+    </tip>
+
+    <tip>
+      <title> Filter textfield </title>
+      <para>
+ Also at the top of the window is a "Filter" box.  Entering text into the box will cause the tree to collapse to show only those items in the tree whose names contain the text in the filter box.  This makes it easy to quickly locate items in the tree.  By default, clicking on an item in the tree clears the filter, but this can be changed in the SideKick plugin option settings by using the "Filter persists after tree selection" checkbox.
+ </para>
+
+      <para>
+ You don't have to click into the filter box to begin typing. As long as SideKick has focus, keystrokes are automatically sent to the box to make locating items even faster.
+ </para>
+    </tip>
+
+    <para>
+  Any errors found while parsing the buffer are sent to the
+  <application>ErrorList</application> plugin, which means they are highlighted
+  in the text area, and shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt; window. See the
+  documentation for the <application>ErrorList</application> plugin for details.
+ </para>
+
+    <para>
+  Clicking on a node in the tree will move the caret to its location in the
+  buffer;
+  conversely, moving the caret in the buffer will select the corresponding
+  node.
+ </para>
+
+    <para>
+      <keycap>Shift</keycap>-clicking on a node will select that node in the text
+  area. <keycap>Alt</keycap>-clicking on a node will narrow the text area
+  display to that node.
+ </para>
+
+    <para>
+  If SideKick is docked into the current view, hovering the mouse
+  over a node will display its attributes in the status bar.
+ </para>
+
+  </chapter>
+
+  <chapter id="moving-around">
+    <title>Moving around</title>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
+  to Previous Asset</guimenuitem> moves the caret to start of the structure
+  element (<quote>asset</quote>).
+ </para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
+  to Next Asset</guimenuitem> moves the caret to start of the next asset.
+ </para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Select
+  Asset at Caret</guimenuitem> selects the asset at the caret position.
+ </para>
+
+  </chapter>
+
+  <chapter id="toolbar">
+    <title>Toolbar</title>
+    
+    <para>
+  SideKick can optionally display the structure of the buffer in a toolbar, using
+  one or more combo-boxes. This option is useful where screen real-estate is
+  important and the tree takes too much of the screen. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Show the assets in a
+      combo-box (inside a toolbar)</guimenuitem>.
+  By default, a single combo-box is shown, which can be used to jump to various
+  positions inside the buffer.
+    </para>
+    <para>
+  There is also an option to show a separate check-box for each level in the
+  SideKick tree. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Use a separate combo-box
+      for each level of the tree</guimenuitem>.
+    </para>
+    <para>
+  To make the combo-box (or multiple combo-boxes) show the asset where the caret is
+  currently located, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Tree/combo-box selection
+      follows caret position</guimenuitem>.
+    </para>
+  
+  </chapter>
+
+  <chapter id="folding">
+    <title>Folding</title>
+
+    <para>
+  The SideKick plugin adds a new <quote>sidekick</quote> fold handler that
+  folds the buffer according to the structure tree. See the jEdit user's guide
+  for general details about folding.
+</para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Narrow to
+  Asset at Caret</guimenuitem> hides all text except that of the asset at the
+  caret location. This works in any folding mode, not just the <quote>sidekick</quote>
+  mode.
+ </para>
+  </chapter>
+
+  <chapter id="completion">
+    <title>Completion</title>
+
+    <para>
+  A completion popup can be shown at any time
+  by invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Show
+  Completion Popup</guimenuitem> command. Each plugin that uses SideKick
+  implements its own specific completion behavior; see the plugin documentation
+  for details.
+ </para>
+
+  </chapter>
+
+  <chapter id="other-plugins">
+    <title>Developing SideKick back-ends</title>
+
+    <para>
+  By itself the SideKick plugin is not very useful; it relies on other plugins to
+  provide buffer structure information. This chapter gives a brief overview of
+  how it's done.
+ </para>
+
+    <sect1 id="preliminaries">
+      <title>Preliminaries</title>
+
+      <para>
+  First you will also need to add a dependency for the SideKick plugin in your plugin's
+  property file:
+ </para>
+
+      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 0.1</programlisting>
+
+      <para>
+  Note that you must replace <replaceable>n</replaceable> with the
+  appropriate number, as dependency properties must have consecutive numbers.
+ </para>
+
+      <para>
+  All SideKick plugin classes are in the <classname>sidekick</classname> package;
+  you will need to add <literal>import</literal> statements where appropriate.
+ </para>
+
+      <para>
+   Parser instances must be registered using the
+   <literal>services.xml</literal> file. With this, you define a service which
+   returns a derived instance of <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+      <classname>SideKickParser</classname>
+        </ulink>
+      </para>
+
+      <programlisting>
+&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;!DOCTYPE SERVICES SYSTEM &quot;services.dtd&quot;&gt;
+
+&lt;SERVICES&gt;
+        &lt;SERVICE CLASS=&quot;sidekick.SideKickParser&quot; NAME=&quot;xml&quot;&gt;
+                new xml.parser.SAXParserImpl();
+        &lt;/SERVICE&gt;
+&lt;/SERVICES&gt;
+</programlisting>
+
+    </sect1>
+
+    <sect1 id="class-sidekickparser">
+      <title>The SideKickParser class</title>
+
+      <para>
+        <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+          <classname>SideKickParser</classname>
+        </ulink> is an abstract class. The constructor takes one string parameter. This string is used in several properties:
+ </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            <literal>sidekick.parser.<replaceable>name</replaceable>.label</literal>
+  - specifies a human-readable label for the parser, shown in status messages. </para>
+          <para> Your derived parser class should return this same name from the <literal>getName()</literal> function.
+  </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>mode.<replaceable>mode</replaceable>.sidekick.parser</literal>
+  - properties of this form are used to associate a parser with an edit mode.
+ </para>
+        </listitem>
+      </itemizedlist>
+
+      <para>
+  For example, the XML plugin, which used to provide two <classname>SideKickParser</classname>
+  implementations, had these properties:
+ </para>
+
+      <programlisting>sidekick.parser.xml.label=XML
+mode.xml.sidekick.parser=xml
+mode.xsl.sidekick.parser=xml
+sidekick.parser.html.label=HTML
+mode.asp.sidekick.parser=html
+mode.coldfusion.sidekick.parser=html
+mode.html.sidekick.parser=html
+mode.jhtml.sidekick.parser=html
+mode.jsp.sidekick.parser=html
+mode.php.sidekick.parser=html
+mode.shtml.sidekick.parser=html
+mode.sgml.sidekick.parser=html
+mode.velocity.sidekick.parser=html</programlisting>
+
+    </sect1>
+
+    <sect1 id="implement-structure-tree">
+      <title>Implementing a structure tree</title>
+
+      <para>
+ The <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+      <classname>SideKickParser</classname>
+        </ulink> has one abstract method that all
+  subclasses must implement:
+ </para>
+
+      <funcsynopsis>
+        <funcprototype>
+
+          <funcdef>public
+
+   SideKickParsedData <function>parse</function>
+          </funcdef>
+          <paramdef>Buffer <parameter>buffer</parameter>
+          </paramdef>
+          <paramdef>DefaultErrorSource <parameter>errorSource</parameter>
+          </paramdef>
+        </funcprototype>
+      </funcsynopsis>
+
+      <para>
+  The <literal>errorSource</literal> is an instance of a class provided by the
+  <application>ErrorList</application> plugin; consult its documentation for
+  details.
+ </para>
+
+      <para>
+  The method is called from a thread, so care must be taken to access the
+  buffer in a thread-safe manner; the API documentation for the
+  <classname>Buffer</classname> class describes how this is done.
+ </para>
+
+      <para>
+  Your implementation of the <function>parse()</function> method should create and return
+an instance of
+   <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParsedData.html">SideKickParsedData </ulink>.   Its constructor of the takes one parameter, which is the file name (to be shown at the root of the structure tree). Your method should
+add  structure elements to the <varname>root</varname> field of the instance.
+<varname>root</varname> is an instance of Java's <classname>DefaultMutableTreeNode</classname> class,
+and is given an initial value by the <classname>SideKickParsedData</classname> constructor.
+ </para>
+
+      <formalpara id="optionalPanel">
+        <title> getPanel() </title>
+        <para> Some SideKick parsers, such as CtagsSideKick, offer an additional toolbar to provide a convenient interface to change certain mode options such as sort by, and group by. They achieve this by overriding the <literal>getPanel()</literal> method of SideKickParser. </para>
+      </formalpara>
+
+    </sect1>
+
+    <sect1 id="implement-completion">
+      <title>Implementing completion popups</title>
+
+      <para> Your derived instance of
+     <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+       SideKickParser</ulink> can implement additional
+       methods to tell Sidekick that your parser supports completions.
+   </para>
+
+      <programlisting>
+        /* @return true if plugin supports completion */
+        public boolean supportsCompletion();
+        /* @return true if we show completions after a period of inactivity. */
+    public boolean canCompleteAnywhere() ;
+        /* @return a list of characters which trigger completion immediately. */
+    public String getInstantCompletionTriggers();
+
+
+        /* @return all completions at a given caret position for this
+        editpane */
+        public SideKickCompletion complete(EditPane editPane, int caret)
+      </programlisting>
+
+
+      <para> If your SideKickParser does support completion, the actual
+     brains of the plugin goes in the last method, <literal>complete()</literal>,
+     which must construct an instance of    <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickCompletion.html">
+     SideKickCompletion</ulink>, given an <literal>EditPane</literal> and a caret position.
+   </para>
+
+      <para>
+   The constructor for <literal>SideKickCompletion</literal> accepts a list (or array) of possible values, these are the values that are displayed in the dropdown.
+   This is an abstract class, so you'll need to derive a specific implementation.  You may want to override the 'insert(int)' method to
+   support language specifics, like "dot" completion.
+   </para>
+
+      <para>How you actually create the completion depends on the specific language and support classes, and the information provided by the parser for the current file. </para>
+
+
+    </sect1>
+
+  </chapter>
+
+  <appendix id="futureplans">
+    <title> Future Plans </title>
+    <itemizedlist>
+      <listitem>
+        <para> Adding a Help tooltip to the CompletionPopup window and methods to the CompletinoInfo for getting/setting help.
+  </para>
+      </listitem>
+
+
+    </itemizedlist>
+  </appendix>
+
+  <appendix id="changes">
+    <title>Change log</title>
+    <itemizedlist>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 1.1</emphasis>
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+                Added options for showing the structure of the buffer in a toolbar (using
+                combo-boxes), for cases where the tree takes too much screen space. 
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 1.0</emphasis>
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+                New macros / actions: search asset for selection and go to begin/end of function. 
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Added a "macros/" dir where additional bsh macros can be placed. 
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Fixes for 'go to next' and 'go to previous' asset, which also fixes Tracker 3008037.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Fix for Shift-Click on sidekick tree to select the entire asset. 
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Fix for Tracker 3081956, race condition during parse on save. 
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.9</emphasis>
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+        Added ability for SideKick derivatives to specify an initial tree expansion model.  This model
+        can be based on option settings or specific language characteristics.  For example, the
+        JavaSideKick could expand inner classes to show method names while leaving the imports node
+        collapsed.
+      </para>
+          </listitem>
+          <listitem>
+            <para>
+        Added ability to hide and disable the filter text area.  Some users don't use it and it tends to
+        grab focus away from the tree, so this new feature helps those users.
+      </para>
+          </listitem>
+          <listitem>
+            <para>
+        Added alternate keyboard handling to the tree.  Now using the arrow keys causes movement through
+        the tree to work as a normal tree and all nodes are accessible with the arrow keys.  Nodes are
+        not automatically expanded as they are highlighted.  The previous keyboard handling is accessible
+        by using the Ctrl key with the up and down arrows, this will move the tree selection to the
+        next/prev leaf nodes, which some people find useful when used in conjunction with the filter
+        text box.
+      </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.8</emphasis> requires JDK 1.5, jEdit 4.3pre17 and ErrorListPlugin 1.4. </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+        Fixed issue where 'Select asset at caret' was not select the last character of the asset.
+      </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.7</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para> Updated to 4.3pre17 API (using Iterator instead of Enumerator)
+      </para>
+          </listitem>
+          <listitem>
+            <para>
+      Fixed "parse on save" so parsing does not occur when parse on save is not selected. (danson)
+      </para>
+          </listitem>
+          <listitem>
+            <para> Possible fix for 1633393, "TextArea painting corruption when saving". (danson)
+      </para>
+          </listitem>
+          <listitem>
+            <para> Fixed the auto-expand tree functionality that I broke earlier when adjusting it for the new filtering. (danson)
+ </para>
+          </listitem>
+          <listitem>
+            <para> Rearranged SideKick toolbars in dockable to add a text field for the "Filter" and a "clear" button to remove the current filter.  Typing works as it did previously, that is, you don't have to click into the text field to begin entering a filter. (danson) </para>
+          </listitem>
+          <listitem>
+            <para> Applied patch from bug#2134884 to resolve focus issues with filter textfield (Matthew Gilbert). </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.6</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Filtering capability in tree view (Matthew Gilbert, #1902558) </para>
+          </listitem>
+          <listitem>
+            <para>
+   Fixed a minor bug; typing over an active completion popup inactivated the popup. (Kazutoshi Satoda)
+ </para>
+          </listitem>
+          <listitem>
+            <para>
+   Completion popup for explicit completion is now active as same as builtin completion. (Kazutoshi Satoda)
+ </para>
+          </listitem>
+          <listitem>
+            <para>
+   Added a new option, which makes automatic completion popups get focus, to make the new behavior in 0.7.5 optional. (Kazutoshi Satoda, Bug #2027704)
+ </para>
+          </listitem>
+          <listitem>
+            <para>
+   Fixed a memory leak; multiple parser specific panels could be held in SideKickTree. (Kazutoshi Satoda)
+ </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.5</emphasis> requires JDK 1.5, jEdit 4.3pre11 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para> Uses refactored CompletionPopup class in 4.3pre11. Checks the edit mode at the caret position for valid completions. When multiple completions are possible, Sidekick no longer selects the first item automatically when a space is typed.  (1752044 - Kazutoshi Satoda). </para>
+          </listitem>
+          <listitem>
+            <para>Fixed "sidekick fold starts in the previous line when the corresponding folding node starts at the beginning of the line ( 1767390 - Matthieu Casanova ) </para>
+          </listitem>
+
+          <listitem>
+            <para>Fixed a minor memory leak when Sidekick is unloaded ( Matthieu Casanova ) </para>
+          </listitem>
+
+          <listitem>
+            <para>Improved Mode Option Pane so it works properly when the edit mode is changed before an "ok/apply" (Shlomy Reinstein) </para>
+          </listitem>
+
+
+
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.4</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Fixed "can't determine mode of buffer" ( 1744627 - Shlomy Reinstein ) </para>
+          </listitem>
+          <listitem>
+            <para>Added support for SideKick Parser Services to offer a JPanel for inserting above the SideKickTree. (Shlomy Reinstein, # 1744797 ) </para>
+          </listitem>
+          <listitem>
+            <para>Preserve horizontal scroll position (Vladimir Avondin # 1746146) </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.3</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para> Added parser setting from mode options pane. (ezust) </para>
+          </listitem>
+          <listitem>
+            <para> NPE after install from plugin manager fixed. (Matthieu Casanova) </para>
+          </listitem>
+          <listitem>
+            <para> Bug 1643614 fixed (reparse on mode change) </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.2</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Bugs 1617620,1624552 - Can't get rid of wrong parser. (hertzhaft, ezust)  </para>
+          </listitem>
+          <listitem>
+            <para>NPE fixed when a jEdit mode had no parser.  (Matthieu Casanova) </para>
+          </listitem>
+          <listitem>
+            <para>Added a dynamic parser switcher menu to a new ActionSet, allowing you to switch parsers via keyboard shortcuts. (ezust) </para>
+          </listitem>
+          <listitem>
+            <para>Rewrote and simplified fold handler code (Matthieu Casanova). </para>
+          </listitem>
+
+        </itemizedlist>
+      </listitem>
+
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7.1</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para> SF.net bugs 1072043, 1553554, 1506964 - Sidekick FoldHandler bugs fixed. </para>
+          </listitem>
+          <listitem>
+            <para> SF.net bug # 1593604 - reparse on save happens only in the active view.
+</para>
+          </listitem>
+          <listitem>
+            <para> Sf.net bug # 1595835 - can't switch to default parser
+</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para>
+     Added a mode-specific option pane, so that settings can
+     be customized on a mode basis by SideKick and its parser service plugins. (ezust).
+     </para>
+          </listitem>
+          <listitem>
+            <para>
+     Made the completion popup accept-characters configurable. Prevented the completion popup from showing when the word at the caret is the same as a completion list entry. (hertzhaft) </para>
+          </listitem>
+          <listitem>
+            <para>Recuses into non-asset nodes  #1571697, 1573034. (shlomy)   </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+
+          <emphasis role="bold">Version 0.6.6</emphasis> requires JDK 1.5, jEdit 4.3pre5 and ErrorListPlugin 1.4.</para>
+        <itemizedlist>
+          <listitem>
+            <para>
+     Added sidekick.util package.  This contains classes to help integrate javacc-generated parsers with sidekick. (danson) </para>
+          </listitem>
+          <listitem>
+            <para> Some work on the popup for code completion.  It still doesn't work right with picking from the list with a mouse. (danson) </para>
+          </listitem>
+          <listitem>
+            <para> Fix for a null pointer exception. (danson) </para>
+          </listitem>
+
+        </itemizedlist>
+
+
+      </listitem>
+      <listitem>
+        <para>
+
+          <emphasis role="bold">Version 0.6.4</emphasis> requires JDK 1.5, jEdit 4.3pre5 and ErrorListPlugin 1.4. </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+     Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is selected in the tree. (ezust) </para>
+          </listitem>
+          <listitem>
+            <para> Mouse Clicks, PgUp and PgDn keys work from completion popups. Arrow keys don't wrap around anymore. (ezust) </para>
+          </listitem>
+          <listitem>
+            <para> Popup menu on parse button for conveniently changing auto parse settings/caret follow settings (requires JDK 1.5). (ezust) </para>
+          </listitem>
+          <listitem>
+            <para> Parse event bugfixes (ezust) </para>
+          </listitem>
+
+        </itemizedlist>
+
+
+      </listitem>
+      <listitem>
+        <para>
+
+          <emphasis role="bold">Version 0.6.2</emphasis> requires JDK 1.4, jEdit 4.3pre3 and ErrorListPlugin 1.4.
+  <itemizedlist>
+  <listitem> <para> Broke up options "parse on buffer switch/save" into 2 separate options. Now you can parse on switch, or on save, or on both, and when you switch buffers with parse-on-switch off, the tree keeps its state. (Alan Ezust) </para>
+            </listitem>
+            <listitem>
+              <para> Added option setting to turn off tool tips. Tool tips can be
+  annoying on slower systems as they are not necessarily drawn quickly. (Dale Anson) </para>
+            </listitem>
+            <listitem>
+              <para> Added option setting to be able to display a status window
+  at the bottom of the tree.  This window is larger than the jEdit status bar,
+  so the full display of tree node can be shown.  This is nice when tool tips
+  are off and the node details are shown on more than one line. (Dale Anson) </para>
+            </listitem>
+          </itemizedlist>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.6.1</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.4.
+  <itemizedlist>
+
+  <listitem><para> Made <varname>SideKickParser.name</varname>
+                <literal>protected</literal>.
+  </para>
+            </listitem>
+            <listitem>
+              <para> Bug 1504746 fixed [combobox]. </para>
+            </listitem>
+          </itemizedlist>
+
+        </para>
+      </listitem>
+
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.6</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.4.
+  <itemizedlist>
+
+  <listitem> <para> Added a combo box to let you switch parsers on an individual buffer basis. (Alan Ezust) </para>
+            </listitem>
+            <listitem>
+              <para> Improved Documentation. (Alan Ezust) </para>
+            </listitem>
+            <listitem>
+              <para> No more multi-line StatusBar messages. Using <function>getShortString()</function>
+  instead of <function>getLongString()</function>. (Alan Ezust) </para>
+            </listitem>
+          </itemizedlist>
+        </para>
+      </listitem>
+
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.5</emphasis> requires jEdit 4.3pre3 and ErrorListPlugin 1.2.</para>
+        <itemizedlist>
+
+          <listitem>
+            <para> SideKick now auto-expands the proper depth of the tree, and properly follows the textarea's caret as the selected node in the sidekick. (Dale Anson) </para>
+          </listitem>
+
+          <listitem>
+            <para> A new context menu exists in SideKick permitting the user to set and view markers. (Martin Raspe) </para>
+          </listitem>
+
+        </itemizedlist>
+      </listitem>
+
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.4</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.2.</para>
+
+        <itemizedlist>
+
+          <listitem>
+            <para> Moved 4 classes from the PerlSideKick plugin into this plugin. The classes are in <literal>package sidekick.enhanced</literal>.
+  This is so that we can break the dependency between
+  JavaScriptSideKick and PerlSideKick.  </para>
+          </listitem>
+          <listitem>
+            <para> Patched for 4.3pre3 API </para>
+          </listitem>
+
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.3.4</emphasis> requires
+  jEdit 4.2final.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Added a new <classname>IAsset</classname> interface that can be
+  used instead of the <classname>Asset</classname> abstract class to realize more flexible
+  inheritance relationships.</para>
+          </listitem>
+          <listitem>
+            <para>Added a new option pane to associate edit modes with SideKick parsers.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.3.3</emphasis> requires
+  jEdit 4.2final.</para>
+
+        <itemizedlist>
+
+          <listitem>
+            <para>The completion popup is now positioned within the screen bounds.</para>
+          </listitem>
+
+          <listitem>
+            <para>The <classname>SideKickCompletion</classname> class is now much more full-featured (but backwards-compatible, if you ignore the new features).</para>
+          </listitem>
+
+          <listitem>
+            <para>Some changes were made to the way the parser works to improve perceived responsiveness.</para>
+          </listitem>
+
+          <listitem>
+            <para>The <classname>SideKickParsedData</classname> associated with a buffer was not unset when the SideKick plugin was unloaded, and as a result, reloading the
+  SideKick plugin would horribly break buffers using the <quote>sidekick</quote> fold handler.</para>
+          </listitem>
+          <listitem>
+            <para>The option to delay parsing after a keystroke did not work; the timeout was always fixed at 1.5 seconds.</para>
+          </listitem>
+
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.3.2</emphasis> requires
+  jEdit 4.2final and ErrorListPlugin 1.2.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Fixed NullPointerException in <guimenuitem>Select Asset</guimenuitem>.</para>
+          </listitem>
+
+          <listitem>
+            <para>Sometimes a buffer would be parsed more than once in a row.</para>
+          </listitem>
+
+          <listitem>
+            <para>Fixed a bug that would show the completion popup twice if the <guilabel>Show completion popups where possible</guilabel> option was on andthe popup trigger delay was larger than 0 seconds and the user invoked the <guilabel>complete</guilabel> action before the trigger delay run   out. (Dirk Moebius)</para>
+          </listitem>
+
+          <listitem>
+            <para>Fixed a bug where typing with the completion popup open would not insert keys if there were no completions available.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.3.1</emphasis> requires
+  jEdit 4.2pre3 and ErrorListPlugin 1.2.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>
+              <classname>SideKickCompletion</classname> implementations can now disable automatic completion popups.</para>
+          </listitem>
+          <listitem>
+            <para>Fix a problem in buffer listener handling.</para>
+          </listitem>
+          <listitem>
+            <para>Various other minor fixes.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.3</emphasis> requires
+  jEdit 4.2pre3 and ErrorListPlugin 1.1.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Updated for jEdit 4.2 API changes.</para>
+          </listitem>
+          <listitem>
+            <para>Added <function>getParseTriggers()</function> method
+   to <classname>SideKickParser</classname> class.</para>
+          </listitem>
+          <listitem>
+            <para>Added <function>getErrorSource()</function> method
+   to <classname>SideKickPlugin</classname> class.</para>
+          </listitem>
+          <listitem>
+            <para>Cleaned up and debugged completion code.</para>
+          </listitem>
+          <listitem>
+            <para>Previously if the <guilabel>parse on keystroke</guilabel>
+   option was on, an in-progress parse was not stopped. This resulted in poor
+   performance. Now, an API has been added for stopping parsing (although only
+   the XML plugin uses it at the moment). Combined with the position optimization
+   in jEdit 4.2pre3, this should result in improved responsiveness when editing
+   large XML files.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.2</emphasis> requires
+  jEdit 4.1pre11 and ErrorListPlugin 1.0.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Fixed a thread safety problem.
+   </para>
+          </listitem>
+          <listitem>
+            <para>Added <function>activate()</function> and
+   <function>deactivate()</function> methods to
+   <classname>SideKickParser</classname> class. These methods are called when
+   a buffer using this parser is selected and deselected in a given view.
+   </para>
+          </listitem>
+          <listitem>
+            <para>The priority of the thread used by SideKick to parse files
+   is now the minimum priority.
+   </para>
+          </listitem>
+          <listitem>
+            <para>jEdit keyboard shortcuts now work when invoked while a
+   completion popup is open.
+   </para>
+          </listitem>
+        </itemizedlist>
+
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.1</emphasis> requires
+  jEdit 4.1pre11.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Initial release.
+   </para>
+          </listitem>
+        </itemizedlist>
+
+      </listitem>
+
+    </itemizedlist>
+
+  </appendix>
+
+</book>
