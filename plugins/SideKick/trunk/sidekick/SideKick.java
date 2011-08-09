@@ -520,10 +520,16 @@ public class SideKick
 			{
 				tree.showStopButton(true);	
 			}
-			buffer.readLock();
-			SideKickParsedData data = parser.parse(buffer, errorSource);
-			buffer.readUnlock();
-			return data;
+			try
+			{
+				buffer.readLock();
+				SideKickParsedData data = parser.parse(buffer, errorSource);
+				return data;
+			}
+			finally
+			{
+				buffer.readUnlock();
+			}
 		}
 		
 		@Override
