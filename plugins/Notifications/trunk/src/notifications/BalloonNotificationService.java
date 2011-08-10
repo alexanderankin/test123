@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,14 +14,12 @@ import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -33,10 +30,6 @@ import org.gjt.sp.jedit.gui.notification.NotificationService;
 
 public class BalloonNotificationService extends NotificationService
 {
-	static private final String BALLOON_TIME_MS_PROP = "balloon.notification.time.ms";
-	static private final int BALLOON_TIME_MS_DEFAULT = 5000;
-	static private final String BALLOON_COLOR_PROP = "balloon.notification.color";
-	static private final Color BALLOON_COLOR_DEFAULT = Color.yellow;
 	private static final int MaxMessageLines = 2;
 	private Object errorLock = new Object();
 	private boolean error = false;
@@ -61,7 +54,7 @@ public class BalloonNotificationService extends NotificationService
 			{
 				setBorder(BorderFactory.createEtchedBorder());
 				setLayout(new BorderLayout(0, 0));
-				Color c = jEdit.getColorProperty(BALLOON_COLOR_PROP, BALLOON_COLOR_DEFAULT);
+				Color c = OptionPane.getColor();
 				JPanel top = new JPanel(new BorderLayout(0, 0));
 				add(top, BorderLayout.NORTH);
 				JLabel extend = new JLabel(GUIUtilities.loadIcon("Plus.png"));
@@ -82,8 +75,7 @@ public class BalloonNotificationService extends NotificationService
 				ta.setEditable(false);
 				ta.setCaretPosition(0);
 				add(ta, BorderLayout.CENTER);
-				int timeMs = jEdit.getIntegerProperty(BALLOON_TIME_MS_PROP,
-					BALLOON_TIME_MS_DEFAULT);
+				int timeMs = OptionPane.getTimeMs();
 				timer = new Timer(timeMs, new ActionListener()
 				{
 					@Override
@@ -133,7 +125,8 @@ public class BalloonNotificationService extends NotificationService
 			bottomRight.y = owner.getY() + owner.getHeight();
 		}
 
-		private void adjustSize() {
+		private void adjustSize()
+		{
 			size.height = num * BalloonHeight;
 			if (size.height > MaxHeight)
 				size.height = MaxHeight;
