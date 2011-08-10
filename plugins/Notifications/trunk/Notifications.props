@@ -15,6 +15,11 @@ plugin.notifications.NotificationsPlugin.menu=\
 
 # option panes
 plugin.notifications.NotificationsPlugin.option-pane=notifications
+options.notifications.label=Notifications
+options.notifications.code=new notifications.OptionPane();
+balloon.notification.options.label=Balloon notifications
+balloon.notification.time.ms.label=Hide balloon after (milliseconds):
+balloon.notification.color.label=Error message color:
 
 # docs
 #plugin.notifications.NotificationsPlugin.docs=index.html
