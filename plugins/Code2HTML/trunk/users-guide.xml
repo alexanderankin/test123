@@ -1,20 +1,16 @@
 <?xml version="1.0"?>
-
 <!--Code2HTML plugin user's guide -->
 <!-- (C) 2002 Andre Kaplan -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
-<book>
-
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
 <bookinfo>
     <title>Code2HTML plugin</title>
 
     <authorgroup>
         <author>
-            <firstname>Andr&eacute;</firstname>
+            <firstname>André</firstname>
             <surname>Kaplan</surname>
         </author>
         <author>
@@ -52,9 +48,9 @@
     </para>
 
     <itemizedlist>
-        <listitem>Syntax highlighting;</listitem>
-        <listitem>Tabulation;</listitem>
-        <listitem>Gutter.</listitem>
+        <listitem><para>Syntax highlighting;</para></listitem>
+        <listitem><para>Tabulation;</para></listitem>
+        <listitem><para>Gutter.</para></listitem>
     </itemizedlist>
 
     <para>
@@ -62,9 +58,9 @@
     </para>
 
     <itemizedlist>
-        <listitem>Printing with a browser;</listitem>
-        <listitem>Documentation: syntax highlighted code always looks better;</listitem>
-        <listitem>Publication.</listitem>
+        <listitem><para>Printing with a browser;</para></listitem>
+        <listitem><para>Documentation: syntax highlighted code always looks better;</para></listitem>
+        <listitem><para>Publication.</para></listitem>
     </itemizedlist>
 
 </chapter>
@@ -78,9 +74,9 @@
     </para>
 
     <itemizedlist>
-        <listitem>Use or not CSS (Cascading Style Sheets);</listitem>
-        <listitem>Show the gutter, which includes the line numbers;</listitem>
-        <listitem>Wrap code at a given column.</listitem>
+        <listitem><para>Use or not CSS (Cascading Style Sheets);</para></listitem>
+        <listitem><para>Show the gutter, which includes the line numbers;</para></listitem>
+        <listitem><para>Wrap code at a given column.</para></listitem>
         <!-- <listitem>Add custom styles to the top-level &lt;body&gt; and &lt;pre&gt; tags.</listitem> -->
     </itemizedlist>
 
@@ -96,32 +92,32 @@
     <para>
     Produce HTML using a cascading style sheet:    
     <itemizedlist>
-        <listitem>HTMLize current buffer using CSS</listitem>		
-        <listitem>HTMLize current selection using CSS</listitem>		
-        <listitem>HTML current buffer using CSS (only content)</listitem>		
-        <listitem>HTML current selection (only content)</listitem>		
-        <listitem>CSS style definitions</listitem>
+        <listitem><para>HTMLize current buffer using CSS</para></listitem>		
+        <listitem><para>HTMLize current selection using CSS</para></listitem>		
+        <listitem><para>HTML current buffer using CSS (only content)</para></listitem>		
+        <listitem><para>HTML current selection (only content)</para></listitem>		
+        <listitem><para>CSS style definitions</para></listitem>
     </itemizedlist>
     </para>
 
     <para>
     Produce HTML with in-line styles:
     <itemizedlist>
-        <listitem>HTMLize current buffer</listitem>		
-        <listitem>HTMLize current selection</listitem>		
-        <listitem>HTML current buffer (only content)</listitem>		
-        <listitem>HTML current selection (only content)</listitem>
+        <listitem><para>HTMLize current buffer</para></listitem>		
+        <listitem><para>HTMLize current selection</para></listitem>		
+        <listitem><para>HTML current buffer (only content)</para></listitem>		
+        <listitem><para>HTML current selection (only content)</para></listitem>
     </itemizedlist>
     </para>
     
     <para>
     Produce Latex:
     <itemizedlist>
-        <listitem>Latex current buffer</listitem>		
-        <listitem>Latex current buffer (only content)</listitem>		
-        <listitem>Latex current selection</listitem>		
-        <listitem>Latex current selection (only content)</listitem>		
-        <listitem>Latex style definitions</listitem>		
+        <listitem><para>Latex current buffer</para></listitem>		
+        <listitem><para>Latex current buffer (only content)</para></listitem>		
+        <listitem><para>Latex current selection</para></listitem>		
+        <listitem><para>Latex current selection (only content)</para></listitem>		
+        <listitem><para>Latex style definitions</para></listitem>		
     </itemizedlist>
     </para>
 </chapter>
@@ -155,20 +151,20 @@
         <!-- listitem>
             Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
         </listitem -->
-        <listitem>
+        <listitem><para>
             David S. Moss (Current Maintainer)
-            <email>seconddevil@users.sourceforge.net</email>;
+            <email>seconddevil@users.sourceforge.net</email>;</para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             or jEdit-users mailing-list
-            <email>jedit-users@lists.sourceforge.net</email>;
+            <email>jedit-users@lists.sourceforge.net</email>;</para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             or jEdit-devel mailing-list
             <email>jedit-devel@lists.sourceforge.net</email>.
-        </listitem>
+        </para></listitem>
     </itemizedlist>
 </chapter>
 
