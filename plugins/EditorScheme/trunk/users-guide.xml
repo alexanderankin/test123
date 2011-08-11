@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE article
-PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-<article>
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
     <title>EditorScheme Plugin</title>
     <articleinfo>
         <author>
@@ -368,6 +366,6 @@ to use the current settings instead of <literal>(Initial Settings)</literal>.</p
                 </itemizedlist>
             </listitem>
         </itemizedlist>
-<!-- :mode=rest:wrap=hard:noTabs=true:lineSeparator=\n:maxLineLen=68:folding=none: -->
+<!-- :mode=xml:wrap=hard:noTabs=true:lineSeparator=\n:maxLineLen=68:folding=none: -->
     </section>
 </article>
