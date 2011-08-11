@@ -1,20 +1,15 @@
 <?xml version="1.0"?>
-
 <!-- Archive plugin user's guide -->
 <!-- (C) 2002 Andre Kaplan -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-
-<book>
-
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
 <bookinfo>
     <title>Archive plugin</title>
 
     <authorgroup>
         <author>
-            <firstname>Andr&eacute;</firstname>
+            <firstname>André</firstname>
             <surname>Kaplan</surname>
         </author>
     </authorgroup>
@@ -61,7 +56,7 @@
     To clear the cache, invoke
     <guimenu>Plugins</guimenu>&gt;
     <guisubmenu>Archive</guisubmenu>&gt;
-    <guimenuitem>Clear&nbsp;directory&nbsp;cache</guimenuitem>
+    <guimenuitem>Clear directory cache</guimenuitem>
     </para>
 
     <para>Follow these steps to open an archive:</para>
@@ -69,7 +64,7 @@
     <itemizedlist>
         <listitem><para>Open the File System Browser
         (<guimenu>Utilities&gt;</guimenu>
-         <guimenuitem>File&nbsp;System&nbsp;Browser</guimenuitem>)</para>
+         <guimenuitem>File System Browser</guimenuitem>)</para>
         </listitem>
 
         <listitem>
@@ -79,7 +74,7 @@
         <listitem>
         <para>In the <guimenu>Plugins</guimenu> menu at the top of the
         File System Browser, choose
-        <guimenuitem>Browse&nbsp;archive</guimenuitem>.</para>
+        <guimenuitem>Browse archive</guimenuitem>.</para>
         </listitem>
     </itemizedlist>
 
