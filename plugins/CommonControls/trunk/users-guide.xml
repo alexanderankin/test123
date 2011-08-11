@@ -1,11 +1,10 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- SQL user's guide -->
 <!-- (C) 2001 Sergey V. Udaltsov -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
-
-<book>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
   <bookinfo>
     <title>Common Controls user's guide</title>
 
