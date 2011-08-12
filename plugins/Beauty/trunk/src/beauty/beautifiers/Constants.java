@@ -24,6 +24,7 @@ public class Constants {
     public static String PRE_INSERT_LINE_CHARACTERS = "preInsertLineCharacters";
     public static String POST_INSERT_LINE_CHARACTERS = "postInsertLineCharacters";
     public static String COLLAPSE_BLANK_LINES = "collapseBlankLines";
+    public static String COLLAPSE_LINEAR_WHITESPACE = "collapseLinearWhitespace";
     public static String USE_JEDIT_INDENTER = "usejEditIndenter";
     public static String INDENT_OPEN_BRACKETS = "indentOpenBrackets";
     public static String INDENT_CLOSE_BRACKETS = "indentCloseBrackets";

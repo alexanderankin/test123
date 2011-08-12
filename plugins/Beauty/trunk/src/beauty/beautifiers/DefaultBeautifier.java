@@ -49,6 +49,7 @@ public class DefaultBeautifier extends Beautifier {
     private String postInsertLineCharacters = "";
  
     private boolean collapseBlankLines = false;
+    private boolean collapseLinearWhitespace = false;
  
     private boolean indentLines = false;
     private String indentOpenBrackets = "";
@@ -93,6 +94,7 @@ public class DefaultBeautifier extends Beautifier {
         preInsertLineCharacters = props.getProperty(PRE_INSERT_LINE_CHARACTERS) == null ? "" : props.getProperty(PRE_INSERT_LINE_CHARACTERS);
         postInsertLineCharacters = props.getProperty(POST_INSERT_LINE_CHARACTERS) == null ? "" : props.getProperty(POST_INSERT_LINE_CHARACTERS);
         collapseBlankLines = "true".equals(props.getProperty(COLLAPSE_BLANK_LINES)) ? true : false;
+        collapseLinearWhitespace = "true".equals(props.getProperty(COLLAPSE_LINEAR_WHITESPACE)) ? true : false;
  
         indentLines = "true".equals(props.getProperty(USE_JEDIT_INDENTER)) ? true : false;
         indentOpenBrackets = props.getProperty(INDENT_OPEN_BRACKETS) == null ? "" : props.getProperty(INDENT_OPEN_BRACKETS);
@@ -120,6 +122,7 @@ public class DefaultBeautifier extends Beautifier {
         for (PToken token : tokens) {
             if (token.isText) {
                 String s = token.tokenText; 
+                System.out.println("+++++ token.tokenText before >" + s + "<");
                 s = prePadCharacters(s);
                 s = postPadCharacters(s);
                 s = preInsertLineSeparators(s);
@@ -127,6 +130,8 @@ public class DefaultBeautifier extends Beautifier {
                 s = dontPrePadCharacters(s);
                 s = dontPostPadCharacters(s);
                 s = collapseBlankLines(s);
+                s = collapseLinearWhitespace(s);
+                System.out.println("+++++ token.tokenText after  >" + s + "<");
                 token.tokenText = s;
             }
         }
@@ -263,6 +268,7 @@ public class DefaultBeautifier extends Beautifier {
         if (preInsertLineCharacters.length() == 0) {
             return s;
         }
+        s = trimStart(s);
  
         // need to deal with commas that may be part of a regex in a comma-
         // separated list of regex's.  Find all escaped commas and replace with
@@ -299,6 +305,7 @@ public class DefaultBeautifier extends Beautifier {
         if (postInsertLineCharacters.length() == 0) {
             return s;
         }
+        s = trimEnd(s);
  
         // need to deal with commas that may be part of a regex in a comma-
         // separated list of regex's.
@@ -400,7 +407,6 @@ public class DefaultBeautifier extends Beautifier {
                     String nextTokenText = token.next != null ? tempBuffer.getText(tokenStart + token.length, token.next.length) : "";
  
                     while (token.id != Token.END) {
- 
                         // maybe pad start
                         if (! previousTokenText.endsWith(" ")) {                            // NOPMD
                             if ((token.id == Token.KEYWORD1 && prePadKeyword1) || (token.id == Token.KEYWORD2 && prePadKeyword2) || (token.id == Token.KEYWORD3 && prePadKeyword3) || (token.id == Token.KEYWORD4 && prePadKeyword4)) {                                // NOPMD
@@ -408,7 +414,7 @@ public class DefaultBeautifier extends Beautifier {
                             }
                         }
  
-                        // definitely add text of current token
+                        // definitely add text of current token, but remove any stray whitespace
                         sb.append(currentTokenText);
  
                         // maybe pad after token
@@ -452,6 +458,18 @@ public class DefaultBeautifier extends Beautifier {
         s = s.replaceAll(regex, getLineSeparator());
         return s;
     }
+    
+    /**
+     * Collapse multiple spaces and/or tabs to a single space.    
+     */
+    String collapseLinearWhitespace(String s) {
+        if (!collapseLinearWhitespace) {
+            return s;   
+        }
+        String regex = "([ ]|[\\t]){2,}";
+        s = s.replaceAll(regex, " ");
+        return s;
+    }
  
     /**
      * Use the jEdit indenter to indent the lines.
@@ -472,6 +490,7 @@ public class DefaultBeautifier extends Beautifier {
             mode.setProperty(INDENT_NEXT_LINE, indentNextLine);
             mode.setProperty(UNINDENT_THIS_LINE, unindentThisLine);
             mode.setProperty(ELECTRIC_KEYS, electricKeys); 
+            mode.getIndentRules();  // causes the indent rules to be reloaded.
  
             File tempFile = File.createTempFile("tmp", null);
             tempFile.deleteOnExit();
@@ -653,11 +672,27 @@ public class DefaultBeautifier extends Beautifier {
         } 
         return ptokens;
     }
- 
+    
     // A class to tell modifiable text from comments and literals.
     public class PToken {
         boolean isText = false;
         String tokenText;
+    }
+    
+    String trimStart(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
+            sb.deleteCharAt(0);   
+        }
+        return sb.toString();
+    }
+    
+    String trimEnd(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+            sb.deleteCharAt(sb.length() - 1);   
+        }
+        return sb.toString();
     }
  
     ////////////////////////////////////////////////////////////////////////////////
@@ -839,4 +874,13 @@ public class DefaultBeautifier extends Beautifier {
     public void setCollapseBlankLines(boolean collapseBlankLines) {
         this.collapseBlankLines = collapseBlankLines;
     }
+    
+    /**
+     * Sets the value of collapseLinearWhitespace.
+     * @param collapseLinearWhitespace The value to assign collapseLinearWhitespace.
+     */ 
+    public void setCollapseLinearWhitespaces(boolean collapseLinearWhitespace) {
+        this.collapseLinearWhitespace = collapseLinearWhitespace;
+    }
+    
 }

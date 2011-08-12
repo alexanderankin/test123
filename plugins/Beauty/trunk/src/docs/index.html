@@ -241,6 +241,8 @@
       <p>
       You can elect to have multiple blank lines collapsed into a single blank line.
       <p>
+      You can also elect to have horizontal whitespace collapsed to a single space. This only examines spaces and tabs. A single tab will remain a tab. This does not affect whitespace in comments or string literals.
+      <p>
       The custom beautifier applies the configuration in order from top to bottom (mostly), so, for example, operators are padded before applying the 'don't pad before' configuration. Padding is only applied if there is no whitespace before or after the item to be padded, so additional whitespace is not added unnecessarily. Similarly, if you want to insert a line break before or after an item and there already is a line separator, no additional blank lines will be added.  The exception to the "top to bottom" rule is padding of keywords.  Keywords are padded last.  This is to prevent the other pad/don't pad rules from removing padding from keywords.  For example, if you have
       <p>
       <code>
