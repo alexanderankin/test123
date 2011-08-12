@@ -6,7 +6,7 @@
 plugin.beauty.BeautyPlugin.activate=defer
 plugin.beauty.BeautyPlugin.name=Beauty
 plugin.beauty.BeautyPlugin.author=Dale Anson
-plugin.beauty.BeautyPlugin.version=0.6.1
+plugin.beauty.BeautyPlugin.version=0.7.0
 plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 1.6
 plugin.beauty.BeautyPlugin.depend.1=jedit 04.03.99.00
@@ -112,6 +112,7 @@ beauty.msg.before=before
 beauty.msg.after=after
 beauty.msg.Label_on_separate_line=Label on separate line
 beauty.msg.Collapse_multiple_blank_lines=Collapse multiple blank lines
+beauty.msg.Collapse_linear_whitespace=Collapse linear whitepace
 beauty.msg.Mode>_=Mode: 
 beauty.msg.Pad_functions=Pad functions
 beauty.msg.Pad_operators=Pad operators
