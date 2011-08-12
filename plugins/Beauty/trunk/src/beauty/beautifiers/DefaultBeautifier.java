@@ -122,7 +122,6 @@ public class DefaultBeautifier extends Beautifier {
         for (PToken token : tokens) {
             if (token.isText) {
                 String s = token.tokenText; 
-                System.out.println("+++++ token.tokenText before >" + s + "<");
                 s = prePadCharacters(s);
                 s = postPadCharacters(s);
                 s = preInsertLineSeparators(s);
@@ -131,7 +130,6 @@ public class DefaultBeautifier extends Beautifier {
                 s = dontPostPadCharacters(s);
                 s = collapseBlankLines(s);
                 s = collapseLinearWhitespace(s);
-                System.out.println("+++++ token.tokenText after  >" + s + "<");
                 token.tokenText = s;
             }
         }
