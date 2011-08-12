@@ -58,6 +58,9 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
     // multiple blank lines can be collapsed to a single blank line
     private JCheckBox collapseBlankLines;
+    
+    // multiple spaces and/or tabs can be collapsed to a single space
+    private JCheckBox collapseLinearWhitespace;
 
     // the user can elect to use the jEdit indenter
     private JCheckBox usejEditIndenter;
@@ -201,6 +204,7 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         postInsertLineCharacters = new JTextField();
 
         collapseBlankLines = new JCheckBox( jEdit.getProperty( "beauty.msg.Collapse_multiple_blank_lines", "Collapse multiple blank lines" ) );
+        collapseLinearWhitespace = new JCheckBox(jEdit.getProperty("beauty.msg.Collapse_linear_whitespace", "Collapse linear whitespace"));
 
         // layout the components
         panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_functions", "Pad functions" ) ), "0, 4, 1, 1, W, w, 2" );
@@ -266,6 +270,7 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 30" );
 
         panel.add( collapseBlankLines, "0, 31, R, 1, W, w, 2" );
+        panel.add( collapseLinearWhitespace, "0, 32, R, 1, W, w, 2");
 
         return panel;
     }
@@ -325,6 +330,7 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         modeProperties.setProperty( POST_PAD_KEYWORDS4, postPadKeywords4.isSelected() ? "true" : "false" );
         modeProperties.setProperty( LABEL_ON_SEPARATE_LINE, labelOnSeparateLine.isSelected() ? "true" : "false" );
         modeProperties.setProperty( COLLAPSE_BLANK_LINES, collapseBlankLines.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( COLLAPSE_LINEAR_WHITESPACE, collapseLinearWhitespace.isSelected() ? "true" : "false");
         modeProperties.setProperty( PRE_PAD_CHARACTERS, prePadCharacters.getText() );
         modeProperties.setProperty( POST_PAD_CHARACTERS, postPadCharacters.getText() );
         modeProperties.setProperty( DONT_PRE_PAD_CHARACTERS, dontPrePadCharacters.getText() );
@@ -395,6 +401,7 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         postPadKeywords4.setSelected( false );
         labelOnSeparateLine.setSelected( false );
         collapseBlankLines.setSelected( false );
+        collapseLinearWhitespace.setSelected(false);
 
         prePadCharacters.setText( "" );
         postPadCharacters.setText( "" );
@@ -432,6 +439,7 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         postPadKeywords4.setSelected( getBoolean( POST_PAD_KEYWORDS4 ) );
         labelOnSeparateLine.setSelected( getBoolean( LABEL_ON_SEPARATE_LINE ) );
         collapseBlankLines.setSelected( getBoolean( COLLAPSE_BLANK_LINES ) );
+        collapseLinearWhitespace.setSelected(getBoolean(COLLAPSE_LINEAR_WHITESPACE));
 
         // set the text field values
         prePadCharacters.setText( getText( PRE_PAD_CHARACTERS ) );
