@@ -124,7 +124,7 @@ implements EBComponent, DefaultFocusComponent
 		propertiesChanged();
 		String defShell = jEdit.getProperty("console.shell.default", "System");
 		if (defShell.equals(jEdit.getProperty("options.last-selected"))) {
-			defShell = jEdit.getProperty("console.shell");			
+			defShell = jEdit.getProperty("console.shell", "System");			
 		}
 		
 		Shell s = Shell.getShell(defShell);
