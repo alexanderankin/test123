@@ -54,7 +54,7 @@ sidekick-jump-to-end-of-function.label=Jump to end of function
 #   like this: sidekick-tree.{modename}.menu= ...
 # )
 sidekick-tree.menu=add-marker \
-                sidekick-remove-marker \
+                remove-marker \
                 remove-all-markers \
                 sidekick-undirty-buffer
 # Action labels (see actions.xml)
