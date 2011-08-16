@@ -43,6 +43,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import marker.MarkerSetsPlugin;
+
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
@@ -54,6 +56,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import sidekick.Asset;
 import sidekick.IAsset;
+import sidekick.SideKickPlugin;
 import sidekick.SideKickTree;
 
 //}}}
@@ -110,10 +113,15 @@ public class SourceTree extends SideKickTree {
         super.update();
         createPopup();
         } //}}}
-    
-    private boolean hasMarker( int start, int end ) {
+
+    private boolean hasMarker(int start, int end) {
         //{{{ getMarker method
-        return ( view.getBuffer().getMarkerInRange( start, end ) != null );
+    	MarkerSetsPlugin markerSets = SideKickPlugin.getMarkerSetsPlugin();
+    	if (markerSets != null) {
+    		if (markerSets.hasMarker(view.getBuffer(), start, end))
+    			return true;
+    	}
+        return (view.getBuffer().getMarkerInRange(start, end) != null);
     } //}}}
 
     public static void toggleMarkersFlag() {

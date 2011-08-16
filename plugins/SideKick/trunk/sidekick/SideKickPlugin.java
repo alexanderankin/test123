@@ -23,10 +23,13 @@
 package sidekick;
 
 //{{{ Imports
+import marker.MarkerSetsPlugin;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -49,6 +52,7 @@ import javax.swing.SwingWorker;
  */
 public class SideKickPlugin extends EditPlugin
 {
+	private static final String MARKER_SETS_PLUGIN = "marker.MarkerSetsPlugin";
 	private static final String SHOW_TOOL_BAR = "sidekick.showToolBar";
 
 	/** The name of the dockable */
@@ -72,11 +76,13 @@ public class SideKickPlugin extends EditPlugin
 	private static Map<View, SideKickToolBar> toolBars;
 	private static boolean toolBarsEnabled;
 	private static Map<View, SwingWorker> workers;
-	
+	private static MarkerSetsPlugin markerSetsPlugin;
+
 	//{{{ start() method
 	public void start()
 	{
 		BeanShell.getNameSpace().addCommandPath(MACRO_PATH, getClass());
+		markerSetsPlugin = (MarkerSetsPlugin) jEdit.getPlugin(MARKER_SETS_PLUGIN, false);
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
 		workers = new HashMap<View, SwingWorker>();
@@ -176,6 +182,30 @@ public class SideKickPlugin extends EditPlugin
 			}
 		}
 	} //}}}
+
+    // {{{ handlePluginUpdate() method
+    @EBHandler
+    public void handlePluginUpdate(PluginUpdate msg)
+    {
+    	EditPlugin plugin = msg.getPluginJAR().getPlugin();
+    	if (plugin.getClassName().equals(MARKER_SETS_PLUGIN))
+    	{
+            if (msg.getWhat() == PluginUpdate.ACTIVATED)
+            {
+            	markerSetsPlugin = (MarkerSetsPlugin) plugin;
+            }
+            else if (msg.getWhat() == PluginUpdate.DEACTIVATED)
+            {
+            	markerSetsPlugin = null;
+            }
+    	}
+    } //}}}
+
+    // {{{ getMarkerSetsPlugin() method
+    public static MarkerSetsPlugin getMarkerSetsPlugin()
+    {
+    	return markerSetsPlugin;
+    } //}}}
 
 	/**
 	 * Returns the parser for the given mode.
