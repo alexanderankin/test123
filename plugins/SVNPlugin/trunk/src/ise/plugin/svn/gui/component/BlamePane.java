@@ -158,7 +158,7 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
                 // remove the blame components from the text area
                 JEditTextArea textArea = epu.getEditPane().getTextArea();
                 JEditBuffer buffer = textArea.getBuffer();
-                if ( epu instanceof BufferChanging && buffer.equals( ( ( BufferChanging ) epu ).getBuffer() ) ) {
+                if ( buffer == null || epu instanceof BufferChanging && buffer.equals( ( ( BufferChanging ) epu ).getBuffer() ) ) {
                     return ;     // same buffer, nothing to do
                 }
                 Object old_blame = buffer.getProperty( "_old_blame_" );
