@@ -136,13 +136,16 @@
   "Go to line" dialog.
 
   <h3>How Navigator works</h3>
-  Navigator tracks PositionChanging EditBus messages. These can be sent by the core, or plugins, to notify
-  Navigator that the current position should be saved.  Each time the buffer changes,
-  a plugin jumps the caret to another line in your buffer, or you mouse click in the TextArea, the location of
-  the caret is recorded in the Navigator history.  Going back moves the caret to the
-  previous position.  If that previous position happened to be in a different file, then that file will be opened.
   <p>
-  Some jEdit terminology: A <strong><i>View</i></strong> is a
+  Navigator tracks PositionChanging EditBus messages.  Going back moves the caret to the
+  previous position.  If that previous position happened to be in a different file, then that file will be opened. </p>
+  
+  <p>PositionChanging messages can be sent by the core or plugins, to notify
+  Navigator that the current position should be saved. Each mouse click will cause one to be sent. 
+  When core or a plugin jumps the caret to another position in the <i>same</i> buffer, it should send a PositionChanging 
+  message for that editpane. </p>
+  
+  <p> Some jEdit terminology: A <strong><i>View</i></strong> is a
   main jEdit window.  You can open more Views by using the View menu and selecting "New View".  Within a View, an
   <strong><i>EditPane</i></strong>
   is the part of the View that contains the text area.  You can open more EditPanes by using the View menu and selecting
