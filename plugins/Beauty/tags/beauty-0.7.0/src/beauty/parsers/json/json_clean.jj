@@ -1,0 +1,242 @@
+/**
+ * Copyright (c) 2010, Dale Anson
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ *     - Redistributions of source code must retain the above copyright notice, this 
+ *     list of conditions and the following disclaimer.
+ *     
+ *     - Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the documentation 
+ *     and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * A parser for json files.  See http://www.json.org for details of the JSON
+ * file format.
+ */
+options {
+    JAVA_UNICODE_ESCAPE = true;
+    UNICODE_INPUT = true;
+    STATIC = false;
+    DEBUG_PARSER=true;
+}
+
+PARSER_BEGIN(JsonParser)
+
+
+public class JsonParser {
+    public static void main(String args[]) {
+        JsonParser parser;
+        if (args.length == 0) {
+            System.out.println("JSON Parser:  Reading from standard input . . .");
+            parser = new JsonParser(System.in);
+        } else if (args.length == 1) {
+            System.out.println("JSON Parser:  Reading from file " + args[0] + " . . .");
+            try {
+                parser = new JsonParser(new java.io.FileInputStream(args[0]));
+            } catch (java.io.FileNotFoundException e) {
+                System.out.println("JSON Parser:  File " + args[0] + " not found.");
+                return;
+            }
+        } else {
+            System.out.println("JSON Parser:  Usage is one of:");
+            System.out.println("         java JsonParser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java JsonParser inputfile");
+            return;
+        }
+        try {
+            parser.enable_tracing();
+            parser.parse();
+            System.out.println("JSON Parser:  JSON input parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println("JSON Parser:  Encountered errors during parse.");
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+PARSER_END(JsonParser)
+
+/*******************************************************************************
+
+JSON token descriptions start here
+
+*******************************************************************************/
+
+
+// white space
+SKIP : 
+{
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+    | "\f"
+}
+
+// The JSON standard does not allow comments of any variety, although people use
+// javascript comments and html comments within json files.  Files containing
+// comments are not acceptable to many parsers since the standard does not allow
+// them.  THIS PARSER WILL NOT ACCEPT COMMENTS. However, if you'd rather it just
+// silently skipped over comments, uncomment this block.
+/*
+SKIP : 
+{
+    <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+    | <BLOCK_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+    | <HTML_COMMENT: "<!--" (~["-"])* "-" ("-" | (~["-",">"] (~["-"])* "-"))* ">"> 
+}
+*/
+
+// literals
+TOKEN : 
+{
+    <LBRACE: "{">
+    |
+    <RBRACE: "}">
+    |
+    <LSQUARE: "[">
+    |
+    <RSQUARE: "]">
+    |
+    <COMMA: ",">
+    |
+    <COLON: ":">  
+    |
+    <TRUE: "true">
+    |
+    <FALSE: "false">
+    |
+    <NULL: "null">
+    |  
+    // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
+    // Unicode values are allowed in char and string. Need to define numbers ahead of characters
+    // since numbers can also match as characters.
+    <NUMBER: (["-"])? ((["0"]) | (["1"-"9"] (["0"-"9"])*)) ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
+    |
+    // a 'char' is any unicode character except " (double quote) or \ (backslash) or
+    // control character (unicode range 0000 - 001f).  Certain special characters and
+    // certain control characters are allowed if escaped with \: ", \, /, b, f, n, r, t.
+    // Unicode characters are allowed using the \\u four-hex-digits notation, e.g.
+    // \\u04af
+    <CHAR:(   
+        (~["\"", "\\", "\u0000"-"\u001f"])
+        | ("\\"
+            ( ["u"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"]
+                | ["\"", "\\", "b", "f", "n", "r", "t"]
+                )
+            )
+        )>
+    |
+    // A string is a collection of zero or more Unicode characters, wrapped in 
+    // double quotes, using backslash escapes. A character is represented as a 
+    // single character string.
+    // Note: I have seen a lot of generated json where strings are not wrapped
+    // in double quotes. It might be useful to relax the string definition to 
+    // allow such things.
+    <STRING: "\"" (<CHAR>)* "\"">
+}
+
+
+/*******************************************************************************
+
+JSON grammar starts here
+
+*******************************************************************************/
+
+void parse() : 
+{
+}
+{
+    (
+        object() <EOF> 
+        |
+        array() <EOF> 
+    )
+}
+
+void object() : 
+{
+}
+{
+    <LBRACE> (members())? <RBRACE>
+}
+
+void array() : 
+{
+}
+{
+    <LSQUARE> (elements())? <RSQUARE>
+}
+
+void members() : 
+{
+}
+{
+    key() <COLON> value() ( <COMMA> members() )?
+}
+
+void elements() : 
+{
+}
+{
+    value() ( <COMMA> elements() )?
+}
+
+void value() : 
+{
+}
+{
+    (
+        string() | number() | object() | array() 
+        |
+        <TRUE>  
+        |
+        <FALSE>  
+        |
+        <NULL> 
+    ) 
+}
+
+void key() :
+{
+}
+{
+    (
+        <STRING> 
+    )
+}
+
+void string() : 
+{
+}
+{
+    (
+        <STRING> 
+    )
+}
+
+void number() :
+{
+}
+{
+    (
+        <NUMBER>  
+    )
+}
+
