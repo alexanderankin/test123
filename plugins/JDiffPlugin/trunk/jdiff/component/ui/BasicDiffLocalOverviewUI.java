@@ -193,7 +193,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     private void fillLeft( Graphics gfx, DiffTextAreaModel model ) {
         // get the visible lines, only need to draw hunks between these lines
         int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
-        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine();
+        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine() + 1;
 
         // map of line number to hunk
         HashMap<Integer, Diff.Change> leftHunkMap = model.getLeftHunkMap();
@@ -265,7 +265,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
     private void fillRight( Graphics gfx, DiffTextAreaModel model ) {
         int rightFirstLine = model.getRightTextArea().getFirstPhysicalLine();
-        int rightLastLine = model.getRightTextArea().getLastPhysicalLine();
+        int rightLastLine = model.getRightTextArea().getLastPhysicalLine() + 1;
         HashMap<Integer, Diff.Change> rightHunkMap = model.getRightHunkMap();
         Color color;
         if ( rightHunkMap != null ) {
@@ -319,10 +319,10 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         // draw a line to connect corresponding diff blocks in the left and
         // right rectangles.
         int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
-        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine();
+        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine() + 1;
         HashMap<Integer, Diff.Change> leftHunkMap = model.getLeftHunkMap();     // line number -> hunk
         int rightFirstLine = model.getRightTextArea().getFirstPhysicalLine();
-        int rightLastLine = model.getRightTextArea().getLastPhysicalLine();
+        int rightLastLine = model.getRightTextArea().getLastPhysicalLine() + 1;
 
         if ( leftHunkMap != null ) {
             gfx.setColor( Color.BLACK );
@@ -583,12 +583,12 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         }
         DiffTextAreaModel model = diffLocalOverview.getModel();
         int leftFirstLine = model.getLeftTextArea().getFirstPhysicalLine();
-        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine();
+        int leftLastLine = model.getLeftTextArea().getLastPhysicalLine() + 1;
         gfx.setColor( localRendererPane.getBackground() );
         gfx.drawRect( leftRectangle.x - 3, 0, 1, ( leftLastLine - leftFirstLine ) * pixelsPerLine );
 
         int rightFirstLine = model.getRightTextArea().getFirstPhysicalLine();
-        int rightLastLine = model.getRightTextArea().getLastPhysicalLine();
+        int rightLastLine = model.getRightTextArea().getLastPhysicalLine() + 1;
         gfx.setColor( localRendererPane.getBackground() );
         gfx.drawRect( rightRectangle.x + rightRectangle.width + 1, 0, 1, ( rightLastLine - rightFirstLine ) * pixelsPerLine );
 
