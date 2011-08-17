@@ -192,7 +192,7 @@ SKIP:
     ends in \\, then it's an escaped \, not a continuation character, and should
     be part of the value.  I think this is a rare use case, so I'm not going
     to worry about it until someone complains. */
-    <VALUE: ((~["\r", "\n"])*(<CONTINUATION>)*)+(<NEWLINE>)? > : DEFAULT
+    <VALUE: ((~["\r", "\n"])*(<CONTINUATION>)*)("\n"|"\r"|"\r\n")? > : DEFAULT
 }
 
 
@@ -239,55 +239,74 @@ Property Property() :
 }
 {
     try {
-    (
-        LOOKAHEAD(2)
         (
-            key=<KEY>
-            {
-              token_source.SwitchTo(ParseEquals);
-            }
-
-            <EQUALS>
-            {
-              token_source.SwitchTo(ParseValue);
-            }
-
-            value=<VALUE>
+            LOOKAHEAD(2)
+            (
+                key=<KEY>
+                {
+                  token_source.SwitchTo(ParseEquals);
+                }
+    
+                <EQUALS>
+                {
+                  token_source.SwitchTo(ParseValue);
+                }
+    
+                value=<VALUE>
+            )
+            |
+            (
+                key=<BARE_KEY>
+                {
+                    token_source.SwitchTo(DEFAULT);
+                }
+            )
         )
-        |
-        (
-            key=<BARE_KEY>
-            {
-                token_source.SwitchTo(DEFAULT);
-            }
-        )
-    )
-    {
-        Property prop = new Property();
-        prop.setStartLocation(createStartLocation(key));
-        prop.setEndLocation(createEndLocation(value == null ? key : value));
-
-        /* key -- need to trim as the regex production can capture whitespace,
-        and by definition, the key cannot contain any whitespace characters */
-        String out = key.image.trim();
-
-        /* key can have escaped 'equals' characters, unescape them */
-        out = out.replaceAll("\\\\=", "=");
-        out = out.replaceAll("\\\\:", ":");
-        out = out.replaceAll("\\\\ ", " ");
-        out = out.replaceAll("\\\\\\t", "\t");
-        prop.setKey(out);
-
-        /* value -- need to combine multi-line values into a single line. Leading
-        whitespace on continuation lines is discarded, as is leading whitespace
-        at the start of the value. */
-        out = value == null ? "" : value.image.replaceAll("\\\\(\\s)+", "");
-        out = trimFront(out);
-        prop.setValue(out);
-        return prop;
-    }
+        {
+            Property prop = new Property();
+            prop.setStartLocation(createStartLocation(key));
+            prop.setEndLocation(createEndLocation(value == null ? key : value));
+    
+            /* key -- need to trim as the regex production can capture whitespace,
+            and by definition, the key cannot contain any whitespace characters */
+            String out = key.image.trim();
+    
+            /* key can have escaped 'equals' characters, unescape them */
+            out = out.replaceAll("\\\\=", "=");
+            out = out.replaceAll("\\\\:", ":");
+            out = out.replaceAll("\\\\ ", " ");
+            out = out.replaceAll("\\\\\\t", "\t");
+            prop.setKey(out);
+    
+            /* value -- need to combine multi-line values into a single line. Leading
+            whitespace on continuation lines is discarded, as is leading whitespace
+            at the start of the value. */
+            out = value == null ? "" : value.image.replaceAll("\\\\(\\s)+", "");
+            out = trimFront(out);
+            prop.setValue(out);
+            return prop;
+        }
     } catch (ParseException e) {
         addException(generateParseException());
+    }
+    {
+        if (key != null) {
+            // this takes care of the case where the last property does not have
+            // a value and does not have a trailing new line.
+            Property prop = new Property();
+            prop.setStartLocation(createStartLocation(key));
+            prop.setEndLocation(createEndLocation(value == null ? key : value));
+            String out = key.image.trim();
+            out = out.replaceAll("\\\\=", "=");
+            out = out.replaceAll("\\\\:", ":");
+            out = out.replaceAll("\\\\ ", " ");
+            out = out.replaceAll("\\\\\\t", "\t");
+            prop.setKey(out);
+            return prop;
+        }
+        else {
+            return null;   
+        }
     }
 }
 
