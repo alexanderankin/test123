@@ -139,15 +139,15 @@ public class PropertyParser implements PropertyParserConstants {
     try {
       if (jj_2_2(2)) {
         key = jj_consume_token(KEY);
-              token_source.SwitchTo(ParseEquals);
+                  token_source.SwitchTo(ParseEquals);
         jj_consume_token(EQUALS);
-              token_source.SwitchTo(ParseValue);
+                  token_source.SwitchTo(ParseValue);
         value = jj_consume_token(VALUE);
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case BARE_KEY:
           key = jj_consume_token(BARE_KEY);
-                token_source.SwitchTo(DEFAULT);
+                    token_source.SwitchTo(DEFAULT);
           break;
         default:
           jj_la1[2] = jj_gen;
@@ -155,31 +155,48 @@ public class PropertyParser implements PropertyParserConstants {
           throw new ParseException();
         }
       }
-        Property prop = new Property();
-        prop.setStartLocation(createStartLocation(key));
-        prop.setEndLocation(createEndLocation(value == null ? key : value));
+            Property prop = new Property();
+            prop.setStartLocation(createStartLocation(key));
+            prop.setEndLocation(createEndLocation(value == null ? key : value));
 
-        /* key -- need to trim as the regex production can capture whitespace,
-        and by definition, the key cannot contain any whitespace characters */
-        String out = key.image.trim();
+            /* key -- need to trim as the regex production can capture whitespace,
+            and by definition, the key cannot contain any whitespace characters */
+            String out = key.image.trim();
 
-        /* key can have escaped 'equals' characters, unescape them */
-        out = out.replaceAll("\u005c\u005c\u005c\u005c=", "=");
-        out = out.replaceAll("\u005c\u005c\u005c\u005c:", ":");
-        out = out.replaceAll("\u005c\u005c\u005c\u005c ", " ");
-        out = out.replaceAll("\u005c\u005c\u005c\u005c\u005c\u005ct", "\u005ct");
-        prop.setKey(out);
+            /* key can have escaped 'equals' characters, unescape them */
+            out = out.replaceAll("\u005c\u005c\u005c\u005c=", "=");
+            out = out.replaceAll("\u005c\u005c\u005c\u005c:", ":");
+            out = out.replaceAll("\u005c\u005c\u005c\u005c ", " ");
+            out = out.replaceAll("\u005c\u005c\u005c\u005c\u005c\u005ct", "\u005ct");
+            prop.setKey(out);
 
-        /* value -- need to combine multi-line values into a single line. Leading
-        whitespace on continuation lines is discarded, as is leading whitespace
-        at the start of the value. */
-        out = value == null ? "" : value.image.replaceAll("\u005c\u005c\u005c\u005c(\u005c\u005cs)+", "");
-        out = trimFront(out);
-        prop.setValue(out);
-        {if (true) return prop;}
+            /* value -- need to combine multi-line values into a single line. Leading
+            whitespace on continuation lines is discarded, as is leading whitespace
+            at the start of the value. */
+            out = value == null ? "" : value.image.replaceAll("\u005c\u005c\u005c\u005c(\u005c\u005cs)+", "");
+            out = trimFront(out);
+            prop.setValue(out);
+            {if (true) return prop;}
     } catch (ParseException e) {
         addException(generateParseException());
     }
+        if (key != null) {
+            // this takes care of the case where the last property does not have
+            // a value and does not have a trailing new line.
+            Property prop = new Property();
+            prop.setStartLocation(createStartLocation(key));
+            prop.setEndLocation(createEndLocation(value == null ? key : value));
+            String out = key.image.trim();
+            out = out.replaceAll("\u005c\u005c\u005c\u005c=", "=");
+            out = out.replaceAll("\u005c\u005c\u005c\u005c:", ":");
+            out = out.replaceAll("\u005c\u005c\u005c\u005c ", " ");
+            out = out.replaceAll("\u005c\u005c\u005c\u005c\u005c\u005ct", "\u005ct");
+            prop.setKey(out);
+            {if (true) return prop;}
+        }
+        else {
+            {if (true) return null;}
+        }
     throw new Error("Missing return statement in function");
   }
 
@@ -202,14 +219,14 @@ public class PropertyParser implements PropertyParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3_2() {
-    if (jj_scan_token(KEY)) return true;
-    if (jj_scan_token(EQUALS)) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(4)) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(4)) return true;
+  private boolean jj_3_2() {
+    if (jj_scan_token(KEY)) return true;
+    if (jj_scan_token(EQUALS)) return true;
     return false;
   }
 
