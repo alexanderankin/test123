@@ -8,8 +8,8 @@ plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge util
 
 # Dependencies
 plugin.jdiff.JDiffPlugin.depend.0=jdk 1.5
-plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.15.00
-plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
+plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.99.00
+plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 1.2
 plugin.jdiff.JDiffPlugin.activate=defer
 
 # Menu
