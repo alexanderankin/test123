@@ -1,0 +1,762 @@
+/**
+ * Copyright (c) 2010, Dale Anson
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, 
+ * are permitted provided that the following conditions are met:
+ * 
+ *     - Redistributions of source code must retain the above copyright notice, this 
+ *     list of conditions and the following disclaimer.
+ *     
+ *     - Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the documentation 
+ *     and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * A parser for json files.  I borrowed some of the code from CSS3Parser, so
+ * it may not all be relevant.
+ */
+options {
+   JAVA_UNICODE_ESCAPE = true;
+   UNICODE_INPUT = true;
+   STATIC = false;
+}
+
+PARSER_BEGIN(JsonParser)
+package beauty.parsers.json;
+
+import java.io.*;
+import java.util.*;
+
+public class JsonParser {
+    Token t;
+    
+    // shouldn't use this, a specific line separator should be set based on
+    // buffer settings.  Of course, it may be the same as what the buffer
+    // uses anyway.
+    String lineSep = System.getProperty("line.separator");
+
+    public void setIndentWidth(int i) {
+        token_source.setIndentWidth(i);
+    }
+
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+    }
+
+    public int getTabSize() {
+        // this really isn't necessary for this beautifier.  Setting the tab
+        // size on the input stream makes the token locations more accurate
+        // is all.
+        return jj_input_stream.getTabSize(0);
+    }
+
+    public void setUseSoftTabs(boolean b) {
+        token_source.setUseSoftTabs(b);
+    }
+    
+    /**
+     * @return The beautified text.    
+     */
+    public String getText() {
+        return token_source.getText();
+    }
+
+    public void resetTokenSource() {
+        token_source.reset();
+    }
+
+    private void add(Token t) {
+        token_source.add(t);
+    }
+
+    private void add(String s) {
+        token_source.add(s);
+    }
+
+    private void trim() {
+        token_source.trim();
+    }
+
+    private void trimWhitespace() {
+        token_source.trimWhitespace();
+    }
+
+    private void write() {
+        token_source.write();
+    }
+
+    private void writeln() {
+        token_source.writeln();
+    }
+
+    public void setLineSeparator(String le) {
+        lineSep = le;
+        token_source.setLineSeparator(le);
+    }
+    
+    public static void main(String args[]) {
+        JsonParser parser;
+        if (args.length == 0) {
+            System.out.println("JSON Parser:  Reading from standard input . . .");
+            parser = new JsonParser(System.in);
+        } else if (args.length == 1) {
+            System.out.println("JSON Parser:  Reading from file " + args[0] + " . . .");
+            try {
+                parser = new JsonParser(new java.io.FileInputStream(args[0]));
+            } catch (java.io.FileNotFoundException e) {
+                System.out.println("JSON Parser:  File " + args[0] + " not found.");
+                return;
+            }
+        } else {
+            System.out.println("JSON Parser:  Usage is one of:");
+            System.out.println("         java JsonParser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java JsonParser inputfile");
+            return;
+        }
+        try {
+            parser.enable_tracing();
+            parser.parse();
+            System.out.println("JSON Parser:  JSON input parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println("JSON Parser:  Encountered errors during parse.");
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+PARSER_END(JsonParser)
+
+/*******************************************************************************
+
+JSON token descriptions start here
+
+*******************************************************************************/
+
+
+// white space
+SKIP : 
+{
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+    | "\f"
+}
+
+// The JSON standard does not allow comments of any variety, although people use
+// javascript comments and html comments within json files.  Files containing
+// comments are not acceptable to many parsers since the standard does not allow
+// them.  THIS PARSER WILL NOT ACCEPT COMMENTS. However, if you'd rather it just
+// silently skipped over comments, uncomment this block. This will cause the
+// beautifier to remove comments.
+// TODO: add a user setting for this.
+/*
+SKIP : 
+{
+    <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+    | <BLOCK_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+    | <HTML_COMMENT: "<!--" (~["-"])* "-" ("-" | (~["-",">"] (~["-"])* "-"))* ">"> 
+}
+*/
+// literals
+TOKEN : 
+{
+    <LBRACE: "{">
+    |
+    <RBRACE: "}">
+    |
+    <LSQUARE: "[">
+    |
+    <RSQUARE: "]">
+    |
+    <COMMA: ",">
+    |
+    <COLON: ":">  
+    |
+    <TRUE: "true">
+    |
+    <FALSE: "false">
+    |
+    <NULL: "null">
+    |  
+    // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
+    // Unicode values are allowed in char and string. Need to define numbers ahead of characters
+    // since numbers can also match as characters.
+    <NUMBER: (["-"])? ((["0"]) | (["1"-"9"] (["0"-"9"])*)) ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
+    |
+    // a 'char' is any unicode character except " (double quote) or \ (backslash) or
+    // control character (unicode range 0000 - 001f).  Certain special characters and
+    // certain control characters are allowed if escaped with \: ", \, /, b, f, n, r, t.
+    // Unicode characters are allowed using the \\u four-hex-digits notation, e.g.
+    // \\u04af
+    <CHAR:(   
+        (~["\"", "\\", "\u0000"-"\u001f"])
+        | ("\\"
+            ( ["u"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"]
+                | ["\"", "\\", "b", "f", "n", "r", "t"]
+                )
+            )
+        )>
+    |
+    // A string is a collection of zero or more Unicode characters, wrapped in 
+    // double quotes, using backslash escapes. A character is represented as a 
+    // single character string.
+    // TODO: allow strings not wrapped in double quotes -- make it a user setting.
+    <STRING: "\"" (<CHAR>)* "\"">
+}
+
+
+/*******************************************************************************
+
+JSON grammar starts here
+
+*******************************************************************************/
+
+void parse() : 
+{
+}
+{
+    (
+        object() <EOF> 
+        |
+        array() <EOF> 
+    )
+    {
+        write();   
+    }
+}
+
+/*
+    Objects are formatted like this:
+    {
+        (members())*
+    }
+    
+    The left brace triggers an indent level increase, for the object members. 
+    The right brace a corresponding indent level decrease.
+*/
+void object() : 
+{
+}
+{
+    <LBRACE> { 
+        writeln(); 
+        add("{"); 
+        writeln(); 
+        ++token_source.level; 
+    }
+    (members())? 
+    t=<RBRACE> { 
+        writeln(); 
+        --token_source.level; 
+        add("}"); 
+        if (t.next != null && t.next.kind != JsonParserConstants.COMMA) 
+            writeln(); 
+    }
+}
+
+/*
+    Arrays are formatted like this:
+    [ element(, element...) ]
+    
+    Note that if an element is an object, it will look like this:
+    [
+        {
+            ...
+        }
+    ]
+    
+*/
+void array() : 
+{
+}
+{
+    <LSQUARE> 
+    {
+        add("[");   
+    }
+    (elements())? 
+    <RSQUARE> 
+    { 
+        add("]"); 
+    }
+}
+
+/*
+    A member is a pair of one more key/value.
+    Pairs are separated by a comma.
+    Comma signals a newline to be inserted.
+    A member is formatted like this:
+    
+    key: value(, key: value...)
+*/
+void members() : 
+{
+}
+{
+    key() <COLON> { add(": "); } value() ( <COMMA> { trimWhitespace(); add(", "); writeln(); } members() )?
+}
+
+/*
+    Elements are members of an array.
+    Elements are one or more values separated by commas.
+    Elements do not trigger insertion of newlines nor change of indent level.
+*/
+void elements() : 
+{
+}
+{
+    value() ( <COMMA> { add(", "); } elements() )?
+}
+
+/*
+    A value is the RHS of a pair.  It can be pretty much any of the
+    other types.
+*/
+void value() : 
+{
+}
+{
+    (
+        string() | number() | object() | array() 
+        |
+        t=<TRUE>  { add(t); }
+        |
+        t=<FALSE>  { add(t); }
+        |
+        t=<NULL> { add(t); }
+    ) 
+}
+
+/*
+    A key is the LHS of a pair.  It is a simple string.
+*/
+void key() :
+{
+}
+{
+    (
+        t=<STRING> { add(t); }
+    )
+}
+
+/*
+    A string is a string, and it's the same as a key.
+*/
+void string() : 
+{
+}
+{
+    (
+        t=<STRING> { add(t); }
+    )
+}
+
+/*
+    A number is a number.
+*/
+void number() :
+{
+}
+{
+    (
+        t=<NUMBER> { add(t); }
+    )
+}
+
+
+TOKEN_MGR_DECLS :
+{
+
+    // line buffer, text is accumulated here, then written to the output stream
+    // on end of line marker.
+    static StringBuilder b = new StringBuilder();
+
+    // all text is accumulated here.  When processing is complete, this buffer
+    // will contain the final beautified text.
+    static StringBuilder outputBuffer = new StringBuilder();
+
+    // accumulate pieces a token or string at a time.  The objects in this array
+    // will be converted to strings, padded as appropriate, and added to the
+    // line buffer b.  This is the "accumulator".
+    static ArrayList a = new ArrayList();
+
+    // where to write the completely beautified code.
+    private static PrintWriter out = null;
+
+    // level of indentation
+    static int level = 0;
+
+    // width of indent
+    static int indent_width = 4;
+    static String indent = "    ";
+    static String double_indent = indent + indent;
+
+    // the soft tab setting from jEdit, use soft tabs by default.
+    static boolean useSoftTabs = true;
+
+    // line separator, defaults to system line separator, but can be set to
+    // a specific separator
+    static String ls = System.getProperty("line.separator");
+
+    static void reset() {
+        b = new StringBuilder();
+        outputBuffer = new StringBuilder();
+        a.clear();
+        level = 0;
+    }
+
+    static String getText() {
+        return outputBuffer.toString();
+    }
+
+    static void setLineSeparator(String le) {
+        ls = le;
+    }
+
+    static void setIndentWidth(int w) {
+        indent_width = w;
+        if (indent_width <= 0) {
+            indent_width = 4;
+        }
+        indent = "";
+        for (int i = 0; i < w; i++) {
+            indent += " ";
+        }
+        double_indent = indent + indent;
+    }
+
+    static void setUseSoftTabs(boolean b) {
+        useSoftTabs = b;
+        if (b) {
+            setIndentWidth(indent_width);
+        }
+        else {
+            indent = "\t";
+            double_indent = "\t\t";
+        }
+    }
+
+    // add a token to the accumulator
+    static void add(Token t) {
+        if (t != null) {
+            a.add(t);
+        }
+    }
+
+    // add a string to the accumulator
+    static void add(String s) {
+        if (s != null) {
+            a.add(s);
+        }
+    }
+
+    // trim spaces from the last item in the accumulator
+    static void trim() {
+        if (a.size() == 0)
+            return;
+        Object o = a.get(a.size() - 1);
+        StringBuilder sb = new StringBuilder();
+        if (o instanceof Token)
+            sb.append( ((Token)o).image );
+        else
+            sb.append((String)o);
+        while(sb.length() > 0 && sb.charAt(sb.length() - 1) == ' ')
+            sb.deleteCharAt(sb.length() - 1);
+        a.set(a.size() - 1, sb.toString() );
+    }
+
+    // trim a single new line from the end of the output buffer
+    static void trimNL() {
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\n')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\r')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+    }
+
+    // trim all \n and/or \r from the end of the given string
+    static void trimNL(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
+            sb.deleteCharAt(sb.length() - 1);
+    }
+
+    // trim all whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(0) == '\r'
+                || sb.charAt(0) == '\n'
+                || sb.charAt(0) == '\t'
+                || sb.charAt(0) == ' ')) {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
+    }
+
+    // trim up to max whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s, int max) {
+        StringBuilder sb = new StringBuilder(s);
+        int trimmed = 0;
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0)) && trimmed < max) {
+            sb.deleteCharAt(0);
+            ++trimmed;
+        }
+        return sb.toString();
+    }
+
+    // trims whitespace (\r, \n, space, \t) from the last items in the
+    // accumulator.  If the last item is all whitespace, continues on to the
+    // previous until a non-whitespace character is encountered.  If the
+    // entire accumulator is whitespace, continues to trim whitespace from the
+    // outputBuffer.
+    static void trimWhitespace() {
+        for (int i = a.size() - 1; i >= 0; i-- ) {
+            Object o = a.get(i);
+            StringBuilder sb = new StringBuilder();
+            if (o instanceof Token)
+                sb.append( ((Token)o).image );
+            else
+                sb.append((String)o);
+            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
+                    || sb.charAt(sb.length() - 1) == '\n'
+                    || sb.charAt(sb.length() - 1) == '\t'
+                    || sb.charAt(sb.length() - 1) == ' ')) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            if (sb.length() == 0) {
+                a.remove(i);
+            }
+            else {
+                a.set(i, sb.toString());
+                break;
+            }
+        }
+        if (a.size() == 0) {
+            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
+                outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+            }
+        }
+    }
+
+    // writes the contents of the accumulator to the outputBuffer.  The line
+    // buffer (b) is used to build the line.
+    static void write() {
+        try {
+            b.setLength(0); // clear the line buffer
+
+            // this next section builds the output string while protecting
+            // string literals.  All extra spaces are removed from the output
+            // string, except that string literals are left as is.
+            ArrayList list = new ArrayList();
+            String s = new String("");
+            for (int i = 0; i < a.size(); i++) {
+                Object o = a.get(i);
+                if (o instanceof Token) {
+                    Token token = (Token)o;
+                    if (token.kind == JsonParserConstants.STRING) {
+                        s = s.replaceAll("[ ]+", " ");
+                        list.add(s);
+                        s = new String("");
+                        list.add(token.image);
+                    }
+                    else {
+                        s += ((Token)o).image;
+                        s = s.replaceAll("[ ]+", " ");
+                    }
+                }
+                else {
+                    s += (String)o;
+                    s = s.replaceAll("[ ]+", " ");
+                }
+            }
+            for (int i = 0; i < list.size(); i++) {
+                b.append((String)list.get(i));
+            }
+
+            b.append(s);
+            s = b.toString();
+
+            // check for blank line(s)
+            String maybe_blank = new String(s);
+            if (maybe_blank.trim().isEmpty()) {
+                // yep, it's a blank, so just print out a line separator
+                outputBuffer.append(ls);
+                a.clear();
+                return;
+            }
+
+            // indent --
+            // most lines get indented, but there are a few special cases:
+            // "else" gets put on the same line as the closing "}" for the "if",
+            // so don't want to indent.  Similarly with "catch" and "finally".
+            // The "while" at the end of a "do" loop is marked as "^while" to
+            // differentiate it from a regular "while" block. "else if" is also
+            // a special case.
+            if (!s.startsWith(" {")) {
+                s = s.trim();
+                for (int i = 0; i < level; i++) {
+                    s = indent + s;
+                }
+            }
+
+            // check if the output buffer does NOT end with a new line.  If it
+            // doesn't, remove any leading whitespace from this line
+            if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+                s = trimStart(s);
+            }
+
+            // check that there aren't extra spaces in the buffer already --
+            // this handles the case where the output buffer ends with a space
+            // and the new string starts with a space, don't want 2 spaces.
+            if (s.startsWith(" ") && endsWith(outputBuffer, " ")) {
+                s = s.substring(1);
+            }
+
+            // check that there is one space between the end of the output
+            // buffer and this line -- this handles the case where the output
+            // buffer does not end in a space and the new string does not start
+            // with a space, want one space in between.
+            if (!s.startsWith(" ")
+                    && !endsWith(outputBuffer, " ")
+                    && !endsWith(outputBuffer, "\r")
+                    && !endsWith(outputBuffer, "\n")
+                    && outputBuffer.length() > 0) {
+                outputBuffer.append(" ");
+            }
+
+            // by the Sun standard, there is no situation where '(' is followed
+            // by a space or ')' is preceded with by a space
+            s = s.replaceAll("[(][ ]", "(");
+            s = s.replaceAll("[ ][)]", ")");
+            
+            // there should be no situation where a comma is preceded by a space,
+            // although that seems to happen when formatting string arrays.
+            s = s.replaceAll("\\s+[,]", ",");
+
+            // finally! add the string to the output buffer
+            // check for line length, may need to wrap.  Sun says to avoid lines
+            // longer than 80 characters.  This doesn't work well yet, so I've 
+            // commented out the wrapping code.  Still need to clean out the
+            // wrapping markers.
+            //s = s.replaceAll("[\u001c]", "");
+            outputBuffer.append(s);
+            /*
+            int wrap_sep_count = countWrapSep(s);
+            if (s.length() - wrap_sep_count > 80) {
+                String[] lines = wrapLines(s);
+                if ( lines != null ) {
+                    for (int i = 0; i < lines.length; i++) {
+                        outputBuffer.append(lines[i]).append(ls);
+                    }
+                }
+                else {
+                    // whack any remaining \u001c characters
+                    s = s.replaceAll("[\u001c]", "");
+                    outputBuffer.append(s);
+                }
+            }
+            else {
+                // whack any remaining \u001c characters
+                s = s.replaceAll("[\u001c]", "");
+                outputBuffer.append(s);
+            }
+            */
+            // clear the accumulator for the next line
+            a.clear();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void writeln() {
+        write();
+        trimNL();
+        outputBuffer.append(ls);
+    }
+
+    static int countWrapSep(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\u001c') {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    // needs work, does a wrap, but not per spec
+    static String[] wrapLines(String s) {
+        if (s.length() <= 80) {
+            return new String[]{s};
+        }
+        int wc = countWrapSep(s);
+        if (wc > 0) {
+            int[] break_points = new int[wc];
+            int offset = 0;
+            for (int i = 0; i < wc; i++) {
+                int index = s.indexOf('\u001c', offset);
+                break_points[i] = index;
+                offset = index + 1;
+            }
+
+            int first_break = -1;
+            for (int i = 0; i < break_points.length; i++) {
+                int possible = break_points[i];
+                if (possible > 80) {
+                    break;
+                }
+                first_break = possible;
+            }
+            if ( first_break == -1 ) {
+                first_break = s.length();
+            }
+
+            int ws_length = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == ' ')
+                    ++ws_length;
+                else
+                    break;
+            }
+            String leading_ws = s.substring(0, ws_length);
+            String head = s.substring(0, first_break);
+            String tail = s.substring(first_break);
+            //head = head.replaceAll("[\u001c]", "");
+            //tail = tail.replaceAll("[\u001c]", "");
+            return new String[]{head, leading_ws + double_indent + tail};
+        }
+        return null;
+    }
+
+    // StringBuilder doesn't have an "endsWith" method
+    static boolean endsWith(StringBuilder sb, String s) {
+        if (sb == null && s == null)
+            return true;
+        if (sb == null && s != null)
+            return false;
+        if (s == null)
+            return false;
+        if (sb.length() < s.length())
+            return false;
+        String end = sb.substring(sb.length() - s.length());
+        return end.equals(s);
+    }
+}
