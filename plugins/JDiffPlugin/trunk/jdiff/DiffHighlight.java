@@ -119,6 +119,38 @@ public class DiffHighlight extends TextAreaExtension {
             }
         }
     }
+    
+    public void paintInvalidLine(Graphics2D gfx, int screenLine, int y) {
+	    if (screenLine == textArea.getLineCount()) {
+            Diff.Change hunk = this.edits;
+            Color color;
+
+            if ( this.position == DiffHighlight.LEFT ) {
+                for ( ; hunk != null; hunk = hunk.next ) {
+                    if ( hunk.first0 <= screenLine && screenLine <= hunk.last0 ) {
+                        System.out.println("+++++ hunk left: " + hunk);
+                        TextAreaPainter painter = this.textArea.getPainter();
+                        color = JDiffPlugin.overviewInvalidColor;
+                        gfx.setColor( color );
+                        gfx.drawLine( 0, y, painter.getWidth() - 1, y );
+                        break;
+                    }
+                }
+            }
+            else { // DiffHighlight.RIGHT
+                for ( ; hunk != null; hunk = hunk.next ) {
+                    if ( hunk.first1 <= screenLine && screenLine <= hunk.last1 ) {
+                        System.out.println("+++++ hunk right: " + hunk);
+                        TextAreaPainter painter = this.textArea.getPainter();
+                        color = JDiffPlugin.overviewInvalidColor;
+                        gfx.setColor( color );
+                        gfx.drawLine( 0, y, painter.getWidth() - 1, y );
+                        break;
+                    }
+                }
+            }
+	    }
+	}
 
 
     public boolean isEnabled() {
