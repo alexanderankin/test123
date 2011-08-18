@@ -25,7 +25,6 @@ package errorlist;
 
 //{{{ Imports
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -55,6 +54,7 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.util.EnhancedTreeCellRenderer;
 
 import errorlist.ErrorSource.Error;
 //}}}
@@ -983,7 +983,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	}
 
 	//{{{ ErrorCellRenderer class
-	static class ErrorCellRenderer extends DefaultTreeCellRenderer
+	static class ErrorCellRenderer extends EnhancedTreeCellRenderer
 	{
 		//{{{ ErrorCellRenderer constructor
 		ErrorCellRenderer()
@@ -991,14 +991,19 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			//setOpaque(true);
 		} //}}}
 
+		//{{{ newInstance() method
+		@Override
+		protected TreeCellRenderer newInstance()
+		{
+			return new ErrorCellRenderer();
+		} //}}}
+
 		//{{{ getTreeCellRendererComponent() method
-		public Component getTreeCellRendererComponent(JTree tree,
+		@Override
+		protected void configureTreeCellRendererComponent(JTree tree,
 			Object value, boolean sel, boolean expanded,
 			boolean leaf, int row, boolean focus)
 		{
-			super.getTreeCellRendererComponent(tree,null,sel,
-				expanded,leaf,row,focus);
-
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
 			Object nodeValue = node.getUserObject();
 
@@ -1060,8 +1065,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				setText(null);
 				setIcon(null);
 			}
-
-			return this;
 		} //}}}
 
 		//{{{ Private members
