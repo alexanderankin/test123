@@ -188,6 +188,8 @@ public class SideKickPlugin extends EditPlugin
     public void handlePluginUpdate(PluginUpdate msg)
     {
     	EditPlugin plugin = msg.getPluginJAR().getPlugin();
+    	if (plugin == null)
+    		return;
     	if (plugin.getClassName().equals(MARKER_SETS_PLUGIN))
     	{
             if (msg.getWhat() == PluginUpdate.ACTIVATED)
