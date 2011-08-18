@@ -23,7 +23,6 @@ package sidekick.enhanced;
 
 //{{{ Imports
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
@@ -34,12 +33,11 @@ import java.awt.event.MouseMotionListener;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -53,6 +51,7 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.util.EnhancedTreeCellRenderer;
 
 import sidekick.Asset;
 import sidekick.IAsset;
@@ -228,17 +227,16 @@ public class SourceTree extends SideKickTree {
         }
     } //}}}
 
-    protected class Renderer extends DefaultTreeCellRenderer {
+    protected class Renderer extends EnhancedTreeCellRenderer {
         //{{{ Renderer class
         // based on sidekick/SideKickTree.java
-        public Component getTreeCellRendererComponent(
+    	@Override
+        protected void configureTreeCellRendererComponent(
             //{{{ +getTreeCellRendererComponent() : Component
             JTree tree, Object value,
             boolean sel, boolean expanded, boolean leaf,
             int row, boolean hasFocus
         ) {
-            JLabel comp = ( JLabel ) super.getTreeCellRendererComponent(
-                        tree, value, sel, expanded, leaf, row, hasFocus );
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) value;
             Object nodeValue = node.getUserObject();
             _hasMarker = false;
@@ -256,7 +254,6 @@ public class SourceTree extends SideKickTree {
             }
             else
                 setIcon( null );
-            return this;
         } //}}}
 
         private void wrap(StringBuffer sb, String indent, String s) {
@@ -322,6 +319,11 @@ public class SourceTree extends SideKickTree {
             //  setBackground(_markerColor); // does not work here
             super.paintComponent( g );
         } //}}}
+
+		@Override
+		protected TreeCellRenderer newInstance() {
+			return new Renderer();
+		}
     } //}}}
 
 }

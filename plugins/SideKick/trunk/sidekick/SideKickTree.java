@@ -24,7 +24,6 @@ package sidekick;
 
 // {{{ Imports
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -59,8 +58,8 @@ import javax.swing.JLabel;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -84,6 +83,7 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.util.EnhancedTreeCellRenderer;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.StringList;
@@ -1486,11 +1486,11 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         }        // }}}
 
         // {{{ Renderer class
-        class Renderer extends DefaultTreeCellRenderer
+        class Renderer extends EnhancedTreeCellRenderer
         {
-                public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
+        		@Override
+                protected void configureTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
                 {
-                        super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
                         Object nodeValue = node.getUserObject();
                         if (nodeValue instanceof IAsset)
@@ -1509,9 +1509,13 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 setIcon(null);
                         }
-
-                        return this;
                 }
+
+				@Override
+				protected TreeCellRenderer newInstance()
+				{
+					return new Renderer();
+				}
         }        // }}}
 
 
