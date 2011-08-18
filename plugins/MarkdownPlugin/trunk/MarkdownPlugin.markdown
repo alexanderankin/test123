@@ -1,7 +1,7 @@
 Markdown Plugin
 ================
 __Author:__ Vitaliy Berdinskikh  
-__Version:__ 0.1.0
+__Version:__ 0.1.1
 
 __MarkdownPlugin__ is a plugin for **jEdit** that can render _Markdown text_ from the current buffer or from selected text. The resulting _HTML_ is written to a new buffer or copied to the clipboard. The plugin can also show a preview in a web-browser (using the **Info Viewer** plugin).
 

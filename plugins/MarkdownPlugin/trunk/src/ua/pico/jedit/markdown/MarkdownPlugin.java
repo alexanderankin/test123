@@ -165,7 +165,7 @@ public class MarkdownPlugin extends EditPlugin {
 			name = buffer.getName();
 		}
 		try {
-			html = File.createTempFile(name, "." + MODE);
+			html = File.createTempFile(name, "." + MODE, new File(buffer.getDirectory()));
 			writer = new OutputStreamWriter(new FileOutputStream(html), charset);
 			builder.append(MessageFormat.format(html_prologue, charset, name));
 			builder.append(text).append(html_epilogue);
