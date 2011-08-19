@@ -48,7 +48,6 @@ public class GUIUtils {
      */
     public static void centerOnScreen(Component me) {
         Point center_point = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-        Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension window_size = me.getSize();
         me.setBounds(center_point.x - (window_size.width / 2), center_point.y - (window_size.height / 2), window_size.width, window_size.height);
     }
