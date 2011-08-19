@@ -146,4 +146,19 @@ public class Op {
         return num;
 
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Op: ").append(operation);
+        sb.append(", numbers: [");
+        for (int i = 0; i < nums.size(); i++) {
+            sb.append(nums.get(i));
+            if (i < nums.size() - 2) {
+                sb.append(',');   
+            }
+        }   
+        sb.append("]");
+        return sb.toString();
+    }
+    
 }
