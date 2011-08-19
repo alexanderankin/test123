@@ -44,7 +44,7 @@ public class NumberPanel extends JPanel {
     private RectangleButton dot = new RectangleButton(".");
 
     // action command to button map
-    private HashMap buttons = new HashMap();
+    private HashMap<String, AbstractButton> buttons = new HashMap<String, AbstractButton>();
 
     private JTextField x_register = null;
 
@@ -258,8 +258,13 @@ public class NumberPanel extends JPanel {
         macro = list;
     }
 
+    protected AbstractButton getButton(String cmd) {
+        return buttons.get(cmd);    
+    }
+    
+    
     protected void doClick(String cmd) {
-        JButton btn = (JButton) buttons.get(cmd);
+        AbstractButton btn = buttons.get(cmd);
         if (btn != null) {
             num_listener.actionPerformed(new ActionEvent(btn, 0, cmd));
             if (recording && macro != null) {

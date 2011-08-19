@@ -39,7 +39,7 @@ public class FunctionReader {
      */
     public FunctionReader(File f) throws IOException {
         if (f.length() == 0) {
-            throw new IOException("Zero length file.");
+            throw new IOException("Zero length file: " + f.getAbsolutePath());
         }
         BufferedReader br = new BufferedReader(new FileReader(f));
         String filename = f.getName();

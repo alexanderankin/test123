@@ -47,6 +47,7 @@ public class Calculator extends JFrame {
 
         setContentPane(new CalculatorPanel());
         pack();
+        GUIUtils.centerOnScreen(this);
         setVisible(true);
     }
 

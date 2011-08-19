@@ -248,11 +248,9 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 }
                 if (value.indexOf('.') >= 0) {
                     return new BigDecimal(value).toString();
-                }
-                else if (value.equals("Infinity") || value.equals("NaN")) {
+                } else if (value.equals("Infinity") || value.equals("NaN")) {
                     return "Error: cannot convert to BigDecimal";
-                }
-                else {
+                } else {
                     value = new BigInteger(value, old_base).toString(new_base);
                 }
                 return new BigDecimal(value).toString();
@@ -262,16 +260,14 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 }
                 if (old_base == new_base) {
                     return String.valueOf(new BigDecimal(value).doubleValue());
-                }
-                else {
+                } else {
                     value = new BigInteger(value, old_base).toString(new_base);
                 }
                 return String.valueOf(new BigDecimal(value).doubleValue());
             case BIGINT:
                 if (value.indexOf('.') >= 0) {
                     value = new BigDecimal(value).toBigInteger().toString();
-                }
-                else {
+                } else {
                     value = new BigInteger(value, old_base).toString(new_base);
                 }
                 return value;
@@ -280,8 +276,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 int n;
                 if (old_base == BASE_10) {
                     n = new Double(Double.parseDouble(value)).intValue();
-                }
-                else {
+                } else {
                     n = Integer.parseInt(value, old_base);
                 }
                 return Integer.toString(n, new_base);
@@ -367,8 +362,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             try {
                 Calculator.PREFS.node("constants_menu").clear();
                 Calculator.PREFS.node("function_menu").clear();
-            }
-            catch (Exception e) { }            // NOPMD
+            } catch (Exception e) { }            // NOPMD
             // System.out.println( "Done." );
         }
     }
@@ -438,7 +432,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
 
                 String name = JOptionPane.showInputDialog(CalculatorPanel.this, "Enter a name for this function:", "Enter Name", JOptionPane.QUESTION_MESSAGE);
                 if (name == null) {
-                    return ;
+                    return;
                 }
                 String desc = JOptionPane.showInputDialog(CalculatorPanel.this, "Enter a description for this function:", "Enter Description", JOptionPane.QUESTION_MESSAGE);
                 try {
@@ -461,11 +455,9 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     mi.setToolTipText(desc);
                     mi.addActionListener(functionPlayer);
                     function_menu.insert(mi, offset);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(CalculatorPanel.this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-                finally {
+                } finally {
                     number_panel.setRecording(false, null);
                 }
 
@@ -508,8 +500,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     java.net.URL help_url = getClass().getClassLoader().getResource("index.html");
                     System.out.println(help_url);
                     new AboutDialog(GUIUtils.getRootJFrame(CalculatorPanel.this), "Help", help_url, true).setVisible(true);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -531,7 +522,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         try {
             File calc_dir = new File(System.getProperty("calc.home"), ".calc");
             if (!calc_dir.exists()) {
-                return ;
+                return;
             }
             Preferences prefs = Calculator.PREFS.node(type);
             String[] constants = prefs.keys();
@@ -549,13 +540,11 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     mi.addActionListener(functionPlayer);
                     buttons.put(cmd, mi);
                     menu.add(mi);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception e) {         // NOPMD
+                    //e.printStackTrace();      
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -790,14 +779,11 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                         AbstractButton base_btn = null;
                         if (base_16_btn.isSelected()) {
                             base_btn = base_16_btn;
-                        }
-                        else if (base_8_btn.isSelected()) {
+                        } else if (base_8_btn.isSelected()) {
                             base_btn = base_8_btn;
-                        }
-                        else if (base_2_btn.isSelected()) {
+                        } else if (base_2_btn.isSelected()) {
                             base_btn = base_2_btn;
-                        }
-                        else {
+                        } else {
                             base_btn = base_10_btn;
                         }
                         base_btn.setSelected(false);
@@ -805,7 +791,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 }
             }
 
-        } ;
+        };
 
         ActionListener base_listener = new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -832,7 +818,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 current_base = base;
                 number_panel.setBase(current_base, current_mode);
             }
-        } ;
+        };
 
         bigdecimal_mode.addActionListener(mode_listener);
         bigint_mode.addActionListener(mode_listener);
@@ -1173,53 +1159,38 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             final Op op = new Op(operation, type);
             op.setStrict(_strict);
 
-            class Calculation extends SwingWorker<String, Object> {
-                @Override
-                public String doInBackground() {
-                    CalculatorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    Number result = null;
-                    String answer = "";
-                    try {
-                        Num num = op.calculate();
-                        result = num.getValue();
-                    }
-                    catch (ArithmeticException e) {
-                        answer = "Error: " + e.getMessage();
-                    }
+            CalculatorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Number result = null;
+            String answer = "";
+            try {
+                Num num = op.calculate();
+                result = num.getValue();
+            } catch (ArithmeticException e) {
+                answer = "Error: " + e.getMessage();
+            }
 
-                    if (!answer.startsWith("Error")) {
-                        switch (current_mode) {
-                            case FLOAT:
-                                double d = result.doubleValue();
-                                answer = Double.toString(d);
-                                break;
-                            default:
-                                int a = result.intValue();
-                                answer = convertToBase(Integer.toString(a), BASE_10, current_base);
-                        }
-                    }
-                    return answer;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        String answer = get();
-                        last_x_value = x_register.getText();
-                        x_register.setText(answer);
-                        x_register.requestFocus();
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    finally {
-                        CalculatorPanel.this.setCursor(Cursor.getDefaultCursor());
-                    }
+            if (!answer.startsWith("Error")) {
+                switch (current_mode) {
+                    case FLOAT:
+                        double d = result.doubleValue();
+                        answer = Double.toString(d);
+                        break;
+                    default:
+                        int a = result.intValue();
+                        answer = convertToBase(Integer.toString(a), BASE_10, current_base);
                 }
             }
-            new Calculation().execute();
+            try {
+                last_x_value = x_register.getText();
+                x_register.setText(answer);
+                x_register.requestFocus();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                CalculatorPanel.this.setCursor(Cursor.getDefaultCursor());
+            }
         }
-    } ;
+    };
 
     // action listener for those function that take one parameter
     private ActionListener unary_op_listener = new ActionListener() {
@@ -1230,7 +1201,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             }
             String xs = x_register.getText();
             if (xs == null || xs.length() == 0) {
-                return ;
+                return;
             }
             String type = "int";
             switch (current_mode) {
@@ -1255,68 +1226,52 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             op.setStrict(_strict);
             op.addNum(new Num(xs));
 
-            class Calculation extends SwingWorker<String, Object> {
-                @Override
-                public String doInBackground() {
-                    CalculatorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    Number result = null;
-                    String answer = "";
-                    try {
-                        Num num = op.calculate();
-                        result = num.getValue();
-                    }
-                    catch (Exception e) {
-                        answer = "Error: " + e.getMessage();
-                    }
-
-                    if (!answer.startsWith("Error")) {
-                        switch (current_mode) {
-                            case BIGDECIMAL:
-                                answer = result.toString();
-                                break;
-                            case FLOAT:
-                                double d = result.doubleValue();
-                                answer = Double.toString(d);
-                                break;
-                            case BIGINT:
-                                if (result instanceof BigInteger) {
-                                    answer = ((BigInteger) result).toString(current_base);
-                                }
-                                else {
-                                    answer = "Error: operation not allowed in BI mode";
-                                }
-                                break;
-                            case INT:
-                            default:
-                                int a = result.intValue();
-                                answer = Integer.toString(a);
-                        }
-
-                        // convert the answer back from base 10 to the current base
-                        answer = convertToBase(answer, BASE_10, current_base);
-                    }
-                    return answer;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        String answer = get();
-                        last_x_value = x_register.getText();
-                        x_register.setText(answer);
-                        x_register.requestFocus();
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    finally {
-                        CalculatorPanel.this.setCursor(Cursor.getDefaultCursor());
-                    }
-                }
+            CalculatorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Number result = null;
+            String answer = "";
+            try {
+                Num num = op.calculate();
+                result = num.getValue();
+            } catch (Exception e) {
+                answer = "Error: " + e.getMessage();
             }
-            new Calculation().execute();
+
+            if (!answer.startsWith("Error")) {
+                switch (current_mode) {
+                    case BIGDECIMAL:
+                        answer = result.toString();
+                        break;
+                    case FLOAT:
+                        double d = result.doubleValue();
+                        answer = Double.toString(d);
+                        break;
+                    case BIGINT:
+                        if (result instanceof BigInteger) {
+                            answer = ((BigInteger) result).toString(current_base);
+                        } else {
+                            answer = "Error: operation not allowed in BI mode";
+                        }
+                        break;
+                    case INT:
+                    default:
+                        int a = result.intValue();
+                        answer = Integer.toString(a);
+                }
+
+                // convert the answer back from base 10 to the current base
+                answer = convertToBase(answer, BASE_10, current_base);
+            }
+            try {
+                last_x_value = x_register.getText();
+                x_register.setText(answer);
+                x_register.requestFocus();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                CalculatorPanel.this.setCursor(Cursor.getDefaultCursor());
+            }
         }
-    } ;
+    };
 
     // action listener for those functions that take two parameters
     private ActionListener binary_op_listener = new ActionListener() {
@@ -1328,10 +1283,10 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             String xs = x_register.getText();
             String ys = y_register.getText();
             if (xs == null || xs.length() == 0) {
-                return ;
+                return;
             }
             if (ys == null || ys.length() == 0) {
-                return ;
+                return;
             }
             String type = "int";
             switch (current_mode) {
@@ -1359,74 +1314,59 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             op.addNum(new Num(ys));
             op.addNum(new Num(xs));
 
-            class Calculation extends SwingWorker<String, Object> {
-                @Override
-                public String doInBackground() {
-                    CalculatorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    Number result = null;
-                    String answer = "";
-                    try {
-                        Num num = op.calculate();
-                        result = num.getValue();
-                    }
-                    catch (ArithmeticException e) {
-                        answer = "Error: " + e.getMessage();
-                        e.printStackTrace();
-                    }
-
-                    if (!answer.startsWith("Error")) {
-                        switch (current_mode) {
-                            case BIGDECIMAL:
-                                answer = result.toString();
-                                break;
-                            case BIGINT:
-                                answer = result.toString();
-                                if (answer.indexOf('.') > 0) {
-                                    answer = answer.substring(0, answer.indexOf('.'));
-                                }
-                                break;
-                            case FLOAT:
-                                double d = result.doubleValue();
-                                answer = Double.toString(d);
-                                break;
-                            default:
-                                int a = result.intValue();
-                                answer = Integer.toString(a);
-                        }
-
-                        // convert the answer from base 10 back to the current base
-                        answer = convertToBase(answer, BASE_10, current_base);
-                    }
-                    return answer;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        String answer = get();
-                        if (answer.startsWith("Error")) {
-                            return;
-                        }
-                        RegisterDocument rd = new RegisterDocument(current_base, current_mode);
-                        rd.insertString(0, answer, null);
-                        last_x_value = x_register.getText();
-                        x_register.setText(answer);
-                        y_register.setText(z_register.getText());
-                        z_register.setText(t_register.getText());
-                        t_register.setText("");
-                        x_register.requestFocus();
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    finally {
-                        CalculatorPanel.this.setCursor(Cursor.getDefaultCursor());
-                    }
-                }
+            CalculatorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Number result = null;
+            String answer = "";
+            try {
+                Num num = op.calculate();
+                result = num.getValue();
+            } catch (ArithmeticException e) {
+                answer = "Error: " + e.getMessage();
+                e.printStackTrace();
             }
-            new Calculation().execute();
+
+            if (!answer.startsWith("Error")) {
+                switch (current_mode) {
+                    case BIGDECIMAL:
+                        answer = result.toString();
+                        break;
+                    case BIGINT:
+                        answer = result.toString();
+                        if (answer.indexOf('.') > 0) {
+                            answer = answer.substring(0, answer.indexOf('.'));
+                        }
+                        break;
+                    case FLOAT:
+                        double d = result.doubleValue();
+                        answer = Double.toString(d);
+                        break;
+                    default:
+                        int a = result.intValue();
+                        answer = Integer.toString(a);
+                }
+
+                // convert the answer from base 10 back to the current base
+                answer = convertToBase(answer, BASE_10, current_base);
+            }
+            try {
+                if (answer.startsWith("Error")) {
+                    return;
+                }
+                RegisterDocument rd = new RegisterDocument(current_base, current_mode);
+                rd.insertString(0, answer, null);
+                last_x_value = x_register.getText();
+                x_register.setText(answer);
+                y_register.setText(z_register.getText());
+                z_register.setText(t_register.getText());
+                t_register.setText("");
+                x_register.requestFocus();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                CalculatorPanel.this.setCursor(Cursor.getDefaultCursor());
+            }
         }
-    } ;
+    };
 
     private ActionListener label_listener = new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
@@ -1440,19 +1380,17 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                         String c = (String) macro.get(macro.size() - 1);
                         if (Character.isDigit(c.charAt(0))) {
                             macro.remove(macro.size() - 1);
-                        }
-                        else {
+                        } else {
                             break;
                         }
                     }
                     macro.add(cmd);
-                }
-                else {
+                } else {
                     macro.add(ae.getActionCommand());
                 }
             }
         }
-    } ;
+    };
 
     /**
      * Executes stored functions, constants, and conversions.
@@ -1488,20 +1426,18 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     AbstractButton btn = (AbstractButton) buttons.get(line);
                     if (btn != null) {
                         btn.doClick();
-                    }
-                    else {
+                    } else {
                         number_panel.doClick(line);
                     }
                     line = br.readLine();
                 }
                 br.close();
                 last_x_value = old_last_x;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    } ;
+    };
 
     ActionListener chs_listener = new ActionListener() {
         public void actionPerformed(ActionEvent ae) {
@@ -1513,11 +1449,10 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 JButton b = (JButton) ae.getSource();
                 Document doc = x_register.getDocument();
                 doc.insertString(x_register.getCaret().getDot(), b.getActionCommand(), null);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 x_register.setText(previous);
             }
             x_register.requestFocus();
         }
-    } ;
+    };
 }
