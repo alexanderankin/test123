@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--
+  ~ jEdit - Programmer's Text Editor
+  ~ :tabSize=8:indentSize=8:noTabs=false:
+  ~ :folding=explicit:collapseFolds=1:
+  ~
+  ~ Copyright © 2011 jEdit contributors
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  -->
+
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Matthieu Casanova">
+  <title>Highlight Plugin</title>
+</head>
+<body>
+<table border="0" cellspacing="0" width="100%" bgcolor="#ccccff">
+    <tr>
+      <td valign="top" style="font-weight:bold;font-size:x-large">Highlight</td>
+      <td align="right" valign="top" style="font-size:small">
+      <span style="font-weight:bold">Version 1.9.6 (Aug 19, 2011)</span><br>
+      Matthieu Casanova &lt;chocolat.mou@gmail.com&gt;&nbsp;</td>
+    </tr>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="3" width="100%" bgcolor="#EEEEFF"
+ summary="Introduction">
+  <tbody>
+    <tr align="center">
+      <td style="font-weight:bold;font-size:large">Introduction</td>
+    </tr>
+  </tbody>
+</table>
+<p>This plugin is a very simple plugin that will highlight a word you selected.
+I found this in Intellij Idea and loved this feature so I added it here.
+</p>
+<h2>Highlight Usage</h2>
+<p>There are severals methods to add highlights : the first one is the old one, you select a word,
+call highlight and the highlight appears.
+The second one is a dialog that will allow you to create regexp, choose color ...
+You can also highlight the last searched word</p>
+<p>You can have multiple highlights at the same time, choose colors and use regexp.</p>
+<p>You can toggle all highlights on or off, or toggle only the highlights you want.</p>
+<p>And there is also a panel to manage your highlights (it is the only way to remove only of them).</p>
+<p>Scope :<br/>
+  Now the highlights have a scope. The default scope is PERMANENT. The new scopes are SESSION (this scope works
+  like permanent scope but will not be saved when closing jEdit. The last is the BUFFER scope. It will be activated only
+  in the buffer where it was created.
+</p>
+<h2>History</h2>
+<ul>
+  <li>1.9.6 (Aug 19, 2011)</li>
+  <ul>
+      <li>Moved the color painter to a lower layer so the caret highlight is on top of it.</li>
+  </ul>
+  <li>1.9.5 (Aug 09, 2011)</li>
+  <ul>
+      <li>Fixed ' changed into &apos in Hypersearch results highlight (#3310376)</li>
+      <li>Removed the highlight subsequence option, too complex for not a good result.</li>
+      <li>The selection highlight do not highlight the current selection anymore so it is easier to see where the
+      caret is.</li>
+  </ul>
+  <li>1.9.1 (Jan 29, 2011)</li>
+  <ul>
+      <li>If the buffer is empty, opening highlight dialog give a NPE (bug #3160075)</li>
+  </ul>
+  <li>1.9.0 (Oct 19, 2010)</li>
+  <ul>
+      <li>Highlight now colors in the buffer</li>
+  </ul>
+  <li>1.8.4 (Aug 4, 2010)</li>
+  <ul>
+      <li>The Highlight dialog contains the current word under caret by default</li>
+  </ul>
+  <li>1.8.3 (May 20, 2010)</li>
+  <ul>
+      <li>Fix selection highlight not always updated (patch #3004382) (Kazutoshi Satoda)</li>
+  </ul>
+  <li>1.8.2 (May 6, 2010)</li>
+  <ul>
+      <li>Disabling highlight overview was not working (#2983441)</li>
+      <li>Performance improvement when moving caret</li>
+  </ul>
+  <li>1.8.1 (Mar 5, 2010)</li>
+  <ul>
+      <li>Huge performance improvement in Highlight overview</li>
+      <li>Highlighter now use CharSequence, it should have lower memory footprint and lower CPU usage</li>
+      <li>Highlighter now highlight only in the first 10000 characters of a line for better performances</li>
+  </ul>
+  <li>1.8.0 (Feb 2, 2010)</li>
+  <ul>
+      <li>If the highlight serialized data are broken the plugin will not be broken anymore</li>
+      <li>New highlight overview next to the right scrollbar (Szalai Endre)</li>
+      <li>Fix a bug when choosing an arbirary layer value</li>
+      <li>The cycle color options were displayed twice</li>
+  </ul>
+  <li>1.6.0 (Aug 25, 2009)</li>
+  <ul>
+      <li>New option to highlight the current selection that is under the caret</li>
+  </ul>
+  <li>1.5.3 (Mar 24, 2009)</li>
+  <ul>
+    <li>Highlight regex can now match beginning or end of line using ^ and $ (Shlomy Reinstein)</li>
+  </ul>
+  <li>1.5.2 (Jan 23, 2009)</li>
+  <ul>
+    <li>Fixed highlight update when some folds are closed</li>
+  </ul>
+  <li>1.5.1 (Dec 06, 2008)</li>
+  <ul>
+    <li>Added the ability to choose the layer and alpha blending level (feature #1884608}</li>
+    <li>Added a square around the highlighted text</li>
+	<li>When softwrap was on, a the line below the highlighted word was highlighted too (#2383346)</li>
+	<li>The color cycle was deactivated after jEdit restart (#1909405)</li>
+  </ul>
+  <li>1.4.2 (May 14, 2007)</li>
+  <ul>
+    <li>Button for hypertext search added in the highlight panel, thanks to Martin Raspe</li>
+    <li>The color cycling option was not loaded at plugin launch</li>
+    <li>Some bugs using soft wrap fixed (#1595219)</li>
+    <li>Fixed wrong painting when changing font size</li>
+  </ul>
+  <li>1.4.1 (Jul 25, 2006)</li>
+  <ul>
+    <li>ArrayOutOfBoundsException fixed</li>
+  </ul>
+  <li>1.3.4 (Jul 18, 2006)</li>
+  <ul>
+    <li>Change : Minor change in option pane design (use of separator).</li>
+    <li>Bugfix : highlight current search will now take the ignore case flag of the last search.</li>
+    <li>New regex api : removed gnu.regex.* dependency</li>
+    <li>Textarea extension rewritten for better performances</li>
+  </ul>
+  <li>1.3.2 (Jan 20, 2006)</li>
+  <ul>
+    <li>New feature : highlight status enabled or disabled are saved when closing jEdit.</li>
+  </ul>
+  <li>1.3.1 (Oct 6, 2005)</li>
+  <ul>
+    <li>New feature : highlight current word.</li>
+    <li>New feature : choice between color cycle or only one default color.</li>
+    <li>New feature : option to replace previous highlights instead of adding them.</li>
+    <li>Bugfix : the Highlighter text area extension is now correctly removed when a textarea is closed</li>
+  </ul>
+  <li>1.3.0 (May 29, 2005)</li>
+  <ul>
+    <li>New feature : highlight scope.</li>
+  </ul>
+  <li>1.2.1 (May 11, 2005)</li>
+  <ul>
+    <li>1193535 bug fixed (wrong highlights with soft wrap)</li>
+    <li>Small optimization on highlight saving and loading</li>
+  </ul>
+  <li>1.2.0 (Mar 25, 2005)</li>
+  <ul>
+    <li>The highlights are now on top layer and have 50% transparency, so you can see them while selecting text.</li>
+    <li>The plugin is now launched at startup so you do not have to open dockable panel to activate highlights loaded at startup.</li>
+  </ul>
+ <li>1.1.0 (Feb 19, 2005)</li>
+  <ul>
+    <li>A dockable list of all your highlights</li>
+    <li>A regexp support</li>
+    <li>Case sensitive / insensitive choice</li>
+    <li>You can now choose the color of the highlight</li>
+    <li>There can be multiple highlights at the same time</li>
+    <li>The highlight box is now on a back layer so the selection will be on top of the highlight</li>
+    <li>Highlights are saved when jEdit is closed and restored when jEdit is launched</li>
+    <li>bugfix : The painter extension wasn't corectly unloaded</li>
+  </ul>
+  <li>1.0.1 (Dec 11, 2004)</li>
+  <ul>
+    <li>A menu added in the plugin menu</li>
+    <li>A link to the help file</li>
+  </ul>
+  <li>1.0.0 (Jul 25, 2004)</li>
+  <ul>
+    <li>Initial Release</li>
+  </ul>
+</ul>
+<h2>Feedback</h2>
+<p>Please report bugs to the bug jEdit's plugin tracker on sourceforge.net</p>
+</body>
+</html>
