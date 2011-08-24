@@ -1,0 +1,15 @@
+# Remote control jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.activate=startup
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.name=RemoteControl
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.author=Matthieu Casanova
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.version=1.0.0
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.docs=docs/RemoteControl.html
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.description=Remote control is a plugin that allows the user to remotely control jEdit.
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.depend.0=jdk 1.5
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.depend.1=jedit 04.03.99.00
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.jars=xstream.jar jettison.jar
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.usePluginHome=true
+
+remotecontrol.port=10000
