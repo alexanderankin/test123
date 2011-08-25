@@ -19,41 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package com.kpouer.jedit.remotecontrol;
-
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+package com.kpouer.jedit.remotecontrol.serializer;
 
 /**
  * @author Matthieu Casanova
  */
-public class RemoteControlPlugin extends EditPlugin
+public interface Serializer
 {
-	public static RemoteServer server;
-	@Override
-	public void start()
-	{
-		int port = jEdit.getIntegerProperty("remotecontrol.port", 10000);
-		server = new RemoteServer(port);
-		server.start();
-	}
-
-	@Override
-	public void stop()
-	{
-		server.stop();
-		server = null;
-	}
-
-	public static View getView(String id)
-	{
-		return server.getjEditListener().getView(id);
-	}
-
-	public static EditPane getEditPane(String id)
-	{
-		return server.getjEditListener().getEditPane(id);
-	}
+	String serialize(Object object);
 }

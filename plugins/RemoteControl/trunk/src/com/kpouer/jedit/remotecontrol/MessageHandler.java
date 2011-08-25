@@ -21,39 +21,11 @@
 
 package com.kpouer.jedit.remotecontrol;
 
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-
 /**
  * @author Matthieu Casanova
  */
-public class RemoteControlPlugin extends EditPlugin
+public interface MessageHandler
 {
-	public static RemoteServer server;
-	@Override
-	public void start()
-	{
-		int port = jEdit.getIntegerProperty("remotecontrol.port", 10000);
-		server = new RemoteServer(port);
-		server.start();
-	}
-
-	@Override
-	public void stop()
-	{
-		server.stop();
-		server = null;
-	}
-
-	public static View getView(String id)
-	{
-		return server.getjEditListener().getView(id);
-	}
-
-	public static EditPane getEditPane(String id)
-	{
-		return server.getjEditListener().getEditPane(id);
-	}
+	boolean accept(String line);
+    void handleMessage(String line);
 }

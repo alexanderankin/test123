@@ -21,8 +21,10 @@
 
 package com.kpouer.jedit.remotecontrol;
 
+import com.kpouer.jedit.remotecontrol.serializer.Serializer;
 import com.thoughtworks.xstream.XStream;
 import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.bsh.NameSpace;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -34,6 +36,8 @@ import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -42,22 +46,27 @@ import java.util.LinkedList;
 public class RemoteClient
 {
 	SocketChannel sChannel;
-	private final XStream xstream;
-	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
-	private static final byte[] HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome".getBytes(RemoteServer.CHARSET);
-
-	private boolean handshaked;
-
 
 	private final LinkedList<String> messages;
 	private final StringBuilder builder;
 
-	public RemoteClient(SocketChannel sChannel, XStream xstream)
+	private Collection<MessageHandler> handlers;
+
+	private Serializer serializer;
+
+	public RemoteClient(SocketChannel sChannel)
 	{
 		this.sChannel = sChannel;
-		this.xstream = xstream;
 		messages = new LinkedList<String>();
 		builder = new StringBuilder();
+		handlers = new ArrayList<MessageHandler>();
+		handlers.add(new Challenge(this, sChannel));
+		serializer = ServiceManager.getService(Serializer.class, "xsjson");
+	}
+
+	public Serializer getSerializer()
+	{
+		return serializer;
 	}
 
 	public void read(ByteBuffer buf)
@@ -98,56 +107,37 @@ public class RemoteClient
 		handleMessage();
 	}
 
-	private void handleMessage()
+	void handshaked()
 	{
-		if (!handshaked)
-		{
-			handleHandshake();
-		}
-		if (handshaked)
-		{
-			while (!messages.isEmpty())
-			{
-				String line = messages.removeFirst();
-				if (line.startsWith("S:"))
-				{
-					handleSingleLineCommand(line);
-				}
-			}
-		}
+		handlers.clear();
+		handlers.add(new SingleLineCommandHandler(this));
 	}
 
-	private void handleHandshake()
+	private void handleMessage()
 	{
 		while (!messages.isEmpty())
 		{
 			String line = messages.removeFirst();
-			if (line.equals(HANDSHAKE))
+			for (MessageHandler handler : handlers)
 			{
-				Log.log(Log.MESSAGE, this, "Handshake received");
-				try
+				if (handler.accept(line))
 				{
-					sChannel.write(ByteBuffer.wrap(HANDSHAKE_ANSWER));
+					handler.handleMessage(line);
+					break;
 				}
-				catch (IOException e)
-				{
-					Log.log(Log.WARNING, this, e, e);
-				}
-				handshaked = true;
-				Log.log(Log.MESSAGE, this, "Client handshaked " + this);
-				break;
-			}
-			else
-			{
-				Log.log(Log.WARNING, this, "Wrong Handshake " + line);
 			}
 		}
 	}
 
+	public void sendObject(Object o)
+	{
+		String message = serializer.serialize(o);
+		byte[] bytes = message.getBytes(RemoteServer.CHARSET);
+		sendMessage(bytes);
+	}
+
 	void sendMessage(byte[] message)
 	{
-		if (!handshaked)
-			return;
 		try
 		{
 			sChannel.write(ByteBuffer.wrap(message));
@@ -158,69 +148,9 @@ public class RemoteClient
 		}
 	}
 
-	/**
-	 * Handle a single line command
-	 * S:transactionId:somebeanshell
-	 *
-	 * If transactionId is empty, there is no response.
-	 * @param line the command received
-	 */
-	private void handleSingleLineCommand(String line)
-	{
-		String command = line.substring(2);
-		int i = command.indexOf(':');
-		if (i == -1)
-		{
-			Log.log(Log.WARNING, this, "Wrong command " + line);
-			return;
-		}
-		String transaction;
-		if (i == 0)
-		{
-			transaction = null;
-		}
-		else
-		{
-			transaction = command.substring(0, i);
-		}
-		command = command.substring(i + 1);
-		execute(command, transaction);
-	}
-
-	private void execute(final String script, final String transactionId)
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				NameSpace ns = new NameSpace(
-					BeanShell.getNameSpace(),
-					"RemoteClient namespace");
-
-				Object ret = null;
-				try
-				{
-					ret = BeanShell.eval(jEdit.getActiveView(), ns, script);
-				}
-				catch (Throwable e)
-				{
-					Log.log(Log.ERROR, this, "Remote command failed:"+script, e);
-					ret = e;
-				}
-				if (transactionId != null)
-				{
-					CommandResponse response = new CommandResponse(transactionId, ret);
-					String s = xstream.toXML(response);
-					sendMessage(s.getBytes(RemoteServer.CHARSET));
-				}
-			}
-		});
-	}
-
 	@Override
 	public String toString()
 	{
-		return "RemoteClient[" + sChannel.socket().getInetAddress() + ":" + sChannel.socket().getPort() + ",hanshaked=" + handshaked + "]";
+		return "RemoteClient[" + sChannel.socket().getInetAddress() + ":" + sChannel.socket().getPort() + "]";
 	}
 }
