@@ -14,3 +14,4 @@ plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.usePluginHome=true
 
 remotecontrol.port=53348
 remotecontrol.pincode=1234
+remotecontrol.welcomeservice=challenge
