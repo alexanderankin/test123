@@ -22,7 +22,6 @@
 package com.kpouer.jedit.remotecontrol;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 import java.io.IOException;
