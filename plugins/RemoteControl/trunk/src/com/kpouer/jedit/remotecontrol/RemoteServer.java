@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class RemoteServer implements Runnable
 {
-	static final Charset CHARSET = Charset.forName("UTF-8");
+	public static final Charset CHARSET = Charset.forName("UTF-8");
 	private final int port;
 	private ServerSocketChannel socketChannel;
 
@@ -56,8 +56,6 @@ public class RemoteServer implements Runnable
 	private Selector selector;
 
 	private final Map<SocketChannel, RemoteClient> clients;
-	private final XStream xstream;
-
 	private static boolean DEBUG = true;
 
 	private final jEditListener jEditListener;
@@ -68,17 +66,6 @@ public class RemoteServer implements Runnable
 		LOCK = new Object();
 		clients = new HashMap<SocketChannel, RemoteClient>();
 		jEditListener = new jEditListener(this);
-		xstream = new XStream(new JettisonMappedXmlDriver());
-		xstream.registerConverter(new GlobalConverter());
-		xstream.registerConverter(new BufferConverter());
-		xstream.registerConverter(new ViewConverter(jEditListener));
-		xstream.registerConverter(new EditPaneConverter(jEditListener));
-//		xstream.registerConverter(new EBMessageConverter(), XStream.PRIORITY_NORMAL - 1);
-//		xstream.registerConverter(new BufferChangingConverter());
-//		xstream.registerConverter(new BufferUpdateConverter());
-//		xstream.registerConverter(new BufferSetMessageConverter());
-
-
 	}
 
 	public jEditListener getjEditListener()
@@ -109,9 +96,9 @@ public class RemoteServer implements Runnable
 	{
 		if (clients.isEmpty())
 			return;
-		String s = xstream.toXML(message);
 		for (RemoteClient remoteClient : clients.values())
 		{
+			String s = remoteClient.getSerializer().serialize(message);
 			if (DEBUG)
 			{
 				Log.log(Log.MESSAGE, this, s);
@@ -197,7 +184,7 @@ public class RemoteServer implements Runnable
 			{
 				sChannel.configureBlocking(false);
 				sChannel.register(selector, sChannel.validOps());
-				RemoteClient client = new RemoteClient(sChannel, xstream);
+				RemoteClient client = new RemoteClient(sChannel);
 				clients.put(sChannel, client);
 				Log.log(Log.MESSAGE, this, "CLient connected : " + client);
 			}
