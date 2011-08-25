@@ -33,10 +33,7 @@ import org.gjt.sp.util.Log;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -196,15 +193,27 @@ public class RemoteServer implements Runnable
 			int nbRead = channel.read(buf);
 			if (nbRead == -1)
 			{
-				RemoteClient removed = clients.remove(channel);
-				Log.log(Log.MESSAGE, this, "CLient disconnected : " + removed);
-				channel.close();
+				removeClient(channel);
 			}
 			else
 			{
 				RemoteClient remoteClient = clients.get(channel);
 				remoteClient.read(buf);
 			}
+		}
+	}
+
+	void removeClient(SocketChannel channel)
+	{
+		RemoteClient removed = clients.remove(channel);
+		Log.log(Log.MESSAGE, this, "Client disconnected : " + removed);
+		try
+		{
+			channel.close();
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e, e);
 		}
 	}
 }

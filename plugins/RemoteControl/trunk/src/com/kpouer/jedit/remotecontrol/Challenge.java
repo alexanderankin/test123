@@ -21,11 +21,15 @@
 
 package com.kpouer.jedit.remotecontrol;
 
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Matthieu Casanova
@@ -33,9 +37,12 @@ import java.nio.channels.SocketChannel;
 public class Challenge implements MessageHandler
 {
 	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
-	private static final byte[] HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome".getBytes(RemoteServer.CHARSET);
+	private static final String HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome-Challenge-";
+	private static final String CHALLENGE_ANSWER = "jEdit-RemoteServer-Challenge-Answer-";
 	private final RemoteClient client;
 	private SocketChannel sChannel;
+	private String challenge;
+	private String hash;
 
 	public Challenge(RemoteClient client, SocketChannel sChannel)
 	{
@@ -57,18 +64,50 @@ public class Challenge implements MessageHandler
 			Log.log(Log.MESSAGE, this, "Handshake received");
 			try
 			{
-				sChannel.write(ByteBuffer.wrap(HANDSHAKE_ANSWER));
+				long time = System.currentTimeMillis();
+				challenge = HANDSHAKE_ANSWER+time;
+				sChannel.write(ByteBuffer.wrap(challenge.getBytes(RemoteServer.CHARSET)));
 			}
 			catch (IOException e)
 			{
 				Log.log(Log.WARNING, this, e, e);
 			}
-			client.handshaked();
 			Log.log(Log.MESSAGE, this, "Client handshaked " + this);
+		}
+		else if (line.startsWith(CHALLENGE_ANSWER))
+		{
+			String hash = line.substring(CHALLENGE_ANSWER.length());
+			String localHash = getHash();
+			if (localHash.equals(hash))
+			{
+				client.handshaked();
+			}
+			else
+			{
+				Log.log(Log.WARNING, this, "Wrong challenge");
+				RemoteControlPlugin.server.removeClient(sChannel);
+			}
 		}
 		else
 		{
 			Log.log(Log.WARNING, this, "Wrong Handshake " + line);
 		}
+	}
+
+	private String getHash()
+	{
+		String pincode = jEdit.getProperty("remotecontrol.pincode", "1234");
+		try
+		{
+			MessageDigest digest = MessageDigest.getInstance("MD5");
+			digest.update(challenge.getBytes(RemoteServer.CHARSET));
+			digest.update(pincode.getBytes(RemoteServer.CHARSET));
+			return new String(digest.digest(), RemoteServer.CHARSET);
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			Log.log(Log.ERROR, this, e, e);
+		}
+		return hash;
 	}
 }

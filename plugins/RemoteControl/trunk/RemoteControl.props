@@ -12,4 +12,5 @@ plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.depend.1=jedit 04.03.9
 plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.jars=xstream.jar jettison.jar
 plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.usePluginHome=true
 
-remotecontrol.port=10000
+remotecontrol.port=53348
+remotecontrol.pincode=1234

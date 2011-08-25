@@ -22,14 +22,9 @@
 package com.kpouer.jedit.remotecontrol;
 
 import com.kpouer.jedit.remotecontrol.serializer.Serializer;
-import com.thoughtworks.xstream.XStream;
-import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.jedit.bsh.NameSpace;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -45,7 +40,7 @@ import java.util.LinkedList;
  */
 public class RemoteClient
 {
-	SocketChannel sChannel;
+	private SocketChannel channel;
 
 	private final LinkedList<String> messages;
 	private final StringBuilder builder;
@@ -56,7 +51,7 @@ public class RemoteClient
 
 	public RemoteClient(SocketChannel sChannel)
 	{
-		this.sChannel = sChannel;
+		this.channel = sChannel;
 		messages = new LinkedList<String>();
 		builder = new StringBuilder();
 		handlers = new ArrayList<MessageHandler>();
@@ -140,7 +135,7 @@ public class RemoteClient
 	{
 		try
 		{
-			sChannel.write(ByteBuffer.wrap(message));
+			channel.write(ByteBuffer.wrap(message));
 		}
 		catch (IOException e)
 		{
@@ -151,6 +146,6 @@ public class RemoteClient
 	@Override
 	public String toString()
 	{
-		return "RemoteClient[" + sChannel.socket().getInetAddress() + ":" + sChannel.socket().getPort() + "]";
+		return "RemoteClient[" + channel.socket().getInetAddress() + ":" + channel.socket().getPort() + "]";
 	}
 }
