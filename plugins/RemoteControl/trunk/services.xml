@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+	<SERVICE NAME="bsh" CLASS="com.kpouer.jedit.remotecontrol.executionengine.Engine">
+		new com.kpouer.jedit.remotecontrol.executionengine.BeanshellEngine();
+	</SERVICE>
+	<SERVICE NAME="xsjson" CLASS="com.kpouer.jedit.remotecontrol.serializer.Serializer">
+		new com.kpouer.jedit.remotecontrol.serializer.XStreamJSON();
+	</SERVICE>
+</SERVICES>
+
+
+
