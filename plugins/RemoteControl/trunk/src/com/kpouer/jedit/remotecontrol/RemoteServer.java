@@ -21,19 +21,16 @@
 
 package com.kpouer.jedit.remotecontrol;
 
-import com.kpouer.jedit.remotecontrol.xstream.BufferConverter;
-import com.kpouer.jedit.remotecontrol.xstream.EditPaneConverter;
-import com.kpouer.jedit.remotecontrol.xstream.GlobalConverter;
-import com.kpouer.jedit.remotecontrol.xstream.ViewConverter;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.util.Log;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -181,9 +178,17 @@ public class RemoteServer implements Runnable
 			{
 				sChannel.configureBlocking(false);
 				sChannel.register(selector, sChannel.validOps());
-				RemoteClient client = new RemoteClient(sChannel);
-				clients.put(sChannel, client);
-				Log.log(Log.MESSAGE, this, "CLient connected : " + client);
+				try
+				{
+					RemoteClient client = new RemoteClient(sChannel);
+					clients.put(sChannel, client);
+					Log.log(Log.MESSAGE, this, "CLient connected : " + client);
+				}
+				catch (Exception e)
+				{
+					sChannel.close();
+					Log.log(Log.ERROR, this, e, e);
+				}
 			}
 		}
 		if (selectionKey.isReadable())
@@ -203,7 +208,7 @@ public class RemoteServer implements Runnable
 		}
 	}
 
-	void removeClient(SocketChannel channel)
+	public void removeClient(SocketChannel channel)
 	{
 		RemoteClient removed = clients.remove(channel);
 		Log.log(Log.MESSAGE, this, "Client disconnected : " + removed);

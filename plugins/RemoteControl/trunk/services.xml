@@ -7,6 +7,14 @@
 	<SERVICE NAME="xsjson" CLASS="com.kpouer.jedit.remotecontrol.serializer.Serializer">
 		new com.kpouer.jedit.remotecontrol.serializer.XStreamJSON();
 	</SERVICE>
+
+    <SERVICE NAME="challenge" CLASS="com.kpouer.jedit.remotecontrol.welcome.WelcomeService">
+		new com.kpouer.jedit.remotecontrol.welcome.Challenge();
+	</SERVICE>
+
+    <SERVICE NAME="challenge" CLASS="com.kpouer.jedit.remotecontrol.welcome.Handshake">
+		new com.kpouer.jedit.remotecontrol.welcome.Handshake();
+	</SERVICE>
 </SERVICES>
 
 

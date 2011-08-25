@@ -22,7 +22,9 @@
 package com.kpouer.jedit.remotecontrol;
 
 import com.kpouer.jedit.remotecontrol.serializer.Serializer;
+import com.kpouer.jedit.remotecontrol.welcome.WelcomeService;
 import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import java.io.IOException;
@@ -55,7 +57,18 @@ public class RemoteClient
 		messages = new LinkedList<String>();
 		builder = new StringBuilder();
 		handlers = new ArrayList<MessageHandler>();
-		handlers.add(new Challenge(this, sChannel));
+		String welcomeService = jEdit.getProperty("remotecontrol.welcomeservice", "");
+		if (welcomeService.length() == 0)
+		{
+			handshaked();
+		}
+		else
+		{
+			WelcomeService welcome = ServiceManager.getService(WelcomeService.class, welcomeService);
+			if (welcome == null)
+				throw new InternalError("No welcome service by that name " + welcomeService);
+			handlers.add(welcome);
+		}
 		serializer = ServiceManager.getService(Serializer.class, "xsjson");
 	}
 
@@ -102,7 +115,7 @@ public class RemoteClient
 		handleMessage();
 	}
 
-	void handshaked()
+	public void handshaked()
 	{
 		handlers.clear();
 		handlers.add(new SingleLineCommandHandler(this));

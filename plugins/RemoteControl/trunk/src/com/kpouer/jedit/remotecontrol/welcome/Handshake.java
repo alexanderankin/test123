@@ -19,33 +19,36 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package com.kpouer.jedit.remotecontrol;
+package com.kpouer.jedit.remotecontrol.welcome;
 
-import org.gjt.sp.jedit.jEdit;
+import com.kpouer.jedit.remotecontrol.MessageHandler;
+import com.kpouer.jedit.remotecontrol.RemoteClient;
+import com.kpouer.jedit.remotecontrol.RemoteServer;
 import org.gjt.sp.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Matthieu Casanova
  */
-public class Challenge implements MessageHandler
+public class Handshake implements MessageHandler, WelcomeService
 {
 	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
-	private static final String HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome-Challenge-";
-	private static final String CHALLENGE_ANSWER = "jEdit-RemoteServer-Challenge-Answer-";
-	private final RemoteClient client;
+	private static final byte[] HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome".getBytes(RemoteServer.CHARSET);
+	private RemoteClient client;
 	private SocketChannel sChannel;
-	private String challenge;
-	private String hash;
 
-	public Challenge(RemoteClient client, SocketChannel sChannel)
+	@Override
+	public void setClient(RemoteClient client)
 	{
 		this.client = client;
+	}
+
+	@Override
+	public void setChannel(SocketChannel sChannel)
+	{
 		this.sChannel = sChannel;
 	}
 
@@ -63,9 +66,8 @@ public class Challenge implements MessageHandler
 			Log.log(Log.MESSAGE, this, "Handshake received");
 			try
 			{
-				long time = System.currentTimeMillis();
-				challenge = HANDSHAKE_ANSWER+time;
-				sChannel.write(ByteBuffer.wrap(challenge.getBytes(RemoteServer.CHARSET)));
+				sChannel.write(ByteBuffer.wrap(HANDSHAKE_ANSWER));
+				client.handshaked();
 			}
 			catch (IOException e)
 			{
@@ -73,40 +75,5 @@ public class Challenge implements MessageHandler
 			}
 			Log.log(Log.MESSAGE, this, "Client handshaked " + this);
 		}
-		else if (line.startsWith(CHALLENGE_ANSWER))
-		{
-			String hash = line.substring(CHALLENGE_ANSWER.length());
-			String localHash = getHash();
-			if (localHash.equals(hash))
-			{
-				client.handshaked();
-			}
-			else
-			{
-				Log.log(Log.WARNING, this, "Wrong challenge");
-				RemoteControlPlugin.server.removeClient(sChannel);
-			}
-		}
-		else
-		{
-			Log.log(Log.WARNING, this, "Wrong Handshake " + line);
-		}
-	}
-
-	private String getHash()
-	{
-		String pincode = jEdit.getProperty("remotecontrol.pincode", "1234");
-		try
-		{
-			MessageDigest digest = MessageDigest.getInstance("MD5");
-			digest.update(challenge.getBytes(RemoteServer.CHARSET));
-			digest.update(pincode.getBytes(RemoteServer.CHARSET));
-			return new String(digest.digest(), RemoteServer.CHARSET);
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			Log.log(Log.ERROR, this, e, e);
-		}
-		return hash;
 	}
 }
