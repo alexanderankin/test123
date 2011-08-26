@@ -15,3 +15,13 @@ plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.usePluginHome=true
 remotecontrol.port=53348
 remotecontrol.pincode=1234
 remotecontrol.welcomeservice=challenge
+
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.option-pane=remotecontrol.option-pane
+options.remotecontrol.option-pane.label=Remote Control
+options.remotecontrol.option-pane.code=new com.kpouer.jedit.remotecontrol.RemoteControlOptionPane();
+
+
+remotecontrol.port.label=Set the tcp port that will be listen for remote control connections:
+remotecontrol.pincode.label=Set the pincode:
+remotecontrol.pincode.detail=<html>The pincode is a security element that you have to choose.<br> You have to set\
+  the same token on your remote<br> so it can communicate with jEdit with some security:</html>
