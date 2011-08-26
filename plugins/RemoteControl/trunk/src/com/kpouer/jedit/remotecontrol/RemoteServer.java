@@ -53,6 +53,7 @@ public class RemoteServer implements Runnable
 	private static boolean DEBUG = true;
 
 	private final jEditListener jEditListener;
+	private Thread thread;
 
 	public RemoteServer(int port)
 	{
@@ -71,7 +72,7 @@ public class RemoteServer implements Runnable
 	{
 		synchronized (LOCK)
 		{
-			Thread thread = new Thread(this);
+			thread = new Thread(this);
 			thread.setName("RemoteControl");
 			thread.setDaemon(true);
 			thread.start();
@@ -83,6 +84,10 @@ public class RemoteServer implements Runnable
 		synchronized (LOCK)
 		{
 			running = false;
+			if (thread != null)
+			{
+				thread.interrupt();
+			}
 		}
 	}
 
@@ -165,6 +170,7 @@ public class RemoteServer implements Runnable
 			}
 			clients.clear();
 		}
+		thread = null;
 		Log.log(Log.MESSAGE, this, "RemoteServer closed");
 	}
 
