@@ -1,0 +1,456 @@
+<?xml version="1.0"?>
+
+<!-- XQuery plugin user's guide -->
+<!-- (C) 2004 Wim Le Page, Pieter Wellens -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book>
+
+  <bookinfo>
+
+    <title>XQuery plugin user's guide</title>
+
+    <authorgroup>
+      <author>
+        <firstname>Wim</firstname>
+        <surname>Le Page</surname>
+      </author>
+      <author>
+        <firstname>Pieter</firstname>
+        <surname>Wellens</surname>
+      </author>
+    </authorgroup>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>
+        Permission is granted to copy, distribute and/or modify this document
+        under the terms of the GNU Free Documentation License, Version 1.1 or
+        any later version published by the Free Software Foundation; with no
+        "Invariant Sections", "Front-Cover Texts" or
+        "Back-Cover Texts", each as defined in the license. A copy of
+        the license can be found in the file <filename>COPYING.DOC.txt</filename>
+        included with jEdit.
+      </para>
+      <para>
+        The XQuery plugin itself is released under the GNU General Public License.
+        A copy of the GPL can be found in the jEdit online help.
+      </para>
+      <para>
+        The XQuery plugin bundles the Saxon XSLT and XQuery processor  developed 
+	by Michael Kay.
+	Saxon is released under the Mozilla Public License 1.0 (MPL).
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="overview">
+    <title>Overview</title>
+    <para>
+      The XQuery plugin provides features for querying XML documents, setting
+      options for output, performance monitoring and other XQuery processor 
+      specific variables.
+      The XQuery engine bundled with this plugin is the Saxon XQuery processor.
+      But we designed the plugin to support other engines as well making use
+      of a dynamic adapter system.      
+    </para>
+  </chapter>
+
+  <chapter id="XQuery">
+    <title>XQuery</title>
+     <para>
+      The XQuery window allows you to query a source XML document using
+      a XQuery document. <ulink url="http://www.w3.org/TR/xquery/">Xquery</ulink>
+      is a W3C-specified standard for XML document quering.
+    </para>
+    <section id="quering">
+    <title>Evaluating XQueries</title>
+    <para>
+      To use the XQuery window for querying:
+      <itemizedlist>
+        <listitem>
+          <para>To display the XQuery window, from the Plugins menu select
+          "XQuery->XQuery". Note that you may select where a Plugin is
+          docked from "Utilize->Global Options->jEdit->Docking", or 
+	  from the docking menu found next to the window name when it is 
+	  displayed.</para>
+        </listitem>
+	 <listitem>
+          <para>Set a Base URI, by typing it or by using the "Select base URI"
+	  button and subsequent dialog. The button is located
+          next to the Base URI text field at the top of the window.</para>
+	  <para>The base uri is used to determine where to find
+	  the documents referenced in the XQuery.</para>
+        </listitem>
+        <listitem>
+          <para>Select a XML context, this can be either the buffer or
+	  a file (in this case you can again type or use the 
+	  "Select Context source from file" button and dialog. 
+	  It is also possible to have no context.</para>
+	  <para>The XML context contains the XML information needed to execute
+	  the query.</para>
+        </listitem>
+        <listitem>
+          <para>Select a XQuery input, this can be either the buffer or
+	  a file (in this case you can again type or use the 
+	  "Select XQuery source from file" button and dialog. 
+	  It is also possible to use the pane, but here no syntax
+	  highlighting is provided, so the use of it is mainly restricted to
+	  small queries or XPath 2.0 expressions (for more information on
+	  how to evaluate XPath 2.0 expressions see section 
+	  <link linkend="xpath">Evaluating XPath 2.0 expressions</link> ).</para>
+	  <para>The XQuery input is the query you want to evaluate.</para>
+        </listitem>
+        <listitem>
+          <para>Run the query using the "Evaluate XQuery" button.
+          What kind of output you will get and where it will be displayed,
+	  depends on the options you set in the XQuery options pane (for more
+	  information see chapter <link linkend="options">Setting the options</link>.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    </section>
+    <section id="xpath">
+    <title>Evaluating XPath 2.0 expressions</title>
+    <para>
+    	The XQuery window can also be used to evaluate XPath 2.0 expressions,
+	if the XQuery engine of the current adapter supports it.
+    </para>
+    <para>
+    <itemizedlist>
+        <listitem>
+          <para>Select the XML file in the "Select XML Context" section. The file
+	  can be either the current buffer or selected from the file system
+	  with the "Select Context source from file" button and dialog.</para>
+        </listitem>
+        <listitem>
+          <para>Select Use Pane in the "Select XQuery Input" section.
+	  Enter your XPath 2.0 expression into the text area
+          beneath "Use Pane".</para>
+        </listitem>
+        <listitem>
+          <para>Use the "Evaluate XQuery" button, to evaluate the
+          the expression against the chosen XML file. What kind of 
+	  output you will get and where it will be displayed,
+	  depends on the options you set in the XQuery options pane (for more
+	  information see chapter <link linkend="options">Setting the options</link>.</para>
+        </listitem>
+      </itemizedlist>
+      </para>
+    </section>
+  </chapter>
+  
+  <chapter id="options">
+  <title>Configuring the options</title>
+   <para>
+  	The XQuery Options can be found under the XQuery-tag under Plugins-->Plugin Options...
+	The XQuery-tag consists of two subtags: General and Adapter.
+	In General Options you can specify some performance options and choose a XQuery Adapter.
+	In Adapter Options you can set Adapter specific Options. The AdapterOptions can also be made dockable
+   </para>
+   <section id="performance">
+   <title>How to configure Performance Monitoring</title>
+   <para>
+   	You can find the General performance monitoring options under
+	Plugins-->Plugin Options...-->XQuery-->General
+
+	First of all you can enable or disable monitoring of performance altogether.
+	This will also influence Adapter specific options if they are related to performance monitoring.
+	If monitoring is enabled you can choose to save the monitoring output to file(A pop-up, prompting where to save the file, will appear when you wish to evaluate).
+	Regardless of your choice to save the performance to file you can choose between four different display options. 
+	<itemizedlist>
+	<listitem><para>Do not display</para></listitem>
+	<listitem><para>Open performance output in a new buffer</para></listitem>
+	<listitem><para>Open performance output in the InfoViewer plugin
+	(for HTML output)</para></listitem>
+	<listitem><para>Open in an external program which you can specify. 
+	This specification works the same way as it would when you 
+	start the program from the commandline. 
+	The performanceoutput destination is specified using &lt;p&gt;.
+	e.g: ooffice &lt;p&gt; will open the performanceoutput in ooffice.
+	jEdit &lt;p&gt; will open the performanceoutput in a new instance of jEdit.</para> </listitem>	
+	</itemizedlist>
+   </para>
+   </section>
+  </chapter>
+  
+  <chapter id="usingadapters">
+  <title>Using and configuring XQuery API Adapters</title>
+  <para>
+  	The jEdit XQuery plugin allows you to plug-in many different XQuery API's
+	under the form of adapters. To be able to use an XQuery API you need 
+	the appropriate adapter. 
+	The XQuery engine bundled with this plugin is the Saxon XQuery processor.
+	You can find more Adapters at the <ulink url="http://plantijn.ruca.ua.ac.be/~wellenslepage/">XQuery plugin homepage</ulink>.
+  </para>
+     <section id="installing">
+   <title>Installing an adapter</title>
+   <para>
+   	If you want to be able to use myXQueryAdapter.jar with the XQuery plugin
+	all you need to do is place the myXQueryAdapter.jar file in the jEdit jars
+	folder. It will then be found by the XQuery Plugin.
+   </para>
+   </section>
+   <section id="adapterselection">
+   <title>Selecting an XQuery Adapter</title>
+   <para>
+   	In jEdit go to Plugins --> Plugin Options... --> XQuery --> General.
+	Under General you will be able to choose the adapter you want to use. 
+	After choosing your adapter of choice press Apply or OK.
+   </para>
+   </section>
+   <section id="adapterconfig">
+   <title>Configuring the selected adapter</title>
+   <para>
+   	After choosing an XQuery Adapter you can go to the Adapter-tag under
+	XQueryOptions.These options will change if you select another adapter. 
+	The options are adapter specific so read more in the manuals of the adapter.
+   </para>
+   </section>
+   <section id="dockableconfig">
+   <title>Making Adapter Options dockable</title>
+   <para>
+   	You can make the adapter Options dockable via 
+	Plugins-->XQuery-->Adapter Options.
+	If you change the Adapter while the Options are docked you can click 
+	on refresh to get the correct Options. 
+	Do not forget to click apply if you want the options to work.
+   </para>
+   </section>
+   <section id="saxonoptions">
+   <title>Configuring Saxon Options</title>
+   <para>
+   	Saxon Options are more fully described on the <ulink url="http://saxon.sourceforge.net">Saxon homepage</ulink>.
+	You are currently able to choose the following:
+	<itemizedlist>
+	<listitem><para>The Tree Data Structure:  
+		<itemizedlist>
+		<listitem><para>Standard Tree Data Structure </para></listitem>
+		<listitem><para>Tiny Tree Data Structure(default) </para></listitem>
+		</itemizedlist>
+	</para></listitem>
+	<listitem><para>Output explanations for the optimized query expression</para></listitem>
+	<listitem><para>Disallow calls to Java Methods</para></listitem>
+	<listitem><para>Use a specified URIResolver Class</para></listitem>
+	<listitem><para>Strip whitespace text nodes</para></listitem>
+	<listitem><para>Trace query execution</para></listitem>
+	<listitem><para>Trace calls to external Java functions</para></listitem>
+	</itemizedlist>
+   </para>
+  </section>
+  </chapter>
+ 
+  <chapter id="writingadapters">
+  <title>Writing XQuery API Adapters</title>
+   <para>
+   	XML and XQuery are both very new standards and therefore XQuery API's 
+	are heavily under development and often new API's emerge.
+	To be able to keep up-to-date we needed a system that would 
+	make it easy for other people to plug their API of choice in the XQuery plugin.
+	All a user has to do is write or update an interface that conforms to some well specified rules.
+	We call this complete interface an adapter.
+	The simplest way to write an adapter is to look at one of the already available adapters.
+   </para>
+   <section id="adapteroverview">
+   <title>Overview</title>
+   <para>
+   	In the end the adapter has to be one Jar file containing two class files in the same package. 
+	The jar file's name has to end in "Adapter.jar". e.g. GalaxAdapter.jar
+	The two class files represent the interface to the API and the GUI for the options.
+	They both have to be part of the same package with the following nameconvention: 
+	same as the jarname but in lowercase. e.g. galaxadapter.
+	Their classnames have to end with: "Adapter" and "AdapterOptionsPanel"
+	e.g. GalaxAdapter and GalaxAdapterOptionsPanel.
+	The prefix (in my examples "Galax") has to be the same for all the names, except for the package which is lowercase!
+	
+   </para>
+   </section>
+   <section id="adapterinterface">
+    <title>Implementation of adapter Interface</title>
+     <para>
+   	In this section we will describe what methods your adapter (yourApiAdapter)
+	must provide in order to work with the XQuery plugin. First of all it has to implement Adapter.
+	This interface can be found in XQuery.jar which you will need if you're going to write an adapter. 
+	You can always take a look at the source code of the Saxon or Galax Adapter. 
+	<itemizedlist>
+	 <listitem><para>
+	 	void setProperties(Properties props): The Properties parameter are the properties your adapter needs. 
+	 </para></listitem>
+	 <listitem><para>
+	 	void loadContextFromFile(String path): The String parameter is the path to an XML Context file. 
+	 </para></listitem>
+	 <listitem><para>
+	 	void loadContextFromString(String context): The String parameter is the XML Context. 
+	 </para></listitem>
+	 <listitem><para>
+	 	void setBaseUri(String path): The String parameter is the path for a baseURI.
+	 </para></listitem>
+	 <listitem><para>
+	 	String evaluateFromString(String query): The String parameter is the complete XQuery expression.
+		The String that is to be returned contains the result of the evaluation.
+	 </para></listitem>
+	 <listitem><para>
+	 	String evaluateFromFile(String path): The String parameter is the path to the file containing the XQuery expression.
+		The String that is to be returned contains the result of the evaluation.
+	</para></listitem>
+	 <listitem><para>
+	 	String getPerformance(): This function returns performance output as a String.
+	 </para></listitem>
+	 <listitem><para>
+	 	void setPerformanceEnabled(boolean enable): The boolean parameter enable enables or disables performance monitoring. 
+	 </para></listitem>
+	</itemizedlist>
+	If one of these functions is not available then the XQueryplugin will throw an exception.
+	If for example you do not wish to implement the ability to set the baseURI you till have to provide this method but it can be empty
+	or give a message stating it is not implemented.
+    </para>
+   </section>
+    <section id="adapteroptions">
+     <title>Implementation of OptionsPanel</title>
+     <para>
+     	In order to give the user some adapter specific options you have to implement an OptionsPanel.
+	This class has to extend AdapterOptionsPanel from XQuery.jar. The classname has to end in AdapterOptionsPanel.
+	e.g. GalaxAdapterOptionsPanel.
+	This Class has to overload two functions: _save() and _init().
+	_init() is called when the AdapterOptions are accessed and _save() is called when Apply or OK is clicked.
+	You can add components by using one of the addComponent functions provided in OptionsPanel. 
+	We have however added two special functions:
+	<itemizedlist>
+	 <listitem><para>
+	  addBooleanComponent(String label,String property) which adds a checkbox.
+	 </para></listitem>
+	 <listitem><para>
+	  addSelectionComponent(String label, String[ ] options, String property) 
+	  which adds a dropdownmenu with label label and options options.
+	 </para></listitem>
+	</itemizedlist>
+	Special about these two functions is that you do not need to provide any _save() code for them. 
+	Everything added with these two functions will be saved and called automatically.
+	This means that options added with these two functions will be automatically remembered after quitting jEdit.
+     </para>
+   </section>  
+  </chapter>
+  <chapter id="contributors">
+    <title>Contributors</title>
+
+    <para>Thanks to Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
+      for helping us with information and support.</para>
+
+    <para>Wim Le Page <email>wimlepage@users.sourceforge.net</email>
+      has produced version 0.6.0 </para>
+      
+    <para>Pieter Wellens <email>pitje@users.sourceforge.net</email>
+      has produces version 0.6.0 </para>
+
+  </chapter>
+
+
+  <chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>The preferred way to send bug reports is to use the
+      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse">Sourceforge Bug Tracker</ulink>.
+    </para>
+
+    <para>Feature requests should be posted to the jEdit users mailing-list
+      <email>jedit-users@lists.sourceforge.net</email>.
+    </para>
+
+    <para>Development questions should be posted to the jEdit development mailing-list
+      <email>jedit-devel@lists.sourceforge.net</email>.
+    </para>
+  </chapter>
+
+
+  <appendix id="changelog">
+    <title>Change log</title>
+    <section>
+	    <title>Changes from 0.5.0 to 0.6.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Dockable adapter options pane.</para>
+		</listitem>
+		<listitem>
+		  <para>Buffer Context bugfix.</para>
+		</listitem>
+		<listitem>
+		  <para>Galax adapter bugfixes.</para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+    </section> 
+    
+    <section>
+	    <title>Changes from 0.4.0 to 0.5.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Adapter options pane provided.
+		  There is a adapter specific section
+		  which will change dynamically to fit the 
+		  needs of the specific adapter.</para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+    </section>   
+    
+    <section>
+	    <title>Changes from 0.3.0 to 0.4.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Dynamic plugin loading</para>
+		</listitem>
+		<listitem>
+		<para>XML Context and error reporting bugfixes.</para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+    </section>   
+
+    <section>
+	    <title>Changes from 0.2.0 to 0.3.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Basic error reporting in Saxon and Galax
+		  adapters. The context sensitive errors are passed 
+		  through to the errorlist plugin together with the 
+		  right information about line numbers and positions</para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+    </section>  
+    <section>
+	    <title>Changes from 0.1.0 to 0.2.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Basic Galax adapter (Galax adapter is not
+		  bundled with the jEdit release because it is not entirely
+		  platform independent).</para>
+		</listitem>
+		<listitem>
+		<para>Non dynamic adapter loading.</para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+    </section>   
+    <section>
+	    <title>Initial version 0.1.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+			<para>Basic XQuery window</para>
+		</listitem>
+		<listitem>
+			<para>First basic version of the Saxon adapter</para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+    </section>
+  </appendix>
+
+</book>
+
