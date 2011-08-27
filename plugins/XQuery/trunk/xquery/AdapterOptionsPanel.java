@@ -59,22 +59,8 @@ public class AdapterOptionsPanel extends AbstractOptionPane {
 		booleanVector = new Vector();
 		selectionVector = new Vector();
 	} 
-	
-	/**
-	 * Do not override this method, override {@link #_init()} instead.
-	 * This method was modified comparing to the original from jEdit
-	 */
 
-	public void init()
-	{
-		_init();
-	} 
-	
-	/**
-	 * Do not override this method, override {@link #_save()} instead.
-	 */
-
-	public void save()
+	public void _save()
 	{
 		for (int i=0; i < booleanVector.size();i++){
 			PropertyComponent propComp = (PropertyComponent)booleanVector.elementAt(i);
@@ -88,7 +74,6 @@ public class AdapterOptionsPanel extends AbstractOptionPane {
 			//System.err.println("xquery.adapter." + propComp.property + " == " + (String)dropDown.getSelectedItem());
 			jEdit.setProperty("xquery.adapter." + propComp.property,(String)dropDown.getSelectedItem());
 		}			
-		_save(); //call adapterswriters _save
 	}
 	
 
@@ -183,11 +168,11 @@ public class AdapterOptionsPanel extends AbstractOptionPane {
 	
 	public Vector getBooleanComponents(){
 		return booleanVector;
-	};
+	}
 	
 	public Vector getSelectionComponents(){
 		return selectionVector;
-	};
+	}
 	
 	public class PropertyComponent {
 		
@@ -198,5 +183,5 @@ public class AdapterOptionsPanel extends AbstractOptionPane {
 			this.property = property;
 			this.component = component;
 		}
-	};
+	}
 }

@@ -75,11 +75,9 @@ public class SaxonAdapter implements Adapter {
 	
 	/**
 	 * Constructor for the Saxon adapter
-	 * @param properties for the adapter
 	 */
-	public SaxonAdapter(Properties properties) {
-		adapterProps = properties;
-		
+	public SaxonAdapter() {
+		adapterProps = new Properties();
 		config = new Configuration();
 		setOptions();
 		config.setHostLanguage(Configuration.XQUERY);
@@ -331,7 +329,8 @@ public class SaxonAdapter implements Adapter {
 	 *
 	 */
 	private void setOptions(){
-		if (XQueryGUI.getProperty("saxon.tree").equals("Standard Tree")) config.setTreeModel(Builder.STANDARD_TREE);
+		String saxonTree = XQueryGUI.getProperty("saxon.tree");
+		if (saxonTree != null && saxonTree.equals("Standard Tree")) config.setTreeModel(Builder.STANDARD_TREE);
 		else config.setTreeModel(Builder.TINY_TREE);
 		
 		config.setLineNumbering(XQueryGUI.getBooleanProperty("saxon.linenumber"));

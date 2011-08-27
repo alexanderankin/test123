@@ -57,7 +57,8 @@ public class SaxonAdapterOptionsPanel extends AdapterOptionsPanel {
 		
 	}
 	
-	protected void _save(){
+	public void _save(){
+		super._save();
 		// uriClassText is the only component that has to be saved "manually" because all the rest is added 
 		// with addBooleanComponent or addSelectionComponent and these options are saved automaticaly
 		XQueryGUI.setProperty("saxon.uriclass",uriClassText.getText());
