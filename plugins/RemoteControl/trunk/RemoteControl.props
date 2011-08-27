@@ -24,4 +24,4 @@ options.remotecontrol.option-pane.code=new com.kpouer.jedit.remotecontrol.Remote
 remotecontrol.port.label=Set the tcp port that will be listen for remote control connections:
 remotecontrol.pincode.label=Set the pincode:
 remotecontrol.pincode.detail=<html>The pincode is a security element that you have to choose.<br> You have to set\
-  the same token on your remote<br> so it can communicate with jEdit with some security:</html>
+  the same token on your remote<br> so it can communicate with jEdit with some security</html>
