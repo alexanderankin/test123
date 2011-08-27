@@ -73,7 +73,7 @@
   	<jar jarfile="${install.dir}/${jar.xquery.name}">
       <fileset dir="${classes.xquery.dir}"/>
       <fileset dir="${resources.dir}"/>
-      <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props,*.txt, *.html"/>
+      <fileset dir="${basedir}" includes="actions.xml,dockables.xml, services.xml, *.props,*.txt, *.html"/>
     </jar>
   </target>
 	

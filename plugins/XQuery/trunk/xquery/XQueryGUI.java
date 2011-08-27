@@ -14,7 +14,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,12 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditAction;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.JARClassLoader;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -467,17 +461,16 @@ public class XQueryGUI extends JPanel {
 											InstantiationException, IllegalAccessException, 
 											InvocationTargetException 
 		{
-			JARClassLoader loader = new JARClassLoader();
-			Class adapterClass = null;
-			Constructor adapterConstructor = null;
-			Adapter adapter = null;
-			String adapterString = jEdit.getProperty("xquery.adapter.selection");
-			//System.err.println("adapter in lowercase is: " + adapterString.toLowerCase());
-			//System.err.println("adapter normal is: " + adapterString);
-			adapterClass = loader.loadClass(adapterString.toLowerCase() + "." + adapterString);
-			//adapterClass = loader.loadClass(adapterString);
-			adapterConstructor = adapterClass.getConstructor( new Class[] {Properties.class});
-			adapter = (Adapter)adapterConstructor.newInstance(new Object[] { props } );
+			Adapter adapter = (Adapter) ServiceManager.getService(Adapter.class, jEdit.getProperty("xquery.adapter.selection",
+					"SaxonAdapter"));
+			if (adapter == null)
+			{
+				adapter = (Adapter) ServiceManager.getService(Adapter.class, "SaxonAdapter");
+			}
+			if (adapter == null)
+				throw new ClassNotFoundException(Adapter.class + " with name " +jEdit.getProperty("xquery.adapter.selection",
+					"SaxonAdapter") );
+			adapter.setProperties(props);
 			return adapter;
 		}
 		
@@ -680,7 +673,7 @@ public class XQueryGUI extends JPanel {
 	}
 
 	/** static method that allows adapter writers to use jEdit functionality without importing jEdit
-	 * @param property String 
+	 * @param prop String
 	 * @param string that you wish to set
 	 * 
 	 */
