@@ -1,0 +1,89 @@
+plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
+plugin.buffertabs.BufferTabsPlugin.activate=startup
+plugin.buffertabs.BufferTabsPlugin.description=Show tabs to switch buffers
+plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels, Alain Robert, Matthieu Casanova, Shlomy Reinstein
+plugin.buffertabs.BufferTabsPlugin.version=1.2.1
+plugin.buffertabs.BufferTabsPlugin.docs=index.html
+plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
+
+plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.5
+plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.04.01.00
+plugin.buffertabs.BufferTabsPlugin.usePluginHome=true
+
+buffertabs.toggle-vis.label=BufferTabs
+
+plugin.buffertabs.BufferTabsPlugin.option-pane=buffertabs
+options.buffertabs.label=BufferTabs
+options.buffertabs.code=new buffertabs.BufferTabsOptionPane();
+
+# Menu
+buffertabs.popup=\
+    reload \
+    close-buffer \
+    save \
+    - \
+	close-all \
+    closeall-except-active \
+	- \
+    buffertabs.insert-name \
+    buffertabs.insert-path \
+    - \
+    buffertabs.copy-name \
+    buffertabs.copy-path \
+    - \
+    global-bufferset \
+    view-bufferset \
+    editpane-bufferset
+
+
+# Actions
+buffertabs.insert-name.label=Insert File Name
+buffertabs.insert-path.label=Insert File Path
+buffertabs.copy-name.label=Copy File Name
+buffertabs.copy-path.label=Copy File Path
+buffertabs.closeall-except-active.label=Close all Others
+buffertabs.toggle-docks.label=Toggle Docks
+global-bufferset.label=Global buffer set
+view-bufferset.label=View buffer set
+editpane-bufferset.label=Edit pane buffer set
+# Default values
+buffertabs.color-tabs=false
+buffertabs.color-selected=true
+buffertabs.color-mute=true
+buffertabs.color-variation=false
+buffertabs.color-foreground=false
+buffertabs.color-selected-foreground=false
+
+# Option labels
+options.buffertabs.enable.label=Enable BufferTabs by default
+options.buffertabs.icons.label=Use icons to show buffer modified status
+options.buffertabs.nostretch.label=Do not stretch tabs to fill rows
+options.buffertabs.wrap.label=Wrap tabs into multiple rows when they don't fit into a single visible row
+options.buffertabs.popup.label=Enable right-click popup menu
+options.buffertabs.closeButton.label=Show close button on tabs (only from Java 1.6)
+options.buffertabs.location.label=Location of BufferTabs:
+options.buffertabs.color-tabs.label=Enable colored tabs
+options.buffertabs.color-selected.label=Colorize selected tab:
+options.buffertabs.color-mute.label=Mute colors
+options.buffertabs.color-variation.label=Show small variation in tab colors
+options.buffertabs.color-background.label=Colorize tab backgrounds
+options.buffertabs.color-foreground.label=Colorize tab titles
+options.buffertabs.color-selected-background.label= Background
+options.buffertabs.color-selected-foreground.label= Title
+options.buffertabs.color-tabs.separator=Options for colored BufferTabs
+options.buffertabs.close-tab-on.double-left-click.label=double left click
+options.buffertabs.close-tab-on.single-middle-click.label=single middle click
+options.buffertabs.close-tab-on.label=Close tab on:
+options.buffertabs.mouse-options.label=Mouse Options
+options.buffertabs.layout-and-style-options.label=Layout and Style Options
+options.buffertabs.toggle-docks-on.label=Toggle docking areas on:
+
+# Miscelaneous labels
+buffertabs.reorderBuffersDisabled.label=Buffer Tab Positioning
+buffertabs.bufferTabPositioningDisabled.label=<html>\
+	The position of buffer tabs cannot be manually changed because the option<br>\
+	"Sort buffer sets" (Global Options / View) is selected. What would you like to do?</html>
+buffertabs.disableBufferSorting.label=\
+	Turn off "Sort buffer sets" to allow buffer tabs to be manually positioned.
+buffertabs.keepBufferSorting.label=\
+	Keep "Sort buffer sets" selected, preventing manual positioning of buffer tabs.
