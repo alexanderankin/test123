@@ -1,0 +1,85 @@
+# General plugin information
+plugin.xquery.XQueryPlugin.activate=defer
+plugin.xquery.XQueryPlugin.name=XQuery Plugin
+plugin.xquery.XQueryPlugin.author=Wim le Page, Pieter Wellens
+plugin.xquery.XQueryPlugin.version=1.0.0
+plugin.xquery.XQueryPlugin.docs=index.html
+plugin.xquery.XQueryPlugin.depend.0=jdk 1.6
+plugin.xquery.XQueryPlugin.depend.1=jedit 04.04.99.00
+plugin.xquery.XQueryPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.xquery.XQueryPlugin.depend.3=plugin infoviewer.InfoViewerPlugin 1.6
+plugin.xquery.XQueryPlugin.description=The XQuery plugin provides features for querying XML documents, setting options for output, performance monitoring and other XQuery processor specific variables.
+plugin.xquery.XQueryPlugin.jars=saxon7.jar SaxonAdapter.jar
+plugin.xquery.XQueryPlugin.usePluginHome=true
+
+# Option pane
+plugin.xquery.XQueryPlugin.option-group=xquery.general xquery.adapter
+
+options.xquery.general.label=General
+options.xquery.general.code=new xquery.options.GeneralOptionPane();
+options.xquery.general.performance.label=Performance Monitoring
+options.xquery.general.adapter.label=XQuery Adapter Selection
+options.xquery.general.postprocess.label=Postprocess Result
+
+options.xquery.adapter.label=Adapter
+options.xquery.adapter.code=new xquery.options.AdapterOptionPane();
+
+# Dockable window name
+xquery-plugin.title=XQuery
+xquery-adapteroptions.title=Adapter Options
+
+# default adaptor
+xquery.adapter.selection=SaxonAdapter
+
+
+# Menu
+plugin.xquery.XQueryPlugin.menu=xquery-plugin \
+	- \
+	xquery-adapteroptions \
+
+xquery-plugin.label = XQuery
+xquery-adapteroptions.label = Adapter Options
+	
+# Output Performance Pane in Options
+xquery.options.monitorPerformance.label=Monitor Performance
+xquery.options.savePerformance.label=Save to File
+xquery.options.display.no=Do not display
+xquery.options.display.buffer=Open in new buffer
+xquery.options.display.infoviewer=Open in Infoviewer (HTML)
+xquery.options.display.external=Open with external program
+
+xquery.options.display.external.editlabel=Specify program: 
+xquery.options.adapter.label=Please choose your XQuery Adapter:
+xquery.options.indent.label=Indent XQuery result 
+
+# XQueryGUI Panel
+
+# SelectInputPanels inside XQueryGUI Panel
+xquery.selectXmlInput.label=Select XML Context:
+xquery.selectXQueryInput.label=Select XQuery Input:
+
+xquery.selectXmlInput.browselabel=Context Source:
+xquery.selectXQueryInput.browselabel=XQuery Source:
+xquery.selectBaseUriInput.browselabel=Base URI:
+
+xquery.selectXmlInput.prompt=Please select a Context source document
+xquery.selectXQueryInput.prompt=Please select a XQuery source document
+xquery.selectBaseUriInput.prompt=Please select a base URI
+
+xquery.selectXmlInput.button.icon=/xquery/icons/Open.png
+xquery.selectXQueryInput.button.icon=/xquery/icons/Open.png
+xquery.selectBaseUriInput.button.icon=/xquery/icons/Open.png
+
+xquery.selectXmlInput.button.tooltip=Select Context source from file
+xquery.selectXQueryInput.button.tooltip=Select XQuery source from file
+xquery.selectBaseUriInput.button.tooltip=Select base URI
+
+xquery.selectInput.noContext=No Context
+xquery.selectInput.buffer=Use Buffer
+xquery.selectInput.file=Use File
+xquery.selectInput.pane=Use Pane
+
+
+#evaluate panel
+xquery.evaluate.button.icon=/xquery/icons/EvaluateQ.png
+xquery.evaluate.button.tooltip=Evaluate XQuery

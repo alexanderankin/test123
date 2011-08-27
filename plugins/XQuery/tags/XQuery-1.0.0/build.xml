@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<!--
+     This is a build.xml file for building the XQuery plugin.
+
+     The 'jarAll' target compiles the plugin and the Saxon adapter and creates two JAR files.
+     Before running the 'jarAll' target, you will need to generate the
+     documentation using one of these two targets:
+
+     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
+     - 'docs-xsltproc': Creates documentation using the xsltproc tool
+-->
+
+<project name="XQuery" default="jarAll" basedir=".">
+   <description>
+   This is a build.xml file for building the XQuery jEdit plugin.
+   </description>
+
+  <property file="build.properties" description="contains machine specific directory locations"/>
+  <property file="../build.properties" description="contains machine specific directory locations"/>
+	
+  <property name="jar.xquery.name" value="XQuery.jar" description="name of the XQuery plugin jar"/>
+  <property name="jar.saxon.name" value="SaxonAdapter.jar" description="name of the SaxonAdapter jar"/>
+  <property name="resources.dir" value="resources" description="contains plugin icons"/>
+  <property name="saxon.api" value="ext/saxon7.jar" description="saxon api"/>
+	
+  <property name="docs-proc.target"  value="xsltproc"/>
+
+  
+  <property name="build.dir" value="build"/>
+  <property name="jedit.install.dir" value="../.."/>
+  <property name="classes.xquery.dir" value="${build.dir}/classesXQuery" description="XQuery plugin classes compiled into here"/>
+  <property name="classes.saxon.dir" value="${build.dir}/classesSaxon" description="Saxon Adapter classes compiled into here"/>
+
+  <path id="xquery.class.path">
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="${install.dir}/ErrorList.jar"/>
+    <pathelement location="${install.dir}/XmlIndenter.jar"/>
+    <pathelement location="${install.dir}/InfoViewer.jar"/>
+  </path>
+	
+  <path id="saxon.class.path">
+  	<pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="${install.dir}/XQuery.jar"/>
+  	<pathelement location="${install.dir}/saxon7.jar"/>
+  	<pathelement location="${saxon.api}"/>
+  </path>
+	
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+	</target>
+  
+  <target name="compileXQuery" depends="init" description="compiles java source of XQueryPlugin">
+    <delete dir="${classes.xquery.dir}"/>
+    <mkdir dir="${classes.xquery.dir}"/>
+    <javac srcdir="${basedir}" destdir="${classes.xquery.dir}" deprecation="on" debug="on" includes="xquery/*.java xquery/options/*.java" source="1.4">
+      <classpath refid="xquery.class.path"/>
+    </javac>
+  </target>
+
+  <target name="jarXQuery" depends="compileXQuery" description="compiles, creates plugin jar file in install.dir">
+    <mkdir dir="${install.dir}"/>
+  	<jar jarfile="${install.dir}/${jar.xquery.name}">
+      <fileset dir="${classes.xquery.dir}"/>
+      <fileset dir="${resources.dir}"/>
+      <fileset dir="${basedir}" includes="actions.xml,dockables.xml, services.xml, *.props,*.txt, *.html"/>
+    </jar>
+  </target>
+	
+  <target name="compileSaxon" description="compiles java source for Saxon Adapter">
+    <delete dir="${classes.saxon.dir}"/>
+    <mkdir dir="${classes.saxon.dir}"/>
+    <javac srcdir="${basedir}" destdir="${classes.saxon.dir}" deprecation="on" debug="on" includes="saxonadapter/*.java" source="1.4">
+      <classpath refid="saxon.class.path"/>
+    </javac>
+  </target>
+
+  <target name="jarSaxon" depends="compileSaxon" description="compiles, creates SaxonAdapter Jarfile file in install.dir">
+    <mkdir dir="${install.dir}"/>
+  	<jar jarfile="${install.dir}/${jar.saxon.name}">
+      <fileset dir="${classes.saxon.dir}"/>
+    </jar>
+  </target>
+	
+  <target name="compileAll" depends="compileXQuery, compileSaxon" description="compiles java source of XQueryPlugin and SaxonAdapter">
+  </target>
+
+  <target name="jarAll" depends="docs, jarXQuery, jarSaxon" description="compiles, creates plugin jar file and SaxonAdapter jar file in install.dir">
+  </target>
+
+  <target name="docs" depends="init">
+  <antcall target="docs-${docs-proc.target}"/>
+  </target>
+
+  <target name="deploySaxon" description="copies Saxon Adapter and API jars to deploy.dir">
+    <copy file="${install.dir}/${jar.saxon.name}" todir="${deploy.dir}"/>
+  	<copy file="${saxon.api}" todir="${deploy.dir}"/>
+  </target>
+	
+  <target name="deployXQuery" description="copies XQuery jar to deploy.dir">
+    <copy file="${install.dir}/${jar.xquery.name}" todir="${deploy.dir}"/>
+  </target>	
+	
+  <target name="deployAll" depends="deployXQuery, deploySaxon" description="copies jars to deploy.dir">
+  </target>
+
+	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc" depends="init">
+		<exec executable="xsltproc">
+			<arg value="--catalogs"/>
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
+		</exec>
+	</target>
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan" depends="init">
+		<style
+			style="users-guide.xsl"
+			in="users-guide.xml"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+		</delete>
+	</target>
+
+</project>
+
