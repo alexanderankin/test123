@@ -183,7 +183,7 @@ public class RemoteServer implements Runnable
 			if (sChannel != null)
 			{
 				sChannel.configureBlocking(false);
-				sChannel.register(selector, sChannel.validOps());
+				sChannel.register(selector, SelectionKey.OP_READ);
 				try
 				{
 					RemoteClient client = new RemoteClient(sChannel);
