@@ -130,6 +130,7 @@ public class SideKickPlugin extends EditPlugin
 		parsers = null;
 		parsedBufferSet = null;
 		toolBars = null;
+		workers = null;
 	} //}}}
 
 	//{{{ handleViewUpdate() method
@@ -391,6 +392,8 @@ public class SideKickPlugin extends EditPlugin
 		SideKick sidekick = sidekicks.get(view);
 		sidekick.dispose();
 		sidekicks.remove(view);
+		stop(view);
+		workers.remove(view);
 		detachToolBar(view);
 	} //}}}
 
@@ -414,7 +417,10 @@ public class SideKickPlugin extends EditPlugin
 		textArea.removeKeyListener(b);
 		SideKickTree.CaretHandler caretHandler = (SideKickTree.CaretHandler) textArea.getClientProperty(SideKickTree.CaretHandler.class);
 		if (caretHandler != null)
+		{
+			textArea.putClientProperty(SideKickTree.CaretHandler.class, null);
 			textArea.removeCaretListener(caretHandler);
+		}
 	} //}}}
 
 	public static void stop(View view) {

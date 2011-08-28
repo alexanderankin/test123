@@ -2,7 +2,7 @@
 plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
-plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust,Shlomy Reinstein
+plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust,Shlomy Reinstein, Matthieu Casanova
 plugin.sidekick.SideKickPlugin.version=1.3
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.05.01.00

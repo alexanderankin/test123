@@ -342,7 +342,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 EditPane editPane = epu.getEditPane();
                 if (epu.getWhat() == EditPaneUpdate.CREATED)
                 {
-                        editPane.getTextArea().addCaretListener(new CaretHandler());
+					CaretHandler listener = new CaretHandler();
+					JEditTextArea textArea = editPane.getTextArea();
+					textArea.putClientProperty(CaretHandler.class, listener);
+					textArea.addCaretListener(listener);
                 }
         }        // }}}
 
