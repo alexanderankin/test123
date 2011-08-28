@@ -24,6 +24,7 @@ package com.kpouer.jedit.remotecontrol;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.util.Log;
 
+import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -32,6 +33,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,12 +57,15 @@ public class RemoteServer implements Runnable
 	private final jEditListener jEditListener;
 	private Thread thread;
 
+	private final EventListenerList listeners;
+
 	public RemoteServer(int port)
 	{
 		this.port = port;
 		LOCK = new Object();
 		clients = new HashMap<SocketChannel, RemoteClient>();
 		jEditListener = new jEditListener(this);
+		listeners = new EventListenerList();
 	}
 
 	public jEditListener getjEditListener()
@@ -169,6 +174,7 @@ public class RemoteServer implements Runnable
 				}
 			}
 			clients.clear();
+			fireServerClosed();
 		}
 		thread = null;
 		Log.log(Log.MESSAGE, this, "RemoteServer closed");
@@ -188,6 +194,7 @@ public class RemoteServer implements Runnable
 				{
 					RemoteClient client = new RemoteClient(sChannel);
 					clients.put(sChannel, client);
+					fireClientConnected(client);
 					Log.log(Log.MESSAGE, this, "CLient connected : " + client);
 				}
 				catch (Exception e)
@@ -217,6 +224,7 @@ public class RemoteServer implements Runnable
 	public void removeClient(SocketChannel channel)
 	{
 		RemoteClient removed = clients.remove(channel);
+		fireClientDisconnected(removed);
 		Log.log(Log.MESSAGE, this, "Client disconnected : " + removed);
 		try
 		{
@@ -225,6 +233,66 @@ public class RemoteServer implements Runnable
 		catch (IOException e)
 		{
 			Log.log(Log.ERROR, this, e, e);
+		}
+	}
+
+	public void visitClients(ClientVisitor visitor)
+	{
+		synchronized (clients)
+		{
+			for (RemoteClient remoteClient : clients.values())
+			{
+				visitor.visit(remoteClient);
+			}
+		}
+	}
+
+	public void addServerListener(ServerListener listener)
+	{
+		listeners.add(ServerListener.class, listener);
+	}
+
+	public void removeServerListener(ServerListener listener)
+	{
+		listeners.remove(EventListener.class, listener);
+	}
+
+	public void fireClientConnected(RemoteClient client)
+	{
+		ServerListener[] list;
+		synchronized (listeners)
+		{
+			list = listeners.getListeners(ServerListener.class);
+		}
+		for (ServerListener clientListener : list)
+		{
+			clientListener.clientConnected(client);
+		}
+	}
+
+	public void fireClientDisconnected(RemoteClient client)
+	{
+		ServerListener[] list;
+		synchronized (listeners)
+		{
+			list = listeners.getListeners(ServerListener.class);
+		}
+		for (ServerListener clientListener : list)
+		{
+			clientListener.clientDisconnected(client);
+		}
+	}
+
+	public void fireServerClosed()
+	{
+		ServerListener[] list;
+		synchronized (listeners)
+		{
+			list = listeners.getListeners(ServerListener.class);
+		}
+		for (ServerListener clientListener : list)
+		{
+			clientListener.serverClosed();
 		}
 	}
 }
