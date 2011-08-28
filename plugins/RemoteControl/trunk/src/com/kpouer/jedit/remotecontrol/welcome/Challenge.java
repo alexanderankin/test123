@@ -40,7 +40,7 @@ import java.security.NoSuchAlgorithmException;
 public class Challenge implements MessageHandler, WelcomeService
 {
 	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
-	private static final String HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome-Challenge-";
+	private static final String CHALLENGE = "jEdit-RemoteServer-Welcome-Challenge-";
 	private static final String CHALLENGE_ANSWER = "jEdit-RemoteServer-Challenge-Answer-";
 	private RemoteClient client;
 	private SocketChannel sChannel;
@@ -73,7 +73,7 @@ public class Challenge implements MessageHandler, WelcomeService
 			try
 			{
 				long time = System.currentTimeMillis();
-				challenge = HANDSHAKE_ANSWER+time;
+				challenge = CHALLENGE +time;
 				sChannel.write(ByteBuffer.wrap(challenge.getBytes(RemoteServer.CHARSET)));
 			}
 			catch (IOException e)
@@ -89,6 +89,14 @@ public class Challenge implements MessageHandler, WelcomeService
 			if (localHash.equals(hash))
 			{
 				client.handshaked();
+				try
+				{
+					sChannel.write(ByteBuffer.wrap(WelcomeService.HANDSHAKE_WELCOME));
+				}
+				catch (IOException e)
+				{
+					Log.log(Log.WARNING, this, e, e);
+				}
 			}
 			else
 			{
