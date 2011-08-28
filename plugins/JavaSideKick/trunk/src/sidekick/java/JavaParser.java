@@ -87,7 +87,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 parser_type = JAVA_PARSER;
         }
-        EditBus.addToBus( this );
     }
 
     /**

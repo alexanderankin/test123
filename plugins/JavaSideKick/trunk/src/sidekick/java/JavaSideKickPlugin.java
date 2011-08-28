@@ -26,76 +26,132 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java;
-//{{{ imports
+// {{{ imports
 import java.util.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.buffer.*;
+import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.textarea.*;
 import classpath.*;
 import errorlist.*;
 import sidekick.*;
 import sidekick.java.util.*;
 import sidekick.java.node.*;
-//}}}
+// }}}
 public class JavaSideKickPlugin extends EBPlugin {
 
-	public final static String NAME = "sidekick.java";
-	public final static String OPTION_PREFIX = "options.sidekick.java.";
-	public final static String PROPERTY_PREFIX = "plugin.sidekick.java.";
-	public final static DefaultErrorSource ERROR_SOURCE = new DefaultErrorSource( "JavaSideKick" );
+    public static final String NAME = "sidekick.java";
+    public static final String OPTION_PREFIX = "options.sidekick.java.";
+    public static final String PROPERTY_PREFIX = "plugin.sidekick.java.";
+    public static final DefaultErrorSource ERROR_SOURCE = new DefaultErrorSource("JavaSideKick");
 
-	public void start() {
-		ErrorSource.registerErrorSource( ERROR_SOURCE );
-	}
-	public void stop() {
-		ErrorSource.unregisterErrorSource( ERROR_SOURCE );
-	}
+    private static HashMap<View, JavaParser> javaParsers = new HashMap<View, JavaParser>();
+    private static HashMap<View, JavaParser> javaccParsers = new HashMap<View, JavaParser>();
 
-	public static void insertImportAtCursor(EditPane editPane) {
-		// Get some position information
-		View view = editPane.getView();
-		JEditTextArea textArea = editPane.getTextArea();
-		JEditBuffer buffer = textArea.getBuffer();
+    public void start() {
+        ErrorSource.registerErrorSource(ERROR_SOURCE);
+    }
 
-		int line = textArea.getCaretLine();
-		int offset = textArea.getLineStartOffset(line);
-		int caret = textArea.getCaretPosition()-offset;
-		String lineText = textArea.getLineText(line);
-		if (caret == lineText.length()) caret--;
-		String noWordSep = (String) textArea.getBuffer().getMode().getProperty("noWordSep");
-		int start = TextUtilities.findWordStart(lineText, caret-1, noWordSep);
-		int end = TextUtilities.findWordEnd(lineText, caret, noWordSep);
-		if (end == -1) end = lineText.length();
-		// Get the word
-		String word = lineText.substring(start, end);
+    public void stop() {
+        ErrorSource.unregisterErrorSource(ERROR_SOURCE);
+        for (JavaParser parser : javaParsers.values()) {
+            EditBus.removeFromBus(parser);
+        }
+        for (JavaParser parser : javaccParsers.values()) {
+            EditBus.removeFromBus(parser);
+        }
+    }
 
-		List<String> classes = Locator.getInstance().getClassName(word);
-		if (classes.size() == 0) {
-			return;
-		}
+    /**
+     * Create a java parser sidekick.
+     * @param view The view for the parser
+     * @param type One of JavaParser.JAVA_PARSER or JavaParser.JAVACC_PARSER);
+     * @return A java parser for the given view.
+     */
+    public static JavaParser createParser(int type) {
+        JavaParser parser = null;
+        View view = jEdit.getActiveView();
+        switch (type) {
+            case JavaParser.JAVA_PARSER:
+                parser = javaParsers.get(view);
+                if (parser == null) {
+                    parser = new JavaParser(type);
+                    javaParsers.put(view, parser);
+                    EditBus.addToBus(parser);
+                }
+                break;
+            case JavaParser.JAVACC_PARSER:
+                parser = javaccParsers.get(view);
+                if (parser == null) {
+                    parser = new JavaParser(type);
+                    javaccParsers.put(view, parser);
+                    EditBus.addToBus(parser);
+                }
+        }
+        return parser;
+    }
 
-		List candids = new ArrayList(classes.size());
-		for (String clazz : classes) {
-			candids.add(new JavaCompletionFinder.JavaCompletionCandidate(clazz,
-						TigerLabeler.getClassIcon()));
-		}
+    public static void insertImportAtCursor(EditPane editPane) {
+        // Get some position information
+        View view = editPane.getView();
+        JEditTextArea textArea = editPane.getTextArea();
 
-		JavaImportCompletion complete = new JavaImportCompletion(view, word, candids);
+        int line = textArea.getCaretLine();
+        int offset = textArea.getLineStartOffset(line);
+        int caret = textArea.getCaretPosition() - offset;
+        String lineText = textArea.getLineText(line);
+        if (caret == lineText.length()) {
+            caret--;
+        }
+        String noWordSep = (String) textArea.getBuffer().getMode().getProperty("noWordSep");
+        int start = TextUtilities.findWordStart(lineText, caret - 1, noWordSep);
+        int end = TextUtilities.findWordEnd(lineText, caret, noWordSep);
+        if (end == -1) {
+            end = lineText.length();
+        }
+        // Get the word
+        String word = lineText.substring(start, end);
 
-		if (classes.size() == 1) {
-			// Just insert it
-			complete.insert(0);
-		} else {
-			// Construct the popup
-			new SideKickCompletionPopup(view, null, offset+end, complete, false);
-		}
-	}
+        List<String> classes = Locator.getInstance().getClassName(word);
+        if (classes.size() == 0) {
+            return;
+        }
 
-	public void handleMessage(EBMessage message) {
-		if (message instanceof ClasspathUpdate) {
-			Locator.getInstance().refresh();
-		}
-	}
+        List candids = new ArrayList(classes.size());
+        for (String clazz : classes) {
+            candids.add(new JavaCompletionFinder.JavaCompletionCandidate(clazz, TigerLabeler.getClassIcon()));
+        }
+
+        JavaImportCompletion complete = new JavaImportCompletion(view, word, candids);
+
+        if (classes.size() == 1) {
+            // Just insert it
+            complete.insert(0);
+        } else {
+            // Construct the popup
+            new SideKickCompletionPopup(view, null, offset + end, complete, false);
+        }
+    }
+
+    public void handleMessage(EBMessage message) {
+        if (message instanceof ClasspathUpdate) {
+            Locator.getInstance().refresh();
+        }
+        if (message instanceof ViewUpdate) {
+            ViewUpdate vu = (ViewUpdate) message;
+            if (ViewUpdate.CLOSED.equals(vu.getWhat())) {
+                View view = vu.getView();
+                JavaParser parser = javaParsers.remove(view);
+                if (parser != null) {
+                    EditBus.removeFromBus(parser);
+                }
+                parser = javaccParsers.remove(view);
+                if (parser != null) {
+                    EditBus.removeFromBus(parser);
+                }
+            }
+        }
+    }
 }
 
