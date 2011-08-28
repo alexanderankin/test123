@@ -23,7 +23,6 @@ package com.kpouer.jedit.remotecontrol.welcome;
 
 import com.kpouer.jedit.remotecontrol.MessageHandler;
 import com.kpouer.jedit.remotecontrol.RemoteClient;
-import com.kpouer.jedit.remotecontrol.RemoteServer;
 import org.gjt.sp.util.Log;
 
 import java.io.IOException;
@@ -36,7 +35,6 @@ import java.nio.channels.SocketChannel;
 public class Handshake implements MessageHandler, WelcomeService
 {
 	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
-	private static final byte[] HANDSHAKE_ANSWER = "jEdit-RemoteServer-Welcome".getBytes(RemoteServer.CHARSET);
 	private RemoteClient client;
 	private SocketChannel sChannel;
 
@@ -66,7 +64,7 @@ public class Handshake implements MessageHandler, WelcomeService
 			Log.log(Log.MESSAGE, this, "Handshake received");
 			try
 			{
-				sChannel.write(ByteBuffer.wrap(HANDSHAKE_ANSWER));
+				sChannel.write(ByteBuffer.wrap(HANDSHAKE_WELCOME));
 				client.handshaked();
 			}
 			catch (IOException e)

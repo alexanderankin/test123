@@ -23,6 +23,7 @@ package com.kpouer.jedit.remotecontrol.welcome;
 
 import com.kpouer.jedit.remotecontrol.MessageHandler;
 import com.kpouer.jedit.remotecontrol.RemoteClient;
+import com.kpouer.jedit.remotecontrol.RemoteServer;
 
 import java.nio.channels.SocketChannel;
 
@@ -34,6 +35,7 @@ import java.nio.channels.SocketChannel;
  */
 public interface WelcomeService extends MessageHandler
 {
+	byte[] HANDSHAKE_WELCOME = "jEdit-RemoteServer-Welcome".getBytes(RemoteServer.CHARSET);
 	void setClient(RemoteClient client);
 
 	void setChannel(SocketChannel sChannel);
