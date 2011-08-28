@@ -33,13 +33,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * @author Matthieu Casanova
  */
 public class Challenge implements MessageHandler, WelcomeService
 {
-	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
+	private static final String HELLO = "jEdit-RemoteServer-Hello";
 	private static final String CHALLENGE = "jEdit-RemoteServer-Welcome-Challenge-";
 	private static final String CHALLENGE_ANSWER = "jEdit-RemoteServer-Challenge-Answer-";
 	private RemoteClient client;
@@ -67,46 +68,57 @@ public class Challenge implements MessageHandler, WelcomeService
 	@Override
 	public void handleMessage(String line)
 	{
-		if (line.equals(HANDSHAKE))
+		if (line.equals(HELLO))
 		{
-			Log.log(Log.MESSAGE, this, "Handshake received");
+			handleHello();
+		}
+		else if (line.startsWith(CHALLENGE_ANSWER))
+		{
+			handleChallengeAnswer(line);
+		}
+		else
+		{
+			Log.log(Log.WARNING, this, "Wrong Handshake " + line);
+		}
+	}
+
+	private void handleChallengeAnswer(String line)
+	{
+		Log.log(Log.MESSAGE, this, "Challenge answer received " + line);
+		String hash = line.substring(CHALLENGE_ANSWER.length());
+		String localHash = getHash();
+		if (localHash.equals(hash))
+		{
+			Log.log(Log.MESSAGE, this, "Challenge accepted");
+			client.handshaked();
 			try
 			{
-				long time = System.currentTimeMillis();
-				challenge = CHALLENGE +time;
-				sChannel.write(ByteBuffer.wrap(challenge.getBytes(RemoteServer.CHARSET)));
+				sChannel.write(ByteBuffer.wrap(WelcomeService.HANDSHAKE_WELCOME));
 			}
 			catch (IOException e)
 			{
 				Log.log(Log.WARNING, this, e, e);
 			}
-			Log.log(Log.MESSAGE, this, "Client handshaked " + this);
-		}
-		else if (line.startsWith(CHALLENGE_ANSWER))
-		{
-			String hash = line.substring(CHALLENGE_ANSWER.length());
-			String localHash = getHash();
-			if (localHash.equals(hash))
-			{
-				client.handshaked();
-				try
-				{
-					sChannel.write(ByteBuffer.wrap(WelcomeService.HANDSHAKE_WELCOME));
-				}
-				catch (IOException e)
-				{
-					Log.log(Log.WARNING, this, e, e);
-				}
-			}
-			else
-			{
-				Log.log(Log.WARNING, this, "Wrong challenge");
-				RemoteControlPlugin.server.removeClient(sChannel);
-			}
 		}
 		else
 		{
-			Log.log(Log.WARNING, this, "Wrong Handshake " + line);
+			Log.log(Log.WARNING, this, "Wrong challenge");
+			RemoteControlPlugin.server.removeClient(sChannel);
+		}
+	}
+
+	private void handleHello()
+	{
+		Log.log(Log.MESSAGE, this, "Hello received");
+		try
+		{
+			long time = System.currentTimeMillis();
+			challenge = CHALLENGE + time;
+			sChannel.write(ByteBuffer.wrap(challenge.getBytes(RemoteServer.CHARSET)));
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.WARNING, this, e, e);
 		}
 	}
 
@@ -116,14 +128,27 @@ public class Challenge implements MessageHandler, WelcomeService
 		try
 		{
 			MessageDigest digest = MessageDigest.getInstance("MD5");
-			digest.update(challenge.getBytes(RemoteServer.CHARSET));
-			digest.update(pincode.getBytes(RemoteServer.CHARSET));
-			return new String(digest.digest(), RemoteServer.CHARSET);
+			byte[] digest1 = digest.digest((pincode + challenge).getBytes(RemoteServer.CHARSET));
+			return toHexString(digest1);
 		}
 		catch (NoSuchAlgorithmException e)
 		{
 			Log.log(Log.ERROR, this, e, e);
 		}
 		return "";
+	}
+
+	private static final String HEX_DIGITS = "0123456789abcdef";
+
+	private static String toHexString(byte[] v)
+	{
+		StringBuilder sb = new StringBuilder(v.length * 2);
+		for (int i = 0; i < v.length; i++)
+		{
+			int b = v[i] & 0xFF;
+			sb.append(HEX_DIGITS.charAt(b >>> 4))
+					.append(HEX_DIGITS.charAt(b & 0xF));
+		}
+		return sb.toString();
 	}
 }
