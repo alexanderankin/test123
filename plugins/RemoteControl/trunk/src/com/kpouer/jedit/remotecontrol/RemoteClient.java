@@ -67,6 +67,8 @@ public class RemoteClient
 			WelcomeService welcome = ServiceManager.getService(WelcomeService.class, welcomeService);
 			if (welcome == null)
 				throw new InternalError("No welcome service by that name " + welcomeService);
+			welcome.setClient(this);
+			welcome.setChannel(sChannel);
 			handlers.add(welcome);
 		}
 		serializer = ServiceManager.getService(Serializer.class, "xsjson");
