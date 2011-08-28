@@ -12,6 +12,11 @@ plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.depend.1=jedit 04.03.9
 plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.jars=xstream.jar jettison.jar
 plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.usePluginHome=true
 
+plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.menu=remotecontrol-clientlist
+
+
+remotecontrol-clientlist.title=Remote Control
+remotecontrol-clientlist.label=Remote Control
 remotecontrol.port=53348
 remotecontrol.pincode=1234
 remotecontrol.welcomeservice=challenge

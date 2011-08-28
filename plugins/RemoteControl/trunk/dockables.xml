@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<DOCKABLES>
+	<DOCKABLE NAME="remotecontrol-clientlist">
+		new com.kpouer.jedit.remotecontrol.ui.ClientListPanel();
+	</DOCKABLE>
+</DOCKABLES>
