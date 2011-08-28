@@ -130,11 +130,19 @@ public class RemoteClient
 			String line = messages.removeFirst();
 			for (MessageHandler handler : handlers)
 			{
-				if (handler.accept(line))
+				try
 				{
-					handler.handleMessage(line);
-					break;
+					if (handler.accept(line))
+					{
+						handler.handleMessage(line);
+						break;
+					}
 				}
+				catch (Exception e)
+				{
+					Log.log(Log.ERROR, this, "Error while processing message " + line, e);
+				}
+
 			}
 		}
 	}
