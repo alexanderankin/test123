@@ -21,6 +21,8 @@
 
 package com.kpouer.jedit.remotecontrol;
 
+import com.kpouer.jedit.remotecontrol.command.ActionCommandHandler;
+import com.kpouer.jedit.remotecontrol.command.SingleLineCommandHandler;
 import com.kpouer.jedit.remotecontrol.serializer.Serializer;
 import com.kpouer.jedit.remotecontrol.welcome.WelcomeService;
 import org.gjt.sp.jedit.ServiceManager;
@@ -121,6 +123,7 @@ public class RemoteClient
 	{
 		handlers.clear();
 		handlers.add(new SingleLineCommandHandler(this));
+		handlers.add(new ActionCommandHandler(this));
 	}
 
 	private void handleMessage()
