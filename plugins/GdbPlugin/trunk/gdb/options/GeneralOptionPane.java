@@ -147,7 +147,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	/***************************************************************************
 	 * Implementation
 	 **************************************************************************/
-	public void _save()
+	@Override
+	protected void _save()
 	{
 		jEdit.setProperty(GDB_PATH_PROP, gdbPathTF.getText());
 		jEdit.setBooleanProperty(USE_EXTERNAL_COMMANDS_PROP, useExternalCommandsCB.isSelected()); 
