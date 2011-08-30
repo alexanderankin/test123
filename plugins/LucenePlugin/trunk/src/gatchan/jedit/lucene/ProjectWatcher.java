@@ -28,7 +28,6 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 
 import projectviewer.event.StructureUpdate;
 import projectviewer.event.ViewerUpdate;
-import projectviewer.vpt.VPTProject;
 
 public class ProjectWatcher
 {
