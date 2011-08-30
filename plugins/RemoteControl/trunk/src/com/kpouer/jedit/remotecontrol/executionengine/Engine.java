@@ -22,7 +22,6 @@
 package com.kpouer.jedit.remotecontrol.executionengine;
 
 import com.kpouer.jedit.remotecontrol.RemoteClient;
-import com.kpouer.jedit.remotecontrol.SingleLineCommandHandler;
 
 /**
  * @author Matthieu Casanova

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 jEdit contributors
+ * Copyright © 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +19,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package com.kpouer.jedit.remotecontrol;
+package com.kpouer.jedit.remotecontrol.command;
 
+import com.kpouer.jedit.remotecontrol.MessageHandler;
+import com.kpouer.jedit.remotecontrol.RemoteClient;
 import com.kpouer.jedit.remotecontrol.executionengine.Engine;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.util.Log;
