@@ -229,7 +229,8 @@ public class LaunchConfigOptionPane extends AbstractOptionPane {
 	/***************************************************************************
 	 * Implementation
 	 **************************************************************************/
-	public void save()
+	@Override
+	protected void _save()
 	{
 		configs.save();
 	}

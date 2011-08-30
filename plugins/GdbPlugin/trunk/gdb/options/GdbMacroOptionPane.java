@@ -147,7 +147,8 @@ public class GdbMacroOptionPane extends AbstractOptionPane {
 	/***************************************************************************
 	 * Implementation
 	 **************************************************************************/
-	public void _save()
+	@Override
+	protected void _save()
 	{
 		// Workaround for committing the last cell editing operation
 		TypeMacroMap tmm = TypeMacroMap.getInstance();
