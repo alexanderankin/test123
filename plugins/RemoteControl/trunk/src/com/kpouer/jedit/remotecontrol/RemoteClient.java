@@ -123,7 +123,7 @@ public class RemoteClient
 	{
 		handlers.clear();
 		handlers.add(new SingleLineCommandHandler(this));
-		handlers.add(new ActionCommandHandler(this));
+		handlers.add(new ActionCommandHandler());
 	}
 
 	private void handleMessage()
