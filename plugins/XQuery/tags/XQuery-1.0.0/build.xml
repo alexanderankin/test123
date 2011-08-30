@@ -28,14 +28,15 @@
   
   <property name="build.dir" value="build"/>
   <property name="jedit.install.dir" value="../.."/>
+  <property name="jedit.plugins.dir" value="${install.dir}" />
   <property name="classes.xquery.dir" value="${build.dir}/classesXQuery" description="XQuery plugin classes compiled into here"/>
   <property name="classes.saxon.dir" value="${build.dir}/classesSaxon" description="Saxon Adapter classes compiled into here"/>
 
   <path id="xquery.class.path">
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${install.dir}/ErrorList.jar"/>
-    <pathelement location="${install.dir}/XmlIndenter.jar"/>
-    <pathelement location="${install.dir}/InfoViewer.jar"/>
+    <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+    <pathelement location="${jedit.plugins.dir}/XmlIndenter.jar"/>
+    <pathelement location="${jedit.plugins.dir}/InfoViewer.jar"/>
   </path>
 	
   <path id="saxon.class.path">
@@ -80,6 +81,7 @@
   <target name="compileSaxon" description="compiles java source for Saxon Adapter">
     <delete dir="${classes.saxon.dir}"/>
     <mkdir dir="${classes.saxon.dir}"/>
+    <copy file="ext/saxon7.jar" todir="${install.dir}" />
     <javac srcdir="${basedir}" destdir="${classes.saxon.dir}" deprecation="on" debug="on" includes="saxonadapter/*.java" source="1.4">
       <classpath refid="saxon.class.path"/>
     </javac>
@@ -113,6 +115,8 @@
 	
   <target name="deployAll" depends="deployXQuery, deploySaxon" description="copies jars to deploy.dir">
   </target>
+  
+  <target name="dist" depends="jarAll" />
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc" depends="init">
