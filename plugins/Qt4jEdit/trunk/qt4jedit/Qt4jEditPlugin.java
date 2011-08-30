@@ -42,6 +42,9 @@ public class Qt4jEditPlugin extends EditPlugin {
 		}
 		try {
 			assistantProcess = builder.start();
+			OutputStream os = assistantProcess.getOutputStream();
+			os.write('\n');
+			os.flush();
 		}
 		catch (IOException ioe) {
 			Log.log(Log.ERROR, this, "Unable to start process", ioe);
@@ -74,12 +77,17 @@ public class Qt4jEditPlugin extends EditPlugin {
 			bar[i] = (byte) command.charAt(i);
 		}
 		bar[len]=0;
-		
+		boolean started=false;
 		if (assistantProcess == null) {
 			startAssistant();
+		    started=true;	
 		}
 		OutputStream os = assistantProcess.getOutputStream();
 		try {
+            if (started) {
+                Thread.sleep(5000);
+			    os.flush();
+			}
 			os.write(bar);
 			os.flush();
 		}
@@ -94,6 +102,7 @@ public class Qt4jEditPlugin extends EditPlugin {
 				Log.log(Log.ERROR, this, "sendToAssistant", ioee);				
 			}
 		}
+		catch (InterruptedException ie) {}
 	}
 	
 	public void activateKeyword(TextArea textArea) {
