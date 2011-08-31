@@ -43,6 +43,7 @@ import javax.swing.tree.TreePath;
 
 import marker.MarkerSetsPlugin;
 
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
@@ -115,9 +116,9 @@ public class SourceTree extends SideKickTree {
 
     private boolean hasMarker(int start, int end) {
         //{{{ getMarker method
-    	MarkerSetsPlugin markerSets = SideKickPlugin.getMarkerSetsPlugin();
+    	EditPlugin markerSets = SideKickPlugin.getMarkerSetsPlugin();
     	if (markerSets != null) {
-    		if (markerSets.hasMarker(view.getBuffer(), start, end))
+    		if (((MarkerSetsPlugin) markerSets).hasMarker(view.getBuffer(), start, end))
     			return true;
     	}
         return (view.getBuffer().getMarkerInRange(start, end) != null);
