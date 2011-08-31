@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.util.Log;
 
 public class ClasspathPlugin extends EBPlugin {
 
@@ -29,10 +30,14 @@ public class ClasspathPlugin extends EBPlugin {
 	public void stop() {}
 
 	/**
-	 * Refreshes the set of open projects
+	 * Refreshes the set of open projects if ProjectViewer is installed
 	 */
 	public static void refreshProjects() {
 		projects.clear();
+
+		// do nothing if ProjectViewer isn't installed
+		if (jEdit.getPlugin("projectviewer.ProjectPlugin") == null)
+			return;
 
 		View[] views = jEdit.getViews();
 		for (int i = 0; i<views.length; i++) {
@@ -41,7 +46,6 @@ public class ClasspathPlugin extends EBPlugin {
 			if (project != null)
 				projects.add(project);
 		}
-
 	}
 
 	/**
@@ -130,33 +134,37 @@ public class ClasspathPlugin extends EBPlugin {
 	 * - when a plugin jar is (un)loaded (only if installed plugins should be included)
 	 */
 	public void handleMessage(EBMessage msg) {
-		if (msg instanceof projectviewer.event.ViewerUpdate) {
-			projectviewer.event.ViewerUpdate update = (projectviewer.event.ViewerUpdate) msg;
-			
-			// The viewer's current 'active project' is old, so remove it
-			projectviewer.ProjectViewer viewer = update.getViewer();
-			// this may happen on first load
-			if (viewer == null)
-				return;
+		// only check project events if ProjectViewer is installed
+		if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
+		   	if (msg instanceof projectviewer.event.ViewerUpdate) {
+				projectviewer.event.ViewerUpdate update = (projectviewer.event.ViewerUpdate) msg;
 
-			projectviewer.vpt.VPTProject old = viewer.getActiveProject(viewer.getView());
-			if (old != null)
-				projects.remove(old);
+				// The viewer's current 'active project' is old, so remove it
+				projectviewer.ProjectViewer viewer = update.getViewer();
+				// this may happen on first load
+				if (viewer == null)
+					return;
 
-			if (update.getType().equals(projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED)) {
-				// New project
-				projects.add(update.getNode());
-			}
+				projectviewer.vpt.VPTProject old = viewer.getActiveProject(viewer.getView());
+				if (old != null)
+					projects.remove(old);
 
-			updateClasspath();
-		}
-		else if (msg instanceof projectviewer.event.ProjectUpdate) {
-			// Re-update the classpath of a project's properties were changed
-			projectviewer.event.ProjectUpdate update = (projectviewer.event.ProjectUpdate) msg;
-			if (update.getType().equals(projectviewer.event.ProjectUpdate.Type.PROPERTIES_CHANGED))
+				if (update.getType().equals(projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED)) {
+					// New project
+					projects.add(update.getNode());
+				}
+
 				updateClasspath();
+			}
+			else if (msg instanceof projectviewer.event.ProjectUpdate) {
+				// Re-update the classpath of a project's properties were changed
+				projectviewer.event.ProjectUpdate update = (projectviewer.event.ProjectUpdate) msg;
+				if (update.getType().equals(projectviewer.event.ProjectUpdate.Type.PROPERTIES_CHANGED))
+					updateClasspath();
+			}
 		}
-		else if (msg instanceof ViewUpdate) {
+
+		if (msg instanceof ViewUpdate) {
 			ViewUpdate update = (ViewUpdate) msg;
 
 			// If a view was opened or closed, refresh the set of projects
