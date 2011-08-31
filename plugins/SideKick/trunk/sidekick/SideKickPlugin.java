@@ -23,8 +23,6 @@
 package sidekick;
 
 //{{{ Imports
-import marker.MarkerSetsPlugin;
-
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -75,17 +73,17 @@ public class SideKickPlugin extends EditPlugin
 	private static Set<Buffer> parsedBufferSet;
 	private static Map<View, SideKickToolBar> toolBars;
 	private static boolean toolBarsEnabled;
-	private static Map<View, SwingWorker> workers;
-	private static MarkerSetsPlugin markerSetsPlugin;
+	private static Map<View, SwingWorker<SideKickParsedData, Object>> workers;
+	private static EditPlugin markerSetsPlugin;
 
 	//{{{ start() method
 	public void start()
 	{
 		BeanShell.getNameSpace().addCommandPath(MACRO_PATH, getClass());
-		markerSetsPlugin = (MarkerSetsPlugin) jEdit.getPlugin(MARKER_SETS_PLUGIN, true);
+		markerSetsPlugin = jEdit.getPlugin(MARKER_SETS_PLUGIN, false);
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
-		workers = new HashMap<View, SwingWorker>();
+		workers = new HashMap<View, SwingWorker<SideKickParsedData, Object>>();
 		parsedBufferSet = new HashSet<Buffer>();
 		toolBars = new HashMap<View, SideKickToolBar>();
 		toolBarsEnabled = jEdit.getBooleanProperty(SHOW_TOOL_BAR);
@@ -194,18 +192,14 @@ public class SideKickPlugin extends EditPlugin
     	if (plugin.getClassName().equals(MARKER_SETS_PLUGIN))
     	{
             if (msg.getWhat() == PluginUpdate.ACTIVATED)
-            {
-            	markerSetsPlugin = (MarkerSetsPlugin) plugin;
-            }
+            	markerSetsPlugin = plugin;
             else if (msg.getWhat() == PluginUpdate.DEACTIVATED)
-            {
             	markerSetsPlugin = null;
-            }
     	}
     } //}}}
 
     // {{{ getMarkerSetsPlugin() method
-    public static MarkerSetsPlugin getMarkerSetsPlugin()
+    public static EditPlugin getMarkerSetsPlugin()
     {
     	return markerSetsPlugin;
     } //}}}
@@ -320,7 +314,7 @@ public class SideKickPlugin extends EditPlugin
 		executor.execute(runnable);
 	}
 	
-	public static void execute(View view, SwingWorker worker) 
+	public static void execute(View view, SwingWorker<SideKickParsedData, Object> worker) 
 	{
 		// QUESTION: there should be only one worker per view. Is it possible
 		// there could be more than one?
@@ -424,7 +418,7 @@ public class SideKickPlugin extends EditPlugin
 	} //}}}
 
 	public static void stop(View view) {
-		SwingWorker worker = workers.get(view);
+		SwingWorker<SideKickParsedData, Object> worker = workers.get(view);
 		if (worker != null && !worker.isCancelled() && !worker.isDone()) {
 			worker.cancel(true);	
 		}
