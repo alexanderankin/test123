@@ -82,7 +82,7 @@ public class SideKickPlugin extends EditPlugin
 	public void start()
 	{
 		BeanShell.getNameSpace().addCommandPath(MACRO_PATH, getClass());
-		markerSetsPlugin = (MarkerSetsPlugin) jEdit.getPlugin(MARKER_SETS_PLUGIN, false);
+		markerSetsPlugin = (MarkerSetsPlugin) jEdit.getPlugin(MARKER_SETS_PLUGIN, true);
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
 		workers = new HashMap<View, SwingWorker>();
