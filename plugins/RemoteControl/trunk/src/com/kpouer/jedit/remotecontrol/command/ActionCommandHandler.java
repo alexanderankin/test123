@@ -27,6 +27,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 /**
+ * An action Command is
+ * A:actionName
  * @author Matthieu Casanova
  */
 public class ActionCommandHandler implements MessageHandler

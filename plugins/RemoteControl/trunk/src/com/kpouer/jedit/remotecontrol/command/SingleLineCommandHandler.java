@@ -28,6 +28,10 @@ import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.util.Log;
 
 /**
+ * An action Command is
+ * S::somebeanshell
+ * S:bsh:somebeanshell
+ * S:anotherexecutionengine:some code
  * @author Matthieu Casanova
  */
 public class SingleLineCommandHandler implements MessageHandler
