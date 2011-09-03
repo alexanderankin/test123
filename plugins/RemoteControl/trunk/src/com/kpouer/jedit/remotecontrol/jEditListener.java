@@ -183,12 +183,12 @@ public class jEditListener implements EBComponent
 
 	private String getNextViewId()
 	{
-		return "view-" + indexCounter++;
+		return "view_" + indexCounter++;
 	}
 
 	private String getNextEditPaneId()
 	{
-		return "editpane-" + indexCounter++;
+		return "editpane_" + indexCounter++;
 	}
 
 	public String getViewId(Object obj)
