@@ -5,9 +5,11 @@ package clojure.shell;
  * Embeds an interactive Clojure session into the console
  */
 //{{{ Imports
+import classpath.ClasspathPlugin;
 import clojure.ClojurePlugin;
 import console.Console;
 import console.Output;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,9 +42,10 @@ public class ClojureShell extends ProcessShell {
 	 */
 	protected void init(ConsoleState state, String command) throws IOException {
 		ClojurePlugin clojure = (ClojurePlugin) jEdit.getPlugin("clojure.ClojurePlugin");
-		Log.log(Log.DEBUG,this,"Attempting to start Clojure process");
-		ProcessBuilder pb = new ProcessBuilder("java", "-cp", clojure.getClojure(),
-				"clojure.main");
+		String cp = clojure.getClojure() + File.pathSeparator + ClasspathPlugin.getClasspath();
+		Log.log(Log.DEBUG,this,"Attempting to start Clojure process with classpath: "+cp);
+
+		ProcessBuilder pb = new ProcessBuilder("java", "-cp", cp, "clojure.main");
 		state.p = pb.start();
 		Log.log(Log.DEBUG,this,"Clojure started.");
 	}

@@ -20,6 +20,11 @@
 			may need to be configured. Refer to that plugin's documentation for information
 			on how to configure it.
 		</para>
+		<para>
+			If you want to have an external library available inside the shell, simply add it to
+			the classpath in Plugins -> Plugin Options -> Classpath, then restart the shell
+			if necessary.
+		</para>
 	</chapter>
 	<chapter id="actions"><title>Evaluating Code</title>
 		<para>
