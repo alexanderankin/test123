@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<book>
+	<bookinfo>
+		<title>Clojure</title>
+		<author>
+			<firstname>Damien</firstname><surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+		<para>
+			This plugin comes packaged with Clojure, a functional programming language
+			targeted for the JVM.
+		</para>
+		<para>
+			The jars provided by this plugin are clojure-core 1.2.0 and clojure-contrib
+			1.1.0. Different jars can be used by configuring the plugin in the Plugin Options
+			window.
+		</para>
+	</chapter>
+	<chapter id="console"><title>Using with Console</title>
+		<para>
+			If the Console plugin is installed, this plugin automatically sets the
+			system environment variable CLOJURE to the path of clojure-core and clojure-contrib.
+			So to run a script called 'script.clj', cd to the file's directory (cd $d) and run:
+		</para>
+		<para><programlisting>
+			java -cp "$CLOJURE" clojure.main script.clj
+		</programlisting></para>
+		<para>
+			Alternatively, this plugin installs a clojure commando file, so scripts can
+			be run by setting it as the interpreter for clojure files (Plugin Options -> Console
+			-> Compile &amp; Run), and then Plugins -> Console -> Run Current Buffer.
+		</para>
+	</chapter>
+</book>
