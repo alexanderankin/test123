@@ -39,6 +39,7 @@
 		<!-- Dependencies that are supplied by other plugins. -->
 		<!-- <pathelement path="${jedit.plugins.dir}/dependency.jar" /> -->
 		<pathelement path="${jedit.plugins.dir}/Console.jar" />
+		<pathelement path="${jedit.plugins.dir}/Classpath.jar" />
 	</path>
 	
 	<target name="build.prepare">

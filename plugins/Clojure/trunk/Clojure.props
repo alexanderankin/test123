@@ -7,24 +7,25 @@ plugin.clojure.ClojurePlugin.docs=index.html
 plugin.clojure.ClojurePlugin.longdescription=description.html
 plugin.clojure.ClojurePlugin.name=Clojure
 plugin.clojure.ClojurePlugin.usePluginHome=false
-plugin.clojure.ClojurePlugin.version=1.2.0
-plugin.clojure.ClojurePlugin.jars=clojure-core-1.2.0.jar clojure-contrib-1.1.0.jar
+plugin.clojure.ClojurePlugin.version=1.2.1
+plugin.clojure.ClojurePlugin.jars=clojure-1.2.1.jar clojure-contrib-1.2.0.jar
 # }}} Basic Plugin Information
 
 # Dependencies {{{
 plugin.clojure.ClojurePlugin.depend.0=jedit 04.03.99.00
 plugin.clojure.ClojurePlugin.depend.1=jdk 1.5
-plugin.clojure.ClojurePlugin.depend.2=optional plugin console.ConsolePlugin 4.4.2
+plugin.clojure.ClojurePlugin.depend.2=plugin classpath.ClasspathPlugin 1.0
+plugin.clojure.ClojurePlugin.depend.3=optional plugin console.ConsolePlugin 4.4.2
 # }}} Dependencies
 
 # Options {{{
 plugin.clojure.ClojurePlugin.option-group=clojure-provider
 options.clojure-provider.label=Provider
 options.clojure-provider.code=new clojure.ClojureProviderOptionPane();
-options.clojure.clojure-core-jar=clojure-core-1.2.0.jar
-options.clojure.clojure-contrib-jar=clojure-contrib-1.1.0.jar
+options.clojure.clojure-core-jar=clojure-1.2.1.jar
+options.clojure.clojure-contrib-jar=clojure-contrib-1.2.0.jar
 
-options.clojure.included-core-label=Included (1.2.0)
-options.clojure.included-contrib-label=Included (1.1.0)
+options.clojure.included-core-label=Included (1.2.1)
+options.clojure.included-contrib-label=Included (1.2.0)
 options.clojure.choose-label=Choose jar
 # }}} Options
