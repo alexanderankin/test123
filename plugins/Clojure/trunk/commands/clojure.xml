@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Script settings">
+			<ENTRY LABEL="Script location" VARNAME="script"
+				EVAL="buffer.getPath()"
+				/>
+			<ENTRY LABEL="Script parameters" VARNAME="args" />
+		</CAPTION>
+
+		<CAPTION LABEL="VM settings">
+			<ENTRY LABEL="Class path" VARNAME="classpath"
+				EVAL="getBufferClassPath(buffer)" />
+			<ENTRY LABEL="Initial heap size (Mb)" VARNAME="ms" DEFAULT="32" />
+			<ENTRY LABEL="Maximum heap size (Mb)" VARNAME="mx" DEFAULT="32" />
+			<ENTRY LABEL="Thread stack size (Kb)" VARNAME="ss" />
+			<ENTRY LABEL="Additional VM parameters" VARNAME="extra" />
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("java -cp \"$CLOJURE");
+
+			if(!classpath.equals(""))
+			{
+				buf.append(File.pathSeparator);
+				buf.append(classpath);
+			}
+			buf.append('"');
+
+			if(!ms.equals(""))
+			{
+				buf.append(" -ms");
+				buf.append(ms);
+				buf.append('m');
+			}
+
+			if(!mx.equals(""))
+			{
+				buf.append(" -mx");
+				buf.append(mx);
+				buf.append('m');
+			}
+
+			if(!ss.equals(""))
+			{
+				buf.append(" -ss");
+				buf.append(ss);
+				buf.append('k');
+			}
+
+			if(!extra.equals(""))
+			{
+				buf.append(' ');
+				buf.append(extra);
+			}
+
+			buf.append(" clojure.main ");
+			buf.append("\""+script+"\"");
+
+			if(!args.equals(""))
+			{
+				buf.append(' ');
+				buf.append(args);
+			}
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
