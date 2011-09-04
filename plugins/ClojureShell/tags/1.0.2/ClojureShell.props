@@ -1,0 +1,33 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.clojure.shell.ClojureShellPlugin.activate=defer
+plugin.clojure.shell.ClojureShellPlugin.author=Damien Radtke
+plugin.clojure.shell.ClojureShellPlugin.description=Provides a Console shell \
+	that maintains a Clojure Read-Eval-Print-Loop.
+plugin.clojure.shell.ClojureShellPlugin.docs=index.html
+plugin.clojure.shell.ClojureShellPlugin.longdescription=description.html
+plugin.clojure.shell.ClojureShellPlugin.name=Clojure Shell
+plugin.clojure.shell.ClojureShellPlugin.usePluginHome=false
+plugin.clojure.shell.ClojureShellPlugin.version=1.0.2
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.clojure.shell.ClojureShellPlugin.depend.0=jedit 04.04.01.00
+plugin.clojure.shell.ClojureShellPlugin.depend.1=jdk 1.5
+plugin.clojure.shell.ClojureShellPlugin.depend.2=plugin clojure.ClojurePlugin 1.2.1
+plugin.clojure.shell.ClojureShellPlugin.depend.3=plugin procshell.ProcessShellPlugin 1.0
+plugin.clojure.shell.ClojureShellPlugin.depend.4=plugin classpath.ClasspathPlugin 1.0
+# }}} Dependencies
+
+# Menu {{{
+plugin.clojure.shell.ClojureShellPlugin.menu=open-clojure-shell - clojure-eval-selected \
+	clojure-eval-buffer clojure-eval-file
+open-clojure-shell.label=Open Clojure Shell
+clojure-eval-selected.label=Evaluate selection in Clojure shell
+clojure-eval-buffer.label=Evaluate buffer in Clojure shell
+clojure-eval-file.label=Evaluate file in Clojure shell ...
+# }}} Menu
+
+# Messages {{{
+msg.clojureshell.info-message=Interactive Clojure console.
+# }}} Messages
