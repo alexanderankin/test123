@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<book>
+	<bookinfo>
+		<title>Clojure Shell</title>
+		<author>
+			<firstname>Damien</firstname>
+			<surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+		<para>
+			The Clojure Shell plugin maintains an interactive Clojure environment within jEdit.
+			This can be useful for running quick tests, or simply to play around with the language
+			to get a better feel for its syntax.
+		</para>
+		<para>
+			To use the plugin, open up the Console dockable and select the Clojure shell.
+			Once selected, it will attempt to start up the Read-Eval-Print-Loop, and if successful,
+			the Clojure prompt will be displayed. If not successful, the Clojure provider plugin
+			may need to be configured. Refer to that plugin's documentation for information
+			on how to configure it.
+		</para>
+		<para>
+			If you want to have an external library available inside the shell, simply add it to
+			the classpath in Plugins -> Plugin Options -> Classpath, then restart the shell
+			if necessary.
+		</para>
+	</chapter>
+	<chapter id="actions"><title>Evaluating Code</title>
+		<para>
+			The easiest way to evaluate code in the shell is to simply type it in and hit enter.
+			But there are several actions available that make it easier to test a portion of your
+			code without having to manually copy and paste it.
+		</para>
+		<para>
+			These actions can be found in Plugins -> Clojure Shell. Using these actions, you can
+			use the shell to evaluate the active buffer, any selected text within that buffer, 
+			or an external Clojure script.
+		</para>
+		<para>
+			Any variables or functions defined in the shell will persist until the loop is
+			manually stopped and restarted.
+		</para>
+	</chapter>
+	<chapter id="stop-restart"><title>Stopping and Restarting</title>
+		<para>
+			To stop the loop, click on the Stop button in the Console dockable. After it's stopped,
+			hit Enter to start it back up again. Restarting can be used to reset the environment,
+			or you can simply stop the loop to conserve system resources.
+		</para>
+	</chapter>
+</book>
