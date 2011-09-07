@@ -26,7 +26,7 @@ import com.kpouer.jedit.remotecontrol.RemoteClient;
 import org.gjt.sp.util.Log;
 
 /**
- * An action Command is S::somebeanshell S:bsh:somebeanshell S:anotherexecutionengine:some code
+ * An action Command is O:key=value
  *
  * @author Matthieu Casanova
  */
