@@ -34,7 +34,6 @@ import java.nio.channels.SocketChannel;
  */
 public class Handshake implements MessageHandler, WelcomeService
 {
-	private static final String HANDSHAKE = "jEdit-RemoteServer-Hello";
 	private RemoteClient client;
 	private SocketChannel sChannel;
 
@@ -59,7 +58,7 @@ public class Handshake implements MessageHandler, WelcomeService
 	@Override
 	public void handleMessage(String line)
 	{
-		if (line.equals(HANDSHAKE))
+		if (line.equals(HELLO))
 		{
 			Log.log(Log.MESSAGE, this, "Handshake received");
 			try
