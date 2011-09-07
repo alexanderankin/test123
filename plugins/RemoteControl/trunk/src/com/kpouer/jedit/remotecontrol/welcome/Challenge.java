@@ -40,7 +40,6 @@ import java.util.Arrays;
  */
 public class Challenge implements MessageHandler, WelcomeService
 {
-	private static final String HELLO = "jEdit-RemoteServer-Hello";
 	private static final String CHALLENGE = "jEdit-RemoteServer-Welcome-Challenge-";
 	private static final String CHALLENGE_ANSWER = "jEdit-RemoteServer-Challenge-Answer-";
 	private RemoteClient client;
