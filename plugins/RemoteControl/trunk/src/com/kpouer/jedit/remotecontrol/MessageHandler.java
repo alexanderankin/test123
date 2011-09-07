@@ -27,5 +27,6 @@ package com.kpouer.jedit.remotecontrol;
 public interface MessageHandler
 {
 	boolean accept(String line);
-    void handleMessage(String line);
+
+	void handleMessage(String line);
 }
