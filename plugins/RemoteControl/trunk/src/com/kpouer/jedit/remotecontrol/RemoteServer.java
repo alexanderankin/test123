@@ -53,7 +53,7 @@ public class RemoteServer implements Runnable
 	private Selector selector;
 
 	private final Map<SocketChannel, RemoteClient> clients;
-	private static boolean DEBUG = true;
+	public static boolean DEBUG = true;
 
 	private final jEditListener jEditListener;
 	private Thread thread;
@@ -103,13 +103,7 @@ public class RemoteServer implements Runnable
 			return;
 		for (RemoteClient remoteClient : clients.values())
 		{
-			Serializer serializer = remoteClient.getSerializer();
-			String s = serializer.serialize(message);
-			if (DEBUG)
-			{
-				Log.log(Log.MESSAGE, this, s);
-			}
-			remoteClient.sendMessage(s.getBytes(CHARSET));
+			remoteClient.sendMessage(message);
 		}
 	}
 
