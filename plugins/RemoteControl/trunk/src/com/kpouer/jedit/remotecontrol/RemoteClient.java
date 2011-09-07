@@ -22,6 +22,7 @@
 package com.kpouer.jedit.remotecontrol;
 
 import com.kpouer.jedit.remotecontrol.command.ActionCommandHandler;
+import com.kpouer.jedit.remotecontrol.command.OptionCommandHandler;
 import com.kpouer.jedit.remotecontrol.command.SingleLineCommandHandler;
 import com.kpouer.jedit.remotecontrol.serializer.Serializer;
 import com.kpouer.jedit.remotecontrol.welcome.WelcomeService;
@@ -38,6 +39,7 @@ import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * @author Matthieu Casanova
@@ -53,9 +55,12 @@ public class RemoteClient
 
 	private Serializer serializer;
 
+	private Properties props;
+
 	public RemoteClient(SocketChannel sChannel)
 	{
 		this.channel = sChannel;
+		props = new Properties();
 		messages = new LinkedList<String>();
 		builder = new StringBuilder();
 		handlers = new ArrayList<MessageHandler>();
@@ -78,6 +83,17 @@ public class RemoteClient
 
 	public Serializer getSerializer()
 	{
+		String serializerName = props.getProperty("serializer", "xsjson");
+		Serializer serializer = ServiceManager.getService(Serializer.class, serializerName);
+		if (serializer == null)
+		{
+			Log.log(Log.ERROR, this, "Wrong serializer " + serializerName);
+			serializer = ServiceManager.getService(Serializer.class, "xsjson");
+		}
+		if (serializer == null)
+		{
+			throw new InternalError("No xsjson serializer !!!");
+		}
 		return serializer;
 	}
 
@@ -124,6 +140,7 @@ public class RemoteClient
 		handlers.clear();
 		handlers.add(new SingleLineCommandHandler(this));
 		handlers.add(new ActionCommandHandler());
+		handlers.add(new OptionCommandHandler(this));
 	}
 
 	private void handleMessage()
@@ -167,6 +184,11 @@ public class RemoteClient
 		{
 			Log.log(Log.WARNING, this, e, e);
 		}
+	}
+
+	public void setProperty(String key, String value)
+	{
+		props.setProperty(key, value);
 	}
 
 	@Override

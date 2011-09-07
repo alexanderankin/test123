@@ -5,14 +5,18 @@
 		new com.kpouer.jedit.remotecontrol.executionengine.BeanshellEngine();
 	</SERVICE>
 	<SERVICE NAME="xsjson" CLASS="com.kpouer.jedit.remotecontrol.serializer.Serializer">
-		new com.kpouer.jedit.remotecontrol.serializer.XStreamJSON();
+		new com.kpouer.jedit.remotecontrol.serializer.XStreamSerializer(new com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver());
 	</SERVICE>
 
-    <SERVICE NAME="challenge" CLASS="com.kpouer.jedit.remotecontrol.welcome.WelcomeService">
+	<SERVICE NAME="xsxml" CLASS="com.kpouer.jedit.remotecontrol.serializer.Serializer">
+		new com.kpouer.jedit.remotecontrol.serializer.XStreamSerializer(new com.thoughtworks.xstream.io.xml.StaxDriver());
+	</SERVICE>
+
+	<SERVICE NAME="challenge" CLASS="com.kpouer.jedit.remotecontrol.welcome.WelcomeService">
 		new com.kpouer.jedit.remotecontrol.welcome.Challenge();
 	</SERVICE>
 
-    <SERVICE NAME="challenge" CLASS="com.kpouer.jedit.remotecontrol.welcome.Handshake">
+	<SERVICE NAME="challenge" CLASS="com.kpouer.jedit.remotecontrol.welcome.Handshake">
 		new com.kpouer.jedit.remotecontrol.welcome.Handshake();
 	</SERVICE>
 </SERVICES>

@@ -21,6 +21,7 @@
 
 package com.kpouer.jedit.remotecontrol;
 
+import com.kpouer.jedit.remotecontrol.serializer.Serializer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.util.Log;
 
@@ -102,7 +103,8 @@ public class RemoteServer implements Runnable
 			return;
 		for (RemoteClient remoteClient : clients.values())
 		{
-			String s = remoteClient.getSerializer().serialize(message);
+			Serializer serializer = remoteClient.getSerializer();
+			String s = serializer.serialize(message);
 			if (DEBUG)
 			{
 				Log.log(Log.MESSAGE, this, s);
