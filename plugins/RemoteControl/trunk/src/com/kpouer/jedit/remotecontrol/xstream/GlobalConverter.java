@@ -49,7 +49,8 @@ public class GlobalConverter implements Converter
 	public boolean canConvert(Class aClass)
 	{
 		Package aPackage = aClass.getPackage();
-		return !EBMessage.class.isAssignableFrom(aClass) &&
+		return !aClass.isArray() &&
+		       !EBMessage.class.isAssignableFrom(aClass) &&
 		       !aClass.equals(CommandResponse.class) &&
 		(aPackage == null || !aPackage.getName().startsWith("java"));
 	}
