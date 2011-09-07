@@ -26,7 +26,9 @@ public class OutlineParser extends SideKickParser {
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
 		SideKickParsedData data = new SideKickParsedData(buffer.getName());
 		FoldHandler handler = buffer.getFoldHandler();
-		Stack nodes = new Stack();
+		Stack<Integer> levels = new Stack<Integer>();
+		levels.push(-1);
+		Stack<DefaultMutableTreeNode> nodes = new Stack<DefaultMutableTreeNode>();
 		nodes.push(data.root);
 		Segment seg = new Segment();
 		int lastFoldLevel = 0;
@@ -46,13 +48,15 @@ public class OutlineParser extends SideKickParser {
 					asset = new OutlineAsset(line,startIndex);
 				}
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode(asset);
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) nodes.peek();
+				DefaultMutableTreeNode parent = nodes.peek();
 				parent.add(node);
 				nodes.push(node);
+				levels.push(lastFoldLevel);
 			}
 			if (level < lastFoldLevel) {
-				if (nodes.peek() != data.root) {
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodes.pop();
+				while (levels.peek() >= level) {
+					levels.pop();
+					DefaultMutableTreeNode node = nodes.pop();
 					try {
 						OutlineAsset asset = (OutlineAsset) node.getUserObject();
 						asset.setEnd(buffer.getLineEndOffset(i));
