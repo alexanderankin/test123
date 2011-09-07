@@ -19,7 +19,7 @@ remotecontrol-clientlist.title=Remote Control
 remotecontrol-clientlist.label=Remote Control
 remotecontrol.port=53348
 remotecontrol.pincode=1234
-remotecontrol.welcomeservice=challenge
+remotecontrol.welcomeservice=
 
 plugin.com.kpouer.jedit.remotecontrol.RemoteControlPlugin.option-pane=remotecontrol.option-pane
 options.remotecontrol.option-pane.label=Remote Control

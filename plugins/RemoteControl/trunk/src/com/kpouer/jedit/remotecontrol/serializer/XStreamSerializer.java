@@ -28,19 +28,16 @@ import com.kpouer.jedit.remotecontrol.xstream.EditPaneConverter;
 import com.kpouer.jedit.remotecontrol.xstream.GlobalConverter;
 import com.kpouer.jedit.remotecontrol.xstream.ViewConverter;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 
-/**
- * @author Matthieu Casanova
- */
-public class XStreamJSON implements Serializer
+public class XStreamSerializer implements Serializer
 {
-	private final XStream xstream;
+	protected final XStream xstream;
 
-	public XStreamJSON()
+	public XStreamSerializer(HierarchicalStreamDriver driver)
 	{
+		xstream = new XStream(driver);
 		jEditListener jEditListener = RemoteControlPlugin.server.getjEditListener();
-		xstream = new XStream(new JettisonMappedXmlDriver());
 		xstream.registerConverter(new GlobalConverter());
 		xstream.registerConverter(new BufferConverter());
 		xstream.registerConverter(new ViewConverter(jEditListener));
