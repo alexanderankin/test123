@@ -23,9 +23,12 @@ package com.kpouer.jedit.remotecontrol;
 
 import com.kpouer.jedit.remotecontrol.command.ActionCommandHandler;
 import com.kpouer.jedit.remotecontrol.command.OptionCommandHandler;
+import com.kpouer.jedit.remotecontrol.command.RegisterEBMessageCommandHandler;
 import com.kpouer.jedit.remotecontrol.command.SingleLineCommandHandler;
+import com.kpouer.jedit.remotecontrol.command.UnregisterEBMessageCommandHandler;
 import com.kpouer.jedit.remotecontrol.serializer.Serializer;
 import com.kpouer.jedit.remotecontrol.welcome.WelcomeService;
+import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -38,29 +41,38 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Matthieu Casanova
  */
 public class RemoteClient
 {
-	private SocketChannel channel;
+	private final SocketChannel channel;
 
 	private final LinkedList<String> messages;
 	private final StringBuilder builder;
 
-	private Collection<MessageHandler> handlers;
+	private final Collection<MessageHandler> handlers;
 
-	private Serializer serializer;
+	private final Serializer serializer;
 
-	private Properties props;
+	private final Properties props;
+
+	/**
+	 * The messages that the client want to receive
+	 */
+	private final Set<Class<? extends EBMessage>> registeredMessages;
 
 	public RemoteClient(SocketChannel sChannel)
 	{
-		this.channel = sChannel;
+		channel = sChannel;
 		props = new Properties();
+		registeredMessages = Collections.synchronizedSet(new HashSet<Class<? extends EBMessage>>());
 		messages = new LinkedList<String>();
 		builder = new StringBuilder();
 		handlers = new ArrayList<MessageHandler>();
@@ -68,8 +80,7 @@ public class RemoteClient
 		if (welcomeService.length() == 0)
 		{
 			handshaked();
-		}
-		else
+		} else
 		{
 			WelcomeService welcome = ServiceManager.getService(WelcomeService.class, welcomeService);
 			if (welcome == null)
@@ -79,6 +90,16 @@ public class RemoteClient
 			handlers.add(welcome);
 		}
 		serializer = ServiceManager.getService(Serializer.class, "xsjson");
+	}
+
+	public void registerMessage(Class<? extends EBMessage> clz)
+	{
+		registeredMessages.add(clz);
+	}
+
+	public void unregisterMessage(Class<? extends EBMessage> clz)
+	{
+		registeredMessages.remove(clz);
 	}
 
 	public Serializer getSerializer()
@@ -127,8 +148,7 @@ public class RemoteClient
 						builder.append(c);
 				}
 			}
-		}
-		catch (CharacterCodingException e)
+		} catch (CharacterCodingException e)
 		{
 			Log.log(Log.ERROR, this, e, e);
 		}
@@ -141,6 +161,8 @@ public class RemoteClient
 		handlers.add(new SingleLineCommandHandler(this));
 		handlers.add(new ActionCommandHandler());
 		handlers.add(new OptionCommandHandler(this));
+		handlers.add(new RegisterEBMessageCommandHandler(this));
+		handlers.add(new UnregisterEBMessageCommandHandler(this));
 	}
 
 	private void handleMessage()
@@ -157,12 +179,10 @@ public class RemoteClient
 						handler.handleMessage(line);
 						break;
 					}
-				}
-				catch (Exception e)
+				} catch (Exception e)
 				{
 					Log.log(Log.ERROR, this, "Error while processing message " + line, e);
 				}
-
 			}
 		}
 	}
@@ -174,13 +194,26 @@ public class RemoteClient
 		sendMessage(bytes);
 	}
 
+	void sendMessage(EBMessage message)
+	{
+		if (registeredMessages.contains(message.getClass()))
+		{
+			Serializer serializer = getSerializer();
+			String s = serializer.serialize(message);
+			if (RemoteServer.DEBUG)
+			{
+				Log.log(Log.MESSAGE, this, s);
+			}
+			sendMessage(s.getBytes(RemoteServer.CHARSET));
+		}
+	}
+
 	void sendMessage(byte[] message)
 	{
 		try
 		{
 			channel.write(ByteBuffer.wrap(message));
-		}
-		catch (IOException e)
+		} catch (IOException e)
 		{
 			Log.log(Log.WARNING, this, e, e);
 		}
