@@ -189,7 +189,7 @@ public class RemoteClient
 
 	public void sendObject(Object o)
 	{
-		String message = serializer.serialize(o);
+		String message = serializer.serialize(o) + "\n";
 		byte[] bytes = message.getBytes(RemoteServer.CHARSET);
 		sendMessage(bytes);
 	}

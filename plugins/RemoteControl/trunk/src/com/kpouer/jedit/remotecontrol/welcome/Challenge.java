@@ -112,7 +112,7 @@ public class Challenge implements MessageHandler, WelcomeService
 		try
 		{
 			long time = System.currentTimeMillis();
-			challenge = CHALLENGE + time;
+			challenge = CHALLENGE + time + "\n";
 			sChannel.write(ByteBuffer.wrap(challenge.getBytes(RemoteServer.CHARSET)));
 		}
 		catch (IOException e)

@@ -36,7 +36,7 @@ import java.nio.channels.SocketChannel;
 public interface WelcomeService extends MessageHandler
 {
 	String HELLO = "jEdit-RemoteServer-Hello";
-	byte[] HANDSHAKE_WELCOME = "jEdit-RemoteServer-Welcome".getBytes(RemoteServer.CHARSET);
+	byte[] HANDSHAKE_WELCOME = "jEdit-RemoteServer-Welcome\n".getBytes(RemoteServer.CHARSET);
 	void setClient(RemoteClient client);
 
 	void setChannel(SocketChannel sChannel);
