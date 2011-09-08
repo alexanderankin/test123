@@ -162,7 +162,7 @@ public class RemoteServer implements Runnable
 			{
 				try
 				{
-					socketChannelRemoteClientEntry.getValue().sendMessage("BYE".getBytes(CHARSET));
+					socketChannelRemoteClientEntry.getValue().sendMessage("BYE\n".getBytes(CHARSET));
 					socketChannelRemoteClientEntry.getKey().close();
 				}
 				catch (IOException e)
