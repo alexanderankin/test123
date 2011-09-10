@@ -129,7 +129,7 @@ public class PHPSideKickParser extends SideKickParser
 			SideKickParsedData data = new SideKickParsedData(buffer.getName());
 
 			buildChildNodes(data.root, phpDocument, buffer);
-			EditBus.send(new PHPProjectChangedMessage(this, projectManager.getProject(), PHPProjectChangedMessage.UPDATED));
+			EditBus.sendAsync(new PHPProjectChangedMessage(this, projectManager.getProject(), PHPProjectChangedMessage.UPDATED));
 			return data;
 		}
 		catch (ParseException e)
