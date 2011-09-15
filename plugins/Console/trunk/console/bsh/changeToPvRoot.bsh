@@ -9,8 +9,9 @@ changeToPvRoot(view) {
     wm = view.getDockableWindowManager();
     if (wm == null) return;
     pv = wm.getDockable("projectviewer");
+    if (pv == null) return;
     con = wm.getDockable("console");
-    if ((pv == null) || (con == null)) return;
+    if (con == null) return;
     wm.showDockableWindow("projectviewer");
     wm.showDockableWindow("console");
     sysShell = console.Shell.getShell("System");
