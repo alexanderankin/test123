@@ -8,13 +8,9 @@
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 
-	<property name="jedit.install.dir"
-			  location="../../build" />
 	<property name="docs-proc.target"
 			  value="none" />
 
-	<property name="build.support"
-			  value="../../../build-support" />
 	<import file="${build.support}/plugin-build.xml" />
 
 	<selector id="packageFiles">
