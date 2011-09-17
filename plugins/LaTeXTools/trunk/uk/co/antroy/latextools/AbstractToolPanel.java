@@ -170,7 +170,7 @@ public abstract class AbstractToolPanel
         DockableWindowUpdate message = new DockableWindowUpdate(view.getDockableWindowManager(), 
                                                                 DockableWindowUpdate.PROPERTIES_CHANGED, 
                                                                 dockable);
-        EditBus.send(message);
+        EditBus.sendAsync(message);
     }
 
     protected JPanel createButtonPanel(int buttonTypes) {
