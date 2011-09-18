@@ -1,0 +1,102 @@
+<html>
+<head>
+<title>CharacterMap Plugin</title>
+</head>
+
+<body>
+
+<h1>CharacterMap Plugin V1.3</h1>
+
+by Slava Pestov<BR>and Mark Wickens<br>and Max Funk
+
+<h2> Introduction </h2>
+
+The character map plugin displays a window showing all ASCII and extended 
+characters. Clicking one will insert it in the buffer.
+
+<h2> Description </h2>
+
+The CharacterMap plugin displays a dockable window listing all characters in
+a specified encoding, which can be selected using the combo box at the top of
+the window. For non-unicode encodings the table contains 256 characters that
+represent the entire character set. 
+<P>
+For Unicode, (UTF8, UTF16, UTF32) the table displays the selected unicode block.
+Currently only the &quot;basic multilingual plane&quot; is supported, i.e. 
+the first 65536 unicode characters.
+<P>
+To specify a custom encoding, type the name directly into the encoding combo
+box text field. Any custom encodings entered are stored in the combo box list
+to ease later selection.
+<P>
+Moving the cursor over the characters in the table updates the status line at 
+the bottom of the window and (if enabled) displays the character under the 
+mouse pointer at the top-right of the window.
+<P>
+Clicking on a character with Button 1 on the mouse (typically the left button)
+will cause the character to be inserted at the cursor position in the current
+buffer.
+<P>
+Pressing and holding button 3 on the mouse (typically the right button)
+will display an enlarged (depending on the size specified) version of the 
+character overlayed at the current pointer position.
+<P>
+The characters in the table are rendered in the font style and size selected 
+for the text area. The anti-alias and fractional font metrics options are 
+also honoured.
+<P>
+The following options can be specified:
+<ul>
+    <li><p>Show large character: displays a large representation of 
+	the character under the cursor in the top-right hand corner of the
+	window.</p></li>
+    <li><p>Large character size: controls the size (in points) of the 
+	large character.</p></li>
+    <li><p>Show right-click character: displays a representation of the
+	character under the cursor when the right-mouse button is pressed 
+	overlayed at the current cursor position.</p></li>
+	<li><p>Right-click character size: controls the size (in points) of the 
+	right-click character.</p></li>
+	<li><p>Offset right-click character: offsets the position at which the
+	right-click character is displayed so that it is easier to see other
+	characters in the current characters rank and file.</p></li>
+	<li><p>Table columns: specify the number of columns to be displayed...</p> 
+    <ol><li><p>floating: if the table is floating (un-docked).</p></li>
+    <li><p>docked l/r: if the table is docked left or right.</p></li>
+	<li><p>docked t/b: if the table is docked at top or bottom.</p></ol></li>
+	<li><p>Show status line: controls whether the status line at the bottom
+	of the window is displayed. The status line contains</p>
+    <ol><li><p>the	character code point in decimal and hexadecimal form,</p></li> 
+	<li><p> the bytes forming the character in hexadecimal form (for UTF-encoded
+    unicode,</p></li>
+    <li><p>the name of the character (for unicode).</p></li></ol></li>
+	<li><p>Show encoding combo box: Controls whether the encoding combo box
+	is displayed. By default the encoding is selected from the encoding specified
+	for the currently selected buffer.</p></li>
+	<li><p>Show unicode blocks combo box: Controls whether the unicode blocks 
+	combo box is displayed. The blocks combo box is only enabled when editing 
+	a unicode buffer or when unicode encoding
+	has been specified in the encoding combo box.</p></li>
+	<li><p>Always use anti-aliasing: If set, the character glyphs are always
+	rendered anti-aliased (smoothed). If not set the anti-aliasing options 
+	are taken from the Global Options -> Text Area settings.</p></li>
+</ul>
+
+<h2>Version History </h2>
+
+<h3>Version 1.1 (2002)</h3>
+	Original version.
+<h3>Version 1.2 (2004)</h3>
+	New version of the CharacterMap plugin provides the following features 
+	- anti-aliased text, large character display, better docking support and 
+	better configuration via an options pane.
+<h3>Version 1.3 (2011)</h3>
+	New version with the following features - Improved layouts for docking. 
+	Upgrade to unicode 6.0.0. Status information for UTF16, UTF32. Wrong 
+	status for columns &lt;&gt; 16 fixed. Unicode detection fixed 
+	(utf8, x-UTF-8... possible).  Immediate font change depending on main 
+	window font.  Table size (unicode) dependent on block size. Source code 
+	warnings removed (javac, ant, netbeans).
+
+</body>
+</html>

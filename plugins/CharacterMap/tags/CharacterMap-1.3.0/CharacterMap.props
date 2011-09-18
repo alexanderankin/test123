@@ -1,0 +1,53 @@
+# Plugin properties
+plugin.charactermap.CharacterMapPlugin.activate=defer
+
+plugin.charactermap.CharacterMapPlugin.name=Character Map
+plugin.charactermap.CharacterMapPlugin.author=Slava Pestov, Mark Wickens, Max Funk
+plugin.charactermap.CharacterMapPlugin.version=1.3
+plugin.charactermap.CharacterMapPlugin.docs=CharacterMap.html
+plugin.Charactermap.description=The character map plugin displays \
+                        a window showing all ASCII and extended characters. \
+                        Clicking one will insert it in the buffer.
+plugin.Charactermap.longdescription=Description.html
+plugin.charactermap.CharacterMapPlugin.depend.0=jedit 04.04.99.01
+plugin.charactermap.CharacterMapPlugin.depend.1=jdk 1.6
+
+# Menu item
+plugin.charactermap.CharacterMapPlugin.menu-item=character-map
+character-map.label=Character Map
+
+# Character map window and options pane
+character-map.title=Character Map
+character-map.encoding-caption=Encoding:
+character-map.blocks-caption=Blocks:
+character-map.char-caption=Char:
+character-map.bad-encoding=Unknown encoding
+character-map.large=Show large character
+character-map.super=Show right-click character
+character-map.super-offset=Offset right-click character
+character-map.large-size=Large character size (points)
+character-map.super-size=Right-click character size (points)
+character-map.columns=Table columns (floating)
+character-map.columns-dock-lr=Table columns (docked l/r)
+character-map.columns-dock-tb=Table columns (docked t/b)
+character-map.status=Show status line
+character-map.encoding=Show encoding combo-box
+character-map.blocks=Show Unicode blocks
+character-map.anti-alias=Always use anti-aliasing
+options.character-map.large=true
+options.character-map.large-size=36
+options.character-map.super=true
+options.character-map.super-size=128
+options.character-map.super-offset=true
+options.character-map.columns=16
+options.character-map.columns-dock-lr=8
+options.character-map.columns-dock-tb=32
+options.character-map.status=true
+options.character-map.encoding=true
+options.character-map.blocks=true
+options.character-map.anti-alias=false;
+character-map.options=Character Map
+plugin.charactermap.CharacterMapPlugin.option-pane=character-map-options
+options.character-map-options.code=new charactermap.CharacterMapOptionPane();
+options.character-map-options.label=Character Map
+
