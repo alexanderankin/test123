@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>CharacterMap Plugin</title>
+</head>
+
+<body>
+
+<h1>CharacterMap Plugin V1.2</h1>
+
+<h3>by Slava Pestov<BR>and Mark Wickens</h3>
+
+The CharacterMap plugin displays a dockable window listing all characters in
+a specified encoding, which can be selected using the combo box at the top of
+the window. For non-unicode encodings the table contains 256 characters that
+represent the entire character set. If the encoding is Unicode or UTF8 the table
+displays a 256-character page of the encoding. The page can be changed using the
+unicode blocks control.
+<P>
+To specify a custom encoding, type the name directly into the encoding combo
+box text field. Any custom encodings entered are stored in the combo box list
+to ease later selection.
+<P>
+Moving the cursor over the characters in the table updates the status line at 
+the bottom of the window and (if enabled) displays the character under the 
+mouse pointer at the top-right of the window.
+<P>
+Clicking on a character with Button 1 on the mouse (typically the left button)
+will cause the character to be inserted at the cursor position in the current
+buffer.
+<P>
+Pressing and holding button 3 on the mouse (typically the right button)
+will display an enlarged (depending on the size specified) version of the character
+overlayed at the current pointer position.
+<P>
+The characters in the table are rendered in the font style and size selected 
+for the text area. The anti-alias and fractional font metrics options are 
+also honoured.
+<P>
+The following options can be specified:
+<ul>
+    <li><p>Show large character: displays a large representation of 
+	the character under the cursor in the top-right hand corner of the
+	window.</p></li>
+    <li><p>Large character size: controls the size (in points) of the 
+	large character.</p></li>
+    <li><p>Show right-click character: displays a representation of the
+	character under the cursor when the right-mouse button is pressed overlayed
+	at the current cursor position.</p></li>
+	<li><p>Right-click character size: controls the size (in points) of the 
+	right-click character.</p></li>
+	<li><p>Offset right-click character: offsets the position at which the
+	right-click character is displayed so that it is easier to see other
+	characters in the current characters rank and file.</p></li>
+	<li><p>Table columns: controls the shape of the displayed table,
+	by specifying the number of columns to be displayed. The table always
+	consists of 256 characters, so specifying a column count of 16 will result
+	in a row count of 16, a column count of 32 will result in a row count of 8, etc.</p></li>
+	<li><p>Show status line: controls whether the status line at the bottom
+	of the window is displayed. The status line contains the 
+	character value, the character position in decimal and hexadecimal radicies and
+	the unicode name of the character.
+	If the UTF8 encoding is specified the number of bytes forming the character
+	is displayed together with their values.</p></li>
+	<li><p>Show encoding combo box: Controls whether the encoding combo box
+	is displayed. By default the encoding is selected from the encoding specified
+	for the currently selected buffer.</p></li>
+	<li><p>Show unicode blocks combo box: Controls whether the unicode blocks combo box is displayed.
+	The blocks combo box is only enabled when editing a Unicode or UTF8 buffer or when either encoding
+	has been specified in the encoding combo box.</p></li>
+	<li><p>Always use anti-aliasing: If set, the character glyphs are always
+	rendered anti-aliased (smoothed). If not set the anti-aliasing options are
+	taken from the Global Options -> Text Area settings.</p></li>
+</ul>
+<p>
+Typically usage:
+<ul>
+    <li><p>Floating map: when used as a floating character map,
+	enable display of all controls and specify either 16 or 32 table columns</p></li>
+	<li><p>Docked map: when used as a docked character map,
+	disable display of all controls and specify 32 or 64 table columns
+	if docked at the top or bottom or specify 4 or 8 table columns if
+	docked at the left or right.</p></li>
+</ul>
+</body>
+</html>
