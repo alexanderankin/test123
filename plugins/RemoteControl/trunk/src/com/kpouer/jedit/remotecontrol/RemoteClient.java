@@ -199,7 +199,7 @@ public class RemoteClient
 		if (registeredMessages.contains(message.getClass()))
 		{
 			Serializer serializer = getSerializer();
-			String s = serializer.serialize(message);
+			String s = serializer.serialize(message) + "\n";
 			if (RemoteServer.DEBUG)
 			{
 				Log.log(Log.MESSAGE, this, s);
