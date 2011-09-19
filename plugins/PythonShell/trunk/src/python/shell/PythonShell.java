@@ -41,6 +41,10 @@ public class PythonShell extends ProcessShell {
 		String exec = jEdit.getProperty("options.python-shell.exec");
 		Log.log(Log.DEBUG,this,"Attempting to start Python process: "+exec);
 		ProcessBuilder pb = new ProcessBuilder(exec, "-i");
+		if (exec.contains("ipython")) {
+			pb = new ProcessBuilder(exec, "-noreadline");
+		}
+		pb.environment().put("TERM", "dumb");	
 		state.p = pb.start();
 		Log.log(Log.DEBUG,this,"Python started.");
 	}

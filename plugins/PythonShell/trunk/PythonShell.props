@@ -8,7 +8,7 @@ plugin.python.shell.PythonShellPlugin.docs=index.html
 plugin.python.shell.PythonShellPlugin.longdescription=description.html
 plugin.python.shell.PythonShellPlugin.name=Python Shell
 plugin.python.shell.PythonShellPlugin.usePluginHome=false
-plugin.python.shell.PythonShellPlugin.version=1.0
+plugin.python.shell.PythonShellPlugin.version=1.1
 # }}} Basic Plugin Information
 
 # Dependencies {{{
