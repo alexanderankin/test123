@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project name="MacOSX"
+		 default="build">
+	<description>
+		This is an ant build.xml file for building the MacOSX plugin for jEdit.
+	</description>
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+
+	<property name="docs-proc.target"
+			  value="none" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+	<selector id="packageFiles">
+		<filename name="docs/MacOSX.html" />
+	</selector>
+</project>
