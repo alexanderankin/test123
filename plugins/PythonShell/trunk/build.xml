@@ -13,7 +13,7 @@
 	none: if you supply your own html file as this template does.
 	xsltproc: if you plan on using docbook
 	-->
-	<property name="docs-proc.target" value="xsltproc" />
+	<property name="docs-proc.target" value="none" />
 
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
@@ -39,6 +39,12 @@
 	<pathelement path="${jedit.plugins.dir}/Console.jar" />
 	<!-- /mark:plugins -->
 	</path>
-
+    <selector id="packageFiles">
+	  <or>
+	    <filename name="index.html" />
+	  </or>
+	</selector>
+	
+	
 </project>
 <!-- ::mode=xml:: -->
