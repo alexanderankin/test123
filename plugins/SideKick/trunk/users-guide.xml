@@ -435,6 +435,15 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   <appendix id="changes">
     <title>Change log</title>
     <itemizedlist>
+      <listitem><para>  <emphasis role="bold"> Version 1.3</emphasis> </para>
+      <itemizedlist>
+        <listitem><para> Integration with Markersets (#3392131 - shlomy). </para> </listitem>
+        <listitem><para> Default Focus on Tree, not filter field. (#3405334 - ezust). </para></listitem>
+        <listitem><para> Fixed sidekick unload problem (kpouer) </para></listitem>
+        <listitem><para> Allow Look and Feel changes at runtime. </para></listitem>
+      </itemizedlist>  
+      </listitem>
+    
       <listitem>
         <para>
           <emphasis role="bold">Version 1.1</emphasis>

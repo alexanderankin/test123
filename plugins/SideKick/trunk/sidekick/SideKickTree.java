@@ -306,7 +306,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         // {{{ focusOnDefaultComponent() method
         public void focusOnDefaultComponent()
         {
-                searchField.requestFocusInWindow();
+                tree.requestFocusInWindow();
         }        // }}}
 
         // {{{ addNotify() method
