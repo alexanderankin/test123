@@ -29,6 +29,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
@@ -541,16 +542,18 @@ public class CharacterMap extends JPanel
 
 	private boolean isDockedLeftRight()
 	{
-		String position = jEdit.getProperty("character-map.dock-position","float");
-		return "left".equalsIgnoreCase(position)
-		    || "right".equalsIgnoreCase(position);
+		String position = jEdit.getProperty("character-map.dock-position",
+			DockableWindowManager.FLOATING);
+		return position.equalsIgnoreCase(DockableWindowManager.LEFT)
+		    || position.equalsIgnoreCase(DockableWindowManager.RIGHT);
 	}
 
 	private boolean isDockedTopBottom()
 	{
-		String position = jEdit.getProperty("character-map.dock-position","float");
-		return "top".equalsIgnoreCase(position)
-		    || "bottom".equalsIgnoreCase(position);
+		String position = jEdit.getProperty("character-map.dock-position",
+			DockableWindowManager.FLOATING);
+		return position.equalsIgnoreCase(DockableWindowManager.TOP)
+		    || position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
 	}
 
 	private boolean isEncodingUnicode()
