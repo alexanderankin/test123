@@ -446,8 +446,6 @@ public class CharacterMap extends JPanel
 	 *  By default, normalFont() is returned.
 	 *  Automatic font substitution for missing characters, 
 	 *  if this feature is selected in jEdit Options.
-	 *  First, user-defined substitution fonts are checked,
-	 *  then system fonts (as in jEdit).
 	 *  @param text Text string to be drawn
 	 *  @see org.gjt.sp.jedit.syntax.Chunk
 	 */
@@ -481,9 +479,9 @@ public class CharacterMap extends JPanel
 		// search system fonts
 
 		// Disabled due to following reasons: 
-		// - there are differences of the shown characters
-		//   jEdit 4.4.1 bug: Not always switching back to first font
-		//   in order
+		// - inconsistencies charmap - jedit:
+		//   jEdit (4.4.1) uses text chunks, not characters 
+		//   and doesn't switch always to first font in order
 		// - perhaps the user should know, which font he is using 
 		//   if he inserts characters from the CharacterMap
 		
@@ -505,7 +503,6 @@ public class CharacterMap extends JPanel
 	}
 	
 	/** Font used to draw the large glyph image.
-	 * Otherwise same as autoFont function
 	 * @param text Text string to be drawn
 	 */
 	private Font largeFont(String text)
@@ -515,7 +512,6 @@ public class CharacterMap extends JPanel
 
 
 	/** Font used to draw the super large glyph image. 
-	 * Otherwise same as autoFont function
 	 * @param text Text string to be drawn
 	 */
 	private Font superFont(String text)

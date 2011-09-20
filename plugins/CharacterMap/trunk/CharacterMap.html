@@ -25,6 +25,7 @@ For Unicode, (UTF8, UTF16, UTF32) the table displays the selected unicode block.
 Currently only the &quot;basic multilingual plane&quot; is supported, i.e. 
 the first 65536 unicode characters.
 <P>
+By default, the current buffer encoding is used.
 To specify a custom encoding, type the name directly into the encoding combo
 box text field. Any custom encodings entered are stored in the combo box list
 to ease later selection.
@@ -43,40 +44,54 @@ character overlayed at the current pointer position.
 <P>
 The characters in the table are rendered in the font style and size selected 
 for the text area. The anti-alias and fractional font metrics options are 
-also honoured.
+honoured. If automatic font substitution is enabled, preferred fonts 
+are also honoured. 
 <P>
+
+<h2> Options </h2>
+
 The following options can be specified:
 <ul>
-    <li><p>Show large character: displays a large representation of 
+	<li><p>Large character: displays a large representation of 
 	the character under the cursor in the top-right hand corner of the
 	window.</p></li>
-    <li><p>Large character size: controls the size (in points) of the 
-	large character.</p></li>
-    <li><p>Show right-click character: displays a representation of the
+	<ol>
+		<li><p>Show large character: display the character.</p></li>
+		<li><p>Large character size: controls the size (in points) of the 
+		large character.</p></li>
+	</ol>
+	<li><p>Show right-click character: displays a representation of the
 	character under the cursor when the right-mouse button is pressed 
 	overlayed at the current cursor position.</p></li>
-	<li><p>Right-click character size: controls the size (in points) of the 
-	right-click character.</p></li>
-	<li><p>Offset right-click character: offsets the position at which the
-	right-click character is displayed so that it is easier to see other
-	characters in the current characters rank and file.</p></li>
+	<ol>
+		<li><p>Show right-click character: display the character.</p></li>
+		<li><p>Right-click character size: controls the size (in points) of the 
+		right-click character.</p></li>
+		<li><p>Offset right-click character: offsets the position at which the
+		right-click character is displayed so that it is easier to see other
+		characters in the current characters rank and file.</p></li>
+	</ol>
 	<li><p>Table columns: specify the number of columns to be displayed...</p> 
-    <ol><li><p>floating: if the table is floating (un-docked).</p></li>
-    <li><p>docked l/r: if the table is docked left or right.</p></li>
-	<li><p>docked t/b: if the table is docked at top or bottom.</p></ol></li>
+	<ol>
+		<li><p>floating: if the table is floating (un-docked).</p></li>
+		<li><p>docked l/r: if the table is docked left or right.</p></li>
+		<li><p>docked t/b: if the table is docked at top or bottom.</p></ol></li>
+	</ol>
 	<li><p>Show status line: controls whether the status line at the bottom
-	of the window is displayed. The status line contains</p>
-    <ol><li><p>the	character code point in decimal and hexadecimal form,</p></li> 
-	<li><p> the bytes forming the character in hexadecimal form (for UTF-encoded
-    unicode,</p></li>
-    <li><p>the name of the character (for unicode).</p></li></ol></li>
+	of the window is displayed. The status line contains</p></li>
+	<ol>
+		<li><p>the character code point in decimal and hexadecimal form,</p></li> 
+		<li><p> the bytes forming the character in hexadecimal form 
+		(for UTF-encoded unicode,</p></li>
+		<li><p>the name of the character (for unicode).</p></li>
+	</ol>
 	<li><p>Show encoding combo box: Controls whether the encoding combo box
 	is displayed. By default the encoding is selected from the encoding specified
 	for the currently selected buffer.</p></li>
 	<li><p>Show unicode blocks combo box: Controls whether the unicode blocks 
 	combo box is displayed. The blocks combo box is only enabled when editing 
-	a unicode buffer or when unicode encoding
-	has been specified in the encoding combo box.</p></li>
+	a unicode buffer or when unicode encoding has been specified in the 
+	encoding combo box.</p></li>
 	<li><p>Always use anti-aliasing: If set, the character glyphs are always
 	rendered anti-aliased (smoothed). If not set the anti-aliasing options 
 	are taken from the Global Options -> Text Area settings.</p></li>
@@ -91,12 +106,11 @@ The following options can be specified:
 	- anti-aliased text, large character display, better docking support and 
 	better configuration via an options pane.
 <h3>Version 1.3 (2011)</h3>
-	New version with the following features - Improved layouts for docking. 
-	Upgrade to unicode 6.0.0. Status information for UTF16, UTF32. Wrong 
-	status for columns &lt;&gt; 16 fixed. Unicode detection fixed 
-	(utf8, x-UTF-8... possible).  Immediate font change depending on main 
-	window font.  Table size (unicode) dependent on block size. Source code 
-	warnings removed (javac, ant, netbeans).
+	New version features - Improved layouts for docking. Unicode 6.0.0. 
+	Unicode detection fixed. Statusinfo for UTF16, UTF32. Status for columns 
+	&lt;&gt; 16 fixed. Immediate font change (main window settings), 
+	font substitution. Table size (unicode) dependent on block size. 
+	Warnings removed (javac, ant, netbeans).
 
 </body>
 </html>
