@@ -75,6 +75,8 @@ public class CharacterMap extends JPanel
 	private JLabel superChar;
 	/** Current display graphics configuration */
 	private GraphicsConfiguration graphConfig;
+        /** Current System Fonts */
+        private Font[] systemFonts;
 	/** Reference to the character map panel */
 	private JPanel thisPanel;
 	/** Number of columns in the glyph table */
@@ -183,7 +185,7 @@ public class CharacterMap extends JPanel
 		gridbag.setConstraints(charCaption, c);
 
 		largeSize = (float) jEdit.getIntegerProperty("options.character-map.large-size", 36);
-		largeChar = new AntiAliasingLabel(largeFont(), " ");
+		largeChar = new AntiAliasingLabel(largeFont(" "), " ");
 		Dimension largeCharSz = largeChar.getPreferredSize();
 		largeCharSz.width *= 3;
 		largeChar.setMinimumSize(largeCharSz);
@@ -197,7 +199,7 @@ public class CharacterMap extends JPanel
 		}
 
 		superSize = (float) jEdit.getIntegerProperty("options.character-map.super-size", 128);
-		superChar = new AntiAliasingLabel(superFont(), " ");
+		superChar = new AntiAliasingLabel(superFont(" "), " ");
 		superChar.setBorder(BorderFactory.createLineBorder(Color.black));
 		showSuper = jEdit.getBooleanProperty("options.character-map.super");
 		offsetSuper = jEdit.getBooleanProperty("options.character-map.super-offset");
@@ -222,7 +224,7 @@ public class CharacterMap extends JPanel
 		tableModel = new CharacterMapModel();
 		
 		table = new JTable(tableModel);
-		table.setFont(view.getTextArea().getPainter().getFont());
+		table.setFont(normalFont());
 		table.setRowSelectionAllowed(false);
 		table.setColumnSelectionAllowed(false);
 		MouseHandler mouseHandler = new MouseHandler(this, superChar);
@@ -440,17 +442,85 @@ public class CharacterMap extends JPanel
 		return view.getTextArea().getPainter().getFont();
 	}
 	
-	/** Font used to draw the large glyph image */
-	private Font largeFont()
+	/** Font used to draw character glyphs in table.
+	 *  By default, normalFont() is returned.
+	 *  Automatic font substitution for missing characters, 
+	 *  if this feature is selected in jEdit Options.
+	 *  First, user-defined substitution fonts are checked,
+	 *  then system fonts (as in jEdit).
+	 *  @param text Text string to be drawn
+	 *  @see org.gjt.sp.jedit.syntax.Chunk
+	 */
+	private Font autoFont(String text)
 	{
-	   return normalFont().deriveFont(largeSize);
+		Font f = normalFont();
+
+		// If normal font sufficient or no font substitution
+		// -> return normal font
+		if ( (f.canDisplayUpTo(text) == -1)
+		   || !jEdit.getBooleanProperty("view.enableFontSubst") )
+	    	{
+	    		return f;
+	    	}
+		
+
+		// search user defined substitution fonts
+		int i = 0;
+		String family;
+		Font candidate;
+		while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null)	
+		{ 
+			candidate = new Font(family, Font.PLAIN, f.getSize());
+			if (candidate.canDisplayUpTo(text) == -1) 
+			{
+				return candidate;
+			}
+			i++;
+		}
+		
+		// search system fonts
+
+		// Disabled due to following reasons: 
+		// - there are differences of the shown characters
+		//   jEdit 4.4.1 bug: Not always switching back to first font
+		//   in order
+		// - perhaps the user should know, which font he is using 
+		//   if he inserts characters from the CharacterMap
+		
+		/* if (systemFonts == null)
+		{
+			systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+		}		
+		for (Font k : systemFonts)
+		{
+			candidate = k.deriveFont(Font.PLAIN, f.getSize());
+			if (candidate.canDisplayUpTo(text) == -1)
+			{
+				return candidate;
+			}
+		} */
+		
+                // if nothing found
+		return normalFont();
+	}
+	
+	/** Font used to draw the large glyph image.
+	 * Otherwise same as autoFont function
+	 * @param text Text string to be drawn
+	 */
+	private Font largeFont(String text)
+	{
+	   return autoFont(text).deriveFont(largeSize);
 	}
 
 
-	/** Font used to draw the super-glyph */
-	private Font superFont()
+	/** Font used to draw the super large glyph image. 
+	 * Otherwise same as autoFont function
+	 * @param text Text string to be drawn
+	 */
+	private Font superFont(String text)
 	{
-	   return normalFont().deriveFont(superSize);
+	   return autoFont(text).deriveFont(superSize);
 	}
 	
 
@@ -785,9 +855,9 @@ public class CharacterMap extends JPanel
 				}
 				else {
 					String ch = getChar(row, column);
-					superChar.setFont(superFont());
+					superChar.setFont(superFont(ch));
 					superChar.setText(ch);
-					largeChar.setFont(largeFont());
+					largeChar.setFont(largeFont(ch));
 					largeChar.setText(ch);
 					setStatusText(ch, row, column);
 					if (displayingSuperChar) {
@@ -845,7 +915,7 @@ public class CharacterMap extends JPanel
 				}
 				else {
 					String ch = getChar(row, column);
-					largeChar.setFont(largeFont());
+					largeChar.setFont(largeFont(ch));
 					largeChar.setText(ch);
 					setStatusText(ch, row, column);
 				}
@@ -1112,7 +1182,7 @@ public class CharacterMap extends JPanel
 		{
 			setForeground(Color.black);
 			setBackground(Color.white);
-			setFont(normalFont());
+			setFont(autoFont((String) text));
 			setText((String) text);
 			return this;
 		}

@@ -2,8 +2,6 @@ Known Issues:
 - Description not shown in Plugin Manager Info field
 - Character Map should be restarted after <OK> or <Apply>
   in Plugin Options
-- Fallback font should be used, if defined in 
-  jEdit -> Text Area -> Font Substitution
 
 Suggested Features:
 - Filter blocks according to region, e.g. Latin, other European, Symbols...
