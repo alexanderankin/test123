@@ -36,6 +36,8 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.jEdit;
 
+import sidekick.SideKickPlugin;
+
 import uk.co.antroy.latextools.macros.ErrorFindingMacros;
 import uk.co.antroy.latextools.macros.ProjectMacros;
 import uk.co.antroy.latextools.macros.UtilityMacros;
@@ -200,7 +202,7 @@ public class LaTeXDockable extends AbstractToolPanel {
         public void actionPerformed(ActionEvent e) {
         	NavigationList nl = (NavigationList) nav_list.getSelectedItem();
         	NavigationList.setDefaultGroup(nl);
-        	LaTeXPlugin.parse(jEdit.getActiveView(), true);
+        	SideKickPlugin.parse(jEdit.getActiveView(), true);
         }
     }
 }

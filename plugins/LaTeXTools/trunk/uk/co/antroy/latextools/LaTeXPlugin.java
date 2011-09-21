@@ -21,6 +21,7 @@ package uk.co.antroy.latextools;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 
 import sidekick.SideKickPlugin;
@@ -28,8 +29,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class LaTeXPlugin
-    extends SideKickPlugin {
+public class LaTeXPlugin extends EditPlugin {
 
     private static List editBusList = new ArrayList();
         
@@ -52,13 +52,8 @@ public class LaTeXPlugin
             it.remove();
         }
     }
-    
-    
-    public void handleMessage(EBMessage message) {
-    }
 
     public void start() {
-        super.start();
         if(System.getProperty("os.name").indexOf("Linux")!= -1 &&
            !jEdit.getBooleanProperty("latex.compile.c-errors.initialized")) {
             
