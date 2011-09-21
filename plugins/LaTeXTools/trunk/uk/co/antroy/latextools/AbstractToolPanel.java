@@ -110,6 +110,9 @@ public abstract class AbstractToolPanel
 
         if (refreshPane) {
             view = jEdit.getActiveView();
+            if (view == null)
+            	    return;
+            
             buffer = view.getBuffer();
             tex = buffer.getPath();
             bufferChanged = true;
