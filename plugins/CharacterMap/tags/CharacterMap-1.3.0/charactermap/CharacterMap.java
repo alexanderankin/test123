@@ -20,6 +20,7 @@
  */
 package charactermap;
  
+//{{{ Imports
 import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,7 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
+//}}}
 
 /**
  * A character map is a way of viewing and inserting characters contained 
@@ -46,57 +48,65 @@ import charactermap.unicode.UnicodeData.Block;
  */
 public class CharacterMap extends JPanel
 {
+//{{{ Variables
 	/** JEdit view */
 	private View view;
-	/** Combox box for font encoding information */
+        /** Current System Fonts */
+        // private Font[] systemFonts;
+	/** Current display graphics configuration */
+	private GraphicsConfiguration graphConfig;
+	
+	// Display components
+	/** Combo box for font encoding information */
 	private JComboBox encodingCombo;
+	/** Encodings contained within the encoding combo box */
+	private DefaultComboBoxModel encodings;
 	/** Selected encoding */
 	private String encoding;
+	/** Combo-box for unicode blocks */
+	private JComboBox blocks;
+	/** Component displaying large glyph */
+	private JLabel largeChar;
 	/** Table containing character glyphs */
 	private JTable table;
+	/** Table model for the character map */
+	private CharacterMapModel tableModel;
+	/** Number of columns in the table */
+	private int tableColumns;
 	/** Status information */
 	private JTextArea status;
+	/** Component displaying super glyph */
+	private JLabel superChar;
+
+	// Show the following components
+	/** Show the encoding combo / information */
+	private boolean showEncoding;
+	/** Show the unicode blocks */
+	private boolean showBlocks;
+	/** Show the large glyph */
+	private boolean showLarge;
+	/** Show the status information */
+	private boolean showStatus;
+	/** Show the super glyph */
+	private boolean showSuper;
+
+	// Font and Graphics settings
 	/** Font size used to draw the large glyph image */
 	private float largeSize;
 	/** Font size used to draw the super-glyph */
 	private float superSize;
-	/** Component displaying large glyph */
-	private JLabel largeChar;
-	/** Large display of selected glyph in table */
-	private boolean showLarge;
-	/** Display all glyphs anti-aliased */
-	private boolean antiAlias;
-	/** Show the super-glyph */
-	private boolean showSuper;
-	/** Offset the super-glyph rendering from the selected glyph */
-	private boolean offsetSuper;
 	/** Use fractional font-metrics in glyph display */
 	private boolean fracFontMetrics;
-	/** Component displaying super glyph */
-	private JLabel superChar;
-	/** Current display graphics configuration */
-	private GraphicsConfiguration graphConfig;
-        /** Current System Fonts */
-        private Font[] systemFonts;
-	/** Reference to the character map panel */
-	private JPanel thisPanel;
-	/** Number of columns in the glyph table */
-	private int tableColumns;
-	/** Display the selected unicode page/glyph information */
-	private boolean showStatus;
-	/** Display the encoding combo box */
-	private boolean showEncoding;
-	/** Display the unicode pager */
-	private boolean showBlocks;
-	/** Encodings contained within the combo box */
-	private DefaultComboBoxModel encodings;
+	/** Offset the super-glyph rendering from the selected glyph */
+	private boolean offsetSuper;
 	/** Lock anti-aliasing on */
 	private boolean alwaysAntiAlias;
-	/** Table model for the character map */
-	private CharacterMapModel tableModel;
-	/** Combo-box for displaying/moving between Unicode pages */
-	private JComboBox blocks;
-	
+	/** Display all glyphs anti-aliased */
+	private boolean antiAlias;
+//}}}
+
+
+//{{{ Main Program
 	/**
 	 * Construct a character map panel using the contents of the current buffer of
 	 * the given view as the default encoding, and the font of the given
@@ -111,18 +121,18 @@ public class CharacterMap extends JPanel
 	{
 		super(new BorderLayout(12, 12));
 
+		this.view = view;
+		
 		alwaysAntiAlias = jEdit.getBooleanProperty("options.character-map.anti-alias");
 		determineAntiAliasRequirements();
 
-		this.view = view;
-		
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		
-		// Upper Menu Line (Encoding Selector, Unicode Block Selector, Char)
+		// North Panel (Encoding Selector, Unicode Block Selector, Char)
 		
-		JPanel encodingBox = new JPanel();
-		encodingBox.setLayout(gridbag);
+		JPanel northPanel = new JPanel();
+		northPanel.setLayout(gridbag);
 		
 		JLabel caption = new JLabel(jEdit.getProperty("character-map.encoding-caption"));
 
@@ -151,11 +161,11 @@ public class CharacterMap extends JPanel
 		showEncoding = jEdit.getBooleanProperty("options.character-map.encoding");
 		if (showEncoding)
 		{
-			encodingBox.add(caption);
-			encodingBox.add(encodingCombo);
+			northPanel.add(caption);
+			northPanel.add(encodingCombo);
 		}
 
-		if (!isDockedLeftRight()) encodingBox.add(Box.createHorizontalStrut(12));
+		if (!isDockedLeftRight()) northPanel.add(Box.createHorizontalStrut(12));
                                                                                                               
 		caption = new JLabel(jEdit.getProperty("character-map.blocks-caption"));
 
@@ -173,17 +183,17 @@ public class CharacterMap extends JPanel
 		showBlocks = jEdit.getBooleanProperty("options.character-map.blocks");
 		if (showBlocks)
 		{
-			encodingBox.add(caption);
-			encodingBox.add(blocks);
+			northPanel.add(caption);
+			northPanel.add(blocks);
 		}
 		
-		JLabel charCaption = new JLabel(jEdit.getProperty("character-map.char-caption"));
+		caption = new JLabel(jEdit.getProperty("character-map.char-caption"));
 		c.gridwidth=1;
 		c.weightx = 0.0;
 		if (isDockedLeftRight()) c.anchor = GridBagConstraints.WEST;
 		else c.anchor = GridBagConstraints.EAST;
 		c.fill = GridBagConstraints.NONE;
-		gridbag.setConstraints(charCaption, c);
+		gridbag.setConstraints(caption, c);
 
 		largeSize = (float) jEdit.getIntegerProperty("options.character-map.large-size", 36);
 		largeChar = new AntiAliasingLabel(largeFont(" "), " ");
@@ -195,8 +205,8 @@ public class CharacterMap extends JPanel
 
 		showLarge = jEdit.getBooleanProperty("options.character-map.large");
 		if (showLarge) {
-			encodingBox.add(charCaption);
-			encodingBox.add(largeChar);
+			northPanel.add(caption);
+			northPanel.add(largeChar);
 		}
 
 		superSize = (float) jEdit.getIntegerProperty("options.character-map.super-size", 128);
@@ -205,27 +215,19 @@ public class CharacterMap extends JPanel
 		showSuper = jEdit.getBooleanProperty("options.character-map.super");
 		offsetSuper = jEdit.getBooleanProperty("options.character-map.super-offset");
 
-		add(BorderLayout.NORTH, encodingBox);
+		add(BorderLayout.NORTH, northPanel);
 
 		encoding = (String) encodingCombo.getSelectedItem();
 		blocks.setEnabled(isEncodingUnicode());
 
-		// Middle Part (Character Table)
+		// Center: Character Table
 		
-		if (isDockedLeftRight()) {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-lr", 8); 
-		}
-		else if (isDockedTopBottom()) {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-tb", 32); 
-		}	
-		else {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns", 16);
-		}
-
+		setTableColumns();
 		tableModel = new CharacterMapModel();
-		
+
 		table = new JTable(tableModel);
 		table.setFont(normalFont());
+		table.setRowHeight(normalFont().getSize()*4/3);
 		table.setRowSelectionAllowed(false);
 		table.setColumnSelectionAllowed(false);
 		MouseHandler mouseHandler = new MouseHandler(this, superChar);
@@ -236,7 +238,7 @@ public class CharacterMap extends JPanel
 
 		add(BorderLayout.CENTER, new JScrollPane(table));
 
-		// Lower Part (Status Line)
+		// South Panel (Status Line)
 		
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(gridbag);
@@ -244,7 +246,8 @@ public class CharacterMap extends JPanel
 		status = new JTextArea(" ");
 		status.setEditable(false);
 		status.setOpaque(false);
-		status.setFont(new Font("Monospaced", Font.PLAIN, status.getFont().getSize()));
+		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 
+			UIManager.getFont("Label.font").getSize() + 2));
 
 		/* status = new AntiAliasingLabel(" ");
 		status.setOpaque(false);
@@ -267,7 +270,10 @@ public class CharacterMap extends JPanel
 		table.repaint();
 		graphConfig = table.getGraphicsConfiguration();
 	}
+//}}}
 
+
+//{{{ Auxiliary functions
 	/**
 	 * Set the value of the status string, based on the selected
 	 * character and table position. If the encoding is not unicode
@@ -396,6 +402,22 @@ public class CharacterMap extends JPanel
 		}
 	}
 	
+	/** Sets tableColumns depending on  
+	 *  plugin options and window docking state.
+	 *  @see tableColumns
+	 */	
+	private void setTableColumns()
+	{
+		if (isDockedLeftRight()) {
+			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-lr", 8); 
+		}
+		else if (isDockedTopBottom()) {
+			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-tb", 32); 
+		}	
+		else {
+			tableColumns = jEdit.getIntegerProperty("options.character-map.columns", 16);
+		}
+	}
 	
 	/** Formatted output of int in hexadecimal form
 	 *  @param i       Integer to be converted
@@ -588,7 +610,10 @@ public class CharacterMap extends JPanel
 			return 0;
 		}
 	}
+//}}}
 
+	
+//{{{ Auxiliary classes
 	/**
 	 * Model of character data contained within the
 	 * glyph table.
@@ -1186,5 +1211,6 @@ public class CharacterMap extends JPanel
 			return this;
 		}
 	}
+//}}}
 }
 
