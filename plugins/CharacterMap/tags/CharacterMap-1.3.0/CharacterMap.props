@@ -43,6 +43,7 @@ options.character-map.super-offset=true
 options.character-map.columns=16
 options.character-map.columns-dock-lr=8
 options.character-map.columns-dock-tb=32
+character-map.dock-position=right
 options.character-map.status=true
 options.character-map.encoding=true
 options.character-map.blocks=true
