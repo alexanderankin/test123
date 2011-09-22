@@ -31,8 +31,11 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 
-import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 //import org.gjt.sp.util.Log;
 
 /**
@@ -213,7 +216,17 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("options.character-map.blocks", blocks.isSelected());
 		jEdit.setBooleanProperty("options.character-map.anti-alias", antialias.isSelected());
 		
-		// TODO: Reload CharacterMap.jar)
+		// Reload CharacterMap.jar		
+		PluginJAR jar = jEdit.getPlugin("charactermap.CharacterMapPlugin").getPluginJAR();		
+		jEdit.removePluginJAR(jar,false);
+		jEdit.addPluginJAR(jar.getPath());
+		boolean isFloating = jEdit.getProperty("character-map.dock-position",
+			DockableWindowManager.FLOATING).equalsIgnoreCase(DockableWindowManager.FLOATING); 
+		if (!isFloating)
+		{
+			EditAction act = jEdit.getAction("character-map");
+			act.invoke(jEdit.getActiveView());
+		}
 	}
 
 	/**
