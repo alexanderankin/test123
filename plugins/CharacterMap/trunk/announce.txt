@@ -4,12 +4,11 @@ Paste the text below into the Plugin Central Submission Tracker at https://sourc
 
 {{{ CharacterMap 1.3
     Source: Source code starts from SVN tagged 1.2.1. Final version should be tagged 1.3.0
-    Announcement: New version with the following features - Improved layouts for docking. 
-        Upgrade to unicode 6.0.0. Status information for UTF16, UTF32. Wrong 
-        status for columns &lt;&gt; 16 fixed. Unicode detection fixed 
-        (utf8, x-UTF-8... possible).  Immediate font change depending on main 
-        window font.  Table size (unicode) dependent on block size. 
-        Source code warnings removed (javac, ant, netbeans).
+    Announcement: New version features - Improved layouts for docking. Unicode 6.0.0. 
+	Unicode detection fixed. Statusinfo for UTF16, UTF32. Status for columns 
+	&lt;&gt; 16 fixed. Auto-reload after font/option change, 
+	Font substitution. Table size (unicode) dependent on block size. 
+	Warnings removed (javac, ant, netbeans).
         
     Requires Java 1.6
     Requires jEdit 04.04.99.01
@@ -17,9 +16,9 @@ Paste the text below into the Plugin Central Submission Tracker at https://sourc
     Short Description: The character map plugin displays a window showing all ASCII and extended characters. Clicking one will insert it in the buffer.
     
     Long Description: 
-<html>
-<p>The character map plugin displays a window showing all ASCII and 
-extended characters. <br/>
-Clicking one will insert it in the buffer.</p>
-</html>
+    <html> 
+    	<p>The character map plugin displays a window showing all ASCII and 
+    	extended characters. <br/>
+    	Clicking one will insert it in the buffer.</p>
+    </html>
  }}}
