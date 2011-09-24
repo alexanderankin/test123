@@ -23,21 +23,13 @@ Workflow
         svn checkout https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/[tag]
    no matter where. You will find the source in a subfolder [tag] where you executed the command
 
-4. Copy build.properties and jars/build.properties from your jEdit source directory to the newly created [tag] source directory. If you don't have the two, then create them. For the root directory you find a template called build.properties.sample there and for the jars/build.properties you find a template in build-support/build.properties. These are independent and have to be set up correctly. The one in the root directory is for jEdit itself, the one in jars is for the standard plugins.
+4. Copy build.properties from your jEdit source directory to the newly created [tag] source directory if needed. If you don't have it, then create it if needed. You find a template called build.properties.sample in the root directory.
    To give an example, in build.properties I customized the following properties:
     - wine.executable=wine
     - winepath.executable=winepath
     - innosetup.compiler.executable=/home/vampire/.wine/drive_c/Programme/Inno Setup 5/ISCC.exe
     - innosetup.via.wine=true
-    - xsltproc.executable=xsltproc
-    - docbook.xsl=/usr/share/xml/docbook/stylesheet/docbook-xsl
-    - docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.4/catalog.xml
-    - fop.dir=/opt/fop-1.0
-    - launch4j.dir=/opt/launch4j
-   And in jars/build.properties I customized the following properties:
-    - docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.4/catalog.xml
-    - docbook.xsl=/usr/share/xml/docbook/stylesheet/docbook-xsl
-   You may not need to customize the same properties than me, e. g. if xsltproc is in your PATH environment variable, you may not need to customize xsltproc.executable.
+   You may not need to customize the same properties than me, e. g. if you are on Windows you don't need to set the three wine properties.
    For further information about what you need to build the source, please read README.SRC.txt in the sources root directory.
 
 5.1. Build the distribution files by doing
