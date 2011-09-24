@@ -28,7 +28,7 @@ SRC_SKIP_FILES = ('.cvsignore', 'Entries', 'Entries.Extra',
               'Entries.Log', 'Repository', 'Root', 'Tag',
               '.DS_Store', 'Thumbs.db', CHECKSUMS)
 # source directories to ignore
-SRC_SKIP_DIRS = ('.svn', 'CVS', '.bzr', '.hg', '_darcs')
+SRC_SKIP_DIRS = ('.svn', 'CVS', '.bzr', '.hg', '_darcs', '.git')
 
 # ---------------------------------------------------------
 # module vars
