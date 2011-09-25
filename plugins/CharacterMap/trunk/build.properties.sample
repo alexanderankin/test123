@@ -1,0 +1,21 @@
+﻿###
+### build.properties file for CharacterMap plugin
+###
+
+
+### Directory must be set to the installed jedit.jar 
+### e.g. "../.." or "C:/Program Files/jEdit" etc. -->
+
+# jedit.install.dir=../..
+        
+### Directory of jEdit settings. Default:
+### ${user.home}/.jedit
+### If you are compiling inside jEdit and charactermap plugin is open, use e.g.
+### ${user.home}/.jedit-test -->
+
+# jedit.setting.dir=${user.home}/.jedit
+
+### Where to install the plugins
+
+# jedit.plugin.dir=${jedit.setting.dir}/jars
+
