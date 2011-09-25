@@ -351,7 +351,11 @@ public class JavaCompletionFinder {
 			}
 			if (paren != -1 && paren < dot) {
 				j = TextUtilities.findMatchingBracket(temp, 0, paren);
-				continue;
+                if (j == -1) {
+                    j = paren + 1;
+                    i = j;
+                }
+                continue;
 			}
 			list.add(qualification.substring(i, dot));
 			i = dot+1;
