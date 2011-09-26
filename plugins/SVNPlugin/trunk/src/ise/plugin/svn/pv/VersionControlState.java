@@ -199,7 +199,7 @@ public class VersionControlState implements VersionControlService {
     }
     
     public ImporterFileFilter getFilter() {
-        return new ImportFilter();   
+        return null;   
     }
 
 
