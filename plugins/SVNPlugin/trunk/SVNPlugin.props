@@ -6,7 +6,7 @@
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
 plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
-plugin.ise.plugin.svn.SVNPlugin.version=1.6.0
+plugin.ise.plugin.svn.SVNPlugin.version=1.6.1
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
 
 # docs
