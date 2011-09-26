@@ -77,6 +77,10 @@ public class ImportFilter extends ImporterFileFilter {
             }
 
         }
+        if (cache.size() == 0) {
+        	Log.log(Log.ERROR, this, "svn ls -R reports no files!");
+        	cache.add (".");	
+        }
     }
 
     @Override
