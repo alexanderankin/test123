@@ -15,7 +15,7 @@
 
 # jedit.setting.dir=${user.home}/.jedit
 
-### Where to install the plugins
+### Where to install the plugins.
 
-# jedit.plugin.dir=${jedit.setting.dir}/jars
+# jedit.plugins.dir=${jedit.setting.dir}/jars
 
