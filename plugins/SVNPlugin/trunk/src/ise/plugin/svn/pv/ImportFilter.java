@@ -59,7 +59,8 @@ public class ImportFilter extends ImporterFileFilter {
             svn.waitFor();
         }
         catch (IOException ioe) {
-            Log.log(Log.ERROR, this, "Unable to run svn.  ", ioe);
+            Log.log(Log.ERROR, this, "Unable to run " + svn.toString(), ioe);
+            cantFind=true;
             return;
         }
         catch (InterruptedException ie) {}
@@ -79,7 +80,7 @@ public class ImportFilter extends ImporterFileFilter {
         }
         if (cache.size() == 0) {
         	Log.log(Log.ERROR, this, "svn ls -R reports no files!");
-        	cache.add (".");	
+        	cantFind=true;	
         }
     }
 
