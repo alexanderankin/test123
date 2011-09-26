@@ -14,9 +14,9 @@
 	<property name="compiler.source" value="1.6" />
 	<property name="compiler.target" value="1.6" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
-
+	
 	<import file="${build.support}/plugin-build.xml" />
-
+	
 	<selector id="packageFiles">
 		<and>
 			<or>
@@ -25,7 +25,7 @@
 		</and>
 	</selector>
 
-	<path id="project.class.path">
+	<!-- <path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/MarkerSets.jar"/>
@@ -34,11 +34,12 @@
 		<pathelement location="${install.dir}/lucene-highlighter-${lucene.version}.jar"/>
 		<pathelement location="${install.dir}/lucene-memory-${lucene.version}.jar"/>
 	</path>
-
-	<target name="build.prepare">
-		<mkdir dir="${build.dir}" />
-		<copy file="lucene-core-${lucene.version}.jar" todir="${install.dir}" />
-		<copy file="lucene-highlighter-${lucene.version}.jar" todir="${install.dir}" />
-		<copy file="lucene-memory-${lucene.version}.jar" todir="${install.dir}" />
+ -->
+ 	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${build.dir}/lib">
+				<include name="lucene*.jar" />
+			</fileset>
+		</copy>
 	</target>
 </project>
