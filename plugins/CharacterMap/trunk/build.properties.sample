@@ -7,7 +7,7 @@
 ### e.g. "../.." or "C:/Program Files/jEdit" etc. -->
 
 # jedit.install.dir=../..
-        
+
 ### Directory of jEdit settings. Default:
 ### ${user.home}/.jedit
 ### If you are compiling inside jEdit and charactermap plugin is open, use e.g.

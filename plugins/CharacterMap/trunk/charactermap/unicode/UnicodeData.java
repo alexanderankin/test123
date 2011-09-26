@@ -161,7 +161,7 @@ public final class UnicodeData
 		/**
 		 * Returns the name of this block as its string representation.
 		 */
-                @Override
+		@Override
 		public String toString()
 		{
 			return name;
@@ -16477,7 +16477,7 @@ static
 	 * Returns <code>true</code> if this map contains a mapping for the
 	 * specified key.
 	 */
-        @Override
+	@Override
 	public boolean containsKey(Object key)
 	{
 		if (key instanceof Integer)
@@ -16494,7 +16494,7 @@ static
 	 * Returns the value to which this Map maps the specified key. Returns
 	 * <code>null</code> if the map contains no mapping for this key.
 	 */
-        @Override
+	@Override
 	public Object get(Object key)
 	{
 		Object value = null;

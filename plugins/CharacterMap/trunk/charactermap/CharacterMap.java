@@ -51,11 +51,11 @@ public class CharacterMap extends JPanel
 //{{{ Variables
 	/** JEdit view */
 	private View view;
-        /** Current System Fonts */
-        // private Font[] systemFonts;
+	/** Current System Fonts */
+	// private Font[] systemFonts;
 	/** Current display graphics configuration */
 	private GraphicsConfiguration graphConfig;
-	
+
 	// Display components
 	/** Combo box for font encoding information */
 	private JComboBox encodingCombo;
@@ -130,10 +130,10 @@ public class CharacterMap extends JPanel
 		GridBagConstraints c = new GridBagConstraints();
 		
 		// North Panel (Encoding Selector, Unicode Block Selector, Char)
-		
+
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(gridbag);
-		
+
 		JLabel caption = new JLabel(jEdit.getProperty("character-map.encoding-caption"));
 
 		c.weighty = 0.0;
@@ -157,7 +157,7 @@ public class CharacterMap extends JPanel
 
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;		
 		gridbag.setConstraints(encodingCombo, c);
-		
+
 		showEncoding = jEdit.getBooleanProperty("options.character-map.encoding");
 		if (showEncoding)
 		{
@@ -166,7 +166,7 @@ public class CharacterMap extends JPanel
 		}
 
 		if (!isDockedLeftRight()) northPanel.add(Box.createHorizontalStrut(12));
-                                                                                                              
+
 		caption = new JLabel(jEdit.getProperty("character-map.blocks-caption"));
 
 		c.gridwidth = 1;
@@ -298,9 +298,9 @@ public class CharacterMap extends JPanel
 		}
 		else {
 			StringBuilder buf = new StringBuilder();
-						
+
 			// buf.append(" Char: ").append(ch);
-			
+
 			if (!isEncodingUnicode())
 			{
 				buf.append(toDecString(n,3," Dec: "));
@@ -401,7 +401,7 @@ public class CharacterMap extends JPanel
 			status.setText(buf.toString());
 		}
 	}
-	
+
 	/** Sets tableColumns depending on  
 	 *  plugin options and window docking state.
 	 *  @see tableColumns
@@ -413,12 +413,12 @@ public class CharacterMap extends JPanel
 		}
 		else if (isDockedTopBottom()) {
 			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-tb", 32); 
-		}	
+		}
 		else {
 			tableColumns = jEdit.getIntegerProperty("options.character-map.columns", 16);
 		}
 	}
-	
+
 	/** Formatted output of int in hexadecimal form
 	 *  @param i       Integer to be converted
 	 *  @param digits  Minimum number of digits 
@@ -440,7 +440,7 @@ public class CharacterMap extends JPanel
 		str = prefix + str;
 		return str;
 	}
-	
+
 	/** Formatted output of int in decimal form
 	 *  @param i       Integer to be converted
 	 *  @param digits  Minimum number of digits 
@@ -464,7 +464,7 @@ public class CharacterMap extends JPanel
 	{
 		return view.getTextArea().getPainter().getFont();
 	}
-	
+
 	/** Font used to draw character glyphs in table.
 	 *  By default, normalFont() is returned.
 	 *  Automatic font substitution for missing characters, 
@@ -479,17 +479,17 @@ public class CharacterMap extends JPanel
 		// If normal font sufficient or no font substitution
 		// -> return normal font
 		if ( (f.canDisplayUpTo(text) == -1)
-		   || !jEdit.getBooleanProperty("view.enableFontSubst") )
-	    	{
-	    		return f;
-	    	}
+			|| !jEdit.getBooleanProperty("view.enableFontSubst") )
+		{
+			return f;
+		}
 		
 
 		// search user defined substitution fonts
 		int i = 0;
 		String family;
 		Font candidate;
-		while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null)	
+		while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null) 
 		{ 
 			candidate = new Font(family, Font.PLAIN, f.getSize());
 			if (candidate.canDisplayUpTo(text) == -1) 
@@ -498,7 +498,7 @@ public class CharacterMap extends JPanel
 			}
 			i++;
 		}
-		
+
 		// search system fonts
 
 		// Disabled due to following reasons: 
@@ -507,11 +507,11 @@ public class CharacterMap extends JPanel
 		//   and doesn't switch always to first font in order
 		// - perhaps the user should know, which font he is using 
 		//   if he inserts characters from the CharacterMap
-		
+
 		/* if (systemFonts == null)
 		{
 			systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-		}		
+		}
 		for (Font k : systemFonts)
 		{
 			candidate = k.deriveFont(Font.PLAIN, f.getSize());
@@ -520,17 +520,17 @@ public class CharacterMap extends JPanel
 				return candidate;
 			}
 		} */
-		
-                // if nothing found
+
+		// if nothing found
 		return normalFont();
 	}
-	
+
 	/** Font used to draw the large glyph image.
 	 * @param text Text string to be drawn
 	 */
 	private Font largeFont(String text)
 	{
-	   return autoFont(text).deriveFont(largeSize);
+		return autoFont(text).deriveFont(largeSize);
 	}
 
 
@@ -539,9 +539,9 @@ public class CharacterMap extends JPanel
 	 */
 	private Font superFont(String text)
 	{
-	   return autoFont(text).deriveFont(superSize);
+		return autoFont(text).deriveFont(superSize);
 	}
-	
+
 
 	/**
 	 * Set member variables regarding anti-aliasing and
@@ -575,14 +575,14 @@ public class CharacterMap extends JPanel
 		String position = jEdit.getProperty("character-map.dock-position",
 			DockableWindowManager.FLOATING);
 		return position.equalsIgnoreCase(DockableWindowManager.TOP)
-		    || position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
+		|| position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
 	}
 
 	private boolean isEncodingUnicode()
 	{
 		return encoding.toUpperCase().startsWith("UNICODE") 
-                    || encoding.toUpperCase().startsWith("UTF")
-                    || encoding.toUpperCase().startsWith("X-UTF");
+		|| encoding.toUpperCase().startsWith("UTF")
+		|| encoding.toUpperCase().startsWith("X-UTF");
 	}
 
 	private int getBlockSize()
@@ -612,7 +612,7 @@ public class CharacterMap extends JPanel
 	}
 //}}}
 
-	
+
 //{{{ Auxiliary classes
 	/**
 	 * Model of character data contained within the
@@ -637,7 +637,7 @@ public class CharacterMap extends JPanel
 		public int getRowCount()
 		{
 			int tableRows = (getBlockSize() - getBlockSize() % tableColumns)
-			                / tableColumns; 
+				/ tableColumns; 
 			if ( getBlockSize() % tableColumns != 0 ) tableRows += 1; 
 			return tableRows;
 		}
@@ -678,7 +678,7 @@ public class CharacterMap extends JPanel
 		 * @param  index  Column index
 		 * @return        Name of column
 		 */
-                @Override
+		 @Override
 		public String getColumnName(int index)
 		{
 			return null;
@@ -731,7 +731,7 @@ public class CharacterMap extends JPanel
 		 * status text to display the current page and repaints
 		 * the table.
 		 *
-		 * @param  evt  The event representing the state change
+		 * @param  evt	The event representing the state change
 		 */
 		public void stateChanged(ChangeEvent evt)
 		{
@@ -797,7 +797,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  Event containing button activity information
 		 */
-                @Override
+		 @Override
 		public void mouseClicked(MouseEvent evt)
 		{
 			int button = evt.getButton();
@@ -824,7 +824,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  Event containing mouse button press information
 		 */
-                @Override
+		 @Override
 		public void mousePressed(MouseEvent evt)
 		{
 			int button = evt.getButton();
@@ -861,7 +861,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  Event containing mouse drag information
 		 */
-                @Override
+		 @Override
 		public void mouseDragged(MouseEvent evt)
 		{
 			Point p = evt.getPoint();
@@ -901,7 +901,7 @@ public class CharacterMap extends JPanel
 		 * @param  evt  Description of the Parameter
 		 * @param,      evt Event containing mouse button release information
 		 */
-                @Override
+		 @Override
 		public void mouseReleased(MouseEvent evt)
 		{
 			int button = evt.getButton();
@@ -921,7 +921,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  Event containing new mouse position
 		 */
-                @Override
+		@Override
 		public void mouseMoved(MouseEvent evt)
 		{
 			Point p = evt.getPoint();
@@ -953,7 +953,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  Mouse event that caused exit
 		 */
-                @Override
+		@Override
 		public void mouseExited(MouseEvent evt)
 		{
 			setStatusText(null, 0, 0);
@@ -979,10 +979,7 @@ public class CharacterMap extends JPanel
 				TableColumn tc = tcm.getColumn(i);
 				cellWidth = tc.getWidth();
 				cellX += cellWidth
-				/*
-				 *  + tcm.getColumnMargin()
-				 */
-					;
+				/* + tcm.getColumnMargin() */ ;
 			}
 			int cellHeight = table.getRowHeight();
 
@@ -1107,7 +1104,7 @@ public class CharacterMap extends JPanel
 	{
 		/** Map containing hints for the renderer (eg, render anti-aliased) */
 		private Map<RenderingHints.Key,Object> renderingHints;
-	 		 
+
 		/**
 		 * Construct a label with the given font and text
 		 *
@@ -1156,7 +1153,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  gc  Graphics context within which to paint the component
 		 */
-                @Override
+		@Override
 		public void paint(Graphics gc)
 		{
 			Graphics2D gc2d = (Graphics2D) gc;
