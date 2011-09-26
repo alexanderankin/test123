@@ -51,7 +51,7 @@ public class ImportFilter extends ImporterFileFilter {
                 return;
             }
         }
-        Command svn = new Command(jEdit.getProperty("svn.path", "svn"), "ls", "-R");
+        Command svn = new Command(jEdit.getProperty("svn.path", "svn"), "info", "-R", ".");
         svn.setWorkDir(cachedDirectory);
         Log.log(Log.DEBUG, this, svn.toString());
         try {
@@ -66,6 +66,8 @@ public class ImportFilter extends ImporterFileFilter {
         catch (InterruptedException ie) {}
         StringList sl = StringList.split(svn.getOutput(), "\n");
         for (String s: sl) {
+            if (!s.startsWith("Path: ")) continue;
+            s = s.substring(6);
             f = new File(cachedDirectory, s);
 //			Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
             cache.add(f.toString());
@@ -79,7 +81,7 @@ public class ImportFilter extends ImporterFileFilter {
 
         }
         if (cache.size() == 0) {
-        	Log.log(Log.ERROR, this, "svn ls -R reports no files!");
+        	Log.log(Log.ERROR, this, "svn info -R . reports no files!");
         	cantFind=true;	
         }
     }
@@ -87,7 +89,7 @@ public class ImportFilter extends ImporterFileFilter {
     @Override
     public String getRecurseDescription()
     {
-        return jEdit.getProperty("svn.importer.description", "Use svn ls -R");
+        return jEdit.getProperty("svn.importer.description", "Use svn info -R .");
     }
 
 
