@@ -98,8 +98,8 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	 * Create and initialise the options page with options
 	 * and labels read from the properties for this plugin
 	 */
-        @Override
-        public void _init()
+	@Override
+	public void _init()
 	{
 		showLarge = this.createCheckBox("character-map.large", true);
 		largeSize = this.createTextField(4, "character-map.large-size", "36");
@@ -197,7 +197,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	 * Store the options selected on the pane back to the 
 	 * jedit properties.
 	 */
-        @Override
+	@Override
 	public void _save()
 	{
 		jEdit.setBooleanProperty("options.character-map.large", showLarge.isSelected());

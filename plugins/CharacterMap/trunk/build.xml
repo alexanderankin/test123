@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 
 <!--
-     This is a build.xml file for building the CharacterMap jEdit plugin.
+	This is a build.xml file for building the CharacterMap jEdit plugin.
 
-     The 'dist' target compiles the plugin and creates the JAR file
-     in project parent folder. Deletes temporary files.
-     
-     The 'install' target compiles the plugin and creates the JAR file. 
-     
-     The 'run' target starts jEdit using the installed plugin.
+	The 'dist' target compiles the plugin and creates the JAR file
+	in project parent folder. Deletes temporary files.
+
+	The 'install' target compiles the plugin and creates the JAR file.
+
+	The 'run' target starts jEdit using the installed plugin.
 -->
 
 <project name="charactermap" default="dist" basedir=".">
@@ -17,24 +17,24 @@
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
-        <!-- Directory containing the distribution -->
+	<!-- Directory containing the distribution -->
 	<property name="dist.dir"  value=".."/>
-        
-	<!-- Directory of build-files --> 
+
+	<!-- Directory of build-files -->
 	<property name="build.dir" value="build"/>
 
-        <property name="jar.name"  value="CharacterMap.jar"/>
+	<property name="jar.name"  value="CharacterMap.jar"/>
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-       
-        <fail message="Set correct directories in build.properties">
-            <condition>
-            <or>
-                <not><available file="${jedit.install.dir}/jedit.jar"/></not>
-                <not><isset property="jedit.plugins.dir"/></not>
-            </or>
-            </condition>
-        </fail>
+
+	<fail message="Set correct directories in build.properties">
+		<condition>
+		<or>
+			<not><available file="${jedit.install.dir}/jedit.jar"/></not>
+			<not><isset property="jedit.plugins.dir"/></not>
+		</or>
+		</condition>
+	</fail>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -42,7 +42,7 @@
 	</path>
 
 	<fileset id="jar-build" dir="${build.dir}"/>
-	<fileset id="jar-src"   dir="${src.dir}">
+	<fileset id="jar-src"	dir="${src.dir}">
 		<include name="dockables.xml"/>
 		<include name="*.props"/>
 		<include name="*.html"/>
@@ -57,10 +57,10 @@
 			debug="on"
 			deprecation="on"
 			includeJavaRuntime="yes"
-                        includeAntRuntime="no"
+			includeAntRuntime="no"
 		>
-                        <compilerarg value="-Xlint"/>
-                        <compilerarg value="-Xlint:-serial"/>
+			<compilerarg value="-Xlint"/>
+			<compilerarg value="-Xlint:-serial"/>
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
@@ -73,7 +73,7 @@
 			<fileset refid="jar-build"/>
 			<fileset refid="jar-src"/>
 		</jar>
-                <antcall target="clean"/>
+		<antcall target="clean"/>
 	</target>
 
 	<target name="install" depends="compile">
@@ -87,17 +87,17 @@
 
 	<target name="run" depends="install">
 		<fail message="Specify setting directory in build.properties">
-		    <condition>
-			<not><isset property="jedit.setting.dir"/></not>
-		    </condition>
+			<condition>
+				<not><isset property="jedit.setting.dir"/></not>
+			</condition>
 		</fail>
 		<mkdir dir="${jedit.setting.dir}"/>
-	        <!-- code from jEdit's original build.xml -->
+		<!-- code from jEdit's original build.xml -->
 		<java jar="${jedit.install.dir}/jedit.jar"
-		      fork="true"
-		      spawn="true"
-		      maxmemory="192M">
-		      <arg value="-settings=${jedit.setting.dir}"/>
+			fork="true"
+			spawn="true"
+			maxmemory="192M">
+			<arg value="-settings=${jedit.setting.dir}"/>
 		</java>
 	</target>
 
