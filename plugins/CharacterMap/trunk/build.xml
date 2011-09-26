@@ -31,8 +31,7 @@
             <condition>
             <or>
                 <not><available file="${jedit.install.dir}/jedit.jar"/></not>
-                <not><isset property="jedit.setting.dir"/></not>
-                <not><isset property="jedit.plugin.dir"/></not>
+                <not><isset property="jedit.plugins.dir"/></not>
             </or>
             </condition>
         </fail>
@@ -79,15 +78,20 @@
 
 	<target name="install" depends="compile">
 		<sleep seconds="2"/>
-		<mkdir dir="${jedit.setting.dir}"/>
-		<mkdir dir="${jedit.plugin.dir}"/>
-		<jar jarfile="${jedit.plugin.dir}/${jar.name}">
+		<mkdir dir="${jedit.plugins.dir}"/>
+		<jar jarfile="${jedit.plugins.dir}/${jar.name}">
 			<fileset refid="jar-build"/>
 			<fileset refid="jar-src"/>
 		</jar>
 	</target>
 
 	<target name="run" depends="install">
+		<fail message="Specify setting directory in build.properties">
+		    <condition>
+			<not><isset property="jedit.setting.dir"/></not>
+		    </condition>
+		</fail>
+		<mkdir dir="${jedit.setting.dir}"/>
 	        <!-- code from jEdit's original build.xml -->
 		<java jar="${jedit.install.dir}/jedit.jar"
 		      fork="true"
