@@ -27,6 +27,7 @@ import com.kpouer.jedit.remotecontrol.command.RegisterEBMessageCommandHandler;
 import com.kpouer.jedit.remotecontrol.command.SingleLineCommandHandler;
 import com.kpouer.jedit.remotecontrol.command.UnregisterEBMessageCommandHandler;
 import com.kpouer.jedit.remotecontrol.serializer.Serializer;
+import com.kpouer.jedit.remotecontrol.welcome.NoWelcome;
 import com.kpouer.jedit.remotecontrol.welcome.WelcomeService;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.ServiceManager;
@@ -163,6 +164,7 @@ public class RemoteClient
 		handlers.add(new OptionCommandHandler(this));
 		handlers.add(new RegisterEBMessageCommandHandler(this));
 		handlers.add(new UnregisterEBMessageCommandHandler(this));
+		handlers.add(new NoWelcome());
 	}
 
 	private void handleMessage()
