@@ -24,11 +24,13 @@ package com.kpouer.jedit.remotecontrol.serializer;
 import com.kpouer.jedit.remotecontrol.RemoteControlPlugin;
 import com.kpouer.jedit.remotecontrol.jEditListener;
 import com.kpouer.jedit.remotecontrol.xstream.BufferConverter;
+import com.kpouer.jedit.remotecontrol.xstream.BufferSetConverter;
 import com.kpouer.jedit.remotecontrol.xstream.EditPaneConverter;
 import com.kpouer.jedit.remotecontrol.xstream.GlobalConverter;
 import com.kpouer.jedit.remotecontrol.xstream.ViewConverter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
+import com.thoughtworks.xstream.mapper.ArrayMapper;
 
 public class XStreamSerializer implements Serializer
 {
@@ -42,6 +44,7 @@ public class XStreamSerializer implements Serializer
 		xstream.registerConverter(new BufferConverter());
 		xstream.registerConverter(new ViewConverter(jEditListener));
 		xstream.registerConverter(new EditPaneConverter(jEditListener));
+		xstream.registerConverter(new BufferSetConverter(new ArrayMapper(xstream.getMapper())));
 //		xstream.registerConverter(new EBMessageConverter(), XStream.PRIORITY_NORMAL - 1);
 //		xstream.registerConverter(new BufferChangingConverter());
 //		xstream.registerConverter(new BufferUpdateConverter());
