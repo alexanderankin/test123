@@ -21,36 +21,43 @@
 
 package com.kpouer.jedit.remotecontrol.xstream;
 
+import java.nio.Buffer;
+
+import com.kpouer.jedit.remotecontrol.CommandResponse;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.ArrayConverter;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import org.gjt.sp.jedit.msg.BufferChanging;
+import com.thoughtworks.xstream.mapper.ArrayMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.bufferset.BufferSet;
 
 /**
  * @author Matthieu Casanova
  */
-public class BufferChangingConverter implements Converter
+public class BufferSetConverter extends ArrayConverter
 {
-	@Override
-	public void marshal(Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext)
+	public BufferSetConverter(Mapper mapper)
 	{
-		BufferChanging bufferChanging = (BufferChanging) o;
-		hierarchicalStreamWriter.startNode("buffer");
-		marshallingContext.convertAnother(bufferChanging.getBuffer());
-		hierarchicalStreamWriter.endNode();
+		super(mapper);
 	}
 
 	@Override
-	public Object unmarshal(HierarchicalStreamReader hierarchicalStreamReader, UnmarshallingContext unmarshallingContext)
+	public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
 	{
-		return null;
+		BufferSet bufferSet = (BufferSet) source;
+		org.gjt.sp.jedit.Buffer[] allBuffers = bufferSet.getAllBuffers();
+		super.marshal(allBuffers, writer,
+			      context);
 	}
 
 	@Override
-	public boolean canConvert(Class aClass)
+	public boolean canConvert(Class type)
 	{
-		return BufferChanging.class.equals(aClass);
+		return BufferSet.class.equals(type);
 	}
 }

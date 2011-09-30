@@ -28,6 +28,7 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.bufferset.BufferSet;
 
 /**
  * @author Matthieu Casanova
@@ -51,6 +52,7 @@ public class GlobalConverter implements Converter
 		Package aPackage = aClass.getPackage();
 		return !aClass.isArray() &&
 		       !EBMessage.class.isAssignableFrom(aClass) &&
+		       !BufferSet.class.isAssignableFrom(aClass) &&
 		       !aClass.equals(CommandResponse.class) &&
 		(aPackage == null || !aPackage.getName().startsWith("java"));
 	}
