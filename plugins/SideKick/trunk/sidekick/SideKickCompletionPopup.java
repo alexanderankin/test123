@@ -164,6 +164,13 @@ public class SideKickCompletionPopup extends CompletionPopup
 		int selected = getSelectedIndex();
 		if(selected == -1)
 		{
+			Macros.Recorder recorder = view.getMacroRecorder();
+
+			if(recorder != null)
+			{
+			 	recorder.recordInput(1,ch,
+			 		view.getTextArea().isOverwriteEnabled());
+			}
 			view.getTextArea().userInput(ch);
 			updateCompletion(false);
 		}

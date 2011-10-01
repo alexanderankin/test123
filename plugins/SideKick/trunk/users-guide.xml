@@ -441,6 +441,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
         <listitem><para> Default Focus on Tree, not filter field. (#3405334 - ezust). </para></listitem>
         <listitem><para> Fixed sidekick unload problem (kpouer) </para></listitem>
         <listitem><para> Allow Look and Feel changes at runtime. </para></listitem>
+        <listitem><para> Fix completion popup regarding macro recorder (3175336 - Eric Le Lay). </para></listitem>
       </itemizedlist>  
       </listitem>
     
