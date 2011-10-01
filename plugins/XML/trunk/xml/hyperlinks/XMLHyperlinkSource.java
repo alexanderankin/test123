@@ -56,7 +56,7 @@ import xml.completion.IDDecl;
  *	      the buffer is opened and that's all.
  *	</li>
  *	<li>IDREF attributes, when the buffer has been parsed and the attribute has the
- *	      IDEF datatype. This includes docbook 4.x links (&lt;xref linkend="id"/&gt;).
+ *	      IDREF datatype. This includes docbook 4.x links (&lt;xref linkend="id"/&gt;).
  *	</li>
  *	<li>XML Schema (XSD) schema location (&lt;myelt xsi:schemaLocation="ns1 url1..."&gt;)
  *	      and no namespace schema location (&lt;myelt xsi:noNamespaceSchemaLocation="url"&gt;).
