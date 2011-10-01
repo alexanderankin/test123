@@ -809,6 +809,63 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   </para>
  </section>
 
+ <section id="hyperlinks"><title>Hyperlinks support</title>
+ <para>If the <emphasis>Hyperlinks</emphasis> plugin is
+ installed and active, some attributes will be available for navigation.
+ To show them, simply hold the <keycode>Ctrl</keycode> key
+ and hover over them with the mouse. A solid blue underline
+ will appear under attribute values recognised as hyperlinks.
+ Then, clicking on the link will open the referenced document
+ in a buffer and in some cases move to the referenced element.</para> 
+ 
+ <para>Hereafter is the list of supported hyperlinks in the <code>XML</code> mode.
+ <code>xml:base</code> attributes are used to resolve relative hyperlinks.</para>
+ <para>
+ <itemizedlist>
+ 	<listitem><para>href attributes in <emphasis>XInclude</emphasis> (&lt;xi:include href="..."/&gt;).
+ 	Fragments are not supported: the buffer is opened and that's all.</para></listitem>
+      <listitem><para>simple <emphasis>XLinks</emphasis> (&lt;myelt xlink:href="..."/&gt;).
+      Only simple links are supported and the fragment identifier is ignored: the buffer is opened and that's all.</para></listitem>
+      <listitem><para><emphasis>IDREF attributes</emphasis>, when the buffer has been parsed and the attribute has the
+            IDREF datatype. This includes DocBook 4.x links (&lt;xref linkend="id"/&gt;). IDREFS attributes are also supported.
+            Each idref is highlighted on its own.  Datatype is derived from the RNG, XSD, or DTD grammar used for the document.
+      </para></listitem>
+      <listitem><para><emphasis>XML Schema</emphasis> (XSD) schema location (&lt;myelt xsi:schemaLocation="ns1 url1..."&gt;)
+            and no-namespace schema location (&lt;myelt xsi:noNamespaceSchemaLocation="url"&gt;).
+            Multiple namespace-url couples are supported.</para></listitem>
+      <listitem><para>attributes with datatype anyURI,
+            e.g. XSD include and import (&lt;xs:include schemaLocation="url"/&gt;).
+             Datatype is derived from the RNG, XSD, or DTD grammar used for the document.</para></listitem>
+      <listitem><para>DocBook ulink (&lt;ulink url="..."&gt;).
+      This is really the url attribute of an ulink element in no namespace.</para></listitem>
+ </itemizedlist>
+ </para>
+ <para>Hereafter is the list of supported hyperlinks in the <code>HTML</code> mode.
+Supported hyperlinks are all attributes with type URI in the HTML 4.01 spec.
+Links to other documents and anchors inside document are supported,
+but fragment identifiers in other documents are not.
+The HTML/HEAD/BASE element is used to resolve URIs, if present.
+ </para>
+ <para>
+ <itemizedlist>
+ 	<listitem><para><code>href</code> attributes in <code>a</code>, <code>area</code>, <code>link</code>
+ 	elements.</para></listitem>
+      <listitem><para><code>longdesc</code>, <code>usemap</code> attributes of <code>img</code> element.</para></listitem>
+      <listitem><para><code>cite</code> attribute of <code>q</code>, <code>blockquote</code>,
+      <code>ins</code> and <code>del</code> elements.</para></listitem>
+      <listitem><para><code>usemap</code> attribute of <code>input</code> and <code>object</code> elements.
+      </para></listitem>
+      <listitem><para><code>src</code> attribute of <code>script</code> element.</para></listitem>
+      <listitem><para>Attributes with type <code>anyURI</code> 
+      are recognised as hyperlinks.</para></listitem>
+      <listitem><para>Attributes with type <code>IDREF</code> and <code>IDREFS</code> work
+      as hyperlinks to the referenced element.</para></listitem>
+ </itemizedlist>
+ </para>
+
+ </section>
+ 
+
  <section id="xmlindenter">
     <title>XML Indenter</title>
     <para>
@@ -953,6 +1010,8 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
    as in the schema for NAnt (#3216494 - Eric Le Lay)</para></listitem>
   <listitem><para>Fix issue with an extra closing bracket being recorded
   in macros (#857802 - Eric Le Lay)</para></listitem>
+  <listitem><para>Hyperlink support for XML and HTML buffers
+  (feat. req. #3257914 - Eric Le Lay)</para></listitem>
  </itemizedlist>
  </listitem>
 
