@@ -141,6 +141,13 @@ class EditTagDialog extends EnhancedDialog
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
 		setLocationRelativeTo(view);
+		// request focus so the dialog can be disposed of by hitting Escape key
+		SwingUtilities.invokeLater(new Runnable(){
+			@Override
+			public void run() {
+				requestFocus();
+			}
+		});
 		setVisible(true);
 	} //}}}
 
