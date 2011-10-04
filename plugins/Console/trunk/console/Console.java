@@ -213,8 +213,7 @@ implements EBComponent, DefaultFocusComponent
 		{
 			try
 			{
-				HistoryModel.getModel(shellHistory).setSize(
-					Integer.parseInt(limit));
+				HistoryModel.getModel(shellHistory).setMax(Integer.parseInt(limit));
 			}
 			catch(NumberFormatException nfe)
 			{
