@@ -3,55 +3,42 @@ package xml.parser;
 // {{{ imports
 import java.net.URISyntaxException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Stack;
-import java.util.StringTokenizer;
 
 import javax.swing.JPanel;
-import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.xerces.impl.XMLErrorReporter;
+import org.apache.xerces.xni.XMLDTDHandler;
+import org.apache.xerces.xni.parser.XMLDTDFilter;
+import org.apache.xerces.xni.parser.XMLDTDSource;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
-import org.xml.sax.Attributes;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.ext.DeclHandler;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
-import xml.Resolver;
 import xml.CharSequenceReader;
 import xml.AntXmlParsedData;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
 import xml.SchemaMappingManager;
 import xml.completion.CompletionInfo;
-import xml.completion.ElementDecl;
-import xml.completion.EntityDecl;
-import xml.completion.IDDecl;
 import xml.gui.XmlModeToolBar;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import static xml.Debug.*;
-import xml.cache.Cache;
-import xml.cache.CacheEntry;
 // }}}
 // {{{ class XercesParserImpl
 /**
@@ -113,7 +100,11 @@ public class XercesParserImpl extends XmlParser
 				 errorSource
 				,buffer.getPath()
 			);
-		Handler handler = new Handler(buffer,text,errorHandler,data);
+		
+		MyEntityResolver resolver = new MyEntityResolver(buffer, errorHandler);
+
+		// {{{ parse one time to get CompletionInfo, Ids, and any error found by Xerces
+		GrabIdsAndCompletionInfoHandler handler = new GrabIdsAndCompletionInfoHandler(this, buffer,errorHandler,data, resolver);
 
 
 		XMLReader reader = null;
@@ -161,13 +152,13 @@ public class XercesParserImpl extends XmlParser
 			reader.setProperty("http://xml.org/sax/properties/lexical-handler",handler);
 			
 			reader.setProperty("http://apache.org/xml/properties/internal/grammar-pool",
-				new CachedGrammarPool(buffer));
+									new CachedGrammarPool(buffer));
 			
 			schemaLoader = new SchemaAutoLoader(reader,mapping,buffer);
 
 			schemaLoader.setErrorHandler(errorHandler);
 			schemaLoader.setContentHandler(handler);
-			schemaLoader.setEntityResolver(handler);
+			schemaLoader.setEntityResolver(resolver);
 
 			//get access to the RNG schema
 			handler.setSchemaAutoLoader(schemaLoader);
@@ -273,6 +264,68 @@ public class XercesParserImpl extends XmlParser
 					schemaLoader.getSchemaURL());
 			}
 		}
+		//}}}
+		// {{{ and parse again to get the SideKick tree (required to get the xi:include elements in the tree)
+		
+		ConstructTreeHandler treeHandler = new ConstructTreeHandler(this, buffer, text, errorHandler, data, resolver);
+		reader = null;
+		try
+		{
+			// One has to explicitely require the parser from XercesPlugin, otherwise
+			// one gets the crimson version bundled in the JRE and the rest fails
+			// miserably (see Plugin Bug #2950392)
+			reader = new org.apache.xerces.parsers.SAXParser();
+			
+			// no validation: it has already been done once
+			reader.setFeature("http://xml.org/sax/features/validation",false);
+			// turn on/off namespace support.
+			// For some legacy documents, namespaces must be disabled
+			reader.setFeature("http://xml.org/sax/features/namespaces",
+				!buffer.getBooleanProperty("xml.namespaces.disable"));
+			// always use EntityResolver2 so that built-in DTDs can be found
+			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
+				true);
+			
+			reader.setProperty("http://apache.org/xml/properties/internal/grammar-pool",
+					new CachedGrammarPool(buffer));
+
+			// XInclude support disabled: we want the xi:include elements to show up in the tree
+			reader.setFeature("http://apache.org/xml/features/xinclude",false);
+			
+			reader.setContentHandler(treeHandler);
+			reader.setEntityResolver(resolver);
+			
+		}
+		catch(SAXException se)
+		{
+			se.printStackTrace();
+			Log.log(Log.ERROR,this,se);
+		}
+
+		source = new InputSource();
+
+		source.setCharacterStream(new CharSequenceReader(text));
+		// must set the systemId to an URL and not a path
+		// otherwise, get errors when opening a DTD specified as a relative path
+		// somehow, xerces doesn't call File.toURI.toURL and the URL
+		// is incorrect : file://server/share instead of file://///server/share
+		// and the DTD can't be found
+		source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
+
+		try
+		{
+			reader.parse(source);
+		}
+		catch(StoppedException e) //NOPMD interrupted parsing
+		{
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,this,"error upon snd reparse",e);
+		}
+		
+		// }}}
+		
 		
 		// danson, a hack(?) to switch the buffer mode to 'ant'.  The first line glob
 		// in the catalog file doesn't necessarily work for Ant files.  If the root
@@ -316,78 +369,6 @@ public class XercesParserImpl extends XmlParser
         return new XmlParsedData(filename, html);   
 	}
 
-	//{{{ ...
-	public XmlTag findParent(EditPane editPane, int caret){
-
-		if (caret == 0)
-			return null;
-		SideKickParsedData _data = SideKickParsedData
-			.getParsedData(editPane.getView());
-		if(!(_data instanceof XmlParsedData))
-			return null;
-		if(XmlPlugin.isDelegated(editPane.getTextArea()))
-			return null;
-		XMLReader reader = null;
-		try
-		{
-			// One has to explicitely require the parser from XercesPlugin, otherwise
-			// one gets the crimson version bundled in the JRE and the rest fails
-			// miserably (at least on Mac OS X, JDK 5)
-			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
-			reader.setFeature("http://xml.org/sax/features/validation",false);
-			reader.setFeature("http://xml.org/sax/features/namespaces",true);
-			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
-			reader.setFeature("http://apache.org/xml/features/xinclude",false);
-			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
-		}
-		catch(SAXException se)
-		{
-			se.printStackTrace();
-			Log.log(Log.ERROR,this,se);
-		}
-
-
-		XmlParsedData data = (XmlParsedData)_data;
-
-		Buffer buffer = editPane.getBuffer();
-		
-		CharSequence text = buffer.getSegment(0,caret);
-
-		FastHandler handler = new FastHandler(buffer,data);
-
-		InputSource source = new InputSource();
-
-		source.setCharacterStream(new CharSequenceReader(text));
-		source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
-
-		reader.setContentHandler(handler);
-		reader.setErrorHandler(handler);
-		reader.setEntityResolver(handler);
-		try
-		{
-			reader.parse(source);
-		}
-		catch(StoppedException e) // NOPMD interrupted parsing
-		{
-		}
-		catch(IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		catch(SAXParseException spe) // NOPMD already handled
-		{
-		}
-		catch(SAXException se)
-		{
-			se.printStackTrace();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	} //}}}
-	
 	//}}}
 
     //{{{ getPanel() method	
@@ -409,667 +390,6 @@ public class XercesParserImpl extends XmlParser
 		
 	}
 	//}}}
-
-	//{{{ Handler class
-	class Handler extends DefaultHandler2 implements DeclHandler, LexicalHandler, ErrorHandler
-	{
-	    // {{{ members
-		Buffer buffer;
-
-		ErrorListErrorHandler errorHandler;
-		CharSequence text;
-		XmlParsedData data;
-		
-		/** used to access the type of attributes
-		 *  to know if they are IDs in case of XSD and RNG
-		 */
-		Stack<ElementDecl> elementDeclStack;
-		
-		HashMap<String, String> declaredPrefixes;
-		Stack<DefaultMutableTreeNode> currentNodeStack;
-		Locator loc;
-		boolean empty;
-		/** at root of document (no startElement() seen yet)*/
-		boolean root = true;
-		
-		/** used to retrieve CompletionInfos for different namespaces (RNG) */
-		SchemaAutoLoader schemaAutoLoader;
-		
-		/** used to register entities with the XmlParsedData at endDTD() */
-		CompletionInfo dtdCompletionInfo;
-		
-		// }}}
-		// {{{ Handler constructor
-		Handler(Buffer buffer, CharSequence text, ErrorListErrorHandler errorHandler,
-			XmlParsedData data)
-		{
-			this.buffer = buffer;
-			this.text = text;
-			this.errorHandler = errorHandler;
-			this.data = data;
-			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
-			this.elementDeclStack = new Stack<ElementDecl>();
-			this.empty = true;
-			this.schemaAutoLoader = null;
-			this.dtdCompletionInfo = null;
-		} // }}}
-
-		private void setSchemaAutoLoader(SchemaAutoLoader sal){
-			this.schemaAutoLoader = sal;
-		}
-		
-		//{{{ endDocument() method
-		public void endDocument() throws SAXException
-		{
-			// don't retrieve the null namespace schema
-			// via getModelForNamespace(null), as it returns null, anyway !
-		} //}}}
-
-		//{{{ setDocumentLocator() method
-		public void setDocumentLocator(Locator locator)
-		{
-			loc = locator;
-		} //}}}
-
-		//{{{ resolveEntity() method
-		/**
-		 * If you do this:
-		 * reader.setProperty("use-entity-resolver2", true)
-		 * Then this method should be called.
-		 */
-		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
-			throws SAXException, java.io.IOException {
-
-			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
-
-			InputSource source = null;
-
-			try {
-				source = Resolver.instance().resolveEntity(name, publicId, baseURI, systemId);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				errorHandler.getErrorSource().addError(ErrorSource.ERROR,
-					buffer.getPath(),
-					Math.max(0,loc.getLineNumber()-1),0,0,
-					e.getMessage());
-			}
-
-			if(source == null)
-			{
-				Log.log(Log.ERROR,this,"PUBLIC=" + publicId
-					+ ", SYSTEM=" + systemId
-					+ " cannot be resolved");
-				// TODO: not sure whether it's the best thing to do :
-				// it prints a cryptic "premature end of file"
-				// error message
-				InputSource dummy = new InputSource(systemId);
-				dummy.setPublicId(publicId);
-				dummy.setCharacterStream(new StringReader("<!-- -->"));
-				return dummy;
-			}
-			else
-			{
-				if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
-					+ ", SYSTEM=" + systemId
-					+ " resolved to " + source.getSystemId());
-				return source;
-			}
-		} //}}}
-
-		//{{{ startPrefixMapping() method
-		public void startPrefixMapping(String prefix, String uri)
-		{
-			if(declaredPrefixes == null)declaredPrefixes = new HashMap<String,String>();
-			declaredPrefixes.put(uri,prefix);
-
-			if(!root){
-				data.allNamespacesBindingsAtTop = false;
-			}
-			
-			// check for built-in completion info for this URI
-			// (eg, XSL, XSD, XHTML has this).
-			if(uri != null)
-			{
-				CompletionInfo info = CompletionInfo
-					.getCompletionInfoForNamespace(uri);
-				if(info != null)
-				{
-					Log.log(Log.DEBUG,XercesParserImpl.class,"using built-in completion info for "+uri);
-					data.setCompletionInfo(uri,info);
-					return;
-				}
-				if(schemaAutoLoader != null 
-					&& schemaAutoLoader.getCompletionInfo() != null
-						&& schemaAutoLoader.getCompletionInfo().containsKey(uri))
-				{
-					info = schemaAutoLoader.getCompletionInfo().get(uri);
-					Log.log(Log.DEBUG,XercesParserImpl.class,"setting completionInfo for '"+prefix+"' : "+info.namespace+")");
-					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,info);
-					data.setCompletionInfo(uri,info);
-				}
-			}
-		} //}}}
-
-		//{{{ endPrefixMapping() method
-		public void endPrefixMapping(String prefix)
-		{
-		} //}}}
-		
-		private void setCompletionInfoFromSchema(String ns, String location, String schemaLocation, String nonsSchemaLocation){
-			if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,Handler.class,"setCompletionInfoFromSchema("+ns+","+location+","+schemaLocation+","+nonsSchemaLocation+")");
-			Map<String,CompletionInfo> infos = XSDSchemaToCompletion.getCompletionInfoFromSchema(location,schemaLocation, nonsSchemaLocation, errorHandler, buffer);
-			for(Map.Entry<String,CompletionInfo> en: infos.entrySet()){
-				String nsC = en.getKey();
-				Log.log(Log.DEBUG,Handler.class,"setting completion info for :'"+nsC+"'");
-				data.setCompletionInfo(nsC,en.getValue());
-			}
-		}
-
-		//{{{ startElement() method
-		public void startElement(String namespaceURI,
-			String lName, // local name
-			String qName, // qualified name
-			Attributes attrs) throws SAXException
-		{
-			if(stopped)
-				throw new StoppedException();
-
-			if(root){
-				// root element :
-				
-				// retrieve no-namespace CompletionInfo
-				if(schemaAutoLoader != null 
-					&& schemaAutoLoader.getCompletionInfo() != null
-						&& schemaAutoLoader.getCompletionInfo().containsKey(""))
-				{
-					data.setCompletionInfo("",schemaAutoLoader.getCompletionInfo().get(""));
-					// TODO: what about no-namespace ?
-				}
-				
-				// retrieve schema grammar if available
-				String schemaLocation = attrs.getValue("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
-				String noNamespaceSchemaLocation = attrs.getValue("http://www.w3.org/2001/XMLSchema-instance", "noNamespaceSchemaLocation");
-				// there may be a better implementation in Xerces in XMLSchemaLoader
-				if(schemaLocation != null){
-					String[] nsLocationPairs = schemaLocation.split("\\s+");
-					if(nsLocationPairs.length % 2 == 0){
-						
-						for(int i=0;i<nsLocationPairs.length;i+=2){
-							String ns = nsLocationPairs[i];
-							String location = nsLocationPairs[i+1];
-							setCompletionInfoFromSchema(ns,location, schemaLocation,noNamespaceSchemaLocation);
-						}
-					}
-				}
-				if(noNamespaceSchemaLocation != null){
-					setCompletionInfoFromSchema(null,noNamespaceSchemaLocation, schemaLocation,noNamespaceSchemaLocation);
-				}
-
-
-				// unset root flag
-				root = false;
-			}
-			
-			empty = true;
-
-			String currentURI = xml.PathUtilities.urlToPath(loc.getSystemId());
-
-			// what do we do in this case?
-			if(loc.getLineNumber() == -1){
-				Log.log(Log.WARNING,XercesParserImpl.class,"no location for "+qName);
-				return;
-			}
-			
-			ElementDecl cDecl = null;
-			
-			if(elementDeclStack.isEmpty()
-				|| elementDeclStack.peek() == null
-			   /* happens for DTD based elements */
-				|| elementDeclStack.peek().elementHash == null){
-				CompletionInfo i = data.getCompletionInfo(namespaceURI);
-				if(i == null){
-					if(schemaAutoLoader != null 
-						&& schemaAutoLoader.getCompletionInfo() != null
-							&& schemaAutoLoader.getCompletionInfo().containsKey(namespaceURI))
-					{
-						i = schemaAutoLoader.getCompletionInfo().get(namespaceURI);
-					}
-				}
-				
-				if(i != null){
-					cDecl  = i.elementHash.get(lName);
-					if(cDecl == null){
-						// fallback to any element ...
-						cDecl = i.getElementDeclLocal(lName);
-					}
-				}
-			}else{
-				cDecl = elementDeclStack.peek().elementHash.get(lName);
-			}
-			elementDeclStack.push(cDecl);
-			
-			// add all attributes with type "ID" to the ids vector
-			for(int i = 0; i < attrs.getLength(); i++)
-			{
-				if(attrs.getType(i).equals("ID")
-					// as in http://www.w3.org/TR/xml-id/
-					|| attrs.getQName(i).equals("xml:id")
-					|| (cDecl != null 
-						&& cDecl.getAttribute(attrs.getLocalName(i)) != null
-						&& "ID".equals(cDecl.getAttribute(attrs.getLocalName(i)).type)))
-				{
-					data.ids.put(attrs.getValue(i), new IDDecl(currentURI,
-						attrs.getValue(i),qName,
-						loc.getLineNumber() - 1,
-						loc.getColumnNumber() - 1));
-				}
-			}
-
-			if(!buffer.getPath().equals(currentURI))
-				return;
-
-			buffer.readLock();
-
-			try
-			{
-				int line = Math.min(buffer.getLineCount() - 1,
-					loc.getLineNumber() - 1);
-				int column = loc.getColumnNumber() - 1;
-				int offset = Math.min(text.length() - 1,
-					buffer.getLineStartOffset(line)
-					+ column - 1);
-
-				offset = findTagStart(offset);
-				Position pos = buffer.createPosition(offset);
-
-				XmlTag newTag = createTag(qName, namespaceURI==null ? "" : namespaceURI, pos, attrs);
-				newTag.namespaceBindings = declaredPrefixes;
-				declaredPrefixes = null;
-				
-				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newTag);
-
-				if(!currentNodeStack.isEmpty())
-				{
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-						currentNodeStack.peek();
-
-					node.insert(newNode,node.getChildCount());
-				}
-				else
-					data.root.insert(newNode,0);
-
-				currentNodeStack.push(newNode);
-			}
-			finally
-			{
-				buffer.readUnlock();
-			}
-		} //}}}
-		
-		private XmlTag createTag(String qname, String namespaceURI, Position pos, Attributes attrs) {
-		    String tagClassName = jEdit.getProperty("xml.xmltag." + buffer.getMode().toString());
-		    if (tagClassName != null) {
-		        try {
-		            Class tagClass = Class.forName(tagClassName);
-		            java.lang.reflect.Constructor con = tagClass.getConstructor(String.class, String.class, Position.class, Attributes.class);
-		            return (XmlTag)con.newInstance(qname, namespaceURI, pos, attrs);
-		        }
-		        catch (Exception e) {
-		             // ignored, just return an XmlTag if this fails   
-		             e.printStackTrace();
-		        }
-		    }
-		    return new XmlTag(qname, namespaceURI, pos, attrs);   
-		}
-
-		//{{{ endElement() method
-		public void endElement(String namespaceURI,
-			String sName, // simple name
-			String qName  // qualified name
-			) throws SAXException
-		{
-			if(stopped)
-				throw new StoppedException();
-
-			if(!buffer.getPath().equals(xml.PathUtilities.urlToPath(loc.getSystemId())))
-				return;
-                  
-			// what do we do in this case?
-			if(loc.getLineNumber() == -1)
-				return;
-
-			elementDeclStack.pop();
-			
-			buffer.readLock();
-
-			try
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					currentNodeStack.peek();
-				XmlTag tag = (XmlTag)node.getUserObject();
-				if(tag.getName().equals(qName))
-				{
-					int line = Math.min(buffer.getLineCount() - 1,
-						loc.getLineNumber() - 1);
-					int column = loc.getColumnNumber() - 1;
-					int offset = Math.min(buffer.getLength(),
-						buffer.getLineStartOffset(line)
-						+ column);
-
-					tag.setEnd(buffer.createPosition(offset));
-					tag.empty = empty;
-					currentNodeStack.pop();
-				}
-			}
-			finally
-			{
-				buffer.readUnlock();
-			}
-
-			empty = false;
-		} //}}}
-
-		//{{{ characters() method
-		public void characters (char ch[], int start, int length)
-			throws SAXException
-		{
-			if(stopped)
-				throw new StoppedException();
-
-			empty = false;
-			// currentNodeStack is empty for compound documents in the "root" document
-			// where text appears in nodes that are not kept in the Sidekick tree
-			// see test_data/compound_documents
-			if(!currentNodeStack.isEmpty()){
-				DefaultMutableTreeNode node = currentNodeStack.peek();
-				XmlTag tag = (XmlTag)node.getUserObject();
-				if (tag.canAddCharacters()) {
-					 char[] chBis = new char[length];
-					 System.arraycopy(ch,start,chBis,0,length);
-					 tag.addCharacters(chBis);   
-				}
-			}
-		} //}}}
-
-		//{{{ DTD related methods
-		
-		//{{{ startDTD() method
-		/**
-		 * cache CompletionInfo for DTD (doesn't work for composite DTDs if a part changes)
-		 */
-		@Override
-		public void startDTD(String name, String publicId, String systemId) throws SAXException
-		{
-			if(DEBUG_DTD)Log.log(Log.DEBUG,Handler.class,"startDTD("+name+","+publicId+","+systemId+")");
-			if(publicId == null && systemId == null)
-			{
-				// DTD in the document itself, don't cache it as it will parsed again anyway
-				if(DEBUG_CACHE)Log.log(Log.DEBUG,Handler.class,"DTD in the document, not caching");
-				dtdCompletionInfo = data.getNoNamespaceCompletionInfo();
-			}
-			else
-			{
-				try
-				{
-					String realLocation = Resolver.instance().resolveEntityToPath(null, publicId, buffer.getPath(), systemId);
-					CacheEntry ce = Cache.instance().get(realLocation,COMPLETION_INFO_CACHE_ENTRY);
-					if(ce == null)
-					{
-						if(DEBUG_CACHE)Log.log(Log.DEBUG,Handler.class,"CompletionInfo not in cache for DTD, caching");
-						dtdCompletionInfo = data.getNoNamespaceCompletionInfo();
-						ce = Cache.instance().put(realLocation,COMPLETION_INFO_CACHE_ENTRY,dtdCompletionInfo);
-						ce.getRequestingBuffers().add(buffer);
-					}
-					else
-					{
-						if(DEBUG_CACHE)Log.log(Log.DEBUG,Handler.class,"CompletionInfo in cache for DTD, reusing");
-						ce.getRequestingBuffers().add(buffer);
-						dtdCompletionInfo = (CompletionInfo)ce.getCachedItem();
-						data.setCompletionInfo("", dtdCompletionInfo);
-					}
-				}
-				catch(IOException ioe)
-				{
-					throw new SAXException("error resolving DTD path",ioe);
-				}
-			}
-		}
-		//}}}
-		
-		//{{{ endDTD() method
-		/**
-		 * register the entities in XmlParsedData
-		 */
-		@Override
-		public void endDTD()
-		{
-			data.setCompletionInfo("", dtdCompletionInfo);
-		}
-		//}}}
-		
-		//{{{ elementDecl() method
-		public void elementDecl(String name, String model)
-		{
-			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"elementDecl("+name+","+model+")");
-			ElementDecl element = data.getElementDecl(name,0);
-			if(element == null)
-			{
-				CompletionInfo info = data.getNoNamespaceCompletionInfo();
-				element = new ElementDecl(info,name,model);
-				info.addElement(element);
-			}
-			else
-				element.setContent(model);
-		} //}}}
-
-		//{{{ attributeDecl() method
-		public void attributeDecl(String eName, String aName,
-			String type, String valueDefault, String value)
-		{
-			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"attributeDecl("+eName+","+aName+","+type+","+valueDefault+","+value+")");
-			ElementDecl element = data.getElementDecl(eName,0);
-			if(element == null)
-			{
-				CompletionInfo info = data.getNoNamespaceCompletionInfo();
-				element = new ElementDecl(info,eName,null);
-				info.addElement(element);
-			}
-
-			// as per the XML spec
-			if(element.getAttribute(aName) != null)
-				return;
-
-			ArrayList<String> values;
-
-			if(type.startsWith("("))
-			{
-				values = new ArrayList<String>();
-
-				StringTokenizer st = new StringTokenizer(
-					type.substring(1,type.length() - 1),"|");
-				while(st.hasMoreTokens())
-				{
-					values.add(st.nextToken());
-				}
-			}
-			else
-				values = null;
-
-			boolean required = "#REQUIRED".equals(valueDefault);
-
-			element.addAttribute(new ElementDecl.AttributeDecl(
-				aName,null,value,values,type,required));
-		} //}}}
-
-		//{{{ internalEntityDecl() method
-		public void internalEntityDecl(String name, String value)
-		{
-			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"internalEntityDecl("+name+","+value+")");
-			// this is a bit of a hack
-			if(name.startsWith("%"))
-				return;
-
-			data.getNoNamespaceCompletionInfo()
-				.addEntity(EntityDecl.INTERNAL,name,value);
-		} //}}}
-
-		//{{{ externalEntityDecl() method
-		public void externalEntityDecl(String name, String publicId,
-			String systemId)
-		{
-			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"externalEntityDecl("+name+","+publicId+","+systemId+")");
-			if(name.startsWith("%"))
-				return;
-
-			data.getNoNamespaceCompletionInfo()
-				.addEntity(EntityDecl.EXTERNAL,name,
-				publicId,systemId);
-		} //}}}
-		//}}}
-		
-		//{{{ findTagStart() method
-		private int findTagStart(int offset)
-		{
-			for(int i = offset; i >= 0; i--)
-			{
-				if(text.charAt(i) == '<')
-					return i;
-			}
-
-			return 0;
-		} //}}}
-
-		// {{{
-		/* (non-Javadoc)
-		 * @see org.xml.sax.ext.DefaultHandler2#resolveEntity(java.lang.String, java.lang.String)
-		 */
-		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
-		{
-			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
-			return resolveEntity(null, publicId, null, systemId);
-		}// }}}
-	}// }}}
-
-	//{{{ FastHandler class
-	class FastHandler extends DefaultHandler2 implements DeclHandler, ErrorHandler
-	{
-	    // {{{ members
-		Buffer buffer;
-
-		XmlParsedData data;
-
-		HashMap<String, String> activePrefixes;
-		Stack<DefaultMutableTreeNode> currentNodeStack;
-		Locator loc;
-		boolean empty;
-		// }}}
-		// {{{ FastHandler constructor
-		FastHandler(Buffer buffer,XmlParsedData data)
-		{
-			this.buffer = buffer;
-			this.data = data;
-			this.activePrefixes = new HashMap<String, String>();
-			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
-		} // }}}
-
-		//{{{ setDocumentLocator() method
-		public void setDocumentLocator(Locator locator)
-		{
-			loc = locator;
-		} //}}}
-
-		//{{{ resolveEntity() method
-		/**
-		 * If you do this:
-		 * reader.setProperty("use-entity-resolver2", true)
-		 * Then this method should be called.
-		 */
-		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
-			throws SAXException, java.io.IOException {
-
-			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
-
-			InputSource source = null;
-
-			try {
-				source = Resolver.instance().resolveEntity(name, publicId, baseURI, systemId);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-
-			if(source == null)
-			{
-				Log.log(Log.ERROR,this,"PUBLIC=" + publicId
-					+ ", SYSTEM=" + systemId
-					+ " cannot be resolved");
-				// TODO: not sure whether it's the best thing to do :
-				// it prints a cryptic "premature end of file"
-				// error message
-			}
-			else
-			{
-				if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
-					+ ", SYSTEM=" + systemId
-					+ " resolved to " + source.getSystemId());
-			}
-			return source;
-		} //}}}
-
-		//{{{ startPrefixMapping() method
-		public void startPrefixMapping(String prefix, String uri)
-		{
-			activePrefixes.put(prefix,uri);
-		} //}}}
-
-		//{{{ endPrefixMapping() method
-		public void endPrefixMapping(String prefix)
-		{
-		} //}}}
-
-		//{{{ startElement() method
-		public void startElement(String namespaceURI,
-			String lName, // local name
-			String qName, // qualified name
-			Attributes attrs) throws SAXException
-		{
-			if(stopped)
-				throw new StoppedException();
-		} //}}}
-
-		//{{{ endElement() method
-		public void endElement(String namespaceURI,
-			String sName, // simple name
-			String qName  // qualified name
-			) throws SAXException
-		{
-			if(stopped)
-				throw new StoppedException();
-
-		} //}}}
-
-		//{{{ characters() method
-		public void characters (char ch[], int start, int length)
-			throws SAXException
-		{
-			if(stopped)
-				throw new StoppedException();
-
-			empty = false;
-		} //}}}
-
-		// {{{
-		/* (non-Javadoc)
-		 * @see org.xml.sax.ext.DefaultHandler2#resolveEntity(java.lang.String, java.lang.String)
-		 */
-		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
-		{
-			throw new UnsupportedOperationException("please use resolveEntity(#4)");
-		}// }}}
-	}// }}}
 
 	//{{{ StoppedException class
 	static class StoppedException extends SAXException
