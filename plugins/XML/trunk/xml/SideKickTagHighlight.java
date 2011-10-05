@@ -65,7 +65,7 @@ public class SideKickTagHighlight implements StructureMatcher
 				 * */
 				JEditBuffer b =  textArea.getBuffer();
 				int max = b.getLength();
-				System.err.println("asset is at "+asset.getStart().getOffset()+" - "+asset.getEnd().getOffset());
+				if(Debug.DEBUG_TAG_HIGHLIGHT)System.err.println("asset is at "+asset.getStart().getOffset()+" - "+asset.getEnd().getOffset());
 				int sA = asset.getStart().getOffset();
 				int lA = asset.getEnd().getOffset()-sA;
 				if(sA < 0 || sA > max){
@@ -77,7 +77,7 @@ public class SideKickTagHighlight implements StructureMatcher
 				CharSequence toParse = b.getSegment(sA,lA);
 				int line = b.getLineOfOffset(sA);
 				int col = b.getVirtualWidth(line, sA-b.getLineStartOffset(line))+1;
-				System.err.println("line="+line+",col="+col);
+				if(Debug.DEBUG_TAG_HIGHLIGHT)System.err.println("line="+line+",col="+col);
 				Reader r = new CharSequenceReader(toParse);
 				XmlParser parser = new XmlParser(r,line+1,
 					col);
@@ -90,7 +90,7 @@ public class SideKickTagHighlight implements StructureMatcher
 					// don't highlight self-closing tags : it flickers annoyingly when typing
 					if(startTag instanceof XmlDocument.Tag && ((XmlDocument.Tag)startTag).emptyTag)return null;
 					
-					System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
+					if(Debug.DEBUG_TAG_HIGHLIGHT)System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
 					// FIXME: switch back to ElementUtil when fixed
 					// int start = ElementUtil.createStartPosition((Buffer)textArea.getBuffer(),startTag).getOffset();
 					// int end= ElementUtil.createEndPosition((Buffer)textArea.getBuffer(),startTag).getOffset();
@@ -99,7 +99,7 @@ public class SideKickTagHighlight implements StructureMatcher
 					tag = new TagParser.Tag(
 						start,
 						end);
-					System.err.println("start="+start+",end="+end);
+					if(Debug.DEBUG_TAG_HIGHLIGHT)System.err.println("start="+start+",end="+end);
 
 					int startEndTag = start;
 					for(int i=toParse.length()-2;i>0;i--){
@@ -112,12 +112,12 @@ public class SideKickTagHighlight implements StructureMatcher
 					}
 					if(caret > end && caret < startEndTag)
 					{
-						System.err.println("not in end ("+startEndTag+","+(start + toParse.length())+") nor start tag");
+						if(Debug.DEBUG_TAG_HIGHLIGHT)System.err.println("not in end ("+startEndTag+","+(start + toParse.length())+") nor start tag");
 						return null;
 					}
 					else if(caret <= end)
 					{
-						System.err.println("inside start tag");
+						if(Debug.DEBUG_TAG_HIGHLIGHT)System.err.println("inside start tag");
 						/* if the caret is inside start tag */
 						tag.start = startEndTag;
 						tag.end = start + toParse.length();

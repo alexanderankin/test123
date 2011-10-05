@@ -44,5 +44,9 @@ public final class Debug
 	
 	/** turn on/off messages about caching */
 	public static final boolean DEBUG_CACHE = false;
+	
+	
+	/** turn on/off messages about matching tag highlighting (SidekickTagHighlight) */
+	public static final boolean DEBUG_TAG_HIGHLIGHT = false;
 }
 
