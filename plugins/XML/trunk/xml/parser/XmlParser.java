@@ -42,7 +42,7 @@ public abstract class XmlParser extends SideKickParser
 	public XmlParser(String name)
 	{
 		super(name);
-		String matcherName = jEdit.getProperty("xml.structure-matcher","old");
+		String matcherName = jEdit.getProperty("xml.structure-matcher","sidekick");
 		if("old".equals(matcherName)) {
 			highlight = new TagHighlight();
 		} else {
