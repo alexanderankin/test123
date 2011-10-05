@@ -22,6 +22,7 @@ package xml.hyperlinks;
 
 import java.io.Reader;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -476,5 +477,11 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			System.err.println("changed column_offset:"+column_offset);
 		}
 		return line_offset + column_offset ;
+	}
+	
+	public static HyperlinkSource create(){
+		return new FallbackHyperlinkSource(
+			Arrays.asList(new XMLHyperlinkSource(),
+				new gatchan.jedit.hyperlinks.url.URLHyperlinkSource()));
 	}
 }

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Arrays;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.View;
@@ -571,5 +572,11 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			}
 		}
 		return null;
+	}
+
+	public static HyperlinkSource create(){
+		return new FallbackHyperlinkSource(
+			Arrays.asList(new HTMLHyperlinkSource(),
+				new gatchan.jedit.hyperlinks.url.URLHyperlinkSource()));
 	}
 }

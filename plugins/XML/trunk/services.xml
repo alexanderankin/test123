@@ -23,9 +23,9 @@
         new xml.indent.XmlBeautifier();
     </SERVICE>
     <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="xml:XMLPlugin">
-        new xml.hyperlinks.XMLHyperlinkSource();
+        xml.hyperlinks.XMLHyperlinkSource.create();
     </SERVICE>
     <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="html:XMLPlugin">
-        new xml.hyperlinks.HTMLHyperlinkSource();
+        xml.hyperlinks.HTMLHyperlinkSource.create();
     </SERVICE>
 </SERVICES>
