@@ -114,7 +114,8 @@ public class XercesParserImpl extends XmlParser
 			// One has to explicitely require the parser from XercesPlugin, otherwise
 			// one gets the crimson version bundled in the JRE and the rest fails
 			// miserably (see Plugin Bug #2950392)
-			reader = new org.apache.xerces.parsers.SAXParser();
+			// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
+			reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
 			
 			// customize validation
 			reader.setFeature("http://xml.org/sax/features/validation",
@@ -150,9 +151,6 @@ public class XercesParserImpl extends XmlParser
 			//get access to the DTD
 			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 			reader.setProperty("http://xml.org/sax/properties/lexical-handler",handler);
-			
-			reader.setProperty("http://apache.org/xml/properties/internal/grammar-pool",
-									new CachedGrammarPool(buffer));
 			
 			schemaLoader = new SchemaAutoLoader(reader,mapping,buffer);
 
@@ -274,7 +272,8 @@ public class XercesParserImpl extends XmlParser
 			// One has to explicitely require the parser from XercesPlugin, otherwise
 			// one gets the crimson version bundled in the JRE and the rest fails
 			// miserably (see Plugin Bug #2950392)
-			reader = new org.apache.xerces.parsers.SAXParser();
+			// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
+			reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
 			
 			// no validation: it has already been done once
 			reader.setFeature("http://xml.org/sax/features/validation",false);
@@ -286,9 +285,6 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
 				true);
 			
-			reader.setProperty("http://apache.org/xml/properties/internal/grammar-pool",
-					new CachedGrammarPool(buffer));
-
 			// XInclude support disabled: we want the xi:include elements to show up in the tree
 			reader.setFeature("http://apache.org/xml/features/xinclude",false);
 			

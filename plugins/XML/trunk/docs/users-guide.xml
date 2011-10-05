@@ -1014,6 +1014,8 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
   (feat. req. #3257914 - Eric Le Lay)</para></listitem>
   <listitem><para>Fix Sidekick Edit Tag dialog does not get keyboard focus (Mac)
   (#3389424 - Eric Le Lay).</para></listitem>
+  <listitem><para>Fix XMLPlugin doesn't find DTD upon second parse
+  (#3393297 - Eric Le Lay).</para></listitem>
  </itemizedlist>
  </listitem>
 
