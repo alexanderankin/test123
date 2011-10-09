@@ -308,7 +308,7 @@ console.error.q_assert.testtext=ASSERT\: "fn.toString() \=\= QString("t.mp3")" i
 
 console.error.perl.name=Perl
 console.error.perl.extra=\\s\\s(.*)
-console.error.perl.match=(.+) at ([^<>]+) line (\\d+)(\\.|, (.+))
+console.error.perl.match=(.+) at ([^<>]+) line (\\d+)(\\.?|, (.+))
 console.error.perl.message=$1 $4
 console.error.perl.filename=$2
 console.error.perl.line=$3
