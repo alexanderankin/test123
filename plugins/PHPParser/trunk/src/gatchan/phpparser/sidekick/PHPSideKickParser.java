@@ -211,15 +211,17 @@ public class PHPSideKickParser extends SideKickParser
 		return true;
 	} //}}}
 
-    @Override
-    public SideKickCompletion complete(EditPane editPane, int caret)
-    {
-        Buffer buffer = editPane.getBuffer();
-        PHPDocument phpDocument = (PHPDocument) buffer.getProperty(PHPDOCUMENT_PROPERTY);
-        return super.complete(editPane, caret);
-    }
+	//{{{ complete() method
+	@Override
+	public SideKickCompletion complete(EditPane editPane, int caret)
+	{
+		Buffer buffer = editPane.getBuffer();
+		PHPDocument phpDocument = (PHPDocument) buffer.getProperty(PHPDOCUMENT_PROPERTY);
+		return super.complete(editPane, caret);
+	} //}}}
 
-    //{{{ complete() method
+
+	//{{{ complete() method
 	public SideKickCompletion complete0(EditPane editPane, int caret)
 	{
 		Log.log(Log.DEBUG, this, "Requesting sidekick complete");

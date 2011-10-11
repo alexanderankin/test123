@@ -40,12 +40,14 @@ public class PHPSideKickCompletion extends SideKickCompletion
 {
 	private final String lastWord;
 
+	//{{{ PHPSideKickCompletion constructor
 	public PHPSideKickCompletion(String word, String lastWord)
 	{
 		super(jEdit.getActiveView(), word);
 		this.lastWord = lastWord;
-	}
+	} //}}}
 
+	//{{{ addItem() method
 	public void addItem(Object item, String word)
 	{
 		boolean caseSensitive = !(item instanceof MethodDeclaration);
@@ -56,27 +58,31 @@ public class PHPSideKickCompletion extends SideKickCompletion
 				items.add(item);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ getRenderer() method
 	@Override
 	public ListCellRenderer getRenderer()
 	{
 		return new PHPItemCellRenderer();
-	}
+	} //}}}
 
+	//{{{ getItemsCount()
 	public int getItemsCount()
 	{
 		return items.size();
-	}
+	} //}}}
 
+	//{{{ addOutlineableList() method
 	public void addOutlineableList(List items, String word)
 	{
 		for (int i = 0; i < items.size(); i++)
 		{
 			addItem(items.get(i), word);
 		}
-	}
+	} //}}}
 
+	//{{{ insert()
 	@Override
 	public void insert(int index)
 	{
@@ -129,14 +135,16 @@ public class PHPSideKickCompletion extends SideKickCompletion
 		caret += insertText.length();
 		textArea.setSelectedText(insertText);
 		// textArea.setCaretPosition(caret);
-	}
+	} //}}}
 
+	//{{{ getTokenLength() method
 	@Override
 	public int getTokenLength()
 	{
 		return text.length();
-	}
+	} //}}}
 
+	//{{{ handleKeystroke() method
 	@Override
 	public boolean handleKeystroke(int selectedIndex, char keyChar)
 	{
@@ -160,5 +168,5 @@ public class PHPSideKickCompletion extends SideKickCompletion
 			textArea.userInput(keyChar);
 			return true;
 		}
-	}
+	} //}}}
 }
