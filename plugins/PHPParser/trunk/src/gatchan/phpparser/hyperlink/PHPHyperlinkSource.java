@@ -106,6 +106,9 @@ public class PHPHyperlinkSource implements HyperlinkSource
 	//{{{ processFunctionCall() method
 	private static Hyperlink processFunctionCall(FunctionCall functionCall, Buffer buffer, int line, int lineOffset)
 	{
+		Project project = ProjectManager.getInstance().getProject();
+		if (project == null)
+			return null;
 		Expression functionName = functionCall.getFunctionName();
 		Expression expressionAt = functionCall.expressionAt(line + 1, lineOffset);
 		if (expressionAt != functionName)
@@ -115,8 +118,8 @@ public class PHPHyperlinkSource implements HyperlinkSource
 			// the cursor is not on the function name
 			return processStatement(buffer, line, lineOffset, expressionAt);
 		}
-		String name = functionName.toString();
-		Project project = ProjectManager.getInstance().getProject();
+		String name = functionName.toString().toLowerCase();
+
 		Object o = project.getMethods().get(name);
 		if (o == null)
 			return null;
@@ -162,7 +165,7 @@ public class PHPHyperlinkSource implements HyperlinkSource
 		ClassHeader classHeader = null;
 		if (prefix instanceof ConstantIdentifier)
 		{
-			classHeader = project.getClass(classAccess.getName());
+			classHeader = project.getClass(classAccess.getName().toLowerCase());
 		}
 		else if (prefix instanceof Variable)
 		{
@@ -170,7 +173,7 @@ public class PHPHyperlinkSource implements HyperlinkSource
 			Type type = variable.getType();
 			String className = type.getClassName();
 			if (className != null)
-				classHeader = project.getClass(className);
+				classHeader = project.getClass(className.toLowerCase());
 		}
 		if (classHeader == null)
 			return null;
