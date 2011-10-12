@@ -27,10 +27,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 /**
@@ -83,7 +83,7 @@ public class ReSupportPopup extends JPopupMenu {
 			else {
 				String actionCommand = jEdit.getProperty("search.ext.regexp-support." + name + Integer.toString(idx) + ".value");
 				if (actionCommand.length() < maxLen)
-					label = actionCommand + MiscUtilities.createWhiteSpace(maxLen - actionCommand.length(), 0) + ": " + label;
+					label = actionCommand + StandardUtilities.createWhiteSpace(maxLen - actionCommand.length(), 0) + ": " + label;
 				else
 					label = actionCommand + " : " + label;
 				JMenuItem mi = new JMenuItem(label);

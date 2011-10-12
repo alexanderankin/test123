@@ -47,7 +47,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -160,7 +159,7 @@ public class SearchAndReplace
 			if (tentativSearch)
 				regExpString = constructTentativSearchString(search);
 			else
-				regExpString = MiscUtilities.charsToEscapes(regExpString,
+				regExpString = StandardUtilities.charsToEscapes(regExpString,
 					"\r\t\n\\()[]{}$^*+?|.");
 			// Log.log(Log.DEBUG, BeanShell.class,"+++
 			// SearchAndReplace.escaped.115: regExpString =
