@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.search.CurrentBufferSet;
 import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 //}}}
 
@@ -1318,7 +1319,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	 */
 	public static String escapeRegexp(String str, boolean multiline)
 	{
-		return MiscUtilities.charsToEscapes(str, "\r\t\\()[]{}$^*+?|."
+		return StandardUtilities.charsToEscapes(str, "\r\t\\()[]{}$^*+?|."
 			+ (multiline ? "" : "\n"));
 	} // }}}
 

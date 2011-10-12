@@ -2,8 +2,8 @@ package xsearch;
 
 import javax.swing.JTextField;
 
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 /**
  *  Description of the Class
@@ -71,7 +71,7 @@ public class SearchReplaceFieldData {
 			}
 			else if (regexpString.equals("esc")) {
 				// TODO: replace selection by matching regexp:
-				newText = MiscUtilities.charsToEscapes(currentText, "\r\t\n\\()[]{}$^*+?|.");
+				newText = StandardUtilities.charsToEscapes(currentText, "\r\t\n\\()[]{}$^*+?|.");
 				newCaretPosition = caret;
 			}
 			else {
@@ -89,7 +89,7 @@ public class SearchReplaceFieldData {
 			}
 			else if (regexpString.equals("esc")) {
 				// TODO: replace selection by matching regexp:
-				newText = MiscUtilities.charsToEscapes(currentText, "\r\t\n\\()[]{}$^*+?|.");
+				newText = StandardUtilities.charsToEscapes(currentText, "\r\t\n\\()[]{}$^*+?|.");
 				newCaretPosition = caret;
 			}
 			else if (regexpString.equals("()") || regexpString.equals("[]") 
