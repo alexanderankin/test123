@@ -1,0 +1,767 @@
+<?xml version="1.0"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.oasis-open.org/docbook/xmlschema/1.0b1/docbook.xsd'>
+<bookinfo>
+<title>Extended Search Plugin</title>
+<authorgroup>
+<author>
+<firstname>Rudolf</firstname>
+<surname>Widmann</surname>
+</author>
+<author>
+<firstname>Alan</firstname>
+<surname>Ezust</surname>
+</author>
+</authorgroup>
+<copyright>
+<year> 2005 </year>
+<holder> Rudolf Widmann </holder>
+</copyright>
+<legalnotice>
+<title>Legal Notice</title>
+
+<para>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the
+Free Software Foundation; with no
+<quote>Invariant Sections</quote>,
+<quote>Front-Cover Texts</quote> or
+<quote>Back-Cover Texts</quote>,
+each as defined in the license.
+A copy of the license can be found in the file
+<filename>COPYING.DOC.txt</filename> included with jEdit.
+</para>
+</legalnotice>
+</bookinfo>
+
+<chapter id="intro">
+<title>Introduction</title>
+
+<para>The Extended Search plugin offers enhanced search-and-replace dialogs based on those from the jEdit text editor. XSearch's dialogs are dockable or floatable, giving more flexible usability. They include all the standard search and replace functions described in jEdit user guide.</para>
+
+<para> Sometimes, features are added and tested in XSearch and later added to jEdit. Think of XSearch as the experimental version of the SearchDialog. </para>
+
+<para>For incremental search users, XSearch does not extend or change the behavior of the SearchBar, which is a View related feature. One interesting, (desirable?) side-effect of this is that changing the checkbox states or <guilabel>Search for:</guilabel> field of the incremental SearchBar has no effect on the state of the <classname>xsearch.SearchPanel</classname> checkboxes and textfields, or vice-versa. Another implication of this is that you now have two distinct pairs of <guimenuitem>find-next/previous</guimenuitem> actions in jedit - the plugin's <guimenuitem>xfind-next/xfind-previous</guimenuitem> uses the XSearch panel to decide what to search for, while the original <guimenuitem>find-next</guimenuitem> applies to the SearchBar and the original SearchReplace dialog.
+</para>
+
+<para> As of XSearch 1.0.9.2, you have an option of overriding the built-in <guimenuitem>Find</guimenuitem> and <guimenuitem>Search in directory...</guimenuitem> actions with XSearch equivalents. The <guimenuitem>Find</guimenuitem> action, if there is a selection, will also serve as <guimenuitem>Replace in selection</guimenuitem>, but if there is no selection, will select the "current buffer" as the search scope. </para>
+
+</chapter>
+
+<chapter id="Dialog">
+<title>Extended Search Dialog</title>
+
+<para>The Extended Search Dialog is an extension of the core search-and-replace dialog</para>
+
+<bridgehead id="resupport" renderas="sect3">RE (regular expression support)</bridgehead>
+
+<para>The regular expression support helps you to construct a regular expression.
+If you select from the popup menu, the according RE is inserted in the search field or in the replace field at the caret position. Any selected text is replaced.
+</para>
+
+<para> The particular flavor of regular expressions supported in XSearch is
+<ulink url="jeditresource:/GnuRegexp.jar!/index.html">gnu.regexp</ulink>. This is not the same language or processor as Sun's
+<literal>java.util.regex</literal>. It's old, and has its own quirks, but
+some say it is more reliable for complex expressions which can cause Sun's
+engine to choke due to infinite recursion analyzing specific patterns against
+specific text.
+</para>
+
+<para>
+<emphasis role="bold">Exceptions:</emphasis>
+</para>
+
+<para>Brackets are inserted around the selection</para>
+
+<para>The action <quote>escape string</quote> adds an escape to all RE relevant characters in the search string</para>
+
+<bridgehead id="findall" renderas="sect3"> find All</bridgehead>
+<para>Search for all occurances of the search string in the current buffer, according to the
+current settings.
+</para>
+<para>
+<emphasis role="underline">All matches are selected, and a match counter is displayed.</emphasis>
+</para>
+
+<para>
+<emphasis role="underline">Restriction</emphasis>: only applicable for the current buffer</para>
+<bridgehead id="resetsettings" renderas="sect3"> resetSettings</bridgehead>
+<para>Resets search settings to default values</para>
+<bridgehead id="sync" renderas="sect3">synchronize search directory</bridgehead>
+<para>When checked, the search directory is the directory of the current buffer</para>
+
+<bridgehead renderas="sect3">find from top</bridgehead>
+
+<para>Start searching from top of buffer.</para>
+<para>
+<emphasis role="underline">Note:</emphasis>
+<quote>refind</quote> will search for the next occurance, as long as no search settings
+are changed
+</para>
+
+<bridgehead renderas="sect3">backward search</bridgehead>
+
+<para>
+<quote>backward search</quote> is available for regular expressions, too.</para>
+
+<bridgehead renderas="sect3">word part search</bridgehead>
+<itemizedlist>
+<listitem>
+<para>whole word: matches only complete words (according to regular expressions convention)</para>
+</listitem>
+<listitem>
+<para>prefix: matches only words with the search string as prefix</para>
+</listitem>
+<listitem>
+<para>suffix: matches only words with the search string as suffix</para>
+</listitem>
+</itemizedlist>
+
+<para>
+<emphasis role="underline">Restriction</emphasis>: combination with option &quot;regular expression&quot; is not supported</para>
+
+<bridgehead renderas="sect3">column search</bridgehead>
+
+<para>Search for all occurances of the search string in the given column range</para>
+<itemizedlist>
+<listitem>
+<para>expandTabs: if selected, tabs are expanded to the visible size. Otherwise, tabs are
+treated as 1 space</para>
+</listitem>
+<listitem>
+<para>left col: left range, line begins with '1' (as displayed in status bar)</para>
+</listitem>
+<listitem>
+<para>right col: right range, must be &gt; left col + length(search string) (if no regexp).
+If right col is omitted, it is calculated automatically, to right col = left col +
+length(search string)</para>
+</listitem>
+</itemizedlist>
+
+<bridgehead renderas="sect3">row search</bridgehead>
+
+<para>Search for all occurances of the search string in the given row range</para>
+<itemizedlist>
+<listitem>
+<para>upper row: upper range, first line begins with '1' (as displayed in status bar)</para>
+</listitem>
+<listitem>
+<para>lower row: lower range, must be &gt;= upper row</para>
+</listitem>
+</itemizedlist>
+
+<para>Hints: </para>
+<itemizedlist>
+<listitem>
+<para>If multiple lines are selected before invoking the search dialog, the upper / lower rows
+are predefined with the selected line range.</para>
+</listitem>
+<listitem>
+<para>Row search allows &quot;find all&quot; and &quot;replace&amp;find&quot; only inside the
+specified line range.</para>
+</listitem>
+</itemizedlist>
+
+<bridgehead renderas="sect3">fold search</bridgehead>
+<itemizedlist>
+<listitem>
+<para>inside folds: matches only text inside of a fold</para>
+</listitem>
+<listitem>
+<para>outside folds: matches only text outside of a fold </para>
+</listitem>
+</itemizedlist>
+
+<para>
+<emphasis role="underline">Restriction</emphasis>: not applicable for hypersearch</para>
+
+<bridgehead renderas="sect3">comment search</bridgehead>
+<itemizedlist>
+<listitem>
+<para>inside comments: matches only text inside of a comments</para>
+</listitem>
+<listitem>
+<para>outside comments: matches only text outside of a comments </para>
+</listitem>
+</itemizedlist>
+
+<para>Note: &quot;comment search&quot; in the current buffer uses identifies comments according to
+the definition in the according edit mode. For hypersearch, this is not possible. Therefore,
+the comment indicators are defined in XSearch.props. </para>
+
+<bridgehead renderas="sect3">hyper search</bridgehead>
+
+<para>
+<emphasis role="bold"></emphasis>This checkbox toggles</para>
+<itemizedlist>
+<listitem>
+<para>the hyper search feature (unchanged to the standard implementation)</para>
+</listitem>
+<listitem>
+<para>the <link linkend="HyperReplace">hyper replace</link> feature, if allowed according to the
+global options</para>
+</listitem>
+</itemizedlist>
+
+<bridgehead renderas="sect3">hyper range</bridgehead>
+
+<para>
+    This feature is an extention to the hyper search facility. If hyper search
+is invoked, the matching lines are displayed in the hyper search window, and additionally the
+surrounding lines before (up) and after (down) the match. </para>
+
+<para>Tip: extremly useful if you search where a method is called and which parameters, specified in the next lines, are used.</para>
+
+<bridgehead renderas="sect3">tentativ search</bridgehead>
+
+<para>Tentativ search uses a search algorithm which tolerates following type mismatching. </para>
+<itemizedlist>
+    <listitem>
+        <para>double typed char (toown instead of. town) </para>
+    </listitem>
+    <listitem>
+        <para>dash instead of underscore (Fast-Macro instead of Fast_Macro)</para>
+    </listitem>
+<!-- <listitem><para><emphasis role="bold">removed:</emphasis> few char (ton instead of toon) </para></listitem>
+<listitem><para><emphasis role="bold">removed:</emphasis> wrong char typed (Rzdi instead of Rudi) </para></listitem>
+<listitem><para><emphasis role="bold">removed:</emphasis> wrong sequence (Rdui instead of Rudi)</para></listitem> -->
+</itemizedlist>
+
+<para>combination with option &quot;regular expression&quot; is not supported</para>
+
+<!--
+    <para>Note: For this feature, a regulare expression is composed for each character of the search
+      string, with:</para>
+    <itemizedlist>
+      <listitem><para>left and right neighbour at the keyboard (for 'b' these are 'v' and 'n')</para></listitem>
+      <listitem><para>preceeding and following character</para></listitem>
+      <listitem><para>default characters: '-' and '_', as defined in XSearch.props</para></listitem>
+    </itemizedlist>
+
+    <para>Example: the regular expression for &quot;abc&quot; is
+      [asbASB_-]+[vbnacVBNAC_-]+[xcvbXCVB_-]+</para>
+
+    <para><emphasis role="underline">Warning:</emphasis> This feature is very time consuming, &quot;find all&quot; or &quot;hypersearch&quot;
+      is not recommended</para>
+    -->
+
+
+		<para>
+			<emphasis role="bold">Example:</emphasis> You search &quot;My_Bsh_Macro&quot; but you enter the search string
+      Myy_Bsh-mmacro</para>
+
+		<para>Tentativ search performs a search with the regexp &quot;My+_Bsh[-_]m+acro&quot;</para>
+
+		<bridgehead renderas="sect3">Search Settings History</bridgehead>
+
+		<para>If enabled, all search settings which apply to a certain search string are memorized.</para>
+
+		<para>If you recall a search string of the History Text Field , its last settings (inclusiv search
+      directory) are active in the xsearch and replace dialog. </para>
+
+		<bridgehead renderas="sect3">Show Options: search | replace | extended</bridgehead>
+
+		<para>Hide or show the search | replace | extended options.</para>
+
+		<para>If a non-default option is selected but not visible, it is displayed in a line below &quot;show
+      options&quot;</para>
+
+		<bridgehead renderas="sect3">Replace and Find</bridgehead>
+
+		<para>If Replace and Find is invoked</para>
+		<itemizedlist>
+			<listitem>
+				<para>and nothing is selected, the first occurance of the search string will be replaced by the
+        replace string</para>
+			</listitem>
+			<listitem>
+				<para>the search dialog is kept as long as 'keep dialog' is not switched off explicitely</para>
+			</listitem>
+		</itemizedlist>
+</chapter>
+
+<chapter id="xhyper">
+    <title>Extended Hypersearch Window</title>
+		<para>
+			<emphasis id="hypercontextmenu" role="bold">Note:</emphasis> The hyper search results are displayed in the dockable window &quot;XHyperserarch&quot;.
+	      In the context menu, you have the options:</para>
+		<variablelist>
+			<varlistentry>
+				<term>Expand Node </term>
+				<listitem>
+					<para>expand all subnodes of the selected node</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Collapse Node </term>
+				<listitem>
+					<para>collapse all subnodes of the selected node</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Expand Level 1 </term>
+				<listitem>
+					<para>expand exactly 1 sublevel of the selected node</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Expand Level 2 </term>
+				<listitem>
+					<para>expand exactly 2 sublevel of the selected node</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Expand all Nodes </term>
+				<listitem>
+					<para>expand all nodes</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Collapse all Nodes </term>
+				<listitem>
+					<para>collapse all nodes</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Write Node to buffer</term>
+				<listitem>
+					<para>writes the hypersearch result of the selected node to a new buffer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Write all Nodes to buffer</term>
+				<listitem>
+					<para>writes the hypersearch result of all nodes to a new buffer</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+</chapter>
+
+<chapter id="menu">
+		<title>Extended Search menu</title>
+
+		<bridgehead renderas="sect3">xfind replace</bridgehead>
+
+		<para>Displays the xsearch-and-replace dialog box</para>
+
+		<para>If text was selected in the text area and the selection does not span a line break, the
+      selected text becomes the default search string (standard behaviour).</para>
+
+		<bridgehead renderas="sect3">xfind-refind</bridgehead>
+
+		<para>Performes a search with the previously used search string, taking in account the current
+      search options, without displaying the xsearch-and-replace dialog.</para>
+
+		<bridgehead renderas="sect3">xfind-first</bridgehead>
+
+		<para>Same as xfind-refind, but the search starts from the <emphasis role="bold">top</emphasis> of the document. The search
+      string is the current selection or, if nothing is selected, the previous search string.</para>
+
+		<bridgehead renderas="sect3">xfind-next</bridgehead>
+
+		<para>Same as xfind-refind, but the search direction is <emphasis role="bold">forward</emphasis>. The search string is the
+      current selection or, if nothing is selected, the previous search string.</para>
+
+		<bridgehead renderas="sect3">xfind-prev</bridgehead>
+
+		<para>Same as xfind-refind, but the search direction is <emphasis role="bold">backward</emphasis>. The search string is the
+      current selection or, if nothing is selected, the previous search string.</para>
+
+<!-- <para><emphasis role="bold">Note:</emphasis> If the option regexp is activ, no search is performed.The message &quot;invalid
+      search settings&quot; is displayed</para> -->
+
+
+		<bridgehead renderas="sect3">xreplace-in-selection</bridgehead>
+
+		<para>Performes the last replace action for all occurances of the search string in the current
+      selection.</para>
+
+		<bridgehead renderas="sect3">xreplace-and-find-next</bridgehead>
+
+		<para>Repeats the last replace action</para>
+
+		<bridgehead renderas="sect3">xreplace-all</bridgehead>
+
+		<para>Performes the last replace action for all occurances of the search string in the current
+      document.</para>
+
+		<bridgehead renderas="sect3">xsearch-directory...</bridgehead>
+
+		<para>Displays the xsearch-and-replace dialog box.</para>
+
+		<para>The options &quot;hypersearch&quot; and &quot;search in directory&quot; are already selected
+      (standard behaviour).</para>
+
+		<bridgehead renderas="sect3">quick-xfind-standard-options</bridgehead>
+
+		<para>Performes a search without displaying the xsearch-and-replace dialog, ignoring the current
+      search settings.</para>
+
+		<para>The search string is:</para>
+		<itemizedlist>
+			<listitem>
+				<para>the current selection, if a single selection exists</para>
+			</listitem>
+			<listitem>
+				<para>the word at the caret, if the caret is at a word. In this case, a <quote>whole word search</quote>is performed</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>If no valid search string is found, the xsearch-and-replace dialog is displayed with
+      standart settings.</para>
+
+		<bridgehead renderas="sect3">quick-hypersearch-standard-options</bridgehead>
+
+		<para>Same as quick-xfind-standard-options, but a hypersearch in the current buffer is performed.</para>
+
+		<bridgehead renderas="sect3">quick-allbuffersearch-standard-options</bridgehead>
+
+		<para>Same as quick-xfind-standard-options, but a hypersearch in all open buffers is performed.</para>
+
+		<bridgehead renderas="sect3">quick-xfind-current-options</bridgehead>
+
+		<para>Same as quick-xfind-standard-options, but the current options are used.</para>
+
+		<bridgehead renderas="sect3">quick-hypersearch-current-options</bridgehead>
+
+		<para>Same as quick-hypersearch-standard-options, but the current options are used.</para>
+
+		<para>
+			<emphasis role="underline">Note:</emphasis> When using quick-search, the user is often not aware of the current search
+      settings. Therefore, only quick search with standard options is recommended</para>
+
+</chapter>
+
+<chapter id="beanshell">
+		<title>Bean shell support</title>
+
+		<bridgehead renderas="sect3">getMatchedSubexpressions</bridgehead>
+
+		<para>After a search with regular expressions, you can obtain the subexpressions </para>
+		<para>
+			<programlisting>
+		<![CDATA[
+Method:
+String[] xsearch.XSearchAndReplace.getMatchedSubexpressions(String <matched String>)
+or
+String xsearch.XSearchAndReplace.getMatchedSubexpressions(String <matched String>,
+  int <number of subexpression>)
+		]]>
+			</programlisting>
+		</para>
+
+		<example>
+			<title>get subexpressions</title>
+			<programlisting>
+xsearch.XSearchAndReplace.setSearchString(&quot;(^\\* SYNTAX - ERRORS : *)([1-9]+)&quot;);
+if (xsearch.XSearchAndReplace.find(view))
+	String[] subExp =
+		xsearch.XSearchAndReplace.getMatchedSubexpressions(textArea.getSelectedText());
+		</programlisting>
+		</example>
+		<bridgehead renderas="sect3">resetSettings</bridgehead>
+
+		<para>Resets search settings to default values </para>
+		<para>Execution: xsearch.SearchSettings.resetSettings()</para>
+
+		<bridgehead renderas="sect3">push Settings</bridgehead>
+
+		<para>Saves the current search settings on a stack. Useful if you don't want to overwrite the
+      settings during macro run Execution: xsearch.SearchSettings.push();</para>
+
+		<bridgehead renderas="sect3">pop Settings</bridgehead>
+
+		<para>Restores the last pushed search settings. Execution: xsearch.SearchSettings.pop();</para>
+
+		<bridgehead renderas="sect3">find all</bridgehead>
+
+		<para>To manipulate all matches inside the current buffer, &quot;findAll&quot; selects all
+      matches. With the method &quot;textArea.getSelectedLines()&quot;, they can be manipulated.</para>
+
+		<example>
+			<title>Delete all lines containing a string</title>
+			<programlisting>
+xsearch.SearchSettings.push();
+xsearch.SearchSettings.resetSettings();
+xsearch.XSearchAndReplace.setSearchString(&quot;jEdit ist doof&quot;);
+xsearch.XSearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+xsearch.XSearchAndReplace.setFindAll(true);
+xsearch.XSearchAndReplace.find(view);
+int[] lines = textArea.getSelectedLines();
+for (int i=lines.length-1;i&gt;=0;i--) {
+textArea.moveCaretPosition(buffer.getLineStartOffset(lines[i]));
+textArea.deleteLine(); }
+xsearch.SearchSettings.pop();
+		</programlisting>
+		</example>
+		<bridgehead renderas="sect3">silent search</bridgehead>
+
+		<para>When you write macros or plugins which invoke search very often, updating the textarea is
+      time consuming. For better performance, highlighting of the search match can be disabled (flag
+      &quot;silent&quot;=xsearch.XSearchAndReplace.FIND_OPTION_SILENT (true) when calling &quot;find&quot;)</para>
+
+		<programlisting>find(View view, Buffer buffer, int start, int end, boolean firstTime, boolean reverse,
+      boolean silent)</programlisting>
+
+		<para>The result of the last search is obtained from method &quot;getLastMatchedSelection&quot;</para>
+
+		<example>
+			<title>Silent search</title>
+			<programlisting>
+xsearch.SearchSettings.push();
+xsearch.SearchSettings.resetSettings();
+xsearch.XSearchAndReplace.setSearchString("target");
+if (xsearch.XSearchAndReplace.find(view, buffer, 0, buffer.getLength(), false, false,
+	xsearch.XSearchAndReplace.FIND_OPTION_SILENT))
+	//do something with      xsearch.XSearchAndReplace.getLastMatchedSelection()
+xsearch.SearchSettings.pop();
+	</programlisting>
+		</example>
+
+</chapter>
+<chapter id="options">
+	<title>Extended Search global options</title>
+
+		<para>It is possible to tailor the layout of the xsearch-and-replace dialog box. Disable features
+      you will &quot;never&quot; use. They won't consume any space on the xsearch-and-replace
+      dialog.</para>
+
+		<para>
+			<emphasis role="underline">Further options:</emphasis>
+		</para>
+
+        <para>
+        <emphasis role="bold">
+        tabbed layout </emphasis></para>
+        <para> If this option is selected, you see a tabbed layout that is better suited as a dockable. Otherwise, you see a classic dialog with buttons to toggle what you see, and a scrollbar as needed. </para>
+
+        <para>
+        <emphasis role="bold">
+        use XSearch instead of builtin actions </emphasis> </para>
+        <para>
+        If this option is enabled, the built-in
+        find actions "find" and "search in directory" are remapped to the equivalent XSearch actions. </para>
+
+        <para> The reasoning behind only mapping these, and not also not mapping "find next" and "find previous", is that these still apply to the incremental search bar. XSearch "xfind-next" and "xfind-previous" can be mapped to other shortcuts.
+        </para>
+
+		<para>
+			<emphasis id="HyperReplace" role="bold">
+				Hyper replace (&quot;hyper search enables hyper replace, too&quot;)</emphasis>
+		</para>
+
+		<para>If this option is selected, the checkbox &quot;hyper search&quot; toggles the feature &quot;hyper
+      replace&quot;, too.</para>
+
+		<para>&quot;Hyper replace&quot; is activated when invoking &quot;replace all&quot;.</para>
+
+		<para>It displays all changed lines in the hyper search window. </para>
+
+		<bridgehead renderas="sect3">Replace case sensitiv</bridgehead>
+
+		<para>The default replace implementation in jEdit is case sensitiv, that means that if the search
+      is case-insensitive, jEdit attempts to modify the case of the replacement string to match that
+      of the particular instance of the search string being replaced (see jEidt user guide: &quot;Replacing
+      text&quot;).</para>
+
+		<para>If this behavious is not required, you can switch it off in the Extended Search
+      global options </para>
+
+		<bridgehead renderas="sect3">Use textArea Font in search and replace field</bridgehead>
+
+		<para>Toggles the font used for the search and replace textareas. The textArea font is usually
+      fixed width, therefore better readable.</para>
+
+		<para>This is especially useful when developing regular expressions. </para>
+</chapter>
+<chapter id="feedback">
+		<title>Feedback</title>
+
+		<para>You can write to:</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+				Rudi Widmann <email>rudi.widmann@web.de</email>
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				The jEdit-users mailing-list
+				<email>jedit-users@lists.sourceforge.net</email>
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				The jEdit-devel mailing-list
+				<email>jedit-devel@lists.sourceforge.net</email>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</chapter>
+<appendix id="changelog">
+<title>Change log</title>
+
+<formalpara><title> Version 1.6 </title>
+<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre17, GnuRegexpPlugin 1.0</emphasis>, and ProjectViewer 2.9.x</para>
+</formalpara>
+<itemizedlist>
+<listitem><para> Updated for newer APIs in ProjectViewer and Core. </para></listitem>
+</itemizedlist>
+
+<formalpara><title> Version 1.5 (ae) </title>
+<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12, GnuRegexpPlugin 1.0</emphasis>, and ProjectViewer 2.1.x</para>
+</formalpara>
+<itemizedlist>
+<listitem><para>
+Now uses new <literal>gnu.regexp</literal> plugin, recently removed from jEdit core.
+</para>
+</listitem>
+</itemizedlist>
+
+
+<formalpara><title> Version 1.3.3 (ae) </title>
+<para> Requires JDK 1.5, <emphasis>jEdit 4.3pre12</emphasis>, ProjectViewer 2.1.x</para>
+</formalpara>
+<itemizedlist>
+<listitem><para>
+Updated for jEdit 4.3pre12's relocated Beanshell package. </para>
+</listitem>
+
+
+</itemizedlist>
+<formalpara><title> Version 1.3.2 (ae) </title>
+<para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>, ProjectViewer 2.1.x </para>
+</formalpara>
+<itemizedlist>
+<listitem><para>
+Bugfix in Project Search - now it waits for you to type something before it starts searching. </para></listitem>
+<listitem><para>
+Fix bug # Bugs-1574049 - no more dialog popups during xfind-next and xfind-previous.
+</para></listitem>
+</itemizedlist>
+<formalpara><title> Version 1.3.1 </title>
+<para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>, ProjectViewer 2.1.x </para>
+</formalpara>
+
+<itemizedlist>
+<listitem><para> Option to show options in tabbed layout instead of everything in one panel. </para> </listitem>
+<listitem><para> Icons instead of text labels to save screen space. </para></listitem>
+<listitem><para> Added default focus component, rewrote hiding/showing code. Escape hides xsearch, equally well as a dockable or as a floater.
+</para></listitem>
+<listitem><para> New dir search options exposed from 4.3pre5: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
+<listitem><para> Many bugfixes. </para></listitem>
+</itemizedlist>
+
+<formalpara><title> Version 1.1 </title>
+<para> Requires JDK 1.4, jEdit 4.3pre4, ProjectViewer 2.1.x.  </para>
+</formalpara>
+<itemizedlist>
+<listitem><para> <emphasis>New Feature:</emphasis> Project Search, search in all files of the current project of PV (rw) </para></listitem>
+<listitem><para> Hyper search: navigation buttons added (rw) </para></listitem>
+<listitem><para> Option to remap "find" and "search in directory" to XSearch actions (ae) </para>
+</listitem>
+<listitem><para>Changed the "synchronize" checkbox to a sync button, with a context
+	menu for making it "autosync". (ae) </para>  </listitem>
+<listitem><para>Small UI improvements </para></listitem>
+</itemizedlist>
+
+
+<formalpara>
+    <title>Version 1.0.9 (ae) </title>
+    <para>Requires JDK 1.4, jEdit 4.3pre3 </para>
+</formalpara>
+<itemizedlist>
+<listitem> <para>Bugfix - search in selection was not working </para></listitem>
+<listitem><para>removed action remapping (caused too much confusion) </para></listitem>
+</itemizedlist>
+
+
+<formalpara>
+<title>Version 1.0.8 (ae) </title>
+<para>Requires JDK 1.4, jEdit 4.3pre3 </para>
+</formalpara>
+<itemizedlist>
+<listitem>
+<para>Uses Dockable windows instead of dialogs.
+</para>
+</listitem>
+<listitem>
+<para>Remaps built-in actions for popping up Search dialogs. </para>
+</listitem>
+<listitem><para> Small bug fixes </para></listitem>
+
+</itemizedlist>
+
+
+
+<formalpara>
+<title>Version 1.0.7</title>
+<para>Requires JDK 1.4, jEdit 4.2</para>
+</formalpara>
+<itemizedlist>
+<listitem>
+<para>Adapted documentation to docbook standard </para>
+</listitem>
+<listitem>
+<para>Implement <link linkend="resupport">RE support button</link>    </para>
+</listitem>
+<listitem>
+<para>Add action <quote>write result to buffer</quote> to the <link linkend="hypercontextmenu">context menu of XHypersearch result</link>
+</para>
+</listitem>
+</itemizedlist>
+
+<formalpara>
+<title>Version 1.0.6</title>
+<para>Requires JDK 1.4, jEdit 4.2</para>
+</formalpara>
+<itemizedlist>
+<listitem>
+    <para>Add extended functions to the <link linkend="hypercontextmenu">context menu of XHypersearch result</link>
+    </para>
+</listitem>
+<listitem>
+    <para>
+        Adaption to jEdit 4.2 deferred plugin loading
+</para>
+</listitem>
+</itemizedlist>
+
+
+<formalpara>
+<title>Version 1.0.0</title>
+<para>Requires JDK 1.4, jEdit 4.1</para>
+</formalpara>
+<itemizedlist>
+<listitem>
+<para>
+    Final release for jEdit 4.1
+</para>
+</listitem>
+</itemizedlist>
+
+</appendix>
+<appendix id="furtherideas">
+<title>Further ideas </title>
+<para>Any ideas welcome</para>
+
+<itemizedlist>
+
+<listitem>
+<para> For multiple-file replacements, option to preview the replace-all before actually performing the replace. </para>
+</listitem>
+
+
+<listitem>
+<para> Re-search of hypersearch results </para>
+</listitem>
+
+<listitem><para> Make the layout of widgets in dialog more flexible so that they use space more efficiently when docked. </para></listitem>
+ </itemizedlist>
+</appendix>
+
+</book>
