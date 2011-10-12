@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="xsearch" MOVABLE="TRUE">
+		new xsearch.XSearchPanel(view, position);
+	</DOCKABLE>
+	<DOCKABLE NAME="xsearch-hypersearch-results" MOVABLE="TRUE">
+		new xsearch.HyperSearchResults(view);
+	</DOCKABLE>
+</DOCKABLES>
