@@ -143,6 +143,11 @@ public class PHPSideKickParser extends SideKickParser
 					     e.currentToken.endColumn,
 					     "Unhandled error please report the bug (with the trace in the activity log");
 		}
+		catch (Throwable t)
+		{
+			parser = null;
+			Log.log(Log.ERROR, this, t);
+		}
 		return null;
 	}
 
