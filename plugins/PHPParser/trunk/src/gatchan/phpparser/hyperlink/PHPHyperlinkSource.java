@@ -224,7 +224,23 @@ public class PHPHyperlinkSource implements HyperlinkSource
 			Hyperlink hyperlink = new PHPHyperlink(header.getName(), header.getPath(), header.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
 			return hyperlink;
 		}
-		System.out.println(suffix);
+		else if (suffix instanceof ConstantIdentifier)
+		{
+			List<FieldDeclaration> fields = classHeader.getFields();
+			String fieldName = suffix.toString();
+			for (FieldDeclaration field : fields)
+			{
+				if (field.getName().equals(fieldName))
+				{
+					Hyperlink hyperlink = new PHPHyperlink(classHeader.getName()+"."+fieldName,
+									       classHeader.getPath(),
+									       field.getBeginLine(),
+									       lineStartOffset + wordStart,
+									       lineStartOffset + wordEnd, line);
+					return hyperlink;
+				}
+			}
+		}
 		return null;
 	} //}}}
 
