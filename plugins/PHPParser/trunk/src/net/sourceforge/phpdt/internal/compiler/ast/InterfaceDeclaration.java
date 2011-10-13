@@ -246,7 +246,7 @@ public class InterfaceDeclaration extends Statement implements Outlineable, PHPI
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		//todo : fix interface declaration
 		return null;

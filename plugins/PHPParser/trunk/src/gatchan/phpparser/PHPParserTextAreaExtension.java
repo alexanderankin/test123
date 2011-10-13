@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
  */
 package gatchan.phpparser;
 
+import net.sourceforge.phpdt.internal.compiler.ast.AstNode;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
@@ -53,12 +54,13 @@ public class PHPParserTextAreaExtension extends TextAreaExtension
 		}
 		int line = textArea.getLineOfOffset(offset);
 		int column = offset - textArea.getLineStartOffset(line);
-		Statement statement = phpDocument.getStatementAt(line + 1, column);
+		AstNode statement = phpDocument.getNodeAt(line + 1, column);
 		if (statement != null)
 		{
-			Expression expression = statement.expressionAt(line + 1, column);
-			if (expression != null)
+			AstNode node = statement.subNodeAt(line + 1, column);
+			if (node != null && node instanceof Expression)
 			{
+				Expression expression = (Expression) node;
 				return expression.getType().toString();
 			}
 		}

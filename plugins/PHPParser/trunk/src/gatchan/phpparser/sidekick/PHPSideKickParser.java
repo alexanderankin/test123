@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -262,11 +262,11 @@ public class PHPSideKickParser extends SideKickParser
 
 		String lastWord2 = getPreviousWord(caret, buffer);
 
-		Statement statementAt = phpDocument.getStatementAt(caretLine + 1, caretInLine);
+		AstNode statementAt = phpDocument.getNodeAt(caretLine + 1, caretInLine);
 		if (statementAt != null)
 		{
 			Log.log(Log.DEBUG, this, "Statement at caret " + statementAt);
-			Expression expression = statementAt.expressionAt(caretLine + 1, caretInLine);
+			AstNode expression = statementAt.subNodeAt(caretLine + 1, caretInLine);
 			if (expression != null)
 			{
 				Log.log(Log.DEBUG, this, "Expression at caret " + expression);

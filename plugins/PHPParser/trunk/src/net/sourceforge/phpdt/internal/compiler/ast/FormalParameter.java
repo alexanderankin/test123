@@ -93,7 +93,7 @@ public class FormalParameter extends Expression implements Serializable
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		return null;
 	}

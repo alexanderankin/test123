@@ -85,10 +85,10 @@ public class TryStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (block.isAt(line, column))
-			return block.expressionAt(line, column);
+			return block.subNodeAt(line, column);
 		return null;
 	}
 

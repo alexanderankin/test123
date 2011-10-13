@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -102,14 +102,14 @@ public abstract class AbstractCase extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (statements != null)
 		{
 			for (Statement statement : statements)
 			{
 				if (statement.isAt(line, column))
-					return statement.expressionAt(line, column);
+					return statement.subNodeAt(line, column);
 			}
 		}
 		return null;

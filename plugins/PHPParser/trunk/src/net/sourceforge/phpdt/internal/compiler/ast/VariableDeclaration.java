@@ -253,7 +253,7 @@ public class VariableDeclaration extends Expression implements Outlineable, IAss
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (variable.isAt(line, column)) return variable;
 		if (initialization != null && initialization.isAt(line, column)) return initialization;

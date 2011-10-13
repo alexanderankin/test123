@@ -133,11 +133,11 @@ public class ForeachStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (expression != null && expression.isAt(line, column)) return expression;
 		if (variable != null && variable.isAt(line, column)) return variable;
-		if (statement != null && statement.isAt(line, column)) return statement.expressionAt(line, column);
+		if (statement != null && statement.isAt(line, column)) return statement.subNodeAt(line, column);
 		return null;
 	}
 

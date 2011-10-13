@@ -580,19 +580,19 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 	{
 	} //}}}
 
-	//{{{ expressionAt() method
+	//{{{ subNodeAt() method
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (methodHeader.isAt(line, column))
-			return methodHeader.expressionAt(line, column);
+			return methodHeader.subNodeAt(line, column);
 		if (statements != null)
 		{
 			for (Statement statement : statements)
 			{
 				if (statement.isAt(line, column))
-					return statement.expressionAt(line, column);
+					return statement.subNodeAt(line, column);
 			}
 		}
 		return null;

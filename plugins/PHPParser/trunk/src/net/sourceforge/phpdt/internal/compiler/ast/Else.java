@@ -121,12 +121,12 @@ public class Else extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		for (int i = 0; i < statements.length; i++)
 		{
 			Statement statement = statements[i];
-			if (statement.isAt(line, column)) return statement.expressionAt(line, column);
+			if (statement.isAt(line, column)) return statement.subNodeAt(line, column);
 		}
 		return null;
 	}

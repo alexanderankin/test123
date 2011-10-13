@@ -206,7 +206,7 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		for (AbstractVariable variable : variables)
 		{

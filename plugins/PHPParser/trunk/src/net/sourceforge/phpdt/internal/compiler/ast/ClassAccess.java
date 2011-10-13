@@ -149,7 +149,7 @@ public class ClassAccess extends AbstractVariable
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (prefix.isAt(line, column)) return prefix;
 		if (suffix != null && suffix.isAt(line, column)) return suffix;

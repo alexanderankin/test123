@@ -179,7 +179,7 @@ public class Const extends Statement implements Outlineable, IAsset
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (defineName.isAt(line, column)) return defineName;
 		if (defineValue.isAt(line, column)) return defineValue;

@@ -76,9 +76,9 @@ public class ReturnStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
-		if (expression.isAt(line, column)) return expression.expressionAt(line, column);
+		if (expression.isAt(line, column)) return expression.subNodeAt(line, column);
 		return null;
 	}
 

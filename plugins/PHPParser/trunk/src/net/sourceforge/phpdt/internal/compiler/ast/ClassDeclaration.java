@@ -350,18 +350,20 @@ public class ClassDeclaration extends Statement implements Outlineable, IAsset
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
+		if (classHeader.isAt(line, column))
+			return classHeader;
 		for (MethodDeclaration methodDeclaration : methods)
 		{
 			if (methodDeclaration.isAt(line, column))
-				return methodDeclaration.expressionAt(line, column);
+				return methodDeclaration.subNodeAt(line, column);
 		}
 		List<FieldDeclaration> fields = classHeader.getFields();
 		for (FieldDeclaration field : fields)
 		{
 			if (field.isAt(line, column))
-				return field.expressionAt(line, column);
+				return field.subNodeAt(line, column);
 		}
 		return null;
 	}

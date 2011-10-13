@@ -95,10 +95,10 @@ public class Case extends AbstractCase
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (value.isAt(line, column)) return value;
-		return super.expressionAt(line, column);
+		return super.subNodeAt(line, column);
 	}
 
 

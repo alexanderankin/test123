@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -214,25 +214,29 @@ public class PHPDocument implements Outlineable, IAsset
 	}
 
 	/**
-	 * Returns the statement at the given position.
+	 * Returns the node at the given position.
 	 *
 	 * @param line   the line
 	 * @param column the column
-	 * @return the statement at the position
+	 * @return the node at the position
 	 */
-	public Statement getStatementAt(int line, int column)
+	public AstNode getNodeAt(int line, int column)
 	{
-		Statement statement = null;
+		AstNode node = null;
 		for (int i = 0; i < nodes.length; i++)
 		{
-			statement = (Statement) nodes[i];
-			if (statement == null) break;
+			node = nodes[i];
+			if (node == null)
+				break;
 
-			if (line == statement.getBeginLine() && column > statement.getBeginColumn()) return statement;
-			if (line == statement.getEndLine() && column < statement.getEndColumn()) return statement;
-			if (line > statement.getBeginLine() && line < statement.getEndLine()) return statement;
+			if (line == node.getBeginLine() && column > node.getBeginColumn())
+				return node;
+			if (line == node.getEndLine() && column < node.getEndColumn())
+				return node;
+			if (line > node.getBeginLine() && line < node.getEndLine())
+				return node;
 		}
-		return statement;
+		return node;
 	}
 
 	/**
