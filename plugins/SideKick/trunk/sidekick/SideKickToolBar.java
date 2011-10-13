@@ -248,7 +248,10 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		NodeWrapper selected = null;
 		for (int i = 0; i < combo.getItemCount(); i++)
 		{
-			NodeWrapper nw = (NodeWrapper) combo.getItemAt(i);
+			Object itemAt = combo.getItemAt(i);
+			if (!(itemAt instanceof NodeWrapper))
+				continue;
+			NodeWrapper nw = (NodeWrapper) itemAt;
 			if (nw == null)
 				continue;
 			if (nw.contains(position))
