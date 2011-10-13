@@ -141,7 +141,7 @@ public class ArrayVariableDeclaration extends Expression
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (key.isAt(line, column)) return key;
 		if (value != null && value.isAt(line, column)) return value;

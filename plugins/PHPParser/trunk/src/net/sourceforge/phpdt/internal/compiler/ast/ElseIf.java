@@ -99,7 +99,7 @@ public class ElseIf extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (condition.isAt(line, column)) return condition;
 		for (int i = 0; i < statements.length; i++)

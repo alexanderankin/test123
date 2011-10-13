@@ -101,7 +101,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		return null;
 	}

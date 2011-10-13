@@ -100,7 +100,7 @@ public class EchoStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		for (int i = 0; i < expressions.length; i++)
 		{

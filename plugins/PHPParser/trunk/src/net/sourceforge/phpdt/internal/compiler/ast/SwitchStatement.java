@@ -94,13 +94,13 @@ public class SwitchStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (variable.isAt(line, column)) return variable;
 		for (int i = 0; i < cases.length; i++)
 		{
 			AbstractCase cas = cases[i];
-			if (cas.isAt(line, column)) return cas.expressionAt(line, column);
+			if (cas.isAt(line, column)) return cas.subNodeAt(line, column);
 		}
 		return null;
 	}

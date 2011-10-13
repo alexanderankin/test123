@@ -167,16 +167,16 @@ public class IfStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (condition.isAt(line, column)) return condition;
-		if (statement != null && statement.isAt(line, column)) return statement.expressionAt(line, column);
+		if (statement != null && statement.isAt(line, column)) return statement.subNodeAt(line, column);
 		for (int i = 0; i < elseifs.length; i++)
 		{
 			ElseIf elseif = elseifs[i];
-			if (elseif.isAt(line, column)) return elseif.expressionAt(line, column);
+			if (elseif.isAt(line, column)) return elseif.subNodeAt(line, column);
 		}
-		if (els != null && els.isAt(line, column)) return els.expressionAt(line, column);
+		if (els != null && els.isAt(line, column)) return els.subNodeAt(line, column);
 		return null;
 	}
 

@@ -141,7 +141,7 @@ public class ArrayDeclarator extends AbstractVariable
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (prefix.isAt(line, column)) return prefix;
 		if (key != null && key.isAt(line, column)) return key;

@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2010 Matthieu Casanova
+* Copyright (C) 2003, 2011 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -248,6 +248,11 @@ public abstract class AstNode implements Serializable
 			(line == node.getEndLine() && column < node.getEndColumn()) ||
 			(line > node.getBeginLine() && line < node.getEndLine());
 	} //}}}
+
+	public AstNode subNodeAt(int line, int column)
+	{
+		return null;
+	}
 
 	public void visitSubNodes(NodeVisitor visitor)
 	{

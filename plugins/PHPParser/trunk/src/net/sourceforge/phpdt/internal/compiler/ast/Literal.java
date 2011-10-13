@@ -48,7 +48,7 @@ public abstract class Literal extends Expression
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		return isAt(line, column) ? this : null;
 	}

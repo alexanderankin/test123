@@ -108,7 +108,7 @@ public class FunctionCall extends AbstractSuffixExpression
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (functionName.isAt(line, column))
 			return functionName;

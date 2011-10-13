@@ -240,10 +240,10 @@ public class Variable extends AbstractVariable
 		}
 	} //}}}
 
-	//{{{ expressionAt() method
+	//{{{ subNodeAt() method
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (variable != null && variable.isAt(line, column)) return variable;
 		if (expression != null && expression.isAt(line, column)) return expression;

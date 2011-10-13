@@ -49,41 +49,52 @@ public class PHPHyperlinkSource implements HyperlinkSource
 		int line = buffer.getLineOfOffset(offset);
 		int lineStartOffset = buffer.getLineStartOffset(line);
 		int lineOffset = offset - lineStartOffset;
-		Statement statement = phpDocument.getStatementAt(line + 1  /* +1 because first line in my parser is 1*/,
-			lineOffset);
+		AstNode statement = phpDocument.getNodeAt(line + 1  /* +1 because first line in my parser is 1*/,
+							    lineOffset);
 		if (statement == null)
 			return null;
-		return processStatement(buffer, line, lineOffset, statement);
+		return processNode(buffer, line, lineOffset, statement);
 	} //}}}
 
 	
-	//{{{ processStatement() method
-	private static Hyperlink processStatement(Buffer buffer, int line, int lineOffset, Statement statement)
+	//{{{ processNode() method
+	private static Hyperlink processNode(Buffer buffer, int line, int lineOffset, AstNode node)
 	{
 		while (true)
 		{
-			if (statement instanceof FunctionCall)
+			if (node instanceof FunctionCall)
 			{
-				FunctionCall functionCall = (FunctionCall) statement;
+				FunctionCall functionCall = (FunctionCall) node;
 				return processFunctionCall(functionCall, buffer, line, lineOffset);
 			}
-			else if (statement instanceof ClassAccess)
+			else if (node instanceof ClassAccess)
 			{
-				ClassAccess classAccess = (ClassAccess) statement;
+				ClassAccess classAccess = (ClassAccess) node;
 				return processClassAccess(classAccess, buffer, line, lineOffset);
 			}
-			else if (statement instanceof ClassInstantiation)
+			else if (node instanceof ClassInstantiation)
 			{
-				ClassInstantiation classInstantiation = (ClassInstantiation) statement;
+				ClassInstantiation classInstantiation = (ClassInstantiation) node;
 				return processClassInstantiation(classInstantiation, buffer, line, lineOffset);
 			}
-			Expression expression = statement.expressionAt(line + 1, lineOffset);
-			if (expression == null || expression == statement)
+			else if (node instanceof ClassHeader)
+			{
+				ClassHeader classHeader = (ClassHeader) node;
+				return processClassHeader(classHeader, buffer, line, lineOffset);
+			}
+			AstNode newNode = node.subNodeAt(line + 1, lineOffset);
+			if (newNode == null || newNode == node)
 				return null;
-			statement = expression;
+			node = newNode;
 		}
 	} //}}}
-	
+
+	private static Hyperlink processClassHeader(ClassHeader classDeclaration, Buffer buffer, int line,
+						    int lineOffset)
+	{
+		return null;
+	}
+
 	//{{{ processClassInstantiation() method
 	private static Hyperlink processClassInstantiation(ClassInstantiation classInstantiation, Buffer buffer, int line, int lineOffset)
 	{
@@ -110,13 +121,13 @@ public class PHPHyperlinkSource implements HyperlinkSource
 		if (project == null)
 			return null;
 		Expression functionName = functionCall.getFunctionName();
-		Expression expressionAt = functionCall.expressionAt(line + 1, lineOffset);
+		AstNode expressionAt = functionCall.subNodeAt(line + 1, lineOffset);
 		if (expressionAt != functionName)
 		{
 			if (expressionAt == null)
 				return null;
 			// the cursor is not on the function name
-			return processStatement(buffer, line, lineOffset, expressionAt);
+			return processNode(buffer, line, lineOffset, expressionAt);
 		}
 		String name = functionName.toString().toLowerCase();
 
@@ -178,7 +189,7 @@ public class PHPHyperlinkSource implements HyperlinkSource
 		if (classHeader == null)
 			return null;
 		int lineStartOffset = buffer.getLineStartOffset(line);
-		Expression expression = classAccess.expressionAt(line + 1, lineOffset);
+		AstNode expression = classAccess.subNodeAt(line + 1, lineOffset);
 		if (expression == classAccess.getPrefix())
 		{
 			Hyperlink hyperlink = new PHPHyperlink(classHeader.getName(),
@@ -192,10 +203,10 @@ public class PHPHyperlinkSource implements HyperlinkSource
 		{
 			FunctionCall functionCall = (FunctionCall) suffix;
 			Expression functionName = functionCall.getFunctionName();
-			Expression expr = functionCall.expressionAt(line + 1, lineOffset);
+			AstNode expr = functionCall.subNodeAt(line + 1, lineOffset);
 			if (expr != functionName)
 			{
-				return processStatement(buffer, line, lineOffset, expr);
+				return processNode(buffer, line, lineOffset, expr);
 			}
 			List<MethodHeader> methodsHeaders = classHeader.getMethodsHeaders();
 			MethodHeader header = null;

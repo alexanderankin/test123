@@ -96,7 +96,7 @@ public class ListExpression extends Expression
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		for (int i = 0; i < vars.length; i++)
 		{

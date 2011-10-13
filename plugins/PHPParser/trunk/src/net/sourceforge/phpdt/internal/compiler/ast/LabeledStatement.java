@@ -97,9 +97,9 @@ public class LabeledStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
-		return statement != null && statement.isAt(line, column) ? statement.expressionAt(line, column) : null;
+		return statement != null && statement.isAt(line, column) ? statement.subNodeAt(line, column) : null;
 	}
 
 	@Override

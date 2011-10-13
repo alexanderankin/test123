@@ -146,7 +146,7 @@ public class BinaryExpression extends OperatorExpression
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (left.isAt(line, column)) return left;
 		if (right != null && right.isAt(line, column)) return right;

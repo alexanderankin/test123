@@ -262,9 +262,9 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
-		if (variable.isAt(line, column)) return variable.expressionAt(line, column);
+		if (variable.isAt(line, column)) return variable.subNodeAt(line, column);
 		return null;
 	}
 

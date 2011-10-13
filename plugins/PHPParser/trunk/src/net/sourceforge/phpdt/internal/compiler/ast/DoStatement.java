@@ -104,10 +104,10 @@ public class DoStatement extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		if (condition.isAt(line, column)) return condition;
-		if (action.isAt(line, column)) return action.expressionAt(line, column);
+		if (action.isAt(line, column)) return action.subNodeAt(line, column);
 		return null;
 	}
 

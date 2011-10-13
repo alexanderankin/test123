@@ -138,11 +138,11 @@ public class Block extends Statement
 	}
 
 	@Override
-	public Expression expressionAt(int line, int column)
+	public AstNode subNodeAt(int line, int column)
 	{
 		for (Statement statement : statements)
 		{
-			if (statement.isAt(line, column)) return statement.expressionAt(line, column);
+			if (statement.isAt(line, column)) return statement.subNodeAt(line, column);
 		}
 		return null;
 	}
