@@ -691,7 +691,7 @@ MORE :
 {
 	<IDENTIFIER: (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)* ("\\" (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)*>
 |
-	<NAMESPACE_IDENTIFIER: (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)* ("\\" (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)*>
+	<NAMESPACE_IDENTIFIER: ("\\" (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)* | "\\" (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*) ("\\" (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)*>
 |								   
 	< #LETTER: ["a"-"z"] | ["A"-"Z"] >
 |
@@ -4737,6 +4737,7 @@ Catch catchClause() :
 	String catchedString = null;
 }
 {
+	//{{{ <CATCH>
 	try
 	{
 		catchToken = <CATCH>
@@ -4752,7 +4753,9 @@ Catch catchClause() :
 		beginLine   = e.currentToken.beginLine;
 		beginColumn = e.currentToken.beginColumn;
 		fireParseError("catch expected", "catch", e.currentToken);
-	}
+	} //}}}
+
+	//{{{ <LPAREN>
 	try
 	{
 		<LPAREN>
@@ -4760,10 +4763,12 @@ Catch catchClause() :
 	catch (ParseException e)
 	{
 		fireParseError("'(' expected", "(", e.currentToken);
-	}
+	} //}}}
+
+	//{{{ <NAMESPACE_IDENTIFIER>
 	try
 	{
-		catchedException = <IDENTIFIER>
+		catchedException = <NAMESPACE_IDENTIFIER>
 		{
 			catchedString = catchedException.image;
 		}
@@ -4771,7 +4776,9 @@ Catch catchClause() :
 	catch (ParseException e)
 	{
 		fireParseError("identifier expected", "identifier", e.currentToken);
-	}
+	} //}}}
+
+	//{{{ <DOLLAR>
 	try
 	{
 		dollarToken = <DOLLAR>
@@ -4780,7 +4787,8 @@ Catch catchClause() :
 			beginLineVar   = dollarToken.beginLine;
 			beginColumnVar = dollarToken.beginColumn;
 		}
-	}
+	} //}}}
+
 	catch (ParseException e)
 	{
 		startVar       = e.currentToken.sourceStart;
