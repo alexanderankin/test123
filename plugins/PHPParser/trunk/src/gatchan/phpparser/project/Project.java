@@ -33,8 +33,7 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.util.WorkRequest;
+import org.gjt.sp.util.*;
 
 import java.io.*;
 import java.util.*;
@@ -623,7 +622,8 @@ public class Project
 			methods.clear();
 			files.clear();
 			quickAccess = new QuickAccessItemFinder();
-			VFSManager.runInWorkThread(new Rebuilder(this, root));
+			Rebuilder run = new Rebuilder(this, root);
+			ThreadUtilities.runInBackground(run);
 		}
 	}
 
@@ -890,7 +890,7 @@ public class Project
 	 *
 	 * @author Matthieu Casanova
 	 */
-	private class Rebuilder extends WorkRequest
+	private class Rebuilder extends Task
 	{
 		private final String path;
 
@@ -904,10 +904,10 @@ public class Project
 		{
 			this.path = path;
 			this.project = project;
-			setAbortable(true);
+			setCancellable(true);
 		}
 
-		public void run()
+		public void _run()
 		{
 			long start = System.currentTimeMillis();
 			VFS vfs = VFSManager.getVFSForPath(path);
@@ -992,14 +992,7 @@ public class Project
 			}
 			finally
 			{
-				try
-				{
-					if (reader != null) reader.close();
-				}
-				catch (IOException e)
-				{
-					Log.log(Log.WARNING, this, "Unable to close reader " + e.getMessage());
-				}
+				IOUtilities.closeQuietly(reader);
 			}
 		}
 	}

@@ -237,75 +237,77 @@ public interface PHPParserConstants {
   /** RegularExpression Id. */
   int IDENTIFIER = 133;
   /** RegularExpression Id. */
-  int LETTER = 134;
+  int NAMESPACE_IDENTIFIER = 134;
   /** RegularExpression Id. */
-  int DIGIT = 135;
+  int LETTER = 135;
   /** RegularExpression Id. */
-  int SPECIAL = 136;
+  int DIGIT = 136;
   /** RegularExpression Id. */
-  int LPAREN = 139;
+  int SPECIAL = 137;
   /** RegularExpression Id. */
-  int RPAREN = 140;
+  int LPAREN = 140;
   /** RegularExpression Id. */
-  int RBRACE = 141;
+  int RPAREN = 141;
   /** RegularExpression Id. */
-  int LBRACKET = 142;
+  int RBRACE = 142;
   /** RegularExpression Id. */
-  int RBRACKET = 143;
+  int LBRACKET = 143;
   /** RegularExpression Id. */
-  int SEMICOLON = 144;
+  int RBRACKET = 144;
   /** RegularExpression Id. */
-  int COMMA = 145;
+  int SEMICOLON = 145;
   /** RegularExpression Id. */
-  int DOT = 146;
+  int COMMA = 146;
   /** RegularExpression Id. */
-  int LBRACE = 147;
+  int DOT = 147;
   /** RegularExpression Id. */
-  int GT = 148;
+  int LBRACE = 148;
   /** RegularExpression Id. */
-  int LT = 149;
+  int GT = 149;
   /** RegularExpression Id. */
-  int EQUAL_EQUAL = 150;
+  int LT = 150;
   /** RegularExpression Id. */
-  int LE = 151;
+  int EQUAL_EQUAL = 151;
   /** RegularExpression Id. */
-  int GE = 152;
+  int LE = 152;
   /** RegularExpression Id. */
-  int NOT_EQUAL = 153;
+  int GE = 153;
   /** RegularExpression Id. */
-  int DIF = 154;
+  int NOT_EQUAL = 154;
   /** RegularExpression Id. */
-  int BANGDOUBLEEQUAL = 155;
+  int DIF = 155;
   /** RegularExpression Id. */
-  int TRIPLEEQUAL = 156;
+  int BANGDOUBLEEQUAL = 156;
   /** RegularExpression Id. */
-  int ASSIGN = 157;
+  int TRIPLEEQUAL = 157;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 158;
+  int ASSIGN = 158;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 159;
+  int PLUSASSIGN = 159;
   /** RegularExpression Id. */
-  int STARASSIGN = 160;
+  int MINUSASSIGN = 160;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 161;
+  int STARASSIGN = 161;
   /** RegularExpression Id. */
-  int ANDASSIGN = 162;
+  int SLASHASSIGN = 162;
   /** RegularExpression Id. */
-  int ORASSIGN = 163;
+  int ANDASSIGN = 163;
   /** RegularExpression Id. */
-  int XORASSIGN = 164;
+  int ORASSIGN = 164;
   /** RegularExpression Id. */
-  int DOTASSIGN = 165;
+  int XORASSIGN = 165;
   /** RegularExpression Id. */
-  int REMASSIGN = 166;
+  int DOTASSIGN = 166;
   /** RegularExpression Id. */
-  int TILDEEQUAL = 167;
+  int REMASSIGN = 167;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 168;
+  int TILDEEQUAL = 168;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 169;
+  int LSHIFTASSIGN = 169;
   /** RegularExpression Id. */
-  int NAMESPACE_NAME = 170;
+  int RSIGNEDSHIFTASSIGN = 170;
+  /** RegularExpression Id. */
+  int NAMESPACE_NAME = 171;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -462,11 +464,12 @@ public interface PHPParserConstants {
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
+    "<NAMESPACE_IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 137>",
     "<token of kind 138>",
+    "<token of kind 139>",
     "\"(\"",
     "\")\"",
     "\"}\"",
