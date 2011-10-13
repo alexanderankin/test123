@@ -157,6 +157,13 @@ public class ClassAccess extends AbstractVariable
 	}
 
 	@Override
+	public void visitSubNodes(NodeVisitor visitor)
+	{
+		visitor.visit(prefix);
+		visitor.visit(suffix);
+	}
+
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		prefix.analyzeCode(parser);

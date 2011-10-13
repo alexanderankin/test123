@@ -96,6 +96,25 @@ public class ClassDeclaration extends Statement implements Outlineable, IAsset
 	 */
 	public void addMethod(MethodDeclaration method)
 	{
+		String name = classHeader.getName();
+		final Type type = new Type(Type.OBJECT_INT, name);
+		method.visitSubNodes(new NodeVisitor()
+		{
+			@Override
+			public void visit(AstNode node)
+			{
+				if (node instanceof Variable)
+				{
+					Variable variable = (Variable) node;
+					if ("this".equals(variable.getName()))
+					{
+						variable.setType(type);
+					}
+				}
+				if (node != null)
+					node.visitSubNodes(this);
+			}
+		});
 		classHeader.addMethod(method.getMethodHeader());
 		methods.add(method);
 		add(method);

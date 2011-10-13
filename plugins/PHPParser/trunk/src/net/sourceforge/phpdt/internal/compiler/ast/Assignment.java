@@ -144,9 +144,18 @@ public class Assignment extends Expression
 	@Override
 	public AstNode subNodeAt(int line, int column)
 	{
-		if (target.isAt(line, column)) return target;
-		if (initialization.isAt(line, column)) return initialization;
+		if (target.isAt(line, column))
+			return target;
+		if (initialization.isAt(line, column))
+			return initialization;
 		return null;
+	}
+
+	@Override
+	public void visitSubNodes(NodeVisitor visitor)
+	{
+		visitor.visit(target);
+		visitor.visit(initialization);
 	}
 
 	@Override
