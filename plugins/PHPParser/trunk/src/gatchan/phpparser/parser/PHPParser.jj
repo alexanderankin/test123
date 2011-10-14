@@ -83,7 +83,7 @@ public class PHPParser
 	private int errorEnd = -1;
 	private PHPDocument phpDocument;
 
-	private static final String SYNTAX_ERROR_CHAR = "syntax error";
+	public static final String SYNTAX_ERROR_CHAR = "syntax error";
 	/**
 	* The point where html starts.
 	* It will be used by the token manager to create HTMLCode objects
@@ -700,7 +700,7 @@ MORE :
 	< #SPECIAL: "_" | ["\u007f"-"\u00ff"] >
 }
 
-<HEREDOC,IN_STRING> SKIP :
+<HEREDOC,IN_STRING> SKIP:
 {
 	<("\\" ~[])>
 |
@@ -1030,7 +1030,7 @@ InterfaceDeclaration interfaceDeclaration():
 	InterfaceDeclaration interfaceDeclaration;
 	String interfaceNameImage = SYNTAX_ERROR_CHAR;
 	MethodDeclaration methodDeclaration;
-	List<String> superInterfaces = null;
+	List<ConstantIdentifier> superInterfaces = null;
 	List<Modifier> modifiers = new ArrayList<Modifier>(1);
 	List<ClassConstant> classConstants;
 }
@@ -1052,13 +1052,13 @@ InterfaceDeclaration interfaceDeclaration():
 		//{{{ extends <IDENTIFIER [, IDENTIFIER]
 		<EXTENDS> nameToken = <IDENTIFIER>
 		{
-			superInterfaces = new ArrayList<String>();
-			superInterfaces.add(nameToken.image);
+			superInterfaces = new ArrayList<ConstantIdentifier>();
+			superInterfaces.add(new ConstantIdentifier(nameToken));
 		}
 		(
 		<COMMA> nameToken = <IDENTIFIER>
 		{
-			superInterfaces.add(nameToken.image);
+			superInterfaces.add(new ConstantIdentifier(nameToken));
 		}
 		)* //}}}
 	]
@@ -1379,16 +1379,13 @@ ClassDeclaration ClassDeclaration():
 } //}}}
 
 //{{{ classHeader(Token abstractToken)
-ClassHeader classHeader(Token abstractToken) :
+ClassHeader classHeader(Token abstractToken):
 {
 	Token classToken;
 	Token className = null;
-	Token superclassName;
+	Token superclassName = null;
 	Token firstToken = abstractToken;
-	String classNameImage = SYNTAX_ERROR_CHAR;
-	String superclassNameImage = null;
-	Token interfaceToken;
-	List<String> interfaceNames = null;
+	List<InterfaceIdentifier> interfaces = null;
 }
 {
 	//{{{ class
@@ -1408,9 +1405,6 @@ ClassHeader classHeader(Token abstractToken) :
 	try
 	{
 		className = <IDENTIFIER>
-		{
-			classNameImage = className.image;
-		}
 	}
 	catch (ParseException e)
 	{
@@ -1423,30 +1417,27 @@ ClassHeader classHeader(Token abstractToken) :
 	try
 	{
 		(superclassName = <IDENTIFIER> | superclassName = <OBJECT>)
-		{
-			superclassNameImage = superclassName.image;
-		}
 	}
 	catch (ParseException e)
 	{
 		//{{{ Parse error
 		fireParseError("identifier expected", "identifier", e.currentToken.next);
-		superclassNameImage = SYNTAX_ERROR_CHAR;
 		error_skipto(LBRACE);//}}}
 	}
 	] //}}}
 
 	//{{{ implements xxx,yyy
 	[
-		{
-			interfaceNames = new ArrayList<String>();
-		}
 		<IMPLEMENTS>
+		{
+			interfaces = new ArrayList<InterfaceIdentifier>();
+			Token interfaceToken;
+		}
 		try
 		{
 			interfaceToken = <IDENTIFIER>
 			{
-				interfaceNames.add(interfaceToken.image);
+				interfaces.add(new InterfaceIdentifier(interfaceToken));
 			}
 		}
 		catch (ParseException e)
@@ -1459,7 +1450,7 @@ ClassHeader classHeader(Token abstractToken) :
 			{
 				interfaceToken = <IDENTIFIER>
 				{
-					interfaceNames.add(interfaceToken.image);
+					interfaces.add(new InterfaceIdentifier(interfaceToken));
 				}
 			}
 			catch (ParseException e)
@@ -1471,23 +1462,43 @@ ClassHeader classHeader(Token abstractToken) :
 
 	{
 		int end,endLine,endColumn;
-		if (className == null)
+		if (interfaces != null && !interfaces.isEmpty())
 		{
-			end         = firstToken.sourceEnd;
-			endLine     = firstToken.endLine;
-			endColumn   = firstToken.endColumn;
+			InterfaceIdentifier id = interfaces.get(interfaces.size() - 1);
+			end = id.getSourceEnd();
+			endLine = id.getEndLine();
+			endColumn = id.getEndColumn();
 		}
 		else
 		{
-			end         = className.sourceEnd;
-			endLine     = className.endLine;
-			endColumn   = className.endColumn;
+			if (superclassName != null)
+			{
+				end = superclassName.sourceEnd;
+				endLine = superclassName.endLine;
+				endColumn = superclassName.endColumn;
+			}
+			else
+			{
+				if (className == null)
+				{
+					end         = firstToken.sourceEnd;
+					endLine     = firstToken.endLine;
+					endColumn   = firstToken.endColumn;
+				}
+				else
+				{
+					end         = className.sourceEnd;
+					endLine     = className.endLine;
+					endColumn   = className.endColumn;
+				}
+			}
 		}
+		
 		return new ClassHeader(namespace,
 				       path,
-				       classNameImage,
-				       superclassNameImage,
-				       interfaceNames,
+				       className == null ? null : new ClassIdentifier(className),
+				       superclassName == null ? null : new ClassIdentifier(superclassName),
+				       interfaces,
 				       firstToken.sourceStart,
 				       end,
 				       firstToken.beginLine,
@@ -2285,7 +2296,7 @@ Variable Var():
   // }
 |
     (
-        expr = ClassIdentifier()
+        expr = classIdentifier()
         (
          expr = VariableSuffix(expr)
         )*
@@ -3336,7 +3347,7 @@ Expression instanceofExpression():
 		try
 		{
 			(
-				expr2 = ClassIdentifier()
+				expr2 = classIdentifier()
 			|
 				expr2 = VariableDeclaratorId()
 			)
@@ -3900,7 +3911,7 @@ Expression instantiation(Token reference):
 		(
 			expr = fullyQualifiedIdentifier()
 		|
-			expr = ClassIdentifier()
+			expr = classIdentifier()
 		|
 			expr = VariableDeclaratorId()
 		)
@@ -4035,14 +4046,14 @@ ArrayInitializer ArrayDeclarator():
 /**
  * A ClassIdentifier is anything that could be a class name that can be use in <code>class ClassIdentifier {}</code>
  */
-Expression ClassIdentifier():
+ClassIdentifier classIdentifier():
 {
 	Token identifierToken;
 }
 {
 	identifierToken = methodIdentifier()
 	{
-		return new ConstantIdentifier(identifierToken);
+		return new ClassIdentifier(identifierToken);
 	}
 } //}}}
 

@@ -212,6 +212,14 @@ public class Project
 			}
 		}
 
+		String projectVersion = properties.getProperty("version");
+		if (!projectVersion.equals(ProjectManager.projectVersion))
+		{
+			Log.log(Log.WARNING, this, "The project version is obsolete, it cannot be loaded. You should refresh your project");
+			reset();
+			return;
+		}
+
 		try
 		{
 			classes = readObjects(classFile);

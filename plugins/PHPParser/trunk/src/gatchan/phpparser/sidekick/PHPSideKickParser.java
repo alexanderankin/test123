@@ -21,6 +21,7 @@
 package gatchan.phpparser.sidekick;
 
 //{{{ Imports
+import com.sun.org.apache.bcel.internal.classfile.Constant;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import gatchan.phpparser.PHPErrorSource;
@@ -624,12 +625,12 @@ public class PHPSideKickParser extends SideKickParser
 					completeClassMembers(superClassHeader, phpSideKickCompletion, currentWord);
 				}
 			}
-			List<String> interfaceNames = classHeader.getInterfaceNames();
+			List<InterfaceIdentifier> interfaceNames = classHeader.getInterfaceNames();
 			if (interfaceNames != null)
 			{
-				for (String interfaceName : interfaceNames)
+				for (InterfaceIdentifier interfaceName : interfaceNames)
 				{
-					InterfaceDeclaration anInterface = project.getInterface(interfaceName);
+					InterfaceDeclaration anInterface = project.getInterface(interfaceName.toString());
 					if (anInterface == null)
 					{
 						Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown interface " + anInterface);
@@ -654,12 +655,12 @@ public class PHPSideKickParser extends SideKickParser
 		Project project = ProjectManager.getInstance().getProject();
 		if (project != null)
 		{
-			List<String> superInterfaces = interfaceDeclaration.getSuperInterfaces();
+			List<ConstantIdentifier> superInterfaces = interfaceDeclaration.getSuperInterfaces();
 			if (superInterfaces != null)
 			{
-				for (String superInterface : superInterfaces)
+				for (ConstantIdentifier superInterface : superInterfaces)
 				{
-					InterfaceDeclaration anInterface = project.getInterface(superInterface);
+					InterfaceDeclaration anInterface = project.getInterface(superInterface.toString());
 					if (anInterface == null)
 					{
 						Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown interface " + anInterface);

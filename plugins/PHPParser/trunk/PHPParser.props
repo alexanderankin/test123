@@ -52,7 +52,7 @@ options.gatchan.phpparser.loadOnStartup.text=Load plugin on startup
 # completion options : project, project then global, global
 option.gatchan.phpparser.complete=project
 
-plugin.gatchan.phpparser.projects.formatversion=1.0.0
+plugin.gatchan.phpparser.projects.formatversion=2.0.0
 
 # SideKick parsers
 sidekick.parser.PHPParser.label=PHPParser

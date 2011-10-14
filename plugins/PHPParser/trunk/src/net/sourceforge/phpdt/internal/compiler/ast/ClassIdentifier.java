@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 jEdit contributors
+ * Copyright © 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,31 +19,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package gatchan.phpparser.hyperlink;
+package net.sourceforge.phpdt.internal.compiler.ast;
 
-import gatchan.jedit.hyperlinks.Hyperlink;
-import gatchan.phpparser.project.Project;
-import gatchan.phpparser.project.ProjectManager;
-import net.sourceforge.phpdt.internal.compiler.ast.AstNode;
-import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
-import net.sourceforge.phpdt.internal.compiler.ast.ClassInstantiation;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.TextUtilities;
+import gatchan.phpparser.parser.Token;
 
 /**
+ * A class that is only here for tagging class names.
  * @author Matthieu Casanova
  */
-public class ClassHeaderSource implements HyperlinkDecoder<ClassHeader>
+public class ClassIdentifier extends ConstantIdentifier
 {
-	@Override
-	public boolean accept(AstNode node)
+	public ClassIdentifier(String name, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn,
+			       int endColumn)
 	{
-		return node instanceof ClassInstantiation;
+		super(name, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 	}
 
-	@Override
-	public Hyperlink getHyperlink(ClassHeader classHeader, Buffer buffer, int line, int lineOffset)
+	public ClassIdentifier(Token token)
 	{
-		return null;
+		super(token);
 	}
 }
