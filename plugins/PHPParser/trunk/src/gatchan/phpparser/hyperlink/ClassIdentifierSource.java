@@ -21,83 +21,42 @@
 
 package gatchan.phpparser.hyperlink;
 
-import java.util.List;
-
 import gatchan.jedit.hyperlinks.Hyperlink;
 import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
 import net.sourceforge.phpdt.internal.compiler.ast.AstNode;
+import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassIdentifier;
-import net.sourceforge.phpdt.internal.compiler.ast.Expression;
-import net.sourceforge.phpdt.internal.compiler.ast.FunctionCall;
-import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
 
 /**
  * @author Matthieu Casanova
  */
-public class FunctionCallSource implements HyperlinkDecoder<FunctionCall>
+public class ClassIdentifierSource implements HyperlinkDecoder<ClassIdentifier>
 {
-	private HyperlinkDecoder<AstNode> defaultDecoder;
-
-	public FunctionCallSource(DefaultNodeDecoder decoder)
-	{
-		defaultDecoder = decoder;
-	}
-
 	@Override
 	public boolean accept(AstNode node)
 	{
-		return node instanceof FunctionCall;
+		return node instanceof ClassIdentifier;
 	}
 
 	@Override
-	public Hyperlink getHyperlink(FunctionCall functionCall, Buffer buffer, int line, int lineOffset)
+	public Hyperlink getHyperlink(ClassIdentifier classIdentifier, Buffer buffer, int line, int lineOffset)
 	{
+		String className = classIdentifier.toString();
+		if (className == null) return null;
 		Project project = ProjectManager.getInstance().getProject();
-		if (project == null)
-			return null;
-		if (functionCall.getFunctionName() instanceof ClassIdentifier)
-		{
-			return defaultDecoder.getHyperlink(functionCall.getFunctionName(), buffer, line, lineOffset);
-		}
-		Expression functionName = functionCall.getFunctionName();
-		AstNode expressionAt = functionCall.subNodeAt(line + 1, lineOffset);
-		if (expressionAt != functionName)
-		{
-			if (expressionAt == null)
-				return null;
-			// the cursor is not on the function name
-			return defaultDecoder.getHyperlink(expressionAt, buffer, line, lineOffset);
-		}
-		String name = functionName.toString().toLowerCase();
-
-		Object o = project.getMethods().get(name);
-		if (o == null)
-			return null;
-		MethodHeader header = null;
-		if (o instanceof List)
-		{
-			List<MethodHeader> headers = (List<MethodHeader>) o;
-			for (MethodHeader methodHeader : headers)
-			{
-				header = methodHeader;
-				break;
-			}
-		}
-		else
-		{
-			header = (MethodHeader) o;
-		}
-		if (header == null)
-			return null;
+		ClassHeader classHeader = project.getClass(className);
+		if (classHeader == null) return null;
 		CharSequence lineSegment = buffer.getLineSegment(line);
 		String noWordSep = buffer.getStringProperty("noWordSep");
 		int wordStart = TextUtilities.findWordStart(lineSegment, lineOffset, noWordSep);
 		int wordEnd = TextUtilities.findWordEnd(lineSegment, lineOffset, noWordSep);
 		int lineStartOffset = buffer.getLineStartOffset(line);
-		Hyperlink hyperlink = new PHPHyperlink(header.getName(), header.getPath(), header.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
+		Hyperlink hyperlink =
+			new PHPHyperlink(classHeader.getName(), classHeader.getPath(), classHeader.getBeginLine(),
+					 lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
 		return hyperlink;
 	}
 }

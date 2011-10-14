@@ -42,7 +42,7 @@ public class ProjectManager
 	/**
 	 * PHPParser project version.
 	 */
-	private final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.formatversion");
+	public static final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.formatversion");
 	private static final String PROJECT_NAME_PROPERTY = "gatchan.phpparser.project.file";
 
 	private ProjectList projectList;

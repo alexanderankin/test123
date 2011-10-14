@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003-2010 Matthieu Casanova
+ * Copyright (C) 2003-2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,7 +64,7 @@ public class InterfaceDeclaration extends Statement implements Outlineable, PHPI
 	/**
 	 * The list of the super interfaces names. This list could be null
 	 */
-	private final List<String> superInterfaces;
+	private final List<ConstantIdentifier> superInterfaces;
 
 	/**
 	 * The methodsHeaders of the class.
@@ -77,7 +77,7 @@ public class InterfaceDeclaration extends Statement implements Outlineable, PHPI
 				    String path,
 				    Outlineable parent,
 				    String name,
-				    List<String> superInterfaces,
+				    List<ConstantIdentifier> superInterfaces,
 				    int sourceStart,
 				    int beginLine,
 				    int beginColumn)
@@ -263,7 +263,7 @@ public class InterfaceDeclaration extends Statement implements Outlineable, PHPI
 		return methodsHeaders;
 	}
 
-	public List<String> getSuperInterfaces()
+	public List<ConstantIdentifier> getSuperInterfaces()
 	{
 		return superInterfaces;
 	}

@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2010 Matthieu Casanova
+* Copyright (C) 2003, 2011 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -50,19 +50,19 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	/**
 	 * The name of the class.
 	 */
-	private final String className;
+	private final ClassIdentifier className;
 
 	private String nameLowerCase;
 
 	/**
 	 * The name of the superclass.
 	 */
-	private final String superClassName;
+	private final ClassIdentifier superClassName;
 
 	/**
 	 * The implemented interfaces. It could be null.
 	 */
-	private final List<String> interfaceNames;
+	private final List<InterfaceIdentifier> interfaceNames;
 
 	/**
 	 * The methodsHeaders of the class.
@@ -88,9 +88,9 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 
 	public ClassHeader(String namespace,
 			   String path,
-			   String className,
-			   String superClassName,
-			   List<String> interfaceNames,
+			   ClassIdentifier className,
+			   ClassIdentifier superClassName,
+			   List<InterfaceIdentifier> interfaceNames,
 			   int sourceStart,
 			   int sourceEnd,
 			   int beginLine,
@@ -179,14 +179,16 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	 */
 	public String getName()
 	{
-		return className;
+		if (className == null)
+			return PHPParser.SYNTAX_ERROR_CHAR;
+		return className.toString();
 	}
 
 	public String getNameLowerCase()
 	{
 		if (nameLowerCase == null)
 		{
-			nameLowerCase = className.toLowerCase();
+			nameLowerCase = getName().toLowerCase();
 		}
 		return nameLowerCase;
 	}
@@ -198,12 +200,15 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	 */
 	public String getSuperClassName()
 	{
-		return superClassName;
+		if (superClassName == null)
+			return PHPParser.SYNTAX_ERROR_CHAR;
+		return superClassName.toString();
 	}
 
 	public boolean equals(Object obj)
 	{
-		if (!(obj instanceof ClassHeader)) return false;
+		if (!(obj instanceof ClassHeader))
+			return false;
 		return ((ClassHeader) obj).getName().equals(className);
 	}
 
@@ -277,8 +282,32 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	{
 	}
 
-	public List<String> getInterfaceNames()
+	public List<InterfaceIdentifier> getInterfaceNames()
 	{
 		return interfaceNames;
+	}
+
+	@Override
+	public AstNode subNodeAt(int line, int column)
+	{
+		if (className != null)
+		{
+			if (className.isAt(line+1, column))
+				return className;
+		}
+		if (superClassName != null)
+		{
+			if (superClassName.isAt(line+1, column))
+				return superClassName;
+		}
+		if (interfaceNames != null)
+		{
+			for (InterfaceIdentifier interfaceName : interfaceNames)
+			{
+				if (interfaceName.isAt(line, column))
+					return interfaceName;
+			}
+		}
+		return null;
 	}
 }
