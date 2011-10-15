@@ -5,6 +5,8 @@
 	 -->
 	<!-- use the built-in Relax-NG schema -->
 	<uri pattern="*.rng" typeId="RNG"></uri>
+	<!-- use the built-in XSD schema -->
+	<uri pattern="*.xsd" typeId="XSD"></uri>
 
 	<!-- use the built-in rule for schemas.xml -->
 	<documentElement localName="locatingRules" typeId="LOCATE"/>
@@ -17,4 +19,5 @@
 	<typeId id="NONE" uri="any.rng" />
 	<typeId id="RNG" uri="relaxng.rng"/>
 	<typeId id="LOCATE" uri="locate.rng"/>
+	<typeId id="XSD" uri="schema4schemas.xsd" />
 </locatingRules>
