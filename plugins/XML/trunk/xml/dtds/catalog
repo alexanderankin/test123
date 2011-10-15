@@ -59,3 +59,9 @@ SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commands/commando.dtd
 OVERRIDE YES
 
 CATALOG "docbook-catalog.xml"
+
+-- XML Schema 1.0 schema --
+-- retrieved from the w3.org website --
+SYSTEM "http://www.w3.org/2001/XMLSchema.xsd" "schema4schemas.xsd"
+SYSTEM "http://www.w3.org/2001/datatypes.xsd" "datatypes.xsd"
+SYSTEM "http://www.w3.org/2001/xml.xsd" "xml.xsd"
