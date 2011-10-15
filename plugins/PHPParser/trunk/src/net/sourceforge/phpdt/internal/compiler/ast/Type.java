@@ -48,6 +48,10 @@ public class Type implements Serializable
 	public static final Type FLOAT = new Type(FLOAT_INT);
 	public static final Type INTEGER = new Type(INTEGER_INT);
 	public static final Type OBJECT = new Type(OBJECT_INT);
+	public static final Type NULL = new Type(NULL_INT);
+	public static final Type STRING = new Type(STRING_INT);
+	public static final Type ARRAY = new Type(ARRAY_INT);
+
 
 	public String toString()
 	{
@@ -75,10 +79,6 @@ public class Type implements Serializable
 				return null;
 		}
 	}
-
-	public static final Type NULL = new Type(NULL_INT);
-	public static final Type STRING = new Type(STRING_INT);
-	public static final Type ARRAY = new Type(ARRAY_INT);
 
 	private final String className;
 
