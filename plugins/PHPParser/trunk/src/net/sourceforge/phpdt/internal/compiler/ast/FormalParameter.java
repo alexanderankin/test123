@@ -31,7 +31,7 @@ import java.io.Serializable;
  */
 public class FormalParameter extends Expression implements Serializable
 {
-	private ObjectIdentifier typeHint;
+	private ConstantIdentifier typeHint;
 	private String name;
 
 	private boolean reference;
@@ -42,7 +42,7 @@ public class FormalParameter extends Expression implements Serializable
 	{
 	}
 
-	public FormalParameter(ObjectIdentifier typeHint,
+	public FormalParameter(ConstantIdentifier typeHint,
 			       String name,
 			       boolean reference,
 			       String defaultValue,
@@ -60,7 +60,7 @@ public class FormalParameter extends Expression implements Serializable
 		this.defaultValue = defaultValue;
 	}
 
-	public FormalParameter(ObjectIdentifier typeHint,
+	public FormalParameter(ConstantIdentifier typeHint,
 			       String name,
 			       boolean reference,
 			       int sourceStart,

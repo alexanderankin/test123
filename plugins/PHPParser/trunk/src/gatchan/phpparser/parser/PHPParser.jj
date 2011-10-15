@@ -2800,7 +2800,7 @@ FormalParameter formalParameter():
 	VariableDeclaration variableDeclaration;
 	FormalParameter parameter;
 	Token bitAndToken = null;
-	ObjectIdentifier typeHint = null;
+	ConstantIdentifier typeHint = null;
 	int startOffset = -1;
 	int startLine = -1;
 	int startColumn = -1;
@@ -2810,13 +2810,26 @@ FormalParameter formalParameter():
 		{
 			Token typeToken;
 		}
-		typeToken = methodIdentifier()
-		{
-			typeHint = new ObjectIdentifier(typeToken);
-			startOffset = typeToken.sourceStart;
-			startLine = typeToken.beginLine;
-			startColumn = typeToken.beginColumn;
-		}
+		(
+			typeToken = methodIdentifier()
+			{
+				typeHint = new ObjectIdentifier(typeToken);
+				startOffset = typeToken.sourceStart;
+				startLine = typeToken.beginLine;
+				startColumn = typeToken.beginColumn;
+			}
+		)
+	|
+		(
+			typeToken = <ARRAY>
+			{
+				typeHint = new ConstantIdentifier(typeToken);
+				startOffset = typeToken.sourceStart;
+				startLine = typeToken.beginLine;
+				startColumn = typeToken.beginColumn;
+			}
+		)
+
 	]
 	[
 		bitAndToken = <BIT_AND>
