@@ -1434,14 +1434,14 @@ public class PHPParser implements PHPParserConstants {
 
 //{{{ Class methods
 
-//{{{ ClassDeclaration()
+//{{{ classDeclaration()
 /**
  * A Class declaration.
  * class <IDENTIFIER> [extends <IDENTIFIER>] Class body
  *
  * @return a ClassDeclaration
  */
-  final public ClassDeclaration ClassDeclaration() throws ParseException {
+  final public ClassDeclaration classDeclaration() throws ParseException {
         ClassHeader classHeader;
         ClassDeclaration classDeclaration;
         Token abstractToken = null;
@@ -1495,7 +1495,7 @@ public class PHPParser implements PHPParserConstants {
                 currentSegment = classDeclaration;
                 scope = new Scope();
                 scopeStack.push(scope);
-      ClassBody(classDeclaration);
+      classBody(classDeclaration);
                 currentSegment = currentSegment.getParent();
                 scope = scopeStack.pop();
                 pushOnAstNodes(classDeclaration);
@@ -1639,8 +1639,8 @@ public class PHPParser implements PHPParserConstants {
 
  //}}}
 
-//{{{ ClassBody(ClassDeclaration classDeclaration)
-  final public void ClassBody(ClassDeclaration classDeclaration) throws ParseException {
+//{{{ classBody(ClassDeclaration classDeclaration)
+  final public void classBody(ClassDeclaration classDeclaration) throws ParseException {
         Token lBraceToken;
         Token rBraceToken;
     try {
@@ -1669,7 +1669,7 @@ public class PHPParser implements PHPParserConstants {
         jj_la1[28] = jj_gen;
         break label_9;
       }
-      ClassBodyDeclaration(classDeclaration);
+      classBodyDeclaration(classDeclaration);
     }
     try {
       rBraceToken = jj_consume_token(RBRACE);
@@ -1754,11 +1754,11 @@ public class PHPParser implements PHPParserConstants {
 
   //}}}
 
-//{{{ ClassBodyDeclaration(ClassDeclaration classDeclaration)
+//{{{ classBodyDeclaration(ClassDeclaration classDeclaration)
 /**
  * A class can contain only methods and fields.
  */
-  final public void ClassBodyDeclaration(ClassDeclaration classDeclaration) throws ParseException {
+  final public void classBodyDeclaration(ClassDeclaration classDeclaration) throws ParseException {
         MethodDeclaration method;
         List<FieldDeclaration> fieldList;
         Modifier modifier;
@@ -1851,7 +1851,7 @@ public class PHPParser implements PHPParserConstants {
       }
       break;
     case VAR:
-      fieldList = FieldDeclaration();
+      fieldList = fieldDeclaration();
                         if (fieldList != null)
                         {
                                 for (FieldDeclaration field:fieldList)
@@ -2015,7 +2015,7 @@ public class PHPParser implements PHPParserConstants {
       }
       break;
     case VAR:
-      fieldList = FieldDeclaration();
+      fieldList = fieldDeclaration();
                 if (fieldList != null)
                 {
                         for (FieldDeclaration field:fieldList)
@@ -2033,12 +2033,12 @@ public class PHPParser implements PHPParserConstants {
 
   //}}}
 
-//{{{ FieldDeclaration()
+//{{{ fieldDeclaration()
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
- * it is only used by ClassBodyDeclaration()
+ * it is only used by classBodyDeclaration()
  */
-  final public List<FieldDeclaration> FieldDeclaration() throws ParseException {
+  final public List<FieldDeclaration> fieldDeclaration() throws ParseException {
         List<FieldDeclaration> arrayList;
     jj_consume_token(VAR);
                 fireParseMessage(new PHPParseMessageEvent(INFO,
@@ -7566,7 +7566,7 @@ Token arrayAssignToken;
     case ABSTRACT:
     case FINAL:
     case CLASS:
-      statement = ClassDeclaration();
+      statement = classDeclaration();
       break;
     case INTERFACE:
       statement = interfaceDeclaration();
@@ -7657,7 +7657,7 @@ Token arrayAssignToken;
     case ABSTRACT:
     case FINAL:
     case CLASS:
-      statement = ClassDeclaration();
+      statement = classDeclaration();
       break;
     case FUNCTION:
       statement = methodDeclaration(CONST_FUNCTION,null);
