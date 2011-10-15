@@ -83,6 +83,7 @@
                 <filename name="xml/**/*.dtd" />
                 <filename name="xml/**/*.rng" />
                 <filename name="xml/**/*.rnc" />
+                <filename name="templates/**/*.vm" />
             </or>
     </selector>
 
@@ -101,6 +102,7 @@
         <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
         <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
         <pathelement location="${jedit.plugins.dir}/Hyperlinks.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Templates.jar"/>
         <pathelement location="."/>
     </path>
 
