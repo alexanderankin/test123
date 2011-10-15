@@ -54,7 +54,7 @@ public class ClassAccessSource implements HyperlinkDecoder<ClassAccess>
 	@Override
 	public boolean accept(AstNode node)
 	{
-		return node instanceof FunctionCall;
+		return node instanceof ClassAccess;
 	}
 
 	@Override

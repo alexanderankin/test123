@@ -1160,7 +1160,7 @@ InterfaceDeclaration interfaceDeclaration():
 	}
 } //}}}
 
-//{{{ ClassConstant() method
+//{{{ classConstant() method
 List<ClassConstant> classConstant():
 {
 	Token constToken, token;
@@ -1306,14 +1306,14 @@ MethodDeclaration interfaceMethodDeclaration(List<Modifier> modifiers):
 
 //{{{ Class methods
 
-//{{{ ClassDeclaration()
+//{{{ classDeclaration()
 /**
  * A Class declaration.
  * class <IDENTIFIER> [extends <IDENTIFIER>] Class body
  *
  * @return a ClassDeclaration
  */
-ClassDeclaration ClassDeclaration():
+ClassDeclaration classDeclaration():
 {
 	ClassHeader classHeader;
 	ClassDeclaration classDeclaration;
@@ -1369,7 +1369,7 @@ ClassDeclaration ClassDeclaration():
 		scopeStack.push(scope);
 	}
 	//todo change this
-	ClassBody(classDeclaration)
+	classBody(classDeclaration)
 	{
 		currentSegment = currentSegment.getParent();
 		scope = scopeStack.pop();
@@ -1508,8 +1508,8 @@ ClassHeader classHeader(Token abstractToken):
 	}
 }//}}}
 
-//{{{ ClassBody(ClassDeclaration classDeclaration)
-void ClassBody(ClassDeclaration classDeclaration) :
+//{{{ classBody(ClassDeclaration classDeclaration)
+void classBody(ClassDeclaration classDeclaration):
 {
 	Token lBraceToken;
 	Token rBraceToken;
@@ -1528,7 +1528,7 @@ void ClassBody(ClassDeclaration classDeclaration) :
 		fireParseError("'{' expected", "{", e.currentToken);
 	}
 	(
-		ClassBodyDeclaration(classDeclaration)
+		classBodyDeclaration(classDeclaration)
 	)*
 	try
 	{
@@ -1600,11 +1600,11 @@ void abstractClassBody(ClassDeclaration classDeclaration) :
   }
 } //}}}
 
-//{{{ ClassBodyDeclaration(ClassDeclaration classDeclaration)
+//{{{ classBodyDeclaration(ClassDeclaration classDeclaration)
 /**
  * A class can contain only methods and fields.
  */
-void ClassBodyDeclaration(ClassDeclaration classDeclaration):
+void classBodyDeclaration(ClassDeclaration classDeclaration):
 {
 	MethodDeclaration method;
 	List<FieldDeclaration> fieldList;
@@ -1665,7 +1665,7 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration):
 		} //}}}
 
 	|
-		fieldList  = FieldDeclaration()
+		fieldList  = fieldDeclaration()
 		{
 			if (fieldList != null)
 			{
@@ -1777,7 +1777,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration):
 		fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
 	}
 |
-	fieldList = FieldDeclaration()
+	fieldList = fieldDeclaration()
 	{
 		if (fieldList != null) 
 		{
@@ -1789,12 +1789,12 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration):
 	}
 } //}}}
 
-//{{{ FieldDeclaration()
+//{{{ fieldDeclaration()
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
- * it is only used by ClassBodyDeclaration()
+ * it is only used by classBodyDeclaration()
  */
-List<FieldDeclaration> FieldDeclaration():
+List<FieldDeclaration> fieldDeclaration():
 {
 	List<FieldDeclaration> arrayList;
 }
@@ -5854,7 +5854,7 @@ Statement BlockStatement() :
 		}
 	}
 	|
-	statement = ClassDeclaration()
+	statement = classDeclaration()
 	|
 	statement = interfaceDeclaration()
 	|
@@ -5883,7 +5883,7 @@ Statement BlockStatementNoBreak():
 		statement = StatementNoBreak()
 	|
 		LOOKAHEAD(1)
-		statement = ClassDeclaration()
+		statement = classDeclaration()
 	|
 		statement = methodDeclaration(CONST_FUNCTION,null)
 		{
