@@ -26,12 +26,11 @@ import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
+import org.gjt.sp.util.Task;
 
 import sidekick.SideKickPlugin;
 import xml.parser.*;
-import java.io.File;
-import xml.parser.SchemaMapping;
-import java.io.IOException;
 
 import static xml.Debug.*;
 //}}}
@@ -65,6 +64,24 @@ public class XmlPlugin extends EBPlugin
 
 		SchemaMappingManager.initGlobalSchemaMapping(view);
 		xml.cache.Cache.instance().start();
+
+		//{{{ schedule install of bundled templates if Templates is installed 
+		EditPlugin templatesPlugin = jEdit.getPlugin("templates.TemplatesPlugin", false);
+		if(templatesPlugin == null){
+			Log.log(Log.MESSAGE,XmlPlugin.class,"Templates plugin is not installed, so templates won't be copied"); 
+		}else{
+			Log.log(Log.DEBUG,XmlPlugin.class,"Will install template files");
+			ThreadUtilities.runInBackground(new Task(){
+					public String getLabel() { return "XML: install template files"; }
+					
+					@Override
+					public void _run(){
+						Log.log(Log.DEBUG,XmlPlugin.class,"Will install template files");
+						TemplatesManager.installTemplates(this, XmlPlugin.this.getPluginJAR());
+					}
+			});
+		}//}}}
+		
 
 	} //}}}
 

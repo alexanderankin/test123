@@ -60,7 +60,7 @@
   <listitem><para>And more. </para></listitem>
 
  </itemizedlist>
-
+ 
  <bridgehead>XML and SideKick</bridgehead>
  <para>
  To provide most of its functionality, the XML plugin relies on
@@ -72,6 +72,19 @@
 
  <para> Note: Since the XML plugin provides a separate Sidekick parser for HTML versus XML, and it may be possible to parse some documents with both, you may get different results depending on how 'strict' the HTML/XML syntax is used in the document. </para>
 
+ <bridgehead>XML and other plugins</bridgehead>
+ 
+ <para>The XML plugin can take advantage of other plugins, in addition to the required
+ ones like Sidekick.</para>
+ 
+ <itemizedlist>
+ <listitem><para>If you want to follow hyperlinks in HTML or XML, you'll have to install the
+ <emphasis>Hyperlinks</emphasis> plugin.</para></listitem>
+ <listitem><para>The XML plugin comes with templates for a few common HTML and XML document types
+ (e.g. HTML 4.01 strict, XSD, XSL).To use them, install the <emphasis>Templates</emphasis> plugin
+ and restart jEdit.</para></listitem>
+ </itemizedlist>
+ 
 </section>
 
 <section id="insert">
@@ -1016,6 +1029,8 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
   (#3389424 - Eric Le Lay).</para></listitem>
   <listitem><para>Fix XMLPlugin doesn't find DTD upon second parse
   (#3393297 - Eric Le Lay).</para></listitem>
+  <listitem><para>Bundle templates for common documents (html, xsl, etc)
+  (Eric Le Lay).</para></listitem>
  </itemizedlist>
  </listitem>
 
