@@ -43,6 +43,7 @@ public class DefaultNodeDecoder implements HyperlinkDecoder<AstNode>
 	//	decoders.add(new ClassInstantiationSource());
 		decoders.add(new ClassIdentifierSource());
 		decoders.add(new InterfaceIdentifierSource());
+		decoders.add(new ObjectIdentifierSource());
 	}
 
 	@Override

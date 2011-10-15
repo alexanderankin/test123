@@ -27,7 +27,7 @@ import gatchan.phpparser.parser.Token;
  * A class that is only here for tagging interfaces.
  * @author Matthieu Casanova
  */
-public class InterfaceIdentifier extends ConstantIdentifier
+public class InterfaceIdentifier extends ObjectIdentifier
 {
 	public InterfaceIdentifier(String name, int sourceStart, int sourceEnd, int beginLine, int endLine,
 				   int beginColumn, int endColumn)

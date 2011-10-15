@@ -376,13 +376,13 @@ public class ClassDeclaration extends Statement implements Outlineable, IAsset
 		for (MethodDeclaration methodDeclaration : methods)
 		{
 			if (methodDeclaration.isAt(line, column))
-				return methodDeclaration.subNodeAt(line, column);
+				return methodDeclaration;
 		}
 		List<FieldDeclaration> fields = classHeader.getFields();
 		for (FieldDeclaration field : fields)
 		{
 			if (field.isAt(line, column))
-				return field.subNodeAt(line, column);
+				return field;
 		}
 		return null;
 	}
