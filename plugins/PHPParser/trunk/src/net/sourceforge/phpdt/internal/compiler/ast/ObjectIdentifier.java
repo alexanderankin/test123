@@ -24,18 +24,18 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import gatchan.phpparser.parser.Token;
 
 /**
- * A class that is only here for tagging class names.
+ * A class that is only here for tagging types that can be classes or interfaces names.
  * @author Matthieu Casanova
  */
-public class ClassIdentifier extends ObjectIdentifier
+public class ObjectIdentifier extends ConstantIdentifier
 {
-	public ClassIdentifier(String name, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn,
-			       int endColumn)
+	public ObjectIdentifier(String name, int sourceStart, int sourceEnd, int beginLine, int endLine,
+				int beginColumn, int endColumn)
 	{
 		super(name, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 	}
 
-	public ClassIdentifier(Token token)
+	public ObjectIdentifier(Token token)
 	{
 		super(token);
 	}

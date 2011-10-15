@@ -29,7 +29,7 @@ options {
   DEBUG_TOKEN_MANAGER = false;
   ERROR_REPORTING = true;
   JAVA_UNICODE_ESCAPE = false;
-  UNICODE_INPUT = true;
+  UNICODE_INPUT = true;/*  */
   IGNORE_CASE = true;
   USER_TOKEN_MANAGER = false;
   USER_CHAR_STREAM = false;
@@ -2446,7 +2446,7 @@ MethodDeclaration closureDeclaration():
 }
 {
 	functionToken = <FUNCTION>
-	FormalParameters(formalParameters)
+	formalParameters(formalParameters)
 	[
 		use = <USE>
 		try
@@ -2549,7 +2549,7 @@ MethodHeader methodHeader(Token functionToken,int type, List<Modifier> modifiers
 			}
 		}
 	}
-	FormalParameters(formalParameters)
+	formalParameters(formalParameters)
 	{
 		return new MethodHeader(namespace,
 					path,
@@ -2681,12 +2681,12 @@ Token constantIdentifier():
 	}
 } //}}}
 
-//{{{ FormalParameters(List parameters)
+//{{{ formalParameters(List parameters)
 /**
- * FormalParameters follows method identifier.
- * (FormalParameter())
+ * formalParameters follows method identifier.
+ * (formalParameter())
  */
-void FormalParameters(List<FormalParameter> parameters):
+void formalParameters(List<FormalParameter> parameters):
 {
 	FormalParameter var;
 }
@@ -2706,7 +2706,7 @@ void FormalParameters(List<FormalParameter> parameters):
 		//{{{ parameter
 		try
 		{
-			var = FormalParameter()
+			var = formalParameter()
 			{
 				parameters.add(var);
 			}
@@ -2720,7 +2720,7 @@ void FormalParameters(List<FormalParameter> parameters):
 			<COMMA>
 			try
 			{
-				var = FormalParameter()
+				var = formalParameter()
 				{
 					parameters.add(var);
 				}
@@ -2790,20 +2790,46 @@ void FormalParameters(List<FormalParameter> parameters):
 	} //}}}
 } //}}}
 
-//{{{ FormalParameter()
+//{{{ formalParameter()
 /**
  * A formal parameter.
  * $varname[=value] (,$varname[=value])
  */
-FormalParameter FormalParameter():
+FormalParameter formalParameter():
 {
 	VariableDeclaration variableDeclaration;
 	FormalParameter parameter;
 	Token bitAndToken = null;
+	ObjectIdentifier typeHint = null;
+	int startOffset = -1;
+	int startLine = -1;
+	int startColumn = -1;
 }
 {
-	[ methodIdentifier() | <ARRAY> ]
-	[bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
+	[
+		{
+			Token typeToken;
+		}
+		typeToken = methodIdentifier()
+		{
+			typeHint = new ObjectIdentifier(typeToken);
+			startOffset = typeToken.sourceStart;
+			startLine = typeToken.beginLine;
+			startColumn = typeToken.beginColumn;
+		}
+	]
+	[
+		bitAndToken = <BIT_AND>
+		{
+			if (startOffset == -1)
+			{
+				startOffset = bitAndToken.sourceStart;
+				startLine = bitAndToken.beginLine;
+				startColumn = bitAndToken.beginColumn;
+			}
+		}
+	] 
+	variableDeclaration = VariableDeclaratorNoSuffix()
 	{
 		if (bitAndToken != null)
 		{
@@ -2811,28 +2837,37 @@ FormalParameter FormalParameter():
 				bitAndToken.sourceStart,bitAndToken.beginLine,
 				bitAndToken.beginColumn);
 		}
+		if (startOffset == -1)
+		{
+			startOffset = variableDeclaration.getSourceStart();
+			startLine = variableDeclaration.getBeginLine();
+			startColumn = variableDeclaration.getBeginColumn();
+
+		}
 		Expression initialization = variableDeclaration.getInitialization();
 		if (initialization == null)
 		{
-			parameter = new FormalParameter(variableDeclaration.getName(),
+			parameter = new FormalParameter(typeHint,
+				variableDeclaration.getName(),
 				bitAndToken != null,
-				variableDeclaration.getSourceStart(),
+				startOffset,
 				variableDeclaration.getSourceEnd(),
-				variableDeclaration.getBeginLine(),
+				startLine,
 				variableDeclaration.getEndLine(),
-				variableDeclaration.getBeginColumn(),
+				startColumn,
 				variableDeclaration.getEndColumn());
 		}
 		else
 		{
-			parameter = new FormalParameter(variableDeclaration.getName(),
+			parameter = new FormalParameter(typeHint,
+				variableDeclaration.getName(),
 				bitAndToken != null,
 				variableDeclaration.getInitialization().toStringExpression(),
-				variableDeclaration.getSourceStart(),
+				startOffset,
 				variableDeclaration.getSourceEnd(),
-				variableDeclaration.getBeginLine(),
+				startLine,
 				variableDeclaration.getEndLine(),
-				variableDeclaration.getBeginColumn(),
+				startColumn,
 				variableDeclaration.getEndColumn());
 		}
 		return parameter;
