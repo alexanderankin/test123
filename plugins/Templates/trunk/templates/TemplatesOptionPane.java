@@ -54,6 +54,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	public void _save() {
 		TemplatesPlugin.setTemplateDir(templateTextField.getText());
 		TemplatesPlugin.setVelocityDir(velocityTextField.getText());
+		TemplatesPlugin.setAcceleratorPassThruFlag(passThruCheckBox.isSelected());
 	}
 	
 	/**
@@ -129,14 +130,6 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		add(masterPanel, BorderLayout.NORTH);
 	}
 	
-	/**
-	 * Save the new Templates directory to the global properties, and refresh 
-	 * the Templates menu.
-	 */
-	public void save() {
-		TemplatesPlugin.setAcceleratorPassThruFlag(passThruCheckBox.isSelected());
-		super.save();	// super class ensures TemplatesOptionPane was initialised
-	}
 
 	/**
 	 * Display the file chooser and respond to the user's selection.
