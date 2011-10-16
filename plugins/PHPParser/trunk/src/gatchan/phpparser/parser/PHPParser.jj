@@ -401,20 +401,20 @@ TOKEN_MGR_DECLS:
 
 //{{{ TOKEN declarations
 
-<DEFAULT> TOKEN :
+<DEFAULT> TOKEN:
 {
   <PHPSTARTSHORT : "<?">    : PHPPARSING
 | <PHPSTARTLONG  : "<?php"> : PHPPARSING
 | <PHPECHOSTART  : "<?=">   : PHPPARSING
 }
 
-<PHPPARSING, IN_SINGLE_LINE_COMMENT,IN_VARIABLE> TOKEN :
+<PHPPARSING, IN_SINGLE_LINE_COMMENT,IN_VARIABLE> TOKEN:
 {
   <PHPEND :"?>"> : DEFAULT
 }
 
 /* Skip any character if we are not in php mode */
-<DEFAULT> SKIP :
+<DEFAULT> SKIP:
 {
   < ~[] >
 | "<?xml"
@@ -422,12 +422,12 @@ TOKEN_MGR_DECLS:
 
 
 //{{{ WHITE SPACE
-<PHPPARSING> SKIP :
+<PHPPARSING> SKIP:
 {
 	"\n"
 }
 
-<IN_NAMESPACE,PHPPARSING> SKIP :
+<IN_NAMESPACE,PHPPARSING> SKIP:
 {
 	" "
 	| "\t"
@@ -437,7 +437,7 @@ TOKEN_MGR_DECLS:
 //}}}
 
 
-<IN_VARIABLE> SPECIAL_TOKEN :
+<IN_VARIABLE> SPECIAL_TOKEN:
 {
   " "  : PHPPARSING
 | "\t" : PHPPARSING
@@ -447,7 +447,7 @@ TOKEN_MGR_DECLS:
 }
 
 //{{{ COMMENTS
-<PHPPARSING> SPECIAL_TOKEN :
+<PHPPARSING> SPECIAL_TOKEN:
 {
   "//" : IN_SINGLE_LINE_COMMENT
 | "#"  : IN_SINGLE_LINE_COMMENT
@@ -456,18 +456,18 @@ TOKEN_MGR_DECLS:
 }
 
 
-<IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN :
+<IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN:
 {
   <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n"> : PHPPARSING
 | < ~[] >
 }
 
-<IN_FORMAL_COMMENT> SPECIAL_TOKEN :
+<IN_FORMAL_COMMENT> SPECIAL_TOKEN:
 {
   "*/" : PHPPARSING
 }
 
-<IN_MULTI_LINE_COMMENT> SPECIAL_TOKEN :
+<IN_MULTI_LINE_COMMENT> SPECIAL_TOKEN:
 {
   "*/" : PHPPARSING
 }
@@ -687,7 +687,7 @@ MORE :
 	<DOLLAR: "$"> : IN_VARIABLE
 }
 
-<HEREDOC, PHPPARSING, IN_VARIABLE, IN_STRING> TOKEN :
+<HEREDOC, PHPPARSING, IN_VARIABLE, IN_STRING> TOKEN:
 {
 	<IDENTIFIER: (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)* ("\\" (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)*>
 |
@@ -702,7 +702,7 @@ MORE :
 
 <HEREDOC,IN_STRING> SKIP:
 {
-	<("\\" ~[])>
+	<"\\" ~[]>
 |
 	<~[]>
 }
@@ -917,6 +917,8 @@ void Php() :
 	(
 		namespace()
 	|
+		useNamespace()
+	|
 		constantStatement()
 	|
 		BlockStatement()
@@ -951,6 +953,8 @@ Namespace namespace():
 		//{{{ block
 		<LBRACE>
 		(
+			useNamespace()
+		|
 			constantStatement()
 		|
 			BlockStatement()
@@ -978,6 +982,8 @@ Namespace namespace():
 				//{{{ { block()* }
 				<LBRACE>
 				(
+					useNamespace()
+				|
 					constantStatement()
 				|
 					BlockStatement()
@@ -1019,6 +1025,70 @@ Namespace namespace():
 		}
 	)
 
+} //}}}
+
+//{{{ useNamespace() method
+UseNamespace useNamespace():
+{
+	Token useToken;
+	Token namespaceNameToken;
+	Token semicolon;
+	int sourceEnd;
+	int endLine;
+	int endColumn;
+	String namespaceName;
+}
+{
+	//{{{ <USE>
+	useToken = <USE>
+	{
+		sourceEnd = useToken.sourceEnd;
+		endLine = useToken.endLine;
+		endColumn = useToken.endColumn;
+	} //}}}
+	try
+	{
+		(
+			namespaceNameToken = <IDENTIFIER>
+		|
+			namespaceNameToken = <NAMESPACE_IDENTIFIER>
+		)
+		{
+			namespaceName = namespaceNameToken.image;
+			sourceEnd = namespaceNameToken.sourceEnd;
+			endLine = namespaceNameToken.endLine;
+			endColumn = namespaceNameToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("namespace expected",";",e.currentToken.next);
+		{
+			namespaceName = SYNTAX_ERROR_CHAR;
+		}
+	}
+	try
+	{
+	semicolon = <SEMICOLON>
+	{
+		sourceEnd = semicolon.sourceEnd;
+		endLine = semicolon.endLine;
+		endColumn = semicolon.endColumn;
+	}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("; expected",";",e.currentToken.next);
+	}
+	{
+		return new UseNamespace(namespaceName,
+			useToken.sourceStart,
+			sourceEnd,
+			useToken.beginLine,
+			endLine,
+			useToken.beginColumn,
+			endColumn);
+	}
 } //}}}
 
 //{{{ interfaceDeclaration()

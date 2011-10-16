@@ -44,6 +44,11 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testParserSuccess()
 	{
+		checkPHP("$a = \"\\n\\n\";");
+		checkPHP("use N\\ett\\e;");
+		checkPHP("use Nette;");
+		checkPHP("use \\Ne\\tte;");
+		checkPHP("namespace Nette\\Application {\n" + "use Nette;\n" + "// ...\n" + "}");
 		checkPHP("function objclone() { return clone($z); }");
 		checkPHP("function objclone() { return clone $z; }");
 		checkHTML("<? toto();?>");
