@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!--
+
+ This is the build.xml file for building the ActionHooks plugin.
+
+ It is based on the standard build.xml file for jEdit plugins.
+
+-->
+
+<project name="ActionHooks" default="build" basedir=".">
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+	<property file="build.support" value="../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${src.dir}"/>
+	</path>
+
+	<selector id="packageFiles">
+		<or>
+			<filename name="actions.xml" />
+			<filename name="**/*.bsh" />
+			<filename name="**/*.props" />
+			<filename name="**/*.html" />
+			<filename name="**/*.txt" />
+			<filename name="**/*.png" />
+		</or>
+	</selector>
+
+</project>
+
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
