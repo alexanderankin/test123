@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@ import org.gjt.sp.util.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * A Project.
@@ -85,22 +86,22 @@ public class Project
 	/**
 	 * This table will contains class names (lowercase) as key and {@link ClassHeader} as values.
 	 */
-	private Hashtable<String, Object> classes;
+	private Map<String, Object> classes;
 
 	/**
 	 * This table will contains interfaces names (lowercase) as key and {@link InterfaceDeclaration} as values.
 	 */
-	private Hashtable<String, Object> interfaces;
+	private Map<String, Object> interfaces;
 
 	/**
 	 * This table will contains class names (lowercase) as key and {@link MethodHeader} as values.
 	 */
-	private Hashtable<String, Object> methods;
+	private Map<String, Object> methods;
 
 	/**
 	 * This table will contains as key the file path, and as value a {@link List} containing {@link PHPItem}
 	 */
-	private Hashtable<String, List<PHPItem>> files;
+	private Map<String, List<PHPItem>> files;
 
 	/**
 	 * The quick access item finder.
@@ -111,6 +112,13 @@ public class Project
 	 * The list of excluded folders. It contains {@link String}
 	 */
 	private List<String> excludedFolders;
+
+	private volatile boolean loading;
+
+	private volatile boolean cancelLoading;
+
+	private final Object LOCK = new Object();
+	private Exception exceptionDuringLoading;
 
 	/**
 	 * Create a new empty project.
@@ -157,17 +165,7 @@ public class Project
 		}
 		finally
 		{
-			try
-			{
-				if (inStream != null)
-				{
-					inStream.close();
-				}
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, e);
-			}
+			IOUtilities.closeQuietly(inStream);
 		}
 		checkProperties();
 	}
@@ -177,16 +175,17 @@ public class Project
 	 */
 	private void reset()
 	{
-		classes = new Hashtable<String, Object>();
-		interfaces = new Hashtable<String, Object>();
-		methods = new Hashtable<String, Object>();
-		files = new Hashtable<String, List<PHPItem>>();
+		classes = Collections.synchronizedMap(new HashMap<String, Object>());
+		interfaces = Collections.synchronizedMap(new HashMap<String, Object>());
+		methods = Collections.synchronizedMap(new HashMap<String, Object>());
+		files = Collections.synchronizedMap(new HashMap<String, List<PHPItem>>());
 		quickAccess = new QuickAccessItemFinder();
 	}
 
 	private void init()
 	{
-		dataDirectory = new File(file.getParent(), file.getName().substring(0, file.getName().length() - 14) + "_datas");
+		dataDirectory = new File(file.getParent(),
+					 file.getName().substring(0, file.getName().length() - 14) + "_datas");
 		//todo : check the return of mkdir
 		dataDirectory.mkdir();
 		classFile = new File(dataDirectory, "classes.ser");
@@ -199,130 +198,290 @@ public class Project
 	/**
 	 * Load the project.
 	 */
-	public void load()
+	public void load(final ProgressObserver observer)
 	{
-		long start = System.currentTimeMillis();
-		String excludedString = properties.getProperty("excluded");
-		if (excludedString != null)
+		if (loading)
 		{
-			StringTokenizer tokenizer = new StringTokenizer(excludedString, "\n");
-			while (tokenizer.hasMoreTokens())
-			{
-				excludedFolders.add(tokenizer.nextToken());
-			}
-		}
-
-		String projectVersion = properties.getProperty("version");
-		if (!projectVersion.equals(ProjectManager.projectVersion))
-		{
-			properties.setProperty("version", ProjectManager.projectVersion);
-			Log.log(Log.WARNING, this, "The project version is obsolete, it cannot be loaded. You should refresh your project");
-			reset();
+			Log.log(Log.ERROR, this, "Already loading");
 			return;
 		}
-
-		try
+		long start = System.currentTimeMillis();
+		synchronized (LOCK)
 		{
-			classes = readObjects(classFile);
-			Collection<Object> collection = classes.values();
-			Iterator<Object> iterator = collection.iterator();
-			while (iterator.hasNext())
+			observer.setStatus("Loading project");
+			try
 			{
-				Object o = iterator.next();
-				if (o instanceof ClassHeader)
+				loading = true;
+				final CountDownLatch latch = new CountDownLatch(5);
+
+				Task propertiesLoader = new Task()
 				{
-					loadClassHeader((ClassHeader) o);
-				}
-				else
-				{
-					Iterable<ClassHeader> list = (Iterable<ClassHeader>) o;
-					for (ClassHeader classHeader : list)
+					@Override
+					public void _run()
 					{
-						loadClassHeader(classHeader);
+						try
+						{
+							setStatus("Loading properties");
+							String excludedString = properties.getProperty("excluded");
+							if (excludedString != null)
+							{
+								StringTokenizer tokenizer =
+									new StringTokenizer(excludedString, "\n");
+								while (tokenizer.hasMoreTokens())
+								{
+									excludedFolders.add(tokenizer.nextToken());
+								}
+							}
+
+							String projectVersion = properties.getProperty("version");
+							if (!projectVersion.equals(ProjectManager.projectVersion))
+							{
+								properties.setProperty("version",
+										       ProjectManager.projectVersion);
+								Log.log(Log.WARNING, this,
+									"The project version is obsolete, it cannot be loaded. You should refresh your project");
+								reset();
+							}
+						}
+						finally
+						{
+							latch.countDown();
+							observer.setValue(latch.getCount());
+						}
 					}
+				};
+
+				Task classLoader = new Task()
+				{
+					@Override
+					public void _run()
+					{
+						try
+						{
+							loadClasses(this);
+						}
+						catch (ClassNotFoundException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						catch (IOException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						finally
+						{
+							latch.countDown();
+							observer.setValue(latch.getCount());
+						}
+					}
+				};
+
+				Task interfaceLoader = new Task()
+				{
+					@Override
+					public void _run()
+					{
+						try
+						{
+							loadInterfaces(this);
+						}
+						catch (ClassNotFoundException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						catch (IOException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						finally
+						{
+							latch.countDown();
+							observer.setValue(latch.getCount());
+						}
+					}
+				};
+
+				Task methodsLoader = new Task()
+				{
+					@Override
+					public void _run()
+					{
+						try
+						{
+							loadMethods(this);
+						}
+						catch (ClassNotFoundException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						catch (IOException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						finally
+						{
+							latch.countDown();
+							observer.setValue(latch.getCount());
+						}
+					}
+				};
+
+				Task filesLoader = new Task()
+				{
+					@Override
+					public void _run()
+					{
+						try
+						{
+							setStatus("Loading files");
+							files = Collections.synchronizedMap(readObjects(fileFile));
+						}
+						catch (ClassNotFoundException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						catch (IOException e)
+						{
+							exceptionDuringLoading = e;
+						}
+						finally
+						{
+							latch.countDown();
+							observer.setValue(latch.getCount());
+						}
+					}
+				};
+
+				ThreadUtilities.runInBackground(classLoader);
+				ThreadUtilities.runInBackground(interfaceLoader);
+				ThreadUtilities.runInBackground(methodsLoader);
+				ThreadUtilities.runInBackground(propertiesLoader);
+				ThreadUtilities.runInBackground(filesLoader);
+
+				latch.await();
+				if (exceptionDuringLoading != null)
+				{
+					throw exceptionDuringLoading;
 				}
 			}
-
-			interfaces = readObjects(interfaceFile);
-			collection = interfaces.values();
-			iterator = collection.iterator();
-			while (iterator.hasNext())
+			catch (Exception e)
 			{
-				Object o = iterator.next();
-				if (o instanceof InterfaceDeclaration)
+				Log.log(Log.ERROR, this, e);
+				GUIUtilities.error(jEdit.getActiveView(),
+						   "gatchan-phpparser.errordialog.unabletoreadproject",
+						   new String[] { e.getMessage() });
+				reset();
+			}
+			finally
+			{
+				loading = false;
+				cancelLoading = false;
+				exceptionDuringLoading = null;
+			}
+			long end = System.currentTimeMillis();
+			Log.log(Log.DEBUG, this, "Project loaded in " + (end - start) + "ms");
+		}
+	}
+
+	private boolean loadMethods(ProgressObserver observer) throws ClassNotFoundException, IOException
+	{
+		observer.setStatus("Loading interfaces");
+		methods = Collections.synchronizedMap(readObjects(methodFile));
+		if (cancelLoading)
+			return true;
+		Collection<Object> collection = methods.values();
+		Iterator<Object> iterator = collection.iterator();
+		observer.setMaximum(methods.size());
+		int i = 0;
+		while (iterator.hasNext())
+		{
+			observer.setValue(++i);
+			if (cancelLoading)
+				return true;
+			Object item = iterator.next();
+			if (item instanceof MethodHeader)
+			{
+				quickAccess.addToIndex((PHPItem) item);
+			}
+			else
+			{
+				Iterable<PHPItem> list = (Iterable<PHPItem>) item;
+				for (PHPItem aList : list)
 				{
-					loadInterface((InterfaceDeclaration) o);
-				}
-				else
-				{
-					Iterable<InterfaceDeclaration> list = (Iterable<InterfaceDeclaration>) o;
-					for (InterfaceDeclaration interfaceDeclaration : list)
-					{
-						loadInterface(interfaceDeclaration);
-					}
+					quickAccess.addToIndex(aList);
 				}
 			}
+		}
+		return false;
+	}
 
-			methods = readObjects(methodFile);
-			collection = methods.values();
-			iterator = collection.iterator();
-
-			while (iterator.hasNext())
+	private boolean loadInterfaces(ProgressObserver observer) throws ClassNotFoundException, IOException
+	{
+		observer.setStatus("Loading interfaces");
+		interfaces = Collections.synchronizedMap(readObjects(interfaceFile));
+		if (cancelLoading)
+			return true;
+		Collection<Object> collection = interfaces.values();
+		Iterator<Object> iterator = collection.iterator();
+		observer.setMaximum(interfaces.size());
+		int i = 0;
+		while (iterator.hasNext())
+		{
+			observer.setValue(++i);
+			if (cancelLoading)
+				return true;
+			Object o = iterator.next();
+			if (o instanceof InterfaceDeclaration)
 			{
-				Object item = iterator.next();
-				if (item instanceof MethodHeader)
+				loadInterface((InterfaceDeclaration) o);
+			}
+			else
+			{
+				Iterable<InterfaceDeclaration> list = (Iterable<InterfaceDeclaration>) o;
+				for (InterfaceDeclaration interfaceDeclaration : list)
 				{
-					quickAccess.addToIndex((PHPItem) item);
-				}
-				else
-				{
-					Iterable<PHPItem> list = (Iterable<PHPItem>) item;
-					for (PHPItem aList : list)
-					{
-						quickAccess.addToIndex(aList);
-					}
+					loadInterface(interfaceDeclaration);
 				}
 			}
+		}
+		return false;
+	}
 
-			files = readObjects(fileFile);
-		}
-		catch (FileNotFoundException e)
+	private boolean loadClasses(ProgressObserver observer) throws ClassNotFoundException, IOException
+	{
+		observer.setStatus("Loading classes");
+		classes = Collections.synchronizedMap(readObjects(classFile));
+		if (cancelLoading)
+			return true;
+		Collection<Object> collection = classes.values();
+		Iterator<Object> iterator = collection.iterator();
+		observer.setMaximum(classes.size());
+		int i = 0;
+		while (iterator.hasNext())
 		{
-			Log.log(Log.ERROR, this, e.getMessage());
-			GUIUtilities.error(jEdit.getActiveView(),
-				"gatchan-phpparser.errordialog.unabletoreadproject",
-				new String[]{e.getMessage()});
-			reset();
+			observer.setValue(++i);
+			if (cancelLoading)
+				return true;
+			Object o = iterator.next();
+			if (o instanceof ClassHeader)
+			{
+				loadClassHeader((ClassHeader) o);
+			}
+			else
+			{
+				Iterable<ClassHeader> list = (Iterable<ClassHeader>) o;
+				for (ClassHeader classHeader : list)
+				{
+					loadClassHeader(classHeader);
+				}
+			}
 		}
-		catch (InvalidClassException e)
-		{
-			Log.log(Log.WARNING,
-				this,
-				"A class is invalid probably because the project used an old plugin " + e.getMessage());
-			GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.invalidprojectformat", null);
-			reset();
-		}
-		catch (ClassNotFoundException e)
-		{
-			//should never happen
-			Log.log(Log.ERROR, this, e);
-			GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.unexpectederror", null);
-			reset();
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, this, e);
-			GUIUtilities.error(jEdit.getActiveView(),
-				"gatchan-phpparser.errordialog.unabletoreadproject",
-				new String[]{e.getMessage()});
-			reset();
-		}
-		long end = System.currentTimeMillis();
-		Log.log(Log.DEBUG, this, "Project loaded in " + (end - start) + "ms");
+		return false;
 	}
 
 	private void loadInterface(InterfaceDeclaration interfaceDeclaration)
 	{
+
 		quickAccess.addToIndex(interfaceDeclaration);
 		for (int i = 0; i < interfaceDeclaration.size(); i++)
 		{
@@ -350,34 +509,35 @@ public class Project
 	 */
 	public void unload()
 	{
-		classes = null;
-		interfaces = null;
-		methods = null;
-		files = null;
-		excludedFolders.clear();
+		if (loading)
+		{
+			cancelLoading = true;
+		}
+		synchronized (LOCK)
+		{
+			classes = null;
+			interfaces = null;
+			methods = null;
+			files = null;
+			excludedFolders.clear();
+		}
 	}
 
-	private Hashtable readObjects(File target) throws FileNotFoundException,
-		ClassNotFoundException, IOException
+	private static Map readObjects(File target) throws ClassNotFoundException, IOException
 	{
 		ObjectInputStream objIn = null;
 		try
 		{
 			objIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(target)));
 			Object object = objIn.readObject();
-			return (Hashtable) object;
+			Map read = (Map) object;
+			Map ret = new HashMap(read.size());
+			ret.putAll(read);
+			return ret;
 		}
 		finally
 		{
-			if (objIn != null)
-				try
-				{
-					objIn.close();
-				}
-				catch (IOException e)
-				{
-					Log.log(Log.WARNING, this, e);
-				}
+			IOUtilities.closeQuietly(objIn);
 		}
 	}
 
@@ -436,7 +596,6 @@ public class Project
 		File directory = classFile.getParentFile();
 		if (!directory.exists())
 		{
-			// todo : do better
 			directory.mkdirs();
 		}
 		StringBuilder buff = new StringBuilder(1000);
@@ -446,37 +605,29 @@ public class Project
 		}
 		properties.setProperty("excluded", buff.toString());
 		BufferedOutputStream outStream = null;
-		try
+		synchronized (LOCK)
 		{
-			outStream = new BufferedOutputStream(new FileOutputStream(file));
-			properties.store(outStream, "");
-
-			writeObjects(classFile, classes);
-			writeObjects(interfaceFile, interfaces);
-			writeObjects(methodFile, methods);
-			writeObjects(fileFile, files);
-
-		}
-		catch (FileNotFoundException e)
-		{
-			Log.log(Log.ERROR, this, e);
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, this, e);
-		}
-		finally
-		{
-			if (outStream != null)
+			try
 			{
-				try
-				{
-					outStream.close();
-				}
-				catch (IOException e)
-				{
-					Log.log(Log.ERROR, this, e);
-				}
+				outStream = new BufferedOutputStream(new FileOutputStream(file));
+				properties.store(outStream, "");
+
+				writeObjects(classFile, classes);
+				writeObjects(interfaceFile, interfaces);
+				writeObjects(methodFile, methods);
+				writeObjects(fileFile, files);
+			}
+			catch (FileNotFoundException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+			finally
+			{
+				IOUtilities.closeQuietly(outStream);
 			}
 		}
 		long end = System.currentTimeMillis();
@@ -500,17 +651,7 @@ public class Project
 		}
 		finally
 		{
-			if (objOut != null)
-			{
-				try
-				{
-					objOut.close();
-				}
-				catch (IOException e)
-				{
-					Log.log(Log.WARNING, Project.class, e);
-				}
-			}
+			IOUtilities.closeQuietly(objOut);
 		}
 	}
 
@@ -521,28 +662,35 @@ public class Project
 	 */
 	public void addClass(ClassHeader classHeader)
 	{
-		needSave = true;
-		if (!classes.containsValue(classHeader))
+		synchronized (LOCK)
 		{
-			insertItem(classes, classHeader);
-
-			List<MethodHeader> methods = classHeader.getMethodsHeaders();
-			for (MethodHeader method : methods)
+			needSave = true;
+			if (!classes.containsValue(classHeader))
 			{
-				quickAccess.addToIndex(method);
+				insertItem(classes, classHeader);
+
+				List<MethodHeader> methods = classHeader.getMethodsHeaders();
+				for (MethodHeader method : methods)
+				{
+					quickAccess.addToIndex(method);
+				}
 			}
 		}
 	}
 
 	public void addInterface(InterfaceDeclaration interfaceDeclaration)
 	{
-		needSave = true;
-		if (!interfaces.containsValue(interfaceDeclaration))
+		synchronized (LOCK)
 		{
-			insertItem(interfaces, interfaceDeclaration);
-			for (int i = 0; i < interfaceDeclaration.size(); i++)
+			needSave = true;
+			if (!interfaces.containsValue(interfaceDeclaration))
 			{
-				quickAccess.addToIndex(((MethodDeclaration) interfaceDeclaration.get(i)).getMethodHeader());
+				insertItem(interfaces, interfaceDeclaration);
+				for (int i = 0; i < interfaceDeclaration.size(); i++)
+				{
+					quickAccess.addToIndex(
+						((MethodDeclaration) interfaceDeclaration.get(i)).getMethodHeader());
+				}
 			}
 		}
 	}
@@ -554,8 +702,11 @@ public class Project
 	 */
 	public void addMethod(PHPItem methodHeader)
 	{
-		needSave = true;
-		insertItem(methods, methodHeader);
+		synchronized (LOCK)
+		{
+			needSave = true;
+			insertItem(methods, methodHeader);
+		}
 	}
 
 	/**
@@ -574,10 +725,15 @@ public class Project
 	public void delete()
 	{
 		Log.log(Log.DEBUG, this, "delete");
-		file.delete();
-		classFile.delete();
-		methodFile.delete();
-		dataDirectory.delete();
+		if (loading)
+			cancelLoading = true;
+		synchronized (LOCK)
+		{
+			file.delete();
+			classFile.delete();
+			methodFile.delete();
+			dataDirectory.delete();
+		}
 	}
 
 	/**
@@ -618,21 +774,26 @@ public class Project
 	 */
 	public void rebuildProject()
 	{
-		String root = getRoot();
-		if (root == null || root.length() == 0)
+		if (loading)
+			cancelLoading = true;
+		synchronized (LOCK)
 		{
-			Log.log(Log.MESSAGE, this, "No root file for that project");
-		}
-		else
-		{
-			Log.log(Log.MESSAGE, this, "Rebuilding project");
-			classes.clear();
-			interfaces.clear();
-			methods.clear();
-			files.clear();
-			quickAccess = new QuickAccessItemFinder();
-			Rebuilder run = new Rebuilder(this, root);
-			ThreadUtilities.runInBackground(run);
+			String root = getRoot();
+			if (root == null || root.length() == 0)
+			{
+				Log.log(Log.MESSAGE, this, "No root file for that project");
+			}
+			else
+			{
+				Log.log(Log.MESSAGE, this, "Rebuilding project");
+				classes.clear();
+				interfaces.clear();
+				methods.clear();
+				files.clear();
+				quickAccess = new QuickAccessItemFinder();
+				Rebuilder run = new Rebuilder(this, root);
+				ThreadUtilities.runInBackground(run);
+			}
 		}
 	}
 
@@ -696,30 +857,34 @@ public class Project
 	 */
 	public void clearSourceFile(String path)
 	{
-		List<PHPItem> fileTable = files.get(path);
-		if (fileTable != null)
+		synchronized (LOCK)
 		{
-			fileTable.clear();
+			List<PHPItem> fileTable = files.get(path);
+			if (fileTable != null)
+			{
+				fileTable.clear();
+			}
+			clearSourceFileFromMap(path, classes);
+			clearSourceFileFromMap(path, methods);
+			clearSourceFileFromMap(path, interfaces);
+			quickAccess.purgePath(path);
 		}
-		clearSourceFileFromMap(path, classes);
-		clearSourceFileFromMap(path, methods);
-		clearSourceFileFromMap(path, interfaces);
-		quickAccess.purgePath(path);
 	}
 
-	private static void clearSourceFileFromMap(String path, Hashtable<String, Object> table)
+	private static void clearSourceFileFromMap(String path, Map<String, Object> table)
 	{
-		Enumeration<String> keys = table.keys();
-		while (keys.hasMoreElements())
+		Iterator<Map.Entry<String, Object>> entryIterator = table.entrySet().iterator();
+		while (entryIterator.hasNext())
 		{
-			String key = keys.nextElement();
-			Object item = table.get(key);
+			Map.Entry<String, Object> entry = entryIterator.next();
+			String key = entry.getKey();
+			Object item = entry.getValue();
 			if (item instanceof PHPItem)
 			{
 				PHPItem phpItem = (PHPItem) item;
 				if (path.equals(phpItem.getPath()))
 				{
-					table.remove(key);
+					entryIterator.remove();
 				}
 			}
 			else
@@ -765,12 +930,15 @@ public class Project
 	 */
 	public ClassHeader getClass(String name)
 	{
-		Object o = classes.get(name.toLowerCase());
-		if (o instanceof ClassHeader)
-			return (ClassHeader) o;
-		if (o == null)
-			return null;
-		return ((List<ClassHeader>) o).get(0);
+		synchronized (LOCK)
+		{
+			Object o = classes.get(name.toLowerCase());
+			if (o instanceof ClassHeader)
+				return (ClassHeader) o;
+			if (o == null)
+				return null;
+			return ((List<ClassHeader>) o).get(0);
+		}
 	}
 
 	/**
@@ -781,12 +949,15 @@ public class Project
 	 */
 	public InterfaceDeclaration getInterface(String name)
 	{
-		Object o = interfaces.get(name.toLowerCase());
-		if (o instanceof InterfaceDeclaration)
-			return (InterfaceDeclaration) o;
-		if (o == null)
-			return null;
-		return ((List<InterfaceDeclaration>) o).get(0);
+		synchronized (LOCK)
+		{
+			Object o = interfaces.get(name.toLowerCase());
+			if (o instanceof InterfaceDeclaration)
+				return (InterfaceDeclaration) o;
+			if (o == null)
+				return null;
+			return ((List<InterfaceDeclaration>) o).get(0);
+		}
 	}
 
 	/**
@@ -796,7 +967,10 @@ public class Project
 	 */
 	public String getVersion()
 	{
-		return properties.getProperty("version");
+		synchronized (LOCK)
+		{
+			return properties.getProperty("version");
+		}
 	}
 
 	/**
@@ -806,7 +980,10 @@ public class Project
 	 */
 	public int getClassCount()
 	{
-		return classes.size();
+		synchronized (LOCK)
+		{
+			return classes.size();
+		}
 	}
 
 	/**
@@ -816,7 +993,10 @@ public class Project
 	 */
 	public int getMethodCount()
 	{
-		return methods.size();
+		synchronized (LOCK)
+		{
+			return methods.size();
+		}
 	}
 
 	/**
@@ -826,7 +1006,10 @@ public class Project
 	 */
 	public int getFileCount()
 	{
-		return files.size();
+		synchronized (LOCK)
+		{
+			return files.size();
+		}
 	}
 
 	public QuickAccessItemFinder getQuickAccess()
@@ -842,15 +1025,18 @@ public class Project
 	 */
 	public boolean addExcludedFolder(String excludedFolder)
 	{
-		if (excludedFolders.contains(excludedFolder))
-			return false;
+		synchronized (LOCK)
+		{
+			if (excludedFolders.contains(excludedFolder))
+				return false;
 
-		Log.log(Log.DEBUG, this, "Excluding folder " + excludedFolder);
-		checkDatas(classes);
-		checkDatas(interfaces);
-		checkDatas(methods);
+			Log.log(Log.DEBUG, this, "Excluding folder " + excludedFolder);
+			checkDatas(classes);
+			checkDatas(interfaces);
+			checkDatas(methods);
 
-		return excludedFolders.add(excludedFolder);
+			return excludedFolders.add(excludedFolder);
+		}
 	}
 
 	private void checkDatas(Map<String, Object> map)
@@ -885,13 +1071,15 @@ public class Project
 				if (l.isEmpty())
 					iterator.remove();
 			}
-
 		}
 	}
 
 	public boolean removeExcludedFolder(String excludedFolder)
 	{
-		return excludedFolders.remove(excludedFolder);
+		synchronized (LOCK)
+		{
+			return excludedFolders.remove(excludedFolder);
+		}
 	}
 
 	/**
@@ -963,7 +1151,8 @@ public class Project
 				}
 			}
 			long end = System.currentTimeMillis();
-			Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
+			Log.log(Log.MESSAGE, this,
+				"Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
 			EditBus.send(new PHPProjectChangedMessage(this, project, PHPProjectChangedMessage.SELECTED));
 		}
 

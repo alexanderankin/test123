@@ -3,6 +3,8 @@ package gatchan.phpparser.project;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.ThreadUtilities;
 
 import javax.swing.*;
 import java.io.File;
@@ -37,12 +39,14 @@ public class ProjectManager
 	/**
 	 * PHPParser project directory.
 	 */
-	public static final String projectDirectory = settingsDirectory + File.separator + "PHPParserPlugin" + File.separator + "projects";
+	public static final String projectDirectory =
+		settingsDirectory + File.separator + "PHPParserPlugin" + File.separator + "projects";
 
 	/**
 	 * PHPParser project version.
 	 */
-	public static final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.formatversion");
+	public static final String projectVersion =
+		jEdit.getProperty("plugin.gatchan.phpparser.projects.formatversion");
 	private static final String PROJECT_NAME_PROPERTY = "gatchan.phpparser.project.file";
 
 	private ProjectList projectList;
@@ -57,14 +61,14 @@ public class ProjectManager
 		if (projectFilePath != null)
 		{
 			Log.log(Log.DEBUG, this, "Opening project " + projectFilePath);
-			File projectFile = new File(projectDirectory + File.separator + projectFilePath + ".project.props");
+			File projectFile =
+				new File(projectDirectory + File.separator + projectFilePath + ".project.props");
 			openProject(projectFile);
 		}
 	}
 
 	/**
-	 * Returns the project list.
-	 * It's also a {@link ListModel} and a {@link ComboBoxModel}
+	 * Returns the project list. It's also a {@link ListModel} and a {@link ComboBoxModel}
 	 *
 	 * @return the project list
 	 */
@@ -126,13 +130,14 @@ public class ProjectManager
 						}
 						catch (InvalidProjectPropertiesException e)
 						{
-							Log.log(Log.WARNING,
-								this,
-								"Warning the file " + projectFile.getAbsolutePath() + " is not a valid project");
+							Log.log(Log.WARNING, this,
+								"Warning the file " + projectFile.getAbsolutePath()
+								+ " is not a valid project");
 						}
 						catch (FileNotFoundException e)
 						{
-							Log.log(Log.ERROR, this, "This error should never happens !!!!");
+							Log.log(Log.ERROR, this,
+								"This error should never happens !!!!");
 							Log.log(Log.ERROR, this, e);
 						}
 					}
@@ -206,8 +211,7 @@ public class ProjectManager
 	{
 		if (project != null)
 		{
-			if (project.needSave())
-				project.save();
+			if (project.needSave()) project.save();
 			project.unload();
 		}
 		project = null;
@@ -228,8 +232,7 @@ public class ProjectManager
 		try
 		{
 			Project project = projectList.getProject(projectFile);
-			project.load();
-			this.project = project;
+			openProject(project);
 		}
 		catch (InvalidProjectPropertiesException e)
 		{
@@ -242,18 +245,38 @@ public class ProjectManager
 			project = null;
 			jEdit.setProperty(PROJECT_NAME_PROPERTY, null);
 		}
-		EditBus.send(new PHPProjectChangedMessage(this, project, PHPProjectChangedMessage.SELECTED));
 	}
 
 	public void openProject(Project project)
 	{
-		if (this.project != null)
-		{
-			closeProject();
-		}
-		project.load();
-		this.project = project;
+		Task projectLoadingTask = new ProjectLoadingTask(project);
+		ThreadUtilities.runInBackground(projectLoadingTask);
+	}
 
-		EditBus.send(new PHPProjectChangedMessage(this, this.project, PHPProjectChangedMessage.SELECTED));
+	private class ProjectLoadingTask extends Task
+	{
+		private final Project project;
+
+		private ProjectLoadingTask(Project project)
+		{
+			this.project = project;
+			setLabel("PHP Project loading");
+		}
+
+		@Override
+		public void _run()
+		{
+			if (ProjectManager.this.project != null)
+			{
+				closeProject();
+			}
+			project.load(this);
+			ProjectManager.this.project = project;
+
+			EditBus.send(new PHPProjectChangedMessage(this, ProjectManager.this.project,
+								  PHPProjectChangedMessage.SELECTED));
+		}
+
+
 	}
 }
