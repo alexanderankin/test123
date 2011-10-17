@@ -4,7 +4,9 @@ plugin.actionhooks.ActionHooksPlugin.name=ActionHooks
 plugin.actionhooks.ActionHooksPlugin.author=Ollie Rutherfurd
 plugin.actionhooks.ActionHooksPlugin.version=0.6
 plugin.actionhooks.ActionHooksPlugin.docs=doc/index.html
-plugin.actionhooks.ActionHooksPlugin.depend.0=jedit 04.03.99.00
+plugin.actionhooks.ActionHooksPlugin.description=description.html
+plugin.actionhooks.ActionHooksPlugin.depend.0=jdk 1.5
+plugin.actionhooks.ActionHooksPlugin.depend.1=jedit 04.03.99.00
 
 # menu
 
