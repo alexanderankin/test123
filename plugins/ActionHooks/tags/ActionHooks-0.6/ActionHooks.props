@@ -1,0 +1,33 @@
+plugin.actionhooks.ActionHooksPlugin.activate=startup
+
+plugin.actionhooks.ActionHooksPlugin.name=ActionHooks
+plugin.actionhooks.ActionHooksPlugin.author=Ollie Rutherfurd
+plugin.actionhooks.ActionHooksPlugin.version=0.6
+plugin.actionhooks.ActionHooksPlugin.docs=doc/index.html
+plugin.actionhooks.ActionHooksPlugin.description=description.html
+plugin.actionhooks.ActionHooksPlugin.depend.0=jdk 1.5
+plugin.actionhooks.ActionHooksPlugin.depend.1=jedit 04.03.99.00
+
+# menu
+
+plugin.actionhooks.ActionHooksPlugin.menu-item=actionhooks-enabled
+actionhooks-enabled.label=ActionHooks
+
+# option pane
+
+plugin.actionhooks.ActionHooksPlugin.option-pane=actionhooks
+
+options.actionhooks.label=ActionHooks
+options.actionhooks.code=new actionhooks.options.ActionHooksOptionPane();
+options.actionhooks.enabled=Enable ActionHooks when jEdit Starts
+options.actionhooks.bindings=Bindings
+options.actionhooks.event=Event:\ 
+
+options.actionhooks.add=Bind New Action to Event...
+options.actionhooks.remove=Unbind Action from Event
+options.actionhooks.moveUp=Move Up
+options.actionhooks.moveDown=Move Down
+
+options.actionhooks.select-action.title=Select Action
+options.actionhooks.actionSetCombo.label=Action Set:
+# :lineSeparator=\n:

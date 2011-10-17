@@ -1,0 +1,248 @@
+==================
+ActionHooks Plugin
+==================
+
+:Author: Ollie Rutherfurd
+:Contact: oliver@jedit.org
+:Version: 0.6
+
+.. :mode=rest:lineSeparator=\n:noTabs=true:maxLineLen=68:
+
+About
+=====
+
+`ActionHooks` enables one to execute actions or macros in reponse to
+specific `EditBus` messages. The `EditBus` is jEdit's mechanism for
+event notification. jEdit "sends" `EditBus` messages when buffers
+are opened, closed, properties changed; when views are created or
+destroyed; when you switch between edit panes and when other events
+occur. As an example, using `ActionHooks`, you could write a macro
+to hide all docking areas when you split a view into multiple edit
+panes. An example macro for this is provided `below`__. It would be
+bound to ``EditPane.CREATED``.
+
+This allows for powerful customization of jEdit. 
+
+Other `Examples`_ include setting custom buffer properties depending
+on the buffer's path or automatically displaying `SideKick's`
+`Structure Browser` when you switch to a buffer containing an XML
+file.
+
+__ `Hiding All Docking Areas`_
+
+
+Usage
+=====
+
+To use `ActionHooks` you must do 2 things.
+
+1. Enable it.
+
+   By default `ActionHooks` is not enabled. To enable `ActionHooks`
+   select `Plugins` > `ActionHooks`. To enable `ActionHooks` by
+   default, select `Plugins` > `Plugin Options` > `ActionHooks` >
+   `Enable ActionHooks by Default`.
+
+2. Associate actions or macros with events.
+
+   To associate actions or macros with events, go to
+   `Plugins` > `Plugin Options` > `ActionHooks`.  You'll see a
+   dropdown box with a list of available events 
+   (`EditBus` messages).  Use the buttons below to add, remove,
+   or change the execution order for actions or macros
+   associated with the selected event.
+
+
+Examples
+========
+
+Showing `Structure Browser` for XML buffers
+-------------------------------------------
+
+If you associate the following macro with 
+``EditPaneUpdate.BUFFER_CHANGED``, when you open
+or switch to an xml or xsl buffer, `SideKick's` 
+`Structure Browser` will be displayed.  If 
+`SideKick's` `Structure Browser` is open and you
+switch to a buffer of another type, it will be
+hidden.
+
+.. include:: examples/Toggle_Structure_Browser.bsh
+    :literal:
+
+
+Setting Buffer Properties
+-------------------------
+
+With the following macro bound to ``EditPaneUpdate.BUFFER_CHANGED``,
+custom buffer properties are set when you switch to a buffer whose
+filename contains ``project_x`` or ``project_y``. This can be handy
+when working on projects with different editing conventions from
+your defaults if coding conventions prevent the use of buffer
+local properties.
+
+.. include:: examples/Set_Buffer_Properties.bsh
+    :literal:
+
+
+Hiding All Docking Areas
+------------------------
+
+If you bind the following macro to ``EditPane.CREATED``, when
+you split a view all docking areas will be collapsed to make room
+for viewing the edit panes.
+
+.. include:: examples/Hide_Docking_Areas.bsh
+    :literal:
+
+Tips
+====
+
+* Use `Utilities` > `Troubleshooting` > `Activity Log` (along with
+  jEdit's API Documentation) to see when `EditBus` messages are 
+  sent.
+
+* Remember that any actions or macros you bind to events
+  may be run a lot and/or frequently.  For example, if you 
+  bind a macro to ``BufferUpdate.LOADED`` it will be run for 
+  each buffer that jEdit re-opens on startup (if enabled).  
+  With a large number of buffers open, then may increase 
+  startup time.
+
+* If you write macros to bind to `EditBus` messages, test them
+  well.  It's easy to make a bit of a mess of things if jEdit
+  starts invoking macros which have errors.  Remember you can always
+  disable `ActionHooks` via `Plugins` > `ActionHooks`.
+
+* Depending on the event, some operations may not work as expected.
+  For example, while a buffer is being saved, the textarea is 
+  read-only, so the following macro bound to 
+  ``BufferUpdate.SAVING`` wouldn't work::
+  
+        textArea.selectAll();
+        textArea.removeTrailingWhiteSpace();
+  
+  In this specific example, you could work around the issue
+  by modifying the buffer itself, but make sure to read jEdit's
+  API docs or code so your actions don't produce unwanted results.
+
+
+Extending ActionHooks
+=====================
+
+By default `ActionHooks` supports the following `EditBus`
+messages: 
+
+ * `BufferUpdate`
+ * `EditPaneUpdate`
+ * `PropertiesChanged`
+ * `ViewUpdate`
+
+Plugins can add support for `EditBus` messages they provide by
+registering `EBMessageHandler` subclasses with `ActionHooks`.
+
+EBMessageHandler
+----------------
+
+An `EBMessageHandler` does the following:
+
+* Tells `ActionHooks` the name of the `EditBus` it handles.
+  For example, ``org.gjt.sp.jedit.msg.BufferUpdate``.
+* Tells `ActionHooks` the list of "events" associated
+  with the `EditBus` message it handles. For example,
+  ``BufferUpdate.LOADED``, ``BufferUpdate.CLOSED``, 
+  ``BufferUpdate.SAVING``, ``BufferUpdate.SAVED``.
+* When an `EditBus` message is sent an `EBMessageHandler`
+  tells `ActionHooks` which event it corresponds to.  
+  For example, a ``BufferUpdate`` message is sent for
+  ``BufferUpdate.LOADED``, ``BufferUpdate.CLOSED``, 
+  ``BufferUpdate.SAVING``, ``BufferUpdate.SAVED``.
+  The `EBMessageHandler` must specify which "event" the
+  specific `EditBus` is for.
+* Tells `ActionHooks` which view to use for invoking
+  EditActions or Macros for an event.
+
+EBMessageHandler Example
+------------------------
+
+Writing an `EBMessageHandler` is actually pretty simple. Here's the
+source for `PropertiesChangedHandler`::
+
+    package actionhooks.handler;
+    
+    import org.gjt.sp.jedit.EBMessage;
+    import org.gjt.sp.jedit.View;
+    import org.gjt.sp.jedit.msg.PropertiesChanged;
+    
+    import actionhooks.EBMessageHandler;
+    
+    public class PropertiesChangedHandler extends EBMessageHandler
+    {
+    
+        static String[] events = {"PropertiesChanged"};
+    
+        public String getMessageName()
+        {
+            return "org.gjt.sp.jedit.msg.PropertiesChanged";
+        }
+    
+        public View getView(EBMessage msg)
+        {
+            return null;
+        }
+    
+        public String[] getEventNames()
+        {
+            return this.events;
+        }
+    
+        public String getEventName(EBMessage msg)
+        {
+            return "PropertiesChanged";
+        }
+    
+    }
+
+See the source code for `ActionHooks` for more examples.
+
+Registering an EBMessageHandler
+-------------------------------
+
+Plugins register an `EBMessageHandler` using::
+
+    ActionHooksPlugin.registerHandler(<handler>);
+
+and unregister a handler using::
+
+    ActionHooksPlugin.unregisterHandler(<handler>);
+
+
+Version History
+===============
+
+* 0.5
+
+  Plugins can register EBMessageHandler classes
+  to add support for custom EditBus messages.
+
+* 0.4.1, released 2004-01-10
+
+  First public release
+
+
+Feedback
+========
+
+Send bug reports or feature requests to:
+
+* Ollie Rutherfurd <oliver@jedit.org>;
+* or jEdit-users mailing-list <jedit-users@lists.sourceforge.net>;
+* or jEdit-devel mailing-list <jedit-devel@lists.sourceforge.net>.
+
+
+License
+=======
+
+The source code for this plugin is release under the GPL.
+Please see http://www.fsf.org/copyleft/gpl.html.
+
