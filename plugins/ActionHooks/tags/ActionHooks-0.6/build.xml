@@ -14,6 +14,7 @@
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
+    <property name="user-doc.xml" value="${basedir}/doc/users-guide.xml" />
 
 	<property file="build.support" value="../build-support" />
 	<import file="${build.support}/plugin-build.xml" />
