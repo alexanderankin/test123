@@ -8,7 +8,7 @@
 <othername>Ollie Rutherfurd</othername>
 <email>oliver@jedit.org</email>
 </author>
-<edition>Version 0.5</edition>
+<edition>Version 0.6</edition>
 </articleinfo>
 <!-- :mode=rest:lineSeparator=\n:noTabs=true:maxLineLen=68: -->
 <section id="about">
@@ -296,6 +296,9 @@ ActionHooksPlugin.unregisterHandler(&lt;handler&gt;);</programlisting>
 <section id="version-history">
 <title>Version History</title>
 <itemizedlist>
+<listitem>
+<para>0.6</para><para>Plugin updated for compatibility with latest apis.</para>
+</listitem>
 <listitem>
 <para>0.5</para><para>Plugins can register EBMessageHandler classes
 to add support for custom EditBus messages.</para></listitem>

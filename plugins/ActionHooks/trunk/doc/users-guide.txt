@@ -4,7 +4,7 @@ ActionHooks Plugin
 
 :Author: Ollie Rutherfurd
 :Contact: oliver@jedit.org
-:Version: 0.5
+:Version: 0.6
 
 .. :mode=rest:lineSeparator=\n:noTabs=true:maxLineLen=68:
 
