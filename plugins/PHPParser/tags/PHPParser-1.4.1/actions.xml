@@ -1,0 +1,52 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="gatchan-phpparser-findClass">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.findClass(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="gatchan-phpparser-findInterface">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.findInterface(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="gatchan-phpparser-findClassOrInterface">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.findClassOrInterface(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="gatchan-phpparser-findMethod">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.findMethod(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="gatchan-phpparser-findInFile">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.findInFile(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="phpparser-dump">
+		<CODE>
+			import net.sourceforge.phpdt.internal.compiler.ast;
+			PHPDocument document = (PHPDocument) buffer.getProperty(PHPSideKickParser.PHPDOCUMENT_PROPERTY);
+			if (document == null)
+			return;
+			AstNode[] astNodes = document.getNodes();
+			for (AstNode astNode : astNodes)
+			{
+			Log.log(Log.DEBUG,PHPParserPlugin.class, astNode.toString());
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="phpparser-dumptypes">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.dumpDocumentTypes(buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="phpparser-debug-at-caret">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.debugAtCaret(textArea, buffer);
+		</CODE>
+	</ACTION>
+</ACTIONS>
