@@ -237,13 +237,13 @@ public interface PHPParserConstants {
   /** RegularExpression Id. */
   int IDENTIFIER = 133;
   /** RegularExpression Id. */
-  int NAMESPACE_IDENTIFIER = 134;
+  int LETTER = 134;
   /** RegularExpression Id. */
-  int LETTER = 135;
+  int DIGIT = 135;
   /** RegularExpression Id. */
-  int DIGIT = 136;
+  int SPECIAL = 136;
   /** RegularExpression Id. */
-  int SPECIAL = 137;
+  int NAMESPACE_IDENTIFIER = 137;
   /** RegularExpression Id. */
   int LPAREN = 140;
   /** RegularExpression Id. */
@@ -464,10 +464,10 @@ public interface PHPParserConstants {
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
-    "<NAMESPACE_IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
+    "<NAMESPACE_IDENTIFIER>",
     "<token of kind 138>",
     "<token of kind 139>",
     "\"(\"",
