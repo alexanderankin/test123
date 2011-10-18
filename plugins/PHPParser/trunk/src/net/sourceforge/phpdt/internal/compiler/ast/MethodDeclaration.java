@@ -601,6 +601,8 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 	@Override
 	public void visitSubNodes(NodeVisitor visitor)
 	{
+		if (statements == null)
+			return;
 		for (AstNode node : statements)
 		{
 			if (node == null)
