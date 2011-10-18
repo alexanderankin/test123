@@ -44,6 +44,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testParserSuccess()
 	{
+		checkPHP("try {\n" + "}\n" + "catch (Exception $e) {\n" + "}");
 		checkPHP("$a = \"\\n\\n\";");
 		checkPHP("use N\\ett\\e;");
 		checkPHP("use Nette;");

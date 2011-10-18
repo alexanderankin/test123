@@ -1051,11 +1051,7 @@ UseNamespace useNamespace():
 	} //}}}
 	try
 	{
-		(
-			namespaceNameToken = <IDENTIFIER>
-		|
-			namespaceNameToken = <NAMESPACE_IDENTIFIER>
-		)
+		namespaceNameToken = namespaceIdentifier()
 		{
 			namespaceName = namespaceNameToken.image;
 			sourceEnd = namespaceNameToken.sourceEnd;
@@ -4019,6 +4015,22 @@ Expression fullyQualifiedIdentifier():
 	 }
 } //}}}
 
+//{{{ namespaceIdentifier() method
+Token namespaceIdentifier():
+{
+	Token token;
+}
+{
+	(
+		token = <NAMESPACE_IDENTIFIER>
+	|
+		token = <IDENTIFIER>
+	)
+	{
+		return token;
+	}
+} //}}}
+
 
 //{{{ instantiation()
 Expression instantiation(Token reference):
@@ -4903,7 +4915,7 @@ Catch catchClause() :
 	//{{{ <NAMESPACE_IDENTIFIER>
 	try
 	{
-		catchedException = <NAMESPACE_IDENTIFIER>
+		catchedException = namespaceIdentifier()
 		{
 			catchedString = catchedException.image;
 		}
