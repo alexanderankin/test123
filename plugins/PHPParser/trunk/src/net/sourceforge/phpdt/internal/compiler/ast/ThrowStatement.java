@@ -45,7 +45,7 @@ public class ThrowStatement extends Statement
 	@Override
 	public void getUsedVariable(List<VariableUsage> list)
 	{
-		throwed.getOutsideVariable(list);
+		throwed.getUsedVariable(list);
 	}
 
 	@Override

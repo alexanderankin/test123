@@ -3378,14 +3378,17 @@ Expression AndExpression():
 } //}}}
 
 //{{{ EqualityExpression()
-Expression EqualityExpression() :
+Expression EqualityExpression():
 {
-	Expression expr,expr2;
+	Expression left;
+	Expression right;
 	Token token;
-	int sourceEnd,endLine,endColumn;
+	int sourceEnd;
+	int endLine;
+	int endColumn;
 }
 {
-	expr = instanceofExpression()
+	left = instanceofExpression()
 	(
 		(
 			token = <EQUAL_EQUAL>
@@ -3400,7 +3403,7 @@ Expression EqualityExpression() :
 		)
 		try
 		{
-			expr2 = instanceofExpression()
+			right = instanceofExpression()
 		}
 		catch (ParseException e)
 		{
@@ -3408,7 +3411,7 @@ Expression EqualityExpression() :
 			{
 				throw e;
 			}
-			expr2 = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
+			right = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
 				token.sourceEnd +1,
 				token.sourceEnd +1,
 				token.beginLine,
@@ -3428,7 +3431,7 @@ Expression EqualityExpression() :
 				e.currentToken.endColumn+1));
 		}
 		{
-			if (expr2 == null)
+			if (right == null)
 			{
 				sourceEnd = token.sourceEnd;
 				endLine   = token.endLine;
@@ -3436,18 +3439,18 @@ Expression EqualityExpression() :
 			}
 			else
 			{
-				sourceEnd = expr2.getSourceEnd();
-				endLine   = expr2.getEndLine();
-				endColumn = expr2.getEndColumn();
+				sourceEnd = right.getSourceEnd();
+				endLine   = right.getEndLine();
+				endColumn = right.getEndColumn();
 			}
-			expr = new BinaryExpression(expr,expr2,
-				token.kind,expr.getSourceStart(),
-				sourceEnd,expr.getBeginLine(),endLine,
-				expr.getBeginColumn(),endColumn);
+			left = new BinaryExpression(left,right,
+				token.kind,left.getSourceStart(),
+				sourceEnd,left.getBeginLine(),endLine,
+				left.getBeginColumn(),endColumn);
 		}
-		)*
+	)*
 	{
-		return expr;
+		return left;
 	}
 } //}}}
 
