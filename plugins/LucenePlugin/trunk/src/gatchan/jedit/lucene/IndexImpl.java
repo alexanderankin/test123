@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,9 +27,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.io.VFS;
@@ -43,6 +43,7 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -62,6 +63,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		this.name = name;
 	}
 
+	@Override
 	public String getName()
 	{
 		return name;
@@ -73,9 +75,10 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			writerCount++;
 		}
-		for (ActivityListener al: listeners)
+		for (ActivityListener al : listeners)
 			al.indexingStarted(this);
 	}
+
 	private void endActivity(boolean close)
 	{
 		synchronized (this)
@@ -89,15 +92,17 @@ public class IndexImpl extends AbstractIndex implements Index
 				closeWriter = false;
 			}
 		}
-		for (ActivityListener al: listeners)
+		for (ActivityListener al : listeners)
 			al.indexingEnded(this);
 	}
 
+	@Override
 	public synchronized boolean isChanging()
 	{
-		return (writerCount > 0);
+		return writerCount > 0;
 	}
 
+	@Override
 	public void addFiles(FileProvider files)
 	{
 		try
@@ -132,11 +137,13 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	public void addFiles(final VFSFile[] files)
+	@Override
+	public void addFiles(VFSFile[] files)
 	{
 		addFiles(new FileArrayProvider(files));
 	}
 
+	@Override
 	public void addFile(String path)
 	{
 		openWriter();
@@ -182,7 +189,9 @@ public class IndexImpl extends AbstractIndex implements Index
 			try
 			{
 				VFS vfs = file.getVFS();
-				String[] files = vfs._listDirectory(session, file.getPath(), filter, true, jEdit.getActiveView(), false, false);
+				String[] files =
+					vfs._listDirectory(session, file.getPath(), filter, true, jEdit.getActiveView(),
+							   false, false);
 				for (String f : files)
 				{
 					VFSFile vfsFile = vfs._getFile(session, f, jEdit.getActiveView());
@@ -200,6 +209,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
+	@Override
 	public void removeFile(String path)
 	{
 		openWriter();
@@ -216,9 +226,10 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
+	@Override
 	public void reindex()
 	{
-		Log.log(Log.DEBUG,this, "reindex()");
+		Log.log(Log.DEBUG, this, "reindex()");
 		openWriter();
 		if (writer == null)
 		{
@@ -233,15 +244,16 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
+	@Override
 	public void search(String query, String fileType, int max, ResultProcessor processor)
 	{
 		if (max < 1)
 			max = 1;
-		Searcher searcher = getSearcher();
+		IndexSearcher searcher = getSearcher();
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_30, new String[]{"path", "content"},
-			getAnalyzer());
+		QueryParser parser =
+			new MultiFieldQueryParser(Version.LUCENE_30, new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			StringBuilder queryStr = new StringBuilder();
@@ -305,9 +317,10 @@ public class IndexImpl extends AbstractIndex implements Index
 		Reader reader = null;
 		try
 		{
-			reader = new BufferedReader(new InputStreamReader(
-				file.getVFS()._createInputStream(session, file.getPath(),
-					false, jEdit.getActiveView())));
+			reader = new BufferedReader(new InputStreamReader(file.getVFS()._createInputStream(session,
+													   file.getPath(),
+													   false,
+													   jEdit.getActiveView())));
 			doc.add(new Field("content", reader));
 			LucenePlugin.CENTRAL.addFile(file.getPath(), name);
 			writer.updateDocument(new Term("_path", file.getPath()), doc);
@@ -322,7 +335,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	protected Document getEmptyDocument(VFSFile file)
+	protected static Document getEmptyDocument(VFSFile file)
 	{
 		Document doc = new Document();
 		if (file.getPath() == null)
@@ -332,7 +345,8 @@ public class IndexImpl extends AbstractIndex implements Index
 		String extension = MiscUtilities.getFileExtension(file.getPath());
 		if (extension.length() != 0)
 		{
-			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO, Field.Index.NOT_ANALYZED));
+			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO,
+					  Field.Index.NOT_ANALYZED));
 		}
 
 		return doc;
@@ -340,13 +354,22 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	private static class MyVFSFilter implements VFSFileFilter
 	{
+		private String[] excludedDirectories;
+
+		private MyVFSFilter()
+		{
+			String property = jEdit.getProperty("lucene.options.ExcludeDirectories", "CVS .svn .git");
+			excludedDirectories = property.split(" ");
+			Arrays.sort(excludedDirectories);
+		}
+
+		@Override
 		public boolean accept(VFSFile file)
 		{
 			String name = file.getName();
-			if (file.getType() == VFSFile.DIRECTORY
-			    || file.getType() == VFSFile.FILESYSTEM)
+			if (file.getType() == VFSFile.DIRECTORY || file.getType() == VFSFile.FILESYSTEM)
 			{
-				return !(name.equals(".svn") || name.equals("CVS"));
+				return Arrays.binarySearch(excludedDirectories, name) > 0;
 			}
 			else
 			{
@@ -354,11 +377,13 @@ public class IndexImpl extends AbstractIndex implements Index
 			}
 		}
 
+		@Override
 		public boolean accept(String url)
 		{
 			return OptionPane.accept(url);
 		}
 
+		@Override
 		public String getDescription()
 		{
 			return null;
