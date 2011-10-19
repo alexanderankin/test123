@@ -154,12 +154,6 @@ public class TemporaryIndex implements Index
 	}
 
 	@Override
-	public void addFiles(VFSFile[] files)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void addFiles(FileProvider files)
 	{
 		throw new UnsupportedOperationException();

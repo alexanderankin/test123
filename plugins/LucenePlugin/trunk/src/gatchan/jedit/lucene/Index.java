@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,13 +40,22 @@ public interface Index
 
 	String getName();
 	Analyzer getAnalyzer();
+
+	/**
+	 * Add a single file to the index.
+	 * @param path the path of the added file.
+	 */
 	void addFile(String path);
-	void addFiles(VFSFile[] files);
 
 	interface FileProvider
 	{
 		VFSFile next();
 	}
+
+	/**
+	 * Add several files to an index
+	 * @param files the file provider
+	 */
 	void addFiles(FileProvider files);
 	void removeFile(String path);
 

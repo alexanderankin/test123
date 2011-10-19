@@ -138,12 +138,6 @@ public class IndexImpl extends AbstractIndex implements Index
 	}
 
 	@Override
-	public void addFiles(VFSFile[] files)
-	{
-		addFiles(new FileArrayProvider(files));
-	}
-
-	@Override
 	public void addFile(String path)
 	{
 		openWriter();
