@@ -41,10 +41,14 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ProgressObserver;
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.ThreadUtilities;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Matthieu Casanova
@@ -103,10 +107,12 @@ public class IndexImpl extends AbstractIndex implements Index
 	}
 
 	@Override
-	public void addFiles(FileProvider files)
+	public void addFiles(FileProvider files, ProgressObserver progressObserver)
 	{
 		try
 		{
+			if (progressObserver != null)
+				progressObserver.setMaximum(files.size());
 			startActivity();
 			VFSFile file = files.next();
 			if (file == null)
@@ -118,8 +124,14 @@ public class IndexImpl extends AbstractIndex implements Index
 			VFS vfs = VFSManager.getVFSForPath(path);
 			View view = jEdit.getActiveView();
 			Object session = vfs.createVFSSession(path, view);
+			int i = 0;
 			for (; file != null; file = files.next())
 			{
+				if (progressObserver != null)
+				{
+					progressObserver.setStatus(file.getPath());
+					progressObserver.setValue(i++);
+				}
 				addDocument(file, session);
 			}
 			try
@@ -176,25 +188,57 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	private void addFile(VFSFile file, Object session)
+	private void addFile(final VFSFile file, final Object session)
 	{
 		if (file.getType() == VFSFile.DIRECTORY)
 		{
 			try
 			{
-				VFS vfs = file.getVFS();
-				String[] files =
-					vfs._listDirectory(session, file.getPath(), filter, true, jEdit.getActiveView(),
-							   false, false);
-				for (String f : files)
+				final CountDownLatch latch = new CountDownLatch(1);
+				Task task = new Task()
 				{
-					VFSFile vfsFile = vfs._getFile(session, f, jEdit.getActiveView());
-					addFile(vfsFile, session);
-				}
+					@Override
+					public void _run()
+					{
+						try
+						{
+							setStatus("Listing directory " + file.getPath());
+							VFS vfs = file.getVFS();
+							String[] files =
+								vfs._listDirectory(session, file.getPath(), filter,
+										   true, jEdit.getActiveView(), false,
+										   false);
+							String suffix = "/" + files.length;
+							setMaximum(files.length);
+							for (int i = 0, filesLength = files.length;
+							     i < filesLength;
+							     i++)
+							{
+								setValue(i);
+								String f = files[i];
+								setStatus(i + suffix);
+								VFSFile vfsFile =
+									vfs._getFile(session, f, jEdit.getActiveView());
+								addFile(vfsFile, session);
+							}
+						}
+						catch (IOException e)
+						{
+							Log.log(Log.ERROR, this,
+								"Unable to list directory " + file.getPath(), e);
+						}
+						finally
+						{
+							latch.countDown();
+						}
+					}
+				};
+				ThreadUtilities.runInBackground(task);
+				latch.await();
 			}
-			catch (IOException e)
+			catch (InterruptedException e)
 			{
-				Log.log(Log.ERROR, this, "Unable to list directory " + file.getPath(), e);
+				Log.log(Log.ERROR, this, e);
 			}
 		}
 		else if (file.getType() == VFSFile.FILE)
@@ -221,7 +265,7 @@ public class IndexImpl extends AbstractIndex implements Index
 	}
 
 	@Override
-	public void reindex()
+	public void reindex(ProgressObserver progressObserver)
 	{
 		Log.log(Log.DEBUG, this, "reindex()");
 		openWriter();
@@ -231,8 +275,19 @@ public class IndexImpl extends AbstractIndex implements Index
 			return;
 		}
 		List<String> allDocuments = LucenePlugin.CENTRAL.getAllDocuments(name);
-		for (String path : allDocuments)
+		if (progressObserver != null)
 		{
+			progressObserver.setMaximum(allDocuments.size());
+		}
+		String suffix = "/" + allDocuments.size();
+		for (int i = 0, allDocumentsSize = allDocuments.size(); i < allDocumentsSize; i++)
+		{
+			String path = allDocuments.get(i);
+			if (progressObserver != null)
+			{
+				progressObserver.setValue(i);
+				progressObserver.setStatus(i + suffix);
+			}
 			removeFile(path);
 			addFile(path);
 		}
@@ -363,7 +418,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			String name = file.getName();
 			if (file.getType() == VFSFile.DIRECTORY || file.getType() == VFSFile.FILESYSTEM)
 			{
-				return Arrays.binarySearch(excludedDirectories, name) > 0;
+				return Arrays.binarySearch(excludedDirectories, name) < 0;
 			}
 			else
 			{

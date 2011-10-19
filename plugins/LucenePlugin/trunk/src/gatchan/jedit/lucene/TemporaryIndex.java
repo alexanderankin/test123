@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ProgressObserver;
 
 import javax.swing.text.Segment;
 import java.io.CharArrayReader;
@@ -118,7 +119,7 @@ public class TemporaryIndex implements Index
 	}
 
 	@Override
-	public void reindex()
+	public void reindex(ProgressObserver progressObserver)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -154,7 +155,7 @@ public class TemporaryIndex implements Index
 	}
 
 	@Override
-	public void addFiles(FileProvider files)
+	public void addFiles(FileProvider files, ProgressObserver progressObserver)
 	{
 		throw new UnsupportedOperationException();
 	}

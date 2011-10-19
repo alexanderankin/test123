@@ -35,6 +35,8 @@ import org.gjt.sp.util.Log;
 
 import gatchan.jedit.lucene.Index.FileProvider;
 
+import org.gjt.sp.util.ProgressObserver;
+import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 
 import javax.swing.*;
@@ -319,7 +321,7 @@ public class LucenePlugin extends EditPlugin
 	 * @param sharedSession whether the VFS session can be shared by all files
 	 */
 	public void addToIndex(String indexName, FileProvider files,
-		boolean sharedSession)
+		boolean sharedSession, ProgressObserver progressObserver)
 	{
 		Index index = getIndex(indexName);
 		if (index == null)
@@ -328,7 +330,7 @@ public class LucenePlugin extends EditPlugin
 			return;
 		}
 		if (sharedSession)
-			index.addFiles(files);
+			index.addFiles(files, progressObserver);
 		else
 		{
 			for (VFSFile file = files.next(); file != null; file = files.next())
@@ -349,14 +351,16 @@ public class LucenePlugin extends EditPlugin
 	public void addToIndex(final String indexName, final VFSFile[] files,
 		final boolean sharedSession)
 	{
-		ThreadUtilities.runInBackground(new Runnable()
+
+		Task task = new Task()
 		{
 			@Override
-			public void run()
+			public void _run()
 			{
-				addToIndex(indexName, new FileArrayProvider(files), sharedSession);		
+				addToIndex(indexName, new FileArrayProvider(files), sharedSession, this);
 			}
-		});
+		};
+		ThreadUtilities.runInBackground(task);
 	}
 
 	/**

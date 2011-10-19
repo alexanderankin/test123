@@ -21,6 +21,8 @@
 
 package gatchan.jedit.lucene;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
@@ -46,9 +48,33 @@ class ReindexTask extends Task
 		{
 			setMaximum(5L);
 			Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
-			Index index = LucenePlugin.instance.getIndex(indexName);
+			final Index index = LucenePlugin.instance.getIndex(indexName);
 			setStatus("Reindex " + indexName);
-			index.reindex();
+			final CountDownLatch latch = new CountDownLatch(1);
+			Task task = new Task()
+			{
+				@Override
+				public void _run()
+				{
+					try
+					{
+						index.reindex(this);
+					}
+					finally
+					{
+						latch.countDown();
+					}
+				}
+			};
+			ThreadUtilities.runInBackground(task);
+			try
+			{
+				latch.await();
+			}
+			catch (InterruptedException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
 			setValue(1L);
 			Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
 			Log.log(Log.NOTICE, this, "Optimize index:" + indexName);

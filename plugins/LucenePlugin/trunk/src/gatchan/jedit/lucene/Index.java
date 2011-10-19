@@ -22,6 +22,7 @@ package gatchan.jedit.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.util.ProgressObserver;
 
 /**
  * @author Matthieu Casanova
@@ -36,7 +37,7 @@ public interface Index
 	boolean isOptimized();
 	void optimize();
 	void commit();
-	void reindex();
+	void reindex(ProgressObserver progressObserver);
 
 	String getName();
 	Analyzer getAnalyzer();
@@ -50,13 +51,14 @@ public interface Index
 	interface FileProvider
 	{
 		VFSFile next();
+		int size();
 	}
 
 	/**
 	 * Add several files to an index
 	 * @param files the file provider
 	 */
-	void addFiles(FileProvider files);
+	void addFiles(FileProvider files, ProgressObserver progressObserver);
 	void removeFile(String path);
 
 	void setAnalyzer(Analyzer analyzer);
