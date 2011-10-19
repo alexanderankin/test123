@@ -3,11 +3,13 @@ package gatchan.jedit.lucene;
 import gatchan.jedit.lucene.Index.FileProvider;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 
 import org.gjt.sp.jedit.io.VFSFile;
 
+import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTFile;
@@ -22,6 +24,7 @@ public class IndexProjectAction extends Action
 		return "Create/update Lucene index for project";
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e)
 	{
 		if (viewer != null)
@@ -46,44 +49,50 @@ public class IndexProjectAction extends Action
 		}
 	}
 
-	private class ProjectIndexer implements Runnable
+	private class ProjectIndexer extends Task
 	{
-		private VPTProject project;
-		private Index index;
+		private final VPTProject project;
+		private final Index index;
 
-		public ProjectIndexer(VPTProject project, Index index)
+		ProjectIndexer(VPTProject project, Index index)
 		{
 			this.project = project;
 			this.index = index;
 		}
 
-		public void run()
+		@Override
+		public void _run()
 		{
 			LucenePlugin.instance.addToIndex(index.getName(),
-							 new ProjectFileList(project), true);
+							 new ProjectFileList(project),
+							 true);
 		}
 
 		private class ProjectFileList implements FileProvider
 		{
-			private VPTProject project;
-			private Vector<VFSFile> files;
-			private int index = 0;
+			private final VPTProject project;
+			private List<VFSFile> files;
+			private int index;
 
-			public ProjectFileList(VPTProject project)
+			ProjectFileList(VPTProject project)
 			{
 				this.project = project;
 			}
 
+			@Override
 			public VFSFile next()
 			{
-				if (files != null)
-				{
-					if (index >= files.size())
-						return null;
-					return files.get(index++);
-				}
+				if (files == null)
+					constructFileList();
+				if (index >= files.size())
+					return null;
+				return files.get(index++);
+			}
+
+			private void constructFileList()
+			{
 				Collection<VPTNode> nodes = project.getOpenableNodes();
-				files = new Vector<VFSFile>();
+				files = new ArrayList<VFSFile>(nodes.size());
 				for (VPTNode n : nodes)
 				{
 					if (n.isFile())
@@ -94,7 +103,6 @@ public class IndexProjectAction extends Action
 							files.add(file);
 					}
 				}
-				return next();
 			}
 		}
 	}
