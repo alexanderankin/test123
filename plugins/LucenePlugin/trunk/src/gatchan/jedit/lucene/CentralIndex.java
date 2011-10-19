@@ -42,9 +42,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
- * This index will contains documents to link files to indexes.
- * Each document has the following fields :
- * "indexName" and "path"
+ * This index will contains documents to link files to indexes. Each document has the following fields : "indexName" and
+ * "path"
  *
  * @author Matthieu Casanova
  */
@@ -70,6 +69,7 @@ public class CentralIndex extends AbstractIndex
 				{
 					ThreadUtilities.runInBackground(new Runnable()
 					{
+						@Override
 						public void run()
 						{
 							fileUpdated(bufferUpdate.getBuffer());
@@ -84,7 +84,7 @@ public class CentralIndex extends AbstractIndex
 		}
 	}
 
-	void createIndex(Index index)
+	static void createIndex(Index index)
 	{
 		EditBus.send(new LuceneIndexUpdate(index.getName(), LuceneIndexUpdate.What.CREATED));
 	}
@@ -97,7 +97,8 @@ public class CentralIndex extends AbstractIndex
 			if (writer == null)
 			{
 				JOptionPane.showMessageDialog(jEdit.getActiveView(),
-											  "Error: Can't complete removal of index " + name + ": Could not open meta-index.");
+							      "Error: Can't complete removal of index " + name
+							      + ": Could not open meta-index.");
 			}
 			else
 			{
@@ -115,14 +116,14 @@ public class CentralIndex extends AbstractIndex
 	/**
 	 * Add a file to the index.
 	 *
-	 * @param path	  the path to add
+	 * @param path      the path to add
 	 * @param indexName the index that contains this path
 	 */
 	void addFile(String path, String indexName)
 	{
 		openWriter();
 
-		Searcher searcher = getSearcher();
+		IndexSearcher searcher = getSearcher();
 		try
 		{
 			BooleanQuery query = getPathIndexQuery(path, indexName);
@@ -131,7 +132,8 @@ public class CentralIndex extends AbstractIndex
 			{
 				Document document = new Document();
 				document.add(new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));
-				document.add(new Field("indexName", indexName, Field.Store.YES, Field.Index.NOT_ANALYZED));
+				document.add(
+					new Field("indexName", indexName, Field.Store.YES, Field.Index.NOT_ANALYZED));
 				writer.addDocument(document);
 			}
 		}
@@ -147,24 +149,24 @@ public class CentralIndex extends AbstractIndex
 
 	List<String> getAllDocuments(String indexName)
 	{
-		final Searcher searcher = getSearcher();
+		final IndexSearcher searcher = getSearcher();
 		final List<String> documents = new ArrayList<String>();
 		try
 		{
 			searcher.search(new TermQuery(new Term("indexName", indexName)), new Collector()
 			{
 				@Override
-				public void setScorer(Scorer scorer) throws IOException
+				public void setScorer(Scorer scorer)
 				{
 				}
 
 				@Override
-				public void collect(int doc) throws IOException
+				public void collect(int doc)
 				{
 					try
 					{
 						Document document = searcher.doc(doc);
-						documents.add(document.getField("path").stringValue());
+						documents.add(document.getFieldable("path").stringValue());
 					}
 					catch (IOException e)
 					{
@@ -173,7 +175,7 @@ public class CentralIndex extends AbstractIndex
 				}
 
 				@Override
-				public void setNextReader(IndexReader reader, int docBase) throws IOException
+				public void setNextReader(IndexReader reader, int docBase)
 				{
 				}
 
@@ -195,8 +197,7 @@ public class CentralIndex extends AbstractIndex
 		return documents;
 	}
 
-
-	private BooleanQuery getPathIndexQuery(String path, String indexName)
+	private static BooleanQuery getPathIndexQuery(String path, String indexName)
 	{
 		BooleanQuery query = new BooleanQuery();
 		query.add(new BooleanClause(new TermQuery(new Term("path", path)), BooleanClause.Occur.MUST));
@@ -220,7 +221,7 @@ public class CentralIndex extends AbstractIndex
 
 	private void fileUpdated(Buffer buffer)
 	{
-		Searcher searcher = getSearcher();
+		IndexSearcher searcher = getSearcher();
 		try
 		{
 			Query query = new TermQuery(new Term("path", buffer.getPath()));
@@ -229,11 +230,11 @@ public class CentralIndex extends AbstractIndex
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
-				String indexName = document.getField("indexName").stringValue();
+				String indexName = document.getFieldable("indexName").stringValue();
 				Index index = LucenePlugin.instance.getIndex(indexName);
 				if (index != null)
 				{
-					index.addFile(document.getField("path").stringValue());
+					index.addFile(document.getFieldable("path").stringValue());
 					index.commit();
 				}
 			}

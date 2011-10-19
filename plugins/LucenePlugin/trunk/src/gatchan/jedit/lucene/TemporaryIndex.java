@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2010 Matthieu Casanova
+ * Copyright (C) 2010, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -51,7 +52,7 @@ public class TemporaryIndex implements Index
 	protected IndexWriter writer;
 	protected Analyzer analyzer;
 
-	private Directory directory;
+	private final Directory directory;
 	private final String name;
 
 	public TemporaryIndex(String name)
@@ -61,7 +62,8 @@ public class TemporaryIndex implements Index
 		directory = new RAMDirectory();
 		try
 		{
-			writer = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
 		{
@@ -69,6 +71,7 @@ public class TemporaryIndex implements Index
 		}
 	}
 
+	@Override
 	public void close()
 	{
 		try
@@ -82,11 +85,13 @@ public class TemporaryIndex implements Index
 		}
 	}
 
+	@Override
 	public boolean isOptimized()
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void optimize()
 	{
 		try
@@ -99,6 +104,7 @@ public class TemporaryIndex implements Index
 		}
 	}
 
+	@Override
 	public void commit()
 	{
 		try
@@ -111,21 +117,25 @@ public class TemporaryIndex implements Index
 		}
 	}
 
+	@Override
 	public void reindex()
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public String getName()
 	{
 		return name;
 	}
 
+	@Override
 	public Analyzer getAnalyzer()
 	{
 		return analyzer;
 	}
 
+	@Override
 	public void addFile(String path)
 	{
 		Buffer buffer = jEdit.getBuffer(path);
@@ -138,48 +148,53 @@ public class TemporaryIndex implements Index
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Log.log(Log.ERROR, this, e);
 			}
 		}
 	}
 
+	@Override
 	public void addFiles(VFSFile[] files)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void addFiles(FileProvider files)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void removeFile(String path)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void setAnalyzer(Analyzer analyzer)
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void search(String query, String fileType, int max, ResultProcessor processor)
 	{
 		if (max < 1)
 			max = 1;
-		Searcher searcher = null;
+		IndexSearcher searcher = null;
 		try
 		{
 			searcher = new IndexSearcher(directory);
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();  
+			Log.log(Log.ERROR, this, e);
 		}
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_30, new String[]{"path", "content"},
-			getAnalyzer());
+		QueryParser parser =
+			new MultiFieldQueryParser(Version.LUCENE_30, new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			StringBuilder queryStr = new StringBuilder();
@@ -227,14 +242,17 @@ public class TemporaryIndex implements Index
 		}
 	}
 
+	@Override
 	public void addActivityListener(ActivityListener al)
 	{
 	}
 
+	@Override
 	public void removeActivityListener(ActivityListener al)
 	{
 	}
 
+	@Override
 	public boolean isChanging()
 	{
 		return false;
@@ -248,7 +266,8 @@ public class TemporaryIndex implements Index
 		String extension = MiscUtilities.getFileExtension(buffer.getPath());
 		if (extension.length() != 0)
 		{
-			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO, Field.Index.NOT_ANALYZED));
+			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO,
+					  Field.Index.NOT_ANALYZED));
 		}
 		Segment segment = new Segment();
 		buffer.getText(0, buffer.getLength(), segment);

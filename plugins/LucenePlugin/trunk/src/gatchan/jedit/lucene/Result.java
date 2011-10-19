@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,10 +29,6 @@ public class Result
 {
 	protected Document document;
 
-	public Result()
-	{
-	}
-
 	void setDocument(Document document)
 	{
 		this.document = document;
@@ -45,6 +41,6 @@ public class Result
 
 	public String getPath()
 	{
-		return document.getField("_path").stringValue();
+		return document.getFieldable("_path").stringValue();
 	}
 }

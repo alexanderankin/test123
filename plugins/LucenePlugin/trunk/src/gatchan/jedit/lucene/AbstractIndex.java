@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,8 +24,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.FSDirectory;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -243,14 +243,7 @@ public class AbstractIndex
 		readerMap.put(reader, count);
 		if (count == 0 && reader != this.reader)
 		{
-			try
-			{
-				reader.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+			IOUtilities.closeQuietly(reader);
 			readerMap.remove(reader);
 		}
 	}
@@ -283,7 +276,7 @@ public class AbstractIndex
 		return analyzer;
 	}
 
-	protected static void closeSearcher(Searcher searcher)
+	protected static void closeSearcher(IndexSearcher searcher)
 	{
 		try
 		{

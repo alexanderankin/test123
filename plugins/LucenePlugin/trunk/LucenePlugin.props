@@ -47,6 +47,7 @@ options.IndexManagement.code=new gatchan.jedit.lucene.IndexManagement();
 
 lucene.options.IncludeGlobs=*
 lucene.options.IncludeGlobs.label=Include only files matching:
+lucene.options.ExcludeDirectories=CVS .svn .git
 lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
 lucene.options.ExcludeGlobs.label=... except files matching:
 lucene.options.SearchDockable.label=Search Results Dockable
