@@ -53,7 +53,7 @@ public class LucenePlugin extends EditPlugin
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
 	private static final String SEARCH_DOCKABLE_NAME = "lucene-search";
-	private Map<String, Index> indexMap = new HashMap<String, Index>();
+	private final Map<String, Index> indexMap = new HashMap<String, Index>();
 	private ProjectWatcher projectWatcher;
 	
 	public static LucenePlugin instance;
@@ -125,7 +125,7 @@ public class LucenePlugin extends EditPlugin
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
@@ -154,7 +154,7 @@ public class LucenePlugin extends EditPlugin
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR,  this, e);
 		}
 		finally
 		{
@@ -318,8 +318,8 @@ public class LucenePlugin extends EditPlugin
 	 * @param files     the file array to add
 	 * @param sharedSession whether the VFS session can be shared by all files
 	 */
-	public void addToIndex(final String indexName, FileProvider files,
-		final boolean sharedSession)
+	public void addToIndex(String indexName, FileProvider files,
+		boolean sharedSession)
 	{
 		Index index = getIndex(indexName);
 		if (index == null)
@@ -351,6 +351,7 @@ public class LucenePlugin extends EditPlugin
 	{
 		ThreadUtilities.runInBackground(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				addToIndex(indexName, new FileArrayProvider(files), sharedSession);		
@@ -368,6 +369,7 @@ public class LucenePlugin extends EditPlugin
 		File indexFolder = new File(home, "indexes");
 		File[] indexes = indexFolder.listFiles(new FileFilter()
 		{
+			@Override
 			public boolean accept(File pathname)
 			{
 				return pathname.isDirectory();
@@ -393,7 +395,7 @@ public class LucenePlugin extends EditPlugin
 		return new File(indexFolder, name);
 	}
 
-	private SearchResults getSearchDockable(View view, boolean show)
+	private static SearchResults getSearchDockable(View view, boolean show)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		if (show)
@@ -449,7 +451,8 @@ public class LucenePlugin extends EditPlugin
 		int end = -1;
 		int start = -1;
 		int offset = ta.getCaretPosition() - ta.getLineStartOffset(line);
-		while (end <= offset) {
+		while (end <= offset)
+		{
 			if (! m.find())
 				return null;
 			end = m.end();
@@ -469,7 +472,7 @@ public class LucenePlugin extends EditPlugin
 	// Plugin-API
 
 	public static boolean search(String indexName, String text, int max,
-		final java.util.List<Object> files, TokenFilter tokenFilter)
+		List<Object> files, TokenFilter tokenFilter)
 	{
 		LucenePlugin instance = getPluginInstance();
 		if (instance == null)
