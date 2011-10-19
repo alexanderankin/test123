@@ -6,14 +6,15 @@ import gatchan.jedit.lucene.Index.FileProvider;
 
 public class FileArrayProvider implements FileProvider
 {
-	private VFSFile[] fileArray;
-	private int index = 0;
+	private final VFSFile[] fileArray;
+	private int index;
 
 	public FileArrayProvider(VFSFile[] files)
 	{
 		fileArray = files;
 	}
 
+	@Override
 	public VFSFile next()
 	{
 		if (index >= fileArray.length)
