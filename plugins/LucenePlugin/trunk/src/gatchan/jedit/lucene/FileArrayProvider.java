@@ -22,4 +22,9 @@ public class FileArrayProvider implements FileProvider
 		return fileArray[index++];
 	}
 
+	@Override
+	public int size()
+	{
+		return fileArray.length;
+	}
 }

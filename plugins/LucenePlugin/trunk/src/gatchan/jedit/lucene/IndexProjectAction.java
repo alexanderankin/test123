@@ -65,7 +65,7 @@ public class IndexProjectAction extends Action
 		{
 			LucenePlugin.instance.addToIndex(index.getName(),
 							 new ProjectFileList(project),
-							 true);
+							 true, this);
 		}
 
 		private class ProjectFileList implements FileProvider
@@ -103,6 +103,14 @@ public class IndexProjectAction extends Action
 							files.add(file);
 					}
 				}
+			}
+
+			@Override
+			public int size()
+			{
+				if (files == null)
+					constructFileList();
+				return files.size();
 			}
 		}
 	}
