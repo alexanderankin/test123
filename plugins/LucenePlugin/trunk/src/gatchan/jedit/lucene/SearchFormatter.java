@@ -1,15 +1,14 @@
 /*
- * SearchFormatter.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2010 Shlomy Reinstein
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,6 +34,7 @@ public class SearchFormatter implements Formatter
 		this.positions = positions;
 		this.max = max;
 	}
+	@Override
 	public String highlightTerm(String originalText,
 		TokenGroup tokenGroup)
 	{

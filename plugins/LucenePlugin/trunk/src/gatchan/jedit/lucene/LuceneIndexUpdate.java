@@ -1,9 +1,9 @@
 /*
- * LuceneIndexUpdate.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ import org.gjt.sp.jedit.EBMessage;
  */
 public class LuceneIndexUpdate extends EBMessage
 {
-	private What what;
+	private final What what;
 
 	public enum What
 	{
@@ -48,8 +48,9 @@ public class LuceneIndexUpdate extends EBMessage
 		return what;
 	}
 
+	@Override
 	public String paramString()
 	{
-		return "what=" + what + "," + super.paramString();
+		return "what=" + what + ',' + super.paramString();
 	}
 }

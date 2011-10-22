@@ -1,9 +1,9 @@
 /*
- * LucenePlugin.java - The Lucene plugin
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -145,10 +145,10 @@ public class LucenePlugin extends EditPlugin
 		try
 		{
 			writer = new PrintWriter(new FileWriter(f));
-			for (String name: indexMap.keySet())
+			for (Map.Entry<String, Index> stringIndexEntry : indexMap.entrySet())
 			{
-				writer.println(name);
-				Index index = indexMap.get(name);
+				writer.println(stringIndexEntry.getKey());
+				Index index = stringIndexEntry.getValue();
 				String type = IndexFactory.getType(index);
 				String analyzer = AnalyzerFactory.getAnalyzerName(index.getAnalyzer());
 				writer.println(type + ',' + analyzer);

@@ -1,9 +1,9 @@
 /*
- * AbstractIndex.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,8 +23,10 @@ package gatchan.jedit.lucene;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -35,9 +37,10 @@ import gatchan.jedit.lucene.Index.ActivityListener;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,7 +53,7 @@ public class AbstractIndex
 	private IndexReader reader;
 	protected File path;
 	protected Analyzer analyzer;
-	protected Vector<ActivityListener> listeners = new Vector<ActivityListener>();
+	protected List<ActivityListener> listeners = new ArrayList<ActivityListener> ();
 	private final Map<IndexReader, Integer> readerMap = new ConcurrentHashMap<IndexReader, Integer>();
 
 	public AbstractIndex(File path)
@@ -114,7 +117,8 @@ public class AbstractIndex
 					IndexWriter.unlock(directory);
 				}
 			}
-			writer = new IndexWriter(directory, getAnalyzer(), IndexWriter.MaxFieldLength.UNLIMITED);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_34, getAnalyzer());
+			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
 		{

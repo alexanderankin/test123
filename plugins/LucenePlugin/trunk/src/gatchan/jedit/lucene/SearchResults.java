@@ -1,3 +1,23 @@
+/*
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package gatchan.jedit.lucene;
 
 import gatchan.jedit.lucene.Index.ActivityListener;
@@ -5,6 +25,7 @@ import gatchan.jedit.lucene.Index.ActivityListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.Collections;
 
@@ -66,14 +87,15 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private final JLabel fileTypeLabel;
 	private final JLabel maxResultsLabel;
 	private boolean shortLabels;
-	private ActionListener indexActionListener;
-	private JCheckBox extendedOptions;
+	private final ActionListener indexActionListener;
+	private final JCheckBox extendedOptions;
 	private JPanel searchOptions;
-	private View view;
+	private final View view;
+
 	public SearchResults(View v)
 	{
 		super(new BorderLayout());
-		this.view = v;	
+		view = v;
 		KeyListener kl = v.getDockableWindowManager().closeListener(DOCKABLE_NAME);
 
 		lineResults = new JCheckBox(getLabel("lucene.line-based"));
@@ -431,7 +453,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		}
 		if (indexName == ALL_BUFFERS)
 		{
-			TemporaryIndex index = new TemporaryIndex(ALL_BUFFERS);
+			Index index = new TemporaryIndex(ALL_BUFFERS);
 			Buffer[] buffers = jEdit.getBuffers();
 			for (Buffer buffer : buffers)
 				index.addFile(buffer.getPath());
@@ -582,14 +604,15 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		{
 			Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
 			ResultProcessor processor;
-			final java.util.List<Object> files = new ArrayList<Object>();
+			final List<Object> files = new ArrayList<Object>();
 			if (lineResult)
 				processor = new MarkerListQueryProcessor(index, files, max, tokenFilter);
 			else
-				processor = new FileListQueryProcessor(index, files, max);
+				processor = new FileListQueryProcessor(files, max);
 			index.search(text, fileType, max, processor);
 			ThreadUtilities.runInDispatchThread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					if (lineResult)
@@ -633,19 +656,21 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 	private static class MyModel extends AbstractListModel
 	{
-		private java.util.List<Object> files = new ArrayList<Object>();
+		private List<Object> files = new ArrayList<Object>();
 
-		public void setFiles(java.util.List<Object> files)
+		public void setFiles(List<Object> files)
 		{
 			this.files = files;
 			fireContentsChanged(this, 0, files.size());
 		}
 
+		@Override
 		public int getSize()
 		{
 			return files.size();
 		}
 
+		@Override
 		public Object getElementAt(int index)
 		{
 			return files.get(index);
@@ -664,11 +689,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			setIndexes(indexes);
 		}
 
+		@Override
 		public int getSize()
 		{
 			return indexes.length;
 		}
 
+		@Override
 		public Object getElementAt(int index)
 		{
 			return indexes[index];
@@ -701,6 +728,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			fireContentsChanged(this, 0, this.indexes.length);
 		}
 
+		@Override
 		public void setSelectedItem(Object selectedItem)
 		{
 			int i;
@@ -715,6 +743,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			fireContentsChanged(this, prev, selectedIndex);
 		}
 
+		@Override
 		public Object getSelectedItem()
 		{
 			return selectedItem;
@@ -735,6 +764,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			return text;
 		}
 
+		@Override
 		public void addPopupMenuItemsFor(JPopupMenu popup,
 			final SourceLinkParentNode parent, final DefaultMutableTreeNode node)
 		{
@@ -742,6 +772,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				return;
 			popup.add(new AbstractAction("Toggle marker(s)")
 			{
+				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					Vector<FileMarker> markers = parent.getFileMarkers(node);
@@ -753,12 +784,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		public void addChildCount(int count)
 		{
-			text = text + " (" + count + ")";
+			text = text + " (" + count + ')';
 		}
 	}
 
 	private class MyActionListener implements ActionListener
 	{
+		@Override
 		public void actionPerformed(ActionEvent e)
 		{
 			String search = searchField.getText().trim();
@@ -767,6 +799,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		}
 	}
 
+	@Override
 	public void focusOnDefaultComponent()
 	{
 		searchField.requestFocusInWindow();
