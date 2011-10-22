@@ -403,7 +403,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	private static class MyVFSFilter implements VFSFileFilter
 	{
-		private String[] excludedDirectories;
+		private final String[] excludedDirectories;
 
 		private MyVFSFilter()
 		{
