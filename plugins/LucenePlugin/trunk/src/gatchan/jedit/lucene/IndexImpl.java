@@ -1,9 +1,9 @@
 /*
- * IndexImpl.java - The Index implementation
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -302,7 +302,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		if (searcher == null)
 			return;
 		QueryParser parser =
-			new MultiFieldQueryParser(Version.LUCENE_30, new String[] { "path", "content" }, getAnalyzer());
+			new MultiFieldQueryParser(Version.LUCENE_34, new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			StringBuilder queryStr = new StringBuilder();

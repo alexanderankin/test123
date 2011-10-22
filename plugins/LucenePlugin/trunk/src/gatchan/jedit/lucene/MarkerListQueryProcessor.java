@@ -1,3 +1,23 @@
+/*
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package gatchan.jedit.lucene;
 
 
@@ -34,7 +54,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 	private final Index index;
 	private final List<Object> results;
 	private final int max;
-	private TokenFilter tokenFilter;
+	private final TokenFilter tokenFilter;
 
 	public MarkerListQueryProcessor(Index index, List<Object> results, int max, TokenFilter tokenFilter)
 	{
@@ -44,6 +64,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		this.tokenFilter = tokenFilter;
 	}
 
+	@Override
 	public boolean process(Query query, float score, Result result)
 	{
 		if (result instanceof LineResult)
@@ -58,7 +79,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			String s = result.getPath();
 			addLinesMatching(query, s, max - results.size());
 		}
-		return (results.size() < max);
+		return results.size() < max;
 	}
 
 	private boolean isFiltered(int offsetInLine, String file, int line, String lineText, int lineStart)

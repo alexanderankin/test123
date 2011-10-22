@@ -1,9 +1,9 @@
 /*
- * IndexManagement.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -59,6 +59,7 @@ public class IndexManagement extends AbstractOptionPane
 		indexList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		indexList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 		{
+			@Override
 			public void valueChanged(ListSelectionEvent e)
 			{
 				int row = e.getFirstIndex();
@@ -156,7 +157,7 @@ public class IndexManagement extends AbstractOptionPane
 			add(reindex);
 
 
-			MyActionListener actionListener = new MyActionListener();
+			ActionListener actionListener = new MyActionListener();
 			optimize.addActionListener(actionListener);
 			delete.addActionListener(actionListener);
 			reindex.addActionListener(actionListener);
@@ -165,7 +166,7 @@ public class IndexManagement extends AbstractOptionPane
 
 		public void setIndex(String name)
 		{
-			this.indexName = name;
+			indexName = name;
 			indexNameField.setText(name);
 			if (name == null)
 			{
@@ -184,6 +185,7 @@ public class IndexManagement extends AbstractOptionPane
 
 		private class MyActionListener implements ActionListener
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				if (e.getSource() == optimize)
@@ -208,14 +210,7 @@ public class IndexManagement extends AbstractOptionPane
 					optimize.setEnabled(false);
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
-					ReindexTask wr = new ReindexTask(indexName, new Runnable()
-					{
-						public void run()
-						{
-							setIndex(indexName);
-							indexList.setEnabled(true);
-						}
-					});
+					ReindexTask wr = new ReindexTask(indexName, new GUIEnabledRunnable(indexName));
 					ThreadUtilities.runInBackground(wr);
 				}
 			}
@@ -248,15 +243,26 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				finally
 				{
-					ThreadUtilities.runInDispatchThread(new Runnable()
-					{
-						public void run()
-						{
-							setIndex(indexName);
-							indexList.setEnabled(true);
-						}
-					});
+					ThreadUtilities.runInDispatchThread(new GUIEnabledRunnable(indexName));
 				}
+			}
+
+		}
+
+		private class GUIEnabledRunnable implements Runnable
+		{
+			private final String indexName;
+
+			private GUIEnabledRunnable(String indexName)
+			{
+				this.indexName = indexName;
+			}
+
+			@Override
+			public void run()
+			{
+				setIndex(indexName);
+				indexList.setEnabled(true);
 			}
 		}
 	}

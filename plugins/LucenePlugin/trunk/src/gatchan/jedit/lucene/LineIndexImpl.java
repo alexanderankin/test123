@@ -1,9 +1,9 @@
 /*
- * IndexImpl.java - The Index implementation
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Shlomy Reinstein
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@ public class LineIndexImpl extends IndexImpl
 		super(name, path);
 	}
 
+	@Override
 	protected void addDocument(VFSFile file, Object session)
 	{
 		if (file.getPath() == null)

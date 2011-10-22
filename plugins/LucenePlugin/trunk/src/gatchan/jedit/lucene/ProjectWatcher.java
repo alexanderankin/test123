@@ -1,9 +1,9 @@
 /*
- * ProjectWatcher.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Shlomy Reinstein
+ * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,18 +46,18 @@ public class ProjectWatcher
 	@EBHandler
 	public void handleViewerUpdate(ViewerUpdate vu)
 	{
-		if (vu.getType().equals(ViewerUpdate.Type.PROJECT_LOADED))
+		if (vu.getType() == ViewerUpdate.Type.PROJECT_LOADED)
 			LucenePlugin.instance.setCurrentIndex(vu.getView(), vu.getNode().getName());
 	}
 
-	private void checkRemoveProjectIndex(String project)
+	private static void checkRemoveProjectIndex(String project)
 	{
 		Index index = LucenePlugin.instance.getIndex(project);
 		if (index == null)
 			return;
-		int res = JOptionPane.showConfirmDialog(jEdit.getActiveView(),
-												"Remove Lucene index of project '" + project + "'?",
-												"Lucene plugin", JOptionPane.YES_NO_OPTION);
+		int res = JOptionPane
+			.showConfirmDialog(jEdit.getActiveView(), "Remove Lucene index of project '" + project + "'?",
+					   "Lucene plugin", JOptionPane.YES_NO_OPTION);
 		if (res == JOptionPane.YES_OPTION)
 			LucenePlugin.instance.removeIndex(project);
 	}
