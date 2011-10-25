@@ -24,7 +24,7 @@ public class OptionPane extends AbstractOptionPane
 		converterPath = new JTextField(jEdit.getProperty(OPTIONS_OCR_CONVERTER_PATH));
 		addComponent("Image converter path:", converterPath);
 	}
-	public void save()
+	public void _save()
 	{
 		jEdit.setProperty(OPTIONS_OCR_GOCR_PATH, gocrPath.getText());
 		jEdit.setProperty(OPTIONS_OCR_CONVERTER_PATH, converterPath.getText());
