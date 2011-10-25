@@ -80,7 +80,7 @@ public class GlobalOptionPane extends AbstractOptionPane {
 		autoUpdateGroup.add(autoUpdateOnSave);
 		autoUpdateGroup.add(autoUpdatePeriodically);
 	}
-	public void save()
+	public void _save()
 	{
 		jEdit.setProperty(GLOBAL_PATH_OPTION, globalPathTF.getText());
 		jEdit.setProperty(IDENTIFIER_REGEXP_OPTION, identifierRegExpTF.getText());
