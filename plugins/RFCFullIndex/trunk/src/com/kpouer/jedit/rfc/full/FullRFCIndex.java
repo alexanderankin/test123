@@ -109,7 +109,7 @@ public class FullRFCIndex extends AbstractRFCIndex
 			if (f.isFile())
 				f.delete();
 			else
-				deleteFolder(file);
+				deleteFolder(f);
 		}
 		file.delete();
 	}
