@@ -1,6 +1,7 @@
 // :folding=explicit:
 package uk.co.antroy.latextools.parsers;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -302,40 +303,36 @@ public class LaTeXParser
      * of a new chapter.
      */
     private void updateAssetEnd(){//{{{ 
-    
-        LinkedList stack = new LinkedList();
+        ArrayDeque<LaTeXAsset> stack = new ArrayDeque<LaTeXAsset>();
         
-        for (Iterator it = navItems.iterator(); it.hasNext(); ){
-           LaTeXAsset currentAsset = (LaTeXAsset) it.next();
-           // Ignore elements that certainly end before the end of buffer
-           if (!currentAsset.getEnd().equals(bufferEndPosition)){ continue;}
-           
-           // Initialize the stack if yet empty
-           if (stack.size()==0){
-              stack.addLast(currentAsset);
-              break;
-           }
-           
-           // Does the current asset mark the end of the previous asset?
-           // Example: A new section ends the previous, as well as a new chapter.
-           LaTeXAsset top = (LaTeXAsset) stack.getLast();
-           if (currentAsset.getLevel() > top.getLevel()){
-              stack.addLast(currentAsset);
-              break;
-           }
-           else{
-              top.setEnd(buffer.createPosition(currentAsset.getStart().getOffset()-1));
-              stack.removeLast();
-           }
-        } // for all Assets
-        if (stack.size()>0){
-           int endOfText = text.length();
-           for (Iterator it = stack.iterator(); it.hasNext(); ){
-              LaTeXAsset next = (LaTeXAsset) it.next();
-              next.setEnd(buffer.createPosition(endOfText));
-           }
+        for (Iterator it = navItems.iterator(); it.hasNext(); )
+        {
+            LaTeXAsset currentAsset = (LaTeXAsset) it.next();
+            
+            // Ignore elements that certainly end before the end of buffer
+            if (!currentAsset.getEnd().equals(bufferEndPosition))
+                continue;
+            
+            // End every element on the stack that is at a higher or equal level to
+            // the current asset
+            while (!stack.isEmpty() &&
+                   currentAsset.getLevel() <= stack.peek().getLevel())
+            {
+                LaTeXAsset top = stack.pop();
+                top.setEnd(buffer.createPosition(
+                    currentAsset.getStart().getOffset() - 1));
+            }
+            
+            stack.push(currentAsset);
         }
-
+        
+        // The rest of the assets will end at the end of the text
+        int endOfText = text.length();
+        while (!stack.isEmpty())
+        {
+            LaTeXAsset next = stack.pop();
+            next.setEnd(buffer.createPosition(endOfText));
+        }
     } //}}}
     
     
