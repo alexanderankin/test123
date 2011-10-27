@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -273,12 +274,11 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 */
 	public void gotoURL(TitledURLEntry entry, boolean addToHistory)
 	{
-		String url = entry.getURL();
-
+		String url = entry.getURL();	 
 		try
 		{
-			baseURL = new File(MiscUtilities.constructPath(jEdit.getJEditHome(), "doc"))
-				.toURL().toString();
+			URI baseURI = new File(MiscUtilities.constructPath(jEdit.getJEditHome(), "doc")).toURI();
+			baseURL = baseURI.toURL().toString();
 		}
 		catch (MalformedURLException mu)
 		{
