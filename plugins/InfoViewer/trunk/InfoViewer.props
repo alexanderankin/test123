@@ -2,13 +2,12 @@
 plugin.infoviewer.InfoViewerPlugin.name=Info Viewer
 plugin.infoviewer.InfoViewerPlugin.activate=startup
 
-plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius, Alan Ezust
-plugin.infoviewer.InfoViewerPlugin.version=1.6
+plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius
+plugin.infoviewer.InfoViewerPlugin.version=1.6.1
 plugin.infoviewer.InfoViewerPlugin.docs=index.html
 plugin.infoviewer.InfoViewerPlugin.description=A Swing-based web browser, which can also provide a replacement for HelpViewer.
-plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.03.99.00
-plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.5
-#plugin.infoviewer.InfoViewerPlugin.depend.2=plugin lucene.LucenePlugin 2.0
+plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.04.99.01
+plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.6
 
 # Two option panes
 plugin.infoviewer.InfoViewerPlugin.option-group=chooseBrowser internalBrowser

@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <!--
-
     Ant build file for the InfoViewer plugin for jEdit
     Please note that jedit.jar must be in the system classpath.
 -->

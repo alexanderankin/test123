@@ -2,8 +2,23 @@
 TODO for InfoViewer
 -------------------
 
-If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all. 
+When using "infoviewer" action, initially un-check the "show help tree" action.
 
+When using "helpviewer" action, make sure the "show help tree" is initially
+checked.
+
+Persist in properties the splitter position after someone drags it.
+
+Initially when showing helpviewer, restore splitter location.
+
+Adjust splitter location after toggle the visibility of the help tree.
+
+If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all.
+
+For tree nodes that point to a part of the document i.e. end with something
+like #d0e310: 
+	Why when clicking on tree nodes, does it always first open at the top of the html file
+	and require you to click a second time on the tree node before it scrolls to the correct location in the page?
 
 Add a "auto-reload" toggle button, which will toggle reload on buffer-save.
 
@@ -15,7 +30,7 @@ We need visual feedback when the editor pane has focus. like a border around the
 
 When the editor pane has focus, and we are not selecting anything, the arrow keys should be handled by the scrollpane that is wrapped around it, not by the editorpane itself. At the moment, arrow keys move around an invisible cursor, which is confusing - you can press downarrow for a while, nothing happens, and then suddenly your down arrow works but your up arrow doesn't. Annoying. Maybe we need a togglebutton that lets you switch between a visible cursor (and text select mode), and scroll mode (like the hand tool in acrobat).
 
-After mouse click on the tree view, it should change keyboard focus to the editor pane. 
+After mouse click on the tree view, it should change keyboard focus to the editor pane.
 
 
 * Redesign search/index (actually from core) to use lucene
@@ -28,8 +43,8 @@ After mouse click on the tree view, it should change keyboard focus to the edito
   - menu "File": New window, Clone window
   - right-click popup: Open link in a new window
   - new "Windows" menu: quick jump to other InfoViewer windows
-  - We need an action suitable for adding to projectviewer's context menu "open in infoviewer". 
-  
+  - We need an action suitable for adding to projectviewer's context menu "open in infoviewer".
+
 * stop button
 * progress bar (use EditorPane.getStream())
 * Option "InternalBrowser/Appeareance/Join Tool and Addressbar" ?

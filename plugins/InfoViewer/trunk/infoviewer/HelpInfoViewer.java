@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import javax.swing.JSplitPane;
@@ -144,9 +145,9 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 
 	public void gotoURL(String url, boolean addToHistory, int scrollPos) {
 		if (baseURL == null) try {
-			baseURL = new File(MiscUtilities.constructPath(
-					jEdit.getJEditHome(), "doc")).toURL().toString();
-
+			URI baseURI = new File(MiscUtilities.constructPath(
+					jEdit.getJEditHome(), "doc")).toURI();
+			baseURL = baseURI.toURL().toString();
 		} catch (MalformedURLException mu) {
 			Log.log(Log.ERROR, this, mu);
 			// what to do?
