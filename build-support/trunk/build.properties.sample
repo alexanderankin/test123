@@ -79,10 +79,10 @@
 #compiler.nowarn=off
 
 # Target JVM version
-#compiler.target=1.4
+#compiler.target=1.5
 
 # Java version of the source files
-#compiler.source=1.4
+#compiler.source=1.5
 
 # List files being compiled
 #compiler.listfiles=no
@@ -100,6 +100,7 @@
 # Documentation build options
 
 # What target to use for the docs
+# can be 'none' if you provide HTML docs that are not generated
 #docs-proc.target=xsltproc
 
 # Stylesheet file to use

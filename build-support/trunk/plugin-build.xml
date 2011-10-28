@@ -233,7 +233,7 @@
 
         <mkdir dir="${ivy.jar.dir}"/>
         <!-- download Ivy from web site so that it can be used even without any special installation -->
-        <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" 
+        <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
              dest="${ivy.jar.file}" usetimestamp="true"/>
     </target>
 
@@ -257,7 +257,7 @@
             <available file="ivy.xml" type="file"/>
         </condition>
     </target>
-    <target name="resolve" description="Retrieve dependencies" 
+    <target name="resolve" description="Retrieve dependencies"
         depends="checkIvy,init-ivy" if="ivyPresent">
             <echo>ivy.xml present, retrieving dependencies</echo>
             <ivy:retrieve pattern="${build.lib}/[artifact].[ext]"/>
@@ -458,7 +458,7 @@
     <target name="upload.docs" depends="javadoc, userdocs"
     description="upload documentation to plugins.jedit.org site" >
         <exec dir="${build.docs}" executable="rsync">
-      <arg line="-avz ./ ${sourceforge.user.name}@plugins.jedit.org:/home/groups/j/je/jedit-plugins/htdocs/plugindoc/${ant.project.name}" />
+      <arg line="-avz ./ ${sourceforge.user.name},jedit@shell.sourceforge.net:/home/project-web/jedit-plugins/htdocs/plugindoc/${ant.project.name}" />
     </exec>
     </target>
 
