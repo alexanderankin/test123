@@ -213,11 +213,11 @@
     <para> While Console has focus, the following keyboard shortcuts work: </para>
   </formalpara>
     <itemizedlist>
-    <listitem><para> <keycap>Ctrl-P</keycap> or <keycap>Up-Arrow</keycap>: Previous entered history command. </para></listitem>
-    <listitem><para> <keycap>Ctrl-N</keycap> or <keycap>Down-Arrow</keycap>: Next entered history command. </para> </listitem>
-    <listitem><para> <keycap>Ctrl-C</keycap>: Copy to clipboard.  </para> </listitem>
+    <listitem><para> <keycap>Ctrl+P</keycap> or <keycap>Up-Arrow</keycap>: Previous entered history command. </para></listitem>
+    <listitem><para> <keycap>Ctrl+N</keycap> or <keycap>Down-Arrow</keycap>: Next entered history command. </para> </listitem>
+    <listitem><para> <keycap>Ctrl+C</keycap>: Copy to clipboard.  </para> </listitem>
+    <listitem><para> <keycap>Ctrl+U</keycap>: Clear current line. </para></listitem>
     </itemizedlist>
-
 
  </chapter>
 
