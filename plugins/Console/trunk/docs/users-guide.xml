@@ -190,7 +190,7 @@
 
    <listitem>
     <para>
-     <guibutton>Stop</guibutton> - stops the currently running process, if any.</para>
+     <guibutton>Stop</guibutton> - stops the currently running process, if any. </para>
    </listitem>
 
    <listitem>
@@ -207,6 +207,17 @@
   <quote>:BeanShell</quote> or <quote>:System</quote>. In addition, each shell has its own toggle and switch shortcut defined from <guimenuitem>Global Options - Shortcuts - Plugin: Console - Shell Switchers </guimenuitem>.
  </para>
   </tip>
+
+  <formalpara>
+  <title> Keyboard Shortcuts </title>
+    <para> While Console has focus, the following keyboard shortcuts work: </para>
+  </formalpara>
+    <itemizedlist>
+    <listitem><para> <keycap>Ctrl-P</keycap> or <keycap>Up-Arrow</keycap>: Previous entered history command. </para></listitem>
+    <listitem><para> <keycap>Ctrl-N</keycap> or <keycap>Down-Arrow</keycap>: Next entered history command. </para> </listitem>
+    <listitem><para> <keycap>Ctrl-C</keycap>: Copy to clipboard.  </para> </listitem>
+    </itemizedlist>
+
 
  </chapter>
 
@@ -1542,10 +1553,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
  <appendix id="changes">
   <title>Change log</title>
   <itemizedlist>
-  
+
   <listitem id="ver4.4.3"><para>
     <emphasis role="bold">Version 4.4.3</emphasis> Requires jEdit 4.4pre1, JDK 1.6, ErrorList 1.9,
-    ProjectViewer 3.0 (optional). 
+    ProjectViewer 3.0 (optional).
     <itemizedlist>
         <listitem><para> API fixes for compatibility with jEdit 4.5. </para></listitem>
         <listitem><para> New general option to set favorite shell, or remember previous selected shell. </para></listitem>
@@ -2052,11 +2063,6 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      <listitem>
       <para>If running a command caused the current shell to be changed, output would
    still go to the old shell.
-   </para>
-     </listitem>
-     <listitem>
-      <para>The input history can be searched by holding down <keycap>Shift</keycap>
-   while pressing <keycap>Up</keycap> or <keycap>Down</keycap>.
    </para>
      </listitem>
      <listitem>
