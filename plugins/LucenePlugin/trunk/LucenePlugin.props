@@ -26,7 +26,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.description=\
 
 lucene.add-to-index.label=Index selected file(s) in Lucene
 lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new Lucene index</b></html>
-lucene.search-word-at-caret.label=Search for the word at the caret location
+lucene.search-word-at-caret.label=Find word at caret
 lucene.go-to-next-result.label=Go to next result
 lucene.go-to-prev-result.label=Go to previous result
 lucene-search.label=Lucene Search
