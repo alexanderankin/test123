@@ -45,7 +45,7 @@ public class Hunspell {
      * The instance of the HunspellManager, looks for the native lib in the
      * default directories
      */
-    public static Hunspell getInstance() throws Exception { 
+    public static Hunspell getInstance() throws UnsatisfiedLinkError, UnsupportedOperationException { 
 		return getInstance(null);
     }
 
@@ -55,7 +55,7 @@ public class Hunspell {
      *
      * @param libDir Optional absolute directory where the native lib can be found. 
      */
-    public static Hunspell getInstance(String libDir) throws Exception { 
+    public static Hunspell getInstance(String libDir) throws UnsatisfiedLinkError, UnsupportedOperationException  { 
         if (hunspell != null) {
             return hunspell;
         }
@@ -71,7 +71,7 @@ public class Hunspell {
      * @param libDir Optional absolute directory where the native lib can be found. 
      * @param libFile Optional name of the native lib 
      */
-    public static Hunspell getInstance(String libDir,String libFile) throws Exception { 
+    public static Hunspell getInstance(String libDir,String libFile) throws UnsatisfiedLinkError, UnsupportedOperationException  { 
         if (hunspell != null) {
             return hunspell;
         }
@@ -166,8 +166,7 @@ public class Hunspell {
 			return libNameBare()+".dll";
 
 		} else if (os.startsWith("mac os x")) {
-			//	    return libNameBare()+".dylib";
-			return libNameBare()+".jnilib";
+			return "lib"+libNameBare()+".dylib";
 	
 		} else {
 			return "lib"+libNameBare()+".so";
@@ -194,6 +193,9 @@ public class Hunspell {
 		} else if (os.startsWith("mac os x")) {
 			if (x86) {
 				return "hunspell-darwin-x86-32";
+			}
+			if (amd64) {
+				return "hunspell-darwin-x86-64";
 			}
 			if (arch.equals("ppc")) {		    
 				return "hunspell-darwin-ppc-32";
@@ -363,5 +365,48 @@ public class Hunspell {
 
 			return res;
 		}
+
+		/**
+		 * Returns a list of stems
+		 *
+		 * @param word The word to get stems for
+		 * @return List of stems or null if the word doesn't exist in dictionary
+		 */
+		public List<String> stem(String word) {
+			List<String> res = new ArrayList<String>();
+			try {		
+				int stemsCount = 0;
+
+				PointerByReference stems = new PointerByReference();
+				stemsCount = hsl.Hunspell_stem(
+						hunspellDict, stems, stringToBytes(word));
+
+				if (stemsCount == 0)
+					return null;
+
+				Pointer[] pointerArray = stems.getValue().
+					getPointerArray(0, stemsCount);
+		
+				for (int i=0; i<stemsCount; i++) {
+					/* Flemming's comment... */
+					/* This only works for 8 bit chars, luckily hunspell uses either
+					   8 bit encodings or utf8, if someone implements support in
+					   hunspell for utf16 we are in trouble.
+					*/
+					long len = pointerArray[i].indexOf(0, (byte)0);
+					if (len != -1) {
+						if (len > Integer.MAX_VALUE) {
+							throw new RuntimeException(
+									"String improperly terminated: " + len);
+						}
+						byte[] data = pointerArray[i].getByteArray(0, (int)len);
+						res.add(new String(data, encoding));
+					}
+				}
+			} catch (UnsupportedEncodingException ex) { }
+
+			return res;
+		}
+
     }
 }

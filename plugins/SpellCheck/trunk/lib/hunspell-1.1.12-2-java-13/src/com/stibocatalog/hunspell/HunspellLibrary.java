@@ -59,4 +59,12 @@ public interface HunspellLibrary extends Library {
      */
     public int Hunspell_suggest(Pointer pHunspell, PointerByReference slst, byte[] word);
 
+	/**
+		* Get stems of a word
+		*
+		* @param pHunspell The Hunspell object returned by Hunspell_create
+		* @param slst  
+		* @param word The word to get the stems for.
+		*/
+	public int Hunspell_stem(Pointer pHunspell, PointerByReference slst, byte[] word);
 }
