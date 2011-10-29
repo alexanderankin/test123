@@ -193,7 +193,7 @@ spell-check-hunspell-update-failed.old.message=Update of {0} failed, but you can
 spell-check-hunspell-update-failed.broken.title=Update failed...
 spell-check-hunspell-update-failed.broken.message=Update of {0} failed and the old version has been uninstalled. Please retry...
 
-spell-check-hunspell-site=http://ftp.services.openoffice.org/pub/OpenOffice.org/contrib/dictionaries/
+spell-check-hunspell-site=http://download.services.openoffice.org/files/contrib/dictionaries/
 
 #offline install
 options.spellcheck.hunspell.offline=Offline Installation
