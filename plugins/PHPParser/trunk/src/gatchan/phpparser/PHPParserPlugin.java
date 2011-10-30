@@ -20,6 +20,9 @@
  */
 package gatchan.phpparser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import common.gui.itemfinder.ItemFinderWindow;
 import gatchan.phpparser.project.ProjectManager;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -47,6 +50,12 @@ public class PHPParserPlugin extends EditPlugin
 	@Override
 	public void start()
 	{
+		Collection<String> tata = new ArrayList<String>();
+		tata.add("aa");
+		tata.add("bb");
+		tata.add("cc");
+		tata.add("dd");
+		System.out.println(TextUtilities.join(tata, ", "));
 		projectManager = ProjectManager.getInstance();
 		itemFinder = new PHPItemFinder();
 		itemFinderWindow = new ItemFinderWindow<PHPItem>(itemFinder);

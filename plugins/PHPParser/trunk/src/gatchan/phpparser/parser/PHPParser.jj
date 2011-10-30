@@ -1039,7 +1039,7 @@ UseNamespace useNamespace():
 	int sourceEnd;
 	int endLine;
 	int endColumn;
-	String namespaceName;
+	List<ConstantIdentifier> list = new ArrayList<ConstantIdentifier>();
 }
 {
 	//{{{ <USE>
@@ -1049,11 +1049,12 @@ UseNamespace useNamespace():
 		endLine = useToken.endLine;
 		endColumn = useToken.endColumn;
 	} //}}}
+	//{{{ namespaceIdentifier()
 	try
 	{
 		namespaceNameToken = namespaceIdentifier()
 		{
-			namespaceName = namespaceNameToken.image;
+			list.add(new ConstantIdentifier(namespaceNameToken));
 			sourceEnd = namespaceNameToken.sourceEnd;
 			endLine = namespaceNameToken.endLine;
 			endColumn = namespaceNameToken.endColumn;
@@ -1065,7 +1066,30 @@ UseNamespace useNamespace():
 		{
 			namespaceName = SYNTAX_ERROR_CHAR;
 		}
+	} //}}}
+
+	[
+	<COMMA>
+	//{{{ namespaceIdentifier()
+	try
+	{
+		namespaceNameToken = namespaceIdentifier()
+		{
+			list.add(new ConstantIdentifier(namespaceNameToken));
+			sourceEnd = namespaceNameToken.sourceEnd;
+			endLine = namespaceNameToken.endLine;
+			endColumn = namespaceNameToken.endColumn;
+		}
 	}
+	catch (ParseException e)
+	{
+		fireParseError("namespace expected",";",e.currentToken.next);
+		{
+			namespaceName = SYNTAX_ERROR_CHAR;
+		}
+	} //}}}
+	
+	]
 	try
 	{
 	semicolon = <SEMICOLON>
@@ -1080,7 +1104,7 @@ UseNamespace useNamespace():
 		fireParseError("; expected",";",e.currentToken.next);
 	}
 	{
-		return new UseNamespace(namespaceName,
+		return new UseNamespace(list,
 			useToken.sourceStart,
 			sourceEnd,
 			useToken.beginLine,

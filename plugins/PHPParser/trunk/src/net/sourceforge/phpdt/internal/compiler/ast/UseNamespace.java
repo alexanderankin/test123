@@ -24,22 +24,20 @@ import java.util.List;
 
 import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
+import org.gjt.sp.util.StringList;
 
 /**
  * @author Matthieu Casanova
  */
 public class UseNamespace extends Statement
 {
-	/**
-	 * The namespace name.
-	 */
-	private final String name;
+	private List<ConstantIdentifier> namespaces;
 
-	public UseNamespace(String name, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn,
+	public UseNamespace(List<ConstantIdentifier> namespaces, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn,
 			    int endColumn)
 	{
 		super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
-		this.name = name;
+		this.namespaces = namespaces;
 	}
 
 	@Override
@@ -51,7 +49,12 @@ public class UseNamespace extends Statement
 	@Override
 	public String toString()
 	{
-		return "use " + name + ';';
+		StringList sl = new StringList();
+		for (ConstantIdentifier namespace : namespaces)
+		{
+			sl.add(namespace.toString());
+		}
+		return "use " + sl.join(", ") + ';';
 	}
 
 	@Override
