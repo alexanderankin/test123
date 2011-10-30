@@ -17,6 +17,11 @@
 	<!-- separate dir for images -->
 	<property name="resources.dir" value="resources"/>
 
+	<!-- custom user manual format -->
+    <property name="user-doc.xsl" location="docs/users-guide.xsl" />
+    <!-- set this property to get user manual in 1 file -->
+    <!-- <property name="docbook.xsl.sheet" value="html/docbook.xsl" /> -->
+
 	<!-- for build-support location -->
 	<property file="build.properties"/>
 	<!-- build support -->

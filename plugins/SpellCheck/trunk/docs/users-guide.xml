@@ -6,12 +6,14 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
 <!-- $Id: users-guide.xml 12872 2008-06-22 07:53:52Z kerik-sf $ - $Revision: 12872 $ -->
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-  "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<book>
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
- <bookinfo>
-  <title>SpellCheck plugin user's guide</title>
+ <articleinfo>
+
+ <releaseinfo>Version R007</releaseinfo>
+ 
+ <title>SpellCheck plugin user's guide</title>
 
   <author>
    <firstname>C.S.</firstname>
@@ -38,20 +40,20 @@
    included with jEdit.
   </para>
  </legalnotice>
- </bookinfo>
+ </articleinfo>
 
- <chapter id="intro">
+ <section id="intro">
   <title>Introduction</title>
 
   <para>
 This is a jEdit plugin to perform spell checking of text in a jEdit buffer.
 It can use various engines to perform the spell-checking.
 </para>
- </chapter>
+ </section>
 
 
  <!--               FEATURES            -->
- <chapter id="features">
+ <section id="features">
   <title>Features</title>
   <itemizedlist>
    <listitem>
@@ -76,11 +78,11 @@ It can use various engines to perform the spell-checking.
     </para>
    </listitem>
   </itemizedlist>
- </chapter>
+ </section>
 
 
  <!--               ENGINES            -->
- <chapter id="engines">
+ <section id="engines">
   <title>Engines</title>
   <para>The SpellCheck plugin has the ability to work with different spell-checkers.
   It currently supports Aspell, Hunspell and VoxSpell</para>
@@ -130,11 +132,11 @@ It can use various engines to perform the spell-checking.
   An English dictionary is included.</para>
   </section>
   
-  </chapter>
+  </section>
 
 
  <!--               SYSTEM REQUIREMENTS            -->
- <chapter id="sysreq">
+ <section id="sysreq">
   <title>System Requirements</title>
 
   <itemizedlist>
@@ -162,11 +164,11 @@ It can use various engines to perform the spell-checking.
    </para></listitem>
   </itemizedlist>
 
- </chapter>
+ </section>
 
 
  <!--               INSTALLATION            -->
- <chapter id="install">
+ <section id="install">
   <title>Installation and Configuration</title>
 
   <section id="install-aspell">
@@ -216,7 +218,7 @@ It can use various engines to perform the spell-checking.
    <para>
    In the <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options...</guimenuitem>
     option dialog, section <code>SpellCheck/Aspell Engine</code>, you must set the path to the
-    Aspell executable : see <link linkend="options">Options</link> chapter below.
+    Aspell executable : see <link linkend="options">Options</link> section below.
     </para>
    </listitem>
    </itemizedlist>
@@ -244,12 +246,12 @@ It can use various engines to perform the spell-checking.
    and in the pane <guilabel>Install</guilabel>, select it then click on <guibutton>Install</guibutton></para>
    </section>
 
- </chapter>
+ </section>
   
   
   
  <!--               OPTIONS            -->
-   <chapter id="options">
+   <section id="options">
    <title>Options</title>
    <para>In the <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Plugin Options...</guimenuitem>
     option dialog, section <code>SpellCheck</code>, there are some options to set.
@@ -445,9 +447,9 @@ It can use various engines to perform the spell-checking.
   </para>
   </section>
   </section>
- </chapter>
+ </section>
 
- <chapter id="usage">
+ <section id="usage">
   <title>Usage</title>
   <section id="usage.general">
    <title>General Usage</title>
@@ -573,9 +575,9 @@ It can use various engines to perform the spell-checking.
     </glosslist>
    </section>
   </section>
- </chapter>
+ </section>
 
- <chapter id="user-dicts">
+ <section id="user-dicts">
  <title>User dictionaries</title>
   <para>User dictionaries consist in lists of words. Any misspelled word reported by
   the spell-checker which is present in the user dictionary is ignored.
@@ -594,8 +596,8 @@ It can use various engines to perform the spell-checking.
   <para>Otherwise, changed dictionaries are saved when the plugin has stopped.
   You can also invoke  <guimenu>Plugins</guimenu>&gt;<guimenuitem>Spell Check</guimenuitem>&gt;<guimenuitem>Persist Dictionaries on disk</guimenuitem> at any time.</para>
   </section>
- </chapter>
- <chapter id="building"><title>Building</title>
+ </section>
+ <section id="building"><title>Building</title>
 <para>
 As of release R005, the build process is the same as other plugins.
 It uses the <code>build-support/plugin-build.xml</code> build file,
@@ -605,8 +607,8 @@ available from jedit repository. The documentation is generated using docbook xs
 for GUI testing. Otherwise they are plain <ulink url="http://www.junit.org/">jUnit</ulink> tests.
 To run the tests, <command>cd</command> to the plugin root directory and type <command>ant test</command>.
 </para>
- </chapter>
-<chapter id="bugs">
+ </section>
+<section id="bugs">
 <title>Current Bugs</title>
 <itemizedlist>
   <listitem>
@@ -615,18 +617,27 @@ To run the tests, <command>cd</command> to the plugin root directory and type <c
   </para>
   </listitem>
 </itemizedlist>
-</chapter>
-<chapter id="todo"><title>Current ToDo List</title>
+</section>
+<section id="todo"><title>Current ToDo List</title>
 <itemizedlist>
   <listitem><para>Allow the user access all of Aspell options.
   This is now dormant, as new engines are included.</para></listitem>
 </itemizedlist>
-</chapter>
+</section>
 
-<chapter id="changelog"><title>Change Log</title>
+<section id="changelog"><title>Change Log</title>
 
 <itemizedlist>
-<listitem><para>Release 006 (September, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E. Le Lay</ulink></para>
+<listitem><para>Release 007 (November, 2011) - <ulink url="mailto:kerik-sf@users.sourceforge.net">E. Le Lay</ulink></para>
+  <para>Maintainance release.</para>
+  <itemizedlist>
+    <listitem><para>support hunspell on Mac OS X x86 64 bits JVM</para></listitem>
+    <listitem><para>use the Fest framework for tests</para></listitem>
+    <listitem><para>update the location of OpenOffice.org dictionary listing</para></listitem>
+    <listitem><para>optional dependency on VoxSpell (fixes plugin bug #2523940)</para></listitem>
+    </itemizedlist>
+</listitem>
+<listitem><para>Release 006 (September, 2008) - <ulink url="mailto:kerik-sf@users.sourceforge.net">E. Le Lay</ulink></para>
   <itemizedlist>
     <listitem><para>user dictionaries</para></listitem>
     <listitem><para>multiple engines (Hunspell bundled)</para></listitem>
@@ -635,7 +646,7 @@ To run the tests, <command>cd</command> to the plugin root directory and type <c
     <listitem><para>use buffer token types for context-sensitive spellchecking</para></listitem>
     </itemizedlist>
 </listitem>
-<listitem><para>Release 005 (August 26, 2008) - <ulink url="mailto:kerik-sf@sourceforge.net">E. Le Lay</ulink></para>
+<listitem><para>Release 005 (August 26, 2008) - <ulink url="mailto:kerik-sf@users.sourceforge.net">E. Le Lay</ulink></para>
   <itemizedlist>
     <listitem><para>Fix: bug [787498] : 	SpellCheck freeze. Now SpellCheck shouldn't
       freeze the editor any more. (If it does, please report !)</para></listitem>
@@ -695,5 +706,5 @@ To run the tests, <command>cd</command> to the plugin root directory and type <c
   </itemizedlist>
 </listitem>
 </itemizedlist>
-</chapter>
-</book>
+</section>
+</article>
