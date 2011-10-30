@@ -51,6 +51,8 @@ import org.junit.*;
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
 import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.timing.Pause;
+import org.fest.swing.edt.*;
 //}}}
 
 import cswilly.spell.ValidationDialog;
@@ -63,7 +65,10 @@ import errorlist.ErrorSourceUpdate;
 //}}}
 ///}}}
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import org.gjt.sp.jedit.testframework.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 /**
  * test high-level functions of the plugin:
@@ -89,34 +94,15 @@ public class SpellCheckPluginTest
 		TestUtils.afterClass();
 	}
 	
-	// @Before
-	// public void beforeTest(){
-	// 	System.err.println("beforeTest");
-	// 	TestUtils.beforeTest();
-	// 	jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().activatePluginIfNecessary();
-	// }
-
-	// @After
-	// public void afterTest(){
-	// 	System.err.println("afterTest");
-	// 	jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().deactivatePlugin(false);
-	// 	TestUtils.afterTest();
-	// }
-
 	@Test
 	public void testOptions(){
+		System.err.println("testOptions");
 		
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
-		
-		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
+		PluginOptionsFixture optionsDialog = TestUtils.pluginOptions();
 			
-		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
+		//TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
 		
-		JPanelFixture pane = optionsDialog.panel(new GenericTypeMatcher<SpellCheckOptionPane>(){
-			@Override protected boolean isMatching(SpellCheckOptionPane ignored) {
-				return true;
-			}
-		});
+		JPanelFixture pane = optionsDialog.optionPane("Spell Check/General","spellcheck.general");
 		
 		optionsDialog.close();
 		//fail("I don't want to succeed");
@@ -132,6 +118,7 @@ public class SpellCheckPluginTest
 
 	@Test
 	public void testInteractiveSpellCheck(){
+		System.err.println("testInteractiveSpellCheck");
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
@@ -140,7 +127,7 @@ public class SpellCheckPluginTest
 		final View view = TestUtils.view();
 		final Buffer buff = TestUtils.newFile();
 		buff.insert(0,"The quick brown foxe");
-		//try{Thread.sleep(120000);}catch(InterruptedException ie){}
+		//Pause.pause(120000);
 		Thread spellThread = new Thread(){
 			public void run(){
 				SpellCheckPlugin.checkBuffer(view,buff);
@@ -159,15 +146,20 @@ public class SpellCheckPluginTest
 	
 	@Test
 	public void testShowCustomLangSpellDialog(){
+		System.err.println("testShowCustomLangSpellDialog");
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en-w_accents");
 
 		final Buffer buff = TestUtils.newFile();
-		buff.setProperty(SpellCheckPlugin.BUFFER_LANGUAGE_PROP,"en");
-		buff.insert(0,"Les licences de la plupart des logiciels\nsont concues pour vous enlever toute libertée");
-		
+		System.err.println("hello");
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					buff.setProperty(SpellCheckPlugin.BUFFER_LANGUAGE_PROP,"en");
+					buff.insert(0,"Les licences de la plupart des logiciels\nsont concues pour vous enlever toute libertée");
+				}
+		});
 		final AtomicReference<SpellException> except = new AtomicReference<SpellException>(null);
 		Thread spellThread = new Thread(){
 			public void run(){
@@ -181,17 +173,17 @@ public class SpellCheckPluginTest
 		};
 		spellThread.start();
 		DialogFixture langDialog = WindowFinder.findDialog(EnhancedDialog.class).withTimeout(5000).using(TestUtils.robot());
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let dictionaries be loaded
+		Pause.pause(1000);//let dictionaries be loaded
 
 		langDialog.comboBox().selectItem("fr");
-		langDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+		langDialog.button(org.fest.swing.core.matcher.JButtonMatcher.withText("OK")).click();
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(20000).using(TestUtils.robot());
 
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let dictionaries be loaded
+		Pause.pause(1000);//let dictionaries be loaded
 		assertEquals("fr",buff.getProperty(SpellCheckPlugin.BUFFER_LANGUAGE_PROP));
 		spellDialog.list().selectItem("conçues");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(5000);}catch(InterruptedException ie){}//let dictionaries be loaded
+		Pause.pause(1000);//let dictionaries be loaded
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.list().selectItem("liberté");
 		spellDialog.button("Change").click();
@@ -204,6 +196,7 @@ public class SpellCheckPluginTest
 
 	@Test
 	public void testSpellCheckOnSave(){
+		System.err.println("testSpellCheckOnSave");
 		String testsDir = System.getProperty(ENV_TESTS_DIR);
 		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",testsDir!=null);
 
@@ -219,7 +212,7 @@ public class SpellCheckPluginTest
 		
 		TestUtils.openFile(path);
 		
-		TestUtils.jeditFrame().menuItemWithPath("File","Save").click();
+		TestUtils.jEditFrame().menuItemWithPath("File","Save").click();
 		
 		final AtomicReference<Boolean> atr = new AtomicReference<Boolean>(Boolean.FALSE);
 		EBComponent eb = new EBComponent(){
@@ -234,7 +227,7 @@ public class SpellCheckPluginTest
 		
 		EditBus.addToBus(eb);
 		
-		try{Thread.sleep(10000);}catch(InterruptedException ie){}
+		Pause.pause(10000);
 		
 		assertEquals(Boolean.TRUE,atr.get());
 		
@@ -254,6 +247,7 @@ public class SpellCheckPluginTest
 	
 	@Test
 	public void testStop(){
+		System.err.println("testStop");
 		
 		final PluginJAR jar = jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR();
 		try{
@@ -278,6 +272,7 @@ public class SpellCheckPluginTest
 
 	@Test
 	public void testMultipleBuffers(){
+		System.err.println("testMultipleBuffers");
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
@@ -313,16 +308,16 @@ public class SpellCheckPluginTest
 		
 		final Buffer buffer2 = buffer1.getNext();
 
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		try{SwingUtilities.invokeAndWait(new Runnable(){
-				public void run(){
+		Pause.pause(2000);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
 					view.getEditPanes()[0].setBuffer(buffer1);
 					EditPane pane2 = view.getEditPanes()[1];
 					pane2.setBuffer(buffer2);
 					buffer2.insert(0,"The qwick brown foxe");
 					pane2.getTextArea().setSelection(new Selection.Range(0,10));
 				}
-		});}catch(InterruptedException ie){}catch(java.lang.reflect.InvocationTargetException ite){}
+		});
 
 
 		//select the second pane and spell-check in the first
@@ -349,7 +344,7 @@ public class SpellCheckPluginTest
 		
 		assertEquals("SpellCheckPlugin didn't throw an exception on view/buffer mismatch",Boolean.TRUE,except.get());
 		
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		spellDialog.list().selectItem("quick");
 		spellDialog.button("Change").click();
 		//update : foxe not spell-checked as it's out of selection
@@ -364,6 +359,7 @@ public class SpellCheckPluginTest
 	
 	@Test
 	public void testMarkupModes(){
+		System.err.println("testMarkupModes");
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
 
@@ -373,8 +369,8 @@ public class SpellCheckPluginTest
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
-		try{Thread.sleep(5000);}catch(InterruptedException ie){}
+		final View view = TestUtils.view();
+		Pause.pause(5000);
 		view.unsplit();
 		final Buffer buff = TestUtils.openFile(testDir+"/latex-file.tex");
 
@@ -419,6 +415,7 @@ public class SpellCheckPluginTest
 	
 	@Test
 	public void testIgnoreAll(){
+		System.err.println("testIgnoreAll");
 		String exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
 
@@ -428,18 +425,18 @@ public class SpellCheckPluginTest
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en");
 
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		final View view = TestUtils.view();
 
-		jEdit.newFile(view);
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		final Buffer buffer = TestUtils.newFile();
+
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					buffer.insert(0,"The wiek comes to an end\nIndeed it's the end of the wiek");
+		}});
 		
-		final Buffer buffer = view.getBuffer();
-
-		buffer.insert(0,"The wiek comes to an end\nIndeed it's the end of the wiek");
-
 		final String oldText = buffer.getText(0,buffer.getLength());
 
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 
 		
 		Thread spellThread = new Thread(){
@@ -471,7 +468,7 @@ public class SpellCheckPluginTest
 		assertTrue("spell-checking didn't finish", !spellThread.isAlive());
 		
 		//test clear...
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Spell Check","Clear Ignored Words").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins","Spell Check","Clear Ignored Words").click();
 		
 		spellThread = new Thread(){
 			public void run(){

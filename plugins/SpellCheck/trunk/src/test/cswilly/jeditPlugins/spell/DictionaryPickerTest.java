@@ -55,7 +55,9 @@ import org.fest.swing.finder.WindowFinder;
 
 
 ///{{{ SpellCheck
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 import cswilly.spell.SpellException;
 ///}}}
 
@@ -73,12 +75,12 @@ public class DictionaryPickerTest
 
 	@BeforeClass
 	public  static void setUpjEdit(){
-		TestUtils.setUpjEdit();
+		TestUtils.beforeClass();
 	}
 
 	@AfterClass
 	public static void tearDownjEdit(){
-		TestUtils.tearDownjEdit();
+		TestUtils.afterClass();
 	}
 	
 	@Before
@@ -101,7 +103,7 @@ public class DictionaryPickerTest
 		
 		final DictionaryPicker dp = new DictionaryPicker(new AspellEngineManager(),"en");
 		
-		final JDialog dialog = dp.asDialog(TestUtils.jeditFrame().targetCastedTo(View.class));
+		final JDialog dialog = dp.asDialog(TestUtils.view());
 		
 		Thread pickThread = new Thread(){
 			public void run(){
@@ -116,7 +118,7 @@ public class DictionaryPickerTest
 		try{Thread.sleep(5000);}catch(InterruptedException ie){}//let dictionaries be loaded
 		
 		langDialog.comboBox().selectItem("fr");
-		langDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+		langDialog.button(org.fest.swing.core.matcher.JButtonMatcher.withText("OK")).click();
 		
 		try{pickThread.join(5000);}catch(InterruptedException ie){}
 		if(pickThread.isAlive())fail("Didn't terminate");
@@ -137,7 +139,7 @@ public class DictionaryPickerTest
 		final DictionaryPicker dp = new DictionaryPicker(new AspellEngineManager(),"en");
 		
 
-		final JDialog dialog = dp.asDialog(TestUtils.jeditFrame().targetCastedTo(View.class));
+		final JDialog dialog = dp.asDialog(TestUtils.view());
 		
 		final AtomicReference<String> error = new AtomicReference<String>(null);
 		dp.getPropertyStore().addPropertyChangeListener(new PropertyChangeListener(){
@@ -162,7 +164,7 @@ public class DictionaryPickerTest
 		
 		assertTrue("didn't get an exception", error.get()!=null);
 		assertEquals(error.get(),langDialog.textBox("error-report").text());
-		langDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"Cancel")).click();
+		langDialog.button(org.fest.swing.core.matcher.JButtonMatcher.withText("Cancel")).click();
 
 	}
 	@Test
@@ -211,7 +213,7 @@ public class DictionaryPickerTest
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}
 
 
-		final JDialog dialog = dp.asDialog(TestUtils.jeditFrame().targetCastedTo(View.class));
+		final JDialog dialog = dp.asDialog(TestUtils.view());
 		
 		pickThread = new Thread(){
 			public void run(){
@@ -227,7 +229,7 @@ public class DictionaryPickerTest
 		
 		
 		langDialog.comboBox().selectItem("fr");
-		langDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+		langDialog.button(org.fest.swing.core.matcher.JButtonMatcher.withText("OK")).click();
 
 		try{pickThread.join(5000);}catch(InterruptedException ie){}
 		if(pickThread.isAlive())fail("Didn't terminate");

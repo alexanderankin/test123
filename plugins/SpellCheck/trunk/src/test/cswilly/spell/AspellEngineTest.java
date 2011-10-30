@@ -53,6 +53,7 @@ public class AspellEngineTest{
 
 	@Test
 	public void testCreationDoesNotExist(){
+		System.err.println("testCreationDoesNotExist");
 		try{
 			Thread t = new Thread(){
 				public void run(){
@@ -83,6 +84,7 @@ public class AspellEngineTest{
 	
 	@Test
 	public void testCreationSink(){
+		System.err.println("testCreationSink");
 		try{
 			Thread t = new Thread(){
 				public void run(){
@@ -90,13 +92,14 @@ public class AspellEngineTest{
 					AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{SINK,"pipe"}),"UTF-8", true);
 						fail("Should not succeed");
 					}catch(Throwable t){
+						System.err.println("caught exception");
 						throwable=t;
 					}
 				}
 			};
 			t.start();
 			try{
-				t.join(10000);
+				t.join(30000);
 			}catch(InterruptedException ie){
 				fail("should not be interrupted");
 			}
@@ -113,6 +116,7 @@ public class AspellEngineTest{
 
 	@Test
 	public void testCreationWelcome(){
+		System.err.println("testCreationWelcome");
 		try{
 			Thread t = new Thread(){
 				public void run(){
@@ -126,7 +130,7 @@ public class AspellEngineTest{
 			};
 			t.start();
 			try{
-				t.join(2000);
+				t.join(30000);
 			}catch(InterruptedException ie){
 				fail("should not be interrupted");
 			}
@@ -144,6 +148,7 @@ public class AspellEngineTest{
 	
 	@Test
 	public void testSpellCheckOK(){
+		System.err.println("testSpellCheckOK");
 		final List<Result> correct_results = Arrays.asList(new Result[]{
 				new Result("*"),new Result("*"),new Result("*"),
 				new Result("& Foox 40 17: Fox, Fix, Foxy, Pox, Fax, Fonz, Foods, Fools, Foots, Fops, Cox, Box, Fog, Lox, Fogs, Foss, Coax, Coos, Flax, Flex, Flux, Foes, Fogy, Fork, Fons, Knox, Fobs, Hoax, Roux, Goo's, Fop's, Fox's, Fog's, Food's, Fool's, Foot's, Koo's, Foe's, Flo's, Fob's")
@@ -162,7 +167,7 @@ public class AspellEngineTest{
 			};
 			t.start();
 			try{
-				t.join(2000);
+				t.join(30000);
 			}catch(InterruptedException ie){
 				fail("should not be interrupted");
 			}
@@ -180,6 +185,7 @@ public class AspellEngineTest{
 
 	@Test
 	public void testSpellCheckWin(){
+		System.err.println("testSpellCheckWin");
 		final List<Result> correct_results = Arrays.asList(new Result[]{
 				new Result("*"),
 				new Result("& Qwick 6 5: Wick, Quick, Vick, Kick, Quack, Quirk"),
@@ -219,6 +225,7 @@ public class AspellEngineTest{
 
 	@Test
 	public void testSpellCheckSink(){
+		System.err.println("testSpellCheckSink");
 		try{
 			final AspellEngine ae = new AspellEngine(Arrays.asList(new String[]{WELCOME_THEN_SINK,"pipe","--lang='en'"}),"UTF-8", true);
 			Thread t = new Thread(){
@@ -233,7 +240,7 @@ public class AspellEngineTest{
 			};
 			t.start();
 			try{
-				t.join(10000);
+				t.join(30000);
 			}catch(InterruptedException ie){
 				fail("should not be interrupted");
 			}

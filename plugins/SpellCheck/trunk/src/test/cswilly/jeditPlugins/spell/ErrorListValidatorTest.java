@@ -56,7 +56,10 @@ import cswilly.spell.Result;
 
 
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 
 /**
@@ -90,9 +93,9 @@ public class ErrorListValidatorTest{
 	public void testNormal(){
 		final ErrorListValidator valid = new ErrorListValidator("ErrorListValidatorTest");
 		
-		TestUtils.jeditFrame().menuItemWithPath("Plugins").click();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList").click();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList","Error List").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins","ErrorList").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins","ErrorList","Error List").click();
 
 		
 		String path  = "/My/Test/Path";

@@ -14,47 +14,126 @@
 	<!-- where the source code lives -->
 	<property name="src.dir" value="src/main"/>
 
-	<!-- separate dir for test code (see test.compile) -->
-	<property name="src.test.dir" value="src/test"/>
-
 	<!-- separate dir for images -->
 	<property name="resources.dir" value="resources"/>
 
 	<!-- for build-support location -->
-	<property file="../build.properties"/>
+	<property file="build.properties"/>
 	<!-- build support -->
 	<import file="${build.support}/plugin-build.xml" />
 
-	<!-- TODO: put this in properties -->
-	<path id="fest.class.path">
-			<pathelement location="lib/fest-swing-1.0b1.jar"/>
-			<pathelement location="lib/fest-util-0.4.jar"/>
-			<pathelement location="lib/fest-reflect-0.4.jar"/>
-			<pathelement location="lib/fest-assert-1.0a1.jar"/>
-	</path>
-	
-	<!-- TODO: make use of recursive dependencies build -->
-	<path id="plugins.class.path">
-		<pathelement location="${install.dir}/ErrorList.jar"/>
-		<pathelement location="${install.dir}/CommonControls.jar"/>
-		<pathelement location="${install.dir}/kappalayout.jar"/>
-		<pathelement location="${install.dir}/VoxSpell.jar"/>
-	</path>
-	
-	<path id="hunspell.class.path">
-		<pathelement location="lib/hunspell.jar"/>
-	</path>
-	
-	<!-- consists in previously defined paths -->
-	<path id="project.class.path">
-		<path refid="plugins.class.path"/>
-		<path refid="fest.class.path"/>
-		<path refid="hunspell.class.path"/>
-	</path>
-	
-	<!-- where to put tests results -->
-    <property name="build.tests"  value="${build.dir}/tests" />
+	<!-- {{{ use Fest for junit testing -->
+    <!-- location of the test framework, this should be set in the build.properties
+    file loaded above. -->
+    <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
+    
+    <!-- test source and classes -->
+    <property name="project.test.src.dir" location="${basedir}/src/test"/>
+    <property name="project.test.classes.dir" location="${build.dir}/testclasses"/>
+    <mkdir dir="${project.test.classes.dir}"/>
 
+    <property name="project.src.dir" location="${basedir}/src/main"/>
+
+    <!-- marker property to indicate to the test framework that plugin jars
+    need to be copied -->
+    <property name="copyPluginJars" value=""/>
+    
+    <property name="project.toinstrument.jar" value="SpellCheck.jar"/>
+    
+	<path id="project.src.dir" path="./src/main"/>
+    
+    <!-- full list of all jar files necessary to let jEdit load and run
+    the plugin.  All of these files will be copied to the jedit_settings/jar
+    directory. -->
+    <filelist id="plugin.jars" dir="${install.dir}">
+    	<!-- SpellCheck -->
+		<file name="SpellCheck.jar"/>
+    	<file name="hunspell.jar"/>
+    	<file name="jna.jar"/>
+		<!-- ErrorList -->
+		<file name="ErrorList.jar"/>
+		<!-- Common Controls -->
+		<file name="CommonControls.jar"/>
+		<file name="kappalayout.jar"/>
+		<!-- VoxSpell -->
+		<file name="VoxSpell.jar"/>
+    </filelist>
+
+    <fileset id="project.resources" dir="tests" defaultexcludes="yes">
+  	<include name="BAH"/>
+    </fileset>
+    
+    <!-- include everything needed to let jEdit load the plugin and run the 
+    unit tests.  This should include all the jars listed in the plugin.jars 
+    file list defined above. -->
+    <path id="project.class.path">
+        <pathelement path="${project.test.classes.dir}"/>
+        <path>
+            <filelist refid="plugin.jars"/>
+        </path>
+    </path>
+
+    <!-- include the classes for which you would like to see the coverage report -->
+    <property name="emma.filter" value="*"/>
+
+    <!-- these are the actual test files to compile.  This is included so it
+    is easy to fine tune which tests are compiled and ran. --> 
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases.  This is optional. -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test.  This is optional. -->
+    <selector id="testcases.current">
+        <filename name="cswilly/spell/AspellEngineTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests,
+    or some other selector.  This is NOT optional, if this selector is not
+    defined, no tests will run. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+
+    <!-- set any system properties, this is a way to let tests know things
+    without hardcoding values directly in the tests. -->    
+    <property name="test-tests.dir" location="tests"/>
+	<property name="test-jedit.aspell-exe" location="/opt/local/bin/aspell"/>
+    <propertyset id="project.test.sysproperties">
+        <propertyref name="test-tests.dir"/>
+        <propertyref name="test-jedit.aspell-exe"/>
+    </propertyset>
+    
+    <!-- actually call the test framework to run the tests.  inheritRefs must
+    be true so that all of the things defined above are known to the test 
+    framework. -->
+    <target name="test-junit">
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+    
+    <target name="test-all" description="run all tests">
+		<selector id="junit.testcases">
+			<or>
+				<selector refid="testcases.all"/>
+			</or>
+		</selector>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+	</target>
+	<!-- }}} -->
+	
 	<!-- I use a separate target to build the tests -->
 	<selector id="compileFiles">
         <filename name="**/*.java" />
@@ -83,11 +162,9 @@
 		description="Compile the plugin's test classes"
 		depends="compile">
 
-        <mkdir dir="${build.classes}" />
-        <jp.javac>
-            <src location="${src.test.dir}" />
-			<selector refid="compileFiles"/>
-        </jp.javac>
+		<ant antfile="${test.framework.home}/build.xml" target="-compileTests" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
 
     </target>
 
@@ -122,120 +199,11 @@
 	</or>
 	</selector>
 	
-	<!-- this selector holds current test... -->
-	<selector id="testcases.current">
-	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
-	</selector>
-	
-	<!-- This selector controls which tests to run. -->
-	<selector id="junit.testcases">
-	<or>
-	<selector refid="testcases.current"/>
-	</or>
-    </selector>
-
-	
 	
 	<!-- for junit tests -->
 	<property name="unit.test.target" value="test-junit"/>
 
-    <!-- {{{ Target: test-junit============================ -->
-	<!-- started as a copy of plugin-build.xml, but added system properties,
-	     batch-processing.
-	  -->
-    <target name="test-junit"
-            description="Runs the plugin's jUnit tests."
-			depends="test.compile,test.prepare">
-        <echo message="Running tests..."/>
-		
-        <junit printsummary="${junit.printsummary}"
-                haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}"
-				fork="yes">
-
-			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
-			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
-			<sysproperty key="test-tests.dir" path="tests"/>
-			
-			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
-
-            <classpath>
-                <pathelement location="${junit.jar}" />
-				
-				<!-- for junit annotations -->
-                <pathelement location="${hamcrest.jar}" />
-				
-                <pathelement location="${build.classes}" />
-                <path refid="default.class.path" />
-                <path refid="project.class.path" />
-            </classpath>
-
-            <batchtest todir="${build.tests}">
-                <fileset dir="${src.test.dir}">
-                  <selector refid="junit.testcases"/>
-                </fileset>
-           </batchtest>
-           <formatter type="brief"/>
-        </junit>
-
-    </target>
-    <!-- ===============================================}}} -->
-
-	<target name="test.prepare"
-		description="creates fresh jedit settings directory for tests">
-		<!--depends="test.compile">-->
-        <mkdir dir="${build.tests}"/>
-		<delete dir="${build.dir}/settings"/>
-		<copy todir="${build.dir}/settings">
-			<fileset dir="tests/settings"/>
-		</copy>
-		<antcall target="build">
-			<param name="want-to-test" value="yes"/>
-		</antcall>
-		<echo message="Preparing tests"/>
-
-		<copy todir="${build.dir}/settings/jars">
-			<fileset dir="${install.dir}">
-			<filename name="*.jar"/>
-			</fileset>
-
-			<fileset dir="./lib">
-			<include name="jna.jar"/>
-			<include name="hunspell.jar"/>
-			</fileset>
-
-			<path refid="project.class.path"/>
-			<flattenmapper/>
-		</copy>
-	</target>	
-
-	<!-- remove test classes from build directory.
-	     The property 'want-to-test' is to protect test.prepare which
-		 needs these classes !
-	  -->
-	<target name="build.remove-tests"
-		depends="compile"
-		description="Remove Unit-Tests from the build classes"
-		unless="want-to-test">
-		<echo message="Removing test classes.."/>
-		<delete dir="${build.classes}">
-			<and>
-			<filename name="**/*Test*.class"/>
-			<not><filename name="cswilly/spell/Test.class"/></not>
-			</and>
-		</delete>
-	</target>
-	
-	<target name="build.prepare"
-		depends="build.remove-tests">
-        <mkdir dir="${build.extras}" />
-		<copy todir="${build.extras}">
-			<fileset dir="${resources.dir}">
-				<include name="**/*.png"/>
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="run" depends="test.compile,test.prepare">
+    <target name="run" depends="build.prepare">
 		<java fork="true" classname="org.gjt.sp.jedit.jEdit">
 			<arg value="-norestore"/>
 			<arg value="-noserver"/>

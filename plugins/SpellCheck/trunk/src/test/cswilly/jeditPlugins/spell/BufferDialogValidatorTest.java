@@ -44,6 +44,8 @@ import static org.junit.Assert.*;
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
 import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.edt.*; 
+import org.fest.swing.timing.*;
 //}}}
 
 ///}}}
@@ -55,7 +57,10 @@ import cswilly.spell.WordListValidator;
 import cswilly.spell.AspellEngine;
 import cswilly.spell.MockEngine;
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 
 /**
@@ -95,9 +100,10 @@ public class BufferDialogValidatorTest{
 	
 	@Test
 	public void testDialog(){
+		System.err.println("testDialog");
 		final BufferDialogValidator valid = new BufferDialogValidator();
 
-		View view = TestUtils.jeditFrame().targetCastedTo(View.class); 
+		View view = TestUtils.view(); 
 		final Buffer buffer = TestUtils.newFile();
 		buffer.insert(0,"The qwick brown foxe");
 		final String oldText = buffer.getText(0,buffer.getLength());
@@ -144,7 +150,7 @@ public class BufferDialogValidatorTest{
 		spellDialog.textBox("changeTo").requireText("wick");
 
 		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 		spellDialog.list().selectItem("fox");
 		spellDialog.button("Change").click();
 		try{
@@ -171,10 +177,11 @@ public class BufferDialogValidatorTest{
 
 	@Test
 	public void testNullDictIgnoreAll(){
+		System.err.println("testNullDictIgnoreAll");
 		final BufferDialogValidator valid = new BufferDialogValidator();
 
 		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		final View view = TestUtils.view();
 		try{
 		SwingUtilities.invokeAndWait(
 			new Runnable(){
@@ -186,7 +193,7 @@ public class BufferDialogValidatorTest{
 			System.err.println(e);
 		}
 	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		
 		final Buffer buffer = view.getBuffer();
 		buffer.insert(0,"The qwick qwick foxe");
@@ -231,15 +238,15 @@ public class BufferDialogValidatorTest{
 
 		spellDialog.textBox("originalWord").requireText("qwick");
 		spellDialog.button("Add").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 
 		spellDialog.textBox("originalWord").requireText("qwick");
 		spellDialog.button("Ignore All").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 
 		spellDialog.textBox("originalWord").requireText("foxe");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 
 		try{
 			spellThread.join(5000);
@@ -256,16 +263,17 @@ public class BufferDialogValidatorTest{
 			jEdit.closeBuffer(view,buffer);
 			}
 		});
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
-		TestUtils.findDialogByTitle("File Not Saved").button(AbstractButtonTextMatcher.withText(JButton.class,"Non")).click();
+		Pause.pause(2000);
+		TestUtils.findDialogByTitle("File Not Saved").button(org.fest.swing.core.matcher.JButtonMatcher.withText("Non")).click();
 	}
 	
 	@Test
 	public void testUserDict(){
+		System.err.println("testUserDict");
 		final BufferDialogValidator valid = new BufferDialogValidator();
 
 		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		final View view = TestUtils.view();
 		try{
 		SwingUtilities.invokeAndWait(
 			new Runnable(){
@@ -277,7 +285,7 @@ public class BufferDialogValidatorTest{
 			System.err.println(e);
 		}
 	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		
 		final Buffer buffer = view.getBuffer();
 		buffer.insert(0,"The qwick qwick foxe");
@@ -334,8 +342,9 @@ public class BufferDialogValidatorTest{
 		TestUtils.close(view,buffer);
 	}
 	
-		@Test
+	@Test
 	public void testCancel(){
+		System.err.println("testCancel");
 		AspellEngine engine = null;
 		try{
 			engine = new AspellEngine( Arrays.asList(new String[]{exePath,"--lang","en","pipe"}), "UTF-8", true);
@@ -352,11 +361,13 @@ public class BufferDialogValidatorTest{
 		final Buffer buffer = TestUtils.openFile(testsDir+"/spellTest.txt");
 		//do that so there is one change before spell-checking
 		//(to catch an undue undo ;-))
-		buffer.insert(0,"hello,\n");
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		GuiActionRunner.execute(new GuiTask(){
+		protected void executeInEDT(){
+			buffer.insert(0,"hello,\n");
+		}});
 		String oldText = buffer.getText(0,buffer.getLength());
 		
-		valid.setTextArea(TestUtils.jeditFrame().targetCastedTo(View.class).getTextArea());
+		valid.setTextArea(TestUtils.view().getTextArea());
 
 		final AtomicReference<SpellException> exp = new AtomicReference<SpellException>(null);
 		Thread spellThread = new Thread(){
@@ -372,9 +383,9 @@ public class BufferDialogValidatorTest{
 		
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		spellDialog.button("Add").click();
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		spellDialog.button("Change").click();
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		//spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.button("Cancel").click();
 		try{
@@ -390,6 +401,7 @@ public class BufferDialogValidatorTest{
 	
 	@Test
 	public void testCommit(){
+		System.err.println("testCommit");
 		AspellEngine engine = null;
 		try{
 			engine = new AspellEngine( Arrays.asList(new String[]{exePath, "--lang","en","pipe"}), "UTF-8", true);
@@ -401,7 +413,7 @@ public class BufferDialogValidatorTest{
 		valid.setEngine(engine);
 		valid.setEngineForSuggest(new MockEngine());
 		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		final View view = TestUtils.view();
 		try{
 		SwingUtilities.invokeAndWait(
 			new Runnable(){
@@ -413,10 +425,14 @@ public class BufferDialogValidatorTest{
 			System.err.println(e);
 		}
 	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		
 		final Buffer buffer = view.getBuffer();
-		buffer.insert(0,"The qwick brown foxe");
+		GuiActionRunner.execute(new GuiTask(){
+		protected void executeInEDT(){
+			buffer.insert(0,"The qwick brown foxe");
+		}});
+		
 		String oldText = buffer.getText(0,buffer.getLength());
 		
 		valid.setTextArea(view.getTextArea());
@@ -435,7 +451,7 @@ public class BufferDialogValidatorTest{
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		spellDialog.list().selectItem("quick");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.list().selectItem("fox");
 		spellDialog.button("Change").click();
@@ -454,6 +470,7 @@ public class BufferDialogValidatorTest{
 	
 	@Test
 	public void testScroll(){
+		System.err.println("testScroll");
 		AspellEngine engine = null;
 		try{
 			engine = new AspellEngine(Arrays.asList(new String[]{exePath,"--lang","en","pipe"}), "UTF-8", true);
@@ -464,26 +481,18 @@ public class BufferDialogValidatorTest{
 		valid.setEngine(engine);
 		valid.setEngineForSuggest(new MockEngine());
 		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
-		try{
-		SwingUtilities.invokeAndWait(
-			new Runnable(){
-				public void run(){
-					jEdit.newFile(view);
-				}
-			});
-		}catch(Exception e){
-			System.err.println(e);
-		}
-	
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		final View view = TestUtils.view();
 		
-		final Buffer buffer = view.getBuffer();
-
-		buffer.insert(0,"The qwick brown foxe\n");
-		for(int i=0;i<50;i++)
-			buffer.insert(buffer.getLength(),"some correct text\n");
-		buffer.insert(buffer.getLength(),"Wronge text\n");		
+		final Buffer buffer = TestUtils.newFile();
+		
+		GuiActionRunner.execute(new GuiTask(){
+		protected void executeInEDT(){
+			buffer.insert(0,"The qwick brown foxe\n");
+		
+			for(int i=0;i<50;i++)
+				buffer.insert(buffer.getLength(),"some correct text\n");
+			buffer.insert(buffer.getLength(),"Wronge text\n");		
+		}});
 
 
 		String oldText = buffer.getText(0,buffer.getLength());
@@ -504,11 +513,11 @@ public class BufferDialogValidatorTest{
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		spellDialog.list().selectItem("quick");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.list().selectItem("fox");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(2000);}catch(InterruptedException ie){}
+		Pause.pause(2000);
 		spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(5000).using(TestUtils.robot());
 		spellDialog.button("Change").click();
 		try{
@@ -525,6 +534,7 @@ public class BufferDialogValidatorTest{
 	
 	@Test
 	public void testPrevious(){
+		System.err.println("testPrevious");
 		final Buffer buf = TestUtils.newFile();
 		final String text = 
 			 "/*\n"
@@ -565,16 +575,16 @@ public class BufferDialogValidatorTest{
 		DialogFixture spellDialog = WindowFinder.findDialog(ValidationDialog.class).withTimeout(10000).using(TestUtils.robot());
 		spellDialog.textBox("originalWord").requireText("Ven");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		spellDialog.textBox("originalWord").requireText("jul");
 		spellDialog.button("Add").click();
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		spellDialog.textBox("originalWord").requireText("kerik");
 		spellDialog.button("Previous").click();
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		spellDialog.textBox("originalWord").requireText("jul");
 		spellDialog.button("Change").click();
-		try{Thread.sleep(1000);}catch(InterruptedException ie){}
+		Pause.pause(1000);
 		spellDialog.textBox("originalWord").requireText("kerik");
 		spellDialog.button("Ignore").click();
 

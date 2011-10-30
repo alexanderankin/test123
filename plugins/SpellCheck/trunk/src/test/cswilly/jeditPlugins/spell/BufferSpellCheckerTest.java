@@ -52,7 +52,10 @@ import cswilly.spell.ValidationDialog;
 import cswilly.spell.SpellException;
 import cswilly.spell.ChangeWordAction;
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 
 /**
@@ -68,13 +71,13 @@ public class BufferSpellCheckerTest{
 	public static void setUpjEdit(){
 		testsDir = System.getProperty(ENV_TESTS_DIR);
 		assertTrue("Forgot to set env. variable '"+ENV_TESTS_DIR+"'",testsDir!=null);
-		TestUtils.setUpjEdit();
+		TestUtils.beforeClass();
 
 	}
 	
 	@AfterClass
 	public static  void tearDownjEdit(){
-		TestUtils.tearDownjEdit();
+		TestUtils.afterClass();
 	}
 
 	@Before
