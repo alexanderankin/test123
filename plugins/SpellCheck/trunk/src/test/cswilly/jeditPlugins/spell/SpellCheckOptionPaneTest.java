@@ -48,9 +48,7 @@ import org.junit.*;
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
 import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.finder.DialogByTitleFinder;
-import static org.fest.swing.fixture.TableCell.row;
-import static org.fest.swing.core.matcher.JButtonByTextMatcher.withText;
+import static org.fest.swing.core.matcher.JButtonMatcher.withText;
 //}}}
 
 import cswilly.spell.ValidationDialog;
@@ -58,7 +56,10 @@ import cswilly.spell.ValidationDialog;
 
 ///}}}
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 /**
  * Test the functionality of the Options pane
@@ -99,11 +100,10 @@ public class SpellCheckOptionPaneTest
 	public void testEngines(){
 		jEdit.setProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP,"Aspell");
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
 		
-		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
+		PluginOptionsFixture optionsDialog = TestUtils.pluginOptions();
 		
-		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
+		optionsDialog.optionPane("Spell Check/General","spellcheck.general");
 		
 		//VoxSpell, Aspell, Hunspell
 		optionsDialog.comboBox("engines").requireSelection("Aspell");
@@ -111,7 +111,7 @@ public class SpellCheckOptionPaneTest
 		
 		optionsDialog.comboBox("engines").selectItem("Hunspell");
 		
-		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+		optionsDialog.OK();
 
 		//effective?
 		assertEquals("Hunspell",jEdit.getProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP));
@@ -122,11 +122,10 @@ public class SpellCheckOptionPaneTest
 		jEdit.setProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP,"Aspell");
 		jEdit.setProperty(AspellEngineManager.ASPELL_EXE_PROP,exePath);
 		jEdit.setProperty(SpellCheckPlugin.MAIN_LANGUAGE_PROP,"en_GB");
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
+
+		PluginOptionsFixture optionsDialog = TestUtils.pluginOptions();
 		
-		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
-		
-		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
+		optionsDialog.optionPane("Spell Check/General","spellcheck.general");
 		
 		try{Thread.sleep(2000);}catch(InterruptedException ie){}
 		
@@ -135,7 +134,7 @@ public class SpellCheckOptionPaneTest
 		
 		optionsDialog.comboBox("engines").selectItem("Hunspell");
 		
-		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+		optionsDialog.OK();
 
 	}
 	
@@ -144,26 +143,22 @@ public class SpellCheckOptionPaneTest
 	public void testCheckOnSave()
 	{
 		jEdit.setProperty(SpellCheckPlugin.ENGINE_MANAGER_PROP,"Aspell");
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
+		PluginOptionsFixture optionsDialog = TestUtils.pluginOptions();
 		
-		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
-		
-		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
-		
+		optionsDialog.optionPane("Spell Check/General","spellcheck.general");
 		
 		//spellcheck on save
 		optionsDialog.checkBox("SpellCheckOnSave").requireNotSelected().click();
 		
 
-		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();
+		optionsDialog.OK();
 
 		//effective?
 		assertTrue(jEdit.getBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP));
 		jEdit.setBooleanProperty(SpellCheckPlugin.SPELLCHECK_ON_SAVE_PROP,false);
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
-		optionsDialog = WindowFinder.findDialog(PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
-		TestUtils.selectPath(optionsDialog.tree(),new String[]{"Plugins","Spell Check","General"});
-		optionsDialog.button(AbstractButtonTextMatcher.withText(JButton.class,"OK")).click();		
+		optionsDialog = TestUtils.pluginOptions();
+		optionsDialog.optionPane("Spell Check/General","spellcheck.general");
+		optionsDialog.OK();
 	}
 	
 }

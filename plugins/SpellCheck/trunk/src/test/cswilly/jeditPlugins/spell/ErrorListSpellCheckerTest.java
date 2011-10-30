@@ -53,7 +53,10 @@ import cswilly.spell.WordListValidator;
 
 import errorlist.*;
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 ///}}}
 
@@ -68,20 +71,20 @@ public class ErrorListSpellCheckerTest{
 	
 	@BeforeClass
 	public static void setUpjEdit(){
-		TestUtils.setUpjEdit();
+		TestUtils.beforeClass();
 	}
 
 	@AfterClass
 	public static  void tearDownjEdit(){
-		TestUtils.tearDownjEdit();
+		TestUtils.afterClass();
 	}
 
 	@Before
 	public void beforeTest(){
 		jEdit.getPlugin(SpellCheckPlugin.class.getName()).getPluginJAR().activatePluginIfNecessary();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins").click();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList").click();
-		TestUtils.jeditFrame().menuItemWithPath("Plugins","ErrorList","Error List").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins","ErrorList").click();
+		TestUtils.jEditFrame().menuItemWithPath("Plugins","ErrorList","Error List").click();
 	}
 
 	@After
@@ -93,7 +96,7 @@ public class ErrorListSpellCheckerTest{
 	public void testNormal(){
 		final ErrorListSpellChecker checker = new ErrorListSpellChecker();
 		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		final View view = TestUtils.view();
 		jEdit.newFile(view);
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let new file be created
 		final Buffer buff = view.getBuffer();
@@ -151,7 +154,7 @@ public class ErrorListSpellCheckerTest{
 	public void testAdditional(){
 		final ErrorListSpellChecker checker = new ErrorListSpellChecker();
 		
-		final View view = TestUtils.jeditFrame().targetCastedTo(View.class);
+		final View view = TestUtils.view();
 		jEdit.newFile(view);
 		try{Thread.sleep(1000);}catch(InterruptedException ie){}//let new file be created
 		final Buffer buff = view.getBuffer();

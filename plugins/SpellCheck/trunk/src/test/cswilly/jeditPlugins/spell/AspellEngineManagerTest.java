@@ -52,7 +52,9 @@ import cswilly.spell.SpellException;
 import cswilly.spell.Engine;
 import cswilly.spell.Result;
 
-import static cswilly.jeditPlugins.spell.TestUtils.*;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import static cswilly.jeditPlugins.spell.TestUtils.ENV_ASPELL_EXE;
 
 
 /**
@@ -69,12 +71,12 @@ public class AspellEngineManagerTest{
 		exePath = System.getProperty(ENV_ASPELL_EXE);
 		assertTrue("Forgot to set env. variable '"+ENV_ASPELL_EXE+"'",exePath!=null);
 
-		TestUtils.setUpjEdit();
+		TestUtils.beforeClass();
 	}
 
 	@AfterClass
 	public static  void tearDownjEdit(){
-		TestUtils.tearDownjEdit();
+		TestUtils.afterClass();
 	}
 
 	@Before

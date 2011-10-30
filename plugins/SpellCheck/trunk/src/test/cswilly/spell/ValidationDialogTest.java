@@ -49,7 +49,8 @@ import org.fest.swing.finder.WindowFinder;
 
 ///}}}
 
-import cswilly.jeditPlugins.spell.TestUtils;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
 
 
 /**
