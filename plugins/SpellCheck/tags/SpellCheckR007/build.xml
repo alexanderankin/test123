@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<!-- :tabSize=4:indentSize=4:noTabs=false: -->
+
+<!-- This is a build.xml file for building the SpellCheck plugin.     -->
+<!--                                                                  -->
+<!-- The 'dist' target compiles the plugin, creates the documentation -->
+<!--      and the SpellCheck.jar file.                                -->
+<!-- Note that this build file uses ../build-support,                 -->
+<!-- available from jedit source repository                           -->
+<!-- $Id$ - $Revision                                                 -->
+<project name="SpellCheck" default="dist" basedir=".">
+
+	
+	<!-- where the source code lives -->
+	<property name="src.dir" value="src/main"/>
+
+	<!-- separate dir for images -->
+	<property name="resources.dir" value="resources"/>
+
+	<!-- custom user manual format -->
+    <property name="user-doc.xsl" location="docs/users-guide.xsl" />
+    <!-- set this property to get user manual in 1 file -->
+    <!-- <property name="docbook.xsl.sheet" value="html/docbook.xsl" /> -->
+
+	<!-- for build-support location -->
+	<property file="build.properties"/>
+	<!-- build support -->
+	<import file="${build.support}/plugin-build.xml" />
+
+	<!-- {{{ use Fest for junit testing -->
+    <!-- location of the test framework, this should be set in the build.properties
+    file loaded above. -->
+    <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
+    
+    <!-- test source and classes -->
+    <property name="project.test.src.dir" location="${basedir}/src/test"/>
+    <property name="project.test.classes.dir" location="${build.dir}/testclasses"/>
+    <mkdir dir="${project.test.classes.dir}"/>
+
+    <property name="project.src.dir" location="${basedir}/src/main"/>
+
+    <!-- marker property to indicate to the test framework that plugin jars
+    need to be copied -->
+    <property name="copyPluginJars" value=""/>
+    
+    <property name="project.toinstrument.jar" value="SpellCheck.jar"/>
+    
+	<path id="project.src.dir" path="./src/main"/>
+    
+    <!-- full list of all jar files necessary to let jEdit load and run
+    the plugin.  All of these files will be copied to the jedit_settings/jar
+    directory. -->
+    <filelist id="plugin.jars" dir="${install.dir}">
+    	<!-- SpellCheck -->
+		<file name="SpellCheck.jar"/>
+    	<file name="hunspell.jar"/>
+    	<file name="jna.jar"/>
+		<!-- ErrorList -->
+		<file name="ErrorList.jar"/>
+		<!-- Common Controls -->
+		<file name="CommonControls.jar"/>
+		<file name="kappalayout.jar"/>
+		<!-- VoxSpell -->
+		<file name="VoxSpell.jar"/>
+    </filelist>
+
+    <fileset id="project.resources" dir="tests" defaultexcludes="yes">
+  	<include name="BAH"/>
+    </fileset>
+    
+    <!-- include everything needed to let jEdit load the plugin and run the 
+    unit tests.  This should include all the jars listed in the plugin.jars 
+    file list defined above. -->
+    <path id="project.class.path">
+        <pathelement path="${project.test.classes.dir}"/>
+        <path>
+            <filelist refid="plugin.jars"/>
+        </path>
+    </path>
+
+    <!-- include the classes for which you would like to see the coverage report -->
+    <property name="emma.filter" value="*"/>
+
+    <!-- these are the actual test files to compile.  This is included so it
+    is easy to fine tune which tests are compiled and ran. --> 
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases.  This is optional. -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test.  This is optional. -->
+    <selector id="testcases.current">
+        <filename name="cswilly/spell/AspellEngineTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests,
+    or some other selector.  This is NOT optional, if this selector is not
+    defined, no tests will run. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+
+    <!-- set any system properties, this is a way to let tests know things
+    without hardcoding values directly in the tests. -->    
+    <property name="test-tests.dir" location="tests"/>
+	<property name="test-jedit.aspell-exe" location="/opt/local/bin/aspell"/>
+    <propertyset id="project.test.sysproperties">
+        <propertyref name="test-tests.dir"/>
+        <propertyref name="test-jedit.aspell-exe"/>
+    </propertyset>
+    
+    <!-- actually call the test framework to run the tests.  inheritRefs must
+    be true so that all of the things defined above are known to the test 
+    framework. -->
+    <target name="test-junit">
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+    
+    <target name="test-all" description="run all tests">
+		<selector id="junit.testcases">
+			<or>
+				<selector refid="testcases.all"/>
+			</or>
+		</selector>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+	</target>
+	<!-- }}} -->
+	
+	<!-- I use a separate target to build the tests -->
+	<selector id="compileFiles">
+        <filename name="**/*.java" />
+    </selector>
+
+	
+	<selector id="extraFiles">
+        <and>
+            <or>
+                <filename name="**/actions.xml" />
+                <filename name="**/browser.actions.xml" />
+                <filename name="**/dockables.xml" />
+                <filename name="**/services.xml" />
+                <filename name="**/*.props" />
+                <filename name="**/LICENSE" />
+                <filename name="**/README" />
+            </or>
+			<not>
+				<filename name="build/**"/>
+			</not>
+        </and>
+    </selector>
+
+	
+	<target name="test.compile"
+		description="Compile the plugin's test classes"
+		depends="compile">
+
+		<ant antfile="${test.framework.home}/build.xml" target="-compileTests" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+
+    </target>
+
+
+	<!-- here you have all the tests about aspell-->
+	<selector id="testcases.aspellengine">
+	<or>
+	<filename name="**/cswilly/spell/AspellEngineTest.java"/>
+	<filename name="**/cswilly/spell/FutureAspellTest.java"/>
+	<filename name="**/cswilly/spell/FutureListDictsTest.java"/>
+	<filename name="**/cswilly/spell/FutureListModesTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellEngineManagerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/AspellOptionPaneTest.java"/>
+	</or>
+	</selector>
+
+	<!-- here you have all the tests about VoxSpell bridge -->
+	<selector id="testcases.voxspell">
+	<filename name="**/cswilly/jeditPlugins/spell/voxspellbridge/*Test.java"/>
+	</selector>
+	
+	<!-- here you have functional tests : spell-check a buffer, show the options -->
+	<selector id="testcases.common">
+	<or>
+	<filename name="**/cswilly/jeditPlugins/spell/BufferDialogValidatorTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/BufferSpellCheckerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/DictionaryPickerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/ErrorListSpellCheckerTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/ErrorListValidatorTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckOptionPaneTest.java"/>
+	<filename name="**/cswilly/jeditPlugins/spell/SpellCheckPluginTest.java"/>
+	</or>
+	</selector>
+	
+	
+	<!-- for junit tests -->
+	<property name="unit.test.target" value="test-junit"/>
+
+    <target name="run" depends="build.prepare">
+		<java fork="true" classname="org.gjt.sp.jedit.jEdit">
+			<arg value="-norestore"/>
+			<arg value="-noserver"/>
+			<arg value="-nobackground"/>
+			<arg value="-settings=${basedir}/${build.dir}/settings"/>
+			<sysproperty key="test-jedit.settings" path="${build.dir}/settings"/>
+			<sysproperty key="test-jedit.aspell-exe" path="/opt/local/bin/aspell"/>
+			<sysproperty key="test-tests.dir" path="tests"/>
+			<sysproperty key="test-in-jedit" value="yes"/>
+			
+			<sysproperty key="jedit.home" path="${jedit.install.dir}"/>
+
+            <classpath>
+                <pathelement location="${junit.jar}" />
+				
+				<!-- for junit annotations -->
+                <pathelement location="${hamcrest.jar}" />
+				
+                <pathelement location="${build.classes}" />
+                <path refid="default.class.path" />
+                <path refid="project.class.path" />
+            </classpath>
+		</java>
+	</target>
+	
+	<target name="run-proto">
+	<javac classpath="${jedit.install.dir}/jedit.jar"
+		   destdir="${build.dir}/classes"
+		   srcdir="src/test"
+	>
+		<filename name="cswilly/jeditPlugins/spell/hunspellbridge/HttpClientProto.java"/>
+	</javac>
+	<java fork="true" classpath="${jedit.install.dir}/jedit.jar:${build.dir}/classes"
+		  classname="cswilly/jeditPlugins/spell/hunspellbridge/HttpClientProto"/>
+	</target>
+</project>
+
