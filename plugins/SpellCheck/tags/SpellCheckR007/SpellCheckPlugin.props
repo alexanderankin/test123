@@ -1,0 +1,227 @@
+# $Id$
+### Properties used by jEdit
+
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R007
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
+# for spell-check on save
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=startup
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.description=The SpellCheck Plugin performs spell checking of text in a jEdit buffer.\
+	You will need to install Aspell to use this plugin.
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.longdescription=description.html
+### These tell jEdit what JDK and jEdit version we require
+
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.04.99.01
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.6
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.3=plugin CommonControlsPlugin 1.3
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.4=optional plugin voxspellcheck.VoxSpellPlugin 1.0.8
+
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.jars=hunspell.jar jna.jar
+
+
+### Option panel labels
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.option-group=	spellcheck.general \
+	spellcheck.syntax \
+	spellcheck.aspell \
+    spellcheck.hunspell
+
+options.spellcheck.general.label=General
+options.spellcheck.general.code=new cswilly.jeditPlugins.spell.SpellCheckOptionPane();
+
+options.spellcheck.aspell.label=Aspell Engine
+options.spellcheck.aspell.code=new cswilly.jeditPlugins.spell.AspellOptionPane();
+
+options.spellcheck.hunspell.label=Hunspell Engine
+options.spellcheck.hunspell.code=new cswilly.jeditPlugins.spell.hunspellbridge.HunspellOptionPane();
+
+options.spellcheck.syntax.label=Syntax handling
+options.spellcheck.syntax.code=new cswilly.jeditPlugins.spell.SyntaxOptionPane();
+
+options.SpellCheck.label=Spell Check
+options.SpellCheck.fileChooser=Choose
+options.SpellCheck.aspellExe=Aspell executable filename:
+options.SpellCheck.aspellLang=Dictionary to use:
+options.SpellCheck.aspellMarkupMode=Markup mode:
+options.SpellCheck.aspellNoMarkupMode=Disable markup mode
+options.SpellCheck.aspellNoMarkupMode.tooltip=Tells Aspell to disable mode filters, for all edit modes (filter name 'none').
+options.SpellCheck.aspellManualMarkupMode=Enable markup mode (according to following table)
+options.SpellCheck.aspellManualMarkupMode.tooltip=Tells Aspell which mode filter to use.
+options.SpellCheck.aspellAutoMarkupMode=Automatic markup mode (for all edit modes)
+options.SpellCheck.aspellAutoMarkupMode.tooltip=Let Aspell decide which mode filter to use (filter name 'AUTO').
+options.SpellCheck.aspellAutoMarkupMode.name=Edit modes
+options.SpellCheck.aspellAutoMarkupMode.isSelected=selection
+options.SpellCheck.aspellOtherParams=Additional parameters:
+options.SpellCheck.refresh-langs=Refresh list...
+options.SpellCheck.stop-refresh-langs=Stop!
+options.SpellCheck.no-dictionary=<No Dictionary Found>
+options.SpellCheck.spellcheckOnSave=Spell-check on save
+options.SpellCheck.spellcheckOnSave.tooltip=Report spelling errors via ErrorList : experimental and slugish ;)
+options.SpellCheck.filtersDescription.default=Here you will find a description of the Aspell's filtering capabilities...
+options.SpellCheck.filtersDescription.error=Couldn't detect Aspell's filtering capabilities!
+options.SpellCheck.filtersDescription.prolog=This is the description of the different filters:\n
+options.SpellCheck.engineManager=Spell-checking engine:
+options.SpellCheck.disableSyntax=Disable syntax-aware spell-checking for this engine.
+options.SpellCheck.disableSyntax.tooltip=With this option checked, each and every word will be spell-checked by the engine.
+options.SpellCheck.spellcheckOnSaveSep=Misspelled words highlighting...
+options.SpellCheck.aspell-encoding=encoding to communicate with Aspell
+options.SpellCheck.aspell-check-pos=check offsets reported by Aspell
+options.SpellCheck.aspell-check-pos.tooltip=(slow: turn it on only when you encounter some drift in error locations)
+### Menu item labels
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
+    spell-check-selection \
+    spell-check-selection-with-lang \
+	spell-check-errorlist \
+	spell-check-set-buffer-lang \
+	spell-check-clear-ignore-all \
+	spell-check-save-dicts \
+	spell-check-browse-dicts
+
+spell-check-menu.label=Spell Check
+
+spell-check-selection.label=Spell check selection...
+spell-check-selection-with-lang.label=Spell check selection with dictionary...
+spell-check-errorlist.label=Highlight misspelled words
+spell-check-set-buffer-lang.label=Set Buffer's language...
+spell-check-save-dicts.label=Persist Dictionaries on disk
+spell-check-browse-dicts.label=Browse user dictionaries...
+### Messages
+spell-check-selection-with-lang.title=Spell check selection with lang...
+spell-check-selection-with-lang.message=Enter an alternative dictionary:
+
+spell-check-noAspellExe.title=Unable to locate the aspell executable...
+spell-check-noAspellExe.message=The spell check engine is unable to locate your aspell executable.\n\
+ Please go to "Plugin Options > Spell Check > Aspell engine"\
+ and fill-in the form.
+
+spell-check-error.title=Error spell checking (Aspell).
+spell-check-error.message=Cannot check selection.\nError (Aspell) is: {0}
+
+list-dict-error.message = Dictionary listing aborted with message:\n{0}
+list-dict-cancelled.message = Dictionary listing has been cancelled
+list-dict-timeout-error.message=Aspell Execution took more than 10 seconds.\nIt's very likely that you have a problem with the executable.\nConsulting the Help Section for SpellCheck might help.
+
+list-modes-error.message = Mode filters listing aborted with message:\n{0}
+list-modes-timeout-error.message=Aspell Execution took more than 10 seconds.\nIt's very likely that you have a problem with the executable.\nConsulting the Help Section for SpellCheck might help.
+
+
+spell-check.workthread-status=listing dictionaries
+spell-check.listing.combo-item=listing...
+
+spell-check-pick-language.title=Buffer's language
+
+
+#mode-filter mappings
+spell-check-filter.xml=sgml
+spell-check-filter.html=sgml
+spell-check-filter.sgml=sgml
+spell-check-filter.tex=tex
+spell-check-filter.latex=tex
+spell-check-filter.xml=sgml
+spell-check-filter.java=ccpp
+spell-check-filter.c=ccpp
+spell-check-filter.c++=ccpp
+
+# deactivate spell-check on save by default
+spell-check-on-save=false
+
+
+#user dictionary
+spell-check-userdict-load-error.message=Can't read the user dictionary for lang {0}!\nError is {1}
+spell-check-userdict-save-error.message=Can't save the user dictionary for lang {0}!\nError is {1}
+spell-check-plugin-home-error.message = The dictionaries can't be saved : unable to create settings directory.\nError is {0}
+spell-check-dirty-dict.message=The dictionary for language {0} has been changed.\n\
+ You should persist it to disk before editing it.
+#ignore all
+spell-check-clear-ignore-all.label=Clear Ignored Words
+spell-check-clear-ignore-all-cleared.message=Ignored words cleared.
+spell-check-clear-ignore-all-none.message=No ignored words list to clear.
+
+#engines
+spell-check-engine=Hunspell
+spell-check-aspell-engine.description=use an externall Aspell program
+spell-check-hunspell-engine.description=use bundled Hunspell library
+spell-check-voxspell-engine.description=use VoxSpell plugin's spell-checker
+spell-check-no-such-service=EngineManager service named {0} doesn't exist
+spell-check-engine.aspell.disableSyntax=true
+
+#hunspell option pane
+spell-check-fetch-available-error=An error occured while fetching available dictionaries:\n{0}
+options.spellcheck.hunspell.installed=Installed dictionaries...
+options.spellcheck.hunspell.available=Available dictionaries...
+options.spellcheck.hunspell.outdated-label=* {0}
+options.spellcheck.hunspell.update=Update...
+options.spellcheck.hunspell.install=Install...
+options.spellcheck.hunspell.remove=Remove...
+options.spellcheck.hunspell.stop=Stop!
+
+options.spellcheck.hunspell.external-lib=Location of external Hunspell library (restart jEdit to apply):
+spell-check-hunspell-init-error.title=Hunspell Error
+spell-check-hunspell-init-error.message=Unable to load the library. Error is:\n{0}
+
+spell-check-hunspell-error-unknownhost.title=Error refreshing available dictionaries...
+spell-check-hunspell-error-unknownhost.message=It seems that you have a network connection problem:\n
+Unknown Host {0}
+spell-check-hunspell-error-fetch.title=Error refreshing available dictionaries...
+spell-check-hunspell-error-fetch.message=An exception occurred while fetching the list\n\
+of available dictionaries : {0}
+
+spell-check-hunspell-error-installed-dict.title=Error installing dictionary
+spell-check-hunspell-error-installed-dict.message=Dictionary {0} is corrupted ({1}).\n\
+Please reinstall it!
+
+options.spellcheck.hunspell.fetch-availables.title=refreshing available dictionaries list...
+spell-check-hunspell-download.error.message=Download of {0} failed.\n
+
+options.spellcheck.hunspell.install-dict.title=Installing dictionary {0}
+spell-check-hunspell-download=Downloading
+spell-check-hunspell-error=Error
+spell-check-hunspell-install=Installing
+spell-check-hunspell-download.error.title=Error installing dictionary
+spell-check-hunspell-download.error.message=Download of {0} failed.\n
+Exception was {1}
+spell-check-hunspell-install.error.title=Error installing dictionary
+spell-check-hunspell-install.error=Installation of {0} failed.\n
+Exception was {1}
+spell-check-update-move.error.title=Error updating dictionary {0}
+spell-check-update-move.error.message=Unable to move dictionary {0} to backup\nin {1}\n:{2}
+spell-check-update-emergency.error.title=Error updating dictionary {0}
+spell-check-update-emergency.error.message=Emergency procedure failed (you'll have to re-install {0}):\n {1}
+spell-check-hunspell-update-failed.old.title=Update failed...
+spell-check-hunspell-update-failed.old.message=Update of {0} failed, but you can still use the old version.
+spell-check-hunspell-update-failed.broken.title=Update failed...
+spell-check-hunspell-update-failed.broken.message=Update of {0} failed and the old version has been uninstalled. Please retry...
+
+spell-check-hunspell-site=http://download.services.openoffice.org/files/contrib/dictionaries/
+
+#offline install
+options.spellcheck.hunspell.offline=Offline Installation
+options.spellcheck.hunspell.offline.msg=You can download manually your dictionary from\n{0}
+options.spellcheck.hunspell.install-offline=Select Dictionary...
+#syntax option pane
+options.SpellCheck.syntax.dialog.title=Token types picker...
+options.SpellCheck.syntax.dialog.message=Please pick the token types to spell-check.
+options.SpellCheck.syntax.dialog.select-all=All
+options.SpellCheck.syntax.add.name=Add...
+options.SpellCheck.syntax.add.tooltip=Add a new profile for spell-checking
+options.SpellCheck.syntax.remove.name=Remove...
+options.SpellCheck.syntax.remove.tooltip=Delete a profile
+options.SpellCheck.syntax.edit=Edit...
+spell-check-syntax-profiles-list=code,markup,text
+
+spell-check-syntax-profiles-list.code.tokens=COMMENT1,COMMENT2,COMMENT3,COMMENT4,LITERAL1,LITERAL2,LITERAL3,LITERAL4
+spell-check-syntax-profiles-list.code.default=true
+
+spell-check-syntax-profiles-list.markup.tokens=NULL,COMMENT1,LITERAL1
+spell-check-syntax-profiles-list.markup.modes=xml,html
+
+spell-check-syntax-profiles-list.text.tokens=NULL
+spell-check-syntax-profiles-list.text.modes=tex,latex,text
+options.SpellCheck.syntax.description=Here you can configure which parts of your buffers to spell-check, depending on the mode (java,text).\n\
+ Modes are grouped by profiles, so that you don't repeat yourself too much.\n\
+ For instance, the 'code' profile includes only literals (e.g. string constants) and comments,\n\
+ while the 'text' mode includes only NULL token types (plain text).
+options.SpellCheck.syntax.warning-disabled=Syntax aware spell-checking is disabled for current engine.\n\
+ To enable it, go to the "SpellCheck>General" option pane.
