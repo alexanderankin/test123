@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ import java.util.Map;
  * @author Matthieu Casanova
  * @version $Id: Server.java,v 1.33 2007/01/05 15:15:17 matthieu Exp $
  */
-public class AncestorPlugin extends EditPlugin implements EBComponent
+public class AncestorPlugin extends EditPlugin
 {
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
@@ -68,53 +68,54 @@ public class AncestorPlugin extends EditPlugin implements EBComponent
 		viewAncestorToolBar.remove(view);
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage message)
+	//{{{ handleViewUpdate() method
+	@EditBus.EBHandler
+	public void handleViewUpdate(ViewUpdate viewUpdate)
 	{
-		if (message instanceof ViewUpdate)
+		if (viewUpdate.getWhat() == ViewUpdate.CREATED)
 		{
-			ViewUpdate viewUpdate = (ViewUpdate) message;
-			if (viewUpdate.getWhat() == ViewUpdate.CREATED)
-			{
-				View view = viewUpdate.getView();
+			View view = viewUpdate.getView();
+			addAncestorToolBar(view);
+		}
+		else if (viewUpdate.getWhat() == ViewUpdate.CLOSED)
+		{
+			viewAncestorToolBar.remove(viewUpdate.getView());
+		}
+		else if (viewUpdate.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+		{
+			View view = viewUpdate.getView();
+			EditPane editPane = view.getEditPane();
+			AncestorToolBar bar = viewAncestorToolBar.get(view);
+			bar.setBuffer(editPane.getBuffer());
+		}
+	} //}}}
+
+	//{{{ handleEditPaneUpdate() method
+	@EditBus.EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate editPaneUpdate)
+	{
+		if (editPaneUpdate.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+		{
+			EditPane editPane = editPaneUpdate.getEditPane();
+			View view = editPane.getView();
+			AncestorToolBar bar = viewAncestorToolBar.get(view);
+			if (bar == null)
 				addAncestorToolBar(view);
-			}
-			else if (viewUpdate.getWhat() == ViewUpdate.CLOSED)
-			{
-				viewAncestorToolBar.remove(viewUpdate.getView());
-			}
-			else if (viewUpdate.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
-			{
-				View view = viewUpdate.getView();
-				EditPane editPane = view.getEditPane();
-				AncestorToolBar bar = viewAncestorToolBar.get(view);
-				bar.setBuffer(editPane.getBuffer());
-			}
+			bar = viewAncestorToolBar.get(view);
+			bar.setBuffer(editPane.getBuffer());
 		}
-		if (message instanceof EditPaneUpdate)
+	} //}}}
+
+	//{{{ handleMessage() method
+	@EditBus.EBHandler
+	public void handleBufferUpdate(BufferUpdate bufferUpdate)
+	{
+		// Needed to catch renaming of buffers / saving of new buffers
+		if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 		{
-			EditPaneUpdate editPaneUpdate = (EditPaneUpdate) message;
-			if (editPaneUpdate.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-			{
-				EditPane editPane = editPaneUpdate.getEditPane();
-				View view = editPane.getView();
-				AncestorToolBar bar = viewAncestorToolBar.get(view);
-				if (bar == null)
-					addAncestorToolBar(view);
-				bar = viewAncestorToolBar.get(view);
-				bar.setBuffer(editPane.getBuffer());
-			}
-		}
-		if (message instanceof BufferUpdate)
-		{
-			BufferUpdate bufferUpdate = (BufferUpdate) message;
-			// Needed to catch renaming of buffers / saving of new buffers
-			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
-			{
-				View view = bufferUpdate.getView();
-				AncestorToolBar bar = viewAncestorToolBar.get(view);
-				bar.setBuffer(bufferUpdate.getBuffer());
-			}
+			View view = bufferUpdate.getView();
+			AncestorToolBar bar = viewAncestorToolBar.get(view);
+			bar.setBuffer(bufferUpdate.getBuffer());
 		}
 	} //}}}
 
@@ -129,5 +130,4 @@ public class AncestorPlugin extends EditPlugin implements EBComponent
 			removeAncestorToolBar(views[i]);
 		}
 	} //}}}
-
 }
