@@ -3,8 +3,9 @@
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol, Eric Le Lay
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R006
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R007
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=index.html
+# for spell-check on save
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.activate=startup
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.usePluginHome=true
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.description=The SpellCheck Plugin performs spell checking of text in a jEdit buffer.\

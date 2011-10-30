@@ -77,7 +77,7 @@ class ValidationDialog
   private       JTextField  _changeToTextField;
   private       JList       _suggestionsJList;
   private		DefaultListModel	_suggestionsModel;
-  private       String      _title              = "Spell Check, Release R005";
+  private       String      _title              = "Spell Check, Release R007";
   private		JLabel		_ignoredWordsLabel;
   private	    AbstractAction		_previousAction;
   private	    AbstractAction		_suggestAction;
