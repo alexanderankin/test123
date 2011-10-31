@@ -1,0 +1,114 @@
+plugin.modelighting.ModeHighlightingPlugin.activate=startup
+plugin.modelighting.ModeHighlightingPlugin.name=ModeHighlighting
+plugin.modelighting.ModeHighlightingPlugin.docs=index.html
+plugin.modelighting.ModeHighlightingPlugin.version=0.1
+plugin.modelighting.ModeHighlightingPlugin.description=Allows for a different syntax highlighting style to be used for each edit mode.
+plugin.modelighting.ModeHighlightingPlugin.author=Evan Wright
+
+plugin.modelighting.ModeHighlightingPlugin.depend.0=jedit 04.03.99.00
+plugin.modelighting.ModeHighlightingPlugin.depend.1=jdk 1.6
+plugin.modelighting.ModeHighlightingPlugin.usePluginHome=true
+
+plugin.modelighting.ModeHighlightingPlugin.option-pane=mode-highlighting
+
+options.syntax.code=new modelighting.ModeHighlightingOptionPane();
+options.mode-highlighting.label=Mode Highlighting
+options.mode-highlighting.code=new modelighting.ModeHighlightingOptionPane();
+options.mode-highlighting.object=Token type
+options.mode-highlighting.style=Text style
+options.mode-highlighting.global=<global>
+options.mode-highlighting.global-default=<Global active style set>
+options.mode-highlighting.mode=Change highlighting for mode:
+options.mode-highlighting.style-sets=Style set:
+options.mode-highlighting.active-style-set=Active style set for this mode:
+options.mode-highlighting.foldLine.1=Collapsed fold line, level 1
+options.mode-highlighting.foldLine.2=Collapsed fold line, level 2
+options.mode-highlighting.foldLine.3=Collapsed fold line, level 3
+options.mode-highlighting.foldLine.0=Collapsed fold line, level > 3
+options.mode-highlighting.buttons.new=New...
+options.mode-highlighting.buttons.copy=Copy to...
+options.mode-highlighting.buttons.delete=Delete
+options.mode-highlighting.dialogs.new-style-set.title=Create a new style set
+options.mode-highlighting.dialogs.new-style-set.style-set-name=Style set name:
+options.mode-highlighting.name-error=Style set names cannot contain the following characters: /,
+options.mode-highlighting.exists-error=A style set with that name already exists in this mode
+options.mode-highlighting.active-global-error=Cannot delete the active global style set
+options.mode-highlighting.confirm-delete=Are you sure you want to delete this style set?
+options.mode-highlighting.confirm-delete-title=Confirm Deletion
+
+# Example styles
+mode-highlighting.all.style-set-list=global/Standard,global/Classic
+mode-highlighting.all.active-style=global/Standard
+
+mode-highlighting.all.style-sets.global/Standard.comment1=color:#cc0000
+mode-highlighting.all.style-sets.global/Standard.comment2=color:#ff8400
+mode-highlighting.all.style-sets.global/Standard.comment3=color:#6600cc
+mode-highlighting.all.style-sets.global/Standard.comment4=color:#cc6600
+mode-highlighting.all.style-sets.global/Standard.digit=color:#ff0000
+mode-highlighting.all.style-sets.global/Standard.foldLine.0=color:#000000 bgColor:#dafeda style:b
+mode-highlighting.all.style-sets.global/Standard.foldLine.1=color:#000000 bgColor:#fff0cc style:b
+mode-highlighting.all.style-sets.global/Standard.foldLine.2=color:#000000 bgColor:#e7e7ff style:b
+mode-highlighting.all.style-sets.global/Standard.foldLine.3=color:#000000 bgColor:#ffe0f0 style:b
+mode-highlighting.all.style-sets.global/Standard.function=color:#9966ff
+mode-highlighting.all.style-sets.global/Standard.invalid=color:#ff0066 bgColor:#ffffcc
+mode-highlighting.all.style-sets.global/Standard.keyword1=color:#006699 style:b
+mode-highlighting.all.style-sets.global/Standard.keyword2=color:#009966 style:b
+mode-highlighting.all.style-sets.global/Standard.keyword3=color:#0099ff style:b
+mode-highlighting.all.style-sets.global/Standard.keyword4=color:#66ccff style:b
+mode-highlighting.all.style-sets.global/Standard.label=color:#02b902
+mode-highlighting.all.style-sets.global/Standard.literal1=color:#ff00cc
+mode-highlighting.all.style-sets.global/Standard.literal2=color:#cc00cc
+mode-highlighting.all.style-sets.global/Standard.literal3=color:#9900cc
+mode-highlighting.all.style-sets.global/Standard.literal4=color:#6600cc
+mode-highlighting.all.style-sets.global/Standard.markup=color:#0000ff
+mode-highlighting.all.style-sets.global/Standard.operator=color:#000000 style:b
+
+mode-highlighting.all.style-sets.global/Classic.comment1=color:#006666 style:i
+mode-highlighting.all.style-sets.global/Classic.comment2=color:#990033 style:i
+mode-highlighting.all.style-sets.global/Classic.comment3=color:#990033 style:i
+mode-highlighting.all.style-sets.global/Classic.comment4=color:#990033 style:i
+mode-highlighting.all.style-sets.global/Classic.digit=color:#666600
+mode-highlighting.all.style-sets.global/Classic.foldLine.0=bgColor:#e8e8e8 color:#009999 style:b
+mode-highlighting.all.style-sets.global/Classic.foldLine.1=bgColor:#e8e8e8 color:#009999 style:b
+mode-highlighting.all.style-sets.global/Classic.foldLine.2=bgColor:#e8e8e8 color:#009999 style:b
+mode-highlighting.all.style-sets.global/Classic.foldLine.3=bgColor:#e8e8e8 color:#009999 style:b
+mode-highlighting.all.style-sets.global/Classic.function=color:#000066
+mode-highlighting.all.style-sets.global/Classic.invalid=color:#ff0000
+mode-highlighting.all.style-sets.global/Classic.keyword1=color:#000000 style:b
+mode-highlighting.all.style-sets.global/Classic.keyword2=color:#660066 style:b
+mode-highlighting.all.style-sets.global/Classic.keyword3=color:#000066 style:b
+mode-highlighting.all.style-sets.global/Classic.keyword4=color:#000066 style:b
+mode-highlighting.all.style-sets.global/Classic.label=color:#990033 style:ib
+mode-highlighting.all.style-sets.global/Classic.literal1=color:#404040
+mode-highlighting.all.style-sets.global/Classic.literal2=color:#404040
+mode-highlighting.all.style-sets.global/Classic.literal3=color:#404040
+mode-highlighting.all.style-sets.global/Classic.literal4=color:#404040
+mode-highlighting.all.style-sets.global/Classic.markup=color:#5e5e5e style:b
+mode-highlighting.all.style-sets.global/Classic.operator=style:b
+
+# Example mode-specific style set
+mode-highlighting.java.style-set-list=Eclipse-like
+mode-highlighting.java.active-style=Eclipse-like
+mode-highlighting.java.style-sets.Eclipse-like.comment1=color\:\#3f7f5f
+mode-highlighting.java.style-sets.Eclipse-like.comment2=color\:\#3f7f5f
+mode-highlighting.java.style-sets.Eclipse-like.comment3=color\:\#3f3fbf
+mode-highlighting.java.style-sets.Eclipse-like.comment4=color\:\#3f5fbf
+mode-highlighting.java.style-sets.Eclipse-like.digit=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.foldLine.0=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.foldLine.1=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.foldLine.2=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.foldLine.3=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.function=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.invalid=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.keyword1=color\:\#7f0055 style\:b
+mode-highlighting.java.style-sets.Eclipse-like.keyword2=color\:\#7f0055 style\:b
+mode-highlighting.java.style-sets.Eclipse-like.keyword3=color\:\#7f0055 style\:b
+mode-highlighting.java.style-sets.Eclipse-like.keyword4=color\:\#646464
+mode-highlighting.java.style-sets.Eclipse-like.label=color\:\#7f9fbf style\:b
+mode-highlighting.java.style-sets.Eclipse-like.literal1=color\:\#2a00ff
+mode-highlighting.java.style-sets.Eclipse-like.literal2=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.literal3=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.literal4=color\:\#000000
+mode-highlighting.java.style-sets.Eclipse-like.markup=color\:\#7f7f9f
+mode-highlighting.java.style-sets.Eclipse-like.operator=color\:\#000000
+
