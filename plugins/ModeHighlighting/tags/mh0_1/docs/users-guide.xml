@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+	<bookinfo>
+		<title>ModeHighlighting plugin</title>
+		<authorgroup>
+			<author><firstname>Evan</firstname><surname>Wright</surname></author>
+		</authorgroup>
+		<legalnotice>
+			<title>Legal Notice</title>
+
+			<para>
+				This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or any later version.
+			</para>
+		</legalnotice>
+	</bookinfo>
+
+	<section id="introduction">
+		<title>Introduction</title>
+		
+		<para>The ModeHighlighting plugin allows the color scheme used by jEdit for syntax highlighting to change based on the edit mode. For example, if you're switching from Eclipse to jEdit for Java development, you can use this plugin to use a color scheme similar to Eclipse when edition .java files without changing the settings for all edit modes at the same time. </para>
+	</section>
+
+	<section id="usage">
+		<title>Using the ModeHighlighting plugin</title>
+		
+		<para>The simplest way to use the ModeHighlighting plugin is the same way you change syntax highlighting colors in jEdit without the plugin: through the global options dialog. Go to the Utilities menu, click Global Options, and then navigate to the Syntax Highlighting pane. The default jEdit options pane will be replaced with the plugin's version.</para>
+		
+		<section id="creating">
+			<title>Creating a new style set</title>
+			
+			<para>The collection of highlighting styles for each token and each fold level is what the ModeHighlighting plugin calls a "style set". To change the highlighting scheme for a particular edit mode, you first must create a style set for that mode. At the combo box labeled "Change highlighting for mode:", click on the edit mode you want to change. Then, click the "New" button and give your style set a name. (Style set names cannot contain commas or forward slash characters). From there, you can change the style for each token by clicking on the "Hello World" string next to the token, just as in the default jEdit highlighting pane. However, jEdit won't use your newly-created style set until it is activated.</para>
+		</section>
+		
+		<section id="activating">
+			<title>Activating a style set</title>
+			<para>The ModeHighlighting plugin can store many different style sets for a given edit mode. The one that is currently being used to highlight that edit mode is said to be "active". To change the active style set for an edit mode, first navigate to the edit mode of you choice using the combo box at the top of the option pane, and then go to the bottom-most combo box, labeled "Active style set for this mode:". Click on it and you'll be presented with a list of style sets that you can set active for this mode. Notice that some of the style sets begin with "global/". This means they are available in every edit mode. You can edit or create global style sets by setting the edit mode combo box to "&lt;global&gt;". You can also set the active style set for a particular mode to "Global active style set", meaning that it will use whatever style set is currently active for the "&lt;global&gt;" mode.</para>
+		</section>
+		
+		<section id="copying">
+			<title>Copying/deleting a style set</title>
+			<para>Often, you'd like to change only one token style from one mode to another, or you'd like to use exactly the same styles for C++ and Java, for example. In this case, you don't need to recreate the same style set from scratch. If you select an edit mode and a style set, you can use the "Copy" button to copy that style set to another name in the same edit mode, or to another edit mode entirely. You can delete a style set you no longer want by selecting the edit mode and style set and hitting the "Delete" button. Notice that you cannot delete the currently-active global style set. You'll need to change the active style set to something else first.</para>
+		</section>
+	</section>
+
+	<section id="feedback">
+		<title>Feedback</title>
+
+		<para>If you find any bugs in the ModeHighlighting plugin, you can let the author know by submitting them to the <ulink url="https://sourceforge.net/tracker/?group_id=588&amp;atid=565475">Sourceforge Plugin Bugs Tracker</ulink>. Make sure to put "ModeHighlighting" in the title of your report. For feature requests, you can use can use the <ulink url="https://sourceforge.net/tracker/?group_id=588&amp;atid=997936">Plugin Feature Request Tracker</ulink>.
+		</para>
+		
+		<para> </para>
+	</section>
+	
+</book>
+
