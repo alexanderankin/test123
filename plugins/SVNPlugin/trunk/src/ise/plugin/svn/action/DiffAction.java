@@ -193,7 +193,7 @@ public class DiffAction extends SVNAction {
             // show the svn console
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
-            panel.showConsole( );
+            //panel.showConsole( );
 
             logger = panel.getLogger();
             log( data.toString() );
