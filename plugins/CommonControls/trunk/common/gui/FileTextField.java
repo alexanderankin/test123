@@ -110,6 +110,7 @@ public class FileTextField extends JPanel
 		// Used for selected and executable file
 		JFileChooser chooser = new ModalJFileChooser();
 		chooser.setFileSelectionMode(selectionMode);
+		chooser.setSelectedFile(new File(text.getText()));
 		if (chooser.showDialog(this, jEdit.getProperty("common.gui.filetextfield.choose"))
 				!= JFileChooser.APPROVE_OPTION)
 			return;
