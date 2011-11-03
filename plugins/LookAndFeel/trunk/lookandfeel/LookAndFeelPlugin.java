@@ -41,10 +41,14 @@ public class LookAndFeelPlugin extends EditPlugin {
         try {
             String lnf = jEdit.getProperty("lookandfeel.lookandfeel");
             if (lnf == null || lnf.trim().length() == 0) {
-                return ;
+                return;
             }
-            installLookAndFeel(getInstaller(lnf));
-
+            LookAndFeelInstaller installer = getInstaller(lnf);
+            if (installer == null) {
+                jEdit.resetProperty("lookandfeel.lookandfeel");
+                return;
+            }
+            installLookAndFeel(installer);
         } catch (Exception e) {
             Log.log(Log.ERROR, this, e);
         }
