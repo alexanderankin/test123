@@ -4,11 +4,12 @@
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.activate=defer
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.name=RFCReader
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.author=Matthieu Casanova
-plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.version=1.5.0
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.version=1.5.1
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.0=jdk 1.6
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.1=jedit 04.04.01.00
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.2=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 1.0.1
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.3=plugin gatchan.jedit.lucene.LucenePlugin 2.0
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.4=plugin CommonControlsPlugin 1.3
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader is a plugin that makes rfc reading more pleasant
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.usePluginHome=true
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.docs=docs/RFCReader.html

@@ -20,13 +20,27 @@
  */
 package gatchan.jedit.ancestor;
 
-import org.gjt.sp.jedit.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import gatchan.jedit.smartopen.FileArrayProvider;
+import gatchan.jedit.smartopen.FileIndex;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSFileFilter;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.ThreadUtilities;
 
 /**
  * @author Matthieu Casanova
@@ -36,10 +50,14 @@ public class AncestorPlugin extends EditPlugin
 {
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
+	public static FileIndex itemFinder;
+
 	//{{{ start() method
 	@Override
 	public void start()
 	{
+		indexFiles();
+
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++)
 		{
@@ -47,6 +65,12 @@ public class AncestorPlugin extends EditPlugin
 		}
 		EditBus.addToBus(this);
 	} //}}}
+
+	private void indexFiles()
+	{
+		Task task = new IndexFiles();
+		ThreadUtilities.runInBackground(task);
+	}
 
 	//{{{ addAncestorToolBar() method
 	private void addAncestorToolBar(View view)
@@ -124,10 +148,101 @@ public class AncestorPlugin extends EditPlugin
 	public void stop()
 	{
 		EditBus.removeFromBus(this);
+		itemFinder = null;
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++)
 		{
 			removeAncestorToolBar(views[i]);
 		}
 	} //}}}
+
+	private static class MyVFSFilter implements VFSFileFilter
+	{
+		private final String[] excludedDirectories;
+
+		private MyVFSFilter()
+		{
+			String property = jEdit.getProperty("options.ancestor.ExcludeDirectories", "CVS .svn .git");
+			excludedDirectories = property.split(" ");
+			Arrays.sort(excludedDirectories);
+		}
+
+		@Override
+		public boolean accept(VFSFile file)
+		{
+			String name = file.getName();
+			if (file.getType() == VFSFile.DIRECTORY || file.getType() == VFSFile.FILESYSTEM)
+			{
+				return Arrays.binarySearch(excludedDirectories, name) < 0;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		@Override
+		public boolean accept(String url)
+		{
+			return true;
+		}
+
+		@Override
+		public String getDescription()
+		{
+			return null;
+		}
+	}
+
+	private static class IndexFiles extends Task
+	{
+		@Override
+		public void _run()
+		{
+			setStatus("Listing files");
+			FileIndex fileIndex = new FileIndex();
+			String property = jEdit.getProperty("options.smartIndexer.folder", "");
+			if (!property.isEmpty())
+			{
+				VFS vfs = VFSManager.getVFSForPath(property);
+				Object vfsSession = null;
+				View activeView = jEdit.getActiveView();
+				try
+				{
+					vfsSession = vfs.createVFSSession(property, activeView);
+
+					String[] strings =
+						vfs._listDirectory(vfsSession, property, new MyVFSFilter(), true,
+								   activeView, false, false);
+
+					setStatus("preparing data");
+					setMaximum(strings.length);
+					VFSFile[] files = new VFSFile[strings.length];
+					for (int i = 0; i < strings.length; i++)
+					{
+						setValue(i);
+						String string = strings[i];
+						files[i] = vfs._getFile(vfsSession, string, activeView);
+					}
+					fileIndex.addFiles(new FileArrayProvider(files), this);
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				finally
+				{
+					try
+					{
+						vfs._endVFSSession(vfsSession, activeView);
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			itemFinder = fileIndex;
+		}
+	}
 }

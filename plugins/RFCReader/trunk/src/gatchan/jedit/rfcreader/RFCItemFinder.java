@@ -21,6 +21,7 @@
  */
 package gatchan.jedit.rfcreader;
 
+import common.gui.itemfinder.ItemFinder;
 import org.gjt.sp.jedit.jEdit;
 
 import javax.swing.*;
