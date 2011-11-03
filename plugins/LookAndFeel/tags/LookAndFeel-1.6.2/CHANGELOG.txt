@@ -1,0 +1,118 @@
+CHANGELOG for LookAndFeel plugin
+================================
+
+Version 1.6
+-----------
+* Refactored and revised the code to use the Service Manager.  All look and
+feels are now registered as services.  The LnfInstaller is deprecated in favor
+of the much simpler LookAndFeelInstaller that each service must implement.
+
+* Removed the Substance LAF to a separate plugin.  It registers as a service to
+this plugin, so it is loaded separately but acts exactly the same as before.
+
+* Reduced the required Java version to 1.5.  The previous bump to 1.6 was due
+to the Substance LAF requiring Java 1.6.  Since it is now a separate plugin, 
+this plugin can be used in Java 1.5 VMs.
+
+
+Version 1.5
+-----------
+* Updated Substance LAF to version 6.0
+
+VERSION 1.4
+-----------
+* added Substance LAF, version 5.3.
+* now requires Java 1.6.
+
+
+VERSION 1.2
+-----------
+
+* added Lipstik LAF
+
+
+VERSION 1.1.1
+-------------
+
+* added Napkin LAF
+
+
+VERSION 1.1
+-----------
+
+* added new NimROD LAF (version 0.9 from 11/11/2005) (by Nilo J. Gonzalez)
+
+
+VERSION 1.0
+------------
+* updated Skin LAF to version 1.2.10
+* updated Kunststoff LAF to version 2.0.2
+* updated Oyoaha LAF to version 3.0
+* added new Tonic LAF (version from 04-Apr-2004) (thanks to Eric Laney)
+* added JGoodies Looks LAF (version 1.2.2): PlasticXP, Plastic3D and ExtWindows
+  (thanks to Adrian Petru Dimulescu)
+* updated to jEdit 4.2 plugin API
+* fixed broken icons
+* requires jEdit 4.2final or higher, JDK 1.4 or higher
+
+
+VERSION 0.10
+------------
+* updated Skin LAF to version 1.2.3
+* updated Kunststoff to version 2.0.1
+* updated Metouia to version 1.0 beta
+* added option for setting all widget fonts to use fonts specified from
+  Global Options > Appearance (Chris Kent)
+
+
+VERSION 0.9
+-----------
+* added Metouia Look and Feel support
+* updated to skinlf library version 1.2
+
+
+VERSION 0.8
+-----------
+* option pane to switch between Skin, Oyoaha, and Kunststoff look and feel
+  implementations
+* attempts to install look and feel without restart.
+* updated documentation to use docbook
+* added help for new look and feels implementations
+
+
+VERSION 0.7
+-----------
+* updated to skinlf library version 1.1
+* updated links in the help page
+* Ant instead of JMK build file
+* requires jEdit 3.1final or higher, JDK 1.2 or higher
+
+
+VERSION 0.6.2
+-------------
+* updated to skinlf library version 1.0.1
+* moved code to package "lookandfeel"
+* makefile updates
+* requires jEdit 3.1final or higher, JDK 1.1.7 or higher
+
+
+VERSION 0.6.1
+-------------
+* added jars dependency property for skinlf.jar library
+
+
+VERSION 0.6
+-----------
+* released by Dirk Moebius
+* new option pane to set themepack
+* theme is set at jEdit startup time, allowing non-jEdit-View frames to get themed
+* new help file, license info
+* skinlf.jar now contained in release
+* requires jEdit 3.0final or higher, JDK 1.1 or higher
+
+
+VERSION 0.5
+-----------
+* initial release by Jamie LaScolea
+* requires jEdit 2.7pre6 or higher, JDK 1.1 or higher
+
