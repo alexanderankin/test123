@@ -1,15 +1,14 @@
 /*
- * ItemFinderWindow.java
+ * jEdit - Programmer's Text Editor
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2011 Matthieu Casanova
+ * Copyright © 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,25 +20,34 @@
  */
 package common.gui.itemfinder;
 
-import org.gjt.sp.jedit.GUIUtilities;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JWindow;
+import javax.swing.ListCellRenderer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * The ItemFinderWindow is a Window that contains a SearchField and a list of items.
  * When typing in the search field, the item list is updated, and when selecting an item of that list, an action is
  * triggered.
- * To use it, you have to implement {@link ItemFinder}, then instantiate {@link ItemFinderWindow} and make it visible.
+ * To use it, you have to implement {@link ItemFinder}, then instantiate {@link ItemFinderPanel} and make it visible.
  * @author Matthieu Casanova
  */
-public class ItemFinderWindow<E> extends JFrame
+public class ItemFinderPanel<E> extends JPanel
 {
 	/**
 	 * This window will contains the scroll with the items.
@@ -51,17 +59,18 @@ public class ItemFinderWindow<E> extends JFrame
 	public final RequestFocusWorker requestFocusWorker;
 	private final ItemFinder<E> itemFinder;
 
-	public ItemFinderWindow(ItemFinder<E> itemFinder)
+	public ItemFinderPanel(Window owner, ItemFinder<E> itemFinder)
 	{
+		super(new BorderLayout());
 		this.itemFinder = itemFinder;
-		setUndecorated(true);
-		window = new JWindow(this);
-		searchField = new JTextField();
+		window = new JWindow(owner);
+		searchField = new JTextField(50);
 
 		itemList = new JList(itemFinder.getModel());
 		itemList.setBorder(BorderFactory.createEtchedBorder());
-		if (itemFinder.getListCellRenderer() != null)
-			itemList.setCellRenderer(itemFinder.getListCellRenderer());
+		ListCellRenderer listCellRenderer = itemFinder.getListCellRenderer();
+		if (listCellRenderer != null)
+			itemList.setCellRenderer(listCellRenderer);
 		itemList.addKeyListener(new ItemListKeyAdapter(searchField));
 		itemList.addMouseListener(new MyMouseAdapter());
 
@@ -69,36 +78,21 @@ public class ItemFinderWindow<E> extends JFrame
 		searchField.getDocument().addDocumentListener(new MyDocumentListener());
 		JScrollPane scroll = new JScrollPane(itemList);
 		window.setContentPane(scroll);
-		JPanel panel = new JPanel(new BorderLayout());
 
 		String label = itemFinder.getLabel();
 		if (label != null)
-			panel.add(new JLabel(label), BorderLayout.NORTH);
+			add(new JLabel(label), BorderLayout.NORTH);
 
-		panel.add(searchField, BorderLayout.CENTER);
-		setContentPane(panel);
+		add(searchField, BorderLayout.CENTER);
 		window.pack();
 		requestFocusWorker = new RequestFocusWorker(searchField);
-		pack();
 		if (itemFinder.getWidth() != -1)
 			setSize(itemFinder.getWidth(), getHeight());
 	}
 
-	@Override
-	public void setVisible(boolean b)
-	{
-		Rectangle bounds = getBounds();
-		window.setLocation(bounds.x, bounds.y + bounds.height);
-		GUIUtilities.requestFocus(this, searchField);
-		window.setVisible(false);
-		super.setVisible(b);
-	}
-
-	@Override
 	public void dispose()
 	{
 		window.dispose();
-		super.dispose();
 	}
 
 	private static boolean handledByList(KeyEvent e)
@@ -215,10 +209,18 @@ public class ItemFinderWindow<E> extends JFrame
 			if (size == 0)
 			{
 				itemList.clearSelection();
+				window.setVisible(false);
 			}
 			else
 			{
-				window.pack();
+				if (!window.isVisible())
+				{
+					Rectangle bounds = getBounds();
+					window.pack();
+					window.setSize(searchField.getWidth(), window.getHeight());
+					Point locationOnScreen = getLocationOnScreen();
+					window.setLocation(locationOnScreen.x, locationOnScreen.y + bounds.height);
+				}
 				window.setVisible(true);
 				if (itemList.getSelectedIndex() == -1)
 				{
