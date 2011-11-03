@@ -21,6 +21,7 @@
  */
 package gatchan.jedit.rfcreader;
 
+import common.gui.itemfinder.ItemFinderWindow;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
