@@ -1195,9 +1195,6 @@ public class PHPParser implements PHPParserConstants {
                         endColumn = namespaceNameToken.endColumn;
     } catch (ParseException e) {
                 fireParseError("namespace expected",";",e.currentToken.next);
-                {
-                        namespaceName = SYNTAX_ERROR_CHAR;
-                }
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COMMA:
@@ -1210,9 +1207,6 @@ public class PHPParser implements PHPParserConstants {
                         endColumn = namespaceNameToken.endColumn;
       } catch (ParseException e) {
                 fireParseError("namespace expected",";",e.currentToken.next);
-                {
-                        namespaceName = SYNTAX_ERROR_CHAR;
-                }
       }
       break;
     default:
@@ -10118,6 +10112,41 @@ Token arrayAssignToken;
     finally { jj_save(8, xla); }
   }
 
+  private boolean jj_3R_284() {
+    if (jj_scan_token(DO)) return true;
+    if (jj_3R_219()) return true;
+    if (jj_scan_token(WHILE)) return true;
+    if (jj_3R_306()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_302() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_332()) {
+    jj_scanpos = xsp;
+    if (jj_3R_333()) {
+    jj_scanpos = xsp;
+    if (jj_3R_334()) {
+    jj_scanpos = xsp;
+    if (jj_3R_335()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_123() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_136()) {
+    jj_scanpos = xsp;
+    if (jj_3R_137()) return true;
+    }
+    return false;
+  }
+
   private boolean jj_3R_338() {
     if (jj_3R_302()) return true;
     return false;
@@ -12596,12 +12625,6 @@ Token arrayAssignToken;
     return false;
   }
 
-  private boolean jj_3R_146() {
-    if (jj_scan_token(ARRAYASSIGN)) return true;
-    if (jj_3R_68()) return true;
-    return false;
-  }
-
   private boolean jj_3R_223() {
     if (jj_scan_token(PHPECHOSTART)) return true;
     if (jj_3R_68()) return true;
@@ -12609,6 +12632,12 @@ Token arrayAssignToken;
     xsp = jj_scanpos;
     if (jj_scan_token(145)) jj_scanpos = xsp;
     if (jj_scan_token(PHPEND)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_146() {
+    if (jj_scan_token(ARRAYASSIGN)) return true;
+    if (jj_3R_68()) return true;
     return false;
   }
 
@@ -13186,41 +13215,6 @@ Token arrayAssignToken;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_295()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_284() {
-    if (jj_scan_token(DO)) return true;
-    if (jj_3R_219()) return true;
-    if (jj_scan_token(WHILE)) return true;
-    if (jj_3R_306()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_302() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_332()) {
-    jj_scanpos = xsp;
-    if (jj_3R_333()) {
-    jj_scanpos = xsp;
-    if (jj_3R_334()) {
-    jj_scanpos = xsp;
-    if (jj_3R_335()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_123() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_136()) {
-    jj_scanpos = xsp;
-    if (jj_3R_137()) return true;
     }
     return false;
   }
