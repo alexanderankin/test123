@@ -20,6 +20,7 @@ public class BzrImporter extends ImporterFileFilter
     TreeSet<String> cache;
     File cachedDirectory;
     BzrDirFilter fnf;
+    boolean cantFind;
 
     static class BzrDirFilter implements FilenameFilter {
         public boolean accept(File f, String name) {
@@ -28,6 +29,7 @@ public class BzrImporter extends ImporterFileFilter
     }
     public BzrImporter() {
         cache = new TreeSet<String>();
+        cantFind=false;
 
         fnf = new BzrDirFilter();
     }
@@ -40,6 +42,7 @@ public class BzrImporter extends ImporterFileFilter
             cachedDirectory = cachedDirectory.getParentFile();
             if (cachedDirectory == null) {
                 Log.log(Log.ERROR, this, "Unable to find .bzr folder");
+                cantFind=true;
                 return;
             }
         }
@@ -80,9 +83,10 @@ public class BzrImporter extends ImporterFileFilter
 
     public boolean accept(VFSFile file)
     {
-        if (cache.isEmpty()) {
-            bzrLsFiles(file.getPath());
+        if (cache.isEmpty() && !cantFind) {
+        	bzrLsFiles(file.getPath());
         }
+        
         boolean retval = cache.contains(file.getPath());
 //		Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
         return retval;
@@ -96,6 +100,7 @@ public class BzrImporter extends ImporterFileFilter
     public void done()
     {
         cache.clear();
+        cantFind=false;
         cachedDirectory = null;
     }
 
