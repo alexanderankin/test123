@@ -21,9 +21,15 @@
 
 package gatchan.jedit.smartopen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 
+import gatchan.jedit.ancestor.AncestorOptionPane;
 import gatchan.jedit.ancestor.AncestorPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFS;
@@ -37,57 +43,76 @@ import org.gjt.sp.util.Task;
 /**
  * @author Matthieu Casanova
  */
-public class IndexFiles extends Task
+public class IndexFilesTask extends Task
 {
 	@Override
 	public void _run()
 	{
 		long start = System.currentTimeMillis();
 		setStatus("Listing files");
-		String property = jEdit.getProperty("options.smartIndexer.folder", "");
+		String property = jEdit.getProperty("options.ancestor.paths", "");
 		if (!property.isEmpty())
 		{
-			VFS vfs = VFSManager.getVFSForPath(property);
-			Object vfsSession = null;
-			View activeView = jEdit.getActiveView();
+			StringTokenizer tokenizer = new StringTokenizer(property, File.pathSeparator);
+			Set<VFSFile> files = new HashSet<VFSFile>();
+			while (tokenizer.hasMoreTokens())
+			{
+				String s = tokenizer.nextToken();
+				files.addAll(listFiles(s));
+			}
+			VFSFile[] f = new VFSFile[files.size()];
+			files.toArray(f);
+			AncestorPlugin.itemFinder.addFiles(new FileArrayProvider(f), this);
+		}
+		else
+		{
+			AncestorPlugin.itemFinder.addFiles(new FileArrayProvider(new VFSFile[0]), this);
+		}
+		long end = System.currentTimeMillis();
+		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));
+	}
+
+	private Collection<VFSFile> listFiles(String path)
+	{
+		VFS vfs = VFSManager.getVFSForPath(path);
+		Object vfsSession = null;
+		View activeView = jEdit.getActiveView();
+		Collection<VFSFile> files = new HashSet<VFSFile>();
+		try
+		{
+			vfsSession = vfs.createVFSSession(path, activeView);
+			long listStart = System.currentTimeMillis();
+			String[] strings =
+				vfs._listDirectory(vfsSession, path, new MyVFSFilter(), true, activeView, false, false);
+			long listEnd = System.currentTimeMillis();
+			Log.log(Log.MESSAGE, this, "Listing files took ms:" + (listEnd - listStart));
+			setStatus("preparing data");
+			setMaximum(strings.length);
+			for (int i = 0; i < strings.length; i++)
+			{
+				setValue(i);
+				String string = strings[i];
+				VFSFile vfsFile = vfs._getFile(vfsSession, string, activeView);
+				if (vfsFile != null)
+					files.add(vfsFile);
+			}
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		finally
+		{
 			try
 			{
-				vfsSession = vfs.createVFSSession(property, activeView);
-				long listStart = System.currentTimeMillis();
-				String[] strings =
-					vfs._listDirectory(vfsSession, property, new MyVFSFilter(), true, activeView,
-							   false, false);
-				long listEnd = System.currentTimeMillis();
-				Log.log(Log.MESSAGE, this, "Listing files took ms:" + (listEnd - listStart));
-				setStatus("preparing data");
-				setMaximum(strings.length);
-				VFSFile[] files = new VFSFile[strings.length];
-				for (int i = 0; i < strings.length; i++)
-				{
-					setValue(i);
-					String string = strings[i];
-					files[i] = vfs._getFile(vfsSession, string, activeView);
-				}
-				AncestorPlugin.itemFinder.addFiles(new FileArrayProvider(files), this);
+				vfs._endVFSSession(vfsSession, activeView);
 			}
 			catch (IOException e)
 			{
 				Log.log(Log.ERROR, this, e);
 			}
-			finally
-			{
-				try
-				{
-					vfs._endVFSSession(vfsSession, activeView);
-				}
-				catch (IOException e)
-				{
-					Log.log(Log.ERROR, this, e);
-				}
-			}
 		}
-		long end = System.currentTimeMillis();
-		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));
+		return files;
 	}
 
 	private static class MyVFSFilter implements VFSFileFilter
@@ -111,14 +136,14 @@ public class IndexFiles extends Task
 			}
 			else
 			{
-				return true;
+				return accept(name);
 			}
 		}
 
 		@Override
 		public boolean accept(String url)
 		{
-			return true;
+			return AncestorOptionPane.accept(url);
 		}
 
 		@Override

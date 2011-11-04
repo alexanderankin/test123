@@ -1,0 +1,100 @@
+/*
+ * jEdit - Programmer's Text Editor
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright © 2011 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+package gatchan.jedit.ancestor;
+
+import java.awt.GridBagConstraints;
+import java.util.regex.Pattern;
+import javax.swing.JList;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import common.gui.VFSPathFileList;
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StandardUtilities;
+
+/**
+ * @author Matthieu Casanova
+ */
+public class AncestorOptionPane extends AbstractOptionPane
+{
+	private JTextField includeFilesTF;
+	private JTextField excludeFilesTF;
+	private static Pattern include;
+	private static Pattern exclude;
+
+	private VFSPathFileList paths;
+
+	public AncestorOptionPane()
+	{
+		super("Ancestor");
+	}
+
+	@Override
+	protected void _init()
+	{
+		setBorder(new EmptyBorder(5, 5, 5, 5));
+		paths = new VFSPathFileList("options.ancestor.paths");
+		addComponent(paths, GridBagConstraints.BOTH);
+		includeFilesTF = new JTextField(jEdit.getProperty("options.ancestor.IncludeGlobs"));
+		addComponent(jEdit.getProperty("options.ancestor.IncludeGlobs.label"), includeFilesTF);
+		excludeFilesTF = new JTextField(jEdit.getProperty("options.ancestor.ExcludeGlobs"));
+		addComponent(jEdit.getProperty("options.ancestor.ExcludeGlobs.label"), excludeFilesTF);
+	}
+
+	@Override
+	protected void _save()
+	{
+		jEdit.setProperty("options.ancestor.IncludeGlobs", includeFilesTF.getText());
+		jEdit.setProperty("options.ancestor.ExcludeGlobs", excludeFilesTF.getText());
+		paths.save();
+		updateFilter();
+	}
+
+	private static Pattern globToPattern(String filter)
+	{
+		String[] parts = filter.split(" ");
+		StringBuilder sb = new StringBuilder();
+		for (String part : parts)
+		{
+			if (sb.length() > 0)
+				sb.append('|');
+			String regexp = StandardUtilities.globToRE(part);
+			sb.append(regexp);
+		}
+		return Pattern.compile(sb.toString());
+	}
+
+	public static boolean accept(CharSequence path)
+	{
+		if (include == null || exclude == null)
+			updateFilter();
+		return include.matcher(path).matches() &&
+			!exclude.matcher(path).matches();
+	}
+
+	private static void updateFilter()
+	{
+		include = globToPattern(jEdit.getProperty("options.ancestor.IncludeGlobs"));
+		exclude = globToPattern(jEdit.getProperty("options.ancestor.ExcludeGlobs"));
+	}
+}

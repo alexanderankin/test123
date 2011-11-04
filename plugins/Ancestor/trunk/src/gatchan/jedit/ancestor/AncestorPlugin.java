@@ -20,11 +20,15 @@
  */
 package gatchan.jedit.ancestor;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import gatchan.jedit.smartopen.FileIndex;
-import gatchan.jedit.smartopen.IndexFiles;
+import gatchan.jedit.smartopen.IndexFilesTask;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
@@ -32,6 +36,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
@@ -45,6 +50,7 @@ public class AncestorPlugin extends EditPlugin
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
 	public static FileIndex itemFinder;
+	private javax.swing.Timer timer;
 
 	//{{{ start() method
 	@Override
@@ -59,11 +65,20 @@ public class AncestorPlugin extends EditPlugin
 			addAncestorToolBar(views[i]);
 		}
 		EditBus.addToBus(this);
+		timer = new javax.swing.Timer(60000, new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				indexFiles();
+			}
+		});
+		timer.start();
 	} //}}}
 
 	public static void indexFiles()
 	{
-		Task task = new IndexFiles();
+		Task task = new IndexFilesTask();
 		ThreadUtilities.runInBackground(task);
 	}
 
@@ -138,10 +153,17 @@ public class AncestorPlugin extends EditPlugin
 		}
 	} //}}}
 
+	@EditBus.EBHandler
+	public void propertiesChanged(PropertiesChanged propertiesChanged)
+	{
+		indexFiles();
+	}
+
 	//{{{ stop() method
 	@Override
 	public void stop()
 	{
+		timer.stop();
 		EditBus.removeFromBus(this);
 		itemFinder = null;
 		View[] views = jEdit.getViews();

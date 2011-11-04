@@ -13,4 +13,13 @@ plugin.gatchan.jedit.ancestor.AncestorPlugin.description=Ancestor plugin is a sm
 plugin.gatchan.jedit.ancestor.AncestorPlugin.usePluginHome=true
 
 
-options.smartIndexer.folder=c:\\Users\\ChocoPC\\dev\\jEdit\\
+plugin.gatchan.jedit.ancestor.AncestorPlugin.option-pane=ancestor
+options.ancestor.label=Ancestor
+options.ancestor.code=new gatchan.jedit.ancestor.AncestorOptionPane();
+
+options.ancestor.ExcludeDirectories=CVS .svn .git
+options.ancestor.IncludeGlobs=*
+options.ancestor.IncludeGlobs.label=Include only files matching:
+options.ancestor.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
+options.ancestor.ExcludeGlobs.label=... except files matching:
+options.ancestor.paths.label=Choose paths to monitor:
