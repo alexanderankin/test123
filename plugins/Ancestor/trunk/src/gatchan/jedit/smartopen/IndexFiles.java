@@ -31,7 +31,6 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSFileFilter;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.Task;
 
@@ -45,7 +44,6 @@ public class IndexFiles extends Task
 	{
 		long start = System.currentTimeMillis();
 		setStatus("Listing files");
-		FileIndex fileIndex = new FileIndex();
 		String property = jEdit.getProperty("options.smartIndexer.folder", "");
 		if (!property.isEmpty())
 		{
@@ -70,7 +68,7 @@ public class IndexFiles extends Task
 					String string = strings[i];
 					files[i] = vfs._getFile(vfsSession, string, activeView);
 				}
-				fileIndex.addFiles(new FileArrayProvider(files), this);
+				AncestorPlugin.itemFinder.addFiles(new FileArrayProvider(files), this);
 			}
 			catch (IOException e)
 			{
@@ -88,7 +86,6 @@ public class IndexFiles extends Task
 				}
 			}
 		}
-		AncestorPlugin.itemFinder = fileIndex;
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));
 	}
