@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import gatchan.jedit.ancestor.AncestorPlugin;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -146,7 +147,7 @@ public class FileIndex
 				File index = new File(pluginHome, getIndexName());
 				Directory tempDirectory = FSDirectory.open(index);
 				observer.setMaximum(fileProvider.size());
-				Analyzer analyzer = new SimpleAnalyzer(Version.LUCENE_34);
+				Analyzer analyzer = new KeywordAnalyzer();
 				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
 				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 				writer = new IndexWriter(tempDirectory, conf);
@@ -157,9 +158,9 @@ public class FileIndex
 					observer.setStatus(next.getPath());
 					Document document = new Document();
 					document.add(
-						new Field("path", next.getPath(), Field.Store.YES, Field.Index.NO));
+						new Field("path", next.getPath().toLowerCase(), Field.Store.YES, Field.Index.NO));
 
-					document.add(new Field("name", next.getName(), Field.Store.NO,
+					document.add(new Field("name", next.getName().toLowerCase(), Field.Store.NO,
 							       Field.Index.ANALYZED));
 					writer.addDocument(document);
 				}
