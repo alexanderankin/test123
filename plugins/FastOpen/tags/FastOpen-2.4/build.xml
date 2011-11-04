@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="FastOpen" default="dist" basedir=".">
+    <property file="FastOpen.props" />
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="docs-proc.target" value="none" />
+	<property name="jar.name"  value="${ant.project.name}.jar"/>
+	<property name="version" value="${plugin.com.patelsoft.fastopen.FastOpenPlugin.version}" />
+
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+</project>

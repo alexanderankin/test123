@@ -1,0 +1,167 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>FastOpen plugin user's guide</TITLE>
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff" alink="#0000FF">
+<TABLE CELLSPACING=0 BORDER=0 WIDTH="100%" bgcolor="#CCCCFF">
+<TR>
+<TD WIDTH="70%" VALIGN="MIDDLE">
+	<H1>FastOpen plugin user's guide</H1>
+</TD>
+<td width="30%" valign="middle" align="right">
+<I><H3>Author :</I>Jiger Patel</H3>
+</td>
+</TR>
+</TABLE>
+<hr>
+
+<H2>Introduction</H2>
+<P>FastOpen is a plugin designed to quickly open any file in the current project by just typing in the first few characters of the filename you want to open. Besides quickly opening any file, it has a lot of features like switching between projects, indicating invalid filenames etc. FastOpen can open files in the projects and/or non project files too.</P>
+
+
+<h3 id="whatsnew">What's New :</h3>
+Take a look at the <a href="#introToNewFeatures">Introduction to New Features</a> &amp; <a href="#releasenotes">release notes.</a>
+
+<h3 id="Introduction">Introduction</h3>
+<p>
+        FastOpen is a plugin for simple to advanced users. You can quickly open files from your project irrespective of their position in the directory structure. A file might be in
+        10 (or n number of) directory below your project root but for a FastOpen user it is as simple as typing in the first few characters of that file. For advanced users, FastOpen (0.6+) also supports
+        Full Perl5 compatible regexp. for searching files matching some pattern (like find me all - *.html or *.txt) files or as complicated as all XML files who has a word TEST in them.
+        </p>
+<br>
+<h3 id="usage">Usage</h3>
+<p>
+        FastOpen can be used with or without ProjectViewer being docked, but you must have atleast one project currently loaded and selected in ProjectViewer (if you are using ProjectViewer). You can also switch between projects using just FastOpen. To search for a file in your project, simply type in the first few characters of the filename(including regexp patterns if so desired). FastOpen will list down matching files in the list below. You can open the file by double clicking or selecting it from keyboard.
+        </p>
+        <p>
+		You can map FastOpen to a favourite shortcut key for really fast, mouse-free access to your project files.
+</p>
+
+<p>FastOpen is fully customisable from the Utilities-Global Options. You can configure things like Sort Files, Keep Open files in the end or at the begining of the list of matching files, or even "Don't show me already open files"... etc.
+You can also color annotate Open files to identify or differentiate between open &amp; not open files. FastOpen can also indicate errors in your search pattern by changing the color of file search pattern to red. to indicate that no files match the criteria or errorneous regexp syntax (0.6+). </p>
+<p>
+  Another feature is "Jump to file". You can select any text or keep your cursor on any text in the JEdit textarea(say a Classname) &amp; invoke FastOpen on it. If FastOpen finds a file matching that name it will automatically open that file for you resembling "Jump to" feature. If it does not match any file or matches more than one file then it will show you matching files dialog box. You can enable/disable this feature from Utilities-Global Options-FastOpen and select/deselect "Pattern from selected text" checkbox.
+</p>
+
+<p>FastOpen adds a lot of new features to make even simpler file manipulation. First among them, is the previous patterns drop down for easy re-run of previous search patterns. This is particularly helpful to remember complex or repetative search patterns, instead of typing patterns everytime/everyday. You can cycle between previous search patterns by pressing Ctrl+UP Arrow or Ctrl+DOWN Arrow keys on your keyboard.</p>
+<p> FastOpen allows you to switch between open files even if they don't belong to the Project, say Log files when working on Web-Applications, which are generally not part of the Project. You can even color code such files from FastOpen preferences in Global Options, to identify such files. Also The 0.7 feature of "Jump to file" feature has now been expanded to "Jump to file" under cursor or you can select a word &amp; Jump to it as usual.</p>
+
+<p>FastOpen has a convenient feature to Open any file + jump to a particular line number. This is globally supported, meaning, this filename:lineno pattern can be typed in or can also be used in conjunction with the "Jump to file" feature.</p>
+
+<p>This feature is very useful especially when looking at a stacktrace you can simply place your cursor on the file in the stack trace &amp; invoke FastOpen, and FastOpen will open the file on the cursor AND automatically take you to the lineno specified in the exception stack trace. Note that the filename need not be full filename and can also be a regexp patten:lineno for e.g the following are some of the valid ways to use this feature</p>
+<ol>
+<li> ListOrderServlet.java:10</li>
+<li> ListOrde*:10 </li>
+</ol>
+
+<p>Fastopen works equally well as a floater or a dockable. When it is activated, the search pattern textfield has the default focus. Starting with 1.0, FastOpen adds yet another innovative and handy feature to also allow opening of files that were recently opened. This is very helpful since we frequently return to previously opened files, regardless of the current proejct.
+</p>
+
+<a name="introToNewFeatures"></a>
+<h3 id="newfeatures">Introduction to New Features</h3>
+
+<p>In one typical usage scenario, there is frequent access to files and relatively less jumping around projects. FastOpen has changed its internals to adopt the popular indexing method. Instead of querying the sources(Project Viewer, Open buffers etc) EACH time, it simply pulls the files and maintains an index and only re-polls after a configurable(via Global Options) second timeout. Thus you can configure how frequent you want FastOpen to load the new file list depending on your usage pattern. Users wishing to NOT use the Polling Index Manager can switch to the old behaviour(query each time) by setting &quot;fastopen.indexing.strategy&quot; property to &quot;simple&quot;. To switch back set the property to &quot;polling&quot;.</p>
+
+<a name="releasenotes"></a>
+
+<h3 id="version2.3">Release Notes &amp; Change Log for Version : 2.3 (????) </h3>
+<p> <b> Requirements: </b>
+Jdk 1.5+, JEdit 4.3+, ProjectViewer 3.0.1+ </p>
+<ol>
+<li> Run in work thread instead of AWT thread to avoid deadlocks. </li>
+<li> Updates to ProjectViewer 3 API. </li>
+</ol>
+
+<h3 id="version2.2">Release Notes &amp; Change Log for Version : 2.2 (July 29 2009) </h3>
+<p> <b> Requirements: </b>
+Jdk 1.5+, JEdit 4.3pre17+, ProjectViewer 2.9(SVN) </p>
+<ol>
+  <li> Request reindex when active project is changed (Shlomy Reinstein - #2018535). </li>
+  <li> Creating dockable after opening the fastopen dialog works now. Floating a docked dockable works too. (alan ezust) </li>
+  <li> Patched to work with ProjectViewer 2.9. </li>
+</ol>
+
+<h3 id="version2.1">Release Notes &amp; Change Log for Version : 2.1 (31st August 2006)</h3>
+<p> <b> Requirements: </b>
+Jdk 1.4+, JEdit 4.3pre6+, ProjectViewer 2.1.3.4+(Optional) </p>
+<ol>
+	<li>Added "delay before searching" (in global options) to enable delay before FastOpen starts searching the index. This improves the performance drastically preventing event firing and thread contentions on every key press since the text to find would now be batched.</li>
+	<li>Fixed NPE if ProjectViewer is present but contains no projects.</li>
+	<li>Refactored FastOpen to use java.util.regex instead of gnu regexp fixing bug 1517598.</li>
+	<li>Made textarea the "default focus component", and ESC dismisses dockable. (Alan Ezust)
+	<li><font color="red"><i>For those using FastOpen with ProjectViewer plugin, we recommend using only ProjectViewer 2.1.3.4+. Using lower versions of ProjectViewer with FastOpen freezes jEdit and killing the process is the only way out.</i></font></li>
+</ol>
+
+<h3 id="version2.0">Release Notes &amp; Change Log for Version : 2.0 (10th January 2006)</h3>
+<p> <b> Requirements: </b>
+Jdk 1.3+, JEdit 4.2final+, ProjectViewer 2.1+ (Optional) </p>
+<ol>
+		<li>FastOpen now maintains an Index of files instead of querying the sources each time. An Index Manager thread will update the index in the background from time-to-time(configurable via Global Options). This immensely speeds up FastOpen.</li>
+		<li>File search string entered during the time the Index is being created(generally on first execution of FastOpen), is buffered and is automatically executed when indexing process is completed. So during initial index building esp. of large projects be patient.</li>
+		<li>Incase two files are not open, then the one which is Project file take precedence(If Sorting is enabled).</li>
+		<li>Fixed a rare case of Same file (1 appearing in Project and the other from Recent List before the Project was created) both getting displayed because sources were returning different character case namely ProjectViewer returning c:\directory\myfile.txt and Recent file returning C:\directory\myfile.txt.</li>
+		<li>Fixed a rare NPE case if there was a RegexpException</li>
+		<li>Limited the filename search pattern to ignore multiline selections to avoid mistakenly invoking FastOpen on a large selection and FastOpen having to go and search an invain pattern.</li>
+		<li>Multi-File open ability added.</li>
+		<li>Projects in the Project List dropdown are now sorted in case-insensitive order.</li>
+</ol>
+<h3 id="Version1.1">Release Notes &amp; Change Log for Version : 1.1 (16th August 2004)</h3>
+<ol>
+		<li>Fixed FastOpen's performance issues cropped up in FastOpen 1.0. The performance has been increased many-folds by optimizing internal data structures and eliminating unnecessary Structure Copies etc.</li>
+		<li>Added option to toggle inclusion of Recent files in Search set.</li>
+		<li>Cleanup of some old, deprecated FastOpen property names.</li>
+</ol>
+
+<h3>Release Notes &amp; Change Log for Version : 1.0</h3>
+<ol>
+		<li>Upgraded to jEdit 4.2 API.</li>
+		<li>FastOpen search pattern textbox now has the default focus(in case FastOpen is docked).</li>
+		<li>FastOpen now adds the ability to open files from the "Recent Files" list also.</li>
+</ol>
+
+<h3>Release Notes &amp; Change Log for Version : 0.9</h3>
+<ol>
+		<li>Added the ability to open file + jump to a line no.</li>
+		<li>Optimised implementation to ArrayList instead of Vectors.</li>
+</ol>
+
+
+
+<h3>Release Notes &amp; Change Log for Version : 0.8</h3>
+<ol>
+		<li>FastOpen now remembers file search patterns you had entered previously &amp; allows easy access to them by using Ctrl+Up or Ctrl+Down arrow to transverse between them for re-run of previous searches.</li>
+        <li>FastOpen can now also switch between "non-project open files" &amp; also supports color coding of such files for Visual identification.</li>
+        <li>You can now use the "Jump to file" feature also by placing the cursor on a filename besides the usual 0.7 way of selecting the text &amp; invoking FastOpen on it.</li>
+		<li>The text color in the pattern box now default to that of jEdit's textarea.</li>
+</ol>
+
+
+<h3>Release Notes &amp; Change Log for Version : 0.7</h3>
+<ol>
+        <li>Updated to jEdit 4.1 plugin changes.</li>
+        <li>Updated to ProjectViewer 2.0</li>
+        <li>Removed FastOpen from EditBus events. Thereby making FastOpen even more faster.</li>
+        <li>Removed ALL dependencies from creating ProjectViewer instances in FastOpen. Now u can use FastOpen without having ProjectViewer as one of your dockables. Thereby further facilitating faster &amp; more performance friendly experience to FastOpen users, since they don't have to block memory for ProjectViewer GUI which they might never use.</li>
+		<li>Lots of code improvements/cleanups. Simplifying FastOpen api further.
+		<li>Removed the unneccesary active Project from titlebar.</li>
+		<li><b>New Feature:</b> FastOpen now supports "Jump to selected file" feature whereby if FastOpen is invoked on a selected filename then it will automatically open that file if it is the only one in your project or shows you a list of files matching that selected text.</li>
+		<li>File pattern textbox now occupies all the space on horizontal resize.</li>
+		<li>FastOpen window set to a good default size for first time installation.</li>
+		<li>Added Dockable shortcuts missing from the previous pre-releases &amp; a couple of changes in action &amp; dockables.xml files.</li>
+</ol>
+
+
+<h3>Release Notes for Version : 0.6</h3>
+<ol>
+        <li>Fixed a small bug when FastOpen would get a NPE on clicking OK/Cancel in Global Options box when FastOpen options were not changed.</li>
+        <li>New Regular Expressions support for finding files. Thus replacing the simple substring functionality. Now you can not just find files matching some
+        substring but apply powerful regexp for searching files. This is very helpfull in huge projects. It supports full Perl5 regexp.</li>
+        <li>Added a new option in the Global Options to toggle Ignorecase when doing Search.</li>
+        <li>This document!! Which was there only in form of Release Notes &amp; TODO list.</li>
+</ol>
+<br>
+<hr>
+</BODY>
+</HTML>
