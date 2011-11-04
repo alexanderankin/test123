@@ -23,17 +23,19 @@ package gatchan.jedit.smartopen;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import gatchan.jedit.ancestor.AncestorPlugin;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -61,7 +63,7 @@ public class FileIndex
 	private static final Pattern CAMELCASE = Pattern.compile("(?<!^)(?=[A-Z])");
 	private Directory directory;
 	private final Object LOCK = new Object();
-	private final String[] indexes = new String[] { "index1", "index2" };
+	private final String[] indexes = { "index1", "index2" };
 	private int indexPos;
 
 	public FileIndex()
@@ -93,10 +95,21 @@ public class FileIndex
 	{
 		if (s == null || s.isEmpty())
 			return Collections.emptyList();
+		try
+		{
+			if (!IndexReader.indexExists(directory))
+				return Collections.emptyList();
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+			return Collections.emptyList();
+		}
 		IndexSearcher searcher = null;
 		List<String> l = new ArrayList<String>();
 		try
 		{
+			s = s.toLowerCase();
 			Query query = new PrefixQuery(new Term("name", s));
 
 			searcher = new IndexSearcher(directory);
@@ -133,8 +146,8 @@ public class FileIndex
 				File index = new File(pluginHome, getIndexName());
 				Directory tempDirectory = FSDirectory.open(index);
 				observer.setMaximum(fileProvider.size());
-				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34,
-									       new StandardAnalyzer(Version.LUCENE_34));
+				Analyzer analyzer = new SimpleAnalyzer(Version.LUCENE_34);
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
 				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 				writer = new IndexWriter(tempDirectory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
