@@ -23,7 +23,6 @@ package gatchan.jedit.ancestor;
 
 import java.awt.GridBagConstraints;
 import java.util.regex.Pattern;
-import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
