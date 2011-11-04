@@ -23,6 +23,7 @@ package gatchan.jedit.smartopen;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,12 +61,15 @@ public class FileIndex
 	private static final Pattern CAMELCASE = Pattern.compile("(?<!^)(?=[A-Z])");
 	private Directory directory;
 	private final Object LOCK = new Object();
+	private final String[] indexes = new String[] { "index1", "index2" };
+	private int indexPos;
 
 	public FileIndex()
 	{
 		EditPlugin plugin = jEdit.getPlugin(AncestorPlugin.class.getName());
 		File pluginHome = plugin.getPluginHome();
-		File index = new File(pluginHome, "index");
+		String indexName = getIndexName();
+		File index = new File(pluginHome, indexName);
 		index.mkdirs();
 		try
 		{
@@ -78,6 +82,13 @@ public class FileIndex
 		}
 	}
 
+	private String getIndexName()
+	{
+		indexPos = (indexPos + 1) % 2;
+		String indexName = indexes[indexPos];
+		return indexName;
+	}
+
 	public List<String> getFiles(String s)
 	{
 		if (s == null || s.isEmpty())
@@ -87,7 +98,6 @@ public class FileIndex
 		try
 		{
 			Query query = new PrefixQuery(new Term("name", s));
-
 
 			searcher = new IndexSearcher(directory);
 
@@ -118,11 +128,15 @@ public class FileIndex
 			IndexWriter writer = null;
 			try
 			{
+				EditPlugin plugin = jEdit.getPlugin(AncestorPlugin.class.getName());
+				File pluginHome = plugin.getPluginHome();
+				File index = new File(pluginHome, getIndexName());
+				Directory tempDirectory = FSDirectory.open(index);
 				observer.setMaximum(fileProvider.size());
 				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34,
 									       new StandardAnalyzer(Version.LUCENE_34));
 				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-				writer = new IndexWriter(directory, conf);
+				writer = new IndexWriter(tempDirectory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					observer.setValue(i);
@@ -136,11 +150,11 @@ public class FileIndex
 							       Field.Index.ANALYZED));
 					writer.addDocument(document);
 				}
-				writer.close();
+				directory = tempDirectory;
 			}
 			catch (IOException e)
 			{
-				Log.log(Log.ERROR,  this, e);
+				Log.log(Log.ERROR, this, e);
 			}
 			finally
 			{

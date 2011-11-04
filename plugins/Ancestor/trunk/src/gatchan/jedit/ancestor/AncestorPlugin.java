@@ -50,6 +50,7 @@ public class AncestorPlugin extends EditPlugin
 	@Override
 	public void start()
 	{
+		itemFinder = new FileIndex();
 		indexFiles();
 
 		View[] views = jEdit.getViews();
