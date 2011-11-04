@@ -53,14 +53,19 @@ public class OptionPane extends AbstractOptionPane
 	private static Pattern include;
 	private static Pattern exclude;
 
-	private final JTextField includeFilesTF;
-	private final JTextField excludeFilesTF;
+	private JTextField includeFilesTF;
+	private JTextField excludeFilesTF;
 	private JSpinner searchStringLength;
 	private JCheckBox useShortLabels;
 
 	public OptionPane()
 	{
 		super("Lucene");
+	}
+
+	@Override
+	protected void _init()
+	{
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		includeFilesTF = new JTextField(includeGlobs());
@@ -87,8 +92,7 @@ public class OptionPane extends AbstractOptionPane
 	{
 		jEdit.setProperty(INCLUDE_GLOBS_OPTION, includeFilesTF.getText());
 		jEdit.setProperty(EXCLUDE_GLOBS_OPTION, excludeFilesTF.getText());
-		jEdit.setIntegerProperty(SEARCH_STRING_LENGTH,
-			((Integer)searchStringLength.getValue()).intValue());
+		jEdit.setIntegerProperty(SEARCH_STRING_LENGTH, (Integer) searchStringLength.getValue());
 		jEdit.setBooleanProperty(USE_SHORT_LABELS, useShortLabels.isSelected());
 		updateFilter();
 	}
