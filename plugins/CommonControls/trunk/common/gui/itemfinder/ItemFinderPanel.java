@@ -124,6 +124,7 @@ public class ItemFinderPanel<E> extends JPanel
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
 			{
+				searchField.setText("");
 				dispose();
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_ENTER)
