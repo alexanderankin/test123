@@ -119,9 +119,10 @@ public class FileIndex
 			try
 			{
 				observer.setMaximum(fileProvider.size());
-				writer = new IndexWriter(directory, new IndexWriterConfig(Version.LUCENE_34,
-											  new StandardAnalyzer(
-												  Version.LUCENE_34)));
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34,
+									       new StandardAnalyzer(Version.LUCENE_34));
+				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+				writer = new IndexWriter(directory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					observer.setValue(i);
