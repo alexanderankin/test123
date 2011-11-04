@@ -4888,7 +4888,7 @@ TryStatement tryStatement() :
 }//}}}
 
 //{{{ catchClause()
-Catch catchClause() :
+Catch catchClause():
 {
 	Token catchToken;
 	Token catchedException;
@@ -4898,7 +4898,7 @@ Catch catchClause() :
 	int start,beginLine,beginColumn;
 	int startVar,beginLineVar,beginColumnVar;
 	int endVar,endLineVar,endColumnVar;
-	String identifierString = null;
+	String identifierString = SYNTAX_ERROR_CHAR;
 	String catchedString = null;
 }
 {

@@ -6463,7 +6463,7 @@ Token arrayAssignToken;
         int start,beginLine,beginColumn;
         int startVar,beginLineVar,beginColumnVar;
         int endVar,endLineVar,endColumnVar;
-        String identifierString = null;
+        String identifierString = SYNTAX_ERROR_CHAR;
         String catchedString = null;
     try {
       catchToken = jj_consume_token(CATCH);
