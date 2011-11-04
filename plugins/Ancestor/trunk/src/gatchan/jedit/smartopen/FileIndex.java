@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 jEdit contributors
+ * Copyright © 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,32 +23,19 @@ package gatchan.jedit.smartopen;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import gatchan.jedit.ancestor.AncestorPlugin;
-import org.apache.lucene.analysis.CharTokenizer;
-import org.apache.lucene.analysis.KeywordTokenizer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.ReusableAnalyzerBase;
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.StopwordAnalyzerBase;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
@@ -61,6 +48,8 @@ import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ProgressObserver;
 
 /**
@@ -84,7 +73,7 @@ public class FileIndex
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 			directory = new RAMDirectory();
 		}
 	}
@@ -113,18 +102,11 @@ public class FileIndex
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
-			try
-			{
-				searcher.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+			IOUtilities.closeQuietly(searcher);
 		}
 		return l;
 	}
@@ -157,18 +139,11 @@ public class FileIndex
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Log.log(Log.ERROR,  this, e);
 			}
 			finally
 			{
-				try
-				{
-					writer.close();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+				IOUtilities.closeQuietly(writer);
 			}
 		}
 	}
