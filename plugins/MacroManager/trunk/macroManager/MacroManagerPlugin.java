@@ -18,16 +18,9 @@
  */
 package macroManager;
 
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.JOptionPane;
-
-import common.gui.PopupList;
-
 import macroManager.popup.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 
 
 /**
