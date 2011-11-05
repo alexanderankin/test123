@@ -39,11 +39,12 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
@@ -110,7 +111,9 @@ public class FileIndex
 		try
 		{
 			s = s.toLowerCase();
-			Query query = new PrefixQuery(new Term("name", s));
+			QueryParser parser = new QueryParser(Version.LUCENE_34, "name", new StandardAnalyzer(Version.LUCENE_34));
+			parser.setAllowLeadingWildcard(true);
+			Query query = new WildcardQuery(new Term("name", '*' +s+ '*'));
 
 			searcher = new IndexSearcher(directory);
 
