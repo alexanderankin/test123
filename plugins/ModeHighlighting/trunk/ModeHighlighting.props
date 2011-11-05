@@ -88,7 +88,6 @@ mode-highlighting.all.style-sets.global/Classic.operator=style:b
 
 # Example mode-specific style set
 mode-highlighting.java.style-set-list=Eclipse-like
-mode-highlighting.java.active-style=Eclipse-like
 mode-highlighting.java.style-sets.Eclipse-like.comment1=color\:\#3f7f5f
 mode-highlighting.java.style-sets.Eclipse-like.comment2=color\:\#3f7f5f
 mode-highlighting.java.style-sets.Eclipse-like.comment3=color\:\#3f3fbf
