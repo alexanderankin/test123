@@ -21,24 +21,16 @@
 package whitespace;
 
 
-import java.util.Vector;
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.EditorStarted;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
 
 import whitespace.WhiteSpaceModel;
@@ -87,7 +79,6 @@ public class WhiteSpacePlugin
         if (message instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) message;
             EditPane editPane = (EditPane) epu.getSource();
-            View view = editPane.getView();
             if (epu.getWhat() == EditPaneUpdate.CREATED) {
                 this.addHighlightsTo(editPane);
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {

@@ -43,7 +43,7 @@ public abstract class WhiteSpaceAbstractOptionPane extends AbstractOptionPane
     protected JButton createColorButton(String property) {
         JButton b = new JButton(" ");
         b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-        b.addActionListener(new ActionHandler(b));
+        b.addActionListener(new ActionHandler());
         b.setRequestFocusEnabled(false);
         return b;
     }
@@ -57,12 +57,6 @@ public abstract class WhiteSpaceAbstractOptionPane extends AbstractOptionPane
 
 
     private class ActionHandler implements ActionListener {
-        private JButton button;
-
-        ActionHandler(JButton button) {
-            this.button = button;
-        }
-
         public void actionPerformed(ActionEvent evt) {
             JButton button = (JButton)evt.getSource();
             Color c = JColorChooser.showDialog(WhiteSpaceAbstractOptionPane.this,
