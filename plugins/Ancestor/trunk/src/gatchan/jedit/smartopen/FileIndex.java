@@ -23,20 +23,14 @@ package gatchan.jedit.smartopen;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import gatchan.jedit.ancestor.AncestorPlugin;
+import gatchan.jedit.smartopen.indexer.FileProvider;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.KeywordTokenizer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.ReusableAnalyzerBase;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -180,12 +174,5 @@ public class FileIndex
 				IOUtilities.closeQuietly(writer);
 			}
 		}
-	}
-
-	interface FileProvider
-	{
-		VFSFile next();
-
-		int size();
 	}
 }

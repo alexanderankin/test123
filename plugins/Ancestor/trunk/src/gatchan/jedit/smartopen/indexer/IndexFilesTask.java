@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package gatchan.jedit.smartopen;
+package gatchan.jedit.smartopen.indexer;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,7 +121,7 @@ public class IndexFilesTask extends Task
 
 		private MyVFSFilter()
 		{
-			String property = jEdit.getProperty("options.ancestor.ExcludeDirectories", "CVS .svn .git");
+			String property = jEdit.getProperty("options.smartopen.ExcludeDirectories", "CVS .svn .git");
 			excludedDirectories = property.split(" ");
 			Arrays.sort(excludedDirectories);
 		}
