@@ -19,12 +19,16 @@
 
 package macroManager;
 
-import com.microstar.xml.*;
+
 import java.io.*;
 import java.util.Stack;
 import org.gjt.sp.util.Log;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-class MacroListHandler extends HandlerBase
+class MacroListHandler extends DefaultHandler
 {
 	MacroListHandler(MacroList macroList, String path)
 	{
@@ -33,36 +37,58 @@ class MacroListHandler extends HandlerBase
 		stateStack = new Stack();
 	}
 
-	public Object resolveEntity(String publicId, String systemId)
-	{
+	
+	public InputSource resolveEntity (String publicId, String systemId)
+		throws IOException, SAXException
+	    {
+		
 		if("macros.dtd".equals(systemId))
 		{
 			// this will result in a slight speed up, since we
 			// don't need to read the DTD anyway, as AElfred is
 			// non-validating
-			return new StringReader("<!-- -->");
+			return new InputSource(new StringReader("<!-- -->"));
 		}
 
 		return null;
 	}
 
-	public void attribute(String aname, String value, boolean isSpecified)
-	{
-		aname = (aname == null) ? null : aname.intern();
-		value = (value == null) ? null : value.intern();
+	public void startElement (String uri, String tag,
+	      String qName, Attributes attributes) throws SAXException 
+    {	
+		tag = pushElement(tag);
 
-		if(aname == "name")
-			name = value;
-		else if(aname == "version")
-			version = value;
-		else if(aname == "date")
-			date = value;
-		else if(aname == "size")
-			size = Integer.parseInt(value);
-		else if(aname == "hits")
-			hits = value;
-	}
+		if(tag == "macro_set")
+		{
+			description = null;
+			macroSet = new MacroList.MacroSet();
+			macroList.addMacroSet(macroSet);
+		}
+		else if(tag == "macro")
+		{
+			description = null;
+			author = null;
+			macro = new MacroList.Macro();
+		}
+		else if(tag == "download")
+			downloadSize = size;
+		
+		if (attributes.getValue("name") != null)
+			name = attributes.getValue("name");
+		if (attributes.getValue("version") != null)
+			version = attributes.getValue("version");
+		if (attributes.getValue("date") != null)
+			date = attributes.getValue("date");
+		
+		if (attributes.getValue("size") != null)
+			size = Integer.parseInt(attributes.getValue("size"));
+		if (attributes.getValue("hits") != null)
+			hits = attributes.getValue("hits");
+			
+    }		
+		
 
+	/** Not used */
 	public void doctypeDecl(String name, String publicId,
 		String systemId) throws Exception
 	{
@@ -70,9 +96,10 @@ class MacroListHandler extends HandlerBase
 			return;
 
 		Log.log(Log.ERROR,this,path + ": DOCTYPE must be macros");
-	}
+	} 
 
-	public void charData(char[] c, int off, int len)
+    public void characters (char c[], int off, int len)
+	throws SAXException	
 	{
 		String tag = peekElement();
 		String text = new String(c, off, len);
@@ -96,32 +123,11 @@ class MacroListHandler extends HandlerBase
 			MacroList.timestamp = text;
 	}
 
-	public void startElement(String tag)
-	{
-		tag = pushElement(tag);
-
-		if(tag == "macro_set")
-		{
-			description = null;
-			macroSet = new MacroList.MacroSet();
-			macroList.addMacroSet(macroSet);
-		}
-		else if(tag == "macro")
-		{
-			description = null;
-			author = null;
-			macro = new MacroList.Macro();
-		}
-		else if(tag == "download")
-			downloadSize = size;
-	}
-
-	public void endElement(String tag)
-	{
+    public void endElement (String uri, String tag, String qName)
+    	throws SAXException
+        {
 		if(tag == null)
-			return;
-		else
-			tag = tag.intern();
+			tag = qName;
 
 		popElement();
 
@@ -159,23 +165,13 @@ class MacroListHandler extends HandlerBase
 		}
 	}
 
-	public void startDocument()
-	{
-		try
-		{
-			pushElement(null);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+    public void startDocument () throws SAXException {    	
+    	pushElement(null);
 	}
 
-	public void endDocument()
-	{
+    public void endDocument () throws SAXException {
 		macroList.finished();
 	}
-	// end HandlerBase implementation
 
 	/**
 	  * Utility method to replace all occurences of 'old' with 'repl' in 'field'.
@@ -214,7 +210,6 @@ class MacroListHandler extends HandlerBase
 	private MacroList.Macro macro;
 	private String author;
 
-	private boolean obsolete;
 	private String version;
 	private String date;
 	private String download;

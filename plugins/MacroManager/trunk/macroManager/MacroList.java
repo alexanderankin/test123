@@ -19,7 +19,7 @@
 
 package macroManager;
 
-import com.microstar.xml.*;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -27,7 +27,11 @@ import java.util.zip.*;
 import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.sql.rowset.spi.XmlReader;
 import javax.swing.*;
 
 /**
@@ -80,10 +84,11 @@ class MacroList implements Comparator
 	private void parseList(File file) throws Exception
 	{
 		MacroListHandler handler = new MacroListHandler(this, file.getAbsolutePath());
-		XmlParser parser = new XmlParser();
-		parser.setHandler(handler);
+		XMLReader parser = XMLReaderFactory.createXMLReader(); 
+		parser.setContentHandler(handler);
 
-		parser.parse(null, null, new BufferedInputStream(new FileInputStream(file)), null);
+		InputSource is = new InputSource(file.getAbsolutePath());
+		parser.parse(is);
 	}
 
 	private StringBuffer getListFromServer() throws Exception
