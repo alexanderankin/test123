@@ -24,11 +24,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import javax.swing.Timer;
 
 import gatchan.jedit.smartopen.FileIndex;
-import gatchan.jedit.smartopen.IndexFilesTask;
+import gatchan.jedit.smartopen.indexer.IndexFilesTask;
+import gatchan.jedit.smartopen.indexer.IndexProjectTask;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
@@ -38,8 +39,11 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTProject;
 
 /**
  * @author Matthieu Casanova
@@ -50,7 +54,9 @@ public class AncestorPlugin extends EditPlugin
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
 
 	public static FileIndex itemFinder;
-	private javax.swing.Timer timer;
+	private Timer timer;
+
+	private VPTProject currenProject;
 
 	//{{{ start() method
 	@Override
@@ -65,7 +71,7 @@ public class AncestorPlugin extends EditPlugin
 			addAncestorToolBar(views[i]);
 		}
 		EditBus.addToBus(this);
-		timer = new javax.swing.Timer(60000, new ActionListener()
+		timer = new Timer(60000, new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -76,10 +82,33 @@ public class AncestorPlugin extends EditPlugin
 		timer.start();
 	} //}}}
 
-	public static void indexFiles()
+	public void indexFiles()
 	{
-		Task task = new IndexFilesTask();
-		ThreadUtilities.runInBackground(task);
+		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
+		{
+			VPTProject activeProject = ProjectViewer.getActiveProject(jEdit.getActiveView());
+			if (StandardUtilities.objectsEqual(currenProject, activeProject))
+			{
+				return;
+			}
+			currenProject = activeProject;
+			if (currenProject != null)
+			{
+				IndexProjectTask task = new IndexProjectTask(currenProject);
+				ThreadUtilities.runInBackground(task);
+			}
+			else
+			{
+				Task task = new IndexFilesTask();
+				ThreadUtilities.runInBackground(task);
+			}
+		}
+		else
+		{
+			currenProject = null;
+			Task task = new IndexFilesTask();
+			ThreadUtilities.runInBackground(task);
+		}
 	}
 
 	//{{{ addAncestorToolBar() method

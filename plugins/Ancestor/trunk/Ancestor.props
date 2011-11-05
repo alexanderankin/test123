@@ -17,9 +17,14 @@ plugin.gatchan.jedit.ancestor.AncestorPlugin.option-pane=ancestor
 options.ancestor.label=Ancestor
 options.ancestor.code=new gatchan.jedit.ancestor.AncestorOptionPane();
 
-options.ancestor.ExcludeDirectories=CVS .svn .git
-options.ancestor.IncludeGlobs=*
-options.ancestor.IncludeGlobs.label=Include only files matching:
-options.ancestor.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
-options.ancestor.ExcludeGlobs.label=... except files matching:
-options.ancestor.paths.label=Choose paths to monitor:
+options.smartopen.ExcludeDirectories=CVS .svn .git
+options.smartopen.IncludeGlobs=*
+options.smartopen.IncludeGlobs.label=Include only files matching:
+options.smartopen.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
+options.smartopen.ExcludeGlobs.label=... except files matching:
+
+
+options.smartopen.paths.label=Choose paths to monitor:
+
+options.smartopen.projectindex=false
+options.smartopen.projectindex.label=Index current project

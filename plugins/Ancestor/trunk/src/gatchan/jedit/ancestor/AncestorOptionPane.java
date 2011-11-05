@@ -23,6 +23,7 @@ package gatchan.jedit.ancestor;
 
 import java.awt.GridBagConstraints;
 import java.util.regex.Pattern;
+import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -36,6 +37,7 @@ import org.gjt.sp.util.StandardUtilities;
  */
 public class AncestorOptionPane extends AbstractOptionPane
 {
+	private JCheckBox indexProject;
 	private JTextField includeFilesTF;
 	private JTextField excludeFilesTF;
 	private static Pattern include;
@@ -54,17 +56,22 @@ public class AncestorOptionPane extends AbstractOptionPane
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		paths = new VFSPathFileList("options.ancestor.paths");
 		addComponent(paths, GridBagConstraints.BOTH);
-		includeFilesTF = new JTextField(jEdit.getProperty("options.ancestor.IncludeGlobs"));
-		addComponent(jEdit.getProperty("options.ancestor.IncludeGlobs.label"), includeFilesTF);
-		excludeFilesTF = new JTextField(jEdit.getProperty("options.ancestor.ExcludeGlobs"));
-		addComponent(jEdit.getProperty("options.ancestor.ExcludeGlobs.label"), excludeFilesTF);
+		includeFilesTF = new JTextField(jEdit.getProperty("options.smartopen.IncludeGlobs"));
+		addComponent(jEdit.getProperty("options.smartopen.IncludeGlobs.label"), includeFilesTF);
+		excludeFilesTF = new JTextField(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
+		addComponent(jEdit.getProperty("options.smartopen.ExcludeGlobs.label"), excludeFilesTF);
+
+		indexProject = new JCheckBox(jEdit.getProperty("options.smartopen.projectindex.label"));
+		indexProject.setSelected(jEdit.getBooleanProperty("options.smartopen.projectindex"));
+		addComponent(indexProject);
 	}
 
 	@Override
 	protected void _save()
 	{
-		jEdit.setProperty("options.ancestor.IncludeGlobs", includeFilesTF.getText());
-		jEdit.setProperty("options.ancestor.ExcludeGlobs", excludeFilesTF.getText());
+		jEdit.setProperty("options.smartopen.IncludeGlobs", includeFilesTF.getText());
+		jEdit.setProperty("options.smartopen.ExcludeGlobs", excludeFilesTF.getText());
+		jEdit.setBooleanProperty("options.smartopen.projectindex", indexProject.isSelected());
 		paths.save();
 		updateFilter();
 	}
@@ -93,7 +100,7 @@ public class AncestorOptionPane extends AbstractOptionPane
 
 	private static void updateFilter()
 	{
-		include = globToPattern(jEdit.getProperty("options.ancestor.IncludeGlobs"));
-		exclude = globToPattern(jEdit.getProperty("options.ancestor.ExcludeGlobs"));
+		include = globToPattern(jEdit.getProperty("options.smartopen.IncludeGlobs"));
+		exclude = globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 	}
 }

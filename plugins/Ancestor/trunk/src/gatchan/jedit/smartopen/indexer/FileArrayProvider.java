@@ -19,14 +19,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package gatchan.jedit.smartopen;
+package gatchan.jedit.smartopen.indexer;
 
+import gatchan.jedit.smartopen.indexer.FileProvider;
 import org.gjt.sp.jedit.io.VFSFile;
 
 /**
  * @author Matthieu Casanova
  */
-public class FileArrayProvider implements FileIndex.FileProvider
+public class FileArrayProvider implements FileProvider
 {
 	private final VFSFile[] fileArray;
 	private int index;
