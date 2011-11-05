@@ -304,11 +304,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 		try
 		{
-			// workaround: calls to SwingUtilities.updateComponentTreeUI
-			//getUI().uninstallUI(this);
 			changeHandler.setEnabled(false);
 			knownBuffers.add(buffer);
-			//ColorTabs.instance().setEnabled( false );
 
 			Component component = null;
 			if (super.indexOfComponent(textArea) == -1)
@@ -318,9 +315,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 			insertTab(buffer.getName(), null, component, buffer.getPath(), index);
 			updateTitleAt(index);
-			//	 int selectedIndex = this.buffers.indexOf(this.editPane.getBuffer());
-			//      this.setSelectedIndex(selectedIndex);
-			//Log.log(Log.MESSAGE, BufferTabs.class, "selected : 1 " + selectedIndex +" index "+ index  );
 			if (component == textArea)
 			{
 				textArea.setVisible(true);
@@ -329,9 +323,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		finally
 		{
 			changeHandler.setEnabled(true);
-			//ColorTabs.instance().setEnabled( true );
-			// workaround: calls to SwingUtilities.updateComponentTreeUI
-			//getUI().installUI(this);
 		}
 
 		if (editPane.getBuffer() == buffer)
@@ -341,34 +332,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 		else
 			updateColorAt(index);
-
-		//CES: Force correct color for new buffer tab
-		//this.updateColorAt(this.getSelectedIndex());
-
-		/*if (index >= 0)
-		{
-			//this.updateColorAt( index );
-			int prevSelected = bufferSet.indexOf(previousBuffer);
-
-			if (buffer == getEditPane().getBuffer())
-			{
-				if (prevSelected < getTabCount())
-					updateColorAt(prevSelected);
-				setSelectedIndex(index);
-				updateHighlightAt(index);
-			}
-			else
-			{
-				if (prevSelected < getTabCount())
-				{
-					setSelectedIndex(prevSelected);
-					updateHighlightAt(prevSelected);
-				}
-				updateColorAt(index);
-			}
-		}     */
 	}
-
 
 	private void setTabComponent(final int index, final boolean set)
 	{
@@ -616,7 +580,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			Log.log(Log.ERROR, this, "The following is a JRE bug:");
 			Log.log(Log.ERROR, this, e);
 		}
-		// this.updateHighlightAt(index);
 	}
 
 
@@ -652,20 +615,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					setForegroundAt(index, selected);
 					setBackgroundAt(index, null);
 				}
-/*
-		try {
-		    this.getUI().uninstallUI(this);
-		    UIManager.getDefaults().put(
-			"TabbedPane.selected",
-			new ColorUIResource(
-			    ColorTabs.instance().alterColorHighlight(color)
-			)
-		    );
-		    this.getUI().installUI(this);
-		} catch (Exception e) {
-		    Log.log(Log.ERROR, BufferTabs.class, "updateHighlightAt: " + e.toString());
-					e.printStackTrace();
-		}*/
 			}
 		}
 	}
@@ -699,8 +648,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 		setTitleAt(index, title);
 		setIconAt(index, icon);
-		//if (index != this.getSelectedIndex() )
-		//	this.updateColorAt(this.getSelectedIndex());
 	}
 
 
@@ -932,8 +879,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 					editPane.focusOnTextArea();
 					jEdit.closeBuffer(editPane, editPane.getBufferSet().getBuffer(tabIndex));
-					//if ( tab != selection )
-					//BufferTabs.this.editPane.getBuffer() );
 				}
 				if (SwingUtilities.isLeftMouseButton(e))
 				{
@@ -969,7 +914,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					}
 					else
 					{
-						//System.out.println( "not moving tab" );
 						// set the focus to the selected tab
 						editPane.focusOnTextArea();
 					}
