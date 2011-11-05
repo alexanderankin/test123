@@ -40,6 +40,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -110,10 +112,24 @@ public class FileIndex
 		List<String> l = new ArrayList<String>();
 		try
 		{
-			s = s.toLowerCase();
-			QueryParser parser = new QueryParser(Version.LUCENE_34, "name", new StandardAnalyzer(Version.LUCENE_34));
+			QueryParser parser =
+				new QueryParser(Version.LUCENE_34, "name", new StandardAnalyzer(Version.LUCENE_34));
 			parser.setAllowLeadingWildcard(true);
-			Query query = new WildcardQuery(new Term("name", '*' +s+ '*'));
+			String[] split = CAMELCASE.split(s);
+			StringBuilder builder = new StringBuilder(s.length() + split.length + 2);
+			for (int i = 0; i < split.length; i++)
+			{
+				builder.append(split[i]).append('*');
+			}
+			builder.append('*');
+			Query queryCaps = new WildcardQuery(new Term("name_caps", builder.toString()));
+			s = s.toLowerCase();
+			Query queryNoCaps = new WildcardQuery(new Term("name", '*' + s + '*'));
+
+			BooleanQuery query = new BooleanQuery();
+			queryCaps.setBoost(10);
+			query.add(queryCaps, BooleanClause.Occur.SHOULD);
+			query.add(queryNoCaps, BooleanClause.Occur.SHOULD);
 
 			searcher = new IndexSearcher(directory);
 
@@ -164,6 +180,8 @@ public class FileIndex
 
 					document.add(new Field("name", next.getName(), Field.Store.NO,
 							       Field.Index.ANALYZED));
+					document.add(new Field("name_caps", next.getName(), Field.Store.NO,
+							       Field.Index.NOT_ANALYZED));
 					writer.addDocument(document);
 				}
 				directory = tempDirectory;
