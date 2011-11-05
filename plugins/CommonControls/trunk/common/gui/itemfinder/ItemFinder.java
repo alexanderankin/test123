@@ -31,13 +31,6 @@ public interface ItemFinder<E>
 	String getLabel();
 
 	/**
-	 * Returns the width of the window
-	 * Return -1 if you want default value
-	 * @return the width of the list
-	 */
-	int getWidth();
-
-	/**
 	 * The list model that is used by the ItemFinderWindow
 	 * @return a listmodel
 	 */

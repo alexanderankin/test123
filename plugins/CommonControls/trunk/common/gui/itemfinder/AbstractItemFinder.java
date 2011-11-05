@@ -36,12 +36,6 @@ public abstract class AbstractItemFinder<E> implements ItemFinder<E>
 	}
 
 	@Override
-	public int getWidth()
-	{
-		return -1;
-	}
-
-	@Override
 	public ListCellRenderer getListCellRenderer()
 	{
 		return null;
