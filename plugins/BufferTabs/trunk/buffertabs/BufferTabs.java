@@ -318,8 +318,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 			insertTab(buffer.getName(), null, component, buffer.getPath(), index);
 			updateTitleAt(index);
-			if (jEdit.getBooleanProperty("buffertabs.closeButton", true))
-				setTabComponent(index, true);
 			//	 int selectedIndex = this.buffers.indexOf(this.editPane.getBuffer());
 			//      this.setSelectedIndex(selectedIndex);
 			//Log.log(Log.MESSAGE, BufferTabs.class, "selected : 1 " + selectedIndex +" index "+ index  );
