@@ -86,8 +86,6 @@ public class ItemFinderPanel<E> extends JPanel
 		add(searchField, BorderLayout.CENTER);
 		window.pack();
 		requestFocusWorker = new RequestFocusWorker(searchField);
-		if (itemFinder.getWidth() != -1)
-			setSize(itemFinder.getWidth(), getHeight());
 	}
 
 	public void dispose()
