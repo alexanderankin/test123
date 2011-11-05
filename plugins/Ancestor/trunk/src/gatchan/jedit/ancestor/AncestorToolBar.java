@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,6 @@
  */
 package gatchan.jedit.ancestor;
 
-import common.gui.itemfinder.AbstractItemFinder;
 import common.gui.itemfinder.ItemFinder;
 import common.gui.itemfinder.ItemFinderPanel;
 import gatchan.jedit.smartopen.FileItemFinder;
@@ -31,7 +30,6 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.LinkedList;
 
@@ -41,7 +39,7 @@ import java.util.LinkedList;
  */
 public class AncestorToolBar extends JPanel
 {
-	private JToolBar toolbar;
+	private final JToolBar toolbar;
 	private final View view;
 	private final LinkedList<String> list = new LinkedList<String>();
 
@@ -56,8 +54,8 @@ public class AncestorToolBar extends JPanel
 		add(toolbar);
 		add(Box.createGlue());
 		add(new JLabel("Search for a file :"));
-		ItemFinder itemFinder = new FileItemFinder();
-		ItemFinderPanel itemFinderPanel = new ItemFinderPanel(view, itemFinder);
+		ItemFinder<String> itemFinder = new FileItemFinder();
+		ItemFinderPanel<String> itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
 		Dimension maximumSize = itemFinderPanel.getMaximumSize();
 		itemFinderPanel.setMaximumSize(new Dimension(500,maximumSize.height));
 		Dimension minimumSize = itemFinderPanel.getMinimumSize();
