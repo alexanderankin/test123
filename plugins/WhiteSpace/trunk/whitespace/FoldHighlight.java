@@ -27,8 +27,6 @@ import java.awt.Graphics2D;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.swing.text.Segment;
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -52,8 +50,6 @@ public class FoldHighlight extends TextAreaExtension
 
     private JEditTextArea textArea;
     private EditPane editPane;
-    private Segment segment = new Segment();
-
 
     private FoldHighlight(JEditTextArea textArea, EditPane editPane) {
         this.textArea = textArea;

@@ -23,7 +23,6 @@ package whitespace;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 
 import javax.swing.text.Segment;
@@ -37,7 +36,6 @@ import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.util.Log;
 
 
 public class BlockHighlight extends TextAreaExtension

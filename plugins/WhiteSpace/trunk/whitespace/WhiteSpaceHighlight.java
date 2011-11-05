@@ -22,7 +22,6 @@ package whitespace;
 
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -39,8 +38,6 @@ import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.util.Log;
-
 
 public class WhiteSpaceHighlight extends TextAreaExtension
 {
