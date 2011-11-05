@@ -19,7 +19,7 @@
 
 package macroManager;
 
-import com.microstar.xml.XmlException;
+
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -27,6 +27,7 @@ import java.awt.*;
 import java.io.InterruptedIOException;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import org.xml.sax.SAXException;
 
 class MacroListDownloadProgress extends JDialog
 {
@@ -84,17 +85,16 @@ class MacroListDownloadProgress extends JDialog
 				list = new MacroList(refresh);
 				dispose();
 			}
-			catch(XmlException xe)
+			catch(SAXException xe)
 			{
 				dispose();
 
-				int line = xe.getLine();
+				//int line = xe.getLine();
 				String path = jEdit.getProperty("macro-manager.url");
 				String message = xe.getMessage();
-				Log.log(Log.ERROR,this,path + ":" + line
-					+ ": " + message);
-				String[] pp = { path, String.valueOf(line), message };
-				GUIUtilities.error(window,"macro-list.xmlerror",pp);
+				Log.log(Log.ERROR,this,path + ": " + message);
+				// String[] pp = { path, String.valueOf(line), message };
+				// GUIUtilities.error(window,"macro-list.xmlerror",pp);
 			}
 			catch(Exception e)
 			{
