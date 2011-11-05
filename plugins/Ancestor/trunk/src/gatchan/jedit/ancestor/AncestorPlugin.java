@@ -43,7 +43,6 @@ import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.ProjectViewer;
-import projectviewer.event.ProjectUpdate;
 import projectviewer.event.ViewerUpdate;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -59,7 +58,7 @@ public class AncestorPlugin extends EditPlugin
 	public static FileIndex itemFinder;
 	private Timer timer;
 
-	private VPTProject currenProject;
+	private static VPTProject currenProject;
 
 	//{{{ start() method
 	@Override
@@ -85,7 +84,7 @@ public class AncestorPlugin extends EditPlugin
 		timer.start();
 	} //}}}
 
-	public void indexFiles()
+	public static void indexFiles()
 	{
 		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
 		{
@@ -211,6 +210,7 @@ public class AncestorPlugin extends EditPlugin
 	public void stop()
 	{
 		timer.stop();
+		currenProject = null;
 		EditBus.removeFromBus(this);
 		itemFinder = null;
 		View[] views = jEdit.getViews();
