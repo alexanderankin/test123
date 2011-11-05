@@ -92,7 +92,10 @@ public class ItemFinderPanel<E> extends JPanel
 
 	public void dispose()
 	{
+		Window owner = window.getOwner();
 		window.dispose();
+		if (owner instanceof ItemFinderWindow)
+			owner.dispose();
 	}
 
 	private static boolean handledByList(KeyEvent e)
