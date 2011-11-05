@@ -22,7 +22,9 @@
 package common.gui.itemfinder;
 
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 
+//{{{ Imports
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -31,12 +33,16 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+//}}}
 
 /**
  * The ItemFinderWindow is a Window that contains a SearchField and a list of items.
  * When typing in the search field, the item list is updated, and when selecting an item of that list, an action is
  * triggered.
- * To use it, you have to implement {@link ItemFinder}, then instantiate {@link ItemFinderWindow} and make it visible.
+ * To use it, you have to implement {@link ItemFinder}.
+ *
+ * Then you have two choice : instantiate {@link ItemFinderWindow} and make it visible.
+ * or use {@link ItemFinderWindow#showWindow()} that will create the window and show it.
  * @author Matthieu Casanova
  */
 public class ItemFinderWindow<E> extends JFrame
@@ -51,12 +57,13 @@ public class ItemFinderWindow<E> extends JFrame
 	public final RequestFocusWorker requestFocusWorker;
 	private final ItemFinder<E> itemFinder;
 
+	//{{{ ItemFinderWindow constructor
 	public ItemFinderWindow(ItemFinder<E> itemFinder)
 	{
 		this.itemFinder = itemFinder;
 		setUndecorated(true);
 		window = new JWindow(this);
-		searchField = new JTextField();
+		searchField = new JTextField(50);
 
 		itemList = new JList(itemFinder.getModel());
 		itemList.setBorder(BorderFactory.createEtchedBorder());
@@ -82,8 +89,17 @@ public class ItemFinderWindow<E> extends JFrame
 		pack();
 		if (itemFinder.getWidth() != -1)
 			setSize(itemFinder.getWidth(), getHeight());
-	}
+	} //}}}
 
+	//{{{ showWindow() method
+	public static void showWindow(View view, ItemFinder itemFinder)
+	{
+		ItemFinderWindow itemFinderWindow = new ItemFinderWindow(itemFinder);
+		itemFinderWindow.setLocationRelativeTo(view);
+		itemFinderWindow.setVisible(true);
+	} //}}}
+
+	//{{{ setVisible() method
 	@Override
 	public void setVisible(boolean b)
 	{
@@ -92,23 +108,26 @@ public class ItemFinderWindow<E> extends JFrame
 		GUIUtilities.requestFocus(this, searchField);
 		window.setVisible(false);
 		super.setVisible(b);
-	}
+	} //}}}
 
+	//{{{ dispose()
 	@Override
 	public void dispose()
 	{
 		window.dispose();
 		super.dispose();
-	}
+	} //}}}
 
+	//{{{ handledByList() method
 	private static boolean handledByList(KeyEvent e)
 	{
 		return e.getKeyCode() == KeyEvent.VK_DOWN ||
 			e.getKeyCode() == KeyEvent.VK_UP ||
 			e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
 			e.getKeyCode() == KeyEvent.VK_PAGE_UP;
-	}
+	} //}}}
 
+	//{{{ select() method
 	private void select()
 	{
 		E value = (E) itemList.getSelectedValue();
@@ -117,8 +136,9 @@ public class ItemFinderWindow<E> extends JFrame
 			itemFinder.selectionMade(value);
 			dispose();
 		}
-	}
+	} //}}}
 
+	//{{{ SearchFieldKeyAdapter class
 	private class SearchFieldKeyAdapter extends KeyAdapter
 	{
 		@Override
@@ -137,8 +157,9 @@ public class ItemFinderWindow<E> extends JFrame
 				select();
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ ItemListKeyAdapter class
 	private static class ItemListKeyAdapter extends KeyAdapter
 	{
 		private final JTextField searchField;
@@ -162,8 +183,9 @@ public class ItemFinderWindow<E> extends JFrame
 				searchField.dispatchEvent(e);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ MyMouseAdapter class
 	private class MyMouseAdapter extends MouseAdapter
 	{
 		@Override
@@ -174,8 +196,9 @@ public class ItemFinderWindow<E> extends JFrame
 				select();
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ RequestFocusWorker class
 	protected static class RequestFocusWorker implements Runnable
 	{
 		private final JTextField searchField;
@@ -189,8 +212,9 @@ public class ItemFinderWindow<E> extends JFrame
 		{
 			searchField.requestFocus();
 		}
-	}
+	} //}}}
 
+	//{{{ MyDocumentListener class
 	private class MyDocumentListener implements DocumentListener
 	{
 		public void insertUpdate(DocumentEvent e)
@@ -227,5 +251,6 @@ public class ItemFinderWindow<E> extends JFrame
 			}
 			EventQueue.invokeLater(requestFocusWorker);
 		}
-	}
+	} //}}}
+
 }
