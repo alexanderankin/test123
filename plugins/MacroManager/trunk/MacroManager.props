@@ -69,7 +69,7 @@ macro-list.progress.title=Macro Manager
 macro-list.progress.caption=Downloading macro list
 macro-list.progress.stop=Stop
 macro-list.xmlerror=An xml error has occurred
-macro-list.xmlerror=An io error has occurred
+macro-list.ioerror=An io error has occurred
 macro-manager.popup.message=Enter macro name:
 macro-manager.popup.filter-message=Filter (? = any character, * = any string)
 macro-manager.progress.install-task=Installing Macros
