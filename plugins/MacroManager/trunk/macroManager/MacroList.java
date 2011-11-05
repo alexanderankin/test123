@@ -84,11 +84,8 @@ class MacroList implements Comparator
 	private void parseList(File file) throws Exception
 	{
 		MacroListHandler handler = new MacroListHandler(this, file.getAbsolutePath());
-		XMLReader parser = XMLReaderFactory.createXMLReader(); 
-		parser.setContentHandler(handler);
-
-		InputSource is = new InputSource(file.getAbsolutePath());
-		parser.parse(is);
+		FileInputStream is = new FileInputStream(file);
+		XMLUtilities.parseXML(is, handler);
 	}
 
 	private StringBuffer getListFromServer() throws Exception
