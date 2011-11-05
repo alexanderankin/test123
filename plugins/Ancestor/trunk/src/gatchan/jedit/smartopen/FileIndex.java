@@ -23,6 +23,7 @@ package gatchan.jedit.smartopen;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +33,11 @@ import java.util.regex.Pattern;
 import gatchan.jedit.ancestor.AncestorPlugin;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.KeywordTokenizer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.ReusableAnalyzerBase;
 import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
@@ -147,7 +152,7 @@ public class FileIndex
 				File index = new File(pluginHome, getIndexName());
 				Directory tempDirectory = FSDirectory.open(index);
 				observer.setMaximum(fileProvider.size());
-				Analyzer analyzer = new KeywordAnalyzer();
+				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
 				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
 				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 				writer = new IndexWriter(tempDirectory, conf);
@@ -158,9 +163,9 @@ public class FileIndex
 					observer.setStatus(next.getPath());
 					Document document = new Document();
 					document.add(
-						new Field("path", next.getPath().toLowerCase(), Field.Store.YES, Field.Index.NO));
+						new Field("path", next.getPath(), Field.Store.YES, Field.Index.NO));
 
-					document.add(new Field("name", next.getName().toLowerCase(), Field.Store.NO,
+					document.add(new Field("name", next.getName(), Field.Store.NO,
 							       Field.Index.ANALYZED));
 					writer.addDocument(document);
 				}
