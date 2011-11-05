@@ -43,6 +43,9 @@ import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.ProjectViewer;
+import projectviewer.event.ProjectUpdate;
+import projectviewer.event.ViewerUpdate;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 /**
@@ -186,6 +189,21 @@ public class AncestorPlugin extends EditPlugin
 	public void propertiesChanged(PropertiesChanged propertiesChanged)
 	{
 		indexFiles();
+	}
+
+	@EditBus.EBHandler
+	public void projectUpdate(ViewerUpdate vu)
+	{
+		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
+		{
+			if (vu.getType() == ViewerUpdate.Type.PROJECT_LOADED)
+			{
+				VPTNode node = vu.getNode();
+				VPTProject project = VPTNode.findProjectFor(node);
+				if (!StandardUtilities.objectsEqual(project, currenProject))
+					indexFiles();
+			}
+		}
 	}
 
 	//{{{ stop() method
