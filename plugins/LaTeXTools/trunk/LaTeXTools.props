@@ -1,6 +1,6 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
 plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy(former), Jakub Holy(former)
-plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.8
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.9
 
 # new jEdit 4.3 plugin API for short description.
 plugin.uk.co.antroy.latextools.LaTeXPlugin.description=A simple LaTeX plugin offering compilation actions and navigation.
