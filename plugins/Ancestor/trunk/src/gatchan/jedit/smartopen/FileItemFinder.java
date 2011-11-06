@@ -39,11 +39,13 @@ public class FileItemFinder extends AbstractItemFinder<String>
 {
 	private final MyListModel model;
 	private final ListCellRenderer listCellRenderer;
+	private final String label;
 
 	public FileItemFinder()
 	{
 		model = new MyListModel();
 		listCellRenderer = new PathCellRenderer();
+		label = jEdit.getProperty("smart-open-dialog.label");
 	}
 
 	@Override
@@ -69,6 +71,12 @@ public class FileItemFinder extends AbstractItemFinder<String>
 	public ListCellRenderer getListCellRenderer()
 	{
 		return listCellRenderer;
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return label;
 	}
 
 	private static class MyListModel extends AbstractListModel
