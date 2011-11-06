@@ -15,7 +15,13 @@ plugin.gatchan.jedit.ancestor.AncestorPlugin.usePluginHome=true
 
 plugin.gatchan.jedit.ancestor.AncestorPlugin.option-pane=ancestor
 options.ancestor.label=Ancestor
-options.ancestor.code=new gatchan.jedit.ancestor.AncestorOptionPane();
+options.ancestor.code=new gatchan.jedit.smartopen.SmartOpenOptionPane();
+
+plugin.gatchan.jedit.ancestor.AncestorPlugin.menu=smart-open-dialog \
+                                                    smart-open-reindex
+
+smart-open-reindex.label=re-index
+smart-open-dialog.label=open file
 
 options.smartopen.ExcludeDirectories=CVS .svn .git
 options.smartopen.IncludeGlobs=*

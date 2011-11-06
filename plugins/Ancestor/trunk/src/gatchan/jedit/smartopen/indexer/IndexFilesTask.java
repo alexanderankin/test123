@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import gatchan.jedit.ancestor.AncestorOptionPane;
+import gatchan.jedit.smartopen.SmartOpenOptionPane;
 import gatchan.jedit.ancestor.AncestorPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFS;
@@ -143,7 +143,7 @@ public class IndexFilesTask extends Task
 		@Override
 		public boolean accept(String url)
 		{
-			return AncestorOptionPane.accept(url);
+			return SmartOpenOptionPane.accept(url);
 		}
 
 		@Override
