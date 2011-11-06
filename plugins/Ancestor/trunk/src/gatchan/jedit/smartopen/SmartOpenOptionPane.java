@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package gatchan.jedit.ancestor;
+package gatchan.jedit.smartopen;
 
 import java.awt.GridBagConstraints;
 import java.util.regex.Pattern;
@@ -35,7 +35,7 @@ import org.gjt.sp.util.StandardUtilities;
 /**
  * @author Matthieu Casanova
  */
-public class AncestorOptionPane extends AbstractOptionPane
+public class SmartOpenOptionPane extends AbstractOptionPane
 {
 	private JCheckBox indexProject;
 	private JTextField includeFilesTF;
@@ -45,7 +45,7 @@ public class AncestorOptionPane extends AbstractOptionPane
 
 	private VFSPathFileList paths;
 
-	public AncestorOptionPane()
+	public SmartOpenOptionPane()
 	{
 		super("Ancestor");
 	}
