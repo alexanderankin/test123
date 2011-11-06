@@ -1,0 +1,190 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Viewer plugin           -->
+<!-- :tabSize=2:indentSize=2:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="LaTeXTools" default="install" basedir=".">
+  <description>
+    LaTeX Tools jEdit Plugin.
+  </description>
+
+  <!-- ================================================ -->
+  <!-- Property definitions                             -->
+  <!-- ================================================ -->
+  <property file="../build.properties"/>
+  <property file="build.properties"/>
+
+  <property file="${user.home}/.build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+  <!-- set global properties for this build -->
+  <property name="src"          value="."/>
+  <property name="build"        value="build"/>
+  <property name="build.images" value="${build}/images"/>
+  <property name="dist"         value="${install.dir}"/>
+  <property name="config"       value="config"/>
+  <property name="images"       value="images"/>
+  <property name="docs"         value="docs"/>
+  <property name="docs.javadoc" value="${docs}/javadocs"/>
+  <property name="can.reload.plugins" value="false"/>
+
+	<!-- set DEFAULT VALUES for some properties -->
+	<!-- (Once defined property cannot be changed => these only applies
+		if the given properties are not yet set) -->
+	<property name="crosscompiler.lib" 			value="${java.home}/lib"/>
+	<property name="crosscompiler.version" 	value="1.5"/>
+	<property name="jedit.user.home" 				value="${jedit.install.dir}"/>
+	<property name="jedit.plugins.dir"			value="${install.dir}"/>
+	<property name="errorlist.jar"  				value="${jedit.plugins.dir}/ErrorList.jar"/>
+	<property name="sidekick.jar"  				 	value="${jedit.plugins.dir}/SideKick.jar"/>
+	<property name="console.jar"  					value="${jedit.plugins.dir}/Console.jar"/>
+	<property name="gnuregexp.jar"					value="${jedit.plugins.dir}/GnuRegexp.jar"/>
+  <!-- ================================================ -->
+  <!-- Classpath definitions                            -->
+  <!-- ================================================ -->
+  <path id="default.classpath">
+    <pathelement location="${jedit.install.dir}/jedit.jar" />
+    <pathelement location="${sidekick.jar}"/>
+    <pathelement location="${errorlist.jar}"/>
+    <pathelement location="${console.jar}"/>
+    <pathelement location="${gnuregexp.jar}"/>
+    <pathelement location="${local.jedit.jars}"/>
+	</path>
+
+  <path id="bootclass.path">
+    <path refid="default.classpath"/>
+    <fileset dir="${crosscompiler.lib}">
+      <include name="**\*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="class.path">
+    <path refid="default.classpath"/>
+    <pathelement path="${classpath}"/>
+  </path>
+
+
+
+  <!-- ================================================ -->
+  <!-- Targets                                          -->
+  <!-- ================================================ -->
+
+  <target name="init">
+		<fail unless="jedit.install.dir" message="ERROR: The property jedit.install.dir (where jEdit is installed) must be defined either in a properties.build or on the command line!" />
+
+		<condition property="can.reload.plugins">
+			<and>
+				<available classname="org.gjt.sp.jedit.jEdit"/>
+				<available classname="ReloadPluginTask"/>
+			</and>
+		</condition>
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build.images}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${docs}"/>
+    <mkdir dir="${docs.javadoc}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+		<!-- <property name="cp" refid="class.path"/>
+		<echo message="classpath: ${cp}." /> -->
+    <javac srcdir="${src}" destdir="${build}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}">
+       <classpath refid="class.path"></classpath>
+    </javac>
+  </target>
+
+  <target name="cross-compile" depends="init" description="compile the source against the bootstrap compiler" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" target="${crosscompiler.version}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}">
+        <bootclasspath refid="bootclass.path"></bootclasspath>
+    </javac>
+  </target>
+
+  <target name="build" depends="cross-compile" description="Build the plugin">
+    <copy todir="${build}">
+      <fileset dir="${config}" casesensitive="no" excludes="*.*~;bugs.html;featurereq.html"/>
+    </copy>
+    <copy file="build.xml" todir="${build}"/>
+    <copy file="services.xml" todir="${build}"/>
+    <copy file="actions.xml" todir="${build}"/>
+		<copy file="dockables.xml" todir="${build}"/>
+     <copy todir="${build.images}">
+      <fileset dir="${images}" casesensitive="no" excludes="*.*~"/>
+      </copy>
+    <copy file="LaTeXTools.props" todir="${build}" />
+	<jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
+   </target>
+
+  <target name="dist" depends="build"
+                     description="Build a distribution">
+		<zip zipfile="${dist}\LaTeXToolsSrc.zip">
+        <fileset dir="${src}">
+          <include name="build.xml"/>
+          <include name="build.properties.template"/>
+          <exclude name="build.properties"/>
+          <exclude name="${build}\**"/>
+          <exclude name="${dist}\**"/>
+          <exclude name="${docs}\**"/>
+          <exclude name="config/bugs.html"/>
+          <exclude name="config/featurereq.html"/>
+          <include name="**"/>
+        </fileset>
+    </zip>
+  </target>
+
+  <target name="install" depends="dist">
+    <copy file="${dist}\LaTeXTools.jar" tofile="..\LaTeXTools.jar"/>
+		<!--<antcall target="reload"/>-->
+  </target>
+
+  <target name="deploy" depends="dist">
+    <copy file="${dist}\LaTeXTools.jar" todir="${jedit.plugins.dir}"/>
+  	<condition property="can.reload.plugins">
+  		<and>
+  		    <available classname="org.gjt.sp.jedit.jEdit"/>
+  			<available classname="ReloadPluginTask"/>
+  		</and>
+  	</condition>
+	<antcall target="reload" />
+  </target>
+
+  <target name="clean-install" depends="clean, install">
+  </target>
+
+  <target name="clean" description="clean up" >
+		<delete dir="${build}"></delete>
+  </target>
+
+  <target name="javadoc" description="Generates javadoc sourcecode documentation">
+    <javadoc sourcepath="${src}"
+						 destdir="${docs.javadoc}"
+             packagenames="uk.co.antroy.latextools.*"
+             windowtitle="${ant.project.name} API"
+						 classpathref="default.classpath">
+    </javadoc>
+  </target>
+
+	<target name="reload" if="can.reload.plugins">
+		<taskdef name="reloadPlugin" classname="ReloadPluginTask" classpathref="class.path"/>
+		<reloadPlugin jarfile="${install.dir}/LaTeXTools.jar"/>
+	</target>
+
+
+  <!--target name="document" description="Copy documentation.">
+    <copy todir="${docs}">
+      <fileset dir="${src}" includes="**/*.htm,**/*.html,**/*.css"/>
+    </copy>
+  </target-->
+
+</project>
+
