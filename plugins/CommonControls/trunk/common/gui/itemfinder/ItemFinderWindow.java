@@ -22,11 +22,7 @@
 package common.gui.itemfinder;
 
 //{{{ Imports
-import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
 //}}}
@@ -43,38 +39,34 @@ import org.gjt.sp.jedit.View;
  */
 public class ItemFinderWindow<E> extends JFrame
 {
-	private ItemFinderPanel<E> itemFinderPanel;
+	private final ItemFinderPanel<E> itemFinderPanel;
 
 	//{{{ ItemFinderWindow constructor
 	public ItemFinderWindow(ItemFinder<E> itemFinder)
 	{
 		setUndecorated(true);
 		itemFinderPanel = new ItemFinderPanel<E>(this, itemFinder);
-		JPanel panel = new JPanel(new BorderLayout());
-
-		String label = itemFinder.getLabel();
-		if (label != null)
-			panel.add(new JLabel(label), BorderLayout.NORTH);
-
-		panel.add(itemFinderPanel, BorderLayout.CENTER);
-		setContentPane(panel);
+		setContentPane(itemFinderPanel);
 		pack();
 	} //}}}
 
-	//{{{ showWindow() method
-	public static void showWindow(View view, ItemFinder itemFinder)
+	//{{{ getItemFinderPanel() method
+	/**
+	 * Returns the ItemFinderPanel.
+	 * This is a JPanel using BorderLayout. The textfield is in the Center,
+	 * the NORTH is a label, you can modify that if you like.
+	 * @return the itemFinderPanel
+	 */
+	public ItemFinderPanel<E> getItemFinderPanel()
 	{
-		ItemFinderWindow itemFinderWindow = new ItemFinderWindow(itemFinder);
-		itemFinderWindow.setLocationRelativeTo(view);
-		itemFinderWindow.setVisible(true);
+		return itemFinderPanel;
 	} //}}}
 
-	//{{{ handledByList() method
-	private static boolean handledByList(KeyEvent e)
+	//{{{ showWindow() method
+	public static <E> void showWindow(View view, ItemFinder<E> itemFinder)
 	{
-		return e.getKeyCode() == KeyEvent.VK_DOWN ||
-			e.getKeyCode() == KeyEvent.VK_UP ||
-			e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-			e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+		ItemFinderWindow<E> itemFinderWindow = new ItemFinderWindow<E>(itemFinder);
+		itemFinderWindow.setLocationRelativeTo(view);
+		itemFinderWindow.setVisible(true);
 	} //}}}
 }
