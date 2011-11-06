@@ -21,7 +21,7 @@ plugin.gatchan.jedit.ancestor.AncestorPlugin.menu=smart-open-dialog \
                                                     smart-open-reindex
 
 smart-open-reindex.label=re-index
-smart-open-dialog.label=open file
+smart-open-dialog.label=Smart Open
 
 options.smartopen.ExcludeDirectories=CVS .svn .git
 options.smartopen.IncludeGlobs=*
