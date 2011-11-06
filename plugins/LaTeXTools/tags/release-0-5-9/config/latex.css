@@ -1,0 +1,9 @@
+TR {background:#ddddff}
+
+TR:hover {background-color:#fff;
+	  color:#000;
+	  font-weight:bold
+}
+
+.blank {background:#efe !important}
+.fix   {color:green; text-decoration:line-through}

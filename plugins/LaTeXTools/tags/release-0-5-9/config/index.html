@@ -1,0 +1,358 @@
+<!-- :wrap=soft: -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>LaTeX Tools Plugin</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="Stylesheet" type="text/css" href="latex.css">
+  <link href="history.html" rel="next">
+  <link href="featurereq.html" rel="last">
+  <link href="bugs.html" rel="Notes" title="Bugs">
+  <link href="featurereq.html" rel="Notes" title="Feature Requests">
+  <link href="history.html" rel="Notes" title="History">
+</head>
+
+<body>
+<h1>LaTeX Tools Plugin.</h1>
+
+<p>This plugin is a collection of tools to make LaTeX editing an easier and
+quicker task. The tools are generally inactive unless the current buffer is a
+LaTeX file. There are four docking windows available, and several additional
+tools available through the LaTeX Tools menu:</p>
+<ul>
+  <li><a href="#project">Overview</a></li>
+  <li><a href="#latextools">LaTeX Tools Window</a></li>
+  <li><a href="#nav">Structure Browser</a></li>
+  <li><a href="#bibtex">BibTeX Navigator</a></li>
+  <li><a href="#label">Label Navigator</a></li>
+  <li><a href="#commands">Other Tools</a></li>
+  <li><a href="history.html">Release Notes</a></li>
+  <!-- <li><a href="bugs.html">Bugs List</a></li>
+  <li><a href="featurereq.html">Feature Requests</a></li>
+  -->
+</ul>
+<a name="project"></a>
+
+<h2>Overview</h2>
+
+<p>This version of LaTeX Tools has added the concept of a LaTeX project,
+which consists of a main file along with all of the files (recursively)
+imported by the main file.</p>
+
+<p>A main file can be specified either globally or locally. The global
+setting is done through the plugin menu, where <em>Set Main File</em> sets
+the global main file to the current file, and <em>Reset Main File</em>
+removes the global property. The local setting is achieved by adding
+somewhere in the first 5 lines of the file the string
+<code>:latex.root=<em>Absolute or relative path to Main file</em>:</code>.
+The menu command <em>Show Main File</em> displays the path to the main file
+in a pop up box. Note that if present, the locally defined Main file has
+priority, followed by the globally defined property. If no local or global
+properties have been set, then the current buffer is deemed to be the Main
+file.</p>
+
+<p>The main file is used by several other commands, such as the
+<em>Compile</em> commands, the <em>BiBTex</em>  command and the <em>Erase
+Working Files...</em> command. It is also used by the Label Navigator and the
+BibTeX Navigator in order to correctly parse information. <em>The project
+files</em> is a term used in these instructions to refer to the set of files
+that include the Main file and all files imported by files in the set.</p>
+
+<h5>Note: Recognized buffer modes</h5>
+
+<p>LaTeX Tools function correctly only if the buffer is recognized as a
+(La)TeX buffer. At present, the following buffer modes are recognized as tex
+modes: tex, latex.</p>
+<a name="latextools"></a>
+
+<h2>LaTeX Tools Window</h2>
+The LaTeX Tools window has two functions, firstly to display a list of
+possible structure filters for the Structure Browser to use. The current
+filter is displayed, and changing the filter causes the Structure Browser to
+reparse the current buffer. The second function is to display information
+about the project. The type of information is chosen by clicking one of the
+tool buttons. Currently, <em>Information</em> <img alt="Information"
+src="images/info.png"> shows the projects main file, and a tree display of
+the files imported by the main file and its children. <em>View Image</em>
+<img alt="View Image" src="images/image.png"> looks for a graphics command
+under the caret, and if it finds one with a displayable image it will display
+the image in the information panel. Since this only displays jpeg, gif and
+png images currently, this is most useful to users of PDFLaTeX. The last two
+buttons are <em>Find Duplicates</em> <img alt="Find Duplicates"
+src="images/duplicate.png"> and <em>Find Orphans</em> <img alt="Find Orphans"
+src="images/orphan.png">. These search the project files for duplicate label
+definitions, and references to missing labels respectively. The duplicate
+labels or orphaned references are displayed in a list, and can be clicked to
+move the caret to that reference or label. <a name="nav"></a>
+
+<h2>Structure Browser</h2>
+
+<p>This feature implements a document navigator. By default all special
+elements of the document are displayed in the SideKick structure browser.
+Controls for selecting a filter for the document elements to parse are
+included in the <a href="#latextools">LaTeX Tools dockable</a>. Several
+filters are predefined, but user defined lists can be added to or replace
+these filters, as described below.</p>
+
+<h3>Suggested use.</h3>
+The way I use the document navigator is to have the Structure Browser docked
+to the right, and LaTeX Tools docked at the top (it is one line deep, so
+doesn't take much space). This way it is easy to select the features of the
+document you wish to see. If you simply want all of the main elements
+displayed, don't bother with the toolbar - it is the default parser.
+
+<h3>User defined Navigation Lists.</h3>
+
+<p>User defined navigation lists are text files containing search data for
+parsing the document, and are placed in the directory specified in the Global
+Options for the LaTeX Navigator. They have the following syntax:</p>
+
+<p>Navigation lists must have a title as the first line of the list, of the
+format, "@<i>title</i><b>n</b>". <i>title</i> is the name displayed in the
+combo box; <b>n</b> is a single digit, giving the preferred position in the
+combo box (1 being the top, 9 being the bottom) or 0 if it should not appear
+at all. Users can override default lists by adding a new list of the same
+name to a user list - user lists take precedent over the defaults.</p>
+
+<p>Following the title tag are the lines defining the search strings to look
+for in the text. These must be of the format, "<strong>N:start search
+string:replace string:end type:end search string:I</strong> ". where
+<strong>N</strong>  is the nesting level of the search string, and
+<strong>I</strong>  is the icon to use in the sidekick tree.</p>
+
+<p>The <strong>start search string</strong>  is parsed as a regular
+expression (so if simple definitions are required, remember to escape special
+characters).</p>
+
+<p>The <strong>replace string</strong>  is an ordinary string, but the
+strings $1, $2, etc can be used to refer to captured groups in the search
+string. If the replace string is simply a " " (space) character, then any
+captured groups are concatenated and used as the text in the tree, or if no
+capturing groups are present, then the whole found string (group $0) is used
+as the tree text. Either a replace expression, or single space should be used
+as the replace string - other strings may have unpredictable results. Note
+also that if the ':' symbol is required in either search or replace string,
+the unicode escape \u003A should be used, or the navigation item will not be
+parsed correctly. An example from the default navigation file follows:</p>
+
+<p>The <strong>end type</strong> gives the type of scope the element has, and
+is used in conjunction with the <strong>end search string</strong>  to
+determine the scope of the element. The types are:</p>
+<ol>
+  <li>The end of scope is set to the end of the buffer.</li>
+  <li>The end of scope is set to the end of the start search string.</li>
+  <li>The end of scope is set to the end of the end search string.</li>
+</ol>
+
+<p>Each type is appropriate for different types of element. In general
+sections should be type 0, commands should be type 1 and environments should
+be type 2.</p>
+<br>
+
+
+<div style="padding-left:4em;background:#dddddd">
+<pre>@Sections2
+1:\\chapter\{(.+?)\}: :0: :1
+2:\\section\{(.+?)\}: :0: :1
+3:\\subsection\{(.+?)\}: :0: :1
+4:\\subsubsection\{(.+?)\}: :0: :1
+5:\\paragraph\{(.+?)\}: :0: :1
+
+@Theorems3
+1:\\begin\{theorem\}(\[.+?\])?:Thm\u003A $1:2:\\end\{theorem\}:3
+1:\\begin\{lemma\}(\[.+?\])?:Lem\u003A $1:2:\\end\{lemma\}:3
+1:\\begin\{proposition\}(\[.+?\])?:Prp\u003A $1:2:\\end\{proposition\}:3
+1:\\begin\{definition\}(\[.+?\])?:Dfn\u003A $1:2:\\end\{definition\}:3
+1:\\begin\{corollary\}(\[.+?\])?:Cor\u003A $1:2:\\end\{corollary\}:3
+2:\\begin\{proof\}(\[.+?\])?:Proof\u003A $1:2:\\end\{proof\}:0
+
+@Graphics5
+1:\\begin\{figure\}:Fig\u003A:2:\\end\{figure\}:2
+2:\\includegraphic[xs].*?\{(\S*?)\}:Img\u003A $1:1: :0
+2:\\caption\{(.*?)\}:Capt\u003A $1:1: :0</pre>
+</div>
+
+<p>Note that the Sections group in this example will only print the section
+title in the tree. The strings "Thm" etc will be displayed in the case of the
+Theorems group, along with the description if present.</p>
+
+<p>The integers for various icons are as follows:</p>
+
+<table width="50%">
+  <tbody>
+    <tr>
+      <td><img alt="default" src="images/default.png"></td>
+      <td>Default</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td><img alt="section" src="images/sections.png"></td>
+      <td>Section</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td><img alt="graphics" src="images/graphics.png"></td>
+      <td>Graphics</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td><img alt="theorem" src="images/theorem.png"></td>
+      <td>Theorem</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td><img alt="table" src="images/table.png"></td>
+      <td>Table</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td><img alt="list" src="images/list.png"></td>
+      <td>List</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td><img alt="list" src="images/verbatim.png"></td>
+      <td>Verbatim</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td><img alt="link" src="images/link.png"></td>
+      <td>Import/Link</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+Any other integer value will display no image at all. <a name="bibtex"></a>
+
+<h2>BibTeX Navigator</h2>
+
+<p>This tool searches the project files for a
+<code>\begin{thebibliography}</code> environment, or  a
+<code>\bibliography{}</code> command. If the former is found, the current
+file is searched for <code>\bibitem</code> commands, and compiles a list of
+such entries. If the latter is found, then all referenced bib files are
+searched for the reference names and reference titles, and a table compiled
+containing these.</p>
+
+<p>A dialog is displayed, from which a selection (or selections if the CTRL
+keys are held down whilst clicking or dragging on table entries) can be made.
+Once ENTER is pressed, all citations are entered at the cursor position in
+the current buffer as a comma delimited list. Alternatively, you can insert
+an entry by double clicking on it. The dialog is canceled by pressing ESCAPE,
+by closing the dialog window, or by hitting ENTER with no selections made.</p>
+
+<p>The table of BibTeX references may be sorted by other column than "Ref" by
+clicking once the column header ("Title", "Author", "Journal" or "Ref"
+again). (The other fields are only shown when editing a .bib file.) To sort
+in the descending order, hold Shift while clicking on it. To change the
+current sort order, just click the header for the second time (but not too
+fast after the 1st click).</p>
+
+<p></p>
+
+<h3>Options</h3>
+<ul>
+  <li><p>Include Tag. If this is selected, then the string \cite{ and } are
+    inserted around the citations on enter.</p>
+  </li>
+  <li><p>Maximum Letters in Title. The integer value gives the maximum number
+    of letters per word in the title. If set to 0, the title is left intact.
+    For example, if the value is set to 3, then "The Users Guide to jEdit" is
+    abbreviated to "The Use Gui to jEd".</p>
+  </li>
+  <li><p>Maximum Words in Title. The integer value gives the maximum number
+    of words in the title. For example, if the value is set to 3, then "The
+    Users Guide to jEdit" is abbreviated to "The Users Guide".</p>
+  </li>
+</ul>
+<a name="label"></a>
+
+<h2>Label Navigator</h2>
+
+<p>When activated, this tool simply searches the project files for
+<code>\label{}</code> commands, and displays the results in a dialog. Only
+single label can be selected (multiple references in a single
+<code>\ref</code> are not supported in LaTeX as they are in
+<code>\cite</code> commands).</p>
+
+<p>Clicking a label has the following effects:</p>
+<ul>
+  <li><strong>Single Click</strong>: "locks" the insertion point for the
+    reference to the cursor position of the current buffer. This saves the
+    cursor position and buffer, so that clicking the table entries navigates
+    the documents, but double clicking inserts the reference at the original
+    location. The lock is released when a click is performed with the ALT key
+    held down and when the mouse exits the table.</li>
+  <li><strong>Alt-Click</strong>: Removes any lock and scrolls to the label
+    in the appropriate buffer. Note that this may change the current buffer
+    and caret position.</li>
+  <li><strong>Double Click</strong>: inserts a reference to the label at the
+    cursor position in the current buffer.</li>
+</ul>
+The locking mechanism allows the entire list of labels to be explored by
+clicking the labels to view their positions. Double clicking a reference will
+insert the reference at the saved cursor location.
+
+<h3>Options</h3>
+<ul>
+  <li><p>Include Tag. If this is selected, then the string \ref{ and } are
+    inserted around the citations on enter.</p>
+  </li>
+</ul>
+<a name="commands"></a>
+
+<h2>Other Tools</h2>
+Various utility commands are included, accessible through the Plugins menu.
+These are catagorized as follows:
+
+<h3>Compilation</h3>
+There are six commands here. <em>Compile</em> runs the default compilation
+command on the current buffer using the Console plugin. The
+<em>Compile...</em> command allows the user to specify the compilation
+command in a text box (which maintains a history of commands). <em>View
+Output</em> and <em>View Output...</em> are similar, but for the output of
+the compilation (eg. Acrobat Reader, DVI, ghostview etc). <em>BibTeX</em>
+runs BibTeX on the current buffer, again through the Console. <em>Erase
+Working Files...</em> displays a checkbox list of file extensions, and
+deletes all files in the same directory as the Main file with those
+extensions (giving plenty of opportunity to pull out at the last minute!).
+
+<h3>LaTeX Utilities</h3>
+<em>Rename Label</em> opens dialogs asking for the current name of the label,
+and the new name. The project files are then examined, and all labels and
+references matching the first string are changed to the second. <em>Display
+Image</em>, <em>Find Duplicate Labels</em> and <em>Find Orphaned
+References</em> open the LaTeX Tools dockable window with the appropriate
+information displayed.
+
+<h3>Text Insertion</h3>
+These are various shortcuts to manipulate text. They are pretty self
+explanatory so play around...
+
+<h3>Project Management</h3>
+These are the commands <em>Set Main File</em>, <em>Reset Main File</em> and
+<em>Show Main File Path</em>. These are described in <a
+href="#project">Project Management</a> above.
+
+<h3>Navigation</h3>
+
+<p>The commands <em>BibTeX Navigator</em>, <em>Label Navigator</em>
+<em>Structure Browser</em> and  <em>LaTeX Information Panel</em>  simply open
+the relevant dockable windows.</p>
+
+<p><em>Open Main File</em> simply opens the Main file as the current buffer.
+<em>Open Import</em> looks to see if there is an import statement under the
+caret, and if so tries to open the import file.</p>
+<br>
+<a href="history.html">View Release Notes</a> <br>
+
+<hr>
+<i>LaTeX Tools</i>
+
+<p>Plugin created by <b>Anthony Roy</b> (<a
+href="home@antroy.co.uk">home@antroy.co.uk</a>) and maintained by <b>Jakub
+Holý</b> (<a href="jakubholy@jakubholy.net">jakubholy@jakubholy.net</a>).
+<span>Last Modified: Sunday January 8, 2006</span></p>
+</body>
+</html>
