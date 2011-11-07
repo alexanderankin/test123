@@ -24,6 +24,10 @@
 
 	<!-- for build-support location -->
 	<property file="build.properties"/>
+	
+	<!-- where plugin dependencies are -->
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+	
 	<!-- build support -->
 	<import file="${build.support}/plugin-build.xml" />
 
@@ -46,11 +50,18 @@
     <property name="project.toinstrument.jar" value="SpellCheck.jar"/>
     
 	<path id="project.src.dir" path="./src/main"/>
+	
+	<!-- Copy required library jars to install.dir -->
+	<target name="build.prepare">
+		<copy todir="${install.dir}">
+			<fileset dir="lib" includes="*.jar"/>
+		</copy>
+	</target>
     
     <!-- full list of all jar files necessary to let jEdit load and run
     the plugin.  All of these files will be copied to the jedit_settings/jar
     directory. -->
-    <filelist id="plugin.jars" dir="${install.dir}">
+    <filelist id="plugin.jars" dir="${jedit.plugins.dir}">
     	<!-- SpellCheck -->
 		<file name="SpellCheck.jar"/>
     	<file name="hunspell.jar"/>
@@ -75,6 +86,7 @@
         <pathelement path="${project.test.classes.dir}"/>
         <path>
             <filelist refid="plugin.jars"/>
+            <fileset dir="lib" includes="*.jar" />
         </path>
     </path>
 
