@@ -100,6 +100,7 @@
   </target>
 
   <target name="cross-compile" depends="init" description="compile the source against the bootstrap compiler" >
+  	<echo>java.home: ${java.home}</echo>
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" target="${crosscompiler.version}"
            debug="${compiler.debug}"
