@@ -20,9 +20,6 @@
  */
 package gatchan.jedit.ancestor;
 
-import common.gui.itemfinder.ItemFinder;
-import common.gui.itemfinder.ItemFinderPanel;
-import gatchan.jedit.smartopen.FileItemFinder;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -30,37 +27,21 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.LinkedList;
 
 /**
  * @author Matthieu Casanova
  * @version $Id: Server.java,v 1.33 2007/01/05 15:15:17 matthieu Exp $
  */
-public class AncestorToolBar extends JPanel
+public class AncestorToolBar extends JToolBar
 {
-	private final JToolBar toolbar;
 	private final View view;
 	private final LinkedList<String> list = new LinkedList<String>();
 
 	//{{{ AncestorToolBar constructor
 	public AncestorToolBar(View view)
 	{
-//		setLayout(new FlowLayout(FlowLayout.LEADING));
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		toolbar = new JToolBar();
-		toolbar.setFloatable(false);
 		this.view = view;
-		add(toolbar);
-		add(Box.createGlue());
-		add(new JLabel("Search for a file :"));
-		ItemFinder<String> itemFinder = new FileItemFinder();
-		ItemFinderPanel<String> itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
-		Dimension maximumSize = itemFinderPanel.getMaximumSize();
-		itemFinderPanel.setMaximumSize(new Dimension(500,maximumSize.height));
-		Dimension minimumSize = itemFinderPanel.getMinimumSize();
-		itemFinderPanel.setMinimumSize(new Dimension(500, minimumSize.height));
-		add(itemFinderPanel);
 	} //}}}
 
 	//{{{ setBuffer() method
@@ -78,21 +59,21 @@ public class AncestorToolBar extends JPanel
 				break;
 			path = parent;
 		}
-		int count = toolbar.getComponentCount() - 1;
+		int count = getComponentCount() - 1;
 
 		int nbTokens = list.size();
 		if (nbTokens < count)
 		{
 			for (int i = 0; i < count - nbTokens; i++)
 			{
-				toolbar.remove(0);
+				remove(0);
 			}
 		}
 		else if (nbTokens > count)
 		{
 			for (int i = 0; i < nbTokens - count; i++)
 			{
-				toolbar.add(new AncestorButton(), 0);
+				add(new AncestorButton(), 0);
 			}
 		}
 		int i = 0;
@@ -102,7 +83,7 @@ public class AncestorToolBar extends JPanel
 		{
 			VFS _vfs = VFSManager.getVFSForPath(fileName);
 			boolean browseable = (_vfs.getCapabilities() & VFS.BROWSE_CAP) != 0;
-			AncestorButton button = (AncestorButton) toolbar.getComponent(i);
+			AncestorButton button = (AncestorButton) getComponent(i);
 			button.setAncestor(new Ancestor(view, fileName, _vfs.getFileName(fileName)));
 			i++;
 			button.setEnabled(browseable && nb != i);
