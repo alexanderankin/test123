@@ -70,6 +70,7 @@ public class AncestorPlugin extends EditPlugin
 
 		JComponent toolBar = getViewToolbar(view);
 		toolBar.add(ancestorToolBar);
+		toolBar.validate();
 		topToolbars.put(view, toolBar);
 		viewAncestorToolBar.put(view, ancestorToolBar);
 	} //}}}
@@ -119,9 +120,16 @@ public class AncestorPlugin extends EditPlugin
 		JComponent top = topToolbars.get(view);
 		top.remove(toolBar);
 		if (top.getComponentCount() == 0)
+		{
+			topToolbars.remove(view);
 			view.removeToolBar(top);
+		}
+		else
+		{
+			top.validate();
+			top.repaint();
+		}
 		viewAncestorToolBar.remove(view);
-		topToolbars.remove(view);
 	} //}}}
 
 	//{{{ handleViewUpdate() method
