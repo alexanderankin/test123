@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="smart-open-dialog" NO_REPEAT="TRUE">
+		<CODE>
+			com.kpouer.jedit.smartopen.FileItemFinder itemFinder = new com.kpouer.jedit.smartopen.FileItemFinder();
+			common.gui.itemfinder.ItemFinderWindow.showWindow(view, itemFinder);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="smart-open-reindex" NO_REPEAT="TRUE">
+		<CODE>
+			com.kpouer.jedit.smartopen.SmartOpenPlugin.indexFiles();
+		</CODE>
+	</ACTION>
+</ACTIONS>
+
