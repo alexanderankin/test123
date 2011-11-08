@@ -20,16 +20,14 @@
  */
 package gatchan.jedit.ancestor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
-import javax.swing.Timer;
-
-import gatchan.jedit.smartopen.FileIndex;
-import gatchan.jedit.smartopen.indexer.IndexFilesTask;
-import gatchan.jedit.smartopen.indexer.IndexProjectTask;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
@@ -37,15 +35,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.util.StandardUtilities;
-import org.gjt.sp.util.Task;
-import org.gjt.sp.util.ThreadUtilities;
-import projectviewer.ProjectViewer;
-import projectviewer.event.ViewerUpdate;
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
+import org.gjt.sp.util.Log;
 
 /**
  * @author Matthieu Casanova
@@ -54,64 +45,19 @@ import projectviewer.vpt.VPTProject;
 public class AncestorPlugin extends EditPlugin
 {
 	private final Map<View, AncestorToolBar> viewAncestorToolBar = new HashMap<View, AncestorToolBar>();
-
-	public static FileIndex itemFinder;
-	private Timer timer;
-
-	private static VPTProject currenProject;
+	private final Map<View, JComponent> topToolbars = new HashMap<View, JComponent>();
 
 	//{{{ start() method
 	@Override
 	public void start()
 	{
-		itemFinder = new FileIndex();
-		indexFiles();
-
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++)
 		{
 			addAncestorToolBar(views[i]);
 		}
 		EditBus.addToBus(this);
-		timer = new Timer(60000, new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				indexFiles();
-			}
-		});
-		timer.start();
 	} //}}}
-
-	public static void indexFiles()
-	{
-		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
-		{
-			VPTProject activeProject = ProjectViewer.getActiveProject(jEdit.getActiveView());
-			if (StandardUtilities.objectsEqual(currenProject, activeProject))
-			{
-				return;
-			}
-			currenProject = activeProject;
-			if (currenProject != null)
-			{
-				IndexProjectTask task = new IndexProjectTask(currenProject);
-				ThreadUtilities.runInBackground(task);
-			}
-			else
-			{
-				Task task = new IndexFilesTask();
-				ThreadUtilities.runInBackground(task);
-			}
-		}
-		else
-		{
-			currenProject = null;
-			Task task = new IndexFilesTask();
-			ThreadUtilities.runInBackground(task);
-		}
-	}
 
 	//{{{ addAncestorToolBar() method
 	private void addAncestorToolBar(View view)
@@ -121,16 +67,61 @@ public class AncestorPlugin extends EditPlugin
 		AncestorToolBar ancestorToolBar = new AncestorToolBar(view);
 		EditPane editPane = view.getEditPane();
 		ancestorToolBar.setBuffer(editPane.getBuffer());
-		view.addToolBar(ancestorToolBar);
+
+		JComponent toolBar = getViewToolbar(view);
+		toolBar.add(ancestorToolBar);
+		topToolbars.put(view, toolBar);
 		viewAncestorToolBar.put(view, ancestorToolBar);
 	} //}}}
+
+	private JComponent getViewToolbar(View view)
+	{
+		try
+		{
+			Field topToolBarsField = view.getClass().getDeclaredField("topToolBars");
+			topToolBarsField.setAccessible(true);
+			JPanel topToolBars = (JPanel) topToolBarsField.get(view);
+			Component[] components = topToolBars.getComponents();
+
+			if (components.length > 1)
+			{
+				for (int i = 1; i < components.length; i++)
+				{
+					Component component = components[i];
+					if (component instanceof JComponent)
+					{
+						JComponent toolBar = (JComponent) component;
+						if (toolBar.getClientProperty("Ancestor-SmartOpen") == Boolean.TRUE)
+							return toolBar;
+
+					}
+				}
+			}
+		}
+		catch (NoSuchFieldException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		catch (IllegalAccessException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		JPanel customToolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		customToolbar.putClientProperty("Ancestor-SmartOpen", Boolean.TRUE);
+		view.addToolBar(customToolbar);
+		return customToolbar;
+	}
 
 	//{{{ removeAncestorToolBar() method
 	private void removeAncestorToolBar(View view)
 	{
 		AncestorToolBar toolBar = viewAncestorToolBar.get(view);
-		view.removeToolBar(toolBar);
+		JComponent top = topToolbars.get(view);
+		top.remove(toolBar);
+		if (top.getComponentCount() == 0)
+			view.removeToolBar(top);
 		viewAncestorToolBar.remove(view);
+		topToolbars.remove(view);
 	} //}}}
 
 	//{{{ handleViewUpdate() method
@@ -184,35 +175,11 @@ public class AncestorPlugin extends EditPlugin
 		}
 	} //}}}
 
-	@EditBus.EBHandler
-	public void propertiesChanged(PropertiesChanged propertiesChanged)
-	{
-		indexFiles();
-	}
-
-	@EditBus.EBHandler
-	public void projectUpdate(ViewerUpdate vu)
-	{
-		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
-		{
-			if (vu.getType() == ViewerUpdate.Type.PROJECT_LOADED)
-			{
-				VPTNode node = vu.getNode();
-				VPTProject project = VPTNode.findProjectFor(node);
-				if (!StandardUtilities.objectsEqual(project, currenProject))
-					indexFiles();
-			}
-		}
-	}
-
 	//{{{ stop() method
 	@Override
 	public void stop()
 	{
-		timer.stop();
-		currenProject = null;
 		EditBus.removeFromBus(this);
-		itemFinder = null;
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++)
 		{

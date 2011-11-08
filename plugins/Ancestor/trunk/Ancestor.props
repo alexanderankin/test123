@@ -4,33 +4,10 @@
 plugin.gatchan.jedit.ancestor.AncestorPlugin.activate=startup
 plugin.gatchan.jedit.ancestor.AncestorPlugin.name=Ancestor
 plugin.gatchan.jedit.ancestor.AncestorPlugin.author=Matthieu Casanova
-plugin.gatchan.jedit.ancestor.AncestorPlugin.version=2.0.0
+plugin.gatchan.jedit.ancestor.AncestorPlugin.version=1.1.0
 plugin.gatchan.jedit.ancestor.AncestorPlugin.docs=docs/Ancestor.html
 plugin.gatchan.jedit.ancestor.AncestorPlugin.depend.0=jdk 1.6
 plugin.gatchan.jedit.ancestor.AncestorPlugin.depend.1=jedit 04.04.01.00
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.2=plugin CommonControlsPlugin 1.4
 plugin.gatchan.jedit.ancestor.AncestorPlugin.description=Ancestor plugin is a small toolbar with buttons to browser quickly all parents folders of the current buffer
 plugin.gatchan.jedit.ancestor.AncestorPlugin.usePluginHome=true
-
-
-plugin.gatchan.jedit.ancestor.AncestorPlugin.option-pane=ancestor
-options.ancestor.label=Ancestor
-options.ancestor.code=new gatchan.jedit.smartopen.SmartOpenOptionPane();
-
-plugin.gatchan.jedit.ancestor.AncestorPlugin.menu=smart-open-dialog \
-                                                    smart-open-reindex
-
-smart-open-reindex.label=re-index
-smart-open-dialog.label=Smart Open
-
-options.smartopen.ExcludeDirectories=CVS .svn .git
-options.smartopen.IncludeGlobs=*
-options.smartopen.IncludeGlobs.label=Include only files matching:
-options.smartopen.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
-options.smartopen.ExcludeGlobs.label=... except files matching:
-
-
-options.smartopen.paths.label=Choose paths to monitor:
-
-options.smartopen.projectindex=false
-options.smartopen.projectindex.label=Index current project
