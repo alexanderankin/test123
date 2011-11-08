@@ -40,12 +40,14 @@ import org.gjt.sp.jedit.View;
 public class ItemFinderWindow<E> extends JFrame
 {
 	private final ItemFinderPanel<E> itemFinderPanel;
+	public final Runnable requestFocusWorker;
 
 	//{{{ ItemFinderWindow constructor
 	public ItemFinderWindow(ItemFinder<E> itemFinder)
 	{
 		setUndecorated(true);
 		itemFinderPanel = new ItemFinderPanel<E>(this, itemFinder);
+		requestFocusWorker = itemFinderPanel.requestFocusWorker;
 		setContentPane(itemFinderPanel);
 		pack();
 	} //}}}
