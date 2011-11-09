@@ -40,6 +40,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.gjt.sp.jedit.GUIUtilities;
+
 /**
  * The ItemFinderWindow is a Window that contains a SearchField and a list of items.
  * When typing in the search field, the item list is updated, and when selecting an item of that list, an action is
@@ -220,9 +222,12 @@ public class ItemFinderPanel<E> extends JPanel
 				{
 					Rectangle bounds = getBounds();
 					window.pack();
-					window.setSize(searchField.getWidth(), window.getHeight());
 					Point locationOnScreen = getLocationOnScreen();
 					window.setLocation(locationOnScreen.x, locationOnScreen.y + bounds.height);
+					Rectangle screenBounds = GUIUtilities.getScreenBounds();
+					int maxWidth = screenBounds.width - locationOnScreen.x;
+					int width = Math.min(window.getWidth(), maxWidth);
+					window.setSize(width, window.getHeight());
 				}
 				window.setVisible(true);
 				if (itemList.getSelectedIndex() == -1)
