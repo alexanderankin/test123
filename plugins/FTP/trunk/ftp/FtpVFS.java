@@ -169,7 +169,7 @@ public class FtpVFS extends VFS
 		try {
 			Log.log(Log.DEBUG, this, "FtpVFS.createVFSSession("+path+", "+comp+")" );
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(comp,
-				path == null ? null : new FtpAddress(path));
+				path == null ? null : new FtpAddress(path), secure);
 			
 			if(info == null)
 				return null;

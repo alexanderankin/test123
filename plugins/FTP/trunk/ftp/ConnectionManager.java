@@ -215,7 +215,7 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ getConnectionInfo() method
-	public static ConnectionInfo getConnectionInfo(Component comp, FtpAddress address)
+	public static ConnectionInfo getConnectionInfo(Component comp, FtpAddress address, boolean _secure)
 	{
 		Log.log(Log.DEBUG, "ConnectionManager.getConnectionInfo", address);
 		String host, user;
@@ -243,9 +243,10 @@ public class ConnectionManager
 			}
 			
 		}
-		else {
+		else
+		{
 			host = user = password = null;
-			secure = false;
+			secure = _secure;
 		}
 
 		/* since this can be called at startup time,
