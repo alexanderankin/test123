@@ -3657,7 +3657,7 @@ Expression MultiplicativeExpression():
 {
 	try
 	{
-		expr = UnaryExpression()
+		expr = unaryExpression()
 	}
 	catch (ParseException e)
 	{
@@ -3675,7 +3675,7 @@ Expression MultiplicativeExpression():
 		|
 			token = <REMAINDER>
 		)
-		expr2 = UnaryExpression()
+		expr2 = unaryExpression()
 		{
 			if (expr2 == null)
 			{
@@ -3700,65 +3700,20 @@ Expression MultiplicativeExpression():
 	}
 } //}}}
 
-//{{{ UnaryExpression()
+//{{{ unaryExpression()
 /**
  * An unary expression starting with @, & or nothing.
  *
  * @return the unary expression
  */
-Expression UnaryExpression() :
+Expression unaryExpression():
 {
 	Expression expr;
 }
 {
-	try
+	expr = AtNotTildeUnaryExpression()
 	{
-		expr = AtNotTildeUnaryExpression() {return expr;}
-	}
-	catch (ParseException e)
-	{
-		fireParseError("unexpected token : "+e.currentToken.image, "", e.currentToken);
-		Token nextToken = getNextToken();
-		while (nextToken.kind != EOF && nextToken.kind != SEMICOLON)
-		{
-			nextToken = getNextToken();
-		}
-		if (nextToken.kind == EOF)
-		{
-			fireParseError(new PHPParseErrorEvent(ERROR,
-				path,
-				"unexpected end of file",
-				")",
-				e.currentToken.next.image,
-				e.currentToken.sourceEnd,
-				nextToken.sourceStart,
-				e.currentToken.beginLine,
-				nextToken.endLine,
-				e.currentToken.endColumn,
-				nextToken.endColumn));
-		}
-		else
-		{
-			fireParseError(new PHPParseErrorEvent(ERROR,
-				path,
-				"expression expected",
-				")",
-				e.currentToken.next.image,
-				e.currentToken.sourceEnd,
-				nextToken.sourceStart,
-				e.currentToken.beginLine,
-				nextToken.endLine,
-				e.currentToken.endColumn+1,
-				nextToken.endColumn-1));
-		}
-		return null;
-		/*
-
-
-
-		getNextToken();
-		return UnaryExpression();
-		*/
+		return expr;
 	}
 } //}}}
 
@@ -3905,7 +3860,7 @@ CastExpression CastExpression():
 			type = new ConstantIdentifier(arrayToken);
 		}
 	)
-	<RPAREN> expr = UnaryExpression()
+	<RPAREN> expr = unaryExpression()
 	{
 		return new CastExpression(type,
 			expr,
@@ -4675,8 +4630,8 @@ ArgumentList arguments():
 			errorEnd,
 			e.currentToken.beginLine,
 			e.currentToken.endLine,
-			e.currentToken.endColumn,
-			e.currentToken.endColumn+1));
+			e.currentToken.beginColumn,
+			e.currentToken.endColumn));
 	}
 	{
 		int sourceEnd, line, column;
