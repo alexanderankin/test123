@@ -8,6 +8,5 @@ plugin.gatchan.jedit.ancestor.AncestorPlugin.version=1.1.0
 plugin.gatchan.jedit.ancestor.AncestorPlugin.docs=docs/Ancestor.html
 plugin.gatchan.jedit.ancestor.AncestorPlugin.depend.0=jdk 1.6
 plugin.gatchan.jedit.ancestor.AncestorPlugin.depend.1=jedit 04.04.01.00
-plugin.gatchan.jedit.lucene.LucenePlugin.depend.2=plugin CommonControlsPlugin 1.4
 plugin.gatchan.jedit.ancestor.AncestorPlugin.description=Ancestor plugin is a small toolbar with buttons to browser quickly all parents folders of the current buffer
 plugin.gatchan.jedit.ancestor.AncestorPlugin.usePluginHome=true
