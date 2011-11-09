@@ -7,6 +7,8 @@ plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.author=Matthieu Casanova
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.version=1.0.0
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.depend.0=jdk 1.6
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.depend.1=jedit 04.04.01.00
+plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.depend.2=plugin CommonControlsPlugin 1.4
+plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.depend.3=plugin plugin projectviewer.ProjectPlugin 3.0.1
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.description=SmartOpen will help you open your files quickly
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.usePluginHome=true
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.docs=docs/SmartOpen.html
@@ -14,7 +16,7 @@ plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.docs=docs/SmartOpen.html
 
 
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.option-pane=smartopen
-options.smartopen.label=Ancestor
+options.smartopen.label=SmartOpen
 options.smartopen.code=new com.kpouer.jedit.smartopen.SmartOpenOptionPane();
 
 plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.menu=smart-open-dialog \
