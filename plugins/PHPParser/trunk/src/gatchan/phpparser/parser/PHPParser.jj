@@ -2735,6 +2735,8 @@ Token constantIdentifier():
 }
 {
 	(
+		constantIdentifier = <NAMESPACE_IDENTIFIER>
+	|
 		constantIdentifier = <IDENTIFIER>
 	|
 		constantIdentifier = <DEFINE>
@@ -3084,7 +3086,7 @@ Expression assignment():
 } //}}}
 
 //{{{ prefixedPrimaryExpression()
- Expression prefixedPrimaryExpression() :
+ Expression prefixedPrimaryExpression():
 {
 	Expression expr;
 	Token prefix = null;
@@ -3097,7 +3099,7 @@ Expression assignment():
 	|
 		prefix = <TILDE> expr = prefixedPrimaryExpression()
 	|
-		expr = PrimaryExpression()
+		expr = primaryExpression()
 	)
 	{
 		if (prefix != null)
@@ -3802,7 +3804,7 @@ Expression PreIncDecExpression() :
 	|
 		prefix = <MINUS_MINUS>
 	)
-	expr = PrimaryExpression()
+	expr = primaryExpression()
 	{
 		return new PrefixedUnaryExpression(expr, prefix);
 	}
@@ -3880,7 +3882,7 @@ Expression PostfixExpression():
 	Token token = null;
 }
 {
-	expr = PrimaryExpression()
+	expr = primaryExpression()
 	[
 		token = <PLUS_PLUS>
 	|
@@ -3899,15 +3901,17 @@ Expression PostfixExpression():
 	}
 } //}}}
 
-//{{{ PrimaryExpression()
-Expression PrimaryExpression():
+//{{{ primaryExpression()
+Expression primaryExpression():
 {
 	Expression expr;
 	Token bitAndToken = null;
 }
 {
 	(
-		[bitAndToken = <BIT_AND>] expr = refPrimaryExpression(bitAndToken)
+		bitAndToken = <BIT_AND> expr = refPrimaryExpression(bitAndToken)
+	|
+		expr = refPrimaryExpression(null)
 	|
 		expr = cloning()
 	|
@@ -3936,6 +3940,7 @@ Expression refPrimaryExpression(Token bitAndToken):
 	(
 		expr = instantiation(bitAndToken)
 	|
+		//{{{ prefix
 		(
 			identifier = constantIdentifier()
 			{
@@ -3948,7 +3953,8 @@ Expression refPrimaryExpression(Token bitAndToken):
 			}
 		|
 			expr = Variable()  //todo use the bitAndToken parameter ...
-		)
+		) //}}}
+		//{{{ suffix*
 		(
 			{
 				ArgumentList argumentList;
@@ -3964,7 +3970,8 @@ Expression refPrimaryExpression(Token bitAndToken):
 			expr = classAccess(expr)
 		|
 			expr = arrayDeclarator(expr)
-		)*
+		)* //}}}
+
 	)
 	{
 		return expr;
@@ -5292,7 +5299,7 @@ HTMLBlock htmlBlock():
 /**
  * An include statement. It's "include" an expression;
  */
-InclusionExpression IncludeExpression() :
+InclusionExpression IncludeExpression():
 {
 	Expression expr;
 	InclusionExpression inclusionExpression;
@@ -5317,7 +5324,7 @@ InclusionExpression IncludeExpression() :
 	try
 	{
 		(
-			expr = PrimaryExpression()
+			expr = primaryExpression()
 		|
 			expr = Literal()
 		|
