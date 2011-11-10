@@ -15,10 +15,9 @@ Adjust splitter location after toggle the visibility of the help tree.
 
 If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all.
 
-For tree nodes that point to a part of the document i.e. end with something
-like #d0e310: 
-	Why when clicking on tree nodes, does it always first open at the top of the html file
-	and require you to click a second time on the tree node before it scrolls to the correct location in the page?
+Bug# 2927178:
+For tree nodes that point to a part of the document i.e. end with something like #d0e310:
+    Why when clicking on tree nodes, does it always first open at the top of the html file and require you to click a second time on the tree node before it scrolls to the correct location in the page?
 
 Add a "auto-reload" toggle button, which will toggle reload on buffer-save.
 
