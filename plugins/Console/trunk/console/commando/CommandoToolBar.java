@@ -73,7 +73,7 @@ public class CommandoToolBar extends JToolBar
 	// }}}
 
 	// {{{ remove()
-	/** Remove the instance from the view */
+	/** Remove the instance from the all views */
 	public static void remove()
 	{
 		Iterator<View> itr = smToolBarMap.keySet().iterator();
@@ -90,6 +90,20 @@ public class CommandoToolBar extends JToolBar
 	}
 	// }}}
 
+	/** Remove the instance from the all views */
+	public static void remove(View v)
+	{
+		CommandoToolBar tb = smToolBarMap.get(v);
+		if (tb != null) {
+			v.removeToolBar(tb);
+			smToolBarMap.remove(v);
+		}
+		
+	}
+	// }}}
+
+	
+	
 	// {{{ CommandoToolBar constructor
 	private CommandoToolBar(View dockable)
 	{

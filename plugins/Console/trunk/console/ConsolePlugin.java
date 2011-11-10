@@ -180,6 +180,12 @@ public class ConsolePlugin extends EditPlugin
 			View v = vmsg.getView();
 			CommandoToolBar.create(v);
 		}
+		if (vmsg.getWhat() == ViewUpdate.CLOSED) {
+			View v = vmsg.getView();
+			CommandoToolBar.remove(v);
+			Console c = getConsole(v);
+			c.unload();
+		}
 	}
 	// }}}
 
