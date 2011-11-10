@@ -182,9 +182,9 @@ public class ConsolePlugin extends EditPlugin
 		}
 		if (vmsg.getWhat() == ViewUpdate.CLOSED) {
 			View v = vmsg.getView();
-			CommandoToolBar.remove(v);
 			Console c = getConsole(v);
-			c.unload();
+			if (c != null) c.unload();
+			CommandoToolBar.remove(v);
 		}
 	}
 	// }}}
