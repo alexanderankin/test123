@@ -316,11 +316,6 @@ public class JavaCompletionFinder {
 			return getThisCompletion( word.substring("this.".length()) );
 		}
 
-		/*
-		if ( qualification.endsWith( ".this" ) )
-			return getQualifiedThisCompletion( word );
-		*/
-
 		// Break it down into tokens to allow for completion off a return type
 		// e.g. sb.append("hello").append("world")
 		Class c = null;
@@ -337,8 +332,10 @@ public class JavaCompletionFinder {
 		// This lets us skip over argument parameters when breaking up the full qualification
 		// into segments
 		JEditBuffer temp = new JEditBuffer();
+
 		// The mode must be set in order to correctly skip literals and comments
 		temp.setMode("java");
+
 		temp.insert(0, qualification);
 		ArrayList<String> list = new ArrayList<String>();
 		int i = 0, j = 0;
@@ -373,7 +370,7 @@ public class JavaCompletionFinder {
 		//
 		//  - If a class has been found, resolve the qualification's field, method, or class
 		//    and use the return type instead
-		String token = "";
+		StringBuilder tokenBuilder = new StringBuilder();
 
 		// if 'this' is the first token, pop it off.
 		// it should be ignored
@@ -381,13 +378,15 @@ public class JavaCompletionFinder {
 			list.remove(0);
 
 		for (j = 0; j<list.size(); j++) {
-			if (j>0) token += ".";
+			if (j>0)
+				tokenBuilder.append(".");
+
 			String newToken = list.get(j);
 			if (newToken.equals("this")) {
 				if (c != null) {
 					// Switch from static methods to instance methods
 					static_only = false;
-					token += "this";
+					tokenBuilder.append("this");
 					continue;
 				} else {
 					// If 'this' is not the first word,
@@ -407,22 +406,43 @@ public class JavaCompletionFinder {
 			}
 
 			if (c == null) {
-				token += newToken;
-				// Class?
+
+				// if it ends with ']' and has '[' somewhere in it, make sure it's an array
+				boolean array_access = false;
+				int arrayIndexStart;
+				if (newToken.endsWith("]") && (arrayIndexStart = newToken.indexOf("[")) != -1) {
+					String arrayName = newToken.substring(0, arrayIndexStart);
+					tokenBuilder.append(arrayName);
+					array_access = true;
+					array_access = true;
+				}
+				else tokenBuilder.append(newToken);
+
 				// If it's a string literal, set it to String
 				if (newToken.startsWith("\"") && newToken.endsWith("\"")) {
 					c = validateClassName("java.lang.String");
 					continue;
 				}
+
+				String token = tokenBuilder.toString();
+				
+				// Class?
 				c = validateClassName(token);
 				if (c == null)
 					c = getClassForType(token, (CUNode) data.root.getUserObject());
+
 				static_only = (c != null);
 				if (c == null) {
 					// Field?
 					FieldNode fieldNode = getLocalVariable(token);
 					if (fieldNode != null) {
-						c = getClassForType(fieldNode.getType(), (CUNode) data.root.getUserObject());
+						String type = fieldNode.getType();
+
+						// check if we need to do array access
+						if (array_access && type.endsWith("[]"))
+							type = type.substring(0, type.length()-2);
+
+						c = getClassForType(type, (CUNode) data.root.getUserObject());
 					}
 
 					if (c == null) {
@@ -459,8 +479,9 @@ public class JavaCompletionFinder {
 				}
 			}
 			else {
-				token = list.get(j);
+				String token = list.get(j);
 				boolean found = false;
+
 				// Fields
 				Field[] fields = c.getFields();
 				for (i = 0; i < fields.length; i++) {
@@ -471,6 +492,7 @@ public class JavaCompletionFinder {
 						break;
 					}
 				}
+
 				if (!found) {
 					// Methods
 					Method[] methods = c.getMethods();
@@ -482,6 +504,7 @@ public class JavaCompletionFinder {
 							break;
 						}
 					}
+
 					if (!found) {
 						// Subclasses
 						Class[] classes = c.getClasses();
@@ -493,6 +516,7 @@ public class JavaCompletionFinder {
 								break;
 							}
 						}
+
 						if (!found) {
 							c = null;
 						}
@@ -500,19 +524,24 @@ public class JavaCompletionFinder {
 				}
 			}
 		}
+
 		if (c == null) {
 			// Might be inside a method call, like: while (tokenizer.<COMPLETION>
 			int paren = qualification.lastIndexOf("(");
 			if (paren != -1 && paren != qualification.length()-1 ) {
 				String halfWord = qualification.substring(paren+1).trim();
+
 				// Class?
 				c = validateClassName(halfWord);
 				if (c == null)
 					c = getClassForType(halfWord, (CUNode) data.root.getUserObject());
+
 				static_only = (c != null);
+
 				if (c == null) {
 					// Field?
 					FieldNode node = getLocalVariable(halfWord);
+
 					if (node != null) {
 						c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
 						if (c == null)
@@ -521,6 +550,7 @@ public class JavaCompletionFinder {
 				}
 			}
 		}
+
 		if (c != null) {
 			// filter the members of the class by the part of the word
 			// following the last dot.  The completion will replace this
@@ -547,11 +577,13 @@ public class JavaCompletionFinder {
 			if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
 				return null;
 			}
+
 			ArrayList candids = new ArrayList(possibles.size());
 			for (int k = 0; k < possibles.size(); k++) {
 				candids.add(new JavaCompletionCandidate(possibles.get(k),
 							TigerLabeler.getClassIcon()));
 			}
+
 			Collections.sort(candids);
 			return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, candids );
 		}
@@ -565,6 +597,7 @@ public class JavaCompletionFinder {
 		word = word.substring(word.lastIndexOf("(")+1);
 		
 		List<String> pkgs = Locator.getInstance().getClassName(word);
+
 		if (pkgs != null && pkgs.size() > 0) {
 			ArrayList pkgCandidates = new ArrayList(pkgs.size());
 			for (int i = 0; i < pkgs.size(); i++) 
@@ -967,6 +1000,14 @@ public class JavaCompletionFinder {
 	 * @param filename the filename of the buffer
 	 */
 	public Class getClassForType( String type, CUNode cu, String filename ) {
+		if (type.endsWith("[]")) {
+			try {
+				return Class.forName("sidekick.java.tools.Array");
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
 		// check in same package
 		String packageName = cu.getPackageName();
 		if ( packageName != null ) {
