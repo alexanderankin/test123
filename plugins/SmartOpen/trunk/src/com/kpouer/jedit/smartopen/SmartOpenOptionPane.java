@@ -49,7 +49,7 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 
 	public SmartOpenOptionPane()
 	{
-		super("Ancestor");
+		super("smartopen");
 	}
 
 	@Override
