@@ -44,12 +44,19 @@ public class IndexProjectUpdateTask extends Task
 	@Override
 	public void _run()
 	{
-		FileProvider addedFileProvider =
-			new VPTFileProvider(addedFiles.toArray(new VPTFile[addedFiles.size()]));
-		SmartOpenPlugin.itemFinder.addFiles(addedFileProvider, this, false);
-		FileProvider removedFileProvider =
-			new VPTFileProvider(removedFiles.toArray(new VPTFile[removedFiles.size()]));
-		SmartOpenPlugin.itemFinder.removeFiles(removedFileProvider, this);
-		SmartOpenPlugin.itemFinder.optimize();
+		if (addedFiles != null)
+		{
+			FileProvider addedFileProvider =
+				new VPTFileProvider(addedFiles.toArray(new VPTFile[addedFiles.size()]));
+			SmartOpenPlugin.itemFinder.addFiles(addedFileProvider, this, false);
+		}
+		if (removedFiles != null)
+		{
+			FileProvider removedFileProvider =
+				new VPTFileProvider(removedFiles.toArray(new VPTFile[removedFiles.size()]));
+			SmartOpenPlugin.itemFinder.removeFiles(removedFileProvider, this);
+		}
+		if (addedFiles != null || removedFiles != null)
+			SmartOpenPlugin.itemFinder.optimize();
 	}
 }
