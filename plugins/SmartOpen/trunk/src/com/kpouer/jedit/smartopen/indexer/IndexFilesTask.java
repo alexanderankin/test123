@@ -65,11 +65,11 @@ public class IndexFilesTask extends Task
 			}
 			VFSFile[] f = new VFSFile[files.size()];
 			files.toArray(f);
-			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(f), this);
+			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(f), this, true);
 		}
 		else
 		{
-			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(new VFSFile[0]), this);
+			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(new VFSFile[0]), this, true);
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));

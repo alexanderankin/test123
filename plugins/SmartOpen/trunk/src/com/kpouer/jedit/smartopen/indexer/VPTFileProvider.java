@@ -21,26 +21,33 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
-import com.kpouer.jedit.smartopen.SmartOpenPlugin;
-import org.gjt.sp.util.Task;
-import projectviewer.vpt.VPTProject;
+import org.gjt.sp.jedit.io.VFSFile;
+import projectviewer.vpt.VPTFile;
 
 /**
  * @author Matthieu Casanova
  */
-public class IndexProjectTask extends Task
+public class VPTFileProvider implements FileProvider
 {
-	private final VPTProject project;
+	private final VPTFile[] fileArray;
+	private int index;
 
-	public IndexProjectTask(VPTProject project)
+	public VPTFileProvider(VPTFile[] files)
 	{
-		this.project = project;
+		fileArray = files;
 	}
 
 	@Override
-	public void _run()
+	public VFSFile next()
 	{
-		FileProvider projectFileList = new ProjectFileList(project);
-		SmartOpenPlugin.itemFinder.addFiles(projectFileList, this, true);
+		if (index >= fileArray.length)
+			return null;
+		return fileArray[index++].getFile();
+	}
+
+	@Override
+	public int size()
+	{
+		return fileArray.length;
 	}
 }

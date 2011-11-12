@@ -38,7 +38,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -111,9 +110,6 @@ public class FileIndex
 		List<String> l = new ArrayList<String>();
 		try
 		{
-			QueryParser parser =
-				new QueryParser(Version.LUCENE_34, "name", new StandardAnalyzer(Version.LUCENE_34));
-			parser.setAllowLeadingWildcard(true);
 			String[] split = CAMELCASE.split(s);
 			StringBuilder builder = new StringBuilder(s.length() + split.length + 2);
 			for (int i = 0; i < split.length; i++)
@@ -152,7 +148,7 @@ public class FileIndex
 		return l;
 	}
 
-	public void addFiles(FileProvider fileProvider, ProgressObserver observer)
+	public void addFiles(FileProvider fileProvider, ProgressObserver observer, boolean reset)
 	{
 		synchronized (LOCK)
 		{
@@ -162,16 +158,27 @@ public class FileIndex
 				EditPlugin plugin = jEdit.getPlugin(SmartOpenPlugin.class.getName());
 				File pluginHome = plugin.getPluginHome();
 				File index = new File(pluginHome, getIndexName());
-				Directory tempDirectory = FSDirectory.open(index);
+				Directory tempDirectory;
+				IndexWriterConfig.OpenMode openMode;
+				if (reset)
+				{
+					tempDirectory = FSDirectory.open(index);
+					openMode = IndexWriterConfig.OpenMode.CREATE;
+				}
+				else
+				{
+					tempDirectory = directory;
+					openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND;
+				}
 				observer.setMaximum(fileProvider.size());
 				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
 				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
-				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+				conf.setOpenMode(openMode);
 				writer = new IndexWriter(tempDirectory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
-					observer.setValue(i);
 					VFSFile next = fileProvider.next();
+					observer.setValue(i);
 					observer.setStatus(next.getPath());
 					Document document = new Document();
 					document.add(
@@ -184,6 +191,61 @@ public class FileIndex
 					writer.addDocument(document);
 				}
 				directory = tempDirectory;
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+			finally
+			{
+				IOUtilities.closeQuietly(writer);
+			}
+		}
+	}
+
+	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
+	{
+		synchronized (LOCK)
+		{
+			IndexWriter writer = null;
+			try
+			{
+				observer.setMaximum(fileProvider.size());
+				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+				writer = new IndexWriter(directory, conf);
+				for (int i = 0; i < fileProvider.size(); i++)
+				{
+					VFSFile next = fileProvider.next();
+					observer.setValue(i);
+					observer.setStatus(next.getPath());
+					writer.deleteDocuments(new Term("path", next.getPath()));
+				}
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+			finally
+			{
+				IOUtilities.closeQuietly(writer);
+			}
+		}
+	}
+
+	public void optimize()
+	{
+		synchronized (LOCK)
+		{
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
+			IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+			conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+			IndexWriter writer = null;
+			try
+			{
+				writer = new IndexWriter(directory, conf);
+				writer.optimize();
 			}
 			catch (IOException e)
 			{
