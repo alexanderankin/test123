@@ -76,7 +76,12 @@ public class FileIndex
 		index.mkdirs();
 		try
 		{
-			directory = FSDirectory.open(index);
+			if (jEdit.getBooleanProperty("options.smartopen.memoryindex"))
+			{
+				directory = new RAMDirectory();
+			}
+			else
+				directory = FSDirectory.open(index);
 		}
 		catch (IOException e)
 		{
@@ -162,7 +167,14 @@ public class FileIndex
 				IndexWriterConfig.OpenMode openMode;
 				if (reset)
 				{
-					tempDirectory = FSDirectory.open(index);
+					if (jEdit.getBooleanProperty("options.smartopen.memoryindex"))
+					{
+						tempDirectory = new RAMDirectory();
+					}
+					else
+					{
+						tempDirectory = FSDirectory.open(index);
+					}
 					openMode = IndexWriterConfig.OpenMode.CREATE;
 				}
 				else
