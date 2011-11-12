@@ -38,6 +38,7 @@ import org.gjt.sp.util.StandardUtilities;
 public class SmartOpenOptionPane extends AbstractOptionPane
 {
 	private JCheckBox indexProject;
+	private JCheckBox toolbar;
 	private JTextField includeFilesTF;
 	private JTextField excludeFilesTF;
 	private static Pattern include;
@@ -54,6 +55,10 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 	protected void _init()
 	{
 		setBorder(new EmptyBorder(5, 5, 5, 5));
+		toolbar = new JCheckBox(jEdit.getProperty("options.smartopen.toolbar.label"));
+		toolbar.setSelected(jEdit.getBooleanProperty("options.smartopen.toolbar"));
+		addComponent(toolbar);
+		addSeparator();
 		paths = new VFSPathFileList("options.ancestor.paths");
 		addComponent(paths, GridBagConstraints.BOTH);
 		includeFilesTF = new JTextField(jEdit.getProperty("options.smartopen.IncludeGlobs"));
@@ -71,7 +76,17 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 	{
 		jEdit.setProperty("options.smartopen.IncludeGlobs", includeFilesTF.getText());
 		jEdit.setProperty("options.smartopen.ExcludeGlobs", excludeFilesTF.getText());
-		jEdit.setBooleanProperty("options.smartopen.projectindex", indexProject.isSelected());
+		boolean indexProjectSelected = indexProject.isSelected();
+		if (indexProjectSelected)
+			jEdit.setBooleanProperty("options.smartopen.projectindex", true);
+		else
+			jEdit.resetProperty("options.smartopen.projectindex");
+
+		boolean tb = toolbar.isSelected();
+		if (tb)
+			jEdit.setBooleanProperty("options.smartopen.toolbar", true);
+		else
+			jEdit.resetProperty("options.smartopen.toolbar");
 		paths.save();
 		updateFilter();
 	}

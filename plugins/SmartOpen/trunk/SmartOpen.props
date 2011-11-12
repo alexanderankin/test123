@@ -20,11 +20,14 @@ plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.option-pane=smartopen
 options.smartopen.label=SmartOpen
 options.smartopen.code=new com.kpouer.jedit.smartopen.SmartOpenOptionPane();
 
-plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.menu=smart-open-dialog \
+plugin.com.kpouer.jedit.smartopen.SmartOpenPlugin.menu=smart-open \
+  							smart-open-dialog \
+							- \
 					    		smart-open-reindex
 
 smart-open-reindex.label=re-index
-smart-open-dialog.label=Smart Open
+smart-open.label=Smart Open
+smart-open-dialog.label=Smart Open Dialog
 
 options.smartopen.ExcludeDirectories=CVS .svn .git
 options.smartopen.IncludeGlobs=*
@@ -37,3 +40,5 @@ options.smartopen.paths.label=Choose paths to monitor:
 
 options.smartopen.projectindex=false
 options.smartopen.projectindex.label=Index current project
+options.smartopen.toolbar=false
+options.smartopen.toolbar.label=Show smartopen in a toolbar

@@ -34,10 +34,13 @@ import org.gjt.sp.jedit.View;
  */
 public class SmartOpenToolbar extends JToolBar
 {
+
+	private final ItemFinderPanel<String> itemFinderPanel;
+
 	public SmartOpenToolbar(View view)
 	{
 		ItemFinder<String> itemFinder = new FileItemFinder();
-		ItemFinderPanel<String> itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
+		itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
 		Dimension maximumSize = itemFinderPanel.getMaximumSize();
 		itemFinderPanel.setMaximumSize(new Dimension(500, maximumSize.height));
 		Dimension minimumSize = itemFinderPanel.getMinimumSize();
@@ -45,5 +48,10 @@ public class SmartOpenToolbar extends JToolBar
 
 		add(new JLabel("Search for a file :"));
 		add(itemFinderPanel);
+	}
+
+	public ItemFinderPanel<String> getItemFinderPanel()
+	{
+		return itemFinderPanel;
 	}
 }
