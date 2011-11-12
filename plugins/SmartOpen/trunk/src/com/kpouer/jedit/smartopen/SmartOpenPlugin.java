@@ -276,6 +276,7 @@ public class SmartOpenPlugin extends EditPlugin
 		ItemFinderWindow.showWindow(view, itemFinder);
 	} //}}}
 
+	//{{{ addToolbars() method
 	private void addToolbars()
 	{
 		View[] views = jEdit.getViews();
@@ -283,8 +284,9 @@ public class SmartOpenPlugin extends EditPlugin
 		{
 			addToolbar(views[i]);
 		}
-	}
+	} //}}}
 
+	//{{{ removeToolbars() method
 	private void removeToolbars()
 	{
 		View[] views = jEdit.getViews();
@@ -292,6 +294,5 @@ public class SmartOpenPlugin extends EditPlugin
 		{
 			removeToolbar(views[i]);
 		}
-	}
-
+	} //}}}
 }
