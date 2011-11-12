@@ -83,7 +83,14 @@ public class ItemFinderPanel<E> extends JPanel
 
 		String label = itemFinder.getLabel();
 		if (label != null)
-			add(new JLabel(label), BorderLayout.NORTH);
+		{
+			JLabel comp = new JLabel(label);
+			if (owner instanceof ItemFinderWindow)
+				add(comp, BorderLayout.NORTH);
+			else
+				add(comp, BorderLayout.WEST);
+		}
+
 
 		add(searchField, BorderLayout.CENTER);
 		window.pack();
