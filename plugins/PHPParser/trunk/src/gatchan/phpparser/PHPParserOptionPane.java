@@ -72,7 +72,7 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	 */
 	public PHPParserOptionPane()
 	{
-		super("gatchan.phpparser.files");
+		super("gatchan.phpparser.option-pane");
 	}
 
 	/**
