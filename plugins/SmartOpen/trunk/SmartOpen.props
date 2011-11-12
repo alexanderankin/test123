@@ -38,7 +38,9 @@ options.smartopen.ExcludeGlobs.label=... except files matching:
 
 options.smartopen.paths.label=Choose paths to monitor:
 
-options.smartopen.projectindex=false
+options.smartopen.projectindex=true
 options.smartopen.projectindex.label=Index current project
 options.smartopen.toolbar=false
 options.smartopen.toolbar.label=Show smartopen in a toolbar
+options.smartopen.memoryindex=false
+options.smartopen.memoryindex.label=Use in-memory index. (very low memory footprint)
