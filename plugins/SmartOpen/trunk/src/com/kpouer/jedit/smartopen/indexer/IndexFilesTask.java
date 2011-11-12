@@ -21,6 +21,7 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+//{{{ Imports
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,12 +40,14 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.Task;
+//}}}
 
 /**
  * @author Matthieu Casanova
  */
 public class IndexFilesTask extends Task
 {
+	//{{{ _run() method
 	@Override
 	public void _run()
 	{
@@ -70,8 +73,9 @@ public class IndexFilesTask extends Task
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));
-	}
+	} //}}}
 
+	//{{{ listFiles() method
 	private Collection<VFSFile> listFiles(String path)
 	{
 		VFS vfs = VFSManager.getVFSForPath(path);
@@ -113,8 +117,9 @@ public class IndexFilesTask extends Task
 			}
 		}
 		return files;
-	}
+	} //}}}
 
+	//{{{ MyVFSFilter class
 	private static class MyVFSFilter implements VFSFileFilter
 	{
 		private final String[] excludedDirectories;
@@ -151,5 +156,5 @@ public class IndexFilesTask extends Task
 		{
 			return null;
 		}
-	}
+	} //}}}
 }
