@@ -22,26 +22,32 @@
 package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
+
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import com.kpouer.jedit.smartopen.indexer.FileArrayProvider;
+import com.kpouer.jedit.smartopen.indexer.FileProvider;
 import com.kpouer.jedit.smartopen.indexer.IndexFilesTask;
 import com.kpouer.jedit.smartopen.indexer.IndexProjectTask;
+import com.kpouer.jedit.smartopen.indexer.IndexProjectUpdateTask;
 import common.gui.itemfinder.ItemFinder;
 import common.gui.itemfinder.ItemFinderPanel;
 import common.gui.itemfinder.ItemFinderWindow;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -50,7 +56,9 @@ import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.ProjectViewer;
+import projectviewer.event.ProjectUpdate;
 import projectviewer.event.ViewerUpdate;
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -77,14 +85,13 @@ public class SmartOpenPlugin extends EditPlugin
 		itemFinder = new FileIndex();
 		propertiesChanged(null);
 
-
 		EditBus.addToBus(this);
 		timer = new Timer(60000, new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				indexFiles();
+				indexFiles(false);
 			}
 		});
 		timer.start();
@@ -123,7 +130,6 @@ public class SmartOpenPlugin extends EditPlugin
 						JComponent toolBar = (JComponent) component;
 						if (toolBar.getClientProperty("Ancestor-SmartOpen") == Boolean.TRUE)
 							return toolBar;
-
 					}
 				}
 			}
@@ -156,37 +162,50 @@ public class SmartOpenPlugin extends EditPlugin
 		else
 		{
 			top.revalidate();
-//			top.validate();
-//			top.repaint();
 		}
 		viewToolbar.remove(view);
 	} //}}}
 
-	//{{{ indexFiles() method
+	//{{{ indexFiles() methods
 	public static void indexFiles()
 	{
-		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
+		indexFiles(false);
+	}
+
+	/**
+	 * Index files.
+	 * @param force true if you want to force project reindexation
+	 */
+	private static void indexFiles(boolean force)
+	{
+		if (force && jEdit.getBooleanProperty("options.smartopen.projectindex"))
 		{
 			VPTProject activeProject = ProjectViewer.getActiveProject(jEdit.getActiveView());
-			if (StandardUtilities.objectsEqual(currenProject, activeProject))
-			{
-				return;
-			}
-			currenProject = activeProject;
-			if (currenProject != null)
-			{
-				IndexProjectTask task = new IndexProjectTask(currenProject);
-				ThreadUtilities.runInBackground(task);
-			}
-			else
-			{
-				Task task = new IndexFilesTask();
-				ThreadUtilities.runInBackground(task);
-			}
+			indexProject(activeProject);
 		}
 		else
 		{
 			currenProject = null;
+			Task task = new IndexFilesTask();
+			ThreadUtilities.runInBackground(task);
+		}
+	} //}}}
+
+	//{{{ indexProject() method
+	private static void indexProject(VPTProject activeProject)
+	{
+		if (StandardUtilities.objectsEqual(currenProject, activeProject))
+		{
+			return;
+		}
+		currenProject = activeProject;
+		if (currenProject != null)
+		{
+			IndexProjectTask task = new IndexProjectTask(currenProject);
+			ThreadUtilities.runInBackground(task);
+		}
+		else
+		{
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
 		}
@@ -232,14 +251,13 @@ public class SmartOpenPlugin extends EditPlugin
 				addToolbars();
 			else
 				removeToolbars();
-
 		}
 		indexFiles();
 	} //}}}
 
-	//{{{ projectUpdate() method
+	//{{{ viewerUpdate() method
 	@EditBus.EBHandler
-	public void projectUpdate(ViewerUpdate vu)
+	public void viewerUpdate(ViewerUpdate vu)
 	{
 		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
 		{
@@ -248,7 +266,23 @@ public class SmartOpenPlugin extends EditPlugin
 				VPTNode node = vu.getNode();
 				VPTProject project = VPTNode.findProjectFor(node);
 				if (!StandardUtilities.objectsEqual(project, currenProject))
-					indexFiles();
+					indexProject(project);
+			}
+		}
+	} //}}}
+
+	//{{{ viewerUpdate() method
+	@EditBus.EBHandler
+	public void projectModified(ProjectUpdate pu)
+	{
+		if (pu.getProject() == currenProject)
+		{
+			if (pu.getType() == ProjectUpdate.Type.FILES_CHANGED)
+			{
+				Collection<VPTFile> addedFiles = pu.getAddedFiles();
+				Collection<VPTFile> removedFiles = pu.getRemovedFiles();
+				IndexProjectUpdateTask task = new IndexProjectUpdateTask(addedFiles, removedFiles);
+				ThreadUtilities.runInBackground(task);
 			}
 		}
 	} //}}}

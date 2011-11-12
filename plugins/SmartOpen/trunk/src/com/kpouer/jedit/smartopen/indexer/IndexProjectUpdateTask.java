@@ -21,26 +21,35 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+import java.util.Collection;
+
 import com.kpouer.jedit.smartopen.SmartOpenPlugin;
 import org.gjt.sp.util.Task;
-import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTFile;
 
 /**
  * @author Matthieu Casanova
  */
-public class IndexProjectTask extends Task
+public class IndexProjectUpdateTask extends Task
 {
-	private final VPTProject project;
+	private final Collection<VPTFile> addedFiles;
+	private final Collection<VPTFile> removedFiles;
 
-	public IndexProjectTask(VPTProject project)
+	public IndexProjectUpdateTask(Collection<VPTFile> addedFiles, Collection<VPTFile> removedFiles)
 	{
-		this.project = project;
+		this.addedFiles = addedFiles;
+		this.removedFiles = removedFiles;
 	}
 
 	@Override
 	public void _run()
 	{
-		FileProvider projectFileList = new ProjectFileList(project);
-		SmartOpenPlugin.itemFinder.addFiles(projectFileList, this, true);
+		FileProvider addedFileProvider =
+			new VPTFileProvider(addedFiles.toArray(new VPTFile[addedFiles.size()]));
+		SmartOpenPlugin.itemFinder.addFiles(addedFileProvider, this, false);
+		FileProvider removedFileProvider =
+			new VPTFileProvider(removedFiles.toArray(new VPTFile[removedFiles.size()]));
+		SmartOpenPlugin.itemFinder.removeFiles(removedFileProvider, this);
+		SmartOpenPlugin.itemFinder.optimize();
 	}
 }
