@@ -21,7 +21,9 @@
 
 package com.kpouer.jedit.smartopen;
 
+//{{{ Imports
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +36,9 @@ import javax.swing.Timer;
 
 import com.kpouer.jedit.smartopen.indexer.IndexFilesTask;
 import com.kpouer.jedit.smartopen.indexer.IndexProjectTask;
+import common.gui.itemfinder.ItemFinder;
+import common.gui.itemfinder.ItemFinderPanel;
+import common.gui.itemfinder.ItemFinderWindow;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
@@ -48,13 +53,14 @@ import projectviewer.ProjectViewer;
 import projectviewer.event.ViewerUpdate;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+//}}}
 
 /**
  * @author Matthieu Casanova
  */
 public class SmartOpenPlugin extends EditPlugin
 {
-	private final Map<View, SmartOpenToolbar> viewAncestorToolBar = new HashMap<View, SmartOpenToolbar>();
+	private final Map<View, SmartOpenToolbar> viewToolbar = new HashMap<View, SmartOpenToolbar>();
 	private final Map<View, JComponent> topToolbars = new HashMap<View, JComponent>();
 
 	public static FileIndex itemFinder;
@@ -62,18 +68,16 @@ public class SmartOpenPlugin extends EditPlugin
 
 	private static VPTProject currenProject;
 
+	private boolean toolbar;
+
 	//{{{ start() method
 	@Override
 	public void start()
 	{
 		itemFinder = new FileIndex();
-		indexFiles();
+		propertiesChanged(null);
 
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
-		{
-			addToolbar(views[i]);
-		}
+
 		EditBus.addToBus(this);
 		timer = new Timer(60000, new ActionListener()
 		{
@@ -89,15 +93,17 @@ public class SmartOpenPlugin extends EditPlugin
 	//{{{ addAncestorToolBar() method
 	private void addToolbar(View view)
 	{
-		if (viewAncestorToolBar.containsKey(view))
+		if (viewToolbar.containsKey(view))
 			return;
 		SmartOpenToolbar smartToolbar = new SmartOpenToolbar(view);
 		JComponent toolBar = getViewToolbar(view);
 		toolBar.add(smartToolbar);
+		toolBar.revalidate();
 		topToolbars.put(view, toolBar);
-		viewAncestorToolBar.put(view, smartToolbar);
+		viewToolbar.put(view, smartToolbar);
 	} //}}}
 
+	//{{{ getViewToolbar() method
 	private JComponent getViewToolbar(View view)
 	{
 		try
@@ -134,12 +140,12 @@ public class SmartOpenPlugin extends EditPlugin
 		customToolbar.putClientProperty("Ancestor-SmartOpen", Boolean.TRUE);
 		view.addToolBar(customToolbar);
 		return customToolbar;
-	}
+	} //}}}
 
-	//{{{ removeAncestorToolBar() method
-	private void removeAncestorToolBar(View view)
+	//{{{ removeToolbar() method
+	private void removeToolbar(View view)
 	{
-		SmartOpenToolbar toolBar = viewAncestorToolBar.get(view);
+		SmartOpenToolbar toolBar = viewToolbar.get(view);
 		JComponent top = topToolbars.get(view);
 		top.remove(toolBar);
 		if (top.getComponentCount() == 0)
@@ -149,12 +155,14 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 		else
 		{
-			top.validate();
-			top.repaint();
+			top.revalidate();
+//			top.validate();
+//			top.repaint();
 		}
-		viewAncestorToolBar.remove(view);
+		viewToolbar.remove(view);
 	} //}}}
 
+	//{{{ indexFiles() method
 	public static void indexFiles()
 	{
 		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
@@ -182,7 +190,7 @@ public class SmartOpenPlugin extends EditPlugin
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
 		}
-	}
+	} //}}}
 
 	//{{{ stop() method
 	@Override
@@ -192,34 +200,44 @@ public class SmartOpenPlugin extends EditPlugin
 		currenProject = null;
 		EditBus.removeFromBus(this);
 		itemFinder = null;
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
-		{
-			removeAncestorToolBar(views[i]);
-		}
+		removeToolbars();
 	} //}}}
 
 	//{{{ handleViewUpdate() method
 	@EditBus.EBHandler
 	public void handleViewUpdate(ViewUpdate viewUpdate)
 	{
-		if (viewUpdate.getWhat() == ViewUpdate.CREATED)
+		if (toolbar)
 		{
-			View view = viewUpdate.getView();
-			addToolbar(view);
-		}
-		else if (viewUpdate.getWhat() == ViewUpdate.CLOSED)
-		{
-			viewAncestorToolBar.remove(viewUpdate.getView());
+			if (viewUpdate.getWhat() == ViewUpdate.CREATED)
+			{
+				View view = viewUpdate.getView();
+				addToolbar(view);
+			}
+			else if (viewUpdate.getWhat() == ViewUpdate.CLOSED)
+			{
+				viewToolbar.remove(viewUpdate.getView());
+			}
 		}
 	} //}}}
 
+	//{{{ propertiesChanged() method
 	@EditBus.EBHandler
 	public void propertiesChanged(PropertiesChanged propertiesChanged)
 	{
-		indexFiles();
-	}
+		if (toolbar != jEdit.getBooleanProperty("options.smartopen.toolbar"))
+		{
+			toolbar = !toolbar;
+			if (toolbar)
+				addToolbars();
+			else
+				removeToolbars();
 
+		}
+		indexFiles();
+	} //}}}
+
+	//{{{ projectUpdate() method
 	@EditBus.EBHandler
 	public void projectUpdate(ViewerUpdate vu)
 	{
@@ -233,5 +251,47 @@ public class SmartOpenPlugin extends EditPlugin
 					indexFiles();
 			}
 		}
+	} //}}}
+
+	//{{{ smartOpen() method
+	public static void smartOpen(View view)
+	{
+		SmartOpenPlugin instance = (SmartOpenPlugin) jEdit.getPlugin(SmartOpenPlugin.class.getName());
+		SmartOpenToolbar smartOpenToolbar = instance.viewToolbar.get(view);
+		if (smartOpenToolbar != null)
+		{
+			ItemFinderPanel<String> itemFinderPanel = smartOpenToolbar.getItemFinderPanel();
+			EventQueue.invokeLater(itemFinderPanel.requestFocusWorker);
+		}
+		else
+		{
+			smartOpenDialog(view);
+		}
+	} //}}}
+
+	//{{{ smartOpenDialog() method
+	public static void smartOpenDialog(View view)
+	{
+		ItemFinder<String> itemFinder = new FileItemFinder();
+		ItemFinderWindow.showWindow(view, itemFinder);
+	} //}}}
+
+	private void addToolbars()
+	{
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++)
+		{
+			addToolbar(views[i]);
+		}
 	}
+
+	private void removeToolbars()
+	{
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++)
+		{
+			removeToolbar(views[i]);
+		}
+	}
+
 }
