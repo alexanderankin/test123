@@ -28,6 +28,13 @@ import javax.swing.*;
  */
 public interface ItemFinder<E>
 {
+	/**
+	 * Returns the label for that ItemFinder.
+	 * If it is null, there is no label.
+	 * Otherwise the label will be displayed on top of the textfield,
+	 * if the panel is in an ItemFinderWindow, and on the left otherwise.
+	 * @return the label or null
+	 */
 	String getLabel();
 
 	/**
