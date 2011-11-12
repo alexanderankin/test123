@@ -46,6 +46,12 @@ public class FileItemFinder extends AbstractItemFinder<String>
 	}
 
 	@Override
+	public String getLabel()
+	{
+		return jEdit.getProperty("search-file.label");
+	}
+
+	@Override
 	public ListModel getModel()
 	{
 		return model;

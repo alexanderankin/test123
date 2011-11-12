@@ -22,7 +22,6 @@
 package com.kpouer.jedit.smartopen;
 
 import java.awt.Dimension;
-import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
 import common.gui.itemfinder.ItemFinder;
@@ -34,7 +33,6 @@ import org.gjt.sp.jedit.View;
  */
 public class SmartOpenToolbar extends JToolBar
 {
-
 	private final ItemFinderPanel<String> itemFinderPanel;
 
 	public SmartOpenToolbar(View view)
@@ -45,8 +43,6 @@ public class SmartOpenToolbar extends JToolBar
 		itemFinderPanel.setMaximumSize(new Dimension(500, maximumSize.height));
 		Dimension minimumSize = itemFinderPanel.getMinimumSize();
 		itemFinderPanel.setMinimumSize(new Dimension(500, minimumSize.height));
-
-		add(new JLabel("Search for a file :"));
 		add(itemFinderPanel);
 	}
 
