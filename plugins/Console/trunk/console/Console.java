@@ -124,15 +124,15 @@ implements EBComponent, DefaultFocusComponent
 		propertiesChanged();
 		String defShell = jEdit.getProperty("console.shell.default", "System");
 		if (defShell.equals(jEdit.getProperty("options.last-selected"))) {
-			defShell = jEdit.getProperty("console.shell", "System");			
+			defShell = jEdit.getProperty("console.shell", "System");
 		}
-		
+
 		Shell s = Shell.getShell(defShell);
 		if (s == null) s = Shell.getShell("System");
 		setShell(s);
 		load();
-		
-		
+
+
 	} //}}}
 
 	// {{{ methods
@@ -150,13 +150,13 @@ implements EBComponent, DefaultFocusComponent
 		addProjectListener();
 		errorSource = new DefaultErrorSource("error parsing");
 	} //}}}
-	
+
 	void addProjectListener()
 	{
 		if (listener != null) return;
 		listener = new ProjectTreeListener(this);
 	}
-	
+
 	//{{{ unload() method
 	public void unload()
 	{
@@ -251,7 +251,7 @@ implements EBComponent, DefaultFocusComponent
 			}
 		});
 	}
-	
+
 	//{{{ getConsolePane() method
 	public ConsolePane getConsolePane()
 	{
@@ -276,7 +276,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getOutput() methods
 	/**
-	 * Returns the Output corresponding to a particular Shell, without changing 
+	 * Returns the Output corresponding to a particular Shell, without changing
 	 * the selected Shell.
 	 */
 	public Output getOutput(String shellName) {
@@ -320,7 +320,7 @@ implements EBComponent, DefaultFocusComponent
 		else if (msg instanceof DockableWindowUpdate) {
 			DockableWindowUpdate dwu = (DockableWindowUpdate) msg;
 			if (dwu.getWhat() != null &&  dwu.getWhat().equals(DockableWindowUpdate.ACTIVATED))
-				if (dwu.getDockable().equals("console")) 
+				if (dwu.getDockable().equals("console"))
 					scrollToBottom();
 		}
 		else if(msg instanceof PluginUpdate)
@@ -340,7 +340,7 @@ implements EBComponent, DefaultFocusComponent
 			unload();
 	}
 	//}}}
-		
+
 	//{{{ getErrorSource() method
 	/**
 	 * Returns this console's error source instance. Plugin shells can
@@ -386,7 +386,7 @@ implements EBComponent, DefaultFocusComponent
 
 	// {{{ getId() method
 	/** @return a unique identifier starting at 0, representing which instance of Console this is,
-	    or -1 if that value can not be determined. 
+	    or -1 if that value can not be determined.
 	*/
 	public int getId() {
 		int retval = 0;
@@ -401,7 +401,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 		return -1;
 	} // }}}
-	
+
 	//{{{ print() method
 	/**
 	 * @deprecated Do not use the console as an <code>Output</code>
@@ -441,7 +441,7 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ getShellState() method
 	/**
 	 * @returns the Output of a Shell, assuming the Shell was already created....
-	 * 
+	 *
 	 * @since Console 4.0.2.
 	 */
 	public ShellState getShellState(Shell shell)
@@ -595,7 +595,7 @@ implements EBComponent, DefaultFocusComponent
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
 
 		initAnimation();
-		
+
 		animationLabel.setIcon(animation);
 		animationLabel.setVisible(false);
 		animation.stop();
@@ -663,25 +663,25 @@ implements EBComponent, DefaultFocusComponent
 		scroller.setPreferredSize(new Dimension(400,100));
 		add(BorderLayout.CENTER,scroller);
 	} //}}}
-	
+
 	//{{{ initAnimation() method
 	private void initAnimation()
 	{
 		// TODO: First frame of animation icon should be visible at gui init
-		
+
 		Toolkit toolkit = getToolkit();
 		Image processImg = toolkit.getImage(Console.class.getResource("/console/process-working.png"));
 		Image standbyImg = null;
-		
+
 		int iconSize = 22;
-		
+
 		ArrayList<Image> frames = new ArrayList<Image>();
-		
+
 		// Wait for the image to load by setting up an icon and discarding it again
 		new ImageIcon(processImg).getImage();
 		int procImgWidth = processImg.getWidth(null);
 		int procImgHeight = processImg.getHeight(null);
-		
+
 		int currentX = 0, currentY = 0;
 		int frameNo = 0;
 		while(currentY < procImgHeight)
@@ -698,13 +698,13 @@ implements EBComponent, DefaultFocusComponent
 				currentX + iconSize - 1,
 				currentY + iconSize - 1,
 				null);
-			
+
 			// First frame is the standby icon
 			if(frameNo == 0)
 				standbyImg = bufImg;
 			else
 				frames.add(bufImg);
-			
+
 			frameNo++;
 			currentX += iconSize;
 			if(currentX + iconSize > procImgWidth)
@@ -713,7 +713,7 @@ implements EBComponent, DefaultFocusComponent
 				currentY += iconSize;
 			}
 		}
-		
+
 		animation = new AnimatedIcon(
 			standbyImg,
 			frames.toArray(new Image[0]),
@@ -735,11 +735,16 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
-		text.setBackground(jEdit.getColorProperty("console.bgColor"));
-		text.setForeground(jEdit.getColorProperty("console.plainColor"));
+		if (!jEdit.getBooleanProperty("textColors")) {
+			text.setBackground(jEdit.getColorProperty("console.bgColor"));
+			text.setForeground(jEdit.getColorProperty("console.plainColor"));
+		}
+		else {
+			text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
+			text.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
+		}
 		text.setCaretColor(jEdit.getColorProperty("console.caretColor"));
 		text.setFont(jEdit.getFontProperty("console.font"));
-
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
@@ -754,7 +759,7 @@ implements EBComponent, DefaultFocusComponent
 		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
 		String path = msg.getPath();
 		File f = new File(path);
-		if (!f.isDirectory()) 
+		if (!f.isDirectory())
 		{
 			path = f.getParent();
 			f = new File(path);
@@ -768,9 +773,9 @@ implements EBComponent, DefaultFocusComponent
 		String cmd = "cd \"" + path + "\"";
 		sysShell.execute(this, cmd, output);
 		output.print(getPlainColor(), "\n");
-		sysShell.printPrompt(this, output);		
+		sysShell.printPrompt(this, output);
 	} //}}}
-	
+
 	//{{{ handlePluginUpdate() method
 	public void handlePluginUpdate(PluginUpdate pmsg)
 	{
@@ -888,7 +893,7 @@ implements EBComponent, DefaultFocusComponent
 
 	/**
 	 * Each Shell of a Console has its own ShellState
-	 * A ShellState is a writable Output. 
+	 * A ShellState is a writable Output.
 	 * It holds the document which is the "scrollback buffer".
 	 */
 	public class ShellState implements Output
@@ -909,7 +914,7 @@ implements EBComponent, DefaultFocusComponent
 			commandRunning = false;
 			scrollback = new DefaultStyledDocument();
 			((DefaultStyledDocument)scrollback).setDocumentFilter(new LengthFilter());
-			
+
 			// ick! talk about tightly coupling two classes.
 			shell.openConsole(Console.this);
 		}
@@ -1024,14 +1029,14 @@ implements EBComponent, DefaultFocusComponent
 		{
 			super();
 		}
-	
+
 		//{{{ insertString() method
 		public void insertString(DocumentFilter.FilterBypass fb, int offset,
 			String str, AttributeSet attr) throws BadLocationException
 		{
 			replace(fb, offset, 0, str, attr);
 		} //}}}
-	
+
 		//{{{ replace() method
 		public void replace(DocumentFilter.FilterBypass fb, int offset,
 			int length, String str, AttributeSet attrs)
@@ -1044,7 +1049,7 @@ implements EBComponent, DefaultFocusComponent
 			if(newLength > limit)
 				fb.remove(0, newLength - limit - 1);
 		} //}}}
-	
+
 		// Not so large default limit to avoid performance down
 		// with large output.
 		// This will be sufficient to first use.
