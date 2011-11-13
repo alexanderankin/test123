@@ -131,7 +131,7 @@ implements EBComponent, DefaultFocusComponent
 		if (s == null) s = Shell.getShell("System");
 		setShell(s);
 		load();
-
+		propertiesChanged();
 
 	} //}}}
 
@@ -735,13 +735,17 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
-		if (!jEdit.getBooleanProperty("textColors")) {
-			text.setBackground(jEdit.getColorProperty("console.bgColor"));
-			text.setForeground(jEdit.getColorProperty("console.plainColor"));
+		if (jEdit.getBooleanProperty("textColors")) {
+			LookAndFeel laf = UIManager.getLookAndFeel();
+			if ( laf.getID().equals( "Metal" ) ) {
+				text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
+				text.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
+			}
+			else text.setUI( new javax.swing.plaf.basic.BasicEditorPaneUI() );
 		}
 		else {
-			text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
-			text.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
+			text.setBackground(jEdit.getColorProperty("console.bgColor"));
+			text.setForeground(jEdit.getColorProperty("console.plainColor"));
 		}
 		text.setCaretColor(jEdit.getColorProperty("console.caretColor"));
 		text.setFont(jEdit.getFontProperty("console.font"));
