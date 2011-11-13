@@ -26,6 +26,7 @@ package console.options;
 //{{{ Imports
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
@@ -47,7 +48,7 @@ import console.Shell;
 import console.gui.Label;
 //}}}
 
-public class GeneralOptionPane extends AbstractOptionPane implements ActionListener
+public class GeneralOptionPane extends AbstractOptionPane
 {
 
 	// {{{ data members
@@ -56,7 +57,6 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	private JComboBox encoding;
 	private JComboBox defaultShell;
 	private JButton bgColor;
-	private JButton usejEditBgColor;
 	private JButton plainColor;
 	private JButton caretColor;
 	private JButton infoColor;
@@ -65,8 +65,8 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	private JCheckBox showWelcomeMessage;
 	private JTextField limit ;
 	private JTextField limitHistory ;
-	
-	
+
+
 	// }}}
 
 	//{{{ GeneralOptionPane constructor
@@ -78,13 +78,13 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	//{{{ _init() method
 	protected void _init()
 	{
-		
+
 		StringList sl = new StringList(Shell.getShellNames());
 		int idx = sl.indexOf("System");
 		if (idx != 0) {
 			String other = sl.get(0);
 			sl.set(idx, other);
-			sl.set(0, "System");			
+			sl.set(0, "System");
 		}
 		sl.add(jEdit.getProperty("options.last-selected"));
 		defaultShell = new JComboBox(sl.toArray());
@@ -96,8 +96,8 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		showWelcomeMessage = new JCheckBox();
 		showWelcomeMessage.setText(jEdit.getProperty("options.console.general.welcome"));
 		showWelcomeMessage.setSelected(jEdit.getBooleanProperty("console.shell.info.toggle"));
-		addComponent(showWelcomeMessage);			
-		
+		addComponent(showWelcomeMessage);
+
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
 
@@ -110,19 +110,17 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		addComponent(jEdit.getProperty("options.console.general.encoding"),
 			encoding);
 
-		
+
 		Label limitLabel = new Label("options.console.general.charlimit");
 		limit = new JTextField(jEdit.getProperty("console.outputLimit"));
 		addComponent(limitLabel, limit);
-		
+
 		Label limitHistoryLabel = new Label("options.console.general.historylimit");
 		limitHistory = new JTextField(jEdit.getProperty("console.historyLimit",
 			String.valueOf(HistoryModel.getDefaultMax())));
 		addComponent(limitHistoryLabel, limitHistory);
-		
-		usejEditBgColor = new JButton("reset");
-		usejEditBgColor.addActionListener(this);
-		addComponent(jEdit.getProperty("options.console.general.usejEditBgColor"), usejEditBgColor);
+
+
 
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
@@ -142,7 +140,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("console.shell.info.toggle", showWelcomeMessage.isSelected());
-		
+
 		jEdit.setFontProperty("console.font",font.getFont());
 
 		String limitstr = limit.getText();
@@ -150,7 +148,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 			jEdit.setProperty("console.outputLimit", limitstr);
 		else
 			jEdit.unsetProperty("console.outputLimit");
-		
+
 		String limithist = limitHistory.getText();
 		if(limithist != null && limithist.length() > 0
 			&& !String.valueOf(HistoryModel.getDefaultMax()).equals(limithist))
@@ -158,12 +156,12 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		else
 			jEdit.unsetProperty("console.historyLimit");
 
- 		jEdit.setProperty("console.encoding", 
+ 		jEdit.setProperty("console.encoding",
  			(String)encoding.getSelectedItem());
 
- 		jEdit.setProperty("console.shell.default", 
+ 		jEdit.setProperty("console.shell.default",
  			(String)defaultShell.getSelectedItem());
- 		
+
 		jEdit.setColorProperty("console.bgColor",
 			bgColor.getBackground());
 		jEdit.setColorProperty("console.plainColor",
@@ -176,8 +174,8 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 			warningColor.getBackground());
 		jEdit.setColorProperty("console.errorColor",
 			errorColor.getBackground());
-		
-		
+
+
 	}
 	//}}}
 
@@ -203,12 +201,4 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		return b;
 	} //}}}
 
-	public void actionPerformed(ActionEvent e)
-	{
-		if (e.getSource() != usejEditBgColor) return;
-		Color c = jEdit.getColorProperty("view.bgColor");
-		jEdit.setColorProperty("console.bgColor", c);
-		bgColor.setBackground(c);
-	}
-	
 }
