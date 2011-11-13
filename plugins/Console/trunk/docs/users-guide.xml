@@ -1557,6 +1557,16 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <title>Change log</title>
   <itemizedlist>
 
+    <listitem id="ver4.4.4"><para>
+    <emphasis role="bold">Version 4.4.4</emphasis> Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9,
+    ProjectViewer 3 (optional).
+    <itemizedlist>
+        <listitem><para> Respects jEdit's "use textArea colors" appearance option. </para></listitem>
+
+    </itemizedlist>
+  </para></listitem>
+
+
   <listitem id="ver4.4.3"><para>
     <emphasis role="bold">Version 4.4.3</emphasis> Requires jEdit 4.4pre1, JDK 1.6, ErrorList 1.9,
     ProjectViewer 3.0 (optional).

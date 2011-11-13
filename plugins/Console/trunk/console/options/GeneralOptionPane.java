@@ -124,8 +124,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
+		bgColor.setToolTipText(jEdit.getProperty("options.console.general.bgColor.tooltip"));
 		addComponent(jEdit.getProperty("options.console.general.plainColor"),
 			plainColor = createColorButton("console.plainColor"));
+		plainColor.setToolTipText(jEdit.getProperty("options.console.general.bgColor.tooltip"));
 		addComponent(jEdit.getProperty("options.console.general.caretColor"),
 			caretColor = createColorButton("console.caretColor"));
 		addComponent(jEdit.getProperty("options.console.general.infoColor"),
