@@ -129,7 +129,9 @@ public class JavaCompletionFinder {
 			Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
 			String tokenText = lineText.substring(t.offset, t.length+t.offset);
 			if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION &&
-					t.id != Token.LITERAL1 && t.id != Token.LITERAL2 && t.id != Token.LITERAL3 && t.id != Token.LITERAL4) {
+					t.id != Token.LITERAL1 && t.id != Token.LITERAL2 && t.id != Token.LITERAL3 &&
+					t.id != Token.LITERAL4 && t.id != Token.KEYWORD1 && t.id != Token.KEYWORD2 &&
+					t.id != Token.KEYWORD3 && t.id != Token.KEYWORD4) {
 				// This stops at an open parenthese
 				if (t.id == Token.OPERATOR) {
 					char op = lineText.charAt(offset);
@@ -144,12 +146,6 @@ public class JavaCompletionFinder {
 							start = i+1;
 							break;
 						}
-					}
-				} else {
-					// Ignore special tokens, like "super" and "this"
-					if (!"super".equals(tokenText) && !"this".equals(tokenText) && !"class".equals(tokenText)) {
-						start = i+1;
-						break;
 					}
 				}
 			}
@@ -406,7 +402,6 @@ public class JavaCompletionFinder {
 			}
 
 			if (c == null) {
-
 				// if it ends with ']' and has '[' somewhere in it, make sure it's an array
 				boolean array_access = false;
 				int arrayIndexStart;
@@ -453,25 +448,33 @@ public class JavaCompletionFinder {
 						}
 
 						if (c == null) {
-							// Class?
-							ClassNode classNode = getLocalClass(token);
-							if (classNode != null) {
-								c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
-							}
-
-							if (c == null && parent.getOrdinal() == TigerNode.CLASS) {
-								Class sc = getSuperclassForNode((ClassNode) parent);
-								c = getClassForToken(sc, token);
-							}
+							// Enum?
+							EnumNode enumNode = getLocalEnum(token);
+							if (enumNode != null)
+								// ???: Not sure if this handles enums correctly...
+								return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, getMembersForEnum(enumNode));
 
 							if (c == null) {
-								// Check for cast
-								String castToken = newToken.trim();
-								if (castToken.startsWith("(") && castToken.endsWith(")")) {
-									int open = castToken.lastIndexOf("(");
-									int close = castToken.indexOf(")");
-									c = getClassForType( castToken.substring(open+1, close),
-											(CUNode) data.root.getUserObject());
+								// Class?
+								ClassNode classNode = getLocalClass(token);
+								if (classNode != null) {
+									c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
+								}
+
+								if (c == null && parent.getOrdinal() == TigerNode.CLASS) {
+									Class sc = getSuperclassForNode((ClassNode) parent);
+									c = getClassForToken(sc, token);
+								}
+
+								if (c == null) {
+									// Check for cast
+									String castToken = newToken.trim();
+									if (castToken.startsWith("(") && castToken.endsWith(")")) {
+										int open = castToken.lastIndexOf("(");
+										int close = castToken.indexOf(")");
+										c = getClassForType( castToken.substring(open+1, close),
+												(CUNode) data.root.getUserObject());
+									}
 								}
 							}
 						}
@@ -911,10 +914,18 @@ public class JavaCompletionFinder {
 				for (TigerNode child : children) {
 					if ( child instanceof FieldNode ) {     // LocalVariableNode is a subclass of FieldNode
 						FieldNode lvn = ( FieldNode ) child;
-						// This originally used startsWith; switch back if issues arise
+						for (TigerNode var : lvn.getChildren()) {
+							if (var instanceof VariableDeclarator) {
+								VariableDeclarator vn = (VariableDeclarator) var;
+								if (!vn.isPrimitive() && vn.getName().equals(name))
+									return lvn;
+							}
+						}
+						/*
 						if ( !lvn.isPrimitive() && lvn.getName().equals( name ) ) {
 							return lvn;
 						}
+						*/
 					}
 				}
 			}
@@ -939,9 +950,28 @@ public class JavaCompletionFinder {
 		return null;
 	}
 
+	private EnumNode getLocalEnum( String name ) {
+		TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+		while ( tn != null ) {
+			List<TigerNode> children = tn.getChildren();
+			if (children != null) {
+				for (TigerNode child : children) {
+					if (child instanceof EnumNode) {
+						if (child.getName().equals(name))
+							return (EnumNode) child;
+					}
+				}
+			}
+			// up the tree
+			tn = tn.getParent();
+		}
+		
+		return null;
+	}
+
 	private MethodNode getLocalMethod( String name ) {
 		TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-		while ( true ) {
+		while ( tn != null ) {
 			// check children of the node first
 			List<TigerNode> children = tn.getChildren();
 			if ( children != null ) {
@@ -955,10 +985,8 @@ public class JavaCompletionFinder {
 			}
 			// up the tree
 			tn = tn.getParent();
-			if ( tn == null ) {
-				break;
-			}
 		}
+
 		return null;
 	}
 
@@ -1222,27 +1250,34 @@ public class JavaCompletionFinder {
 		Set members = new TreeSet();
 		for ( Iterator it = cn.getChildren().iterator(); it.hasNext(); ) {
 			TigerNode child = ( TigerNode ) it.next();
-			String more = "";
-			Icon icon = null;
+			if (filter != null && !child.getName().startsWith(filter))
+				continue;
+
 			switch ( child.getOrdinal() ) {     // NOPMD
-				case TigerNode.ENUM:
+				// field is a special case
 				case TigerNode.FIELD:
-					if (more.length() == 0) {
-						FieldNode fn = (FieldNode) child;
-						more = " : " + fn.getType();
-						icon = TigerLabeler.getFieldIcon();
+					for (TigerNode var : child.getChildren()) {
+						if (var.getOrdinal() == TigerNode.VARIABLE) {
+							VariableDeclarator vn = (VariableDeclarator) var;
+							members.add(new JavaCompletionCandidate(
+										vn.getName()+" : "+child.getType(), TigerLabeler.getFieldIcon()));
+						}
 					}
+					break;
+				case TigerNode.ENUM:
+					// FIXME
+					members.add(new JavaCompletionCandidate(child.getName()+" : enum",
+								TigerLabeler.getInnerClassIcon(false, true)));
+					break;
 				case TigerNode.METHOD:
-					if (more.length() == 0) {
-						MethodNode mn = (MethodNode) child;
-						more = "(" + mn.getFormalParams(true, false, true, true) +
-							   ") : " + mn.getReturnType().getType();
-						icon = TigerLabeler.getMethodIcon();
-					}
+					MethodNode mn = (MethodNode) child;
+					String more = "(" + mn.getFormalParams(true, false, true, true) +
+						") : " + mn.getReturnType().getType();
+					members.add(new JavaCompletionCandidate(mn.getName()+more,
+								TigerLabeler.getMethodIcon()));
+					break;
 				case TigerNode.CLASS:
-					if ( filter == null || child.getName().startsWith( filter ) ) {
-						members.add( new JavaCompletionCandidate(child.getName() + more, icon) );
-					}
+					members.add(new JavaCompletionCandidate(child.getName(), TigerLabeler.getClassIcon()));
 					break;
 				case TigerNode.EXTENDS:
 					Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject() );
@@ -1361,6 +1396,17 @@ public class JavaCompletionFinder {
 		}
 		List members = new ArrayList( list );
 		Collections.sort( members );
+		return members;
+	}
+
+	private List getMembersForEnum(EnumNode enumNode) {
+		Set list = new TreeSet();
+		for (TigerNode node : enumNode.getChildren()) {
+			list.add(new JavaCompletionCandidate(node.getName(), TigerLabeler.getFieldIcon()));
+		}
+
+		List members = new ArrayList(list);
+		Collections.sort(members);
 		return members;
 	}
 
