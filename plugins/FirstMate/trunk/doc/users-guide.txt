@@ -2,7 +2,7 @@
 First Mate
 ==========
 
-:version: 0.3.1
+:version: 0.3.2
 :author: Ollie Rutherfurd
 
 .. :wrap=none:noTabs=false:maxLineLen=80:mode=rest:tabSize=4:folding=none:
@@ -10,10 +10,10 @@ First Mate
 Overview
 ========
 
-`First Mate` implements some editing features from 
+`First Mate` implements some editing features from
 `TextMate <http://macromates.com/>`_ (http://macromates.com/).
 
-Its primary feature is `Auto-Paired Characters`. When 
+Its primary feature is `Auto-Paired Characters`. When
 enabled, when you type one of the following characters:
 
 * ``"``
@@ -22,7 +22,7 @@ enabled, when you type one of the following characters:
 * ``[``
 * ``{``
 
-the corresponding closing character is inserted 
+the corresponding closing character is inserted
 after the caret.
 
 * ``" => "|"``
@@ -54,13 +54,13 @@ Options
 	When enabled, if text is selected, typing an auto-paired
 	character will wrap the selection instead of overwriting
 	it.  For example::
-		
+
 		``[selection] => "[selection]"``
 
 Auto-Paired Characters by Mode
 ------------------------------
 
-You may control which of the supported characters are 
+You may control which of the supported characters are
 auto-paired on a mode by mode basis, using properties.
 Property names follow this format::
 
@@ -85,7 +85,7 @@ set by hand.
 Future Plans
 ============
 
-* Smarter Auto-Paired characters (based on syntax highlighting, respecting 
+* Smarter Auto-Paired characters (based on syntax highlighting, respecting
   escape characters, etc...)
 
 Feedback
@@ -100,8 +100,12 @@ Send bug reports or feature requests to:
 Change Log
 ==========
 
+ * Version 0.3.2 (requires jEdit 4.3)
+
+   - Migration to jEdit's SVN
+
  * Version 0.3.1 (requires jEdit 4.3pre5)
- 
+
    - Fixed pairing of apostrophes when "don't autopair apostrophe after letter"
      enabled, text was selected, and caret after a letter.
    - Fixed pairing of apostrophes when "don't autopair apostrophe after letter"
@@ -110,7 +114,7 @@ Change Log
  * Version 0.3 (requires jEdit 4.3pre5)
 
    - updated for 4.3pre5 API changes
-   - Auto-Paired characters around selections works with 
+   - Auto-Paired characters around selections works with
      multiple and rectangular selections.
 
  * Version 0.2, initial release
