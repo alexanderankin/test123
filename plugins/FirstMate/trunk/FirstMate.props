@@ -1,10 +1,12 @@
+plugin.firstmate.FirstMatePlugin.description=First Mate primary feature is `Auto-Paired Characters`
 plugin.firstmate.FirstMatePlugin.activate=firstmate.auto-enable
 plugin.firstmate.FirstMatePlugin.name=First Mate
 plugin.firstmate.FirstMatePlugin.author=Ollie Rutherfurd
-plugin.firstmate.FirstMatePlugin.version=0.3.1
+plugin.firstmate.FirstMatePlugin.version=0.3.2
 plugin.firstmate.FirstMatePlugin.docs=doc/index.html
-plugin.firstmate.FirstMatePlugin.depend.0=jedit 04.03.05.00
-plugin.firstmate.FirstMatePlugin.depend.1=jdk 1.4
+plugin.firstmate.FirstMatePlugin.depend.0=jedit 04.03.99.00
+plugin.firstmate.FirstMatePlugin.depend.1=jdk 1.5
+plugin.firstmate.FirstMatePlugin.usePluginHome=true
 
 plugin.firstmate.FirstMatePlugin.option-pane=firstmate
 options.firstmate.label=First Mate
