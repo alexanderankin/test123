@@ -54,6 +54,8 @@ public class PHPErrorSource implements PHPParserListener
 	private boolean methodFieldsNameCheck;
 	private boolean phpClosingMissing;
 	private boolean doubleDollar;
+	private boolean labelStatement;
+	private boolean gotoStatement;
 
 	/**
 	 * Instantiate the PHP error source.
@@ -108,6 +110,8 @@ public class PHPErrorSource implements PHPParserListener
 			(!methodFieldsNameCheck && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_METHOD_FIELD_WITH_SAME_NAME) ||
 			(!phpClosingMissing && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING) ||
 			(!doubleDollar && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_DOUBLE_DOLLAR) ||
+			(!labelStatement && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_LABEL_STATEMENT) ||
+			(!gotoStatement && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_GOTO_STATEMENT) ||
 			(!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG))
 		{
 			return;
@@ -137,5 +141,7 @@ public class PHPErrorSource implements PHPParserListener
 		methodFieldsNameCheck = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME);
 		phpClosingMissing = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_MESSAGE_PHP_CLOSING_MISSING);
 		doubleDollar = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_DOUBLE_DOLLAR);
+		labelStatement = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_LABEL_STATEMENT);
+		gotoStatement = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_GOTO_STATEMENT);
 	}
 }

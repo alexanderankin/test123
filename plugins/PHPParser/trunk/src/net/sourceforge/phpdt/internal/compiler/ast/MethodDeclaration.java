@@ -22,6 +22,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
+import gatchan.phpparser.parser.PHPParseErrorEvent;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -327,9 +328,37 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 			// the method is abstract, no need to analyze it.
 			return;
 		}
+		Map<String,ConstantIdentifier> labels = new HashMap<String, ConstantIdentifier>();
+		Map<String,ConstantIdentifier> gotoLabels = new HashMap<String, ConstantIdentifier>();
 		for (Statement statement : statements)
 		{
+			if (statement instanceof LabeledStatement)
+			{
+				LabeledStatement label = (LabeledStatement) statement;
+				ConstantIdentifier name = label.getName();
+				labels.put(name.toString(), name);
+			}
+			else if (statement instanceof GotoStatement)
+			{
+				GotoStatement gotoStatement = (GotoStatement) statement;
+				ConstantIdentifier name = gotoStatement.getName();
+				gotoLabels.put(name.toString(), name);
+			}
 			statement.analyzeCode(parser);
+		}
+
+		for (String s : labels.keySet())
+		{
+			gotoLabels.remove(s);
+		}
+		for (ConstantIdentifier constantIdentifier : gotoLabels.values())
+		{
+			parser.fireParseError(
+				new PHPParseErrorEvent(PHPParser.ERROR,
+							 parser.getPath(), "unknown label used " + constantIdentifier.toString(),
+							 constantIdentifier.getSourceStart(), constantIdentifier.getSourceEnd(),
+							 constantIdentifier.getBeginLine(), constantIdentifier.getEndLine(),
+							 constantIdentifier.getBeginColumn(), constantIdentifier.getEndColumn()));
 		}
 
 		List<VariableUsage> globalsVars = new ArrayList<VariableUsage>();
