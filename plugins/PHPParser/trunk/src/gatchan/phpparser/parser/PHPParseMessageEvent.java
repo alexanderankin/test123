@@ -38,16 +38,19 @@ public class PHPParseMessageEvent
 	public static final int MESSAGE_UNUSED_PARAMETERS = 7;
 	public static final int MESSAGE_VARIABLE_MAY_BE_UNASSIGNED = 8;
 	public static final int MESSAGE_UNNECESSARY_GLOBAL = 9;
-
 	/**
 	 * message for syntax case '' ;.
 	 */
 	public static final int MESSAGE_CASE_SEMICOLON = 10;
+
 	public static final int MESSAGE_DEPRECATED_VAR_TOKEN = 11;
 	public static final int MESSAGE_CONDITIONAL_EXPRESSION_CHECK = 12;
 	public static final int MESSAGE_METHOD_FIELD_WITH_SAME_NAME = 13;
 	public static final int MESSAGE_PHP_CLOSING_MISSING = 14;
 	public static final int MESSAGE_DOUBLE_DOLLAR = 15;
+
+	public static final int MESSAGE_LABEL_STATEMENT = 16;
+	public static final int MESSAGE_GOTO_STATEMENT = 17;
 
 	private int messageClass;
 	private int level;

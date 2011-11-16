@@ -2741,8 +2741,6 @@ Token constantIdentifier():
 	|
 		constantIdentifier = <DEFINE>
 	|
-		constantIdentifier = <GOTO>
-	|
 		constantIdentifier = <SUPER>
 	|
 		constantIdentifier = <THIS>
@@ -4736,6 +4734,8 @@ Statement StatementNoBreak() :
 		LOOKAHEAD(2)
 		statement = LabeledStatement()
 	|
+		statement = gotoStatement()
+	|
 		statement = Block()
 	|
 		statement = EmptyStatement()
@@ -5538,7 +5538,7 @@ ListExpression ListExpression():
  * An echo statement.
  * echo anyexpression (, otherexpression)*
  */
-EchoStatement EchoStatement() :
+EchoStatement EchoStatement():
 {
 	List<Expression> expressions = new ArrayList<Expression>();
 	Expression expr;
@@ -5748,15 +5748,86 @@ StaticStatement StaticStatement():
 	}
 } //}}}
 
-//{{{ LabeledStatement()
-
-LabeledStatement LabeledStatement() :
+//{{{ labelIdentifier()
+ConstantIdentifier labelIdentifier():
 {
 	Token label;
-	Statement statement = null;
 }
 {
 	label = <IDENTIFIER>
+	{
+		return new ConstantIdentifier(label);
+	}
+} //}}}
+
+//{{{ gotoStatement() method
+GotoStatement gotoStatement():
+{
+	Token gotoToken;
+	ConstantIdentifier label = null;
+	Token semicolon = null;
+	int pos,line,column;
+}
+{
+	//{{{ <GOTO>
+	gotoToken = <GOTO>
+	{
+		pos = gotoToken.sourceEnd;
+		line = gotoToken.endLine;
+		column = gotoToken.endColumn;
+	} //}}}
+
+	//{{{ label
+	try
+	{
+		label = labelIdentifier()
+		{
+			pos = label.getSourceEnd();
+			line = label.getEndLine();
+			column = label.getEndColumn();
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("label expected", "label",e.currentToken.next);
+		semicolon = error_skipto(SEMICOLON);
+		{
+			if (semicolon.kind == SEMICOLON)
+			{
+				pos = gotoToken.sourceEnd;
+				line = gotoToken.endLine;
+				column = gotoToken.endColumn;
+				return new GotoStatement(gotoToken, label, pos,line,column);
+			}
+		}
+	} //}}}
+
+	try
+	{
+		semicolon = <SEMICOLON>
+		{
+			pos = gotoToken.sourceEnd;
+			line = gotoToken.endLine;
+			column = gotoToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("';' expected", ";",e.currentToken);
+	}
+	{
+		return new GotoStatement(gotoToken, label, pos,line,column);
+	}
+} //}}}
+
+//{{{ LabeledStatement()
+LabeledStatement LabeledStatement():
+{
+	ConstantIdentifier label;
+	Statement statement = null;
+}
+{
+	label = labelIdentifier()
 	try
 	{
 		<COLON>
@@ -5772,23 +5843,17 @@ LabeledStatement LabeledStatement() :
 	catch (ParseException e)
 	{
 		fireParseError("statement expected", "statement",e.currentToken);
-		return new LabeledStatement(label.image,
+		return new LabeledStatement(label,
 					    statement,
-					    label.sourceStart,
 					    e.currentToken.sourceEnd,
 					    e.currentToken.beginLine,
-					    label.beginLine,
-					    e.currentToken.beginColumn,
-					    label.endColumn);
+					    e.currentToken.beginColumn);
 	}
 	{
-		return new LabeledStatement(label.image,
+		return new LabeledStatement(label,
 					    statement,
-					    label.sourceStart,
 					    statement.getSourceEnd(),
-					    label.beginLine,
 					    statement.getEndLine(),
-					    label.beginColumn,
 					    statement.getEndColumn());
 	}
 }

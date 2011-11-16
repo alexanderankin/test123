@@ -40,6 +40,8 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	private JCheckBox whileEndWhile;
 	private JCheckBox foreachEndForeach;
 	private JCheckBox doubleDollarCheck;
+	private JCheckBox labelStatement;
+	private JCheckBox gotoStatement;
 
 	private JCheckBox unusedParameter;
 	private JCheckBox unassignedVariable;
@@ -66,6 +68,8 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	public static final String PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME = "gatchan.phpparser.warnings.classes.method_field_same_name";
 	public static final String PROP_WARN_MESSAGE_PHP_CLOSING_MISSING = "gatchan.phpparser.warnings.phpclosingmissing";
 	public static final String PROP_WARN_DOUBLE_DOLLAR = "gatchan.phpparser.warnings.doubledollar";
+	public static final String PROP_WARN_LABEL_STATEMENT = "gatchan.phpparser.warnings.labelstatement";
+	public static final String PROP_WARN_GOTO_STATEMENT = "gatchan.phpparser.warnings.gotostatement";
 
 	/**
 	 * Instantiate the option pane of the PHP Parser.
@@ -97,6 +101,8 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		addComponent(caseSemicolon = createCheckBox(PROP_WARN_CASE_SEMICOLON));
 		addComponent(conditionalExpressionCheck = createCheckBox(PROP_WARN_CONDITIONAL_EXPRESSION_CHECK));
 		addComponent(doubleDollarCheck = createCheckBox(PROP_WARN_DOUBLE_DOLLAR));
+		addComponent(labelStatement = createCheckBox(PROP_WARN_LABEL_STATEMENT));
+		addComponent(gotoStatement = createCheckBox(PROP_WARN_GOTO_STATEMENT));
 		addComponent(new JLabel("Method analysis"));
 		addComponent(unusedParameter = createCheckBox(PROP_WARN_UNUSED_PARAMETERS));
 		addComponent(unassignedVariable = createCheckBox(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED));
@@ -142,5 +148,7 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME, methodFieldsSameName.isSelected());
 		jEdit.setBooleanProperty(PROP_WARN_MESSAGE_PHP_CLOSING_MISSING, phpClosingMissing.isSelected());
 		jEdit.setBooleanProperty(PROP_WARN_DOUBLE_DOLLAR, doubleDollarCheck.isSelected());
+		jEdit.setBooleanProperty(PROP_WARN_LABEL_STATEMENT, labelStatement.isSelected());
+		jEdit.setBooleanProperty(PROP_WARN_GOTO_STATEMENT, gotoStatement.isSelected());
 	}
 }
