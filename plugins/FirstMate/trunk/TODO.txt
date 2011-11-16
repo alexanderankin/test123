@@ -1,0 +1,20 @@
+* method to do append method invocation syntax for languages
+
+  for example, for java "();\n", for python "()\n"
+
+* language-specific pairing?
+
+  try using syntax highlighting engine, so overrides 
+  can be done, for example:
+
+  mode.vbscript.null.pair.apostrophe=false
+  # default would be true, so this is a silly example
+  mode.vbscript.comment1.pair.apostrophe=true
+
+* toggle for modes (specific characters, too -- ex: ')
+
+* option to auto-wrap char around selection
+
+* look for escape char for quotes (ex: \')
+
+* fix problems w/HOME, END

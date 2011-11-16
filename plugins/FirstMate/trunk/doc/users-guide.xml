@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE article 
+        PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+        "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+<title>First Mate</title><articleinfo>
+<author>
+<othername>Ollie Rutherfurd</othername>
+</author>
+<edition>Version 0.3.1</edition>
+</articleinfo>
+<!-- :wrap=none:noTabs=false:maxLineLen=80:mode=rest:tabSize=4:folding=none: -->
+<section>
+<title>Overview</title>
+<para><citetitle>First Mate</citetitle> implements some editing features from
+<ulink url="http://macromates.com/">TextMate</ulink> (<ulink url="http://macromates.com/">http://macromates.com/</ulink>).</para><para>Its primary feature is <citetitle>Auto-Paired Characters</citetitle>. When
+enabled, when you type one of the following characters:</para><itemizedlist>
+<listitem>
+<para><literal>&quot;</literal></para></listitem>
+<listitem>
+<para><literal>'</literal></para></listitem>
+<listitem>
+<para><literal>(</literal></para></listitem>
+<listitem>
+<para><literal>[</literal></para></listitem>
+<listitem>
+<para><literal>{</literal></para></listitem>
+</itemizedlist>
+<para>the corresponding closing character is inserted
+after the caret.</para><itemizedlist>
+<listitem>
+<para><literal>&quot; =&gt; &quot;|&quot;</literal></para></listitem>
+<listitem>
+<para><literal>' =&gt; '|'</literal></para></listitem>
+<listitem>
+<para><literal>( =&gt; (|)</literal></para></listitem>
+<listitem>
+<para><literal>[ =&gt; [|]</literal></para></listitem>
+<listitem>
+<para><literal>{ =&gt; {|}</literal></para></listitem>
+</itemizedlist>
+</section>
+<section>
+<title>Configuration</title>
+<section>
+<title>Options</title>
+<variablelist>
+<varlistentry>
+<term>
+<varname><literal>Enable Auto-Paired characters on startup</literal></varname></term>
+<listitem>
+<para>Controls whether <citetitle>Auto-Paired Characters</citetitle> is enabled
+when jEdit is started.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>
+<varname><literal>Don't auto-pair apostrophe following letter</literal></varname></term>
+<listitem>
+<para>When enabled, apostrophes aren't auto-paired when an
+apostrophe follows a letter.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>
+<varname><literal>Remove auto-pair character on backspace</literal></varname></term>
+<listitem>
+<para>When enabled, if backspace if the first key you press
+after triggering an auto-pairing, both characters are
+removed.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>
+<varname><literal>Auto-pair characters around selections</literal></varname></term>
+<listitem>
+<para>When enabled, if text is selected, typing an auto-paired
+character will wrap the selection instead of overwriting
+it.  For example:</para><programlisting>
+``[selection] =&gt; &quot;[selection]&quot;``</programlisting>
+</listitem>
+</varlistentry>
+</variablelist>
+</section>
+<section>
+<title>Auto-Paired Characters by Mode</title>
+<para>You may control which of the supported characters are
+auto-paired on a mode by mode basis, using properties.
+Property names follow this format:</para><programlisting>
+mode.&lt;MODE&gt;.pair.&lt;CHAR&gt;=boolean</programlisting>
+<para>For example, apostrophe is disabled in vbscript by default:</para><programlisting>
+mode.vbscript.pair.apostrophe=false</programlisting>
+<para>The character names to use when setting properties are:</para><itemizedlist>
+<listitem>
+<para>apostrophe (<literal>'</literal>)</para></listitem>
+<listitem>
+<para>brace (<literal>{</literal>)</para></listitem>
+<listitem>
+<para>bracket (<literal>[</literal>)</para></listitem>
+<listitem>
+<para>parenthesis (<literal>(</literal>)</para></listitem>
+<listitem>
+<para>quote (<literal>&quot;</literal>)</para></listitem>
+</itemizedlist>
+<para>At present, there is no option pane for controlling
+character-pairing by mode.  The properties must by
+set by hand.</para></section>
+</section>
+<section>
+<title>Future Plans</title>
+<itemizedlist>
+<listitem>
+<para>Smarter Auto-Paired characters (based on syntax highlighting, respecting
+escape characters, etc...)</para></listitem>
+</itemizedlist>
+</section>
+<section>
+<title>Feedback</title>
+<para>Send bug reports or feature requests to:</para><itemizedlist>
+<listitem>
+<para>Ollie Rutherfurd &lt;<ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink>&gt;;</para></listitem>
+<listitem>
+<para>or jEdit-users mailing-list &lt;<ulink url="mailto:jedit-users@lists.sourceforge.net">jedit-users@lists.sourceforge.net</ulink>&gt;;</para></listitem>
+<listitem>
+<para>or jEdit-devel mailing-list &lt;<ulink url="mailto:jedit-devel@lists.sourceforge.net">jedit-devel@lists.sourceforge.net</ulink>&gt;.</para></listitem>
+</itemizedlist>
+</section>
+<section>
+<title>Change Log</title>
+<blockquote>
+<itemizedlist>
+<listitem>
+<para>Version 0.3.1 (requires jEdit 4.3pre5)</para><itemizedlist>
+<listitem>
+<para>Fixed pairing of apostrophes when &quot;don't autopair apostrophe after letter&quot;
+enabled, text was selected, and caret after a letter.</para></listitem>
+<listitem>
+<para>Fixed pairing of apostrophes when &quot;don't autopair apostrophe after letter&quot;
+disabled (didn't work at all).</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<para>Version 0.3 (requires jEdit 4.3pre5)</para><itemizedlist>
+<listitem>
+<para>updated for 4.3pre5 API changes</para></listitem>
+<listitem>
+<para>Auto-Paired characters around selections works with
+multiple and rectangular selections.</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<para>Version 0.2, initial release</para></listitem>
+</itemizedlist>
+</blockquote>
+</section>
+<section>
+<title>License</title>
+<para>The source code for this plugin is release under the GPL.
+Please see <ulink url="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</ulink>.</para></section>
+</article>
