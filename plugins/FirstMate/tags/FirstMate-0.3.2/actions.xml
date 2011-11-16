@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="firstmate-enabled" NO_REPEAT="TRUE">
+		<CODE>
+			firstmate.FirstMatePlugin.setEnabled(
+				!firstmate.FirstMatePlugin.isEnabled());
+		</CODE>
+		<IS_SELECTED>
+			return firstmate.FirstMatePlugin.isEnabled();
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="firstmate-ignore-next" NO_REPEAT="TRUE">
+		<CODE>
+			firstmate.FirstMatePlugin.setIgnoreNext(
+				!firstmate.FirstMatePlugin.getIgnoreNext());
+		</CODE>
+		<IS_SELECTED>
+			return firstmate.FirstMatePlugin.getIgnoreNext();
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="newline-and-indent" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.appendNewlineAndIndent(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="newline-indent-newline" NO_REPEAT="TRUE">
+		<CODE>
+			firstmate.EditingActions.newlineIndentNewline(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="colon-at-eol" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.insertAtEOL(textArea, ":", false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="colon-at-eol-and-newline" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.insertAtEOL(textArea, ":", true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="comma-at-eol" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.insertAtEOL(textArea, ",", false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="comma-at-eol-and-newline" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.insertAtEOL(textArea, ",", true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="semicolon-at-eol" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.insertAtEOL(textArea, ";", false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="semicolon-at-eol-and-newline" NO_REPEAT="FALSE">
+		<CODE>
+			firstmate.EditingActions.insertAtEOL(textArea, ";", true);
+		</CODE>
+	</ACTION>
+</ACTIONS>

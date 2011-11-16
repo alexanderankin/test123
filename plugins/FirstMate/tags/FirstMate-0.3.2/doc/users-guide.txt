@@ -1,0 +1,128 @@
+==========
+First Mate
+==========
+
+:version: 0.3.2
+:author: Ollie Rutherfurd
+
+.. :wrap=none:noTabs=false:maxLineLen=80:mode=rest:tabSize=4:folding=none:
+
+Overview
+========
+
+`First Mate` implements some editing features from
+`TextMate <http://macromates.com/>`_ (http://macromates.com/).
+
+Its primary feature is `Auto-Paired Characters`. When
+enabled, when you type one of the following characters:
+
+* ``"``
+* ``'``
+* ``(``
+* ``[``
+* ``{``
+
+the corresponding closing character is inserted
+after the caret.
+
+* ``" => "|"``
+* ``' => '|'``
+* ``( => (|)``
+* ``[ => [|]``
+* ``{ => {|}``
+
+Configuration
+=============
+
+Options
+-------
+
+``Enable Auto-Paired characters on startup``
+	Controls whether `Auto-Paired Characters` is enabled
+	when jEdit is started.
+
+``Don't auto-pair apostrophe following letter``
+	When enabled, apostrophes aren't auto-paired when an
+	apostrophe follows a letter.
+
+``Remove auto-pair character on backspace``
+	When enabled, if backspace if the first key you press
+	after triggering an auto-pairing, both characters are
+	removed.
+
+``Auto-pair characters around selections``
+	When enabled, if text is selected, typing an auto-paired
+	character will wrap the selection instead of overwriting
+	it.  For example::
+
+		``[selection] => "[selection]"``
+
+Auto-Paired Characters by Mode
+------------------------------
+
+You may control which of the supported characters are
+auto-paired on a mode by mode basis, using properties.
+Property names follow this format::
+
+	mode.<MODE>.pair.<CHAR>=boolean
+
+For example, apostrophe is disabled in vbscript by default::
+
+	mode.vbscript.pair.apostrophe=false
+
+The character names to use when setting properties are:
+
+* apostrophe (``'``)
+* brace (``{``)
+* bracket (``[``)
+* parenthesis (``(``)
+* quote (``"``)
+
+At present, there is no option pane for controlling
+character-pairing by mode.  The properties must by
+set by hand.
+
+Future Plans
+============
+
+* Smarter Auto-Paired characters (based on syntax highlighting, respecting
+  escape characters, etc...)
+
+Feedback
+========
+
+Send bug reports or feature requests to:
+
+* Ollie Rutherfurd <oliver@jedit.org>;
+* or jEdit-users mailing-list <jedit-users@lists.sourceforge.net>;
+* or jEdit-devel mailing-list <jedit-devel@lists.sourceforge.net>.
+
+Change Log
+==========
+
+ * Version 0.3.2 (requires jEdit 4.3)
+
+   - Migration to jEdit's SVN
+
+ * Version 0.3.1 (requires jEdit 4.3pre5)
+
+   - Fixed pairing of apostrophes when "don't autopair apostrophe after letter"
+     enabled, text was selected, and caret after a letter.
+   - Fixed pairing of apostrophes when "don't autopair apostrophe after letter"
+     disabled (didn't work at all).
+
+ * Version 0.3 (requires jEdit 4.3pre5)
+
+   - updated for 4.3pre5 API changes
+   - Auto-Paired characters around selections works with
+     multiple and rectangular selections.
+
+ * Version 0.2, initial release
+
+License
+=======
+
+The source code for this plugin is release under the GPL.
+Please see http://www.fsf.org/copyleft/gpl.html.
+
+

@@ -1,0 +1,52 @@
+plugin.firstmate.FirstMatePlugin.description=First Mate primary feature is `Auto-Paired Characters`
+plugin.firstmate.FirstMatePlugin.activate=firstmate.auto-enable
+plugin.firstmate.FirstMatePlugin.name=First Mate
+plugin.firstmate.FirstMatePlugin.author=Ollie Rutherfurd
+plugin.firstmate.FirstMatePlugin.version=0.3.2
+plugin.firstmate.FirstMatePlugin.docs=doc/index.html
+plugin.firstmate.FirstMatePlugin.depend.0=jedit 04.03.99.00
+plugin.firstmate.FirstMatePlugin.depend.1=jdk 1.5
+plugin.firstmate.FirstMatePlugin.usePluginHome=true
+
+plugin.firstmate.FirstMatePlugin.option-pane=firstmate
+options.firstmate.label=First Mate
+options.firstmate.code=new firstmate.options.GeneralOptionPane();
+options.firstmate.auto-enable=Enable Auto-Paired characters on startup
+options.firstmate.no-apostrophe-after-letter=Don't auto-pair apostrophe following letter
+options.firstmate.undo-on-backspace=Remove auto-pair character on backspace
+options.firstmate.wrap-selections=Auto-pair characters around selections
+
+firstmate.auto-enable=true
+firstmate.no-apostrophe-after-letter=true
+firstmate.undo-on-backspace=true
+firstmate.wrap-selections=true
+
+firstmate-enabled.label=Auto-Pair Characters
+firstmate-ignore-next.label=Ignore Next
+
+newline-indent-newline.label=Newline, Indent, and Newline
+newline-and-indent.label=Move to End of Line, add Newline, and Indent
+semicolon-at-eol.label=Insert Semicolon at EOL
+semicolon-at-eol-and-newline.label=Insert Semicolon at EOL, then Newline
+colon-at-eol.label=Insert Colon at EOL
+colon-at-eol-and-newline.label=Insert Colon at EOL, then Newline
+comma-at-eol.label=Insert Comma at EOL
+comma-at-eol-and-newline.label=Insert Comma at EOL, then Newline
+
+
+plugin.firstmate.FirstMatePlugin.menu=firstmate-enabled \
+										   firstmate-ignore-next \
+										   - \
+										   colon-at-eol \
+										   colon-at-eol-and-newline \
+										   comma-at-eol \
+										   comma-at-eol-and-newline \
+										   semicolon-at-eol \
+										   semicolon-at-eol-and-newline \
+										   - \
+										   newline-and-indent \
+										   newline-indent-newline
+
+# exclusions (default is true)
+mode.vbscript.pair.apostrophe=false
+mode.lisp.pair.apostrophe=false
