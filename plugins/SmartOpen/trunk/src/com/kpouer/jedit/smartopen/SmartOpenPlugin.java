@@ -22,7 +22,6 @@
 package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
-
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -36,8 +35,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.kpouer.jedit.smartopen.indexer.FileArrayProvider;
-import com.kpouer.jedit.smartopen.indexer.FileProvider;
 import com.kpouer.jedit.smartopen.indexer.IndexFilesTask;
 import com.kpouer.jedit.smartopen.indexer.IndexProjectTask;
 import com.kpouer.jedit.smartopen.indexer.IndexProjectUpdateTask;
@@ -47,7 +44,6 @@ import common.gui.itemfinder.ItemFinderWindow;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -178,10 +174,13 @@ public class SmartOpenPlugin extends EditPlugin
 	 */
 	private static void indexFiles(boolean force)
 	{
-		if (force && jEdit.getBooleanProperty("options.smartopen.projectindex"))
+		if (jEdit.getBooleanProperty("options.smartopen.projectindex"))
 		{
-			VPTProject activeProject = ProjectViewer.getActiveProject(jEdit.getActiveView());
-			indexProject(activeProject);
+			if (force)
+			{
+				VPTProject activeProject = ProjectViewer.getActiveProject(jEdit.getActiveView());
+				indexProject(activeProject);
+			}
 		}
 		else
 		{
