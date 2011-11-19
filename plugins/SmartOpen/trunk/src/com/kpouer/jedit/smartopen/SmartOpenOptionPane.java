@@ -81,22 +81,9 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 	{
 		jEdit.setProperty("options.smartopen.IncludeGlobs", includeFilesTF.getText());
 		jEdit.setProperty("options.smartopen.ExcludeGlobs", excludeFilesTF.getText());
-		boolean indexProjectSelected = indexProject.isSelected();
-		if (indexProjectSelected)
-			jEdit.setBooleanProperty("options.smartopen.projectindex", true);
-		else
-			jEdit.resetProperty("options.smartopen.projectindex");
-
-		boolean tb = toolbar.isSelected();
-		if (tb)
-			jEdit.setBooleanProperty("options.smartopen.toolbar", true);
-		else
-			jEdit.resetProperty("options.smartopen.toolbar");
-		boolean memory = inMemoryIndex.isSelected();
-		if (memory)
-			jEdit.setBooleanProperty("options.smartopen.memoryindex", true);
-		else
-			jEdit.resetProperty("options.smartopen.memoryindex");
+		jEdit.setBooleanProperty("options.smartopen.projectindex", indexProject.isSelected());
+		jEdit.setBooleanProperty("options.smartopen.toolbar", toolbar.isSelected());
+		jEdit.setBooleanProperty("options.smartopen.memoryindex", inMemoryIndex.isSelected());
 		paths.save();
 		updateFilter();
 	}
