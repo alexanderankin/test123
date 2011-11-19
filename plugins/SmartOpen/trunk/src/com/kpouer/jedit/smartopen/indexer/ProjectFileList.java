@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.util.Log;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -36,7 +36,7 @@ import projectviewer.vpt.VPTProject;
 public class ProjectFileList implements FileProvider
 {
 	private final VPTProject project;
-	private List<VFSFile> files;
+	private List<String> files;
 	private int index;
 
 	ProjectFileList(VPTProject project)
@@ -45,7 +45,7 @@ public class ProjectFileList implements FileProvider
 	}
 
 	@Override
-	public VFSFile next()
+	public String next()
 	{
 		if (files == null)
 			constructFileList();
@@ -56,18 +56,22 @@ public class ProjectFileList implements FileProvider
 
 	private void constructFileList()
 	{
+		long start = System.currentTimeMillis();
 		Collection<VPTNode> nodes = project.getOpenableNodes();
-		files = new ArrayList<VFSFile>(nodes.size());
+		files = new ArrayList<String>(nodes.size());
 		for (VPTNode n : nodes)
 		{
 			if (n.isFile())
 			{
 				VPTFile vptFile = (VPTFile) n;
-				VFSFile file = vptFile.getFile();
+				String file = vptFile.getURL();
 				if (file != null)
 					files.add(file);
 			}
 		}
+		long end = System.currentTimeMillis();
+		Log.log(Log.MESSAGE, this,
+			"Listing files for project " + project + ' ' + files.size() + " in " + (end - start) + "ms");
 	}
 
 	@Override
