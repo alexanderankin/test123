@@ -21,7 +21,6 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
-import org.gjt.sp.jedit.io.VFSFile;
 import projectviewer.vpt.VPTFile;
 
 /**
@@ -38,11 +37,11 @@ public class VPTFileProvider implements FileProvider
 	}
 
 	@Override
-	public VFSFile next()
+	public String next()
 	{
 		if (index >= fileArray.length)
 			return null;
-		return fileArray[index++].getFile();
+		return fileArray[index++].getURL();
 	}
 
 	@Override

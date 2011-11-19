@@ -21,23 +21,21 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
-import org.gjt.sp.jedit.io.VFSFile;
-
 /**
  * @author Matthieu Casanova
  */
 public class FileArrayProvider implements FileProvider
 {
-	private final VFSFile[] fileArray;
+	private final String[] fileArray;
 	private int index;
 
-	public FileArrayProvider(VFSFile[] files)
+	public FileArrayProvider(String[] files)
 	{
 		fileArray = files;
 	}
 
 	@Override
-	public VFSFile next()
+	public String next()
 	{
 		if (index >= fileArray.length)
 			return null;

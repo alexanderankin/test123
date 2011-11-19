@@ -50,6 +50,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
@@ -137,6 +138,7 @@ public class FileIndex
 
 	public void addFiles(FileProvider fileProvider, ProgressObserver observer, boolean reset)
 	{
+		long start = System.currentTimeMillis();
 		synchronized (LOCK)
 		{
 			IndexWriter writer = null;
@@ -161,16 +163,17 @@ public class FileIndex
 				writer = new IndexWriter(tempDirectory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
-					VFSFile next = fileProvider.next();
+					String path = fileProvider.next();
 					observer.setValue(i);
-					observer.setStatus(next.getPath());
+					observer.setStatus(path);
 					Document document = new Document();
 					document.add(
-						new Field("path", next.getPath(), Field.Store.YES, Field.Index.NO));
+						new Field("path", path, Field.Store.YES, Field.Index.NO));
 
-					document.add(new Field("name", next.getName(), Field.Store.NO,
+					String fileName = MiscUtilities.getFileName(path);
+					document.add(new Field("name", fileName, Field.Store.NO,
 							       Field.Index.ANALYZED));
-					document.add(new Field("name_caps", next.getName(), Field.Store.NO,
+					document.add(new Field("name_caps", fileName, Field.Store.NO,
 							       Field.Index.NOT_ANALYZED));
 					writer.addDocument(document);
 				}
@@ -185,6 +188,42 @@ public class FileIndex
 				IOUtilities.closeQuietly(writer);
 			}
 		}
+		long end = System.currentTimeMillis();
+		Log.log(Log.MESSAGE, this, "Added " + fileProvider.size()+" files in "+(end - start) + "ms");
+	}
+
+	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
+	{
+		long start = System.currentTimeMillis();
+		synchronized (LOCK)
+		{
+			IndexWriter writer = null;
+			try
+			{
+				observer.setMaximum(fileProvider.size());
+				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+				writer = new IndexWriter(directory, conf);
+				for (int i = 0; i < fileProvider.size(); i++)
+				{
+					String path = fileProvider.next();
+					observer.setValue(i);
+					observer.setStatus(path);
+					writer.deleteDocuments(new Term("path", path));
+				}
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+			finally
+			{
+				IOUtilities.closeQuietly(writer);
+			}
+		}
+		long end = System.currentTimeMillis();
+		Log.log(Log.MESSAGE, this, "Removed " + fileProvider.size()+" files in "+(end - start) + "ms");
 	}
 
 	private Directory getDirectory()
@@ -211,37 +250,6 @@ public class FileIndex
 			}
 		}
 		return tempDirectory;
-	}
-
-	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
-	{
-		synchronized (LOCK)
-		{
-			IndexWriter writer = null;
-			try
-			{
-				observer.setMaximum(fileProvider.size());
-				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
-				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
-				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-				writer = new IndexWriter(directory, conf);
-				for (int i = 0; i < fileProvider.size(); i++)
-				{
-					VFSFile next = fileProvider.next();
-					observer.setValue(i);
-					observer.setStatus(next.getPath());
-					writer.deleteDocuments(new Term("path", next.getPath()));
-				}
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, e);
-			}
-			finally
-			{
-				IOUtilities.closeQuietly(writer);
-			}
-		}
 	}
 
 	public void optimize()

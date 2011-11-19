@@ -28,7 +28,7 @@ import org.gjt.sp.jedit.io.VFSFile;
  */
 public interface FileProvider
 {
-	VFSFile next();
+	String next();
 
 	int size();
 }

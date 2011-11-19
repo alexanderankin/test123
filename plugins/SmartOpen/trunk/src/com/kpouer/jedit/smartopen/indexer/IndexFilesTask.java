@@ -57,31 +57,31 @@ public class IndexFilesTask extends Task
 		if (!property.isEmpty())
 		{
 			StringTokenizer tokenizer = new StringTokenizer(property, File.pathSeparator);
-			Set<VFSFile> files = new HashSet<VFSFile>();
+			Set<String> files = new HashSet<String>();
 			while (tokenizer.hasMoreTokens())
 			{
 				String s = tokenizer.nextToken();
 				files.addAll(listFiles(s));
 			}
-			VFSFile[] f = new VFSFile[files.size()];
+			String[] f = new String[files.size()];
 			files.toArray(f);
 			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(f), this, true);
 		}
 		else
 		{
-			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(new VFSFile[0]), this, true);
+			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(new String[0]), this, true);
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));
 	} //}}}
 
 	//{{{ listFiles() method
-	private Collection<VFSFile> listFiles(String path)
+	private Collection<String> listFiles(String path)
 	{
 		VFS vfs = VFSManager.getVFSForPath(path);
 		Object vfsSession = null;
 		View activeView = jEdit.getActiveView();
-		Collection<VFSFile> files = new HashSet<VFSFile>();
+		Collection<String> files = new HashSet<String>();
 		try
 		{
 			vfsSession = vfs.createVFSSession(path, activeView);
@@ -95,10 +95,8 @@ public class IndexFilesTask extends Task
 			for (int i = 0; i < strings.length; i++)
 			{
 				setValue(i);
-				String string = strings[i];
-				VFSFile vfsFile = vfs._getFile(vfsSession, string, activeView);
-				if (vfsFile != null)
-					files.add(vfsFile);
+				String filePath = strings[i];
+				files.add(filePath);
 			}
 		}
 		catch (IOException e)
