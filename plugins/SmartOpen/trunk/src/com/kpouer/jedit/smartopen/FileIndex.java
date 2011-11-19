@@ -69,25 +69,7 @@ public class FileIndex
 
 	public FileIndex()
 	{
-		EditPlugin plugin = jEdit.getPlugin(SmartOpenPlugin.class.getName());
-		File pluginHome = plugin.getPluginHome();
-		String indexName = getIndexName();
-		File index = new File(pluginHome, indexName);
-		index.mkdirs();
-		try
-		{
-			if (jEdit.getBooleanProperty("options.smartopen.memoryindex"))
-			{
-				directory = new RAMDirectory();
-			}
-			else
-				directory = FSDirectory.open(index);
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, this, e);
-			directory = new RAMDirectory();
-		}
+		directory = getDirectory();
 	}
 
 	private String getIndexName()
@@ -160,21 +142,11 @@ public class FileIndex
 			IndexWriter writer = null;
 			try
 			{
-				EditPlugin plugin = jEdit.getPlugin(SmartOpenPlugin.class.getName());
-				File pluginHome = plugin.getPluginHome();
-				File index = new File(pluginHome, getIndexName());
 				Directory tempDirectory;
 				IndexWriterConfig.OpenMode openMode;
 				if (reset)
 				{
-					if (jEdit.getBooleanProperty("options.smartopen.memoryindex"))
-					{
-						tempDirectory = new RAMDirectory();
-					}
-					else
-					{
-						tempDirectory = FSDirectory.open(index);
-					}
+					tempDirectory = getDirectory();
 					openMode = IndexWriterConfig.OpenMode.CREATE;
 				}
 				else
@@ -213,6 +185,32 @@ public class FileIndex
 				IOUtilities.closeQuietly(writer);
 			}
 		}
+	}
+
+	private Directory getDirectory()
+	{
+		Directory tempDirectory;
+		if (jEdit.getBooleanProperty("options.smartopen.memoryindex"))
+		{
+			tempDirectory = new RAMDirectory();
+		}
+		else
+		{
+			try
+			{
+				EditPlugin plugin = jEdit.getPlugin(SmartOpenPlugin.class.getName());
+				File pluginHome = plugin.getPluginHome();
+				File index = new File(pluginHome, getIndexName());
+				index.mkdirs();
+				tempDirectory = FSDirectory.open(index);
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+				tempDirectory = new RAMDirectory();
+			}
+		}
+		return tempDirectory;
 	}
 
 	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
