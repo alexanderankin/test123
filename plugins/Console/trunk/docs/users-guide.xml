@@ -73,7 +73,7 @@
  <orderedlist>
  <listitem><para> Actions <guimenuitem>Compile Project</guimenuitem>
  and <guimenuitem>Run Project</guimenuitem> which are
- configured from ProjectViewer's <guimenuitem>Commands</guimenuitem> properties pane. </para></listitem>
+ configured from ProjectViewer's <guimenuitem>Console</guimenuitem> properties pane. </para></listitem>
  
  <listitem><para> The ability to listen to node change events from the ProjectViewer and make changes to the System shell's current directory. </para></listitem>
 
