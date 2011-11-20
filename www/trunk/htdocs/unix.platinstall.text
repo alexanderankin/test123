@@ -1,0 +1,10 @@
+<!-- begin unix.platinstall.text -->
+
+<!-- for jEdit: :mode=php:indentSize=2:tabSize=2:noTabs=true: -->
+
+<h3>Installing the Debian package manually</h3>
+
+<p>After downloading the DEB file, run the command
+<code>dpkg -i /path/to/your/jedit_&lt;version&gt;_all.deb</code>.</p>
+
+<!-- end unix.platinstall.text -->

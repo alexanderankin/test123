@@ -1,0 +1,12 @@
+<!-- begin mac.platinstall.text -->
+
+<!-- for jEdit: :indentSize=2:tabSize=2:noTabs=true: -->
+
+<p>Once you've downloaded the Mac OS X package, open jEdit.dmg.
+When the jEdit drive image appears on your desktop,
+copy the jEdit folder on it to your Applications folder
+(or wherever you'd like install it).</p>
+
+<p>Simply run the jEdit application in the jEdit folder, and code away...</p>
+
+<!-- end mac.platinstall.text -->

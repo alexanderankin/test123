@@ -6,9 +6,18 @@
 
 <table>
 <tr>
-<td valign="top">
+<td valign="top" align="center">
+<div class="g-plus" data-href="https://plus.google.com/105573242513550708576" data-size="badge"></div>
+<div style="height: 1em"></div>
 <script src="http://widgets.twimg.com/j/2/widget.js"></script>
 <script>
+(function() 
+{var po = document.createElement("script");
+po.type = "text/javascript"; po.async = true;po.src = "https://apis.google.com/js/plusone.js";
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(po, s);
+})();
+
 new TWTR.Widget({
   version: 2,
   type: 'search',
@@ -16,8 +25,8 @@ new TWTR.Widget({
   interval: 6000,
   title: '',
   subject: 'Tweets about jEdit',
-  width: 250,
-  height: 500,
+  width: 300,
+  height: 400,
   theme: {
     shell: {
       background: '#8ec1da',
