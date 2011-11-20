@@ -19,14 +19,19 @@
   </copyright>
   <copyright>
    <year>2005</year>
-   <year>2008</year>
+   <year>2011</year>
    <holder>Alan Ezust</holder>
   </copyright>
 
   <legalnotice>
    <title>Legal Notice</title>
    <para>
-   Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1 or any later version published by the Free Software Foundation; with no <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of the license can be found in the file <filename>COPYING.DOC.txt</filename> included with jEdit.
+   Permission is granted to copy, distribute and/or modify this document under
+   the terms of the GNU Free Documentation License, Version 1.1 or any later
+   version published by the Free Software Foundation; with no <quote>Invariant
+   Sections</quote>, <quote>Front-Cover Texts</quote> or <quote>Back-Cover
+   Texts</quote>, each as defined in the license. A copy of the license can be
+   found in the file <filename>COPYING.DOC.txt</filename> included with jEdit.
   </para>
   </legalnotice>
  </bookinfo>
@@ -55,25 +60,37 @@
     <para>Providing an extensible framework for other plugins that need to display streamed output.</para>
    </listitem>
   </itemizedlist>
-
-
  </chapter>
 
  <chapter id="setup">
  <title> Setup/Options </title>
 
+ <bridgehead> ProjectViewer Integration </bridgehead>
+ 
  <para> Console has an optional dependency on ProjectViewer.
  What this means is that it has some extra features which you can see if you have also installed ProjectViewer plugin. In particular they are: </para>
 
  <orderedlist>
- <listitem><para> The ability to listen to node change events from the projectviewer and make changes to the System shell's current directory. </para></listitem>
+ <listitem><para> Actions <guimenuitem>Compile Project</guimenuitem>
+ and <guimenuitem>Run Project</guimenuitem> which are
+ configured from ProjectViewer's <guimenuitem>Commands</guimenuitem> properties pane. </para></listitem>
+ 
+ <listitem><para> The ability to listen to node change events from the ProjectViewer and make changes to the System shell's current directory. </para></listitem>
 
- <listitem><para> The ability to query the ProjectViewer for the "current root directory" to run build commands from. This is used by the Console commandos for "ant", "make", and "qmake", and perhaps others<footnote><para> If you wish to use these commando buttons without the projectviewer, right click on the commando buttons, "customize" and edit the XML file, removing the lines that refer to projectviewer. </para></footnote>. </para></listitem>
+ <listitem><para> The ability to query the ProjectViewer for the "current root
+ directory" to run build commands from. This is used by the Console commandos
+ for "ant", "make", and "qmake", and perhaps others<footnote><para> If you
+ wish to use these commando buttons without the projectviewer, right click on
+ the commando buttons, "customize" and edit the XML file, removing the lines
+ that refer to projectviewer. </para></footnote>. </para></listitem>
+ 
 </orderedlist>
 
  <bridgehead> Option Panes </bridgehead>
 
- <para> By selecting <literal>Plugin Options - Console </literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do.
+ <para> By selecting <literal>Plugin Options - Console </literal>, you will
+ notice a number of options. It is recommended you browse through them to get
+ a full idea of what Console (and your other plugins) can do.
  </para>
 
  <bridgehead> Console - General Options </bridgehead>
@@ -117,12 +134,15 @@
         checked, append instead of prepend the extra directories.
   </para></listitem>
 
-
-
  </itemizedlist>
+ <bridgehead> Toolbar Options </bridgehead>
 
- <section id="errorpatterns">
- <title> Error Patterns Options </title>
+ <para> Console has an optional toolbar that displays commando commands.
+ The commands can be executed by keyboard shortcuts even if the toolbar is not
+ enabled. You can check and un-check which commands show up in the menus and
+ toolbars. </para>
+ 
+ <bridgehead> Error Patterns Options </bridgehead>
 
  <para> This option dialog allows you fine grained control over Console's error parsing capabilities.
  </para>
@@ -139,7 +159,13 @@
 </para>
 </tip>
 
-</section>
+<bridgehead> Compile and Run Options </bridgehead>
+
+<para> For each edit mode, you can choose a command that is 
+   used to compile or run a buffer. 
+   This can be either a commando command or a custom command.
+   These commands are executed in the System shell. 
+</para>
 
 </chapter>
 
@@ -1562,7 +1588,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     ProjectViewer 3 (optional).
     <itemizedlist>
         <listitem><para> Respects jEdit's "use textArea colors" appearance option. </para></listitem>
-        <listitem><para> New ProjectViewer option pane for providing actions to build and run project. (#3153058 - Damien Radtke) </para></listitem>
+        <listitem><para> New ProjectViewer option pane for defining new actions to compile and run a project. (#3153058 - Damien Radtke) </para></listitem>
 
     </itemizedlist>
   </para></listitem>
