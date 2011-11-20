@@ -159,7 +159,7 @@ options.console.compile-run.help=<HTML>Useful environment variables:<BLOCKQUOTE>
 	Read the Console plugin documentation for a full list of available \
 	environment variables.</HTML>
 
-options.pv.commands.label=Commands
+options.pv.commands.label=Console
 
 options.pv.commands.help=Commands are run relative to the project's root directory
 options.pv.commands.compile=Compile Project:
