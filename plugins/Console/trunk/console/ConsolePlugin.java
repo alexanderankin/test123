@@ -45,6 +45,7 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
+import org.gjt.sp.util.ThreadUtilities;
 
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
@@ -362,6 +363,35 @@ public class ConsolePlugin extends EditPlugin
 	// {{{ compile() method
 	public static void compile(View view, Buffer buffer)
 	{
+		SystemShell systemShell = getSystemShell();
+		String mode = buffer.getMode().getName();
+		
+		// Check for a custom compile command
+		if (jEdit.getBooleanProperty("mode."+mode+".compile.use-custom")) {
+			String command = jEdit.getProperty("mode."+mode+".compile.custom", "");
+			view.getDockableWindowManager().showDockableWindow("console");
+			Console console = (Console) getConsole(view);
+			Console.ShellState state = console.getShellState(systemShell);
+			
+			if (buffer.isDirty())
+			{
+				Object[] args = { buffer.getName() };
+				int result = GUIUtilities.confirm(view, "commando.not-saved-compile", args,
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (result == JOptionPane.YES_OPTION)
+				{
+					if (!buffer.save(view, null, true))
+						return;
+				}
+				else if (result != JOptionPane.NO_OPTION)
+					return;
+			}
+			
+			systemShell.execute(console, null, state, null, command);
+			return;
+		}
+		
+		// If it got here, run commando as normal
 		String compiler = buffer.getStringProperty("commando.compile");
 		if (compiler == null || compiler.length() == 0)
 		{
@@ -405,6 +435,35 @@ public class ConsolePlugin extends EditPlugin
 	// {{{ run() method
 	public static void run(View view, Buffer buffer)
 	{
+		SystemShell systemShell = getSystemShell();
+		String mode = buffer.getMode().getName();
+		
+		// Check for a custom compile command
+		if (jEdit.getBooleanProperty("mode."+mode+".run.use-custom")) {
+			String command = jEdit.getProperty("mode."+mode+".run.custom", "");
+			view.getDockableWindowManager().showDockableWindow("console");
+			Console console = (Console) getConsole(view);
+			Console.ShellState state = console.getShellState(systemShell);
+			
+			if (buffer.isDirty())
+			{
+				Object[] args = { buffer.getName() };
+				int result = GUIUtilities.confirm(view, "commando.not-saved-run", args,
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (result == JOptionPane.YES_OPTION)
+				{
+					if (!buffer.save(view, null, true))
+						return;
+				}
+				else if (result != JOptionPane.NO_OPTION)
+					return;
+			}
+			
+			systemShell.execute(console, null, state, null, command);
+			return;
+		}
+		
+		// If it got here, run commando as normal
 		String interpreter = buffer.getStringProperty("commando.run");
 		if (interpreter == null || interpreter.length() == 0)
 		{
@@ -440,6 +499,54 @@ public class ConsolePlugin extends EditPlugin
 		}
 	} // }}}
 
+	// {{{ compileProject() method
+	public static void compileProject(View view) {
+		runProjectCommand(view, "compile");
+	} // }}}
+	
+	// {{{ runProject() method
+	public static void runProject(View view) {
+		runProjectCommand(view, "run");
+	} // }}}
+
+	// {{{ runProjectCommand() method
+	private static void runProjectCommand(View view, String prop) {
+		if (jEdit.getPlugin("projectviewer.ProjectPlugin") == null) {
+			GUIUtilities.error(view, "console.pv.not-installed", null);
+			return;
+		}
+		
+		projectviewer.vpt.VPTProject project =
+			projectviewer.ProjectViewer.getViewer(view).getActiveProject(view);
+		if (project == null) {
+			GUIUtilities.error(view, "console.pv.no-active-project", null);
+			return;
+		}
+		
+		String cmd = project.getProperty("console."+prop);
+		if (cmd == null) cmd = "";
+		
+		// Run the command in the project's root, but then return to
+		// the original working directory
+		final SystemShell systemShell = getSystemShell();
+		view.getDockableWindowManager().showDockableWindow("console");
+		final Console console = (Console) getConsole(view);
+		final Console.ShellState state = console.getShellState(systemShell);
+		
+		final String cwd = systemShell.getConsoleState(console).currentDirectory;
+		systemShell.execute(console, null, state, null, "cd \""+project.getRootPath()+"\"");
+		systemShell.waitFor(console);
+		console.run(systemShell, cmd);
+		ThreadUtilities.runInBackground(new Runnable() {
+			public void run() {
+				systemShell.waitFor(console);
+				systemShell.execute(console, null, state, null,
+					"cd \""+cwd+"\"");
+				systemShell.printPrompt(console, state);
+			}
+		});
+	} // }}}
+	
 	// {{{ getPackageName() method
 	/**
 	 * A utility method that returns the name of the package containing the

@@ -39,7 +39,16 @@ public class ConsoleMenuProvider implements DynamicMenuProvider
 	//{{{ update() method
 	public void update(JMenu superMenu)
 	{
-		JMenu menu = new JMenu("Commands");
+		JMenu menu = new JMenu("Project");
+		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("project-compile"), false));
+		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("project-run"), false));
+		menu.addSeparator();
+		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("chdir-pv-root"), false));
+		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("chdir-pv-selected"), false));
+		superMenu.add(menu);
+		superMenu.addSeparator();
+		
+		menu = new JMenu("Commands");
 		EditAction[] commands = ConsolePlugin.getCommandoCommands();
 		for(int i = 0; i < commands.length; i++)
 		{

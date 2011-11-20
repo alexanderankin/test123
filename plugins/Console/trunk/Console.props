@@ -12,7 +12,7 @@ plugin.console.ConsolePlugin.longdescription=description.html
 plugin.console.ConsolePlugin.docs=index.html
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.04.99.01
+plugin.console.ConsolePlugin.depend.0=jedit 04.04.99.02
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 # ProjectViewer is optional because Console only listens to events from it.
@@ -21,16 +21,18 @@ plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugi
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
 	commando - commando-compile commando-run console-clear - \
-	browse-commando-directory rescan-commands - \
-    chdir-pv-selected chdir-pv-root -
+	browse-commando-directory rescan-commands -
+#chdir-pv-selected chdir-pv-root -
 plugin.console.ConsolePlugin.menu.code=new console.ConsoleMenuProvider();
 console.label=Console
 run-last-console-command.label=Run Last Command
 commando.label=Commando...
 commando-compile.label=Compile Current Buffer...
 commando-run.label=Run Current Buffer...
-chdir-pv-selected.label=cd to ProjectViewer selected node dir
-chdir-pv-root.label=cd to ProjectViewer root dir
+chdir-pv-selected.label=CD to Selected Node
+chdir-pv-root.label=CD to Root
+project-compile.label=Compile Project
+project-run.label=Run Project
 
 browse-commando-directory.label=Browse Commando Directory
 rescan-commands.label=Regen dynamic menus
@@ -148,6 +150,20 @@ options.console.compile-run.caption=Compilers and interpreters:
 options.console.compile-run.mode=Mode
 options.console.compile-run.compiler=Compiler
 options.console.compile-run.interpreter=Interpreter
+
+# Because this uses a JLabel, the HTML formatting is necessary
+options.console.compile-run.help=<HTML>Useful environment variables:<BLOCKQUOTE> \
+	$f - full path of the current buffer<BR /> \
+	$d - parent directory of the current buffer<BR /> \
+	$n - name of the current buffer</BLOCKQUOTE> \
+	Read the Console plugin documentation for a full list of available \
+	environment variables.</HTML>
+
+options.pv.commands.label=Commands
+
+options.pv.commands.help=Commands are run relative to the project's root directory
+options.pv.commands.compile=Compile Project:
+options.pv.commands.run=Run Project:
 
 ### SystemShell
 console.shell.info.toggle=true
@@ -452,3 +468,10 @@ mode.perl.commando.compile=perl
 mode.shellscript.commando.run=execute
 mode.makefile.commando.compile=make
 
+# Project compilation
+console.pv.not-installed.title=ProjectViewer not installed
+console.pv.not-installed.message=This action requires the ProjectViewer plugin. \
+	Please install it and try again.
+console.pv.no-active-project.title=No Active Project
+console.pv.no-active-project.message=Select a project in the ProjectViewer \
+	dockable and try again.
