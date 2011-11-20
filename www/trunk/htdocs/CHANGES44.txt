@@ -2,6 +2,77 @@ jEdit 4.4 version history
        (changes since jEdit 4.3)
 :encoding=UTF-8:
 
+{{{ Version 4.4.2
+
+Thanks to Björn "Vampire" Kautler, Alan Ezust, Matthieu Casanova, and
+Evan Wright for contributing to this release.
+
+{{{ Bug Fixes
+- Untitled buffer should not be created on VFS without write capability
+  (#3399387) (Matthieu Casanova)
+
+- Shortcuts option pane was showing shortcuts twice when an action was
+  overridden by a macro or a plugin (Matthieu Casanova)
+
+- When macros are reloaded, if one of them was overriding a built-in action,
+  the action is not restored if the overriding macro is removed
+  (#3110689 - Matthieu Casanova)
+
+- Fixed a bug which caused lines to disappear when using indent folding
+  if every line was indented (#3412237 - Evan Wright)
+
+- When removing a plugin, the update and install panel were not refreshed
+  (Matthieu Casanova)
+
+- Fixed a corner case when trying to move caret during a buffer operation
+  (loading, transaction, undo) prevent to move the caret forever
+  (Matthieu Casanova)
+
+- Fixed jEdit starting when max heap size is too low to load Killring
+  (#1827853) (Matthieu Casanova
+
+- MiscUtilities.expandVariables() now recognizes %varname% on Windows,
+  meaning it can reverse what MiscUtilities.abbreviate() does. (Alan Ezust).
+
+- Fixed NPE when starting jEdit with nosettings (#3401814) (Matthieu Casanova)
+
+- Fixed several case where userinput during buffer loading cause exceptions
+  (#3398342) (Matthieu Casanova)
+
+- Pressing left arrow when the caret is at the buffer start but in a selection
+  now cancels the selection as it should. (#3396672) (Matthieu Casanova)
+
+- Fixed loading of jEdit in case of corrupted recent.xml file in the settings
+  (#3396545) (Matthieu Casanova)
+
+- If the current buffer is on a VFS that is not browseable (ex:http), trying
+  to open a new file was trying to browse the path of the current file giving
+  an error (Matthieu Casanova)
+
+- Error Widget now use the same color as Invalid token instead of being always
+  red (Matthieu Casanova)
+
+- Fix for tracker 3034220, jEdit fails to load text-file under Mac OS X
+  (#3034220 - Evan Wright)
+
+- Fixed a bug that occured when jumping to a line inside of a nested fold.
+  (#3406213 - Evan Wright)
+
+}}}
+{{{ Miscellaneous
+
+
+}}}
+{{{ API Changes
+
+
+}}}
+{{{ Editing
+- `elsif compiler directive added to verilog edit mode (#3261277)
+  (Matthieu Casanova)
+
+}}}
+}}}
 {{{ Version 4.4.1
 
 Thanks to Björn "Vampire" Kautler, Kazutoshi Satoda, Alan Ezust,
@@ -19,12 +90,12 @@ and Matthieu Casanova for contributing to this release.
 - jEdit now force drops from external applications to be COPY and not
   MOVE drops. It prevents ftp explorer from deleting dropped files
   (#1208598 - Matthieu Casanova)
-  
+
 - Changing bufferset scopes now saved to properties as default scope.
   (#3316329 - Matthieu Casanova)
-  
-- Buffersets no longer populated with open files when creating new view. 
-  (#2990965 - Matthieu Casanova and Alan Ezust)  
+
+- Buffersets no longer populated with open files when creating new view.
+  (#2990965 - Matthieu Casanova and Alan Ezust)
 
 - BufferSet contents of new Plain View #3317405 fixed (Matthieu Casanova)
 
@@ -46,8 +117,8 @@ and Matthieu Casanova for contributing to this release.
 - Improve integration with Unity Launcher. Without this change if you pin jEdit
   to the Launcher and then run it, a separate icon for the running instance is
   shown. With this change this is correctly merged with the pinned starter.
-  (Björn "Vampire" Kautler) 
- 
+  (Björn "Vampire" Kautler)
+
 }}}
 
 }}}

@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="https://plus.google.com/105573242513550708576" rel="publisher" />
 <?php
 		$page = trim($_GET['page']);
 
@@ -13,13 +14,21 @@
 </title>
 
 <link href="stylesheet.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+  var uvOptions = {};
+  (function() {
+    var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
+    uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/PBf9IJPQtpxVh9tbgSth2A.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
+  })();
+</script>
 </head>
 
 <body>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 21 June 2011 | <?php /*Latest Version: <a class="header_text" href="CHANGES44.txt">4.4pre1</a> | */?>Stable Version: <a class="header_text" href="CHANGES44.txt">4.4.1</a></p>
+      <p class="header_text">Last Site Update: 19 November 2011 | <?php /**/?>Latest Version: <a class="header_text" href="CHANGES45.txt">4.5pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES44.txt">4.4.2</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">

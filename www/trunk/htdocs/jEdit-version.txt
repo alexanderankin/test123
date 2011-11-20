@@ -1,8 +1,9 @@
-.version 4.4.1
-.build 04.04.99.01
-.stablebuild 04.04.99.01
+.version 4.5pre1
+.build 04.05.01.00
+.stablebuild 04.04.99.02
 
-There is no current development version
+The current development version is 4.5pre1. You can find a list of major
+changes since 4.4 at www.jedit.org/CHANGES45.txt
 
-The current stable version is 4.4.1. You can find a list of major
+The current stable version is 4.4.2. You can find a list of major
 changes since 4.3 at www.jedit.org/CHANGES44.txt
