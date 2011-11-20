@@ -1562,6 +1562,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     ProjectViewer 3 (optional).
     <itemizedlist>
         <listitem><para> Respects jEdit's "use textArea colors" appearance option. </para></listitem>
+        <listitem><para> New ProjectViewer option pane for providing actions to build and run project. (#3153058 - Damien Radtke) </para></listitem>
 
     </itemizedlist>
   </para></listitem>

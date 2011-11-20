@@ -30,6 +30,16 @@
 			console.ConsolePlugin.run(view,buffer);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="project-compile">
+		<CODE>
+			console.ConsolePlugin.compileProject(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="project-run">
+		<CODE>
+			console.ConsolePlugin.runProject(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="rescan-commands">
 		<CODE>
 			console.ConsolePlugin.rescanCommands();

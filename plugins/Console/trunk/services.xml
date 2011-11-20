@@ -9,4 +9,7 @@
 	<SERVICE CLASS="console.Shell" NAME="BeanShell">
 		new console.ConsoleBeanShell();
 	</SERVICE>
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="Commands">
+        new console.ProjectCommandOptionsService();
+    </SERVICE>
 </SERVICES>
