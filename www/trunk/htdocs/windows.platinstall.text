@@ -1,0 +1,8 @@
+<!-- begin windows.platinstall.text -->
+
+<!-- for jEdit: :mode=php:indentSize=2:tabSize=2:noTabs=true: -->
+
+<p>After downloading the EXE file, just double click it or run the executable
+from the commandline. Then just follow the onscreen instructions.</p>
+
+<!-- end windows.platinstall.text -->
