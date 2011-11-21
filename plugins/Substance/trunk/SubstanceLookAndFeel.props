@@ -1,12 +1,12 @@
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.name=SubstanceLookAndFeel
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.author=Dale Anson
-plugin.lookandfeel.SubstanceLookAndFeelPlugin.version=6.1
+plugin.lookandfeel.SubstanceLookAndFeelPlugin.version=6.1.1
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.docs=index.html
-plugin.lookandfeel.SubstanceLookAndFeelPlugin.activate=defer
+plugin.lookandfeel.SubstanceLookAndFeelPlugin.activate=startup
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.depend.0=jdk 1.6
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.depend.1=jedit 04.03.99.00
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.depend.2=plugin lookandfeel.LookAndFeelPlugin 1.6.0
-plugin.lookandfeel.SubstanceLookAndFeelPlugin.jars=substance.jar trident.jar
+plugin.lookandfeel.SubstanceLookAndFeelPlugin.jars=substance.jar trident.jar laf-widget.jar laf-plugin.jar
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.description=The Substance Look and Feel plugin provides the Substance Look and Feel to jEdit.
 
 substance.theme.label=Theme
