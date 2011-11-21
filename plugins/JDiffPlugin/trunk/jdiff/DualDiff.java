@@ -444,9 +444,11 @@ public class DualDiff implements EBComponent {
     private void installHandlers() {
         textArea0.addScrollListener(scrollHandler);
         textArea0.addFocusListener(scrollHandler);
+        textArea0.getDisplayManager().expandAllFolds();
 
         textArea1.addScrollListener(scrollHandler);
         textArea1.addFocusListener(scrollHandler);
+        textArea1.getDisplayManager().expandAllFolds();
     }
 
     private void removeHandlers() {
