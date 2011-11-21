@@ -1,0 +1,17 @@
+<project name="Substance 6.1" basedir="." default="build">
+    <description>
+        This simple build file builds the Substance jars and copies them to the
+        lib directory for the Substance plugin for jEdit.
+    </description>
+    
+    <target name="build">
+        <ant antfile="build.xml" dir="laf-plugin"/>
+        <ant antfile="build.xml" dir="laf-widget"/>
+        <ant antfile="build.xml" dir="substance"/>
+        
+        <copy file="laf-plugin/drop/laf-plugin.jar" todir="../lib/"/>
+        <copy file="laf-widget/drop/laf-widget.jar" todir="../lib/"/>
+        <copy file="substance/drop/substance.jar" todir="../lib/"/>
+        <copy file="substance/lib/trident.jar" todir="../lib/"/>
+    </target>
+</project>
