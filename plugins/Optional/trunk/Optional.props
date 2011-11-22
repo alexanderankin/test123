@@ -3,7 +3,7 @@ plugin.optional.OptionalPlugin.name=Optional
 plugin.optional.OptionalPlugin.activate=startup
 
 plugin.optional.OptionalPlugin.author=Alan Ezust
-plugin.optional.OptionalPlugin.version=1.0.2
+plugin.optional.OptionalPlugin.version=1.0.3
 plugin.optional.OptionalPlugin.docs=index.html
 plugin.optional.OptionalPlugin.depend.0=jedit 04.03.99.00
 plugin.optional.OptionalPlugin.depend.1=jdk 1.5
