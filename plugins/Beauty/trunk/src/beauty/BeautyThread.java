@@ -59,7 +59,7 @@ public class BeautyThread implements Runnable {
             // current buffer settings
             Mode mode = buffer.getMode();
             String modeName = mode.getName();
-            String ls = buffer.getStringProperty( "lineSeparator" );
+            String ls = "\n";   // jEdit Buffer always uses \n internally
             int tabWidth = buffer.getIntegerProperty( "tabSize", 4 );
             int indentWidth = buffer.getIntegerProperty( "indentSize", 4 );
             boolean softTabs = buffer.getBooleanProperty( "noTabs" );
