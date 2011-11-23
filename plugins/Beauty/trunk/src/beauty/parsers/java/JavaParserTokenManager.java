@@ -294,7 +294,8 @@ public class JavaParserTokenManager implements JavaParserConstants
             // check that there is one space between the end of the output
             // buffer and this line -- this handles the case where the output
             // buffer does not end in a space and the new string does not start
-            // with a space, want one space in between.
+            // with a space, want one space in between, unless, of course, the
+            // next character is ;.
             if (!s.startsWith(" ") && !s.startsWith(";")
                     && !endsWith(outputBuffer, " ")
                     && !endsWith(outputBuffer, "\u005cr")

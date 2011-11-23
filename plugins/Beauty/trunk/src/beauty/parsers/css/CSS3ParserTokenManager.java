@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.jEdit;
 
+/** Token Manager. */
 public class CSS3ParserTokenManager implements CSS3ParserConstants
 {
     // line buffer, text is accumulated here, then written to the output stream
@@ -70,8 +71,8 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
-            indent = "\t";
-            double_indent = "\t\t";
+            indent = "\u005ct";
+            double_indent = "\u005ct\u005ct";
         }
         else {
             setIndentWidth(indent_width);
@@ -109,25 +110,25 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
 
     // trim a single new line from the end of the output buffer
     static void trimNL() {
-        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\n')
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cn')
             outputBuffer.deleteCharAt(outputBuffer.length() - 1);
-        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\r')
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cr')
             outputBuffer.deleteCharAt(outputBuffer.length() - 1);
     }
 
     // trim all \n and/or \r from the end of the given string
     static void trimNL(String s) {
         StringBuilder sb = new StringBuilder(s);
-        while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
+        while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\u005cr' || sb.charAt(sb.length() - 1) == '\u005cn'))
             sb.deleteCharAt(sb.length() - 1);
     }
 
     // trim all whitespace (\r, \n, space, \t) from the start of the given string
     static String trimStart(String s) {
         StringBuilder sb = new StringBuilder(s);
-        while(sb.length() > 0 && (sb.charAt(0) == '\r'
-                || sb.charAt(0) == '\n'
-                || sb.charAt(0) == '\t'
+        while(sb.length() > 0 && (sb.charAt(0) == '\u005cr'
+                || sb.charAt(0) == '\u005cn'
+                || sb.charAt(0) == '\u005ct'
                 || sb.charAt(0) == ' ')) {
             sb.deleteCharAt(0);
         }
@@ -158,9 +159,9 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
                 sb.append( ((Token)o).image );
             else
                 sb.append((String)o);
-            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
-                    || sb.charAt(sb.length() - 1) == '\n'
-                    || sb.charAt(sb.length() - 1) == '\t'
+            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\u005cr'
+                    || sb.charAt(sb.length() - 1) == '\u005cn'
+                    || sb.charAt(sb.length() - 1) == '\u005ct'
                     || sb.charAt(sb.length() - 1) == ' ')) {
                 sb.deleteCharAt(sb.length() - 1);
             }
@@ -173,9 +174,9 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
             }
         }
         if (a.size() == 0) {
-            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
-                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
-                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
+            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cr'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cn'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\u005ct'
                     || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
                 outputBuffer.deleteCharAt(outputBuffer.length() - 1);
             }
@@ -242,7 +243,7 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
             // doesn't, remove any leading whitespace from this line.
             // Hmm, yeah, well, this fucks up the first line.  Added the length
             // check.
-            if (outputBuffer.length() > 0 && !endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+            if (outputBuffer.length() > 0 && !endsWith(outputBuffer, "\u005cn") && !endsWith(outputBuffer, "\u005cr")) {
                 s = trimStart(s);
             }
 
@@ -259,8 +260,8 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
             // with a space, want one space in between.
             if (!s.startsWith(" ")
                     && !endsWith(outputBuffer, " ")
-                    && !endsWith(outputBuffer, "\r")
-                    && !endsWith(outputBuffer, "\n")
+                    && !endsWith(outputBuffer, "\u005cr")
+                    && !endsWith(outputBuffer, "\u005cn")
                     && outputBuffer.length() > 0) {
                 outputBuffer.append(" ");
             }
@@ -272,7 +273,7 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
 
             // there should be no situation where a comma is preceded by a space,
             // although that seems to happen when formatting string arrays.
-            s = s.replaceAll("\\s+[,]", ",");
+            s = s.replaceAll("\u005c\u005cs+[,]", ",");
 
             // finally! add the string to the output buffer
             // check for line length, may need to wrap.  Sun says to avoid lines
@@ -387,15 +388,18 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
             add(t);
         }
     }
+
+  /** Debug output. */
   public  java.io.PrintStream debugStream = System.out;
+  /** Set debug output. */
   public  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }
-private final int jjStopAtPos(int pos, int kind)
+private int jjStopAtPos(int pos, int kind)
 {
    jjmatchedKind = kind;
    jjmatchedPos = pos;
    return pos + 1;
 }
-private final int jjMoveStringLiteralDfa0_0()
+private int jjMoveStringLiteralDfa0_0()
 {
    switch(curChar)
    {
@@ -458,7 +462,7 @@ private final int jjMoveStringLiteralDfa0_0()
          return jjMoveNfa_0(20, 0);
    }
 }
-private final int jjMoveStringLiteralDfa1_0(long active0, long active1)
+private int jjMoveStringLiteralDfa1_0(long active0, long active1)
 {
    try { curChar = input_stream.readChar(); }
    catch(java.io.IOException e) {
@@ -548,7 +552,7 @@ private final int jjMoveStringLiteralDfa1_0(long active0, long active1)
    }
    return jjMoveNfa_0(20, 1);
 }
-private final int jjMoveStringLiteralDfa2_0(long old0, long active0, long old1, long active1)
+private int jjMoveStringLiteralDfa2_0(long old0, long active0, long old1, long active1)
 {
    if (((active0 &= old0) | (active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 1);
@@ -618,7 +622,7 @@ private final int jjMoveStringLiteralDfa2_0(long old0, long active0, long old1, 
    }
    return jjMoveNfa_0(20, 2);
 }
-private final int jjMoveStringLiteralDfa3_0(long old0, long active0, long old1, long active1)
+private int jjMoveStringLiteralDfa3_0(long old0, long active0, long old1, long active1)
 {
    if (((active0 &= old0) | (active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 2);
@@ -696,7 +700,7 @@ private final int jjMoveStringLiteralDfa3_0(long old0, long active0, long old1, 
    }
    return jjMoveNfa_0(20, 3);
 }
-private final int jjMoveStringLiteralDfa4_0(long old0, long active0, long old1, long active1)
+private int jjMoveStringLiteralDfa4_0(long old0, long active0, long old1, long active1)
 {
    if (((active0 &= old0) | (active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 3);
@@ -773,7 +777,7 @@ private final int jjMoveStringLiteralDfa4_0(long old0, long active0, long old1, 
    }
    return jjMoveNfa_0(20, 4);
 }
-private final int jjMoveStringLiteralDfa5_0(long old1, long active1)
+private int jjMoveStringLiteralDfa5_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 4);
@@ -834,7 +838,7 @@ private final int jjMoveStringLiteralDfa5_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 5);
 }
-private final int jjMoveStringLiteralDfa6_0(long old1, long active1)
+private int jjMoveStringLiteralDfa6_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 5);
@@ -895,7 +899,7 @@ private final int jjMoveStringLiteralDfa6_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 6);
 }
-private final int jjMoveStringLiteralDfa7_0(long old1, long active1)
+private int jjMoveStringLiteralDfa7_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 6);
@@ -947,7 +951,7 @@ private final int jjMoveStringLiteralDfa7_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 7);
 }
-private final int jjMoveStringLiteralDfa8_0(long old1, long active1)
+private int jjMoveStringLiteralDfa8_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 7);
@@ -974,7 +978,7 @@ private final int jjMoveStringLiteralDfa8_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 8);
 }
-private final int jjMoveStringLiteralDfa9_0(long old1, long active1)
+private int jjMoveStringLiteralDfa9_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 8);
@@ -1023,7 +1027,7 @@ private final int jjMoveStringLiteralDfa9_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 9);
 }
-private final int jjMoveStringLiteralDfa10_0(long old1, long active1)
+private int jjMoveStringLiteralDfa10_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 9);
@@ -1060,7 +1064,7 @@ private final int jjMoveStringLiteralDfa10_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 10);
 }
-private final int jjMoveStringLiteralDfa11_0(long old1, long active1)
+private int jjMoveStringLiteralDfa11_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 10);
@@ -1083,7 +1087,7 @@ private final int jjMoveStringLiteralDfa11_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 11);
 }
-private final int jjMoveStringLiteralDfa12_0(long old1, long active1)
+private int jjMoveStringLiteralDfa12_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 11);
@@ -1106,7 +1110,7 @@ private final int jjMoveStringLiteralDfa12_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 12);
 }
-private final int jjMoveStringLiteralDfa13_0(long old1, long active1)
+private int jjMoveStringLiteralDfa13_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 12);
@@ -1139,7 +1143,7 @@ private final int jjMoveStringLiteralDfa13_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 13);
 }
-private final int jjMoveStringLiteralDfa14_0(long old1, long active1)
+private int jjMoveStringLiteralDfa14_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 13);
@@ -1158,7 +1162,7 @@ private final int jjMoveStringLiteralDfa14_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 14);
 }
-private final int jjMoveStringLiteralDfa15_0(long old1, long active1)
+private int jjMoveStringLiteralDfa15_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 14);
@@ -1177,7 +1181,7 @@ private final int jjMoveStringLiteralDfa15_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 15);
 }
-private final int jjMoveStringLiteralDfa16_0(long old1, long active1)
+private int jjMoveStringLiteralDfa16_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 15);
@@ -1196,7 +1200,7 @@ private final int jjMoveStringLiteralDfa16_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 16);
 }
-private final int jjMoveStringLiteralDfa17_0(long old1, long active1)
+private int jjMoveStringLiteralDfa17_0(long old1, long active1)
 {
    if (((active1 &= old1)) == 0L)
       return jjMoveNfa_0(20, 16);
@@ -1225,40 +1229,10 @@ private final int jjMoveStringLiteralDfa17_0(long old1, long active1)
    }
    return jjMoveNfa_0(20, 17);
 }
-private final void jjCheckNAdd(int state)
-{
-   if (jjrounds[state] != jjround)
-   {
-      jjstateSet[jjnewStateCnt++] = state;
-      jjrounds[state] = jjround;
-   }
-}
-private final void jjAddStates(int start, int end)
-{
-   do {
-      jjstateSet[jjnewStateCnt++] = jjnextStates[start];
-   } while (start++ != end);
-}
-private final void jjCheckNAddTwoStates(int state1, int state2)
-{
-   jjCheckNAdd(state1);
-   jjCheckNAdd(state2);
-}
-private final void jjCheckNAddStates(int start, int end)
-{
-   do {
-      jjCheckNAdd(jjnextStates[start]);
-   } while (start++ != end);
-}
-private final void jjCheckNAddStates(int start)
-{
-   jjCheckNAdd(jjnextStates[start]);
-   jjCheckNAdd(jjnextStates[start + 1]);
-}
 static final long[] jjbitVec0 = {
    0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL
 };
-private final int jjMoveNfa_0(int startState, int curPos)
+private int jjMoveNfa_0(int startState, int curPos)
 {
    int strKind = jjmatchedKind;
    int strPos = jjmatchedPos;
@@ -1267,12 +1241,11 @@ private final int jjMoveNfa_0(int startState, int curPos)
    try { curChar = input_stream.readChar(); }
    catch(java.io.IOException e) { throw new Error("Internal Error"); }
    curPos = 0;
-   int[] nextStates;
    int startsAt = 0;
    jjnewStateCnt = 613;
    int i = 1;
    jjstateSet[0] = startState;
-   int j, kind = 0x7fffffff;
+   int kind = 0x7fffffff;
    for (;;)
    {
       if (++jjround == 0x7fffffff)
@@ -1280,7 +1253,7 @@ private final int jjMoveNfa_0(int startState, int curPos)
       if (curChar < 64)
       {
          long l = 1L << curChar;
-         MatchLoop: do
+         do
          {
             switch(jjstateSet[--i])
             {
@@ -3818,7 +3791,7 @@ private final int jjMoveNfa_0(int startState, int curPos)
       else if (curChar < 128)
       {
          long l = 1L << (curChar & 077);
-         MatchLoop: do
+         do
          {
             switch(jjstateSet[--i])
             {
@@ -5553,7 +5526,7 @@ private final int jjMoveNfa_0(int startState, int curPos)
       {
          int i2 = (curChar & 0xff) >> 6;
          long l2 = 1L << (curChar & 077);
-         MatchLoop: do
+         do
          {
             switch(jjstateSet[--i])
             {
@@ -5845,6 +5818,8 @@ static final int[] jjnextStates = {
    222, 223, 235, 237, 238, 239, 249, 251, 252, 253, 331, 332, 349, 351, 352, 353, 
    365, 367, 368, 369, 379, 380, 
 };
+
+/** Token literal values. */
 public static final String[] jjstrLiteralImages = {
 "", null, null, null, null, null, null, null, null, null, null, null, null, 
 null, null, null, null, null, null, null, null, null, "\74\41\55\55", "\55\55\76", 
@@ -5855,22 +5830,29 @@ null, null, null, null, null, null, "\72\72", "\100\143\150\141\162\163\145\164"
 null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
 null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
 null, null, "\174", };
+
+/** Lexer state names. */
 public static final String[] lexStateNames = {
-   "DEFAULT", 
+   "DEFAULT",
 };
 protected SimpleCharStream input_stream;
 private final int[] jjrounds = new int[613];
 private final int[] jjstateSet = new int[1226];
 protected char curChar;
+/** Constructor. */
 public CSS3ParserTokenManager(SimpleCharStream stream){
    if (SimpleCharStream.staticFlag)
       throw new Error("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
    input_stream = stream;
 }
+
+/** Constructor. */
 public CSS3ParserTokenManager(SimpleCharStream stream, int lexState){
    this(stream);
    SwitchTo(lexState);
 }
+
+/** Reinitialise parser. */
 public void ReInit(SimpleCharStream stream)
 {
    jjmatchedPos = jjnewStateCnt = 0;
@@ -5878,18 +5860,22 @@ public void ReInit(SimpleCharStream stream)
    input_stream = stream;
    ReInitRounds();
 }
-private final void ReInitRounds()
+private void ReInitRounds()
 {
    int i;
    jjround = 0x80000001;
    for (i = 613; i-- > 0;)
       jjrounds[i] = 0x80000000;
 }
+
+/** Reinitialise parser. */
 public void ReInit(SimpleCharStream stream, int lexState)
 {
    ReInit(stream);
    SwitchTo(lexState);
 }
+
+/** Switch to specified lex state. */
 public void SwitchTo(int lexState)
 {
    if (lexState >= 1 || lexState < 0)
@@ -5900,14 +5886,25 @@ public void SwitchTo(int lexState)
 
 protected Token jjFillToken()
 {
-   Token t = Token.newToken(jjmatchedKind);
-   t.kind = jjmatchedKind;
+   final Token t;
+   final String curTokenImage;
+   final int beginLine;
+   final int endLine;
+   final int beginColumn;
+   final int endColumn;
    String im = jjstrLiteralImages[jjmatchedKind];
-   t.image = (im == null) ? input_stream.GetImage() : im;
-   t.beginLine = input_stream.getBeginLine();
-   t.beginColumn = input_stream.getBeginColumn();
-   t.endLine = input_stream.getEndLine();
-   t.endColumn = input_stream.getEndColumn();
+   curTokenImage = (im == null) ? input_stream.GetImage() : im;
+   beginLine = input_stream.getBeginLine();
+   beginColumn = input_stream.getBeginColumn();
+   endLine = input_stream.getEndLine();
+   endColumn = input_stream.getEndColumn();
+   t = Token.newToken(jjmatchedKind, curTokenImage);
+
+   t.beginLine = beginLine;
+   t.endLine = endLine;
+   t.beginColumn = beginColumn;
+   t.endColumn = endColumn;
+
    return t;
 }
 
@@ -5918,22 +5915,21 @@ int jjround;
 int jjmatchedPos;
 int jjmatchedKind;
 
+/** Get the next Token. */
 public Token getNextToken() 
 {
-  int kind;
-  Token specialToken = null;
   Token matchedToken;
   int curPos = 0;
 
   EOFLoop :
   for (;;)
-  {   
-   try   
-   {     
+  {
+   try
+   {
       curChar = input_stream.BeginToken();
-   }     
+   }
    catch(java.io.IOException e)
-   {        
+   {
       jjmatchedKind = 0;
       matchedToken = jjFillToken();
       return matchedToken;
@@ -5970,6 +5966,33 @@ public Token getNextToken()
    }
    throw new TokenMgrError(EOFSeen, curLexState, error_line, error_column, error_after, curChar, TokenMgrError.LEXICAL_ERROR);
   }
+}
+
+private void jjCheckNAdd(int state)
+{
+   if (jjrounds[state] != jjround)
+   {
+      jjstateSet[jjnewStateCnt++] = state;
+      jjrounds[state] = jjround;
+   }
+}
+private void jjAddStates(int start, int end)
+{
+   do {
+      jjstateSet[jjnewStateCnt++] = jjnextStates[start];
+   } while (start++ != end);
+}
+private void jjCheckNAddTwoStates(int state1, int state2)
+{
+   jjCheckNAdd(state1);
+   jjCheckNAdd(state2);
+}
+
+private void jjCheckNAddStates(int start, int end)
+{
+   do {
+      jjCheckNAdd(jjnextStates[start]);
+   } while (start++ != end);
 }
 
 }
