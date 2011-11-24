@@ -80,6 +80,27 @@ public class Type implements Serializable
 		}
 	}
 
+	public static Type fromString(String type)
+	{
+		if ("boolean".equals(type))
+			return BOOLEAN;
+		if ("float".equals(type))
+			return FLOAT;
+		if ("integer".equals(type))
+			return INTEGER;
+		if ("null".equals(type))
+			return NULL;
+		if ("string".equals(type))
+			return STRING;
+		if ("array".equals(type))
+			return ARRAY;
+		if ("mixed".equals(type) || "unknown".equals(type))
+			return UNKNOWN;
+		if ("object".equals(type))
+			return OBJECT;
+		return new Type(OBJECT_INT, type);
+	}
+
 	private final String className;
 
 	public Type(int type)
