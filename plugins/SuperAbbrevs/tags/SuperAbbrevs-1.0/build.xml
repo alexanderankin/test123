@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<!--
+     This build.xml file for building the SuperAbbrevs  plugin is based
+     upon the model file used for building the QuickNotepad plugin.
+     
+     See INSTALL.txt
+-->
+<project name="SuperAbbrevs" default="build" basedir=".">
+	
+	<description>
+			This is an ant build.xml file for building the SuperAbbrevs plugin for jEdit.
+	</description>
+	<property file="build.properties" />
+	<property file="../build.properties" />
+	<property name="build.support" value="../build-support" />    
+
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<property name="ant.project.name" value="SuperAbbrevs" />
+        <property name="src.dir" value="."/>
+  
+	<property name="compiler.source" value="1.5" />
+        <property name="compiler.target" value="1.5" />
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	</path>
+	
+  <!-- make tags with ctags-exuberant -->
+  <target name="tags">
+		<exec executable="ctags-exuberant">
+			<arg value="-R"/>
+			<arg value="."/>
+		</exec>
+  </target>
+	
+  <!-- 
+  You need to install jflex to compile this target. But you only need to build 
+  this target if you change the lexer files.
+  -->
+	<target name="jflex">
+		<exec executable="jflex">
+			<arg value="superabbrevs/lexer/*.lex"/>
+		</exec>
+	</target>
+	
+	<selector id="extraFiles">
+		<and>
+			<or>
+				<filename name="actions.xml"/>
+				<filename name="**/*.props"/>
+				<filename name="**/*.gif"/>
+				<filename name="**/*.bsh"/>
+				<filename name="resources/*"/>
+			</or>
+			<not>
+				<filename name="${build.dir}/**" />
+			</not>
+		</and>
+	</selector>
+</project>
