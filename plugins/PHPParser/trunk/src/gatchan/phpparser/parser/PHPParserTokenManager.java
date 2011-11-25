@@ -4,6 +4,7 @@ package gatchan.phpparser.parser;
 import java.util.ArrayList;
 import java.io.*;
 import java.util.List;
+import java.util.Collection;
 import java.util.Stack;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
@@ -2811,10 +2812,10 @@ private int jjMoveNfa_4(int startState, int curPos)
    }
 }
 static final int[] jjnextStates = {
-   24, 21, 25, 26, 31, 32, 35, 36, 9, 40, 41, 43, 44, 45, 47, 19, 
-   22, 21, 5, 6, 9, 27, 28, 9, 35, 36, 9, 40, 41, 43, 44, 45, 
-   47, 49, 50, 52, 53, 54, 56, 58, 59, 62, 49, 50, 52, 53, 54, 56, 
-   11, 16, 7, 8, 29, 30, 33, 34, 37, 38, 
+   24, 21, 25, 26, 31, 32, 35, 36, 9, 40, 41, 43, 44, 45, 47, 19,
+   22, 21, 5, 6, 9, 27, 28, 9, 35, 36, 9, 40, 41, 43, 44, 45,
+   47, 49, 50, 52, 53, 54, 56, 58, 59, 62, 49, 50, 52, 53, 54, 56,
+   11, 16, 7, 8, 29, 30, 33, 34, 37, 38,
 };
 private static final boolean jjCanMove_0(int hiByte, int i1, int i2, long l1, long l2)
 {
@@ -2841,20 +2842,20 @@ private static final boolean jjCanMove_1(int hiByte, int i1, int i2, long l1, lo
 
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
-"", "\74\77", null, "\74\77\75", "\77\76", null, null, null, null, null, null, 
-null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-null, null, null, null, null, null, null, "\55\76", "\72\72", "\75\76", null, null, 
-null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-null, "\100", "\41", "\176", "\77", "\72", "\174\174", "\46\46", "\53\53", "\55\55", 
-"\53", "\55", "\52", "\57", "\134", "\46", "\174", "\136", "\45", "\74\74", "\76\76", 
-"\76\76\76", null, null, null, null, null, null, null, null, null, null, null, null, "\42", 
-"\44\173", "\44", "\42", "\74\74\74", "\44", null, null, null, null, null, null, null, 
-"\50", "\51", "\175", "\133", "\135", "\73", "\54", "\56", "\173", "\76", "\74", 
-"\75\75", "\74\75", "\76\75", "\41\75", "\74\76", "\41\75\75", "\75\75\75", "\75", 
-"\53\75", "\55\75", "\52\75", "\57\75", "\46\75", "\174\75", "\136\75", "\56\75", 
+"", "\74\77", null, "\74\77\75", "\77\76", null, null, null, null, null, null,
+null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+null, null, null, null, null, null, null, "\55\76", "\72\72", "\75\76", null, null,
+null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+null, "\100", "\41", "\176", "\77", "\72", "\174\174", "\46\46", "\53\53", "\55\55",
+"\53", "\55", "\52", "\57", "\134", "\46", "\174", "\136", "\45", "\74\74", "\76\76",
+"\76\76\76", null, null, null, null, null, null, null, null, null, null, null, null, "\42",
+"\44\173", "\44", "\42", "\74\74\74", "\44", null, null, null, null, null, null, null,
+"\50", "\51", "\175", "\133", "\135", "\73", "\54", "\56", "\173", "\76", "\74",
+"\75\75", "\74\75", "\76\75", "\41\75", "\74\76", "\41\75\75", "\75\75\75", "\75",
+"\53\75", "\55\75", "\52\75", "\57\75", "\46\75", "\174\75", "\136\75", "\56\75",
 "\45\75", "\176\75", "\74\74\75", "\76\76\75", null, };
 
 /** Lexer state names. */
@@ -2872,25 +2873,25 @@ public static final String[] lexStateNames = {
 
 /** Lex State array. */
 public static final int[] jjnewLexState = {
-   -1, 1, 1, 1, 0, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 2, 2, 5, 6, 1, -1, 1, 1, 
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 
-   1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 
-   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, 
-   -1, -1, 7, -1, -1, 1, 8, 3, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+   -1, 1, 1, 1, 0, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 2, 2, 5, 6, 1, -1, 1, 1,
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1,
+   1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1,
+   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1,
+   -1, -1, 7, -1, -1, 1, 8, 3, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 static final long[] jjtoToken = {
-   0xfffffffffc00001fL, 0xf47fffffffffffffL, 0xffffffff23fL, 
+   0xfffffffffc00001fL, 0xf47fffffffffffffL, 0xffffffff23fL,
 };
 static final long[] jjtoSkip = {
-   0x1ffffe0L, 0x0L, 0xc00L, 
+   0x1ffffe0L, 0x0L, 0xc00L,
 };
 static final long[] jjtoSpecial = {
-   0x1fff000L, 0x0L, 0x0L, 
+   0x1fff000L, 0x0L, 0x0L,
 };
 static final long[] jjtoMore = {
-   0x2000000L, 0x0L, 0x0L, 
+   0x2000000L, 0x0L, 0x0L,
 };
 protected SimpleCharStream input_stream;
 private final int[] jjrounds = new int[63];
@@ -2977,7 +2978,7 @@ int jjmatchedPos;
 int jjmatchedKind;
 
 /** Get the next Token. */
-public Token getNextToken() 
+public Token getNextToken()
 {
   Token specialToken = null;
   Token matchedToken;

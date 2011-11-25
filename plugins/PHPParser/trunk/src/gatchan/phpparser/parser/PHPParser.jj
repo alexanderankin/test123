@@ -48,6 +48,7 @@ package gatchan.phpparser.parser;
 import java.util.ArrayList;
 import java.io.*;
 import java.util.List;
+import java.util.Collection;
 import java.util.Stack;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
@@ -3915,7 +3916,7 @@ Expression primaryExpression():
 	|
 		expr = ArrayDeclarator()
 	|
-		expr = ListExpression()
+		expr = listExpression()
 	|
 		expr = IncludeExpression()
 	)
@@ -5412,13 +5413,16 @@ PrintExpression PrintExpression():
 	}
 } //}}}
 
-//{{{ ListExpression()
-ListExpression ListExpression():
+//{{{ listExpression() method
+ListExpression listExpression():
 {
 	AbstractVariable expr = null;
-	List<AbstractVariable> list = new ArrayList<AbstractVariable>();
-	int pos,line,column;
-	Token listToken, rParen;
+	Collection<AbstractVariable> list = new ArrayList<AbstractVariable>();
+	int pos;
+	int line;
+	int column;
+	Token listToken;
+	Token rParen;
 	Token token;
 }
 {
@@ -5457,7 +5461,19 @@ ListExpression ListExpression():
 	]
 	{
 		if (expr == null)
-			list.add(null);
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+						      path,
+						     "expected at least one variable",
+						      "$",
+						      null,
+						      jj_input_stream.getBeginOffset(),
+						      jj_input_stream.getEndOffset(),
+						      jj_input_stream.getBeginLine(),
+						      jj_input_stream.getEndLine(),
+						      jj_input_stream.getBeginColumn(),
+						      jj_input_stream.getEndColumn()));
+		}
 	}
 	(
 		try
