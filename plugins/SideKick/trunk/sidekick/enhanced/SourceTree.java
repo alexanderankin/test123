@@ -54,11 +54,9 @@ import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.EnhancedTreeCellRenderer;
 
-import sidekick.Asset;
 import sidekick.IAsset;
 import sidekick.SideKickPlugin;
 import sidekick.SideKickTree;
-
 //}}}
 
 /**
@@ -244,7 +242,7 @@ public class SourceTree extends SideKickTree {
             if ( node.getParent() == null ) {
                 setIcon( org.gjt.sp.jedit.browser.FileCellRenderer.fileIcon );
             }
-            if ( nodeValue instanceof Asset ) {
+            if ( nodeValue instanceof IAsset ) {
                 IAsset _asset = ( IAsset ) node.getUserObject();
                 setIcon( _asset.getIcon() );
                 setText( _asset.getShortString() );
