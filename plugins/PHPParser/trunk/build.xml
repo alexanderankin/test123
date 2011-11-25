@@ -21,6 +21,7 @@
 				<filename name="actions.xml"/>
 				<filename name="dockables.xml"/>
 				<filename name="services.xml"/>
+				<filename name="functionlist"/>
 				<filename name="*.props"/>
 				<filename name="gatchan/**/*.png"/>
 				<filename name="docs/*.html"/>

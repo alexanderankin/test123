@@ -85,14 +85,6 @@ public class ListExpression extends Expression
 	@Override
 	public void getUsedVariable(List<VariableUsage> list)
 	{
-        for (int i = 0; i < vars.length; i++)
-		{
-			if (vars[i] != null)
-			{
-                vars[i].getOutsideVariable(list);
-				vars[i].getUsedVariable(list);
-			}
-		}
 	}
 
 	@Override
