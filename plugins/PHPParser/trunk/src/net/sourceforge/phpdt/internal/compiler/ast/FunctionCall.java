@@ -19,6 +19,9 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.PHPParserPlugin;
+import gatchan.phpparser.methodlist.Argument;
+import gatchan.phpparser.methodlist.Function;
 import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
@@ -41,6 +44,8 @@ public class FunctionCall extends AbstractSuffixExpression
 	 */
 	private final ArgumentList args;
 
+	private Function definition;
+
 
 	public FunctionCall(Expression functionName,
 			    ArgumentList args)
@@ -54,6 +59,12 @@ public class FunctionCall extends AbstractSuffixExpression
 			args.getEndColumn());
 		this.functionName = functionName;
 		this.args = args;
+		if (functionName instanceof ConstantIdentifier)
+		{
+			definition = PHPParserPlugin.phpMethodList.getFunction(getFunctionName().toString());
+			if (definition != null)
+				setType(definition.getReturnType());
+		}
 	}
 
 	public Expression getFunctionName()
@@ -92,7 +103,27 @@ public class FunctionCall extends AbstractSuffixExpression
 	@Override
 	public void getModifiedVariable(List<VariableUsage> list)
 	{
-		args.getModifiedVariable(list);
+		if (definition == null)
+			args.getModifiedVariable(list);
+		else
+		{
+			Expression[] arguments = args.getArgs();
+			if (arguments == null)
+				return;
+			for (int i = 0; i < arguments.length; i++)
+			{
+				Expression argument = arguments[i];
+				Argument argDef = definition.getArgument(i);
+				if (argDef != null && argDef.isReference())
+				{
+					argument.getUsedVariable(list);
+				}
+				else
+				{
+					argument.getModifiedVariable(list);
+				}
+			}
+		}
 	}
 
 	/**
@@ -104,7 +135,23 @@ public class FunctionCall extends AbstractSuffixExpression
 	public void getUsedVariable(List<VariableUsage> list)
 	{
 		functionName.getUsedVariable(list);
-		args.getUsedVariable(list);
+		if (definition == null)
+			args.getUsedVariable(list);
+		else
+		{
+			Expression[] arguments = args.getArgs();
+			if (arguments == null)
+				return;
+			for (int i = 0; i < arguments.length; i++)
+			{
+				Expression argument = arguments[i];
+				Argument argDef = definition.getArgument(i);
+				if (argDef == null || !argDef.isReference())
+				{
+					argument.getUsedVariable(list);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -118,5 +165,27 @@ public class FunctionCall extends AbstractSuffixExpression
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
+		//if (definition == null)
+		//	return;
+
+		/*Expression[] arguments = args.getArgs();
+		for (int i = 0; i < arguments.length; i++)
+		{
+			Expression argument = arguments[i];
+			Argument defArgument = definition.getArgument(i);
+			if (defArgument == null)
+			{
+				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+					PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
+					parser.getPath(),
+					"warning, the parameter " + param.getName() + " seems to be never used in your method",
+					param.getSourceStart(),
+					param.getSourceEnd(),
+					param.getBeginLine(),
+					param.getEndLine(),
+					param.getBeginColumn(),
+					param.getEndColumn()));
+			}
+		}   */
 	}
 }

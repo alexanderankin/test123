@@ -1,0 +1,4 @@
+# http://fr2.php.net/list
+array:list:&mixed:&mixed...
+# http://fr2.php.net/preg_match
+integer:preg_match:string:string:&array:integer=0:integer=0

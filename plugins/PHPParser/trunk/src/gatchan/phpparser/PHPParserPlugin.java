@@ -21,6 +21,7 @@
 package gatchan.phpparser;
 
 import common.gui.itemfinder.ItemFinderWindow;
+import gatchan.phpparser.methodlist.PHPMethodList;
 import gatchan.phpparser.project.ProjectManager;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.project.itemfinder.PHPItemFinder;
@@ -43,6 +44,7 @@ public class PHPParserPlugin extends EditPlugin
 
 	private static ItemFinderWindow<PHPItem> itemFinderWindow;
 	private static PHPItemFinder itemFinder;
+	public static PHPMethodList phpMethodList;
 
 	@Override
 	public void start()
@@ -50,11 +52,14 @@ public class PHPParserPlugin extends EditPlugin
 		projectManager = ProjectManager.getInstance();
 		itemFinder = new PHPItemFinder();
 		itemFinderWindow = new ItemFinderWindow<PHPItem>(itemFinder);
+		phpMethodList = new PHPMethodList();
+		phpMethodList.load();
 	}
 
 	@Override
 	public void stop()
 	{
+		phpMethodList = null;
 		projectManager.dispose();
 		projectManager = null;
 		itemFinderWindow.dispose();
