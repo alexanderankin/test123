@@ -33,17 +33,13 @@ public class LabeledStatement extends Statement
 {
 	private final ConstantIdentifier label;
 
-	private final Statement statement;
-
 	public LabeledStatement(ConstantIdentifier label,
-				Statement statement,
 				int sourceEnd,
 				int endLine,
 				int endColumn)
 	{
 		super(label.getSourceStart(), sourceEnd, label.getBeginLine(), endLine, label.getBeginColumn(), endColumn);
 		this.label = label;
-		this.statement = statement;
 	}
 
 	public ConstantIdentifier getName()
@@ -58,11 +54,7 @@ public class LabeledStatement extends Statement
 	 */
 	public String toString()
 	{
-		if (statement != null)
-		{
-			return label + statement.toString();
-		}
-		return label.toStringExpression();
+		return label.toStringExpression()+':';
 	}
 
 	/**
@@ -85,10 +77,6 @@ public class LabeledStatement extends Statement
 	@Override
 	public void getOutsideVariable(List<VariableUsage> list)
 	{
-		if (statement != null)
-		{
-			statement.getOutsideVariable(list);
-		}
 	}
 
 	/**
@@ -99,10 +87,6 @@ public class LabeledStatement extends Statement
 	@Override
 	public void getModifiedVariable(List<VariableUsage> list)
 	{
-		if (statement != null)
-		{
-			statement.getModifiedVariable(list);
-		}
 	}
 
 	/**
@@ -113,16 +97,14 @@ public class LabeledStatement extends Statement
 	@Override
 	public void getUsedVariable(List<VariableUsage> list)
 	{
-		if (statement != null)
-		{
-			statement.getUsedVariable(list);
-		}
 	}
 
 	@Override
 	public AstNode subNodeAt(int line, int column)
 	{
-		return statement != null && statement.isAt(line, column) ? statement.subNodeAt(line, column) : null;
+		if (label.isAt(line, column))
+			return label;
+		return null;
 	}
 
 	@Override
@@ -134,9 +116,5 @@ public class LabeledStatement extends Statement
 						 "use of a label statement " + label.toString(),
 						 label.getSourceStart(), label.getSourceEnd(), label.getBeginLine(),
 						 label.getEndLine(), label.getBeginColumn(), label.getEndColumn()));
-		if (statement != null)
-		{
-			statement.analyzeCode(parser);
-		}
 	}
 }

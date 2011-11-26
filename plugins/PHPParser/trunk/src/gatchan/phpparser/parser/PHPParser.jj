@@ -4733,7 +4733,7 @@ Statement StatementNoBreak() :
 		statement = expressionStatement()
 	|
 		LOOKAHEAD(2)
-		statement = LabeledStatement()
+		statement = labeledStatement()
 	|
 		statement = gotoStatement()
 	|
@@ -5836,8 +5836,8 @@ GotoStatement gotoStatement():
 	}
 } //}}}
 
-//{{{ LabeledStatement()
-LabeledStatement LabeledStatement():
+//{{{ labeledStatement() method
+LabeledStatement labeledStatement():
 {
 	ConstantIdentifier label;
 	Statement statement = null;
@@ -5846,31 +5846,24 @@ LabeledStatement LabeledStatement():
 	label = labelIdentifier()
 	try
 	{
-		<COLON>
+		{
+			Token colonToken;
+		}
+		colonToken = <COLON>
+		{
+			return new LabeledStatement(label, colonToken.sourceEnd,
+				colonToken.endLine, colonToken.endColumn);
+		}
 	}
 	catch (ParseException e)
 	{
 		fireParseError("':' expected", ":",e.currentToken);
-	}
-	try
-	{
-		statement = Statement()
-	}
-	catch (ParseException e)
-	{
-		fireParseError("statement expected", "statement",e.currentToken);
-		return new LabeledStatement(label,
-					    statement,
-					    e.currentToken.sourceEnd,
-					    e.currentToken.beginLine,
-					    e.currentToken.beginColumn);
-	}
-	{
-		return new LabeledStatement(label,
-					    statement,
-					    statement.getSourceEnd(),
-					    statement.getEndLine(),
-					    statement.getEndColumn());
+		{
+			return new LabeledStatement(label,
+				e.currentToken.sourceEnd,
+				e.currentToken.endLine,
+				e.currentToken.endColumn);
+		}
 	}
 }
 
