@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
  */
 package gatchan.phpparser;
 
+import gatchan.phpparser.parser.WarningMessageClass;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
@@ -51,25 +52,7 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	private JCheckBox deprecatedVarToken;
 	private JCheckBox conditionalExpressionCheck;
 	private JCheckBox methodFieldsSameName;
-	private JCheckBox phpClosingMissing;
-
-	public static final String PROP_WARN_SHORT_OPENTAG = "gatchan.phpparser.warnings.shortOpenTag";
-	public static final String PROP_WARN_FORENDFOR = "gatchan.phpparser.warnings.forEndFor";
-	public static final String PROP_WARN_SWITCHENDSWITCH = "gatchan.phpparser.warnings.switchEndSwitch";
-	public static final String PROP_WARN_IFENDIF = "gatchan.phpparser.warnings.ifEndSwitch";
-	public static final String PROP_WARN_WHILEENDWHILE = "gatchan.phpparser.warnings.whileEndWhile";
-	public static final String PROP_WARN_FOREACHENDFOREACH = "gatchan.phpparser.warnings.foreachEndForeach";
-	public static final String PROP_WARN_UNUSED_PARAMETERS = "gatchan.phpparser.warnings.methodanalysis.unusedParameters";
-	public static final String PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED = "gatchan.phpparser.warnings.methodanalysis.unassignedVariable";
-	public static final String PROP_WARN_CASE_SEMICOLON = "gatchan.phpparser.warnings.warnings.caseSemicolon";
-	public static final String PROP_WARN_UNNECESSARY_GLOBAL = "gatchan.phpparser.warnings.methodanalysis.unnecessaryGlobal";
-	public static final String PROP_WARN_DEPRECATED_VAR_TOKEN = "gatchan.phpparser.warnings.deprecatedphp4.varToken";
-	public static final String PROP_WARN_CONDITIONAL_EXPRESSION_CHECK = "gatchan.phpparser.warnings.types.conditionalExpressionCheck";
-	public static final String PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME = "gatchan.phpparser.warnings.classes.method_field_same_name";
-	public static final String PROP_WARN_MESSAGE_PHP_CLOSING_MISSING = "gatchan.phpparser.warnings.phpclosingmissing";
-	public static final String PROP_WARN_DOUBLE_DOLLAR = "gatchan.phpparser.warnings.doubledollar";
-	public static final String PROP_WARN_LABEL_STATEMENT = "gatchan.phpparser.warnings.labelstatement";
-	public static final String PROP_WARN_GOTO_STATEMENT = "gatchan.phpparser.warnings.gotostatement";
+	private JCheckBox unusedLabel;
 
 	/**
 	 * Instantiate the option pane of the PHP Parser.
@@ -85,37 +68,39 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	@Override
 	protected void _init()
 	{
-		addComponent(loadOnStartup = new JCheckBox(jEdit.getProperty("options.gatchan.phpparser.loadOnStartup.text")));
+		addComponent(loadOnStartup =
+				     new JCheckBox(jEdit.getProperty("options.gatchan.phpparser.loadOnStartup.text")));
 		String startupMode = jEdit.getProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate");
 		loadOnStartup.setSelected("startup".equals(startupMode));
 
 		addComponent(new JLabel("Warnings"));
-		addComponent(phpClosingMissing = createCheckBox(PROP_WARN_MESSAGE_PHP_CLOSING_MISSING));
-		addComponent(deprecatedVarToken = createCheckBox(PROP_WARN_DEPRECATED_VAR_TOKEN));
-		addComponent(shortOpenTag = createCheckBox(PROP_WARN_SHORT_OPENTAG));
-		addComponent(forEndFor = createCheckBox(PROP_WARN_FORENDFOR));
-		addComponent(switchEndSwitch = createCheckBox(PROP_WARN_SWITCHENDSWITCH));
-		addComponent(ifEndSwitch = createCheckBox(PROP_WARN_IFENDIF));
-		addComponent(whileEndWhile = createCheckBox(PROP_WARN_WHILEENDWHILE));
-		addComponent(foreachEndForeach = createCheckBox(PROP_WARN_FOREACHENDFOREACH));
-		addComponent(caseSemicolon = createCheckBox(PROP_WARN_CASE_SEMICOLON));
-		addComponent(conditionalExpressionCheck = createCheckBox(PROP_WARN_CONDITIONAL_EXPRESSION_CHECK));
-		addComponent(doubleDollarCheck = createCheckBox(PROP_WARN_DOUBLE_DOLLAR));
-		addComponent(labelStatement = createCheckBox(PROP_WARN_LABEL_STATEMENT));
-		addComponent(gotoStatement = createCheckBox(PROP_WARN_GOTO_STATEMENT));
+		addComponent(deprecatedVarToken = createCheckBox(WarningMessageClass.varToken));
+		addComponent(shortOpenTag = createCheckBox(WarningMessageClass.shortOpenTag));
+		addComponent(forEndFor = createCheckBox(WarningMessageClass.forEndFor));
+		addComponent(switchEndSwitch = createCheckBox(WarningMessageClass.switchEndSwitch));
+		addComponent(ifEndSwitch = createCheckBox(WarningMessageClass.ifEndIf));
+		addComponent(whileEndWhile = createCheckBox(WarningMessageClass.whileEndWhile));
+		addComponent(foreachEndForeach = createCheckBox(WarningMessageClass.foreachEndForeach));
+		addComponent(caseSemicolon = createCheckBox(WarningMessageClass.caseSemicolon));
+		addComponent(conditionalExpressionCheck = createCheckBox(WarningMessageClass.conditionalExpressionCheck));
+		addComponent(doubleDollarCheck = createCheckBox(WarningMessageClass.doubledollar));
+		addComponent(labelStatement = createCheckBox(WarningMessageClass.labelstatement));
+		addComponent(unusedLabel = createCheckBox(WarningMessageClass.unusedLabel));
+		addComponent(gotoStatement = createCheckBox(WarningMessageClass.gotostatement));
 		addComponent(new JLabel("Method analysis"));
-		addComponent(unusedParameter = createCheckBox(PROP_WARN_UNUSED_PARAMETERS));
-		addComponent(unassignedVariable = createCheckBox(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED));
-		addComponent(unnecessaryGlobal = createCheckBox(PROP_WARN_UNNECESSARY_GLOBAL));
+		addComponent(unusedParameter = createCheckBox(WarningMessageClass.unusedParameters));
+		addComponent(unassignedVariable = createCheckBox(WarningMessageClass.unassignedVariable));
+		addComponent(unnecessaryGlobal = createCheckBox(WarningMessageClass.unnecessaryGlobal));
 
 		addComponent(new JLabel("Class analysis"));
-		addComponent(methodFieldsSameName = createCheckBox(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME));
+		addComponent(methodFieldsSameName = createCheckBox(WarningMessageClass.methodFieldNameCollision));
 	}
 
-	private static JCheckBox createCheckBox(String property)
+	private static JCheckBox createCheckBox(WarningMessageClass warningMessageClass)
 	{
-		JCheckBox checkbox = new JCheckBox(jEdit.getProperty(property + ".text"));
-		checkbox.setSelected(jEdit.getBooleanProperty(property));
+		JCheckBox checkbox =
+			new JCheckBox(jEdit.getProperty("gatchan.phpparser.warnings." + warningMessageClass + ".text"));
+		checkbox.setSelected(jEdit.getBooleanProperty("gatchan.phpparser.warnings." + warningMessageClass));
 		return checkbox;
 	}
 
@@ -133,22 +118,24 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		{
 			jEdit.setProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate", "defer");
 		}
-		jEdit.setBooleanProperty(PROP_WARN_DEPRECATED_VAR_TOKEN, deprecatedVarToken.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_SHORT_OPENTAG, shortOpenTag.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_FORENDFOR, forEndFor.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_SWITCHENDSWITCH, switchEndSwitch.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_IFENDIF, ifEndSwitch.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_WHILEENDWHILE, whileEndWhile.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_FOREACHENDFOREACH, foreachEndForeach.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_UNUSED_PARAMETERS, unusedParameter.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED, unassignedVariable.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL, unnecessaryGlobal.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_CASE_SEMICOLON, caseSemicolon.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_CONDITIONAL_EXPRESSION_CHECK, conditionalExpressionCheck.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME, methodFieldsSameName.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_MESSAGE_PHP_CLOSING_MISSING, phpClosingMissing.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_DOUBLE_DOLLAR, doubleDollarCheck.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_LABEL_STATEMENT, labelStatement.isSelected());
-		jEdit.setBooleanProperty(PROP_WARN_GOTO_STATEMENT, gotoStatement.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.varToken, deprecatedVarToken.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.shortOpenTag, shortOpenTag.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.forEndFor, forEndFor.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.switchEndSwitch, switchEndSwitch.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.ifEndIf, ifEndSwitch.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.whileEndWhile, whileEndWhile.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.foreachEndForeach, foreachEndForeach.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.unusedParameters, unusedParameter.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.unassignedVariable, unassignedVariable.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.unnecessaryGlobal, unnecessaryGlobal.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.caseSemicolon, caseSemicolon.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.conditionalExpressionCheck,
+					 conditionalExpressionCheck.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.methodFieldNameCollision,
+					 methodFieldsSameName.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.doubledollar, doubleDollarCheck.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.unusedLabel, unusedLabel.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.labelstatement, labelStatement.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.gotostatement, gotoStatement.isSelected());
 	}
 }

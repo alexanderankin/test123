@@ -22,6 +22,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.*;
 
+import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -445,7 +446,7 @@ public class ClassDeclaration extends Statement implements Outlineable, IAsset
 		else if (methodNames.contains(name))
 		{
 			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-				PHPParseMessageEvent.MESSAGE_METHOD_FIELD_WITH_SAME_NAME,
+				WarningMessageClass.methodFieldNameCollision,
 				parser.getPath(),
 				"a method is defined with the same name " + name,
 				node.getSourceStart(),

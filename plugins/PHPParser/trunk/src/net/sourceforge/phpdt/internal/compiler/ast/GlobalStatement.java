@@ -23,6 +23,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.List;
 
+import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import gatchan.phpparser.parser.PHPParser;
@@ -142,7 +143,7 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 			if (arrayContains(Variable.SPECIAL_VARS, variable.getName()))
 			{
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-					PHPParseMessageEvent.MESSAGE_UNNECESSARY_GLOBAL,
+					WarningMessageClass.unnecessaryGlobal,
 					parser.getPath(),
 					"warning, you shouldn't request " + variable.getName() + " as global",
 					variable.sourceStart,

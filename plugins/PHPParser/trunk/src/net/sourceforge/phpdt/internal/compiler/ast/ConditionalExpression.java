@@ -23,6 +23,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
+import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
@@ -128,7 +129,7 @@ public class ConditionalExpression extends OperatorExpression
 		if (valueIfFalse.equals(valueIfTrue))
 		{
 			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-				PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+				WarningMessageClass.conditionalExpressionCheck,
 				parser.getPath(),
 				"Conditional expression : silly expression, the result is always the same",
 				sourceStart,
@@ -144,7 +145,7 @@ public class ConditionalExpression extends OperatorExpression
 		if (typeFalse != typeTrue && !typeFalse.isEmpty() && !typeTrue.isEmpty())
 		{
 			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-				PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+				WarningMessageClass.conditionalExpressionCheck,
 				parser.getPath(),
 				"Conditional expression : warning, the true value is type " + typeTrue + " and the false value is " + typeFalse,
 				sourceStart,

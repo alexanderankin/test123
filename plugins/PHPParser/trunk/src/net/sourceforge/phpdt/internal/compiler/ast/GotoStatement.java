@@ -26,6 +26,7 @@ import java.util.List;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.Token;
+import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 /**
@@ -112,7 +113,7 @@ public class GotoStatement extends Statement
 	public void analyzeCode(PHPParser parser)
 	{
 		parser.fireParseMessage(
-			new PHPParseMessageEvent(PHPParser.WARNING, PHPParseMessageEvent.MESSAGE_GOTO_STATEMENT,
+			new PHPParseMessageEvent(PHPParser.WARNING, WarningMessageClass.gotostatement,
 						 parser.getPath(),
 						 "use of a goto statement",
 						 getSourceStart(), label.getSourceEnd(), getBeginLine(),
