@@ -22,7 +22,9 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import gatchan.phpparser.PHPParserPlugin;
 import gatchan.phpparser.methodlist.Argument;
 import gatchan.phpparser.methodlist.Function;
+import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
@@ -46,17 +48,10 @@ public class FunctionCall extends AbstractSuffixExpression
 
 	private Function definition;
 
-
-	public FunctionCall(Expression functionName,
-			    ArgumentList args)
+	public FunctionCall(Expression functionName, ArgumentList args)
 	{
-		super(Type.UNKNOWN,
-			functionName.getSourceStart(),
-			args.getSourceEnd(),
-			functionName.getBeginLine(),
-			args.getEndLine(),
-			functionName.getBeginColumn(),
-			args.getEndColumn());
+		super(Type.UNKNOWN, functionName.getSourceStart(), args.getSourceEnd(), functionName.getBeginLine(),
+		      args.getEndLine(), functionName.getBeginColumn(), args.getEndColumn());
 		this.functionName = functionName;
 		this.args = args;
 		if (functionName instanceof ConstantIdentifier)
@@ -165,27 +160,48 @@ public class FunctionCall extends AbstractSuffixExpression
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
-		//if (definition == null)
-		//	return;
-
-		/*Expression[] arguments = args.getArgs();
+		if (definition == null)
+			return;
+		Expression[] arguments = args.getArgs();
 		for (int i = 0; i < arguments.length; i++)
 		{
 			Expression argument = arguments[i];
 			Argument defArgument = definition.getArgument(i);
 			if (defArgument == null)
 			{
-				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-					PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
-					parser.getPath(),
-					"warning, the parameter " + param.getName() + " seems to be never used in your method",
-					param.getSourceStart(),
-					param.getSourceEnd(),
-					param.getBeginLine(),
-					param.getEndLine(),
-					param.getBeginColumn(),
-					param.getEndColumn()));
+				if (!definition.isVarargs())
+				{
+					parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+											 WarningMessageClass.tooManyArguments,
+											 parser.getPath(),
+											 "Too many arguments",
+											 argument.getSourceStart(),
+											 argument.getSourceEnd(),
+											 argument.getBeginLine(),
+											 argument.getEndLine(),
+											 argument.getBeginColumn(),
+											 argument.getEndColumn()));
+				}
+				break;
 			}
-		}   */
+			else
+			{
+				if (!defArgument.getType().isCompatibleWith(argument.getType()))
+				{
+					parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+											 WarningMessageClass.wrongArgumentType,
+											 parser.getPath(),
+											 "wrong argument type, expected "
+											 + defArgument.getType()
+											 + " got " + argument.getType(),
+											 argument.getSourceStart(),
+											 argument.getSourceEnd(),
+											 argument.getBeginLine(),
+											 argument.getEndLine(),
+											 argument.getBeginColumn(),
+											 argument.getEndColumn()));
+				}
+			}
+		}
 	}
 }

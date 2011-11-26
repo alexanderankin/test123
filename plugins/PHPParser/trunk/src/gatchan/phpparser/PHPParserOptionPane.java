@@ -53,6 +53,8 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	private JCheckBox conditionalExpressionCheck;
 	private JCheckBox methodFieldsSameName;
 	private JCheckBox unusedLabel;
+	private JCheckBox tooManyArguments;
+	private JCheckBox wrongArgumentType;
 
 	/**
 	 * Instantiate the option pane of the PHP Parser.
@@ -87,6 +89,8 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		addComponent(labelStatement = createCheckBox(WarningMessageClass.labelstatement));
 		addComponent(unusedLabel = createCheckBox(WarningMessageClass.unusedLabel));
 		addComponent(gotoStatement = createCheckBox(WarningMessageClass.gotostatement));
+		addComponent(tooManyArguments = createCheckBox(WarningMessageClass.tooManyArguments));
+		addComponent(wrongArgumentType = createCheckBox(WarningMessageClass.wrongArgumentType));
 		addComponent(new JLabel("Method analysis"));
 		addComponent(unusedParameter = createCheckBox(WarningMessageClass.unusedParameters));
 		addComponent(unassignedVariable = createCheckBox(WarningMessageClass.unassignedVariable));
@@ -137,5 +141,7 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.unusedLabel, unusedLabel.isSelected());
 		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.labelstatement, labelStatement.isSelected());
 		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.gotostatement, gotoStatement.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.tooManyArguments, tooManyArguments.isSelected());
+		jEdit.setBooleanProperty("gatchan.phpparser.warnings." + WarningMessageClass.wrongArgumentType, wrongArgumentType.isSelected());
 	}
 }
