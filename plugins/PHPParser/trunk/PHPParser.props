@@ -43,7 +43,10 @@ gatchan.phpparser.warnings.methodFieldNameCollision.text=Report method and field
 gatchan.phpparser.warnings.phpclosingmissing.text=Report missing '?>'
 gatchan.phpparser.warnings.doubledollar.text=Report $$ syntax
 gatchan.phpparser.warnings.labelstatement.text=Report label statements
+gatchan.phpparser.warnings.unusedLabel.text=Report unused labels
 gatchan.phpparser.warnings.gotostatement.text=Report goto statements
+gatchan.phpparser.warnings.tooManyArguments.text=Too many arguments in function call
+gatchan.phpparser.warnings.wrongArgumentType.text=Wrong argument type
 # }}}
 
 # default value is true

@@ -124,6 +124,15 @@ public class Type implements Serializable
 		return className;
 	}
 
+	public boolean isCompatibleWith(Type type)
+	{
+		if (type == this)
+			return true;
+		if (this == UNKNOWN)
+			return true;
+		return false;
+	}
+
 	/**
 	 * Tell if the type is empty.
 	 *

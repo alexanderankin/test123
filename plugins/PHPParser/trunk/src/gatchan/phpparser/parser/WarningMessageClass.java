@@ -42,5 +42,7 @@ public enum WarningMessageClass
 	doubledollar,
 	labelstatement,
 	gotostatement,
-	unusedLabel
+	unusedLabel,
+	tooManyArguments,
+	wrongArgumentType
 }
