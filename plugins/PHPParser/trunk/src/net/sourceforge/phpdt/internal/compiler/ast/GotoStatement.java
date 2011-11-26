@@ -112,7 +112,7 @@ public class GotoStatement extends Statement
 	public void analyzeCode(PHPParser parser)
 	{
 		parser.fireParseMessage(
-			new PHPParseMessageEvent(PHPParser.WARNING, PHPParseMessageEvent.MESSAGE_LABEL_STATEMENT,
+			new PHPParseMessageEvent(PHPParser.WARNING, PHPParseMessageEvent.MESSAGE_GOTO_STATEMENT,
 						 parser.getPath(),
 						 "use of a goto statement",
 						 getSourceStart(), label.getSourceEnd(), getBeginLine(),
