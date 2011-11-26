@@ -25,6 +25,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import gatchan.phpparser.parser.PHPParseErrorEvent;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.WarningMessageClass;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
@@ -361,6 +362,20 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 							 constantIdentifier.getBeginColumn(), constantIdentifier.getEndColumn()));
 		}
 
+		for (ConstantIdentifier label : labels.values())
+		{
+			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+				WarningMessageClass.unusedLabel,
+				parser.getPath(),
+				"unused label",
+				label.getSourceStart(),
+				label.getSourceEnd(),
+				label.getBeginLine(),
+				label.getEndLine(),
+				label.getBeginColumn(),
+				label.getEndColumn()));
+		}
+
 		List<VariableUsage> globalsVars = new ArrayList<VariableUsage>();
 		getGlobalVariable(globalsVars);
 		List<VariableUsage> modifiedVars = getAssignedVariableInCode();
@@ -399,7 +414,7 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 			if (!isVariableInList(param.getName(), vars))
 			{
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-					PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
+					WarningMessageClass.unusedParameters,
 					parser.getPath(),
 					"warning, the parameter " + param.getName() + " seems to be never used in your method",
 					param.getSourceStart(),
@@ -450,7 +465,7 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 			{
 				list.add(variableUsage.getName());
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-					PHPParseMessageEvent.MESSAGE_VARIABLE_MAY_BE_UNASSIGNED,
+					WarningMessageClass.unassignedVariable,
 					parser.getPath(),
 					"warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
 					variableUsage.getSourceStart(),

@@ -26,20 +26,20 @@ options.gatchan.phpparser.option-pane.label=PHP Parser
 options.gatchan.phpparser.option-pane.code=new gatchan.phpparser.PHPParserOptionPane();
 
 # {{{ options
-gatchan.phpparser.warnings.deprecatedphp4.varToken.text=report deprecated 'var' token
+gatchan.phpparser.warnings.varToken.text=report deprecated 'var' token
 
 gatchan.phpparser.warnings.shortOpenTag.text='<?' used instead of '<?php'
 gatchan.phpparser.warnings.forEndFor.text=report for() : endfor; syntax
 gatchan.phpparser.warnings.switchEndSwitch.text=report switch() : switch; syntax
-gatchan.phpparser.warnings.ifEndSwitch.text=report if() : endif; syntax
+gatchan.phpparser.warnings.ifEndIf.text=report if() : endif; syntax
 gatchan.phpparser.warnings.whileEndWhile.text=report while() : endwhile; syntax
 gatchan.phpparser.warnings.foreachEndForeach.text=report foreach() : endforeach; syntax
-gatchan.phpparser.warnings.methodanalysis.unusedParameters.text=unused parameters
-gatchan.phpparser.warnings.methodanalysis.unassignedVariable.text=variable may be unassigned
-gatchan.phpparser.warnings.warnings.caseSemicolon.text=report case '' ; syntax
-gatchan.phpparser.warnings.methodanalysis.unnecessaryGlobal.text=Unnecessary global
-gatchan.phpparser.warnings.types.conditionalExpressionCheck.text=inspect conditional expression
-gatchan.phpparser.warnings.classes.method_field_same_name.text=Report method and fields with the same name
+gatchan.phpparser.warnings.unusedParameters.text=unused parameters
+gatchan.phpparser.warnings.unassignedVariable.text=variable may be unassigned
+gatchan.phpparser.warnings.caseSemicolon.text=report case '' ; syntax
+gatchan.phpparser.warnings.unnecessaryGlobal.text=Unnecessary global
+gatchan.phpparser.warnings.conditionalExpressionCheck.text=inspect conditional expression
+gatchan.phpparser.warnings.methodFieldNameCollision.text=Report method and fields with the same name
 gatchan.phpparser.warnings.phpclosingmissing.text=Report missing '?>'
 gatchan.phpparser.warnings.doubledollar.text=Report $$ syntax
 gatchan.phpparser.warnings.labelstatement.text=Report label statements

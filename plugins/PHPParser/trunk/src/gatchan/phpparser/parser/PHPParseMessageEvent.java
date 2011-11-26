@@ -28,31 +28,7 @@ package gatchan.phpparser.parser;
  */
 public class PHPParseMessageEvent
 {
-
-	public static final int MESSAGE_SHORT_OPEN_TAG = 1;
-	public static final int MESSAGE_SWITCH_ENDSWITCH_TAG = 2;
-	public static final int MESSAGE_IF_ENDIF_TAG = 3;
-	public static final int MESSAGE_FOR_ENDFOR_TAG = 4;
-	public static final int MESSAGE_WHILE_ENDWHILE_TAG = 5;
-	public static final int MESSAGE_FOREACH_ENDFOREACH_TAG = 6;
-	public static final int MESSAGE_UNUSED_PARAMETERS = 7;
-	public static final int MESSAGE_VARIABLE_MAY_BE_UNASSIGNED = 8;
-	public static final int MESSAGE_UNNECESSARY_GLOBAL = 9;
-	/**
-	 * message for syntax case '' ;.
-	 */
-	public static final int MESSAGE_CASE_SEMICOLON = 10;
-
-	public static final int MESSAGE_DEPRECATED_VAR_TOKEN = 11;
-	public static final int MESSAGE_CONDITIONAL_EXPRESSION_CHECK = 12;
-	public static final int MESSAGE_METHOD_FIELD_WITH_SAME_NAME = 13;
-	public static final int MESSAGE_PHP_CLOSING_MISSING = 14;
-	public static final int MESSAGE_DOUBLE_DOLLAR = 15;
-
-	public static final int MESSAGE_LABEL_STATEMENT = 16;
-	public static final int MESSAGE_GOTO_STATEMENT = 17;
-
-	private int messageClass;
+	private WarningMessageClass messageClass;
 	private int level;
 
 	private final String path;
@@ -66,7 +42,7 @@ public class PHPParseMessageEvent
 	private String message;
 
 	public PHPParseMessageEvent(int level,
-				    int messageClass,
+				    WarningMessageClass messageClass,
 				    String path,
 				    String message,
 				    int sourceStart,
@@ -98,7 +74,7 @@ public class PHPParseMessageEvent
 	 * @param token	the token
 	 */
 	public PHPParseMessageEvent(int level,
-				    int messageClass,
+				    WarningMessageClass messageClass,
 				    String path,
 				    String message,
 				    Token token)
@@ -160,7 +136,7 @@ public class PHPParseMessageEvent
 		return path;
 	}
 
-	public int getMessageClass()
+	public WarningMessageClass getMessageClass()
 	{
 		return messageClass;
 	}

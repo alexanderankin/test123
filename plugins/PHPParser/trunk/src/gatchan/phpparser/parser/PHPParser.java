@@ -549,7 +549,7 @@ public class PHPParser implements PHPParserConstants {
         case PHPSTARTSHORT:
           token = jj_consume_token(PHPSTARTSHORT);
                 fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                          PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG,
+                                                          WarningMessageClass.shortOpenTag,
                                                           path,
                                                           "You should use '<?php' instead of '<?' it will avoid some problems with XML",
                                                           token));
@@ -572,11 +572,7 @@ public class PHPParser implements PHPParserConstants {
                         htmlLineStart = phpEnd.endLine;
                         htmlColumnStart = phpEnd.endColumn;
       } catch (ParseException e) {
-                fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                          PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
-                                                          path,
-                                                          "'?>' is missing",
-                                                          e.currentToken));
+
       }
       break;
     default:
@@ -618,11 +614,6 @@ public class PHPParser implements PHPParserConstants {
                                                      echoStartToken.beginColumn,
                                                      echoEndToken.endColumn);
     } catch (ParseException e) {
-                fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                          PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
-                                                          path,
-                                                          "'?>' is missing",
-                                                          e.currentToken));
                 echoBlock = new PHPEchoBlock(expr,
                                              echoStartToken.sourceStart,
                                              e.currentToken.sourceEnd,
@@ -2125,7 +2116,7 @@ public class PHPParser implements PHPParserConstants {
         List<FieldDeclaration> arrayList;
     jj_consume_token(VAR);
                 fireParseMessage(new PHPParseMessageEvent(INFO,
-                        PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN,
+                        WarningMessageClass.varToken,
                         path,
                         "The var token is deprecated in php 5",
                         token));
@@ -2565,7 +2556,7 @@ public class PHPParser implements PHPParserConstants {
                       token = jj_consume_token(DOLLAR);
       variable = Var();
                         fireParseMessage(new PHPParseMessageEvent(INFO,
-                                PHPParseMessageEvent.MESSAGE_DOUBLE_DOLLAR,
+                                WarningMessageClass.doubledollar,
                                 path,
                                 "You have several $$, this may be a bug",
                                 token.sourceStart,
@@ -8055,7 +8046,7 @@ Token arrayAssignToken;
     token = jj_consume_token(COLON);
                          pos = token.sourceEnd;
                 fireParseMessage(new PHPParseMessageEvent(INFO,
-                        PHPParseMessageEvent.MESSAGE_SWITCH_ENDSWITCH_TAG,
+                        WarningMessageClass.switchEndSwitch,
                         path,
                         "Ugly syntax detected, you should switch () {...} instead of switch (): ... enswitch;",
                         start,
@@ -8349,7 +8340,7 @@ Token arrayAssignToken;
         case SEMICOLON:
           token = jj_consume_token(SEMICOLON);
                                 fireParseMessage(new PHPParseMessageEvent(INFO,
-                                        PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON,
+                                        WarningMessageClass.caseSemicolon,
                                         path,
                                         "a ; was found in a case statement. You should use :",
                                         token));
@@ -8735,7 +8726,7 @@ Token arrayAssignToken;
         ;
       }
                 fireParseMessage(new PHPParseMessageEvent(INFO,
-                        PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
+                        WarningMessageClass.ifEndIf,
                         path,
                         "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
                         colonToken));
@@ -9103,7 +9094,7 @@ Token arrayAssignToken;
       colonToken = jj_consume_token(COLON);
       stmts = statementList();
                 fireParseMessage(new PHPParseMessageEvent(INFO,
-                        PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
+                        WarningMessageClass.whileEndWhile,
                         path,
                         "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
                         colonToken));
@@ -9400,7 +9391,7 @@ Token arrayAssignToken;
                         pos = tokenColon.sourceEnd+1;
       list = statementList();
                         fireParseMessage(new PHPParseMessageEvent(INFO,
-                                PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
+                                WarningMessageClass.foreachEndForeach,
                                 path,
                                 "Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
                                 tokenColon));
@@ -9728,7 +9719,7 @@ Token arrayAssignToken;
                         pos = tokenColon.sourceEnd+1;
       list = statementList();
                         fireParseMessage(new PHPParseMessageEvent(INFO,
-                                PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
+                                WarningMessageClass.forEndFor,
                                 path,
                                 "Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
                                 tokenColon));
@@ -10141,6 +10132,41 @@ Token arrayAssignToken;
     try { return !jj_3_9(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(8, xla); }
+  }
+
+  private boolean jj_3R_138() {
+    if (jj_3R_54()) return true;
+    if (jj_3R_55()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_168()) {
+    jj_scanpos = xsp;
+    if (jj_3R_169()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_4() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_56()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(44)) return true;
+    }
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_273() {
+    if (jj_scan_token(IMPLEMENTS)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_299()) { jj_scanpos = xsp; break; }
+    }
+    return false;
   }
 
   private boolean jj_3R_382() {
@@ -12684,6 +12710,16 @@ Token arrayAssignToken;
     return false;
   }
 
+  private boolean jj_3R_225() {
+    if (jj_scan_token(PHPECHOSTART)) return true;
+    if (jj_3R_68()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(145)) jj_scanpos = xsp;
+    if (jj_scan_token(PHPEND)) return true;
+    return false;
+  }
+
   private boolean jj_3R_102() {
     Token xsp;
     xsp = jj_scanpos;
@@ -12713,16 +12749,6 @@ Token arrayAssignToken;
 
   private boolean jj_3R_101() {
     if (jj_3R_115()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_225() {
-    if (jj_scan_token(PHPECHOSTART)) return true;
-    if (jj_3R_68()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(145)) jj_scanpos = xsp;
-    if (jj_scan_token(PHPEND)) return true;
     return false;
   }
 
@@ -13237,41 +13263,6 @@ Token arrayAssignToken;
 
   private boolean jj_3R_56() {
     if (jj_3R_73()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_138() {
-    if (jj_3R_54()) return true;
-    if (jj_3R_55()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_168()) {
-    jj_scanpos = xsp;
-    if (jj_3R_169()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_4() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_56()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(44)) return true;
-    }
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_273() {
-    if (jj_scan_token(IMPLEMENTS)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_299()) { jj_scanpos = xsp; break; }
-    }
     return false;
   }
 

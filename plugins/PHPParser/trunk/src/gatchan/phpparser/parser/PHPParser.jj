@@ -836,7 +836,7 @@ void PhpBlock() :
 	token = <PHPSTARTSHORT>
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
-							  PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG,
+							  WarningMessageClass.shortOpenTag,
 							  path,
 							  "You should use '<?php' instead of '<?' it will avoid some problems with XML",
 							  token));
@@ -858,11 +858,6 @@ void PhpBlock() :
 	}
 	catch (ParseException e)
 	{
-		fireParseMessage(new PHPParseMessageEvent(INFO,
-							  PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
-							  path,
-							  "'?>' is missing",
-							  e.currentToken));
 	}
 } //}}}
 
@@ -895,11 +890,6 @@ PHPEchoBlock phpEchoBlock() :
 	}
 	catch (ParseException e)
 	{
-		fireParseMessage(new PHPParseMessageEvent(INFO,
-							  PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
-							  path,
-							  "'?>' is missing",
-							  e.currentToken));
 		echoBlock = new PHPEchoBlock(expr,
 					     echoStartToken.sourceStart,
 					     e.currentToken.sourceEnd,
@@ -1891,7 +1881,7 @@ List<FieldDeclaration> fieldDeclaration():
 	<VAR>
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
-			PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN,
+			WarningMessageClass.varToken,
 			path,
 			"The var token is deprecated in php 5",
 			token));
@@ -2308,7 +2298,7 @@ Variable Var():
 		token = <DOLLAR> variable = Var()
 		{
 			fireParseMessage(new PHPParseMessageEvent(INFO,
-				PHPParseMessageEvent.MESSAGE_DOUBLE_DOLLAR,
+				WarningMessageClass.doubledollar,
 				path,
 				"You have several $$, this may be a bug",
 				token.sourceStart,
@@ -6270,7 +6260,7 @@ AbstractCase[] switchStatementColon(int start, int end) :
 	token = <COLON> {pos = token.sourceEnd;}
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
-			PHPParseMessageEvent.MESSAGE_SWITCH_ENDSWITCH_TAG,
+			WarningMessageClass.switchEndSwitch,
 			path,
 			"Ugly syntax detected, you should switch () {...} instead of switch (): ... enswitch;",
 			start,
@@ -6423,7 +6413,7 @@ Expression SwitchLabel():
 			token = <SEMICOLON>
 			{
 				fireParseMessage(new PHPParseMessageEvent(INFO,
-					PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON,
+					WarningMessageClass.caseSemicolon,
 					path,
 					"a ; was found in a case statement. You should use :",
 					token));
@@ -6634,7 +6624,7 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
-			PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
+			WarningMessageClass.ifEndIf,
 			path,
 			"Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
 			colonToken));
@@ -6872,7 +6862,7 @@ Statement WhileStatementAction(Token whileToken):
 	stmts = statementList()
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
-			PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
+			WarningMessageClass.whileEndWhile,
 			path,
 			"Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
 			colonToken));
@@ -7102,7 +7092,7 @@ ForeachStatement ForeachStatement():
 		list = statementList()
 		{
 			fireParseMessage(new PHPParseMessageEvent(INFO,
-				PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
+				WarningMessageClass.foreachEndForeach,
 				path,
 				"Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
 				tokenColon));
@@ -7243,7 +7233,7 @@ ForStatement ForStatement():
                 list = statementList()
                 {
                 	fireParseMessage(new PHPParseMessageEvent(INFO,
-                		PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
+                		WarningMessageClass.forEndFor,
                 		path,
                 		"Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
                 		tokenColon));
