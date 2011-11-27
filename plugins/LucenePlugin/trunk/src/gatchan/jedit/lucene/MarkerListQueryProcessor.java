@@ -67,18 +67,8 @@ public class MarkerListQueryProcessor implements ResultProcessor
 	@Override
 	public boolean process(Query query, float score, Result result)
 	{
-		if (result instanceof LineResult)
-		{
-			LineResult lr = (LineResult) result;
-			FileMarker marker = new FileMarker(lr.getPath(),
-			                                   lr.getLine() - 1, lr.getText());
-			results.add(marker);
-		}
-		else
-		{
-			String s = result.getPath();
-			addLinesMatching(query, s, max - results.size());
-		}
+		String s = result.getPath();
+		addLinesMatching(query, s, max - results.size());
 		return results.size() < max;
 	}
 

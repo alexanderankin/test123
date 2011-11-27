@@ -46,7 +46,6 @@ public class NewIndexDialog extends JDialog
 	public static final String MESSAGE = "lucene.message.";
 	private static final String GEOMETRY = OPTION + "NewLuceneIndexDialog";
 	private JTextField name;
-	private JComboBox type;
 	private JComboBox analyzer;
 	private boolean accepted;
 
@@ -83,12 +82,6 @@ public class NewIndexDialog extends JDialog
 			name.setText(initialName);
 			name.setEditable(false);
 		}
-		// Index type panel
-		p = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		add(p);
-		p.add(new JLabel(jEdit.getProperty(MESSAGE + "IndexType")));
-		type = new JComboBox(IndexFactory.getIndexNames());
-		p.add(type);
 		// Analyzer panel
 		p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		add(p);
@@ -151,11 +144,6 @@ public class NewIndexDialog extends JDialog
 	public String getIndexAnalyzer()
 	{
 		return analyzer.getSelectedItem().toString();
-	}
-
-	public String getIndexType()
-	{
-		return type.getSelectedItem().toString();
 	}
 
 	public boolean accepted()

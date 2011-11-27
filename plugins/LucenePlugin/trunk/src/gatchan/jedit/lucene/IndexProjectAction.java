@@ -119,7 +119,7 @@ public class IndexProjectAction extends Action
 					{
 						VPTFile vptFile = (VPTFile) n;
 						VFSFile file = vptFile.getFile();
-						if (file != null)
+						if (file != null && OptionPane.accept(file.getPath()))
 							files.add(file);
 					}
 				}
