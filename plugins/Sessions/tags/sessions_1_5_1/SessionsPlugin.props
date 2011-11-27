@@ -1,0 +1,197 @@
+#
+# General plugin properites
+#
+
+plugin.sessions.SessionsPlugin.activate=startup
+plugin.sessions.SessionsPlugin.name=Sessions
+plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>, Steve Jakob
+plugin.sessions.SessionsPlugin.version=1.5.1
+plugin.sessions.SessionsPlugin.description=A plugin to manage lists of open files and switch between them.
+plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
+plugin.sessions.SessionsPlugin.depend.0=jedit 04.03.15.00
+plugin.sessions.SessionsPlugin.depend.1=jdk 1.5
+
+
+#
+# menu
+#
+
+plugin.sessions.SessionsPlugin.menu=session-manager - session-save session-save-as session-reload - session-properties
+sessions.menu.label=Sessions
+
+
+#
+# actions
+#
+
+session-manager.label=Manage Sessions...
+session-save.label=Save Session
+session-save-as.label=Save Session As...
+session-reload.label=Reload Session
+session-properties.label=Session Properties (experimental!)
+
+
+#
+# SessionSwitcher panel
+#
+
+sessions.switcher.title=Session:\ \ 
+
+sessions.switcher.save.tooltip=Save current session
+sessions.switcher.saveAs.tooltip=Save current session under a different name...
+sessions.switcher.reload.tooltip=Reload current session
+sessions.switcher.props.tooltip=Edit current session properties
+sessions.switcher.prefs.tooltip=Manage sessions...
+
+sessions.switcher.save.saved.title=Session Saved
+sessions.switcher.save.saved.message=Session {0} saved.
+
+sessions.switcher.saveAs.input.title=New Session Name
+sessions.switcher.saveAs.input.message=Please enter a new name for the session:
+
+sessions.switcher.saveAs.exists.title=Session Name Exists
+sessions.switcher.saveAs.exists.message=\
+	A session file with the name {0} already exists.\n\
+	Overwrite?
+
+sessions.switcher.saveAs.error.empty.title=Empty Name
+sessions.switcher.saveAs.error.empty.message=Please enter a name, or cancel the dialog.
+
+sessions.switcher.saveAs.error.illegalChars.title=Illegal Characters in Name
+sessions.switcher.saveAs.error.illegalChars.message=\
+	The name may not contain any of these characters:\n\
+	{0}
+
+
+#
+# SessionManager dialog
+#
+
+sessions.manager.title=Manage Sessions
+sessions.manager.rename=Rename...
+sessions.manager.delete=Delete
+sessions.manager.changeTo=Change To
+sessions.manager.close=Close
+
+sessions.manager.error.load.title=Error Loading Session File
+sessions.manager.error.load.message=\
+	Could not load the session: {0}\n\
+	\n\
+	The error was:\n\
+	\ \ {1}\n\
+	\n\
+	See the activity log for more details.\n\
+	Please report this error to the maintainer\n\
+	of the Sessions plugin. Thanks.
+
+sessions.manager.error.rename.title=Error Renaming Session File
+sessions.manager.error.rename.message=\
+	Could not rename the session file:\n\
+	{0}\n\
+	to:\n\
+	{1}
+
+sessions.manager.error.delete.title=Error Deleting Session File
+sessions.manager.error.delete.message=\
+	Could not delete the session file:\n\
+	{0}
+
+sessions.manager.warning.load.ambigious.title=Ambigious Session Name
+sessions.manager.warning.load.ambigious.message=\
+	Attention!\n\
+	The session name according to the filename is "{0}",\n\
+	but the name property of the SESSION tag inside the session \n\
+	xml file says it is "{1}"!\n\
+	Using "{1}" from now on.\n\
+	When this session is saved, it will be under the name "{1}".
+
+sessions.manager.info.restore.title=Information: Session not restored
+sessions.manager.info.restore.message=\
+	The jEdit option\n\
+	\n\
+	"Restore previously open files on startup"\n\
+	\n\
+	is currently off. jEdit won't restore the last open session.\n\
+	If you want to restore the last open session at startup,\n\
+	please enable this option again.\n\
+	\n\
+	If you want to load your last open session now, please\n\
+	invoke the action "Reload Session".\n\
+	\ 
+
+sessions.manager.info.restore_autosave.title=Warning
+sessions.manager.info.restore_autosave.message=\
+	The Auto-Save Sessions feature is currently enabled,\n\
+	but one of the options for restoring files on jEdit restart\n\
+	is disabled. Either:\n\
+	\n\
+	"Restore previously open files on startup"    and/or\n\
+	"Restore even if file names were specified on the command line"\n\
+	\n\
+	is currently off. This could cause conflicts, and end up in\n\
+	empty session files.\n\
+	\n\
+	Please either turn on *both* options again, or disable the\n\
+	Auto-Save Sessions feature in the Session Plugin's options.\n\
+	\n\
+	If your session turns out to be empty now, simply reload it.\n\
+	\ 
+
+sessions.manager.info.dontShowAgain=\
+	Don't show this message again.
+
+#
+# Save dialog
+#
+
+session.savedialog.title=Session has been changed!
+session.savedialog.caption=The file list for the current session has \
+	changed (see differences below).
+session.savedialog.question=Save the session?
+session.savedialog.added=Opened files:
+session.savedialog.removed=Closed files:
+session.savedialog.dontsave=Don't save
+session.savedialog.save=Save
+session.savedialog.cancel=Cancel
+
+
+#
+# Option pane
+#
+
+plugin.sessions.SessionsPlugin.option-pane=sessions
+options.sessions.label=Sessions
+options.sessions.code=new sessions.SessionsOptionPane();
+
+options.sessions.switcher.autoSave=Autosave sessions (on switch or close)
+options.sessions.switcher.askSave=Display "Confirm Save" dialog
+options.sessions.switcher.closeAll=Close all files before switching to new session
+options.sessions.switcher.showToolBar=Show Session Switcher toolbar
+options.sessions.switcher.showBelowToolBar=Show below jEdit\' main toolbar
+options.sessions.switcher.showJEditToolBar=Show inside JEdit\'s main toolbar
+options.sessions.switcher.showInsideBufferList=Show inside BufferList (>=0.8 required, only if docked)
+options.sessions.switcher.showTitle=Show "Session:" label
+options.sessions.switcher.maxListSize.label=Max. sessions listed in combobox (from 5 to 50): 
+options.sessions.switcher.changeFSBDirectory=Change FSB directory on switch (only if currently visible)
+options.sessions.switcher.showSessionNameInTitleBar=Show session name in jEdit title bar
+options.sessions.switcher.showSessionPrefixInTitleBar=Use "Session:" prefix in jEdit title bar 
+
+
+#
+# Session properties pane
+#
+
+sessions.sessionproperties.title=Properties for Session: {0}
+
+sessions.sessionproperties.default.label=General
+sessions.sessionproperties.default.basedir=Base Directory:
+sessions.sessionproperties.default.mode=Preferred Mode:
+
+# 
+# title bar
+#
+sessions.titlebar.default=jEdit -\ 
+sessions.titlebar.startbracket=\(\ 
+sessions.titlebar.prefix=Session\:\ 
+sessions.titlebar.endbracket=\ \)\ 
+
