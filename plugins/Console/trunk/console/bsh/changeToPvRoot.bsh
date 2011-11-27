@@ -5,15 +5,13 @@
    by ezust
    
 */
-changeToPvRoot(view) {
-    wm = view.getDockableWindowManager();
-    if (wm == null) return;
-    pv = wm.getDockable("projectviewer");
+changeToPvRoot(view) { 
+    pv = view.getDockableWindowManager().getDockable("projectviewer");
     if (pv == null) return;
-    con = wm.getDockable("console");
+    con = view.getDockableWindowManager().getDockable("console");
     if (con == null) return;
-    wm.showDockableWindow("projectviewer");
-    wm.showDockableWindow("console");
+    view.getDockableWindowManager().showDockableWindow("projectviewer");
+    view.getDockableWindowManager().showDockableWindow("console");
     sysShell = console.Shell.getShell("System");
     sstate = con.getShellState(sysShell);
     project = pv.getActiveProject(view);

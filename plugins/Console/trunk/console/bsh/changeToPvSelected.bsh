@@ -7,14 +7,11 @@
 */
 
 changeToPvSelected(view) {
-    wm = view.getDockableWindowManager();
-    if (wm == null) return;
-    pv = wm.getDockable("projectviewer");
-    con = wm.getDockable("console");
-    if ((pv == null) || (con == null)) return;
-    if (!con.isVisible()) return;
-//    wm.showDockableWindow("console");
-//    wm.showDockableWindow("projectviewer");
+    
+    pv = view.getDockableWindowManager().getDockable("projectviewer");
+    if (pv == null) return;
+    con = view.getDockableWindowManager().getDockable("console");
+    if ((con == null) || !con.isVisible()) return;
 //    String shellName = con.getShell().getName();
 //    if (!shellName.equals("System")) return;
     sysShell = console.Shell.getShell("System");

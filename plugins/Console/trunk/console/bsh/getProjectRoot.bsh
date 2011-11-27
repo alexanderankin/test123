@@ -10,9 +10,7 @@
  *          if no active project can be found. 
  */
 getProjectRoot(View view, Buffer buffer) {
-	wm = view.getDockableWindowManager();
-	if (wm == null) return ".";
-	pv = wm.getDockable("projectviewer");
+	pv = view.getDockableWindowManager().getDockable("projectviewer");
 	if (pv == null) return ".";
 	project = projectviewer.ProjectViewer.getActiveProject(view);
 	if (project != null) {
