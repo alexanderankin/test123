@@ -1,35 +1,38 @@
+import org.gjt.sp.jedit.bsh.Primitive;
+
 commandoTOGGLE_ENTRY(view,pane,ns,label,var,options)
 {
-	toggle = new JCheckBox(label);
-	entry = new JTextField(20);
-	if(ns.getVariable(var + "Toggle") == void)
-		value1 = false;
-	else
-		value1 = ns.getVariable(var + "Toggle");
-	value2 = ns.getVariable(var);
-	if(new Primitive(true).equals(value))
-	{
-		toggle.setSelected(true);
-		entry.setEnabled(false);
-	}
-	else
-	{
-		toggle.setSelected(false);
-		entry.setEnabled(true);
-	}
+    toggle = new JCheckBox(label);
+    entry = new JTextField(20);
 
-	if(value2 != null)
-		entry.setText(value2.toString());
+    if(ns.getVariable(var + "Toggle") == Primitive.VOID)
+    {
+        ns.setVariable(var + "Toggle", new Primitive(false));
+    }
+    toggle.setSelected(ns.getVariable(var + "Toggle").booleanValue());
+    entry.setEnabled(toggle.isSelected());
 
-	valueChanged()
-	{
-		ns.setVariable(var + "Toggle",
-			new Primitive(toggle.isSelected()));
+    if(ns.getVariable(var) == Primitive.VOID)
+    {
+        ns.setVariable(var, "");
+    }
+    entry.setText(ns.getVariable(var).toString());
 
-		ns.setVariable(var,entry.getText());
-	}
+    listener = new ActionListener() {
+        actionPerformed(evt)
+        {
+            ns.setVariable(var + "Toggle", new Primitive(toggle.isSelected()));
+            entry.setEnabled(toggle.isSelected());
+        }
+    };
+    toggle.addActionListener(listener);
 
-	pane.addComponent(toggle,entry);
+    valueChanged()
+    {
+        ns.setVariable(var,entry.getText());
+    }
 
-	return this;
+    pane.addComponent(toggle,entry);
+
+    return this;
 }
