@@ -40,6 +40,7 @@ public class Type implements Serializable
 	public static final int NULL_INT = 7;
 	public static final int STRING_INT = 8;
 	public static final int ARRAY_INT = 9;
+	public static final int RESOURCE_INT = 10;
 
 	private final int type;
 
@@ -51,6 +52,7 @@ public class Type implements Serializable
 	public static final Type NULL = new Type(NULL_INT);
 	public static final Type STRING = new Type(STRING_INT);
 	public static final Type ARRAY = new Type(ARRAY_INT);
+	public static final Type RESOURCE = new Type(RESOURCE_INT);
 
 
 	public String toString()
@@ -74,6 +76,8 @@ public class Type implements Serializable
 				return "string";
 			case ARRAY_INT:
 				return "array";
+			case RESOURCE_INT:
+				return "resource";
 			default:
 				Log.log(Log.ERROR, this, "net.sourceforge.phpdt.internal.compiler.ast.Type unknown : " + type);
 				return null;
@@ -98,6 +102,8 @@ public class Type implements Serializable
 			return UNKNOWN;
 		if ("object".equals(type))
 			return OBJECT;
+		if ("resource".equals(type))
+			return RESOURCE;
 		return new Type(OBJECT_INT, type);
 	}
 
