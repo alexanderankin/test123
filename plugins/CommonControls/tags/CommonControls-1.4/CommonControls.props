@@ -1,0 +1,28 @@
+### Properties used by jEdit
+
+plugin.CommonControlsPlugin.activate=defer
+
+plugin.CommonControlsPlugin.name=Common Controls
+plugin.CommonControlsPlugin.author=Sergey V. Udaltsov, Dale Anson, Marcelo Vanzin, Matthieu Casanova
+plugin.CommonControlsPlugin.version=1.4
+plugin.CommonControlsPlugin.docs=index.html
+plugin.CommonControlsPlugin.jars=kappalayout.jar
+plugin.CommonControlsPlugin.description=Shared GUI Code
+plugin.CommonControlsPlugin.longdescription=description.html
+plugin.CommonControlsPlugin.usePluginHome=true
+
+plugin.CommonControlsPlugin.depend.0=jedit 04.04.01.00
+plugin.CommonControlsPlugin.depend.1=jdk 1.6.0
+
+common.gui.error=Error
+
+common.gui.pathbuilder.addButtonText=Add Element...
+common.gui.pathbuilder.removeButtonText=Remove Element...
+common.gui.pathbuilder.moveUpButtonText=Move Up
+common.gui.pathbuilder.moveDownButtonText=Move Down
+common.gui.pathbuilder.fileDialogTitle=Add element to Path
+common.gui.pathbuilder.fileDialogAction=Select
+
+common.gui.filetextfield.choose=Choose...
+common.gui.filetextfield.file_not_found=The selected file cannot be opened.
+
