@@ -15,7 +15,6 @@ plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.depend.0=jedit 04.04.99.02
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
-# ProjectViewer is optional because Console only listens to events from it.
 plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.0.1
 
 # Menu
