@@ -118,11 +118,15 @@ public class LucenePlugin extends EditPlugin
 				if (line == null)
 					break;
 				String [] parts = pattern.split(line);
-				if (parts.length < 2)
-					break;
-				String type = parts[0];
-				String analyzer = parts[1];
-				createIndex(name, type, analyzer);
+				/* analyzerIndex is for backward-compatibility. In the past, there
+				 * were two types of index - file index and line index. The type
+				 * and the analyzer were both specified on the same line in the
+				 * meta-index file, separated by comma. Now, only the analyzer is
+				 * specified.
+				 */
+				int analyzerIndex = (parts.length == 2) ? 1 : 0;
+				String analyzer = parts[analyzerIndex];
+				createIndex(name, analyzer);
 			}
 		}
 		catch (Exception e)
@@ -149,9 +153,8 @@ public class LucenePlugin extends EditPlugin
 			{
 				writer.println(stringIndexEntry.getKey());
 				Index index = stringIndexEntry.getValue();
-				String type = IndexFactory.getType(index);
 				String analyzer = AnalyzerFactory.getAnalyzerName(index.getAnalyzer());
-				writer.println(type + ',' + analyzer);
+				writer.println(analyzer);
 			}
 		}
 		catch (Exception e)
@@ -218,29 +221,26 @@ public class LucenePlugin extends EditPlugin
 			dlg.setVisible(true);
 			if (dlg.accepted())
 			{
-				index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
-					dlg.getIndexAnalyzer());
+				index = createIndex(dlg.getIndexName(), dlg.getIndexAnalyzer());
 				jEdit.setProperty(LUCENE_DEFAULT_ANALYZER, dlg.getIndexAnalyzer());
 			}
 		}
 		return index;
 	}
 
-	public Index createIndex(String name, String type, String analyzerName)
+	public Index createIndex(String name, String analyzerName)
 	{
 		Index index = getIndex(name);
 		if (index != null)
 			return index;
 
 		File path = getIndexFile(name);
-		index = IndexFactory.createIndex(type, name, path);
-		if (index == null)
-			return null;
+		index = new IndexImpl(name, path);
 		Analyzer analyzer = AnalyzerFactory.getAnalyzer(analyzerName);
 		if (analyzer != null)
 			index.setAnalyzer(analyzer);
 		indexMap.put(name, index);
-		CENTRAL.createIndex(index);
+		CentralIndex.createIndex(index);
 		saveIndexes();
 		if (!path.exists())
 			path.mkdirs();
@@ -305,8 +305,7 @@ public class LucenePlugin extends EditPlugin
 		dlg.setVisible(true);
 		if (!dlg.accepted())
 			return null;
-		Index index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
-			dlg.getIndexAnalyzer());
+		Index index = createIndex(dlg.getIndexName(), dlg.getIndexAnalyzer());
 		if (index == null)
 			return null;
 		// Update the properties

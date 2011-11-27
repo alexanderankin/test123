@@ -35,7 +35,6 @@ lucene.remove-index.label=Delete an index
 
 lucene.message.NewIndexDialogTitle=New Lucene Index
 lucene.message.IndexName=Name:
-lucene.message.IndexType=Type:
 lucene.message.Analyzer=Analyzer:
 
 # Options

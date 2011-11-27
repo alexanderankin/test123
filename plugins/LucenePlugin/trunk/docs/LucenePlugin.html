@@ -50,16 +50,6 @@ The "New Lucene Index" dialog will show up. Fill-in the details.
 <li>
 If this is not a project index, specify the index name.
 <li>
-Select the type of index: Line-based or file-based. A file-based index creates
-a Lucene document for each file, whereas a line-based index creates a Lucene
-document for each line in each file. A line-based index is a lot larger than
-a file-based index; its only advantage is that there is no need to scan the file
-again later to find which lines contain the words you search for. Both types of
-index can produce the line numbers where the words occur, but the file-based
-index will require an additional scan of the files containing the words in order
-to produce the line numbers. A line-based index may be appropriate if you're
-indexing network files with very slow access.
-<li>
 Select the analyzer to use for indexing. If you are not familiar with analyzers,
 use "Java identifier" for source code, which allows you to look for precise
 identifier occurrences, and "Standard" for text, or check the Lucene website for
@@ -102,8 +92,8 @@ Specify the maximal number of results that you want to get for your search in
 the "Max results:" box.
 <li>
 If you'd like to see the line numbers where the search matches, select the
-'Line-based results' check-box. If the index is file-based, the files that
-match will be re-scanned to find the line numbers.
+'Line-based results' check-box. The files that match will be re-scanned to
+find the line numbers.
 <li>
 If you'd like to constrain the search to a specific file extension, enter the
 extension in the 'file type:' box.
