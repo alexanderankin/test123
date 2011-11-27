@@ -8,8 +8,8 @@ plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>, Steve Jak
 plugin.sessions.SessionsPlugin.version=1.5.1
 plugin.sessions.SessionsPlugin.description=A plugin to manage lists of open files and switch between them.
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
-plugin.sessions.SessionsPlugin.depend.0=jedit 04.03.15.00
-plugin.sessions.SessionsPlugin.depend.1=jdk 1.5
+plugin.sessions.SessionsPlugin.depend.0=jedit 04.05.01.00
+plugin.sessions.SessionsPlugin.depend.1=jdk 1.6
 
 
 #
