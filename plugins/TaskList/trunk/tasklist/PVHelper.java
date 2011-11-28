@@ -73,7 +73,7 @@ public class PVHelper {
      */
     public static boolean isProjectViewerAvailable() {
         EditPlugin pv = jEdit.getPlugin( "projectviewer.ProjectPlugin", false );
-        return pv != null;
+        return pv != null && !(pv instanceof EditPlugin.Broken);
     }
 
     /**
