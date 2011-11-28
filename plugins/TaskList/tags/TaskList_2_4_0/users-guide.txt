@@ -1,0 +1,305 @@
+============================
+TaskList Plugin Users' Guide
+============================
+
+:Authors: Ollie Rutherfurd,
+		  John Gellene
+:Version: 0.4.4
+:Copyright: Copyright (C) 2002 John Gellene, 2003-2004 Ollie Rutherfurd
+
+Summary
+=======
+
+This plugin provides a dockable tabular list of comments extracted from
+the text of a file being edited in jEdit. The display shows an icon
+representing the type of comment, the line where the comment appears and
+the comment text. You can jump to a comment by double-clicking on the
+corresponding row of the table. The comment text in the buffer can be
+highlighted as a user option.
+
+Default Tags
+============
+
+A number of default comment tags are supplied, each with a 
+distinctive icon:
+
+=========== ==================
+Name        Icon
+=========== ==================
+DEBUG       |DEBUG_ICON|
+----------- ------------------
+DONE        |DONE_ICON|
+----------- ------------------
+FIXME       |FIXME_ICON|
+----------- ------------------
+IDEA        |IDEA_ICON|
+----------- ------------------
+NOTE        |NOTE_ICON|
+----------- ------------------
+QUESTION    |QUESTION_ICON|
+----------- ------------------
+TODO        |TODO_ICON|
+----------- ------------------
+XXX         |XXX_ICON|
+----------- ------------------
+\?\?\?      |QQQ_ICON|
+=========== ==================
+
+.. |DEBUG_ICON|     image:: icons/stock_preferences-16.png
+.. |DONE_ICON|      image:: icons/stock_spellcheck-16.png
+.. |FIXME_ICON|     image:: icons/stock_broken_image-16.png
+.. |IDEA_ICON|      image:: icons/stock_about-16.png
+.. |NOTE_ICON|      image:: icons/stock_attach-16.png
+.. |QUESTION_ICON|  image:: icons/stock_help-16.png
+.. |TODO_ICON|      image:: icons/stock_jump-to-16.png
+.. |XXX_ICON|       image:: icons/stock_right-16.png
+.. |QQQ_ICON|       image:: icons/stock_help-16.png
+
+You can change the icons associated with a task type by changing the
+plugin's settings in the `Utilities` -> `Global Options` dialog. You can
+also add your own comment types, using the icons supplied with the
+plugin or your own custom icons.
+
+Examples
+========
+
+TODO in a Java comment::
+
+	// TODO: add some more comments
+
+NOTE in an HTML comment::
+
+	<!--
+	 NOTE: there must be at least one space character before ``NOTE``.
+	-->
+
+Operation
+=========
+
+Whenever the plugin is activated, it will parse a buffer and display
+formatted comments when the buffer is first loaded, when it is saved,
+and when you switch buffers or edit panes within a view window. To jump
+to the text of a comment in the buffer, double-click on the row
+containing the comment.
+
+By default, the task comments are sorted in ascending order by the line
+of buffer text in which each comment appears. You can change the sorting
+arrangement by double-clicking on the header above the column
+corresponding to the sort criteria. Clicking on the icon or
+`Description` column will trigger sorting by the comment tag (such as
+``NOTE`` or ``QUESTION``), and by buffer line number within a group of
+identically tagged comment. The text of the comment following the tag
+will be ignored for sorting purposes. If the column being clicked
+already corresponds to the existing sort criteria, the direction of the
+sort is reversed - from ascending to descending, for example. A given
+sorting arrangement changed in this fashion will persist as long as the
+TaskList plugin is active.
+
+You can change or delete a comment by right-clicking on a row containing
+a comment. A popup menu will appear with three selections, `Change task
+tag`, `Delete task`, and `Parse buffer`.
+
+You can change the type of comment (for example, from ``IDEA`` to
+``TODO``, or from ``TODO`` to ``DONE``, by selecting the `Change task
+tag` option. A child popup menu will appear with the text of available
+comment tags. Clicking on an item will cause the buffer text to be
+updated to show the new comment tag. The TaskList display will also be
+updated.
+
+You can delete a task comment by selecting `Delete task` from the popup
+menu. You then have the choice between deleting the comment tag only (so
+the comment text will remain but will not be parsed as a task comment)
+and deleting the entire comment. This operation will also refresh the
+TaskList display.
+
+Any change or deletion to a task comment in a text buffer can be
+reversed using the editor's `Undo` feature.
+
+The TaskList display is not refreshed with every change made to a
+buffer. It is updated when a buffer is loaded or saved, when you switch
+edit panes or buffers in the view window and when you make changes to a
+task comment using the plugin context (right-click) menu. As a result,
+if you have made unsaved changes to a buffer, TaskList may not be able
+to find or change your comment text. You can reparse a buffer at any
+time using the `Task List` -> `Parse buffer` menu item in the `Plugins`
+menu (which you can tie to a keyboard shortcut) or by double-clicking on
+the header row of the TaskList table.
+
+Settings and Options
+====================
+
+There are three option pane windows available for user settings from the
+`Utilities` -> `Global Options` dialog.
+
+General
+-------
+
+The `General` options pane allows you to change the appearance of the
+TaskList table display, including default sorting criteria, and
+highlighting of commented buffer text.
+
+Task Types
+----------
+
+The `Task Types` options pane allows you to add, delete, or edit comment
+tags corresponding to task types.
+
+The tags for default task types, and any types you may add, are
+represented by regular expressions for which the TaskList plugin
+searches once it encounters a comment token on a line of buffer text.
+The content of the comment token will depend on the jEdit edit mode
+being applied to the buffer. The regular expression is applied to all
+text on a given line following the matching comment. Two fields are
+extracted for display when a match occurs: the name of the tag that will
+be displayed at the beginning of the `Description` column of the
+TaskList table, and the text of the comment that will follow the tag
+name. These two fields correspond to two defined groups in the tag's
+regular expression.
+
+The ability to change the comment type and tag from the TaskList table
+(using its context menu) depends upon the target comment type's regular
+expression being in the basic form of the default types::
+
+    \s+(tag-name):\s+(.+)$
+
+When using the current version, the name of the task type should match
+the tag name used in regular expression.
+
+You can reset the task patterns to those installed with the plugin by
+using the `Task List` -> `Reset task patterns` command.
+
+
+Modes
+-----
+
+The `Modes` option pane allow you to specify which modes TaskList should
+extract tasks from comments.
+
+As ``text`` and ``hex`` don't have comments, they are not enabled by
+default.
+
+
+Known bugs and limitations
+==========================
+
+The name of a task item must currently be identical to the tag text
+contained in the regular expression defining the task item. These items
+may be corrected in a future version.
+
+The current version also does not parse task comments spanning more than
+one line of buffer text. There is also no facility for serializing the
+contents of the TaskList display. These features may be added in a
+future version.
+
+
+Legal notices
+=============
+
+The TaskList plugin and it's documentation are released under the GNU
+General Public License (either version 2 or any later version, at the
+user's option). A copy of the GPL is available in the COPYING.txt file
+in the jEdit distribution.
+
+The TaskList plugin comes with ABSOLUTELY NO WARRANTY OF ANY KIND; see
+section 11 and 12 of the GPL for details.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+"Invariant Sections", "Front-Cover Texts" or "Back-Cover Texts", each as
+defined in the license. A copy of the license is included in the file
+COPYING.DOC.txt included with the jEdit distribution.
+
+
+Feedback
+========
+
+Bug reports, comments and suggestions regarding TaskList may be sent to
+Ollie Rutherfurd at oliver@jedit.org or posted on the jedit-users
+mailing list (for which membership is required).
+
+
+Version History
+===============
+
+Version 0.4.4, August, 2004
+---------------------------
+
+- Recognize Tasks that contain tokens other than comment types,
+  if the other tokens are surrounded by comment tokens.  This
+  allows PHPDoc ``@TODO: ....`` comments, where ``@TODO`` is a 
+  ``LABEL`` token, to be recognized.
+
+Version 0.4.3, April, 2004
+---------------------------
+
+- Fixed NullPointerException when trying to extract tasks 
+  from a mode that was added since jEdit was started.
+- Updated for 4.2pre1 Token changes.
+- Fixed deprecation warnings.
+- Updated for 4.2 plugin API
+- Changing default sort column or order is applied immediately.
+
+Version 0.4.2, March 13, 2003
+------------------------------
+
+- Fixed sf bug 535882, "TaskList, removing and jumping"
+- Fixed a sorting bug (NPE if no ":" in Task.text)
+- Fixed "Reset task patterns"
+- Added "Parse Buffer" to TaskList Popup menu
+- Fixed sf bug 699048, "Unable to delete tasks"
+- Code re-organization
+- Added option to sort tasks by buffer name
+- Fixed bug removing task patterns
+
+Version 0.4.1, February 18, 2003
+---------------------------------
+
+- Better performance in default patterns (Antonio Argentieri).
+- Removed uses of APIs deprecated by jEdit 4.1 (Slava Pestov).
+
+Version 0.4.0, June 04, 2002
+-----------------------------
+
+- Option to specify which modes to use
+- fixed case-senstive matching and task name saving
+- parsing updates for jEdit 4.1
+
+Version 0.3.5, March 17, 2002
+------------------------------
+
+- Fixed bug in parsing routine
+
+Version 0.3.4, March 4, 2002
+-----------------------------
+
+- Release on jEdit Plugin Central
+
+Version 0.3.3, January 29, 2002
+--------------------------------
+
+- Port to jEdit 4.0 API
+
+Version 0.3.2, December 13, 2001
+---------------------------------
+
+- Fixed highlighting option
+- cleaned up table appearance
+
+Version 0.3.1, December 12, 2001
+---------------------------------
+
+- Fixed bug affecting deletion on entire task comment
+
+Version 0.3, December 11, 2001
+-------------------------------
+
+- Revised for beta version 0.3
+
+Version 0.2, December 1, 2001
+------------------------------
+
+- Initial version of documentation
+
+.. $Id$
+.. :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:
