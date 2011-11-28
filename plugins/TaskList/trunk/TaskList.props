@@ -5,7 +5,7 @@ plugin.tasklist.TaskListPlugin.activate=defer
 
 plugin.tasklist.TaskListPlugin.name=TaskList
 plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene, Dale Anson
-plugin.tasklist.TaskListPlugin.version=2.3
+plugin.tasklist.TaskListPlugin.version=2.4
 plugin.tasklist.TaskListPlugin.docs=docs/index.html
 plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
 plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.99.00
