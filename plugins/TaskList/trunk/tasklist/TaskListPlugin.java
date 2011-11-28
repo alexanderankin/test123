@@ -77,7 +77,7 @@ public class TaskListPlugin extends EditPlugin {
         while (view != null) {
             EditPane[] panes = view.getEditPanes();
             for (int i = 0; i < panes.length; i++) {
-                JEditTextArea textArea = panes[ i].getTextArea();
+                JEditTextArea textArea = panes[i].getTextArea();
                 initTextArea(textArea);
             }
             view = view.getNext();
@@ -96,7 +96,7 @@ public class TaskListPlugin extends EditPlugin {
         while (view != null) {
             EditPane[] panes = view.getEditPanes();
             for (int i = 0; i < panes.length; i++) {
-                JEditTextArea textArea = panes[ i].getTextArea();
+                JEditTextArea textArea = panes[i].getTextArea();
                 uninitTextArea(textArea);
             }
             view = view.getNext();
@@ -165,7 +165,7 @@ public class TaskListPlugin extends EditPlugin {
         while (view != null) {
             EditPane[] panes = view.getEditPanes();
             for (int i = 0; i < panes.length; i++) {
-                JEditTextArea textArea = panes[ i].getTextArea();
+                JEditTextArea textArea = panes[i].getTextArea();
                 TaskHighlight highlight = (TaskHighlight) textArea.getClientProperty(TaskHighlight.class);
                 if (highlight != null) {
                     highlight.setEnabled(enabled);
@@ -199,7 +199,9 @@ public class TaskListPlugin extends EditPlugin {
      * @param taskType the TaskType object to be added
      */
     public static void addTaskType(TaskType taskType) {
-        taskTypes.add(taskType);
+        if (taskType != null) {
+            taskTypes.add(taskType);
+        }
     }    // }}}
 
     // {{{ loadTaskTypes() method
@@ -211,10 +213,10 @@ public class TaskListPlugin extends EditPlugin {
         int i = 0;
         String pattern;
         while ((pattern = jEdit.getProperty("tasklist.tasktype." + i + ".pattern")) != null && !pattern.equals("")) {
-            String name = jEdit.getProperty ("tasklist.tasktype." + i + ".name");
-            String iconPath = jEdit.getProperty ("tasklist.tasktype." + i + ".iconpath");
-            String sample = jEdit.getProperty ("tasklist.tasktype." + i + ".sample");
-            boolean ignoreCase = jEdit.getBooleanProperty ("tasklist.tasktype." + i + ".ignorecase");
+            String name = jEdit.getProperty("tasklist.tasktype." + i + ".name");
+            String iconPath = jEdit.getProperty("tasklist.tasktype." + i + ".iconpath");
+            String sample = jEdit.getProperty("tasklist.tasktype." + i + ".sample");
+            boolean ignoreCase = jEdit.getBooleanProperty("tasklist.tasktype." + i + ".ignorecase");
 
             taskTypes.add(new TaskType(name, pattern, sample, ignoreCase, iconPath));            // NOPMD
 
@@ -355,9 +357,9 @@ public class TaskListPlugin extends EditPlugin {
         TaskListPlugin.loadTaskTypes();
         TaskListPlugin.loadParseModes();
 
-        highlightColor = GUIUtilities.parseColor(jEdit.getProperty ("tasklist.highlight.color"));
+        highlightColor = GUIUtilities.parseColor(jEdit.getProperty("tasklist.highlight.color"));
 
-        allowSingleClickSelection = jEdit.getBooleanProperty ("tasklist.single-click-selection", false);
+        allowSingleClickSelection = jEdit.getBooleanProperty("tasklist.single-click-selection", false);
 
         boolean highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
         toggleHighlights(highlightEnabled);
@@ -394,7 +396,7 @@ public class TaskListPlugin extends EditPlugin {
      * A collection of TaskType objects representing the form of comments that
      * will be parsed from a buffer and store as Task objects
      */
-    private static List<TaskType> taskTypes = new ArrayList<TaskType>();
+    private static Set<TaskType> taskTypes = new HashSet<TaskType>();
 
     /**
      * A collection of collections: each member represents a collection of
@@ -475,7 +477,7 @@ public class TaskListPlugin extends EditPlugin {
      * Parses a Buffer and extracts task item data to be stored in the plugin's
      * collection.
      * @param buffer the Buffer to be parsed
-     * TODO: does this really need to be synchronized?  Should it be moved elsewhere and made non-static?
+     * DONE: does this really need to be synchronized?  Should it be moved elsewhere and made non-static?
      * DONE: removed the synchronized.  No problems so far.
      */
     public static void parseBuffer(Buffer buffer) {
@@ -579,16 +581,6 @@ public class TaskListPlugin extends EditPlugin {
         }
 
         Integer _line = Integer.valueOf(task.getLineIndex());
-        /* TODO: is this check necessary?
-        if ( taskMap.get( _line ) != null ) {
-            Task prevTask = taskMap.get(_line);
-            //if (!task.equals(prevTask)) {
-            Log.log( Log.ERROR, TaskListPlugin.class,
-                "2 tasks on line: " + task + " and " + prevTask
-                    + " of buffer: " + task.getBufferPath() ); //##
-            //}
-        }
-        */
         taskMap.put(_line, task);
     }    // }}}
 
