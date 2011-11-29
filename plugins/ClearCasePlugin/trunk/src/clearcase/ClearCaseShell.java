@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -55,50 +56,21 @@ public class ClearCaseShell extends Shell implements ClearCaseConstants
             Log.log(Log.DEBUG, this, "clearcase.path = " + path);
             
             // Tidy path
-            if(path != null)
+            if(path != null && path.length() > 0)
             {
-                path.replace('\\', '/');
-                
-                if(!path.endsWith("/"))
-                {
-                    path = path + "/";
-                }
-
-				// Add ClearTool to path
-				path = path + COMMAND_CLEARTOOL;
-
-				try
-				{
-					String osName = System.getProperty("os.name");		
-					if (osName.startsWith("Win"))
-					{
-						path = path + ".exe";
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.log(Log.ERROR, this, "os.name could not be retrieved");
-				}
+            	    String cmd = COMMAND_CLEARTOOL;
+            	    if (OperatingSystem.isWindows())
+			cmd = cmd + ".exe";
 				
-                File file = new File(path);
-                
-                // Check if ClearTool can be found.
-                if(!file.exists())
-                {
-                    JOptionPane.showMessageDialog(
-                        null, 
-                        "ClearTool not found. " + 
-                        "\n\nGoto 'Global Options' and set the folder where " + 
-                        "ClearTool is located." + 
-                        "\n\nFull search path: " + path,
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE
-                        );
-                }
+		    File file = new File(path, cmd);
+		    path = file.getCanonicalPath();
+		    // Check if ClearTool can be found.
+		    if(!file.exists()) 
+		    	Log.log(Log.ERROR, this, "Cleartool not found: " + path);		    
             }
             else
             {
-				// Tell user to set ClearTool path or verify that it is in the PATH.
+		// Tell user to set ClearTool path or verify that it is in the PATH.
                 if(jEdit.getProperty("clearcase.firstTime") == null)
                 {
                     jEdit.setProperty("clearcase.firstTime", "true");
@@ -112,9 +84,8 @@ public class ClearCaseShell extends Shell implements ClearCaseConstants
                         JOptionPane.ERROR_MESSAGE
                         );
                 }
-                path = "";
+                path = "cleartool";
             }
-
             clearTool = new InteractiveProcess(path, input, error);
             
             // Start process.

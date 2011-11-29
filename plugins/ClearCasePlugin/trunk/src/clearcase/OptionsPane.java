@@ -55,7 +55,7 @@ public class OptionsPane extends AbstractOptionPane implements ActionListener
         mainPanel.setLayout(null);
         mainPanel.setPreferredSize(new Dimension(350, 200));
         pathLabel.setFont(new java.awt.Font("Dialog", 1, 12));
-        pathLabel.setText("ClearTool Path (leave empty if in path)");
+        pathLabel.setText("ClearTool directory (leave empty if in path)");
         pathLabel.setBounds(new Rectangle(18, 13, 317, 17));
         pathField.setBounds(new Rectangle(18, 32, 267, 25));
         
