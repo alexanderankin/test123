@@ -6,10 +6,15 @@
 	<property file="../build.properties" />
     <property name="build.support" value="../../build-support" />
 		
-    <property name="compiler.source" value="1.4" />
-    <property name="compiler.target" value="1.4" />
 	<import file="${build.support}/plugin-build.xml" />
 	
+	 <selector id="packageFiles">
+	  <or>
+	  <filename name="doc/ClearCasePlugin.html" />
+	  <filename name="doc/*.txt" />
+	  </or>
+	 </selector>
+	 
 	<path id="project.class.path">
 	<pathelement location="${dir.jedit}/jedit.jar"/>
         <pathelement location="${install.dir}/ErrorList.jar"/>
