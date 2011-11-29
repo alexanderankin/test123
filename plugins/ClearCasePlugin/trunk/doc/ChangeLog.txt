@@ -27,7 +27,8 @@ Version 0.3 / x-x-2002
     Bug fixes:
 
 Version 0.28 / 27-November-2011    
-    Bugfixes and updates for jEdit 4.4 and Console 4.4
+    Updates for jEdit 4.4 and Console 4.4 (ezust)
+    Fixed broken OptionPane (#1567629 - shlomy)
     
 Version 0.27 / 27-November-2002
 -------------------------------------------------------------------------------
