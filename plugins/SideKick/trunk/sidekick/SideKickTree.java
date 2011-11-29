@@ -1272,7 +1272,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         node = node.getPreviousLeaf();
                         if (node != null)
                         {
-                                while ((node != null) && (!model.isVisible(node)))
+                                while ((node != null) && !(model.isVisible(node) && tree.isVisible(new TreePath(node.getPath()))))
                                 {
                                         node = node.getPreviousLeaf();
                                 }
