@@ -157,14 +157,23 @@
 
     <para>
       <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
-  to Next Asset</guimenuitem> moves the caret to start of the next asset.
+  to Next Asset</guimenuitem> moves the caret to start of the next asset. 
  </para>
 
-    <para>
+ <para>
       <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Select
   Asset at Caret</guimenuitem> selects the asset at the caret position.
  </para>
 
+  <bridgehead> Keyboard Shortcuts </bridgehead>
+    <itemizedlist>
+      <listitem><para> Up and Down arrow keys let you navigate between sibling nodes,
+      or to parents/children of exploded nodes. </para></listitem>
+      <listitem><para> Ctrl+Up and Ctrl+Down keys go to previous/next asset. 
+      </para></listitem>
+      <listitem><para> Right and Left arrow keys expand and collapse tree nodes. 
+      </para></listitem>  
+    </itemizedlist>
   </chapter>
 
   <chapter id="toolbar">
