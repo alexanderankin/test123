@@ -9,9 +9,10 @@ plugin.clearcase.ClearCasePlugin.docs=doc/ClearCasePlugin.html
 plugin.clearcase.ClearCasePlugin.activate=defer
 plugin.clearcase.ClearCasePlugin.description=Rational ClearCase source code control plugin
 plugin.clearcase.ClearCasePlugin.depend.0=jedit 04.04.99.00
-plugin.clearcase.ClearCasePlugin.depend.1=plugin console.ConsolePlugin 4.4
+plugin.clearcase.ClearCasePlugin.depend.1=jdk 1.6
 plugin.clearcase.ClearCasePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
-plugin.clearcase.ClearCasePlugin.depend.3=jdk 1.6
+plugin.clearcase.ClearCasePlugin.depend.3=plugin console.ConsolePlugin 4.4.2
+
 
 
 #
