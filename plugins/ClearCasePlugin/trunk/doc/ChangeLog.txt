@@ -3,33 +3,23 @@ Project started 16 July 2002
 
 Current version 0.28
 
--------------------------------------------------------------------------------
-
-Version 0.4 / x-x-2002
+Future plans:  
 -------------------------------------------------------------------------------
     New Features:
-    - (PLANNED) Tested on some/all Unix, Linux, Windows NT+/98+
-    - (PLANNED) Tested on some/all ClearCase versions.
+    - (PLANNED) Test on some/all Unix, Linux, Windows NT+/98+
+    - (PLANNED) Test on some/all ClearCase versions.
     - (PLANNED) More generic. So that support for other systems can be added easily.
-    - (PLANNED) Option to edit command before execution.
-    
-    Bug fixes:
-
-Version 0.3 / x-x-2002
--------------------------------------------------------------------------------
-    New Features:
     - (PLANNED) Cleanup/Refactor code.
-    - (PLANNED) Better ClearTool shell.
-    - (PLANNED) JavaDoc and User documentation created.
     - (PLANNED) Integrated with the "File System Browser". Able to work on directories.
     - (PLANNED) Checkin if identical with previous possible.
      
+Version 0.28 / 27-November-2011
+-------------------------------------------------------------------------------
     Bug fixes:
-
-Version 0.28 / 27-November-2011    
-    Updates for jEdit 4.4 and Console 4.4 (ezust)
-    Fixed broken OptionPane (#1567629 - shlomy)
-    
+	- Updates for jEdit 4.4 and Console 4.4 (ezust)
+	- Fixed broken OptionPane (#1567629 - shlomy)
+	- Fixed OptionPane Browse button (#718460 - ezust)
+	
 Version 0.27 / 27-November-2002
 -------------------------------------------------------------------------------
     Bug fixes:
