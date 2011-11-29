@@ -4,7 +4,7 @@
 plugin.clearcase.ClearCasePlugin.name=ClearCase Plugin
 plugin.clearcase.ClearCasePlugin.author=Christian Hellsten and Ken Gentry
 plugin.clearcase.ClearCasePlugin.contributors=...
-plugin.clearcase.ClearCasePlugin.version=0.27
+plugin.clearcase.ClearCasePlugin.version=0.28
 plugin.clearcase.ClearCasePlugin.docs=ClearCasePlugin.html
 plugin.clearcase.ClearCasePlugin.activate=defer
 
