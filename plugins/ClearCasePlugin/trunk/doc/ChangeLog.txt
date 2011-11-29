@@ -1,7 +1,8 @@
 -------------------------------------------------------------------------------
 Project started 16 July 2002
 
-Current version 0.27
+Current version 0.28
+
 -------------------------------------------------------------------------------
 
 Version 0.4 / x-x-2002
@@ -24,7 +25,10 @@ Version 0.3 / x-x-2002
     - (PLANNED) Checkin if identical with previous possible.
      
     Bug fixes:
-	
+
+Version 0.28 / 27-November-2011    
+    Bugfixes and updates for jEdit 4.4 and Console 4.4
+    
 Version 0.27 / 27-November-2002
 -------------------------------------------------------------------------------
     Bug fixes:
