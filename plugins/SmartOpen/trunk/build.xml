@@ -13,8 +13,4 @@
 	<property name="jedit.plugins.dir" value="${install.dir}"/>
 
 	<import file="${build.support}/plugin-build.xml"/>
-
-	<path id="project.class.path">
-		<pathelement location="${install.dir}/CommonControls.jar" />
-	</path>
 </project>
