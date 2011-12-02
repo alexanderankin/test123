@@ -72,7 +72,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		showStatusWindow.setSelected(jEdit.getBooleanProperty("sidekick.showStatusWindow"));
 		addComponent(treeFollowsCaret = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.tree-follows-caret")));
-		treeFollowsCaret.setSelected(SideKick.isFollowCaret());
+		treeFollowsCaret.setSelected(SideKick.isGlobalFollowCaret());
 		
 		treeFollowsCaret.addActionListener(new ActionHandler());
 
@@ -229,7 +229,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 			keystrokeParse.isSelected());
 		jEdit.setProperty("sidekick.auto-parse-delay",String.valueOf(
 			autoParseDelay.getValue()));
-		SideKick.setFollowCaret(treeFollowsCaret.isSelected());
+		SideKick.setGlobalFollowCaret(treeFollowsCaret.isSelected());
 		jEdit.setBooleanProperty(SHOW_TOOL_BAR, showToolBar.isSelected());
 		jEdit.setBooleanProperty(SPLIT_COMBO, splitCombo.isSelected());
 		jEdit.setBooleanProperty(SINGLE_ICON_IN_COMBO, singleIconInCombo.isSelected());

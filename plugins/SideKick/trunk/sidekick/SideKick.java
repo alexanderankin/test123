@@ -117,7 +117,10 @@ public class SideKick
 			return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
 		}
 	}
-	public static void setFollowCaret(boolean fc) {
+	public static boolean isGlobalFollowCaret() {
+		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET);
+	}
+	public static void setGlobalFollowCaret(boolean fc) {
 		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
 	}
 

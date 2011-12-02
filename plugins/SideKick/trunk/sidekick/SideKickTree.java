@@ -901,7 +901,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         if (evt.getSource() == followCaret)
                         {
                                 boolean v = followCaret.isSelected();
-                                SideKick.setFollowCaret(followCaret.isSelected());
+                                SideKick.setGlobalFollowCaret(followCaret.isSelected());
                                 if (v)
                                 {
                                         onChange.setSelected(true);
