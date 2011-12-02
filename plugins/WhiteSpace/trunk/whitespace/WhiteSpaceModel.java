@@ -2,6 +2,9 @@
  * WhiteSpaceModel.java
  * Copyright (c) 2001 Andre Kaplan
  *
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -19,6 +22,7 @@
 
 package whitespace;
 
+import java.util.*;
 
 public class WhiteSpaceModel
 {
@@ -46,6 +50,7 @@ public class WhiteSpaceModel
     private Option tabifyLeadingWhitespace;
     private Option untabifyLeadingWhitespace;
 
+    private Map<String, Option> optsMap;
 
     public WhiteSpaceModel() {
         // Paragraph separators highlighting option
@@ -107,8 +112,32 @@ public class WhiteSpaceModel
         this.untabifyLeadingWhitespace   = new Option(
             WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
         );
+        
+        optsMap = new HashMap<String, Option>();
+        // {{{ fill optsMap
+		optsMap.put("space-highlight", this.spaceHighlight);
+		optsMap.put("tab-highlight", this.tabHighlight);
+		optsMap.put("whitespace-highlight", this.whitespaceHighlight);
+		optsMap.put("block-highlight", this.blockHighlight);
+		optsMap.put("fold-highlight", this.foldHighlight);
+		optsMap.put("fold-tooltip", this.foldTooltip);
+		optsMap.put("leading-space-highlight", this.leadingSpaceHighlight);
+		optsMap.put("inner-space-highlight", this.innerSpaceHighlight);
+		optsMap.put("trailing-space-highlight", this.trailingSpaceHighlight);
+		optsMap.put("leading-tab-highlight", this.leadingTabHighlight);
+		optsMap.put("inner-tab-highlight", this.innerTabHighlight);
+		optsMap.put("trailing-tab-highlight", this.trailingTabHighlight);
+		optsMap.put("remove-trailing-white-space", this.removeTrailingWhitespace);
+		optsMap.put("soft-tabify-leading-white-space", this.softTabifyLeadingWhitespace);
+		optsMap.put("tabify-leading-white-space", this.tabifyLeadingWhitespace);
+		optsMap.put("untabify-leading-white-space", this.untabifyLeadingWhitespace);
+		// }}}
+
     }
 
+    public Option getOption(String sName) {
+    	return optsMap.get(sName);
+    }
 
     public Option getBlockHighlight() {
         return this.blockHighlight;

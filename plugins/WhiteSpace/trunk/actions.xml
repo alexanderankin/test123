@@ -3,6 +3,13 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
+    <ACTION NAME="white-space.show-buffer-options">
+        <CODE>
+            whitespace.WhiteSpaceActions.showBufferOptions(buffer, view);
+        </CODE>
+    </ACTION>
+
+
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
             whitespace.WhiteSpaceActions.toggleBlockHighlight(buffer);
