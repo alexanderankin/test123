@@ -160,6 +160,11 @@
 				<patternset refid="include-from-source"/>
 			</fileset>
 		</jar>
+		<copy todir="${install.dir}">
+		  <fileset dir="${src.lib}">
+		  	<include name="*.jar"/>
+		  </fileset>
+		</copy>
 	</target>
 	<!-- }}} -->
 
