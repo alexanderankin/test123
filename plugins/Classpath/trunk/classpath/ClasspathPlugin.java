@@ -90,7 +90,7 @@ public class ClasspathPlugin extends EBPlugin {
 			cpBuilder.deleteCharAt(end);
 
 		jEdit.setProperty("java.classpath", cpBuilder.toString());
-		
+
 		// If necessary, update console's var
 		updateEnv(jEdit.getBooleanProperty("java.classpath.includeWorking"));
 
@@ -167,9 +167,9 @@ public class ClasspathPlugin extends EBPlugin {
 		if (msg instanceof ViewUpdate) {
 			ViewUpdate update = (ViewUpdate) msg;
 
-			// If a view was opened or closed, refresh the set of projects
+			// If a view was opened refresh the set of projects
 			Object what = update.getWhat();
-			if (what.equals(ViewUpdate.CLOSED) || what.equals(ViewUpdate.CREATED))
+			if (what.equals(ViewUpdate.CREATED))
 				refreshProjects();
 		}
 		else if (msg instanceof PluginUpdate) {
