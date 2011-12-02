@@ -8,7 +8,7 @@ plugin.sessions.TemplatesPlugin.description=The Templates plugin integrates the 
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
 # Dependencies
-plugin.templates.TemplatesPlugin.depend.0=jedit 04.03.13.00
+plugin.templates.TemplatesPlugin.depend.0=jedit 04.03.99.00
 plugin.templates.TemplatesPlugin.depend.1=jdk 1.5
 plugin.templates.TemplatesPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.5
 plugin.templates.TemplatesPlugin.jars=oro-2.0.8.jar velocity-1.5.jar
