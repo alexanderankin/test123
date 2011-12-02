@@ -1,0 +1,74 @@
+# $Id$
+
+plugin.templates.TemplatesPlugin.activate=startup
+plugin.templates.TemplatesPlugin.name=Templates
+plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
+plugin.templates.TemplatesPlugin.version=4.1.2
+plugin.sessions.TemplatesPlugin.description=The Templates plugin integrates the Apache Velocity templating engine with jEdit, to allow dynamic text generation based on template files.
+plugin.templates.TemplatesPlugin.docs=docs/index.html
+
+# Dependencies
+plugin.templates.TemplatesPlugin.depend.0=jedit 04.03.99.00
+plugin.templates.TemplatesPlugin.depend.1=jdk 1.5
+plugin.templates.TemplatesPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.5
+plugin.templates.TemplatesPlugin.jars=oro-2.0.8.jar velocity-1.5.jar
+
+# Action labels
+Templates.refresh-templates.label=Refresh templates
+Templates.edit-template.label=Edit template
+Templates.save-template.label=Save template
+Templates.expand-accelerator.label=Expand Accelerator
+Templates.browse-templates.label=Browse Templates
+templates-tree.label=Templates Tree
+templates-tree-toggle.label=Toggle Templates Tree
+
+# Plugins menu labels
+plugin.templates.TemplatesPlugin.menu.code=new templates.TemplatesMenuProvider();
+
+# OptionPane labels
+plugin.templates.TemplatesPlugin.option-group=templates accelerators
+options.templates.label=General
+options.templates.code=new templates.TemplatesOptionPane();
+options.accelerators.label=Accelerators
+options.accelerators.code=new templates.AcceleratorOptionPane();
+
+options.Templates.general.label=General
+options.Templates.general.choose-dir-msg=Templates directory:\ 
+options.Templates.general.velocity-dir-msg=Velocity directory:\ 
+options.Templates.general.dir-warning-msg=NOTE: The Templates and Velocity\
+ \ directories must be different, otherwise Velocity configuration files may\
+ \ be interpreted as templates. The Templates directory may be a sub-directory\
+ \ of the Velocity directory (but not the other way around).
+options.Templates.general.choose-btn-msg=Choose
+options.Templates.general.accelPassThru-msg=Try jEdit abbreviation if accelerator not found?\ 
+
+options.Templates.accelerators.label=Accelerators
+options.Templates.accelerators.input.accelerator.title=Enter Accelerator
+options.Templates.accelerators.input.accelerator.message=Accelerator:
+
+# Error messages
+plugin.TemplatesPlugin.error.bad-backup-filter=Templates: Bad RegExp for backup filter. Report to programmer.
+plugin.TemplatesPlugin.error.template-label=Error creating template label for file:\ 
+plugin.TemplatesPlugin.error.create-dir=Unable to create directory:\ 
+
+plugin.TemplatesPlugin.error.no-template-found.title=No Template Found
+plugin.TemplatesPlugin.error.no-template-found.message=Template ''{0}'' not found
+
+plugin.TemplatesPlugin.error.no-accelerator-found.title=No Accelerator Found
+plugin.TemplatesPlugin.error.no-accelerator-found.message=Accelerator ''{0}'' not found
+
+plugin.TemplatesPlugin.error.invalid-template-path.title=Invalid Template
+plugin.TemplatesPlugin.error.invalid-template-path.message=You must select a template
+
+plugin.TemplatesPlugin.error.buffer-read-only.title=Unable to write
+plugin.TemplatesPlugin.error.buffer-read-only.message=Unable to write. Buffer is read-only.
+
+#AcceleratorOptionPane Label Properties
+plugin.TemplatesPlugin.mode.label=Mode
+plugin.TemplatesPlugin.remove-accelerator.label=Remove
+plugin.TemplatesPlugin.add-accelerator.label=Add
+plugin.TemplatesPlugin.save-accelerator.label=Save
+
+# Templates Tree window
+templates-tree.title=Templates Tree
+

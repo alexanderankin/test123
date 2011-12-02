@@ -1,0 +1,181 @@
+CHANGES file for Templates plugin.
+
+Version 4.1.2 (xx-xxx-200x)
+=============================
+CHANGES:
+- removed dependency on the gnu.regexp library in favour of java.util.regex
+- fixed a bug which caused the templates tree to reload for every EditBus message (patch by Nick Clarke)
+- fixed Enter key handling in Templates dockable (based on patch by Nick Clarke)
+- fixed a bug in the #caret directive which caused the caret to be placed on position ahead of where it should have been (patch by Nick Clarke)
+
+Version 4.1.1 (24-JAN-2008)
+=============================
+CHANGES:
+- Modified for API changes introduced in jEdit 4.3pre12
+
+Version 4.1.0 (22-AUG-2007)
+=============================
+CHANGES:
+- updated Velocity version from 1.4 to 1.5
+- updated dependencies as a result of the Velocity update (now requires JakartaCommons plugin 0.5, oro-2.0.8)
+
+Version 4.0.0 (11-OCT-2006)
+=============================
+CHANGES:
+- list of templates now sorted (case-insensitive)
+- updated Velocity version from 1.3.1rc2 to 1.4
+- updated dependencies as a result of the Velocity update (now requires JRE 1.5, JakartaCommons plugin 0.4.4)
+ENHANCEMENTS:
+- added new "#yes_no" directive
+- display error dialog when an exception is thrown during template processing
+
+Version 3.3.1 (06-JAN-2006)
+=============================
+CHANGES:
+- changes for jEdit 4.2pre3
+
+Version 3.3.0 (10-JUL-2003)
+=============================
+CHANGES:
+- more changes for jEdit 4.2 dynamic plugin loading API, fixes problems resulting from changes in jEdit 4.2pre2
+
+Version 3.2.0 (25-MAY-2003)
+=============================
+CHANGES:
+- removed dependancy on commons-collections.jar
+- added dependancy on JakartaCommons plugin
+- changed jEdit dependancy from version 4.0pre4 to version 4.2pre1
+- updated Templates to be compliant with jEdit 4.2 API changes
+
+Version 3.1.0 (03-FEB-2003)
+=============================
+BUG FIX:
+- fixed error in #beanshell directive example code in help documentation
+- fixed problem where, if #caret() directive was the first thing in a template, the caret would end up at the end of the file, rather than the beginning (reported by Hajo Wuellner)
+- Fix bug where the 'Edit Template' doesn't open to the template directory (Calvin Yu).
+- Applied same fix to 'Save Template' option (Steve Jakob)
+- overhauled accelerator expansion function to fix bug where expansion of template accelerator at the start of a buffer would cause a BeanShell error (array index out of bounds (-1)) (Steve Jakob)
+- fixed problem in velocity.properties where backslash was not recognized as a line continuation indicator in Windows. The "userdirective" entry is now all on one line (reported by Lee Turner/Rob Fletcher)
+- fixed properties loading problem where use of a custom velocity.properties file would result in the normal properties not getting loaded. Now custom properties will override normal properties. (Steve Jakob)
+- fixed macro reloading problem, where changes to a Velocimacro were not reflected until jEdit was restarted (Calvin Yu)
+ENHANCEMENTS:
+- Added $_jeditSelection which represents the current buffer selection (Calvin Yu).
+- added ability to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expansion function, if no matching template accelerator is found (Steve Jakob)
+- added option to Templates General option pane to configure "pass through" to abbreviation expansion (Steve Jakob)
+- added an optional boolean parameter to the #beanshell() directive to allow suppression of output of the last result in the script; documentation updated accordingly (Calvin Yu)
+- Velocity engine updated from version 1.3-rc1 to 1.3.1-rc2
+
+Version 3.0.1 (16-AUG-2002)
+=============================
+BUG FIX:
+- fixed problem with regular expression for filtering backup files, where it would filter all files if backup filename prefix and suffix both blank (fix submitted by John Murga) 
+- fixed problem with dockable tree view not updating in response to "Refresh templates" request
+ENHANCEMENTS:
+- updated help documentation with regards to plugin configuration and template creation procedures
+
+Version 3.0.0 (29-JUL-2002)
+=============================
+CHANGES:
+Templates plugin now uses Apache Velocity as its templating engine (Calvin Yu).
+ENHANCEMENTS:
+Added support for template labeling via "## template=" statement.
+Added Calvin's dockable window for template selection.
+Switched to Docbook for help documentation.
+Modified Calvin's AcceleratorManager to use a more readable storage format, very similar to property files.
+Added a dirty flag to AcceleratorManager so that accelerators are saved only if there are changes.
+Added a field to the options pane to allow selection of the directory containing Velocity configuration files.
+
+Version 2.9.9 (30-APR-2002)
+=============================
+Pre-release for testing integration of Calvin Yu's Velocity classes.
+Directory hierarchy changed to separate Velocity classes from Templates plugin classes.
+Changed to ant for build management.
+
+Version 2.0.2 (08-MAR-2002)
+=============================
+BUG FIX:
+- fixed problem with file paths on Windows, where BeanShell threw an exception on encountering a backslash when processing a TemplateAction object (as reported by Arno Verhoeven) 
+
+Version 2.0.1 (25-FEB-2002)
+=============================
+BUG FIX:
+- fixed problem with templates directory not being created (as reported by Will Sargent) 
+
+Version 2.0.0 (21-FEB-2002)
+=============================
+CHANGES:
+- updated Templates to be compliant with jEdit 4.0 actions API
+ENHANCEMENTS:
+- all template menu items are now created using BeanShellAction objects, 
+which allows menu selections to be used in recorded macros 
+
+Version 1.1.0 (16-JULY-2001)
+=============================
+BUG FIX:
+- updated TemplatesPlugin to use createMenuItems(Vector menuItems), rather 
+than the deprecated createMenuItems(View view, Vector menus, Vector menuItems).
+ENHANCEMENTS:
+- added "Edit Template" function to Templates menu
+- added "Save Template" function to Templates menu
+
+Version 1.0.2 (04-DEC-2000)
+=============================
+BUG FIX:
+- the signature of org.gjt.sp.jedit.EditAction (2.7pre2) was changed such that 
+it no longer implements ActionListener. TemplatesAction was modified to 
+implement ActionListener directly, instead of relying on the EditAction 
+superclass. Tested against jEdit 2.7pre2, as well as 2.6final.
+
+Version 1.0.1 (20-APR-2000)
+=============================
+CHANGES:
+- updated TemplatesOptionPane for compliance with new OptionPane interface 
+in jEdit 2.4pre6. The class remains compatible with earlier releases, though.
+
+Version 1.0.0 (08-MAR-2000)
+=============================
+BUG FIXES:
+- fixed problem with Templates menu, whereby the menu was present only 
+in the most current view (as reported by Slava Pestov)
+ENHANCEMENTS:
+- added support for #ctpragma directives; as of this version only 
+the "#ctpragma LABEL" (aka "#ctpragma NAME") has been implemented. 
+This directive allows the user to specify within the template file 
+a label to denote that template in the Templates menu.
+- updated online documentation
+CHANGES:
+- log error messages with org.gjt.sp.util.Log class rather than 
+System.out.println. Therefore, the plugin now requires jEdit 2.2Final 
+or better.
+- use properties for error messages, rather than hard-coded strings
+
+Version 0.3.2 (15-JAN-2000)
+=============================
+BUG FIXES:
+- fixed problem with end-of-line markers being handled incorrectly (as
+reported by Juha Lindfors)
+
+Version 0.3.1 (10-JAN-2000)
+=============================
+CHANGES:
+- in TemplatesPlugin.createMenuItems(), Templates submenu now added to 
+menus vector, not menuItems (M. Dillon)
+- changed comments style in Templates.props to conform to standard Java 
+properties file format (M. Dillon)
+- added missing Templates.html help file back into distribution
+
+Version 0.3.0 (20-DEC-1999)
+=============================
+ENHANCEMENTS:
+- user-configurable templates directory via "Plugin Options"
+- recursive scanning of template directory and its subdirectories; each
+subdirectory becomes a submenu on the "Templates" menu
+
+Version 0.2.1 (11-DEC-1999)
+=============================
+BUG FIXES:
+- fixed strange ClassCastException which showed up on Windows, but not Linux
+
+Version 0.2.0 (10-DEC-1999)
+=============================
+- Initial public alpha release
