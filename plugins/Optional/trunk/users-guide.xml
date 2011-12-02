@@ -27,38 +27,32 @@
    the license can be found in the file <filename>COPYING.DOC.txt</filename>
    included with jEdit.
   </para>
- 
+
  </legalnotice>
 </articleinfo>
 <section id="usersguide">
 <title>User's Guide</title>
 <para>
   This plugin replaces the three Option dialogs in jedit  core: Global Options, Plugin Options and Buffer Options.
-  Now you can access all of them from any of them, since they are available as different tabs under the same Dialog. 
+  Now you can access all of them from any of them, since they are available as different tabs under the same Dialog.
 </para>
 <bridgehead> Instructions </bridgehead>
 <para>
- Just install it and you'll notice the difference immediately.  
+ Just install it and you'll notice the difference immediately.
  Initially, you should see the same option panes as you did before,
  but now there are tabs.  This makes it much easier to switch between global/plugin options,
  something I find myself doing quite often. I only added Buffer Options for completeness,
  but I find I rarely need it.
 </para>
 <para>
- The <emphasis role="bold">Global Options</emphasis>, 
+ The <emphasis role="bold">Global Options</emphasis>,
  <emphasis role="bold">Plugin Options</emphasis>, and <emphasis role="bold">Buffer
  Options</emphasis> actions have all been remapped via the <literal>actions.xml</literal> file, to pop
- up the same combined dialog (but starting in a different tab). 
+ up the same combined dialog (but starting in a different tab).
  The <emphasis role="bold">Combined Options</emphasis> brings up the
- same tab you were looking at last time the combined dialog was open. 
+ same tab you were looking at last time the combined dialog was open.
 </para>
-<para> If you notice that any of the option dialogs are different in Optional
- (most notably, things missing or laid out incorrectly) please report this as a bug
- on the jEdit 
- <ulink url="https://sourceforge.net/tracker/?group_id=588&amp;atid=565475">plugin-bugs</ulink> tracker.
- Some older plugins have not been updated to the 4.2 plugin standard and may not show up at all
- in Optional, while jEdit may be more forgiving.
- </para> 
+<para> Click <ulink url="./CHANGELOG.txt">here</ulink> for the detailed changelog. </para>
 </section>
 </article>
 

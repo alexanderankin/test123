@@ -32,4 +32,9 @@
 
     <import file="${build.support}/plugin-build.xml" />
 
+
+    <selector id="packageFiles">
+		<filename name="CHANGELOG.txt" />
+	</selector>
+
 </project>
