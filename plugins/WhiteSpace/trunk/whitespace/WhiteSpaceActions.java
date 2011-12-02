@@ -20,6 +20,7 @@
 package whitespace;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
 
 
 public class WhiteSpaceActions
@@ -32,6 +33,15 @@ public class WhiteSpaceActions
             WhiteSpaceModel.MODEL_PROPERTY
         );
     }
+
+
+    public static void showBufferOptions(Buffer buffer, View view) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+        new whitespace.BufferOptionsDialog(buffer, view, model);
+    }
+
+
 
 
     public static void toggleBlockHighlight(Buffer buffer) {

@@ -76,8 +76,6 @@
             deprecation="on"
             debug="on"
             includeJavaRuntime="yes"
-            source="1.4"
-            target="1.4"
         >
             <classpath refid="project.class.path"/>
         </javac>

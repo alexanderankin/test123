@@ -11,6 +11,8 @@ plugin.whitespace.WhiteSpacePlugin.description=The main feature of WhiteSpace is
 
 #Menu
 plugin.whitespace.WhiteSpacePlugin.menu= \
+    white-space.show-buffer-options             \
+    -                                           \
     white-space.toggle-space-highlight          \
     white-space.toggle-tab-highlight            \
     white-space.toggle-whitespace-highlight     \
@@ -34,6 +36,7 @@ plugin.whitespace.WhiteSpacePlugin.menu= \
 
 
 # Action labels
+white-space.show-buffer-options.label=Show WhiteSpace buffer options
 white-space.toggle-space-highlight.label=Show spaces
 white-space.toggle-leading-space-highlight.label=Show leading spaces
 white-space.toggle-inner-space-highlight.label=Show inner spaces
@@ -126,3 +129,10 @@ options.white-space.soft-tabify-leading-white-space=Tabify/untabify according to
 options.white-space.untabify-leading-white-space=Untabify leading whitespaces
 options.white-space.tabify-leading-white-space=Tabify leading whitespaces
 
+# Buffer options dialog
+whitespace.buffer-options-dialog.title=WhiteSpace Buffer options
+options.whitespace.ifShowTabs.label=If "Show tabs" selected
+options.whitespace.ifShowSpaces.label=If "Show space" selected
+options.whitespace.onBufferSave.label=On buffer save
+options.whitespace.space-highlight.label=Show selected spaces:
+options.whitespace.tab-highlight.label=Show selected tabs:
