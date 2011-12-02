@@ -1,7 +1,7 @@
 plugin.classpath.ClasspathPlugin.activate=startup
 plugin.classpath.ClasspathPlugin.name=Classpath
 plugin.classpath.ClasspathPlugin.author=Damien Radtke
-plugin.classpath.ClasspathPlugin.version=1.0
+plugin.classpath.ClasspathPlugin.version=1.0.1
 plugin.classpath.ClasspathPlugin.description=Maintains a global java classpath.
 plugin.classpath.ClasspathPlugin.docs=index.html
 
