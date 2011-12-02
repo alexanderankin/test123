@@ -1,0 +1,9 @@
+## template=jEdit actions.xml
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+${_jeditTab}
+#parse ( "xml/actions/action.vm" )
+</ACTIONS>

@@ -1,0 +1,3 @@
+## template=Private Method
+#set ( $accessModifier = "private" )
+#parse ( "java/method.vm" )
