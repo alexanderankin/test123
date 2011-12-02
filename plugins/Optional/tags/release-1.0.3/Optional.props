@@ -1,0 +1,27 @@
+# Plugin properties
+plugin.optional.OptionalPlugin.name=Optional
+plugin.optional.OptionalPlugin.activate=startup
+
+plugin.optional.OptionalPlugin.author=Alan Ezust
+plugin.optional.OptionalPlugin.version=1.0.3
+plugin.optional.OptionalPlugin.docs=index.html
+plugin.optional.OptionalPlugin.depend.0=jedit 04.03.99.00
+plugin.optional.OptionalPlugin.depend.1=jdk 1.5
+plugin.optional.OptionalPlugin.description=Improves navigability of the Global/Plugin option panes by bringing them both into a tab layout. Now you can switch between Global Options and Plugin Options without closing the dialog. Saves many mouse-motions!
+plugin.optional.OptionalPlugin.longdescription=description.html
+
+# Plugin Menu
+plugin.optional.OptionalPlugin.menu = optional.combined-options
+
+# Plugin menu properties
+optional.combined-options.label=Combined Options
+
+
+optional.title-template={0} {1}
+
+Combined\ Options.y=100
+Combined\ Options.x=100
+Combined\ Options.height=600
+Combined\ Options.width=800
+
+optional.combined-options.shortcut=C+F12
