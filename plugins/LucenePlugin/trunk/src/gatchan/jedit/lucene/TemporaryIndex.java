@@ -26,6 +26,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -191,17 +192,17 @@ public class TemporaryIndex implements Index
 			new MultiFieldQueryParser(Version.LUCENE_34, new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
-			StringBuilder queryStr = new StringBuilder();
-			if (fileType.length() > 0)
+			Query parsedQuery = parser.parse(query);
+
+			BooleanQuery _query = new BooleanQuery();
+			_query.add(parsedQuery, BooleanClause.Occur.MUST);
+			if (!fileType.isEmpty())
 			{
-				if (query.length() > 0)
-					queryStr.append('(').append(query).append(") AND ");
-				queryStr.append("filetype:").append(fileType);
+				_query.add(new TermQuery(new Term("filetype", fileType)), BooleanClause.Occur.MUST);
 			}
-			else
-				queryStr.append(query);
-			Query _query = parser.parse(queryStr.toString());
+			_query.add(parsedQuery, BooleanClause.Occur.MUST);
 			TopDocs docs = searcher.search(_query, max);
+
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
 			Result result = new Result();
 			Query _textQuery = parser.parse(query);
