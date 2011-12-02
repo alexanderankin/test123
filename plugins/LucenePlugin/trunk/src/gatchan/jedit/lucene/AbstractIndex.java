@@ -150,8 +150,8 @@ public class AbstractIndex
 		{
 			try
 			{
-				IndexReader reader = this.reader.reopen();
-				if (reader != this.reader)
+				IndexReader reader = IndexReader.openIfChanged(this.reader);
+				if (reader != null)
 				{
 					IndexReader oldReader = this.reader;
 					readerMap.put(reader, 0);

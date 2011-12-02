@@ -1,10 +1,10 @@
 <ivy-module version="2.0">
     <info organisation="jedit-plugins" module="LucenePlugin"/>
     <dependencies>
-        <dependency org="org.apache.lucene" name="lucene-core" rev="3.4.0"/>
-        <dependency org="org.apache.lucene" name="lucene-memory" rev="3.4.0"/>
-        <dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.4.0"/>
+        <dependency org="org.apache.lucene" name="lucene-core" rev="3.5.0"/>
+        <dependency org="org.apache.lucene" name="lucene-memory" rev="3.5.0"/>
+        <dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.5.0"/>
         <dependency org="jedit-plugins" name="MarkerSets" rev="0.7"/>
-        <dependency org="jedit-plugins" name="ProjectViewer" rev="3.0.1"/>
+        <dependency org="jedit-plugins" name="ProjectViewer" rev="3.2.0"/>
     </dependencies>
 </ivy-module>
