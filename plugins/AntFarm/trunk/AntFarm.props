@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Rick Gibbs, James Scott, Todd Papaioannou, James Wilson, Gerard Smyth, Damien Radtke
-plugin.antfarm.AntFarmPlugin.version=1.8
+plugin.antfarm.AntFarmPlugin.version=1.8.2
 plugin.antfarm.AntFarmPlugin.docs=index.html
 plugin.antfarm.AntFarmPlugin.activate=defer
 plugin.antfarm.AntFarmPlugin.description=AntFarm provides an interface to the Apache Ant \
@@ -9,13 +9,13 @@ plugin.antfarm.AntFarmPlugin.description=AntFarm provides an interface to the Ap
 	and a shell is added to Console for displaying build output. Errors are shown in \
 	ErrorList.
 
-plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.03.99.00
-plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.5
-plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.7.0
-plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.8
-plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 1.1
-plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.9.3
-plugin.antfarm.AntFarmPlugin.depend.6=plugin console.ConsolePlugin 4.4.1
+plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.04.99.00
+plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.6
+plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.8.2
+plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 1.4
+plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 3.1.0
+plugin.antfarm.AntFarmPlugin.depend.6=plugin console.ConsolePlugin 4.4.4
 plugin.antfarm.AntFarmPlugin.depend.7=optional plugin sidekick.java.JavaSideKickPlugin 2.8.1
 
 
