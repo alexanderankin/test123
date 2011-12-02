@@ -14,7 +14,7 @@ plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.6
 plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.8.2
 plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 1.4
-plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 3.1.0
+plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 3.2.0
 plugin.antfarm.AntFarmPlugin.depend.6=plugin console.ConsolePlugin 4.4.3
 plugin.antfarm.AntFarmPlugin.depend.7=optional plugin sidekick.java.JavaSideKickPlugin 2.8.1
 
@@ -100,7 +100,6 @@ plugin.antfarm.AntFarmPlugin.menu=antfarm \
             run-current-target \
             run-last-build
 plugin.antfarm.AntFarmPlugin.menu.label=Ant Farm
-antfarm.label=Ant Farm
 prompt-for-ant-build-file.label=Load Ant Build Script
 run-current-target.label=Run Current Target
 run-last-build.label=Run Last Build
