@@ -22,31 +22,9 @@ public class ClasspathPlugin extends EBPlugin {
 	 */
 	public void start() {
 		projects = new TreeSet();
-
-		refreshProjects();
-		updateClasspath();
 	}
 
 	public void stop() {}
-
-	/**
-	 * Refreshes the set of open projects if ProjectViewer is installed
-	 */
-	public static void refreshProjects() {
-		projects.clear();
-
-		// do nothing if ProjectViewer isn't installed
-		if (jEdit.getPlugin("projectviewer.ProjectPlugin") == null)
-			return;
-
-		View[] views = jEdit.getViews();
-		for (int i = 0; i<views.length; i++) {
-			projectviewer.ProjectViewer viewer = projectviewer.ProjectViewer.getViewer(views[i]);
-			projectviewer.vpt.VPTProject project = viewer.getActiveProject(views[i]);
-			if (project != null)
-				projects.add(project);
-		}
-	}
 
 	/**
 	 * Update the classpath
@@ -141,17 +119,16 @@ public class ClasspathPlugin extends EBPlugin {
 
 				// The viewer's current 'active project' is old, so remove it
 				projectviewer.ProjectViewer viewer = update.getViewer();
-				// this may happen on first load
-				if (viewer == null)
-					return;
-
-				projectviewer.vpt.VPTProject old = viewer.getActiveProject(viewer.getView());
-				if (old != null)
-					projects.remove(old);
+				if (viewer != null) {
+          projectviewer.vpt.VPTProject old = viewer.getActiveProject(viewer.getView());
+          if (old != null)
+            projects.remove(old);
+        }
 
 				if (update.getType().equals(projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED)) {
 					// New project
-					projects.add(update.getNode());
+					if (update.getNode() != null)
+            projects.add(update.getNode());
 				}
 
 				updateClasspath();
@@ -164,15 +141,7 @@ public class ClasspathPlugin extends EBPlugin {
 			}
 		}
 
-		if (msg instanceof ViewUpdate) {
-			ViewUpdate update = (ViewUpdate) msg;
-
-			// If a view was opened refresh the set of projects
-			Object what = update.getWhat();
-			if (what.equals(ViewUpdate.CREATED))
-				refreshProjects();
-		}
-		else if (msg instanceof PluginUpdate) {
+		if (msg instanceof PluginUpdate) {
 			// We only care about this if we need to include installed jars
 			if (jEdit.getBooleanProperty("java.classpath.includeInstalled"))
 				updateClasspath();
