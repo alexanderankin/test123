@@ -11,6 +11,7 @@
 		This plugin is used to maintain a global classpath for Java and
 		JVM-based languages.
 	</para>
+	<para> Click <ulink url="docs/CHANGELOG.txt">here</ulink> to see a changelog. </para>
 	<para>
 		The global classpath can be configured in <guimenu>Plugins</guimenu>
 		-&gt; <guimenu>Plugin Options</guimenu> -&gt; <guimenu>Classpath</guimenu>.
@@ -31,7 +32,7 @@
 	<para>
 		If you have the Console plugin installed, the CLASSPATH environment variable
 		will automatically be set when jEdit loads and when you update the classpath.
-		If you're compiling a file using commando, CLASSPATH is automatically included, 
+		If you're compiling a file using commando, CLASSPATH is automatically included,
 		so changes made to the classpath should be immediately picked up.
 	</para>
 	<para>
@@ -39,4 +40,5 @@
 		which is prepended to the CLASSPATH environment variable.
 	</para>
 	</chapter>
+
 </book>
