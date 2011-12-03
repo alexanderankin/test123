@@ -9,9 +9,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.util.Log;
 
 public class ClasspathPlugin extends EBPlugin {
 
