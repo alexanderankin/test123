@@ -13,4 +13,8 @@
 	<property name="jedit.plugins.dir" value="${install.dir}"/>
 
 	<import file="${build.support}/plugin-build.xml"/>
+
+	<selector id="packageFiles">
+		<filename name="docs/*.html" />
+	</selector>
 </project>
