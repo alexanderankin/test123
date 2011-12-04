@@ -64,7 +64,7 @@ public class FunctionListParser implements FunctionListParserConstants {
       }
       function = function();
                         Function f = functions.get(function.getName());
-                        if (o == null)
+                        if (f == null)
                                 functions.put(function.getName(), function);
                         else
                         {

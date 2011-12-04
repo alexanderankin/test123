@@ -57,6 +57,33 @@ public class FunctionCall extends AbstractSuffixExpression
 		if (functionName instanceof ConstantIdentifier)
 		{
 			definition = PHPParserPlugin.phpFunctionList.getFunction(getFunctionName().toString());
+			Expression[] arguments = args.getArgs();
+			if (arguments == null)
+			{
+				Function def = definition;
+				while (def != null)
+				{
+					if (def.getMinArgumentCount() == 0)
+					{
+						definition = def;
+						break;
+					}
+					def = def.getAlternative();
+				}
+			}
+			else
+			{
+				Function def = definition;
+				while (def != null)
+				{
+					if (def.getMinArgumentCount() == arguments.length)
+					{
+						definition = def;
+						break;
+					}
+					def = def.getAlternative();
+				}
+			}
 			if (definition != null)
 				setType(definition.getReturnType());
 		}
