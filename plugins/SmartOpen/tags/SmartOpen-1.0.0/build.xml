@@ -1,0 +1,20 @@
+<project name="SmartOpen" default="build" basedir=".">
+	<property name="docs-proc.target" value="none"/>
+
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+
+	<property name="dist.target" value="dist.complete"/>
+	<property name="compiler.source" value="1.6"/>
+	<property name="compiler.target" value="1.6"/>
+	<property name="debug" value="on"/>
+	<property name="jedit.plugins.dir" value="${install.dir}"/>
+
+	<import file="${build.support}/plugin-build.xml"/>
+
+	<selector id="packageFiles">
+		<filename name="docs/*.html" />
+	</selector>
+</project>
