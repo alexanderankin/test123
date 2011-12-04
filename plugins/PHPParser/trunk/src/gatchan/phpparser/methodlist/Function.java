@@ -21,8 +21,6 @@
 
 package gatchan.phpparser.methodlist;
 
-import java.util.List;
-
 import net.sourceforge.phpdt.internal.compiler.ast.Type;
 
 /**
@@ -36,13 +34,42 @@ public class Function
 
 	private final Argument[] arguments;
 	private boolean varargs;
+	private int minArgumentCount;
+	
+	private Function alternative;
 
-	public Function(Type returnType, String name, Argument[] arguments, boolean varargs)
+	public Function(String returnType, String name, Argument[] arguments)
 	{
-		this.returnType = returnType;
+		this.returnType = Type.fromString(returnType);
 		this.name = name;
 		this.arguments = arguments;
-		this.varargs = varargs;
+
+
+		for (int i = 0; i < arguments.length; i++)
+		{
+			Argument argument = arguments[i];
+			if (!argument.isOptional())
+			{
+				minArgumentCount = i+1;
+			}
+			if (argument.isVarargs())
+				varargs = true;
+		}
+	}
+
+	public Function getAlternative()
+	{
+		return alternative;
+	}
+
+	public void setAlternative(Function alternative)
+	{
+		if (this.alternative != null)
+		{
+			this.alternative.setAlternative(alternative);
+		}
+		else
+			this.alternative = alternative;
 	}
 
 	public Type getReturnType()
@@ -77,6 +104,15 @@ public class Function
 		if (varargs)
 			return arguments[arguments.length-1];
 		return null;
+	}
+
+	/**
+	 * The minimum number of arguments
+	 * @return
+	 */
+	public int getMinArgumentCount()
+	{
+		return minArgumentCount;
 	}
 
 	@Override

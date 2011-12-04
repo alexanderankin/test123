@@ -30,15 +30,35 @@ public class Argument
 {
 	private final Type type;
 
-	private final boolean reference;
+	private boolean reference;
 
-	private final String defaultValue;
+	private String defaultValue;
 
-	public Argument(Type type, boolean reference, String defaultValue)
+	private boolean optional;
+
+	private final String name;
+
+	private boolean varargs;
+
+	public Argument(String type, String name)
 	{
-		this.type = type;
-		this.reference = reference;
-		this.defaultValue = defaultValue;
+		this.type = Type.fromString(type);
+		this.name = name;
+	}
+
+	public boolean isVarargs()
+	{
+		return varargs;
+	}
+
+	public void setVarargs(boolean varargs)
+	{
+		this.varargs = varargs;
+	}
+
+	public void setAlternateType(String type)
+	{
+		// todo: store type
 	}
 
 	public Type getType()
@@ -46,20 +66,51 @@ public class Argument
 		return type;
 	}
 
+	public void setReference(boolean reference)
+	{
+		this.reference = reference;
+	}
+
 	public boolean isReference()
 	{
 		return reference;
+	}
+
+	public void setDefaultValue(String defaultValue)
+	{
+		this.defaultValue = defaultValue;
+	}
+
+	public String getDefaultValue()
+	{
+		return defaultValue;
+	}
+
+	public boolean isOptional()
+	{
+		return optional;
+	}
+
+	public void setOptional(boolean optional)
+	{
+		this.optional = optional;
 	}
 
 	@Override
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
+		if (optional)
+			builder.append("[ ");
 		if (reference)
 			builder.append('&');
 		builder.append(type);
+		builder.append(' ');
+		builder.append(name);
 		if (defaultValue != null)
 			builder.append('=').append(defaultValue);
+		if (optional)
+			builder.append(" ]");
 		return builder.toString();
 	}
 }

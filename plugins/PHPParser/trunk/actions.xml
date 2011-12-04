@@ -49,4 +49,9 @@
 			gatchan.phpparser.PHPParserPlugin.debugAtCaret(textArea, buffer);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="phpparser-reloadFunctionList">
+		<CODE>
+			gatchan.phpparser.PHPParserPlugin.reloadFunctionList();
+		</CODE>
+	</ACTION>
 </ACTIONS>

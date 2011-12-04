@@ -21,6 +21,7 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParserConstants;
 import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
@@ -54,15 +55,8 @@ public class Assignment extends Expression
 	 * @param sourceStart    the start point
 	 * @param sourceEnd      the end point
 	 */
-	public Assignment(Expression variable,
-			  Expression initialization,
-			  int operator,
-			  int sourceStart,
-			  int sourceEnd,
-			  int beginLine,
-			  int endLine,
-			  int beginColumn,
-			  int endColumn)
+	public Assignment(Expression variable, Expression initialization, int operator, int sourceStart, int sourceEnd,
+			  int beginLine, int endLine, int beginColumn, int endColumn)
 	{
 		super(initialization.getType(), sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 		variable.setType(initialization.getType());
@@ -71,11 +65,7 @@ public class Assignment extends Expression
 		this.operator = operator;
 	}
 
-
-	public void setReference(boolean reference,
-				 int sourceStart,
-				 int beginLine,
-				 int beginColumn)
+	public void setReference(boolean reference, int sourceStart, int beginLine, int beginColumn)
 	{
 		this.reference = reference;
 		this.sourceStart = sourceStart;
@@ -93,12 +83,10 @@ public class Assignment extends Expression
 	{
 		String variableString = target.toStringExpression();
 		String initString = initialization.toStringExpression();
-		String operatorImage = PHPParserConstants.tokenImage[operator].substring(1,
-			PHPParserConstants.tokenImage[operator].length() - 1);
-		StringBuilder buff = new StringBuilder(variableString.length() +
-			operatorImage.length() +
-			initString.length() +
-			1);
+		String operatorImage = PHPParserConstants.tokenImage[operator]
+			.substring(1, PHPParserConstants.tokenImage[operator].length() - 1);
+		StringBuilder buff =
+			new StringBuilder(variableString.length() + operatorImage.length() + initString.length() + 1);
 		buff.append(variableString);
 		buff.append(operatorImage);
 		buff.append(initString);
@@ -161,21 +149,21 @@ public class Assignment extends Expression
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
-		/*initialization.analyzeCode(parser);
-		    target.analyzeCode(parser);
-		    Type targetType = target.getType();
-		    Type initType = initialization.getType();
-		    if (!targetType.isEmpty() && !initType.isEmpty() && targetType != initType) {
-			    parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-								       PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
-								       parser.getPath(),
-								       "Assignment : warning, you will change the type of the variable "+target.toStringExpression()+", it was "+targetType+" and will be "+initType,
-								       sourceStart,
-								       sourceEnd,
-								       beginLine,
-								       endLine,
-								       beginColumn,
-								       endColumn));
-		    }*/
+
+		initialization.analyzeCode(parser);
+		/*target.analyzeCode(parser);
+		Type targetType = target.getType();
+		Type initType = initialization.getType();
+		if (!targetType.isEmpty() && !initType.isEmpty() && targetType != initType)
+		{
+			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+									 PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+									 parser.getPath(),
+									 "Assignment : warning, you will change the type of the variable "
+									 + target.toStringExpression() + ", it was "
+									 + targetType + " and will be " + initType,
+									 sourceStart, sourceEnd, beginLine, endLine,
+									 beginColumn, endColumn));
+		}      */
 	}
 }

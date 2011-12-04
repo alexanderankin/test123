@@ -13,7 +13,7 @@ plugin.gatchan.phpparser.PHPParserPlugin.depend.0=jdk 1.5
 plugin.gatchan.phpparser.PHPParserPlugin.depend.1=jedit 04.03.99.00
 plugin.gatchan.phpparser.PHPParserPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.gatchan.phpparser.PHPParserPlugin.depend.3=plugin sidekick.SideKickPlugin 1.0
-plugin.gatchan.phpparser.PHPParserPlugin.depend.4=plugin CommonControlsPlugin 1.3
+plugin.gatchan.phpparser.PHPParserPlugin.depend.4=plugin CommonControlsPlugin 1.4
 plugin.gatchan.phpparser.PHPParserPlugin.depend.5=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 1.0.3
 gatchan-phpparser-parse.label=parse
 
@@ -46,6 +46,7 @@ gatchan.phpparser.warnings.labelstatement.text=Report label statements
 gatchan.phpparser.warnings.unusedLabel.text=Report unused labels
 gatchan.phpparser.warnings.gotostatement.text=Report goto statements
 gatchan.phpparser.warnings.tooManyArguments.text=Too many arguments in function call
+gatchan.phpparser.warnings.tooFewArguments.text=Too few arguments in function call
 gatchan.phpparser.warnings.wrongArgumentType.text=Wrong argument type
 # }}}
 
@@ -105,3 +106,5 @@ gatchan-phpparser.itemfinder.searchLabel.field     = Type the searched field nam
 gatchan-phpparser.itemfinder.searchLabel.interface = Type the searched interface name :
 
 mode.php.hyperlink.source=php
+
+phpparser-reloadFunctionList.label=reload functions list
