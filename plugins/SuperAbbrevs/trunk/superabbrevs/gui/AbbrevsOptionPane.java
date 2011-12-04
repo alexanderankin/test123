@@ -54,7 +54,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	//{{{ AbbrevsOptionPane constructor
 	public AbbrevsOptionPane(View view)
 	{
-		super("superabbrevs");
+		super("superabbrevs.abbreviations");
 		
 		this.view = view;
 	} //}}}
