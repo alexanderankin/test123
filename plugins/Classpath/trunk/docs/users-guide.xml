@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<book>
-	<bookinfo>
+<article>
+	<articleinfo>
 		<title>Classpath</title>
 		<author>
 			<firstname>Damien</firstname><surname>Radtke</surname>
 		</author>
-	</bookinfo>
-	<chapter id="overview"><title>Overview</title>
+	</articleinfo>
+	<section id="overview"><title>Overview</title>
 	<para>
 		This plugin is used to maintain a global classpath for Java and
 		JVM-based languages.
@@ -15,11 +15,8 @@
 	<para>
 		The global classpath can be configured in <guimenu>Plugins</guimenu>
 		-&gt; <guimenu>Plugin Options</guimenu> -&gt; <guimenu>Classpath</guimenu>.
-		If you have ProjectViewer installed, project-specific paths can be
-		defined by right-clicking on the project -&gt; <guimenu>Properties</guimenu>
-		-&gt; <guimenu>Classpath</guimenu>.
-	 </para>
-	 <para>
+		</para>
+		<para>
 		 Both .jar files and directories are supported. To add one, click on Add Element
 		 and navigate to the desired item. If you select "include system classpath" in the
 		 plugin options menu, then the system classpath used to start jEdit will be included
@@ -27,18 +24,28 @@
 		 plugins and jars" will add all installed plugins and jar libraries. You can see what's
 		 installed from the Plugin Manager.
 	 </para>
-	</chapter>
-	<chapter id="console"><title>Integration with Console</title>
+	 <para>
+		In the global classpath, there's an option to include the current directory ("."),
+		which is prepended to the CLASSPATH environment variable.
+	</para>
+
+     <note> <title> Integration with ProjectViewer </title>
+     <para>
+		If you have ProjectViewer installed, project-specific paths can be
+		defined by right-clicking on the project -&gt; <guimenu>Properties</guimenu>
+		-&gt; <guimenu>Classpath</guimenu>.
+	 </para>
+	 </note>
+
+
+	<note> <title>Integration with Console</title>
 	<para>
 		If you have the Console plugin installed, the CLASSPATH environment variable
 		will automatically be set when jEdit loads and when you update the classpath.
 		If you're compiling a file using commando, CLASSPATH is automatically included,
 		so changes made to the classpath should be immediately picked up.
 	</para>
-	<para>
-		In the global classpath, there's an option to include the current directory ("."),
-		which is prepended to the CLASSPATH environment variable.
-	</para>
-	</chapter>
 
-</book>
+	</note>
+	</section>
+</article>
