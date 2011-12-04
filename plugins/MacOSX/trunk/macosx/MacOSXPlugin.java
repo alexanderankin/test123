@@ -137,7 +137,9 @@ public class MacOSXPlugin extends EBPlugin
 				View view = jEdit.getActiveView();
 				if (view == null)
 				{
-					view = PerspectiveManager.loadPerspective(false);
+					view = PerspectiveManager.loadPerspective(
+						jEdit.getBooleanProperty("restore") &&
+						jEdit.getBooleanProperty("restore.cli"));
 				}
 				
 				if (jEdit.openFile(view, file.getPath()) == null)
@@ -163,7 +165,7 @@ public class MacOSXPlugin extends EBPlugin
 		}
 		else
 		{
-			PerspectiveManager.loadPerspective(true);
+			PerspectiveManager.loadPerspective(jEdit.getBooleanProperty("restore"));
 		}
 	}
 	
