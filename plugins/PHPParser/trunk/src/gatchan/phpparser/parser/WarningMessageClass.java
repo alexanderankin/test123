@@ -44,5 +44,6 @@ public enum WarningMessageClass
 	gotostatement,
 	unusedLabel,
 	tooManyArguments,
+	tooFewArguments,
 	wrongArgumentType
 }

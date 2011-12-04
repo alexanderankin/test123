@@ -56,7 +56,7 @@ public class FunctionCall extends AbstractSuffixExpression
 		this.args = args;
 		if (functionName instanceof ConstantIdentifier)
 		{
-			definition = PHPParserPlugin.phpMethodList.getFunction(getFunctionName().toString());
+			definition = PHPParserPlugin.phpFunctionList.getFunction(getFunctionName().toString());
 			if (definition != null)
 				setType(definition.getReturnType());
 		}
@@ -163,15 +163,37 @@ public class FunctionCall extends AbstractSuffixExpression
 		if (definition == null)
 			return;
 		Expression[] arguments = args.getArgs();
-		for (int i = 0; i < arguments.length; i++)
+		if (arguments != null)
 		{
-			Expression argument = arguments[i];
-			Argument defArgument = definition.getArgument(i);
-			if (defArgument == null)
+			for (int i = 0; i < arguments.length; i++)
 			{
-				if (!definition.isVarargs())
+				Expression argument = arguments[i];
+				Argument defArgument = definition.getArgument(i);
+				if (defArgument == null)
 				{
-					parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+					if (!definition.isVarargs())
+					{
+						parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+												 WarningMessageClass.tooManyArguments,
+												 parser.getPath(),
+												 "Too many arguments",
+												 argument.getSourceStart(),
+												 argument.getSourceEnd(),
+												 argument.getBeginLine(),
+												 argument.getEndLine(),
+												 argument.getBeginColumn(),
+												 argument.getEndColumn()));
+					}
+					break;
+				}
+				else
+				{
+					if (!defArgument.getType().isCompatibleWith(argument.getType()))
+					{
+						if (defArgument.getType() == Type.VOID)
+						{
+							parser.fireParseMessage(
+								new PHPParseMessageEvent(PHPParser.WARNING,
 											 WarningMessageClass.tooManyArguments,
 											 parser.getPath(),
 											 "Too many arguments",
@@ -181,27 +203,45 @@ public class FunctionCall extends AbstractSuffixExpression
 											 argument.getEndLine(),
 											 argument.getBeginColumn(),
 											 argument.getEndColumn()));
-				}
-				break;
-			}
-			else
-			{
-				if (!defArgument.getType().isCompatibleWith(argument.getType()))
-				{
-					parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+							break;
+						}
+						else
+						{
+							parser.fireParseMessage(
+								new PHPParseMessageEvent(PHPParser.WARNING,
 											 WarningMessageClass.wrongArgumentType,
 											 parser.getPath(),
-											 "wrong argument type, expected "
-											 + defArgument.getType()
-											 + " got " + argument.getType(),
+											 "wrong argument type, "
+											 + argument.getType()
+											 + " cannot match "
+											 + defArgument.toString(),
 											 argument.getSourceStart(),
 											 argument.getSourceEnd(),
 											 argument.getBeginLine(),
 											 argument.getEndLine(),
 											 argument.getBeginColumn(),
 											 argument.getEndColumn()));
+						}
+					}
 				}
 			}
+		}
+		int nbArgs = arguments == null ? 0 : arguments.length;
+		if (nbArgs < definition.getMinArgumentCount())
+		{
+			StringBuilder builder = new StringBuilder();
+			for (int i = nbArgs;i<definition.getArgumentCount();i++)
+			{
+				if (i != nbArgs)
+					builder.append(", ");
+				builder.append(definition.getArgument(i));
+			}
+			parser.fireParseMessage(
+				new PHPParseMessageEvent(PHPParser.WARNING, WarningMessageClass.tooFewArguments,
+							 parser.getPath(), "Too few arguments, expecting " + builder.toString(),
+							 args.getSourceStart(),
+							 args.getSourceEnd(), args.getBeginLine(), args.getEndLine(),
+							 args.getBeginColumn(), args.getEndColumn()));
 		}
 	}
 }

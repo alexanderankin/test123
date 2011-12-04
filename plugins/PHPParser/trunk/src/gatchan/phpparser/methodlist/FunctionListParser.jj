@@ -1,0 +1,507 @@
+/*
+ * jEdit - Programmer's Text Editor
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright © 2011 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(FunctionListParser)
+
+
+package gatchan.phpparser.methodlist;
+import java.io.*;
+import java.util.*;
+
+
+public class FunctionListParser
+{
+
+
+    public static void main(String args[]) throws IOException
+    {
+          FunctionListParser parser = new FunctionListParser(new StringReader(""));
+	BufferedReader in = new BufferedReader(new FileReader(
+		"c:\u005c\u005cUsers\u005c\u005cChocoPC\u005c\u005cdev\u005c\u005cjEdit\u005c\u005cplugins\u005c\u005cPHPParser\u005c\u005csrc\u005c\u005cgatchan\u005c\u005cphpparser\u005c\u005cmethodlist\u005c\u005ctest"));
+	String line = in.readLine();
+	Map<String, Function> functions = new HashMap<String, Function>();
+	while (line != null)
+	{
+		if (!line.isEmpty())
+		{
+			parser.ReInit(new StringReader(line));
+			try
+			{
+				Function function = parser.function();
+				functions.put(function.getName(), function);
+			}
+			catch (TokenMgrError e)
+			{
+				System.err.println(line);
+			}
+			catch (ParseException e)
+			{
+				System.err.println(line);
+			}
+		}
+		line = in.readLine();
+	}
+    }
+
+}
+
+
+
+PARSER_END(FunctionListParser)
+
+
+
+SKIP : {
+
+    " "
+
+  | "\t"
+
+  | "\n"
+
+  | "\r"
+
+  | <"#"(
+ ~["\n","\r"] )* ("\n" | "\r" | "\r\n")>
+
+}
+
+
+TOKEN:
+{
+	<SLASH:"/">
+	|
+	<PLUS:"+">
+	|
+	<MINUS:"-">
+	|
+	<STAR:"*">
+	|
+	<ASSIGN:"=">
+	|
+	<VARARGSIDENTIFIER:"$...">
+	|
+	<VARARGS:"...">
+	|
+	<REF:"&">
+	|
+	<PIPE:"|">
+	|
+	<COMMA:",">
+	|
+	<LPAREN:"(">
+	|
+	<RPAREN:")">
+	|
+	<LBRACKET:"[">
+	|
+	<RBRACKET:"]">
+	|
+	<VOID: "void">
+	|
+	<STRING: "string">
+	|
+	<BOOL: "bool">
+	|
+	<INTEGER: "integer">
+	|
+	<DOUBLE: "double">
+	|
+	<INT: "int">
+	|
+	<ARRAY: "array">
+	|
+	<LONG: "long">
+	|
+	<RESOURCE: "resource">
+	|
+	<OBJECT: "object">
+	|
+	<MIXED: "mixed">
+}
+
+TOKEN:
+{
+	<INTEGER_LITERAL: (<DIGIT>)+ >
+|
+	<FLOATING_POINT_LITERAL: (<DIGIT>)+ "." (<DIGIT>)+ >
+|
+	<FUNCTION_IDENTIFIER:(<LETTER> | <DIGIT>)+ (<MINUS> <LETTER> (<LETTER> | <DIGIT>)*)?>
+|
+	<IDENTIFIER: "$" (<STAR>)* <FUNCTION_IDENTIFIER>>
+|
+	<#LETTER: ["A"-"Z","_","a"-"z"]>
+|
+	<#DIGIT: ["0"-"9"]>
+|
+	<LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"]) | ("\\" ~[] ) )*
+      "\""
+  >
+|
+	<SINGLEQUOTE_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"]) | ("\\" ~[] ) )*
+      "'"
+  >
+}
+
+
+
+//{{{ parse() method
+Map<String,Function> parse():
+{
+	Function function;
+	Map<String,Function> functions = new HashMap<String,Function>();
+}
+{
+	(
+		function = function()
+		{
+			Function f = functions.get(function.getName());
+			if (o == null)
+				functions.put(function.getName(), function);
+			else
+			{
+				f.setAlternative(function);
+			}
+		}
+	)*
+	<EOF>
+	{
+		return functions;
+	}
+} //}}}
+
+//{{{ function() method
+Function function():
+{
+	String type;
+	String methodName;
+	Argument argument;
+	List<Argument> arguments = null;
+}
+{
+	type = returnType()
+	methodName = functionIdentifier()
+	<LPAREN>
+	[
+		arguments = firstArgument()
+	]
+	<RPAREN>
+	{
+		if (arguments == null)
+		{
+			return new Function(type, methodName, new Argument[0]);
+		}
+
+		Argument[] args = new Argument[arguments.size()];
+		args = arguments.toArray(args);
+		return new Function(type, methodName, args);
+	}
+} //}}}
+
+//{{{ firstArgument()
+List<Argument> firstArgument():
+{
+	Argument argument;
+	List<Argument> arguments = new ArrayList<Argument>();
+	List<Argument> nextArgs = new ArrayList<Argument>();
+}
+{
+	(
+		<VOID>
+	|
+		argument = argument() { arguments.add(argument); }
+		[ nextArgs = nextArguments() { arguments.addAll(nextArgs); } ]
+	|
+		<LBRACKET>
+		argument = argument()
+		{
+			argument.setOptional(true);
+			arguments.add(argument);
+		}
+		[
+			nextArgs = nextArguments()
+			{
+				for (Argument arg : nextArgs)
+				{
+					arg.setOptional(true);
+					arguments.add(arg);
+				}
+			}
+		]
+		<RBRACKET>
+		[ nextArgs = nextArguments() { arguments.addAll(nextArgs); } ]
+	)
+	{
+		return arguments;
+	}
+} //}}}
+
+//{{{ nextArguments() method
+List<Argument> nextArguments():
+{
+	Argument argument;
+	List<Argument> arguments = new ArrayList<Argument>();
+	List<Argument> nextArgs;
+
+}
+{
+	(
+		<COMMA>
+		argument = argument() { arguments.add(argument); }
+		[ nextArgs = nextArguments() { arguments.addAll(nextArgs); } ]
+	|
+		<LBRACKET>
+		<COMMA>
+		argument = argument()
+		{
+			argument.setOptional(true);
+			arguments.add(argument);
+		}
+		[
+			nextArgs = nextArguments()
+			{
+				for (Argument arg : nextArgs)
+				{
+					arg.setOptional(true);
+					arguments.add(arg);
+				}
+			}
+		]
+		<RBRACKET>
+		[ nextArgs = nextArguments() { arguments.addAll(nextArgs); } ]
+	)
+	{
+		return arguments;
+	}
+} //}}}
+
+//{{{ argument() method
+Argument argument():
+{
+	String type;
+	String argumentName;
+	String alternateType = null;
+	boolean ref = false;
+	String initializer = null;
+	boolean varargs = false;
+}
+{
+	(
+		<VARARGSIDENTIFIER>
+		{
+			Argument arg = new Argument("unknown", "...");
+			arg.setVarargs(true);
+			return arg;
+		}
+	|
+		[<REF> { ref = true;}]
+		type = type()
+		[
+			<PIPE> alternateType = type()
+		]
+		[<REF> { ref = true;}]
+		[<STAR>]
+		argumentName = argumentIdentifier()
+		[
+			<VARARGS> { varargs = true; }
+		|
+			<ASSIGN>
+			initializer = initializer()
+			(
+				<PIPE>
+				{
+					String secondInitializer;
+				}
+				secondInitializer = initializer() { initializer += " | " + secondInitializer; }
+			)*
+		]
+		{
+			Argument argument = new Argument(type, argumentName);
+			argument.setAlternateType(alternateType);
+			argument.setReference(ref);
+			argument.setVarargs(varargs);
+			argument.setDefaultValue(initializer);
+			return argument;
+
+		}
+	)
+} //}}}
+
+//{{{ initializer()
+String initializer():
+{
+	String ret;
+}
+{
+	(
+		<LITERAL> { ret = token.image; }
+	|
+		<SINGLEQUOTE_LITERAL> { ret = token.image; }
+	|
+		<MINUS>
+		( <FUNCTION_IDENTIFIER> | <INTEGER_LITERAL> ) { ret = "-"+token.image;}
+	|
+		LOOKAHEAD(2)
+		ret = functionCall()
+	|
+		<FUNCTION_IDENTIFIER>{ ret = token.image;}
+	|
+		<IDENTIFIER>{ ret = token.image;}
+	|
+		<STRING> { ret = token.image;}
+	|
+		<INTEGER_LITERAL> { ret = token.image;}
+	|
+		<FLOATING_POINT_LITERAL> { ret = token.image;}
+	)
+	[
+		( <PLUS> | <SLASH> )
+		{
+			String next;
+		}
+		next = initializer()
+		{
+			return ret + " + " + next;
+		}
+	]
+	{
+		return ret;
+	}
+} //}}}
+
+//{{{ functionCall() method
+String functionCall():
+{
+	String ret;
+}
+{
+	(
+		<FUNCTION_IDENTIFIER>
+	|
+		<ARRAY>
+	)
+	{
+		ret = token.image;
+	}
+	<LPAREN>
+	[
+		initializer()
+		(<COMMA> initializer())*
+	]
+	<RPAREN>
+	{
+		return ret;
+	}
+} //}}}
+
+//{{{ argumentIdentifier() method
+String argumentIdentifier():
+{
+	String ret;
+}
+{
+	(
+		<IDENTIFIER> { ret = token.image; }
+		[ <SLASH> (<IDENTIFIER> | <FUNCTION_IDENTIFIER> ) { ret += "/" + token.image; } ]
+	|
+		<OBJECT> { ret = token.image; }
+	|
+		<VARARGSIDENTIFIER> { ret = token.image; }
+	)
+	{
+		return ret;
+	}
+} //}}}
+
+//{{{ functionIdentifier() method
+String functionIdentifier():
+{
+}
+{
+	(
+		<FUNCTION_IDENTIFIER>
+	|
+		<ARRAY>
+	)
+	{
+		return token.image;
+	}
+} //}}}
+
+
+//{{{ returnType() method
+String returnType():
+{
+	String ret;
+}
+{
+	(
+		<VOID> { ret = "void"; }
+	|
+		ret = type()
+	)
+	{
+		return ret;
+	}
+} //}}}
+
+//{{{ type() method
+String type():
+{
+	String ret;
+}
+{
+	(
+	  <STRING> { ret = "string"; }
+	|
+	  <BOOL> { ret = "boolean"; }
+	|
+	  <INT> { ret = "integer"; }
+	|
+	  <INTEGER> { ret = "integer"; }
+	|
+	  <OBJECT> { ret = "object"; }
+	|
+	  <ARRAY> { ret = "array"; }
+	|
+	  <LONG> { ret = "long"; }
+	|
+	  <RESOURCE> { ret = "resource"; }
+	|
+	  <DOUBLE> { ret = "double"; }
+	|
+	  <MIXED> { ret = "mixed"; }
+	|
+		<FUNCTION_IDENTIFIER> { ret = token.image; } [ LOOKAHEAD(2) <OBJECT>  { ret = ret + " object"; } ]
+	)
+	{
+		return ret;
+	}
+} //}}}
+
