@@ -47,7 +47,7 @@ public class VariablesOptionPane extends AbstractOptionPane {
 	//{{{ VariablesOptionPane constructor
 	public VariablesOptionPane(View view)
 	{
-		super("superabbrevs");
+		super("superabbrevs.variables");
 		
 		this.view = view;
 	} //}}}
