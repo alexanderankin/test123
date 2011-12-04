@@ -4,13 +4,13 @@
 plugin.gatchan.phpparser.PHPParserPlugin.activate=defer
 plugin.gatchan.phpparser.PHPParserPlugin.name=PHPParserPlugin
 plugin.gatchan.phpparser.PHPParserPlugin.author=Matthieu Casanova
-plugin.gatchan.phpparser.PHPParserPlugin.version=1.4.3
+plugin.gatchan.phpparser.PHPParserPlugin.version=2.0.0
 plugin.gatchan.phpparser.PHPParserPlugin.docs=docs/PHPParser.html
 plugin.gatchan.phpparser.PHPParserPlugin.usePluginHome=true
 plugin.gatchan.phpparser.PHPParserPlugin.description=PHPParser is a plugin that parses php buffer and helps you developing php
 
-plugin.gatchan.phpparser.PHPParserPlugin.depend.0=jdk 1.5
-plugin.gatchan.phpparser.PHPParserPlugin.depend.1=jedit 04.03.99.00
+plugin.gatchan.phpparser.PHPParserPlugin.depend.0=jdk 1.6
+plugin.gatchan.phpparser.PHPParserPlugin.depend.1=jedit 04.04.99.00
 plugin.gatchan.phpparser.PHPParserPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.gatchan.phpparser.PHPParserPlugin.depend.3=plugin sidekick.SideKickPlugin 1.0
 plugin.gatchan.phpparser.PHPParserPlugin.depend.4=plugin CommonControlsPlugin 1.4
