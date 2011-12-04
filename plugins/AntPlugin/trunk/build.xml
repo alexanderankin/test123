@@ -4,6 +4,7 @@
 	<property file="build.properties"/>
 	<property name="ant.archive" value="apache-ant-1.8.2-bin.zip"/>
 	<property name="ant.archive.docsdir" value="build/apache-ant-1.8.2/docs"/>
+	<property name="ant.archive.libdir" value="build/apache-ant-1.8.2/lib"/>
 
 	<import file="${build.support}/plugin-build.xml" />
 
@@ -11,7 +12,21 @@
 		<filename name="AntPlugin.props" />
 	</selector>
 
-	<target name="build.prepare">
+	<target name="download.ant" unless="offline">
+		<get src="http://apache.multidist.com/ant/binaries/${ant.archive}"
+		     dest="${ant.archive}" usetimestamp="true" ignoreerrors="true"/>
+
+	</target>
+
+	<target name="checkAnt" depends="download.ant">
+		<condition property="antArchivePresent">
+			<available file="${ant.archive}" type="file"/>
+		</condition>
+	</target>
+
+
+	<target name="build.prepare" depends="checkAnt" if="antArchivePresent">
+
 		<unzip src="${ant.archive}" dest="${build.dir}"/>
 		<copy todir="${build.docs}">
 			<fileset dir="${ant.archive.docsdir}">
@@ -23,8 +38,9 @@
 
 	<target name="build.post">
 		<copy todir="${install.dir}">
-			<fileset dir="${build.dir}/lib">
-				<include name="ant*.jar"/>
+			<fileset dir="${ant.archive.libdir}">
+				<include name="ant.jar"/>
+				<include name="ant-launcher.jar"/>
 			</fileset>
 		</copy>
 	</target>
