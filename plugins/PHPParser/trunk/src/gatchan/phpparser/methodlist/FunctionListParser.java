@@ -63,7 +63,13 @@ public class FunctionListParser implements FunctionListParserConstants {
         break label_1;
       }
       function = function();
-                                        functions.put(function.getName(), function);
+                        Function f = functions.get(function.getName());
+                        if (o == null)
+                                functions.put(function.getName(), function);
+                        else
+                        {
+                                f.setAlternative(function);
+                        }
     }
     jj_consume_token(0);
                 {if (true) return functions;}
