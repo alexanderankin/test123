@@ -10,7 +10,6 @@
 	<property name="docs-proc.target" value="none"/>
 	<property name="plugin.dependencies" value="CommonControls" />
 	<property name="dist.target" value="dist.complete" />
-	<property name="lucene.version" value="3.0.3" />
 	<property name="compiler.source" value="1.6" />
 	<property name="compiler.target" value="1.6" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
@@ -25,16 +24,6 @@
 		</and>
 	</selector>
 
-	<!-- <path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
-		<pathelement location="${jedit.plugins.dir}/MarkerSets.jar"/>
-		<pathelement location="${install.dir}/MarkerSets.jar"/>
-		<pathelement location="${install.dir}/lucene-core-${lucene.version}.jar"/>
-		<pathelement location="${install.dir}/lucene-highlighter-${lucene.version}.jar"/>
-		<pathelement location="${install.dir}/lucene-memory-${lucene.version}.jar"/>
-	</path>
- -->
  	<target name="build.post">
 		<copy todir="${install.dir}">
 			<fileset dir="${build.dir}/lib">
