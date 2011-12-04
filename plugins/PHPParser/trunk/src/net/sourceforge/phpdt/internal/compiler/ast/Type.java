@@ -42,6 +42,8 @@ public class Type implements Serializable
 	public static final int ARRAY_INT = 9;
 	public static final int RESOURCE_INT = 10;
 	public static final int VOID_INT = 11;
+	public static final int NUMBERS_INT = 12;
+	public static final int DOUBLE_INT = 13;
 
 	private final int type;
 
@@ -55,6 +57,8 @@ public class Type implements Serializable
 	public static final Type ARRAY = new Type(ARRAY_INT);
 	public static final Type RESOURCE = new Type(RESOURCE_INT);
 	public static final Type VOID = new Type(VOID_INT);
+	public static final Type NUMBERS = new Type(NUMBERS_INT);
+	public static final Type DOUBLE = new Type(DOUBLE_INT);
 
 
 	public String toString()
@@ -82,6 +86,10 @@ public class Type implements Serializable
 				return "resource";
 			case VOID_INT:
 				return "void";
+			case NUMBERS_INT:
+				return "numbers";
+			case DOUBLE_INT:
+				return "double";
 			default:
 				Log.log(Log.ERROR, this, "net.sourceforge.phpdt.internal.compiler.ast.Type unknown : " + type);
 				return null;
@@ -90,11 +98,11 @@ public class Type implements Serializable
 
 	public static Type fromString(String type)
 	{
-		if ("boolean".equals(type))
+		if ("boolean".equals(type) || "bool".equals(type))
 			return BOOLEAN;
 		if ("float".equals(type))
 			return FLOAT;
-		if ("integer".equals(type))
+		if ("integer".equals(type) || "int".equals(type))
 			return INTEGER;
 		if ("null".equals(type))
 			return NULL;
@@ -110,6 +118,8 @@ public class Type implements Serializable
 			return RESOURCE;
 		if ("void".equals(type))
 			return VOID;
+		if ("numbers".equals(type))
+			return NUMBERS;
 		return new Type(OBJECT_INT, type);
 	}
 
@@ -142,6 +152,11 @@ public class Type implements Serializable
 			return true;
 		if (this == UNKNOWN)
 			return true;
+		if (this == NUMBERS)
+		{
+			if (type == NUMBERS || type == FLOAT || type == INTEGER || type == DOUBLE)
+				return true;
+		}
 		return false;
 	}
 
