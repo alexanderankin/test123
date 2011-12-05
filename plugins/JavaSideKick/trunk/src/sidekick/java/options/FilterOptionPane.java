@@ -27,16 +27,16 @@ public class FilterOptionPane extends AbstractOptionPane {
     private String[] memberVisibilityNames = { "private", "package", "protected", "public" };
 
     public FilterOptionPane() {
-        super( jEdit.getProperty("options.sidekick.java.filter.label", "Filter") );
+        super( "sidekick.java.filter" );
     }
 
     protected void _init() {
         installComponents();
         installDefaults();
     }
-    
+
     /**
-     * Create and add all GUI components.    
+     * Create and add all GUI components.
      */
     private void installComponents() {
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 12, 12 ) );
@@ -65,16 +65,16 @@ public class FilterOptionPane extends AbstractOptionPane {
         addComponent( showStaticInitializersCheckBox );
         addComponent( showThrowsCheckBox );
         addComponent( showLocalVariablesCheckBox );
-        
+
         addComponent( Box.createVerticalStrut( 11 ) );
         addComponent( visibilityLevelLabel );
         addComponent( Box.createVerticalStrut( 6 ) );
         addComponent( jEdit.getProperty( "options.sidekick.java.topLevelVis", "Top level:" ), topLevelVisibilityComboBox );
         addComponent( jEdit.getProperty( "options.sidekick.java.memberVis", "Member:" ), memberVisibilityComboBox );
     }
-    
+
     /**
-     * Set/restore values from jEdit properties.    
+     * Set/restore values from jEdit properties.
      */
     private void installDefaults() {
         attributesCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showAttr", true ) );
