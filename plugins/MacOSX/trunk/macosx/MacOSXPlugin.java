@@ -174,78 +174,56 @@ public class MacOSXPlugin extends EBPlugin
 		if(message instanceof BufferUpdate)
 		{
 			BufferUpdate msg = (BufferUpdate)message;
-			refreshViewModification(jEdit.getActiveView());
 			
-			// When saving a buffer, we need to update the proxy icon for any View in which
-			// that buffer is active
-			if (msg.getWhat() == BufferUpdate.SAVED)
+			Buffer buffer = msg.getBuffer();
+			View[] views = jEdit.getViews();
+			for (View view : views)
 			{
-				Buffer buffer = msg.getBuffer();
-				File path = new File(buffer.getPath());
-				
-				View[] views = jEdit.getViews();
-				for (View view : views)
+				if (view.getBuffer() == buffer)
 				{
-					if (view.getBuffer() == buffer)
-					{
-						view.getRootPane().putClientProperty("Window.documentFile", path);
-					}
+					refreshProxyIcon(view);
 				}
-			}
+			}	
 		}
 		else if(message instanceof ViewUpdate)
 		{
 			ViewUpdate msg = (ViewUpdate)message;
-			refreshViewModification(msg.getView());
+			refreshProxyIcon(msg.getView());
 		}
 		else if(message instanceof EditPaneUpdate)
 		{
 			EditPaneUpdate msg = (EditPaneUpdate)message;
-			View view = msg.getEditPane().getView();
-			if(view != null)
-			{
-				// Attach a file to the View's proxy icon
-				if(view.getBuffer() != null)
-				{
-					String path = view.getBuffer().getPath();
-					view.getRootPane().putClientProperty("Window.documentFile", new File(path));
-				}
-			}
+			refreshProxyIcon(msg.getEditPane().getView());
 		}
 	}
 	
-	public void refreshViewModification(View view)
+	public void refreshProxyIcon(View view)
 	{
-		boolean modifiedView = false;
-		if(view != null)
+		if (view == null) return;
+		
+		Buffer buffer = view.getBuffer();
+		if (buffer == null)
 		{
-			EditPane[] editPanes = view.getEditPanes();
-			for(int i = 0; i < editPanes.length; i++)
-			{
-				Buffer[] buffers = editPanes[i].getBufferSet().getAllBuffers();
-				for(int j = 0; j < buffers.length; j++)
-				{
-					Buffer buf = buffers[j];
-					if(buf.isDirty())
-					{
-						Log.log(Log.DEBUG, this, "Dirty buffer found");
-						modifiedView = true;
-						break;
-					}
-				}
-			}
-			Log.log(Log.DEBUG, this, "Dirty buffer found? " + modifiedView + " for " + editPanes.length + " buffers");
-			if(modifiedView)
-			{
-				view.getRootPane().putClientProperty("Window.documentModified", Boolean.TRUE);
-				view.getRootPane().putClientProperty("windowModified", Boolean.TRUE); // * support for Tiger
-			}
-			else
-			{
-				view.getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
-				view.getRootPane().putClientProperty("windowModified", Boolean.FALSE); // * support for Tiger
-			}
-		} 
+			view.getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
+			view.getRootPane().putClientProperty("windowModified", Boolean.FALSE); // * support for Tiger
+			view.getRootPane().putClientProperty("Window.documentFile", null);
+			return;
+		}
+		
+		// Turn on/off the "document modified" dot
+		if(buffer.isDirty())
+		{
+			view.getRootPane().putClientProperty("Window.documentModified", Boolean.TRUE);
+			view.getRootPane().putClientProperty("windowModified", Boolean.TRUE); // * support for Tiger
+		}
+		else
+		{
+			view.getRootPane().putClientProperty("Window.documentModified", Boolean.FALSE);
+			view.getRootPane().putClientProperty("windowModified", Boolean.FALSE); // * support for Tiger
+		}
+		
+		// Set the path to the proxy icon
+		view.getRootPane().putClientProperty("Window.documentFile", new File(buffer.getPath()));
 	}
 	
 	public static void fixMacKeyBindings(UIDefaults uiDefaults)
