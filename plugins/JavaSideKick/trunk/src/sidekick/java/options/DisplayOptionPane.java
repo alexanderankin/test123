@@ -46,7 +46,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
 
 
     public DisplayOptionPane() {
-        super( jEdit.getProperty("options.sidekick.java.display", "Display") );
+        super( "sidekick.java.display" );
     }
 
     protected void _init() {
@@ -56,7 +56,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
     }
 
     /**
-     * Create and add all GUI components.    
+     * Create and add all GUI components.
      */
     private void installComponents() {
         createComponents();
@@ -153,7 +153,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
     }
 
     /**
-     * Set/restore values from jEdit properties.    
+     * Set/restore values from jEdit properties.
      */
     private void installDefaults() {
         argumentsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showArgs", true ) );

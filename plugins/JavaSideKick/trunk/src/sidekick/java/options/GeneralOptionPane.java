@@ -13,7 +13,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
     private JCheckBox importPackage;
 
     public GeneralOptionPane() {
-        super( jEdit.getProperty("options.sidekick.java.general.label", "General") );
+        super( "sidekick.java.general" );
     }
 
     protected void _init() {
@@ -22,7 +22,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
     }
 
     /**
-     * Create and add all GUI components.    
+     * Create and add all GUI components.
      */
     private void installComponents() {
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 12, 12 ) );
@@ -43,7 +43,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
     }
 
     /**
-     * Set/restore values from jEdit properties.    
+     * Set/restore values from jEdit properties.
      */
     private void installDefaults() {
         showErrorsInErrorList.setSelected( jEdit.getBooleanProperty( "sidekick.java.showErrors", true ) );
