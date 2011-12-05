@@ -172,7 +172,7 @@ public class SpecialCommentRemover extends Preprocessor
 		 */
 		public CommentOptionPane()
 		{
-			super("sql.preprocessors.specialCommentRemover");
+			super("sql_preprocessors_specialCommentRemover");
 		}
 
 
