@@ -35,7 +35,7 @@ public class ParagraphOptionPane extends WhiteSpaceAbstractOptionPane
 
 
     public ParagraphOptionPane() {
-        super("white-space.paragraph");
+        super("whitespace.paragraphOption");
     }
 
 

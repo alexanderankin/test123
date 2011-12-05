@@ -39,7 +39,7 @@ public class SpaceOptionPane extends WhiteSpaceAbstractOptionPane
 
 
     public SpaceOptionPane() {
-        super("white-space.space");
+        super("whitespace.spaceOption");
     }
 
 

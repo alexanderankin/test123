@@ -40,7 +40,7 @@ public class OnSaveOptionPane extends WhiteSpaceAbstractOptionPane
 
 
     public OnSaveOptionPane() {
-        super("white-space.on-save");
+        super("whitespace.saveOption");
     }
 
 
