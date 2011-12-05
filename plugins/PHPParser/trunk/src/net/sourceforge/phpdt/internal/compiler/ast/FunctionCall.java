@@ -37,6 +37,14 @@ import java.util.List;
 public class FunctionCall extends AbstractSuffixExpression
 {
 	/**
+	 * If it is a class Access, the class expression
+	 */
+	private final Expression clazz;
+	/**
+	 * Type of class access : static or instance. If there is no clazz the argument is meaningless
+	 */
+	private final boolean staticClassAccess;
+	/**
 	 * the function name.
 	 */
 	private final Expression functionName;
@@ -48,13 +56,15 @@ public class FunctionCall extends AbstractSuffixExpression
 
 	private Function definition;
 
-	public FunctionCall(Expression functionName, ArgumentList args)
+	public FunctionCall(Expression clazz, boolean staticClassAccess, Expression functionName, ArgumentList args)
 	{
 		super(Type.UNKNOWN, functionName.getSourceStart(), args.getSourceEnd(), functionName.getBeginLine(),
 		      args.getEndLine(), functionName.getBeginColumn(), args.getEndColumn());
+		this.clazz = clazz;
+		this.staticClassAccess = staticClassAccess;
 		this.functionName = functionName;
 		this.args = args;
-		if (functionName instanceof ConstantIdentifier)
+		if (clazz == null && functionName instanceof ConstantIdentifier)
 		{
 			definition = PHPParserPlugin.phpFunctionList.getFunction(getFunctionName().toString());
 			Expression[] arguments = args.getArgs();
@@ -87,6 +97,11 @@ public class FunctionCall extends AbstractSuffixExpression
 			if (definition != null)
 				setType(definition.getReturnType());
 		}
+	}
+
+	public FunctionCall(Expression functionName, ArgumentList args)
+	{
+		this(null, false, functionName, args);
 	}
 
 	public Expression getFunctionName()

@@ -3950,8 +3950,7 @@ Expression refPrimaryExpression(Token bitAndToken):
 			}
 			argumentList = arguments()
 			{
-				expr = new FunctionCall(expr,
-					argumentList);
+				expr = new FunctionCall(expr, argumentList);
 			}
 		|
 			expr = staticClassAccess(expr)
@@ -4239,7 +4238,7 @@ ClassAccess staticClassAccess(Expression expr):
 					}
 					args = arguments()
 					{
-						arguments = new FunctionCall(expr2, args);
+						arguments = new FunctionCall(expr, true, expr2, args);
 					}
 				]
 				{
@@ -4281,8 +4280,8 @@ ClassAccess staticClassAccess(Expression expr):
 	}
 } //}}}
 
-//{{{ classAccess()
-ClassAccess classAccess(Expression prefix) :
+//{{{ classAccess() method
+ClassAccess classAccess(Expression prefix):
 {
 	Token lbrace, rbrace, listToken;
 	Token classAccess;
@@ -4325,7 +4324,7 @@ ClassAccess classAccess(Expression prefix) :
 					}
 					args = arguments()
 					{
-						expression = new FunctionCall(expression, args);
+						expression = new FunctionCall(prefix, false, expression, args);
 					}
 				]
 				{
