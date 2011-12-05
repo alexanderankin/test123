@@ -37,7 +37,7 @@ public class FindFileOptionPane extends AbstractOptionPane {
     //}}}
 
     public FindFileOptionPane() {
-        super("FindFile");
+        super("FindFilePlugin-options");
     }
 
     //{{{ _init
