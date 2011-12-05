@@ -4,11 +4,15 @@ import java.util.*;
 import java.io.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.bsh.*;
+import org.gjt.sp.jedit.bsh.ParseException;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.Buffer;
 import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
+import superabbrevs.zencoding.html.*;
+import superabbrevs.zencoding.ZenParser;
+
 import javax.swing.JOptionPane;
 
 
@@ -110,7 +114,7 @@ public class SuperAbbrevs {
 	//}}}
 	
 	//{{{ key handlers
-	
+	private static boolean zenCoding = true;
 	/**
 	 * Method tab(View view, JEditTextArea textArea, Buffer buffer)
 	 * The method that desides what action should be taken for the tab key
@@ -129,19 +133,50 @@ public class SuperAbbrevs {
 			// for the tab key
 			textArea.insertTabAndIndent();
 		} else {
-			// get the abbrevation before the caret 
-			String abbrev = getAbbrev(textArea, buffer);
-			
+			String abbrev = null;
+			boolean zen = false;
+			String mode = getMode(textArea, buffer);
+			if (zenCoding && ("html".equals(mode) || "php".equals(mode)
+			     || "jsp".equals(mode))) {
+				String lineText = buffer.getLineText(textArea.getCaretLine()).trim();
+				
+				if (!lineText.isEmpty() && Character.isLetter(lineText.charAt(0))) {
+					abbrev = lineText;
+					for (int i = 0;i<abbrev.length();i++)
+					{
+						if (!Character.isLetter(abbrev.charAt(i))) {
+							zen = true;
+							break;
+						}
+					}
+				}
+			}
+			if (abbrev == null) {
+				// get the abbrevation before the caret
+				abbrev = getAbbrev(textArea, buffer);
+			}
+
 			// if the abbreviation is empty we use the default behavior for the 
 			// tab key
 			if (abbrev.trim().equals("")){
 				textArea.insertTabAndIndent();
 				return;
 			}
-			
-			String mode = getMode(textArea, buffer);
-			
-			String template = getTemplateString(mode, abbrev);
+			String template = null;
+			if ("html".equals(mode) && zen) {
+				ZenParser zenParser = new HTMLZenParser(new StringReader(abbrev));
+				try
+				{
+					template = zenParser.parse();
+				}
+				catch (superabbrevs.zencoding.html.ParseException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+			if (template == null || template.isEmpty())
+				template = getTemplateString(mode, abbrev);
 			
 			if(template!=null){
 				// Support for soft tabs
@@ -150,14 +185,20 @@ public class SuperAbbrevs {
 					int tabSize = buffer.getTabSize();
 					template = template.replaceAll("\t", spaces(tabSize));
 				}
-				
-				// remove the abbrevation from the buffer
-				removeAbbrev(textArea, buffer, abbrev);
-				
-				Hashtable modeVariables = loadVariables();
-				
-				// Expand the abbreviation
-				expandAbbrev(view, template, modeVariables);
+
+				try {
+					buffer.beginCompoundEdit();
+					// remove the abbrevation from the buffer
+					removeAbbrev(textArea, buffer, abbrev);
+
+					Hashtable modeVariables = loadVariables();
+
+					// Expand the abbreviation
+					expandAbbrev(view, template, modeVariables);
+				}
+				finally {
+					buffer.endCompoundEdit();
+				}
 			} else {
 				// If there no template exist use the default behavior 
 				// for the tab key
