@@ -168,7 +168,7 @@ options.pv.commands.run=Run Project:
 console.shell.info.toggle=true
 console.shell.info=This shell runs operating system processes.\n\
 	\n\
-	Press TAB with an empty command line to list built-in commands.\n\
+	Press %<TAB> to list built-in commands.\n\
 	Run built-in with --help argument to get a brief usage message.\n\
 	Run %help to view Console plugin online help.\n\
 	\n\
@@ -183,7 +183,7 @@ console.shell.prefix.bash=bash -c
 console.shell.prefix.tcsh=csh -c
 
 console.shell.unknown-builtin=Built-in {0} not recognized.\n\
-	Press TAB with an empty command line to list built-in commands.
+	Press %<TAB> to list built-in commands.
 
 console.shell.bad-opt-long=Unknown option --{0}. Try invoking with the --help parameter.
 console.shell.need-arg-long=Option --{0} requires an argument.
