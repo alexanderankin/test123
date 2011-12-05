@@ -34,12 +34,12 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 
 	public InfoViewerOptionPane()
 	{
-		super("infoviewer.chooseBrowser");
+		super("chooseBrowser");
 	}
 
 	public void _init()
 	{
-		
+
 		useForHelp = new JCheckBox(jEdit.getProperty("options.infoviewer.useforhelp.label"));
 		useForHelp.setSelected(jEdit.getBooleanProperty("infoviewer.useforhelp"));
 		addComponent(useForHelp);

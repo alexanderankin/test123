@@ -41,7 +41,7 @@ public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionL
 
 	private static final long serialVersionUID = 8785488835232627553L;
 	public InfoViewerOptionPane2() {
-        super("infoviewer.internalBrowser");
+        super("internalBrowser");
     }
 
 
