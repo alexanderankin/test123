@@ -7,7 +7,7 @@ plugin.bzr.BzrPlugin.version=0.3
 plugin.bzr.BzrPlugin.docs=index.html
 plugin.bzr.BzrPlugin.description=Offers a file filter importer for ProjectViewer
 plugin.bzr.BzrPlugin.depend.0=jdk 1.6
-plugin.bzr.BzrPlugin.depend.1=jedit 04.03.99.00
+plugin.bzr.BzrPlugin.depend.1=jedit 04.04.99.01
 plugin.bzr.BzrPlugin.depend.2=plugin CommonControlsPlugin 1.4
 plugin.bzr.BzrPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
 
