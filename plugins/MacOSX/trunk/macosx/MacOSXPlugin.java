@@ -223,7 +223,14 @@ public class MacOSXPlugin extends EBPlugin
 		}
 		
 		// Set the path to the proxy icon
-		view.getRootPane().putClientProperty("Window.documentFile", new File(buffer.getPath()));
+		if (buffer.isNewFile())
+		{
+			view.getRootPane().putClientProperty("Window.documentFile", null);
+		}
+		else
+		{
+			view.getRootPane().putClientProperty("Window.documentFile", new File(buffer.getPath()));
+		}
 	}
 	
 	public static void fixMacKeyBindings(UIDefaults uiDefaults)
