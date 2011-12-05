@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -151,6 +151,8 @@ public class Type implements Serializable
 		if (type == this)
 			return true;
 		if (this == UNKNOWN)
+			return true;
+		if (type == UNKNOWN)
 			return true;
 		if (this == NUMBERS)
 		{
