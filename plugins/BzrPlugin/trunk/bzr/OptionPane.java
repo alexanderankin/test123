@@ -20,7 +20,7 @@ public class OptionPane extends AbstractOptionPane {
     String oldPath;
 
     public OptionPane() {
-        super("Bzr");
+        super("bzr");
     }
 
     protected void _init() {
