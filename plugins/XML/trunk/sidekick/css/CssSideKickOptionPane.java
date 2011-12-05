@@ -40,7 +40,7 @@ public class CssSideKickOptionPane extends AbstractOptionPane  {
 
     //{{{ CssSideKickOptionPane constructor
     public CssSideKickOptionPane() {
-        super(CssSideKickPlugin.NAME);
+        super("sidekick.css");
     } //}}}
 
     //{{{ _init() method
