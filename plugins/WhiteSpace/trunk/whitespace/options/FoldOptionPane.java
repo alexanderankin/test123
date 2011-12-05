@@ -36,7 +36,7 @@ public class FoldOptionPane extends WhiteSpaceAbstractOptionPane
 
 
     public FoldOptionPane() {
-        super("white-space.fold");
+        super("whitespace.foldOption");
     }
 
 

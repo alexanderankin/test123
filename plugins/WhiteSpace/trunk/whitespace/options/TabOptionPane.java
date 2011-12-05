@@ -39,7 +39,7 @@ public class TabOptionPane extends WhiteSpaceAbstractOptionPane
 
 
     public TabOptionPane() {
-        super("white-space.tab");
+        super("whitespace.tabOption");
     }
 
 

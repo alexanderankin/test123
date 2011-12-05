@@ -37,7 +37,7 @@ public class WhiteSpaceOptionPane extends WhiteSpaceAbstractOptionPane
 
 
     public WhiteSpaceOptionPane() {
-        super("white-space.other");
+        super("whitespace.mainOption");
     }
 
 
