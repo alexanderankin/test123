@@ -45,7 +45,7 @@ public class ShortcutDisplayOptionPane extends AbstractOptionPane {
      *  Constructor for the ShortcutDisplayOptionPane object
      */
     public ShortcutDisplayOptionPane() {
-        super("shortcut-display");
+        super("shortcut-display-menu");
     }
 
     // protected members
