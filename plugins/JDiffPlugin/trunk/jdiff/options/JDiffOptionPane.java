@@ -53,7 +53,7 @@ public class JDiffOptionPane implements OptionPane {
      * @return the name of this panel
      */
     public String getName() {
-        return jEdit.getProperty( "jdiff.general" );
+        return "jdiff.general";
     }
 
     /**
