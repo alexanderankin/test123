@@ -91,7 +91,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	 */
 	public CharacterMapOptionPane()
 	{
-		super("character-map");
+		super("character-map-options");
 	}
 
 	/**
