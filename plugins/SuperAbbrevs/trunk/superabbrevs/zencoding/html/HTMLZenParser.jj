@@ -1,0 +1,342 @@
+/*
+ * jEdit - Programmer's Text Editor
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright © 2011 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(HTMLZenParser)
+
+
+package superabbrevs.zencoding.html;
+
+import superabbrevs.zencoding.ZenParser;
+import java.util.*;
+import java.text.MessageFormat;
+
+public class HTMLZenParser implements ZenParser
+{
+	private int index = 1;
+
+	private String getTabs(int indent)
+	{
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0;i<indent;i++)
+		{
+			builder.append('\t');
+		}
+		return builder.toString();
+	}
+}
+
+
+
+PARSER_END(HTMLZenParser)
+
+//{{{ Tokens
+SKIP:
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+}
+
+TOKEN:
+{
+	<SHARP: "#">
+|
+	<DOT: ".">
+|
+	<GT: ">">
+|
+	<PLUS: "+">
+|
+	<STAR: "*">
+|
+	<EQUALS: "=">
+|
+	<LBRACKET: "[">
+|
+	<RBRACKET: "]">
+}
+
+TOKEN:
+{
+	<INTEGER_LITERAL: (<DIGIT>)+ >
+|
+	<IDENTIFIER:(<LETTER>)+>
+|
+	<ID_MULTIPLIER: "$*" <INTEGER_LITERAL>>
+|
+	<LITERAL:
+	      "\""
+	      (   (~["\"","\\","\n","\r"]) | ("\\" ~[] ) )*
+	      "\""
+	  >
+|
+	<#LETTER: ["A"-"Z","_","-","a"-"z"]>
+|
+	<#DIGIT: ["0"-"9"]>
+} //}}}
+
+
+//{{{ parse() method
+String parse():
+{
+	LinkedList<String> begin = new LinkedList<String>();
+	LinkedList<String> end = new LinkedList<String>();
+	LinkedList<String> middle = new LinkedList<String>();
+}
+{
+	tag(begin,middle, end)
+
+	{
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0;i<begin.size();i++)
+		{
+			if (i != 0)
+			{
+				builder.append(getTabs(i));
+			}
+			builder.append(begin.get(i));
+			builder.append("\n");
+		}
+		for (int i = 0;i<middle.size();i++)
+		{
+			builder.append(getTabs(begin.size()));
+			builder.append(middle.get(i));
+			if (i < middle.size() - 1)
+			{
+				builder.append("\n");
+			}
+			else if (!end.isEmpty())
+			{
+				builder.append("\n").append(getTabs(begin.size() - 1));
+			}
+		}
+		for (int i = end.size() - 1;i>= 0;i--)
+		{
+			builder.append(end.get(i));
+			if (i != 0)
+			{
+				builder.append("\n").append(getTabs(i-1));
+			}
+		}
+		return builder.toString();
+	}
+} //}}}
+
+
+//{{{ tag() method
+void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end):
+{
+	String temp;
+	boolean finalTag = true;
+}
+{
+	<IDENTIFIER>
+	{
+		begin.add("<"+token.image);
+		end.add("</"+token.image+">");
+	}
+	//{{{ #id
+	[
+		temp = id()
+		{
+			String last = begin.removeLast();
+			begin.add(last + temp);
+		}
+		[
+			<ID_MULTIPLIER>
+			{
+				finalTag = false;
+				int count = Integer.parseInt(token.image.substring(2));
+				String _s = begin.removeLast();
+				_s = _s.substring(0, _s.length()-1);
+				String _e = end.removeLast();
+				for (int i = 0;i<count;i++)
+				{
+					middle.add(_s + i + "\">$" + index++ + _e);
+				}
+			}
+		]
+	] //}}}
+	//{{{ .class.class
+	[
+		temp = cssClass()
+		{
+			String last = begin.removeLast();
+			begin.add(last + temp);
+		}
+		[
+			<ID_MULTIPLIER>
+			{
+				finalTag = false;
+				int count = Integer.parseInt(token.image.substring(2));
+				String _s = begin.removeLast();
+				_s = _s.substring(0, _s.length()-1);
+				String _e = end.removeLast();
+				for (int i = 0;i<count;i++)
+				{
+					middle.add(_s + i + "\">$" + index++ + _e);
+				}
+			}
+		]
+	] //}}}
+	[
+		temp = attributes()
+		{
+			String last = begin.removeLast();
+			begin.add(last + temp);
+		}
+	]
+	//{{{ >
+	[
+		<GT>
+		{
+			finalTag = false;
+			temp = begin.removeLast();
+			begin.add(temp + ">");
+		}
+		tag(begin, middle, end)
+	] //}}}
+	{
+		if (finalTag)
+		{
+			temp = begin.removeLast();
+			middle.add(temp + ">$" + index++ + end.removeLast());
+		}
+	}
+	//{{{ +tag
+	[
+		LOOKAHEAD(2)
+		<PLUS>
+		tag(begin, middle, end)
+	] //}}}
+	//{{{ *int
+	[
+		LOOKAHEAD(<STAR> <INTEGER_LITERAL>)
+		<STAR>
+		<INTEGER_LITERAL>
+		{
+			String mid = middle.getLast();
+			MessageFormat format = new MessageFormat("{0}${1}<{2}");
+			String _s = "";
+			String _e = "";
+			try
+			{
+				Object[] parse = format.parse(mid);
+				_s = parse[0].toString() + '$';
+				_e = '<' + parse[2].toString();
+			}
+			catch (java.text.ParseException e)
+			{
+				e.printStackTrace();
+			}
+			int count = Integer.parseInt(token.image);
+                        for (int i = 0;i<count-1;i++)
+                        {
+                                middle.add(_s + index++ + _e);
+                        }
+		}
+	] //}}}
+} //}}}
+
+//{{{ id() method
+String id():
+{
+}
+{
+	<SHARP>
+	<IDENTIFIER>
+	{
+		return " id=\""+token.image+"\"";
+	}
+} //}}}
+
+//{{{ cssClass() method
+String cssClass():
+{
+	String ret = "";
+}
+{
+	<DOT>
+	<IDENTIFIER>
+	{
+		ret += " " + token.image;
+	}
+	(
+		<DOT>
+		<IDENTIFIER>
+		{
+			ret += " " + token.image;
+		}
+	)*
+	{
+		return " class=\""+ret.trim()+"\"";
+	}
+} //}}}
+
+//{{{ cssClass() method
+String attributes():
+{
+	String ret = "";
+	boolean shouldAddDoublequote;
+}
+{
+	<LBRACKET>
+	(
+		{
+			shouldAddDoublequote = true;
+		}
+		<IDENTIFIER> { ret += ' ' + token.image + '='; }
+		[
+			<EQUALS>
+			{
+				shouldAddDoublequote = false;
+			}
+			(
+					<IDENTIFIER> { ret += '"' + token.image + '"'; }
+				|
+					<INTEGER_LITERAL> { ret += '"' + token.image + '"'; }
+				|
+					<LITERAL> { ret += token.image; }
+			)
+		]
+		{
+			if (shouldAddDoublequote)
+				ret += "\"$"+index++ +"\"";
+		}
+
+	)*
+	<RBRACKET>
+	{
+		return ret;
+	}
+} //}}}
+
+
+
+
+
+
+
