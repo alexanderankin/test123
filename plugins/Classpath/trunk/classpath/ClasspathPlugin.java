@@ -125,7 +125,8 @@ public class ClasspathPlugin extends EBPlugin {
 
 				if (update.getType().equals(projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED)) {
 					// New project
-					if (update.getNode() != null)
+					if (update.getNode() != null
+					    && update.getNode() instanceof projectviewer.vpt.VPTProject)
             projects.add(update.getNode());
 				}
 
