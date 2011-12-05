@@ -175,6 +175,23 @@ public class MacOSXPlugin extends EBPlugin
 		{
 			BufferUpdate msg = (BufferUpdate)message;
 			refreshViewModification(jEdit.getActiveView());
+			
+			// When saving a buffer, we need to update the proxy icon for any View in which
+			// that buffer is active
+			if (msg.getWhat() == BufferUpdate.SAVED)
+			{
+				Buffer buffer = msg.getBuffer();
+				File path = new File(buffer.getPath());
+				
+				View[] views = jEdit.getViews();
+				for (View view : views)
+				{
+					if (view.getBuffer() == buffer)
+					{
+						view.getRootPane().putClientProperty("Window.documentFile", path);
+					}
+				}
+			}
 		}
 		else if(message instanceof ViewUpdate)
 		{
@@ -187,6 +204,7 @@ public class MacOSXPlugin extends EBPlugin
 			View view = msg.getEditPane().getView();
 			if(view != null)
 			{
+				// Attach a file to the View's proxy icon
 				if(view.getBuffer() != null)
 				{
 					String path = view.getBuffer().getPath();
