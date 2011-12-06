@@ -47,7 +47,7 @@ public class OptionPane extends AbstractOptionPane {
     private JRadioButton mouseClick = null;
 
     public OptionPane() {
-        this( "" );
+        this( "imageviewer" );
     }
 
     public OptionPane( String name ) {
