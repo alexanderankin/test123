@@ -32,9 +32,9 @@ toggle-line-comment.label=Toggle Line Comment
 toggle-range-comment.label=Toggle Range Comment
 
 # option panes
-plugin.TextToolsPlugin.option-group=toggle-comments
+plugin.TextToolsPlugin.option-pane=toggle-comments
 # options.label=Text Tools
-options.toggle-comments.label=Toggle Comments
+options.toggle-comments.label=TextTools
 options.toggle-comments.code=new TextToolsCommentsOptionPane();
 
 # sort options window title
