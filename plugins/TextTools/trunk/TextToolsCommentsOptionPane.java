@@ -41,7 +41,7 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 	/** Constructor for the <code>TextToolsCommentsOptionPane</code> object. */
 	public TextToolsCommentsOptionPane()
 	{
-		super("text-tools.toggle-comments");
+		super("toggle-comments");
 	} //}}}
 	
 	//{{{ init() method
