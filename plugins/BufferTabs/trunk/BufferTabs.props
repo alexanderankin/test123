@@ -17,6 +17,7 @@ options.buffertabs.label=BufferTabs
 options.buffertabs.code=new buffertabs.BufferTabsOptionPane();
 buffertabs.location=top
 buffertabs.enable=true
+view.showBufferSwitcher=false
 
 # Menu
 buffertabs.popup=\
