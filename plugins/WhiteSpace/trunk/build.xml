@@ -1,135 +1,27 @@
 <?xml version="1.0"?>
-
 <!--
-
      This is the standard build.xml file for building the WhiteSpace plugin.
 
      The 'dist' target compiles the plugin, generates documentation, and creates
      the JAR file.  Before running the 'dist' target, you will need to choose
      whether to generate the documentation using one of these two targets:
-
-     - 'docs-xsltproc': Creates documentation using the xsltproc tool from
-       libxslt, available at http://xmlsoft.org/XSLT
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor,
-       available at http://xml.apache.org/
-
-     The default processor is xsltproc. You can change the processor to Xalan by
-     setting the docs-proc.target property to xalan. This can be done on the
-     command line by adding '-Ddocs-proc.target=xalan'. If you do not have any
-     documentation, you can remove the 'docs' target from the depends list for
-     the 'dist' target.
-
-     To use this template for building your own plugin, make these changes:
-
-     - Change 'name' property for the <project> to the name of your plugin
-     - Change definition of 'jedit.install.dir' to point to the directory
-       containing jedit.jar
-     - If necessary, add any dependencies to the 'project.class.path' definition
-     - If necessary, change the list of files in the 'dist' target
-     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets to
-       reflect the appropriate values for your documentation
-
 -->
 
 <project name="WhiteSpace" default="dist" basedir=".">
 
     <property file="build.properties"/>
     <property file="../build.properties"/>
-    <property file="${user.home}/.build.properties"/>
-    <property file="${user.home}/build.properties"/>
-
-    <property name="jedit.install.dir"  value="../.."/>
-    <property name="jar.name"  value="${ant.project.name}.jar"/>
-    <property name="docs-proc.target"  value="xsltproc"/>
 
     <property name="src.dir" value="."/>
     <property name="build.dir" value="build"/>
-    <property name="install.dir"  value=".."/>
 
+    <import file="${build.support}/plugin-build.xml" />
 
-    <path id="project.class.path">
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${src.dir}"/>
-    </path>
+     <selector id="packageFiles">
+	  <or>
+        <filename name="*.gif" />
+		<filename name="CHANGELOG.txt" />
+	  </or>
+	  </selector>
 
-
-    <target name="init">
-        <mkdir dir="${build.dir}"/>
-        <delete file="docbook-wrapper.xsl" />
-        <echo file="docbook-wrapper.xsl"
-            message="&lt;xsl:stylesheet"/>
-        <echo file="docbook-wrapper.xsl" append="true"
-            message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-        <echo file="docbook-wrapper.xsl" append="true"
-            message=" version='1.0'&gt;"/>
-        <echo file="docbook-wrapper.xsl" append="true"
-            message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
-        <echo file="docbook-wrapper.xsl" append="true"
-            message="&lt;/xsl:stylesheet&gt;"/>
-    </target>
-
-
-    <target name="compile" depends="init">
-        <javac
-            srcdir="${src.dir}"
-            destdir="${build.dir}"
-            deprecation="on"
-            debug="on"
-            includeJavaRuntime="yes"
-        >
-            <classpath refid="project.class.path"/>
-        </javac>
-    </target>
-
-
-    <target name="dist" depends="compile, docs">
-        <mkdir dir="${install.dir}"/>
-
-        <jar jarfile="${install.dir}/${jar.name}">
-            <fileset dir="${build.dir}"/>
-            <fileset dir="${src.dir}">
-                <include name="actions.xml"/>
-                <include name="**/*.props"/>
-                <include name="**/*.gif"/>
-                <include name="**/*.html"/>
-            </fileset>
-        </jar>
-    </target>
-
-
-    <target name="docs">
-        <antcall target="docs-${docs-proc.target}"/>
-    </target>
-
-
-    <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-    <target name="docs-xsltproc">
-        <exec executable="xsltproc">
-            <arg value="-o"/>
-            <arg value="users-guide.html"/>
-            <arg value="--catalogs"/>
-            <arg value="users-guide.xsl"/>
-            <arg value="users-guide.xml"/>
-        </exec>
-    </target>
-
-
-    <!-- Generate docs with Xalan tool from xml.apache.org -->
-    <target name="docs-xalan">
-        <style
-            style="users-guide.xsl"
-            in="users-guide.xml"
-            out="users-guide.html"
-        />
-    </target>
-
-
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-        <delete>
-            <fileset dir="." includes="users-guide.html"/>
-            <fileset dir="." includes="docbook-wrapper.xsl"/>
-            <fileset dir="." includes="**/*~"/>
-        </delete>
-    </target>
 </project>
