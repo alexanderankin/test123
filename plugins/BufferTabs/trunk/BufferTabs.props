@@ -15,9 +15,13 @@ buffertabs.toggle-vis.label=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.option-pane=buffertabs
 options.buffertabs.label=BufferTabs
 options.buffertabs.code=new buffertabs.BufferTabsOptionPane();
-buffertabs.location=top
+
+
+# Enable buffertabs by default:
 buffertabs.enable=true
+# Hide the regular buffer switcher
 view.showBufferSwitcher=false
+buffertabs.location=top
 
 # Menu
 buffertabs.popup=\
