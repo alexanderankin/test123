@@ -15,6 +15,8 @@ buffertabs.toggle-vis.label=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.option-pane=buffertabs
 options.buffertabs.label=BufferTabs
 options.buffertabs.code=new buffertabs.BufferTabsOptionPane();
+buffertabs.location=top
+buffertabs.enable=true
 
 # Menu
 buffertabs.popup=\
