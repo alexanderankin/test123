@@ -12,6 +12,4 @@ docs-proc.target=xsltproc
 docbook.xsl=/usr/share/xml/docbook/docbook-xsl
 compiler.target=5
 compiler.source=5
-compiler.debug=on
-compiler.debuglevel=lines,vars,source
 
