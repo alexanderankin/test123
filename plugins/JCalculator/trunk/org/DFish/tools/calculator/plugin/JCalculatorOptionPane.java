@@ -21,7 +21,7 @@ public class JCalculatorOptionPane extends AbstractOptionPane {
   JCheckBox onlyResult;
 
   public JCalculatorOptionPane(){
-    super(JCalculatorPlugin.NAME);
+    super("jcalculatorOption");
   }
 
   @Override
