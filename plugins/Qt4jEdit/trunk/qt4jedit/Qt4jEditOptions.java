@@ -15,7 +15,7 @@ public class Qt4jEditOptions extends AbstractOptionPane {
 	String oldPath;
 	
 	public Qt4jEditOptions() {
-		super("Qt4jEdit");
+		super("qt4jedit");
 	}
 
 	protected void _init() {
