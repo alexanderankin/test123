@@ -1,12 +1,9 @@
 <?xml version="1.0"?>
-
 <!-- WhiteSpace plugin user's guide -->
-<!-- (c) 2000, 2001, 2002 Andre Kaplan -->
+<!-- (c) 2000, 2001, 2002 André Kaplan -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
-<book>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
 
 <bookinfo>
@@ -14,7 +11,7 @@
 
     <authorgroup>
         <author>
-            <firstname>Andr&eacute;</firstname>
+            <firstname>André</firstname>
             <surname>Kaplan</surname>
         </author>
     </authorgroup>
@@ -47,26 +44,17 @@
 
     <para>When highlighted,</para>
     <itemizedlist>
-        <listitem>Spaces are represented by a
-            <imagedata
-                fileref="space.gif"
-                format="gif"
-            />
+        <listitem><para>Spaces are represented by a
+            <imagedata  fileref="space.gif" format="GIF" /> </para>
         </listitem>
 
-        <listitem>Tabs are represented by a
-            <imagedata
-                fileref="tab.gif"
-                format="gif"
-            />
+        <listitem><para>Tabs are represented by a
+            <imagedata  fileref="tab.gif" /></para>
         </listitem>
 
-        <listitem>Other whitespaces are represented by a
-            <imagedata
-                fileref="whitespace.gif"
-                format="gif"
-            />
-        </listitem>
+        <listitem><para>Other whitespaces are represented by a
+            <imagedata fileref="whitespace.gif" />
+        </para></listitem>
     </itemizedlist>
 
     <para>Except for the space, the horizontal tabulation and the line feed,
@@ -75,18 +63,18 @@
     </para>
 
     <itemizedlist>
-        <listitem> a Unicode space separator (category "Zs"), but not
-            a no-break space (&#92;u00a0 or &#92;ufeff).
+        <listitem><para> a Unicode space separator (category "Zs"), but not
+            a no-break space (&#92;u00a0 or &#92;ufeff). </para>
         </listitem>
-        <listitem> a Unicode line separator (category "Zl").</listitem>
-        <listitem> a Unicode paragraph separator (category "Zp").</listitem>
-        <listitem> &#92;u000b, vertical tabulation.</listitem>
-        <listitem> &#92;u000c, form feed.</listitem>
-        <listitem> &#92;u000d, carriage return.</listitem>
-        <listitem> &#92;u001c, file separator.</listitem>
-        <listitem> &#92;u001d, group separator.</listitem>
-        <listitem> &#92;u001e, record separator.</listitem>
-        <listitem> &#92;u001f, unit separator.</listitem>
+        <listitem><para> a Unicode line separator (category "Zl").</para></listitem>
+        <listitem><para> a Unicode paragraph separator (category "Zp").</para></listitem>
+        <listitem><para> &#92;u000b, vertical tabulation.</para></listitem>
+        <listitem><para> &#92;u000c, form feed.</para></listitem>
+        <listitem><para> &#92;u000d, carriage return.</para></listitem>
+        <listitem><para> &#92;u001c, file separator.</para></listitem>
+        <listitem><para> &#92;u001d, group separator.</para></listitem>
+        <listitem><para> &#92;u001e, record separator.</para></listitem>
+        <listitem><para> &#92;u001f, unit separator.</para></listitem>
     </itemizedlist>
 
     <para>
@@ -103,30 +91,30 @@
     </para>
 
     <itemizedlist>
-        <listitem><emphasis>Paragraph separators</emphasis>:
+        <listitem><para><emphasis>Paragraph separators</emphasis>:
         a paragraph separator is displayed whenever two or more empty
-        lines are encoutered.
+        lines are encoutered.</para>
         </listitem>
 
-        <listitem><emphasis>Fold guides</emphasis>
+        <listitem><para><emphasis>Fold guides</emphasis>
         show the different levels of indentations of your code by
-        displaying vertical grey (default) lines
+        displaying vertical grey (default) lines </para>
         </listitem>
 
-        <listitem><emphasis>Fold tooltips</emphasis>
+        <listitem><para><emphasis>Fold tooltips</emphasis>
         are displayed when the beginning of a block is not visible and
-        your mouse cursor is near a fold guide.
+        your mouse cursor is near a fold guide. </para>
         </listitem>
 
-        <listitem><emphasis>On save actions</emphasis>:
+        <listitem><para><emphasis>On save actions</emphasis>: </para>
             <itemizedlist>
-                <listitem>Remove trailing whitespaces</listitem>
-                <listitem>
+                <listitem><para>Remove trailing whitespaces</para></listitem>
+                <listitem><para>
                     Tabify/untabify leading whitespaces according to soft tabs
-                    settings
+                    settings</para>
                 </listitem>
-                <listitem>Tabify leading whitespaces</listitem>
-                <listitem>Untabify leading whitespaces</listitem>
+                <listitem><para>Tabify leading whitespaces</para></listitem>
+                <listitem><para>Untabify leading whitespaces</para></listitem>
             </itemizedlist>
         </listitem>
     </itemizedlist>
@@ -136,16 +124,16 @@
     </para>
 
     <itemizedlist>
-        <listitem>
+        <listitem><para>
             <guimenu>Edit</guimenu>&gt;
             <guisubmenu>Text</guisubmenu>&gt;
-            <guimenuitem>Spaces&nbsp;To&nbsp;Tabs</guimenuitem>
+            <guimenuitem>Spaces-To-Tabs</guimenuitem> </para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             <guimenu>Edit</guimenu>&gt;
             <guisubmenu>Text</guisubmenu>&gt;
-            <guimenuitem>Tabs&nbsp;To&nbsp;Spaces</guimenuitem>
+            <guimenuitem>Tabs-To-Spaces</guimenuitem> </para>
         </listitem>
     </itemizedlist>
 
@@ -158,8 +146,8 @@
     <para>
     WhiteSpace default options are available under:
         <guimenu>Utilities</guimenu>&gt;
-        <guisubmenu>Global&nbsp;Options</guisubmenu>&gt;
-        <guimenu>Plugin&nbsp;Options</guimenu>&gt;
+        <guisubmenu>Global Options</guisubmenu>&gt;
+        <guimenu>Plugin Options</guimenu>&gt;
         <guisubmenu>WhiteSpace</guisubmenu>.
     </para>
 
@@ -168,11 +156,11 @@
         <title>&quot;Spaces&quot; options</title>
 
         <itemizedlist>
-            <listitem>Show spaces by default</listitem>
-            <listitem>Space color</listitem>
-            <listitem>Show leading spaces by default</listitem>
-            <listitem>Show inner spaces by default</listitem>
-            <listitem>Show trailing spaces by default</listitem>
+            <listitem><para>Show spaces by default</para></listitem>
+            <listitem><para>Space color</para></listitem>
+            <listitem><para>Show leading spaces by default</para></listitem>
+            <listitem><para>Show inner spaces by default</para></listitem>
+            <listitem><para>Show trailing spaces by default</para></listitem>
         </itemizedlist>
     </simplesect>
 
@@ -181,11 +169,11 @@
         <title>&quot;Tabs&quot; options</title>
 
         <itemizedlist>
-            <listitem>Show tabs by default</listitem>
-            <listitem>Tab color</listitem>
-            <listitem>Show leading tabs by default</listitem>
-            <listitem>Show inner tabs by default</listitem>
-            <listitem>Show trailing tabs by default</listitem>
+            <listitem><para>Show tabs by default</para></listitem>
+            <listitem><para>Tab color</para></listitem>
+            <listitem><para>Show leading tabs by default</para></listitem>
+            <listitem><para>Show inner tabs by default</para></listitem>
+            <listitem><para>Show trailing tabs by default</para></listitem>
         </itemizedlist>
     </simplesect>
 
@@ -194,9 +182,9 @@
         <title>&quot;Other whitespaces&quot; options</title>
 
         <itemizedlist>
-            <listitem>Show other whitespaces by default</listitem>
-            <listitem>Display ISO control chars as whitespaces</listitem>
-            <listitem>Other whitespace color</listitem>
+            <listitem><para>Show other whitespaces by default</para></listitem>
+            <listitem><para>Display ISO control chars as whitespaces</para></listitem>
+            <listitem><para>Other whitespace color</para></listitem>
         </itemizedlist>
     </simplesect>
 
@@ -205,9 +193,9 @@
         <title>&quot;Fold guides&quot; options</title>
 
         <itemizedlist>
-            <listitem>Show fold guides by default</listitem>
-            <listitem>Show fold tooltips by default</listitem>
-            <listitem>Fold guide color</listitem>
+            <listitem><para>Show fold guides by default</para></listitem>
+            <listitem><para>Show fold tooltips by default</para></listitem>
+            <listitem><para>Fold guide color</para></listitem>
         </itemizedlist>
     </simplesect>
 
@@ -216,9 +204,9 @@
         <title>&quot;Paragraph separators&quot; options</title>
 
         <itemizedlist>
-            <listitem>Show paragraph separators by default</listitem>
-            <listitem>Paragraph separators respect indentation</listitem>
-            <listitem>Paragraph separator color</listitem>
+            <listitem><para>Show paragraph separators by default</para></listitem>
+            <listitem><para>Paragraph separators respect indentation</para></listitem>
+            <listitem><para>Paragraph separator color</para></listitem>
         </itemizedlist>
     </simplesect>
 
@@ -242,7 +230,7 @@
 Some Text&#92;<inlinemediaobject>
     <imageobject>
         <alt>Space</alt>
-        <imagedata fileref="space.gif" format="gif"/>
+        <imagedata fileref="space.gif" format="GIF"/>
     </imageobject>
 </inlinemediaobject><inlinemediaobject>
     <imageobject>
@@ -318,52 +306,52 @@ Some Text&#92;<inlinemediaobject>
     </para>
 
     <itemizedlist>
-        <listitem>
-            <guimenuitem>Show&nbsp;spaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show spaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;tabs</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show tabs</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;other&nbsp;whitespaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show other whitespaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;paragraph&nbsp;separators</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show paragraph separators</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;fold&nbsp;guides</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show fold guides</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;fold&nbsp;tooltips</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show fold tooltips</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;leading&nbsp;spaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show leading spaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;inner&nbsp;spaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show inner spaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;trailing&nbsp;spaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show trailing spaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;leading&nbsp;tabs</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show leading tabs</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;inner&nbsp;tabs</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show inner tabs</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Show&nbsp;trailing&nbsp;tabs</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Show trailing tabs</guimenuitem></para>
         </listitem>
     </itemizedlist>
 
@@ -374,22 +362,22 @@ Some Text&#92;<inlinemediaobject>
     </para>
 
     <itemizedlist>
-        <listitem>
-            <guimenuitem>Remove&nbsp;trailing&nbsp;whitespaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Remove trailing whitespaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             <guimenuitem>
-            Tabify/untabify&nbsp;according&nbsp;to&nbsp;soft&nbsp;tabs&nbsp;setting
-            </guimenuitem>
+            Tabify/untabify according to soft tabs setting
+            </guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Tabify&nbsp;according&nbsp;whitespaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Tabify according whitespaces</guimenuitem></para>
         </listitem>
 
-        <listitem>
-            <guimenuitem>Untabify&nbsp;leading&nbsp;whitespaces</guimenuitem>
+        <listitem><para>
+            <guimenuitem>Untabify leading whitespaces</guimenuitem></para>
         </listitem>
     </itemizedlist>
 
@@ -422,61 +410,22 @@ Some Text&#92;<inlinemediaobject>
 
     <para>You can also write to:</para>
     <itemizedlist>
-        <listitem>
-            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
-        </listitem>
-
-        <listitem>
+        <listitem><para>
             or jEdit-users mailing-list
-            <email>jedit-users@lists.sourceforge.net</email>;
+            <email>jedit-users@lists.sourceforge.net</email></para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             or jEdit-devel mailing-list
-            <email>jedit-devel@lists.sourceforge.net</email>.
+            <email>jedit-devel@lists.sourceforge.net</email></para>
         </listitem>
     </itemizedlist>
 </chapter>
 
 
 <appendix id="changelog">
-    <title>Change log</title>
-
-	<formalpara>
-        <title>Version 0.9.2</title>
-        <para>Requires JDK 1.3, jEdit 4.2pre1</para>
-
-        <itemizedlist>
-            <listitem>Updated for jEdit 4.2 plugin API</listitem>
-        </itemizedlist>
-    </formalpara>
-
-    <formalpara>
-        <title>Version 0.9.1</title>
-        <para>Requires JDK 1.2, jEdit 4.0pre4</para>
-
-        <itemizedlist>
-            <listitem>Updated for jEdit 4.0 Buffer API</listitem>
-            <listitem>Updated for jEdit 4.0 Highlighting API</listitem>
-        </itemizedlist>
-    </formalpara>
-
-    <formalpara>
-        <title>Version 0.9</title>
-        <para>Requires JDK 1.1, jEdit 3.2.2</para>
-
-        <itemizedlist>
-            <listitem>Ant now used as build tool</listitem>
-            <listitem>DocBook now used for the documentation</listitem>
-            <listitem>
-                WhiteSpace options are now <classname>Buffer</classname>
-                properties
-            </listitem>
-            <listitem>
-                All highlighting options but fold highlighting default to false
-            </listitem>
-        </itemizedlist>
-    </formalpara>
+   <title> Changes </title>
+    <para> Click <ulink url="CHANGELOG.txt">here</ulink> to see the changelog. </para>
 </appendix>
 
 
