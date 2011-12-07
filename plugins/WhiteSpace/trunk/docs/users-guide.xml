@@ -45,15 +45,18 @@
     <para>When highlighted,</para>
     <itemizedlist>
         <listitem><para>Spaces are represented by a
-            <imagedata  fileref="space.gif" format="GIF" /> </para>
+        <mediaobject><imageobject>
+            <imagedata  fileref="space.gif" format="GIF" /> </imageobject> </mediaobject></para>
         </listitem>
 
         <listitem><para>Tabs are represented by a
-            <imagedata  fileref="tab.gif" /></para>
+        <mediaobject><imageobject>
+            <imagedata  fileref="tab.gif" /></imageobject></mediaobject></para>
         </listitem>
 
         <listitem><para>Other whitespaces are represented by a
-            <imagedata fileref="whitespace.gif" />
+        <mediaobject><imageobject>
+            <imagedata fileref="whitespace.gif" /> </imageobject></mediaobject>
         </para></listitem>
     </itemizedlist>
 
@@ -228,27 +231,23 @@
                     The default escape character is &#92; (backslash). E.g.
                     <screen>
 Some Text&#92;<inlinemediaobject>
-    <imageobject>
-        <alt>Space</alt>
-        <imagedata fileref="space.gif" format="GIF"/>
-    </imageobject>
+    <imageobject>  
+        <imagedata fileref="space.gif" format="GIF"/></imageobject>
+</inlinemediaobject>
+<inlinemediaobject>
+    <imageobject> 
+        <imagedata fileref="tab.gif" format="GIF"/>  </imageobject>
+
 </inlinemediaobject><inlinemediaobject>
     <imageobject>
-        <alt>Tab</alt>
-        <imagedata fileref="tab.gif" format="gif"/>
-    </imageobject>
-</inlinemediaobject><inlinemediaobject>
-    <imageobject>
-        <alt>Tab</alt>
-        <imagedata fileref="tab.gif" format="gif"/>
+        <imagedata fileref="tab.gif" format="GIF"/> 
     </imageobject>
 </inlinemediaobject></screen>
                     will be replaced by
                     <screen>
 Some Text&#92;<inlinemediaobject>
     <imageobject>
-        <alt>Space</alt>
-        <imagedata fileref="space.gif" format="gif"/>
+        <imagedata fileref="space.gif" format="GIF"/>
     </imageobject>
 </inlinemediaobject></screen>
                 </para></listitem>
