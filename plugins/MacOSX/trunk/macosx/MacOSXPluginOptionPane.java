@@ -46,6 +46,10 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 		useQuartz.setSelected(!new File(settingsDirectory, "noquartz").exists());
 		addComponent(useQuartz);
 		
+		multiShortcut = new JCheckBox(jEdit.getProperty("option.MacOSXPlugin.multiShortcut"));
+		multiShortcut.setSelected(jEdit.getBooleanProperty("menu.multiShortcut", false));
+		addComponent(multiShortcut);
+		
 		addSeparator("options.MacOSXPlugin.experimental");
 		
 		altDispatcher = new JCheckBox(jEdit.getProperty(
@@ -63,6 +67,7 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 	protected void _save()
 	{
 		setFileFlag("noquartz", !useQuartz.isSelected());
+		jEdit.setBooleanProperty("menu.multiShortcut", multiShortcut.isSelected());
 		MacOSXPlugin.setAlternativeDispatcher(altDispatcher.isSelected());
 		MacOSXPlugin.setDisableOption(disableOption.isSelected());
 	} //}}}
@@ -102,5 +107,6 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 	private JCheckBox useQuartz;
 	private JCheckBox altDispatcher;
 	private JCheckBox disableOption;
+	private JCheckBox multiShortcut;
 }
 
