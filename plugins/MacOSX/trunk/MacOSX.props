@@ -1,5 +1,5 @@
 plugin.macosx.MacOSXPlugin.activate=startup
-#plugin.macosx.MacOSXPlugin.option-pane=MacOSXPlugin
+plugin.macosx.MacOSXPlugin.option-pane=MacOSXPlugin
 #plugin.macosx.MacOSXPlugin.menu.code=new MacOSXPlugin();
 
 
@@ -25,8 +25,12 @@ MacOSXPlugin.depend.mrj.version=99
 #
 # Options dialog
 #
-#options.MacOSXPlugin.code=new macos.MacOSXOptionPane();
-#options.MacOSXPlugin.label=Mac OS X Settings
+options.MacOSXPlugin.code=new macosx.MacOSXPluginOptionPane();
+options.MacOSXPlugin.label=Mac OS X Settings
+options.MacOSXPlugin.experimental=Experimental options
+options.MacOSXPlugin.useQuartz=Use OS X native Quartz renderer (restart required)
+options.MacOSXPlugin.altDispatcher=Use alternative keyboard dispatcher (may help with buggy international keyboards)
+options.MacOSXPlugin.disableOption=Disable option-key shortcuts
 
 #
 # Error dialogs
@@ -39,4 +43,10 @@ MacOSXPlugin.dialog.mrjversion.message=Mac OS X plugin requires a newer version 
 
 compiler.source=1.5
 compiler.target=1.5
+
+#
+# Plugin options
+#
+plugin.MacOSXPlugin.altDispatcher=false
+plugin.MacOSXPlugin.disableOption=false
 
