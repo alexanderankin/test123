@@ -1,0 +1,28 @@
+plugin.classpath.ClasspathPlugin.activate=startup
+plugin.classpath.ClasspathPlugin.name=Classpath
+plugin.classpath.ClasspathPlugin.author=Damien Radtke
+plugin.classpath.ClasspathPlugin.version=1.0.1
+plugin.classpath.ClasspathPlugin.description=Maintains a global java classpath.
+plugin.classpath.ClasspathPlugin.docs=index.html
+
+plugin.classpath.ClasspathPlugin.depend.0=jdk 1.5.0
+plugin.classpath.ClasspathPlugin.depend.1=jedit 04.03.99.00
+plugin.classpath.ClasspathPlugin.depend.2=plugin CommonControlsPlugin 1.3
+plugin.classpath.ClasspathPlugin.depend.3=optional plugin console.ConsolePlugin 4.4.2
+plugin.classpath.ClasspathPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.0.0
+
+plugin.classpath.ClasspathPlugin.option-pane=classpath
+options.classpath.label=Classpath
+options.classpath.code=new classpath.ClasspathOptionPane();
+options.classpath.path=Classpath
+options.classpath.includeWorking=Include working directory (Console only)
+options.classpath.includeSystem=Include system classpath
+options.classpath.includeInstalled=Include installed plugins and jars (may slow down jEdit while refreshing classloader)
+
+java.classpath=
+java.customClasspath=
+java.classpath.includeWorking=true
+java.classpath.includeSystem=true
+java.classpath.includeInstalled=false
+
+options.project.classpath.label=Classpath
