@@ -184,7 +184,7 @@ public class ClearCaseShell extends Shell implements ClearCaseConstants
         StringBuffer buffer = new StringBuffer(text.length() + 1024);
         buffer.append(text);
         
-        String currentFile = console.getView().getBuffer().getFile().getAbsolutePath();
+        String currentFile = console.getView().getBuffer().getPath();
         
         // Replace all variables.
         for(int i = 0; i < VARIABLES.length; i++)

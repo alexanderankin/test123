@@ -1,15 +1,13 @@
 package clearcase;
-import java.util.Vector;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.util.Log;
 
 
@@ -41,7 +39,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
 
     public static void checkOut(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         CheckOutDialog dialog = new CheckOutDialog(view);
         Console console = showConsole(view, true);
@@ -61,7 +59,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
     
     public static void checkIn(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         CheckInDialog dialog = new CheckInDialog(view);
         
@@ -79,7 +77,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
     
     public static void addToSourceControl(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         AddToSourceControlDialog dialog = new AddToSourceControlDialog(view);
         
@@ -93,7 +91,8 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
             
 			if (dialog.getCheckOutInParentDirectory())
 			{
-				CheckOut parentDirCommand = new CheckOut(view.getBuffer().getFile().getParent(), true, "");
+				String parentOfPath = MiscUtilities.getParentOfPath(view.getBuffer().getPath());
+				CheckOut parentDirCommand = new CheckOut(parentOfPath, true, "");
 				executeClearToolCommand(view, parentDirCommand);
 				// sleep for a few seconds to allow previous cleartool command to execute
 				try { Thread.sleep(getFileReloadDelay()*1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
@@ -104,7 +103,8 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
 			if (dialog.getCheckOutInParentDirectory())
 			{	// sleep for a few seconds to allow previous cleartool command to execute
 				try { Thread.sleep(getFileReloadDelay()*1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-				CheckIn parentDirCommand = new CheckIn(view.getBuffer().getFile().getParent(), "");
+				String parentOfPath = MiscUtilities.getParentOfPath(view.getBuffer().getPath());
+				CheckIn parentDirCommand = new CheckIn(parentOfPath, "");
 				executeClearToolCommand(view, parentDirCommand);
 			}
 			
@@ -117,7 +117,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
     
     public static void unCheckOut(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         UnCheckOutDialog dialog = new UnCheckOutDialog(view);
         
@@ -135,7 +135,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
 
     public static void updateBuffer(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
 
         Update command = new Update(file);
         
@@ -144,7 +144,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
     
     public static void showHistory(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         ShowHistory command = new ShowHistory(file);
 
@@ -155,7 +155,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
 
     public static void compareToPreviousVersion(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         ComparePreviousVersion command = new ComparePreviousVersion(file);
 
@@ -167,7 +167,7 @@ public class ClearCasePlugin extends EditPlugin implements ClearCaseConstants
 
     public static void showVersionTree(View view) 
     {
-        String file = view.getBuffer().getFile().getAbsolutePath();
+        String file = view.getBuffer().getPath();
         
         ShowVersionTree command = new ShowVersionTree(file);
 
