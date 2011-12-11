@@ -29,35 +29,35 @@
   <chapter id="Introduction"><title>Introduction</title>
     <para>
       This plugin gives you the ability to expand an abbreviations to userdefined
-      code template. When expanded you can jump between the variables in the
+      code template. When expanded, you can jump between the variables in the
       template using the TAB key. If you change the text of a variable, the text
       will change everywhere the variable is placed in the template.
     </para>
     <para>
-      There is already some predefined abbreviations when you install the plugin, 
-      you can find them in the <application>SuperAbbrevs</application>
-      optionpane. Each mode have a list of defined abbreviations, you can change
-      between the mode in the dropdown menu at the top of the optionpane, an the
-      abbreviations associated with the mode will be shown in the table below.
+      There are already some predefined abbreviations when you install the plugin. 
+      You can find them in the <application>SuperAbbrevs</application>
+      optionpane. Each mode has a list of defined abbreviations, and you can select
+      the mode with a dropdown menu at the top of the optionpane. 
+      The abbreviations associated with the mode will be shown in the table below.
       There is a special mode added, <emphasis>global</emphasis>, that defines
-      abbreviations that works across all modes. 
+      abbreviations that work across all modes. 
     </para>
     <para>
-    	You can define, edit or delete the abbreviations from the optionpane,
-      this will be explained further in <xref linkend="UsingPlugin"/>. 
+    	You can define, edit or delete abbreviations from this optionpane. 
+      This will be explained further in <xref linkend="UsingPlugin"/>. 
     </para>
   </chapter>
 
   <chapter id="UsingPlugin"><title>Using the plugin</title>
     <section id="expand"><title>Expand an abbreviation</title>
     <para>
-      To expand an abbreviation, you have to be in the mode the abbreviation is
+      To expand an abbreviation, you must be in the mode the abbreviation is
       associated with, and the cursor should be placed after the abbreviation.
-      Then press the TAB key, the template will be
-      inserted and the first variable will be selected. If you change the text
-      of the variable it changes everywhere the variable is placed in the
+      Press the TAB key, and the template will be
+      inserted, and the first variable will be selected. If you change the text
+      of the variable, it changes everywhere the variable is placed in the
       template. By pressing the TAB key once more, the
-      next variable is selected. If you want to jump back to a earlier variable 
+      next variable is selected. If you want to jump back to an earlier variable 
       you should just press S+TAB. </para>
     </section>
     <section id="expandselection"><title>Expand an abbreviation on a selection</title>
@@ -72,27 +72,27 @@
     <para>
       In the SuperAbbrevs optionpane, find the mode in the dropdown menu, for which
       you want to add the abbreviation. Then press the plus button below the
-      abbreviation table, a abbreviation editor will appear. Type in the
+      abbreviation table, an abbreviation editor will appear. Type in the
       abbreviation and the template according to the syntax explained in <xref
       linkend="WritingTemplates"/>. Press the Ok button. The abbreviation is not saved
-      yet, you have to press Apply or the Ok button, at the button of the
+      yet - you must press Apply or the Ok button, at the button of the
       optionpane, to save all the changes you made to the abbreviations. </para>
     </section>
     <section id="addInline"><title>Add a new abbreviation from the buffer</title>
     <para>
       If you want to add a new abbreviation from the buffer, type the abbreviation and press
-      S+TAB a abbreviation editor dialog will be shown. This dialog is used the
-      same way as <xref linkend="add"/>, the only difference is that there is to
+      S+TAB. An abbreviation editor dialog will be shown. This dialog is used the
+      same way as in <xref linkend="add"/> - the only difference is that there are two
       buttons instead of the Ok button, one for adding the abbreviation to the
-      <emphasis>global</emphasis> mode and one for the current mode.
+      <emphasis>global</emphasis> mode and one for adding it to the current mode.
      </para>
     </section>
     <section id="edit"><title>Edit a existing abbreviation</title>
     <para>
       To edit an abbreviation, double click it, an abbreviation editor dialog
-      will appear, Type in the abbreviation and the template according to the 
+      will appear. Type in the abbreviation and the template according to the 
       syntax explained in <xref linkend="WritingTemplates"/>. Press the Ok button. 
-      The abbreviation is not saved yet, you have to press Apply or the Ok button, 
+      The abbreviation is not saved yet, you still have to press Apply or the Ok button, 
       at the button of the optionpane, to save all the changes you made to the 
       abbreviations.
       </para>
@@ -100,10 +100,10 @@
     <section id="editInline"><title>Add a new abbreviation from the buffer</title>
     <para>
       If you want to edit an abbreviation from the buffer, type the abbreviation 
-      and press S+TAB a abbreviation editor dialog will be shown. This dialog is 
-      used the same way as <xref linkend="edit"/>, the only difference is that there is to
+      and press S+TAB.  An abbreviation editor dialog will be shown. This dialog is 
+      used the same way as <xref linkend="edit"/>, the only difference is that there are two
       buttons instead of the ok button, one for adding the abbreviation to the
-      <emphasis>global</emphasis> mode and one for the current mode.
+      <emphasis>global</emphasis> mode and one for adding it to the current mode.
     </para>
     </section>
   </chapter>
@@ -118,7 +118,8 @@
         <para>
           <emphasis role="bold">Variable</emphasis>:
           Variables are the essential part of a template. You write a variable
-          in a template as ${number:value} where number is the TAB index of the 
+          in a template as <literal>${number:value}</literal>
+          where number is the TAB index of the 
           variable, and value is the text that will be inserted in the
           variable when the template is expanded. The value will be inserted
           instead of the variable when the template is expanded.
@@ -141,39 +142,41 @@
           This is a special kind of reference where you can run beanshell code
           on the text of the referred variable. You insert it in the template
           as ${number=code} where number is the TAB index of the variable you
-          are referring to, and code is arbitrary beanshell code. In the code
+          are referring to, and code is arbitrary beanshell code. In the code,
           the beanshell variable <emphasis>s</emphasis> holds the text of the
           referred variable. The functions in the file 
-          <emphasis>.jedit/SuperAbbrevs/abbrevs_functions.bsh</emphasis> is also available in the
-          code.
+          <emphasis>.jedit/SuperAbbrevs/abbrevs_functions.bsh</emphasis> are
+          also available in the code.
         </para>
       </listitem>
       <listitem>
         <para>
         <emphasis role="bold">The end variable</emphasis>: 
-          A special variable is $end, this variable will always be defined for a
+          A special variable is <literal>$end</literal>. 
+          This variable will always be defined for a
           template, and represents the last place the cursor will jump to in the
-          template. If the $end variable is not explicit defined, it will be
-          inserted at the end of the template. When you type in the end variable
+          template. If the <literal>$end</literal> variable is not explicitly defined,
+          it will be inserted at the end of the template. When you type in the end variable
           the template becomes inactive and the TAB key functions as normal.
         </para>
       </listitem>
       <listitem>
         <para>
         <emphasis role="bold">Normal text</emphasis>:
-          Everywhere thing else is just normal text that's inserted and not
+          Everything else is just normal text that's inserted and not
           manipulated by the template engine. 
         </para>
         <para>
-          One thing to be aware of is that there is some character sequences that 
+          One thing to be aware of is that there are some character sequences that 
           have to be escaped.
-        	If you want to write $ in the text you have to escape it as \$. As well
-          \ should be escapes as \\.
+        	If you want to write <literal>$</literal> in the text you have to escape it as 
+        	<literal>\$</literal>. Similarly, <literal>\</literal> should be escaped 
+        	as <literal>\\</literal>.
         </para>
       </listitem>
     </itemizedlist>
     <para>
-    	This example shows you how to make a java field with getter and setters.
+    	This example shows you how to make a Java field with getter and setters.
       The firstUp function makes the first character of the variable uppercase.
     </para>
     <para>
@@ -196,7 +199,7 @@ public void set${1=firstUp(s)}($2 $1){
 ]]></programlisting>
     </para>
     <para>
-    	The best advice I can give you is to look at the already defined,
+    	The best advice I can give you is to look at the already defined
       templates and play around with them.
     </para>
   </chapter>
@@ -207,7 +210,7 @@ public void set${1=firstUp(s)}($2 $1){
     <para>
     	It's possible to generate a template with beanshell code, 
       you embed code into the template in between &lt;# code #&gt;, the template 
-      is then turned inside out, so all the normal text is turn into print 
+      is then turned inside out, so all the normal text is turned into print 
       statements, and the code will be executed. It's possible to print new code
       to the template with &lt;#= code #&gt; where the code have to evaluate to
       a string. All the functions in the files 
@@ -217,8 +220,8 @@ public void set${1=firstUp(s)}($2 $1){
       the selection.
     </para>
     <para>
-    	This example shows how to generate a HTML multiplying table of 5 rows and
-      5 columns, not that usefull but only imagination hold you back.
+    	This example shows how to generate an HTML multiplying table of 5 rows and
+      5 columns - not that useful by itself, but only your imagination holds you back.
     </para>
     <para>
       <programlisting><![CDATA[
