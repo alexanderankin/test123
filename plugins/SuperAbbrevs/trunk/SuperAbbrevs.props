@@ -1,6 +1,6 @@
 plugin.SuperAbbrevsPlugin.name=SuperAbbrevs
 plugin.SuperAbbrevsPlugin.author=Sune Simonsen
-plugin.SuperAbbrevsPlugin.version=2.0
+plugin.SuperAbbrevsPlugin.version=2.0-pre2
 plugin.SuperAbbrevsPlugin.depend.0=jedit 04.03.99.00
 plugin.SuperAbbrevsPlugin.depend.1=jdk 1.5
 plugin.SuperAbbrevsPlugin.activate=defer
@@ -18,9 +18,12 @@ superabbrevs.label=SuperAbbrevs
 
 # Option pane
 #plugin.SuperAbbrevsPlugin.option-pane=superabbrevs
-plugin.SuperAbbrevsPlugin.option-group=superabbrevs.abbreviations \
-									   superabbrevs.variables
+plugin.SuperAbbrevsPlugin.option-group=superabbrevs \
+                                        superabbrevs.abbreviations \
+					superabbrevs.variables
 
+options.superabbrevs.label=Options
+options.superabbrevs.code=new superabbrevs.gui.SuperAbbrevsOptionPane();
 options.superabbrevs.abbreviations.label=Abbreviations
 options.superabbrevs.abbreviations.code=new superabbrevs.gui.AbbrevsOptionPane(view);
 
@@ -30,6 +33,10 @@ options.superabbrevs.variables.code=new superabbrevs.gui.VariablesOptionPane(vie
 options.superabbrevs.mode=Select mode:
 options.superabbrevs.abbreviations.abbrev=Abbreviation
 options.superabbrevs.abbreviations.expand=Expansion
+options.superabbrevs.zencoding.label=Activate Zen Coding (if ZenCoding parser do not match the standard abbrevs are used)
+options.superabbrevs.zencoding=true
+options.superabbrevs.zencoding.modes=html xml jsp php asp
+
 
 options.superabbrevs.variables.variable=Variable
 options.superabbrevs.variables.value=Value
