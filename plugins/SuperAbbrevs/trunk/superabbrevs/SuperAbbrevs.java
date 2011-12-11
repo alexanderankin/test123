@@ -175,7 +175,6 @@ public class SuperAbbrevs {
 				}
 				catch (superabbrevs.zencoding.html.ParseException e)
 				{
-					e.printStackTrace();
 				}
 			}
 

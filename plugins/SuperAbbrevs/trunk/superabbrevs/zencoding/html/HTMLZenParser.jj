@@ -1,5 +1,12 @@
+
+
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(HTMLZenParser)
 /*
- * jEdit - Programmer's Text Editor
+ * ZenCoding JavaCC parser
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -19,34 +26,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-options {
-  STATIC = false;
-}
-
-PARSER_BEGIN(HTMLZenParser)
-
-
 package superabbrevs.zencoding.html;
 
 import superabbrevs.zencoding.ZenParser;
-import java.util.*;
-import java.text.MessageFormat;
 
 public class HTMLZenParser implements ZenParser
 {
-	private int index = 1;
-
-	//{{{ getTabs() method
-	private String getTabs(int indent)
-	{
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0;i<indent;i++)
-		{
-			builder.append('\t');
-		}
-		return builder.toString();
-	} //}}}
-
 	private String pad(int i, int num)
 	{
 		String t = Integer.toString(i);
@@ -56,44 +41,6 @@ public class HTMLZenParser implements ZenParser
 		}
 		return t;
 	}
-
-	//{{{ merge() method
-	private void merge(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end, StringBuilder builder)
-	{
-		if (builder.length() != 0)
-			builder.append('\n');
-		for (int i = 0;i<begin.size();i++)
-		{
-			if (i != 0)
-			{
-				builder.append(getTabs(i));
-			}
-			builder.append(begin.get(i));
-			builder.append("\n");
-		}
-		for (int i = 0;i<middle.size();i++)
-		{
-			builder.append(getTabs(begin.size()));
-			builder.append(middle.get(i));
-			if (i < middle.size() - 1)
-			{
-				builder.append("\n");
-			}
-			else if (!end.isEmpty())
-			{
-				builder.append("\n").append(getTabs(begin.size() - 1));
-			}
-		}
-		for (int i = end.size() - 1;i>= 0;i--)
-		{
-			builder.append(end.get(i));
-			if (i != 0)
-			{
-				builder.append("\n").append(getTabs(i-1));
-			}
-		}
-		middle.clear();
-	} //}}}
 }
 
 PARSER_END(HTMLZenParser)
@@ -148,119 +95,49 @@ TOKEN:
 //{{{ parse() method
 String parse():
 {
-	LinkedList<String> begin = new LinkedList<String>();
-	LinkedList<String> end = new LinkedList<String>();
-	LinkedList<String> middle = new LinkedList<String>();
-	StringBuilder builder = new StringBuilder();
+	Tag tag = new Tag();
 }
 {
-	tag(begin,middle, end, builder)
+	tag(tag)
 	{
-		merge(begin, middle, end, builder);
-		return builder.toString();
+		return tag.toString();
 	}
 } //}}}
 
 //{{{ tag() method
-void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end, StringBuilder b):
+void tag(Tag parent):
 {
-	String temp;
-	boolean finalTag = true;
+	Tag tag;
 	String tagName = "div";
 }
 {
 	[ <IDENTIFIER> { tagName = token.image; } ]
 	{
-		begin.add('<'+tagName);
-		end.add("</"+tagName+'>');
+		tag = new Tag(tagName);
+		parent.addSubtag(tag);
 	}
-	//{{{ #id
+	(
+		id(tag)
+	|
+		cssClass(tag)
+	|
+		attributes(tag)
+	)*
 	[
-		temp = id()
-		{
-			String last = begin.removeLast();
-			begin.add(last + temp);
-		}
-	] //}}}
-	//{{{ .class.class
-	[
-		temp = cssClass()
-		{
-			String last = begin.removeLast();
-			begin.add(last + temp);
-		}
-	] //}}}
-	//{{{ [attributes]
-	[
-		temp = attributes()
-		{
-			String last = begin.removeLast();
-			begin.add(last + temp);
-		}
-	] //}}}
-	[
-		multiplier(begin, middle, end)
-		{
-			finalTag = false;
-		}
+		multiplier(parent, tag)
+	|
+		<GT> tag(tag)
 	]
-	//{{{ >
-	[
-		<GT>
-		{
-			finalTag = false;
-			temp = begin.removeLast();
-			begin.add(temp + ">");
-		}
-		tag(begin, middle, end, b)
-	] //}}}
-	{
-		if (finalTag)
-		{
-			temp = begin.removeLast();
-			middle.add(temp + ">$" + index++ + end.removeLast());
-		}
-	}
 	//{{{ +tag
 	[
 		LOOKAHEAD(2)
 		<PLUS>
-		// {
-		// 	merge(begin, middle, end, b);
-		// }
-		tag(begin, middle, end, b)
+		tag(parent)
 	] //}}}
-	//{{{ *int
-	/*[
-		LOOKAHEAD(<STAR> <INTEGER_LITERAL>)
-		<STAR>
-		<INTEGER_LITERAL>
-		{
-			String mid = middle.getLast();
-			MessageFormat format = new MessageFormat("{0}${1}<{2}");
-			String _s = "";
-			String _e = "";
-			try
-			{
-				Object[] parse = format.parse(mid);
-				_s = parse[0].toString() + '$';
-				_e = '<' + parse[2].toString();
-			}
-			catch (java.text.ParseException e)
-			{
-				e.printStackTrace();
-			}
-			int count = Integer.parseInt(token.image);
-                        for (int i = 0;i<count-1;i++)
-                        {
-                                middle.add(_s + index++ + _e);
-                        }
-		}
-	]*/ //}}}
 } //}}}
 
 //{{{ multiplier() method
-void multiplier(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end):
+void multiplier(Tag parent, Tag current):
 {
 	Token multiplier;
 }
@@ -270,45 +147,50 @@ void multiplier(LinkedList<String> begin, LinkedList<String> middle, LinkedList<
 	|
 		multiplier = <MULTIPLIER>
 	)
+
+	[ <GT> tag(current) ]
 	{
 		String[] split = multiplier.image.split("\\*");
 		int count = Integer.parseInt(split[1]);
-		String _s = begin.removeLast();
-		String _e = end.removeLast();
 		int pad = split[0].length();
 		if (pad != 0)
 		{
-			_s = _s.substring(0, _s.length()-1);
-			for (int i = 0;i<count;i++)
+			String id = pad(1, pad);
+			Tag original = current.clone();
+			current.appendAttribute(current.getLastAttribute(), id);
+			for (int i = 1;i<count;i++)
 			{
-				String id = pad(i+1, pad);
-				middle.add(_s + id + "\">$" + index++ + _e);
+				Tag tag = original.clone();
+				id = pad(i+1, pad);
+				tag.appendAttribute(tag.getLastAttribute(), id);
+				parent.addSubtag(tag);
 			}
 		}
 		else
 		{
-			for (int i = 0;i<count;i++)
+			for (int i = 1;i<count;i++)
 			{
-				middle.add(_s + ">$" + index++ + _e);
+				Tag tag = current.clone();
+				parent.addSubtag(tag);
 			}
 		}
 	}
 } //}}}
 
 //{{{ id() method
-String id():
+void id(Tag tag):
 {
 }
 {
 	<SHARP>
 	<IDENTIFIER>
 	{
-		return " id=\""+token.image+"\"";
+		tag.addAttribute("id", token.image);
 	}
 } //}}}
 
 //{{{ cssClass() method
-String cssClass():
+void cssClass(Tag tag):
 {
 	String ret = "";
 }
@@ -316,56 +198,46 @@ String cssClass():
 	<DOT>
 	<IDENTIFIER>
 	{
-		ret += " " + token.image;
+		tag.appendAttribute("class", token.image, true);
 	}
 	(
+		LOOKAHEAD(<DOT> <IDENTIFIER>)
 		<DOT>
 		<IDENTIFIER>
 		{
-			ret += " " + token.image;
+			tag.appendAttribute("class", token.image, true);
 		}
 	)*
-	{
-		return " class=\""+ret.trim()+"\"";
-	}
 } //}}}
 
-//{{{ cssClass() method
-String attributes():
+//{{{ attributes() method
+void attributes(Tag tag):
 {
-	String ret = "";
-	boolean shouldAddDoublequote;
+	String name;
+	String value;
 }
 {
 	<LBRACKET>
 	(
 		{
-			shouldAddDoublequote = true;
+			value = null;
 		}
-		<IDENTIFIER> { ret += ' ' + token.image + '='; }
+		<IDENTIFIER> { name = token.image; }
 		[
 			<EQUALS>
-			{
-				shouldAddDoublequote = false;
-			}
 			(
-					<IDENTIFIER> { ret += '"' + token.image + '"'; }
+					<IDENTIFIER> { value = token.image; }
 				|
-					<INTEGER_LITERAL> { ret += '"' + token.image + '"'; }
+					<INTEGER_LITERAL> { value = token.image; }
 				|
-					<LITERAL> { ret += token.image; }
+					<LITERAL> { value = token.image.substring(1, token.image.length() -1); }
 			)
 		]
 		{
-			if (shouldAddDoublequote)
-				ret += "\"$"+index++ +"\"";
+			tag.appendAttribute(name, value, true);
 		}
-
 	)*
 	<RBRACKET>
-	{
-		return ret;
-	}
 } //}}}
 
 
