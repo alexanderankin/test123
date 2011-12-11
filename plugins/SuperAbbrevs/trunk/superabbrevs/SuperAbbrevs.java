@@ -2,6 +2,8 @@
 package superabbrevs;
 import java.util.*;
 import java.io.*;
+
+import com.sun.xml.internal.fastinfoset.util.CharArray;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.bsh.*;
 import org.gjt.sp.jedit.bsh.ParseException;
@@ -141,7 +143,8 @@ public class SuperAbbrevs {
 			{
 				String lineText = buffer.getLineText(textArea.getCaretLine()).trim();
 
-				if (!lineText.isEmpty() && Character.isLetter(lineText.charAt(0))) {
+				if (!lineText.isEmpty() && (Character.isLetter(lineText.charAt(0))
+					|| lineText.charAt(0) == '.' || lineText.charAt(0) == '#')) {
 					abbrev = lineText;
 					for (int i = 0;i<abbrev.length();i++)
 					{
