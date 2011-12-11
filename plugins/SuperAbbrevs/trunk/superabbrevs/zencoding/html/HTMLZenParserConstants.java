@@ -19,19 +19,19 @@ public interface HTMLZenParserConstants {
   /** RegularExpression Id. */
   int PLUS = 8;
   /** RegularExpression Id. */
-  int STAR = 9;
+  int EQUALS = 9;
   /** RegularExpression Id. */
-  int EQUALS = 10;
+  int LBRACKET = 10;
   /** RegularExpression Id. */
-  int LBRACKET = 11;
+  int RBRACKET = 11;
   /** RegularExpression Id. */
-  int RBRACKET = 12;
+  int INTEGER_LITERAL = 12;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 13;
+  int IDENTIFIER = 13;
   /** RegularExpression Id. */
-  int IDENTIFIER = 14;
+  int ID_MULTIPLIER = 14;
   /** RegularExpression Id. */
-  int ID_MULTIPLIER = 15;
+  int MULTIPLIER = 15;
   /** RegularExpression Id. */
   int LITERAL = 16;
   /** RegularExpression Id. */
@@ -53,13 +53,13 @@ public interface HTMLZenParserConstants {
     "\".\"",
     "\">\"",
     "\"+\"",
-    "\"*\"",
     "\"=\"",
     "\"[\"",
     "\"]\"",
     "<INTEGER_LITERAL>",
     "<IDENTIFIER>",
     "<ID_MULTIPLIER>",
+    "<MULTIPLIER>",
     "<LITERAL>",
     "<LETTER>",
     "<DIGIT>",

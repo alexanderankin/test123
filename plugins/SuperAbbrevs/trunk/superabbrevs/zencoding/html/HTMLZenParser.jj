@@ -36,6 +36,7 @@ public class HTMLZenParser implements ZenParser
 {
 	private int index = 1;
 
+	//{{{ getTabs() method
 	private String getTabs(int indent)
 	{
 		StringBuilder builder = new StringBuilder();
@@ -44,73 +45,23 @@ public class HTMLZenParser implements ZenParser
 			builder.append('\t');
 		}
 		return builder.toString();
-	}
-}
+	} //}}}
 
-
-
-PARSER_END(HTMLZenParser)
-
-//{{{ Tokens
-SKIP:
-{
-    " "
-  | "\t"
-  | "\n"
-  | "\r"
-}
-
-TOKEN:
-{
-	<SHARP: "#">
-|
-	<DOT: ".">
-|
-	<GT: ">">
-|
-	<PLUS: "+">
-|
-	<STAR: "*">
-|
-	<EQUALS: "=">
-|
-	<LBRACKET: "[">
-|
-	<RBRACKET: "]">
-}
-
-TOKEN:
-{
-	<INTEGER_LITERAL: (<DIGIT>)+ >
-|
-	<IDENTIFIER:(<LETTER>)+>
-|
-	<ID_MULTIPLIER: "$*" <INTEGER_LITERAL>>
-|
-	<LITERAL:
-	      "\""
-	      (   (~["\"","\\","\n","\r"]) | ("\\" ~[] ) )*
-	      "\""
-	  >
-|
-	<#LETTER: ["A"-"Z","_","-","a"-"z"]>
-|
-	<#DIGIT: ["0"-"9"]>
-} //}}}
-
-
-//{{{ parse() method
-String parse():
-{
-	LinkedList<String> begin = new LinkedList<String>();
-	LinkedList<String> end = new LinkedList<String>();
-	LinkedList<String> middle = new LinkedList<String>();
-}
-{
-	tag(begin,middle, end)
-
+	private String pad(int i, int num)
 	{
-		StringBuilder builder = new StringBuilder();
+		String t = Integer.toString(i);
+		while (t.length() < num)
+		{
+			t = '0' + t;
+		}
+		return t;
+	}
+
+	//{{{ merge() method
+	private void merge(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end, StringBuilder builder)
+	{
+		if (builder.length() != 0)
+			builder.append('\n');
 		for (int i = 0;i<begin.size();i++)
 		{
 			if (i != 0)
@@ -141,22 +92,87 @@ String parse():
 				builder.append("\n").append(getTabs(i-1));
 			}
 		}
+		middle.clear();
+	} //}}}
+}
+
+PARSER_END(HTMLZenParser)
+
+//{{{ Tokens
+SKIP:
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+}
+
+TOKEN:
+{
+	<SHARP: "#">
+|
+	<DOT: ".">
+|
+	<GT: ">">
+|
+	<PLUS: "+">
+|
+	<EQUALS: "=">
+|
+	<LBRACKET: "[">
+|
+	<RBRACKET: "]">
+}
+
+TOKEN:
+{
+	<INTEGER_LITERAL: (<DIGIT>)+ >
+|
+	<IDENTIFIER:(<LETTER>)+>
+|
+	<ID_MULTIPLIER: ("$")+ "*" <INTEGER_LITERAL>>
+|
+	<MULTIPLIER: "*" <INTEGER_LITERAL>>
+|
+	<LITERAL:
+	      "\""
+	      (   (~["\"","\\","\n","\r"]) | ("\\" ~[] ) )*
+	      "\""
+	  >
+|
+	<#LETTER: ["A"-"Z","_","-","a"-"z"]>
+|
+	<#DIGIT: ["0"-"9"]>
+} //}}}
+
+//{{{ parse() method
+String parse():
+{
+	LinkedList<String> begin = new LinkedList<String>();
+	LinkedList<String> end = new LinkedList<String>();
+	LinkedList<String> middle = new LinkedList<String>();
+	StringBuilder builder = new StringBuilder();
+}
+{
+	tag(begin,middle, end, builder)
+	{
+		merge(begin, middle, end, builder);
 		return builder.toString();
 	}
 } //}}}
 
-
 //{{{ tag() method
-void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end):
+void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end, StringBuilder b):
 {
 	String temp;
 	boolean finalTag = true;
+	String tagName = "div";
 }
 {
-	<IDENTIFIER>
+	[ <IDENTIFIER> { tagName = token.image; } ]
 	{
-		begin.add("<"+token.image);
-		end.add("</"+token.image+">");
+		begin.add('<'+tagName);
+		end.add("</"+tagName+'>');
 	}
 	//{{{ #id
 	[
@@ -165,20 +181,6 @@ void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String>
 			String last = begin.removeLast();
 			begin.add(last + temp);
 		}
-		[
-			<ID_MULTIPLIER>
-			{
-				finalTag = false;
-				int count = Integer.parseInt(token.image.substring(2));
-				String _s = begin.removeLast();
-				_s = _s.substring(0, _s.length()-1);
-				String _e = end.removeLast();
-				for (int i = 0;i<count;i++)
-				{
-					middle.add(_s + i + "\">$" + index++ + _e);
-				}
-			}
-		]
 	] //}}}
 	//{{{ .class.class
 	[
@@ -187,26 +189,19 @@ void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String>
 			String last = begin.removeLast();
 			begin.add(last + temp);
 		}
-		[
-			<ID_MULTIPLIER>
-			{
-				finalTag = false;
-				int count = Integer.parseInt(token.image.substring(2));
-				String _s = begin.removeLast();
-				_s = _s.substring(0, _s.length()-1);
-				String _e = end.removeLast();
-				for (int i = 0;i<count;i++)
-				{
-					middle.add(_s + i + "\">$" + index++ + _e);
-				}
-			}
-		]
 	] //}}}
+	//{{{ [attributes]
 	[
 		temp = attributes()
 		{
 			String last = begin.removeLast();
 			begin.add(last + temp);
+		}
+	] //}}}
+	[
+		multiplier(begin, middle, end)
+		{
+			finalTag = false;
 		}
 	]
 	//{{{ >
@@ -217,7 +212,7 @@ void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String>
 			temp = begin.removeLast();
 			begin.add(temp + ">");
 		}
-		tag(begin, middle, end)
+		tag(begin, middle, end, b)
 	] //}}}
 	{
 		if (finalTag)
@@ -230,10 +225,13 @@ void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String>
 	[
 		LOOKAHEAD(2)
 		<PLUS>
-		tag(begin, middle, end)
+		// {
+		// 	merge(begin, middle, end, b);
+		// }
+		tag(begin, middle, end, b)
 	] //}}}
 	//{{{ *int
-	[
+	/*[
 		LOOKAHEAD(<STAR> <INTEGER_LITERAL>)
 		<STAR>
 		<INTEGER_LITERAL>
@@ -258,7 +256,43 @@ void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String>
                                 middle.add(_s + index++ + _e);
                         }
 		}
-	] //}}}
+	]*/ //}}}
+} //}}}
+
+//{{{ multiplier() method
+void multiplier(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end):
+{
+	Token multiplier;
+}
+{
+	(
+		multiplier = <ID_MULTIPLIER>
+	|
+		multiplier = <MULTIPLIER>
+	)
+	{
+		String[] split = multiplier.image.split("\\*");
+		int count = Integer.parseInt(split[1]);
+		String _s = begin.removeLast();
+		String _e = end.removeLast();
+		int pad = split[0].length();
+		if (pad != 0)
+		{
+			_s = _s.substring(0, _s.length()-1);
+			for (int i = 0;i<count;i++)
+			{
+				String id = pad(i+1, pad);
+				middle.add(_s + id + "\">$" + index++ + _e);
+			}
+		}
+		else
+		{
+			for (int i = 0;i<count;i++)
+			{
+				middle.add(_s + ">$" + index++ + _e);
+			}
+		}
+	}
 } //}}}
 
 //{{{ id() method

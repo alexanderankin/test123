@@ -8,6 +8,7 @@ import java.text.MessageFormat;
 public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
         private int index = 1;
 
+        //{{{ getTabs() method
         private String getTabs(int indent)
         {
                 StringBuilder builder = new StringBuilder();
@@ -16,18 +17,23 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
                         builder.append('\u005ct');
                 }
                 return builder.toString();
+        } //}}}
+
+        private String pad(int i, int num)
+        {
+                String t = Integer.toString(i);
+                while (t.length() < num)
+                {
+                        t = '0' + t;
+                }
+                return t;
         }
 
-  //}}}
-
-
-//{{{ parse() method
-  final public String parse() throws ParseException {
-        LinkedList<String> begin = new LinkedList<String>();
-        LinkedList<String> end = new LinkedList<String>();
-        LinkedList<String> middle = new LinkedList<String>();
-    tag(begin,middle, end);
-                StringBuilder builder = new StringBuilder();
+        //{{{ merge() method
+        private void merge(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end, StringBuilder builder)
+        {
+                if (builder.length() != 0)
+                        builder.append('\u005cn');
                 for (int i = 0;i<begin.size();i++)
                 {
                         if (i != 0)
@@ -58,42 +64,46 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
                                 builder.append("\u005cn").append(getTabs(i-1));
                         }
                 }
+                middle.clear();
+        }
+
+  //}}}
+
+//{{{ parse() method
+  final public String parse() throws ParseException {
+        LinkedList<String> begin = new LinkedList<String>();
+        LinkedList<String> end = new LinkedList<String>();
+        LinkedList<String> middle = new LinkedList<String>();
+        StringBuilder builder = new StringBuilder();
+    tag(begin,middle, end, builder);
+                merge(begin, middle, end, builder);
                 {if (true) return builder.toString();}
     throw new Error("Missing return statement in function");
   }
 
   //}}}
 
-
 //{{{ tag() method
-  final public void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end) throws ParseException {
+  final public void tag(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end, StringBuilder b) throws ParseException {
         String temp;
         boolean finalTag = true;
-    jj_consume_token(IDENTIFIER);
-                begin.add("<"+token.image);
-                end.add("</"+token.image+">");
+        String tagName = "div";
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+                         tagName = token.image;
+      break;
+    default:
+      jj_la1[0] = jj_gen;
+      ;
+    }
+                begin.add('<'+tagName);
+                end.add("</"+tagName+'>');
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SHARP:
       temp = id();
                         String last = begin.removeLast();
                         begin.add(last + temp);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ID_MULTIPLIER:
-        jj_consume_token(ID_MULTIPLIER);
-                                finalTag = false;
-                                int count = Integer.parseInt(token.image.substring(2));
-                                String _s = begin.removeLast();
-                                _s = _s.substring(0, _s.length()-1);
-                                String _e = end.removeLast();
-                                for (int i = 0;i<count;i++)
-                                {
-                                        middle.add(_s + i + "\u005c">$" + index++ + _e);
-                                }
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        ;
-      }
       break;
     default:
       jj_la1[1] = jj_gen;
@@ -104,26 +114,9 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
       temp = cssClass();
                         String last = begin.removeLast();
                         begin.add(last + temp);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ID_MULTIPLIER:
-        jj_consume_token(ID_MULTIPLIER);
-                                finalTag = false;
-                                int count = Integer.parseInt(token.image.substring(2));
-                                String _s = begin.removeLast();
-                                _s = _s.substring(0, _s.length()-1);
-                                String _e = end.removeLast();
-                                for (int i = 0;i<count;i++)
-                                {
-                                        middle.add(_s + i + "\u005c">$" + index++ + _e);
-                                }
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        ;
-      }
       break;
     default:
-      jj_la1[3] = jj_gen;
+      jj_la1[2] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -131,6 +124,16 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
       temp = attributes();
                         String last = begin.removeLast();
                         begin.add(last + temp);
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      ;
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ID_MULTIPLIER:
+    case MULTIPLIER:
+      multiplier(begin, middle, end);
+                        finalTag = false;
       break;
     default:
       jj_la1[4] = jj_gen;
@@ -142,7 +145,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
                         finalTag = false;
                         temp = begin.removeLast();
                         begin.add(temp + ">");
-      tag(begin, middle, end);
+      tag(begin, middle, end, b);
       break;
     default:
       jj_la1[5] = jj_gen;
@@ -155,35 +158,50 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
                 }
     if (jj_2_1(2)) {
       jj_consume_token(PLUS);
-      tag(begin, middle, end);
+      tag(begin, middle, end, b);
     } else {
       ;
     }
-    if (jj_2_2(2147483647)) {
-      jj_consume_token(STAR);
-      jj_consume_token(INTEGER_LITERAL);
-                        String mid = middle.getLast();
-                        MessageFormat format = new MessageFormat("{0}${1}<{2}");
-                        String _s = "";
-                        String _e = "";
-                        try
-                        {
-                                Object[] parse = format.parse(mid);
-                                _s = parse[0].toString() + '$';
-                                _e = '<' + parse[2].toString();
-                        }
-                        catch (java.text.ParseException e)
-                        {
-                                e.printStackTrace();
-                        }
-                        int count = Integer.parseInt(token.image);
-                        for (int i = 0;i<count-1;i++)
-                        {
-                                middle.add(_s + index++ + _e);
-                        }
-    } else {
-      ;
+  }
+
+  //}}}
+
+//{{{ multiplier() method
+  final public void multiplier(LinkedList<String> begin, LinkedList<String> middle, LinkedList<String> end) throws ParseException {
+        Token multiplier;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ID_MULTIPLIER:
+      multiplier = jj_consume_token(ID_MULTIPLIER);
+      break;
+    case MULTIPLIER:
+      multiplier = jj_consume_token(MULTIPLIER);
+      break;
+    default:
+      jj_la1[6] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+                String[] split = multiplier.image.split("\u005c\u005c*");
+                int count = Integer.parseInt(split[1]);
+                String _s = begin.removeLast();
+                String _e = end.removeLast();
+                int pad = split[0].length();
+                if (pad != 0)
+                {
+                        _s = _s.substring(0, _s.length()-1);
+                        for (int i = 0;i<count;i++)
+                        {
+                                String id = pad(i+1, pad);
+                                middle.add(_s + id + "\u005c">$" + index++ + _e);
+                        }
+                }
+                else
+                {
+                        for (int i = 0;i<count;i++)
+                        {
+                                middle.add(_s + ">$" + index++ + _e);
+                        }
+                }
   }
 
   //}}}
@@ -211,7 +229,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
         ;
         break;
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[7] = jj_gen;
         break label_1;
       }
       jj_consume_token(DOT);
@@ -236,7 +254,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
         ;
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[8] = jj_gen;
         break label_2;
       }
                         shouldAddDoublequote = true;
@@ -260,13 +278,13 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
                                                     ret += token.image;
           break;
         default:
-          jj_la1[8] = jj_gen;
+          jj_la1[9] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         ;
       }
                         if (shouldAddDoublequote)
@@ -284,11 +302,43 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     finally { jj_save(0, xla); }
   }
 
-  private boolean jj_2_2(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_2(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(1, xla); }
+  private boolean jj_3R_4() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_4()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_5()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_6()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_7()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_8()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_9()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3_1()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_6() {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_9() {
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_10() {
+    if (jj_scan_token(SHARP)) return true;
+    return false;
   }
 
   private boolean jj_3_1() {
@@ -297,14 +347,38 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     return false;
   }
 
-  private boolean jj_3R_3() {
-    if (jj_scan_token(IDENTIFIER)) return true;
+  private boolean jj_3R_5() {
+    if (jj_3R_10()) return true;
     return false;
   }
 
-  private boolean jj_3_2() {
-    if (jj_scan_token(STAR)) return true;
-    if (jj_scan_token(INTEGER_LITERAL)) return true;
+  private boolean jj_3R_8() {
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_12() {
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_11() {
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(14)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(15)) return true;
+    }
     return false;
   }
 
@@ -319,15 +393,15 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[10];
+  final private int[] jj_la1 = new int[11];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x8000,0x20,0x8000,0x40,0x800,0x80,0x40,0x4000,0x16000,0x400,};
+      jj_la1_0 = new int[] {0x2000,0x20,0x40,0x400,0xc000,0x80,0xc000,0x40,0x2000,0x13000,0x200,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[2];
+  final private JJCalls[] jj_2_rtns = new JJCalls[1];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -342,7 +416,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -357,7 +431,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -368,7 +442,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -379,7 +453,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -389,7 +463,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -399,7 +473,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -516,7 +590,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 11; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -552,7 +626,7 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 1; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -560,7 +634,6 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
           jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
           switch (i) {
             case 0: jj_3_1(); break;
-            case 1: jj_3_2(); break;
           }
         }
         p = p.next;
@@ -586,4 +659,5 @@ public class HTMLZenParser implements ZenParser, HTMLZenParserConstants {
     JJCalls next;
   }
 
+          //}}}
 }
