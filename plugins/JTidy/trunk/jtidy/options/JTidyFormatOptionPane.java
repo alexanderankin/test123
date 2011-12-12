@@ -40,7 +40,7 @@ public class JTidyFormatOptionPane
 
 
     public JTidyFormatOptionPane() {
-        super("jtidy-format");
+        super("jtidy.format");
     }
 }
 

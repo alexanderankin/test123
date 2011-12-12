@@ -35,7 +35,7 @@ public class JTidyNewTagsOptionPane
 
 
     public JTidyNewTagsOptionPane() {
-        super("jtidy-new-tags");
+        super("jtidy.new-tags");
     }
 }
 

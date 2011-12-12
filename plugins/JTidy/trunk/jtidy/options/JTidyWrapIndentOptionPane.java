@@ -42,7 +42,7 @@ public class JTidyWrapIndentOptionPane
 
 
     public JTidyWrapIndentOptionPane() {
-        super("jtidy-wrap-indent");
+        super("jtidy.wrap-indent");
     }
 }
 

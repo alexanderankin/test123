@@ -40,7 +40,7 @@ public class JTidyCleanOptionPane
 
 
     public JTidyCleanOptionPane() {
-        super("jtidy-clean");
+        super("jtidy.clean");
     }
 }
 
