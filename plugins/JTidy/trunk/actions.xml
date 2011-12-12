@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="jtidy-generate-config-file">
+        <CODE>
+            jtidy.TidyConfig.generateTidyConfig(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jtidy-tidy-buffer">
+        <CODE>
+            jtidy.TidyBuffer.tidyBuffer(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>

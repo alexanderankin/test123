@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+
+<!-- JTidy plugin user's guide -->
+<!-- (c) 2002 Andre Kaplan -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+
+<bookinfo>
+    <title>JTidy plugin</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Andr&eacute;</firstname>
+            <surname>Kaplan</surname>
+        </author>
+        <author>
+            <firstname>Dale</firstname>
+            <surname>Anson</surname>
+        </author>
+    </authorgroup>
+
+    <legalnotice>
+        <title>Legal Notice</title>
+
+        <para>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        <quote>Invariant Sections</quote>,
+        <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>,
+        each as defined in the license.
+        A copy of the license can be found in the file
+        <filename>COPYING.DOC.txt</filename> included with jEdit.
+        </para>
+    </legalnotice>
+</bookinfo>
+
+
+<chapter id="presentation">
+    <title>Presentation</title>
+
+    <para>The JTidy plugin integrates the reference JTidy utility
+    (r938 version) which will help you to clean and correct HTML files.
+    </para>
+
+    <para>
+    The <ulink url="http://www.w3.org/People/Raggett/tidy/">Tidy Home Page</ulink> will give
+    you an overview of Tidy's numerous features.
+    </para>
+
+    <para>
+    JTidy requires:
+    </para>
+    <itemizedlist>
+        <listitem>JDK 1.5</listitem>
+        <listitem>jEdit 4.3</listitem>
+        <listitem>ErrorList 1.9</listitem>
+        <listitem>XercesPlugin 2.9.1</listitem>
+        <listitem>Beauty 0.7.0</listitem>
+    </itemizedlist>
+</chapter>
+
+
+<chapter id="tidy">
+    <title>Tidy</title>
+
+    <simplesect id="options">
+        <title>Options</title>
+
+        <para>
+        All Tidy options are available from
+        <guimenu>Utilities&gt;</guimenu>
+        <guimenuitem>Global Options...&gt;</guimenuitem>
+        <guimenu>Plugin Options&gt;</guimenu>
+        <guimenuitem>JTidy</guimenuitem>.
+        As Tidy provides numerous options, they have been gathered into different
+        categories:
+        </para>
+
+        <itemizedlist>
+            <listitem>General</listitem>
+            <listitem>Wrap/Indent</listitem>
+            <listitem>Format</listitem>
+            <listitem>Clean</listitem>
+            <listitem>XML</listitem>
+            <listitem>New Tags</listitem>
+        </itemizedlist>
+        
+        <para>
+        Most options have good help right in the options dialog, so they shouldn't
+        need explanation here. One item of note is the option for "No generated output".
+        If this is selected, but you use the Beauty plugin to beautify html files
+        with JTidy, this option is ignored.
+        </para>
+
+        <para>
+        Once you have set all your options you can either:
+        </para>
+
+        <itemizedlist>
+            <listitem>Tidy the current HTML buffer;</listitem>
+
+            <listitem>Generate a configuration file reflecting the current configuration: Tidy
+            is primarily a command-line tool and this file could be used to automate
+            &quot;tidification&quot;.
+            </listitem>
+        </itemizedlist>
+
+    </simplesect>
+
+    <simplesect id="error_handling">
+        <title>Error handling</title>
+
+        <para>
+        When Tidy encounters an incorrect HTML construct, it throws either a warning or
+        an error.
+        Contrary to warnings, Tidy errors must be manually corrected since Tidy errors
+        cause Tidy to fail.
+        </para>
+
+        <para>
+        These messages are captured and analyzed and then sent to the ErrorList
+        plugin.
+        This enables ErrorList to highlight warnings and errors in the original HTML
+        buffer and to give a convenient access to the origin of the warnings/errors.
+        </para>
+
+        <para>
+        All messages except warnings are sent to the Activity Log.
+        </para>
+
+        <tip>
+            <para>
+            When a file has a few errors among many warnings, it can be useful to
+            click the button in ErrorList to see only the errors.
+            </para>
+        </tip>
+
+    </simplesect>
+
+</chapter>
+
+
+<chapter id="license">
+    <title>License</title>
+
+    <para>
+    The source code is distributed under the GPL.
+    Please see
+    <ulink url="http://www.fsf.org/copyleft/gpl.html">
+        http://www.fsf.org/copyleft/gpl.html
+    </ulink>
+    </para>
+</chapter>
+
+
+<chapter id="credits">
+    <title>Credits</title>
+
+    <itemizedlist>
+        <listitem>
+        The Tidy utility is written by Dave Raggett at
+        <ulink url="http://www.w3.org/People/Raggett/tidy/"
+        >http://www.w3.org/People/Raggett/tidy/</ulink>.
+        </listitem>
+
+        <listitem>The java port of HTML tidy utility was developed and kept up-to-date
+        for a long time by Andy Quick.
+        </listitem>
+
+        <listitem>Sami Lempinen and the JTidy team have taken over JTidy developments.
+        JTidy is now hosted at
+        <ulink url="http://lempinen.net/sami/jtidy/">http://lempinen.net/sami/jtidy/</ulink>.
+        Further developments are made on SourceForge:
+        <ulink url="http://sourceforge.net/projects/jtidy/">http://sourceforge.net/projects/jtidy/</ulink>.
+        </listitem>
+    </itemizedlist>
+
+    </chapter>
+
+
+<chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>
+    The preferred way to send bug reports is to use the
+    Sourceforge Bug Tracker at
+    <ulink url="http://sourceforge.net/bugs/?group_id=588">
+        http://sourceforge.net/bugs/?group_id=588
+    </ulink>
+    </para>
+
+    <para>You can also write to:</para>
+    <itemizedlist>
+        <listitem>
+            or jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>;
+        </listitem>
+
+        <listitem>
+            or jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>.
+        </listitem>
+    </itemizedlist>
+</chapter>
+
+
+</book>
+

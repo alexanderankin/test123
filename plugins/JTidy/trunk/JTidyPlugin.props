@@ -1,0 +1,531 @@
+# JTidy plugin properties
+
+plugin.jtidy.JTidyPlugin.name=JTidy
+plugin.jtidy.JTidyPlugin.author=Andre Kaplan
+plugin.jtidy.JTidyPlugin.version=1.1
+plugin.jtidy.JTidyPlugin.docs=index.html
+plugin.jtidy.JTidyPlugin.activate=defer
+
+plugin.jtidy.JTidyPlugin.depend.0=jdk 1.5
+plugin.jtidy.JTidyPlugin.depend.1=jedit 04.03.99.00
+plugin.jtidy.JTidyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.jtidy.JTidyPlugin.depend.3=plugin xerces.XercesPlugin 2.9.1
+plugin.jtidy.JTidyPlugin.depend.4=plugin beauty.BeautyPlugin 0.7.0
+plugin.jtidy.JTidyPlugin.jars=jtidy-r938.jar
+
+# for plugin menu
+jtidy.label=JTidy
+plugin.jtidy.JTidyPlugin.menu=\
+    jtidy-tidy-buffer \
+    jtidy-generate-config-file
+
+jtidy-tidy-buffer.label=Tidy current buffer
+jtidy-generate-config-file.label=Generate Tidy config file
+
+# for Beauty plugin integration
+mode.html.beauty.beautifier.JTidy
+
+# Option panes labels
+options.jtidy.label=JTidy
+
+plugin.jtidy.JTidyPlugin.option-group=jtidy.general jtidy.wrap-indent jtidy.format jtidy.clean jtidy.new-tags jtidy.xml
+
+options.jtidy.general.title=General
+options.jtidy.general.label=General
+options.jtidy.general.code=new jtidy.options.JTidyGeneralOptionPane();
+
+options.jtidy.wrap-indent.title=Wrap/Indent
+options.jtidy.wrap-indent.label=Wrap/Indent
+options.jtidy.wrap-indent.code=new jtidy.options.JTidyWrapIndentOptionPane();
+
+options.jtidy.format.title=Format
+options.jtidy.format.label=Format
+options.jtidy.format.code=new jtidy.options.JTidyFormatOptionPane();
+
+options.jtidy.clean.title=Clean
+options.jtidy.clean.label=Clean
+options.jtidy.clean.code=new jtidy.options.JTidyCleanOptionPane();
+
+options.jtidy.new-tags.title=New tags
+options.jtidy.new-tags.label=New tags
+options.jtidy.new-tags.code=new jtidy.options.JTidyNewTagsOptionPane();
+
+options.jtidy.xml.title=XML
+options.jtidy.xml.label=XML
+options.jtidy.xml.code=new jtidy.options.JTidyXmlOptionPane();
+
+# No help message found
+options.jtidy.no-help.found.text=No help available
+
+# Custom options
+options.jtidy.no-output=No generated output
+jtidy.no-output=false
+options.jtidy.no-output.text=\
+If set, no output will be generated. This is useful when you want to correct \
+an HTML file before tidying it. Not set by default.
+
+# Tidy options labels
+options.jtidy.tidy-mark=Tidy signature
+options.jtidy.markup=Markup
+options.jtidy.wrap=Wrap:\ 
+options.jtidy.wrap-attributes=Wrap attributes
+options.jtidy.wrap-script-literals=Wrap script literals
+options.jtidy.wrap-asp=Wrap ASP
+options.jtidy.wrap-jste=Wrap JSTE
+options.jtidy.wrap-php=Wrap PHP
+options.jtidy.literal-attributes=Literal Attributes
+options.jtidy.tab-size=Tab size:\ 
+options.jtidy.indent=Indent:\ 
+options.jtidy.indent-spaces=Indent spaces:\ 
+options.jtidy.indent-attributes=Indent attributes
+options.jtidy.hide-endtags=Hide end tags
+options.jtidy.input-xml=XML input
+options.jtidy.output-xml=XML output
+options.jtidy.add-xml-pi=Add XML PI
+options.jtidy.add-xml-decl=Add XML decl
+options.jtidy.output-xhtml=XHTML output
+options.jtidy.doctype=Doctype:\ 
+options.jtidy.doctype-fpi=Formal Public Identifier (fpi):\ 
+options.jtidy.char-encoding=Encoding:\ 
+options.jtidy.numeric-entities=Numeric Entities
+options.jtidy.quote-marks=Quote marks
+options.jtidy.quote-nbsp=Quote non-breaking spaces
+options.jtidy.quote-ampersand=Quote ampersands
+options.jtidy.assume-xml-procins=Assume XML PI
+options.jtidy.fix-backslash=Fix backslashes
+options.jtidy.break-before-br=Break before <BR>
+options.jtidy.uppercase-tags=Uppercase tags
+options.jtidy.uppercase-attributes=Uppercase attributes
+options.jtidy.word-2000=Word 2000
+options.jtidy.clean=Clean
+options.jtidy.logical-emphasis=Logical emphasis
+options.jtidy.drop-empty-paras=Drop empty paragraphs
+options.jtidy.drop-font-tags=Drop <FONT> tags
+options.jtidy.enclose-text=Enclose text in <P>
+options.jtidy.enclose-block-text=Enclose block text
+options.jtidy.fix-bad-comments=Fix ColdFusion comments
+options.jtidy.add-xml-space=Add xml:space="preserve"
+options.jtidy.alt-text=Default ALT text:\ 
+options.jtidy.write-back=Write back files with tidied content
+options.jtidy.keep-time=Keep last modified time
+# options.jtidy.error-file=Output to error file
+options.jtidy.show-warnings=Show warnings
+options.jtidy.quiet=Quiet output
+options.jtidy.gnu-emacs=GNU Emacs error reporting style
+# options.jtidy.split=Split into slides
+options.jtidy.new-empty-tags=New empty tags:\ 
+options.jtidy.new-inline-tags=New inline tags:\ 
+options.jtidy.new-blocklevel-tags=New blocklevel tags:\ 
+options.jtidy.new-pre-tags=New pre tags:\ 
+
+# Tidy options help texts
+options.jtidy.tidy-mark.text=\
+If set (the default) Tidy will add a meta element to the document \
+head to indicate that the document has been tidied. To suppress this, set \
+tidy-mark to no. Tidy won't add a meta element if one is already present.
+
+options.jtidy.markup.text=\
+Determines whether Tidy generates a pretty printed version of the markup.\
+Note that Tidy won't generate a pretty printed version if it finds unknown \
+tags, or missing trailing quotes on attribute values, or missing trailing \
+'>' on tags. Set by default.
+
+options.jtidy.wrap.text=\
+Sets the right margin for line wrapping. Tidy tries to wrap lines so that \
+they do not exceed this length. The default is 66. Set wrap to zero if \
+you want to disable line wrapping.
+
+options.jtidy.wrap-attributes.text=\
+If set, attribute values may be wrapped across lines for easier \
+editing. The default is no. This option can be set independently of \
+wrap-scriptlets.
+
+options.jtidy.wrap-script-literals.text=\
+If set, this allows lines to be wrapped within string literals \
+that appear in script attributes. Not set by default. \
+The example shows how Tidy wraps a really really long script string \
+literal inserting a backslash character before the linebreak:\n\
+<a href="somewhere.html" onmouseover="document.status='...some \\\n\
+really, really, really, really, really, really, really, really, \\\n\
+really, really long string..';">test</a>
+
+options.jtidy.wrap-asp.text=\
+If unset, this prevents lines from being wrapped within ASP pseudo \
+elements, which look like: <% ... %>. Set by default.
+
+options.jtidy.wrap-jste.text=\
+If unset, this prevents lines from being wrapped within JSTE pseudo \
+elements, which look like: <# ... #>. Set by default.
+
+options.jtidy.wrap-php.text=\
+If unset, this prevents lines from being wrapped within PHP pseudo \
+elements. Set by default.
+
+options.jtidy.literal-attributes.text=\
+If set, this ensures that whitespace characters within attribute \
+values are passed through unchanged. Not set by default.
+
+options.jtidy.tab-size.text=\
+Sets the number of columns between successive tab stops. \
+The default is 4. It is used to map tabs to spaces when reading files. \
+Tidy never outputs files with tabs.
+
+options.jtidy.indent.text=\
+If set to yes Tidy will indent block-level tags. The default is no. If \
+set to auto Tidy will decide whether or not to indent the content of tags \
+such as title, h1-h6, li, td, th, or p depending on whether or not the \
+content includes a block-level element. You are advised to avoid setting \
+indent to yes as this can expose layout bugs in some browsers.
+#jtidy.indent.0=no
+#jtidy.indent.1=yes
+#jtidy.indent.2=auto
+options.jtidy.indent.0.text=\
+No indentation (default)
+options.jtidy.indent.1.text=\
+Tidy will indent block-level tags. You are advised to avoid setting \
+indent to yes as this can expose layout bugs in some browsers.
+options.jtidy.indent.2.text=\
+Tidy will decide whether or not to indent the content of tags \
+such as title, h1-h6, li, td, th, or p depending on whether or not the \
+content includes a block-level element.
+
+options.jtidy.indent-spaces.text=\
+Sets the number of spaces to indent content when indentation is enabled. \
+The default is 2 spaces.
+
+options.jtidy.indent-attributes.text=\
+If set to yes, each attribute will begin on a new line. \
+Not set by default.
+
+options.jtidy.hide-endtags.text=\
+If set to yes, optional end-tags will be omitted when generating the \
+pretty printed markup. This option is ignored if you are outputting to \
+XML. Not set by default.
+
+options.jtidy.input-xml.text=\
+If set, Tidy will use the XML parser rather than the error \
+correcting HTML parser. Not set by default.
+
+options.jtidy.output-xml.text=\
+If set, Tidy will use generate the pretty printed output writing \
+it as well-formed XML. Any entities not defined in XML 1.0 will be \
+written as numeric entities to allow them to be parsed by an XML parser. \
+The tags and attributes will be in the case used in the input document, \
+regardless of other options. Not set by default.
+
+options.jtidy.add-xml-pi.text=\
+If set, Tidy will add the XML declaration when outputting XML or \
+XHTML. Not set by default. Note that if the input document includes an \
+<?xml?> declaration then it will appear in the output independent of the \
+value of this option.
+
+options.jtidy.add-xml-decl.text=\
+If set, Tidy will add the XML declaration when outputting XML or \
+XHTML. Not set by default. Note that if the input document includes an \
+<?xml?> declaration then it will appear in the output independent of the \
+value of this option.
+
+options.jtidy.output-xhtml.text=\
+If set, Tidy will generate the pretty printed output writing it as \
+extensible HTML. Not set by default. This option causes Tidy to set the \
+doctype and default namespace as appropriate to XHTML. If a doctype or \
+namespace is given they will checked for consistency with the content of \
+the document. In the case of an inconsistency, the corrected values will \
+appear in the output. For XHTML, entities can be written as named or \
+numeric entities according to the value of the "numeric-entities" \
+property. The tags and attributes will be output in the case used in the \
+input document, regardless of other options.
+
+options.jtidy.doctype.text=\
+This property controls the doctype declaration generated by Tidy. If set \
+to omit the output file won't contain a doctype declaration. If set to \
+auto (the default) Tidy will use an educated guess based upon the \
+contents of the document. If set to strict, Tidy will set the doctype \
+to the strict DTD. If set to loose, the doctype is set to the loose \
+(transitional) DTD.
+# jtidy.doctype.0=omit
+# jtidy.doctype.1=auto
+# jtidy.doctype.2=strict
+# jtidy.doctype.3=loose
+# jtidy.doctype.4=<fpi>
+options.jtidy.doctype.0.text=\
+The output file won't contain a doctype declaration.
+options.jtidy.doctype.1.text=\
+Tidy will use an educated guess based upon the \
+contents of the document. (default)
+options.jtidy.doctype.2.text=\
+Tidy will set the doctype to the strict DTD.
+options.jtidy.doctype.3.text=\
+Tidy will set the doctype to the loose (transitional) DTD.
+options.jtidy.doctype.4.text=\
+Tidy will use the formal public identifier (fpi) given below.
+
+options.jtidy.doctype-fpi.text=\
+Example for the formal public identifier (fpi):\n\
+doctype: "-//ACME//DTD HTML 3.14159//EN"\n\
+If you specify the fpi for an XHTML document, Tidy will set the system \
+identifier to the empty string. Tidy leaves the document type for generic \
+XML documents unchanged.
+
+options.jtidy.char-encoding.text=\
+Determines how Tidy interprets character streams. For ascii, Tidy will \
+accept Latin-1 character values, but will use entities for all characters \
+whose value > 127. For raw, Tidy will output values above 127 without \
+translating them into entities. For latin1 characters above 255 will be \
+written as entities. For utf8, Tidy assumes that both input and output is \
+encoded as UTF-8. You can use iso2022 for files encoded using the ISO2022 \
+family of encodings e.g. ISO 2022-JP. The default is ascii.
+# jtidy.char-encoding.0=raw
+# jtidy.char-encoding.1=ascii
+# jtidy.char-encoding.2=latin1
+# jtidy.char-encoding.3=utf8
+# jtidy.char-encoding.4=iso2022
+options.jtidy.char-encoding.0.text=\
+Tidy will output values above 127 without translating them into entities.
+options.jtidy.char-encoding.1.text=\
+Tidy will accept Latin-1 character values, but will use entities for all \
+characters whose value > 127. (Default)
+options.jtidy.char-encoding.2.text=\
+Characters above 255 will be written as entities.
+options.jtidy.char-encoding.3.text=\
+Tidy assumes that both input and output is encoded as UTF-8.
+options.jtidy.char-encoding.4.text=\
+You can use iso2022 for files encoded using the ISO2022 family of encodings \
+e.g. ISO 2022-JP.
+
+options.jtidy.numeric-entities.text=\
+Causes entities other than the basic XML 1.0 named entities to be written \
+in the numeric rather than the named entity form. Not set by default.
+
+options.jtidy.quote-marks.text=\
+If set, this causes " characters to be written out as &quot; as is \
+preferred by some editing environments. The apostrophe character ' is \
+written out as &#39; since many web browsers don't yet support &apos;. \
+Not set by default.
+
+options.jtidy.quote-nbsp.text=\
+If set, this causes non-breaking space characters to be written out as \
+entities. Set by default.
+
+options.jtidy.quote-ampersand.text=\
+If set, this causes unadorned & characters to be written out as \
+&amp;. Set by default.
+
+options.jtidy.assume-xml-procins.text=\
+If set, this changes the parsing of processing instructions to \
+require ?> as the terminator rather than >. Not set by default. This \
+option is automatically set if the input is in XML.
+
+options.jtidy.fix-backslash.text=\
+If set, this causes backslash characters "\\" in URLs to be \
+replaced by forward slashes "/". Set by default.
+
+options.jtidy.break-before-br.text=\
+If set, Tidy will output a line break before each <br> element. \
+Not set by default.
+
+options.jtidy.uppercase-tags.text=\
+Causes tag names to be output in upper case. The default is no resulting \
+in lowercase, except for XML input where the original case is preserved.
+
+options.jtidy.uppercase-attributes.text=\
+Causes attribute names to be output in upper case.The default is no \
+resulting in lowercase, except for XML where the original case is \
+preserved.
+
+options.jtidy.word-2000.text=\
+If set, Tidy will go to great pains to strip out all the surplus stuff \
+Microsoft Word 2000 inserts when you save Word documents as "Web pages". \
+Not set by defaulto. Note that Tidy doesn't yet know what to do with VML \
+markup from Word, but in future I hope to be able to map VML to SVG.\n\
+Microsoft has developed its own optional filter for exporting to HTML, \
+and the 2.0 version is much improved. You can download the filter free \
+from the Microsoft Office Update site.
+
+options.jtidy.clean.text=\
+If set, causes Tidy to strip out surplus presentational tags and \
+attributes replacing them by style rules and structural markup as \
+appropriate. It works well on the html saved from Microsoft Office'97. \
+Not set by default.
+
+options.jtidy.logical-emphasis.text=\
+If set, causes Tidy to replace any occurrence of <i> by <em> and any \
+occurrence of <b> by <strong>. In both cases, the attributes are preserved \
+unchanged. Not set by default. This option can now be set independently \
+of the clean and drop-font-tags options.
+
+options.jtidy.drop-empty-paras.text=\
+If set to yes, empty paragraphs will be discarded. If set to no, empty \
+paragraphs are replaced by a pair of br elements as HTML4 precludes \
+empty paragraphs. Set by default.
+
+options.jtidy.drop-font-tags.text=\
+If set together with the clean option (see above), Tidy will discard font \
+and center tags rather than creating the corresponding style rules. \
+Not set by default.
+
+options.jtidy.enclose-text.text=\
+If set, this causes Tidy to enclose any text it finds in the body element \
+within a <p> element. This is useful when you want to take an existing html \
+file and use it with a style sheet. Any text at the body level will screw \
+up the margins, but wrap the text within a <p> element and all is well! \
+Not set by default.
+
+options.jtidy.enclose-block-text.text=\
+If set, this causes Tidy to insert a p element to enclose any text it \
+finds in any element that allows mixed content for HTML transitional but \
+not HTML strict. not set bydefault.
+
+options.jtidy.fix-bad-comments.text=\
+If set, this causes Tidy to replace unexpected hyphens with "=" \
+characters when it comes across adjacent hyphens The default is yes. This \
+option is provided for users of Cold Fusion which uses the comment \
+syntax: <!--- --->
+
+options.jtidy.add-xml-space.text=\
+If set, this causes Tidy to add xml:space="preserve" to elements such \
+as pre, style and script when generating XML. This is needed if the \
+whitespace in such elements is to be parsed appropriately without having \
+access to the DTD. Not set by default.
+
+options.jtidy.alt-text.text=\
+This allows you to set the default alt text for img attributes. This \
+feature is dangerous as it suppresses further accessibility warnings. \
+YOU ARE RESPONSIBLE FOR MAKING YOUR DOCUMENTS ACCESSIBLE TO PEOPLE WHO \
+CAN'T SEE THE IMAGES!!!
+
+options.jtidy.write-back.text=\
+If set, Tidy will write back the tidied markup to the same file it read \
+from. The default is no. You are advised to keep copies of important \
+files before tidying them as on rare occasions the result may not always \
+be what you expect.
+
+options.jtidy.keep-time.text=\
+If set, Tidy won't alter the last modified time for files it writes back \
+to. Set by default. This allows you to tidy files without effecting \
+which ones will be uploaded to the Web server when using a tool such as \
+'SiteCopy'.
+
+# options.jtidy.error-file.text=\
+# Writes errors and warnings to the named file rather than to ErrorList and \
+# Activity Log.
+
+options.jtidy.show-warnings.text=\
+If unset, warnings are suppressed. This can be useful when a few \
+errors are hidden in a flurry of warnings. Set by default.
+
+options.jtidy.quiet.text=\
+If set, Tidy won't output the welcome message or the summary of \
+the numbers of errors and warnings. Not set by default.
+
+options.jtidy.gnu-emacs.text=\
+If set, Tidy changes the format for reporting errors and warnings to a \
+format that is more easily parsed by GNU Emacs. Not set by default.
+
+# options.jtidy.split.text=\
+# If set to yes Tidy will use the input file to create a sequence of \
+# slides, splitting the markup prior to each successive <h2>. The slides \
+# are written to "slide1.html", "slide2.html" etc. not set by default.
+
+options.jtidy.new-empty-tags.text=\
+Use this to declare new empty inline tags. The option takes a space or \
+comma separated list of tag names. Unless you declare new tags, Tidy will \
+refuse to generate a tidied file if the input includes previously unknown \
+tags. Remember to also declare empty tags as either inline or blocklevel, \
+see below.
+
+options.jtidy.new-inline-tags.text=\
+Use this to declare new non-empty inline tags. The option takes a space \
+or comma separated list of tag names. Unless you declare new tags, Tidy \
+will refuse to generate a tidied file if the input includes previously \
+unknown tags.
+
+options.jtidy.new-blocklevel-tags.text=\
+Use this to declare new block-level tags. The option takes a space or \
+comma separated list of tag names. Unless you declare new tags, Tidy will \
+refuse to generate a tidied file if the input includes previously unknown \
+tags. Note you can't change the content model for elements such as table, \
+ul, ol and dl. This is explained in more detail in the release notes.
+
+options.jtidy.new-pre-tags.text=\
+Use this to declare new tags that are to be processed in exactly the same \
+way as HTML's pre element. The option takes a space or comma separated \
+list of tag names. Unless you declare new tags, Tidy will refuse to \
+generate a tidied file if the input includes previously unknown tags. \
+Note you can't as yet add new CDATA elements (similar to script).
+
+
+# Tidy options values
+jtidy.tidy-mark=true
+jtidy.markup=true
+jtidy.wrap=66
+jtidy.wrap-attributes=false
+jtidy.wrap-script-literals=false
+jtidy.wrap-asp=true
+jtidy.wrap-jste=true
+jtidy.wrap-php=true
+jtidy.literal-attributes=false
+jtidy.tab-size=4
+jtidy.indent=0
+jtidy.indent.0=no
+jtidy.indent.1=yes
+jtidy.indent.2=auto
+jtidy.indent-spaces=2
+jtidy.indent-attributes=false
+jtidy.hide-endtags=false
+jtidy.input-xml=false
+jtidy.output-xml=false
+jtidy.add-xml-pi=false
+jtidy.add-xml-decl=false
+jtidy.output-xhtml=false
+jtidy.doctype=1
+jtidy.doctype.0=omit
+jtidy.doctype.1=auto
+jtidy.doctype.2=strict
+jtidy.doctype.3=loose
+jtidy.doctype.4=<fpi>
+jtidy.doctype-fpi=
+jtidy.char-encoding=1
+jtidy.char-encoding.0=raw
+jtidy.char-encoding.1=ascii
+jtidy.char-encoding.2=latin1
+jtidy.char-encoding.3=utf8
+jtidy.char-encoding.4=iso2022
+jtidy.numeric-entities=false
+jtidy.quote-marks=false
+jtidy.quote-nbsp=true
+jtidy.quote-ampersand=true
+jtidy.assume-xml-procins=false
+jtidy.fix-backslash=true
+jtidy.break-before-br=false
+jtidy.uppercase-tags=false
+jtidy.uppercase-attributes=false
+jtidy.word-2000=false
+jtidy.clean=false
+jtidy.logical-emphasis=false
+jtidy.drop-empty-paras=true
+jtidy.drop-font-tags=false
+jtidy.enclose-text=false
+jtidy.enclose-block-text=false
+jtidy.fix-bad-comments=true
+jtidy.add-xml-space=false
+jtidy.alt-text=
+jtidy.write-back=false
+jtidy.keep-time=true
+# jtidy.error-file
+jtidy.show-warnings=true
+jtidy.quiet=false
+jtidy.gnu-emacs=false
+# jtidy.split=false
+jtidy.new-empty-tags=
+jtidy.new-inline-tags=
+jtidy.new-blocklevel-tags=
+jtidy.new-pre-tags=
+
+jtidy.msg.fatal-error.title=Fatal Error: Buffer could not be tidied
+jtidy.msg.fatal-error.message=\
+JTidy won''t be able to tidy [{0}] until all errors (but not warnings) are fixed.\n\
+These errors are logged in your Activity Log.\n\
+If you have installed the ErrorList plugin, these errors are also highlighted in [{0}].
+
+# END
