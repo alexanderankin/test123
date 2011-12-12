@@ -133,7 +133,7 @@ public class TextToolsBlockHandling
 		{
 			if (leadingZeros)
 			{
-				StringBuffer nulBuf = new StringBuffer("0000000000");
+				StringBuilder nulBuf = new StringBuilder("0000000000");
 				for (int s=10; s<targetLen;s+=10)
 					nulBuf.append("0000000000");
 				nullsBlanksString = nulBuf.toString();
@@ -148,7 +148,7 @@ public class TextToolsBlockHandling
 		String sourceString = insertText;
 		// Note: from now on, we don't need the selections
 		textArea.selectNone();  // reset selection
-		StringBuffer blankBuf = new StringBuffer("          ");
+		StringBuilder blankBuf = new StringBuilder("          ");
 		buffer.beginCompoundEdit();
 		ArrayList targetSelection = new ArrayList();  // collects Selection
 		for (int i=0;i<selLines.length;i++)

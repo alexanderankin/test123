@@ -156,10 +156,10 @@ public class TextToolsSortControl extends EnhancedDialog implements ActionListen
 
  		jsort.sort(data);
 		Iterator iter = data.iterator();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		while(iter.hasNext())
 		{
-			sb.append(iter.next() + "\n");
+			sb.append(iter.next()).append('\n');
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		

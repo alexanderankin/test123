@@ -310,7 +310,7 @@ public class TextToolsPlugin extends EditPlugin
 			}
 		}
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		buf.append(lineText.substring(word2Start, word2End));
 		buf.append(lineText.substring(word1End, word2Start));
@@ -348,10 +348,10 @@ public class TextToolsPlugin extends EditPlugin
 		int start = textArea.getLineStartOffset(line - 1);
 		int end = textArea.getLineEndOffset(line);
 		
-		StringBuffer buf = new StringBuffer();
-		
-		buf.append(textArea.getLineText(line) + "\n");
-		buf.append(textArea.getLineText(line - 1) + "\n");
+		StringBuilder buf = new StringBuilder();
+
+		buf.append(textArea.getLineText(line)).append('\n');
+		buf.append(textArea.getLineText(line - 1)).append('\n');
 		
 		JEditBuffer b = textArea.getBuffer();
 		
