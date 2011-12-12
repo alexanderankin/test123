@@ -48,7 +48,7 @@ public class JTidyGeneralOptionPane
 
 
     public JTidyGeneralOptionPane() {
-        super("jtidy-general");
+        super("jtidy.general");
     }
 }
 

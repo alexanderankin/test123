@@ -64,7 +64,7 @@ public class JTidyXmlOptionPane
 
 
     public JTidyXmlOptionPane() {
-        super("jtidy-xml");
+        super("jtidy.xml");
     }
 }
 
