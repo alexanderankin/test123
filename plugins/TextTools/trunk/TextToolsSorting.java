@@ -103,7 +103,7 @@ public class TextToolsSorting
 		
 		Arrays.sort(lines, compare);
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < lines.length - 1 ; ++i)
 		{
 			sb.append(lines[i]).append('\n');
@@ -177,10 +177,10 @@ public class TextToolsSorting
 
 		JSort.shuffle(recs);
 		Iterator iter = recs.iterator();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		while (iter.hasNext())
 		{
-			sb.append(iter.next() + "\n");
+			sb.append(iter.next()).append('\n');
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		if (textArea.getSelectedLines().length > 1)
@@ -219,10 +219,10 @@ public class TextToolsSorting
 		
  		jsort.sort(data);
 		Iterator iter = data.iterator();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		while (iter.hasNext())
 		{
-			sb.append(iter.next() + "\n");
+			sb.append(iter.next()).append('\n');
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		

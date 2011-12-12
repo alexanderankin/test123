@@ -504,7 +504,7 @@ public class JSort implements Comparator
 		
 		public String toString()
 		{
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append("startColumn = ").append(startColumn)
 				.append(" endColumn = ").append(endColumn)
 				.append(" ascending = ").append(ascending)

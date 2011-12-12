@@ -392,7 +392,7 @@ public class TextToolsComments
 	{
 		String commentStart = buffer.getContextSensitiveProperty(start, "commentStart");
 		String commentEnd = buffer.getContextSensitiveProperty(start, "commentEnd");
-		StringBuffer buf = new StringBuffer(buffer.getText(start, end - start));
+		StringBuilder buf = new StringBuilder(buffer.getText(start, end - start));
 
 		// use a state machine to step through text and reverse commenting
 		final byte REMOVE_COMMENT_START = 0;

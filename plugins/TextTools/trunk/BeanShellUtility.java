@@ -262,7 +262,7 @@ public class BeanShellUtility
 	 */
 	public static  String MiscUtilities_createWhiteSpace(int len, int tabSize, int lineOffset)
 	{
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if(tabSize == 0 || len <= 1) // for a single blank don't create a tab
 		{
 			while(len-- > 0)
