@@ -1,0 +1,30 @@
+the following is a list of authors and the actions they are responsible for.
+
+mike dillon <mdillon@jedit.org>
+	Sort/Revese Sort
+	Transpose Characters
+	Transpose Lines
+	Transpose Words
+
+John Gellene <jgellene@nyc.rr.com>
+	port of Sort Lines to jEdit 4.0 API
+
+Carmine Lucarelli <carmine@jedit.org>
+	Field Sort Lines
+	Shuffle Lines
+
+Nathan Tenney <eulernt@yahoo.com>
+	Column Insert
+
+Rudolf Widmann <Rudi.Widmann@web.de>
+	Block Insert/Increment
+	Delete Duplicates
+	Sort Advanced
+	Rectangular Selection move
+
+Robert Fletcher <rfletch6@yahoo.co.uk>
+	Toggle Line Comment
+	Toggle Range Comment
+
+Ian Lewis <IanLewis@member.fsf.org>
+    Bug Fixes
