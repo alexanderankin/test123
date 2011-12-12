@@ -1,0 +1,68 @@
+plugin.TextToolsPlugin.name=TextTools
+plugin.TextToolsPlugin.author=mike dillon
+plugin.TextToolsPlugin.version=1.15
+plugin.TextToolsPlugin.docs=TextTools.html
+plugin.TextToolsPlugin.description=This plugin provides a number of small actions for performing text manipulation.
+plugin.TextToolsPlugin.depend.0=jdk 1.5
+plugin.TextToolsPlugin.depend.1=jedit 04.03.99.00
+plugin.TextToolsPlugin.activate=defer
+
+# Menu
+plugin.TextToolsPlugin.menu=sort-lines revsort-lines delete-duplicated \
+	sort-advanced shuffle-lines - transpose-chars transpose-words \
+	transpose-lines - column-insert textblock - rect-moveup \
+	rect-movedown rect-moveleft rect-moveright - toggle-line-comment \
+	toggle-range-comment
+sort-lines.label=Sort Lines
+revsort-lines.label=Reverse Sort Lines
+delete-duplicated.label=Delete duplicated
+sort-advanced.label=Sort ...
+field-sort-lines.label=Sort Lines by Fields
+shuffle-lines.label=Shuffle Lines
+transpose-chars.label=Transpose Characters
+transpose-words.label=Transpose Words
+transpose-lines.label=Transpose Lines
+column-insert.label=Column Insert
+textblock.label=Block Fill Insert
+rect-moveup.label=Rect Move Up
+rect-movedown.label=Rect Move Down
+rect-moveleft.label=Rect Move Left
+rect-moveright.label=Rect Move Right
+toggle-line-comment.label=Toggle Line Comment
+toggle-range-comment.label=Toggle Range Comment
+
+# option panes
+plugin.TextToolsPlugin.option-pane=toggle-comments
+# options.label=Text Tools
+options.toggle-comments.label=TextTools
+options.toggle-comments.code=new TextToolsCommentsOptionPane();
+
+# sort options window title
+text-tools.sortcontrol.label=TextTools - Sort Lines by Field
+text-tools.sortadvanced.label=TextTools - Advanced Sort Dialog
+text-tools.sortadvanced.delete-identic-lines=delete identic lines
+text-tools.sortadvanced.dont-sort=do not sort
+text-tools.sortadvanced.sort-only-selection=sort selected block
+
+texttoolsplugin.error.no-rect-selection.message=Please use a rectangular selection
+texttoolsplugin.error.no-rect-selection.title=Rectangular selection
+view.status.textTools.buffer-not-editable=buffer not editable
+view.status.textTools.selection-required=selection required
+view.status.textTools.rectangular-selection-required=rectangular selection required
+
+# option pane labels
+options.toggle-comments.line-comments.title=Line comment settings
+options.toggle-comments.commentAsBlock.title=Comment or un-comment entire selection (don't toggle individual lines)
+options.toggle-comments.indentAtLineStart.title=Insert line comments at start of line
+options.toggle-comments.indentWithCode.title=Insert line comments after leading whitespace
+options.toggle-comments.indentAsBlock.title=Align line comments at leftmost indent of selected block
+options.toggle-comments.keepSelected.title=Keep selection after toggling comments?
+
+# option defaults
+options.toggle-comments.commentAsBlock=true
+options.toggle-comments.indentAtLineStart=false
+options.toggle-comments.indentWithCode=false
+options.toggle-comments.indentAsBlock=true
+options.toggle-comments.keepSelected=false
+
+
