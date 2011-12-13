@@ -2,5 +2,6 @@
     <info organisation="jedit-plugins" module="SuperAbbrevs"/>
     <dependencies>
 	<dependency org="junit" name="junit" rev="4.8.2"/>
+	<dependency org="net.java.dev.javacc" name="javacc" rev="5.0"/>
     </dependencies>
 </ivy-module>
