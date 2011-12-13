@@ -135,6 +135,12 @@ public class FileIndex
 		return l;
 	}
 
+	/**
+	 * Index files.
+	 * @param fileProvider the file provider to index
+	 * @param observer the progress observer
+	 * @param reset true if you want to reset the previous index
+	 */
 	public void addFiles(FileProvider fileProvider, ProgressObserver observer, boolean reset)
 	{
 		long start = System.currentTimeMillis();
