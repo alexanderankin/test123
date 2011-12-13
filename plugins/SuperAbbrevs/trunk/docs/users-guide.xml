@@ -28,10 +28,10 @@
 
   <chapter id="Introduction"><title>Introduction</title>
     <para>
-      This plugin gives you the ability to expand an abbreviations to userdefined
+      This plugin gives you the ability to expand an abbreviation to a userdefined
       code template. When expanded, you can jump between the variables in the
       template using the TAB key. If you change the text of a variable, the text
-      will change everywhere the variable is placed in the template.
+      will instantly change at the variable's other positions in the template. 
     </para>
     <para>
       There are already some predefined abbreviations when you install the plugin. 
@@ -72,10 +72,10 @@
     <para>
       In the SuperAbbrevs optionpane, find the mode in the dropdown menu, for which
       you want to add the abbreviation. Then press the plus button below the
-      abbreviation table, an abbreviation editor will appear. Type in the
+      abbreviation table. An abbreviation editor will appear. Type in the
       abbreviation and the template according to the syntax explained in <xref
       linkend="WritingTemplates"/>. Press the Ok button. The abbreviation is not saved
-      yet - you must press Apply or the Ok button, at the button of the
+      yet - you must press Apply or the Ok button, at the bottom of the
       optionpane, to save all the changes you made to the abbreviations. </para>
     </section>
     <section id="addInline"><title>Add a new abbreviation from the buffer</title>
@@ -93,7 +93,7 @@
       will appear. Type in the abbreviation and the template according to the 
       syntax explained in <xref linkend="WritingTemplates"/>. Press the Ok button. 
       The abbreviation is not saved yet, you still have to press Apply or the Ok button, 
-      at the button of the optionpane, to save all the changes you made to the 
+      at the bottom of the optionpane, to save all the changes you made to the 
       abbreviations.
       </para>
     </section>
