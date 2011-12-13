@@ -32,6 +32,7 @@ import superabbrevs.zencoding.ZenParser;
 
 public class HTMLZenParser implements ZenParser
 {
+
 	private String pad(int i, int num)
 	{
 		String t = Integer.toString(i);
@@ -75,7 +76,7 @@ TOKEN:
 {
 	<INTEGER_LITERAL: (<DIGIT>)+ >
 |
-	<IDENTIFIER:(<LETTER>)+>
+	<IDENTIFIER: <LETTER>(<LETTER> | <DIGIT> )+>
 |
 	<ID_MULTIPLIER: ("$")+ "*" <INTEGER_LITERAL>>
 |
