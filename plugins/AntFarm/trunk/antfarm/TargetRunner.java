@@ -20,7 +20,6 @@ package antfarm;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
@@ -54,7 +53,7 @@ public class TargetRunner extends Thread
 
     DefaultLogger _buildLogger = new DefaultLogger();
 
-    Throwable _error = null;
+    Throwable _error;
 
     Target _target;
 
@@ -85,6 +84,7 @@ public class TargetRunner extends Thread
         init(target, buildFile, view, output, userProperties);
     }
 
+    @Override
     public void run()
     {
         AntFarmPlugin.getErrorSource().clear();
@@ -173,7 +173,7 @@ public class TargetRunner extends Thread
             command += "\"";
             command += _buildFile.getAbsolutePath();
             command += "\"";
-            command += " " + _target.getName();
+            command += ' ' + _target.getName();
             runAntCommand(command);
         }
         cleanup();
@@ -193,14 +193,13 @@ public class TargetRunner extends Thread
         _project.setUserProperty("ant.version", Main.getAntVersion());
 
         // set user-define properties
-        Enumeration e = _userProperties.keys();
-        while (e.hasMoreElements())
-        {
-            String arg = (String) e.nextElement();
-            String value = (String) _userProperties.get(arg);
-            value = ConsolePlugin.expandSystemShellVariables(_view, value);
-            _project.setUserProperty(arg, value);
-        }
+	for (Object o : _userProperties.keySet())
+	{
+		String arg = (String) o;
+		String value = _userProperties.getProperty(arg);
+		value = ConsolePlugin.expandSystemShellVariables(_view, value);
+		_project.setUserProperty(arg, value);
+	}
 
         _project.setUserProperty("ant.file", _buildFile.getAbsolutePath());
     }
@@ -243,7 +242,7 @@ public class TargetRunner extends Thread
 
     private void addGlobalProperties()
     {
-        String name = null;
+        String name;
         int counter = 1;
         while ((name = jEdit.getProperty(PropertiesOptionPane.PROPERTY + counter
             + PropertiesOptionPane.NAME)) != null)
@@ -260,13 +259,12 @@ public class TargetRunner extends Thread
     private void runAntCommand(String args)
     {
         String command = jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX + "command");
-        if (command == null || command.equals(""))
+        if (command == null || command.isEmpty())
             Log.log(Log.WARNING, this,
                 "Please set the path to the Ant script you wish to use.");
-
-        if (command != null)
+	else
         {
-            command = "\"" + command + "\"";
+            command = '"' + command + '"';
 
             command += AntFarmShell.getAntCommandFragment(_userProperties);
             if (jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "output-emacs"))
@@ -335,21 +333,20 @@ public class TargetRunner extends Thread
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
             options[0]);
 
-        if (yesOrNo == JOptionPane.YES_OPTION)
-        {
-            String scriptFilePath = AntFarmOptionPane.promptForAntScript(_view);
-            jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "command", scriptFilePath);
-            jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm",
-                false);
-            jEdit.propertiesChanged();
-            return scriptFilePath;
-        }
-        else if (yesOrNo == JOptionPane.NO_OPTION)
-        {
-            jEdit.setBooleanProperty(
-                AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true);
-            jEdit.propertiesChanged();
-        }
-        return null;
+	    if (yesOrNo == JOptionPane.YES_OPTION)
+	    {
+		    String scriptFilePath = AntFarmOptionPane.promptForAntScript(_view);
+		    jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "command", scriptFilePath);
+		    jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", false);
+		    jEdit.propertiesChanged();
+		    return scriptFilePath;
+	    }
+	    if (yesOrNo == JOptionPane.NO_OPTION)
+	    {
+		jEdit.setBooleanProperty(
+		    AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true);
+		jEdit.propertiesChanged();
+	    }
+	    return null;
     }
 }
