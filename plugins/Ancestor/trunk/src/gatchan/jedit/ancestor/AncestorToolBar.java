@@ -87,6 +87,10 @@ public class AncestorToolBar extends JToolBar
 			button.setAncestor(new Ancestor(view, fileName, _vfs.getFileName(fileName)));
 			i++;
 			button.setEnabled(browseable && nb != i);
+			if (nb - 1 == i)
+			{
+				button.setText("<html><b>" + button.getText() + "</b></html>");
+			}
 		}
 	} //}}}
 }
