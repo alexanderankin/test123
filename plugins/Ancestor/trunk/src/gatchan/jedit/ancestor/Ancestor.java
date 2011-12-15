@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007, 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@ public class Ancestor
 	//{{{ closeFiles() method
 	public void closeContainedFiles()
 	{
-		Buffer b[] = jEdit.getBuffers();
+		Buffer[] b = jEdit.getBuffers();
 		
 		for(int i=0; i<b.length; i++)
 			if(b[i].getDirectory().startsWith(path))
