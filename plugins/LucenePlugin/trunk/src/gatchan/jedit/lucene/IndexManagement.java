@@ -44,7 +44,7 @@ public class IndexManagement extends AbstractOptionPane
 
 	public IndexManagement()
 	{
-		super("LuceneIndexManagement");
+		super("IndexManagement");
 		setLayout(new BorderLayout());
 	}
 
