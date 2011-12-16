@@ -173,7 +173,7 @@ public class FileIndex
 					observer.setStatus(path);
 					Document document = new Document();
 					document.add(
-						new Field("path", path, Field.Store.YES, Field.Index.NO));
+						new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 					String fileName = MiscUtilities.getFileName(path);
 					document.add(new Field("name", fileName, Field.Store.NO,
@@ -217,6 +217,7 @@ public class FileIndex
 					observer.setStatus(path);
 					writer.deleteDocuments(new Term("path", path));
 				}
+				writer.commit();
 			}
 			catch (IOException e)
 			{
