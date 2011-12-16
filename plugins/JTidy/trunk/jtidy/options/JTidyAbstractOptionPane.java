@@ -71,6 +71,7 @@ public abstract class JTidyAbstractOptionPane
         Properties props = new Properties();
         for (int i = 0; i < components.length; i++) {
             components[i].saveTo(props);
+            components[i].save();
         }
         JTidyPlugin.save(props);
     }
