@@ -225,6 +225,12 @@ public class SmartOpenPlugin extends EditPlugin
 	@EditBus.EBHandler
 	public void handleViewUpdate(ViewUpdate viewUpdate)
 	{
+		if (viewUpdate.getWhat() == ViewUpdate.ACTIVATED)
+		{
+			VPTProject project = ProjectViewer.getActiveProject(viewUpdate.getView());
+			if (!StandardUtilities.objectsEqual(project, currenProject))
+				indexProject(project);
+		}
 		if (toolbar)
 		{
 			if (viewUpdate.getWhat() == ViewUpdate.CREATED)
@@ -270,7 +276,7 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 	} //}}}
 
-	//{{{ viewerUpdate() method
+	//{{{ projectModified() method
 	@EditBus.EBHandler
 	public void projectModified(ProjectUpdate pu)
 	{
