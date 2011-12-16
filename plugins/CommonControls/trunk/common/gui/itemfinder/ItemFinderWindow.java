@@ -22,7 +22,9 @@
 package common.gui.itemfinder;
 
 //{{{ Imports
-import javax.swing.JFrame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JDialog;
 
 import org.gjt.sp.jedit.View;
 //}}}
@@ -37,7 +39,7 @@ import org.gjt.sp.jedit.View;
  * or use {@link ItemFinderWindow#showWindow(View, ItemFinder)} that will create the window and show it.
  * @author Matthieu Casanova
  */
-public class ItemFinderWindow<E> extends JFrame
+public class ItemFinderWindow<E> extends JDialog
 {
 	private final ItemFinderPanel<E> itemFinderPanel;
 	public final Runnable requestFocusWorker;
@@ -50,6 +52,14 @@ public class ItemFinderWindow<E> extends JFrame
 		requestFocusWorker = itemFinderPanel.requestFocusWorker;
 		setContentPane(itemFinderPanel);
 		pack();
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowDeactivated(WindowEvent e)
+			{
+				dispose();
+			}
+		});
 	} //}}}
 
 	//{{{ getItemFinderPanel() method

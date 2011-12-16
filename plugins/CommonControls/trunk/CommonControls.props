@@ -4,7 +4,7 @@ plugin.CommonControlsPlugin.activate=defer
 
 plugin.CommonControlsPlugin.name=Common Controls
 plugin.CommonControlsPlugin.author=Sergey V. Udaltsov, Dale Anson, Marcelo Vanzin, Matthieu Casanova
-plugin.CommonControlsPlugin.version=1.4
+plugin.CommonControlsPlugin.version=1.4.1
 plugin.CommonControlsPlugin.docs=index.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 plugin.CommonControlsPlugin.description=Shared GUI Code
