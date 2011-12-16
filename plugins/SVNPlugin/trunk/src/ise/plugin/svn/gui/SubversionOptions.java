@@ -48,7 +48,7 @@ public class SubversionOptions implements OptionPane {
     private JLabel fileformat_label;
     private JComboBox fileformat;
 
-    public SubversionOptions( ) {}
+    public SubversionOptions( ) { }
 
     public void init() {
         if ( panel != null )
@@ -135,7 +135,7 @@ public class SubversionOptions implements OptionPane {
     }
 
     public String getName() {
-        return "subversion";
+        return "svnplugin";
     }
 
 }
