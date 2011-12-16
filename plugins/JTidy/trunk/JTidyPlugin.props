@@ -10,8 +10,7 @@ plugin.jtidy.JTidyPlugin.description=The JTidyPlugin cleans and beautifies HTML 
 plugin.jtidy.JTidyPlugin.depend.0=jdk 1.5
 plugin.jtidy.JTidyPlugin.depend.1=jedit 04.03.99.00
 plugin.jtidy.JTidyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
-plugin.jtidy.JTidyPlugin.depend.3=plugin xerces.XercesPlugin 2.9.1
-plugin.jtidy.JTidyPlugin.depend.4=plugin beauty.BeautyPlugin 0.7.0
+plugin.jtidy.JTidyPlugin.depend.3=plugin beauty.BeautyPlugin 0.7.0
 plugin.jtidy.JTidyPlugin.jars=jtidy-r938.jar
 
 # for plugin menu
