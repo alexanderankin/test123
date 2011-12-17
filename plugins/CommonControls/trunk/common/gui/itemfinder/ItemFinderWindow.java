@@ -22,6 +22,7 @@
 package common.gui.itemfinder;
 
 //{{{ Imports
+import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
@@ -74,11 +75,39 @@ public class ItemFinderWindow<E> extends JDialog
 		return itemFinderPanel;
 	} //}}}
 
-	//{{{ showWindow() method
+	//{{{ showWindow() methods
+	/**
+	 * Show the ItemFinderWindow
+	 * @param view the parent view
+	 * @param itemFinder the itemFinder object
+	 * @param <E>
+	 */
 	public static <E> void showWindow(View view, ItemFinder<E> itemFinder)
 	{
-		ItemFinderWindow<E> itemFinderWindow = new ItemFinderWindow<E>(itemFinder);
+		showWindow(view, itemFinder, "");
+	}
+
+	/**
+	 * Show the ItemFinderWindow
+	 * @param view the parent view
+	 * @param itemFinder the itemFinder object
+	 * @param defaultText the default text
+	 * @param <E>
+	 * @since CommonControls 1.4.1
+	 */
+	public static <E> void showWindow(View view, ItemFinder<E> itemFinder, final String defaultText)
+	{
+		final ItemFinderWindow<E> itemFinderWindow = new ItemFinderWindow<E>(itemFinder);
 		itemFinderWindow.setLocationRelativeTo(view);
 		itemFinderWindow.setVisible(true);
+		EventQueue.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				itemFinderWindow.getItemFinderPanel().setText(defaultText);
+			}
+		});
+
 	} //}}}
 }

@@ -20,6 +20,7 @@
  */
 package common.gui.itemfinder;
 
+//{{{ Imports
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Point;
@@ -41,6 +42,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.gjt.sp.jedit.GUIUtilities;
+//}}}
 
 /**
  * The ItemFinderWindow is a Window that contains a SearchField and a list of items.
@@ -61,6 +63,7 @@ public class ItemFinderPanel<E> extends JPanel
 	public final RequestFocusWorker requestFocusWorker;
 	private final ItemFinder<E> itemFinder;
 
+	//{{{ ItemFinderPanel constructor
 	public ItemFinderPanel(Window owner, ItemFinder<E> itemFinder)
 	{
 		super(new BorderLayout());
@@ -95,24 +98,27 @@ public class ItemFinderPanel<E> extends JPanel
 		add(searchField, BorderLayout.CENTER);
 		window.pack();
 		requestFocusWorker = new RequestFocusWorker(searchField);
-	}
+	} //}}}
 
+	//{{{ dispose() method
 	public void dispose()
 	{
 		Window owner = window.getOwner();
 		window.dispose();
 		if (owner instanceof ItemFinderWindow)
 			owner.dispose();
-	}
+	} //}}}
 
+	//{{{ handledByList() method
 	private static boolean handledByList(KeyEvent e)
 	{
 		return e.getKeyCode() == KeyEvent.VK_DOWN ||
 			e.getKeyCode() == KeyEvent.VK_UP ||
 			e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
 			e.getKeyCode() == KeyEvent.VK_PAGE_UP;
-	}
+	} //}}}
 
+	//{{{ select() method
 	private void select()
 	{
 		E value = (E) itemList.getSelectedValue();
@@ -122,8 +128,16 @@ public class ItemFinderPanel<E> extends JPanel
 			itemFinder.selectionMade(value);
 			dispose();
 		}
-	}
+	} //}}}
 
+	//{{{ setText() method
+	public void setText(String s)
+	{
+		searchField.setText(s);
+		searchField.selectAll();
+	} //}}}
+
+	//{{{ SearchFieldKeyAdapter class
 	private class SearchFieldKeyAdapter extends KeyAdapter
 	{
 		@Override
@@ -143,8 +157,9 @@ public class ItemFinderPanel<E> extends JPanel
 				select();
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ ItemListKeyAdapter class
 	private static class ItemListKeyAdapter extends KeyAdapter
 	{
 		private final JTextField searchField;
@@ -168,8 +183,9 @@ public class ItemFinderPanel<E> extends JPanel
 				searchField.dispatchEvent(e);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ MyMouseAdapter class
 	private class MyMouseAdapter extends MouseAdapter
 	{
 		@Override
@@ -180,8 +196,9 @@ public class ItemFinderPanel<E> extends JPanel
 				select();
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ RequestFocusWorker class
 	protected static class RequestFocusWorker implements Runnable
 	{
 		private final JTextField searchField;
@@ -195,8 +212,9 @@ public class ItemFinderPanel<E> extends JPanel
 		{
 			searchField.requestFocus();
 		}
-	}
+	} //}}}
 
+	//{{{ MyDocumentListener class
 	private class MyDocumentListener implements DocumentListener
 	{
 		public void insertUpdate(DocumentEvent e)
@@ -244,5 +262,5 @@ public class ItemFinderPanel<E> extends JPanel
 			}
 			EventQueue.invokeLater(requestFocusWorker);
 		}
-	}
+	} //}}}
 }
