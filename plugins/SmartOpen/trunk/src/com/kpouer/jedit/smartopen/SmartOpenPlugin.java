@@ -31,6 +31,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -47,6 +49,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Task;
@@ -300,6 +303,8 @@ public class SmartOpenPlugin extends EditPlugin
 		if (smartOpenToolbar != null)
 		{
 			ItemFinderPanel<String> itemFinderPanel = smartOpenToolbar.getItemFinderPanel();
+			String wordAtCaret = getWordAtCaret(view);
+			itemFinderPanel.setText(wordAtCaret);
 			EventQueue.invokeLater(itemFinderPanel.requestFocusWorker);
 		}
 		else
@@ -312,7 +317,8 @@ public class SmartOpenPlugin extends EditPlugin
 	public static void smartOpenDialog(View view)
 	{
 		ItemFinder<String> itemFinder = new FileItemFinder();
-		ItemFinderWindow.showWindow(view, itemFinder);
+		String wordAtCaret = getWordAtCaret(view);
+		ItemFinderWindow.showWindow(view, itemFinder, wordAtCaret);
 	} //}}}
 
 	//{{{ addToolbars() method
@@ -334,4 +340,30 @@ public class SmartOpenPlugin extends EditPlugin
 			removeToolbar(views[i]);
 		}
 	} //}}}
+
+	public static String getWordAtCaret(View view)
+	{
+		JEditTextArea ta = view.getTextArea();
+		String selected = ta.getSelectedText();
+		if ((selected != null) && (! "".equals(selected)))
+			return selected;
+		int line = ta.getCaretLine();
+		String text = ta.getLineText(line);
+		Pattern pat = Pattern.compile("\\w+");
+		Matcher m = pat.matcher(text);
+		int end = -1;
+		int start = -1;
+		int offset = ta.getCaretPosition() - ta.getLineStartOffset(line);
+		while (end <= offset)
+		{
+			if (! m.find())
+				return null;
+			end = m.end();
+			start = m.start();
+			selected = m.group();
+		}
+		if ((start > offset) || (selected.length() == 0))
+			return null;
+		return selected;
+	}
 }
