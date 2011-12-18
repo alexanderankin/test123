@@ -22,6 +22,7 @@
     <selector id="packageFiles">
 	  <or>
 		<filename name="**/LICENSE" />
+		<filename name="docs/CHANGELOG.txt" />
 		<filename name="**/README" />
 		<filename name="console/bsh/*.*" />
 		<filename name="console/**/*.xml" />
