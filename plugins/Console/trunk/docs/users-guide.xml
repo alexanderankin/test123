@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- jEdit buffer-local properties: -->
-<!-- maxLineLen=0:wrap=soft:indentSize=1:noTabs=true: -->
-<!-- jEdit user's guide -->
-<!-- (C) 1999, 2004 Slava Pestov -->
-<!-- (C) 2001, 2002 John Gellene -->
-<!-- (C) 2005, 2011 Alan Ezust -->
+<!-- :maxLineLen=80:wrap=hard:indentSize=2:noTabs=true: -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-<!-- Console user's guide -->
-<!-- (C) 2001, 2005 Slava Pestov -->
  <bookinfo>
   <title>Console plugin user's guide</title>
 
@@ -57,25 +51,26 @@
  graphical front-ends, specified using an XML file, to command-line tools.</para>
    </listitem>
    <listitem>
-    <para>Providing an extensible framework for other plugins that need to display streamed output.</para>
+    <para>Providing an extensible framework for other plugins that need to
+    display streamed output.</para>
    </listitem>
   </itemizedlist>
- </chapter>
-
- <chapter id="setup">
- <title> Setup/Options </title>
 
  <bridgehead> ProjectViewer Integration </bridgehead>
- 
+
  <para> Console has an optional dependency on ProjectViewer.
- What this means is that it has some extra features which you can see if you have also installed ProjectViewer plugin. In particular they are: </para>
+ What this means is that it has some extra features which you can see if you
+ have also installed ProjectViewer plugin. In particular they are: </para>
 
  <orderedlist>
  <listitem><para> Actions <guimenuitem>Compile Project</guimenuitem>
  and <guimenuitem>Run Project</guimenuitem> which are
- configured from ProjectViewer's <guimenuitem>Console</guimenuitem> properties pane. </para></listitem>
- 
- <listitem><para> The ability to listen to node change events from the ProjectViewer and make changes to the System shell's current directory. </para></listitem>
+ configured from ProjectViewer's <guimenuitem>Console</guimenuitem> properties
+ pane. </para></listitem>
+
+ <listitem><para> The ability to listen to node change events from the
+ ProjectViewer and make changes to the System shell's current directory.
+ </para></listitem>
 
  <listitem><para> The ability to query the ProjectViewer for the "current root
  directory" to run build commands from. This is used by the Console commandos
@@ -83,8 +78,15 @@
  wish to use these commando buttons without the projectviewer, right click on
  the commando buttons, "customize" and edit the XML file, removing the lines
  that refer to projectviewer. </para></footnote>. </para></listitem>
- 
+
 </orderedlist>
+
+
+ </chapter>
+
+ <chapter id="setup">
+ <title> Setup/Options </title>
+
 
  <bridgehead> Option Panes </bridgehead>
 
@@ -95,10 +97,13 @@
 
  <bridgehead> Console - General Options </bridgehead>
 
-  <para> Here, you can set general options that apply to all shells, such as showing the welcome message, character encoding to use, scrollback buffer size, colors, etc. </para>
+  <para> Here, you can set general options that apply to all shells, such as
+  showing the welcome message, character encoding to use, scrollback buffer
+  size, colors, etc. </para>
 
  <itemizedlist>
-  <listitem><para><emphasis>Show Welcome Message</emphasis> - suppress welcome message on shells. </para>
+  <listitem><para><emphasis>Show Welcome Message</emphasis> - suppress welcome
+  message on shells. </para>
   </listitem>
 
   <listitem><para><emphasis>Character Encoding</emphasis> - If you want to
@@ -110,25 +115,39 @@
 
  <itemizedlist>
  <listitem>
-	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command.
+	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before
+	 the command you type whenever a command is executed. Console itself does
+	 parse and preprocess your commands in its own way, but you have the option
+	 of having the commands subsequently evaluated by your native command line
+	 shell, which will in turn execute your command.
      </para>
 
-     <para> Console can choose a sensible os-specific shell prefix for you, by setting it to <literal>osdefault</literal>. If this field is blank, or if <literal>none</literal> is used, Console will execute commands directly (without a prefix).
-     I prefer using a native shell for its functions, aliases, and redirection, but you can try different values here to see which works best for you.
+     <para> Console can choose a sensible os-specific shell prefix for you, by
+     setting it to <literal>osdefault</literal>. If this field is blank, or if
+     <literal>none</literal> is used, Console will execute commands directly
+     (without a prefix).
+     I prefer using a native shell for its functions, aliases, and redirection,
+     but you can try different values here to see which works best for you.
      </para>
 
-     <para> In addition, if you like to use a different shell from the OS-default (4NT, or cygwin's bash), you can add it to this list and see if it works. </para>
+     <para> In addition, if you like to use a different shell from the
+     OS-default (4NT, or cygwin's bash), you can add it to this list and see if
+     it works. </para>
 
   </listitem>
 
   <listitem>
 	  <para>
-		<emphasis>Merge stdout and stderr</emphasis> - this option will only affect users of "make", where Console needs to merge the streams in order to resolve pathnames of files of errors inbetween "make entering..leaving" messages.
+		<emphasis>Merge stdout and stderr</emphasis> - this option will only
+		affect users of "make", where Console needs to merge the streams in
+		order to resolve pathnames of files of errors inbetween "make
+		entering..leaving" messages.
 	  </para>
   </listitem>
   <listitem><para><emphasis>Subshell extra PATH</emphasis> - This option
 		  prepends directories to the environment before spawning
-		  subprocesses. If you want your jedit console to be able to find some files in the path, add those directories here.
+		  subprocesses. If you want your jedit console to be able to find some
+		  files in the path, add those directories here.
 	  </para></listitem>
   <listitem><para><emphasis>Append extra dirs to PATH</emphasis> - if
         checked, append instead of prepend the extra directories.
@@ -141,30 +160,44 @@
  The commands can be executed by keyboard shortcuts even if the toolbar is not
  enabled. You can check and un-check which commands show up in the menus and
  toolbars. </para>
- 
+
  <bridgehead> Error Patterns Options </bridgehead>
 
  <para> This option dialog allows you fine grained control over Console's error parsing capabilities.
  </para>
 
- <para> Each line of output that is generated by a program that is run in the Console <literal>System</literal> (and <literal>ssh</literal>) shells is checked against a number of error patterns to determine if the line is part of an error message. If the error message is found, pieces of information are extracted from it to get the line number and filename. This information is in turn fed into Error List to give you a convenient way to send the editor to the location of an error message. </para>
+ <para> Each line of output that is generated by a program that is run in the
+ Console <literal>System</literal> (and <literal>ssh</literal>) shells is
+ checked against a number of error patterns to determine if the line is part of
+ an error message. If the error message is found, pieces of information are
+ extracted from it to get the line number and filename. This information is in
+ turn fed into Error List to give you a convenient way to send the editor to the
+ location of an error message. </para>
 
-<para> Each error pattern is a set of regular expressions. To edit, test, add, or remove error patterns from Console's output parsing module, you can select this option dialog. Keep in mind, you must "test/commit" each error pattern before clicking 'ok'. This helps avoid accidentally committing invalid regular expressions that may cause parse errors.
+<para> Each error pattern is a set of regular expressions. To edit, test, add,
+or remove error patterns from Console's output parsing module, you can select
+this option dialog. Keep in mind, you must "test/commit" each error pattern
+before clicking 'ok'. This helps avoid accidentally committing invalid regular
+expressions that may cause parse errors.
 </para>
 
 <tip>
 <title> Removing unused patterns. </title>
 
-<para> Since many of the error patterns are similar, it is possible that one of the existing patterns is getting triggered before Console sees the one you are developing. For this reason, it is suggested you remove or disable the error patterns you are not using, and place the error patterns for the tools you use most often at the top of the list.
+<para> Since many of the error patterns are similar, it is possible that one of
+the existing patterns is getting triggered before Console sees the one you are
+developing. For this reason, it is suggested you remove or disable the error
+patterns you are not using, and place the error patterns for the tools you use
+most often at the top of the list.
 </para>
 </tip>
 
 <bridgehead> Compile and Run Options </bridgehead>
 
-<para> For each edit mode, you can choose a command that is 
-   used to compile or run a buffer. 
+<para> For each edit mode, you can choose a command that is
+   used to compile or run a buffer.
    This can be either a commando command or a custom command.
-   These commands are executed in the System shell. 
+   These commands are executed in the System shell.
 </para>
 
 </chapter>
@@ -172,11 +205,17 @@
  <chapter id="window">
   <title>The console window</title>
 
- <para> <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Console</guisubmenu> -&gt; <guimenuitem>Console</guimenuitem> displays the console window. This window is floating by default, but can be  made to dock into the view in the <guilabel>Docking</guilabel> pane of the  <guimenuitem>Global Options</guimenuitem> dialog box.
+ <para> <guimenu>Plugins</guimenu> -&gt; <guisubmenu>Console</guisubmenu> -&gt;
+ <guimenuitem>Console</guimenuitem> displays the console window. This window is
+ floating by default, but can be  made to dock into the view in the
+ <guilabel>Docking</guilabel> pane of the  <guimenuitem>Global
+ Options</guimenuitem> dialog box.
  </para>
 
   <para>
- The console window consists of a popup for choosing the current  <firstterm>shell</firstterm>, a series of icon buttons, and a shell input/output area that occupies the remaining space of the window.
+ The console window consists of a popup for choosing the current
+ <firstterm>shell</firstterm>, a series of icon buttons, and a shell
+ input/output area that occupies the remaining space of the window.
  </para>
 
  <para>
@@ -1581,601 +1620,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
 
  <appendix id="changes">
   <title>Change log</title>
-  <itemizedlist>
-
-    <listitem id="ver4.4.4"><para>
-    <emphasis role="bold">Version 4.4.4</emphasis> Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9,
-    ProjectViewer 3 (optional).
-    <itemizedlist>
-        <listitem><para> Respects jEdit's "use textArea colors" appearance option. </para></listitem>
-        <listitem><para> New ProjectViewer option pane for defining new actions to compile and run a project. (#3153058 - Damien Radtke) </para></listitem>
-
-    </itemizedlist>
-  </para></listitem>
-
-
-  <listitem id="ver4.4.3"><para>
-    <emphasis role="bold">Version 4.4.3</emphasis> Requires jEdit 4.4pre1, JDK 1.6, ErrorList 1.9,
-    ProjectViewer 3.0 (optional).
-    <itemizedlist>
-        <listitem><para> API fixes for compatibility with jEdit 4.5. </para></listitem>
-        <listitem><para> New general option to set favorite shell, or remember previous selected shell. </para></listitem>
-        <listitem><para> No longer generates hidden commandos in the dialog (available via combobox selector). </para></listitem>
-        <listitem><para> Configurable command history size (#2648110 - Eric Le Lay). </para></listitem>
-        <listitem><para> Avoided occasional performance down with large output when maximum scroll buffer size is not set. (Kazutoshi Satoda). </para></listitem>
-    </itemizedlist> </para>
-  </listitem>
-
-  <listitem id="ver4.4.2"><para>
-    <emphasis role="bold">Version 4.4.2</emphasis> Requires jEdit 4.3pre99, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
-    <listitem><para> Un-customize now works even if no FSB is shown yet. </para></listitem>
-    <listitem><para> Do checkBufferStatus() in the event dispatch thread (# 2933468 - Dale Anson) </para></listitem>
-    <listitem><para> No longer uses objectfactory xml parser (Eric Le Lay # 2927830) </para></listitem>
-    <listitem><para> Fixed built-in <literal>pwd</literal> system shell command. </para></listitem>
-
-    </itemizedlist>
-    </para>
-  </listitem>
-
-  <listitem id="ver4.4.1"><para>
-    <emphasis role="bold">Version 4.4.1</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
-        <listitem><para> Patch #2893518 - un-synchronized getOutput() to avoid deadlocks (Damien Radtke) </para></listitem>
-        <listitem><para> Report errors for processes with only one multiline error, fixing regression introduced by 2783642 in Console 4.4. </para></listitem>
-        <listitem><para> Added an "uncustomize" context menu item for Commando Buttons that override same-named commando.xml files from the jar, to easily restore them to the previous state, as well as indicators via tooltip and color, that a button has been customized. </para></listitem>
-    </itemizedlist>
-    </para></listitem>
-
-  <listitem id="ver4.4"><para>
-    <emphasis role="bold">Version 4.4</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
-    	<listitem><para> Updated to listen to ProjectViewer 2.9 project switch events. </para></listitem>
-    	<listitem><para> Updated to use jEdit 4.2 EditBus registration technique (Shlomy Reinstein), for compatibility with MyDoggy Plugin. </para></listitem>
-    	<listitem><para> System shell built-in cd changes drives as well as directories on windows. (Alan Ezust) </para></listitem>
-        <listitem><para> Console: Immediately report errors to ErrorList (Shlomy Reinstein - # 2783642) </para></listitem>
-
-    </itemizedlist>
-   </para>
-  </listitem>
-
-  <listitem id="ver4.3.8"><para>
-    <emphasis role="bold">Version 4.3.8</emphasis> Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer 2.1.3 (optional). <itemizedlist>
-
-	  <listitem><para> Scrolls to bottom whenever dockable is activated. (Alan Ezust) </para></listitem>
-      <listitem><para> 1928738 Fix NPEs caused by patch #1859034 - k_satoda </para></listitem>
-      <listitem><para> Updated console.bsh macros for reloacted beanshell in pre12. </para> </listitem>
-	  <listitem><para> Option to append (instead of prepend) subshell extra path. (Alan Ezust) </para></listitem>
-      <listitem><para> Change to PV selected node no longer causes Console to show if it is not already showing. (Alan Ezust)
-      </para></listitem>
-  </itemizedlist> </para></listitem>
-
-
-  <listitem id="ver4.3.7"><para>
-    <emphasis role="bold">Version 4.3.7</emphasis> Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer 2.1.3 (optional). <itemizedlist>
-      <listitem><para> Rebuilt against pre13 for binary compatibility </para></listitem>
-      <listitem><para> getProjectRoot directory more robust from make.xml, ant.xml and javac.xml - doesn't care if you don't have ProjectViewer or an active project. </para></listitem>
-    </itemizedlist>
-  </para></listitem>
-
-
-  <listitem id="ver4.3.6"><para>
-    <emphasis role="bold">Version 4.3.6</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
-    <listitem><para> New option to remember current working directory from previous sessions (ezust) </para></listitem>
-    <listitem><para> fix bug in capture of extra line for error (1854413 - David Bernard) </para></listitem>
-    <listitem><para> Forward slashes no longer substituted and driveletters no longer prepended in arguments except when expanding completions on MS-Windows. (#185614 - k_satoda, ezust) </para></listitem>
-    <listitem><para> Subshell extra PATH works now (k_satoda - 1859034) </para></listitem>
-    </itemizedlist>
-  </para></listitem>
-
-  <listitem id="ver4.3.5"><para>
-    <emphasis role="bold">Version 4.3.5</emphasis> Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.3 (optional).  <itemizedlist>
-    <listitem><para> Updated for relocated beanshell package in 4.3pre12. </para></listitem>
-    <listitem><para> runCommandToBuffer() doesn't send command to buffer (1643269 - ezust) </para></listitem>
-    <listitem><para> waitForConsole(view) should work properly on *nix systems now. (k_satoda, ezust - #1698976) </para></listitem>
-    <listitem><para> <literal>alias ant ant -emacs</literal> to get rid of adornments when running inside System shell (ezust).</para></listitem>
-    <listitem><para> Improved <literal>generic</literal> extra line regexp - catches javac and gcc multilines better. Made #1 on list. (ezust).  </para></listitem>
-	<listitem><para> (windows only) - driveletters work in Console the way they do in <literal>cmd.exe</literal>, as change-directory shortcuts. Console keeps track of default directories for each drive, as well as the default drive for the current shell session. Also, / works as well as \ for path separators. (Alan Ezust - bug#1511941 ) </para></listitem>
-    <listitem><para> Small changes to make the SshConsole plugin work (ezust). </para> </listitem>
-    </itemizedlist>
-	</para>
-    </listitem>
-
-  <listitem id="ver4.3.4">
-  <para>
-    <emphasis role="bold">Verison 4.3.4</emphasis> Requires jEdit 4.3pre11, JDK 1.5, ErrorList 1.4, and ProjectViewer 2.1.1 (optional).
-    <itemizedlist>
-    <listitem><para> New General Option: chdir VFS node select events. Listens to new VFSPathSelected EBMessage (jEdit 4.3pre11).
-    </para> </listitem>
-    <listitem><para> Fixes to perl error pattern, and to the ErrorMatcher regex routine, to allow for partial line matches (#1764455 - Shlomy Reinstein). </para></listitem>
-    <listitem><para> ErrorPatternOptionPane buttons to add/remove/up/down error patterns work better now (#1715796 - Shlomy Reinstein). </para></listitem>
-    </itemizedlist>
-   </para>
-   </listitem>
-
-
-  <listitem id="ver4.3.3">
-   <para>
-     <emphasis role="bold">Version 4.3.3 </emphasis>
-     Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and ProjectViewer 2.1.1 (optional)
-     <itemizedlist>
-     <listitem><para> 1727037, 1726365 applied, handling error lines in StreamThread better. (k_satoda) </para></listitem>
-     <listitem><para> 1700484 fixed, was not registering dynamic shortcuts on startup. </para></listitem>
-     <listitem><para> 1671430 cd to project root/node needs line break </para></listitem>
-     <listitem><para> Ctrl-P and Ctrl-N select through command history (ezust). </para></listitem>
-     <listitem><para> Paste in the panel moves caret to end of input before pasting (ezust). </para></listitem>
-     </itemizedlist>
-   </para>
-   </listitem>
-
-  <listitem id="ver4.3.2">
-    <para>
-  <emphasis role="bold">Version 4.3.2</emphasis>
-   Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   <itemizedlist>
-      <listitem><para> (1665849) PV CD to selected node no longer requires system shell to be active. (Alan Ezust) </para></listitem>
-      <listitem><para> Buffered Console output is fixed, improved performance rendering command output. (Marcelo Vanzin)
-      </para></listitem>
-      <listitem><para> New option: Max console scrollback buffer size (Carmine Lucarelli)  </para></listitem>
-   </itemizedlist>
-   </para>
-   </listitem>
-
-
-  <listitem id="ver4.3.1">
-   <para>
-       <emphasis role="bold">Version 4.3.1</emphasis>
-  Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   <itemizedlist>
-     <listitem><para> Process exited message
-   from shell command to buffer no longer ends up in buffer. </para>
-     </listitem>
-    <listitem><para>(#1630431) Typing in the consolepane when caret is not at bottom moves caret to end of document first. (Alan Ezust)
-    </para></listitem>
-   </itemizedlist>
-   </para>
-   </listitem>
-
-  <listitem id="ver4.3.0">
-
-    <para>
-       <emphasis role="bold">Version 4.3.0</emphasis>
-  Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   <itemizedlist>
-     <listitem><para> New dynamic ActionSet (Plugin: Console - Shell Switchers) generated for switching to, or toggling the Console, combined with selecting a specific shell. In other words, now you can bind a specific keyboard shortcut to "Toggle Beanshell" and another for "Show Ant Shell", etc. (Alan Ezust)</para> </listitem>
-     </itemizedlist>
-  </para></listitem>
-
- <listitem id="ver4.2.6.5">
-   <para>
-   <emphasis role="bold">Version 4.2.6.5</emphasis>
-   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   </para>
-   <itemizedlist>
-      <listitem><para>
-        Bug# 1223288 - no longer buffering output of subprocesses. Some interactive programs work in Console again. (Christopher Plant)
-   </para></listitem>
-   <listitem><para>
-   Ctrl-Enter is now the same as "run command to buffer" </para></listitem>
-
-  </itemizedlist>
-  </listitem>
-
-  <listitem id="ver4.2.6.4">
-    <para>
-     <emphasis role="bold">Version 4.2.6.4</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) (Alan Ezust)
-  </para>
-  <itemizedlist>
-
-    <listitem><para>
-        Added option to not show welcome message. </para></listitem>
-    <listitem><para>
-        File completion now expands ~ as the homedir. </para></listitem>
-    <listitem><para>
-        Ctrl-U deletes what you typed. </para></listitem>
-    <listitem><para> Bugfix with runInSystemShell - selects the correct Output now. </para></listitem>
-  </itemizedlist>
-  </listitem>
-
-
-
-  <listitem id="ver4.2.6.3">
-    <para>
-     <emphasis role="bold">Version 4.2.6.3</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-  </para>
-  <itemizedlist>
-       <listitem><para> Improved LaTeX commando. </para></listitem>
-       <listitem><para> Fixed bug # 1480991 related to printing exit codes after a subprocess exits. </para></listitem>
-   </itemizedlist>
-
-
-  </listitem>
-  <listitem id="ver4.2.6.2">
-    <para>
-     <emphasis role="bold">Version 4.2.6.2</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   </para>
-   <itemizedlist>
-   <listitem>  <para> New console prefix modes: "osdefault" and "none". Both work now, and are documented. </para></listitem>
-
-  <listitem><para> For bash prefix mode, fixed some quote handling bugs. </para></listitem>
-
-   </itemizedlist>
-
-  </listitem>
-  <listitem id="ver4.2.6.1">
-    <para>
-     <emphasis role="bold">Version 4.2.6.1</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) (Alan Ezust)
-   </para>
-   <itemizedlist>
-   <listitem>  <para>
-	  Improved <command>make</command> and <command>ant</command> commando buttons (They grab ProjectViewer's root dir).
-   </para>
-      </listitem>
-      <listitem>
-       <para>
-      Fixed *nix quoting/spacing/platform issues (1468934).
-      </para></listitem>
-      <listitem><para>
-      Fixed 1459562 - Console.waitFor() now works. </para></listitem>
-    <listitem><para>
-      Added checkboxes in General Option Pane: showExitStatus and mergeStreams. </para></listitem>
-      <listitem><para>
-      Added "none" option for shell prefix (which currently does not work).   </para></listitem>
-      </itemizedlist>
-      </listitem>
-      <listitem id="ver4.2.6">
-    <para>
-     <emphasis role="bold">Version 4.2.6</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   <itemizedlist>
-      <listitem>
-       <para>
-      Generic error pattern handles windows pathnames now.
-      </para></listitem>
-      <listitem>
-      <para> Improved/updated documentation. </para> </listitem>
-     </itemizedlist>
-    </para>
-   </listitem>
-
-   <listitem id="ver4.2.5.2">
-    <para>
-     <emphasis role="bold">Version 4.2.5.2</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional)
-   <itemizedlist>
-   <listitem>  <para>
-	  Bugs fixed: 1185273, 1465602, 1450389. (Ezust)
-   </para>
-      </listitem>
-      <listitem>
-       <para>
-      Rewrote variable substitution code. (Ezust)
-   </para>
-      </listitem>
-      <listitem>
-       <para>
-	   Merging stdout/stderr of subprocesses is optional and works now. (Ezust)
-   </para>
-      </listitem>
-      <listitem>
-       <para>
-	   Rewrote the StreamThread class to use StreamReader.
-       This means that output and error parsing is faster now. (Marcello Vanzin) </para>
-   </listitem>
-   </itemizedlist>
-   </para></listitem>
-
-   <listitem id="ver4.2.5.1">
-    <para>
-     <emphasis role="bold">Version 4.2.5.1</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) (Alan Ezust)
-   <itemizedlist>
-   <listitem>  <para>
-	  Bugs fixed: 1460349 1459481 1459460 1454080 1449325 1448809
-   </para>
-      </listitem>
-      <listitem>
-       <para>
-	  added informative label in <classname>ErrorOptionPane</classname> so people Test/Commit changes to error paths.
-   </para>
-      </listitem>
-      <listitem>
-       <para>
-   feature request 1202051 - now users can prepend directories to the <envar>PATH</envar> of child processes.
-   </para>
-      </listitem>
-     </itemizedlist>
-    </para>
-
-   </listitem>
-
-   <listitem id="ver4.2.5">
-    <para>
-     <emphasis role="bold">Version 4.2.5</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) </para>
-    <para>
-    Bugfixes, refactoring, code cleanup. (Alan Ezust)
-  </para>
-   </listitem>
-
-
-   <listitem id="ver4.2.4">
-    <para>
-     <emphasis role="bold">Version 4.2.4</emphasis>
-
-   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) (Alan Ezust) </para>
-    <itemizedlist>
-     <listitem>
-      <para>
-     Closing one View does not remove toolbars from all other views.</para>
-     </listitem>
-     <listitem>
-      <para>  Un-broke some earlier plugin-breaking
-		  changes.
-	  </para>
-     </listitem>
-     <listitem>
-      <para>
-     Improved Perl error pattern bug# 1195354
-     </para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-   <listitem id="ver4.2.2">
-    <para>
-     <emphasis role="bold">Version 4.2.2</emphasis>
-   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5,
-   ProjectViewer 2.1.1 (optional) (Alan Ezust)
-   </para>
-
-    <itemizedlist>
-     <listitem>
-      <para>
-     Rewrote the Error Pattern dialog into a JPanel, embeddable in the
-     larger OptionPane. No more popping up of dialogs for editing an error
-     pattern. </para>
-      <para>
-     Now it is possible to enable/disable individual error matchers with
-		 a checkbox there. </para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-   <listitem id="ver4.2.1">
-    <para>
-     <emphasis role="bold">Version 4.2.1</emphasis>
-     Requires jEdit 4.2 final, ErrorList 1.3.5, and <emphasis role="bold">JDK 1.5</emphasis>.
-     Optional: Projectviewer 2.1.0.92 (for listening to events) (Alan Ezust)
-   <itemizedlist>
-     <listitem>
-     <para>
-     Rewrote command execution part to use the JDK 1.5
-     <literal>ProcessBuilder</literal> class. This made it possible to
-     merge <literal>stdout</literal> and <literal>stderr</literal>,
-     which means that the output of <literal>make</literal>, which
-     sends its "entering/leaving" messages to stdout, and its error
-     messages to stderr, can be merged into one stream for parsing. </para>
-      </listitem>
-
-      <listitem>
-       <para>
-     Applied encoding patch from jedit-plugin-bugs #1245860.
-     </para>
-      </listitem>
-
-      <listitem>
-       <para> Context menu on commando buttons lets you hide/customize the
-     built-in commands with ease. </para>
-      </listitem>
-
-      <listitem>
-       <para>New beanshell commands bound to system shell actions: chdir to
-     ProjectViewer root, and chdir to ProjectViewer current.
-     </para>
-      </listitem>
-
-      <listitem>
-       <para>Option to bind the above actions to new ProjectViewer
-     Events. </para>
-      </listitem>
-
-      <listitem>
-       <para> Console Preferences allow you to set a prefix, so you can
-     run each command in an alternate shell (not working yet). </para>
-
-
-      </listitem>
-     </itemizedlist>
-    </para>
-   </listitem>
-
-   <listitem id="ver4.2">
-    <para>
-     <emphasis role="bold">Version 4.2</emphasis>
-   Requires jEdit 4.2 final, JDK 1.4, and ErrorList 1.3.5 </para>
-
-    <itemizedlist>
-     <listitem>
-      <para>
-      Possibility of testing regular expressions in the
-      Plugin Options - Console - Error Patterns. </para>
-     </listitem>
-
-     <listitem>
-      <para> Rewrote to use <classname>java.util.Pattern</classname>
-      instead of <classname>gnu.regex.RE</classname>. </para>
-     </listitem>
-
-     <listitem>
-      <para>
-      Possibility of selecting which Commando buttons are shown in the
-      toolbar.
-    </para>
-     </listitem>
-     <listitem>
-      <para>Added some more Commando buttons (make, ant) to choose from.  </para>
-     </listitem>
-     <listitem>
-      <para>Misc bugfixes  - Alan Ezust</para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-
-   <listitem id="ver4.1.2">
-    <para>
-     <emphasis role="bold">Version 4.1.2</emphasis>
-   requires jEdit 4.2final, JDK 1.4, and ErrorList 1.3.1.</para>
-
-    <itemizedlist>
-     <listitem>
-      <para>Console caret color is now configurable (Justin Dieters).
-   </para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-   <listitem id="ver4.1.1">
-    <para>
-     <emphasis role="bold">Version 4.1.1</emphasis>
-   requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
-
-    <itemizedlist>
-     <listitem>
-      <para>Fixed race condition with command output to a buffer that
-   could result in a <classname>NullPointerException</classname>.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Commando dialog fields are saved, as long as they do not
-   result from a computed evaluation (for example, path names are not saved
-   because they are computed from the current buffer's name).
-   </para>
-     </listitem>
-     <listitem>
-      <para>Pressing <keycombo><keycap>Control</keycap>
-        <keycap>Z</keycap>
-       </keycombo>
-   detaches the foreground process. The process continues running in the background, and no longer shows
-   output in the console.
-   </para>
-     </listitem>
-    </itemizedlist>
-
-   </listitem>
-
-
-   <listitem>
-    <para>
-     <emphasis role="bold">Version 4.1</emphasis>
-   requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
-
-    <itemizedlist>
-     <listitem>
-      <para>Minor change to <classname>EvalAction</classname> for Factor.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Invoking <function>%clear</function> in the system shell would
-   print the prompt twice.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Passing a path name that is not a directory to <function>%cd</function>
-   now prints an error.
-   </para>
-     </listitem>
-     <listitem>
-      <para>If running a command caused the current shell to be changed, output would
-   still go to the old shell.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Error parsing and copying of text from the console
-   was broken on Windows, due to incorrect line terminator
-   handling.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Automatically check for files being changed on disk after a command completes.
-   </para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-   <listitem>
-    <para>
-     <emphasis role="bold">Version 4.0.1</emphasis>
-   requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
-
-    <itemizedlist>
-     <listitem>
-      <para>Generic error pattern was broken.
-   </para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-   <listitem>
-    <para>
-     <emphasis role="bold">Version 4.0</emphasis>
-   requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
-
-    <itemizedlist>
-     <listitem>
-      <para>The separate input field is now gone; all input is done
-   in the console pane.
-   </para>
-     </listitem>
-     <listitem>
-      <para>The plugin can now send standard input to processes. Press
-   <keycombo><keycap>Control</keycap>
-        <keycap>D</keycap>
-       </keycombo> to send
-   an end-of-file.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Unloading the Console plugin did not hide the Commando
-   tool bar.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Console tool bar is now gone, since the console input field
-   component no longer exists.
-   </para>
-     </listitem>
-     <listitem>
-      <para>Fixed a minor flaw in the generic error pattern, add Python
-   error pattern (Ollie Rutherfurd).
-   </para>
-     </listitem>
-     <listitem>
-      <para>If an error was raised by the BeanShell, opening the Console
-   in subsequently-created views would fail because of a rogue variable that
-   was set in the global namespace.
-   </para>
-     </listitem>
-    </itemizedlist>
-   </listitem>
-
-  </itemizedlist>
-
- </appendix>
+   <para> Click <ulink url="docs/CHANGELOG.txt">here</ulink> to see the full
+   changelog. </para>
+  </appendix>   
 
 </book>

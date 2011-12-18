@@ -1,0 +1,302 @@
+:encoding=UTF-8:maxLineLen=80:wrap=hard:folding=indent:collapseFolds=2:
+Console Changelog
+
+    Version 4.4.4 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer 3
+    (optional).
+
+        Respects jEdit's "use textArea colors" appearance option.
+        ProjectViewer option pane for defining commands to compile and run
+        project. (#3153058 - Damien Radtke)
+        Bug fixes (2360096, 2933787)
+
+    Version 4.4.3 Requires jEdit 4.4pre1, JDK 1.6, ErrorList 1.9, ProjectViewer
+    3.0 (optional).
+
+        API fixes for compatibility with jEdit 4.5.
+        New general option to set favorite shell, or remember previous selected
+        shell.
+        No longer generates hidden commandos in the dialog (available via
+        combobox selector).
+        Configurable command history size (#2648110 - Eric Le Lay).
+        Avoided occasional performance down with large output when maximum
+        scroll buffer size is not set. (Kazutoshi Satoda).
+
+    Version 4.4.2 Requires jEdit 4.3pre99, JDK 1.5, ErrorList 1.4, ProjectViewer
+    2.9 (optional).
+
+        Un-customize now works even if no FSB is shown yet.
+        Do checkBufferStatus() in the event dispatch thread (# 2933468 - Dale
+        Anson)
+        No longer uses objectfactory xml parser (Eric Le Lay # 2927830)
+        Fixed built-in pwd system shell command.
+
+    Version 4.4.1 Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer
+    2.9 (optional).
+
+        Patch #2893518 - un-synchronized getOutput() to avoid deadlocks (Damien Radtke)
+        Report errors for processes with only one multiline error, fixing
+        regression introduced by 2783642 in Console 4.4.
+        Added an "uncustomize" context menu item for Commando Buttons that
+        override same-named commando.xml files from the jar, to easily restore
+        them to the previous state, as well as indicators via tooltip and color,
+        that a button has been customized.
+
+    Version 4.4 Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer
+    2.9 (optional). 
+
+        Updated to listen to ProjectViewer 2.9 project switch events.
+        Updated to use jEdit 4.2 EditBus registration technique (Shlomy
+        Reinstein), for compatibility with MyDoggy Plugin.
+        System shell built-in cd changes drives as well as directories on
+        windows. (Alan Ezust)
+        Console: Immediately report errors to ErrorList (Shlomy Reinstein - #
+        2783642)
+
+    Version 4.3.8 Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer
+    2.1.3 (optional).
+
+        Scrolls to bottom whenever dockable is activated. (Alan Ezust)
+        1928738 Fix NPEs caused by patch #1859034 - k_satoda
+        Updated console.bsh macros for reloacted beanshell in pre12.
+        Option to append (instead of prepend) subshell extra path. (Alan Ezust)
+        Change to PV selected node no longer causes Console to show if it is not
+        already showing. (Alan Ezust)
+
+    Version 4.3.7 Requires jEdit 4.3pre13, JDK 1.5, ErrorList 1.4, ProjectViewer
+    2.1.3 (optional).
+
+        Rebuilt against 4.3pre13 for binary compatibility
+        getProjectRoot directory more robust from make.xml, ant.xml and
+        javac.xml - doesn't care if you don't have ProjectViewer or an active
+        project.
+
+    Version 4.3.6 Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and
+    ProjectViewer 2.1.3 (optional).
+
+        New option to remember current working directory from previous sessions
+        (ezust)
+        fix bug in capture of extra line for error (1854413 - David Bernard)
+        Forward slashes no longer substituted and driveletters no longer
+        prepended in arguments except when expanding completions on MS-Windows.
+        (#185614 - k_satoda, ezust)
+        Subshell extra PATH works now (k_satoda - 1859034)
+
+    Version 4.3.5 Requires jEdit 4.3pre12, JDK 1.5, ErrorList 1.4, and
+    ProjectViewer 2.1.3 (optional).
+
+        Updated for relocated beanshell package in 4.3pre12.
+        runCommandToBuffer() doesn't send command to buffer (1643269 - ezust)
+        waitForConsole(view) should work properly on *nix systems now.
+        (k_satoda, ezust - #1698976)
+        alias ant ant -emacs to get rid of adornments when running inside System
+        shell (ezust).
+        Improved generic extra line regexp - catches javac and gcc multilines
+        better. Made #1 on list. (ezust).
+        (windows only) - driveletters work in Console the way they do in
+        cmd.exe, as change-directory shortcuts. Console keeps track of default
+        directories for each drive, as well as the default drive for the current
+        shell session. Also, / works as well as \ for path separators. (Alan
+        Ezust - bug#1511941 )
+        Small changes to make the SshConsole plugin work (ezust).
+
+    Verison 4.3.4 Requires jEdit 4.3pre11, JDK 1.5, ErrorList 1.4, and
+    ProjectViewer 2.1.1 (optional).
+
+        New General Option: chdir VFS node select events. Listens to new
+        VFSPathSelected EBMessage (jEdit 4.3pre11).
+        Fixes to perl error pattern, and to the ErrorMatcher regex routine, to
+        allow for partial line matches (#1764455 - Shlomy Reinstein).
+        ErrorPatternOptionPane buttons to add/remove/up/down error patterns work
+        better now (#1715796 - Shlomy Reinstein).
+
+    Version 4.3.3 Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        1727037, 1726365 applied, handling error lines in StreamThread better.
+        (k_satoda)
+        1700484 fixed, was not registering dynamic shortcuts on startup.
+        1671430 cd to project root/node needs line break
+        Ctrl-P and Ctrl-N select through command history (ezust).
+        Paste in the panel moves caret to end of input before pasting (ezust).
+
+    Version 4.3.2 Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        (1665849) PV CD to selected node no longer requires system shell to be
+        active. (Alan Ezust)
+        Buffered Console output is fixed, improved performance rendering command
+        output. (Marcelo Vanzin)
+        New option: Max console scrollback buffer size (Carmine Lucarelli)
+
+    Version 4.3.1 Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        Process exited message from shell command to buffer no longer ends up in
+        buffer.
+        (#1630431) Typing in the consolepane when caret is not at bottom moves
+        caret to end of document first. (Alan Ezust)
+
+    Version 4.3.0 Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        New dynamic ActionSet (Plugin: Console - Shell Switchers) generated for
+        switching to, or toggling the Console, combined with selecting a
+        specific shell. In other words, now you can bind a specific keyboard
+        shortcut to "Toggle Beanshell" and another for "Show Ant Shell", etc.
+        (Alan Ezust)
+
+    Version 4.2.6.5 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        Bug# 1223288 - no longer buffering output of subprocesses. Some
+        interactive programs work in Console again. (Christopher Plant)
+        Ctrl-Enter is now the same as "run command to buffer"
+
+    Version 4.2.6.4 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional) (Alan Ezust)
+
+        Added option to not show welcome message.
+        File completion now expands ~ as the homedir.
+        Ctrl-U deletes what you typed.
+        Bugfix with runInSystemShell - selects the correct Output now.
+
+    Version 4.2.6.3 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        Improved LaTeX commando.
+        Fixed bug # 1480991 related to printing exit codes after a subprocess exits.
+
+    Version 4.2.6.2 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional) 
+
+        New console prefix modes: "osdefault" and "none". Both work now, and are
+        documented.
+        For bash prefix mode, fixed some quote handling bugs.
+
+    Version 4.2.6.1 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional) (Alan Ezust)
+
+        Improved make and ant commando buttons (They grab ProjectViewer's root dir).
+        Fixed *nix quoting/spacing/platform issues (1468934).
+        Fixed 1459562 - Console.waitFor() now works.
+        Added checkboxes in General Option Pane: showExitStatus and mergeStreams.
+        Added "none" option for shell prefix (which currently does not work).
+
+    Version 4.2.6 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        Generic error pattern handles windows pathnames now.
+        Improved/updated documentation.
+
+    Version 4.2.5.2 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+        Bugs fixed: 1185273, 1465602, 1450389. (Ezust)
+        Rewrote variable substitution code. (Ezust)
+        Merging stdout/stderr of subprocesses is optional and works now. (Ezust)
+        Rewrote the StreamThread class to use StreamReader. This means that
+        output and error parsing is faster now. (Marcello Vanzin)
+
+    Version 4.2.5.1 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional) (Alan Ezust) 
+
+        Bugs fixed: 1460349 1459481 1459460 1454080 1449325 1448809
+        added informative label in ErrorOptionPane so people Test/Commit changes
+        to error paths.
+        feature request 1202051 - now users can prepend directories to the PATH
+        of child processes.
+
+    Version 4.2.5 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional)
+
+    	Bugfixes, refactoring, code cleanup. (Alan Ezust)
+
+    Version 4.2.4 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+    ProjectViewer 2.1.1 (optional) (Alan Ezust)
+
+        Closing one View does not remove toolbars from all other views.
+        Un-broke some earlier plugin-breaking changes.
+        Improved Perl error pattern bug# 1195354
+
+    Version 4.2.2 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5,
+    ProjectViewer 2.1.1 (optional) (Alan Ezust)
+
+        Rewrote the Error Pattern dialog into a JPanel, embeddable in the larger
+        OptionPane. No more popping up of dialogs for editing an error pattern.
+
+        Now it is possible to enable/disable individual error matchers with a
+        checkbox there.
+
+    Version 4.2.1 Requires jEdit 4.2 final, ErrorList 1.3.5, and JDK 1.5.
+    Optional: Projectviewer 2.1.0.92 (for listening to events) (Alan Ezust)
+
+        Rewrote command execution part to use the JDK 1.5 ProcessBuilder class.
+        This made it possible to merge stdout and stderr, which means that the
+        output of make, which sends its "entering/leaving" messages to stdout,
+        and its error messages to stderr, can be merged into one stream for
+        parsing.
+
+        Applied encoding patch from jedit-plugin-bugs #1245860.
+        Context menu on commando buttons lets you hide/customize the built-in
+        commands with ease.
+        New beanshell commands bound to system shell actions: chdir to
+        ProjectViewer root, and chdir to ProjectViewer current.
+        Option to bind the above actions to new ProjectViewer Events.
+        Console Preferences allow you to set a prefix, so you can run each
+        command in an alternate shell (not working yet).
+
+    Version 4.2 Requires jEdit 4.2 final, JDK 1.4, and ErrorList 1.3.5
+
+        Possibility of testing regular expressions in the Plugin Options -
+        Console - Error Patterns.
+        Rewrote to use java.util.Pattern instead of gnu.regex.RE.
+        Possibility of selecting which Commando buttons are shown in the toolbar.
+        Added some more Commando buttons (make, ant) to choose from.
+        Misc bugfixes - Alan Ezust
+
+    Version 4.1.2 requires jEdit 4.2final, JDK 1.4, and ErrorList 1.3.1.
+
+        Console caret color is now configurable (Justin Dieters).
+
+    Version 4.1.1 requires jEdit 4.2final and the ErrorList plugin 1.3.1.
+
+        Fixed race condition with command output to a buffer that could result
+        in a NullPointerException.
+        Commando dialog fields are saved, as long as they do not result from a
+        computed evaluation (for example, path names are not saved because they
+        are computed from the current buffer's name).
+        Pressing Control+Z detaches the foreground process. The process
+        continues running in the background, and no longer shows output in the
+        console.
+
+    Version 4.1 requires jEdit 4.2final and the ErrorList plugin 1.3.1.
+
+        Minor change to EvalAction for Factor.
+        Invoking %clear in the system shell would print the prompt twice.
+        Passing a path name that is not a directory to %cd now prints an error.
+        If running a command caused the current shell to be changed, output
+        would still go to the old shell.
+        Error parsing and copying of text from the console was broken on
+        Windows, due to incorrect line terminator handling.
+        Automatically check for files being changed on disk after a command
+        completes.
+
+    Version 4.0.1 requires jEdit 4.2final and the ErrorList plugin 1.3.1.
+
+        Generic error pattern was broken.
+
+    Version 4.0 requires jEdit 4.2final and the ErrorList plugin 1.3.1.
+
+        The separate input field is now gone; all input is done in the console
+        pane.
+        The plugin can now send standard input to processes. Press Control+D to
+        send an end-of-file.
+        Unloading the Console plugin did not hide the Commando tool bar.
+        Console tool bar is now gone, since the console input field component no
+        longer exists.
+        Fixed a minor flaw in the generic error pattern, add Python error
+        pattern (Ollie Rutherfurd).
+        If an error was raised by the BeanShell, opening the Console in
+        subsequently-created views would fail because of a rogue variable that
+        was set in the global namespace.
+
