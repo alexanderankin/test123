@@ -1,0 +1,22 @@
+<project name="FXBrowser" default="build" basedir=".">
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="dist.target" value="dist.complete" />
+	<property name="docs-proc.target" value="none" />
+	<property name="compiler.source" value="1.6" />
+	<property name="compiler.target" value="1.6" />
+	
+
+	<import file="${build.support}/plugin-build.xml" />
+
+
+	<path id="project.class.path">
+		<pathelement location="${javafxc.home}/rt/lib/jfxrt.jar"/>
+	</path>
+	
+	<selector id="packageFiles">
+		<or>
+			<filename name="docs/FXBrowser.html" />
+		</or>
+	</selector>
+</project>
