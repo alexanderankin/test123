@@ -1,0 +1,12 @@
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.activate=defer
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.name=FXBrowser
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.author=Matthieu Casanova
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.version=1.0.0
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.docs=docs/FXBrower.html
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.depend.0=jdk 1.6
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.depend.1=jedit 04.04.01.00
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.description=FXBrowser is a web browser for jEdit using JavaFX
+plugin.com.kpouer.jedit.fxbrowser.FXBrowserPlugin.usePluginHome=true
+
+
+fxbrowser-panel.title=FX Browser
