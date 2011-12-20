@@ -19,10 +19,26 @@
 	</para>
 	<para>
 		The standard java documentation can be found at
-		http://java.sun.com/javase/downloads/index.jsp (under Additional
-		Resources, look for "Java SE 6 Documentation"), and the jEdit
-		api should have come with your jEdit installation.
+		www.oracle.com/technetwork/java/javase/downloads/index.html 
+		(under Additional Resources, look for "Java SE Documentation").
+		Unzip the downloaded file into a location of choice and add a  
+		javadoc tree to "[your directory]/docs/api".
 	</para>
+	<para>
+		Optionally, you can also add the documentation main directory 
+		"[your directory]/docs" to have a shortcut to the documentation 
+		overview.
+	</para>
+	<para>
+		The jEdit api should have come with your jEdit installation. 
+		Typically, it can be found in "/usr/share/jEdit/doc/api" 
+		or in "C:/Program Files/jEdit/doc/api".
+	</para>
+	<para>
+		You can browse the documentation, with the action: "View...". 
+		This action is only available, if all trees are valid
+		documentation paths, containing a file "index.html". 
+	</para>	
 	<para>
 		To quickly search the api trees for a particular class, there are two
 		available actions: "Search...", which opens up a dialog requesting
@@ -32,7 +48,10 @@
 	<para>
 		This plugin uses the InfoViewer plugin to display the documentation,
 		which can be configured in <guimenu>Plugins</guimenu> > <guimenu>Plugin
-		Options</guimenu> > <guimenu>InfoViewer</guimenu>.
+		Options</guimenu> > <guimenu>InfoViewer</guimenu>. 
+		Especially, in case of rendering problems, you may choose an 
+		external browser, e.g. with commands "firefox $u" or 
+		"C:/Program Files/Internet Explorer/iexplore.exe $u". 
 	</para>
 	</chapter>
 </book>
