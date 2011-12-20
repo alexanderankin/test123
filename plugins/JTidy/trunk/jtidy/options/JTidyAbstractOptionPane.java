@@ -78,7 +78,7 @@ public abstract class JTidyAbstractOptionPane
 
 
     public OptionPaneComponent[] getOptionPaneComponents() {
-        return this.components;
+        return this.components;     // NOPMD
     }
 
 

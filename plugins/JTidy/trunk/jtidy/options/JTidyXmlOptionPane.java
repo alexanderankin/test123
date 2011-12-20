@@ -36,7 +36,7 @@ public class JTidyXmlOptionPane
 
                     try {
                         idx = Integer.parseInt(jEdit.getProperty(this.getJEditProp()));
-                    } catch (NumberFormatException nfe) {}
+                    } catch (NumberFormatException nfe) {}      // NOPMD
 
                     // Special case for fpi
                     String value =

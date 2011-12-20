@@ -69,9 +69,7 @@ public class CheckBoxComponent
     public void saveTo(Properties props) {
         props.put(
             this.getTidyProp(),
-            jEdit.getBooleanProperty(this.getJEditProp(), this.checkBox.isSelected())
-                ? "yes"
-                : "no"
+            this.checkBox.isSelected() ? "yes" : "no"
         );
     }
 
