@@ -90,6 +90,10 @@
         <pathelement location="${src.dir}"/>
     </path>
 
+    <target name="build.prepare">
+        <ant antfile="build.xml" dir="substance-6.1"/>
+    </target>
+    
     <target name="build.post">
         <copy todir="${install.dir}">
             <fileset refid="libraries" />
