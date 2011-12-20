@@ -30,7 +30,7 @@ import javax.swing.ListCellRenderer;
 
 import org.gjt.sp.jedit.jEdit;
 
-import org.gjt.sp.util.Log;
+//import org.gjt.sp.util.Log;
 
 
 public class ComboBoxComponent
@@ -66,7 +66,7 @@ public class ComboBoxComponent
         int selectedItem = this.defaultIndex;
         try {
             selectedItem = Integer.parseInt(jEdit.getProperty(this.getJEditProp()));
-        } catch (NumberFormatException nfe) {}
+        } catch (NumberFormatException nfe) {}      // NOPMD
 
         this.comboBox.setSelectedIndex(selectedItem);
     }
@@ -89,7 +89,7 @@ public class ComboBoxComponent
 
         try {
             idx = Integer.parseInt(jEdit.getProperty(this.getJEditProp()));
-        } catch (NumberFormatException nfe) {}
+        } catch (NumberFormatException nfe) {}      // NOPMD
 
         props.put(tidyProp, jEdit.getProperty(this.getJEditProp() + "." + idx));
     }
@@ -119,14 +119,12 @@ public class ComboBoxComponent
             Object value, int index, boolean isSelected,
             boolean cellHasFocus
         ) {
-            if (isSelected) {
-                if (ComboBoxComponent.this.helper != null) {
-                    String text = ComboBoxComponent.this.getHelpText(index);
-                    if (text == null) {
-                        text = ComboBoxComponent.this.getHelpText();
-                    }
-                    ComboBoxComponent.this.helper.showHelp(text);
+            if (isSelected && ComboBoxComponent.this.helper != null) {
+                String text = ComboBoxComponent.this.getHelpText(index);
+                if (text == null) {
+                    text = ComboBoxComponent.this.getHelpText();
                 }
+                ComboBoxComponent.this.helper.showHelp(text);
             }
 
             return this.renderer.getListCellRendererComponent(list,

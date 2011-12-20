@@ -21,17 +21,14 @@
 package jtidy;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.io.FilterWriter;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 
 import org.gjt.sp.util.Log;
@@ -70,7 +67,6 @@ public class JTidyErrorSourceWriter
 
     public void write(int c) throws IOException
     {
-        System.out.println("+++++ write c");
         buf.append(c);
         if (lineSeparator.indexOf(c) != -1) {
             this.showErrors();
@@ -80,7 +76,6 @@ public class JTidyErrorSourceWriter
 
     public void write(char[] cbuf, int off, int len) throws IOException
     {
-        System.out.println("+++++ write cbuf");
         buf.append(cbuf, off, len);
         char c;
         for (int i = off, j = len - 1; j >= 0; i++, j--) {
@@ -178,7 +173,7 @@ main:   for (int i = 0; i < len; i++) {
                 type   = ErrorSource.WARNING;
 
                 success = true;
-            } catch (Exception e) {
+            } catch (Exception e) {     // NOPMD
                 // Log.log(Log.ERROR, this, e);
             }
         }
@@ -198,7 +193,7 @@ main:   for (int i = 0; i < len; i++) {
                 out.write(lineSeparator);
 
                 success = true;
-            } catch (Exception e) {
+            } catch (Exception e) {     // NOPMD
                 // Log.log(Log.ERROR, this, e);
             }
         }
@@ -220,7 +215,6 @@ main:   for (int i = 0; i < len; i++) {
 
     private void showEmacsError(String line) throws IOException {
         int type   = ErrorSource.WARNING;
-        String path = "";
         int lineNo = 0;
         int colNo  = 0;
         String msg = "";
@@ -231,14 +225,13 @@ main:   for (int i = 0; i < len; i++) {
             try {
                 Object[] o = msgEmacsWarning.parse(line);
 
-                path   = (String) o[0];
                 lineNo = ((Number) o[1]).intValue();
                 colNo  = ((Number) o[2]).intValue();
                 msg    = res_warning + ((String) o[9]);
                 type   = ErrorSource.WARNING;
 
                 success = true;
-            } catch (Exception e) {
+            } catch (Exception e) {     // NOPMD
                 // Log.log(Log.ERROR, this, e);
             }
         }
@@ -247,7 +240,6 @@ main:   for (int i = 0; i < len; i++) {
             try {
                 Object[] o = msgEmacsError.parse(line);
 
-                path   = (String) o[0];
                 lineNo = ((Number) o[1]).intValue();
                 colNo  = ((Number) o[2]).intValue();
                 msg    = res_error + ((String) o[9]);
@@ -259,7 +251,7 @@ main:   for (int i = 0; i < len; i++) {
                 out.write(lineSeparator);
 
                 success = true;
-            } catch (Exception e) {
+            } catch (Exception e) {     // NOPMD
                 // Log.log(Log.ERROR, this, e);
             }
         }

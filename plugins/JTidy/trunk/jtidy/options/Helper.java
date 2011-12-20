@@ -20,8 +20,6 @@
 
 package jtidy.options;
 
-import java.awt.Component;
-
 
 public interface Helper
 {
