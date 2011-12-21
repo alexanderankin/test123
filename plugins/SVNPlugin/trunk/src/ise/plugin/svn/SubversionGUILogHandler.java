@@ -78,11 +78,6 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     private Color GREEN = new Color(0, 153, 51);
     private Color foreground = Color.BLACK;
 
-    /**
-     * Current font
-     */
-    private Font currentFont = null;
-
     private SimpleAttributeSet attributeSet = null;
 
     /**
@@ -120,7 +115,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         }
 
         // use the same font as the jEdit text area
-        currentFont = jEdit.getFirstView().getEditPane().getTextArea().getPainter().getFont();
+        Font currentFont = jEdit.getFirstView().getEditPane().getTextArea().getPainter().getFont();
         textPane.setFont(currentFont);
 
         textPane.setCaretPosition(0);
@@ -238,7 +233,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     }
 
     private void queueMessage(StyledMessage sm) {
-        messageQueue.add(sm);
+        messageQueue.addLast(sm);
     }
 
     private void processMessage(final StyledMessage sm) {
@@ -308,8 +303,12 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         public void run() {
             setPriority(Thread.MIN_PRIORITY);
             while (true) {
-                while (messageQueue.size() > 0) {
-                    processMessage(messageQueue.remove());
+                while (!messageQueue.isEmpty()) {
+                    try {
+                        processMessage(messageQueue.removeFirst());
+                    } catch (Exception e) {     // NOPMD
+                        // ignored
+                    }
                     yield();
                 }
                 try {
