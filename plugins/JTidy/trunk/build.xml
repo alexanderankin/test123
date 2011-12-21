@@ -60,6 +60,7 @@
 		<property file="${user.home}/.build.properties"/>
 		<property file="${user.home}/build.properties"/>
 		<property name="src.dir" value="jtidy"/>
+		<property name="jedit.plugins.dir" value="${install.dir}" />
 		
 		<import file="${build.support}/plugin-build.xml" />
 		
@@ -93,8 +94,8 @@
 	<!-- {{{ Paths -->
 		<path id="project.class.path">
 				<pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${install.dir}/ErrorList.jar"/>
-        <pathelement location="${install.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
 				<fileset refid="libraries" />
 				<pathelement location="${src.dir}"/>
 		</path>
