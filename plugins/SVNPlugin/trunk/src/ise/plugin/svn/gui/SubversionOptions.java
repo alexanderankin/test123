@@ -69,12 +69,8 @@ public class SubversionOptions implements OptionPane {
         ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getTextField().setForeground( jEdit.getColorProperty( "view.fgColor", Color.BLACK ) );
         ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getTextField().setBackground( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
 
-        panel.add( useTsvnTemplate, "0, 0, 2, 1, 0, wh, 5" );
 
-        JPanel max_logs_panel = new JPanel( new FlowLayout() );
-        max_logs_panel.add( new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) ) );
-        max_logs_panel.add( maxLogs );
-        panel.add( "0, 1, 2, 1, W,  , 5", max_logs_panel );
+        JLabel maxLogsLabel = new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) );
 
         fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
         fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6"} );
@@ -98,8 +94,12 @@ public class SubversionOptions implements OptionPane {
 
         }
         fileformat.setSelectedItem( wc_item );
-        panel.add( "0, 3, 1, 1, E,  , 3", fileformat_label );
-        panel.add( "1, 3, 2, 1, 0, w, 3", fileformat );
+        
+        panel.add( "0, 0, 2, 1, W, w, 3", useTsvnTemplate );
+        panel.add( "0, 1, 1, 1, W, w, 3", maxLogsLabel);
+        panel.add( "1, 1, 1, 1, W, w, 3", maxLogs );
+        panel.add( "0, 2, 1, 1, W, w, 3", fileformat_label );
+        panel.add( "1, 2, 2, 1, W, w, 3", fileformat );
 
     }
 
