@@ -101,11 +101,13 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( jEdit.getProperty( "ips.Add...", "Add..." ) );
         item.addActionListener( getAddActionListener() );
         add( item );
+        /* resolve/resolved doesn't work with svnkit 1.7 alpha
         item = new JMenuItem( jEdit.getProperty( "ips.Resolve_Conflicts...", "Resolve Conflicts..." ) );
         item.addActionListener( getResolveConflictsActionListener() );
         add( item );
         item = new JMenuItem( jEdit.getProperty( "ips.Mark_File_Resolved...", "Mark File Resolved..." ) );
         item.addActionListener( getResolvedActionListener() );
+        */
         add( item );
         item = new JMenuItem( jEdit.getProperty( "ips.Delete...", "Delete..." ) );
         item.addActionListener( getDeleteActionListener() );
@@ -129,9 +131,11 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( jEdit.getProperty( "ips.Diff...", "Diff..." ) );
         item.addActionListener( getDiffActionListener() );
         add( item );
+        /* TODO: merge doesn't work with svnkit 1.7 alpha
         item = new JMenuItem( jEdit.getProperty( "ips.Merge", "Merge" ) + "..." );
         item.addActionListener( getMergeActionListener() );
         add( item );
+        */
         /// TODO: uncomment these when time lapse works
         //item = new JMenuItem( jEdit.getProperty("ips.TimeLapse...", "Time Lapse") );
         //item.addActionListener( getTimeLapseActionListener() );
@@ -143,9 +147,11 @@ public class TextAreaContextMenu extends JMenu {
         item = new JMenuItem( jEdit.getProperty( "ips.Switch", "Switch" ) );
         item.addActionListener( getSwitchActionListener() );
         add( item );
+        /* TODO: cleanup doesn't work with svnkit 1.7 alpha
         item = new JMenuItem( jEdit.getProperty( "ips.Cleanup...", "Cleanup..." ) );
         item.addActionListener( getCleanupActionListener() );
         add( item );
+        */
         addSeparator();
         item = new JMenuItem( jEdit.getProperty( "ips.Copy", "Copy" ) );
         item.addActionListener( getCopyActionListener() );

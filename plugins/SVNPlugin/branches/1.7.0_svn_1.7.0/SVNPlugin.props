@@ -6,7 +6,7 @@
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
 plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
-plugin.ise.plugin.svn.SVNPlugin.version=1.6.1
+plugin.ise.plugin.svn.SVNPlugin.version=1.7.0
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
 
 # docs
@@ -64,8 +64,9 @@ ise.plugin.svn.action.label.5=Revert...
 ise.plugin.svn.action.code.5=ise.plugin.svn.pv.RevertActor
 ise.plugin.svn.action.label.6=Add
 ise.plugin.svn.action.code.6=ise.plugin.svn.pv.AddActor
-ise.plugin.svn.action.label.7=Mark Resolved
-ise.plugin.svn.action.code.7=ise.plugin.svn.pv.ResolvedActor
+# TODO: resolve doesn't work with svnkit 1.7 alpha
+#ise.plugin.svn.action.label.7=Mark Resolved
+#ise.plugin.svn.action.code.7=ise.plugin.svn.pv.ResolvedActor
 ise.plugin.svn.action.label.8=Delete...
 ise.plugin.svn.action.code.8=ise.plugin.svn.pv.DeleteActor
 ise.plugin.svn.action.label.9=Ignore...
@@ -81,8 +82,10 @@ ise.plugin.svn.action.label.14=Properties
 ise.plugin.svn.action.code.14=ise.plugin.svn.pv.PropertyActor
 ise.plugin.svn.action.label.15=Diff...
 ise.plugin.svn.action.code.15=ise.plugin.svn.pv.DiffActor
-ise.plugin.svn.action.label.16=Merge...
-ise.plugin.svn.action.code.16=ise.plugin.svn.pv.MergeActor
+# TODO: merge doesn't work with svnkit 1.7 alpha
+#ise.plugin.svn.action.label.16=Merge...
+#ise.plugin.svn.action.code.16=ise.plugin.svn.pv.MergeActor
+# timelapse hasn't been completed.
 #ise.plugin.svn.action.label.16=Time Lapse
 #ise.plugin.svn.action.code.16=ise.plugin.svn.pv.TimeLapseActor
 ise.plugin.svn.action.label.17=-
@@ -90,8 +93,9 @@ ise.plugin.svn.action.label.18=Checkout...
 ise.plugin.svn.action.code.18=ise.plugin.svn.pv.CheckoutActor
 ise.plugin.svn.action.label.19=Switch...
 ise.plugin.svn.action.code.19=ise.plugin.svn.pv.SwitchActor
-ise.plugin.svn.action.label.20=Cleanup
-ise.plugin.svn.action.code.20=ise.plugin.svn.pv.CleanupActor
+# TODO: cleanup doesn't work with svnkit 1.7 alpha
+#ise.plugin.svn.action.label.20=Cleanup
+#ise.plugin.svn.action.code.20=ise.plugin.svn.pv.CleanupActor
 ise.plugin.svn.action.label.21=-
 ise.plugin.svn.action.label.22=Copy...
 ise.plugin.svn.action.code.22=ise.plugin.svn.pv.CopyActor
@@ -123,8 +127,10 @@ ise.plugin.svn.gui.br.label.5=Properties
 ise.plugin.svn.gui.br.code.5=ise.plugin.svn.gui.br.Property
 ise.plugin.svn.gui.br.label.6=Diff
 ise.plugin.svn.gui.br.code.6=ise.plugin.svn.gui.br.Diff
-ise.plugin.svn.gui.br.label.7=Merge...
-ise.plugin.svn.gui.br.code.7=ise.plugin.svn.gui.br.Merge
+# TODO: merge doesn't work with svnkit 1.7 alpha
+#ise.plugin.svn.gui.br.label.7=Merge...
+#ise.plugin.svn.gui.br.code.7=ise.plugin.svn.gui.br.Merge
+# timelapse doesn't work yet
 #ise.plugin.svn.gui.br.label.7=Time Lapse
 #ise.plugin.svn.gui.br.code.7=ise.plugin.svn.gui.br.TimeLapse
 ise.plugin.svn.gui.br.label.8=-
