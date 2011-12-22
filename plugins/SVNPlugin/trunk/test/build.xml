@@ -72,6 +72,7 @@
     the plugin.  All of these files will be copied to the jedit_settings/jar
     directory. -->
     <filelist id="plugin.jars" dir="${install.dir}">
+        <file name="JNAPlugin.jar"/>
         <file name="jna.jar"/>
         <file name="svnkit-cli.jar"/>
         <file name="svnkit.jar"/>
@@ -81,6 +82,7 @@
         <file name="ProjectViewer.jar"/>
         <file name="CommonControls.jar"/>
         <file name="kappalayout.jar"/>
+        <file name="InfoViewer.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
@@ -108,7 +110,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="test/CheckoutTest.java"/>
+        <filename name="test/StatusTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
