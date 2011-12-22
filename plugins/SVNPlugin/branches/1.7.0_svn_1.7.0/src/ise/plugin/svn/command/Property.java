@@ -106,7 +106,7 @@ public class Property {
                 PropertyHandler handler = new PropertyHandler( file );
                 SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
                 if ( name != null ) {
-                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), depth, handler, ( Collection ) null );
+                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), depth, handler, ( Collection<String> ) null );
                 }
                 else {
                     // check for multiple properties
@@ -117,7 +117,7 @@ public class Property {
                         if ( key != null ) {
                             name = key.toString();
                             value = String.valueOf( me.getValue() );
-                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), depth, handler, ( Collection ) null );
+                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), depth, handler, ( Collection<String> ) null );
                         }
                     }
                 }
