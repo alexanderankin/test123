@@ -171,6 +171,7 @@ public class RevertAction extends SVNAction {
                         JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Revert", "Revert" ), results_panel );
                         for ( String path : results.getPaths() ) {
+                            updateStatus(path);
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
                                 buffer.reload( RevertAction.this.getView() );

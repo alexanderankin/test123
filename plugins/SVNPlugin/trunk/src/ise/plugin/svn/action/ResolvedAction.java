@@ -169,6 +169,9 @@ public class ResolvedAction extends SVNAction {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Resolved", "Resolved" ), results_panel );
+                        for (String path : paths) {
+                            updateStatus(path);   
+                        }
                     }
                     catch ( Exception e ) {
                         System.err.println( e.getMessage() );

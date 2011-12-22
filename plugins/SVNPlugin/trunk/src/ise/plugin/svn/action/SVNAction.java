@@ -38,6 +38,7 @@ import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.gui.LoginDialog;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.PasswordHandler;
+import ise.plugin.svn.pv.VersionControlState;
 
 public abstract class SVNAction implements ActionListener {
 
@@ -173,5 +174,9 @@ public abstract class SVNAction implements ActionListener {
 
         setUsername( uname );
         setPassword( pwd );             // encrypted password
+    }
+    
+    protected void updateStatus(String path) {
+        VersionControlState.getInstance().updateStatus(path);   
     }
 }

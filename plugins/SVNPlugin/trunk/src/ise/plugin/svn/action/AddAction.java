@@ -37,6 +37,7 @@ import ise.plugin.svn.gui.AddDialog;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+
 import common.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -140,6 +141,9 @@ public class AddAction extends SVNAction {
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Add", "Add" ), results_panel );
+                        for (String path : paths) {
+                            updateStatus(path);   
+                        }
                     }
                     catch ( Exception e ) {
                         System.err.println( e.getMessage() );

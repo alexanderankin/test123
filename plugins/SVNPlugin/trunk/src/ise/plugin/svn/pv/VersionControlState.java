@@ -27,36 +27,52 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 public class VersionControlState implements VersionControlService {
 
     // version control states for Subversion
-    public final static int NONE = 0; // no state
-    public final static int LOCAL_MOD = 1; // modified
-    public final static int LOCAL_ADD = 2; // added
-    public final static int LOCAL_RM = 3; // missing
-    public final static int NEED_UPDATE = 4; // out of date
-    public final static int CONFLICT = 5; // conflicted
-    public final static int DELETED = 6; // deleted
-    public final static int IGNORED = 7; // ignored
-    public final static int LOCKED = 8; // locked
-    public final static int UNVERSIONED = 9;  // unversioned
-    public final static int NORMAL = 10; // normal
+    public static final int NONE = 0;    // no state
+    public static final int LOCAL_MOD = 1;    // modified
+    public static final int LOCAL_ADD = 2;    // added
+    public static final int LOCAL_RM = 3;    // missing
+    public static final int NEED_UPDATE = 4;    // out of date
+    public static final int CONFLICT = 5;    // conflicted
+    public static final int DELETED = 6;    // deleted
+    public static final int IGNORED = 7;    // ignored
+    public static final int LOCKED = 8;    // locked
+    public static final int UNVERSIONED = 9;    // unversioned
+    public static final int NORMAL = 10;    // normal
 
+    public static final int UNKNOWN = -1;
 
     // icon definitions for the various states
-    public final static Icon NORMAL_ICON = createIcon( "ise/plugin/svn/gui/icons/normal.png" );
-    public final static Icon ADDED_ICON = createIcon( "ise/plugin/svn/gui/icons/added.png" );
-    public final static Icon CONFLICT_ICON = createIcon( "ise/plugin/svn/gui/icons/conflict.png" );
-    public final static Icon DELETED_ICON = createIcon( "ise/plugin/svn/gui/icons/deleted.png" );
-    public final static Icon IGNORED_ICON = createIcon( "ise/plugin/svn/gui/icons/ignored.png" );
-    public final static Icon LOCKED_ICON = createIcon( "ise/plugin/svn/gui/icons/locked.png" );
-    public final static Icon MODIFIED_ICON = createIcon( "ise/plugin/svn/gui/icons/modified.png" );
-    public final static Icon OUTOFDATE_ICON = createIcon( "ise/plugin/svn/gui/icons/outofdate.png" );
-    public final static Icon READONLY_ICON = createIcon( "ise/plugin/svn/gui/icons/readonly.png" );
-    public final static Icon UNVERSIONED_ICON = createIcon( "ise/plugin/svn/gui/icons/unversioned.png" );
+    public static final Icon NORMAL_ICON = createIcon("ise/plugin/svn/gui/icons/normal.png");
+    public static final Icon ADDED_ICON = createIcon("ise/plugin/svn/gui/icons/added.png");
+    public static final Icon CONFLICT_ICON = createIcon("ise/plugin/svn/gui/icons/conflict.png");
+    public static final Icon DELETED_ICON = createIcon("ise/plugin/svn/gui/icons/deleted.png");
+    public static final Icon IGNORED_ICON = createIcon("ise/plugin/svn/gui/icons/ignored.png");
+    public static final Icon LOCKED_ICON = createIcon("ise/plugin/svn/gui/icons/locked.png");
+    public static final Icon MODIFIED_ICON = createIcon("ise/plugin/svn/gui/icons/modified.png");
+    public static final Icon OUTOFDATE_ICON = createIcon("ise/plugin/svn/gui/icons/outofdate.png");
+    public static final Icon READONLY_ICON = createIcon("ise/plugin/svn/gui/icons/readonly.png");
+    public static final Icon UNVERSIONED_ICON = createIcon("ise/plugin/svn/gui/icons/unversioned.png");
 
-    private static Icon createIcon( String name ) {
-        return new ImageIcon( VersionControlState.class.getClassLoader().getResource( name ) );
+    private static Icon createIcon(String name) {
+        return new ImageIcon(VersionControlState.class.getClassLoader().getResource(name));
     }
 
     private static Status command = new Status();
+
+    private static HashMap<String, FileStatus> cache = new HashMap<String, FileStatus>();
+    
+    private static class SingletonHolder {
+        public static final VersionControlState instance = new VersionControlState();   
+    }
+    
+    
+    private VersionControlState() {
+        
+    }
+    
+    public static VersionControlState getInstance() {
+        return SingletonHolder.instance;
+    }
 
     /**
      * This method should return an integer identifying the current
@@ -71,46 +87,64 @@ public class VersionControlState implements VersionControlService {
      *
      * @return A service-specific identifier for the file state.
      */
-    public int getNodeState( VPTNode f ) {
-        String path = f.getNodePath();
-        File file = new File( path );
-        SVNStatus status = command.getStatus( file );
+    public int getNodeState(VPTNode f) {
+        return getNodeState(f.getNodePath(), false);
+    }
+
+    public int getNodeState(String path, boolean force) {
+        int rtn = checkModified(path);
+        if (! force && rtn != UNKNOWN) {
+            return rtn;
+        }
+
+        File file = new File(path);
+        SVNStatus status = command.getStatus(file);
         if (status == null) {
-            return NONE;   
+            return NONE;
         }
         SVNStatusType type = status.getContentsStatus();
-        int rtn;
-        if ( SVNStatusType.STATUS_ADDED.equals( type ) ) {
+        if (SVNStatusType.STATUS_ADDED.equals(type)) {
             rtn = LOCAL_ADD;
-        }
-        else if ( SVNStatusType.STATUS_CONFLICTED.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_CONFLICTED.equals(type)) {
             rtn = CONFLICT;
-        }
-        else if ( SVNStatusType.STATUS_DELETED.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_DELETED.equals(type)) {
             rtn = DELETED;
-        }
-        else if ( SVNStatusType.STATUS_IGNORED.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_IGNORED.equals(type)) {
             rtn = DELETED;
-        }
-        else if ( status.isLocked() ) {
+        } else if (status.isLocked()) {
             rtn = LOCKED;
-        }
-        else if ( SVNStatusType.STATUS_MISSING.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_MISSING.equals(type)) {
             rtn = LOCAL_RM;
-        }
-        else if ( SVNStatusType.STATUS_MODIFIED.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_MODIFIED.equals(type)) {
             rtn = LOCAL_MOD;
-        }
-        else if ( SVNStatusType.STATUS_UNVERSIONED.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_UNVERSIONED.equals(type)) {
             rtn = UNVERSIONED;
-        }
-        else if ( SVNStatusType.STATUS_NORMAL.equals( type ) ) {
+        } else if (SVNStatusType.STATUS_NORMAL.equals(type)) {
             rtn = NORMAL;
-        }
-        else {
+        } else {
             rtn = NONE;
         }
+        cache.put(path, new FileStatus(file.lastModified(), rtn));
         return rtn;
+    }
+
+    // return positive int if file has not been modified since last check, 
+    // -1 otherwise. "Modified" is determined only by file timestamp.
+    private int checkModified(String path) {
+        FileStatus fs = cache.get(path);
+        if (fs == null) {
+            return UNKNOWN;
+        }
+        File f = new File(path);
+        long lastModified = f.lastModified();
+        if (lastModified != fs.timestamp) {
+            return UNKNOWN;
+        }
+        return lastModified == fs.timestamp ? fs.status : UNKNOWN;
+    }
+    
+    public void updateStatus(String path) {
+        getNodeState(path, true);   
     }
 
     /**
@@ -121,8 +155,8 @@ public class VersionControlState implements VersionControlService {
      *
      * @return The icon for the given state, or null for no icon.
      */
-    public Icon getIcon( int state ) {
-        switch ( state ) {
+    public Icon getIcon(int state) {
+        switch (state) {
             case LOCAL_MOD:
                 return MODIFIED_ICON;
             case NEED_UPDATE:
@@ -159,7 +193,6 @@ public class VersionControlState implements VersionControlService {
         return ise.plugin.svn.SVNPlugin.class;
     }
 
-
     /**
      * Called when a user removes the version control association with a
      * project (either by not choosing a version control service or a
@@ -169,7 +202,7 @@ public class VersionControlState implements VersionControlService {
      *
      * @param proj The project.
      */
-    public void dissociate( VPTProject proj ) {}
+    public void dissociate(VPTProject proj) { }
 
     /**
      * This method should return the option pane to be shown. As with
@@ -180,10 +213,9 @@ public class VersionControlState implements VersionControlService {
      *
      * @return An OptionPane instance, or null for no option pane.
      */
-    public OptionPane getOptionPane( VPTProject project ) {
-        return new PVSVNOptionPane( project.getName() );
+    public OptionPane getOptionPane(VPTProject project) {
+        return new PVSVNOptionPane(project.getName());
     }
-
 
     /**
      * This should return an OptionGroup to be shown. As with regular
@@ -194,13 +226,24 @@ public class VersionControlState implements VersionControlService {
      *
      * @return null
      */
-    public OptionGroup getOptionGroup( VPTProject project ) {
+    public OptionGroup getOptionGroup(VPTProject project) {
         return null;
     }
-    
+
     public ImporterFileFilter getFilter() {
-        return null;   
+        return null;
     }
 
+    class FileStatus {
+        // timestamp that the status of the file was last checked
+        long timestamp;
 
+        // int representing the status of the file last time it was checked
+        int status;
+
+        public FileStatus(Long lastModified, int status) {
+            timestamp = lastModified;
+            this.status = status;
+        }
+    }
 }
