@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+    <!-- adds the SVN context menu to the jEdit text area context menu -->
+    <SERVICE CLASS="org.gjt.sp.jedit.gui.DynamicContextMenuService" NAME="subversion">
+        new ise.plugin.svn.ContextMenuService();
+    </SERVICE>
+
+    <!-- adds the SVN context menu to Project Viewer context menu -->
+    <SERVICE CLASS="projectviewer.action.Action" NAME="My Action Name">
+        new ise.plugin.svn.pv.SVNAction();
+    </SERVICE>
+
+    <!-- let ProjectViewer display svn state with icons -->
+    <SERVICE CLASS="projectviewer.config.VersionControlService" NAME="Subversion">
+        ise.plugin.svn.pv.VersionControlState.getInstance();
+    </SERVICE>
+    
+    <SERVICE CLASS="projectviewer.importer.ImporterFileFilter" NAME="svn">
+        new ise.plugin.svn.pv.ImportFilter();
+    </SERVICE>
+</SERVICES>
+
