@@ -163,6 +163,7 @@ public class UpdateAction extends SVNAction {
                         JPanel results_panel = new UpdateResultsPanel( getView(), data );
                         panel.addTab( jEdit.getProperty( "ips.Update", "Update" ), results_panel );
                         for ( String path : data.getPaths() ) {
+                            updateStatus(path);
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
                                 buffer.reload( getView() );
@@ -171,7 +172,7 @@ public class UpdateAction extends SVNAction {
                         if ( data.getConflictedFiles() != null ) {
                             StringBuffer sb = new StringBuffer();
                             for ( String path : data.getConflictedFiles() ) {
-                                sb.append( path ).append( "\n" );
+                                sb.append( path ).append( '\n' );
                             }
                             String filelist = sb.toString();
                             if ( filelist.length() > 0 ) {

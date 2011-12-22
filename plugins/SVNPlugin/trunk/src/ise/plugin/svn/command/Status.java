@@ -46,6 +46,16 @@ import ise.plugin.svn.data.StatusData;
 
 public class Status {
     
+    /*
+    static SVNClientManager clientManager;
+    static SVNStatusClient client;
+    static {
+        SVNKit.setupLibrary();
+        clientManager = SVNClientManager.newInstance();
+        client = clientManager.getStatusClient();
+    }
+    */
+    
     /**
      * This is a very fast way of getting status. It only checks against the
      * working copy, never remote.  There is no output to the SVN Console, 
@@ -53,9 +63,11 @@ public class Status {
      * @param path the file to check status of
      */
     public SVNStatus getStatus(File path) {
+        ///
         SVNKit.setupLibrary();
         SVNClientManager clientManager = SVNClientManager.newInstance();
         SVNStatusClient client = clientManager.getStatusClient();
+        ///
         SVNStatus status = null;
         try {
             status = client.doStatus(path, false);

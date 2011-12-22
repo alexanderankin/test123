@@ -177,6 +177,9 @@ public class DeleteAction extends SVNAction {
                         AddResults results = ( AddResults ) get();
                         JPanel results_panel = new AddResultsPanel( results, data.pathsAreURLs() ? AddResultsPanel.REMOTE_DELETE : AddResultsPanel.DELETE, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Delete", "Delete" ), results_panel );
+                        for (String path : data.getPaths()) {
+                            updateStatus(path);    
+                        }
                     }
                     catch ( Exception e ) {
                         e.printStackTrace();

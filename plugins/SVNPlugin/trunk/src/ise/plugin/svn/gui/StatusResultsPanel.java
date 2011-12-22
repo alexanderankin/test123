@@ -62,7 +62,7 @@ public class StatusResultsPanel extends JPanel {
     private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
     private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
 
-    private VersionControlState versionControlState = new VersionControlState();
+    private VersionControlState versionControlState = VersionControlState.getInstance();
 
 
     public StatusResultsPanel( StatusData results, View view, String username, String password ) {

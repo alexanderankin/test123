@@ -180,6 +180,7 @@ public class CommitAction extends SVNAction {
 
                         // fix for 2081908
                         for ( String path : paths.keySet() ) {
+                            updateStatus(path);
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
                                 buffer.reload( getView() );
