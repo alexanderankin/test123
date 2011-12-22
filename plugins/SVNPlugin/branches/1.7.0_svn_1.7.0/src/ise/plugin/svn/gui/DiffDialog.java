@@ -135,8 +135,10 @@ public class DiffDialog extends JDialog {
             panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 1, 1, 1" );
         }
         panel.add( rsp, "0, 2, 1, 1, W, w" );
+        /* TODO: svn diff doesn't work with svnkit 1.7 alpha
         panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 3, 1, 1" );
         panel.add( svn_diff, "0, 4, 1, 1, W, w" );
+        */
         panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 5, 1, 1" );
         panel.add( btn_panel, "0, 6, 1, 1, E" );
         setContentPane( panel );
