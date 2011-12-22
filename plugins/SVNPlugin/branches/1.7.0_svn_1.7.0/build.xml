@@ -64,9 +64,16 @@
             <pathelement path="${java.class.path}"/>
 
             <!-- SVNKit jars -->
+            <!--
             <pathelement location="${lib.dir}/trilead.jar"/>
             <pathelement location="${lib.dir}/svnkit-cli.jar"/>
             <pathelement location="${lib.dir}/svnkit.jar"/>
+            -->
+            <fileset dir="${lib.dir}" id="libraries">
+				<patternset>
+						<include name="*.jar"/>
+				</patternset>
+			</fileset>
             <!-- jna.jar is now provided by the JNAPlugin
             <pathelement location="${lib.dir}/jna.jar"/>
             -->
