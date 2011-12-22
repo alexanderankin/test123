@@ -345,8 +345,12 @@ public class SmartOpenPlugin extends EditPlugin
 	{
 		JEditTextArea ta = view.getTextArea();
 		String selected = ta.getSelectedText();
-		if ((selected != null) && (! "".equals(selected)))
+		if (selected != null && !selected.isEmpty())
+		{
+			if (selected.contains("\n"))
+				return null;
 			return selected;
+		}
 		int line = ta.getCaretLine();
 		String text = ta.getLineText(line);
 		Pattern pat = Pattern.compile("\\w+");
@@ -362,7 +366,7 @@ public class SmartOpenPlugin extends EditPlugin
 			start = m.start();
 			selected = m.group();
 		}
-		if ((start > offset) || (selected.length() == 0))
+		if (start > offset || selected.isEmpty())
 			return null;
 		return selected;
 	}
