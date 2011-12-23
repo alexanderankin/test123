@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.util.Log;
 import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
 import superabbrevs.zencoding.html.*;
@@ -173,8 +174,9 @@ public class SuperAbbrevs {
 				{
 					template = zenParser.parse();
 				}
-				catch (superabbrevs.zencoding.html.ParseException e)
+				catch (Exception e)
 				{
+					Log.log(Log.WARNING, SuperAbbrevs.class, e);
 				}
 			}
 

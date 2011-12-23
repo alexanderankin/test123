@@ -7,8 +7,6 @@ options {
 PARSER_BEGIN(HTMLZenParser)
 /*
  * ZenCoding JavaCC parser
- * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
  *
  * Copyright © 2011 Matthieu Casanova
  *
@@ -70,6 +68,18 @@ TOKEN:
 	<LBRACKET: "[">
 |
 	<RBRACKET: "]">
+|
+	<LBRACE: "{">:INNER_TEXT
+}
+
+<INNER_TEXT> TOKEN:
+{
+	<RBRACE: "}">:DEFAULT
+}
+
+<INNER_TEXT> TOKEN:
+{
+	<TEXT: ~["}"]>
 }
 
 TOKEN:
@@ -110,9 +120,16 @@ void tag(Tag parent):
 {
 	Tag tag;
 	String tagName = "div";
+	boolean implicitTag = true;
 }
 {
-	[ <IDENTIFIER> { tagName = token.image; } ]
+	[
+		<IDENTIFIER>
+		{
+			tagName = token.image;
+			implicitTag = false;
+		}
+	]
 	{
 		tag = new Tag(tagName);
 		parent.addSubtag(tag);
@@ -124,17 +141,51 @@ void tag(Tag parent):
 	|
 		attributes(tag)
 	)*
-	[
-		multiplier(parent, tag)
+	(
+		//{{{ innerTag()
+		{
+			String innerText;
+		}
+		(
+			innerText = innerText()
+			{
+				if (implicitTag)
+				{
+					if (!tag.hasAttributes())
+					{
+						// implicit without attributes, we don't introduce a div
+						parent.removeSubtag(tag);
+						parent.addSubtag(innerText);
+					}
+					else
+						tag.addSubtag(innerText);
+				}
+				else
+					tag.addSubtag(innerText);
+			}
+			//{{{ +tag
+			[
+				LOOKAHEAD(2)
+				<PLUS>
+				tag(parent)
+			] //}}}
+
+		)
+		//}}}
 	|
-		<GT> tag(tag)
-	]
-	//{{{ +tag
-	[
-		LOOKAHEAD(2)
-		<PLUS>
-		tag(parent)
-	] //}}}
+		[
+			multiplier(parent, tag)
+		|
+			<GT> tag(tag)
+		]
+		//{{{ +tag
+		[
+			LOOKAHEAD(2)
+			<PLUS>
+			tag(parent)
+		] //}}}
+	)
+
 } //}}}
 
 //{{{ multiplier() method
@@ -241,9 +292,27 @@ void attributes(Tag tag):
 	<RBRACKET>
 } //}}}
 
+//{{{ innerText() method
+String innerText():
+{
+	Token innerText;
+	StringBuilder builder = new StringBuilder();
+}
+{
+	<LBRACE>
+	(
+		innerText = <TEXT>
+		{
+			builder.append(innerText.image);
+		}
+	)*
+	<RBRACE>
+	{
+		return builder.toString();
+	}
+} //}}}
 
-
-
-
-
-
+/*
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+*/
