@@ -96,6 +96,9 @@ public class HTMLZenParserTester extends TestCase
 								 "\t\t</li>\n" +
 								 "\t</ul>\n" +
 								 "</div>");
+		doTest("p{here}", "<p>here</p>");
+		doTest("p>{here}", "<p>here</p>");
+		doTest("p>{Click }+a{here}+{ to continue}", "<p>Click <a>here</a> to continue</p>");
 	}
 
 	private static void doTest(String tested, String value)

@@ -32,7 +32,7 @@ import java.util.Set;
 public class Tag implements Cloneable
 {
 	private final String name;
-	private final LinkedList<Tag> subTag;
+	private final LinkedList<Object> subTag;
 
 	private final Map<String, String> attributes;
 
@@ -41,7 +41,7 @@ public class Tag implements Cloneable
 	private static int index;
 
 	//{{{ Tag constructors
-	public Tag()
+	Tag()
 	{
 		this(null);
 	}
@@ -49,13 +49,28 @@ public class Tag implements Cloneable
 	public Tag(String name)
 	{
 		this.name = name;
-		subTag = new LinkedList<Tag>();
+		subTag = new LinkedList<Object>();
 		attributes = new HashMap();
 	} //}}}
 
-	public void addSubtag(Tag tag)
+	public void addSubtag(Object o)
 	{
-		subTag.add(tag);
+		subTag.add(o);
+	}
+
+	public void removeSubtag(Object o)
+	{
+		subTag.remove(o);
+	}
+	
+	public boolean hasAttributes()
+	{
+		return !attributes.isEmpty();
+	}
+
+	public String getName()
+	{
+		return name;
 	}
 
 	public void addAttribute(String name, String value)
@@ -105,20 +120,17 @@ public class Tag implements Cloneable
 	{
 		index = 1;
 		StringBuilder builder = new StringBuilder();
-		toString(-1, builder);
+		toString(-1, builder, false);
 		return builder.toString();
 	}
 
-	public void toString(int indent, StringBuilder builder)
+	public void toString(int indent, StringBuilder builder, boolean skipIndent)
 	{
 		String tabs = getTabs(indent);
 		if (name != null)
 		{
-//			if (indent > 0)
-//			{
-//				builder.append('\n').append(tabs);
-//			}
-			builder.append(tabs);
+			if (!skipIndent)
+				builder.append(tabs);
 			builder.append('<').append(name);
 			Set<Map.Entry<String, String>> entries = attributes.entrySet();
 			for (Map.Entry<String, String> entry : entries)
@@ -139,8 +151,6 @@ public class Tag implements Cloneable
 			builder.append('>');
 		}
 
-
-
 		if (subTag.isEmpty())
 		{
 			builder.append('$').append(index++);
@@ -148,25 +158,38 @@ public class Tag implements Cloneable
 		else
 		{
 			int i = 0;
-			for (Tag tag : subTag)
+			boolean prevNodeIsText = false;
+			for (Object o : subTag)
 			{
-				if (indent != -1 || i != 0)
-					builder.append('\n');
-				tag.toString(indent + 1, builder);
-				i++;
+				if (o instanceof Tag)
+				{
+
+					Tag tag = (Tag) o;
+					if ((indent != -1 || i != 0) && !prevNodeIsText)
+						builder.append('\n');
+					tag.toString(indent + 1, builder, prevNodeIsText);
+					i++;
+					prevNodeIsText = false;
+				}
+				else if (o instanceof String)
+				{
+					// inner text
+					prevNodeIsText = true;
+					builder.append(o);
+				}
 			}
 		}
 
 		if (name != null)
 		{
-			if (!subTag.isEmpty())
+			if (!subTag.isEmpty() && subTag.getLast() instanceof Tag)
 				builder.append('\n').append(tabs);
 			builder.append("</").append(name).append('>');
 		}
 	}
 
 	//{{{ getTabs() method
-	private String getTabs(int indent)
+	private static String getTabs(int indent)
 	{
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < indent; i++)
