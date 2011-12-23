@@ -234,6 +234,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                             filterTree();
                             expandTree();
                             tree.addMouseListener( new TreeMouseListener( view, tree ) );
+                            tree.addKeyListener( new TreeKeyListener( view, tree ) );
                             tree.setCellRenderer( new TaskTreeCellRenderer() );
                             add( new JScrollPane( tree ) );
                         }

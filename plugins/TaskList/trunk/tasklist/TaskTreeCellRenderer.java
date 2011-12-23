@@ -51,9 +51,9 @@ public class TaskTreeCellRenderer extends DefaultTreeCellRenderer {
         if ( obj == null ) {
             return null;
         }
+        super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
         if ( obj instanceof String ) {
             // file name node
-            super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
             String bufferDisplay;
             String displayType = jEdit.getProperty( "tasklist.buffer.display", "" );
             if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
@@ -78,8 +78,8 @@ public class TaskTreeCellRenderer extends DefaultTreeCellRenderer {
         setIcon( task.getIcon() );
         setIconTextGap( 0 );
         StringBuilder html = new StringBuilder();
-        html.append( "<html><table><tr><td width=\"50\" align=\"right\">" );
-        html.append( task.getLineNumber() + 1 );
+        html.append( "<html><table cellpadding=0><tr><td width=\"50\" align=\"right\">" );
+        html.append( task.getLineNumber() + 1 ).append("&nbsp;&nbsp;");
         html.append( "</td><td>" );
         html.append( task.getText() );
         html.append( "</td></tr></table></html>" );
