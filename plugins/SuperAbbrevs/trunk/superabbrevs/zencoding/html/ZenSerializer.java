@@ -19,15 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package superabbrevs.zencoding;
-
-import superabbrevs.zencoding.html.ParseException;
-import superabbrevs.zencoding.html.ZenSerializer;
+package superabbrevs.zencoding.html;
 
 /**
  * @author Matthieu Casanova
  */
-public interface ZenParser
+public interface ZenSerializer
 {
-	String parse(ZenSerializer serializer) throws ParseException;
+	String serialize(Tag tag);
 }

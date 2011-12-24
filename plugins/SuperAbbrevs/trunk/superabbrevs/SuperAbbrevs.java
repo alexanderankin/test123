@@ -3,7 +3,6 @@ package superabbrevs;
 import java.util.*;
 import java.io.*;
 
-import com.sun.xml.internal.fastinfoset.util.CharArray;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.bsh.*;
 import org.gjt.sp.jedit.bsh.ParseException;
@@ -172,7 +171,10 @@ public class SuperAbbrevs {
 				ZenParser zenParser = new HTMLZenParser(new StringReader(abbrev));
 				try
 				{
-					template = zenParser.parse();
+					if ("xml".equals(mode))
+						template = zenParser.parse(new XMLSerializer());
+					else
+						template = zenParser.parse(new HTMLSerializer(jEdit.getProperties()));
 				}
 				catch (Exception e)
 				{

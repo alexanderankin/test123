@@ -104,14 +104,14 @@ TOKEN:
 } //}}}
 
 //{{{ parse() method
-String parse():
+String parse(ZenSerializer serializer):
 {
 	Tag tag = new Tag();
 }
 {
 	tag(tag)
 	{
-		return tag.toString();
+		return serializer.serialize(tag);
 	}
 } //}}}
 
@@ -185,6 +185,10 @@ void tag(Tag parent):
 			tag(parent)
 		] //}}}
 	)
+	{
+		if (implicitTag && tag.attributes.isEmpty() && tag.subTags.isEmpty())
+			parent.subTags.remove(tag);
+	}
 
 } //}}}
 

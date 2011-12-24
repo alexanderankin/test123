@@ -24,22 +24,19 @@ package superabbrevs.zencoding.html;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Matthieu Casanova
  */
 public class Tag implements Cloneable
 {
-	private final String name;
-	private final LinkedList<Object> subTag;
+	final String name;
+	final LinkedList<Object> subTags;
 
-	private final Map<String, String> attributes;
+	final Map<String, String> attributes;
 
 	private String lastAttribute;
 	
-	private static int index;
-
 	//{{{ Tag constructors
 	Tag()
 	{
@@ -49,18 +46,18 @@ public class Tag implements Cloneable
 	public Tag(String name)
 	{
 		this.name = name;
-		subTag = new LinkedList<Object>();
+		subTags = new LinkedList<Object>();
 		attributes = new HashMap();
 	} //}}}
 
 	public void addSubtag(Object o)
 	{
-		subTag.add(o);
+		subTags.add(o);
 	}
 
 	public void removeSubtag(Object o)
 	{
-		subTag.remove(o);
+		subTags.remove(o);
 	}
 	
 	public boolean hasAttributes()
@@ -111,91 +108,13 @@ public class Tag implements Cloneable
 		Tag cloned = new Tag(name);
 		cloned.attributes.putAll(attributes);
 		cloned.lastAttribute = lastAttribute;
-		cloned.subTag.addAll(subTag);
+		cloned.subTags.addAll(subTags);
 		return cloned;
 	}
 
 	@Override
 	public String toString()
 	{
-		index = 1;
-		StringBuilder builder = new StringBuilder();
-		toString(-1, builder, false);
-		return builder.toString();
+		return name + '>';
 	}
-
-	public void toString(int indent, StringBuilder builder, boolean skipIndent)
-	{
-		String tabs = getTabs(indent);
-		if (name != null)
-		{
-			if (!skipIndent)
-				builder.append(tabs);
-			builder.append('<').append(name);
-			Set<Map.Entry<String, String>> entries = attributes.entrySet();
-			for (Map.Entry<String, String> entry : entries)
-			{
-				builder.append(' ');
-				builder.append(entry.getKey()).append("=\"");
-				if (entry.getValue() == null)
-				{
-					builder.append('$').append(index++);
-				}
-				else
-				{
-					builder.append(entry.getValue());
-				}
-
-				builder.append('"');
-			}
-			builder.append('>');
-		}
-
-		if (subTag.isEmpty())
-		{
-			builder.append('$').append(index++);
-		}
-		else
-		{
-			int i = 0;
-			boolean prevNodeIsText = false;
-			for (Object o : subTag)
-			{
-				if (o instanceof Tag)
-				{
-
-					Tag tag = (Tag) o;
-					if ((indent != -1 || i != 0) && !prevNodeIsText)
-						builder.append('\n');
-					tag.toString(indent + 1, builder, prevNodeIsText);
-					i++;
-					prevNodeIsText = false;
-				}
-				else if (o instanceof String)
-				{
-					// inner text
-					prevNodeIsText = true;
-					builder.append(o);
-				}
-			}
-		}
-
-		if (name != null)
-		{
-			if (!subTag.isEmpty() && subTag.getLast() instanceof Tag)
-				builder.append('\n').append(tabs);
-			builder.append("</").append(name).append('>');
-		}
-	}
-
-	//{{{ getTabs() method
-	private static String getTabs(int indent)
-	{
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < indent; i++)
-		{
-			builder.append('\t');
-		}
-		return builder.toString();
-	} //}}}
 }
