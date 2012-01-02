@@ -94,17 +94,8 @@ public class ProjectTaskList extends AbstractTreeTaskList {
             // better than 99.9% of the nodes in ProjectViewer
             if ( node.isFile() ) {
                 VPTFile file_node = ( VPTFile ) node;
-                if ( file_node.getFile() == null ) {
-                    continue;
-                }
-
-                String path = file_node.getFile().getPath();
-
-                // added this check for binary files just to speed things up.
-                // Initially, I'm just checking filename extension for standard
-                // image filename extensions, plus .class and .jar files.  There
-                // could be others.
-                if ( isBinary( path ) ) {
+                String path = file_node.getNodePath();
+                if ( Binary.isBinary( path ) ) {
                     continue;
                 }
                 toScan.add( path );
@@ -127,22 +118,5 @@ public class ProjectTaskList extends AbstractTreeTaskList {
         else {
             super.handleMessage( msg );
         }
-    }
-
-    // Helper method to determine binary files.  These are file name extensions
-    // for commonly known binary files.  There could be many others. Those others
-    // will be scanned for tasks, which will hurt performance.
-    private static final String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
-    boolean isBinary( String file ) {
-        if ( file == null || file.length() == 0) {
-            return true;   
-        }
-        String filename = file.toLowerCase();
-        for ( String ext : exts ) {
-            if ( filename.endsWith( ext ) ) {
-                return true;
-            }
-        }
-        return false;
     }
 }

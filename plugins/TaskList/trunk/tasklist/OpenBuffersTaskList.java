@@ -60,6 +60,9 @@ public class OpenBuffersTaskList extends AbstractTreeTaskList {
         for ( EditPane editPane : editPanes ) {
             Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
             for ( Buffer buffer : buffers ) {
+                if (Binary.isBinary(buffer)) {
+                    continue;   
+                }
                 openBuffers.add( buffer.getPath() );
             }
         }

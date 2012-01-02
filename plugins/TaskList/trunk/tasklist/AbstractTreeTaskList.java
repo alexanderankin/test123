@@ -286,19 +286,21 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 Buffer buffer = openBuffers.get( path );
                 
                 boolean can_close = false;
-                if ( buffer == null ) {
+                if ( buffer == null && !Binary.isBinary(path) ) {
                     // file is not open, so open it.  Note that the mode must be
                     // set explicitly since openTemporary won't actually set the mode
                     // and TaskList will fail if the mode is missing.  openTemporary
                     // is preferred over openFile since openTemporary won't send EditBus
                     // messages nor is the buffer added to the buffer list.
                     buffer = jEdit.openTemporary( jEdit.getActiveView(), null, path, false );
-                    Mode mode = TaskListPlugin.getMode( path, buffer.getLineText(0) );
+                    Mode mode = TaskListPlugin.setMode( buffer );
                     if ( mode == null ) {
                         continue;
                     }
-                    buffer.setMode( mode );
-
+                    if (Binary.isBinary(buffer)) {
+                        continue;   
+                    }
+                    
                     // files open this way can be closed when TaskList parsing is complete.
                     can_close = true;
                 }

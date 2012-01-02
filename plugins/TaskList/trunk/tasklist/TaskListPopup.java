@@ -250,7 +250,7 @@ public class TaskListPopup extends JPopupMenu {
             Buffer buffer = jEdit.getBuffer( bufferPath );
             if ( buffer == null ) {
                 buffer = jEdit.openTemporary( view, null, bufferPath, false );
-                buffer.setMode( TaskListPlugin.getMode( bufferPath, buffer.getLineText(0) ) );
+                buffer.setMode();
             }
 
             if ( "parse-buffer".equals( cmd ) ) {

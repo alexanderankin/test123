@@ -18,16 +18,16 @@
 */
 
 /**
-* This code is based on:
-* A macro to show all of the tasks that the TaskList plugin would show
-* if the TaskList plugin had any concept of ProjectViewer.  This macro
-* gets the list of files from ProjectViewer for the current project,
-* passes each of them to TaskList to find the tasks for each file, and
-* combines them all into a single tree display.  This puts all the tasks
-* for the entire project in a single display.
-*
-* @author Dale Anson, 3 Nov 2008
-*/
+ * This code is based on:
+ * A macro to show all of the tasks that the TaskList plugin would show
+ * if the TaskList plugin had any concept of ProjectViewer.  This macro
+ * gets the list of files from ProjectViewer for the current project,
+ * passes each of them to TaskList to find the tasks for each file, and
+ * combines them all into a single tree display.  This puts all the tasks
+ * for the entire project in a single display.
+ *
+ * @author Dale Anson, 3 Nov 2008
+ */
 package tasklist;
 
 import java.util.*;
@@ -37,14 +37,13 @@ import javax.swing.tree.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 
-
 import common.swingworker.*;
 
 public class CurrentBufferTaskList extends AbstractTreeTaskList {
 
-    public CurrentBufferTaskList( View view ) {
-        super( view, jEdit.getProperty( "tasklist.currentbuffer", "Current File:" ) );
-        putClientProperty( "isCloseable", Boolean.FALSE );
+    public CurrentBufferTaskList(View view) {
+        super(view, jEdit.getProperty("tasklist.currentbuffer", "Current File:"));
+        putClientProperty("isCloseable", Boolean.FALSE);
     }
 
     @Override
@@ -55,33 +54,34 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
     @Override
     protected List<String> getBuffersToScan() {
         List<String> buffers = new ArrayList<String>();
-        buffers.add( view.getBuffer().getPath() );
+        if (!Binary.isBinary(view.getBuffer())) {
+            buffers.add(view.getBuffer().getPath());
+        }
         return buffers;
     }
 
-    public void handleMessage( EBMessage message ) {
+    public void handleMessage(EBMessage message) {
         Buffer buffer = view.getBuffer();
         Buffer b = null;
         Object what = null;
-        if ( message instanceof ParseBufferMessage ) {
-            b = ( ( ParseBufferMessage ) message ).getBuffer();
-            what = ( ( ParseBufferMessage ) message ).getWhat();
-            if ( ParseBufferMessage.APPLY_FILTER.equals( what ) ) {
+        if (message instanceof ParseBufferMessage) {
+            b = ((ParseBufferMessage) message).getBuffer();
+            what = ((ParseBufferMessage) message).getWhat();
+            if (ParseBufferMessage.APPLY_FILTER.equals(what)) {
                 filterTree();
-                return ;
+                return;
             }
+        } else if (message instanceof EditPaneUpdate) {
+            b = ((EditPaneUpdate) message).getEditPane().getBuffer();
         }
-        else if ( message instanceof EditPaneUpdate ) {
-            b = ( ( EditPaneUpdate ) message ).getEditPane().getBuffer();
+        if (b == null) {
+            return;
         }
-        if ( b == null ) {
-            return ;
-        }
-        if ( buffer.getPath().equals( b.getPath() ) ) {
+        if (buffer.getPath().equals(b.getPath())) {
             loadFiles();
-            return ;
+            return;
         }
-        super.handleMessage( message );
+        super.handleMessage(message);
     }
 
 }
