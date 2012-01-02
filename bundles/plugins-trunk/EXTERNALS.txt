@@ -53,7 +53,6 @@ P4Plugin        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/P4Plugin
 PHPParser       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PHPParser/trunk
 PerlSideKick    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PerlSideKick/trunk
 ProjectOptions  https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectOptions/trunk
-ProjectViewer   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectViewer/trunk
 RFCReader      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk
 RubyPlugin      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RubyPlugin/trunk
 SQL             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SQL/trunk
@@ -61,6 +60,7 @@ SVNPlugin       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugi
 Sessions        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Sessions/trunk
 ShortcutSaver   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ShortcutSaver/trunk
 SideKick        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SideKick/trunk
+SmartOpen       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SmartOpen/trunk
 SuperAbbrevs    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SuperAbbrevs/trunk
 SyntaxHelper    https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SyntaxHelper/trunk
 Tags            https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Tags/trunk
