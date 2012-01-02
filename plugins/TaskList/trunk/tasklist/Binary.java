@@ -10,6 +10,8 @@ import org.gjt.sp.jedit.MiscUtilities;
  * is not all inclusive, but covers many of the more widely used file formats.
  * This class is to help identify binary files prior to loading them in a buffer,
  * which helps overall performance and helps reduce error messages.
+ *
+ * QUESTION: move this list to properties file? Make the list user-editable?
  */
 public class Binary {
     // This list is from Wikipedia. There may be duplicates.
