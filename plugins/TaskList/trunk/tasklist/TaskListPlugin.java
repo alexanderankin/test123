@@ -46,7 +46,6 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
-import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
@@ -487,8 +486,8 @@ public class TaskListPlugin extends EditPlugin {
 
         TaskListPlugin.clearTasks(buffer);
 
-        // if this file's mode is not to be parsed, skip it
-        if (!parseModes.containsKey(buffer.getMode())) {
+        // if this file's mode is not to be parsed or it is binary, skip it
+        if (!parseModes.containsKey(buffer.getMode()) || Binary.isBinary(buffer)) {
             // fill with empty HashMap of tasks
             bufferMap.put(buffer.getPath(), new HashMap<Integer, Task>());
 
@@ -496,7 +495,7 @@ public class TaskListPlugin extends EditPlugin {
             parseRequests.remove(buffer);
             return ;
         }
-
+        
         int firstLine = 0;
         int lastLine = buffer.getLineCount();
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
@@ -660,23 +659,22 @@ public class TaskListPlugin extends EditPlugin {
     }    // }}}
 
     /**
-     * Helper method to find the mode for the given file.  This is intended for
-     * finding the mode of a temporary buffer.  Actual opened buffers already
-     * have a mode.
-     * @param file The file for a buffer.
-     * @param firstLine The first line of the file.
-     * @return the mode of the buffer or null if not found in our list of
-     * nodes we are allowed to parse.
+     * Helper method to set the mode for a buffer. This is intended for
+     * temporary buffers since already opened buffers will have a mode.
+     * @param buffer A temporary buffer.
+     * @return The mode of the buffer or null if it is either not set 
+     * or not a mode that is to be parsed for tasks.
      */
-    public static Mode getMode(String file, String firstLine) {
-        if (file == null || firstLine == null) {
-            return null;
+    public static Mode setMode(Buffer buffer) {
+        if (buffer == null) {
+            return null;   
         }
         if (parseModes.isEmpty()) {
-            loadParseModes();
+            loadParseModes();   
         }
-        Mode modeForFile = ModeProvider.instance.getModeForFile(file, firstLine);
-        return parseModes.containsKey(modeForFile) ? modeForFile : null;
+        buffer.setMode();
+        Mode mode = buffer.getMode();
+        return parseModes.containsKey(mode) ? mode : null;
     }
 
     /**
@@ -707,4 +705,5 @@ public class TaskListPlugin extends EditPlugin {
     public static void removeRunner(common.swingworker.SwingWorker runner) {
         runners.remove(runner);
     }
+    
 }

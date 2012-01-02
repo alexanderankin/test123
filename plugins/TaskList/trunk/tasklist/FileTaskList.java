@@ -60,7 +60,7 @@ public class FileTaskList extends AbstractTreeTaskList {
     }
     
     private void findPaths(VFSFile file, Set<String> paths) {
-        if (file.getType() == VFSFile.FILE) {
+        if (file.getType() == VFSFile.FILE && !Binary.isBinary(file.getPath())) {
             paths.add(file.getPath());   
         }
         else if (file.getType() == VFSFile.DIRECTORY) {
