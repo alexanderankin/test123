@@ -79,6 +79,11 @@ options.tasklist.tasktype.noicon=(None Selected)
 options.tasklist.modes.label=Modes
 options.tasklist.modes.code=new tasklist.options.TaskListModesOptionPane();
 options.tasklist.modes.parse.label=Parse Tasks for these Modes:
+options.tasklist.modes.modeColumnName=Mode
+options.tasklist.modes.parseTypeColumnName=Parse type
+options.tasklist.modes.none=None
+options.tasklist.modes.all=All
+options.tasklist.modes.comments=Comments
 
 # dockable window name
 tasklist.title=Task List

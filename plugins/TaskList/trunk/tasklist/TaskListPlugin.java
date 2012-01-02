@@ -63,6 +63,12 @@ public class TaskListPlugin extends EditPlugin {
 
     private static Set<common.swingworker.SwingWorker> runners = new HashSet<common.swingworker.SwingWorker>();
 
+    // parse types, most files have their comments parsed for tasks
+    public final static int COMMENT = 0;
+    public final static int NONE = 1;
+    public final static int ALL = 2;
+    
+
     // {{{ start() method
     /**
      * Adds TaskHighlights
@@ -71,6 +77,14 @@ public class TaskListPlugin extends EditPlugin {
         DEBUG = jEdit.getBooleanProperty("tasklist.debug", false);
 
         Log.log(Log.DEBUG, this, "adding TaskHighlights");
+        
+        // text and hex modes don't have comments, so they are not set to be parsed.
+        if (jEdit.getProperty("mode.text.tasklist.parseType") == null) {
+            jEdit.setIntegerProperty("mode.text.tasklist.parseType", NONE);   
+        }
+        if (jEdit.getProperty("mode.hex.tasklist.parseType") == null) {
+            jEdit.setIntegerProperty("mode.hex.tasklist.parseType", NONE);   
+        }
 
         View view = jEdit.getFirstView();
         while (view != null) {
@@ -354,7 +368,6 @@ public class TaskListPlugin extends EditPlugin {
     protected static void propertiesChanged() {
         TaskListPlugin.clearTaskTypes();
         TaskListPlugin.loadTaskTypes();
-        TaskListPlugin.loadParseModes();
 
         highlightColor = GUIUtilities.parseColor(jEdit.getProperty("tasklist.highlight.color"));
 
@@ -362,18 +375,6 @@ public class TaskListPlugin extends EditPlugin {
 
         boolean highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
         toggleHighlights(highlightEnabled);
-    }    // }}}
-
-    // {{{ loadParseModes() method
-    /**
-     * Load which modes are to be parsed and which are not to be parsed.
-     */
-    public static void loadParseModes() {
-        parseModes.clear();
-        Mode[] modes = jEdit.getModes();
-        for (Mode mode : modes) {
-            parseModes.put(mode, mode);
-        }
     }    // }}}
 
     // {{{ clearTaskTypes() method
@@ -407,12 +408,6 @@ public class TaskListPlugin extends EditPlugin {
      */
     private static Map<String, HashMap<Integer, Task>> bufferMap = new HashMap <String, HashMap <Integer, Task >>();
 
-    /**
-     * A collection to track which buffer modes to parse for tasks.  Modes not
-     * in this list won't be parsed.
-     */
-    private static Map<Mode, Mode> parseModes = new HashMap<Mode, Mode>();
-    // }}}
 
     // view <=> task list map
     private static HashMap<View, TaskList> taskLists = new HashMap<View, TaskList>();
@@ -483,11 +478,13 @@ public class TaskListPlugin extends EditPlugin {
         if (buffer == null) {
             return ;
         }
-
+        
         TaskListPlugin.clearTasks(buffer);
 
+        int parseType = jEdit.getIntegerProperty("mode." + buffer.getMode().getName() + ".tasklist.parseType", COMMENT);
+
         // if this file's mode is not to be parsed or it is binary, skip it
-        if (!parseModes.containsKey(buffer.getMode()) || Binary.isBinary(buffer)) {
+        if (parseType == NONE || Binary.isBinary(buffer)) {
             // fill with empty HashMap of tasks
             bufferMap.put(buffer.getPath(), new HashMap<Integer, Task>());
 
@@ -496,6 +493,15 @@ public class TaskListPlugin extends EditPlugin {
             return ;
         }
         
+        if (parseType == COMMENT) {
+            parseBufferByTokens(buffer);
+        }
+        else {
+            parseBufferByLines(buffer);   
+        }
+    }
+    
+    private static void parseBufferByTokens(Buffer buffer) {
         int firstLine = 0;
         int lastLine = buffer.getLineCount();
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
@@ -562,6 +568,35 @@ public class TaskListPlugin extends EditPlugin {
         // remove 'buffer' from parse queue
         parseRequests.remove(buffer);
     }    // }}}
+    
+    private static void parseBufferByLines(Buffer buffer) {
+        int firstLine = 0;
+        int lastLine = buffer.getLineCount();
+        for (int lineNum = firstLine; lineNum < lastLine; lineNum++) {
+            String text = buffer.getLineText(lineNum);
+            for (TaskType taskType : taskTypes) {
+                Task task = taskType.extractTask(buffer, text, lineNum, 0);
+                if (task != null) {
+                    TaskListPlugin.addTask(task);
+                    break;
+                }
+            }
+        }
+
+        // after a buffer has been parsed, bufferMap should contain
+        // an empty set of tasks, if there are not, not a null set
+        // (a null set is used to indicate the buffer has never been parsed)
+        if (bufferMap.get(buffer.getPath()) == null) {
+            bufferMap.put(buffer.getPath(), new HashMap<Integer, Task>());
+        }
+
+        if (TaskListPlugin.DEBUG) {
+            Log.log(Log.DEBUG, TaskListPlugin.class, "TaskListPlugin.parseBuffer(...) DONE");
+        }
+
+        // remove 'buffer' from parse queue
+        parseRequests.remove(buffer);
+    }
 
     // {{{ addTask() method
     /**
@@ -669,12 +704,10 @@ public class TaskListPlugin extends EditPlugin {
         if (buffer == null) {
             return null;   
         }
-        if (parseModes.isEmpty()) {
-            loadParseModes();   
-        }
         buffer.setMode();
         Mode mode = buffer.getMode();
-        return parseModes.containsKey(mode) ? mode : null;
+        int parseType = jEdit.getIntegerProperty("mode." + mode.getName() + ".tasklist.parseType", COMMENT);
+        return parseType != NONE ? mode : null;
     }
 
     /**
