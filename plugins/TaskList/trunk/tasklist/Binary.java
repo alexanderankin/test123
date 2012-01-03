@@ -3,6 +3,7 @@ package tasklist;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 
 /**
@@ -1283,8 +1284,13 @@ public class Binary {
     
     // Check if buffer contents are binary.
     static boolean isBinary(Buffer buffer) {
+        if (buffer == null || buffer.getLength() == 0 || buffer.getText() == null) {
+            return false;   
+        }
         try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(buffer.getText().getBytes());
+            int maxChars = Math.min(buffer.getLength(), jEdit.getIntegerProperty("vfs.binaryCheck.length", 100));
+            String bufferStart = buffer.getText(0, maxChars);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bufferStart.getBytes());
             return MiscUtilities.isBinary(bais);
         }
         catch(IOException e) {
