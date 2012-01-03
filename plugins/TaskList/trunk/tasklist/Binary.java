@@ -956,8 +956,8 @@ public class Binary {
         ".slk", // SYLK (SYmbolic LinK)
         ".stc", // OpenOffice.org XML (obsolete) Spreadsheet template
         ".sxc", // OpenOffice.org XML (obsolete) Spreadsheet
-        ".tab", // tab delimited columns; also TSV (Tab-Separated Values)
-        ".txt", // tab delimited columns
+        //".tab", // tab delimited columns; also TSV (Tab-Separated Values)
+        //".txt", // tab delimited columns
         ".vc", // Visicalc
         ".wk1", // Lotus 1-2-3 up to version 2.01
         ".wk3", // Lotus 1-2-3 version 3.0
