@@ -1,10 +1,12 @@
+TODO: sort by line number doesn't work anymore.
+
 version 0.4.3
 =============
 
-* change patterns to \s|\b?
-* (./) change underline to be straight, like error list?
-* (./) fix: unloading plugin doesn't seem to remove Highlights
-* (./) fix:
+ QUESTION: change patterns to \s|\b?
+ QUESTION: (./) change underline to be straight, like error list?
+ TODO: (./) fix: unloading plugin doesn't seem to remove Highlights
+ TODO: (./) fix:
 
 	[error] ExtensionManager: java.lang.NullPointerException
 	[error] ExtensionManager:  at tasklist.TaskHighlight.underlineTask(TaskHighlight.java:215)
@@ -37,30 +39,30 @@ version 0.4.3
 version 0.4.2
 =============
 
-- docs to reST? (done)
-- put tasklist into it's own package (done)
-- delete task and delete tag into Task class (done)
-- explicit re-parse in TaskList popup (done)
-- fix "Reset task patterns" (done)
-- fix 699048 (done)
-- removing 1 built-in tax, then re-parsing causes error (done)
-- 2-pane split, all tasks are show twice (done)
-- sorting by buffer doesn't work (done)
-- add sorting by buffer to option pane (done)
-- proof/revise docs (done)
+DONE: docs to reST? (done, but dumped, docs now in html)
+DONE: put tasklist into it's own package (done)
+DONE: delete task and delete tag into Task class (done)
+DONE: explicit re-parse in TaskList popup (done)
+DONE: fix "Reset task patterns" (done)
+DONE: fix 699048 (done)
+DONE: removing 1 built-in tax, then re-parsing causes error (done)
+DONE: 2-pane split, all tasks are show twice (done)
+DONE: sorting by buffer doesn't work (done)
+DONE: add sorting by buffer to option pane (done)
+DONE: proof/revise docs (done)
 
 future
 ======
 
-- use SideKick's work request API
-- insert task action(s)
-- example of inserting a task into a comment
-- empahsize that tasks are taken from comments
-- parse text in text mode?
-- don't parse buffers when they've saved, if they're not displayed?
-- next/prev task actions
+TODO: use SideKick's work request API (or newer task manager)
+TODO: insert task action(s)
+TODO: example of inserting a task into a comment
+DONE: empahsize that tasks are taken from comments
+DONE: parse text in text mode?
+TODO: don't parse buffers when they've saved, if they're not displayed?
+TODO: next/prev task actions
 
-- buffer sets: display tasks for current buffer, buffers 
+DONE: buffer sets: display tasks for current buffer, buffers 
   visible in view, all buffers, others?
 
 	// interface something like this?
@@ -68,7 +70,11 @@ future
 		Buffer[] getBuffersInSet();
 		int getBufferCount();
 	}
+	
+	Now have current buffer. open buffers, files from ProjectViewer,
+	files from part of project in ProjectViewer, files from directory or
+	file in File Browser.
 
-- multi-line task comments
+TODO: multi-line task comments
 
 :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:

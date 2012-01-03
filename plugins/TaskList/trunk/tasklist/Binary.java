@@ -12,6 +12,8 @@ import org.gjt.sp.jedit.MiscUtilities;
  * which helps overall performance and helps reduce error messages.
  *
  * QUESTION: move this list to properties file? Make the list user-editable?
+ * Answer: yes, do this. Some file types here may be text. The user may have 
+ * additional file types to add.
  */
 public class Binary {
     // This list is from Wikipedia. There may be duplicates.
@@ -206,7 +208,8 @@ public class Binary {
         ".upf", // Standard for Power-domain specification in SoC implementation
         ".v", // Verilog source file
         ".vcd", // Standard format for digital simulation waveform
-        ".vhd, vhdl", // VHDL source file
+        ".vhd", // VHDL source file
+        ".vhdl",
         
         //  Database
         ".accdb", // Microsoft Database (Microsoft Office Access 2007)
