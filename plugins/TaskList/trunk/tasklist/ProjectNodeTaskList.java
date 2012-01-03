@@ -65,7 +65,7 @@ public class ProjectNodeTaskList extends AbstractTreeTaskList {
     }
     
     private void findPaths(VPTNode node, List<String> paths) {
-        if (node.isFile()) {
+        if (node.isFile() && !Binary.isBinary(node.getNodePath())) {
             paths.add(node.getNodePath());
         }
         else {
