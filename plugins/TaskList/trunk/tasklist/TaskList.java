@@ -237,6 +237,12 @@ public class TaskList extends JPanel implements EBComponent {
                 init();
             }
         }
+        else if ( msg instanceof ParseBufferMessage ) {
+            Object what = ((ParseBufferMessage)msg).getWhat();
+            if (ParseBufferMessage.REINIT.equals(what)) {
+                init();   
+            }
+        }
     }
 
     MouseListener tabMouseListener =

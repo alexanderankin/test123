@@ -29,6 +29,7 @@ public class ParseBufferMessage extends EBMessage {
     public static Object DO_PARSE = "do-parse";
     public static Object DO_PARSE_ALL = "do-parse-all";
     public static Object APPLY_FILTER = "apply-filter";
+    public static Object REINIT = "reinit";
 
     private View view;
     private Buffer buffer;

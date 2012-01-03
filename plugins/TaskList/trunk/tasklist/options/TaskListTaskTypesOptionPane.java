@@ -113,7 +113,8 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
         TaskListPlugin.reloadTaskTypes();
         View[] views = jEdit.getViews();
         for (View view : views) {
-            EditBus.send(new tasklist.ParseBufferMessage(view, view.getBuffer(), tasklist.ParseBufferMessage.DO_PARSE_ALL));
+            EditBus.send(new ParseBufferMessage(view, view.getBuffer(), ParseBufferMessage.REINIT));
+            EditBus.send(new ParseBufferMessage(view, view.getBuffer(), ParseBufferMessage.DO_PARSE_ALL));
         }
     } //}}}
 
