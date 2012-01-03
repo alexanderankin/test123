@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- SQL Result set dockable window -->
+
+<DOCKABLES>
+  <DOCKABLE NAME="sql.resultSet">
+    new sql.ResultSetWindow( view );
+  </DOCKABLE>
+</DOCKABLES>
