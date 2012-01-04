@@ -1,27 +1,33 @@
 <?xml version="1.0"?>
 
 <!--
-	This is a build.xml file for building the CharacterMap jEdit plugin.
+	This is a build.xml file for building the jEdit CharacterMap plugin.
 
-	The 'dist' target compiles the plugin and creates the JAR file
-	in project parent folder. Deletes temporary files.
+	The 'compile' target compiles the plugin.
+	
+	The 'dist' target (DEFAULT) creates the JAR file in the project parent 
+	folder and deletes temporary files.
 
-	The 'install' target compiles the plugin and creates the JAR file.
+	The 'install' target creates the JAR file in the jedit plugin directory.
 
-	The 'run' target starts jEdit using the installed plugin.
+	The 'run' target makes a test run of jEdit with the plugin.
 -->
 
 <project name="charactermap" default="dist" basedir=".">
 
-	<!-- read build.properties -->
-	<property file="../build.properties"/>
+	<!-- Read external configuration files -->
 	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="../../build.properties"/>
 
-	<!-- Directory containing the distribution -->
-	<property name="dist.dir"  value=".."/>
+	<!-- Default directory containing the distribution -->
+	<property name="dist.dir" value=".."/>
 
-	<!-- Directory of build-files -->
-	<property name="build.dir" value="build"/>
+	<!-- Default directory of installed jEdit plugins -->
+	<property name="jedit.plugins.dir" value="${user.home}/.jedit/jars"/>
+	
+	<!-- Default directory of jedit settings for a test run -->
+	<property name="jedit.setting.dir" value="${user.home}/.jedit-test" />
 
 	<property name="jar.name"  value="CharacterMap.jar"/>
 	<property name="src.dir" value="."/>
@@ -85,14 +91,15 @@
 		</jar>
 	</target>
 
-	<target name="run" depends="install">
-		<fail message="Specify setting directory in build.properties">
-			<condition>
-				<not><isset property="jedit.setting.dir"/></not>
-			</condition>
-		</fail>
+	<target name="run" depends="compile">
+		<sleep seconds="2"/>
 		<mkdir dir="${jedit.setting.dir}"/>
-		<!-- code from jEdit's original build.xml -->
+		<mkdir dir="${jedit.setting.dir}/jars"/>
+		<jar jarfile="${jedit.setting.dir}/jars/${jar.name}">
+			<fileset refid="jar-build"/>
+			<fileset refid="jar-src"/>
+		</jar>
+		<!-- Start parameters as in jEdit's original build.xml -->
 		<java jar="${jedit.install.dir}/jedit.jar"
 			fork="true"
 			spawn="true"
