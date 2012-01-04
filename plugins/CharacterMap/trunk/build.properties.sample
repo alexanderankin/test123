@@ -4,18 +4,18 @@
 
 
 ### Directory must be set to the installed jedit.jar 
-### e.g. "../.." or "C:/Program Files/jEdit" etc. -->
+### e.g. "../.." or "C:/Program Files/jEdit" etc. 
 
 # jedit.install.dir=../..
 
-### Directory of jEdit settings. Default:
-### ${user.home}/.jedit
-### If you are compiling inside jEdit and charactermap plugin is open, use e.g.
-### ${user.home}/.jedit-test -->
+### Where to install the plugin
 
-# jedit.setting.dir=${user.home}/.jedit
+# jedit.plugins.dir=${user.home}/.jedit/jars
 
-### Where to install the plugins.
+### Directory of jEdit settings for a test run
+### Should be different from standard directory, 
+### if compiling inside jEdit
 
-# jedit.plugins.dir=${jedit.setting.dir}/jars
+# ${user.home}/.jedit-test
+
 
