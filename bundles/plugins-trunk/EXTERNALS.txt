@@ -24,6 +24,7 @@ CtagsSideKick   https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsSid
 ErrorList       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk
 FTP             https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FTP/trunk
 FastOpen        https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FastOpen/trunk
+FirstMate       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FirstMate/trunk
 FoldViewer      https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FoldViewer
 GdbPlugin       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GdbPlugin/trunk
 GnuRegexp       https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GnuRegexp/trunk
