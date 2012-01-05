@@ -18,11 +18,12 @@ characters. Clicking one will insert it in the buffer.
 
 The CharacterMap plugin displays a dockable window listing all characters in
 a specified encoding, which can be selected using the combo box at the top of
-the window. For non-unicode encodings the table contains 256 characters that
-represent the entire character set. 
+the window.
 <P>
+For non-unicode encodings the table contains 256 characters that
+represent the entire character set.
 For Unicode, (UTF8, UTF16, UTF32) the table displays the selected unicode block.
-Currently only the &quot;basic multilingual plane&quot; is supported, i.e. 
+By default, only the &quot;basic multilingual plane&quot; is shown, i.e.
 the first 65536 unicode characters.
 <P>
 By default, the current buffer encoding is used.
@@ -31,16 +32,15 @@ box text field. Any custom encodings entered are stored in the combo box list
 to ease later selection.
 <P>
 Moving the cursor over the characters in the table updates the status line at 
-the bottom of the window and (if enabled) displays the character under the 
-mouse pointer at the top-right of the window.
+the bottom of the window and (if enabled) displays the character at the top-right of the window.
 <P>
 Clicking on a character with Button 1 on the mouse (typically the left button)
 will cause the character to be inserted at the cursor position in the current
 buffer.
 <P>
 Pressing and holding button 3 on the mouse (typically the right button)
-will display an enlarged (depending on the size specified) version of the 
-character overlayed at the current pointer position.
+will display an enlarged version of the character overlayed at the current 
+pointer position.
 <P>
 The characters in the table are rendered in the font style and size selected 
 for the text area. The anti-alias and fractional font metrics options are 
@@ -92,6 +92,12 @@ The following options can be specified in the option pane.
 	combo box is displayed. The blocks combo box is only enabled when editing 
 	a unicode buffer or when unicode encoding has been specified in the 
 	encoding combo box.</p></li>
+	<li><p>Include higher Unicode planes: Not only the blocks from Plane 1 
+	(Basic Multilingual Plane), but also from higher Planes are shown. 
+	This enables Unicode Characters with Codepoints > 65536 or 0xFFFF.
+	Be aware: This is a Beta Feature, since Java encodes these Characters with
+	two elementary chars instead of one, and you may experience compatibility
+	issues in jEdit.</p></li>
 	<li><p>Always use anti-aliasing: If set, the character glyphs are always
 	rendered anti-aliased (smoothed). If not set the anti-aliasing options 
 	are taken from the Global Options -> Text Area settings.</p></li>
@@ -106,11 +112,10 @@ The following options can be specified in the option pane.
 	- anti-aliased text, large character display, better docking support and 
 	better configuration via an options pane.
 <h3>Version 1.3 (2011)</h3>
-	New version features - Improved layouts for docking. Unicode 6.0.0. 
-	Unicode detection fixed. Statusinfo for UTF16, UTF32. Status for columns 
-	&lt;&gt; 16 fixed. Auto-reload after font/option change, 
-	Font substitution. Table size (unicode) dependent on block size. 
-	Warnings removed (javac, ant, netbeans).
+	Improved layouts for docking. Unicode 6.0.0. 
+	Unicode detection fixed. Statusinfo fixed, UTF16, UTF32 added. 
+	Auto-reload after option change. Font substitution. 
+	Table size (unicode) fixed. Code cleaning.
 
 </body>
 </html>

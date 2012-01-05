@@ -83,6 +83,8 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	private JCheckBox encoding;
 	/** Checkbox controlling display of unicode blocks slider */
 	private JCheckBox blocks;
+	/** Enable higher Unicode planes (Characters above 65536 or 0xFFFF) */
+	private JCheckBox higherplanes;
 	/** Checkbox controlling anti-aliasing */
 	private JCheckBox antialias;
 	
@@ -112,6 +114,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		status = this.createCheckBox("character-map.status", true);
 		encoding = this.createCheckBox("character-map.encoding", true);
 		blocks = this.createCheckBox("character-map.blocks", true);
+		higherplanes = this.createCheckBox("character-map.higherplanes", false);
 		antialias = this.createCheckBox("character-map.anti-alias", false);
 		
 		showLarge.addActionListener(
@@ -190,6 +193,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		addComponent(status);
 		addComponent(encoding);
 		addComponent(blocks);
+		addComponent(higherplanes);
 		addComponent(antialias);
 	}
 
@@ -214,6 +218,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("options.character-map.status", status.isSelected());
 		jEdit.setBooleanProperty("options.character-map.encoding", encoding.isSelected());
 		jEdit.setBooleanProperty("options.character-map.blocks", blocks.isSelected());
+		jEdit.setBooleanProperty("options.character-map.higherplanes", higherplanes.isSelected());
 		jEdit.setBooleanProperty("options.character-map.anti-alias", antialias.isSelected());
 		
 		// Reload CharacterMap.jar		
