@@ -6,6 +6,5 @@ Known Issues:
 Suggested Features:
 - Block groups, e.g. Latin, other European, Symbols...
   (cf. http://en.wikipedia.org/wiki/File:Roadmap_to_Unicode_BMP.svg)
-- Characters from higher unicode planes (> 0xFFFF) should be implemented
 - Character radical lookup search for CJK characters
 

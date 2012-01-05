@@ -89,6 +89,8 @@ public class CharacterMap extends JPanel
 	private boolean showStatus;
 	/** Show the super glyph */
 	private boolean showSuper;
+	/** Show the Characters with Codepoints above 0xFFFF or 65536 */
+	private boolean showHigherPlanes;
 
 	// Font and Graphics settings
 	/** Font size used to draw the large glyph image */
@@ -172,21 +174,25 @@ public class CharacterMap extends JPanel
 		c.gridwidth = 1;
 		gridbag.setConstraints(caption,c);
 
-		blocks = new JComboBox(UnicodeData.getBlocks().toArray());
+		showHigherPlanes = jEdit.getBooleanProperty("options.character-map.higherplanes");
+		if(showHigherPlanes)
+			blocks = new JComboBox(UnicodeData.getBlocks().toArray());
+		else
+			blocks= new JComboBox(UnicodeData.getLowBlocks().toArray());
 		blocks.addItemListener(new ItemHandler());
 
 		c.weightx = 1.0;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(blocks, c);
-		
+
 		showBlocks = jEdit.getBooleanProperty("options.character-map.blocks");
 		if (showBlocks)
 		{
 			northPanel.add(caption);
 			northPanel.add(blocks);
 		}
-		
+
 		caption = new JLabel(jEdit.getProperty("character-map.char-caption"));
 		c.gridwidth=1;
 		c.weightx = 0.0;
@@ -249,13 +255,15 @@ public class CharacterMap extends JPanel
 		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 
 			UIManager.getFont("Label.font").getSize() + 2));
 
-		/* status = new AntiAliasingLabel(" ");
+		/* Alternative: AntiAliasingLabel
+		status = new AntiAliasingLabel(" ");
 		status.setOpaque(false);
 		status.setHorizontalAlignment(SwingConstants.LEFT);
 		status.setHorizontalTextPosition(SwingConstants.LEFT);
 		status.setVerticalAlignment(SwingConstants.CENTER);
 		status.setVerticalTextPosition(SwingConstants.CENTER);
 		status.setFont(font); */
+
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = GridBagConstraints.REMAINDER;
@@ -326,42 +334,89 @@ public class CharacterMap extends JPanel
 					{
 						int b1 = 192;
 						int b2 = 128;
-						b1 += n >> 6;
+						b1 += (n >> 6);
 						b2 += n & 63;
 						buf.append(toHexString(b1, 2, true, "0x"));
 						buf.append(toHexString(b2, 2, true, " 0x"));
 					}
-					else
+					else if (n < 65536)
 					{
 						int b1 = 224;
 						int b2 = 128;
-						int b3 = 128;				
-						b1 += n >> 12;
+						int b3 = 128;
+						b1 += (n >> 12);
 						b2 += (n >> 6) & 63;
 						b3 += n & 63;
 						buf.append(toHexString(b1, 2, true, "0x"));
 						buf.append(toHexString(b2, 2, true, " 0x"));
 						buf.append(toHexString(b3, 2, true, " 0x"));
 					}
-
+					else
+					{
+						int b1 = 240;
+						int b2 = 128;
+						int b3 = 128;
+						int b4 = 128;
+						b1 += (n >> 18);
+						b2 += (n >> 12) & 63;
+						b3 += (n >> 6) & 63;
+						b4 += n & 63;
+						buf.append(toHexString(b1, 2, true, "0x"));
+						buf.append(toHexString(b2, 2, true, " 0x"));
+						buf.append(toHexString(b3, 2, true, " 0x"));
+						buf.append(toHexString(b4, 2, true, " 0x"));
+					}
 				}
 				else if (encoding.contains("16"))
 				{
-					if (encoding.contains("LE"))
+					if (n< 65536)
 					{
-						buf.append(" UTF-16LE: ");
-						int b1 = n & 0xFF;
-						int b2 = (n & 0xFF00) >> 8; 
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
+						if (encoding.contains("LE"))
+						{
+							buf.append(" UTF-16LE: ");
+							int b1 = (n & 0x00FF);
+							int b2 = (n & 0xFF00) >> 8;
+							buf.append(toHexString(b1, 2, true, "0x"));
+							buf.append(toHexString(b2, 2, true, " 0x"));
+						}
+						else // Big endian
+						{
+							buf.append(" UTF-16BE: ");
+							int b1 = (n & 0xFF00) >> 8;
+							int b2 = (n & 0x00FF);
+							buf.append(toHexString(b1, 2, true, "0x"));
+							buf.append(toHexString(b2, 2, true, " 0x"));
+						}
 					}
-					else // Big endian
+					else // n >= 65536
 					{
-						buf.append(" UTF-16BE: ");
-						int b1 = (n & 0xFF00) >> 8;
-						int b2 = n & 0xFF; 
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
+						int nn = n - 65536;
+						int nn_highSurrogate = (54 << 10) + (nn >> 10);
+						int nn_lowSurrogate  = (55 << 10) + (nn & 1023);
+						if (encoding.contains("LE"))
+						{
+							buf.append(" UTF-16LE: ");
+							int b1 = (nn_highSurrogate & 0x00FF);
+							int b2 = (nn_highSurrogate & 0xFF00) >> 8;
+							int b3 = (nn_lowSurrogate  & 0x00FF);
+							int b4 = (nn_lowSurrogate  & 0xFF00) >> 8;
+							buf.append(toHexString(b1, 2, true, "0x"));
+							buf.append(toHexString(b2, 2, true, " 0x"));
+							buf.append(toHexString(b3, 2, true, " 0x"));
+							buf.append(toHexString(b4, 2, true, " 0x"));
+						}
+						else // Big endian
+						{
+							buf.append(" UTF-16BE: ");
+							int b1 = (nn_highSurrogate & 0xFF00) >> 8;
+							int b2 = (nn_highSurrogate & 0x00FF);
+							int b3 = (nn_lowSurrogate  & 0xFF00) >> 8;
+							int b4 = (nn_lowSurrogate  & 0x00FF);
+							buf.append(toHexString(b1, 2, true, "0x"));
+							buf.append(toHexString(b2, 2, true, " 0x"));
+							buf.append(toHexString(b3, 2, true, " 0x"));
+							buf.append(toHexString(b4, 2, true, " 0x"));
+						}
 					}
 				}
 				else if (encoding.contains("32"))
@@ -369,20 +424,26 @@ public class CharacterMap extends JPanel
 					if (encoding.contains("LE"))
 					{
 						buf.append(" UTF-32LE: ");
-						int b1 = n & 0xFF;
-						int b2 = (n & 0xFF00) >> 8; 
+						int b1 = (n & 0x000000FF);
+						int b2 = (n & 0x0000FF00) >> 8;
+						int b3 = (n & 0x00FF0000) >> 16;
+						int b4 = (n & 0xFF000000) >> 24;
 						buf.append(toHexString(b1, 2, true, "0x"));
 						buf.append(toHexString(b2, 2, true, " 0x"));
-						buf.append(" 0x00 0x00");
+						buf.append(toHexString(b3, 2, true, " 0x"));
+						buf.append(toHexString(b4, 2, true, " 0x"));
 					}
 					else // Big endian
 					{
 						buf.append(" UTF-32BE: ");
-						int b1 = (n & 0xFF00) >> 8;
-						int b2 = n & 0xFF; 
-						buf.append("0x00 0x00");
-						buf.append(toHexString(b1, 2, true, " 0x"));
+						int b1 = (n & 0xFF000000) >> 24;
+						int b2 = (n & 0x00FF0000) >> 16;
+						int b3 = (n & 0x0000FF00) >> 8;
+						int b4 = (n & 0x000000FF);
+						buf.append(toHexString(b1, 2, true, "0x"));
 						buf.append(toHexString(b2, 2, true, " 0x"));
+						buf.append(toHexString(b3, 2, true, " 0x"));
+						buf.append(toHexString(b4, 2, true, " 0x"));
 					}
 				}
 			}
@@ -659,7 +720,8 @@ public class CharacterMap extends JPanel
 			if (isEncodingUnicode()) 
 			{
 				int offset = getBlockOffset();
-				return String.valueOf((char) (offset + cell));
+				//return String.valueOf((char) (offset + cell));
+				return new String(Character.toChars(offset+cell));
 			}
 			else {
 				try {

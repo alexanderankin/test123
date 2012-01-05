@@ -34,6 +34,7 @@ character-map.columns-dock-tb=Table columns (docked t/b)
 character-map.status=Show status line
 character-map.encoding=Show encoding combo-box
 character-map.blocks=Show Unicode blocks
+character-map.higherplanes=Include higher Unicode planes (Chars > 0xFFFF)
 character-map.anti-alias=Always use anti-aliasing
 options.character-map.large=true
 options.character-map.large-size=36

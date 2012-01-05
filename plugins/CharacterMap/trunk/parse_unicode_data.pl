@@ -2,9 +2,13 @@
 
 use strict;
 
-# We don't currently deal with Unicode chars above FFFF
-use constant CUTOFF => 0xFFFF;
-use constant CUTOFF_STRING => sprintf '0x%04X', CUTOFF;
+# BMP Plane Unicode chars
+# use constant CUTOFF => 0xFFFF;
+# use constant CUTOFF_STRING => sprintf '0x%04X', CUTOFF;
+
+# All Unicode chars
+use constant CUTOFF => 0x10FFFF;
+use constant CUTOFF_STRING => sprintf '0x%06X', CUTOFF;
 
 use subs qw( parse_ucd_file dump_blocks dump_points );
 
@@ -55,14 +59,14 @@ sub parse_ucd_file {
 sub dump_blocks {
 	print <<JAVA;
 // BEGIN GENERATED CODE: Blocks.txt, cutoff=@{[CUTOFF_STRING]}
-private static List<Block> blocks = Arrays.asList(new Block[] {
+private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Block[] {
 JAVA
 
 	for my $block (@_) {
 		my ($first, $last, $name) = @$block;
 
 	print <<JAVA;
-	new Block("$name", 0x$first, 0x$last),
+	new UnicodeData.Block("$name", 0x$first, 0x$last),
 JAVA
 
 	}
