@@ -51,11 +51,11 @@ public class PropertyComboBox extends JComboBox {
 
         // load the previous values
         Stack<String> values = new Stack<String>();
-        for ( int i = 1; i < 10; i++ ) {
+        for ( int i = 0; i < 10; i++ ) {
             try {
                 String name = jEdit.getProperty( propertyPrefix + i );
                 if ( name == null ) {
-                    break;
+                    continue;
                 }
                 if ( values.search( name ) == -1 ) {
                     values.push( name );
@@ -105,7 +105,8 @@ public class PropertyComboBox extends JComboBox {
      * top 10 items will be saved.
      */
     public void save() {
-        for ( int i = 1; i < Math.min( model.getSize(), 10 ); i++ ) {
+        int index = 0;
+        for ( int i = 0; i < Math.min( model.getSize(), 10 ); i++ ) {
             String value = ( String ) model.getElementAt( i );
             if ( SELECT.equals( value ) ) {
                 // there's a bug here, if SELECT is hit, the loop counter
@@ -113,7 +114,8 @@ public class PropertyComboBox extends JComboBox {
                 continue;
             }
             if ( value != null && value.length() > 0 ) {
-                jEdit.setProperty( propertyPrefix + i, value );
+                jEdit.setProperty( propertyPrefix + index, value );
+                ++index;
             }
         }
     }
