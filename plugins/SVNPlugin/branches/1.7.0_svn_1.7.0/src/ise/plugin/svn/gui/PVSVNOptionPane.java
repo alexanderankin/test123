@@ -108,7 +108,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         // subversion file format
         fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6"} );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "Auto"} );
         fileformat.setEditable( false );
         String wc_item;
         switch ( getWCVersion() ) {
@@ -122,10 +122,12 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 wc_item = "1.5";
                 break;
             case SVNAdminAreaFactory.WC_FORMAT_16:
-            default:
                 wc_item = "1.6";
                 break;
-
+            default:
+                wc_item = "Auto";
+                break;
+                
         }
         fileformat.setSelectedItem( wc_item );
 
@@ -196,10 +198,13 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         else if ( "1.5".equals( new_wc_format ) ) {
             wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
         }
-        else {
+        else if ( "1.6".equals( new_wc_format ) ) {
             wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
         }
-        if ( wc_format != current_wc_format ) {
+        else {
+            wc_format = -1;   
+        }
+        if ( wc_format != -1 && wc_format != current_wc_format ) {
             // put this in a SwingWorker, otherwise, it takes a long time on
             // large projects and causes the UI to hang until it is done.
             final int wcf = wc_format;

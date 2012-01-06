@@ -181,8 +181,49 @@ public class CommitDialog extends JDialog {
     }
 
     private void installComponents( boolean showLogin ) {
-        JPanel panel = new JPanel( new LambdaLayout() );
+        JPanel panel = new JPanel( new BorderLayout() );
+        JPanel topPanel = new JPanel( new KappaLayout() );
+        JPanel bottomPanel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 12, 11, 11, 12 ) );
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // top panel
+        // field for bug number
+        String bug_label_name = bugtraqProperties.getProperty( "bugtraq:label" );
+        if ( bug_label_name != null || bugtraqProperties.getProperty( "bugtraq:message" ) != null ) {
+            JLabel bug_label = new JLabel( bug_label_name == null ? jEdit.getProperty( "ips.Bug_ID>", "Bug ID:" ) : bug_label_name );
+            bugField = new JTextField( 10 );
+            String bugtraq_number = bugtraqProperties.getProperty( "bugtraq:number" );
+            if ( bugtraq_number != null && isTrue( bugtraq_number ) ) {
+                ( ( AbstractDocument ) bugField.getDocument() ).setDocumentFilter( new NumericDocumentFilter() );
+            }
+
+            // add the components to the option panel
+            topPanel.add( "0, 0, 1, 1, W,  , 3", bug_label );
+            topPanel.add( "1, 0, 1, 1, W, w, 3", bugField );
+            topPanel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+        }
+        JLabel label = new JLabel( jEdit.getProperty( "ips.Enter_comment_for_this_commit>", "Enter comment for this commit:" ) );
+        topPanel.add( "0, 2, 6, 1, W,  , 3", label );
+
+        // middle panel        
+        // text area for comment entry, autofill with tsvn template if it is available
+        comment = new JTextPane();
+        comment.setMinimumSize( new Dimension( 400, 100 ) );
+        comment.setBackground( view.getBackground() );
+        comment.setCaretColor( view.getEditPane().getTextArea().getPainter().getCaretColor() );
+        comment.setSelectionColor( view.getEditPane().getTextArea().getPainter().getSelectionColor() );
+        if ( commitMessageTemplate != null ) {
+            comment.setText( commitMessageTemplate );
+        }
+        panel.add( BorderLayout.CENTER, new JScrollPane( comment ) );
+
+        // bottom panel
+        // list for previous comments
+        commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList.setEditable( false );
+        commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
 
         JLabel file_label = new JLabel( jEdit.getProperty( "ips.Committing_these_files>", "Committing these files:" ) );
         BestRowTable file_table = new BestRowTable();
@@ -199,21 +240,6 @@ public class CommitDialog extends JDialog {
         recursiveCheckbox = new JCheckBox( jEdit.getProperty( "ips.Recursively_commit?", "Recursively commit?" ) );
         recursiveCheckbox.setSelected( commitData.getRecursive() );
 
-        // text area for comment entry, autofill with tsvn template if it is available
-        JLabel label = new JLabel( jEdit.getProperty( "ips.Enter_comment_for_this_commit>", "Enter comment for this commit:" ) );
-        comment = new JTextPane();
-        comment.setPreferredSize( new Dimension( 400, 100 ) );
-        comment.setBackground( view.getBackground() );
-        comment.setCaretColor( view.getEditPane().getTextArea().getPainter().getCaretColor() );
-        comment.setSelectionColor( view.getEditPane().getTextArea().getPainter().getSelectionColor() );
-        if ( commitMessageTemplate != null ) {
-            comment.setText( commitMessageTemplate );
-        }
-
-        // list for previous comments
-        commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
-        commentList.setEditable( false );
-
         // possible login
         login = new LoginPanel( commitData.getPaths().get( 0 ) );
         login.setVisible( showLogin );
@@ -221,55 +247,36 @@ public class CommitDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        okButton = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        okButton = new JButton( "What?");//jEdit.getProperty( "ips.Ok", "Ok" ) );
         okButton.setMnemonic( KeyEvent.VK_O );
         cancelButton = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
         cancelButton.setMnemonic( KeyEvent.VK_C );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", okButton );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancelButton );
         kl.makeColumnsSameWidth( 0, 1 );
+        
+        
+        bottomPanel.add( "0, 4, 6, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
+        bottomPanel.add( "0, 5, 6, 1, W, w, 3", commentList );
+        bottomPanel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
-        // field for bug number
-        String bug_label_name = bugtraqProperties.getProperty( "bugtraq:label" );
-        if ( bug_label_name != null || bugtraqProperties.getProperty( "bugtraq:message" ) != null ) {
-            JLabel bug_label = new JLabel( bug_label_name == null ? jEdit.getProperty( "ips.Bug_ID>", "Bug ID:" ) : bug_label_name );
-            bugField = new JTextField( 10 );
-            String bugtraq_number = bugtraqProperties.getProperty( "bugtraq:number" );
-            if ( bugtraq_number != null && isTrue( bugtraq_number ) ) {
-                ( ( AbstractDocument ) bugField.getDocument() ).setDocumentFilter( new NumericDocumentFilter() );
-            }
-
-            // add the components to the option panel
-            panel.add( "0, 0, 1, 1, W,  , 3", bug_label );
-            panel.add( "1, 0, 1, 1, W, w, 3", bugField );
-            panel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        }
-
-        panel.add( "0, 2, 6, 1, W,  , 3", label );
-        panel.add( "0, 3, 6, 1, W, wh, 3", new JScrollPane( comment ) );
-
-        commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-        panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
-        panel.add( "0, 5, 6, 1, W, w, 3", commentList );
-        panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
-
-        panel.add( "0, 7, 6, 1, W,  , 3", file_label );
+        bottomPanel.add( "0, 7, 6, 1, W,  , 3", file_label );
         JScrollPane file_scroller = new JScrollPane( file_table );
         file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 200 ) ) );
-        panel.add( "0, 8, 6, 1, W, w, 3", file_scroller );
+        bottomPanel.add( "0, 8, 6, 1, W, w, 3", file_scroller );
 
         if ( commitData.getRecursive() ) {
-            panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            panel.add( "0, 10, 6, 1, W,  , 3", recursiveCheckbox );
+            bottomPanel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+            bottomPanel.add( "0, 10, 6, 1, W,  , 3", recursiveCheckbox );
         }
 
         if ( showLogin ) {
-            panel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
-            panel.add( "0, 12, 6, 1, 0, w", login );
+            bottomPanel.add( "0, 11, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
+            bottomPanel.add( "0, 12, 6, 1, 0, w", login );
         }
 
-        panel.add( "0, 13, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
-        panel.add( "0, 14, 6, 1, E,  , 0", btn_panel );
+        bottomPanel.add( "0, 13, 1, 1, 0,  , 3", KappaLayout.createVerticalStrut( 11, true ) );
+        bottomPanel.add( "0, 14, 6, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
