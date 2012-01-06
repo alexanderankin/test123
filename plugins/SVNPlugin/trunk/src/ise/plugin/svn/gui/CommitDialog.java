@@ -248,11 +248,9 @@ public class CommitDialog extends JDialog {
         panel.add( "0, 2, 6, 1, W,  , 3", label );
         panel.add( "0, 3, 6, 1, W, wh, 3", new JScrollPane( comment ) );
 
-        if ( commentList != null && commentList.getModel().getSize() > 0 ) {
-            commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-            panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
-            panel.add( "0, 5, 6, 1, W, w, 3", commentList );
-        }
+        commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
+        panel.add( "0, 4, 6, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
+        panel.add( "0, 5, 6, 1, W, w, 3", commentList );
         panel.add( "0, 6, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
 
         panel.add( "0, 7, 6, 1, W,  , 3", file_label );
