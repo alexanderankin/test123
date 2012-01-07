@@ -1,6 +1,5 @@
 package tasklist;
 
-
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.beans.*;
@@ -15,7 +14,7 @@ import common.swingworker.*;
 import ise.java.awt.KappaLayout;
 
 /**
- * Base class of all task list trees. Subclasses need to supply 
+ * Base class of all task list trees. Subclasses need to supply
  * <code>getBuffersToScan</code>.  This class handles all scanning, tree building,
  * tree filtering, and so on.
  */
@@ -51,14 +50,13 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         // that has a lot of files and the user doesn't want to wait until
         // they are all done.
         stopButton = new JButton( jEdit.getProperty( "tasklist.projectfiles.stop", "Stop" ) );
-        stopButton.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    if ( runner != null ) {
-                        runner.cancel( true );
-                    }
+        stopButton.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                if ( runner != null ) {
+                    runner.cancel( true );
                 }
             }
+        }
         );
 
         loadFiles();
@@ -71,7 +69,6 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         super.removeNotify();
         EditBus.removeFromBus( this );
     }
-
 
     /**
      * Finds the tasks in all files using a SwingWorker so as not to impact
@@ -113,8 +110,8 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 filteredRoot.add( filteredBufferNode );
             }
         }
-        String rootDisplay = filteredRoot.getUserObject().toString() + " (" + taskCount + " task" + (taskCount > 1 ? "s)" : ")"); 
-        filteredRoot.setUserObject(rootDisplay);
+        String rootDisplay = filteredRoot.getUserObject().toString() + " (" + taskCount + " task" + ( taskCount > 1 ? "s)" : ")" );
+        filteredRoot.setUserObject( rootDisplay );
         tree.setModel( filteredModel );
         expandTree();
         invalidate();
@@ -146,10 +143,10 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     private class Runner extends common.swingworker.SwingWorker<TreeModel, Object> {
 
         private JProgressBar progressBar = new JProgressBar( 0, 100 );
-        
+
         public Runner() {
             super();
-            TaskListPlugin.addRunner(this);
+            TaskListPlugin.addRunner( this );
         }
 
         @Override
@@ -157,39 +154,36 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             try {
                 // build the tree model
                 if ( showProgress() ) {
-                    SwingUtilities.invokeLater(
-                        new Runnable() {
-                            public void run() {
-                                // show a progress bar while the model is loading
-                                removeAll();
+                    SwingUtilities.invokeLater( new Runnable() {
+                        public void run() {
+                            // show a progress bar while the model is loading
+                            removeAll();
 
-                                progressBar.setStringPainted( true );
-                                JPanel progressPanel = new JPanel( new KappaLayout() );
-                                progressPanel.add( "0, 0, 1, 1, 0, w, 3", new JLabel( jEdit.getProperty( "tasklist.loadingtasksfromfiles.", "Please wait, loading tasks from files..." ) ) );
-                                progressPanel.add( "0, 1, 1, 1, 0, w, 3", progressBar );
-                                JPanel btnPanel = new JPanel();
-                                btnPanel.add( stopButton );
-                                progressPanel.add( "0, 2, 1, 1, 0, 0, 3", btnPanel );
+                            progressBar.setStringPainted( true );
+                            JPanel progressPanel = new JPanel( new KappaLayout() );
+                            progressPanel.add( "0, 0, 1, 1, 0, w, 3", new JLabel( jEdit.getProperty( "tasklist.loadingtasksfromfiles.", "Please wait, loading tasks from files..." ) ) );
+                            progressPanel.add( "0, 1, 1, 1, 0, w, 3", progressBar );
+                            JPanel btnPanel = new JPanel();
+                            btnPanel.add( stopButton );
+                            progressPanel.add( "0, 2, 1, 1, 0, 0, 3", btnPanel );
 
-                                add( progressPanel, BorderLayout.CENTER );
-                                invalidate();
-                                validate();
-                            }
+                            add( progressPanel, BorderLayout.CENTER );
+                            invalidate();
+                            validate();
                         }
+                    }
                     );
-                    addPropertyChangeListener(
-                        new PropertyChangeListener() {
-                            public void propertyChange( PropertyChangeEvent evt ) {
-                                if ( "progress".equals( evt.getPropertyName() ) ) {
-                                    progressBar.setValue( ( Integer ) evt.getNewValue() );
-                                }
+                    addPropertyChangeListener( new PropertyChangeListener() {
+                        public void propertyChange( PropertyChangeEvent evt ) {
+                            if ( "progress".equals( evt.getPropertyName() ) ) {
+                                progressBar.setValue( ( Integer ) evt.getNewValue() );
                             }
                         }
+                    }
                     );
                 }
                 return buildTreeModel();
-            }
-            catch ( Exception e ) {
+            } catch ( Exception e ) {
                 e.printStackTrace();
                 return null;
             }
@@ -199,17 +193,16 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         public boolean cancel( boolean mayInterruptIfRunning ) {
             boolean cancelled = super.cancel( mayInterruptIfRunning );
             if ( cancelled ) {
-                SwingUtilities.invokeLater(
-                    new Runnable() {
-                        public void run() {
-                            removeAll();
-                            invalidate();
-                            validate();
-                        }
+                SwingUtilities.invokeLater( new Runnable() {
+                    public void run() {
+                        removeAll();
+                        invalidate();
+                        validate();
                     }
+                }
                 );
             }
-            TaskListPlugin.removeRunner(this);
+            TaskListPlugin.removeRunner( this );
             return cancelled;
         }
 
@@ -218,36 +211,33 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             try {
                 fullModel = ( TreeModel ) get();
                 if ( fullModel == null ) {
-                    return ;
+                    return;
                 }
+            } catch ( Exception e ) {
+                return;
             }
-            catch ( Exception e ) {
-                return ;
-            }
-            SwingUtilities.invokeLater(
-                new Runnable() {
-                    public void run() {
-                        // build the display
-                        removeAll();
-                        if ( fullModel.getChildCount( fullModel.getRoot() ) > 0 ) {
-                            tree = new JTree( fullModel );
-                            filterTree();
-                            expandTree();
-                            tree.addMouseListener( new TreeMouseListener( view, tree ) );
-                            tree.addKeyListener( new TreeKeyListener( view, tree ) );
-                            tree.setCellRenderer( new TaskTreeCellRenderer() );
-                            add( new JScrollPane( tree ) );
-                        }
-                        else {
-                            JLabel label = new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) );
-                            add( label );
-                        }
-                        invalidate();
-                        validate();
+            SwingUtilities.invokeLater( new Runnable() {
+                public void run() {
+                    // build the display
+                    removeAll();
+                    if ( fullModel.getChildCount( fullModel.getRoot() ) > 0 ) {
+                        tree = new JTree( fullModel );
+                        filterTree();
+                        expandTree();
+                        tree.addMouseListener( new TreeMouseListener( view, tree ) );
+                        tree.addKeyListener( new TreeKeyListener( view, tree ) );
+                        tree.setCellRenderer( new TaskTreeCellRenderer() );
+                        add( new JScrollPane( tree ) );
+                    } else {
+                        JLabel label = new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) );
+                        add( label );
                     }
+                    invalidate();
+                    validate();
                 }
+            }
             );
-            TaskListPlugin.removeRunner(this);
+            TaskListPlugin.removeRunner( this );
             runner = null;
         }
 
@@ -266,44 +256,57 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             if ( toScan == null ) {
                 return model;
             }
-            
+
             Buffer[] buffers = jEdit.getBuffers();
             HashMap<String, Buffer> openBuffers = new HashMap<String, Buffer>();
-            for (Buffer b : buffers) {
-                openBuffers.put(b.getPath(), b);   
+            for ( Buffer b : buffers ) {
+                openBuffers.put( b.getPath(), b );
             }
-            
+
             for ( int i = 0; i < toScan.size(); i++ ) {
                 if ( isCancelled() ) {
                     return model;
                 }
-                String path = toScan.get( i );
 
-                setProgress( 100 * i / toScan.size() );
+                setProgress(100 * i / toScan.size() );
+                
+                String path = toScan.get( i );
+                
+                // skip binary files
+                if ( Binary.isBinary( path ) ) {
+                    continue;
+                }
 
                 // the buffer could already be open in jEdit.  If so, don't
                 // close it below.
                 Buffer buffer = openBuffers.get( path );
-                
                 boolean can_close = false;
-                if ( buffer == null && !Binary.isBinary(path) ) {
-                    // file is not open, so open it.  Note that the mode must be
-                    // set explicitly since openTemporary won't actually set the mode
-                    // and TaskList will fail if the mode is missing.  openTemporary
-                    // is preferred over openFile since openTemporary won't send EditBus
-                    // messages nor is the buffer added to the buffer list.
+
+                if ( buffer == null ) {
+                    // file is not open, so open it.  openTemporary
+                    // is preferred over openFile since openTemporary won't send
+                    // EditBus messages nor is the buffer added to the buffer list.
                     buffer = jEdit.openTemporary( jEdit.getActiveView(), null, path, false );
-                    Mode mode = TaskListPlugin.setMode( buffer );
-                    if ( mode == null ) {
-                        continue;
-                    }
-                    if (Binary.isBinary(buffer)) {
-                        continue;   
-                    }
-                    
+
                     // files open this way can be closed when TaskList parsing is complete.
                     can_close = true;
                 }
+
+                // skip binary files
+                if ( Binary.isBinary( buffer ) ) {
+                    continue;
+                }
+
+                // Set/check the mode. Note that the mode must be set explicitly
+                // for temporary buffers since openTemporary won't actually set
+                // the mode and TaskList will fail if the mode is missing. This
+                // also checks that the mode is one that should be parsed.
+                Mode mode = TaskListPlugin.setMode( buffer );
+                if ( mode == null ) {
+                    continue;
+                }
+
+                // actually parse the buffer for tasks and add them to a tree node
                 DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
                 if ( buffer_node == null ) {
                     continue;
@@ -363,8 +366,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     buffer_node.add( task_node );
                 }
             }
-        }
-        catch ( Exception e ) {     // NOPMD
+        } catch ( Exception e ) {            // NOPMD
             // ignore any exception, there really isn't anything to do about
             // it.  The most likely cause is the buffer didn't get loaded by
             // jEdit before TaskList tried to parse it.
@@ -383,7 +385,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
             // only handle messages for our view
             if ( !view.equals( bu.getView() ) ) {
-                return ;
+                return;
             }
 
             final Buffer buffer = bu.getBuffer();
@@ -391,27 +393,22 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             if ( BufferUpdate.CLOSED.equals( bu.getWhat() ) ) {
                 removeBuffer( buffer );
                 repaint();
-            }
-            else if ( BufferUpdate.LOADED.equals( bu.getWhat() ) ) {
+            } else if ( BufferUpdate.LOADED.equals( bu.getWhat() ) ) {
                 addBuffer( buffer );
                 repaint();
             }
-        }
-        else if ( msg instanceof ParseBufferMessage ) {
-            ParseBufferMessage pbm = ( ParseBufferMessage)msg;
+        } else if ( msg instanceof ParseBufferMessage ) {
+            ParseBufferMessage pbm = ( ParseBufferMessage ) msg;
             if ( ParseBufferMessage.DO_PARSE.equals( pbm.getWhat() ) ) {
                 removeBuffer( pbm.getBuffer() );
                 addBuffer( pbm.getBuffer() );
                 repaint();
-            }
-            else if ( ParseBufferMessage.DO_PARSE_ALL.equals( pbm.getWhat() ) ) {
+            } else if ( ParseBufferMessage.DO_PARSE_ALL.equals( pbm.getWhat() ) ) {
                 loadFiles();
-            }
-            else if ( ParseBufferMessage.APPLY_FILTER.equals( pbm.getWhat() ) ) {
+            } else if ( ParseBufferMessage.APPLY_FILTER.equals( pbm.getWhat() ) ) {
                 filterTree();
             }
-        }
-        else if ( msg instanceof PropertiesChanged ) {
+        } else if ( msg instanceof PropertiesChanged ) {
             int _sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
             boolean _sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
             if ( sortColumn != _sortColumn || sortAscending != _sortAscending ) {
@@ -441,7 +438,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     private void addBuffer( Buffer buffer ) {
         DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
         if ( buffer_node == null || tree == null ) {
-            return ;
+            return;
         }
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
         model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
@@ -452,7 +449,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
     private void removeBuffer( Buffer buffer ) {
         if ( tree == null ) {
-            return ;
+            return;
         }
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
         for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
