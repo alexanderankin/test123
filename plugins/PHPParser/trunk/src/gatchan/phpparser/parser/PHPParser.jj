@@ -1027,10 +1027,12 @@ UseNamespace useNamespace():
 	Token useToken;
 	Token namespaceNameToken;
 	Token semicolon;
+	Token asToken;
 	int sourceEnd;
 	int endLine;
 	int endColumn;
-	List<ConstantIdentifier> list = new ArrayList<ConstantIdentifier>();
+	List<Expression> list = new ArrayList<Expression>();
+	Expression expr;
 }
 {
 	//{{{ <USE>
@@ -1045,10 +1047,36 @@ UseNamespace useNamespace():
 	{
 		namespaceNameToken = namespaceIdentifier()
 		{
-			list.add(new ConstantIdentifier(namespaceNameToken));
+			expr = new ConstantIdentifier(namespaceNameToken);
 			sourceEnd = namespaceNameToken.sourceEnd;
 			endLine = namespaceNameToken.endLine;
 			endColumn = namespaceNameToken.endColumn;
+		}
+		[
+			asToken = <AS>
+			{
+				sourceEnd = namespaceNameToken.sourceEnd;
+				endLine = namespaceNameToken.endLine;
+				endColumn = namespaceNameToken.endColumn;
+			}
+			<IDENTIFIER>
+			{
+				sourceEnd = namespaceNameToken.sourceEnd;
+				endLine = namespaceNameToken.endLine;
+				endColumn = namespaceNameToken.endColumn;
+				expr = new BinaryExpression(expr,
+							    new ConstantIdentifier(token),
+							    asToken.kind,
+							    expr.getSourceStart(),
+							    sourceEnd,
+							    expr.getBeginLine(),
+							    endLine,
+							    expr.getBeginColumn(),
+							    endColumn);
+			}
+		]
+		{
+			list.add(expr);
 		}
 	}
 	catch (ParseException e)
@@ -1056,25 +1084,50 @@ UseNamespace useNamespace():
 		fireParseError("namespace expected",";",e.currentToken.next);
 	} //}}}
 
-	[
+	(
 	<COMMA>
 	//{{{ namespaceIdentifier()
 	try
 	{
 		namespaceNameToken = namespaceIdentifier()
 		{
-			list.add(new ConstantIdentifier(namespaceNameToken));
+			expr = new ConstantIdentifier(namespaceNameToken);
 			sourceEnd = namespaceNameToken.sourceEnd;
 			endLine = namespaceNameToken.endLine;
 			endColumn = namespaceNameToken.endColumn;
+		}
+		[
+			asToken = <AS>
+			{
+				sourceEnd = namespaceNameToken.sourceEnd;
+				endLine = namespaceNameToken.endLine;
+				endColumn = namespaceNameToken.endColumn;
+			}
+			<IDENTIFIER>
+			{
+				sourceEnd = namespaceNameToken.sourceEnd;
+				endLine = namespaceNameToken.endLine;
+				endColumn = namespaceNameToken.endColumn;
+				expr = new BinaryExpression(expr,
+							    new ConstantIdentifier(token),
+							    asToken.kind,
+							    expr.getSourceStart(),
+							    sourceEnd,
+							    expr.getBeginLine(),
+							    endLine,
+							    expr.getBeginColumn(),
+							    endColumn);
+			}
+		]
+		{
+			list.add(expr);
 		}
 	}
 	catch (ParseException e)
 	{
 		fireParseError("namespace expected",";",e.currentToken.next);
 	} //}}}
-
-	]
+	)*
 	try
 	{
 	semicolon = <SEMICOLON>
@@ -3972,15 +4025,15 @@ Expression fullyQualifiedIdentifier():
 	Token token;
 }
 {
-	<BACKSLASH> token = <NAMESPACE_NAME>
+	(
+		token = <NAMESPACE_IDENTIFIER>
+
+	|
+		 token = <NAMESPACE_NAME>
+	)
 	{
-		return new ConstantIdentifier(token);
-	}
-|
-	 token = <NAMESPACE_NAME>
-	 {
 	 	 return new ConstantIdentifier(token);
-	 }
+	}
 } //}}}
 
 //{{{ namespaceIdentifier() method
@@ -3998,7 +4051,6 @@ Token namespaceIdentifier():
 		return token;
 	}
 } //}}}
-
 
 //{{{ instantiation()
 Expression instantiation(Token reference):
