@@ -12,10 +12,4 @@
 
 # jedit.plugins.dir=${user.home}/.jedit/jars
 
-### Directory of jEdit settings for a test run
-### Should be different from standard directory, 
-### if compiling inside jEdit
-
-# ${user.home}/.jedit-test
-
 
