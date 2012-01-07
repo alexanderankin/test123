@@ -33,7 +33,8 @@ plugin.tasklist.TaskListPlugin.browser-menu-item=tasklist.parse-browser
 
 plugin.tasklist.TaskListPlugin.option-group=tasklist.general \
 	tasklist.tasktypes \
-	tasklist.modes
+	tasklist.modes \
+	tasklist.binaryfiles
 
 options.tasklist.general.label=General
 options.tasklist.general.code=new tasklist.options.TaskListGeneralOptionPane();
@@ -84,6 +85,10 @@ options.tasklist.modes.parseTypeColumnName=Parse type
 options.tasklist.modes.none=None
 options.tasklist.modes.all=All
 options.tasklist.modes.comments=Comments
+
+options.tasklist.binaryfiles.label=Binary Files
+options.tasklist.binaryfiles.code=new tasklist.options.TaskListBinaryFilesOptionPane();
+
 
 # dockable window name
 tasklist.title=Task List
