@@ -114,10 +114,6 @@ public class TaskListPlugin extends EditPlugin {
             }
             view = view.getNext();
         }
-
-        for (common.swingworker.SwingWorker worker : runners) {
-            worker.cancel(true);
-        }
     }    // }}}
 
     public static void registerTaskList(TaskList taskList) {
@@ -481,7 +477,12 @@ public class TaskListPlugin extends EditPlugin {
         
         TaskListPlugin.clearTasks(buffer);
 
-        int parseType = jEdit.getIntegerProperty("mode." + buffer.getMode().getName() + ".tasklist.parseType", COMMENT);
+        int parseType = NONE;
+        
+        if (buffer.getMode() != null && buffer.getMode().getName() != null) {
+            parseType = jEdit.getIntegerProperty("mode." + buffer.getMode().getName() + ".tasklist.parseType", COMMENT);
+        }
+            
 
         // if this file's mode is not to be parsed or it is binary, skip it
         if (parseType == NONE || Binary.isBinary(buffer)) {
@@ -704,8 +705,11 @@ public class TaskListPlugin extends EditPlugin {
         if (buffer == null) {
             return null;   
         }
-        buffer.setMode();
         Mode mode = buffer.getMode();
+        if (mode == null) {
+            buffer.setMode();
+            mode = buffer.getMode();
+        }
         int parseType = jEdit.getIntegerProperty("mode." + mode.getName() + ".tasklist.parseType", COMMENT);
         return parseType != NONE ? mode : null;
     }
