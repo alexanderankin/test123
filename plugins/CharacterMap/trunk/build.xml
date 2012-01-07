@@ -21,18 +21,20 @@
 	<property file="../../build.properties"/>
 
 	<!-- Default directory containing the distribution -->
-	<property name="dist.dir" value=".."/>
+	<property name="dist.dir" location=".."/>
 
 	<!-- Default directory of installed jEdit plugins -->
-	<property name="jedit.plugins.dir" value="${user.home}/.jedit/jars"/>
+	<property name="jedit.plugins.dir" location="${user.home}/.jedit/jars"/>
 	
+	<!-- Default directory for temporary files -->
+	<property name="build.dir" location="build"/>
+
 	<!-- Default directory of jedit settings for a test run -->
-	<property name="jedit.setting.dir" value="${user.home}/.jedit-test" />
+	<property name="jedit.setting.dir" location="${build.dir}/settings"/>
 
 	<property name="jar.name"  value="CharacterMap.jar"/>
-	<property name="src.dir" value="."/>
-	<property name="build.dir" value="build"/>
-
+	<property name="src.dir" location="."/>
+	
 	<fail message="Set correct directories in build.properties">
 		<condition>
 		<or>
@@ -47,7 +49,9 @@
 		<pathelement location="."/>
 	</path>
 
-	<fileset id="jar-build" dir="${build.dir}"/>
+	<fileset id="jar-build" dir="${build.dir}">
+		<exclude name="**/settings/**"/>
+	</fileset>
 	<fileset id="jar-src"	dir="${src.dir}">
 		<include name="dockables.xml"/>
 		<include name="*.props"/>

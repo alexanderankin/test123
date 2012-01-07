@@ -19,88 +19,85 @@ characters. Clicking one will insert it in the buffer.
 The CharacterMap plugin displays a dockable window listing all characters in
 a specified encoding, which can be selected using the combo box at the top of
 the window.
-<P>
-For non-unicode encodings the table contains 256 characters that
+<P>For non-unicode encodings the table contains 256 characters that
 represent the entire character set.
 For Unicode, (UTF8, UTF16, UTF32) the table displays the selected unicode block.
 By default, only the &quot;basic multilingual plane&quot; is shown, i.e.
-the first 65536 unicode characters.
-<P>
-By default, the current buffer encoding is used.
+the first 65536 unicode characters.</P>
+<P>By default, the current buffer encoding is used.
 To specify a custom encoding, type the name directly into the encoding combo
 box text field. Any custom encodings entered are stored in the combo box list
-to ease later selection.
-<P>
-Moving the cursor over the characters in the table updates the status line at 
-the bottom of the window and (if enabled) displays the character at the top-right of the window.
-<P>
-Clicking on a character with Button 1 on the mouse (typically the left button)
+to ease later selection.</P>
+<P>Moving the cursor over the characters in the table updates the status line at 
+the bottom of the window and (if enabled) displays the character at the top-right of the window.</P>
+<P>Clicking on a character with Button 1 on the mouse (typically the left button)
 will cause the character to be inserted at the cursor position in the current
-buffer.
-<P>
-Pressing and holding button 3 on the mouse (typically the right button)
+buffer.</P>
+<P>Pressing and holding button 3 on the mouse (typically the right button)
 will display an enlarged version of the character overlayed at the current 
-pointer position.
-<P>
-The characters in the table are rendered in the font style and size selected 
+pointer position.</P>
+<P>The characters in the table are rendered in the font style and size selected 
 for the text area. The anti-alias and fractional font metrics options are 
-honoured. If automatic font substitution is enabled, preferred fonts 
-are also honoured. 
-<P>
+honoured.</P>
+<P>If automatic font substitution is enabled, preferred fonts are also honoured. 
+You can e.g. try the fonts Code2000-2002 (currently available at
+code2000.sourceforge.net). Activate them in &quot;jEdit - Global Options -
+Text Area - Automatic Font Substitution&quot;.</P>
+
 
 <h2> Options </h2>
 
 The following options can be specified in the option pane.
 <ul>
-	<li><p>Large character: displays a large representation of 
+	<li>Large character: displays a large representation of 
 	the character under the cursor in the top-right hand corner of the
-	window.</p></li>
+	window.</li>
 	<ol>
-		<li><p>Show large character: display the character.</p></li>
-		<li><p>Large character size: controls the size (in points) of the 
-		large character.</p></li>
+		<li>Show large character: display the character.</li>
+		<li>Large character size: controls the size (in points) of the 
+		large character.</li>
 	</ol>
-	<li><p>Show right-click character: displays a representation of the
+	<li>Show right-click character: displays a representation of the
 	character under the cursor when the right-mouse button is pressed 
-	overlayed at the current cursor position.</p></li>
+	overlayed at the current cursor position.</li>
 	<ol>
-		<li><p>Show right-click character: display the character.</p></li>
-		<li><p>Right-click character size: controls the size (in points) of the 
-		right-click character.</p></li>
-		<li><p>Offset right-click character: offsets the position at which the
+		<li>Show right-click character: display the character.</li>
+		<li>Right-click character size: controls the size (in points) of the 
+		right-click character.</li>
+		<li>Offset right-click character: offsets the position at which the
 		right-click character is displayed so that it is easier to see other
-		characters in the current characters rank and file.</p></li>
+		characters in the current characters rank and file.</li>
 	</ol>
-	<li><p>Table columns: specify the number of columns to be displayed...</p> 
+	<li>Table columns: specify the number of columns to be displayed...</li>
 	<ol>
-		<li><p>floating: if the table is floating (un-docked).</p></li>
-		<li><p>docked l/r: if the table is docked left or right.</p></li>
-		<li><p>docked t/b: if the table is docked at top or bottom.</p></li>
+		<li>floating: if the table is floating (un-docked).</li>
+		<li>docked l/r: if the table is docked left or right.</li>
+		<li>docked t/b: if the table is docked at top or bottom.</li>
 	</ol>
-	<li><p>Show status line: controls whether the status line at the bottom
-	of the window is displayed. The status line contains</p></li>
+	<li>Show status line: controls whether the status line at the bottom
+	of the window is displayed. The status line contains</li>
 	<ol>
-		<li><p>the character code point in decimal and hexadecimal form,</p></li> 
-		<li><p> the bytes forming the character in hexadecimal form 
-		(for UTF-encoded unicode,</p></li>
-		<li><p>the name of the character (for unicode).</p></li>
+		<li>the character code point in decimal and hexadecimal form,</li> 
+		<li> the bytes forming the character in hexadecimal form
+		(for UTF-encoded unicode,</li>
+		<li>the name of the character (for unicode).</li>
 	</ol>
-	<li><p>Show encoding combo box: Controls whether the encoding combo box
+	<li>Show encoding combo box: Controls whether the encoding combo box
 	is displayed. By default the encoding is selected from the encoding specified
-	for the currently selected buffer.</p></li>
-	<li><p>Show unicode blocks combo box: Controls whether the unicode blocks 
+	for the currently selected buffer.</li>
+	<li>Show unicode blocks combo box: Controls whether the unicode blocks 
 	combo box is displayed. The blocks combo box is only enabled when editing 
 	a unicode buffer or when unicode encoding has been specified in the 
-	encoding combo box.</p></li>
-	<li><p>Include higher Unicode planes: Not only the blocks from Plane 1 
+	encoding combo box.</li>
+	<li>Include higher Unicode planes: Not only the blocks from Plane 1 
 	(Basic Multilingual Plane), but also from higher Planes are shown. 
 	This enables Unicode Characters with Codepoints > 65536 or 0xFFFF.
 	Be aware: This is a Beta Feature, since Java encodes these Characters with
 	two elementary chars instead of one, and you may experience compatibility
-	issues in jEdit.</p></li>
-	<li><p>Always use anti-aliasing: If set, the character glyphs are always
+	issues in jEdit.</li>
+	<li>Always use anti-aliasing: If set, the character glyphs are always
 	rendered anti-aliased (smoothed). If not set the anti-aliasing options 
-	are taken from the Global Options -> Text Area settings.</p></li>
+	are taken from the Global Options -> Text Area settings.</li>
 </ul>
 
 <h2>Version History </h2>
@@ -111,7 +108,7 @@ The following options can be specified in the option pane.
 	New version of the CharacterMap plugin provides the following features 
 	- anti-aliased text, large character display, better docking support and 
 	better configuration via an options pane.
-<h3>Version 1.3 (2011)</h3>
+<h3>Version 1.3.0 (2011)</h3>
 	Improved layouts for docking. Unicode 6.0.0. 
 	Unicode detection fixed. Statusinfo fixed, UTF16, UTF32 added. 
 	Auto-reload after option change. Font substitution. 
