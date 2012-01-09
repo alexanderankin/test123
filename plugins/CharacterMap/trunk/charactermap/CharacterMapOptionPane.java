@@ -17,7 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package charactermap;
- 
+
+//{{{ Imports
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +38,7 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 //import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * Options pane displayed when Character Map
@@ -49,6 +51,31 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
  */
 public class CharacterMapOptionPane extends AbstractOptionPane
 {
+//{{{ Private Variables
+	/** Checkbox controlling display of status line */
+	private JCheckBox status;
+	/** Checkbox controlling display of encoding combo box */
+	private JCheckBox encoding;
+	/** Checkbox controlling display of unicode blocks slider */
+	private JCheckBox blocks;
+	/** Enable higher Unicode planes (Characters above 65536 or 0xFFFF) */
+	private JCheckBox higherplanes;
+	/** Checkbox controlling anti-aliasing */
+	private JCheckBox antialias;
+
+	/** Spinner controlling number of columns displayed in floating table */
+	private JSpinner columnsSpinner;
+	/** Spinner controlling number of columns displayed in left/right docked table */
+	private JSpinner columnsSpinnerDockLR;
+	/** Spinner controlling number of columns displayed in top/bottom docked table */	
+	private JSpinner columnsSpinnerDockTB;
+	/** Model for spinner options (floating) */
+	private SpinnerModel spinnerModel;
+	/** Model for spinner options (docked left/right) */
+	private SpinnerModel spinnerModelDockLR;
+	/** Model for spinner options (docked top/bottom) */
+	private SpinnerModel spinnerModelDockTB;
+
 	/** Checkbox controlling display of large character  */
 	private JCheckBox showLarge;
 	/** Textfield containing size of large character in points */
@@ -63,46 +90,67 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	private JPanel superSizePanel;
 	/** Checkbox controlling whether super character is offset */
 	private JCheckBox superOffset;
-	/** Spinner controlling number of columns displayed in floating table */
-	private JSpinner columnsSpinner;
-	/** Spinner controlling number of columns displayed in left/right docked table */
-	private JSpinner columnsSpinnerDockLR;
-	/** Spinner controlling number of columns displayed in top/bottom docked table */	
-	private JSpinner columnsSpinnerDockTB;
-	/** Model for spinner options (floating) */
-	private SpinnerModel spinnerModel;
-	/** Model for spinner options (docked left/right) */
-	private SpinnerModel spinnerModelDockLR;
-	/** Model for spinner options (docked top/bottom) */
-	private SpinnerModel spinnerModelDockTB;
-	/** Panel containing components controlling table columns */
-	private JPanel columnsPanel;
-	/** Checkbox controlling display of status line */
-	private JCheckBox status;
-	/** Checkbox controlling display of encoding combo box */
-	private JCheckBox encoding;
-	/** Checkbox controlling display of unicode blocks slider */
-	private JCheckBox blocks;
-	/** Enable higher Unicode planes (Characters above 65536 or 0xFFFF) */
-	private JCheckBox higherplanes;
-	/** Checkbox controlling anti-aliasing */
-	private JCheckBox antialias;
-	
-	/**
+//}}}
+
+//{{{ Constructor
+		/**
 	 * Default constructor.
 	 */
 	public CharacterMapOptionPane()
 	{
 		super("character-map-options");
 	}
+//}}}
 
-	/**
+//{{{ _init() method
+		/**
 	 * Create and initialise the options page with options
 	 * and labels read from the properties for this plugin
 	 */
 	@Override
 	public void _init()
 	{
+		//Initialise general option components
+		status = this.createCheckBox("character-map.status", true);
+		encoding = this.createCheckBox("character-map.encoding", true);
+		blocks = this.createCheckBox("character-map.blocks", true);
+		higherplanes = this.createCheckBox("character-map.higherplanes", false);
+		antialias = this.createCheckBox("character-map.anti-alias", false);
+
+		//Initialise table option components
+		ArrayList<Integer> spinnerValues = new ArrayList<Integer>();
+		for (int i = 8; i >= 0; i -= 1) {
+			spinnerValues.add(new Integer(1 << i));
+		}
+
+		spinnerModel = new SpinnerListModel(spinnerValues);
+		columnsSpinner = new JSpinner(spinnerModel);
+		JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor) columnsSpinner.getEditor();
+		JTextField columnsTextField = spinnerEditor.getTextField();
+		columnsTextField.setColumns(3);
+		columnsTextField.setHorizontalAlignment(JTextField.LEFT);
+		int column = jEdit.getIntegerProperty("options.character-map.columns", 16);
+		columnsSpinner.setValue(new Integer(column));
+
+		spinnerModelDockLR = new SpinnerListModel(spinnerValues);
+		columnsSpinnerDockLR = new JSpinner(spinnerModelDockLR);
+		spinnerEditor = (JSpinner.DefaultEditor) columnsSpinnerDockLR.getEditor();
+		columnsTextField = spinnerEditor.getTextField();
+		columnsTextField.setColumns(3);
+		columnsTextField.setHorizontalAlignment(JTextField.LEFT);
+		column = jEdit.getIntegerProperty("options.character-map.columns-dock-lr", 8);
+		columnsSpinnerDockLR.setValue(new Integer(column));
+
+		spinnerModelDockTB = new SpinnerListModel(spinnerValues);
+		columnsSpinnerDockTB = new JSpinner(spinnerModelDockTB);
+		spinnerEditor = (JSpinner.DefaultEditor) columnsSpinnerDockTB.getEditor();
+		columnsTextField = spinnerEditor.getTextField();
+		columnsTextField.setColumns(3);
+		columnsTextField.setHorizontalAlignment(JTextField.LEFT);
+		column = jEdit.getIntegerProperty("options.character-map.columns-dock-tb", 32);
+		columnsSpinnerDockTB.setValue(new Integer(column));
+
+		//Initialise character option components
 		showLarge = this.createCheckBox("character-map.large", true);
 		largeSize = this.createTextField(4, "character-map.large-size", "36");
 		largeSize.setEnabled(showLarge.isSelected());
@@ -111,12 +159,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		superSize.setEnabled(showSuper.isSelected());
 		superOffset = this.createCheckBox("character-map.super-offset", true);
 		superOffset.setEnabled(showSuper.isSelected());
-		status = this.createCheckBox("character-map.status", true);
-		encoding = this.createCheckBox("character-map.encoding", true);
-		blocks = this.createCheckBox("character-map.blocks", true);
-		higherplanes = this.createCheckBox("character-map.higherplanes", false);
-		antialias = this.createCheckBox("character-map.anti-alias", false);
-		
+
 		showLarge.addActionListener(
 			new ActionListener()
 			{
@@ -137,104 +180,88 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 				}
 			});
 
-		//addComponent(new JLabel(jEdit.getProperty("character-map.options")));
+		//Display components
+
+		addSeparator("character-map.separator-general");
+
+		addComponent(status);
+
+		addComponent(encoding);
+
+		addComponent(blocks);
+
+		addComponent(higherplanes);
+
+		addComponent(antialias);
+
+
+		addSeparator("character-map.separator-table");
+
+		addComponent(jEdit.getProperty("character-map.columns"), columnsSpinner);
+
+		addComponent(jEdit.getProperty("character-map.columns-dock-lr"), columnsSpinnerDockLR);
+
+		addComponent(jEdit.getProperty("character-map.columns-dock-tb"), columnsSpinnerDockTB);
+
+
+		addSeparator("character-map.separator-chars");
 
 		addComponent(this.showLarge);
 
-		largeSizePanel = createLabelledComponent(largeSize,
-			jEdit.getProperty("character-map.large-size"));
-		addComponent(largeSizePanel);
+		addComponent(jEdit.getProperty("character-map.large-size"), largeSize);
 
 		addComponent(this.showSuper);
-		superSizePanel = createLabelledComponent(superSize,
-			jEdit.getProperty("character-map.super-size"));
-		addComponent(superSizePanel);
+
+		addComponent(jEdit.getProperty("character-map.super-size"), superSize);
 
 		addComponent(superOffset);
-
-		ArrayList<Integer> values = new ArrayList<Integer>();
-		for (int i = 8; i >= 0; i -= 1) {
-			values.add(new Integer(1 << i));
-		}
-		spinnerModel = new SpinnerListModel(values);
-		spinnerModelDockLR = new SpinnerListModel(values);
-		spinnerModelDockTB = new SpinnerListModel(values);
-		
-		columnsSpinner = new JSpinner(spinnerModel);
-		JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) columnsSpinner.getEditor();
-		JTextField columnsTextField = editor.getTextField();
-		columnsTextField.setColumns(3);
-		int column = jEdit.getIntegerProperty("options.character-map.columns", 16);
-		columnsSpinner.setValue(new Integer(column));
-		columnsPanel = createLabelledComponent(columnsSpinner,
-			jEdit.getProperty("character-map.columns"));
-		addComponent(columnsPanel);
-
-		columnsSpinnerDockLR = new JSpinner(spinnerModelDockLR);
-		editor = (JSpinner.DefaultEditor) columnsSpinnerDockLR.getEditor();
-		columnsTextField = editor.getTextField();
-		columnsTextField.setColumns(3);
-		column = jEdit.getIntegerProperty("options.character-map.columns-dock-lr", 8);
-		columnsSpinnerDockLR.setValue(new Integer(column));
-		columnsPanel = createLabelledComponent(columnsSpinnerDockLR,
-			jEdit.getProperty("character-map.columns-dock-lr"));
-		addComponent(columnsPanel);
-
-		columnsSpinnerDockTB = new JSpinner(spinnerModelDockTB);
-		editor = (JSpinner.DefaultEditor) columnsSpinnerDockTB.getEditor();
-		columnsTextField = editor.getTextField();
-		columnsTextField.setColumns(3);
-		column = jEdit.getIntegerProperty("options.character-map.columns-dock-tb", 32);
-		columnsSpinnerDockTB.setValue(new Integer(column));
-		columnsPanel = createLabelledComponent(columnsSpinnerDockTB,
-			jEdit.getProperty("character-map.columns-dock-tb"));
-		addComponent(columnsPanel);
-		
-		addComponent(status);
-		addComponent(encoding);
-		addComponent(blocks);
-		addComponent(higherplanes);
-		addComponent(antialias);
 	}
+//}}}
 
-	/**
+//{{{ _save() method
+		/**
 	 * Store the options selected on the pane back to the 
 	 * jedit properties.
 	 */
 	@Override
 	public void _save()
 	{
-		jEdit.setBooleanProperty("options.character-map.large", showLarge.isSelected());
-		jEdit.setBooleanProperty("options.character-map.super", showSuper.isSelected());
-		setIntegerPropertyFromTextField("options.character-map.large-size", largeSize, 36);
-		setIntegerPropertyFromTextField("options.character-map.super-size", superSize, 128);
-		jEdit.setBooleanProperty("options.character-map.super-offset", superOffset.isSelected());
+		// Save options
+		jEdit.setBooleanProperty("options.character-map.status", status.isSelected());
+		jEdit.setBooleanProperty("options.character-map.encoding", encoding.isSelected());
+		jEdit.setBooleanProperty("options.character-map.blocks", blocks.isSelected());
+		jEdit.setBooleanProperty("options.character-map.higherplanes", higherplanes.isSelected());
+		jEdit.setBooleanProperty("options.character-map.anti-alias", antialias.isSelected());
+
 		int column = ((Integer) columnsSpinner.getValue()).intValue();
 		jEdit.setIntegerProperty("options.character-map.columns", column);
 		column = ((Integer) columnsSpinnerDockLR.getValue()).intValue();
 		jEdit.setIntegerProperty("options.character-map.columns-dock-lr", column);
 		column = ((Integer) columnsSpinnerDockTB.getValue()).intValue();
 		jEdit.setIntegerProperty("options.character-map.columns-dock-tb", column);
-		jEdit.setBooleanProperty("options.character-map.status", status.isSelected());
-		jEdit.setBooleanProperty("options.character-map.encoding", encoding.isSelected());
-		jEdit.setBooleanProperty("options.character-map.blocks", blocks.isSelected());
-		jEdit.setBooleanProperty("options.character-map.higherplanes", higherplanes.isSelected());
-		jEdit.setBooleanProperty("options.character-map.anti-alias", antialias.isSelected());
-		
-		// Reload CharacterMap.jar		
-		PluginJAR jar = jEdit.getPlugin("charactermap.CharacterMapPlugin").getPluginJAR();		
+
+		jEdit.setBooleanProperty("options.character-map.large", showLarge.isSelected());
+		jEdit.setBooleanProperty("options.character-map.super", showSuper.isSelected());
+		setIntegerPropertyFromTextField("options.character-map.large-size", largeSize, 36);
+		setIntegerPropertyFromTextField("options.character-map.super-size", superSize, 128);
+		jEdit.setBooleanProperty("options.character-map.super-offset", superOffset.isSelected());
+
+		// Reload CharacterMap.jar
+		PluginJAR jar = jEdit.getPlugin("charactermap.CharacterMapPlugin").getPluginJAR();
 		jEdit.removePluginJAR(jar,false);
 		jEdit.addPluginJAR(jar.getPath());
 		boolean isFloating = jEdit.getProperty("character-map.dock-position",
-			DockableWindowManager.FLOATING).equalsIgnoreCase(DockableWindowManager.FLOATING); 
+			DockableWindowManager.FLOATING).equalsIgnoreCase(DockableWindowManager.FLOATING);
 		if (!isFloating)
 		{
 			EditAction act = jEdit.getAction("character-map");
 			act.invoke(jEdit.getActiveView());
 		}
 	}
+//}}}
 
-	/**
+//{{{ Auxiliary functions
+		/**
 	 * Determine the value of the given text field and store in the 
 	 * named jedit property. If the valued does not parse as an integer,
 	 * use the specified default instead.
@@ -255,23 +282,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		finally {
 			jEdit.setIntegerProperty(property, value);
 		}
-	}
-
-	/** 
-	 * Create a JLabel containing the given string and put it together
-	 * with the given component into a panel The two are separated by a colon,
-	 * and are layed out using the flow layout manager.
-	 * @param component Will appear after the label
-	 * @param label Value to be assigned to label
-	 * @return Panel containing label and given component
-	 */
-	private JPanel createLabelledComponent(JComponent component, String label)
-	{
-		JPanel rtn = new JPanel();
-		rtn.setLayout(new FlowLayout());
-		rtn.add(new JLabel(label + ": "));
-		rtn.add(component);
-		return rtn;
 	}
 
 	/**
@@ -305,5 +315,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		JTextField tf = new JTextField(jEdit.getProperty("options." + property, defaultValue), size);
 		return tf;
 	}
+//}}}
 }
 

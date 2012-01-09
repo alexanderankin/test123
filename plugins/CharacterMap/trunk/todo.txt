@@ -1,5 +1,4 @@
 Known Issues:
-- Better description in Plugin Manager info field (before AND after installation)
 - Redraw after font size change in main program
 - Correct blocks for east asian multi-byte encodings GBxxx, SJIS, BIG5
 

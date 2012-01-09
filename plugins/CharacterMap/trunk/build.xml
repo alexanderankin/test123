@@ -106,8 +106,7 @@
 		<!-- Start parameters as in jEdit's original build.xml -->
 		<java jar="${jedit.install.dir}/jedit.jar"
 			fork="true"
-			spawn="true"
-			maxmemory="192M">
+			spawn="true">
 			<arg value="-settings=${jedit.setting.dir}"/>
 		</java>
 	</target>
