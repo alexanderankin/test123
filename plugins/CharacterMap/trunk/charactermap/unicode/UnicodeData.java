@@ -1,5 +1,7 @@
 /*
  * UnicodeData.java
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2003 Mike Dillon
  * Generated Portions Copyright (C) Unicode, Inc.
  *                    (see charactermap/unicode/LICENSE)
@@ -38,8 +40,6 @@ import java.util.Set;
 //}}}
 
 
-
-//{{{ Public class including Block handling functions
 /**
  * A utility class providing access to data structures generated from the
  * Unicode Character Database (UCD). This class provides access to a list of
@@ -48,7 +48,8 @@ import java.util.Set;
  */
 public final class UnicodeData
 {
-	/**
+//{{{ Block handling
+		/**
 	 * A simple data type representing a Unicode Block.
 	 */
 	public static class Block
@@ -174,7 +175,9 @@ public final class UnicodeData
 			return name;
 		}
 	}
+//}}}
 
+//{{{ Main class
 	/**
 	 * The singleton instance of the Unicode Block List.
 	 */
@@ -218,21 +221,18 @@ public final class UnicodeData
 	{
 		return (String)THE_NAME_MAP.get(new Integer(codePoint));
 	}
-}
 //}}}
+}
 
 
-
-//{{{ Private classes storing the Unicode data
-
+//{{{ Unicode Block Data
 /**
  * List implementation containing the Unicode Blocks imported from the
  * Unicode Database and auxiliary functions
  */
 final class UnicodeBlockList
 {
-
-	/*
+		/*
 	 * Below is a list of Unicode Blocks generated from the UCD file
 	 * Blocks.txt using the parse_unicode_data.pl script. All blocks below
 	 * a cutoff value defined in the script are included in the generated
@@ -474,9 +474,10 @@ List<UnicodeData.Block>  getBlocks()
 }
 
 }
+//}}}
 
 
-
+//{{{ Unicode Name Data
 /**
  * Map implementation containing the Character Names imported from the
  * Unicode Database and auxiliary functions
@@ -24438,6 +24439,6 @@ static
 
 		return value;
 	}
-} 
+}
 //}}}
 

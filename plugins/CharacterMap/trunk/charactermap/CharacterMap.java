@@ -1,5 +1,7 @@
 /*
  *  CharacterMapPlugin.java
+ * :folding=explicit:collapseFolds=1:
+ *
  *  Copyright (C) 2000, 2001, 2002 Slava Pestov
  *  Copyright (C) 2003 Mark Wickens
  *  Copyright (C) 2011 Max Funk
@@ -136,7 +138,7 @@ public class CharacterMap extends JPanel
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(gridbag);
 
-		JLabel caption = new JLabel(jEdit.getProperty("character-map.encoding-caption"));
+		JLabel caption = new JLabel(jEdit.getProperty("character-map.encoding.label"));
 
 		c.weighty = 0.0;
 		c.weightx = 0.0;
@@ -169,7 +171,7 @@ public class CharacterMap extends JPanel
 
 		if (!isDockedLeftRight()) northPanel.add(Box.createHorizontalStrut(12));
 
-		caption = new JLabel(jEdit.getProperty("character-map.blocks-caption"));
+		caption = new JLabel(jEdit.getProperty("character-map.blocks.label"));
 
 		c.gridwidth = 1;
 		gridbag.setConstraints(caption,c);
@@ -193,7 +195,7 @@ public class CharacterMap extends JPanel
 			northPanel.add(blocks);
 		}
 
-		caption = new JLabel(jEdit.getProperty("character-map.char-caption"));
+		caption = new JLabel(jEdit.getProperty("character-map.char.label"));
 		c.gridwidth=1;
 		c.weightx = 0.0;
 		if (isDockedLeftRight()) c.anchor = GridBagConstraints.WEST;
