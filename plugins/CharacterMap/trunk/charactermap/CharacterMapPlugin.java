@@ -1,5 +1,6 @@
 /*
  * CharacterMapPlugin.java
+ *
  * Copyright (C) 2000, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +24,8 @@ import org.gjt.sp.jedit.EditPlugin;
 /**
  * @author Slava Pestov
  * @author Mark Wickens
- * @version 1.2
+ * @author Max Funk
+ * @version 1.3
  */
 public class CharacterMapPlugin extends EditPlugin 
 {

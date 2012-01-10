@@ -1,5 +1,7 @@
 /*
  *  CharacterMapOptionPane.java
+ * :folding=explicit:collapseFolds=1:
+ *
  *  Copyright (c) 2003 Mark Wickens
  *
  *  This program is free software; you can redistribute it and/or
@@ -80,16 +82,12 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	private JCheckBox showLarge;
 	/** Textfield containing size of large character in points */
 	private JTextField largeSize;
-	/** Panel containing components controlling large size character options */
-	private JPanel largeSizePanel;
 	/** Checkbox controlling display of super-size character */
 	private JCheckBox showSuper;
-	/** Textfield containing size of super character in points */
-	private JTextField superSize;
-	/** Panel containing components controlling super size character options */
-	private JPanel superSizePanel;
 	/** Checkbox controlling whether super character is offset */
 	private JCheckBox superOffset;
+	/** Textfield containing size of super character in points */
+	private JTextField superSize;
 //}}}
 
 //{{{ Constructor
@@ -103,7 +101,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 //}}}
 
 //{{{ _init() method
-		/**
+	/**
 	 * Create and initialise the options page with options
 	 * and labels read from the properties for this plugin
 	 */
@@ -111,11 +109,16 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	public void _init()
 	{
 		//Initialise general option components
-		status = this.createCheckBox("character-map.status", true);
-		encoding = this.createCheckBox("character-map.encoding", true);
-		blocks = this.createCheckBox("character-map.blocks", true);
-		higherplanes = this.createCheckBox("character-map.higherplanes", false);
-		antialias = this.createCheckBox("character-map.anti-alias", false);
+		status = new JCheckBox(jEdit.getProperty("options.character-map.status.label"),
+			jEdit.getBooleanProperty("options.character-map.status", true));
+		encoding = new JCheckBox(jEdit.getProperty("options.character-map.encoding.label"),
+			jEdit.getBooleanProperty("options.character-map.encoding", true));
+		blocks = new JCheckBox(jEdit.getProperty("options.character-map.blocks.label"),
+			jEdit.getBooleanProperty("options.character-map.blocks", true));
+		higherplanes = new JCheckBox(jEdit.getProperty("options.character-map.higherplanes.label"),
+			jEdit.getBooleanProperty("options.character-map.higherplanes", false));
+		antialias = new JCheckBox(jEdit.getProperty("options.character-map.antialias.label"),
+			jEdit.getBooleanProperty("options.character-map.antialias", false));
 
 		//Initialise table option components
 		ArrayList<Integer> spinnerValues = new ArrayList<Integer>();
@@ -151,14 +154,18 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		columnsSpinnerDockTB.setValue(new Integer(column));
 
 		//Initialise character option components
-		showLarge = this.createCheckBox("character-map.large", true);
-		largeSize = this.createTextField(4, "character-map.large-size", "36");
+		showLarge = new JCheckBox(jEdit.getProperty("options.character-map.large.label"),
+			jEdit.getBooleanProperty("options.character-map.large", true));
+		largeSize = new JTextField(jEdit.getProperty("options.character-map.large-size", "36"));
 		largeSize.setEnabled(showLarge.isSelected());
-		showSuper = this.createCheckBox("character-map.super", true);
-		superSize = this.createTextField(4, "character-map.super-size", "128");
-		superSize.setEnabled(showSuper.isSelected());
-		superOffset = this.createCheckBox("character-map.super-offset", true);
+
+		showSuper = new JCheckBox(jEdit.getProperty("options.character-map.super.label"),
+			jEdit.getBooleanProperty("options.character-map.super", true));
+		superOffset = new JCheckBox(jEdit.getProperty("options.character-map.super-offset.label"),
+			jEdit.getBooleanProperty("options.character-map.super-offset", true));
 		superOffset.setEnabled(showSuper.isSelected());
+		superSize = new JTextField(jEdit.getProperty("options.character-map.super-size", "128"));
+		superSize.setEnabled(showSuper.isSelected());
 
 		showLarge.addActionListener(
 			new ActionListener()
@@ -182,7 +189,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 
 		//Display components
 
-		addSeparator("character-map.separator-general");
+		addSeparator("options.character-map.separator-general.label");
 
 		addComponent(status);
 
@@ -195,31 +202,31 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		addComponent(antialias);
 
 
-		addSeparator("character-map.separator-table");
+		addSeparator("options.character-map.separator-table.label");
 
-		addComponent(jEdit.getProperty("character-map.columns"), columnsSpinner);
+		addComponent(jEdit.getProperty("options.character-map.columns.label"), columnsSpinner);
 
-		addComponent(jEdit.getProperty("character-map.columns-dock-lr"), columnsSpinnerDockLR);
+		addComponent(jEdit.getProperty("options.character-map.columns-dock-lr.label"), columnsSpinnerDockLR);
 
-		addComponent(jEdit.getProperty("character-map.columns-dock-tb"), columnsSpinnerDockTB);
+		addComponent(jEdit.getProperty("options.character-map.columns-dock-tb.label"), columnsSpinnerDockTB);
 
 
-		addSeparator("character-map.separator-chars");
+		addSeparator("options.character-map.separator-chars.label");
 
-		addComponent(this.showLarge);
+		addComponent(showLarge);
 
-		addComponent(jEdit.getProperty("character-map.large-size"), largeSize);
+		addComponent(jEdit.getProperty("options.character-map.large-size.label"), largeSize);
 
-		addComponent(this.showSuper);
-
-		addComponent(jEdit.getProperty("character-map.super-size"), superSize);
+		addComponent(showSuper);
 
 		addComponent(superOffset);
+
+		addComponent(jEdit.getProperty("options.character-map.super-size.label"), superSize);
 	}
 //}}}
 
 //{{{ _save() method
-		/**
+	/**
 	 * Store the options selected on the pane back to the 
 	 * jedit properties.
 	 */
@@ -260,8 +267,8 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	}
 //}}}
 
-//{{{ Auxiliary functions
-		/**
+//{{{ Auxiliary function
+	/**
 	 * Determine the value of the given text field and store in the 
 	 * named jedit property. If the valued does not parse as an integer,
 	 * use the specified default instead.
@@ -282,38 +289,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		finally {
 			jEdit.setIntegerProperty(property, value);
 		}
-	}
-
-	/**
-	 * Create a checkbox with label as specified in the given property,
-	 * and set the value to the property stored with the given name
-	 * pre-pended with "options.". If the value property does not exist,
-	 * use the given default.
-	 * @param property Name of property and sub-string of property value
-	 * @param defaultValue Used if value cannot be determined from property
-	 * @return JCheckBox labelled with start value set
-	 */
-	private JCheckBox createCheckBox(String property, boolean defaultValue)
-	{
-		JCheckBox cb = new JCheckBox(jEdit.getProperty(property));
-		cb.setSelected(jEdit.getBooleanProperty("options." + property, defaultValue));
-		return cb;
-	}
-
-	/**
-	 * Create a text field with value set to the property stored with 
-	 * the given name pre-pended with "options.". If the value property 
-	 * does not exist, use the given default. The initial width of the text field
-	 * is set from the size parameter.
-	 * @param size initial width (in characters) of the text field
-	 * @param property Sub-string of property value
-	 * @param defaultValue Used if value cannot be determined from property
-	 * @return JTextfield with start value set and width specified
-	 */
-	private JTextField createTextField(int size, String property, String defaultValue)
-	{
-		JTextField tf = new JTextField(jEdit.getProperty("options." + property, defaultValue), size);
-		return tf;
 	}
 //}}}
 }
