@@ -2942,7 +2942,7 @@ FormalParameter formalParameter():
 			Token typeToken;
 		}
 		(
-			typeToken = methodIdentifier()
+			typeToken = superClassOrInterface()
 			{
 				typeHint = new ObjectIdentifier(typeToken);
 				startOffset = typeToken.sourceStart;
