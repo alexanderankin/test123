@@ -351,6 +351,9 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 	{
 		if (currentPane != null)
 			jEdit.setProperty(getName() + ".last", currentPane.getName());
+		int dividerPosition = splitter.getDividerLocation();
+		jEdit.setIntegerProperty(optionGroup.getName() + ".splitter", dividerPosition);
+
 
 		save(optionGroup);
 	}
