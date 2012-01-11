@@ -23,10 +23,10 @@ import org.gjt.sp.jedit.EditPlugin;
 
 /**
  * @author Slava Pestov
- * @author Mark Wickens
- * @author Max Funk
  * @version 1.3
  */
 public class CharacterMapPlugin extends EditPlugin 
 {
+	public static final String NAME = "character-map";
+	public static final String OPTION_PREFIX = "options.character-map.";
 }

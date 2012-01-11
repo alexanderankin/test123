@@ -203,7 +203,7 @@ public class CharacterMap extends JPanel
 		c.fill = GridBagConstraints.NONE;
 		gridbag.setConstraints(caption, c);
 
-		largeSize = (float) jEdit.getIntegerProperty("options.character-map.large-size", 36);
+		largeSize = (float) jEdit.getIntegerProperty("options.character-map.large-size");
 		largeChar = new AntiAliasingLabel(largeFont(" "), " ");
 		Dimension largeCharSz = largeChar.getPreferredSize();
 		largeCharSz.width *= 3;
@@ -217,7 +217,7 @@ public class CharacterMap extends JPanel
 			northPanel.add(largeChar);
 		}
 
-		superSize = (float) jEdit.getIntegerProperty("options.character-map.super-size", 128);
+		superSize = (float) jEdit.getIntegerProperty("options.character-map.super-size");
 		superChar = new AntiAliasingLabel(superFont(" "), " ");
 		superChar.setBorder(BorderFactory.createLineBorder(Color.black));
 		showSuper = jEdit.getBooleanProperty("options.character-map.super");
@@ -472,13 +472,13 @@ public class CharacterMap extends JPanel
 	private void setTableColumns()
 	{
 		if (isDockedLeftRight()) {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-lr", 8); 
+			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-lr"); 
 		}
 		else if (isDockedTopBottom()) {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-tb", 32); 
+			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-tb"); 
 		}
 		else {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns", 16);
+			tableColumns = jEdit.getIntegerProperty("options.character-map.columns");
 		}
 	}
 
