@@ -4,12 +4,13 @@ plugin: Console
 Original Author: Slava Pestov 
 
 Current maintainer:
-   ??? (help wanted)
+   Damien Radtke (kog13@users.sourceforge.net)
 
 Committers:
    Alan Ezust <ezust@users.sourceforge.net>
    Marcelo Vanzin <vanza@users.sourceforge.net>
    Kazutoshi Satoda <k_satoda@users.sourceforge.net>
+   Shlomy Reinstein <sreinst@users.sourceforge.net>
 
 Others, please submit patches to the jedit plugin patches tracker for review. 
 
