@@ -21,11 +21,13 @@
 
 package common.gui.itemfinder;
 
+//{{{ Imports
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
 import org.gjt.sp.jedit.MiscUtilities;
+//}}}
 
 /**
  * A list cell renderer that renders path.
@@ -33,6 +35,7 @@ import org.gjt.sp.jedit.MiscUtilities;
  */
 public class PathCellRenderer extends DefaultListCellRenderer
 {
+	//{{{ getListCellRendererComponent() method
 	@Override
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 						      boolean cellHasFocus)
@@ -41,7 +44,8 @@ public class PathCellRenderer extends DefaultListCellRenderer
 							  cellHasFocus);
 		String path = String.valueOf(value);
 		String fileName = MiscUtilities.getFileName(path);
-		setText("<html><b>"+fileName+"</b> <gray>("+path+")</gray></html>");
+		setText("<html><b>"+fileName+"</b>&nbsp;<gray>("+path+")</gray></html>");
 		return this;
-	}
+	} //}}}
+
 }
