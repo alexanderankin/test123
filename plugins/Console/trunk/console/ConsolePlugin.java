@@ -537,14 +537,6 @@ public class ConsolePlugin extends EditPlugin
 				ConsolePane.colorAttributes(console.getInfoColor()),
 				"\n"+cmd+"\n");
 		systemShell.executeInDir(console, null, state, null, cmd, project.getRootPath());
-
-		// print the prompt once it's done
-		ThreadUtilities.runInBackground(new Runnable() {
-			public void run() {
-				systemShell.waitFor(console);
-				//systemShell.printPrompt(console, state);
-			}
-		});
 	} // }}}
 	
 	// {{{ getPackageName() method
