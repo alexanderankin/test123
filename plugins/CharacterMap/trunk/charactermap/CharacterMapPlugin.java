@@ -28,5 +28,7 @@ import org.gjt.sp.jedit.EditPlugin;
 public class CharacterMapPlugin extends EditPlugin 
 {
 	public static final String NAME = "character-map";
+	
+	public static final String NAME_PREFIX = "character-map.";
 	public static final String OPTION_PREFIX = "options.character-map.";
 }
