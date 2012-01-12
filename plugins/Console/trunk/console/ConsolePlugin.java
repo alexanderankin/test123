@@ -532,17 +532,17 @@ public class ConsolePlugin extends EditPlugin
 		view.getDockableWindowManager().showDockableWindow("console");
 		final Console console = (Console) getConsole(view);
 		final Console.ShellState state = console.getShellState(systemShell);
-		
-		final String cwd = systemShell.getConsoleState(console).currentDirectory;
-		systemShell.execute(console, null, state, null, "cd \""+project.getRootPath()+"\"");
-		systemShell.waitFor(console);
-		console.run(systemShell, cmd);
+
+		console.getOutput().writeAttrs(
+				ConsolePane.colorAttributes(console.getInfoColor()),
+				"\n"+cmd+"\n");
+		systemShell.executeInDir(console, null, state, null, cmd, project.getRootPath());
+
+		// print the prompt once it's done
 		ThreadUtilities.runInBackground(new Runnable() {
 			public void run() {
 				systemShell.waitFor(console);
-				systemShell.execute(console, null, state, null,
-					"cd \""+cwd+"\"");
-				systemShell.printPrompt(console, state);
+				//systemShell.printPrompt(console, state);
 			}
 		});
 	} // }}}
