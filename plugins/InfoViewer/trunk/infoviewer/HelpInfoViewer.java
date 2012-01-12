@@ -36,8 +36,8 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 
 	public void toggleSideBar() {
 		showSideBar = aToggleSidebar.isSelected();
-		// remove(centralComponent);
-		// innerPanel.remove(centralComponent);
+		remove(centralComponent);
+		innerPanel.remove(centralComponent);
 		if (showSideBar) 
 		{
 			splitter.setLeftComponent(tabs);
