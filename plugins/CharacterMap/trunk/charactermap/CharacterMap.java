@@ -56,10 +56,16 @@ public class CharacterMap extends JPanel
 //{{{ Variables
 	/** JEdit view */
 	private View view;
+
 	/** Current System Fonts */
 	// private Font[] systemFonts;
 	/** Current display graphics configuration */
 	private GraphicsConfiguration graphConfig;
+
+	/** Shortcut to CharacterMapPlugin.NAME_PREFIX */
+	private final String NAME_PREFIX = CharacterMapPlugin.NAME_PREFIX;
+	/** Shortcut to CharacterMapPlugin.OPTION_PREFIX */
+	private final String OPTION_PREFIX = CharacterMapPlugin.OPTION_PREFIX;
 
 	// Display components
 	/** Combo box for font encoding information */
@@ -130,7 +136,7 @@ public class CharacterMap extends JPanel
 
 		this.view = view;
 		
-		alwaysAntiAlias = jEdit.getBooleanProperty("options.character-map.anti-alias");
+		alwaysAntiAlias = jEdit.getBooleanProperty(OPTION_PREFIX + "anti-alias");
 		determineAntiAliasRequirements();
 
 		GridBagLayout gridbag = new GridBagLayout();
@@ -141,7 +147,7 @@ public class CharacterMap extends JPanel
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(gridbag);
 
-		JLabel caption = new JLabel(jEdit.getProperty("character-map.encoding.label"));
+		JLabel caption = new JLabel(jEdit.getProperty(NAME_PREFIX + "encoding.label"));
 
 		c.weighty = 0.0;
 		c.weightx = 0.0;
@@ -165,7 +171,7 @@ public class CharacterMap extends JPanel
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;		
 		gridbag.setConstraints(encodingCombo, c);
 
-		showEncoding = jEdit.getBooleanProperty("options.character-map.encoding");
+		showEncoding = jEdit.getBooleanProperty(OPTION_PREFIX + "encoding");
 		if (showEncoding)
 		{
 			northPanel.add(caption);
@@ -174,12 +180,12 @@ public class CharacterMap extends JPanel
 
 		if (!isDockedLeftRight()) northPanel.add(Box.createHorizontalStrut(12));
 
-		caption = new JLabel(jEdit.getProperty("character-map.blocks.label"));
+		caption = new JLabel(jEdit.getProperty(NAME_PREFIX + "blocks.label"));
 
 		c.gridwidth = 1;
 		gridbag.setConstraints(caption,c);
 
-		showHigherPlanes = jEdit.getBooleanProperty("options.character-map.higherplanes");
+		showHigherPlanes = jEdit.getBooleanProperty(OPTION_PREFIX + "higherplanes");
 		if(showHigherPlanes)
 			blocks = new JComboBox(UnicodeData.getBlocks().toArray());
 		else
@@ -191,14 +197,14 @@ public class CharacterMap extends JPanel
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(blocks, c);
 
-		showBlocks = jEdit.getBooleanProperty("options.character-map.blocks");
+		showBlocks = jEdit.getBooleanProperty(OPTION_PREFIX + "blocks");
 		if (showBlocks)
 		{
 			northPanel.add(caption);
 			northPanel.add(blocks);
 		}
 
-		caption = new JLabel(jEdit.getProperty("character-map.char.label"));
+		caption = new JLabel(jEdit.getProperty(NAME_PREFIX + "char.label"));
 		c.gridwidth=1;
 		c.weightx = 0.0;
 		if (isDockedLeftRight()) c.anchor = GridBagConstraints.WEST;
@@ -206,7 +212,7 @@ public class CharacterMap extends JPanel
 		c.fill = GridBagConstraints.NONE;
 		gridbag.setConstraints(caption, c);
 
-		largeSize = (float) jEdit.getIntegerProperty("options.character-map.large-size");
+		largeSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "large-size");
 		largeChar = new AntiAliasingLabel(largeFont(" "), " ");
 		Dimension largeCharSz = largeChar.getPreferredSize();
 		largeCharSz.width *= 3;
@@ -214,17 +220,17 @@ public class CharacterMap extends JPanel
 		largeChar.setPreferredSize(largeCharSz);
 		gridbag.setConstraints(largeChar, c);
 
-		showLarge = jEdit.getBooleanProperty("options.character-map.large");
+		showLarge = jEdit.getBooleanProperty(OPTION_PREFIX + "large");
 		if (showLarge) {
 			northPanel.add(caption);
 			northPanel.add(largeChar);
 		}
 
-		superSize = (float) jEdit.getIntegerProperty("options.character-map.super-size");
+		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
 		superChar = new AntiAliasingLabel(superFont(" "), " ");
 		superChar.setBorder(BorderFactory.createLineBorder(Color.black));
-		showSuper = jEdit.getBooleanProperty("options.character-map.super");
-		offsetSuper = jEdit.getBooleanProperty("options.character-map.super-offset");
+		showSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super");
+		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
 
 		add(BorderLayout.NORTH, northPanel);
 
@@ -274,7 +280,7 @@ public class CharacterMap extends JPanel
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(status, c);
 
-		showStatus = jEdit.getBooleanProperty("options.character-map.status");
+		showStatus = jEdit.getBooleanProperty(OPTION_PREFIX + "status");
 		if (showStatus) {
 			southPanel.add(status);
 			add(BorderLayout.SOUTH, southPanel);
@@ -475,13 +481,13 @@ public class CharacterMap extends JPanel
 	private void setTableColumns()
 	{
 		if (isDockedLeftRight()) {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-lr"); 
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-lr"); 
 		}
 		else if (isDockedTopBottom()) {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns-dock-tb"); 
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb"); 
 		}
 		else {
-			tableColumns = jEdit.getIntegerProperty("options.character-map.columns");
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns");
 		}
 	}
 
@@ -636,7 +642,7 @@ public class CharacterMap extends JPanel
 
 	private boolean isDockedLeftRight()
 	{
-		String position = jEdit.getProperty("character-map.dock-position",
+		String position = jEdit.getProperty(NAME_PREFIX + "dock-position",
 			DockableWindowManager.FLOATING);
 		return position.equalsIgnoreCase(DockableWindowManager.LEFT)
 		    || position.equalsIgnoreCase(DockableWindowManager.RIGHT);
@@ -644,7 +650,7 @@ public class CharacterMap extends JPanel
 
 	private boolean isDockedTopBottom()
 	{
-		String position = jEdit.getProperty("character-map.dock-position",
+		String position = jEdit.getProperty(NAME_PREFIX + "dock-position",
 			DockableWindowManager.FLOATING);
 		return position.equalsIgnoreCase(DockableWindowManager.TOP)
 		|| position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
@@ -741,6 +747,7 @@ public class CharacterMap extends JPanel
 	}
 
 	/** Charmap Communication with EditBus ("Remove") */
+	@Override
 	public void addNotify()
 	{
 		super.addNotify();
@@ -748,6 +755,7 @@ public class CharacterMap extends JPanel
 	}
 
 	/** Charmap Communication with EditBus ("Add") */
+	@Override
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -1132,11 +1140,9 @@ public class CharacterMap extends JPanel
 		 */
 		private int getColumnWidth(int column)
 		{
-			int rtn = 0;
 			TableColumnModel tcm = table.getColumnModel();
 			TableColumn tc = tcm.getColumn(column);
-			rtn = tc.getWidth();
-			return rtn;
+			return tc.getWidth();
 		}
 
 		/**
