@@ -153,6 +153,16 @@ public class SystemShell extends Shell
 		}
 	} // }}}
 
+	public void executeInDir(final Console console, String input, final Output output, Output error,
+			String command, String dir)
+	{
+		ConsoleState state = getConsoleState(console);
+		String cwd = state.currentDirectory;
+
+		state.setCurrentDirectory(console, dir);
+		this.execute(console, input, output, error, command);
+		state.setCurrentDirectory(console, cwd);
+	}
 	
 	// {{{ execute()
 	public void execute(final Console console, String input, final Output output, Output error,
