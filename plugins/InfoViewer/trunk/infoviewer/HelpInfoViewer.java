@@ -37,17 +37,21 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 	public void toggleSideBar() {
 		showSideBar = aToggleSidebar.isSelected();
 		// remove(centralComponent);
-		innerPanel.remove(centralComponent);
+		// innerPanel.remove(centralComponent);
 		if (showSideBar) 
 		{
 			splitter.setLeftComponent(tabs);
 			splitter.setRightComponent(scrViewer);
 			centralComponent = splitter;
-			splitter.setDividerLocation(100);
+			splitter.setDividerLocation(jEdit.getIntegerProperty("helpviewer.splitter", 250));
+			
 		} else 
 		{
+			int dl = splitter.getDividerLocation();
+			if (dl > 0) jEdit.setIntegerProperty("helpviewer.splitter", dl);
 			centralComponent = scrViewer;
 		}
+		
 		innerPanel.add(BorderLayout.CENTER, centralComponent);
 		scrViewer.repaint();
 		repaint();
@@ -83,6 +87,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		splitter.setBorder(null);
 		if (showSideBar) {
 			centralComponent = splitter;
+			splitter.setDividerLocation(jEdit.getIntegerProperty("helpviewer.splitter", 250));
 		}
 		else 
 		{
@@ -96,19 +101,18 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 			public void run() 
 			{
 				splitter.setDividerLocation(jEdit.getIntegerProperty(
-						"infoviewer.splitter", 250));
+						"helpviewer.splitter", 250));
 				requestFocus();
 			}
 		});
 	}
 
-	// {{{ dispose() method
-	public void dispose() 
-	{
-		jEdit.setIntegerProperty("infoviewer.splitter", splitter
-				.getDividerLocation());
+	// {{{ dispose
+	public void dispose() {
+		int dl = splitter.getDividerLocation();
+		if (dl > 0) jEdit.setIntegerProperty("helpviewer.splitter", dl);		
 	} // }}}
-
+		
 	// {{{ queueTOCReload() method
 
 	public void queueTOCReload() 
@@ -144,6 +148,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 	}
 
 	public void gotoURL(String url, boolean addToHistory, int scrollPos) {
+
 		if (baseURL == null) try {
 			URI baseURI = new File(MiscUtilities.constructPath(
 					jEdit.getJEditHome(), "doc")).toURI();
