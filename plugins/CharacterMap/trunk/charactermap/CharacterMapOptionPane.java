@@ -22,24 +22,15 @@
 package charactermap;
 
 //{{{ Imports
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerListModel;
-import javax.swing.SpinnerModel;
-
-import org.gjt.sp.jedit.jEdit;
+import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.jEdit;
 //import org.gjt.sp.util.Log;
 //}}}
 
@@ -181,6 +172,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		largeSizeLabel = new JLabel(jEdit.getProperty(OPTION_PREFIX + "large-size.label"));
 		largeSize = new JTextField(jEdit.getProperty(OPTION_PREFIX + "large-size"));
 		largeSize.setEnabled(showLarge.isSelected());
+		largeSizeLabel.setEnabled(showLarge.isSelected());
 
 		showSuper = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "super.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "super"));

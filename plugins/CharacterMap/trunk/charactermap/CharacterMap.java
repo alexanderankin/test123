@@ -23,21 +23,29 @@
 package charactermap;
  
 //{{{ Imports
+import charactermap.unicode.UnicodeData;
+import charactermap.unicode.UnicodeData.Block;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-
-import charactermap.unicode.UnicodeData;
-import charactermap.unicode.UnicodeData.Block;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 //}}}
 
 /**
@@ -50,6 +58,12 @@ import charactermap.unicode.UnicodeData.Block;
  * @author     Max Funk
  * @version    1.3
  */
+
+@SuppressWarnings({"rawtypes", "unchecked"})
+// Alternatively (compiles only in Java 7, not in Java 6):
+//	JComboBox -> JComboBox<String>, JComboBox<Block>
+//	JComboBoxModel ->  JComboBoxModel<String>, JComboBoxModel<Block>
+
 public class CharacterMap extends JPanel
 	implements EBComponent
 {
@@ -75,7 +89,9 @@ public class CharacterMap extends JPanel
 	/** Selected encoding */
 	private String encoding;
 	/** Combo-box for unicode blocks */
-	private JComboBox blocks;
+	private JComboBox blocksCombo;
+	/** Blocks contained within the blocks combo box */
+	private DefaultComboBoxModel blocks;
 	/** Component displaying large glyph */
 	private JLabel largeChar;
 	/** Table containing character glyphs */
@@ -186,22 +202,30 @@ public class CharacterMap extends JPanel
 		gridbag.setConstraints(caption,c);
 
 		showHigherPlanes = jEdit.getBooleanProperty(OPTION_PREFIX + "higherplanes");
-		if(showHigherPlanes)
-			blocks = new JComboBox(UnicodeData.getBlocks().toArray());
-		else
-			blocks= new JComboBox(UnicodeData.getLowBlocks().toArray());
-		blocks.addItemListener(new ItemHandler());
+
+		Iterator<Block> blocks_iterator;
+		blocks = new DefaultComboBoxModel();
+		if(showHigherPlanes) {
+			blocks_iterator = UnicodeData.getBlocks().iterator();
+			while (blocks_iterator.hasNext()) blocks.addElement(blocks_iterator.next());
+		}
+		else {
+			blocks_iterator = UnicodeData.getLowBlocks().iterator();
+			while (blocks_iterator.hasNext()) blocks.addElement(blocks_iterator.next());
+		}
+		blocksCombo = new JComboBox(blocks);
+		blocksCombo.addItemListener(new ItemHandler());
 
 		c.weightx = 1.0;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
-		gridbag.setConstraints(blocks, c);
+		gridbag.setConstraints(blocksCombo, c);
 
 		showBlocks = jEdit.getBooleanProperty(OPTION_PREFIX + "blocks");
 		if (showBlocks)
 		{
 			northPanel.add(caption);
-			northPanel.add(blocks);
+			northPanel.add(blocksCombo);
 		}
 
 		caption = new JLabel(jEdit.getProperty(NAME_PREFIX + "char.label"));
@@ -235,7 +259,7 @@ public class CharacterMap extends JPanel
 		add(BorderLayout.NORTH, northPanel);
 
 		encoding = (String) encodingCombo.getSelectedItem();
-		blocks.setEnabled(isEncodingUnicode());
+		blocksCombo.setEnabled(isEncodingUnicode());
 
 		// Center: Character Table
 		
@@ -667,7 +691,7 @@ public class CharacterMap extends JPanel
 	{
 		if (isEncodingUnicode())
 		{
-			Block block = (Block)blocks.getSelectedItem();
+			Block block = (Block)blocksCombo.getSelectedItem();
 			return block.length();
 		}
 		else
@@ -680,7 +704,7 @@ public class CharacterMap extends JPanel
 	{
 		if (isEncodingUnicode())
 		{
-			Block block = (Block)blocks.getSelectedItem();
+			Block block = (Block)blocksCombo.getSelectedItem();
 			return block.getFirstPoint();
 		}
 		else
@@ -719,7 +743,7 @@ public class CharacterMap extends JPanel
 		}
 		if (encodingChanged)
 		{
-			blocks.setEnabled(isEncodingUnicode());
+			blocksCombo.setEnabled(isEncodingUnicode());
 			tableModel.fireTableDataChanged();
 			table.repaint();
 		}

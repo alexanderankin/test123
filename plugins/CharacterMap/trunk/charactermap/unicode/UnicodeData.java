@@ -26,17 +26,9 @@ package charactermap.unicode;
 
 
 //{{{ Imports
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
+// Only if AbstractMap is used (see below):
+// import java.util.Map.Entry;
 //}}}
 
 
@@ -178,10 +170,11 @@ public final class UnicodeData
 //}}}
 
 //{{{ Main class
-	/**
-	 * The singleton instance of the Unicode Block List.
-	 */
+	/** Internally stored Unicode Block Data */
 	private static UnicodeBlockList THE_BLOCK_LIST = new UnicodeBlockList();
+
+	/** Internally stored Unicode Character Name Data */
+	private static UnicodeCharNameMap THE_NAME_MAP = new UnicodeCharNameMap();
 
 	/**
 	 * Returns the list of all defined Blocks from the Unicode Character
@@ -198,28 +191,22 @@ public final class UnicodeData
 	 */
 	public static List<Block> getLowBlocks()
 	{
-		LinkedList<Block> tempList = new LinkedList<Block>();
+		List<Block> lowBlockList = new ArrayList<Block>();
 		for(Block I : THE_BLOCK_LIST.getBlocks())
 		{
 			if (! I.isHighBlock())
-				tempList.add(I);
+				lowBlockList.add(I);
 		}
-		return Collections.unmodifiableList(tempList);
+		return Collections.unmodifiableList(lowBlockList);
 	}
 
 	/**
-	 * The singleton instance of the Unicode character name Map.
-	 */
-	private static Map THE_NAME_MAP = new UnicodeCharNameMap();
-
-
-	/**
-	 * Returns the Unicode character description for the specified code
+	 * Returns the Unicode character name for the specified code
 	 * point, or <code>null</code> if there is no name available.
 	 */
 	public static String getCharacterName(int codePoint)
 	{
-		return (String)THE_NAME_MAP.get(new Integer(codePoint));
+		return THE_NAME_MAP.get(new Integer(codePoint));
 	}
 //}}}
 }
@@ -232,7 +219,7 @@ public final class UnicodeData
  */
 final class UnicodeBlockList
 {
-		/*
+	/*
 	 * Below is a list of Unicode Blocks generated from the UCD file
 	 * Blocks.txt using the parse_unicode_data.pl script. All blocks below
 	 * a cutoff value defined in the script are included in the generated
@@ -456,23 +443,21 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 });
 // END GENERATED CODE
 
+	/**
+	 * Creates a new instance of UnicodeCharNameMap. This class should not be
+	 * instantiated outside of charactermap.unicode.UnicodeData.
+	 */
+	UnicodeBlockList()
+	{
+	}
 
-/**
- * Creates a new instance of UnicodeCharNameMap. This class should not be
- * instantiated outside of charactermap.unicode.UnicodeData.
- */
-UnicodeBlockList()
-{
-}
-
-/**
- Returns the Unicode Block List
- */
-List<UnicodeData.Block>  getBlocks()
-{
-	return blocks;
-}
-
+	/**
+	 Returns the Unicode Block List
+	 */
+	List<UnicodeData.Block>  getBlocks()
+	{
+		return blocks;
+	}
 }
 //}}}
 
@@ -482,7 +467,8 @@ List<UnicodeData.Block>  getBlocks()
  * Map implementation containing the Character Names imported from the
  * Unicode Database and auxiliary functions
  */
-final class UnicodeCharNameMap extends AbstractMap
+final class UnicodeCharNameMap extends HashMap<Integer,String>
+// original: ... extends AbstractMap<Integer,String>
 {
 	/*
 	 * Below is a list of Unicode character descriptions generated from the
@@ -24260,147 +24246,154 @@ static
 // END GENERATED CODE
 
 	/**
-	 * Creates a new instance of UnicodeCharNameMap. This class should not be
-	 * instantiated outside of charactermap.unicode.UnicodeData.
+	 * Constructor of UnicodeCharNameMap.
+	 * Should not be instantiated outside of the class UnicodeData.
 	 */
 	UnicodeCharNameMap()
 	{
 	}
 
-	/**
-	 * A custom Set implementation wrapping the static code-point-to-name
-	 * mapping extracted from the Unicode Character Database. This class is
-	 * used as the backing entry set for the UnicodeCharNameMap class.
-	 */
-	private static class EntrySet extends AbstractSet
-	{
-		/**
-		 * Returns the number of entries in the code-point-to-name
-		 * mapping. This number is included in the generated portion of
-		 * the UnicodeCharNameMap class.
-		 *
-		 * @see UnicodeCharNameMap#actualSize
-		 */
-		public int size() {
-			return actualSize;
-		}
-
-		/**
-		 * Returns a new iterator over the entries in this set.
-		 */
-		public Iterator iterator() {
-			return new EntryIterator();
-		}
-	}
-
-	/**
-	 * A custom Iterator implementation wrapping the static
-	 * code-point-to-name mapping extracted from the Unicode Character
-	 * Database. This class is used the Iterator implementation for the
-	 * EntrySet class. It also implements the Entry interface and returns
-	 * itself from next(). This allows us to avoid the unnecessary creation
-	 * of Entry objects for every code point in our table. It also means
-	 * that you can't compare more than one Entry returned from this
-	 * iterator, since "they" will always be the same object.
-	 */
-	private static class EntryIterator implements Iterator, Entry
-	{
-		// A value of -1 indicates that hasNext has not been called
-		private int nextIndex = -1;
-		private Integer currentKey = null;
-
-		// Iterator interface
-		public boolean hasNext()
-		{
-			// If this is the first call to hasNext(), change our
-			// counter from the flag value to the initial index.
-			if (nextIndex == -1)
-			{
-				nextIndex = 0;
-			}
-
-			// If the next index is already past the end of the
-			// character name array, there can be no next mapping.
-			if (nextIndex >= characterNames.length) return false;
-
-			// Check if there is a name at nextIndex:
-			// If there isn't we are at a "blank" spot in the name
-			// array, so advance nextIndex until we find a non-null
-			// entry or we hit the end of the array, otherwise,
-			// return true because nextIndex points to a non-null
-			// entry.
-			do
-			{
-				if (characterNames[nextIndex] != null)
-				{
-					return true;
-				}
-			}
-			while (++nextIndex < characterNames.length);
-
-			// We fell off the end of array
-			return false;
-		}
-
-		public Object next()
-		{
-			// If hasNext() has not been called, call it in case
-			// the first elements of characterNames have null names
-			if (nextIndex == -1)
-			{
-				hasNext();
-			}
-
-			// If we are not past the end of the array and
-			// hasNext() has been called, we must have a valid
-			// index, so return this object as the next Entry after
-			// setting currentKey to the value to be fetched.
-			if (nextIndex < characterNames.length)
-			{
-				currentKey = new Integer(nextIndex++);
-				return this;
-			}
-
-			throw new NoSuchElementException();
-		}
-
-		public void remove()
-		{
-			throw new UnsupportedOperationException();
-		}
-
-		// Map.Entry interface
-		public Object getKey()
-		{
-			return currentKey;
-		}
-
-		public Object getValue()
-		{
-			return currentKey == null ? null
-				: characterNames[currentKey.intValue()];
-		}
-
-		public Object setValue(Object value)
-		{
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	/**
-	 * The singleton EntrySet instance used by all instances of
-	 * UnicodeCharNameMap. It can be shared because it is completely static and
-	 * immutable.
-	 */
-	private static Set THE_ENTRY_SET = new EntrySet();
-
-	/**
-	 * Returns a Set view of the mappings in this map.
-	 */
-	public Set entrySet()
-	{
-		return THE_ENTRY_SET;
-	}
+//	THE FOLLOWING SECTION HAS BEEN REMOVED FROM THE ORIGINAL VERSION.
+//	It implements a Set "EntrySet" with an Iterator "EntryIterator".
+//	That is only needed, if the class is derived from AbstractMap.
+//	However, the public functions containsKey(), get() use just
+//	the values of the internal array, so a speciall Map Implementation
+//	is not (?) needed.
+//
+//	 /**
+// 	 * A custom Set implementation wrapping the static code-point-to-name
+//	 * mapping extracted from the Unicode Character Database. This class is
+//	  * used as the backing entry set for the UnicodeCharNameMap class.
+//	  */
+//	 private static class EntrySet extends AbstractSet<Entry<Integer,String>>
+//	 {
+//		 /**
+//		  * Returns the number of entries in the code-point-to-name
+//		  * mapping. This number is included in the generated portion of
+//		  * the UnicodeCharNameMap class.
+//		  *
+//		  * @see UnicodeCharNameMap#actualSize
+//		  */
+//		 public int size() {
+//			 return actualSize;
+//		 }
+//
+//		 /**
+//		  * Returns a new iterator over the entries in this set.
+//		  */
+//		 public Iterator<Entry<Integer,String>> iterator() {
+//			 return new EntryIterator();
+//		 }
+//	 }
+//
+//	 /**
+//	  * A custom Iterator implementation wrapping the static
+//	  * code-point-to-name mapping extracted from the Unicode Character
+//	  * Database. This class is used the Iterator implementation for the
+//	  * EntrySet class. It also implements the Entry interface and returns
+//	  * itself from next(). This allows us to avoid the unnecessary creation
+//	  * of Entry objects for every code point in our table. It also means
+//	  * that you can't compare more than one Entry returned from this
+//	  * iterator, since "they" will always be the same object.
+//	  */
+//	 private static class EntryIterator implements Iterator, Entry
+//	 {
+//		 // A value of -1 indicates that hasNext has not been called
+//		 private int nextIndex = -1;
+//		 private Integer currentKey = null;
+////
+//		 // Iterator interface
+//		 public boolean hasNext()
+//		 {
+//			 // If this is the first call to hasNext(), change our
+//			 // counter from the flag value to the initial index.
+//			 if (nextIndex == -1)
+//			 {
+//				 nextIndex = 0;
+//			 }
+//
+//			 // If the next index is already past the end of the
+//			 // character name array, there can be no next mapping.
+//			 if (nextIndex >= characterNames.length) return false;
+//
+//			 // Check if there is a name at nextIndex:
+//			 // If there isn't we are at a "blank" spot in the name
+//			 // array, so advance nextIndex until we find a non-null
+//			 // entry or we hit the end of the array, otherwise,
+//			 // return true because nextIndex points to a non-null
+//			 // entry.
+//			 do
+//			 {
+//				 if (characterNames[nextIndex] != null)
+//				 {
+//					// return true;
+//				 }
+//			 }
+//			 while (++nextIndex < characterNames.length);
+//
+//			 // We fell off the end of array
+//			 return false;
+//		 }
+////
+//		 public Object next()
+//		 {
+//			 // If hasNext() has not been called, call it in case
+//			 // the first elements of characterNames have null names
+//			 if (nextIndex == -1)
+//			 {
+//				 hasNext();
+//			 }
+////
+//			 // If we are not past the end of the array and
+//			 // hasNext() has been called, we must have a valid
+//			 // index, so return this object as the next Entry after
+//			 // setting currentKey to the value to be fetched.
+//			 if (nextIndex < characterNames.length)
+//			 {
+//				 currentKey = new Integer(nextIndex++);
+//				 return this;
+//			 }
+//
+//			 throw new NoSuchElementException();
+//		 }
+//
+//		 public void remove()
+//		 {
+//			 throw new UnsupportedOperationException();
+//		 }
+////
+//		 // Map.Entry interface
+//		 public Object getKey()
+//		 {
+//			 return currentKey;
+//		 }
+//
+//		 public Object getValue()
+//		 {
+//			 return currentKey == null ? null
+//				 : characterNames[currentKey.intValue()];
+//		 }
+//
+//		 public Object setValue(Object value)
+//		 {
+//			 throw new UnsupportedOperationException();
+//		 }
+//	 }
+////
+//	 /**
+//	  * The singleton EntrySet instance used by all instances of
+//	  * UnicodeCharNameMap. It can be shared because it is completely static and
+//	  * immutable.
+//	  */
+//	 private static Set<Entry<Integer,String>> THE_ENTRY_SET = new EntrySet();
+////
+//	 /**
+//	  * Returns a Set view of the mappings in this map.
+//	  */
+//	 public Set<Entry<Integer,String>> entrySet()
+//	 {
+//		// return THE_ENTRY_SET;
+//	 }
 
 	/**
 	 * Returns <code>true</code> if this map contains a mapping for the
@@ -24424,16 +24417,16 @@ static
 	 * <code>null</code> if the map contains no mapping for this key.
 	 */
 	@Override
-	public Object get(Object key)
+	public String get(Object key)
 	{
-		Object value = null;
+		String value = null;
 
 		if (key instanceof Integer)
 		{
 			int i = ((Integer)key).intValue();
 			if (i < characterNames.length)
 			{
-				value = characterNames[i];
+			value = characterNames[i];
 			}
 		}
 
