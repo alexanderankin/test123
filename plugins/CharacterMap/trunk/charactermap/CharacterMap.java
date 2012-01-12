@@ -32,6 +32,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 import charactermap.unicode.UnicodeData;
@@ -49,6 +51,7 @@ import charactermap.unicode.UnicodeData.Block;
  * @version    1.3
  */
 public class CharacterMap extends JPanel
+	implements EBComponent
 {
 //{{{ Variables
 	/** JEdit view */
@@ -235,7 +238,7 @@ public class CharacterMap extends JPanel
 
 		table = new JTable(tableModel);
 		table.setFont(normalFont());
-		table.setRowHeight(normalFont().getSize()*4/3);
+		table.setRowHeight(normalRowHeight());
 		table.setRowSelectionAllowed(false);
 		table.setColumnSelectionAllowed(false);
 		MouseHandler mouseHandler = new MouseHandler(this, superChar);
@@ -527,6 +530,12 @@ public class CharacterMap extends JPanel
 	{
 		return view.getTextArea().getPainter().getFont();
 	}
+	
+	/** Height of tableRows depending on the normal font size */
+	private int normalRowHeight()
+	{
+		return normalFont().getSize()*4/3;
+	}
 
 	/** Font used to draw character glyphs in table.
 	 *  By default, normalFont() is returned.
@@ -673,6 +682,77 @@ public class CharacterMap extends JPanel
 			return 0;
 		}
 	}
+
+	/** 
+	 * Set the encoding and the encoding combo box to the input value.
+	 * If the value does not exist in the encodings list, it is stored
+	 * for later reference in this session.
+	 * If the encoding really changed, the charmap table is redrawn.
+	 * @param enc New encoding.
+	 * @see   encoding
+	 * @see   encodings
+	 * @see   encodingCombo
+	 */
+	private void changeEncoding(String enc)
+	{
+		boolean encodingChanged = false;
+		
+		if (!enc.equals(encoding))
+		{
+			encoding = enc;
+			encodingChanged=true;
+		}
+		if (!encodings.getSelectedItem().equals(enc))
+		{
+			if (encodings.getIndexOf(enc) < 0)
+			{
+				encodings.addElement(enc);
+			}
+			encodingCombo.setSelectedItem(enc);
+			encodingChanged=true;
+		}
+		if (encodingChanged)
+		{
+			blocks.setEnabled(isEncodingUnicode());
+			tableModel.fireTableDataChanged();
+			table.repaint();
+		}
+	}
+
+	/**
+	 * Implementation of EBComponent.
+	 * - Changes charmap encoding, if buffer encoding has changed in jEdit.
+	 * - Changes table row height, if text area font size has changed in jEdit.
+	 */
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof BufferUpdate)
+		{
+			changeEncoding(view.getBuffer().getStringProperty(JEditBuffer.ENCODING));
+		}
+		if (message instanceof PropertiesChanged)
+		{
+			if (table.getRowHeight() != normalRowHeight())
+			{
+				table.setRowHeight(normalRowHeight());
+				table.repaint();
+			}
+		}
+	}
+
+	/** Charmap Communication with EditBus ("Remove") */
+	public void addNotify()
+	{
+		super.addNotify();
+		EditBus.addToBus(this);
+	}
+
+	/** Charmap Communication with EditBus ("Add") */
+	public void removeNotify()
+	{
+		super.removeNotify();
+		EditBus.removeFromBus(this);
+	}
 //}}}
 
 
@@ -759,25 +839,14 @@ public class CharacterMap extends JPanel
 	class ActionHandler implements ActionListener
 	{
 		/**
-		 * Called when the encoding value in the encoding combo-box
-		 * is changed. The encoding is stored, the page slider is
-		 * enabled if the encoding set is unicode or utf8 and the
-		 * table is repainted. If the encoding has been entered 
-		 * manually it is stored in the combo box list for later
-		 * reference in this session.
+		 * Changes encoding after entering a value in the encoding 
+		 * combo-box.
 		 *
 		 * @param  evt  The event representing the action performed
 		 */
 		public void actionPerformed(ActionEvent evt)
 		{
-			encoding = (String) encodingCombo.getSelectedItem();
-			blocks.setEnabled(isEncodingUnicode());
-			if (encodings.getIndexOf(encoding) < 0)
-			{
-				encodings.addElement(encoding);
-			}
-			tableModel.fireTableDataChanged();
-			table.repaint();
+			changeEncoding((String) encodingCombo.getSelectedItem());
 		}
 	}
 

@@ -1,8 +1,5 @@
 Known Issues:
-- Redraw after font size change in main program
-- Set encoding after encoding change in main program
 - Correct blocks for east asian multi-byte encodings GBxxx, SJIS, BIG5
-- Character names in status info for CJK characters
 
 Suggested Features:
 - Remember last block setting for charactermap restart
