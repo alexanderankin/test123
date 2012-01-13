@@ -1075,7 +1075,12 @@ implements EBComponent, DefaultFocusComponent
 		{
 			Console console = (Console)GUIUtilities.getComponentParent(
 				(Component)evt.getSource(),Console.class);
-			console.run(console.getShell(),null, console.getOutput(), null, command);
+			
+			console.run(console.getShell(),
+				console.getView().getTextArea().getSelectedText(),
+				console.getOutput(), 
+				null,
+				command);
 		}
 	} //}}}
 

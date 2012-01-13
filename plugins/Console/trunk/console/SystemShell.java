@@ -135,8 +135,7 @@ public class SystemShell extends Shell
 
 	// }}}
 
-		// {{{ executeBuiltIn() method
-
+	// {{{ executeBuiltIn() method
 	public void executeBuiltIn(Console console, Output output, Output error, String command,
 		Vector<String> args)
 	{
@@ -153,6 +152,7 @@ public class SystemShell extends Shell
 		}
 	} // }}}
 
+	// {{{ executeInDir()
 	public void executeInDir(final Console console, String input, final Output output, Output error,
 			String command, String dir)
 	{
@@ -162,7 +162,7 @@ public class SystemShell extends Shell
 		state.setCurrentDirectory(console, dir);
 		this.execute(console, input, output, error, command);
 		state.setCurrentDirectory(console, cwd);
-	}
+	} // }}}
 	
 	// {{{ execute()
 	public void execute(final Console console, String input, final Output output, Output error,
@@ -312,9 +312,7 @@ public class SystemShell extends Shell
 				}
 			}
 		}
-	}
-
-	// }}}
+	} // }}}
 
 	// {{{ stop() method
 	public void stop(Console console)
