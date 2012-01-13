@@ -4502,7 +4502,7 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
 //{{{ LITERAL
 
 //{{{ Literal()
-Literal Literal() :
+Literal Literal():
 {
 	Token token;
 	StringLiteral stringLiteral;
