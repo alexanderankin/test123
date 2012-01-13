@@ -1076,11 +1076,8 @@ implements EBComponent, DefaultFocusComponent
 			Console console = (Console)GUIUtilities.getComponentParent(
 				(Component)evt.getSource(),Console.class);
 			
-			console.run(console.getShell(),
-				console.getView().getTextArea().getSelectedText(),
-				console.getOutput(), 
-				null,
-				command);
+			console.run(console.getShell(), null, console.getOutput(),
+					null, command);
 		}
 	} //}}}
 
@@ -1112,7 +1109,7 @@ implements EBComponent, DefaultFocusComponent
 		{
 			String cmd = text.getInput();
 			Object source = evt.getSource();
-			String input = null;
+			String input = view.getTextArea().getSelectedText();
 			Output output = shellState;
 			boolean printInput = false;
 
@@ -1120,7 +1117,6 @@ implements EBComponent, DefaultFocusComponent
 				printInput = true;
 			else if(source == toBuffer)
 			{
-				input = view.getTextArea().getSelectedText();
 				output = new BufferOutput(Console.this);
 			}
 

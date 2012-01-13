@@ -297,6 +297,7 @@ public class SystemShell extends Shell
 			 */
 			if (input != null)
 			{
+				Log.log(Log.DEBUG, this, "sending input to system shell: "+input);
 				OutputStream out = proc.getPipeOutput();
 				if (out != null)
 				{
