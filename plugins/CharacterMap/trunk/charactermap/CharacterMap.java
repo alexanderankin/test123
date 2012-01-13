@@ -21,7 +21,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package charactermap;
- 
+
 //{{{ Imports
 import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
@@ -49,8 +49,8 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 //}}}
 
 /**
- * A character map is a way of viewing and inserting characters contained 
- * within the character set of the character encoding method used by the 
+ * A character map is a way of viewing and inserting characters contained
+ * within the character set of the character encoding method used by the
  * current buffer.
  *
  * @author     Slava Pestov
@@ -151,13 +151,13 @@ public class CharacterMap extends JPanel
 		super(new BorderLayout(12, 12));
 
 		this.view = view;
-		
+
 		alwaysAntiAlias = jEdit.getBooleanProperty(OPTION_PREFIX + "anti-alias");
 		determineAntiAliasRequirements();
 
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
-		
+
 		// North Panel (Encoding Selector, Unicode Block Selector, Char)
 
 		JPanel northPanel = new JPanel();
@@ -184,7 +184,7 @@ public class CharacterMap extends JPanel
 		encodingCombo.setSelectedItem(view.getBuffer().getStringProperty(Buffer.ENCODING));
 		encodingCombo.addActionListener(new ActionHandler());
 
-		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;		
+		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(encodingCombo, c);
 
 		showEncoding = jEdit.getBooleanProperty(OPTION_PREFIX + "encoding");
@@ -262,7 +262,7 @@ public class CharacterMap extends JPanel
 		blocksCombo.setEnabled(isEncodingUnicode());
 
 		// Center: Character Table
-		
+
 		setTableColumns();
 		tableModel = new CharacterMapModel();
 
@@ -280,14 +280,14 @@ public class CharacterMap extends JPanel
 		add(BorderLayout.CENTER, new JScrollPane(table));
 
 		// South Panel (Status Line)
-		
+
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(gridbag);
 
 		status = new JTextArea(" ");
 		status.setEditable(false);
 		status.setOpaque(false);
-		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 
+		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN,
 			UIManager.getFont("Label.font").getSize() + 2));
 
 		/* Alternative: AntiAliasingLabel
@@ -309,7 +309,7 @@ public class CharacterMap extends JPanel
 			southPanel.add(status);
 			add(BorderLayout.SOUTH, southPanel);
 		}
-		
+
 		table.repaint();
 		graphConfig = table.getGraphicsConfiguration();
 	}
@@ -335,7 +335,7 @@ public class CharacterMap extends JPanel
 		int num;
 
 		int n = row * tableColumns + column + getBlockOffset();
-		
+
 		if (ch == null) {
 			status.setText(" ");
 		}
@@ -498,17 +498,17 @@ public class CharacterMap extends JPanel
 		}
 	}
 
-	/** Sets tableColumns depending on  
+	/** Sets tableColumns depending on
 	 *  plugin options and window docking state.
 	 *  @see tableColumns
-	 */	
+	 */
 	private void setTableColumns()
 	{
 		if (isDockedLeftRight()) {
-			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-lr"); 
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-lr");
 		}
 		else if (isDockedTopBottom()) {
-			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb"); 
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb");
 		}
 		else {
 			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns");
@@ -517,7 +517,7 @@ public class CharacterMap extends JPanel
 
 	/** Formatted output of int in hexadecimal form
 	 *  @param i       Integer to be converted
-	 *  @param digits  Minimum number of digits 
+	 *  @param digits  Minimum number of digits
 	 *                 (fill with leading zeros)
 	 *  @param upper   true: Uppercase digits; else: Lowercase
 	 *  @param prefix  Prefix string
@@ -539,7 +539,7 @@ public class CharacterMap extends JPanel
 
 	/** Formatted output of int in decimal form
 	 *  @param i       Integer to be converted
-	 *  @param digits  Minimum number of digits 
+	 *  @param digits  Minimum number of digits
 	 *                 (fill with leading zeros)
 	 *  @param prefix  Prefix string
 	 */
@@ -560,7 +560,7 @@ public class CharacterMap extends JPanel
 	{
 		return view.getTextArea().getPainter().getFont();
 	}
-	
+
 	/** Height of tableRows depending on the normal font size */
 	private int normalRowHeight()
 	{
@@ -569,7 +569,7 @@ public class CharacterMap extends JPanel
 
 	/** Font used to draw character glyphs in table.
 	 *  By default, normalFont() is returned.
-	 *  Automatic font substitution for missing characters, 
+	 *  Automatic font substitution for missing characters,
 	 *  if this feature is selected in jEdit Options.
 	 *  @param text Text string to be drawn
 	 *  @see org.gjt.sp.jedit.syntax.Chunk
@@ -585,16 +585,16 @@ public class CharacterMap extends JPanel
 		{
 			return f;
 		}
-		
+
 
 		// search user defined substitution fonts
 		int i = 0;
 		String family;
 		Font candidate;
-		while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null) 
-		{ 
+		while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null)
+		{
 			candidate = new Font(family, Font.PLAIN, f.getSize());
-			if (candidate.canDisplayUpTo(text) == -1) 
+			if (candidate.canDisplayUpTo(text) == -1)
 			{
 				return candidate;
 			}
@@ -603,11 +603,11 @@ public class CharacterMap extends JPanel
 
 		// search system fonts
 
-		// Disabled due to following reasons: 
+		// Disabled due to following reasons:
 		// - inconsistencies charmap - jedit:
-		//   jEdit (4.4.1) uses text chunks, not characters 
+		//   jEdit (4.4.1) uses text chunks, not characters
 		//   and doesn't switch always to first font in order
-		// - perhaps the user should know, which font he is using 
+		// - perhaps the user should know, which font he is using
 		//   if he inserts characters from the CharacterMap
 
 		/* if (systemFonts == null)
@@ -636,7 +636,7 @@ public class CharacterMap extends JPanel
 	}
 
 
-	/** Font used to draw the super large glyph image. 
+	/** Font used to draw the super large glyph image.
 	 * @param text Text string to be drawn
 	 */
 	private Font superFont(String text)
@@ -682,7 +682,7 @@ public class CharacterMap extends JPanel
 
 	private boolean isEncodingUnicode()
 	{
-		return encoding.toUpperCase().startsWith("UNICODE") 
+		return encoding.toUpperCase().startsWith("UNICODE")
 		|| encoding.toUpperCase().startsWith("UTF")
 		|| encoding.toUpperCase().startsWith("X-UTF");
 	}
@@ -713,8 +713,8 @@ public class CharacterMap extends JPanel
 		}
 	}
 
-	/** 
-	 * Set the encoding and the encoding combo box to the input value.
+	/**
+	 * Set the charmap encoding and the encoding combo box to the input value.
 	 * If the value does not exist in the encodings list, it is stored
 	 * for later reference in this session.
 	 * If the encoding really changed, the charmap table is redrawn.
@@ -723,10 +723,10 @@ public class CharacterMap extends JPanel
 	 * @see   encodings
 	 * @see   encodingCombo
 	 */
-	private void changeEncoding(String enc)
+	private void changeEncodingCharMap(String enc)
 	{
 		boolean encodingChanged = false;
-		
+
 		if (!enc.equals(encoding))
 		{
 			encoding = enc;
@@ -750,6 +750,50 @@ public class CharacterMap extends JPanel
 	}
 
 	/**
+	 * Set the encoding of the current jEdit Buffer to the input value.
+	 * If the value does not exist in the encodings list, it is stored
+	 * for later reference in this session.
+	 * If the encoding really changed, the charmap table is redrawn.
+	 * @param enc New encoding.
+	 * @see   org.gjt.sp.jedit.Buffer
+	 */
+	private void changeEncodingBuffer(String enc)
+	{
+		if (!view.getBuffer().getStringProperty(JEditBuffer.ENCODING).equals(enc)
+			&& isYesDialog(jEdit.getProperty(NAME_PREFIX + "encoding-security.label"),
+				jEdit.getProperty(NAME_PREFIX + "encoding-security-question")))
+		{
+			view.getBuffer().setStringProperty(JEditBuffer.ENCODING, encoding);
+			view.getBuffer().setDirty(true);
+			view.getBuffer().propertiesChanged();
+		}
+	}
+
+
+	/**
+	 * Dialog to confirm a security question with "No", "Yes".
+	 * Returns, whether the answer is "Yes".
+	 * @param title Title of the dialog window
+	 * @param question The question to be answered.
+	 * @return whether the answer is yes
+	 */
+	private boolean isYesDialog(String title, String question)
+	{
+		JOptionPane pane = new JOptionPane(question);
+		pane.setMessageType(JOptionPane.WARNING_MESSAGE);
+		Object[] options = new String[] { "Yes", "No" };
+		pane.setOptions(options);
+		JDialog dialog = pane.createDialog(new JFrame(), title);
+		dialog.setModal(true);
+		dialog.setVisible(true);
+		Object obj = pane.getValue();
+		boolean isYes;
+		if (options[0].equals(obj)) isYes = true;
+			else isYes = false;
+		return isYes;
+	}
+
+	/**
 	 * Implementation of EBComponent.
 	 * - Changes charmap encoding, if buffer encoding has changed in jEdit.
 	 * - Changes table row height, if text area font size has changed in jEdit.
@@ -758,7 +802,7 @@ public class CharacterMap extends JPanel
 	{
 		if (message instanceof BufferUpdate)
 		{
-			changeEncoding(view.getBuffer().getStringProperty(JEditBuffer.ENCODING));
+			changeEncodingCharMap(view.getBuffer().getStringProperty(JEditBuffer.ENCODING));
 		}
 		if (message instanceof PropertiesChanged)
 		{
@@ -812,8 +856,8 @@ public class CharacterMap extends JPanel
 		public int getRowCount()
 		{
 			int tableRows = (getBlockSize() - getBlockSize() % tableColumns)
-				/ tableColumns; 
-			if ( getBlockSize() % tableColumns != 0 ) tableRows += 1; 
+				/ tableColumns;
+			if ( getBlockSize() % tableColumns != 0 ) tableRows += 1;
 			return tableRows;
 		}
 
@@ -830,8 +874,8 @@ public class CharacterMap extends JPanel
 		public Object getValueAt(int row, int col)
 		{
 			int cell = row * tableColumns + col;
-			
-			if (isEncodingUnicode()) 
+
+			if (isEncodingUnicode())
 			{
 				int offset = getBlockOffset();
 				//return String.valueOf((char) (offset + cell));
@@ -861,7 +905,6 @@ public class CharacterMap extends JPanel
 		}
 	}
 
-
 	/**
 	 *  Handles actions performed on the encoding combo-box
 	 *
@@ -871,14 +914,18 @@ public class CharacterMap extends JPanel
 	class ActionHandler implements ActionListener
 	{
 		/**
-		 * Changes encoding after entering a value in the encoding 
+		 * Changes encoding after entering a value in the encoding
 		 * combo-box.
 		 *
 		 * @param  evt  The event representing the action performed
 		 */
 		public void actionPerformed(ActionEvent evt)
 		{
-			changeEncoding((String) encodingCombo.getSelectedItem());
+			if (evt.getSource() == encodingCombo)
+			{
+				changeEncodingCharMap((String) encodingCombo.getSelectedItem());
+				changeEncodingBuffer((String) encodingCombo.getSelectedItem());
+			}
 		}
 	}
 
@@ -1231,7 +1278,7 @@ public class CharacterMap extends JPanel
 			if (offsetSuper) {
 				int rowHeight = table.getRowHeight();
 				int columnWidth = getColumnWidth(column);
-				displayX += (columnWidth / 2) + (popupWidth / 2); 
+				displayX += (columnWidth / 2) + (popupWidth / 2);
 				displayY -= (rowHeight / 2) + (popupHeight / 2);
 
 				GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
@@ -1339,7 +1386,7 @@ public class CharacterMap extends JPanel
 	class AntiAliasingRenderer extends AntiAliasingLabel implements TableCellRenderer
 	{
 		/**
-		 * Default constructor, use default font 
+		 * Default constructor, use default font
 		 */
 		public AntiAliasingRenderer()
 		{
@@ -1347,9 +1394,9 @@ public class CharacterMap extends JPanel
 		}
 
 		/**
-		 * Method called by the table renderer to determine the 
+		 * Method called by the table renderer to determine the
 		 * component to use to render the selected table cell.
-		 * Sets up the foreground and background colours, sets the 
+		 * Sets up the foreground and background colours, sets the
 		 * text to render then returns the instance of the renderer
 		 * (which is a super-class of JLabel).
 		 * @param table Glyph table

@@ -23,9 +23,13 @@ character-map.title=Character Map
 character-map.encoding.label=Encoding:
 character-map.blocks.label=Blocks:
 character-map.char.label=Char:
+character-map.encoding-security.label=Confirm
+character-map.encoding-security-question=Do you want to change \
+                                         your current file encoding?
+character-map.bad-encoding=Unknown encoding
+
 
 # Main window default settings
-character-map.bad-encoding=Unknown encoding
 character-map.dock-position=right
 
 # Option window

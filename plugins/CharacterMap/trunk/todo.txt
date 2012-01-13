@@ -1,6 +1,5 @@
 Known Issues:
 - Correct blocks for east asian multi-byte encodings GBxxx, SJIS, BIG5
-- Charmap encoding change should trigger buffer encoding change
 
 Suggested Features:
 - Remember last block setting for charactermap restart
