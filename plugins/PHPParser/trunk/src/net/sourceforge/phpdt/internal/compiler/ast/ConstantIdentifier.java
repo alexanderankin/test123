@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2011 Matthieu Casanova
+* Copyright (C) 2003, 2012 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -21,20 +21,22 @@
 */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+//{{{ Imports
 import gatchan.phpparser.parser.Token;
 import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
+//}}}
 
 /**
  * @author Matthieu Casanova
  */
 public class ConstantIdentifier extends Expression
 {
-
 	private final String name;
 
+	//{{{ ConstantIdentifier constructor
 	public ConstantIdentifier(String name,
 				  int sourceStart,
 				  int sourceEnd,
@@ -43,16 +45,17 @@ public class ConstantIdentifier extends Expression
 				  int beginColumn,
 				  int endColumn)
 	{
-		super(Type.STRING, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+		super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 		this.name = name;
 	}
 
 	public ConstantIdentifier(Token token)
 	{
-		super(Type.STRING, token.sourceStart, token.sourceEnd, token.beginLine, token.endLine, token.beginColumn, token.endColumn);
+		super(Type.UNKNOWN, token.sourceStart, token.sourceEnd, token.beginLine, token.endLine, token.beginColumn, token.endColumn);
 		name = token.image;
-	}
+	} //}}}
 
+	//{{{ toStringExpression()
 	/**
 	 * Return the expression as String.
 	 *
@@ -62,13 +65,15 @@ public class ConstantIdentifier extends Expression
 	public String toStringExpression()
 	{
 		return name;
-	}
+	} //}}}
 
+	//{{{ toString()
 	public String toString()
 	{
 		return name;
-	}
+	} //}}}
 
+	//{{{ getOutsideVariable() method
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
@@ -77,8 +82,9 @@ public class ConstantIdentifier extends Expression
 	@Override
 	public void getOutsideVariable(List<VariableUsage> list)
 	{
-	}
+	} //}}}
 
+	//{{{ getModifiedVariable() method
 	/**
 	 * get the modified variables.
 	 *
@@ -87,8 +93,9 @@ public class ConstantIdentifier extends Expression
 	@Override
 	public void getModifiedVariable(List<VariableUsage> list)
 	{
-	}
+	} //}}}
 
+	//{{{ getUsedVariable() method
 	/**
 	 * Get the variables used.
 	 *
@@ -97,16 +104,18 @@ public class ConstantIdentifier extends Expression
 	@Override
 	public void getUsedVariable(List<VariableUsage> list)
 	{
-	}
+	} //}}}
 
+	//{{{ subNodeAt() method
 	@Override
 	public AstNode subNodeAt(int line, int column)
 	{
 		return null;
-	}
+	} //}}}
 
+	//{{{ analyzeCode() method
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
-	}
+	} //}}}
 }
