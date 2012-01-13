@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- The Android plugin currently does not have any dockables. -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="">
+	</DOCKABLE>
+</DOCKABLES>
+
