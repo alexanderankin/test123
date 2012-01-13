@@ -11,8 +11,14 @@
             
             import ise.java.awt.KappaLayout;
             
-            
-            HashMap targetSkins = new HashMap();
+            // targets start with a number, sort on the number
+            TreeMap targetSkins = new TreeMap(new Comparator(){
+                    int compare(a, b) {
+                        String inta = a.substring(0, a.indexOf(" "));
+                        String intb = b.substring(0, b.indexOf(" "));
+                        return (new Integer(inta).compareTo(new Integer(intb)));
+                    }
+            });
             
             createAndroidAVD(name, targetId, cardSize, skin) {
                 if (name == null || name.trim().length() == 0) {
