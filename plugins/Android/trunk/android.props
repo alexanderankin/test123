@@ -8,9 +8,9 @@ plugin.android.AndroidPlugin.author=Dale Anson
 plugin.android.AndroidPlugin.version=1.0
 plugin.android.AndroidPlugin.activate=startup
 plugin.android.AndroidPlugin.description=Android pluging provides some utilities to help create and run Android projects.
-plugin.tasklist.TaskListPlugin.depend.1=plugin CommonControlsPlugin 1.2
-plugin.tasklist.TaskListPlugin.depend.2=optional plugin projectviewer.ProjectPlugin 3.1.0
-plugin.classpath.ClasspathPlugin.depend.3=optional plugin console.ConsolePlugin 4.4.4
+plugin.tasklist.TaskListPlugin.depend.1=plugin CommonControlsPlugin 1.4.1
+plugin.tasklist.TaskListPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.1.0
+plugin.classpath.ClasspathPlugin.depend.3=plugin console.ConsolePlugin 4.4.4
 
 # dependencies
 plugin.android.AndroidPlugin.depend.0=jdk 1.6
