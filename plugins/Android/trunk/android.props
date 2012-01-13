@@ -1,0 +1,46 @@
+# $Id: AndroidPlugin.props 16359 2009-10-18 04:38:17Z daleanson $
+#-----------------------------------
+# Properties for Android Plugin
+#-----------------------------------
+
+plugin.android.AndroidPlugin.name=Android
+plugin.android.AndroidPlugin.author=Dale Anson
+plugin.android.AndroidPlugin.version=1.0
+plugin.android.AndroidPlugin.activate=startup
+plugin.android.AndroidPlugin.description=Android pluging provides some utilities to help create and run Android projects.
+plugin.tasklist.TaskListPlugin.depend.1=plugin CommonControlsPlugin 1.2
+plugin.tasklist.TaskListPlugin.depend.2=optional plugin projectviewer.ProjectPlugin 3.1.0
+plugin.classpath.ClasspathPlugin.depend.3=optional plugin console.ConsolePlugin 4.4.4
+
+# dependencies
+plugin.android.AndroidPlugin.depend.0=jdk 1.6
+plugin.android.AndroidPlugin.depend.1=jedit 04.03.99.00
+
+# docs
+plugin.android.AndroidPlugin.docs=index.html
+
+
+# menu settings
+plugin.android.AndroidPlugin.menu.label=Android
+plugin.android.AndroidPlugin.menu= \
+	android.createAVD \
+	android.createProject \
+	android.launchAVD \
+	- \
+	android.buildDebug \
+	android.deployDebug \
+	- \
+	android.listTargets \
+	android.listAVDs
+
+android.createAVD.label=Create AVD
+android.createProject.label=Create Project
+android.launchAVD.label=Launch AVD
+android.listTargets.label=List Targets
+android.listAVDs.label=List AVDs
+android.buildDebug.label=Build App (Debug)
+android.deployDebug.label=Deploy App (Debug)
+
+
+
+

@@ -1,0 +1,38 @@
+<html>
+<body>
+<h2>Android</h2>
+The Android plugin helps you create and run AVDs, and create Android projects 
+and import them into ProjectViewer.
+<p>
+This is a quick and dirty plugin, all it does is provide access to a few
+macros and ensure that both CommonControls and ProjectViewer are also
+installed.
+<p>
+<b>This plugin assumes your Android tools are in your system path, specifically</b>
+<ul>
+<li>android</li>
+<li>emulator</li>
+</ul>
+
+Also required for build and deploy to your emulator is <b>ant</b>.
+<p>
+Available actions:
+<br>
+<ul>
+<li><b>Create AVD</b> Creates a new AVD. You may select any of the currently
+existing Android platform targets along with any of the skins supported
+by the selected platform target.</li>
+<li><b>Create Project</b> Creates a new Android project. This creates a skeleton
+Android project at the location you specify. The "Build target" is the
+minimum Android platform target that your app will run on. The "activity" is
+the main Android activity class in your project. A class with this name will
+be created and your apk file will also have this name.</li>
+<li><b>Launch AVD</b> Select any existing AVD and start it.</li>
+<li><b>Build App (Debug)</b> Build the debug version of your app. Output is to Console.</li>
+<li><b>Deploy App (Debug)</b> Deploy the debug version of your app to a currently
+running emulator. Output is to Console.</li>
+<li><b>List Targets</b> List the available Android target platforms.</li>
+<li><b>List AVDs</b> List the available AVDs.</li>
+</ul>
+</body>
+</html>
