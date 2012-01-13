@@ -3529,6 +3529,8 @@ Expression instanceofExpression():
 		try
 		{
 			(
+				expr2 = fullyQualifiedIdentifier()
+			|
 				expr2 = classIdentifier()
 			|
 				expr2 = VariableDeclaratorId()
