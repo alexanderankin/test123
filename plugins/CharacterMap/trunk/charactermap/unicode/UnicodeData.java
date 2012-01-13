@@ -25,11 +25,8 @@
 package charactermap.unicode;
 
 
-//{{{ Imports
 import java.util.*;
-// Only if AbstractMap is used (see below):
-// import java.util.Map.Entry;
-//}}}
+// import java.util.Map.Entry;  //Only if AbstractMap is used - see below.
 
 
 /**
@@ -24253,16 +24250,16 @@ static
 	{
 	}
 
-//	THE FOLLOWING SECTION HAS BEEN REMOVED FROM THE ORIGINAL VERSION.
+//	THE FOLLOWING SECTION FROM THE ORIGINAL VERSION HAS BEEN REMOVED.
 //	It implements a Set "EntrySet" with an Iterator "EntryIterator".
 //	That is only needed, if the class is derived from AbstractMap.
-//	However, the public functions containsKey(), get() use just
+//	However, the public functions "containsKey()", "get()" use just
 //	the values of the internal array, so a speciall Map Implementation
 //	is not (?) needed.
 //
 //	 /**
-// 	 * A custom Set implementation wrapping the static code-point-to-name
-//	 * mapping extracted from the Unicode Character Database. This class is
+//	  * A custom Set implementation wrapping the static code-point-to-name
+//	  * mapping extracted from the Unicode Character Database. This class is
 //	  * used as the backing entry set for the UnicodeCharNameMap class.
 //	  */
 //	 private static class EntrySet extends AbstractSet<Entry<Integer,String>>
