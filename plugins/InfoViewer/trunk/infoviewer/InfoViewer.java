@@ -93,10 +93,10 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.FloatingWindowContainer;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -108,7 +108,7 @@ import org.gjt.sp.util.Log;
  * an info viewer for jEdit. It uses a Swing JEditorPane to display the HTML,
  * and implements a URL history, bookmarks and some other web browsing
  * functions.
- * 
+ *
  * @author Dirk Moebius
  * @author Slava Pestov
  */
@@ -126,7 +126,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 	/**
 	 * Creates a new info viewer instance.
-	 * 
+	 *
 	 * @param view
 	 *                where this dockable is docked into.
 	 * @param position
@@ -218,12 +218,18 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		}
 		else
 		{
-			// open homepage at startup
-			String home = jEdit.getProperty("infoviewer.homepage");
-			currentURL = new TitledURLEntry("Infoviewer Homepage", home);
-			if (home != null)
-				gotoURL(home, true, 0);
-		}
+		    if (jEdit.getBooleanProperty("infoviewer.restorePreviousPage")) {
+		        // Restore previous page on startup
+		        gotoURL(urlField.getModel().getItem(0), true, 0);
+		    }
+            else {
+                // open homepage at startup
+                String home = jEdit.getProperty("infoviewer.homepage");
+                currentURL = new TitledURLEntry("Infoviewer Homepage", home);
+                if (home != null)
+                    gotoURL(home, true, 0);
+            }
+        }
 		urlField.addKeyListener(escKeyHandler);
 		setFocusCycleRoot(true);
 		Caret c = viewer.getCaret();
@@ -266,7 +272,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 	/**
 	 * Displays the specified URL in the HTML component.
-	 * 
+	 *
 	 * @param url
 	 *                The URL as String
 	 * @param addToHistory
@@ -274,7 +280,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 */
 	public void gotoURL(TitledURLEntry entry, boolean addToHistory)
 	{
-		String url = entry.getURL();	 
+		String url = entry.getURL();
 		try
 		{
 			URI baseURI = new File(MiscUtilities.constructPath(jEdit.getJEditHome(), "doc")).toURI();
@@ -328,7 +334,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 	/**
 	 * Convenience function
-	 * 
+	 *
 	 * @param url
 	 * @param addToHistory
 	 */
@@ -339,7 +345,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 	/**
 	 * Displays the specified URL in the HTML component.
-	 * 
+	 *
 	 * @param url
 	 *                The URL
 	 * @param addToHistory
@@ -353,8 +359,12 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		if (urlText.length() == 0)
 			return;
 
-		if (addToHistory)
+		if (addToHistory) 
+		{
 			history.add(getCurrentURL());
+			HistoryModel hm = urlField.getModel();			
+			hm.addItem(urlText);
+		}
 
 		urlField.setText(urlText);
 		viewer.setCursor(Cursor.getDefaultCursor());
@@ -556,7 +566,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	public void back()
 	{
 		TitledURLEntry prevURL = history.getPrevious(getCurrentURL());
-		
+
 		if (prevURL == null) {
 			getToolkit().beep();
 		}
@@ -1135,8 +1145,8 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			}
 		});
 	}
-	
-	
+
+
 	protected void dismiss()
 	{
 		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
@@ -1167,7 +1177,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	{
 		return jEdit.getProperty(key, args);
 	}
-	
+
 
 	// greet string
 	private final static String GREET = props("infoviewer.greetstring", new Object[] {
@@ -1244,7 +1254,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	private JMenu mHelp;
 
 	// misc
-	private org.gjt.sp.jedit.View view;
+	private View view;
 
 	private TitledURLEntry currentURL;
 
@@ -1348,7 +1358,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	}
 
 
-	public class ArrowKeyHandler 
+	public class ArrowKeyHandler
 	{
 		int[] keys;
 

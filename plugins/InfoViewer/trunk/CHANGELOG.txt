@@ -1,10 +1,16 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+Version 1.6.1 depends on jEdit 4.4 and Java 1.6
+    * Fixed disappearing sidebar in HelpInfoViewer when used as a HelpViwer replacement. (Ezust)
+    * bug 1542027 fixed (Ezust)
+    * New option to restore previous page instead of showing home page
+      on startup. (Ezust) 
+
 Version 1.6 depends on jEdit 4.3, Java 1.5
     * Removed font size actions which didn't work. Now uses the same font as
       secondary metal font (jedit 4.3) or new helpviewer font (jedit 4.4) as specified in
-      appearance option pane. 
+      appearance option pane. (Ezust) 
 
 Version 1.5.9 Depends on jedit 4.3pre5, Java 1.5
     * Reload on buffer save reloads same address, rather than opening the current buffer.

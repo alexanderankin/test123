@@ -90,12 +90,20 @@ public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionL
         addComponent(appearance);
 
         // "Homepage:"
+        
+        restorePreviousPage = new JCheckBox(
+            jEdit.getProperty("options.infoviewer.restorePreviousPage"),
+            jEdit.getBooleanProperty("infoviewer.restorePreviousPage"));
+        restorePreviousPage.addActionListener(this);
+        
         tHome = new JTextField(jEdit.getProperty("infoviewer.homepage"), 30);
         Box bHome = Box.createHorizontalBox();
         bHome.add(new JLabel(jEdit.getProperty("options.infoviewer.homepage")));
         bHome.add(tHome);
+        
         addComponent(Box.createVerticalStrut(10));
         addComponent(bHome);
+        addComponent(restorePreviousPage);
 
         // "Auto-Update"
         addComponent(Box.createVerticalStrut(15));
@@ -185,6 +193,7 @@ public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionL
         jEdit.setBooleanProperty("infoviewer.appearance.docked.showStatusbar", showDockedStatusbar.isSelected());
         jEdit.setBooleanProperty("infoviewer.autoupdate", autoUpdate.isSelected());
         jEdit.setBooleanProperty("infoviewer.autoupdate.onSwitch", autoUpdateOnSwitch.isSelected());
+        jEdit.setBooleanProperty("infoviewer.restorePreviousPage", restorePreviousPage.isSelected());
         jEdit.setBooleanProperty("infoviewer.autoupdate.onSave", autoUpdateOnSave.isSelected());
         //jEdit.setBooleanProperty("infoviewer.autoupdate.onChange", autoUpdateOnChange.isSelected());
         jEdit.setBooleanProperty("infoviewer.autoupdate.periodically", autoUpdatePeriodically.isSelected());
@@ -198,6 +207,7 @@ public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionL
      */
     public void actionPerformed(ActionEvent e)
     {
+    	tHome.setEnabled(!restorePreviousPage.isSelected());
         autoUpdateOnSwitch.setEnabled(autoUpdate.isSelected());
         autoUpdateOnSave.setEnabled(autoUpdate.isSelected());
         //autoUpdateOnChange.setEnabled(autoUpdate.isSelected());
@@ -217,6 +227,7 @@ public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionL
     private JCheckBox showDockedAddressbar;
     private JCheckBox showDockedStatusbar;
     private JCheckBox autoUpdate;
+    private JCheckBox restorePreviousPage;
     private JCheckBox autoUpdateOnSwitch;
     private JCheckBox autoUpdateOnSave;
     private JCheckBox autoUpdateOnChange;
