@@ -37,6 +37,7 @@ import javax.swing.JFrame;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -143,8 +144,8 @@ public class InfoViewerPlugin extends EditPlugin
 			openURLWithOtherBrowser(view, url);
 		else if ("class".equals(browsertype))
 			openURLWithJavaMethod(view, url);
-		else if ("netscape".equals(browsertype))
-			openURLWithNetscape(view, url);
+		else if ("firefox".equals(browsertype))
+			openURLWithFirefox(view, url);
 		else
 			openURLWithInfoViewer(view, url);
 	}
@@ -157,13 +158,21 @@ public class InfoViewerPlugin extends EditPlugin
 		iv.gotoURL(url, true, 0);
 	}
 
-	public static void openURLWithNetscape(View view, String url)
+	public static void openURLWithFirefox(View view, String url)
 	{
 		String[] args = new String[3];
-		args[0] = "sh";
-		args[1] = "-c";
-		args[2] = "netscape -remote openURL\\('" + url + "'\\) -raise || netscape '" + url
-			+ "'";
+		if (OperatingSystem.isWindows()) 
+		{
+			args[0]="cmd";
+			args[1]="/C";
+		} 
+		else 
+		{
+			args[0] = "sh";
+			args[1] = "-c";
+		}
+		args[2] = "firefox";
+		args[3] = url;
 		execProcess(view, args);
 	}
 

@@ -57,11 +57,11 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 		rbClass.addActionListener(this);
 		addComponent(rbClass);
 
-		// "Netscape"
-		rbNetscape = new JRadioButton(jEdit
-			.getProperty("options.infoviewer.browser.netscape"));
-		rbNetscape.addActionListener(this);
-		addComponent(rbNetscape);
+		// "Firefox"
+		rbFirefox = new JRadioButton(jEdit
+			.getProperty("options.infoviewer.browser.firefox"));
+		rbFirefox.addActionListener(this);
+		addComponent(rbFirefox);
 
 		// "External browser"
 		rbOther = new JRadioButton(jEdit.getProperty("options.infoviewer.browser.other"));
@@ -71,12 +71,12 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 		ButtonGroup browserGroup = new ButtonGroup();
 		browserGroup.add(rbInternal);
 		browserGroup.add(rbClass);
-		browserGroup.add(rbNetscape);
+		browserGroup.add(rbFirefox);
 		browserGroup.add(rbOther);
 
 		String browserType = jEdit.getProperty("infoviewer.browsertype");
-		if ("netscape".equals(browserType))
-			rbNetscape.setSelected(true);
+		if ("firefox".equals(browserType))
+			rbFirefox.setSelected(true);
 		else if ("class".equals(browserType))
 			rbClass.setSelected(true);
 		else if ("external".equals(browserType))
@@ -111,7 +111,7 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 	public void _save()
 	{
 		jEdit.setProperty("infoviewer.browsertype", rbInternal.isSelected() ? "internal"
-			: rbClass.isSelected() ? "class" : rbNetscape.isSelected() ? "netscape"
+			: rbClass.isSelected() ? "class" : rbFirefox.isSelected() ? "firefox"
 				: "external");
 
 		jEdit.setBooleanProperty("infoviewer.useforhelp", useForHelp.isSelected());
@@ -136,7 +136,7 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 
 	private JRadioButton rbClass;
 
-	private JRadioButton rbNetscape;
+	private JRadioButton rbFirefox;
 
 	private JCheckBox useForHelp;
 

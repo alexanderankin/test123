@@ -36,7 +36,7 @@ infoviewer.open-sel.label=Open selected URL with browser
 infoviewer.browsertype=internal
 infoviewer.class=infoviewer.HelpInfoViewer
 infoviewer.method=showInternalInfoViewer
-infoviewer.otherBrowser=netscape -remote openURL($u) -raise
+infoviewer.otherBrowser=firefox $u
 infoviewer.homepage=jeditresource:/InfoViewer.jar!/index.html
 infoviewer.appearance.floating.showMenu=true
 infoviewer.appearance.floating.showToolbar=true
@@ -176,7 +176,7 @@ options.infoviewer.useforhelp.label=Use internal InfoViewer instead of HelpViewe
 options.infoviewer.browser.label=Choose Preferred Browser:
 options.infoviewer.browser.internal=Internal (InfoViewer)
 options.infoviewer.browser.class=Class in classpath
-options.infoviewer.browser.netscape=Netscape (with reuse, Unix only)
+options.infoviewer.browser.firefox=Firefox
 options.infoviewer.browser.other=External browser
 
 options.infoviewer.browser.settings.label=Configure Browser:
