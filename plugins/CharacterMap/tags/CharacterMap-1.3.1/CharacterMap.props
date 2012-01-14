@@ -1,0 +1,74 @@
+# Plugin properties
+plugin.charactermap.CharacterMapPlugin.activate=defer
+plugin.charactermap.CharacterMapPlugin.name=Character Map
+plugin.charactermap.CharacterMapPlugin.author=Slava Pestov, Mark Wickens, Max Funk
+plugin.charactermap.CharacterMapPlugin.version=1.3.1
+plugin.charactermap.CharacterMapPlugin.home=false
+plugin.charactermap.CharacterMapPlugin.docs=CharacterMap.html
+plugin.charactermap.CharacterMapPlugin.description=Show ASCII and extended characters and insert them into the buffer.
+plugin.charactermap.CharacterMapPlugin.longdescription=description.html
+plugin.charactermap.CharacterMapPlugin.depend.0=jedit 04.04.99.02
+plugin.charactermap.CharacterMapPlugin.depend.1=jdk 1.6
+
+# Menu item: Start main window
+plugin.charactermap.CharacterMapPlugin.menu-item=character-map
+
+# Menu action label from dockables.xml
+character-map.label=Character Map
+
+# Main window title
+character-map.title=Character Map
+
+# Main window labels
+character-map.encoding.label=Encoding:
+character-map.blocks.label=Blocks:
+character-map.char.label=Char:
+character-map.no-insert-message.label=Message
+
+# Main window default settings
+character-map.dock-position=right
+character-map.no-insert-message-1=Insert Characters from this table only into\nbuffer encoding "
+character-map.no-insert-message-2=" or Unicode (UTF-xx).
+
+# Option window
+plugin.charactermap.CharacterMapPlugin.option-pane=character-map
+
+# Option window activation Bean Shell Snippet
+options.character-map.code=new charactermap.CharacterMapOptionPane();
+
+# Option window label
+options.character-map.label=Character Map
+
+# Option labels
+options.character-map.separator-general.label=General
+options.character-map.encoding.label=Show encoding combo box
+options.character-map.blocks.label=Show Unicode blocks
+options.character-map.higher-planes.label=Include higher Unicode planes (Chars > 0xFFFF)
+options.character-map.anti-alias.label=Always use anti-aliasing
+options.character-map.status.label=Show status line
+options.character-map.separator-table.label=Table
+options.character-map.columns.label=Table columns (floating)
+options.character-map.columns-dock-lr.label=Table columns (docked l/r)
+options.character-map.columns-dock-tb.label=Table columns (docked t/b)
+options.character-map.separator-chars.label=Large characters
+options.character-map.large.label=Show large character
+options.character-map.large-size.label=Large character size (points)
+options.character-map.super.label=Show right-click character
+options.character-map.super-offset.label=Offset right-click character
+options.character-map.super-size.label=Right-click character size (points)\u0020\u0020
+
+# Option default settings
+options.character-map.encoding=true
+options.character-map.blocks=true
+options.character-map.higher-planes=false
+options.character-map.anti-alias=false
+options.character-map.status=true
+options.character-map.columns=16
+options.character-map.columns-dock-lr=8
+options.character-map.columns-dock-tb=32
+options.character-map.large=true
+options.character-map.large-size=36
+options.character-map.super=true
+options.character-map.super-offset=true
+options.character-map.super-size=128
+
