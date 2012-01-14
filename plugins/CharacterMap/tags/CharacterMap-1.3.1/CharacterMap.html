@@ -1,0 +1,129 @@
+<html>
+<head>
+<title>CharacterMap Plugin</title>
+</head>
+
+<body>
+
+<h1>CharacterMap Plugin V1.3</h1>
+
+by Slava Pestov<BR>and Mark Wickens<br>and Max Funk
+
+<h2> Introduction </h2>
+
+<p>The character map plugin displays a window showing all ASCII and extended
+characters, depending on the selected encoding.</p>
+<p>Clicking one will insert it into the buffer.</p>
+
+
+<h2> Description </h2>
+
+<p>In a dockable window a character table is shown. Clicking on a character with
+Button 1 on the mouse (typically the left button) will cause the character to be
+inserted at the cursor position in the current buffer.
+Moving the cursor over the characters in the table updates the status line at
+the bottom of the window and (if enabled) displays the character at the top-right
+of the window. Pressing and holding button 3 on the mouse (typically the right button)
+will display an enlarged version of the character overlayed at the current
+pointer position.</p>
+<p>For non-unicode encodings the table contains 256 characters, that
+represent (mostly) the entire character set.
+For Unicode (UTF-8, UTF-16, UTF-32) the table displays the selected unicode block,
+shown in the blocks combo box.
+By default, only the &quot;basic multilingual plane&quot; is shown, i.e.
+the first 65536 unicode characters. In the options (see below) you can activate
+all Unicode planes.</p>
+<p>The encoding of the table is shown in the encoding combo box (if enabled).
+You can change it with the dropdown list or directly type it into the text field.
+The encoding of the current buffer / file is shown in the jEdit status line.
+Opening or changing a buffer resets the table to the encoding of the buffer.</p>
+<p> Character Map will refuse to insert characters from different encodings into
+a non-unicode buffer. If you still want to insert the character, you must change
+the encoding in the buffer options.
+Be careful: Some applications may require a specific encoding. Also, if you
+change to another non-Unicode encoding, some other characters of the buffer may
+not be present in the new encoding.</p>
+<p>The characters in the table are rendered in the font style and size selected
+for the text area. The anti-alias and fractional font metrics options are
+honoured. If automatic font substitution is enabled, preferred fonts are also
+honoured. You can e.g. try the fonts Code2000-2002 (currently available at
+code2000.sourceforge.net). Install and activate them in &quot;jEdit - Global
+Options - Text Area - Automatic Font Substitution&quot;. </p>
+
+
+<h2> Options </h2>
+
+The following options can be specified in the option pane.
+<ul>
+	<li>Show encoding combo box: Controls whether the encoding combo box
+	is displayed. By default the encoding is selected from the encoding specified
+	for the currently selected buffer.</li>
+	<li>Show unicode blocks combo box: Controls whether the unicode blocks
+	combo box is displayed. The blocks combo box is only enabled when editing
+	a unicode buffer or when unicode encoding has been specified in the
+	encoding combo box.</li>
+	<li>Include higher Unicode planes: Not only the blocks from Plane 1
+	(Basic Multilingual Plane), but also from higher Planes are shown.
+	This enables Unicode Characters with Codepoints > 65536 or 0xFFFF.
+	Be aware: This is a Beta Feature, since Java encodes these Characters with
+	two elementary chars instead of one, and you may experience compatibility
+	issues in jEdit.</li>
+	<li>Always use anti-aliasing: If set, the character glyphs are always
+	rendered anti-aliased (smoothed). If not set the anti-aliasing options
+	are taken from the Global Options -> Text Area settings.</li>
+	<li>Table columns: specify the number of columns to be displayed...</li>
+	<ol>
+		<li>floating: if the table is floating (un-docked).</li>
+		<li>docked l/r: if the table is docked left or right.</li>
+		<li>docked t/b: if the table is docked at top or bottom.</li>
+	</ol>
+	<li>Show status line: controls whether the status line at the bottom
+	of the window is displayed. The status line contains</li>
+	<ol>
+		<li>the character code point in decimal and hexadecimal form,</li>
+		<li> the bytes forming the character in hexadecimal form
+		(for UTF-encoded unicode,</li>
+		<li>the name of the character (for unicode).</li>
+	</ol>
+	<li>Large character: displays a large representation of
+	the character under the cursor in the top-right hand corner of the
+	window.</li>
+	<ol>
+		<li>Show large character: display the character.</li>
+		<li>Large character size: controls the size (in points) of the
+		large character.</li>
+	</ol>
+	<li>Show right-click character: displays a representation of the
+	character under the cursor when the right-mouse button is pressed
+	overlayed at the current cursor position.</li>
+	<ol>
+		<li>Show right-click character: display the character.</li>
+		<li>Offset right-click character: offsets the position at which the
+		right-click character is displayed so that it is easier to see other
+		characters in the current characters rank and file.</li>
+		<li>Right-click character size: controls the size (in points) of the
+		right-click character.</li>
+	</ol>
+</ul>
+
+<h2>Version History </h2>
+
+<h3>Version 1.1 (2002)</h3>
+	Original version.
+<h3>Version 1.2 (2004)</h3>
+	New version of the CharacterMap plugin provides the following features
+	- anti-aliased text, large character display, better docking support and
+	better configuration via an options pane.
+<h3>Version 1.3.0 (2011)</h3>
+	Improved layouts for docking. Unicode 6.0.0.
+	Unicode detection fixed. Statusinfo fixed, UTF16, UTF32 added.
+	Auto-reload after option change. Font substitution.
+	Table size (unicode) fixed. Code cleaning.
+<h3>Version 1.3.1 (2012)</h3>
+	All Unicode planes. Change encoding / font with jEdit settings.
+	No insertion of characters which cannot be encoded.
+	Option panel layout.
+	Code cleaning, better conformity to plugin standard and Java 7.
+
+</body>
+</html>
