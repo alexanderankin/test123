@@ -115,7 +115,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			{
 				Entry entry = (Entry)keys.next();
 				Object uri = resourceCache.get(entry);
-				if(uri == IGNORE)
+				if(uri == IGNORE || uri == null)
 					continue;
 
 				if(entry.type == Entry.PUBLIC)
