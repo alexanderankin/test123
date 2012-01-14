@@ -48,5 +48,8 @@ public final class Debug
 	
 	/** turn on/off messages about matching tag highlighting (SidekickTagHighlight) */
 	public static final boolean DEBUG_TAG_HIGHLIGHT = false;
+
+	/** turn on/off messages about hyperlinks highlighting (XmlHyperlinkSource) */
+	public static final boolean DEBUG_HYPERLINKS = false;
 }
 

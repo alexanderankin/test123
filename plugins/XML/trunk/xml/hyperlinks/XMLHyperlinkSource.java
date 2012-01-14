@@ -38,6 +38,7 @@ import sidekick.util.Location;
 
 import gatchan.jedit.hyperlinks.*;
 
+import static xml.Debug.*;
 import xml.Resolver;
 import xml.CharSequenceReader;
 import xml.XmlParsedData;
@@ -117,23 +118,19 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			CharSequence toParse = buffer.getSegment(sA,lA);
 			int line = buffer.getLineOfOffset(sA);
 			int col = buffer.getVirtualWidth(line, sA-buffer.getLineStartOffset(line)+1);
-			System.err.println("line="+line+",col="+col);
 			Reader r = new CharSequenceReader(toParse);
 			XmlParser parser = new XmlParser(r, line+1, col);
 			parser.setTabSize( buffer.getTabSize() );
 			try{
 				XmlDocument.XmlElement startTag = parser.Tag();
-				System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
 				int start = ElementUtil.createStartPosition(buffer,startTag).getOffset();
 				int end= ElementUtil.createEndPosition(buffer,startTag).getOffset();
-				System.err.println("start="+start+",end"+end);
 				/* if the offset is inside start tag */
 				if(offset <= end)
 				{
-					System.err.println("inside open tag");
 					XmlDocument.AttributeList al = ((XmlDocument.Tag)startTag).attributeList;
 					if(al == null){
-						System.err.println("no attributes");
+						if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"no attribute in this element");
 						return null;
 					}else{
 						for(XmlDocument.Attribute att: al.attributes){
@@ -149,20 +146,19 @@ public class XMLHyperlinkSource implements HyperlinkSource
 						              )
 						          )
 						        {
-						        	System.err.println("inside attribute "+att.name+"="+att.value);
 						        	if(asset instanceof XmlTag) {
 						        		return getHyperlinkForAttribute(buffer, offset, data, asset, att);
 						        	}
 						        }
 						}
-						System.err.println("not inside attributes");
+						if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"not inside attributes");
 						return null;
 					}
 				}else{
 					return null;
 				}
 			}catch(ParseException pe){
-				Log.log(Log.ERROR, XMLHyperlinkSource.class, "error parsing element", pe);
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "error parsing element", pe);
 				return null;
 			}
 		}
@@ -183,13 +179,13 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		XmlTag sideKickTag = (XmlTag)asset;
 		
 		if(sideKickTag.attributes == null){
-			System.err.println("Sidekick doesn't have attributes");
+			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"Sidekick version of this element doesn't have attributes");
 			return null;
 		}
 		
 		int attIndex = sideKickTag.attributes.getIndex(att.name);
 		if(attIndex < 0){
-			System.err.println("Sidekick doesn't have this attribute: "+att.name);
+			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"Sidekick version of this element doesn't have this attribute: "+att.name);
 			return null;
 		}
 		
@@ -200,8 +196,6 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		String localName = att.name.contains(":")? sideKickTag.attributes.getLocalName(attIndex) : att.name;
 		String value = sideKickTag.attributes.getValue(attIndex);
 		
-		System.err.println("inside "+tagNS+":"+tagLocalName+" @"+ns+":"+localName);
-		
 		Hyperlink h = getHyperlinkForAttribute(buffer, offset,
 			tagNS,tagLocalName, ns, localName, value,
 			data, sideKickTag, att);
@@ -210,15 +204,14 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		
 			ElementDecl eltDecl  = data.getElementDecl(sideKickTag.getName(),offset);
 			if(eltDecl == null){
-				System.err.println("no element declaration for "+tagLocalName);
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"no element declaration for "+tagLocalName);
 			}else{
 				ElementDecl.AttributeDecl attDecl = eltDecl.attributeHash.get(localName);
 				if(attDecl == null){
-					System.err.println("no attribute declaration for "+localName);
+					if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"no attribute declaration for "+localName);
 					return null;
 				}else{
 					if("IDREF".equals(attDecl.type)){
-						System.err.println("found IDREF");
 						return getHyperlinkForIDREF(buffer, data, value, att);
 					}else if("anyURI".equals(attDecl.type)){
 						// FIXME: shall it use xml:base ?
@@ -227,10 +220,8 @@ public class XMLHyperlinkSource implements HyperlinkSource
 							return newJEditOpenFileHyperlink(buffer, att, href);
 						}
 					}else if("IDREFS".equals(attDecl.type)){
-						System.err.println("found IDREFS");
 						return getHyperlinkForIDREFS(buffer, offset, data, value, att);
 					}
-					System.err.println("attDecl.type="+attDecl.type);
 					return null;
 				}
 			}
@@ -282,8 +273,6 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			int st = m.start(0);
 			int nd = m.end(0);
 			if(attStart + st <= offset && attStart + nd >= offset){
-				System.err.println("idref="+m.group(0));
-				System.err.println("ids="+data.ids);
 				IDDecl idDecl = data.getIDDecl(m.group(0));
 				if(idDecl==null)return null;
 				int start = attStart + st;
@@ -311,27 +300,22 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			&& "include".equals(tagLocalName)
 			&& "href".equals(attLocalName))
 		{
-			System.err.println("found xi:include");
 			href = resolve(attValue, buffer, offset, data, tag, true);
 		} else if("http://www.w3.org/1999/xlink".equals(attNS)
 			&& "href".equals(attLocalName))
 		{
-			System.err.println("found xlink");
 			href = resolve(attValue, buffer, offset, data, tag, true);
 		} else if("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
 			&& "noNamespaceSchemaLocation".equals(attLocalName))
 		{
-			System.err.println("found xsi:noNamespaceSchemaLocation");
 			href = resolve(attValue, buffer, offset, data, tag, false);
 		} else if("".equals(tagNS) && "ulink".equals(tagLocalName)
 				&& "url".equals(attLocalName))
 		{
-			System.err.println("found DocBook ulink");
 			href = resolve(attValue, buffer, offset, data, tag, false);
 		} else if("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
 			&& "schemaLocation".equals(attLocalName))
 		{
-			System.err.println("found xsi:schemaLocation");
 			
 			// +1 for the quote around the attribute value
 			int attStart = createOffset(buffer, att.getValueStartLocation()) +1;
@@ -466,15 +450,15 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			    Math.max( loc.column - 1, 0 ),
 			    totalVirtualWidth );
 		if ( column_offset == -1 ) {
-			System.err.println("wanted virtual column "+(loc.column-1)+", totalVirtualWitdth="+totalVirtualWidth[0]);
+			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"wanted virtual column "+(loc.column-1)+", totalVirtualWitdth="+totalVirtualWidth[0]);
 			if(loc.column-1 == totalVirtualWidth[ 0 ]){
-				System.err.println("setting offset to real end of line offset");
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"setting offset to real end of line offset");
 				column_offset = buffer.getLineLength(line);
 			}else {
-				System.err.println("setting offset to virtual width");
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"setting offset to virtual width");
 				column_offset = totalVirtualWidth[ 0 ];
 			}
-			System.err.println("changed column_offset:"+column_offset);
+			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"changed column_offset:"+column_offset);
 		}
 		return line_offset + column_offset ;
 	}
