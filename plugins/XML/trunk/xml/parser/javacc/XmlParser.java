@@ -276,7 +276,6 @@ public class XmlParser implements XmlParserConstants {
   XmlDocument.AttributeList alist;
   Token firstToken = getToken(1);
   Token st = null;
-  boolean isJspTag = false;
     try {
       st = jj_consume_token(TAG_START);
       t = jj_consume_token(TAG_NAME);
@@ -296,15 +295,11 @@ public class XmlParser implements XmlParserConstants {
         String tag_start = "<";
         String tag_name = "";
         if (st.image.startsWith("<") && st.image.endsWith(":")) {
-            isJspTag = true;
             tag_start = "<";
             tag_name = st.image.substring(1) + t.image;
         }
         else {
             tag_name = t.image;
-        }
-        if (st.image.startsWith("<%")) {
-            isJspTag = true;
         }
       XmlDocument.Tag rtn_tag = new XmlDocument.Tag(tag_start, tag_name, alist, et.image);
       if (et.kind == TAG_SLASHEND) {
@@ -312,7 +307,6 @@ public class XmlParser implements XmlParserConstants {
       }
       rtn_tag.setStartLocation(st.beginLine, st.beginColumn);
       rtn_tag.setEndLocation(et.endLine, et.endColumn + 1);
-      rtn_tag.setIsJspTag(isJspTag);
       {if (true) return rtn_tag;}
     } catch (ParseException ex) {
       addException(ex);

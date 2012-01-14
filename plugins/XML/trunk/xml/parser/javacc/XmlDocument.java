@@ -17,7 +17,10 @@
 package xml.parser.javacc;
 
 import java.util.*;
+
 import javax.swing.text.Position;
+
+import sidekick.html.parser.html.HtmlDocument;
 import sidekick.util.*;
 
 /**
@@ -39,27 +42,9 @@ public class XmlDocument {
     ElementSequence elements;
     static String NL = System.getProperty( "line.separator" );
 
-    // core attribute definitions and should they be shown
-    static List coreAttributes = Arrays.asList( new String[] {"id", "class", "style", "title"} );
-    static boolean showCoreAttributes = true;
-
-    // internationalization language attribute definitions and should they be shown
-    static List langAttributes = Arrays.asList( new String[] {"lang", "dir"} );
-    static boolean showLangAttributes = true;
-
-    // scripting attribute definitions and should they be shown
-    static List scriptAttributes = Arrays.asList( new String[] {"onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup"} );
-    static boolean showScriptAttributes = true;
-
-    // should all other tag attributes be shown
-    static boolean showTagAttributes = true;
-
-    // should < and > be shown with the tag?
-    private static boolean showBrackets = true;
-
     private static final String HTML_HEAD = "<head>" +
             "<link rel=STYLESHEET TYPE=\"text/css\" HREF=\"" +
-            XmlDocument.class.getResource( "../style.css" ) +
+            HtmlDocument.class.getResource( "../style.css" ) +
             "\"></head>";
 
     public XmlDocument( ElementSequence s ) {
@@ -70,49 +55,6 @@ public class XmlDocument {
         NL = ls;
     }
 
-    /**
-     * Should the brackets, &lt; and &gt; be shown on the output of the toString
-     * methods of the individual elements?
-     */
-    public void setShowBrackets( boolean b ) {
-        showBrackets = b;
-    }
-
-    public boolean getShowBrackets() {
-        return showBrackets;
-    }
-
-    public void setShowTagAttributes( boolean b ) {
-        showTagAttributes = b;
-    }
-
-    public boolean getShowTagAttributes() {
-        return showTagAttributes;
-    }
-
-    public void setShowCoreAttributes( boolean b ) {
-        showCoreAttributes = b;
-    }
-
-    public boolean getShowCoreAttributes() {
-        return showCoreAttributes;
-    }
-
-    public void setShowLangAttributes( boolean b ) {
-        showLangAttributes = b;
-    }
-
-    public boolean getShowLangAttributes() {
-        return showLangAttributes;
-    }
-
-    public void setShowScriptAttributes( boolean b ) {
-        showScriptAttributes = b;
-    }
-
-    public boolean getShowScriptAttributes() {
-        return showScriptAttributes;
-    }
 
     public void accept( XmlVisitor v ) {
         if (v != null)
@@ -231,8 +173,11 @@ public class XmlDocument {
         public AttributeList attributeList;
         public String tagEnd = ">";
         public boolean emptyTag = false;
-        public boolean isJspTag = false;
+    	public String namespace;
+    	/** namespace -> prefix */
+    	public Map<String,String> namespaceBindings;
 
+        
         public Tag( String name, AttributeList a ) {
             tagName = name;
             attributeList = a;
@@ -262,10 +207,6 @@ public class XmlDocument {
             emptyTag = b;
         }
 
-        public void setIsJspTag( boolean b ) {
-            isJspTag = b;
-        }
-
         public void accept( XmlVisitor v ) {
             v.visit( this );
         }
@@ -288,54 +229,16 @@ public class XmlDocument {
                 Attribute attribute = ( Attribute ) iterator.next();
                 length += 1 + ( attribute.getLength() );
             }
-            return length + tagName.length() + ( showBrackets ? 2 : 0 ) + ( emptyTag ? 1 : 0 );
+            return length + tagName.length() + ( emptyTag ? 1 : 0 );
         }
 
         public String toString() {
-            StringBuffer s = new StringBuffer();
-            if ( tagName.equals( "html" ) ) {
-                /* deal with a Swing thing -- I can't add "<html>" directly
-                because Swing thinks it's the start of html formatted text */
-                if ( showBrackets ) {
-                    s.append( "<html>&lt;html&gt;" );
-                }
-                else {
-                    s.append( "html" );
-                }
-                return s.toString();
-            }
-            s.append( tagStart );
-            if ( tagStart.length() > 1 && !tagStart.endsWith( ":" ) )
-                s.append( " " );  // got a jsp tag
+            StringBuilder s = new StringBuilder();
             s.append( tagName );
             for ( Iterator iterator = attributeList.attributes.iterator(); iterator.hasNext(); ) {
                 Attribute attribute = ( Attribute ) iterator.next();
-                String attName = attribute.getName().toLowerCase();
-                if ( coreAttributes.contains( attName ) && showCoreAttributes ) {
-                    s.append( " " );
-                    s.append( attribute.toString() );
-                }
-                else if ( langAttributes.contains( attName ) && showLangAttributes ) {
-                    s.append( " " );
-                    s.append( attribute.toString() );
-                }
-                else if ( scriptAttributes.contains( attName ) && showScriptAttributes ) {
-                    s.append( " " );
-                    s.append( attribute.toString() );
-                }
-                else if ( showTagAttributes ) {
-                    s.append( " " );
-                    s.append( attribute.toString() );
-                }
-            }
-            if ( tagEnd.length() > 1 && !tagEnd.startsWith( "/" ) ) {
-                s.append( " " );  // got a jsp tag
-            }
-            if ( showBrackets ) {
-                s.append( tagEnd );
-            }
-            if ( !showBrackets ) {
-                return trimBrackets( s );
+                s.append( " " );
+                s.append( attribute.toString() );
             }
             return s.toString();
         }
