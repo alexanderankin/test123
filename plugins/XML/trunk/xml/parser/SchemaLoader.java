@@ -137,7 +137,8 @@ public final class SchemaLoader
 			// FIXME: can't get the actual components of the schema this way
 			//        so the cache isn't cleared when a schema component has changed !
 			en = Cache.instance().put(realLocation,"Schema",schema);
-			en.getRequestingBuffers().add(requestingBuffer);
+			// en will be null if cache is disabled
+			if(en != null)en.getRequestingBuffers().add(requestingBuffer);
 		} else {
 			if(DEBUG_CACHE)Log.log(Log.DEBUG,SchemaLoader.class,"found schema in cache for "+schemaFileNameOrURL);
 			schema = (Schema)en.getCachedItem();
