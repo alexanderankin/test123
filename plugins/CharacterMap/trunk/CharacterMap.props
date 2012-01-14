@@ -7,7 +7,7 @@ plugin.charactermap.CharacterMapPlugin.home=false
 plugin.charactermap.CharacterMapPlugin.docs=CharacterMap.html
 plugin.charactermap.CharacterMapPlugin.description=Show ASCII and extended characters and insert them into the buffer.
 plugin.charactermap.CharacterMapPlugin.longdescription=description.html
-plugin.charactermap.CharacterMapPlugin.depend.0=jedit 04.04.99.01
+plugin.charactermap.CharacterMapPlugin.depend.0=jedit 04.04.99.02
 plugin.charactermap.CharacterMapPlugin.depend.1=jdk 1.6
 
 # Menu item: Start main window
@@ -23,14 +23,12 @@ character-map.title=Character Map
 character-map.encoding.label=Encoding:
 character-map.blocks.label=Blocks:
 character-map.char.label=Char:
-character-map.encoding-security.label=Confirm
-character-map.encoding-security-question=Do you want to change \
-                                         your current file encoding?
-character-map.bad-encoding=Unknown encoding
-
+character-map.no-insert-message.label=Message
 
 # Main window default settings
 character-map.dock-position=right
+character-map.no-insert-message-1=Insert Characters from this table only into\nbuffer encoding "
+character-map.no-insert-message-2=" or Unicode (UTF-xx).
 
 # Option window
 plugin.charactermap.CharacterMapPlugin.option-pane=character-map
@@ -43,11 +41,11 @@ options.character-map.label=Character Map
 
 # Option labels
 options.character-map.separator-general.label=General
-options.character-map.status.label=Show status line
-options.character-map.encoding.label=Show encoding combo-box
+options.character-map.encoding.label=Show encoding combo box
 options.character-map.blocks.label=Show Unicode blocks
-options.character-map.higherplanes.label=Include higher Unicode planes (Chars > 0xFFFF)
+options.character-map.higher-planes.label=Include higher Unicode planes (Chars > 0xFFFF)
 options.character-map.anti-alias.label=Always use anti-aliasing
+options.character-map.status.label=Show status line
 options.character-map.separator-table.label=Table
 options.character-map.columns.label=Table columns (floating)
 options.character-map.columns-dock-lr.label=Table columns (docked l/r)
@@ -60,11 +58,11 @@ options.character-map.super-offset.label=Offset right-click character
 options.character-map.super-size.label=Right-click character size (points)\u0020\u0020
 
 # Option default settings
-options.character-map.status=true
 options.character-map.encoding=true
 options.character-map.blocks=true
-options.character-map.higherplanes=false
+options.character-map.higher-planes=false
 options.character-map.anti-alias=false
+options.character-map.status=true
 options.character-map.columns=16
 options.character-map.columns-dock-lr=8
 options.character-map.columns-dock-tb=32

@@ -4,7 +4,7 @@
  *
  *  Copyright (C) 2000, 2001, 2002 Slava Pestov
  *  Copyright (C) 2003 Mark Wickens
- *  Copyright (C) 2011 Max Funk
+ *  Copyright (C) 2011, 2012 Max Funk
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -45,7 +45,9 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+//import org.gjt.sp.util.Log;
 //}}}
 
 /**
@@ -201,7 +203,7 @@ public class CharacterMap extends JPanel
 		c.gridwidth = 1;
 		gridbag.setConstraints(caption,c);
 
-		showHigherPlanes = jEdit.getBooleanProperty(OPTION_PREFIX + "higherplanes");
+		showHigherPlanes = jEdit.getBooleanProperty(OPTION_PREFIX + "higher-planes");
 
 		Iterator<Block> blocks_iterator;
 		blocks = new DefaultComboBoxModel();
@@ -259,7 +261,7 @@ public class CharacterMap extends JPanel
 		add(BorderLayout.NORTH, northPanel);
 
 		encoding = (String) encodingCombo.getSelectedItem();
-		blocksCombo.setEnabled(isEncodingUnicode());
+		blocksCombo.setEnabled(isUnicode(encoding));
 
 		// Center: Character Table
 
@@ -344,7 +346,7 @@ public class CharacterMap extends JPanel
 
 			// buf.append(" Char: ").append(ch);
 
-			if (!isEncodingUnicode())
+			if (!isUnicode(encoding))
 			{
 				buf.append(toDecString(n,3," Dec: "));
 				buf.append(toHexString(n,2,true," Hex: 0x"));
@@ -482,7 +484,7 @@ public class CharacterMap extends JPanel
 					}
 				}
 			}
-			if (isEncodingUnicode())
+			if (isUnicode(encoding))
 			{
 				if (isDockedLeftRight()) buf.append("\n");
 				String name =
@@ -680,16 +682,16 @@ public class CharacterMap extends JPanel
 		|| position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
 	}
 
-	private boolean isEncodingUnicode()
+	private boolean isUnicode(String enc)
 	{
-		return encoding.toUpperCase().startsWith("UNICODE")
-		|| encoding.toUpperCase().startsWith("UTF")
-		|| encoding.toUpperCase().startsWith("X-UTF");
+		return enc.toUpperCase().startsWith("UNICODE")
+		|| enc.toUpperCase().startsWith("UTF")
+		|| enc.toUpperCase().startsWith("X-UTF");
 	}
 
 	private int getBlockSize()
 	{
-		if (isEncodingUnicode())
+		if (isUnicode(encoding))
 		{
 			Block block = (Block)blocksCombo.getSelectedItem();
 			return block.length();
@@ -702,7 +704,7 @@ public class CharacterMap extends JPanel
 
 	private int getBlockOffset()
 	{
-		if (isEncodingUnicode())
+		if (isUnicode(encoding))
 		{
 			Block block = (Block)blocksCombo.getSelectedItem();
 			return block.getFirstPoint();
@@ -743,7 +745,7 @@ public class CharacterMap extends JPanel
 		}
 		if (encodingChanged)
 		{
-			blocksCombo.setEnabled(isEncodingUnicode());
+			blocksCombo.setEnabled(isUnicode(encoding));
 			tableModel.fireTableDataChanged();
 			table.repaint();
 		}
@@ -751,46 +753,17 @@ public class CharacterMap extends JPanel
 
 	/**
 	 * Set the encoding of the current jEdit Buffer to the input value.
-	 * If the value does not exist in the encodings list, it is stored
-	 * for later reference in this session.
-	 * If the encoding really changed, the charmap table is redrawn.
 	 * @param enc New encoding.
 	 * @see   org.gjt.sp.jedit.Buffer
 	 */
 	private void changeEncodingBuffer(String enc)
 	{
-		if (!view.getBuffer().getStringProperty(JEditBuffer.ENCODING).equals(enc)
-			&& isYesDialog(jEdit.getProperty(NAME_PREFIX + "encoding-security.label"),
-				jEdit.getProperty(NAME_PREFIX + "encoding-security-question")))
+		if (!view.getBuffer().getStringProperty(JEditBuffer.ENCODING).equals(enc))
 		{
 			view.getBuffer().setStringProperty(JEditBuffer.ENCODING, encoding);
 			view.getBuffer().setDirty(true);
 			view.getBuffer().propertiesChanged();
 		}
-	}
-
-
-	/**
-	 * Dialog to confirm a security question with "No", "Yes".
-	 * Returns, whether the answer is "Yes".
-	 * @param title Title of the dialog window
-	 * @param question The question to be answered.
-	 * @return whether the answer is yes
-	 */
-	private boolean isYesDialog(String title, String question)
-	{
-		JOptionPane pane = new JOptionPane(question);
-		pane.setMessageType(JOptionPane.WARNING_MESSAGE);
-		Object[] options = new String[] { "Yes", "No" };
-		pane.setOptions(options);
-		JDialog dialog = pane.createDialog(new JFrame(), title);
-		dialog.setModal(true);
-		dialog.setVisible(true);
-		Object obj = pane.getValue();
-		boolean isYes;
-		if (options[0].equals(obj)) isYes = true;
-			else isYes = false;
-		return isYes;
 	}
 
 	/**
@@ -800,7 +773,9 @@ public class CharacterMap extends JPanel
 	 */
 	public void handleMessage(EBMessage message)
 	{
-		if (message instanceof BufferUpdate)
+		if ((message instanceof BufferUpdate)
+		|| ((message instanceof EditPaneUpdate)
+			&& ((EditPaneUpdate) message).getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)))
 		{
 			changeEncodingCharMap(view.getBuffer().getStringProperty(JEditBuffer.ENCODING));
 		}
@@ -829,6 +804,20 @@ public class CharacterMap extends JPanel
 		super.removeNotify();
 		EditBus.removeFromBus(this);
 	}
+
+private void setCharInBuffer(String ch)
+{
+	String bufferEncoding = view.getBuffer().getStringProperty(JEditBuffer.ENCODING);
+	if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding))
+		view.getTextArea().setSelectedText(ch);
+	else
+		JOptionPane.showMessageDialog(view,
+			jEdit.getProperty(NAME_PREFIX + "no-insert-message-1")
+			  + encoding
+			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-2"),
+			jEdit.getProperty(NAME_PREFIX + "no-insert-message.label"),
+			JOptionPane.WARNING_MESSAGE);
+}
 //}}}
 
 
@@ -869,15 +858,16 @@ public class CharacterMap extends JPanel
 		 * @param  row  Row of table containing required character
 		 * @param  col  Column of table containing required character
 		 * @return      String containing character representation of
-		 * glyph stored within glyph table at given row
+		 *              glyph stored within glyph table at given row
 		 */
 		public Object getValueAt(int row, int col)
 		{
 			int cell = row * tableColumns + col;
 
-			if (isEncodingUnicode())
+			if (isUnicode(encoding))
 			{
 				int offset = getBlockOffset();
+				//Not compatible with higher Unicode planes:
 				//return String.valueOf((char) (offset + cell));
 				return new String(Character.toChars(offset+cell));
 			}
@@ -924,7 +914,6 @@ public class CharacterMap extends JPanel
 			if (evt.getSource() == encodingCombo)
 			{
 				changeEncodingCharMap((String) encodingCombo.getSelectedItem());
-				changeEncodingBuffer((String) encodingCombo.getSelectedItem());
 			}
 		}
 	}
@@ -1023,7 +1012,7 @@ public class CharacterMap extends JPanel
 				}
 				else {
 					String ch = getChar(row, column);
-					view.getTextArea().setSelectedText(ch);
+					setCharInBuffer(ch);
 				}
 			}
 		}
@@ -1259,21 +1248,14 @@ public class CharacterMap extends JPanel
 			// Position of popup should be relative to owner component
 			// over the character in the table
 			Point ownerLoc = owner.getLocationOnScreen();
-			//Log.log(Log.MESSAGE, this, "ownerLoc.x = " + ownerLoc.x + ", ownerLoc.y = " + ownerLoc.y);
 			int displayX = ownerLoc.x + x;
 			int displayY = ownerLoc.y + y;
-
-			//Log.log(Log.MESSAGE, this, "before displayX = " + displayX + ", displayY = " + displayY);
 
 			int popupWidth = contents.getWidth();
 			int popupHeight = contents.getHeight();
 
-			//Log.log(Log.MESSAGE, this, "popupWidth = " + popupWidth + ", popupHeight = " + popupHeight);
-
 			displayX -= (popupWidth / 2);
 			//displayY += (popupHeight / 2);
-
-			//Log.log(Log.MESSAGE, this, "after displayX = " + displayX + ", displayY = " + displayY);
 
 			if (offsetSuper) {
 				int rowHeight = table.getRowHeight();
@@ -1284,7 +1266,6 @@ public class CharacterMap extends JPanel
 				GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
 				Rectangle bounds = gf.getBounds();
 				int screenWidth = bounds.x + bounds.width;
-				//Log.log(Log.MESSAGE, this, "bounds = " + bounds + ", displayX + popupWidth = " + (displayX + popupWidth));
 				if (displayX + popupWidth > screenWidth) {
 					displayX = screenWidth - popupWidth;
 				}

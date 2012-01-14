@@ -52,22 +52,22 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	/** Shortcut to CharacterMapPlugin.OPTION_PREFIX */
 	private final String OPTION_PREFIX = CharacterMapPlugin.OPTION_PREFIX;
 
-	/** Checkbox controlling display of status line */
-	private JCheckBox status;
 	/** Checkbox controlling display of encoding combo box */
 	private JCheckBox encoding;
 	/** Checkbox controlling display of unicode blocks slider */
 	private JCheckBox blocks;
 	/** Checkbox to enable higher Unicode planes (Characters above 0xFFFF) */
-	private JCheckBox higherplanes;
+	private JCheckBox higherPlanes;
 	/** Checkbox controlling anti-aliasing */
-	private JCheckBox antialias;
+	private JCheckBox antiAlias;
+	/** Checkbox controlling display of status line */
+	private JCheckBox status;
 
 	/** Spinner controlling number of columns displayed in floating table */
 	private JSpinner columnsSpinner;
 	/** Spinner controlling number of columns displayed in left/right docked table */
 	private JSpinner columnsSpinnerDockLR;
-	/** Spinner controlling number of columns displayed in top/bottom docked table */	
+	/** Spinner controlling number of columns displayed in top/bottom docked table */
 	private JSpinner columnsSpinnerDockTB;
 	/** Label for spinner options (floating) */
 	private JLabel columnsSpinnerLabel;
@@ -119,16 +119,16 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	public void _init()
 	{
 		//Initialise general option components
-		status = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "status.label"),
-			jEdit.getBooleanProperty(OPTION_PREFIX + "status"));
 		encoding = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "encoding.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "encoding"));
 		blocks = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "blocks.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "blocks"));
-		higherplanes = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "higherplanes.label"),
-			jEdit.getBooleanProperty(OPTION_PREFIX + "higherplanes"));
-		antialias = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "anti-alias.label"),
+		higherPlanes = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "higher-planes.label"),
+			jEdit.getBooleanProperty(OPTION_PREFIX + "higher-planes"));
+		antiAlias = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "anti-alias.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "anti-alias"));
+		status = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "status.label"),
+			jEdit.getBooleanProperty(OPTION_PREFIX + "status"));
 
 		//Initialise table option components
 		spinnerValues = new ArrayList<Integer>();
@@ -209,55 +209,40 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		//Display all components
 
 		addSeparator(OPTION_PREFIX + "separator-general.label");
-
+		addComponent(encoding);
+		addComponent(blocks);
+		addComponent(higherPlanes);
+		addComponent(antiAlias);
 		addComponent(status);
 
-		addComponent(encoding);
-
-		addComponent(blocks);
-
-		addComponent(higherplanes);
-
-		addComponent(antialias);
-
-
 		addSeparator(OPTION_PREFIX + "separator-table.label");
-
 		addComponent(columnsSpinnerLabel, columnsSpinner);
-
 		addComponent(columnsSpinnerDockLRLabel, columnsSpinnerDockLR);
-
 		addComponent(columnsSpinnerDockTBLabel, columnsSpinnerDockTB);
 
-
 		addSeparator(OPTION_PREFIX + "separator-chars.label");
-
 		addComponent(showLarge);
-
 		addComponent(largeSizeLabel, largeSize);
-
 		addComponent(showSuper);
-
 		addComponent(superOffset);
-
 		addComponent(superSizeLabel, superSize);
 	}
 //}}}
 
 //{{{ _save() method
 	/**
-	 * Store the options selected on the pane back to the 
+	 * Store the options selected on the pane back to the
 	 * jedit properties.
 	 */
 	@Override
 	public void _save()
 	{
 		// Save options
-		jEdit.setBooleanProperty(OPTION_PREFIX + "status", status.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "encoding", encoding.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "blocks", blocks.isSelected());
-		jEdit.setBooleanProperty(OPTION_PREFIX + "higherplanes", higherplanes.isSelected());
-		jEdit.setBooleanProperty(OPTION_PREFIX + "anti-alias", antialias.isSelected());
+		jEdit.setBooleanProperty(OPTION_PREFIX + "higher-planes", higherPlanes.isSelected());
+		jEdit.setBooleanProperty(OPTION_PREFIX + "anti-alias", antiAlias.isSelected());
+		jEdit.setBooleanProperty(OPTION_PREFIX + "status", status.isSelected());
 
 		int column = ((Integer) columnsSpinner.getValue()).intValue();
 		jEdit.setIntegerProperty(OPTION_PREFIX + "columns", column);
@@ -288,7 +273,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 
 //{{{ Auxiliary function
 	/**
-	 * Determine the value of the given text field and store in the 
+	 * Determine the value of the given text field and store in the
 	 * named jedit property. If the valued does not parse as an integer,
 	 * use the specified default instead.
 	 * @param property The name of the jedit property to receive the value
