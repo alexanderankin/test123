@@ -160,7 +160,7 @@ public class InfoViewerPlugin extends EditPlugin
 
 	public static void openURLWithFirefox(View view, String url)
 	{
-		String[] args = new String[3];
+		String[] args = new String[4];
 		if (OperatingSystem.isWindows()) 
 		{
 			args[0]="cmd";
