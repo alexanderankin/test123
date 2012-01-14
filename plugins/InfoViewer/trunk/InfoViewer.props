@@ -206,6 +206,7 @@ options.infoviewer.autoupdate.onChange=...on buffer changes
 options.infoviewer.autoupdate.onChange.delay=After buffer change, wait (seconds):
 options.infoviewer.autoupdate.periodically=...periodically
 options.infoviewer.autoupdate.periodically.delay=Update every (seconds):
+options.infoviewer.restorePreviousPage=Restore previous page on startup
 
 # Dialog "Edit Bookmarks"
 infoviewer.bdialog.title=Edit Bookmarks
