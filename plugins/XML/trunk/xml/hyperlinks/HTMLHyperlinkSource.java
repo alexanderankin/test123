@@ -46,6 +46,7 @@ import sidekick.util.SideKickElement;
 
 import gatchan.jedit.hyperlinks.*;
 
+import static xml.Debug.*;
 import xml.Resolver;
 import xml.CharSequenceReader;
 import xml.XmlParsedData;
@@ -107,22 +108,19 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			}else if(elt instanceof Tag){
 				startTag = (Tag)elt;
 			}else{
-				System.err.println("unexpected asset type: "+elt.getClass());
+				Log.log(Log.WARNING,HTMLHyperlinkSource.class,"unexpected asset type: "+elt.getClass()+", please report");
 				startTag = null;
 				return null;
 			}
 
-			System.err.println("startL="+startTag.getStartLocation()+",endL="+startTag.getEndLocation());
 			int start = ElementUtil.createStartPosition(buffer,startTag).getOffset();
 			int end= ElementUtil.createEndPosition(buffer,startTag).getOffset();
-			System.err.println("start="+start+",end"+end);
 			/* if the offset is inside start tag */
 			if(offset <= end)
 			{
-				System.err.println("inside open tag");
 				AttributeList al = startTag.attributeList;
 				if(al == null){
-					System.err.println("no attributes");
+					if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,HTMLHyperlinkSource.class,"no attribute in this element");
 					return null;
 				}else{
 					for(Attribute att: al.attributes){
@@ -138,11 +136,10 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 						      )
 						  )
 						{
-							System.err.println("inside attribute "+att.name+"="+att.value);
 							return getHyperlinkForAttribute(buffer, offset, data, startTag, att);
 						}
 					}
-					System.err.println("not inside attributes");
+					if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,HTMLHyperlinkSource.class,"not inside attributes");
 					return null;
 				}
 			}else{
@@ -177,7 +174,6 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			quoted = false;
 		}
 		
-		System.err.println("inside "+tagLocalName+" @"+localName);
 		
 		Hyperlink h = getHyperlinkForAttribute(buffer, offset,
 			tagLocalName, localName, value,
@@ -187,15 +183,14 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		
 			ElementDecl eltDecl  = data.getElementDecl(localName,offset);
 			if(eltDecl == null){
-				System.err.println("no element declaration for "+tagLocalName);
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,HTMLHyperlinkSource.class,"no element declaration for "+tagLocalName);
 			}else{
 				ElementDecl.AttributeDecl attDecl = eltDecl.attributeHash.get(localName);
 				if(attDecl == null){
-					System.err.println("no attribute declaration for "+localName);
+					if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,HTMLHyperlinkSource.class,"no attribute declaration for "+localName);
 					return null;
 				}else{
 					if("IDREF".equals(attDecl.type)){
-						System.err.println("found IDREF");
 						return getHyperlinkForIDREF(buffer, data, value, att, quoted);
 					}else if("anyURI".equals(attDecl.type)){
 						String href =  resolve(value, buffer, offset, data);
@@ -203,10 +198,8 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 							return newJEditOpenFileHyperlink(buffer, att, href, quoted);
 						}
 					}else if("IDREFS".equals(attDecl.type)){
-						System.err.println("found IDREFS");
 						return getHyperlinkForIDREFS(buffer, offset, data, value, att, quoted);
 					}
-					System.err.println("attDecl.type="+attDecl.type);
 					return null;
 				}
 			}
@@ -262,8 +255,6 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			int st = m.start(0);
 			int nd = m.end(0);
 			if(attStart + st <= offset && attStart + nd >= offset){
-				System.err.println("idref="+m.group(0));
-				System.err.println("ids="+data.ids);
 				IDDecl idDecl = data.getIDDecl(m.group(0));
 				if(idDecl==null)return null;
 				int start = attStart + st;
@@ -323,7 +314,6 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		if(uriAttributes.containsKey(tagLocalName)
 			&& uriAttributes.get(tagLocalName).contains(attLocalName))
 		{
-			System.err.println("found "+tagLocalName+" "+attLocalName);
 			if(attValue.startsWith("#")){
 				Location found = getNamedAnchorLocation(data, attValue.substring(1));
 				if(found != null){
@@ -523,7 +513,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		DefaultMutableTreeNode docRoot = (DefaultMutableTreeNode)tn.getFirstChild();
 		
 		if(docRoot == null){
-			System.err.println("not parsed ??");
+			if(DEBUG_HYPERLINKS)Log.log(Log.WARNING,HTMLHyperlinkSource.class,"not parsed ??");
 			return null;
 		}else{
 			SideKickElement elt = ((SideKickAsset)data.getAsset(docRoot)).getElement();
