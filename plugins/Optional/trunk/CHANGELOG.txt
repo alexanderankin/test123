@@ -9,4 +9,4 @@ History:
 1.0.2	    Optional no longer hardcodes the list of options panes to create, so core
             can add new ones without them being hidden by Optional (Matthieu Casanova)
 1.0.3       Scrollbars added around optionpanes. (Dale Anson)
-
+1.0.4       Persistent splitter positions. (Alan Ezust)
