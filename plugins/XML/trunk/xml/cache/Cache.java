@@ -32,12 +32,17 @@ import xml.PathUtilities;
  */
 public final class Cache extends BufferAdapter
 {
+	private static final String DISABLE_PROP = "xml.cache.disable-cache";
+	
 	private static Cache instance;
 	
 	private Set<CacheEntry> entries;
 	
+	private boolean disabled;
+	
 	private Cache(){
 		entries = new HashSet<CacheEntry>();
+		disabled = jEdit.getBooleanProperty(DISABLE_PROP);
 	}
 	
 	public static Cache instance()
@@ -52,6 +57,10 @@ public final class Cache extends BufferAdapter
 	 */
 	public CacheEntry put(String path, Object key, Object value){
 		if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class,"put("+path+","+key+","+(value == null ? null : value.getClass())+")");
+		if(disabled){
+			if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class,"cache disabled !");
+			return null;
+		}
 		String npath = PathUtilities.urlToPath(path);
 		if(npath != path){
 			if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class," really putting "+npath);
@@ -74,6 +83,10 @@ public final class Cache extends BufferAdapter
 	 */
 	public CacheEntry get(String path, Object key){
 		if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class,"get("+path+","+key+")");
+		if(disabled){
+			if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class,"cache disabled !");
+			return null;
+		}
 		String npath = PathUtilities.urlToPath(path);
 		if(npath != path){
 			if(DEBUG_CACHE)Log.log(Log.DEBUG,Cache.class," really getting "+npath);
@@ -202,5 +215,21 @@ public final class Cache extends BufferAdapter
 	 */
 	public void clear(){
 		entries.clear();
+	}
+	
+	/**
+	 * disable caching (persistent)
+	 */
+	public void disable(){
+		disabled = true;
+		jEdit.setBooleanProperty(DISABLE_PROP,true);
+	}
+
+	/**
+	 * enable caching (persistent)
+	 */
+	public void enable(){
+		disabled = false;
+		jEdit.unsetProperty(DISABLE_PROP);
 	}
 }
