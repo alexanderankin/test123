@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!-- :wrap=soft:maxLineLen=20: -->
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
 <!-- example with IDREFS inside arearefs.
        id1 and id2 are picked as separate hyperlinks and when clicking on one of them,
@@ -18,6 +19,7 @@
    <anchor id="id2"/>
 
    <para>
-   <ulink url="http://www.jedit.org">toto</ulink>
+   <!-- url with space, so that it breaks when using soft-wrap (margin=20) -->
+   <ulink url="http://www .jedit.org">toto</ulink>
    </para>
 </article>
