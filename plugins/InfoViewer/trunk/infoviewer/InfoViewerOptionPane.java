@@ -61,7 +61,7 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 		rbFirefox = new JRadioButton(jEdit
 			.getProperty("options.infoviewer.browser.firefox"));
 		rbFirefox.addActionListener(this);
-		addComponent(rbFirefox);
+		// addComponent(rbFirefox);
 
 		// "External browser"
 		rbOther = new JRadioButton(jEdit.getProperty("options.infoviewer.browser.other"));
