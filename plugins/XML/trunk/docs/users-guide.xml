@@ -7,7 +7,7 @@
 
  <articleinfo>
 
- <releaseinfo>Version 2.8.1</releaseinfo>
+ <releaseinfo>Version 2.8.2</releaseinfo>
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -1014,6 +1014,11 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
 
 
 <title>Change log</title> <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 2.8.2</emphasis>
+ Requires jEdit 4.4, Java 1.6, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0, Hyperlinks 1.1.0 and XercesPlugin 2.9.1.
+ </para>
+ </listitem>
 
  <listitem><para><emphasis role="bold">Version 2.8.1</emphasis>
  Requires jEdit 4.4, Java 1.6, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0, Hyperlinks 1.1.0 and XercesPlugin 2.9.1.
