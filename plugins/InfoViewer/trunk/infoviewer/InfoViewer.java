@@ -218,7 +218,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		}
 		else
 		{
-		    if (jEdit.getBooleanProperty("infoviewer.restorePreviousPage")) {
+		    if (jEdit.getBooleanProperty("infoviewer.restorePreviousPage") && urlField.getModel().getSize() > 0) {
 		        // Restore previous page on startup
 		        gotoURL(urlField.getModel().getItem(0), true, 0);
 		    }
