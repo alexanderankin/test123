@@ -1016,7 +1016,7 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
 <title>Change log</title> <itemizedlist>
 
  <listitem><para><emphasis role="bold">Version 2.8.1</emphasis>
- Requires jEdit 4.4pre1, Java 1.5, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+ Requires jEdit 4.4, Java 1.6, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0, Hyperlinks 1.1.0 and XercesPlugin 2.9.1.
  </para>
  <itemizedlist>
   <listitem><para>Fix issue with recursing XSD complex types,
