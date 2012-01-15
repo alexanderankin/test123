@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+<dtd>
+      <element-list>
+            <element name="date-format" content="">
+                  <attribute name="href" type="CDATA" required="true" />
+                  <attribute name="name" type="NMTOKEN" />
+                  <attribute name="calendar" type="NMTOKEN" />
+                  <attribute name="lang" type="NMTOKEN" />
+                  <attribute name="first-day-of-week" type="(sunday|monday|tuesday|wednesday|thursday|friday|saturday)" />
+            </element>
+      </element-list>
+</dtd>

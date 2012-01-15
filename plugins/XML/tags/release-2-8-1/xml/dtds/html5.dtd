@@ -1,0 +1,150 @@
+<!-- This document is neither complete nor finalized. 
+     It is a bunch of blog posts cut and pasted together. 
+     Taken from http://www.html5dtd.org/2011/05/31/html5-dtd-module-for-head/html5dtd.org  -->
+
+<!-- ========= head elements ========= -->
+
+<!ELEMENT head (title, meta*, link*, style?, script*)>
+
+<!ELEMENT title (#PCDATA)>
+
+<!ELEMENT meta EMPTY>
+<!ATTLIST meta
+ id          ID             #IMPLIED
+ http-equiv  CDATA          #IMPLIED
+ name        CDATA          #IMPLIED
+ content     CDATA          #REQUIRED
+ scheme      CDATA          #IMPLIED
+ >
+
+<!ELEMENT link EMPTY>
+<!ATTLIST link
+ href        CDATA          #IMPLIED
+ type        CDATA          #IMPLIED
+ rel         CDATA          #IMPLIED
+ rev         CDATA          #IMPLIED
+ >
+
+<!ELEMENT script (#PCDATA)>
+<!ATTLIST script
+ type        CDATA        #REQUIRED
+ src         CDATA        #IMPLIED
+ defer       (defer)        #IMPLIED
+ async       (async)        #IMPLIED
+ >
+
+<!ELEMENT style (#PCDATA)>
+<!ATTLIST style
+ id          ID             #IMPLIED
+ type        CDATA         #REQUIRED
+ media       CDATA         #IMPLIED
+ title       CDATA          #IMPLIED
+ >
+
+<!-- $Id: html5-head.mod 8263 2011-05-31 16:42:03Z sm $ -->
+<!-- ========= body ========= -->
+<!-- taken from http://www.html5dtd.org/2011/06/01/html5-dtd-module-for-body/
+ A body is
+
+ 1. a sequence of block elements ("no structure" = "legacy html - headings")
+ or
+ 2. a header, a sequence of sections and a footer ("common web page layout")
+ with optional aside element ("blog layout")
+ or
+ 3. sections with exactly one heading and subsections ("book-like structure")
+-->
+<!ELEMENT body         ( (%block;)
+                         | (header, aside?, section+, footer)
+                         | (%H5SectioningContent;)) >
+
+<!-- ========= structure elements ========= -->
+
+<!ELEMENT section      (%H5SectioningContent;) >
+<!ATTLIST section
+ %commonAttrs;
+>
+
+<!ELEMENT header       ( (h1 | hgroup), (%block;)+ )>
+<!ATTLIST header
+ %commonAttrs;
+>
+
+<!ELEMENT footer       (%block;)+>
+<!ATTLIST footer
+ %commonAttrs;
+>
+
+<!ELEMENT aside        (%H5SectioningContent;) >
+<!ATTLIST aside
+ %commonAttrs;
+>
+
+<!-- ========= headings ========= -->
+
+<!ELEMENT hgroup       ( h1, h2 ) >
+<!ATTLIST hgroup
+ %commonAttrs;
+>
+
+<!ELEMENT h1           (#PCDATA)>
+<!ATTLIST h1
+ %commonAttrs;
+>
+
+<!ELEMENT h2           (#PCDATA)>
+<!ATTLIST h2
+ %commonAttrs;
+>
+<!-- $Id: html5-body-structure.mod 8269 2011-06-01 13:07:55Z sm $ -->
+
+Currently the parameter entity H5SectioningContent is defined as:
+
+<!ENTITY % H5SectioningContent "(h1 | hgroup),
+                                (
+                                 ((%block;)+, (section)*)
+                                 |
+                                 (section)+
+                                )">
+
+<!-- ========= audio/video elements ========= -->
+<!-- http://www.html5dtd.org/2011/06/07/html5-dtd-module-for-videoaudio/ -->
+<!ELEMENT video (source+, track*, div?)>
+<!ATTLIST video
+ poster    CDATA    #IMPLIED
+ preload    (none, metadata, auto) "metadata"
+ autoplay    (autoplay) #IMPLIED
+ mediagroup  CDATA       #IMPLIED
+ loop    (loop)       #IMPLIED
+ muted    (muted)       #IMPLIED
+ controls    (controls) #IMPLIED
+ width    CDATA       #IMPLIED
+ height    CDATA       #IMPLIED
+>
+
+<!ELEMENT audio (source+, track*, span?)>
+<!ATTLIST audio
+ preload    (none, metadata, auto) "metadata"
+ autoplay    (autoplay) #IMPLIED
+ mediagroup  CDATA       #IMPLIED
+ loop    (loop)       #IMPLIED
+ muted    (muted)       #IMPLIED
+ controls    (controls) #IMPLIED
+>
+
+<!ELEMENT source    EMPTY>
+<!ATTLIST source
+ src        CDATA    #REQUIRED
+ type    CDATA    #IMPLIED
+ media    CDATA    #IMPLIED
+>
+
+<!ELEMENT track        EMPTY>
+<!ATTLIST track
+ src        CDATA        #REQUIRED
+ kind    (subtitles | captions | descriptions | chapters | metadata)    #REQUIRED
+ srclang    CDATA             #IMPLIED
+ label    CDATA        #REQUIRED
+ default    (default)    #IMPLIED
+>
+
+<!-- $Id: html5-audio-video.mod 8273 2011-06-07 14:56:36Z sm $ -->
