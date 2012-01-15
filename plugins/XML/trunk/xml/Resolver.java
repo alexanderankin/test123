@@ -470,7 +470,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 * the systemId  will be the full jeditresource:XML.jar!.../docbookx.dtd
 	 * @return array [systemId to report, real systemId]
 	 */
-	private String[] resolveEntityToPathInternal(String name, String publicId, String current,
+	public String[] resolveEntityToPathInternal(String name, String publicId, String current,
 		String systemId) throws java.io.IOException {
 		
 		if(publicId != null && publicId.length() == 0)
@@ -739,7 +739,6 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		while(jEdit.getProperty(prop = "xml.cache"
 			+ ".public-id." + i++) != null)
 		{
-			System.out.println("unset "+prop);
 			jEdit.unsetProperty(prop);
 			jEdit.unsetProperty(prop+".uri");
 		}
@@ -748,7 +747,6 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		while(jEdit.getProperty(prop = "xml.cache"
 			+ ".system-id." + i++) != null)
 		{
-			System.out.println("unset "+prop);
 			jEdit.unsetProperty(prop);
 			jEdit.unsetProperty(prop+".uri");
 		}

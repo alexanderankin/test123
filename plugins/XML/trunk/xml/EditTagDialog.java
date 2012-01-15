@@ -62,7 +62,6 @@ class EditTagDialog extends EnhancedDialog
 		top.add(BorderLayout.CENTER,new JLabel(element.name));
 
 		empty = new JCheckBox(jEdit.getProperty("xml-edit-tag.empty"));
-		System.out.println(element);
 		if(element.empty)
 		{
 			empty.setSelected(true);

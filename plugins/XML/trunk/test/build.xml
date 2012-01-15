@@ -40,7 +40,7 @@
 		<file name="trang.jar"/>
 		<!-- XercesPlugin -->
 		<file name="XercesPlugin.jar"/>
-<!--		<file name="xml-apis.jar"/>-->
+		<file name="xml-apis.jar"/>
 		<file name="xercesImpl.jar"/>
 		<file name="resolver.jar"/>
 		<!-- Beauty -->
@@ -54,6 +54,8 @@
 		<file name="kappalayout.jar"/>
 		<!-- EclipseIcons -->
 		<file name="EclipseIcons.jar"/>
+		<!-- Hyperlinks -->
+		<file name="Hyperlinks.jar"/>
     </filelist>
 
     <fileset id="project.resources" dir="../test_data" defaultexcludes="yes">
@@ -88,7 +90,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/parser/xml/TagParserTest.java"/>
+        <filename name="xml/XmlPluginTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either

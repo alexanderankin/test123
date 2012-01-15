@@ -147,7 +147,7 @@ public class XmlCompletion extends SideKickCompletion
 		}
 		else if(obj instanceof ElementDecl)
 		{
-			ElementDecl element = (ElementDecl)obj;
+			final ElementDecl element = (ElementDecl)obj;
 
 			StringBuffer buf = new StringBuffer();
 			buf.append(element.name.substring(text.length()));
@@ -191,7 +191,7 @@ public class XmlCompletion extends SideKickCompletion
 					{
 						public void run()
 						{
-							XmlActions.showEditTagDialog(view);
+							XmlActions.showEditTagDialog(view, element);
 						}
 					});
 				}

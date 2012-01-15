@@ -263,7 +263,7 @@ public final class SchemaMapping
 
 		if(res!=null)
 		{
-			System.out.println("found: "+res);
+			if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG, SchemaMapping.class,"found: "+res);
 		}
 		return res;
 	}
@@ -424,7 +424,7 @@ public final class SchemaMapping
 					return compPattern.matcher(url).matches();
 				}
 			}catch(URISyntaxException use){
-				System.err.println("Malformed:"+url);
+				Log.log(Log.WARNING,SchemaMapping.class,"error looking for matching schema for "+url+", invalid url: "+use.getMessage());
 				return compPattern.matcher(url).matches();
 			}
 		}
@@ -637,7 +637,7 @@ public final class SchemaMapping
 					return resURL.equals(matchedURL);
 					
 				}catch(URISyntaxException use){
-					System.err.println("invalid matched URL : "+use);
+					Log.log(Log.WARNING,SchemaMapping.class,"error looking for matching schema for "+url+", invalid URL: "+use.getMessage());
 				}
 			}
 			return resource.equals(url);
@@ -870,15 +870,21 @@ public final class SchemaMapping
 			reader.parse(input);
 
 		}
-		catch (SAXException e)
+		catch (SAXException se)
 		{
-			e.printStackTrace();
-			System.err.println(e);
+			String msg = "error loading schema mapping '"+url+"'";
+			Throwable t = se.getException();
+			if(msg != null){
+				msg+=": "+se.getMessage();
+			}
+			if(t!=null){
+				msg+=" caused by "+t;
+			}
+			Log.log(Log.WARNING, SchemaMapping.class, msg);
 		}
-		catch(IOException ioe)
+		catch(IOException e)
 		{
-			ioe.printStackTrace();
-			System.err.println(ioe);
+			Log.log(Log.ERROR,SchemaMapping.class,"I/O error loading schema mapping '"+url+"': "+e.getClass()+": "+e.getMessage());
 		}
 		return mapping;
 	}

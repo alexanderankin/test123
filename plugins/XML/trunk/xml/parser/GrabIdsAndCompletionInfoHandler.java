@@ -141,12 +141,14 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		}
 	} //}}}
 
-	private void setCompletionInfoFromSchema(String ns, String location, String schemaLocation, String nonsSchemaLocation){
+	private void setCompletionInfoFromSchema(String ns, String location, String schemaLocation, String nonsSchemaLocation)
+		throws IOException, SAXException
+	{
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,GrabIdsAndCompletionInfoHandler.class,"setCompletionInfoFromSchema("+ns+","+location+","+schemaLocation+","+nonsSchemaLocation+")");
 		Map<String,CompletionInfo> infos = XSDSchemaToCompletion.getCompletionInfoFromSchema(location,schemaLocation, nonsSchemaLocation, errorHandler, buffer);
 		for(Map.Entry<String,CompletionInfo> en: infos.entrySet()){
 			String nsC = en.getKey();
-			Log.log(Log.DEBUG,GrabIdsAndCompletionInfoHandler.class,"setting completion info for :'"+nsC+"'");
+			if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,GrabIdsAndCompletionInfoHandler.class,"setting completion info for :'"+nsC+"'");
 			data.setCompletionInfo(nsC,en.getValue());
 		}
 	}
@@ -175,25 +177,38 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 			// retrieve schema grammar if available
 			String schemaLocation = attrs.getValue("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
 			String noNamespaceSchemaLocation = attrs.getValue("http://www.w3.org/2001/XMLSchema-instance", "noNamespaceSchemaLocation");
-			// there may be a better implementation in Xerces in XMLSchemaLoader
-			if(schemaLocation != null){
-				String[] nsLocationPairs = schemaLocation.split("\\s+");
-				if(nsLocationPairs.length % 2 == 0){
-					
-					for(int i=0;i<nsLocationPairs.length;i+=2){
-						String ns = nsLocationPairs[i];
-						String location = nsLocationPairs[i+1];
-						setCompletionInfoFromSchema(ns,location, schemaLocation,noNamespaceSchemaLocation);
+			
+			try{
+
+				// there may be a better implementation in Xerces in XMLSchemaLoader
+				if(schemaLocation != null){
+					String[] nsLocationPairs = schemaLocation.split("\\s+");
+					if(nsLocationPairs.length % 2 == 0){
+						
+						for(int i=0;i<nsLocationPairs.length;i+=2){
+							String ns = nsLocationPairs[i];
+							String location = nsLocationPairs[i+1];
+							try{
+								setCompletionInfoFromSchema(ns,location, schemaLocation,noNamespaceSchemaLocation);
+							} catch(IOException e){
+								throw new SAXException("error setting completion info from "+location,e);
+							}
+						}
 					}
 				}
-			}
-			if(noNamespaceSchemaLocation != null){
-				setCompletionInfoFromSchema(null,noNamespaceSchemaLocation, schemaLocation,noNamespaceSchemaLocation);
-			}
+				if(noNamespaceSchemaLocation != null){
+					try{
+						setCompletionInfoFromSchema(null,noNamespaceSchemaLocation, schemaLocation,noNamespaceSchemaLocation);
+					} catch(IOException e){
+						throw new SAXException("error setting completion info from "+noNamespaceSchemaLocation,e);
+					}
+				}
+			
+			} finally{
 
-
-			// unset root flag
-			root = false;
+				// unset root flag
+				root = false;
+			}
 		}
 		
 

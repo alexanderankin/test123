@@ -180,6 +180,7 @@ public final class SchemaLoader
        some code also existed to load DTDs.
      */
 	public Grammar loadXercesGrammar(Buffer current, String systemId, String schemaLocation, String nonsSchemaLocation, ErrorHandler handler)
+	throws IOException, SAXException
 	{
         SymbolTable sym = new SymbolTable(2031);
         XMLGrammarPreparser preparser = new XMLGrammarPreparser(sym);
@@ -193,19 +194,14 @@ public final class SchemaLoader
         preparser.setEntityResolver(new EntityResolver2Wrapper(Resolver.instance()));
         preparser.setErrorHandler(new ErrorHandlerWrapper(handler));
 
-        try {
-            InputSource in = Resolver.instance().resolveEntity(null,null,current.getPath(),systemId);
-            if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaLoader.class,"going to preparse "+systemId);
-            Grammar g = preparser.preparseGrammar(XMLGrammarDescription.XML_SCHEMA,
-            				new SAXInputSource(in));
-            	//doesn't work : it's not resolved (see XMLEntityManager during step by step debugging)
-            	// new XMLInputSource(null,systemId,current.getPath()));
-            if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaLoader.class,"preparsed grammar="+g);
-            return g;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+		InputSource in = Resolver.instance().resolveEntity(null,null,current.getPath(),systemId);
+		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaLoader.class,"going to preparse "+systemId);
+		Grammar g = preparser.preparseGrammar(XMLGrammarDescription.XML_SCHEMA,
+						new SAXInputSource(in));
+			//doesn't work : it's not resolved (see XMLEntityManager during step by step debugging)
+			// new XMLInputSource(null,systemId,current.getPath()));
+		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaLoader.class,"preparsed grammar="+g);
+		return g;
 	}
 
 	/** @return singleton instance */
