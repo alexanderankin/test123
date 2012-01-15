@@ -3,9 +3,9 @@ ChangeLog for InfoViewer plugin
 ===========================================================================
 
 Version 1.6.1 depends on jEdit 4.4 and Java 1.6
-    * Replaced netscape with firefox (#3462283)
-    * Fixed disappearing sidebar in HelpInfoViewer when used as a HelpViwer
-      replacement. (Ezust) 
+    * Got rid of netscape stuff (comment from #3462283)
+    * Fixed disappearing sidebar in HelpInfoViewer when used as a HelpViewer
+      replacement. (Ezust)
     * bug 1542027 fixed (Ezust)
     * New option to restore previous page instead of showing home page
       on startup. (Ezust) 
@@ -33,7 +33,7 @@ Version 1.5.5 Depends: jEdit 4.3pre3, Java 1.4
       from the "View" menu. (Alan Ezust)
 
 Version 1.5 - requires jedit 4.3pre3, Java 1.4 
-    * Added option to use InfoViewer instead of HelpViewer
+    * Added option to use InfoViewer instead of HelpViewer (Alan Ezust)
     * Added HelpInfoViewer - an InfoViewer with the Help table of contents
         as an optional sidebar. (Alan Ezust) 
 
@@ -187,5 +187,5 @@ VERSION 0.1
 
 jEdit buffer local properties:
 :folding=indent:maxLineLen=80:wrap=hard:autoIndent=simple
-:noTabs=true:indentSize=2:tabSize=2:
+:noTabs=true:indentSize=2:tabSize=2:collapseFolds=1:
 
