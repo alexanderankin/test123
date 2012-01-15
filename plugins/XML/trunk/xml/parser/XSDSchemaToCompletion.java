@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import javax.xml.XMLConstants;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.StringList;
@@ -348,22 +349,18 @@ public class XSDSchemaToCompletion{
 	 * @param	errorHandler		to report errors while parsing the schema
 	 * @param	buffer				requesting buffer, for caching
 	 */
-	public static Map<String,CompletionInfo> getCompletionInfoFromSchema(String location, String schemaLocation, String nonsSchemaLocation, ErrorHandler errorHandler, Buffer buffer){
+	public static Map<String,CompletionInfo> getCompletionInfoFromSchema(String location, String schemaLocation, String nonsSchemaLocation, ErrorHandler errorHandler, Buffer buffer)
+	throws IOException, SAXException{
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XSDSchemaToCompletion.class,"getCompletionInfoFromSchema("+location+","+schemaLocation+","+nonsSchemaLocation+","+buffer.getPath()+")");
-		String realLocation = null;
-		try{
-			realLocation = Resolver.instance().resolveEntityToPath(
+		String realLocation = Resolver.instance().resolveEntityToPath(
 				null,//name
 				null,//public Id
 				buffer.getPath(),//current
 				location// systemId
 				);
-		}catch(IOException ioe){
-			Log.log(Log.ERROR, XSDSchemaToCompletion.class, "error resolving grammar location for : "+location, ioe);
-		}
 		if(realLocation==null){
 			// resolved location really shouldn't be null
-			Log.log(Log.ERROR, XSDSchemaToCompletion.class,"error resolving grammar location for : "+location);
+			throw new IOException("unable to resolve grammar location for : "+location);
 		}else{
 			CacheEntry entry = Cache.instance().get(realLocation,XercesParserImpl.COMPLETION_INFO_CACHE_ENTRY);
 			if(entry == null){
@@ -378,7 +375,7 @@ public class XSDSchemaToCompletion{
 				}
 				
 				if(grammar == null){
-					Log.log(Log.ERROR, XSDSchemaToCompletion.class, "couldn't load grammar from "+realLocation+" for "+location);
+					throw new SAXException("couldn't load grammar "+location+" from "+realLocation);
 				}else{
 					
 					XSModel model = ((org.apache.xerces.xni.grammars.XSGrammar)grammar).toXSModel();
@@ -425,6 +422,5 @@ public class XSDSchemaToCompletion{
 				return infos;
 			}
 		}
-		return Collections.emptyMap();
 	} //}}}
 }

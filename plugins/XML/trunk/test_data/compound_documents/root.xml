@@ -31,6 +31,6 @@
      "XML Insert" dockable shows all the IDs of the fragments here
   -->
 &frag2;
-<!-- still an issue here : the error is reported in each sub-document... -->
+<!-- GOOD: the error is reported here, even when parsing sub-documents. -->
 &frags;
 </book>

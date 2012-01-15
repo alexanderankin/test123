@@ -36,6 +36,7 @@ import xml.XmlPlugin;
 import xml.SchemaMappingManager;
 import xml.completion.CompletionInfo;
 import xml.gui.XmlModeToolBar;
+import xml.parser.MyEntityResolver.IOExceptionWithLocation;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import static xml.Debug.*;
@@ -176,19 +177,19 @@ public class XercesParserImpl extends XmlParser
 					}
 					catch(IOException ioe)
 					{
-						Log.log(Log.ERROR,this,ioe);
+						Log.log(Log.WARNING,this,"I/O error loading forced schema: "+ioe.getClass()+": "+ioe.getMessage());
 					}
-					catch(URISyntaxException ioe)
+					catch(URISyntaxException e)
 					{
-						Log.log(Log.ERROR,this,ioe);
+						Log.log(Log.WARNING,this,"forced schema URL is invalid: "+e.getMessage());
 					}
 				}
 			}
 		}
 		catch(SAXException se)
 		{
-			se.printStackTrace();
-			Log.log(Log.ERROR,this,se);
+			// not likely : messed jars or sthing
+			Log.log(Log.ERROR,this,"unexpected error preparing XML parser, please report",se);
 		}
 
 		//TODO
@@ -197,7 +198,9 @@ public class XercesParserImpl extends XmlParser
 		if(info != null)
 			data.setCompletionInfo("",info);
 
-
+		// don't log the same error twice when reparsing to construct the sidekick tree 
+		Exception errorParsing = null;
+		
 		InputSource source = new InputSource();
 
 		String rootDocument = buffer.getStringProperty("xml.root");
@@ -225,33 +228,45 @@ public class XercesParserImpl extends XmlParser
 		{
 			reader.parse(source);
 		}
-		catch(StoppedException e) //NOPMD interrupted parsing
+		catch(StoppedException e) // interrupted parsing: don't parse a second time
 		{
+			errorParsing = e;
+		}
+		catch(IOExceptionWithLocation ioe)
+		{
+			// same as IOException, but with correct line number
+			String msg = "I/O error while parsing: "+ioe.getMessage()+", caused by "+ioe.getCause().getClass().getName()+": "+ioe.getCause().getMessage();
+			Log.log(Log.WARNING,this,msg);
+			errorSource.addError(ErrorSource.ERROR, ioe.path, ioe.line, 0, 0,
+				msg);
+			errorParsing = ioe;
 		}
 		catch(IOException ioe)
 		{
-			Log.log(Log.ERROR,this,ioe);
-			ioe.printStackTrace();
+			Log.log(Log.WARNING,this,"I/O error while parsing: "+ioe.getClass().getName()+": "+ioe.getMessage());
 			errorSource.addError(ErrorSource.ERROR, buffer.getPath(), 0, 0, 0,
-				ioe.toString());
+				ioe.getClass()+": "+ioe.getMessage());
+			errorParsing = ioe;
 		}
-		catch(SAXParseException spe) //NOPMD already handled
+		catch(SAXParseException spe)
 		{
+			// don't print it: already handled
+			errorParsing = spe;
 		}
 		catch(SAXException se)
 		{
-			Log.log(Log.ERROR, this, se.getException());
-			se.printStackTrace();
-			if(se.getMessage() != null)
-			{
-				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
-					0,0,0,se.getMessage());
+			String msg = "SAX exception while parsing";
+			Throwable t = se.getException();
+			if(msg != null){
+				msg+=": "+se.getMessage();
 			}
-		}
-		catch(Exception e)
-		{
-			Log.log(Log.ERROR,this,e);
-			e.printStackTrace();
+			if(t!=null){
+				msg+=" caused by "+t;
+			}
+			Log.log(Log.WARNING, this, msg);
+			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
+				0,0,0,msg);
+			errorParsing = se;
 		}
 		finally
 		{
@@ -263,66 +278,95 @@ public class XercesParserImpl extends XmlParser
 			}
 		}
 		//}}}
+		
 		// {{{ and parse again to get the SideKick tree (required to get the xi:include elements in the tree)
-		
-		ConstructTreeHandler treeHandler = new ConstructTreeHandler(this, buffer, text, errorHandler, data, resolver);
-		reader = null;
-		try
-		{
-			// One has to explicitely require the parser from XercesPlugin, otherwise
-			// one gets the crimson version bundled in the JRE and the rest fails
-			// miserably (see Plugin Bug #2950392)
-			// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
-			reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
+		if(!(errorParsing instanceof StoppedException)){
+			ConstructTreeHandler treeHandler = new ConstructTreeHandler(this, buffer, text, errorHandler, data, resolver);
+			reader = null;
+			try
+			{
+				// One has to explicitely require the parser from XercesPlugin, otherwise
+				// one gets the crimson version bundled in the JRE and the rest fails
+				// miserably (see Plugin Bug #2950392)
+				// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
+				reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
+				
+				// no validation: it has already been done once
+				reader.setFeature("http://xml.org/sax/features/validation",false);
+				// turn on/off namespace support.
+				// For some legacy documents, namespaces must be disabled
+				reader.setFeature("http://xml.org/sax/features/namespaces",
+					!buffer.getBooleanProperty("xml.namespaces.disable"));
+				// always use EntityResolver2 so that built-in DTDs can be found
+				reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
+					true);
+				
+				// XInclude support disabled: we want the xi:include elements to show up in the tree
+				reader.setFeature("http://apache.org/xml/features/xinclude",false);
+				
+				reader.setContentHandler(treeHandler);
+				reader.setEntityResolver(resolver);
+				
+			}
+			catch(SAXException se)
+			{
+				// not likely : messed jars or sthing
+				Log.log(Log.ERROR,this,"error preparing to parse ¤2nd pass), please report !",se);
+			}
+	
+			source = new InputSource();
+	
+			source.setCharacterStream(new CharSequenceReader(text));
+			// must set the systemId to an URL and not a path
+			// otherwise, get errors when opening a DTD specified as a relative path
+			// somehow, xerces doesn't call File.toURI.toURL and the URL
+			// is incorrect : file://server/share instead of file://///server/share
+			// and the DTD can't be found
+			source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
+	
+			try
+			{
+				reader.parse(source);
+			}
+			catch(StoppedException e) //NOPMD interrupted parsing
+			{
+			}
+			catch(IOException e)
+			{
+				// don't repeat yourself
+				if(errorParsing == null
+						|| !e.getClass().equals(errorParsing.getClass())
+						|| (!e.toString().equals(errorParsing.toString())))
+				{
+					Log.log(Log.ERROR,this,"I/O error upon snd reparse :"+e.getClass()+": "+e.getMessage());
+				}
+			}
+			catch(SAXParseException e) //NOPMD: handled by ErrorHandler
+			{
+			}
+			catch(SAXException se)
+			{
+				// don't repeat yourself
+				if(errorParsing == null
+						|| !se.getClass().equals(errorParsing.getClass())
+						|| (!se.toString().equals(errorParsing.toString())))
+				{
+					String msg = "SAX exception while parsing (constructing sidekick tree)";
+					Throwable t = se.getException();
+					if(msg != null){
+						msg+=": "+se.getMessage();
+					}
+					if(t!=null){
+						msg+=" caused by "+t;
+					}
+					Log.log(Log.WARNING, this, msg);
+					errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
+						0,0,0,msg);
+				}
+			}
+			// }}}
+		}
 			
-			// no validation: it has already been done once
-			reader.setFeature("http://xml.org/sax/features/validation",false);
-			// turn on/off namespace support.
-			// For some legacy documents, namespaces must be disabled
-			reader.setFeature("http://xml.org/sax/features/namespaces",
-				!buffer.getBooleanProperty("xml.namespaces.disable"));
-			// always use EntityResolver2 so that built-in DTDs can be found
-			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
-				true);
-			
-			// XInclude support disabled: we want the xi:include elements to show up in the tree
-			reader.setFeature("http://apache.org/xml/features/xinclude",false);
-			
-			reader.setContentHandler(treeHandler);
-			reader.setEntityResolver(resolver);
-			
-		}
-		catch(SAXException se)
-		{
-			se.printStackTrace();
-			Log.log(Log.ERROR,this,se);
-		}
-
-		source = new InputSource();
-
-		source.setCharacterStream(new CharSequenceReader(text));
-		// must set the systemId to an URL and not a path
-		// otherwise, get errors when opening a DTD specified as a relative path
-		// somehow, xerces doesn't call File.toURI.toURL and the URL
-		// is incorrect : file://server/share instead of file://///server/share
-		// and the DTD can't be found
-		source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
-
-		try
-		{
-			reader.parse(source);
-		}
-		catch(StoppedException e) //NOPMD interrupted parsing
-		{
-		}
-		catch(Exception e)
-		{
-			Log.log(Log.ERROR,this,"error upon snd reparse",e);
-		}
-		
-		// }}}
-		
-		
 		// danson, a hack(?) to switch the buffer mode to 'ant'.  The first line glob
 		// in the catalog file doesn't necessarily work for Ant files.  If the root
 		// node is "project" and the mode is "xml", switch to "ant" mode.  I checked

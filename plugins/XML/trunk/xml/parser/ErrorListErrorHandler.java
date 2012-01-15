@@ -49,7 +49,7 @@ public class ErrorListErrorHandler implements ErrorHandler
 	// {{{ addError() method
 	private void addError(int type, SAXParseException exception)
 	{
-		Log.log(Log.DEBUG, this,"addError :"+exception.toString());
+		//Log.log(Log.DEBUG, this,"addError :"+exception.toString());
 		int line=exception.getLineNumber()-1;
 		int col=exception.getColumnNumber()-1;
 		if(line < 0) line=0;

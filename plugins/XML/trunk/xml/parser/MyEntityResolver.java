@@ -26,6 +26,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 
+import xml.PathUtilities;
 import xml.Resolver;
 import errorlist.ErrorSource;
 
@@ -84,20 +85,35 @@ class MyEntityResolver implements EntityResolver2
 		try {
 			source = Resolver.instance().resolveEntity(name, publicId, baseURI, systemId);
 		}
-		catch(Exception e)
+		catch(IOException e)
 		{
-			e.printStackTrace();
-			errorHandler.getErrorSource().addError(ErrorSource.ERROR,
-				buffer.getPath(),
-				Math.max(0,loc.getLineNumber()-1),0,0,
-				e.getMessage());
+			String msg = "resource with ";
+			if(publicId!=null)
+				msg+=" publicId="+publicId;
+			if(systemId!=null)
+				msg+=" systemId=" + systemId;
+			
+			msg+= " cannot be resolved";
+			String path;
+			if(loc.getSystemId() != null){
+				path = PathUtilities.urlToPath(loc.getSystemId());
+			}else{
+				path = buffer.getPath();
+			}
+			throw new IOExceptionWithLocation(msg,path, Math.max(0,loc.getLineNumber()-1), e);
 		}
 
 		if(source == null)
 		{
-			Log.log(Log.ERROR,this,"PUBLIC=" + publicId
-				+ ", SYSTEM=" + systemId
-				+ " cannot be resolved");
+			String msg = "resource with ";
+			if(publicId!=null)
+				msg+=" publicId="+publicId;
+			if(systemId!=null)
+				msg+=" systemId=" + systemId;
+			
+			msg+= " cannot be resolved";
+
+			Log.log(Log.WARNING,MyEntityResolver.class,msg);
 			// TODO: not sure whether it's the best thing to do :
 			// it prints a cryptic "premature end of file"
 			// error message
@@ -125,4 +141,15 @@ class MyEntityResolver implements EntityResolver2
 		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
 		return resolveEntity(null, publicId, null, systemId);
 	}// }}}
+	
+	public static class IOExceptionWithLocation extends IOException{
+		public final String path;
+		public final int line;
+		
+		public IOExceptionWithLocation(String msg, String path, int line, IOException cause){
+			super(msg,cause);
+			this.path = path;
+			this.line = line;
+		}
+	}
 }// }}}

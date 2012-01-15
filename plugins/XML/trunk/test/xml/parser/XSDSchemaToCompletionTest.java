@@ -61,7 +61,7 @@ public class XSDSchemaToCompletionTest{
     }
 
     @Test
-    public void testNant(){
+    public void testNant() throws IOException, org.xml.sax.SAXException {
     	File f = new File(testData,"nant/mini-nant.xsd");
     	Map<String,CompletionInfo> schemas = 
     		XSDSchemaToCompletion.getCompletionInfoFromSchema(f.getPath()

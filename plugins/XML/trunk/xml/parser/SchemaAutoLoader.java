@@ -154,7 +154,15 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		}
 		else
 		{
-			this.schemaURL = baseURI.resolve(schemaURL).toString();
+			// this is stupid: new URI("jar:file:.....").resolve(schema4schemas.xsd") returns schema4schemas.xsd
+			// instead of jar:file:...../schema4schemas.xsd because jar:file:.... URIs are opaque.
+			// so use xml.Resolver
+			String[] sids = Resolver.instance().resolveEntityToPathInternal(null, null, baseURI.toString(), schemaURL);
+			if(sids==null){
+				this.schemaURL = baseURI.resolve(schemaURL).toString();
+			}else{
+				this.schemaURL = sids[0];
+			}
 		}
 		
 		if(needReplay){
@@ -174,11 +182,13 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		
 		// FIXME: very add-hoc, but who uses other extensions for one's schema ?
 		if(schemaURL.endsWith("rng") || schemaURL.endsWith("rnc")){
-			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),schemaURL,getErrorHandler(),requestingBuffer);
+		    // take care of using the resolved schemaURL !
+			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),this.schemaURL,getErrorHandler(),requestingBuffer);
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
 			completions = info;
 		}else if(schemaURL.endsWith("xsd")){
-			Map<String,CompletionInfo> infos = XSDSchemaToCompletion.getCompletionInfoFromSchema(schemaURL,null,null,getErrorHandler(),requestingBuffer);
+		    // take care of using the resolved schemaURL !
+			Map<String,CompletionInfo> infos = XSDSchemaToCompletion.getCompletionInfoFromSchema(this.schemaURL,null,null,getErrorHandler(),requestingBuffer);
 			if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionsInfos : "+infos);
 			completions = infos;
 		}
