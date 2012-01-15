@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+	<documentElement localName="ACTIONS" typeId="ACTIONS"/>
+	<uri pattern="*.rng" typeId="RNG"></uri>
+
+	<typeId id="ACTIONS" uri="actions.rng"/>
+	<typeId id="RNG" uri="relaxng.rng"/>
+	
+	<include href="schemas.xml"/>
+</locatingRules>

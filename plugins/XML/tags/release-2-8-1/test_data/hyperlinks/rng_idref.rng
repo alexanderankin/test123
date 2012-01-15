@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<!-- an RNG schema defining IDs, IDREFs, IDREFSs, URIs
+     adapted from RELAX NG DTD Compatibility specification
+     Copyright (C) The Organization for the Advancement of Structured Information Standards [OASIS] 2001.
+     http://www.oasis-open.org/committees/relax-ng/compatibility-20011203.html
+   -->
+<element name="employees"
+    xmlns="http://relaxng.org/ns/structure/1.0"
+    xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+    datatypeLibrary="http://relaxng.org/ns/compatibility/datatypes/1.0">
+  <a:documentation>A list of employees.</a:documentation>
+  <zeroOrMore>
+    <element name="employee">
+      <a:documentation>An individual employee.</a:documentation>
+      <attribute name="id">
+        <data type="ID"/>
+      </attribute> 
+      <optional>
+        <attribute name="manages">
+          <data type="IDREFS"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="managedBy">
+          <data type="IDREF"/>
+        </attribute>
+      </optional>
+      <optional>
+	<attribute name="homepage">
+  	  <data type="anyURI" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+	</attribute>
+      </optional>
+      <text/>
+    </element>
+  </zeroOrMore>
+</element>

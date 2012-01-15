@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="att-bool">
+    <choice>
+      <value>TRUE</value>
+      <value>FALSE</value>
+    </choice>
+  </define>
+  <!-- ACTIONS element -->
+  <define name="ACTIONS">
+    <element name="ACTIONS">
+      <ref name="ACTIONS-attlist"/>
+      <oneOrMore>
+        <ref name="ACTION"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="ACTIONS-attlist" combine="interleave">
+    <empty/>
+  </define>
+  <!-- ACTION element -->
+  <define name="ACTION">
+    <element name="ACTION">
+      <ref name="ACTION-attlist"/>
+      <ref name="CODE"/>
+      <optional>
+        <ref name="IS_SELECTED"/>
+      </optional>
+    </element>
+  </define>
+  <define name="ACTION-attlist" combine="interleave">
+    <attribute name="NAME">
+      <data type="ID"/>
+    </attribute>
+    <optional>
+      <attribute name="NO_REPEAT" a:defaultValue="FALSE">
+        <ref name="att-bool"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="NO_RECORD" a:defaultValue="FALSE">
+        <ref name="att-bool"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="NO_REMEMBER_LAST" a:defaultValue="FALSE">
+        <ref name="att-bool"/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- ACTION children -->
+  <define name="CODE">
+    <element name="CODE">
+      <ref name="CODE-attlist"/>
+      <text/>
+    </element>
+  </define>
+  <define name="CODE-attlist" combine="interleave">
+    <empty/>
+  </define>
+  <define name="IS_SELECTED">
+    <element name="IS_SELECTED">
+      <ref name="IS_SELECTED-attlist"/>
+      <text/>
+    </element>
+  </define>
+  <define name="IS_SELECTED-attlist" combine="interleave">
+    <empty/>
+  </define>
+  <start>
+    <choice>
+      <ref name="ACTIONS"/>
+    </choice>
+  </start>
+</grammar>
