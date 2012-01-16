@@ -303,7 +303,8 @@ public class BSHParser implements BSHParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-    jj_consume_token(IDENTIFIER);
+    t = jj_consume_token(IDENTIFIER);
+                         add(t);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EXTENDS:
       jj_consume_token(EXTENDS);

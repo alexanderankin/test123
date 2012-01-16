@@ -603,7 +603,7 @@ void ClassDeclaration()  :
 {
 	Modifiers() 
 	( "class" { add("class"); } | "interface" { add("interface"); }  ) 
-	<IDENTIFIER> 
+	t=<IDENTIFIER> { add(t); }
 	[ "extends" { add("extends"); } AmbiguousName()  ] 
 	[ "implements" { add("implements"); } NameList() 
 		 ]
