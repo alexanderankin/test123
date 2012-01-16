@@ -219,7 +219,7 @@ public class StatusResultsPanel extends JPanel {
                 status = ( Status ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
             }
             if ( e.isPopupTrigger() && tree.getSelectionCount() > 0 ) {
-                GUIUtils.showPopupMenu( createPopupMenu(status), StatusResultsPanel.this, e.getX(), e.getY() );
+                GUIUtils.showPopupMenu( createPopupMenu(status), tree, e.getX(), e.getY() );
             }
             else if ( e.getClickCount() == 2 && status != null) {
                 // for double-click on a text file, open the file in jEdit
