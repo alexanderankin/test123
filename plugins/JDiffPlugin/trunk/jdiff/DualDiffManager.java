@@ -106,10 +106,14 @@ public class DualDiffManager {
                 filenames.add( match );
             }
         }
-        for ( String filename : filenames ) {
-            if ( jEdit.getBuffer( filename ) == null ) {
-                JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + filename, "JDiff Error", JOptionPane.ERROR_MESSAGE );
+        if (filenames.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (String filename : filenames) {
+                if (jEdit.getBuffer( filename ) == null) {
+                    sb.append(filename).append('\n');   
+                }
             }
+            JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + sb.toString(), "JDiff Error", JOptionPane.ERROR_MESSAGE );
         }
     }
 
