@@ -1449,13 +1449,13 @@ void ForUpdate() :
 void BreakStatement()  :
 {}
 {
-  "break" { add("break"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); writeln(); }
+  "break" { add("break"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); write(); }
 }
 
 void ContinueStatement()  :
 {}
 {
-  "continue" { add("continue"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); writeln(); }
+  "continue" { add("continue"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); write(); }
 }
 
 void ReturnStatement()  :

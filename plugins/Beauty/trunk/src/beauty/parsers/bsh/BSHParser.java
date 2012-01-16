@@ -2459,7 +2459,7 @@ void VariableDeclaratorId()  :
       ;
     }
     jj_consume_token(SEMICOLON);
-                                                                 add(";"); writeln();
+                                                                 add(";"); write();
   }
 
   final public void ContinueStatement() throws ParseException {
@@ -2475,7 +2475,7 @@ void VariableDeclaratorId()  :
       ;
     }
     jj_consume_token(SEMICOLON);
-                                                                       add(";"); writeln();
+                                                                       add(";"); write();
   }
 
   final public void ReturnStatement() throws ParseException {
