@@ -813,8 +813,10 @@ private void setCharInBuffer(String ch)
 	else
 		JOptionPane.showMessageDialog(view,
 			jEdit.getProperty(NAME_PREFIX + "no-insert-message-1")
+			  + bufferEncoding
+			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-2")
 			  + encoding
-			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-2"),
+			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-3"),
 			jEdit.getProperty(NAME_PREFIX + "no-insert-message.label"),
 			JOptionPane.WARNING_MESSAGE);
 }
