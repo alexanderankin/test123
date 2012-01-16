@@ -27,8 +27,9 @@ character-map.no-insert-message.label=Message
 
 # Main window default settings
 character-map.dock-position=right
-character-map.no-insert-message-1=Insert Characters from this table only into\nbuffer encoding "
-character-map.no-insert-message-2=" or Unicode (UTF-xx).
+character-map.no-insert-message-1=Insert into this buffer only encoding: "
+character-map.no-insert-message-2="\nOr change buffer to "
+character-map.no-insert-message-3=" or Unicode.
 
 # Option window
 plugin.charactermap.CharacterMapPlugin.option-pane=character-map
