@@ -135,7 +135,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             // areas.
             leftVisibleLineCount = model.getLeftTextArea().getVisibleLines();
             rightVisibleLineCount = model.getRightTextArea().getVisibleLines();
-            pixelsPerLine = model.getLeftTextArea().getPainter().getFontMetrics().getHeight();
+            pixelsPerLine = model.getLeftTextArea().getPainter().getLineHeight();
 
             // default width is 40 pixels, set in DiffOverview
             Rectangle size = getBounds();

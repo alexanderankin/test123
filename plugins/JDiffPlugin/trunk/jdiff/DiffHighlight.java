@@ -76,7 +76,7 @@ public class DiffHighlight extends TextAreaExtension {
                 for ( ; hunk != null; hunk = hunk.next ) {
                     if ( hunk.first0 <= physicalLine && physicalLine <= hunk.last0 ) {
                         TextAreaPainter painter = this.textArea.getPainter();
-                        int height = hunk.lines0 == 0 ? y : painter.getFontMetrics().getHeight();
+                        int height = hunk.lines0 == 0 ? y : painter.getLineHeight();
 
                         if ( hunk.lines0 == 0 ) {
                             if ( hunk.first0 != physicalLine ) {
@@ -99,7 +99,7 @@ public class DiffHighlight extends TextAreaExtension {
                 for ( ; hunk != null; hunk = hunk.next ) {
                     if ( hunk.first1 <= physicalLine && physicalLine <= hunk.last1 ) {
                         TextAreaPainter painter = this.textArea.getPainter();
-                        int height = hunk.lines1 == 0 ? y : painter.getFontMetrics().getHeight();
+                        int height = hunk.lines1 == 0 ? y : painter.getLineHeight();
                         if ( hunk.lines1 == 0 ) {
                             if ( hunk.first1 != physicalLine ) {
                                 continue;
@@ -128,7 +128,6 @@ public class DiffHighlight extends TextAreaExtension {
             if ( this.position == DiffHighlight.LEFT ) {
                 for ( ; hunk != null; hunk = hunk.next ) {
                     if ( hunk.first0 <= screenLine && screenLine <= hunk.last0 ) {
-                        System.out.println("+++++ hunk left: " + hunk);
                         TextAreaPainter painter = this.textArea.getPainter();
                         color = JDiffPlugin.overviewInvalidColor;
                         gfx.setColor( color );
@@ -140,7 +139,6 @@ public class DiffHighlight extends TextAreaExtension {
             else { // DiffHighlight.RIGHT
                 for ( ; hunk != null; hunk = hunk.next ) {
                     if ( hunk.first1 <= screenLine && screenLine <= hunk.last1 ) {
-                        System.out.println("+++++ hunk right: " + hunk);
                         TextAreaPainter painter = this.textArea.getPainter();
                         color = JDiffPlugin.overviewInvalidColor;
                         gfx.setColor( color );
