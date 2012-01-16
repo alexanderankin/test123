@@ -113,7 +113,9 @@ public class DualDiffManager {
                     sb.append(filename).append('\n');   
                 }
             }
-            JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + sb.toString(), "JDiff Error", JOptionPane.ERROR_MESSAGE );
+            if (sb.toString().trim().length() > 0) {
+                JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + sb.toString(), "JDiff Error", JOptionPane.ERROR_MESSAGE );
+            }
         }
     }
 
