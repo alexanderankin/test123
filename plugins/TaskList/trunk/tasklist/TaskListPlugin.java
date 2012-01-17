@@ -44,6 +44,7 @@ import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
@@ -705,6 +706,9 @@ public class TaskListPlugin extends EditPlugin {
         if (buffer == null) {
             return null;   
         }
+        if(!buffer.isLoaded()) {
+            VFSManager.waitForRequests();
+		}
         Mode mode = buffer.getMode();
         if (mode == null) {
             buffer.setMode();
