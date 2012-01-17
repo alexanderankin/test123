@@ -63,8 +63,8 @@ public class TaskType {
 	//{{{ extractTask() method
 	public Task extractTask( Buffer buffer, String tokenText,
 	        int line, int tokenOffset ) {
-		Matcher match = this.re.matcher( tokenText );
-		if ( !match.find() ) {
+        Matcher match = this.re.matcher( tokenText );
+        if ( !match.find() ) {
 			return null;
 		}
 
@@ -98,10 +98,8 @@ public class TaskType {
 	}
 
 	public void setPattern( String pattern ) {
-		if ( this.pattern == null || !this.pattern.equals( pattern ) ) {
-			this.pattern = pattern;
-			compileRE();
-		}
+        this.pattern = pattern;
+        compileRE();
 	} //}}}
 
 	//{{{ get/setSample() methods
@@ -119,11 +117,9 @@ public class TaskType {
 	}
 
 	public void setIgnoreCase( boolean ignoreCase ) {
-		if ( this.ignoreCase != ignoreCase ) {
-			this.ignoreCase = ignoreCase;
-			this.reFlags = ignoreCase ? Pattern.CASE_INSENSITIVE : 0;
-			compileRE();
-		}
+        this.ignoreCase = ignoreCase;
+        this.reFlags = ignoreCase ? Pattern.CASE_INSENSITIVE : 0;
+        compileRE();
 	} //}}}
 
 	public Icon getIcon() {
