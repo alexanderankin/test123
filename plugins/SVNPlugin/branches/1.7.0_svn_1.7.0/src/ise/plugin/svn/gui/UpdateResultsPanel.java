@@ -56,12 +56,13 @@ public class UpdateResultsPanel extends JPanel {
     }
 
     public UpdateResultsPanel( View view, UpdateData results, boolean isExport ) {
-        super( new LambdaLayout() );
+        super( new BorderLayout() );
         this.view = view;
         this.data = results;
 
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
+        JPanel contentPanel = new JPanel(new LambdaLayout());
         JLabel label;
         if ( isExport ) {
             label = new JLabel( jEdit.getProperty("ips.Exported_at_revision>", "Exported at revision:") + " " + results.getRevision() );
@@ -69,23 +70,23 @@ public class UpdateResultsPanel extends JPanel {
         else {
             label = new JLabel( jEdit.getProperty("ips.Updated_to_revision>", "Updated to revision:") + " " + results.getRevision() );
         }
-
+        add( label, BorderLayout.NORTH );
+        
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
         con.a = LambdaLayout.W;
         con.y = 0;
         con.s = "wh";
         con.p = 3;
-
-
-        add( label, con );
-
+        
+        
+        
         boolean added = false;
 
         List<String> list = results.getConflictedFiles();
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + " " + jEdit.getProperty("ips.with_conflicts>", "with conflicts:"), list ), con );
+            contentPanel.add( createPanel( size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + " " + jEdit.getProperty("ips.with_conflicts>", "with conflicts:"), list ), con );
             added = true;
         }
 
@@ -93,7 +94,7 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( jEdit.getProperty("ips.Updated", "Updated") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
+            contentPanel.add( createPanel( jEdit.getProperty("ips.Updated", "Updated") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             added = true;
         }
 
@@ -102,10 +103,10 @@ public class UpdateResultsPanel extends JPanel {
             int size = list.size();
             ++con.y;
             if ( isExport ) {
-                add( createPanel( jEdit.getProperty("ips.Exported", "Exported") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
+                contentPanel.add( createPanel( jEdit.getProperty("ips.Exported", "Exported") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             }
             else {
-                add( createPanel( jEdit.getProperty("ips.Added", "Added") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
+                contentPanel.add( createPanel( jEdit.getProperty("ips.Added", "Added") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             }
             added = true;
         }
@@ -114,13 +115,14 @@ public class UpdateResultsPanel extends JPanel {
         if ( list != null ) {
             int size = list.size();
             ++con.y;
-            add( createPanel( jEdit.getProperty("ips.Deleted", "Deleted") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
+            contentPanel.add( createPanel( jEdit.getProperty("ips.Deleted", "Deleted") + " " + size + " " + jEdit.getProperty("ips.file", "file") + ( size != 1 ? "s" : "" ) + ":", list ), con );
             added = true;
         }
 
         if ( !added ) {
             label.setText( label.getText() + " " + jEdit.getProperty("ips.(Already_up_to_date.)", "(Already up to date.)") );
         }
+        add(contentPanel, BorderLayout.CENTER);
     }
 
     private JPanel createPanel( String title, List<String> values ) {
@@ -165,7 +167,7 @@ public class UpdateResultsPanel extends JPanel {
                     table.setRowSelectionInterval( row, row );
                     table.setColumnSelectionInterval( col, col );
                 }
-                GUIUtils.showPopupMenu( createPopupMenu( table ), UpdateResultsPanel.this, me.getX(), me.getY() );
+                GUIUtils.showPopupMenu( createPopupMenu( table ), table, me.getX(), me.getY() );
             }
             else if ( me.getClickCount() == 2 ) {
                 // for double-click on a text file, open the file in jEdit

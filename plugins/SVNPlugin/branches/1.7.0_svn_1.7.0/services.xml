@@ -16,9 +16,5 @@
     <SERVICE CLASS="projectviewer.config.VersionControlService" NAME="Subversion">
         ise.plugin.svn.pv.VersionControlState.getInstance();
     </SERVICE>
-    
-    <SERVICE CLASS="projectviewer.importer.ImporterFileFilter" NAME="svn">
-        new ise.plugin.svn.pv.ImportFilter();
-    </SERVICE>
 </SERVICES>
 
