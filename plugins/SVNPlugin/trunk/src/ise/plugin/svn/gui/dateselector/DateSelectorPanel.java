@@ -99,9 +99,6 @@ import org.gjt.sp.jedit.jEdit;
  */
 
 public class DateSelectorPanel extends JPanel implements DateSelector {
-    //TODO: These strings should be in a resource bundle so they
-    //  can be internationalized.
-    //
     private String[] months =
         { jEdit.getProperty( "ips.Jan", "Jan" ), jEdit.getProperty( "ips.Feb", "Feb" ),
           jEdit.getProperty( "ips.Mar", "Mar" ), jEdit.getProperty( "ips.Apr", "Apr" ),
