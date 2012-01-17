@@ -244,7 +244,7 @@ public class TaskListPlugin extends EditPlugin {
             return null;
         }
         for (TaskType type : taskTypes) {
-            if (typeName.equals(type.getName())) {
+            if (typeName.equalsIgnoreCase(type.getName())) {
                 return type.getIcon();
             }
         }
@@ -257,7 +257,7 @@ public class TaskListPlugin extends EditPlugin {
         }
         String typeName = task.getIdentifier();
         for (TaskType type : taskTypes) {
-            if (typeName.equals(type.getName())) {
+            if (typeName.equalsIgnoreCase(type.getName())) {
                 return type;
             }
         }
@@ -606,6 +606,9 @@ public class TaskListPlugin extends EditPlugin {
      * @param task the Task to be added.
      */
     private static void addTask(Task task) {
+        if (task == null) {
+            return;   
+        }
         if (TaskListPlugin.DEBUG) {
             Log.log(Log.DEBUG, TaskListPlugin.class, "TaskListPlugin.addTask(" + task.toString() + ")");            // ##
         }
@@ -613,7 +616,8 @@ public class TaskListPlugin extends EditPlugin {
         HashMap<Integer, Task> taskMap = bufferMap.get(task.getBufferPath());
 
         if (taskMap == null) {
-            bufferMap.put(task.getBufferPath(), new HashMap<Integer, Task>());
+            taskMap = new HashMap<Integer, Task>();
+            bufferMap.put(task.getBufferPath(), taskMap);
         }
 
         Integer _line = Integer.valueOf(task.getLineIndex());
