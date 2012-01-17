@@ -525,6 +525,10 @@ ips.Fetching_annotation_info_...=Fetching annotation info ...
 ips.Formatting_annotation_info_...=Formatting annotation info ...
 ips.Done.=Done.
 
+# for PV file importer dialog
+ips.Use_SVN-entries.=Use SVN entries.
+ips.Import_files_in_under_SVN_version_control_only.=Import files in under SVN version control only.
+
 ips.Apr=Apr
 ips.Aug=Aug
 ips.Browse_Repository=Browse Repository

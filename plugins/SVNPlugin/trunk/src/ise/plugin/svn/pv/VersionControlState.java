@@ -16,6 +16,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreeNode;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.EBComponent;
@@ -265,7 +266,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
     public ImporterFileFilter getFilter() {
         return new ImporterFileFilter() {
             public String getRecurseDescription() {
-                return "Yes, use SVN entries.";
+                return jEdit.getProperty("ips.Use_SVN_entries.", "Use SVN entries.");
             }
 
             @Override
@@ -285,7 +286,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
             }
             
             public String getDescription() {
-                return "Import files in SVN only.";    
+                return jEdit.getProperty("ips.Import_files_in_under_SVN_version_control_only.", "Import files in under SVN version control only.");    
             }
         };
     }
