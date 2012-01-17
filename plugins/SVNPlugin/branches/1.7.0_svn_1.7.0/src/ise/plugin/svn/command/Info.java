@@ -45,12 +45,25 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.SVNPlugin;
 
 public class Info {
 
+    public static boolean isWorkingCopy( File path ) {
+        ///
+        SVNKit.setupLibrary();
+        SVNClientManager clientManager = SVNClientManager.newInstance();
+        SVNWCClient client = clientManager.getWCClient();
+        ///
+        try {
+            SVNInfo info = client.doInfo(path, SVNRevision.WORKING);
+            return info != null;
+        }
+        catch(SVNException e) {        // NOPMD
+            return false;
+        }
+    }
 
     public List<SVNInfo> info( SVNData data ) throws CommandInitializationException, SVNException {
         List<SVNInfo> results = getInfo( data );
@@ -68,7 +81,7 @@ public class Info {
 
         // validate commit data values
         if ( data.getPaths() == null ) {
-            return null;     // nothing to do
+            return null;            // nothing to do
         }
         if ( data.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
@@ -80,7 +93,6 @@ public class Info {
         // convert first path to File
         List<String> paths = data.getPaths();
 
-
         // use the svnkit client manager
         SVNClientManager clientManager;
         if ( data.pathsAreURLs() ) {
@@ -88,9 +100,8 @@ public class Info {
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
             // need to log in to remote repository for urls
-            clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  data.getUsername(), data.getDecryptedPassword() ) );
-        }
-        else {
+            clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword() ) );
+        } else {
             // get info from local working directory
             clientManager = SVNClientManager.newInstance();
         }
@@ -102,8 +113,8 @@ public class Info {
         client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
 
         // printout the SVNData to the console
-        data.getOut().println(SVNData.toString(data));
-        
+        data.getOut().println( SVNData.toString( data ) );
+
         // actually fetch the info
         List<SVNInfo> results = new ArrayList<SVNInfo>();
         if ( data.pathsAreURLs() ) {
@@ -112,8 +123,7 @@ public class Info {
                 SVNInfo result = client.doInfo( svnurl, SVNRevision.HEAD, SVNRevision.HEAD );
                 results.add( result );
             }
-        }
-        else {
+        } else {
             for ( String path : paths ) {
                 File localPath = new File( path );
                 SVNInfo result = client.doInfo( localPath, SVNRevision.WORKING );
@@ -125,12 +135,11 @@ public class Info {
     }
 
     public void handleInfo( SVNInfo info, PrintStream out ) {
-        StringBuffer sb = new StringBuffer(512);
+        StringBuffer sb = new StringBuffer(512 );
         sb.append( "\n" );
         if ( !info.isRemote() ) {
             sb.append( "Path: " + SVNFormatUtil.formatPath( info.getFile() ) + "\n" );
-        }
-        else if ( info.getPath() != null ) {
+        } else if ( info.getPath() != null ) {
             String path = info.getPath();
             path = path.replace( '/', File.separatorChar );
             sb.append( "Path: " + path + "\n" );
@@ -138,8 +147,7 @@ public class Info {
         if ( info.getKind() != SVNNodeKind.DIR ) {
             if ( info.isRemote() ) {
                 sb.append( "Name: " + SVNPathUtil.tail( info.getPath() ) + "\n" );
-            }
-            else {
+            } else {
                 sb.append( "Name: " + info.getFile().getName() + "\n" );
             }
         }
@@ -155,20 +163,16 @@ public class Info {
         }
         if ( info.getKind() == SVNNodeKind.DIR ) {
             sb.append( "Node Kind: directory" + "\n" );
-        }
-        else if ( info.getKind() == SVNNodeKind.FILE ) {
+        } else if ( info.getKind() == SVNNodeKind.FILE ) {
             sb.append( "Node Kind: file" + "\n" );
-        }
-        else if ( info.getKind() == SVNNodeKind.NONE ) {
+        } else if ( info.getKind() == SVNNodeKind.NONE ) {
             sb.append( "Node Kind: none" + "\n" );
-        }
-        else {
+        } else {
             sb.append( "Node Kind: unknown" + "\n" );
         }
         if ( info.getSchedule() == null && !info.isRemote() ) {
             sb.append( "Schedule: normal" + "\n" );
-        }
-        else if ( !info.isRemote() ) {
+        } else if ( !info.isRemote() ) {
             sb.append( "Schedule: " + info.getSchedule() + "\n" );
         }
         if ( info.getAuthor() != null ) {
@@ -219,8 +223,7 @@ public class Info {
                 int lineCount = getLineCount( lock.getComment() );
                 if ( lineCount == 1 ) {
                     sb.append( "(1 line)" );
-                }
-                else {
+                } else {
                     sb.append( "(" + lineCount + " lines)" );
                 }
                 sb.append( ":\n" + lock.getComment() + "\n" );
