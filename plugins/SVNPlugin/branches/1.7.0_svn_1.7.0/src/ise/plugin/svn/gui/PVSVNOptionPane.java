@@ -53,6 +53,8 @@ import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
+import org.tmatesoft.svn.core.internal.wc17.db.ISVNWCDb;
+
 
 /**
  * Option pane for setting the url, username, and password for subversion via
@@ -108,7 +110,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         // subversion file format
         fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "Auto"} );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7", "Auto"} );
         fileformat.setEditable( false );
         String wc_item;
         switch ( getWCVersion() ) {
@@ -124,6 +126,8 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             case SVNAdminAreaFactory.WC_FORMAT_16:
                 wc_item = "1.6";
                 break;
+            case ISVNWCDb.WC_FORMAT_17:
+                wc_item = "1.7";
             default:
                 wc_item = "Auto";
                 break;
@@ -200,6 +204,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         }
         else if ( "1.6".equals( new_wc_format ) ) {
             wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
+        }
+        else if ( "1.7".equals( new_wc_format ) ) {
+            wc_format = ISVNWCDb.WC_FORMAT_17;
         }
         else {
             wc_format = -1;   
