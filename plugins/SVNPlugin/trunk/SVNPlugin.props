@@ -636,8 +636,12 @@ ips.Warning>_Local_Modifications=Warning: Local Modifications
 ips.Would_you_like_to_create_a_project_from_these_files?=Would you like to create a project from these files?
 ips.Would_you_like_to_see_properties_for_subdirectories_and_files?=Would you like to see properties for subdirectories and files?
 
+# 
 ips.Subversion_file_format>=Subversion file format:
-ips.Error=Error
 ips.Unable_to_convert_working_copy_file_format>=Unable to convert working copy file format:
 ips.Bug_ID>=Bug ID:
 ips.Diff_against_working_copy=Diff against working copy
+ips.Converting_svn_working_copy_format_to_=Converting svn working copy format to 
+ips.Unable_to_stop_conversion_of_working_file_format.=Unable to stop conversion of working file format.
+ips.Completed_converting_working_copy_format_to_=Completed converting working copy format to 
+ips.Converting=Converting

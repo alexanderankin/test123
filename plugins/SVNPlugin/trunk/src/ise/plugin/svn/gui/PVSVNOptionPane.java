@@ -208,11 +208,10 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             panel.showConsole();
             class Runner extends SwingWorker < Object , Object > {
                 ConsolePrintStream out = new ConsolePrintStream( jEdit.getActiveView() );
-                // TODO: move strings to property file
                 @Override
                 protected Object doInBackground() {
                     try {
-                        out.println("Converting svn working copy format to " + new_wc_format + "...");
+                        out.println(jEdit.getProperty("ips.Converting_svn_working_copy_format_to_", "Converting svn working copy format to ") + new_wc_format + "...");
                         SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
                         wc_client.doSetWCFormat( projectRoot, wcf );
                     }
@@ -223,17 +222,17 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 }
                 @Override
                 public boolean cancel( boolean mayInterruptIfRunning ) {
-                    out.printError( "Unable to stop conversion of working file format." );
+                    out.printError( jEdit.getProperty("ips.Unable_to_stop_conversion_of_working_file_format.", "Unable to stop conversion of working file format.") );
                     return false;
                 }
                 @Override
                 protected void done() {
-                    out.println("Completed converting working copy format to " + new_wc_format + ".");
+                    out.println(jEdit.getProperty("ips.Completed_converting_working_copy_format_to_", "Completed converting working copy format to ") + new_wc_format + ".");
                     out.close();
                 }
             }
             Runner runner = new Runner();
-            panel.addWorker( "Converting", runner );
+            panel.addWorker( jEdit.getProperty("ips.Converting", "Converting"), runner );
             runner.execute();
         }
     }
