@@ -294,7 +294,18 @@ The ProjectViewer trees show the SVN status of files using these icons:
 </a>
 
 <p>
-Option settings are accessed from Plugins - Plugin Options - Subversion. Currently, there is only one setting for this plugin, whether or not to use a "tsvn:logtemplate" property as a template for commit messages.  This is a property defined by the Tortoise SVN project and supported by many Subversion clients.  It allows a template for commit comments to be set, usually on a project basis.  Usually, this property is in set in Subversion on the top level folder and applies to all files contained within the folder.  If checked, it may take slightly longer for a commit dialog to appear, as the SVN Plugin will need to query the Subversion server for the value of this property.  Once the commit dialog does appear, the commit template will be displayed, which helps programmers remember to fill in particular pieces of information, such as bug number, reviewed by, and so on.
+Option settings are accessed from Plugins - Plugin Options - Subversion.
+</p>
+<p>
+<ul>
+<li><b>tsvn:logtemplate</b> property as a template for commit messages.  This is a property defined by the Tortoise SVN project and supported by many Subversion clients.  It allows a template for commit comments to be set, usually on a project basis.  Usually, this property is in set in Subversion on the top level folder and applies to all files contained within the folder.  If checked, it may take slightly longer for a commit dialog to appear, as the SVN Plugin will need to query the Subversion server for the value of this property.  Once the commit dialog does appear, the commit template will be displayed, which helps programmers remember to fill in particular pieces of information, such as bug number, reviewed by, and so on.
+</li>
+<li>
+<b>Maximum log entries to show</b> Setting this to a small value will improve performance.
+</li>
+<li>
+<b>Subversion file format</b> The default setting for the working copy file format. "Auto" means use whatever the Subversion server is using. Otherwise, reformat newly checked out files to a specific format. This is just the default setting, nothing actually happens when changing it in the options dialog. It is used when new files are checked out. This is useful for when you are using several tools for svn and the other tools cannot use a particular version. If you want to change the working copy file format for a project, go into the project properties and change the working copy file format from the Subversion setting panel. That will change the working copy file format immediately for that project.
+</li>
 </p>
 
 <hr>
@@ -330,7 +341,7 @@ Project Viewer will automatically switch to your new project so you can begin wo
 <li>
 Right click on the top node of your project and select "Properties".  Select "Subversion" from the version control dropdown if it is not selected already. Select
 "Subversion settings" from the left panel.  The URL should be filled in for you.
-If the repository requires a username and password, fill them in here, or leave the fields blank if the repository allows anonymous access.  The format of your working copies is also displayed.  You can change this value if you need to for compatibility with other SVN clients.<br>
+If the repository requires a username and password, fill them in here, or leave the fields blank if the repository allows anonymous access.  The format of your working copies is also displayed.  You can change this value if you need to for compatibility with other SVN clients. Changing this value will change the working copy file format for your files as soon as you close the dialog. Currently supported are the working copy file formats for SVN versions 1.2 through 1.6. Changing to 1.7 is not currently supported, however, if your SVN server gives you version 1.7 file format, changing to an earlier version is supported.<br>
 <br>
 
 <img src="subversion_settings.jpg"><br>
