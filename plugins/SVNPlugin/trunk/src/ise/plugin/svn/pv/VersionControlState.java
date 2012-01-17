@@ -70,7 +70,8 @@ public class VersionControlState implements VersionControlService, EBComponent {
 
     private static Status command = new Status();
 
-    // hashtable rather than hashmap as synchronization is needed.
+    // hashtable rather than hashmap as synchronization is needed. This caches
+    // the last known status of a file.
     private static Hashtable<String, FileStatus> cache = new Hashtable<String, FileStatus>();
 
     private static class SingletonHolder {
