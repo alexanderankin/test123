@@ -2,18 +2,28 @@
 package ise.plugin.svn.pv;
 
 import projectviewer.config.VersionControlService;
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.importer.ImporterFileFilter;
+import projectviewer.event.ProjectUpdate;
+import projectviewer.event.ViewerUpdate;
+import projectviewer.ProjectViewer;
 
 import java.io.File;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 
+import ise.plugin.svn.command.Info;
 import ise.plugin.svn.command.Status;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.gui.PVSVNOptionPane;
@@ -24,7 +34,7 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 /**
  * Provide version control icons for file status to ProjectViewer.
  */
-public class VersionControlState implements VersionControlService {
+public class VersionControlState implements VersionControlService, EBComponent {
 
     // version control states for Subversion
     public static final int NONE = 0;    // no state
@@ -42,34 +52,34 @@ public class VersionControlState implements VersionControlService {
     public static final int UNKNOWN = -1;
 
     // icon definitions for the various states
-    public static final Icon NORMAL_ICON = createIcon("ise/plugin/svn/gui/icons/normal.png");
-    public static final Icon ADDED_ICON = createIcon("ise/plugin/svn/gui/icons/added.png");
-    public static final Icon CONFLICT_ICON = createIcon("ise/plugin/svn/gui/icons/conflict.png");
-    public static final Icon DELETED_ICON = createIcon("ise/plugin/svn/gui/icons/deleted.png");
-    public static final Icon IGNORED_ICON = createIcon("ise/plugin/svn/gui/icons/ignored.png");
-    public static final Icon LOCKED_ICON = createIcon("ise/plugin/svn/gui/icons/locked.png");
-    public static final Icon MODIFIED_ICON = createIcon("ise/plugin/svn/gui/icons/modified.png");
-    public static final Icon OUTOFDATE_ICON = createIcon("ise/plugin/svn/gui/icons/outofdate.png");
-    public static final Icon READONLY_ICON = createIcon("ise/plugin/svn/gui/icons/readonly.png");
-    public static final Icon UNVERSIONED_ICON = createIcon("ise/plugin/svn/gui/icons/unversioned.png");
+    public static final Icon NORMAL_ICON = createIcon( "ise/plugin/svn/gui/icons/normal.png" );
+    public static final Icon ADDED_ICON = createIcon( "ise/plugin/svn/gui/icons/added.png" );
+    public static final Icon CONFLICT_ICON = createIcon( "ise/plugin/svn/gui/icons/conflict.png" );
+    public static final Icon DELETED_ICON = createIcon( "ise/plugin/svn/gui/icons/deleted.png" );
+    public static final Icon IGNORED_ICON = createIcon( "ise/plugin/svn/gui/icons/ignored.png" );
+    public static final Icon LOCKED_ICON = createIcon( "ise/plugin/svn/gui/icons/locked.png" );
+    public static final Icon MODIFIED_ICON = createIcon( "ise/plugin/svn/gui/icons/modified.png" );
+    public static final Icon OUTOFDATE_ICON = createIcon( "ise/plugin/svn/gui/icons/outofdate.png" );
+    public static final Icon READONLY_ICON = createIcon( "ise/plugin/svn/gui/icons/readonly.png" );
+    public static final Icon UNVERSIONED_ICON = createIcon( "ise/plugin/svn/gui/icons/unversioned.png" );
 
-    private static Icon createIcon(String name) {
-        return new ImageIcon(VersionControlState.class.getClassLoader().getResource(name));
+    private static Icon createIcon( String name ) {
+        return new ImageIcon( VersionControlState.class.getClassLoader().getResource( name ) );
     }
 
     private static Status command = new Status();
 
-    private static HashMap<String, FileStatus> cache = new HashMap<String, FileStatus>();
-    
+    // hashtable rather than hashmap as synchronization is needed.
+    private static Hashtable<String, FileStatus> cache = new Hashtable<String, FileStatus>();
+
     private static class SingletonHolder {
-        public static final VersionControlState instance = new VersionControlState();   
+        public static final VersionControlState instance = new VersionControlState();
     }
-    
-    
+
     private VersionControlState() {
-        
+
     }
-    
+
     public static VersionControlState getInstance() {
         return SingletonHolder.instance;
     }
@@ -87,64 +97,78 @@ public class VersionControlState implements VersionControlService {
      *
      * @return A service-specific identifier for the file state.
      */
-    public int getNodeState(VPTNode f) {
-        return getNodeState(f.getNodePath(), false);
+    public int getNodeState( VPTNode f ) {
+        if ( f == null ) {
+            return UNKNOWN;
+        }
+        return getNodeState( f.getNodePath() );
     }
 
-    public int getNodeState(String path, boolean force) {
-        int rtn = checkModified(path);
-        if (! force && rtn != UNKNOWN) {
-            return rtn;
+    public int getNodeState( String path ) {
+        if ( path == null ) {
+            return UNKNOWN;
         }
+        FileStatus rtn = checkModified( path );
+        if ( rtn.status != NORMAL ) {
+            rtn = getStatus( path );
+        }
+        return rtn.status;
+    }
 
-        File file = new File(path);
-        SVNStatus status = command.getStatus(file);
-        if (status == null) {
-            return NONE;
+    // gets the status of the file by calling svn, updates the cache with the
+    // current status.
+    FileStatus getStatus( String path ) {
+        File file = new File( path );
+        SVNStatus status = command.getStatus( file );
+        if ( status == null ) {
+            return new FileStatus( new Date().getTime(), NONE );
         }
         SVNStatusType type = status.getContentsStatus();
-        if (SVNStatusType.STATUS_ADDED.equals(type)) {
-            rtn = LOCAL_ADD;
-        } else if (SVNStatusType.STATUS_CONFLICTED.equals(type)) {
-            rtn = CONFLICT;
-        } else if (SVNStatusType.STATUS_DELETED.equals(type)) {
-            rtn = DELETED;
-        } else if (SVNStatusType.STATUS_IGNORED.equals(type)) {
-            rtn = DELETED;
-        } else if (status.isLocked()) {
-            rtn = LOCKED;
-        } else if (SVNStatusType.STATUS_MISSING.equals(type)) {
-            rtn = LOCAL_RM;
-        } else if (SVNStatusType.STATUS_MODIFIED.equals(type)) {
-            rtn = LOCAL_MOD;
-        } else if (SVNStatusType.STATUS_UNVERSIONED.equals(type)) {
-            rtn = UNVERSIONED;
-        } else if (SVNStatusType.STATUS_NORMAL.equals(type)) {
-            rtn = NORMAL;
-        } else {
-            rtn = NONE;
+        FileStatus rtn = cache.get( path );
+        if ( rtn == null ) {
+            rtn = new FileStatus( file.lastModified(), UNKNOWN );
+            cache.put( path, rtn );
         }
-        cache.put(path, new FileStatus(file.lastModified(), rtn));
+        rtn.timestamp = file.lastModified();
+        if ( SVNStatusType.STATUS_ADDED.equals( type ) ) {
+            rtn.status = LOCAL_ADD;
+        } else if ( SVNStatusType.STATUS_CONFLICTED.equals( type ) ) {
+            rtn.status = CONFLICT;
+        } else if ( SVNStatusType.STATUS_DELETED.equals( type ) ) {
+            rtn.status = DELETED;
+        } else if ( SVNStatusType.STATUS_IGNORED.equals( type ) ) {
+            rtn.status = DELETED;
+        } else if ( status.isLocked() ) {
+            rtn.status = LOCKED;
+        } else if ( SVNStatusType.STATUS_MISSING.equals( type ) ) {
+            rtn.status = LOCAL_RM;
+        } else if ( SVNStatusType.STATUS_MODIFIED.equals( type ) ) {
+            rtn.status = LOCAL_MOD;
+        } else if ( SVNStatusType.STATUS_UNVERSIONED.equals( type ) ) {
+            rtn.status = UNVERSIONED;
+        } else if ( SVNStatusType.STATUS_NORMAL.equals( type ) ) {
+            rtn.status = NORMAL;
+        } else {
+            rtn.status = NONE;
+        }
         return rtn;
     }
 
-    // return positive int if file has not been modified since last check, 
-    // -1 otherwise. "Modified" is determined only by file timestamp.
-    private int checkModified(String path) {
-        FileStatus fs = cache.get(path);
-        if (fs == null) {
-            return UNKNOWN;
+    // check if the file has been changed by checking the timestamp
+    FileStatus checkModified( String path ) {
+        FileStatus status = cache.get( path );
+        File f = new File( path );
+        if ( status == null ) {
+            status = new FileStatus( f.lastModified(), UNKNOWN );
+            cache.put( path, status );
+        } else {
+            long lastModified = f.lastModified();
+            if ( lastModified != status.timestamp ) {
+                status.timestamp = lastModified;
+                status.status = UNKNOWN;
+            }
         }
-        File f = new File(path);
-        long lastModified = f.lastModified();
-        if (lastModified != fs.timestamp) {
-            return UNKNOWN;
-        }
-        return lastModified == fs.timestamp ? fs.status : UNKNOWN;
-    }
-    
-    public void updateStatus(String path) {
-        getNodeState(path, true);   
+        return status;
     }
 
     /**
@@ -155,8 +179,8 @@ public class VersionControlState implements VersionControlService {
      *
      * @return The icon for the given state, or null for no icon.
      */
-    public Icon getIcon(int state) {
-        switch (state) {
+    public Icon getIcon( int state ) {
+        switch ( state ) {
             case LOCAL_MOD:
                 return MODIFIED_ICON;
             case NEED_UPDATE:
@@ -202,7 +226,7 @@ public class VersionControlState implements VersionControlService {
      *
      * @param proj The project.
      */
-    public void dissociate(VPTProject proj) { }
+    public void dissociate( VPTProject proj ) { }
 
     /**
      * This method should return the option pane to be shown. As with
@@ -213,8 +237,8 @@ public class VersionControlState implements VersionControlService {
      *
      * @return An OptionPane instance, or null for no option pane.
      */
-    public OptionPane getOptionPane(VPTProject project) {
-        return new PVSVNOptionPane(project.getName());
+    public OptionPane getOptionPane( VPTProject project ) {
+        return new PVSVNOptionPane( project.getName() );
     }
 
     /**
@@ -226,24 +250,103 @@ public class VersionControlState implements VersionControlService {
      *
      * @return null
      */
-    public OptionGroup getOptionGroup(VPTProject project) {
+    public OptionGroup getOptionGroup( VPTProject project ) {
         return null;
     }
 
+    /**
+     * Returns a file filter to be shown as an option when the user
+     * imports files into a project backed by this version control
+     * service.
+     *
+     * @return An ImporterFileFilter, or null if there's no specific
+     *         filter for the service.
+     */
     public ImporterFileFilter getFilter() {
-        return null;
+        return new ImporterFileFilter() {
+            public String getRecurseDescription() {
+                return "Yes, use SVN entries.";
+            }
+
+            @Override
+            public boolean accept( String path ) {
+                if (path == null) {
+                    return false;
+                }
+                File file = new File(path);
+                if (!file.exists()) {
+                    return false;   
+                }
+                return Info.isWorkingCopy(new File(path));
+            }
+            
+            public boolean accept(VFSFile file) {
+                return accept(file.getPath());   
+            }
+            
+            public String getDescription() {
+                return "Import files in SVN only.";    
+            }
+        };
     }
 
     class FileStatus {
         // timestamp that the status of the file was last checked
-        long timestamp;
+        public long timestamp;
 
         // int representing the status of the file last time it was checked
-        int status;
+        public int status;
 
-        public FileStatus(Long lastModified, int status) {
+        public FileStatus( Long lastModified, int status ) {
             timestamp = lastModified;
             this.status = status;
+        }
+    }
+
+    public void handleMessage( EBMessage msg ) {
+        if ( msg == null ) {
+            return;
+        }
+        if ( msg instanceof BufferUpdate ) {
+            // update status for single file
+            BufferUpdate bu = ( BufferUpdate ) msg;
+            Object what = bu.getWhat();
+            if ( BufferUpdate.DIRTY_CHANGED.equals( what ) || BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
+                getStatus( bu.getBuffer().getPath() );
+            }
+        } else if ( msg instanceof ProjectUpdate ) {
+            // update status for added files
+            ProjectUpdate pu = ( ProjectUpdate ) msg;
+            if ( ProjectUpdate.Type.FILES_CHANGED.equals( pu.getType() ) ) {
+                Collection<VPTFile> files = pu.getAddedFiles();
+                for ( VPTFile file : files ) {
+                    getStatus( file.getNodePath() );
+                }
+            }
+        } else if ( msg instanceof ViewerUpdate ) {
+            // reload cache with new project files
+            ViewerUpdate vu = ( ViewerUpdate ) msg;
+            if ( ViewerUpdate.Type.PROJECT_LOADED.equals( vu.getType() ) ) {
+                reloadCache( vu.getViewer() );
+            }
+        }
+    }
+
+    void reloadCache( ProjectViewer pv ) {
+        if ( pv == null ) {
+            return;
+        }
+        VPTNode root = pv.getRoot();
+        reloadCache( root );
+    }
+
+    void reloadCache( TreeNode node ) {
+        if ( node == null ) {
+            return;
+        }
+        getNodeState( ( VPTNode ) node );
+        for ( int i = 0; i < node.getChildCount(); i++ ) {
+            reloadCache( node.getChildAt( i ) );
         }
     }
 }

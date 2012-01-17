@@ -177,6 +177,6 @@ public abstract class SVNAction implements ActionListener {
     }
     
     protected void updateStatus(String path) {
-        VersionControlState.getInstance().updateStatus(path);   
+        VersionControlState.getInstance().getNodeState(path);   
     }
 }
