@@ -267,7 +267,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
     public ImporterFileFilter getFilter() {
         return new ImporterFileFilter() {
             public String getRecurseDescription() {
-                return jEdit.getProperty("ips.Use_SVN_entries.", "Use SVN entries.");
+                return jEdit.getProperty("ips.Use_SVN_entries", "Use SVN entries");
             }
 
             @Override
