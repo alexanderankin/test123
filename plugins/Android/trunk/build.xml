@@ -40,6 +40,11 @@
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${src.dir}"/>
+        <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+        <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ProcessShell.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Console.jar"/>
     </path>
 
     <condition property="can.reload.plugins">
@@ -76,6 +81,7 @@
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
                 <include name="dockables.xml"/>
+                <include name="services.xml"/>
                 <include name="**/*.props"/>
                 <include name="**/*.html"/>
                 <include name="**/*.gif"/>
