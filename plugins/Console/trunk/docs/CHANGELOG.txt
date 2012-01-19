@@ -7,7 +7,7 @@ Console Changelog
         Respects jEdit's "use textArea colors" appearance option.
         ProjectViewer option pane for defining commands to compile and run
         project. (#3153058 - Damien Radtke)
-        Bug fixes (2360096, 2933787)
+        Bug fixes (2360096, 2933787, 3475731, 3475732)
 
     Version 4.4.3 Requires jEdit 4.4pre1, JDK 1.6, ErrorList 1.9, ProjectViewer
     3.0 (optional).
@@ -42,7 +42,7 @@ Console Changelog
         that a button has been customized.
 
     Version 4.4 Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer
-    2.9 (optional). 
+    2.9 (optional).
 
         Updated to listen to ProjectViewer 2.9 project switch events.
         Updated to use jEdit 4.2 EditBus registration technique (Shlomy
@@ -167,7 +167,7 @@ Console Changelog
         Fixed bug # 1480991 related to printing exit codes after a subprocess exits.
 
     Version 4.2.6.2 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-    ProjectViewer 2.1.1 (optional) 
+    ProjectViewer 2.1.1 (optional)
 
         New console prefix modes: "osdefault" and "none". Both work now, and are
         documented.
@@ -198,7 +198,7 @@ Console Changelog
         output and error parsing is faster now. (Marcello Vanzin)
 
     Version 4.2.5.1 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-    ProjectViewer 2.1.1 (optional) (Alan Ezust) 
+    ProjectViewer 2.1.1 (optional) (Alan Ezust)
 
         Bugs fixed: 1460349 1459481 1459460 1454080 1449325 1448809
         added informative label in ErrorOptionPane so people Test/Commit changes
