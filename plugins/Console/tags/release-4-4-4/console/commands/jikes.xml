@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+
+<!-- This was based around jikes 1.10. -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Source file(s)">
+
+		<FILE_ENTRY LABEL="Source file(s)" VARNAME="source"
+			EVAL="buffer.getPath()" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="Paths">
+
+		<ENTRY LABEL="Class path" VARNAME="classpath_env"
+			EVAL="jEdit.getProperty(&quot;CLASSPATH&quot;, &quot;&quot;);" />
+		<FILE_ENTRY LABEL="Output directory" VARNAME="outputpath" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="Compilation flags">
+
+		<TOGGLE LABEL="Generate debug info" VARNAME="debug" />
+		<TOGGLE LABEL="Optimize" VARNAME="optimize" />
+		<TOGGLE LABEL="Show warnings" VARNAME="warn" DEFAULT="TRUE" />
+		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
+		<TOGGLE LABEL="Pedantic warnings" VARNAME="pedantic" />
+		<TOGGLE LABEL="Treat cautions as errors" VARNAME="cautions" />
+
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer("jikes +E");
+			
+			jEdit.setProperty("CLASSPATH", classpath_env);
+			setenv("CLASSPATH", classpath_env);
+			classpath = getBufferClassPath(buffer);
+
+			if(!classpath.equals(""))
+			{
+				buf.append(" -classpath \"");
+				buf.append(classpath);
+				buf.append('"');
+			}
+
+			if(!outputpath.equals(""))
+			{
+				buf.append(" -d \"");
+				buf.append(outputpath);
+				buf.append('"');
+			}
+
+			if(debug)
+				buf.append(" -g");
+
+			if(optimize)
+				buf.append(" -O");
+
+			if(!warn)
+				buf.append(" -nowarn");
+
+			if(deprecation)
+				buf.append(" -deprecation");
+
+			if(pedantic)
+				buf.append(" +P");
+
+			buf.append(" \"");
+			buf.append(source);
+			buf.append('"');
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
