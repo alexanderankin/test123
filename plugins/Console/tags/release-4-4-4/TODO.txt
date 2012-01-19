@@ -1,0 +1,28 @@
+- Replace use of old objectfactory parser with one from JDK or MiscUtilities
+- Add a history file input and a history text input for commando dialogs.
+- Test alternate shells using the prefix feature
+- $d/.. not canonicalized
+- jikes warning pattern
+- %edit -n, -p, -s
+- caret color option
+- more flexible redirection
+- multiple commands in system shell with ;
+- handle multiple consecutive command invocations correctly in console
+- error hyperlinks
+- exception tracebacks handled, maybe
+  --> use JLib for this
+- need <INIT> code block in commando files
+- notify of process exit
+- multiple-line env vars don't work
+- see if an extra pattern can eat all javac errors
+- TeX, Tidy error patterns
+- foo"aaaa" doesn't parse like in a Unix shell
+- beanshell completion
+- aliases option pane
+- URL hyperlinks in output; %ls output lines open files and directories;
+- ${beanshell:...} syntax
+- file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
+- VFS support - Select correct shell (ssh) for non-System VFS (such as
+    sftp:// paths) from commando buttons.
+
+
