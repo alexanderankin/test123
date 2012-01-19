@@ -4,7 +4,7 @@
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
  <bookinfo>
-  <title>Console plugin user's guide</title>
+  <title>jEdit Console plugin user's guide</title>
 
   <copyright>
    <year>1999</year>
@@ -14,7 +14,7 @@
   <copyright>
    <year>2005</year>
    <year>2011</year>
-   <holder>Alan Ezust</holder>
+   <holder>Other Volunteers</holder>
   </copyright>
 
   <legalnotice>
@@ -34,7 +34,7 @@
   <title>Introduction</title>
 
   <para>
- The <application>Console</application> plugin has four main functions:
+ The jEdit <application>Console</application> plugin has four main functions:
 </para>
 
   <itemizedlist>

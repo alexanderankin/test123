@@ -1,6 +1,6 @@
 
 /*
- * ErrorMatcherPanel.java - 
+ * ErrorMatcherPanel.java -
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -52,18 +52,18 @@ import console.gui.Label;
 
 /**
  * A view/editor for a single ErrorMatcher
- * 
+ *
  * @author ezust
  * @version $Id$
  *
  */
-class ErrorMatcherPanel extends AbstractOptionPane 
+class ErrorMatcherPanel extends AbstractOptionPane
 {
 
 	// {{{ Public Members
 	// {{{ Constructor
 	/**
-	 * 
+	 *
 	 * @param optionPane -
 	 *                an instance of ErrorsOptionPane - which is how we
 	 *                created this dialog, presumably.
@@ -77,7 +77,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		testMatcher = (ErrorMatcher) matcher.clone();
 
 //		apply = new Button("common.apply");
-		
+
 		test = new Button("options.console.errors.apply");
 		restore = new Button("options.console.errors.reload");
 
@@ -87,11 +87,11 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		restore.addActionListener(handler);
 
 		Box box = new Box(BoxLayout.X_AXIS);
-		
+
 		box.add(test);
 		box.add(restore);
-		
-		
+
+
 		// addSeparator();
 
 		JLabel label = new Label("options.console.errors.name", JLabel.RIGHT);
@@ -100,59 +100,59 @@ class ErrorMatcherPanel extends AbstractOptionPane
 
 		label = new Label("options.console.errors.match", JLabel.RIGHT);
 		error = new JTextField(20);
-		
+
 		addComponent(label, error, GridBagConstraints.BOTH);
 
 		label = new Label("options.console.errors.warning", JLabel.RIGHT);
 		warning = new JTextField(20);
-		
+
 		addComponent(label, warning, GridBagConstraints.HORIZONTAL);
 
 		label = new Label("options.console.errors.extra", JLabel.RIGHT);
-		
+
 		extra = new JTextField(20);
-		
+
 		addComponent(label, extra, GridBagConstraints.HORIZONTAL);
 
 		label = new Label("options.console.errors.filename",
 			JLabel.RIGHT);
 		filename = new JTextField(20);
-		
+
 		addComponent(label, filename, GridBagConstraints.HORIZONTAL);
-		
+
 		label = new Label("options.console.errors.line", JLabel.RIGHT);
 		line = new JTextField(20);
-		
+
 		addComponent(label, line, GridBagConstraints.HORIZONTAL);
 
 		label = new Label("options.console.errors.message",
 			JLabel.RIGHT);
-		
+
 		message = new JTextField(20);
-		
+
 		addComponent(label, message, GridBagConstraints.HORIZONTAL);
 
 
-		
-		
-		
-		
+
+
+
+
 		label = new Label("options.console.errors.testarea.label",
 			JLabel.RIGHT);
 		testArea = new JTextArea();
 		testArea.setFocusable(true);
-		
+
 		testArea.addKeyListener(new KeyHandler());
-		
+
 		JScrollPane scrollPane = new JScrollPane(testArea);
 		scrollPane.setMinimumSize(new Dimension(300, 150));
 		// scrollPane.setPreferredSize(new Dimension(300, 200));
 		// scrollPane.setSize(new Dimension(400, 200));
-		
+
 		scrollPane.setBorder(new TitledBorder(label.getText()));
 //		addComponent(scrollPane, GridBagConstraints.HORIZONTAL);
 		addComponent(scrollPane, GridBagConstraints.BOTH);
-		
+
 		JTextArea info = new JTextArea();
 		info.setLineWrap(true);
 		info.setWrapStyleWord(true);
@@ -160,17 +160,17 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		String text = jEdit.getProperty("options.console.errors.info");
 		info.append(text);
 		info.setEditable(false);
-		
+
 		addComponent(box, GridBagConstraints.CENTER);
 		addComponent(info, GridBagConstraints.HORIZONTAL);
-		
-		validateTree();
+
+		validate();
 		init();
-		
-		
+
+
 	} // }}}
 
-	
+
 	@Override
 	protected void _init()
 	{
@@ -179,13 +179,13 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	}
 
 	protected void _save()
-	{	
+	{
 		commitTextFields(matcher);
 		matcher.save();
 	}
 
 
-	
+
 	// {{{ updateTextFields()
 	/**
 	 * Sets the text field values based on what is in the ErrorMatcher
@@ -293,11 +293,11 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-/*			if (evt.getSource() == apply) 
+/*			if (evt.getSource() == apply)
 			{
 				apply();
 			}
-			else */ 
+			else */
 			if (evt.getSource() == test)
 			{
 				testRegex();
@@ -310,7 +310,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	} // }}}
 
 	// {{{ Private data members
-	
+
 	private ErrorMatcher matcher;
 
 	private ErrorMatcher testMatcher;
@@ -332,7 +332,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	private JTextArea testArea;
 
 //	private Button apply;
-	
+
 	private Button test;
 
 	private Button restore;
@@ -342,24 +342,24 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	public void keyTyped(KeyEvent e)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	public void keyPressed(KeyEvent e)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	public void keyReleased(KeyEvent e)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	class KeyHandler extends KeyAdapter 
+
+	class KeyHandler extends KeyAdapter
 	{
 		public void keyPressed(KeyEvent evt)
 		{
