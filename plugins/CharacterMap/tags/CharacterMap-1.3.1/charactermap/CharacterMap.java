@@ -241,7 +241,7 @@ public class CharacterMap extends JPanel
 		largeSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "large-size");
 		largeChar = new AntiAliasingLabel(largeFont(" "), " ");
 		Dimension largeCharSz = largeChar.getPreferredSize();
-		largeCharSz.width *= 3;
+		largeCharSz.width = largeCharSz.height * 3 / 2;
 		largeChar.setMinimumSize(largeCharSz);
 		largeChar.setPreferredSize(largeCharSz);
 		gridbag.setConstraints(largeChar, c);
