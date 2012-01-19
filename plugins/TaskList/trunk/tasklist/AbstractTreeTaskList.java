@@ -396,6 +396,9 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             } else if ( BufferUpdate.LOADED.equals( bu.getWhat() ) ) {
                 addBuffer( buffer );
                 repaint();
+                synchronized(TaskListPlugin.buffersLoading) {
+                    TaskListPlugin.buffersLoading.notifyAll();
+                }
             }
         } else if ( msg instanceof ParseBufferMessage ) {
             ParseBufferMessage pbm = ( ParseBufferMessage ) msg;
