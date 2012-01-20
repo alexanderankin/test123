@@ -7,14 +7,13 @@ import projectviewer.ProjectViewer;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
 // deploy debug version of android app using build.xml in current project to
 // currently running emulator.
 // assumes ProjectViewer is installed, assumes "ant" is in your path
 // output goes to Console
-public class DeployDebugApp {
+public class DeployDebugApp implements Command {
     private View view;
 
     public void execute( View view ) {
