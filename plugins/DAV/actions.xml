@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="clear-working-directory">
+		<CODE>
+			dav.DavPlugin.clear_directory_cache(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="forget-remote-passwords">
+		<CODE>
+			dav.ConnectionManager.forgetPasswords();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="open-dav">
+		<CODE>
+			dav.DavPlugin.showOpenDAVDialog(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="save-dav">
+		<CODE>
+			dav.DavPlugin.showSaveDAVDialog(view);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="specify-working-directory">
+		<CODE>
+			dav.DavVFS.specifyWorkingDirectory();
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="unlock-dav">
+		<CODE>
+			dav.DavPlugin.unlockThisFile(view);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="props-dav">
+		<CODE>
+			dav.DavPlugin.editProps(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>

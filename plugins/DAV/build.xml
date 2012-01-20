@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="dav" default="dist" basedir=".">
+<!--
+     This is a build.xml file for building the DavPlugin.
+-->
+	<property name="jar.name" value="DAV.jar"/>
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="build.support" value="../build-support" />
+
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<path id="project.class.path">
+		<pathelement location="${src.dir}/lib/commons-httpclient.jar"/>
+		<pathelement location="${src.dir}/lib/commons-logging.jar"/>
+		<pathelement location="${src.dir}/lib/slide-webdavlib.jar"/>
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+<!-- not sure why the following were included in the original plugin -->
+<!--	
+		<pathelement location="${src.dir}/lib/crimson.jar"/>
+		<pathelement location="${src.dir}/lib/jaxp.jar"/>
+		<pathelement location="${src.dir}/lib/slide-anttasks.jar"/>
+		<pathelement location="${src.dir}/lib/slide-client.jar"/>
+		<pathelement location="${src.dir}/lib/slide-swing.jar"/>
+ -->
+	</path>
+
+	<target name="build.prepare">
+		<copy todir="${build.classes}" overwrite="no">
+			<fileset dir="${src.dir}" >
+   				<include name="org/apache/commons/httpclient/*.class"/>
+				<include name="org/apache/commons/httpclient/auth/*.class"/>
+				<include name="org/apache/commons/httpclient/cookie/*.class"/>
+				<include name="org/apache/commons/httpclient/methods/*.class"/>
+				<include name="org/apache/commons/httpclient/methods/multipart/*.class"/>
+				<include name="org/apache/commons/httpclient/protocol/*.class"/>
+				<include name="org/apache/commons/httpclient/util/*.class"/>
+				<include name="org/apache/webdav/lib/properties/*.class"/>
+				<include name="org/apache/webdav/lib/methods/*.class"/>
+				<include name="org/apache/webdav/lib/*.class"/>
+				<include name="org/apache/util/*.class"/>
+<!-- not sure why the following were included in the original plugin -->
+<!--
+				<include name="org/apache/crimson/jaxp/*.class"/>
+				<include name="org/apache/crimson/parser/*.class"/>
+				<include name="org/apache/crimson/tree/*.class"/>
+				<include name="org/apache/crimson/util/*.class"/>
+ 				<include name="org/apache/commons/logging/*.class"/>
+				<include name="org/apache/commons/logging/impl/*.class"/>
+-->
+			</fileset>	
+		</copy>
+	</target>
+</project>

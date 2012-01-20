@@ -1,0 +1,51 @@
+# Plugin properties
+plugin.dav.DavPlugin.name=DAV
+plugin.dav.DavPlugin.activate=defer
+
+plugin.dav.DavPlugin.author=James Glaubiger, Martin Raspe
+plugin.dav.DavPlugin.version=1.2
+#plugin.dav.DavPlugin.docs=index.html
+plugin.ftp.FtpPlugin.depend.0=jedit 04.05.01.00
+plugin.ftp.FtpPlugin.depend.1=jdk 1.5
+plugin.dav.davPlugin.description=The Dav plugin allows you to load, edit and store \
+  documents to/from a WebDAV-capable server
+plugin.dav.davPlugin.longdescription=description.html
+
+# Menu
+plugin.dav.DavPlugin.menu=\
+    open-dav \
+    save-dav \
+    - \
+    clear-working-directory \
+    specify-working-directory \
+    forget-remote-passwords \
+    unlock-dav \
+    props-dav
+
+dav.label=DAV
+
+# Actions
+open-dav.label=Open from DAV Server...
+save-dav.label=Save to DAV Server...
+clear-working-directory.label=Clear Local Working Directory
+specify-working-directory.label=Specify Local Working Directory
+forget-remote-passwords.label=Forget Remote Passwords
+lock-dav.label=Unlock Current File
+props-dav.label=Edit Author(s) & Comments
+
+# DAV VFS label
+vfs.dav.label=Connect to a DAV Server...
+
+# Login dialog box
+login.title=Log in
+login.host=Remote host:
+login.user=User name:
+login.password=Password:
+
+# Props dialog box.
+props.title=Authoring & Comments
+props.author=Authors:
+props.authorEntry=Add Author(s):
+props.comment=Comments:
+props.commentEntry=Add Comments:
+
