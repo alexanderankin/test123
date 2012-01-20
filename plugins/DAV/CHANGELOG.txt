@@ -1,0 +1,30 @@
+VERSION 1.2.0
+	(c) 2012 by Martin Raspe (hertzhaft@biblhertz.it)
+
+	- adapted build.xml to use plugin-build.xml
+	- added services.xml and updated the code accordingly
+	- updated DAV.props
+	- adapted the code to the current Plugin API
+	- added methods (listfiles, mkdir, rename, close)
+	- cleaned up some of the code
+	- bug fixing
+
+	This version was transferred to the jEdit SVN repository on SourceForge
+	(http://jedit.svn.sourceforge.net/viewvc/jedit/plugins/DAV). Thanks to
+	Ron Hitchens and Eric Bloch of MarkLogic for making the code available
+	to the jEdit community.
+
+VERSION 1.0.1
+	(c) 2003 by James Glaubiger (opster@users.sourceforge.net)
+
+	The plugin was written by James Glaubiger and Marshall Clark as part of
+	a final project while attending the University Of California Santa Cruz.
+	There were two iterations of the project, the second of which was completed
+	as part of an independent study under Professor Jim Whitehead.
+	Jim Whitehead is responsible for the development of the WebDAV
+	(Web-based Distributed Authoring and Versioning) protocol.
+	
+	In 2004 the plugin code was transferred to GitHub
+	(https://github.com/marklogic/webdavjedit) and has been maintained
+	by MarkLogic (http://www.marklogic.com).
+
