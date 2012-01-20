@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 jEdit contributors
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 package com.kpouer.jedit.smartopen;
 
+//{{{ Imports
 import java.awt.GridBagConstraints;
 import java.util.regex.Pattern;
 import javax.swing.JCheckBox;
@@ -31,6 +32,7 @@ import common.gui.VFSPathFileList;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.StandardUtilities;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -47,11 +49,13 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 
 	private VFSPathFileList paths;
 
+	//{{{ SmartOpenOptionPane constructor
 	public SmartOpenOptionPane()
 	{
 		super("smartopen");
-	}
+	} //}}}
 
+	//{{{ _init() method
 	@Override
 	protected void _init()
 	{
@@ -74,8 +78,9 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 		inMemoryIndex = new JCheckBox(jEdit.getProperty("options.smartopen.memoryindex.label"));
 		inMemoryIndex.setSelected(jEdit.getBooleanProperty("options.smartopen.memoryindex"));
 		addComponent(inMemoryIndex);
-	}
+	} //}}}
 
+	//{{{ _save() method
 	@Override
 	protected void _save()
 	{
@@ -86,8 +91,9 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("options.smartopen.memoryindex", inMemoryIndex.isSelected());
 		paths.save();
 		updateFilter();
-	}
+	} //}}}
 
+	//{{{ globToPattern() method
 	private static Pattern globToPattern(String filter)
 	{
 		String[] parts = filter.split(" ");
@@ -100,19 +106,21 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 			sb.append(regexp);
 		}
 		return Pattern.compile(sb.toString());
-	}
+	} //}}}
 
+	//{{{ accept() method
 	public static boolean accept(CharSequence path)
 	{
 		if (include == null || exclude == null)
 			updateFilter();
 		return include.matcher(path).matches() &&
 			!exclude.matcher(path).matches();
-	}
+	} //}}}
 
+	//{{{ updateFilter() method
 	private static void updateFilter()
 	{
 		include = globToPattern(jEdit.getProperty("options.smartopen.IncludeGlobs"));
 		exclude = globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
-	}
+	} //}}}
 }
