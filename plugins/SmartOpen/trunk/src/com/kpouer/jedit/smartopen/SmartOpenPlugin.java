@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -341,6 +341,7 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 	} //}}}
 
+	//{{{ getWordAtCaret() method
 	public static String getWordAtCaret(View view)
 	{
 		JEditTextArea ta = view.getTextArea();
@@ -369,5 +370,6 @@ public class SmartOpenPlugin extends EditPlugin
 		if (start > offset || selected.isEmpty())
 			return null;
 		return selected;
-	}
+	} //}}}
+
 }
