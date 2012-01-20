@@ -3,13 +3,24 @@
 ###
 
 
-### Directory must be set to the installed jedit.jar 
-### e.g. "../.." or "C:/Program Files/jEdit" etc. 
+### Directory of the installed jedit.jar
+### e.g. "../.." or "C:/Program Files/jEdit" etc.
 
 # jedit.install.dir=../..
 
+
 ### Where to install the plugin
 
-# jedit.plugins.dir=${user.home}/.jedit/jars
+# install.dir=${user.home}/.jedit/jars
+
+
+### Directory of the build-support tools
+
+# build.support=../../../build-support
+
+
+### Exclude ant runtime
+
+# build.sysclasspath=ignore
 
 
