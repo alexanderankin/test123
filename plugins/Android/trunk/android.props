@@ -7,32 +7,30 @@ plugin.android.AndroidPlugin.name=Android
 plugin.android.AndroidPlugin.author=Dale Anson
 plugin.android.AndroidPlugin.version=1.0
 plugin.android.AndroidPlugin.activate=defer
-plugin.android.AndroidPlugin.description=Android pluging provides some utilities to help create and run Android projects.
-plugin.android.AndroidPlugin.depend.1=plugin CommonControlsPlugin 1.4.1
-plugin.android.AndroidPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.1.0
-plugin.android.AndroidPlugin.depend.3=plugin console.ConsolePlugin 4.4.4
-plugin.android.AndroidPlugin.depend.4=plugin procshell.ProcessShellPlugin 1.0
+plugin.android.AndroidPlugin.description=Android plugin provides some utilities to help create and run Android projects.
 
 # dependencies
 plugin.android.AndroidPlugin.depend.0=jdk 1.6
-plugin.android.AndroidPlugin.depend.1=jedit 04.03.99.00
+plugin.android.AndroidPlugin.depend.1=jedit 04.04.02.00
+plugin.android.AndroidPlugin.depend.2=plugin CommonControlsPlugin 1.4.1
+plugin.android.AndroidPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.1.0
+plugin.android.AndroidPlugin.depend.4=plugin console.ConsolePlugin 4.4.4
 
 # docs
 plugin.android.AndroidPlugin.docs=index.html
 
-
 # menu settings
 plugin.android.AndroidPlugin.menu.label=Android
-plugin.android.AndroidPlugin.menu= \
-	android.createAVD \
-	android.createProject \
-	android.launchAVD \
-	- \
-	android.buildDebug \
-	android.deployDebug \
-	- \
-	android.listTargets \
-	android.listAVDs
+plugin.android.AndroidPlugin.menu=\
+    android.createAVD \
+    android.createProject \
+    android.launchAVD \
+    - \
+    android.buildDebug \
+    android.deployDebug \
+    - \
+    android.listTargets \
+    android.listAVDs
 
 # menu labels	
 android.createAVD.label=Create AVD
@@ -46,8 +44,8 @@ android.deployDebug.label=Deploy App (Debug)
 # various messages
 android.Activity_name_cannot_be_null.=Activity name cannot be null.
 android.Activity_name_may_not_have_spaces.=Activity name may not have spaces.
-android.Can_not_find_project_base_directory_for_current_project.=Can not find project base directory for current project.
-android.Can_not_get_list_of_AVDs>=Can not get list of AVDs:
+android.Can_not_find_project_base_directory_for_current_project.=Cannot find project base directory for current project.
+android.Can_not_get_list_of_AVDs>=Cannot get list of AVDs:
 android.Error=Error
 android.Name_cannot_be_empty.=Name cannot be empty.
 android.Name_may_not_have_spaces.=Name may not have spaces.
