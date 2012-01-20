@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 package com.kpouer.jedit.smartopen;
 
+//{{{ Imports
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ProgressObserver;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -67,18 +69,21 @@ public class FileIndex
 	private final String[] indexes = { "index1", "index2" };
 	private int indexPos;
 
+	//{{{ FileIndex constructor
 	public FileIndex()
 	{
 		directory = getDirectory();
-	}
+	} //}}}
 
+	//{{{ getIndexName() method
 	private String getIndexName()
 	{
 		indexPos = (indexPos + 1) % 2;
 		String indexName = indexes[indexPos];
 		return indexName;
-	}
+	} //}}}
 
+	//{{{ getFiles() method
 	public List<String> getFiles(String s)
 	{
 		if (s == null || s.isEmpty())
@@ -133,8 +138,9 @@ public class FileIndex
 			IOUtilities.closeQuietly(searcher);
 		}
 		return l;
-	}
+	} //}}}
 
+	//{{{ addFiles() method
 	/**
 	 * Index files.
 	 * @param fileProvider the file provider to index
@@ -195,8 +201,9 @@ public class FileIndex
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Added " + fileProvider.size()+" files in "+(end - start) + "ms");
-	}
+	} //}}}
 
+	//{{{ removeFiles() method
 	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
 	{
 		long start = System.currentTimeMillis();
@@ -230,8 +237,9 @@ public class FileIndex
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Removed " + fileProvider.size()+" files in "+(end - start) + "ms");
-	}
+	} //}}}
 
+	//{{{ getDirectory() method
 	private Directory getDirectory()
 	{
 		Directory tempDirectory;
@@ -256,8 +264,9 @@ public class FileIndex
 			}
 		}
 		return tempDirectory;
-	}
+	} //}}}
 
+	//{{{ optimize() method
 	public void optimize()
 	{
 		synchronized (LOCK)
@@ -280,5 +289,5 @@ public class FileIndex
 				IOUtilities.closeQuietly(writer);
 			}
 		}
-	}
+	} //}}}
 }

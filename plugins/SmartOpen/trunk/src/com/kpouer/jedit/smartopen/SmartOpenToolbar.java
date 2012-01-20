@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,14 @@
 
 package com.kpouer.jedit.smartopen;
 
+//{{{ Imports
 import java.awt.Dimension;
 import javax.swing.JToolBar;
 
 import common.gui.itemfinder.ItemFinder;
 import common.gui.itemfinder.ItemFinderPanel;
 import org.gjt.sp.jedit.View;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -35,6 +37,7 @@ public class SmartOpenToolbar extends JToolBar
 {
 	private final ItemFinderPanel<String> itemFinderPanel;
 
+	//{{{ SmartOpenToolbar constructor
 	public SmartOpenToolbar(View view)
 	{
 		ItemFinder<String> itemFinder = new FileItemFinder();
@@ -44,10 +47,11 @@ public class SmartOpenToolbar extends JToolBar
 		Dimension minimumSize = itemFinderPanel.getMinimumSize();
 		itemFinderPanel.setMinimumSize(new Dimension(500, minimumSize.height));
 		add(itemFinderPanel);
-	}
+	} //}}}
 
+	//{{{ getItemFinderPanel() method
 	public ItemFinderPanel<String> getItemFinderPanel()
 	{
 		return itemFinderPanel;
-	}
+	} //}}}
 }

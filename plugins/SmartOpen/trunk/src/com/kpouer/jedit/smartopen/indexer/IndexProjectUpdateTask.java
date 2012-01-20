@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,11 +21,13 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+//{{{ Imports
 import java.util.Collection;
 
 import com.kpouer.jedit.smartopen.SmartOpenPlugin;
 import org.gjt.sp.util.Task;
 import projectviewer.vpt.VPTFile;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -35,12 +37,14 @@ public class IndexProjectUpdateTask extends Task
 	private final Collection<VPTFile> addedFiles;
 	private final Collection<VPTFile> removedFiles;
 
+	//{{{ IndexProjectUpdateTask constructor
 	public IndexProjectUpdateTask(Collection<VPTFile> addedFiles, Collection<VPTFile> removedFiles)
 	{
 		this.addedFiles = addedFiles;
 		this.removedFiles = removedFiles;
-	}
+	} //}}}
 
+	//{{{ _run() method
 	@Override
 	public void _run()
 	{
@@ -58,5 +62,5 @@ public class IndexProjectUpdateTask extends Task
 		}
 		if (addedFiles != null || removedFiles != null)
 			SmartOpenPlugin.itemFinder.optimize();
-	}
+	} //}}}
 }

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -122,13 +122,15 @@ public class IndexFilesTask extends Task
 	{
 		private final String[] excludedDirectories;
 
+		//{{{ MyVFSFilter constructor
 		private MyVFSFilter()
 		{
 			String property = jEdit.getProperty("options.smartopen.ExcludeDirectories", "CVS .svn .git");
 			excludedDirectories = property.split(" ");
 			Arrays.sort(excludedDirectories);
-		}
+		} //}}}
 
+		//{{{ accept() method
 		@Override
 		public boolean accept(VFSFile file)
 		{
@@ -139,20 +141,15 @@ public class IndexFilesTask extends Task
 			}
 			else
 			{
-				return accept(name);
+				return SmartOpenOptionPane.accept(name);
 			}
-		}
+		} //}}}
 
-		@Override
-		public boolean accept(String url)
-		{
-			return SmartOpenOptionPane.accept(url);
-		}
-
+		//{{{ getDescription() method
 		@Override
 		public String getDescription()
 		{
 			return null;
-		}
+		} //}}}
 	} //}}}
 }

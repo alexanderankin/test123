@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+//{{{ 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.gjt.sp.util.Log;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -39,11 +41,13 @@ public class ProjectFileList implements FileProvider
 	private List<String> files;
 	private int index;
 
+	//{{{ ProjectFileList constructor
 	ProjectFileList(VPTProject project)
 	{
 		this.project = project;
-	}
+	} //}}}
 
+	//{{{ next() method
 	@Override
 	public String next()
 	{
@@ -52,8 +56,9 @@ public class ProjectFileList implements FileProvider
 		if (index >= files.size())
 			return null;
 		return files.get(index++);
-	}
+	} //}}}
 
+	//{{{ constructFileList() method
 	private void constructFileList()
 	{
 		long start = System.currentTimeMillis();
@@ -72,13 +77,14 @@ public class ProjectFileList implements FileProvider
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this,
 			"Listing files for project " + project + ' ' + files.size() + " in " + (end - start) + "ms");
-	}
+	} //}}}
 
+	//{{{ size() method
 	@Override
 	public int size()
 	{
 		if (files == null)
 			constructFileList();
 		return files.size();
-	}
+	} //}}}
 }
