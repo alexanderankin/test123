@@ -14,7 +14,7 @@ import org.gjt.sp.jedit.View;
 // build debug version of android app using build.xml in current project
 // assumes "android" is in your path, assumes "ant" is in your path
 // output goes to Console
-public class BuildDebugApp {
+public class BuildDebugApp implements Command {
     private View view;
 
     public void execute( View view ) {
