@@ -1,12 +1,23 @@
+:encoding=UTF-8:maxLineLen=80:wrap=hard:folding=indent:collapseFolds=2:
+
+jEdit BufferTabs Plugin Changelog
+
 Version 1.2.3.  Requires JDK 1.6, jEdit 4.4.x
     Automatically disables the built-in buffer Selector when plugin is loaded.
     BufferTabs default location changed to top.
 
 Version 1.2.2.  Requires JDK 1.6, jEdit 4.4.x
-    Bugfix release
+    Adds an option to use a scrollable row of tabs rather than splitting the
+    tabs into multiple rows. 
+
+Version 1.2.1
+    -#3381170: option for tabs in single row,scrollable
+    -#Fixed a bug that prevent from changing look & feel.
 
 Version 1.2.0.  Requires JDK 1.6, jEdit 4.4.x
-    Added option to toggle docking areas on double click. When selected, the close on double click option is deselected if it was previously selected. (Eric Berry)
+    Added option to toggle docking areas on double click. When selected, the
+    close on double click option is deselected if it was previously selected.
+    (Eric Berry)  
     Fixed tabs updated on Workthread instead of EventQueue. (Matthieu Casanova)
     Updated compatibility for 4.4.x bufferSet api. (Matthieu Casanova)
 
