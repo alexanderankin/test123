@@ -1,18 +1,13 @@
-<?xml version='1.0' ?>
-<!--  BufferTabs plugin user's guide
-  -->
-<!--  (C) 2001 Andre Kaplan
-  -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
-<book>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  BufferTabs plugin user's guide  -->
+<!--  (C) 2001 Andre Kaplan  -->
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <bookinfo>
   <title>BufferTabs plugin</title>
 <authorgroup>
 <author>
-  <firstname>Andr&eacute;</firstname>
+  <firstname>André</firstname>
   <surname>Kaplan</surname>
   </author>
   </authorgroup>
@@ -96,93 +91,6 @@
   </chapter>
 <appendix id="changelog">
   <title>Change log</title>
-  <formalpara>
-     <title>Version 1.2.0</title>
-        <para> Requires JDK 1.6, jEdit 4.4.x
-          <itemizedlist>
-            <listitem><para>Added option to toggle docking areas on double click. When selected, the close on double click option is deselected if it was previously selected. (Eric Berry)</para></listitem>
-            <listitem><para>Fixed tabs updated on Workthread instead of EventQueue. (Matthieu Casanova)</para></listitem>
-            <listitem><para>Updated compatibility for 4.4.x bufferSet api. (Matthieu Casanova)</para></listitem>
-          </itemizedlist>
-      </para>
-   </formalpara>
-  <formalpara>
-     <title>Version 1.1.1</title>
-        <para> Requires JDK 1.5, jEdit 4.3pre15
-          <itemizedlist>
-            <listitem><para>Implemented bufferSetSorted() method for 4.3pre17 compatibility</para></listitem>
-          </itemizedlist>
-      </para>
-   </formalpara>
-   <formalpara>
-     <title>Version 1.1.0</title>
-        <para> Requires JDK 1.5, jEdit 4.3pre15
-          <itemizedlist>
-            <listitem><para> Shows only buffers belonging to the editPane's view </para></listitem>
-          </itemizedlist>
-      </para>
-   </formalpara>
-
-  <formalpara>
-	  <title>Version 0.8.3</title>
-		  <para>Requires JDK 1.5, jEdit 4.3pre12
-		  <itemizedlist>
-		  <listitem><para>The gnu.regex dependency was removed</para></listitem>
-	  </itemizedlist></para>
-  </formalpara>
-
-  <formalpara>
-        <title>Version 0.8.3</title>
-        <para>Requires JDK 1.3, jEdit 4.2
-        <itemizedlist>
-	    <listitem><para>change the options panel. Add option for mouse actions Thanks to Dennis Benzinger</para></listitem>
-	    <listitem><para>Added menu for closing all buffers /all buffers except current</para></listitem>
-	    <listitem><para>Adde menu for toggle docks</para></listitem>
-		<listitem><para>Fix: [1176564] BufferTabs 0.8.2: wrong tab highlighted with multiple views</para></listitem>
-        </itemizedlist></para>
-    </formalpara>
-
-  <formalpara>
-        <title>Version 0.8.2</title>
-        <para>Requires JDK 1.3, jEdit 4.2
-        <itemizedlist>
-	    <listitem><para>Fix bug [923714]:  last opened buffer becomes the current one in all view</para></listitem>
-        </itemizedlist></para>
-    </formalpara>
-<formalpara>
-        <title>Version 0.8.1</title>
-        <para>Requires JDK 1.3, jEdit 4.2
-        <itemizedlist>
-	    <listitem><para>Support the  jEdit 4.2 plugin mode</para></listitem>
-		    <listitem><para>Middle mouse button to close the buffer</para></listitem>
-	    <listitem><para>Drags the tab to arrange</para></listitem>
-        </itemizedlist></para>
-    </formalpara>
-<formalpara>
-  <title>Version 0.8.0</title>
-  <para>Requires JDK 1.3, jEdit 4.1
-<itemizedlist>
-  <listitem><para>Buffer Tabs can display colored backgrounds or colored titles</para></listitem>
-  </itemizedlist>
-  </para></formalpara>
-<formalpara>
-  <title>Version 0.7.8</title>
-  <para>Requires JDK 1.3, jEdit 3.2.2
-<itemizedlist>
-  <listitem><para>Delayed the creation of the popup menu so the plugin starts up faster</para></listitem>
-  <listitem><para>Fixed a bug where pop-up menu was not displayed on OS X</para></listitem>
-  <listitem><para>Fixed a bug where the path was not updated after doing "Save As"</para></listitem>
-  <listitem><para>Ant now used as build tool</para></listitem>
-  <listitem><para>DocBook now used for the documentation</para></listitem>
-<listitem><para>
-  <classname>BufferTabs</classname>
-  were not properly removed from
-  <classname>EditBus</classname>
-  when an
-  <classname>EditPane</classname>
-  was destroyed</para>
-  </listitem>
-  </itemizedlist></para>
-  </formalpara>
-  </appendix>
+  <para> Click <ulink url="CHANGELOG.txt">here</ulink> to see the detailed changelog. </para> 
+</appendix>
   </book>
