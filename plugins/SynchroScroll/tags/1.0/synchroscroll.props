@@ -1,0 +1,23 @@
+#-----------------------------------
+# Properties for SynchroScroll Plugin
+#-----------------------------------
+
+plugin.synchroscroll.SynchroScrollPlugin.name=SynchroScroll
+plugin.synchroscroll.SynchroScrollPlugin.author=Dale Anson
+plugin.synchroscroll.SynchroScrollPlugin.version=1.0
+plugin.synchroscroll.SynchroScrollPlugin.activate=defer
+plugin.synchroscroll.SynchroScrollPlugin.description=Provides ability to synchronize scrolling when multiple text areas are open.
+
+# dependencies
+plugin.synchroscroll.SynchroScrollPlugin.depend.0=jdk 1.6
+plugin.synchroscroll.SynchroScrollPlugin.depend.1=jedit 04.04.02.00
+
+# docs
+plugin.synchroscroll.SynchroScrollPlugin.docs=index.html
+
+# menu settings
+plugin.synchroscroll.SynchroScrollPlugin.menu.label=SynchroScroll
+plugin.synchroscroll.SynchroScrollPlugin.menu=synchroscroll.synchroScroll 
+
+# menu labels
+synchroscroll.synchroScroll.label=Toggle Synchro Scrolling
