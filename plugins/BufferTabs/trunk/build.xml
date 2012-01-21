@@ -37,4 +37,10 @@
     <property file="../build.properties"/>
     <property name="build.support" value="../../build-support" />
     <import file="${build.support}/plugin-build.xml" />
+    <selector id="packageFiles">
+       <and>
+        <filename name="CHANGELOG.txt" />
+       </and>
+    </selector>
+    
 </project>
