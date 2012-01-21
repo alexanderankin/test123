@@ -57,6 +57,7 @@ options.toggle-comments.indentAtLineStart.title=Insert line comments at start of
 options.toggle-comments.indentWithCode.title=Insert line comments after leading whitespace
 options.toggle-comments.indentAsBlock.title=Align line comments at leftmost indent of selected block
 options.toggle-comments.keepSelected.title=Keep selection after toggling comments?
+options.toggle-comments.moveDown.title=Move line down after toggling comments
 
 # option defaults
 options.toggle-comments.commentAsBlock=true
@@ -64,5 +65,6 @@ options.toggle-comments.indentAtLineStart=false
 options.toggle-comments.indentWithCode=false
 options.toggle-comments.indentAsBlock=true
 options.toggle-comments.keepSelected=false
+options.toggle-comments.moveDown=false
 
 
