@@ -62,6 +62,8 @@ public class TextToolsComments
 				return;
 			}
 
+			int magicCaretPos = textArea.getMagicCaretPosition();
+			
 			// get an array of all selected lines, or if there are no selections,
 			// just the line of the caret
 			Selection[] selections = textArea.getSelection();
@@ -216,6 +218,22 @@ public class TextToolsComments
 					{
 						textArea.setCaretPosition(sArr[sArr.length - 1].getEnd());
 					}
+				}
+
+			}
+
+			// restore magic caret position - (un)commenting should not change it
+			textArea.setMagicCaretPosition(magicCaretPos);
+
+			// optionally move line down
+			if(jEdit.getBooleanProperty("options.toggle-comments.moveDown"))
+			{
+				// we don't do it if some text is selected
+				// we'd better avoid beeping if trying to go past the last line
+				if (textArea.getSelection().length==0 &&
+				    textArea.getCaretLine()+1 < textArea.getLineCount())
+				{
+					textArea.goToNextLine(false);
 				}
 			}
 		}

@@ -57,6 +57,10 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 			jEdit.getProperty("options.toggle-comments.commentAsBlock.title"),
 			jEdit.getBooleanProperty("options.toggle-comments.commentAsBlock"));
 		addComponent(commentAsBlock);
+		moveDown = new JCheckBox(
+			jEdit.getProperty("options.toggle-comments.moveDown.title"),
+			jEdit.getBooleanProperty("options.toggle-comments.moveDown"));
+		addComponent(moveDown);
 		// line comment indenting options go in a group
 		indentAtLineStart = new JRadioButton(
 			jEdit.getProperty("options.toggle-comments.indentAtLineStart.title"),
@@ -84,6 +88,8 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 			keepSelected.isSelected());
 		jEdit.setBooleanProperty("options.toggle-comments.commentAsBlock",
 			commentAsBlock.isSelected());
+		jEdit.setBooleanProperty("options.toggle-comments.moveDown",
+			moveDown.isSelected());
 		jEdit.setBooleanProperty("options.toggle-comments.indentAtLineStart",
 			indentAtLineStart.isSelected());
 		jEdit.setBooleanProperty("options.toggle-comments.indentWithCode",
@@ -95,6 +101,7 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 	//{{{ Private members
 	private JCheckBox keepSelected;
 	private JCheckBox commentAsBlock;
+	private JCheckBox moveDown;
 	private ButtonGroup lineIndentMode;
 	private JRadioButton indentAtLineStart;
 	private JRadioButton indentWithCode;
