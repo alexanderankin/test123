@@ -2,7 +2,7 @@
 
 <!--
 
-	This is the standard build.xml file for building the Android plugin.
+	This is the standard build.xml file for building plugins.
 	
 	The 'dist' target compiles the plugin, generates documentation, and creates
 	the JAR file.  Before running the 'dist' target, you will need to choose

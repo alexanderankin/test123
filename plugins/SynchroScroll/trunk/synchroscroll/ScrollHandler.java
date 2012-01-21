@@ -13,7 +13,11 @@ public class ScrollHandler implements ScrollListener {
     ScrollHandler(View view) {
         this.view = view;
     }
-
+    
+    /**
+     * Synchronizes horizontal scrolling between all text areas in the View.
+     * @param textArea The text area doing the scrolling.
+     */
     public void scrolledHorizontally( TextArea textArea ) {
         int offset = textArea.getHorizontalOffset();
         EditPane[] editPanes = view.getEditPanes();
@@ -23,6 +27,10 @@ public class ScrollHandler implements ScrollListener {
         }
     }
 
+    /**
+     * Synchronizes vertical scrolling between all text areas in the View.
+     * @param textArea The text area doing the scrolling.
+     */
     public void scrolledVertically( TextArea textArea ) {
         int firstLine = textArea.getFirstLine();
         Integer BL = (Integer)textArea.getClientProperty(SynchroScrollPlugin.BASELINE);
