@@ -736,12 +736,12 @@ public class CharacterMap extends JPanel
 		}
 		if (!encodings.getSelectedItem().equals(enc))
 		{
-			if (encodings.getIndexOf(enc) < 0)
-			{
-				encodings.addElement(enc);
-			}
 			encodingCombo.setSelectedItem(enc);
 			encodingChanged=true;
+		}
+		if (encodings.getIndexOf(enc) < 0)
+		{
+			encodings.addElement(enc);
 		}
 		if (encodingChanged)
 		{
@@ -773,7 +773,10 @@ public class CharacterMap extends JPanel
 	 */
 	public void handleMessage(EBMessage message)
 	{
-		if ((message instanceof BufferUpdate)
+		if (((message instanceof BufferUpdate)
+			&& (((BufferUpdate) message).getWhat().equals(BufferUpdate.CREATED)
+			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.LOADED)
+			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.PROPERTIES_CHANGED)))
 		|| ((message instanceof EditPaneUpdate)
 			&& ((EditPaneUpdate) message).getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)))
 		{
