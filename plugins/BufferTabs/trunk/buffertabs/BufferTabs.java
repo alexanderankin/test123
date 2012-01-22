@@ -577,8 +577,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		catch (ArrayIndexOutOfBoundsException e)
 		{
 			// Log the exception, but ignore it, it's a JRE bug.
-			Log.log(Log.ERROR, this, "The following is a JRE bug:");
-			Log.log(Log.ERROR, this, e);
+			Log.log(Log.WARNING, this, "The following is a JRE bug:", e);
 		}
 	}
 
