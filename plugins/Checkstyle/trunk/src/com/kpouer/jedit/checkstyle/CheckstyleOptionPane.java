@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2009 Matthieu Casanova
+* Copyright (C) 2009-2012 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 //}}}
 
 /**
@@ -58,12 +58,13 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _init() method
+	@Override
 	protected void _init()
 	{
 		addComponent(embedded = createCheckBox("checkstyle.defaultstyle.embedded"));
 		EditPlugin plugin = jEdit.getPlugin("com.kpouer.jedit.checkstyle.CheckstylePlugin");
 		String[] resources = plugin.getPluginJAR().getResources();
-		List<String> styles = new ArrayList<String>();
+		Collection<String> styles = new ArrayList<String>();
 		for (String resource : resources)
 		{
 			if (resource.startsWith("styles/") && resource.endsWith(".xml"))
@@ -82,6 +83,7 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 		browseButton = new JButton("...");
 		browseButton.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				String[] choosenFolder =
@@ -101,6 +103,7 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 		updateEmbedded();
 		embedded.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				updateEmbedded();
@@ -118,6 +121,7 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 	}
 
 	//{{{ _save() method
+	@Override
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("checkstyle.defaultstyle.embedded", embedded.isSelected());
