@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2010 Matthieu Casanova
+ * Copyright (C) 2010-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.Task;
 import org.xml.sax.InputSource;
 
 import javax.swing.text.Segment;
@@ -48,7 +49,7 @@ import java.util.List;
 /**
  * @author Matthieu Casanova
  */
-public class CheckstyleParse implements Runnable, AuditListener
+public class CheckstyleParse extends Task implements AuditListener
 {
 	private final List<File> file;
 
@@ -216,7 +217,8 @@ public class CheckstyleParse implements Runnable, AuditListener
 		return getConfiguration(path);
 	}
 
-	public void run()
+	@Override
+	public void _run()
 	{
 		if (file.isEmpty())
 			return;
@@ -237,27 +239,32 @@ public class CheckstyleParse implements Runnable, AuditListener
 		}
 	}
 
+	@Override
 	public void auditStarted(AuditEvent auditEvent)
 	{
 		segment = new Segment();
 	}
 
+	@Override
 	public void auditFinished(AuditEvent auditEvent)
 	{
 		segment = null;
 	}
 
+	@Override
 	public void fileStarted(AuditEvent auditEvent)
 	{
 		buffer = jEdit.openTemporary(jEdit.getActiveView(), null, auditEvent.getFileName(), false);
 		skip = buffer.isDirty();
 	}
 
+	@Override
 	public void fileFinished(AuditEvent auditEvent)
 	{
 		buffer = null;
 	}
 
+	@Override
 	public void addError(AuditEvent auditEvent)
 	{
 		if (skip)
@@ -279,7 +286,7 @@ public class CheckstyleParse implements Runnable, AuditListener
 		int start = column == 0 ? 0 : column - 1;
 		int reduce = 0;
 		int lineIndex = line == 0 ? 0 : line - 1;
-		if (buffer != null && buffer.getBooleanProperty("noTabs"))
+		if (buffer != null && !buffer.getBooleanProperty("noTabs"))
 		{
 			int tabSize = buffer.getTabSize();
 			int maxIndent = start % tabSize;
@@ -300,10 +307,11 @@ public class CheckstyleParse implements Runnable, AuditListener
 				     auditEvent.getFileName(),
 				     lineIndex,
 				     start,
-				     start + 1,
+				     start,
 				     auditEvent.getMessage());
 	}
 
+	@Override
 	public void addException(AuditEvent auditEvent, Throwable throwable)
 	{
 	}
