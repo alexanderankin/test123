@@ -1,4 +1,4 @@
-<project name="Checkstyle" default="build" basedir=".">
+<project name="CheckstylePlugin" default="build" basedir=".">
 
 	<!-- Read optional properties from various places -->
 	<!-- Latter ones override previous properties. -->
@@ -9,15 +9,6 @@
 	<property name="compiler.target" value="1.5"/>
 
 	<import file="${build.support}/plugin-build.xml"/>
-
-	<path id="project.class.path">
-		<pathelement location="lib/checkstyle-5.1.jar"/>
-		<pathelement location="lib/commons-beanutils-core-1.8.3.jar"/>
-		<pathelement location="lib/google-collect-1.0.jar"/>
-		<pathelement location="lib/antlr.jar"/>
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${install.dir}/ErrorList.jar"/>
-	</path>
 
 	<selector id="packageFiles">
 		<and>
@@ -30,7 +21,7 @@
 
 	<target name="build.post">
 		<copy todir="${install.dir}">
-			<fileset dir="${basedir}/lib">
+			<fileset dir="${build.dir}/lib">
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
