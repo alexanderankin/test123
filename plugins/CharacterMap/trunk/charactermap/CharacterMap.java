@@ -29,10 +29,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.StringTokenizer;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -47,6 +47,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.util.StandardUtilities;
+//import java.util.StringTokenizer;
 //import org.gjt.sp.util.Log;
 //}}}
 
@@ -86,6 +88,10 @@ public class CharacterMap extends JPanel
 	// Display components
 	/** Combo box for font encoding information */
 	private JComboBox encodingCombo;
+	/** Listener for encoding combo settings */
+	private ActionListener encodingComboListener;
+	/** Encodings selected in jEdit settings */
+	private String[] selectedEncodings;
 	/** Encodings contained within the encoding combo box */
 	private DefaultComboBoxModel encodings;
 	/** Selected encoding */
@@ -175,16 +181,27 @@ public class CharacterMap extends JPanel
 		else c.insets = new Insets(0, 4, 0, 4);
 		gridbag.setConstraints(caption, c);
 
-		encodings = new DefaultComboBoxModel();
-		StringTokenizer st = new StringTokenizer(jEdit.getProperty("encodings"));
-		while (st.hasMoreTokens()) {
-			encodings.addElement(st.nextToken());
-		}
+		encoding = view.getBuffer().getStringProperty(Buffer.ENCODING);
+
+
+		// A small, fixed encoding set from jEdit properties
+		//encodings = new DefaultComboBoxModel();
+		//StringTokenizer st = new StringTokenizer(jEdit.getProperty("encodings"));
+		//while (st.hasMoreTokens())
+		//	encodings.addElement(st.nextToken());
+
+		// Encoding set from jEdit global options
+		selectedEncodings = MiscUtilities.getEncodings(true);
+		Arrays.sort(selectedEncodings,new StandardUtilities.StringCompare<String>(true));
+
+		encodings = new DefaultComboBoxModel(selectedEncodings);
+		if (encodings.getIndexOf(encoding) < 0) encodings.addElement(encoding);
 
 		encodingCombo = new JComboBox(encodings);
 		encodingCombo.setEditable(true);
-		encodingCombo.setSelectedItem(view.getBuffer().getStringProperty(Buffer.ENCODING));
-		encodingCombo.addActionListener(new ActionHandler());
+		encodingCombo.setSelectedItem(encoding);
+		encodingComboListener = new ActionHandler();
+		encodingCombo.addActionListener(encodingComboListener);
 
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(encodingCombo, c);
@@ -217,6 +234,8 @@ public class CharacterMap extends JPanel
 		}
 		blocksCombo = new JComboBox(blocks);
 		blocksCombo.addItemListener(new ItemHandler());
+		blocksCombo.setEnabled(isUnicode(encoding));
+
 
 		c.weightx = 1.0;
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -259,9 +278,6 @@ public class CharacterMap extends JPanel
 		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
 
 		add(BorderLayout.NORTH, northPanel);
-
-		encoding = (String) encodingCombo.getSelectedItem();
-		blocksCombo.setEnabled(isUnicode(encoding));
 
 		// Center: Character Table
 
@@ -776,7 +792,8 @@ public class CharacterMap extends JPanel
 		if (((message instanceof BufferUpdate)
 			&& (((BufferUpdate) message).getWhat().equals(BufferUpdate.CREATED)
 			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.LOADED)
-			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.PROPERTIES_CHANGED)))
+			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.PROPERTIES_CHANGED)
+			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.CLOSED)))
 		|| ((message instanceof EditPaneUpdate)
 			&& ((EditPaneUpdate) message).getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)))
 		{
@@ -788,6 +805,22 @@ public class CharacterMap extends JPanel
 			{
 				table.setRowHeight(normalRowHeight());
 				table.repaint();
+			}
+
+			// Reinitialise encoding combo list
+			String[] selectedEncodingsNew = MiscUtilities.getEncodings(true);
+			Arrays.sort(selectedEncodingsNew,new StandardUtilities.StringCompare<String>(true));
+			if (!Arrays.equals(selectedEncodingsNew, selectedEncodings))
+			{
+				encodingCombo.removeActionListener(encodingComboListener);
+				encodingCombo.setSelectedIndex(-1);
+				encodings.removeAllElements();
+				for (int i = 0; i < selectedEncodingsNew.length; i++)
+					encodings.addElement(selectedEncodingsNew[i]);
+				if (encodings.getIndexOf(encoding) < 0) encodings.addElement(encoding);
+				encodingCombo.setSelectedItem(encoding);
+				encodingCombo.addActionListener(encodingComboListener);
+				selectedEncodings = selectedEncodingsNew;
 			}
 		}
 	}

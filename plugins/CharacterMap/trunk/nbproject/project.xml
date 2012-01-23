@@ -19,14 +19,14 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>compile</target>
+                    <target>build</target>
                 </action>
                 <action name="clean">
                     <target>clean</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
-                    <target>compile</target>
+                    <target>build</target>
                 </action>
                 <action name="run">
                     <target>run</target>
@@ -50,10 +50,6 @@
                     <action>
                         <label>Make Distribution</label>
                         <target>dist</target>
-                    </action>
-                    <action>
-                        <label>Install into jEdit</label>
-                        <target>install</target>
                     </action>
                 </context-menu>
             </view>
