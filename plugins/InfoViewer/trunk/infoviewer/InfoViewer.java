@@ -525,8 +525,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		catch (Exception ex)
 		{
 			Log.log(Log.ERROR, this,
-				"JEditorPane.setPage() threw an exception, probably a Swing bug:");
-			Log.log(Log.ERROR, this, ex);
+				"JEditorPane.setPage() threw an exception, probably a Swing bug:", ex);
 		}
 		finally
 		{
