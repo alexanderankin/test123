@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="ClearCasePlugin-uncheckout">
+		<CODE>
+			clearcase.ClearCasePlugin.unCheckOut(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-checkin">
+		<CODE>
+			clearcase.ClearCasePlugin.checkIn(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-checkout">
+		<CODE>
+			clearcase.ClearCasePlugin.checkOut(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-addtocontrol">
+		<CODE>
+			clearcase.ClearCasePlugin.addToSourceControl(view);
+		</CODE>
+	</ACTION>
+    
+	<ACTION NAME="ClearCasePlugin-history">
+		<CODE>
+			clearcase.ClearCasePlugin.showHistory(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-diffpred">
+		<CODE>
+			clearcase.ClearCasePlugin.compareToPreviousVersion(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-version">
+		<CODE>
+			clearcase.ClearCasePlugin.showVersionTree(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-updatebuffer">
+		<CODE>
+			clearcase.ClearCasePlugin.updateBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-findcheckout">
+		<CODE>
+			clearcase.ClearCasePlugin.findCheckouts(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="ClearCasePlugin-details">
+		<CODE>
+			clearcase.ClearCasePlugin.showDetails(view);
+		</CODE>
+	</ACTION>
+    
+	<ACTION NAME="ClearCasePlugin-merge">
+		<CODE>
+			clearcase.ClearCasePlugin.merge(view);
+		</CODE>
+	</ACTION>
+        
+	<ACTION NAME="ClearCasePlugin-option">
+		<CODE>
+			new clearcase.OptionDialog(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
