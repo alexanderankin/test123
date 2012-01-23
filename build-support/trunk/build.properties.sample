@@ -164,6 +164,11 @@
 
 # Ant Contrib
 
+# Include ant runtime in classpath
+# Modern build files: "ignore"
+# Compatibility to old build files: "last"
+#build.sysclasspath=ignore
+
 # Where to find the ant-contrib jar.
 #ant-contrib.jar=ant-contrib-1.0b1.jar
 
