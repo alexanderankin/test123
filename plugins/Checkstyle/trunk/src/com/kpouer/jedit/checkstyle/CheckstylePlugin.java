@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2009-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.util.ThreadUtilities;
 
 /**
  * @author Matthieu Casanova
@@ -54,21 +55,21 @@ public class CheckstylePlugin extends EBPlugin
 	{
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(buffer, plugin.errorSource);
-		VFSManager.runInWorkThread(parser);
+		ThreadUtilities.runInBackground(parser);
 	}
 
 	public static void checkAllOpenBuffers()
 	{
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(jEdit.getBuffers(), plugin.errorSource);
-		VFSManager.runInWorkThread(parser);
+		ThreadUtilities.runInBackground(parser);
 	}
 
 	public static void checkFiles(VFSFile[] files)
 	{
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(files, plugin.errorSource);
-		VFSManager.runInWorkThread(parser);
+		ThreadUtilities.runInBackground(parser);
 	}
 
 	@Override
