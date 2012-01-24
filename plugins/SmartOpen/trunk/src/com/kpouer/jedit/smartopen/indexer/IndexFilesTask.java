@@ -130,7 +130,7 @@ public class IndexFilesTask extends Task
 			Arrays.sort(excludedDirectories);
 		} //}}}
 
-		//{{{ accept() method
+		//{{{ accept() methods
 		@Override
 		public boolean accept(VFSFile file)
 		{
@@ -143,6 +143,12 @@ public class IndexFilesTask extends Task
 			{
 				return SmartOpenOptionPane.accept(name);
 			}
+		}
+
+		@Override
+		public boolean accept(String url)
+		{
+			return false;
 		} //}}}
 
 		//{{{ getDescription() method
