@@ -56,6 +56,8 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	private JCheckBox encoding;
 	/** Checkbox controlling display of unicode blocks slider */
 	private JCheckBox blocks;
+	/** Checkbox to controlling alphabetic order of unicode blocks */
+	private JCheckBox blocksABC;
 	/** Checkbox to enable higher Unicode planes (Characters above 0xFFFF) */
 	private JCheckBox higherPlanes;
 	/** Checkbox controlling anti-aliasing */
@@ -123,6 +125,8 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty(OPTION_PREFIX + "encoding"));
 		blocks = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "blocks.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "blocks"));
+		blocksABC = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "blocks-abc.label"),
+			jEdit.getBooleanProperty(OPTION_PREFIX + "blocks-abc"));
 		higherPlanes = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "higher-planes.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "higher-planes"));
 		antiAlias = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "anti-alias.label"),
@@ -211,6 +215,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		addSeparator(OPTION_PREFIX + "separator-general.label");
 		addComponent(encoding);
 		addComponent(blocks);
+		addComponent(blocksABC);
 		addComponent(higherPlanes);
 		addComponent(antiAlias);
 		addComponent(status);
@@ -240,6 +245,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		// Save options
 		jEdit.setBooleanProperty(OPTION_PREFIX + "encoding", encoding.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "blocks", blocks.isSelected());
+		jEdit.setBooleanProperty(OPTION_PREFIX + "blocks-abc", blocksABC.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "higher-planes", higherPlanes.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "anti-alias", antiAlias.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "status", status.isSelected());

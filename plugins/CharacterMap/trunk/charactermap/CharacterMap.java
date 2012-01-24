@@ -100,6 +100,8 @@ public class CharacterMap extends JPanel
 	private JComboBox blocksCombo;
 	/** Blocks contained within the blocks combo box */
 	private DefaultComboBoxModel blocks;
+	/** Blocks in alphabetic order */
+	private boolean blocksAlphabetic;
 	/** Component displaying large glyph */
 	private JLabel largeChar;
 	/** Table containing character glyphs */
@@ -221,11 +223,20 @@ public class CharacterMap extends JPanel
 		gridbag.setConstraints(caption,c);
 
 		showHigherPlanes = jEdit.getBooleanProperty(OPTION_PREFIX + "higher-planes");
+		blocksAlphabetic = jEdit.getBooleanProperty(OPTION_PREFIX + "blocks-abc");
 
 		Iterator<Block> blocks_iterator;
 		blocks = new DefaultComboBoxModel();
-		if(showHigherPlanes) {
+		if(showHigherPlanes && blocksAlphabetic) {
+			blocks_iterator = UnicodeData.getBlocksABC().iterator();
+			while (blocks_iterator.hasNext()) blocks.addElement(blocks_iterator.next());
+		}
+		else if(showHigherPlanes && !blocksAlphabetic) {
 			blocks_iterator = UnicodeData.getBlocks().iterator();
+			while (blocks_iterator.hasNext()) blocks.addElement(blocks_iterator.next());
+		}
+		else if(!showHigherPlanes && blocksAlphabetic) {
+			blocks_iterator = UnicodeData.getLowBlocksABC().iterator();
 			while (blocks_iterator.hasNext()) blocks.addElement(blocks_iterator.next());
 		}
 		else {
