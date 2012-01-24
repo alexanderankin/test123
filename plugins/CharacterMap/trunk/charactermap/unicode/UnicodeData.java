@@ -26,6 +26,7 @@ package charactermap.unicode;
 
 
 import java.util.*;
+import org.gjt.sp.util.StandardUtilities;
 // import java.util.Map.Entry;  //Only if AbstractMap is used - see below.
 
 
@@ -168,10 +169,10 @@ public final class UnicodeData
 
 //{{{ Main class
 	/** Internally stored Unicode Block Data */
-	private static UnicodeBlockList THE_BLOCK_LIST = new UnicodeBlockList();
+	private static final UnicodeBlockList THE_BLOCK_LIST = new UnicodeBlockList();
 
 	/** Internally stored Unicode Character Name Data */
-	private static UnicodeCharNameMap THE_NAME_MAP = new UnicodeCharNameMap();
+	private static final UnicodeCharNameMap THE_NAME_MAP = new UnicodeCharNameMap();
 
 	/**
 	 * Returns the list of all defined Blocks from the Unicode Character
@@ -189,12 +190,36 @@ public final class UnicodeData
 	public static List<Block> getLowBlocks()
 	{
 		List<Block> lowBlockList = new ArrayList<Block>();
-		for(Block I : THE_BLOCK_LIST.getBlocks())
+		for(Block I : getBlocks())
 		{
 			if (! I.isHighBlock())
 				lowBlockList.add(I);
 		}
 		return Collections.unmodifiableList(lowBlockList);
+	}
+
+	/**
+	 * Returns the list of all defined Blocks from the Unicode Character
+	 * Database in alphabetic order.
+	 */
+	public static List<Block> getBlocksABC()
+	{
+		Block[] blockArrayABC  = new Block[getBlocks().size()];
+		blockArrayABC = getBlocks().toArray(blockArrayABC);
+		Arrays.sort(blockArrayABC,new StandardUtilities.StringCompare<Block>(true));
+		return Collections.unmodifiableList(Arrays.asList(blockArrayABC));
+	}
+
+	/**
+	 * Returns the list of low defined Blocks from the Unicode Character
+	 * Database in alphabetic order.
+	 */
+	public static List<Block> getLowBlocksABC()
+	{
+		Block[] blockArrayABC  = new Block[getLowBlocks().size()];
+		blockArrayABC = getLowBlocks().toArray(blockArrayABC);
+		Arrays.sort(blockArrayABC,new StandardUtilities.StringCompare<Block>(true));
+		return Collections.unmodifiableList(Arrays.asList(blockArrayABC));
 	}
 
 	/**

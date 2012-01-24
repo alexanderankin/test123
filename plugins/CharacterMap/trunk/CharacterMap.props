@@ -44,6 +44,7 @@ options.character-map.label=Character Map
 options.character-map.separator-general.label=General
 options.character-map.encoding.label=Show encoding combo box
 options.character-map.blocks.label=Show Unicode blocks
+options.character-map.blocks-abc.label=Sort Unicode blocks alphabetically
 options.character-map.higher-planes.label=Include higher Unicode planes (Chars > 0xFFFF)
 options.character-map.anti-alias.label=Always use anti-aliasing
 options.character-map.status.label=Show status line
@@ -61,6 +62,7 @@ options.character-map.super-size.label=Right-click character size (points)\u0020
 # Option default settings
 options.character-map.encoding=true
 options.character-map.blocks=true
+options.character-map.blocks-abc=false
 options.character-map.higher-planes=false
 options.character-map.anti-alias=false
 options.character-map.status=true
