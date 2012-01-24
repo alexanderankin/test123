@@ -25,6 +25,7 @@ plugin.android.AndroidPlugin.menu=\
     android.createAVD \
     android.createProject \
     android.launchAVD \
+    android.launchDDMS \
     - \
     android.buildDebug \
     android.deployDebug \
@@ -36,6 +37,7 @@ plugin.android.AndroidPlugin.menu=\
 android.createAVD.label=Create AVD
 android.createProject.label=Create Project
 android.launchAVD.label=Launch AVD
+android.launchDDMS.label=Launch Dalvik Debug Monitor
 android.listTargets.label=List Targets
 android.listAVDs.label=List AVDs
 android.buildDebug.label=Build App (Debug)

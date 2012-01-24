@@ -9,19 +9,17 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 
-// deploy debug version of android app using build.xml in current project to
-// currently running emulator.
-// assumes ProjectViewer is installed, assumes "ant" is in your path
-// output goes to Console
-public class DeployDebugApp implements Command {
+// Executes an Ant target from the build.xml in the root directory of the
+// current project. Output goes to the console.
+public class RunAntCommand {
     private View view;
 
-    public void execute( View view ) {
+    public void execute( View view, String target ) {
         this.view = view;
-        deployDebug();
+        executeTarget(target);
     }
 
-    void deployDebug() {
+    protected void executeTarget(String target) {
 
         if ( !isProjectViewerAvailable() ) {
             Util.showError(view, jEdit.getProperty("android.Error", "Error"), jEdit.getProperty("android.ProjectViewer_and_build.xml_not_available.", "ProjectViewer and build.xml not available."));
@@ -39,7 +37,7 @@ public class DeployDebugApp implements Command {
             return;
         }
 
-        String command = "ant -f " + buildFile.getAbsolutePath() + " installd";
+        String command = "ant -f " + buildFile.getAbsolutePath() + " " + target;
         Util.runInSystemShell(view, command);
     }
 

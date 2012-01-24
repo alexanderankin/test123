@@ -36,17 +36,24 @@
             ]]>
 		</CODE>
 	</ACTION>
+	<ACTION NAME="android.launchDDMS">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.LaunchDDMS().execute(view);
+            ]]>
+		</CODE>
+	</ACTION>
 	<ACTION NAME="android.buildDebug">
 		<CODE>
 		    <![CDATA[
-		        new android.actions.BuildDebugApp().execute(view);
+		        new android.actions.RunAntCommand().execute(view, "clean debug");
             ]]>
 		</CODE>
 	</ACTION>
 	<ACTION NAME="android.deployDebug">
 		<CODE>
 		    <![CDATA[
-		        new android.actions.DeployDebugApp().execute(view);
+		        new android.actions.RunAntCommand().execute(view, "installd");
             ]]>
 		</CODE>
 	</ACTION>
