@@ -151,6 +151,8 @@ public class SmartOpenPlugin extends EditPlugin
 	private void removeToolbar(View view)
 	{
 		SmartOpenToolbar toolBar = viewToolbar.get(view);
+		if (toolBar == null)
+			return;
 		JComponent top = topToolbars.get(view);
 		top.remove(toolBar);
 		if (top.getComponentCount() == 0)
