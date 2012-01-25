@@ -76,7 +76,7 @@ public class CharacterMap extends JPanel
 	private View view;
 
 	/** Current System Fonts */
-	// private Font[] systemFonts;
+	private Font[] systemFonts;
 	/** Current display graphics configuration */
 	private GraphicsConfiguration graphConfig;
 
@@ -162,6 +162,7 @@ public class CharacterMap extends JPanel
 
 		this.view = view;
 
+		systemFonts = null;
 		alwaysAntiAlias = jEdit.getBooleanProperty(OPTION_PREFIX + "anti-alias");
 		determineAntiAliasRequirements();
 
@@ -630,27 +631,24 @@ public class CharacterMap extends JPanel
 			i++;
 		}
 
+
 		// search system fonts
 
-		// Disabled due to following reasons:
-		// - inconsistencies charmap - jedit:
-		//   jEdit (4.4.1) uses text chunks, not characters
-		//   and doesn't switch always to first font in order
-		// - perhaps the user should know, which font he is using
-		//   if he inserts characters from the CharacterMap
-
-		/* if (systemFonts == null)
+		if (jEdit.getBooleanProperty("view.enableFontSubstSystemFonts",false))
 		{
-			systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-		}
-		for (Font k : systemFonts)
-		{
-			candidate = k.deriveFont(Font.PLAIN, f.getSize());
-			if (candidate.canDisplayUpTo(text) == -1)
+			if (systemFonts == null)
 			{
-				return candidate;
+				systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 			}
-		} */
+			for (Font k : systemFonts)
+			{
+				candidate = k.deriveFont(Font.PLAIN, f.getSize());
+				if (candidate.canDisplayUpTo(text) == -1)
+				{
+					return candidate;
+				}
+			}
+		}
 
 		// if nothing found
 		return normalFont();
@@ -833,6 +831,9 @@ public class CharacterMap extends JPanel
 				encodingCombo.addActionListener(encodingComboListener);
 				selectedEncodings = selectedEncodingsNew;
 			}
+
+			// Reinitialise systemfonts
+			systemFonts = null;
 		}
 	}
 
