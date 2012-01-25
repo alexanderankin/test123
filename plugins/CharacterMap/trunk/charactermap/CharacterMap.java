@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -76,7 +77,7 @@ public class CharacterMap extends JPanel
 	private View view;
 
 	/** Current System Fonts */
-	private Font[] systemFonts;
+	private ArrayList<Font> substitutionFonts;
 	/** Current display graphics configuration */
 	private GraphicsConfiguration graphConfig;
 
@@ -162,7 +163,8 @@ public class CharacterMap extends JPanel
 
 		this.view = view;
 
-		systemFonts = null;
+		substitutionFonts = new ArrayList();
+
 		alwaysAntiAlias = jEdit.getBooleanProperty(OPTION_PREFIX + "anti-alias");
 		determineAntiAliasRequirements();
 
@@ -610,48 +612,48 @@ public class CharacterMap extends JPanel
 
 		// If normal font sufficient or no font substitution
 		// -> return normal font
-		if ( (f.canDisplayUpTo(text) == -1)
-			|| !jEdit.getBooleanProperty("view.enableFontSubst") )
+		if ((f.canDisplayUpTo(text) == -1)
+		|| !jEdit.getBooleanProperty("view.enableFontSubst"))
 		{
 			return f;
 		}
 
 
-		// search user defined substitution fonts
-		int i = 0;
-		String family;
-		Font candidate;
-		while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null)
+		// If empty, determine substitution font list
+		if (substitutionFonts.size() == 0)
 		{
-			candidate = new Font(family, Font.PLAIN, f.getSize());
+			// add preferred fonts
+			String family;
+			int i = 0;
+			while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null)
+			{
+				substitutionFonts.add(new Font(family, Font.PLAIN, f.getSize()));
+				i++;
+			}
+			// add system fonts
+			if (jEdit.getBooleanProperty("view.enableFontSubstSystemFonts",false))
+			{
+				Font[] sysFonts = GraphicsEnvironment
+					.getLocalGraphicsEnvironment().getAllFonts();
+				for(i = 0; i < sysFonts.length; i++)
+					substitutionFonts.add(sysFonts[i].deriveFont(Font.PLAIN, f.getSize()));
+			}
+		}
+
+		// return substitution font
+		Iterator<Font> I = substitutionFonts.iterator();
+		Font candidate;
+		while (I.hasNext())
+		{
+			candidate = I.next();
 			if (candidate.canDisplayUpTo(text) == -1)
 			{
 				return candidate;
 			}
-			i++;
-		}
-
-
-		// search system fonts
-
-		if (jEdit.getBooleanProperty("view.enableFontSubstSystemFonts",false))
-		{
-			if (systemFonts == null)
-			{
-				systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-			}
-			for (Font k : systemFonts)
-			{
-				candidate = k.deriveFont(Font.PLAIN, f.getSize());
-				if (candidate.canDisplayUpTo(text) == -1)
-				{
-					return candidate;
-				}
-			}
 		}
 
 		// if nothing found
-		return normalFont();
+		return f;
 	}
 
 	/** Font used to draw the large glyph image.
@@ -832,8 +834,8 @@ public class CharacterMap extends JPanel
 				selectedEncodings = selectedEncodingsNew;
 			}
 
-			// Reinitialise systemfonts
-			systemFonts = null;
+			// Reinitialise Substitution Fonts
+			substitutionFonts.clear();
 		}
 	}
 
