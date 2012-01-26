@@ -29,7 +29,7 @@ import projectviewer.gui.OptionPaneBase;
 
 /**
  * @author Damien Radtke
- * class ProjectCommandOptionPane
+ * Projectviewer Console OptionPane
  * An option pane for configuring project commands
  */
 public class ProjectCommandOptionPane extends OptionPaneBase {

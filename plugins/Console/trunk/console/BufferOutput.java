@@ -31,7 +31,9 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.io.VFSManager;
+
+import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 
 
@@ -86,12 +88,12 @@ public class BufferOutput implements Output
 	//{{{ commandDone() method
 	public void commandDone()
 	{
-		final Buffer buffer = jEdit.newFile(view);
 
-		VFSManager.runInAWTThread(new Runnable()
+		ThreadUtilities.runInDispatchThreadAndWait(new Runnable()
 		{
 			public void run()
 			{
+				final Buffer buffer = jEdit.newFile(view);
 				console.getOutput().commandDone();
 				Mode _mode = jEdit.getMode(mode);
 				if(_mode != null)

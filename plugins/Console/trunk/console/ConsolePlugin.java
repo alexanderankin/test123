@@ -517,7 +517,7 @@ public class ConsolePlugin extends EditPlugin
 		}
 		
 		projectviewer.vpt.VPTProject project =
-			projectviewer.ProjectViewer.getViewer(view).getActiveProject(view);
+			projectviewer.ProjectViewer.getActiveProject(view);
 		if (project == null) {
 			GUIUtilities.error(view, "console.pv.no-active-project", null);
 			return;
@@ -525,6 +525,11 @@ public class ConsolePlugin extends EditPlugin
 		
 		String cmd = project.getProperty("console."+prop);
 		if (cmd == null) cmd = "";
+		if (cmd.equals("")) {
+			// TODO: if cmd is "", then pop up a ProjectCommandOptionPane.		
+			
+		}
+		
 		
 		// Run the command in the project's root, but then return to
 		// the original working directory

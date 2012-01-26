@@ -1,4 +1,4 @@
-- Replace use of old objectfactory parser with one from JDK or MiscUtilities
+- Handle vt100 escape codes.
 - Add a history file input and a history text input for commando dialogs.
 - Test alternate shells using the prefix feature
 - $d/.. not canonicalized
