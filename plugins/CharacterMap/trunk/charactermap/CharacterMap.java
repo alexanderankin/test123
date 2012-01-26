@@ -618,25 +618,35 @@ public class CharacterMap extends JPanel
 			return f;
 		}
 
-
 		// If empty, determine substitution font list
 		if (substitutionFonts.size() == 0)
 		{
 			// add preferred fonts
 			String family;
+			Font candidate;
 			int i = 0;
 			while ((family = jEdit.getProperty("view.fontSubstList." + i)) != null)
 			{
-				substitutionFonts.add(new Font(family, Font.PLAIN, f.getSize()));
+				candidate = new Font(family, Font.PLAIN, f.getSize());
+				// if the specified font does not exist,
+				// java falls back to a font with family "Dialog".
+				// Don't take that one.
+				if (candidate.getFamily().equalsIgnoreCase(family))
+					substitutionFonts.add(candidate);
 				i++;
 			}
 			// add system fonts
-			if (jEdit.getBooleanProperty("view.enableFontSubstSystemFonts",false))
+			if (jEdit.getBooleanProperty("view.enableFontSubstSystemFonts",true))
 			{
 				Font[] sysFonts = GraphicsEnvironment
 					.getLocalGraphicsEnvironment().getAllFonts();
 				for(i = 0; i < sysFonts.length; i++)
-					substitutionFonts.add(sysFonts[i].deriveFont(Font.PLAIN, f.getSize()));
+				{
+					candidate = sysFonts[i].deriveFont(Font.PLAIN, f.getSize());
+					if (candidate.getFamily()
+						.equalsIgnoreCase(sysFonts[i].getFamily()))
+						substitutionFonts.add(candidate);
+				}
 			}
 		}
 
