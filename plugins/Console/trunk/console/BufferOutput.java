@@ -89,7 +89,7 @@ public class BufferOutput implements Output
 	public void commandDone()
 	{
 
-		ThreadUtilities.runInDispatchThreadAndWait(new Runnable()
+		ThreadUtilities.runInDispatchThread(new Runnable()
 		{
 			public void run()
 			{
