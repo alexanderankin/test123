@@ -94,6 +94,7 @@ public class BufferOutput implements Output
 			public void run()
 			{
 				final Buffer buffer = jEdit.newFile(view);
+				// What does this do? recursive?
 				console.getOutput().commandDone();
 				Mode _mode = jEdit.getMode(mode);
 				if(_mode != null)
