@@ -104,17 +104,17 @@ public class CharacterMap extends JPanel
 	/** Blocks in alphabetic order */
 	private boolean blocksAlphabetic;
 	/** Component displaying large glyph */
-	private JLabel largeChar;
+	private CharacterLabel largeChar;
 	/** Table containing character glyphs */
 	private JTable table;
 	/** Table model for the character map */
-	private CharacterMapModel tableModel;
+	private CharacterTableModel tableModel;
 	/** Number of columns in the table */
 	private int tableColumns;
 	/** Status information */
 	private JTextArea status;
 	/** Component displaying super glyph */
-	private JLabel superChar;
+	private CharacterLabel superChar;
 
 	// Show the following components
 	/** Show the encoding combo / information */
@@ -272,8 +272,9 @@ public class CharacterMap extends JPanel
 		gridbag.setConstraints(caption, c);
 
 		largeSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "large-size");
-		largeChar = new AntiAliasingLabel(largeFont(" "), " ");
-		Dimension largeCharSz = largeChar.getPreferredSize();
+		largeChar = new CharacterLabel(largeFont(" "), " ");
+		Dimension largeCharSz = new Dimension();
+		largeCharSz.height = largeChar.getPreferredSize().height * 5 / 4;
 		largeCharSz.width = largeCharSz.height * 3 / 2;
 		largeChar.setMinimumSize(largeCharSz);
 		largeChar.setPreferredSize(largeCharSz);
@@ -286,7 +287,7 @@ public class CharacterMap extends JPanel
 		}
 
 		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
-		superChar = new AntiAliasingLabel(superFont(" "), " ");
+		superChar = new CharacterLabel(superFont(" "), " ");
 		superChar.setBorder(BorderFactory.createLineBorder(Color.black));
 		showSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super");
 		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
@@ -296,7 +297,7 @@ public class CharacterMap extends JPanel
 		// Center: Character Table
 
 		setTableColumns();
-		tableModel = new CharacterMapModel();
+		tableModel = new CharacterTableModel();
 
 		table = new JTable(tableModel);
 		table.setFont(normalFont());
@@ -307,7 +308,7 @@ public class CharacterMap extends JPanel
 		table.addMouseListener(mouseHandler);
 		table.addMouseMotionListener(mouseHandler);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		table.setDefaultRenderer(Object.class, new AntiAliasingRenderer());
+		table.setDefaultRenderer(Object.class, new CharacterTableCellRenderer());
 
 		add(BorderLayout.CENTER, new JScrollPane(table));
 
@@ -321,9 +322,13 @@ public class CharacterMap extends JPanel
 		status.setOpaque(false);
 		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN,
 			UIManager.getFont("Label.font").getSize() + 2));
+		if (isDockedLeftRight() && isUnicode(encoding))
+			status.setRows(3);
+		else
+			status.setRows(1);
 
-		/* Alternative: AntiAliasingLabel
-		status = new AntiAliasingLabel(" ");
+		/* Alternative: CharacterLabel
+		status = new CharacterLabel(" ");
 		status.setOpaque(false);
 		status.setHorizontalAlignment(SwingConstants.LEFT);
 		status.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -520,10 +525,9 @@ public class CharacterMap extends JPanel
 				String name =
 					UnicodeData.getCharacterName(n);
 				if (name != null)
-				{
-					buf.append(" Name: ");
-					buf.append(name);
-				}
+					buf.append(" Name: " + name);
+				else
+					buf.append(" Name: " + " - ");
 			}
 
 			status.setText(buf.toString());
@@ -617,6 +621,12 @@ public class CharacterMap extends JPanel
 		{
 			return f;
 		}
+
+		// If the string contains control characters
+		// -> return normal font
+		for (int i = 0; i < text.length(); i++)
+			if (Character.isISOControl(text.codePointAt(i)))
+			return f;
 
 		// If empty, determine substitution font list
 		if (substitutionFonts.size() == 0)
@@ -783,6 +793,10 @@ public class CharacterMap extends JPanel
 		if (encodingChanged)
 		{
 			blocksCombo.setEnabled(isUnicode(encoding));
+			if (isDockedLeftRight() && isUnicode(encoding))
+				status.setRows(3);
+			else
+				status.setRows(1);
 			tableModel.fireTableDataChanged();
 			table.repaint();
 		}
@@ -813,8 +827,7 @@ public class CharacterMap extends JPanel
 		if (((message instanceof BufferUpdate)
 			&& (((BufferUpdate) message).getWhat().equals(BufferUpdate.CREATED)
 			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.LOADED)
-			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.PROPERTIES_CHANGED)
-			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.CLOSED)))
+			|| ((BufferUpdate) message).getWhat().equals(BufferUpdate.PROPERTIES_CHANGED)))
 		|| ((message instanceof EditPaneUpdate)
 			&& ((EditPaneUpdate) message).getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)))
 		{
@@ -891,7 +904,7 @@ private void setCharInBuffer(String ch)
 	 * @author     mawic
 	 * @created    June 11, 2003
 	 */
-	class CharacterMapModel extends AbstractTableModel
+	class CharacterTableModel extends AbstractTableModel
 	{
 		/**
 		 * @return    Number of columns in the glyph table
@@ -1353,7 +1366,7 @@ private void setCharInBuffer(String ch)
 	 * @author     mawic
 	 * @created    June 11, 2003
 	 */
-	class AntiAliasingLabel extends JLabel
+	class CharacterLabel extends JLabel
 	{
 		/** Map containing hints for the renderer (eg, render anti-aliased) */
 		private Map<RenderingHints.Key,Object> renderingHints;
@@ -1364,9 +1377,12 @@ private void setCharInBuffer(String ch)
 		 * @param  font  The font to render label value in
 		 * @param  text  The text of the label
 		 */
-		public AntiAliasingLabel(Font font, String text)
+		public CharacterLabel(Font font, String text)
 		{
+			// Initialise JLabel
 			super();
+
+			// Anti-Aliasing-Feature
 			renderingHints = new HashMap<RenderingHints.Key,Object>();
 
 			if (antiAlias) {
@@ -1383,18 +1399,20 @@ private void setCharInBuffer(String ch)
 				fracFontMetrics ?
 				RenderingHints.VALUE_FRACTIONALMETRICS_ON
 				 : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+
+			// Set font and text
 			if (font != null) {
 				setFont(font);
 			}
-			if (text != null) {
-				setText(text);
-			}
 			else {
-				setText("");
+				setFont(normalFont());
 			}
-			setBackground(Color.white);
+			setText(text);
+
+			// Default Layout
+			setBackground(Color.WHITE);
 			setOpaque(true);
-			setForeground(Color.black);
+			setForeground(Color.BLACK);
 			setHorizontalAlignment(SwingConstants.CENTER);
 			setVerticalAlignment(SwingConstants.CENTER);
 		}
@@ -1416,22 +1434,38 @@ private void setCharInBuffer(String ch)
 			}
 			super.paint(gc);
 		}
+
+		/**
+		 * Set the text in the Label. Special correction for CharacterMap:
+		 * Empty strings or strings starting with a ISO control character
+		 * are replaced by a single space.
+		 *
+		 * @param  text Text string for label
+		 */
+		@Override
+		public void setText(String text)
+		{
+			if ((text == null) || (text).isEmpty()
+				|| Character.isISOControl(text.codePointAt(0)))
+			text = " ";
+			super.setText(text);
+		}
 	}
 
 	/**
-	 * Renderer for table cells based on the AntiAliasingLabel
+	 * Renderer for table cells based on the CharacterLabel
 	 * that uses anti-aliasing if required
 	 *
 	 * @author     mawic
 	 * @created    June 11, 2003
-	 * @see AntiAliasingLabel
+	 * @see CharacterLabel
 	 */
-	class AntiAliasingRenderer extends AntiAliasingLabel implements TableCellRenderer
+	class CharacterTableCellRenderer extends CharacterLabel implements TableCellRenderer
 	{
 		/**
 		 * Default constructor, use default font
 		 */
-		public AntiAliasingRenderer()
+		public CharacterTableCellRenderer()
 		{
 			super(null, null);
 		}
@@ -1454,10 +1488,19 @@ private void setCharInBuffer(String ch)
 			boolean isSelected, boolean hasFocus,
 			int row, int column)
 		{
-			setForeground(Color.black);
-			setBackground(Color.white);
 			setFont(autoFont((String) text));
+
+			if ((text == null) || ((String)text).isEmpty()) {
+				setBackground(Color.WHITE);
+			}
+			else if (Character.isISOControl(((String)text).codePointAt(0))) {
+				setBackground(new Color(230,230,255));
+			}
+			else {
+				setBackground(Color.WHITE);
+			}
 			setText((String) text);
+
 			return this;
 		}
 	}
