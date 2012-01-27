@@ -50,6 +50,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/LogViewer/trunk LogViewe
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/LookAndFeel/trunk LookAndFeel
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/LucenePlugin/trunk LucenePlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/MacroManager/trunk MacroManager
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/MibSideKick/trunk MibSideKick
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Minimap/trunk Minimap
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/MyDoggyPlugin/trunk MyDoggyPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Navigator/trunk Navigator
