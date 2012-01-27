@@ -1,0 +1,97 @@
+VERSION 1.5.1 (Steve Jakob)
+- fixed bug (#2872914) using patch (#2886196) submitted by Steve Gough, where Unicode characters in file names were interpreted incorrectly when restoring a session
+
+VERSION 1.5.0 (Steve Jakob)
+- added a property in the Sessions plugin options to specify the maximum number of entries for the session switcher combo
+- removed calls to deprecated methods
+
+VERSION 1.4.3 (Steve Jakob)
+- incorporated code submitted by halyavin (patch #2006663) to change XML parser from Microstar's AElfred parser to the SAX parser provided by jEdit's XMLUtilities class (bugs 1992191 and 2046470)
+- changed SessionManager class to use the View.updateTitle() method to update the title bar, rather than sending a message on the EditBus
+
+VERSION 1.4.2 (Steve Jakob)
+- incorporated code submitted by strank (patch #1697914) to fix bug where current file was not being saved on Windows
+
+VERSION 1.4.1 (Davide Del Vento, Steve Jakob)
+- fixed bug (#1724376) the code submitted by strank conflicted with the behaviour of save confirmation dialog
+- minor improvements in the save confirmation dialog (ask only if there are changes and show two separate lists)
+- removed calls to deprecated jEdit MiscUtilities classes/methods
+
+VERSION 1.4.0 (Steve Jakob)
+- show more sessions in the SessionManagerDialog (based on code submitted by SourceForge user strank)
+- retain file character encoding when saving/retrieving sessions
+- retain carat position in each file when saving/retrieving sessions
+
+VERSION 1.3.0 (Steve Jakob)
+- added the option to display a confirmation dialog prior to session autosave (based on code submitted by Davide Del Vento)
+
+VERSION 1.2.3 (Steve Jakob)
+- fixed bug (#806606) where "\u" in a Windows directory path would get replaced with "\\" each time the session was switched, causing the path to get increasingly long
+- fixed bug (#1108472) where session name in title bar was not always being updated
+
+VERSION 1.2.2 (Paul Russell)
+- fixed bug where reloading the Sessions plugin causes the Sessions toolbar to be displayed even if it is disabled in the Sessions Plugin options.
+- added session name to the jEdit toobar. Configurable via the Sessions Plugin Options screen.  
+
+VERSION 1.2.0 (Steve Jakob)
+- updated to use the new plugin loading API introduced in jEdit 4.2pre1
+- updated jEdit dependancy to version 4.2pre2, since there were problems with the new OptionPane API in pre1
+
+VERSION 1.1.0 (Steve Jakob)
+- fixed bug (#738931): renaming a session does not change the name in the XML file (Steve Jakob)
+- updated jEdit dependancy to version 4.2pre1, since Sessions requires a recompile due to changes in jEdit's EBMessage class
+- fixed bug (#536400): Selecting "Cancel" when asked to save unsaved files during session switch causes session name on toolbar to change, although the session does not actually change
+
+VERSION 1.0.2 (Steve Jakob)
+- fixed bug (#665623) where changing session would cause jEdit to hang. The SessionManager was using a separate thread to open the new session, which resulted in the Buffer being accessed in a non-thread-safe manner.
+
+VERSION 1.0.1
+
+- new option to add the session toolbar at the top of the BufferList plugin
+  (needs BufferList 0.8 or higher)
+- fixed toolbar icons
+- fixed #461523: Session files occasionally get corrupted
+- requires jEdit 4.0 or higher
+
+
+VERSION 1.0.0 (unreleased)
+
+- introduced session local properties (experimental!)
+- new "Edit Session Properties" dialog (experimental!)
+- allow third parties to add custom session property option panes,
+  and to listen for property changes
+- every session has two default properties: "basedir" and "mode"
+- session files are now in XML format (old session files are
+  automatically converted to the new format on the next run)
+- faster session switching
+- some refactorings (now has a real "Session" class)
+- Ant instead of JMK makefile
+- requires jEdit 3.2.1
+
+
+VERSION 0.7.3
+- SVU: Fix the bug introduced in 0.7.2
+
+
+VERSION 0.7.2
+- SVU: Two messages are fired: before changing the session and after the
+  sesion is changed
+
+
+VERSION 0.7.1
+
+- the sessions toolbar can now be added to jEdit's main toolbar; saves screenspace
+- requires jEdit 3.2.1
+
+
+VERSION 0.7
+
+- initial release, spun off from the BufferList Plugin 0.6.3
+- as a result of the spin off, the Session Switcher toolbar can no longer be
+  docked into BufferList. I'm searching for a remedy, but in the meantime
+  your only choice is to dock it into the view at top.
+- bugfix: switching sessions could cause the line numbers in the gutter
+  to vanish (SessionsPlugin no longer sends out PropertiesChanged messages
+  on session change)
+- requires jEdit 3.2pre2 or higher
+
