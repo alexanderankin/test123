@@ -104,17 +104,17 @@ public class CharacterMap extends JPanel
 	/** Blocks in alphabetic order */
 	private boolean blocksAlphabetic;
 	/** Component displaying large glyph */
-	private CharacterLabel largeChar;
+	private CharLabel largeChar;
 	/** Table containing character glyphs */
 	private JTable table;
 	/** Table model for the character map */
-	private CharacterTableModel tableModel;
+	private CharTableModel tableModel;
 	/** Number of columns in the table */
 	private int tableColumns;
 	/** Status information */
 	private JTextArea status;
 	/** Component displaying super glyph */
-	private CharacterLabel superChar;
+	private CharLabel superChar;
 
 	// Show the following components
 	/** Show the encoding combo / information */
@@ -272,7 +272,7 @@ public class CharacterMap extends JPanel
 		gridbag.setConstraints(caption, c);
 
 		largeSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "large-size");
-		largeChar = new CharacterLabel(largeFont(" "), " ");
+		largeChar = new CharLabel(largeFont(), " ");
 		Dimension largeCharSz = new Dimension();
 		largeCharSz.height = largeChar.getPreferredSize().height * 5 / 4;
 		largeCharSz.width = largeCharSz.height * 3 / 2;
@@ -287,7 +287,7 @@ public class CharacterMap extends JPanel
 		}
 
 		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
-		superChar = new CharacterLabel(superFont(" "), " ");
+		superChar = new CharLabel(superFont(), " ");
 		superChar.setBorder(BorderFactory.createLineBorder(Color.black));
 		showSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super");
 		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
@@ -297,7 +297,7 @@ public class CharacterMap extends JPanel
 		// Center: Character Table
 
 		setTableColumns();
-		tableModel = new CharacterTableModel();
+		tableModel = new CharTableModel();
 
 		table = new JTable(tableModel);
 		table.setFont(normalFont());
@@ -308,7 +308,7 @@ public class CharacterMap extends JPanel
 		table.addMouseListener(mouseHandler);
 		table.addMouseMotionListener(mouseHandler);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		table.setDefaultRenderer(Object.class, new CharacterTableCellRenderer());
+		table.setDefaultRenderer(Object.class, new CharTableCellRenderer());
 
 		add(BorderLayout.CENTER, new JScrollPane(table));
 
@@ -327,8 +327,8 @@ public class CharacterMap extends JPanel
 		else
 			status.setRows(1);
 
-		/* Alternative: CharacterLabel
-		status = new CharacterLabel(" ");
+		/* Alternative: CharLabel
+		status = new CharLabel(" ");
 		status.setOpaque(false);
 		status.setHorizontalAlignment(SwingConstants.LEFT);
 		status.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -607,16 +607,16 @@ public class CharacterMap extends JPanel
 	 *  By default, normalFont() is returned.
 	 *  Automatic font substitution for missing characters,
 	 *  if this feature is selected in jEdit Options.
-	 *  @param text Text string to be drawn
+	 *  @param codepoint Codepoint of character glyph to be drawn
 	 *  @see org.gjt.sp.jedit.syntax.Chunk
 	 */
-	private Font autoFont(String text)
+	private Font autoFont(int codepoint)
 	{
 		Font f = normalFont();
 
 		// If normal font sufficient or no font substitution
 		// -> return normal font
-		if ((f.canDisplayUpTo(text) == -1)
+		if (f.canDisplay(codepoint)
 		|| !jEdit.getBooleanProperty("view.enableFontSubst"))
 		{
 			return f;
@@ -624,8 +624,7 @@ public class CharacterMap extends JPanel
 
 		// If the string contains control characters
 		// -> return normal font
-		for (int i = 0; i < text.length(); i++)
-			if (Character.isISOControl(text.codePointAt(i)))
+		if (Character.isISOControl(codepoint))
 			return f;
 
 		// If empty, determine substitution font list
@@ -666,7 +665,7 @@ public class CharacterMap extends JPanel
 		while (I.hasNext())
 		{
 			candidate = I.next();
-			if (candidate.canDisplayUpTo(text) == -1)
+			if (candidate.canDisplay(codepoint))
 			{
 				return candidate;
 			}
@@ -677,22 +676,38 @@ public class CharacterMap extends JPanel
 	}
 
 	/** Font used to draw the large glyph image.
-	 * @param text Text string to be drawn
+	 *  The font family is determined by autoFont().
+	 * @param codepoint Codepoint of glyph to be drawn
 	 */
-	private Font largeFont(String text)
+	private Font largeFont(int codepoint)
 	{
-		return autoFont(text).deriveFont(largeSize);
+		return autoFont(codepoint).deriveFont(largeSize);
 	}
 
+	/** Font used to draw the large glyph image.
+	 *  The font family is determined by normalFont().
+	 */
+	private Font largeFont()
+	{
+		return normalFont().deriveFont(largeSize);
+	}
 
 	/** Font used to draw the super large glyph image.
-	 * @param text Text string to be drawn
+	 *  The font family is determined by autoFont().
+	 * @param codepoint Codepoint of glyph to be drawn
 	 */
-	private Font superFont(String text)
+	private Font superFont(int codepoint)
 	{
-		return autoFont(text).deriveFont(superSize);
+		return autoFont(codepoint).deriveFont(superSize);
 	}
 
+	/** Font used to draw the super large glyph image.
+	 *  The font family is determined by normalFont().
+	 */
+	private Font superFont()
+	{
+		return normalFont().deriveFont(superSize);
+	}
 
 	/**
 	 * Set member variables regarding anti-aliasing and
@@ -742,6 +757,10 @@ public class CharacterMap extends JPanel
 		{
 			Block block = (Block)blocksCombo.getSelectedItem();
 			return block.length();
+		}
+		else if (encoding.toUpperCase().contains("ASCII"))
+		{
+			return 128;
 		}
 		else
 		{
@@ -904,7 +923,7 @@ private void setCharInBuffer(String ch)
 	 * @author     mawic
 	 * @created    June 11, 2003
 	 */
-	class CharacterTableModel extends AbstractTableModel
+	class CharTableModel extends AbstractTableModel
 	{
 		/**
 		 * @return    Number of columns in the glyph table
@@ -1155,9 +1174,10 @@ private void setCharInBuffer(String ch)
 				}
 				else {
 					String ch = getChar(row, column);
-					superChar.setFont(superFont(ch));
+					int cp = ch.codePointAt(0);
+					superChar.setFont(superFont(cp));
 					superChar.setText(ch);
-					largeChar.setFont(largeFont(ch));
+					largeChar.setFont(largeFont(cp));
 					largeChar.setText(ch);
 					setStatusText(ch, row, column);
 					if (displayingSuperChar) {
@@ -1215,7 +1235,8 @@ private void setCharInBuffer(String ch)
 				}
 				else {
 					String ch = getChar(row, column);
-					largeChar.setFont(largeFont(ch));
+					int cp = ch.codePointAt(0);
+					largeChar.setFont(largeFont(cp));
 					largeChar.setText(ch);
 					setStatusText(ch, row, column);
 				}
@@ -1366,7 +1387,7 @@ private void setCharInBuffer(String ch)
 	 * @author     mawic
 	 * @created    June 11, 2003
 	 */
-	class CharacterLabel extends JLabel
+	class CharLabel extends JLabel
 	{
 		/** Map containing hints for the renderer (eg, render anti-aliased) */
 		private Map<RenderingHints.Key,Object> renderingHints;
@@ -1377,7 +1398,7 @@ private void setCharInBuffer(String ch)
 		 * @param  font  The font to render label value in
 		 * @param  text  The text of the label
 		 */
-		public CharacterLabel(Font font, String text)
+		public CharLabel(Font font, String text)
 		{
 			// Initialise JLabel
 			super();
@@ -1453,19 +1474,19 @@ private void setCharInBuffer(String ch)
 	}
 
 	/**
-	 * Renderer for table cells based on the CharacterLabel
+	 * Renderer for table cells based on the CharLabel
 	 * that uses anti-aliasing if required
 	 *
 	 * @author     mawic
 	 * @created    June 11, 2003
-	 * @see CharacterLabel
+	 * @see CharLabel
 	 */
-	class CharacterTableCellRenderer extends CharacterLabel implements TableCellRenderer
+	class CharTableCellRenderer extends CharLabel implements TableCellRenderer
 	{
 		/**
 		 * Default constructor, use default font
 		 */
-		public CharacterTableCellRenderer()
+		public CharTableCellRenderer()
 		{
 			super(null, null);
 		}
@@ -1488,17 +1509,20 @@ private void setCharInBuffer(String ch)
 			boolean isSelected, boolean hasFocus,
 			int row, int column)
 		{
-			setFont(autoFont((String) text));
+			int codepoint_0 =
+				((text == null) || ((String) text).isEmpty()) ?
+				-1 : ((String) text).codePointAt(0);
 
-			if ((text == null) || ((String)text).isEmpty()) {
-				setBackground(Color.WHITE);
-			}
-			else if (Character.isISOControl(((String)text).codePointAt(0))) {
+			if (codepoint_0 == -1)
+				setFont(normalFont());
+			else
+				setFont(autoFont(codepoint_0));
+
+			if ((codepoint_0 != -1) && Character.isISOControl(codepoint_0))
 				setBackground(new Color(230,230,255));
-			}
-			else {
+			else
 				setBackground(Color.WHITE);
-			}
+
 			setText((String) text);
 
 			return this;
