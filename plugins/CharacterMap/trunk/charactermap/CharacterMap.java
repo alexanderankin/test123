@@ -356,150 +356,117 @@ public class CharacterMap extends JPanel
 //{{{ Auxiliary functions
 	/**
 	 * Set the value of the status string, based on the selected
-	 * character and table position. If the encoding is not unicode
-	 * or utf8 then the position is reported as a character and the
-	 * position of the character in the 256 character table. If unicode
-	 * or utf8, the position includes a page indicator. If the given
-	 * character is null, there is no selected character and therefore
-	 * only page information is displayed.
+	 * character.
+	 * The position in the in the 256 character table is reported.
+	 * For unicode/utf8, the bytecode and the unicode name are reported.
+	 * If the given codepoint is -1, the status line is cleared.
 	 *
-	 * @param  ch      The selected character, or null if none
-	 * @param  row     The table row of the selected character
-	 * @param  column  The table column of the selected character
+	 * @param  cp      Codepoint of the selected character, or null if none
 	 */
-	private void setStatusText(String ch, int row, int column)
+	private void setStatusText(int cp)
 	{
 		int num;
 
-		int n = row * tableColumns + column + getBlockOffset();
-
-		if (ch == null) {
+		if (cp == -1) {
 			status.setText(" ");
+			return;
 		}
-		else {
-			StringBuilder buf = new StringBuilder();
 
-			// buf.append(" Char: ").append(ch);
+		StringBuilder buf = new StringBuilder();
 
-			if (!isUnicode(encoding))
+		// buf.append(" Char: ").append(ch);
+
+		if (!isUnicode(encoding))
+		{
+			buf.append(toDecString(cp,3," Dec: "));
+			buf.append(toHexString(cp,2,true," Hex: 0x"));
+		}
+		else
+		{
+			buf.append(toDecString(cp,5," Dec: "));
+			buf.append(toHexString(cp,4,true," Hex: 0x"));
+		}
+
+		if (encoding.toUpperCase().startsWith("UTF")
+			|| encoding.toUpperCase().startsWith("X-UTF"))
+		{
+			if (isDockedLeftRight()) buf.append("\n");
+
+			if (encoding.contains("8"))
 			{
-				buf.append(toDecString(n,3," Dec: "));
-				buf.append(toHexString(n,2,true," Hex: 0x"));
-			}
-			else
-			{
-				buf.append(toDecString(n,5," Dec: "));
-				buf.append(toHexString(n,4,true," Hex: 0x"));
-			}
-
-			if (encoding.toUpperCase().startsWith("UTF")
-			 || encoding.toUpperCase().startsWith("X-UTF"))
-			{
-				if (isDockedLeftRight()) buf.append("\n");
-
-				if (encoding.contains("8"))
+				buf.append(" UTF-8: ");
+				if (cp < 128)
+					buf.append(toHexString(cp, 2, true, "0x"));
+				else if (cp < 2048)
 				{
-					buf.append(" UTF-8: ");
-					if (n < 128)
-						buf.append(toHexString(n, 2, true, "0x"));
-					else if (n < 2048)
-					{
-						int b1 = 192;
-						int b2 = 128;
-						b1 += (n >> 6);
-						b2 += n & 63;
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-					}
-					else if (n < 65536)
-					{
-						int b1 = 224;
-						int b2 = 128;
-						int b3 = 128;
-						b1 += (n >> 12);
-						b2 += (n >> 6) & 63;
-						b3 += n & 63;
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-						buf.append(toHexString(b3, 2, true, " 0x"));
-					}
-					else
-					{
-						int b1 = 240;
-						int b2 = 128;
-						int b3 = 128;
-						int b4 = 128;
-						b1 += (n >> 18);
-						b2 += (n >> 12) & 63;
-						b3 += (n >> 6) & 63;
-						b4 += n & 63;
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-						buf.append(toHexString(b3, 2, true, " 0x"));
-						buf.append(toHexString(b4, 2, true, " 0x"));
-					}
+					int b1 = 192;
+					int b2 = 128;
+					b1 += (cp >> 6);
+					b2 += cp & 63;
+					buf.append(toHexString(b1, 2, true, "0x"));
+					buf.append(toHexString(b2, 2, true, " 0x"));
 				}
-				else if (encoding.contains("16"))
+				else if (cp < 65536)
 				{
-					if (n< 65536)
-					{
-						if (encoding.contains("LE"))
-						{
-							buf.append(" UTF-16LE: ");
-							int b1 = (n & 0x00FF);
-							int b2 = (n & 0xFF00) >> 8;
-							buf.append(toHexString(b1, 2, true, "0x"));
-							buf.append(toHexString(b2, 2, true, " 0x"));
-						}
-						else // Big endian
-						{
-							buf.append(" UTF-16BE: ");
-							int b1 = (n & 0xFF00) >> 8;
-							int b2 = (n & 0x00FF);
-							buf.append(toHexString(b1, 2, true, "0x"));
-							buf.append(toHexString(b2, 2, true, " 0x"));
-						}
-					}
-					else // n >= 65536
-					{
-						int nn = n - 65536;
-						int nn_highSurrogate = (54 << 10) + (nn >> 10);
-						int nn_lowSurrogate  = (55 << 10) + (nn & 1023);
-						if (encoding.contains("LE"))
-						{
-							buf.append(" UTF-16LE: ");
-							int b1 = (nn_highSurrogate & 0x00FF);
-							int b2 = (nn_highSurrogate & 0xFF00) >> 8;
-							int b3 = (nn_lowSurrogate  & 0x00FF);
-							int b4 = (nn_lowSurrogate  & 0xFF00) >> 8;
-							buf.append(toHexString(b1, 2, true, "0x"));
-							buf.append(toHexString(b2, 2, true, " 0x"));
-							buf.append(toHexString(b3, 2, true, " 0x"));
-							buf.append(toHexString(b4, 2, true, " 0x"));
-						}
-						else // Big endian
-						{
-							buf.append(" UTF-16BE: ");
-							int b1 = (nn_highSurrogate & 0xFF00) >> 8;
-							int b2 = (nn_highSurrogate & 0x00FF);
-							int b3 = (nn_lowSurrogate  & 0xFF00) >> 8;
-							int b4 = (nn_lowSurrogate  & 0x00FF);
-							buf.append(toHexString(b1, 2, true, "0x"));
-							buf.append(toHexString(b2, 2, true, " 0x"));
-							buf.append(toHexString(b3, 2, true, " 0x"));
-							buf.append(toHexString(b4, 2, true, " 0x"));
-						}
-					}
+					int b1 = 224;
+					int b2 = 128;
+					int b3 = 128;
+					b1 += (cp >> 12);
+					b2 += (cp >> 6) & 63;
+					b3 += cp & 63;
+					buf.append(toHexString(b1, 2, true, "0x"));
+					buf.append(toHexString(b2, 2, true, " 0x"));
+					buf.append(toHexString(b3, 2, true, " 0x"));
 				}
-				else if (encoding.contains("32"))
+				else
+				{
+					int b1 = 240;
+					int b2 = 128;
+					int b3 = 128;
+					int b4 = 128;
+					b1 += (cp >> 18);
+					b2 += (cp >> 12) & 63;
+					b3 += (cp >> 6) & 63;
+					b4 += cp & 63;
+					buf.append(toHexString(b1, 2, true, "0x"));
+					buf.append(toHexString(b2, 2, true, " 0x"));
+					buf.append(toHexString(b3, 2, true, " 0x"));
+					buf.append(toHexString(b4, 2, true, " 0x"));
+				}
+			}
+			else if (encoding.contains("16"))
+			{
+				if (cp< 65536)
 				{
 					if (encoding.contains("LE"))
 					{
-						buf.append(" UTF-32LE: ");
-						int b1 = (n & 0x000000FF);
-						int b2 = (n & 0x0000FF00) >> 8;
-						int b3 = (n & 0x00FF0000) >> 16;
-						int b4 = (n & 0xFF000000) >> 24;
+						buf.append(" UTF-16LE: ");
+						int b1 = (cp & 0x00FF);
+						int b2 = (cp & 0xFF00) >> 8;
+						buf.append(toHexString(b1, 2, true, "0x"));
+						buf.append(toHexString(b2, 2, true, " 0x"));
+					}
+					else // Big endian
+					{
+						buf.append(" UTF-16BE: ");
+						int b1 = (cp & 0xFF00) >> 8;
+						int b2 = (cp & 0x00FF);
+						buf.append(toHexString(b1, 2, true, "0x"));
+						buf.append(toHexString(b2, 2, true, " 0x"));
+					}
+				}
+				else // n >= 65536
+				{
+					int cp2 = cp - 65536;
+					int cp_highSurrogate = (54 << 10) + (cp2 >> 10);
+					int cp_lowSurrogate  = (55 << 10) + (cp2 & 1023);
+					if (encoding.contains("LE"))
+					{
+						buf.append(" UTF-16LE: ");
+						int b1 = (cp_highSurrogate & 0x00FF);
+						int b2 = (cp_highSurrogate & 0xFF00) >> 8;
+						int b3 = (cp_lowSurrogate  & 0x00FF);
+						int b4 = (cp_lowSurrogate  & 0xFF00) >> 8;
 						buf.append(toHexString(b1, 2, true, "0x"));
 						buf.append(toHexString(b2, 2, true, " 0x"));
 						buf.append(toHexString(b3, 2, true, " 0x"));
@@ -507,11 +474,11 @@ public class CharacterMap extends JPanel
 					}
 					else // Big endian
 					{
-						buf.append(" UTF-32BE: ");
-						int b1 = (n & 0xFF000000) >> 24;
-						int b2 = (n & 0x00FF0000) >> 16;
-						int b3 = (n & 0x0000FF00) >> 8;
-						int b4 = (n & 0x000000FF);
+						buf.append(" UTF-16BE: ");
+						int b1 = (cp_highSurrogate & 0xFF00) >> 8;
+						int b2 = (cp_highSurrogate & 0x00FF);
+						int b3 = (cp_lowSurrogate  & 0xFF00) >> 8;
+						int b4 = (cp_lowSurrogate  & 0x00FF);
 						buf.append(toHexString(b1, 2, true, "0x"));
 						buf.append(toHexString(b2, 2, true, " 0x"));
 						buf.append(toHexString(b3, 2, true, " 0x"));
@@ -519,19 +486,46 @@ public class CharacterMap extends JPanel
 					}
 				}
 			}
-			if (isUnicode(encoding))
+			else if (encoding.contains("32"))
 			{
-				if (isDockedLeftRight()) buf.append("\n");
-				String name =
-					UnicodeData.getCharacterName(n);
-				if (name != null)
-					buf.append(" Name: " + name);
-				else
-					buf.append(" Name: " + " - ");
+				if (encoding.contains("LE"))
+				{
+					buf.append(" UTF-32LE: ");
+					int b1 = (cp & 0x000000FF);
+					int b2 = (cp & 0x0000FF00) >> 8;
+					int b3 = (cp & 0x00FF0000) >> 16;
+					int b4 = (cp & 0xFF000000) >> 24;
+					buf.append(toHexString(b1, 2, true, "0x"));
+					buf.append(toHexString(b2, 2, true, " 0x"));
+					buf.append(toHexString(b3, 2, true, " 0x"));
+					buf.append(toHexString(b4, 2, true, " 0x"));
+				}
+				else // Big endian
+				{
+					buf.append(" UTF-32BE: ");
+					int b1 = (cp & 0xFF000000) >> 24;
+					int b2 = (cp & 0x00FF0000) >> 16;
+					int b3 = (cp & 0x0000FF00) >> 8;
+					int b4 = (cp & 0x000000FF);
+					buf.append(toHexString(b1, 2, true, "0x"));
+					buf.append(toHexString(b2, 2, true, " 0x"));
+					buf.append(toHexString(b3, 2, true, " 0x"));
+					buf.append(toHexString(b4, 2, true, " 0x"));
+				}
 			}
-
-			status.setText(buf.toString());
 		}
+		if (isUnicode(encoding))
+		{
+			if (isDockedLeftRight()) buf.append("\n");
+			String name =
+				UnicodeData.getCharacterName(cp);
+			if (name != null)
+				buf.append(" Name: " + name);
+			else
+				buf.append(" Name: " + " - ");
+		}
+
+		status.setText(buf.toString());
 	}
 
 	/** Sets tableColumns depending on
@@ -1030,7 +1024,7 @@ private void setCharInBuffer(String ch)
 		 */
 		public void stateChanged(ChangeEvent evt)
 		{
-			setStatusText(null, 0, 0);
+			setStatusText(-1);
 			table.repaint();
 		}
 	}
@@ -1100,11 +1094,12 @@ private void setCharInBuffer(String ch)
 				Point p = evt.getPoint();
 				row = table.rowAtPoint(p);
 				column = table.columnAtPoint(p);
-				if (row == -1 || column == -1) {
-					setStatusText(null, 0, 0);
-					largeChar.setText(" ");
-				}
-				else {
+				if (row != -1 && column != -1) {
+				// if (row == -1 || column == -1) {
+				// 	setStatusText(-1);
+				// 	largeChar.setText(" ");
+				// }
+				// else {
 					String ch = getChar(row, column);
 					setCharInBuffer(ch);
 				}
@@ -1124,23 +1119,27 @@ private void setCharInBuffer(String ch)
 		{
 			int button = evt.getButton();
 			if (button == MouseEvent.BUTTON3) {
+				if (row == -1 || column == -1) return;
+
 				Point p = evt.getPoint();
 				row = table.rowAtPoint(p);
 				column = table.columnAtPoint(p);
-				if (row != -1 && column != -1) {
-					if (showSuper) {
-						//Log.log(Log.MESSAGE, this, "Got mousePressed at x = " + p.x + ", y = " + p.y);
-						String ch = getChar(row, column);
-						if (popup == null) {
-							// We need to do this because the popup contents will not have
-							// been defined and the final position on screen depends
-							// on the size of the contents.
-							displaySuperChar(ch, row, column);
-							popup.hide();
-						}
+
+				if (showSuper) {
+					//Log.log(Log.MESSAGE, this, "Got mousePressed at x = " + p.x + ", y = " + p.y);
+					String ch = getChar(row, column);
+					int cp = ch.codePointAt(0);
+					superChar.setFont(superFont(cp));
+
+					if (popup == null) {
+						// We need to do this because the popup contents will not have
+						// been defined and the final position on screen depends
+						// on the size of the contents.
 						displaySuperChar(ch, row, column);
-						displayingSuperChar = true;
+						popup.hide();
 					}
+					displaySuperChar(ch, row, column);
+					displayingSuperChar = true;
 				}
 			}
 		}
@@ -1169,17 +1168,17 @@ private void setCharInBuffer(String ch)
 				column = newColumn;
 
 				if (row == -1 || column == -1) {
-					setStatusText(null, 0, 0);
+					setStatusText(-1);
 					largeChar.setText(" ");
 				}
 				else {
 					String ch = getChar(row, column);
 					int cp = ch.codePointAt(0);
-					superChar.setFont(superFont(cp));
-					superChar.setText(ch);
 					largeChar.setFont(largeFont(cp));
+					superChar.setFont(superFont(cp));
+
+					setStatusText(cp);
 					largeChar.setText(ch);
-					setStatusText(ch, row, column);
 					if (displayingSuperChar) {
 						//Log.log(Log.MESSAGE, this, "Got mouseDragged at x = " + p.x + ", y = " + p.y);
 						popup.hide();
@@ -1230,15 +1229,16 @@ private void setCharInBuffer(String ch)
 				column = newColumn;
 
 				if (row == -1 || column == -1) {
-					setStatusText(null, 0, 0);
+					setStatusText(-1);
 					largeChar.setText(" ");
 				}
 				else {
 					String ch = getChar(row, column);
 					int cp = ch.codePointAt(0);
 					largeChar.setFont(largeFont(cp));
+
 					largeChar.setText(ch);
-					setStatusText(ch, row, column);
+					setStatusText(cp);
 				}
 			}
 		}
@@ -1253,7 +1253,8 @@ private void setCharInBuffer(String ch)
 		@Override
 		public void mouseExited(MouseEvent evt)
 		{
-			setStatusText(null, 0, 0);
+			row = -1; column = -1;
+			setStatusText(-1);
 			largeChar.setText(" ");
 		}
 
@@ -1457,8 +1458,9 @@ private void setCharInBuffer(String ch)
 		}
 
 		/**
-		 * Set the text in the Label. Special correction for CharacterMap:
-		 * Empty strings or strings starting with a ISO control character
+		 * Set the text in the Label.
+		 * Empty strings are replaced by a single space.
+		 * Strings consisting of one control character
 		 * are replaced by a single space.
 		 *
 		 * @param  text Text string for label
@@ -1466,9 +1468,17 @@ private void setCharInBuffer(String ch)
 		@Override
 		public void setText(String text)
 		{
-			if ((text == null) || (text).isEmpty()
-				|| Character.isISOControl(text.codePointAt(0)))
-			text = " ";
+			if ((text != null)
+				&& (text.length() == 1)
+				&& Character.isISOControl(text.codePointAt(0)))
+			{
+				text = "#" + text.codePointAt(0);
+				setFont(this.getFont().deriveFont(
+					(float) this.getFont().getSize() * 2/3));
+			}
+			if ((text == null) || text.isEmpty())
+				text = " ";
+
 			super.setText(text);
 		}
 	}
@@ -1509,16 +1519,16 @@ private void setCharInBuffer(String ch)
 			boolean isSelected, boolean hasFocus,
 			int row, int column)
 		{
-			int codepoint_0 =
+			int cp =
 				((text == null) || ((String) text).isEmpty()) ?
 				-1 : ((String) text).codePointAt(0);
 
-			if (codepoint_0 == -1)
+			if (cp == -1)
 				setFont(normalFont());
 			else
-				setFont(autoFont(codepoint_0));
+				setFont(autoFont(cp));
 
-			if ((codepoint_0 != -1) && Character.isISOControl(codepoint_0))
+			if ((cp != -1) && Character.isISOControl(cp))
 				setBackground(new Color(230,230,255));
 			else
 				setBackground(Color.WHITE);
