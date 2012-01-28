@@ -48,8 +48,8 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 	}
 	
 	protected void _init() {
-		compile = new HistoryTextField("console.compile");
-		run = new HistoryTextField("console.run");
+		compile = new HistoryTextField("console.compile.project");
+		run = new HistoryTextField("console.run.project");
 		
 		String _compile = proj.getProperty("console.compile");
 		if (_compile != null)
@@ -65,8 +65,16 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 	}
 	
 	protected void _save() {
-		proj.setProperty("console.compile", compile.getText());
-		proj.setProperty("console.run", run.getText());
+		String ccmd = compile.getText();
+		if (!ccmd.equals("")) {
+			proj.setProperty("console.compile", compile.getText());
+			compile.getModel().addItem(ccmd);
+		}
+		String rcmd = run.getText();
+		if (!rcmd.equals("")) {
+			run.getModel().addItem(rcmd);
+			proj.setProperty("console.run", rcmd);
+		}
 	}
 	
 }
