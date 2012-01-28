@@ -23,6 +23,7 @@
 package console;
 
 import javax.swing.*;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
 import projectviewer.vpt.VPTProject;
 import projectviewer.gui.OptionPaneBase;
@@ -35,8 +36,8 @@ import projectviewer.gui.OptionPaneBase;
 public class ProjectCommandOptionPane extends OptionPaneBase {
 	
 	private VPTProject proj;
-	private JTextField compile;
-	private JTextField run;
+	private HistoryTextField compile;
+	private HistoryTextField run;
 	
 	/*
  	 * Constructor for ProjectCommandOptionPane
@@ -47,8 +48,8 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 	}
 	
 	protected void _init() {
-		compile = new JTextField();
-		run = new JTextField();
+		compile = new HistoryTextField("console.compile");
+		run = new HistoryTextField("console.run");
 		
 		String _compile = proj.getProperty("console.compile");
 		if (_compile != null)

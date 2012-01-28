@@ -131,7 +131,6 @@ public class ConsolePlugin extends EditPlugin
 		allCommands = new ActionSet("Plugin: Console - Commando Commands");
 		shellSwitchActions = new ActionSet("Plugin: Console - Shell Switchers");
 		rescanCommands();
-
 		CommandoToolBar.init();
 		EditBus.addToBus(this);
 
