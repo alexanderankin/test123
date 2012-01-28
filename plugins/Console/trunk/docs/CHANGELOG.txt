@@ -1,10 +1,13 @@
 :encoding=UTF-8:maxLineLen=80:wrap=hard:folding=indent:collapseFolds=2:
 Console Changelog
 
-    Version 4.4.4 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer
-    3.4
-    (optional).
+    Version 4.4.5 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer
+    3.4    (optional).
+    	Fixed #3479434: InterruptedException at object.wait() from BufferOutput.
+    	#3471524: Item 1b (Show project options when values are not set)
 
+    Version 4.4.4 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer
+    3.4     (optional).
         Respects jEdit's "use textArea colors" appearance option.
         ProjectViewer option pane for defining commands to compile and run
         project. (#3153058 - Damien Radtke)
