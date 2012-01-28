@@ -1,0 +1,19 @@
+# JavascriptSideKick jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.activate=defer
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.name=JavascriptSideKick
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.author=Matthieu Casanova
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.version=1.0.0
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.docs=docs/JavascriptSideKick.html
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.usePluginHome=true
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.description=JavascriptSideKick is a parser that will show you errors in your javascript code
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.0=jdk 1.6
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.1=jedit 04.04.99.00
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.2
+plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.4=plugin rhino.RhinoPlugin 1.7R3
+
+
+mode.javascript.sidekick.parser=rhinojs
+sidekick.parser.rhinojs.label=Javascript (full syntax)
