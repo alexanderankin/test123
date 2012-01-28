@@ -51,6 +51,8 @@ import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
 import errorlist.DefaultErrorSource;
 
+import projectviewer.action.EditProjectAction;
+
 // }}}
 
 /**
@@ -526,11 +528,11 @@ public class ConsolePlugin extends EditPlugin
 		String cmd = project.getProperty("console."+prop);
 		if (cmd == null) cmd = "";
 		if (cmd.equals("")) {
-			// TODO: if cmd is "", then pop up a ProjectCommandOptionPane.		
-			
+			EditProjectAction ea = 
+			new EditProjectAction("pv.commands");
+			ea.actionPerformed(null);
 		}
-		
-		
+	
 		// Run the command in the project's root, but then return to
 		// the original working directory
 		final SystemShell systemShell = getSystemShell();
