@@ -3,8 +3,8 @@ Console Changelog
 
     Version 4.4.5 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer
     3.4.1    (optional).
-    	Fixed #3479434: InterruptedException at object.wait() from BufferOutput.
-    	#3471524: Item 1b (Show project options when commands are not set)
+    	#3479434: InterruptedException from BufferOutput. (Ezust)
+    	#3471524: Console Project option panes enhancements (Ezust)
 
     Version 4.4.4 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer
     3.4     (optional).
