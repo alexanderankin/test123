@@ -606,7 +606,7 @@ public class SystemShell extends Shell
 		{
 			TextArea ta = view.getTextArea();
 			int caretPos = ta.getCaretPosition();
-			int line = ta.getLineOfOffset(caretPos);
+			int line = ta.getCaretLine()+1;
 			expansion = new Integer(line).toString();
 			return expansion;
 		}
