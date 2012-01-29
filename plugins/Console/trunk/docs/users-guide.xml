@@ -642,6 +642,11 @@ most often at the top of the list.
     </listitem>
     <listitem>
      <para>
+      <varname>${pv}</varname> - the root directory of the current project,
+      or <literal>.</literal> if the current file is not part of a project. </para>
+    </listitem>
+    <listitem>
+     <para>
       <varname>~</varname> - this is not a <quote>variable</quote>
  per-se, and it is specified using a different syntax, but it makes sense to
  mention it here.

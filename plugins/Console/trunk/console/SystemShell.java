@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
@@ -604,17 +605,16 @@ public class SystemShell extends Shell
 		}
 		else if (varName.equals("l"))
 		{
-			TextArea ta = view.getTextArea();
-			int caretPos = ta.getCaretPosition();
-			int line = ta.getCaretLine()+1;
+			int line = view.getTextArea().getCaretLine()+1;
 			expansion = new Integer(line).toString();
-			return expansion;
 		}
 		else if (varName.equals("u"))
 		{
 			expansion = buffer.getPath();
 			if (!MiscUtilities.isURL(expansion))
 			{
+				
+				// FIXME: This is totally incorrect! make a proper URL. 
 				expansion = "file:/" + expansion.replace(File.separatorChar, '/');
 			}
 		}
@@ -635,6 +635,9 @@ public class SystemShell extends Shell
 		}
 		else if (varName.equals("ROOT"))
 			expansion = ConsolePlugin.getPackageRoot(buffer);
+		else if (varName.equals("pv"))		
+			expansion = BeanShell.eval(view, BeanShell.getNameSpace(),
+				"getProjectRoot(view, buffer)").toString();
 		else if (varName.equals("BROWSER_DIR"))
 		{
 			VFSBrowser browser = (VFSBrowser) view.getDockableWindowManager()
