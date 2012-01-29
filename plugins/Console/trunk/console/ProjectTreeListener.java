@@ -87,6 +87,7 @@ public class ProjectTreeListener implements EBComponent
 				}
 				catch (InterruptedException ie)
 				{
+					interrupt();
 				}
 				//VPTNode n = vu.getNode();
 				View view = vu.getView();

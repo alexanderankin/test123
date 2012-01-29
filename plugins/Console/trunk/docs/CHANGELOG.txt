@@ -4,9 +4,10 @@ jEdit Console Changelog
     Version 4.4.5 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, and  
         ProjectViewer 3.4.1 (optional).
     	#3479434: InterruptedException from BufferOutput. (Ezust)
-    	#3471524: Console Project option panes enhancements (Ezust)
-    	#2940948: Console: add variable ($l) for View's TextArea's cursors's  
+    	#3471524: Project option panes enhancements (Ezust)
+    	#2940948: Add variable ($l) for View's TextArea's cursors's  
     	          line number (Ezust)
+        #3481158: Add variable ($pv) for current project root dir.	          
 
     Version 4.4.4 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer
     	3.4     (optional).
