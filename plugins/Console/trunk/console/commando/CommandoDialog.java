@@ -198,10 +198,11 @@ public class CommandoDialog extends EnhancedDialog
 		// open a console
 		DockableWindowManager wm = view.getDockableWindowManager();
 		wm.addDockableWindow("console");
-
-		CommandoThread thread = new CommandoThread(
-			(Console)wm.getDockable("console"),
-			commands);
+		Console c = (Console)wm.getDockable("console");  
+		if (jEdit.getBooleanProperty("console.clearBeforeExecute")) 
+			c.clear();
+			
+		CommandoThread thread = new CommandoThread(c, commands);
 		thread.start();
 
 		dispose();
@@ -445,7 +446,7 @@ public class CommandoDialog extends EnhancedDialog
 			GridBagConstraints cons = new GridBagConstraints();
 			cons.gridy = y++;
 			cons.gridheight = 1;
-			cons.gridwidth = cons.REMAINDER;
+			cons.gridwidth = GridBagConstraints.REMAINDER;
 			cons.fill = GridBagConstraints.BOTH;
 			cons.anchor = GridBagConstraints.WEST;
 			cons.weightx = 1.0f;

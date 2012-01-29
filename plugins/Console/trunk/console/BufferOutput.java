@@ -32,7 +32,6 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
 
 

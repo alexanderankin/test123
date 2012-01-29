@@ -90,6 +90,7 @@ options.console.general.plainColor=Plain text:
 options.console.general.caretColor=Caret:
 options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
+options.console.system.clearBeforeExecute=Clear scrollback buffer before executing commands
 options.console.general.infoColor=Information messages:
 options.console.general.changedir=Tree selection options:
 options.last-selected=Last Selected
