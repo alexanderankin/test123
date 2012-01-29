@@ -228,8 +228,64 @@ public final class UnicodeData
 	 */
 	public static String getCharacterName(int codePoint)
 	{
-		return THE_NAME_MAP.get(new Integer(codePoint));
+		if (!Character.isValidCodePoint(codePoint)) return null;
+
+		String name = THE_NAME_MAP.get(new Integer(codePoint));
+
+		// Correct the name, if it is from a block in which only
+		// first and last character are named.
+		if (name == null) {
+			name = THE_NAME_MAP.get(new Integer(
+				getBlock(codePoint).getFirstPoint()));
+		}
+		if (name == null) return null;
+
+		if (name.toUpperCase().trim().endsWith("FIRST>"))
+			name = (name.trim().substring(1, name.trim().length() - 8)
+				+ "-" + Integer.toHexString(codePoint))
+				.toUpperCase();
+		if (name.toUpperCase().trim().endsWith("LAST>"))
+			name = (name.trim().substring(1, name.trim().length() - 7)
+				+ "-" + Integer.toHexString(codePoint))
+				.toUpperCase();
+
+		return name;
 	}
+
+	/**
+	 *  Returns the Unicode block of a character.
+	 *  If no valid character is given, <code>null</code> is returned.
+	 *
+	 *  @param codePoint The codepoint of the character
+	 */
+	public static Block getBlock(int codePoint)
+	{
+		String name;
+
+		if (!Character.isValidCodePoint(codePoint)) return null;
+
+		Iterator<Block> I = getBlocks().iterator();
+		Block B;
+		while (I.hasNext()) {
+			B = I.next();
+			if ( (B.getFirstPoint() <= codePoint)
+				&& (codePoint <= B.getLastPoint()) )
+				return B;
+		}
+		return null;
+	}
+
+	/**
+	 *  Character assignment in the data list.
+	 *  A character is unassigned, if it has an empty name.
+	 *  @param codePoint Codepoint of the Character
+	 *  @return          Character unassigned
+	 */
+	public static boolean isUnAssigned(int codePoint)
+	{
+		return (getCharacterName(codePoint) == null);
+	}
+
 //}}}
 }
 

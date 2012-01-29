@@ -85,6 +85,9 @@ public class CharacterMap extends JPanel
 	private final String NAME_PREFIX = CharacterMapPlugin.NAME_PREFIX;
 	/** Shortcut to CharacterMapPlugin.OPTION_PREFIX */
 	private final String OPTION_PREFIX = CharacterMapPlugin.OPTION_PREFIX;
+	/** Replacement for invalid characters.
+	 *  Also used at the Java-internal encoding conversions. */
+	private final String REPLACEMENT_CHAR = "\uFFFD";
 
 	// Display components
 	/** Combo box for font encoding information */
@@ -187,7 +190,6 @@ public class CharacterMap extends JPanel
 		gridbag.setConstraints(caption, c);
 
 		encoding = view.getBuffer().getStringProperty(Buffer.ENCODING);
-
 
 		// A small, fixed encoding set from jEdit properties
 		//encodings = new DefaultComboBoxModel();
@@ -321,20 +323,8 @@ public class CharacterMap extends JPanel
 		status.setEditable(false);
 		status.setOpaque(false);
 		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN,
-			UIManager.getFont("Label.font").getSize() + 2));
-		if (isDockedLeftRight() && isUnicode(encoding))
-			status.setRows(3);
-		else
-			status.setRows(1);
-
-		/* Alternative: CharLabel
-		status = new CharLabel(" ");
-		status.setOpaque(false);
-		status.setHorizontalAlignment(SwingConstants.LEFT);
-		status.setHorizontalTextPosition(SwingConstants.LEFT);
-		status.setVerticalAlignment(SwingConstants.CENTER);
-		status.setVerticalTextPosition(SwingConstants.CENTER);
-		status.setFont(font); */
+			UIManager.getFont("Label.font").getSize()));
+		clearStatusText();
 
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
@@ -357,175 +347,80 @@ public class CharacterMap extends JPanel
 	/**
 	 * Set the value of the status string, based on the selected
 	 * character.
-	 * The position in the in the 256 character table is reported.
+	 * The index in the in the character table is reported,
 	 * For unicode/utf8, the bytecode and the unicode name are reported.
-	 * If the given codepoint is -1, the status line is cleared.
 	 *
-	 * @param  cp      Codepoint of the selected character, or null if none
+	 * @param cp  Codepoint (unicode) of the selected character, or -1 if none
+	 * @param row Table row of the selected character
+	 * @param col Table column of the selected character
 	 */
-	private void setStatusText(int cp)
+	private void setStatusText(int cp, int row, int col)
 	{
-		int num;
+		int index;    // Table index = codepoint for current encoding
+		String ch;    // Character as unicode string
+		byte[] bytes; // Character bytecode for current encoding
+		String name;  // Character unicode name
 
-		if (cp == -1) {
-			status.setText(" ");
+		index = tableModel.getIndexAt(row,col);
+
+		ch = new String(Character.toChars(cp));
+
+		try {
+			// switch to encodings without explicit encoding marks
+			String enc = encoding.toUpperCase();
+			if (enc.contains("UTF") && enc.contains("8"))
+				enc = "UTF-8";
+			if (enc.contains("UTF") && enc.contains("16")) {
+				enc = enc.contains("LE") ?
+				"UTF-16LE" : "UTF-16BE";
+			}
+			if (enc.contains("UTF") && enc.contains("32")) {
+				enc = enc.contains("LE") ?
+				"UTF-32LE" : "UTF-32BE";
+			}
+
+			bytes = ch.getBytes(enc);
+		}
+		catch (Exception e) {
+			clearStatusText();
 			return;
 		}
 
+		name = Character.getName(cp);
+		//name = UnicodeData.getCharacterName(cp);
+
+		// Write the status line
+
 		StringBuilder buf = new StringBuilder();
 
-		// buf.append(" Char: ").append(ch);
+		buf.append(toDecString(index, 3, " Dec: "));
+		buf.append(toHexString(index, 2, true, " Hex: 0x"));
 
-		if (!isUnicode(encoding))
-		{
-			buf.append(toDecString(cp,3," Dec: "));
-			buf.append(toHexString(cp,2,true," Hex: 0x"));
-		}
+		if (isDockedLeftRight()) buf.append("\n");
+
+		buf.append(" Bytes:");
+		for (int i = 0; i < bytes.length; i++)
+			buf.append(toHexString(bytes[i] & 0xFF, 2, true, " 0x"));
+
+		if (isDockedLeftRight()) buf.append("\n");
+
+		if (name != null)
+			buf.append(" Name: " + name);
 		else
-		{
-			buf.append(toDecString(cp,5," Dec: "));
-			buf.append(toHexString(cp,4,true," Hex: 0x"));
-		}
-
-		if (encoding.toUpperCase().startsWith("UTF")
-			|| encoding.toUpperCase().startsWith("X-UTF"))
-		{
-			if (isDockedLeftRight()) buf.append("\n");
-
-			if (encoding.contains("8"))
-			{
-				buf.append(" UTF-8: ");
-				if (cp < 128)
-					buf.append(toHexString(cp, 2, true, "0x"));
-				else if (cp < 2048)
-				{
-					int b1 = 192;
-					int b2 = 128;
-					b1 += (cp >> 6);
-					b2 += cp & 63;
-					buf.append(toHexString(b1, 2, true, "0x"));
-					buf.append(toHexString(b2, 2, true, " 0x"));
-				}
-				else if (cp < 65536)
-				{
-					int b1 = 224;
-					int b2 = 128;
-					int b3 = 128;
-					b1 += (cp >> 12);
-					b2 += (cp >> 6) & 63;
-					b3 += cp & 63;
-					buf.append(toHexString(b1, 2, true, "0x"));
-					buf.append(toHexString(b2, 2, true, " 0x"));
-					buf.append(toHexString(b3, 2, true, " 0x"));
-				}
-				else
-				{
-					int b1 = 240;
-					int b2 = 128;
-					int b3 = 128;
-					int b4 = 128;
-					b1 += (cp >> 18);
-					b2 += (cp >> 12) & 63;
-					b3 += (cp >> 6) & 63;
-					b4 += cp & 63;
-					buf.append(toHexString(b1, 2, true, "0x"));
-					buf.append(toHexString(b2, 2, true, " 0x"));
-					buf.append(toHexString(b3, 2, true, " 0x"));
-					buf.append(toHexString(b4, 2, true, " 0x"));
-				}
-			}
-			else if (encoding.contains("16"))
-			{
-				if (cp< 65536)
-				{
-					if (encoding.contains("LE"))
-					{
-						buf.append(" UTF-16LE: ");
-						int b1 = (cp & 0x00FF);
-						int b2 = (cp & 0xFF00) >> 8;
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-					}
-					else // Big endian
-					{
-						buf.append(" UTF-16BE: ");
-						int b1 = (cp & 0xFF00) >> 8;
-						int b2 = (cp & 0x00FF);
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-					}
-				}
-				else // n >= 65536
-				{
-					int cp2 = cp - 65536;
-					int cp_highSurrogate = (54 << 10) + (cp2 >> 10);
-					int cp_lowSurrogate  = (55 << 10) + (cp2 & 1023);
-					if (encoding.contains("LE"))
-					{
-						buf.append(" UTF-16LE: ");
-						int b1 = (cp_highSurrogate & 0x00FF);
-						int b2 = (cp_highSurrogate & 0xFF00) >> 8;
-						int b3 = (cp_lowSurrogate  & 0x00FF);
-						int b4 = (cp_lowSurrogate  & 0xFF00) >> 8;
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-						buf.append(toHexString(b3, 2, true, " 0x"));
-						buf.append(toHexString(b4, 2, true, " 0x"));
-					}
-					else // Big endian
-					{
-						buf.append(" UTF-16BE: ");
-						int b1 = (cp_highSurrogate & 0xFF00) >> 8;
-						int b2 = (cp_highSurrogate & 0x00FF);
-						int b3 = (cp_lowSurrogate  & 0xFF00) >> 8;
-						int b4 = (cp_lowSurrogate  & 0x00FF);
-						buf.append(toHexString(b1, 2, true, "0x"));
-						buf.append(toHexString(b2, 2, true, " 0x"));
-						buf.append(toHexString(b3, 2, true, " 0x"));
-						buf.append(toHexString(b4, 2, true, " 0x"));
-					}
-				}
-			}
-			else if (encoding.contains("32"))
-			{
-				if (encoding.contains("LE"))
-				{
-					buf.append(" UTF-32LE: ");
-					int b1 = (cp & 0x000000FF);
-					int b2 = (cp & 0x0000FF00) >> 8;
-					int b3 = (cp & 0x00FF0000) >> 16;
-					int b4 = (cp & 0xFF000000) >> 24;
-					buf.append(toHexString(b1, 2, true, "0x"));
-					buf.append(toHexString(b2, 2, true, " 0x"));
-					buf.append(toHexString(b3, 2, true, " 0x"));
-					buf.append(toHexString(b4, 2, true, " 0x"));
-				}
-				else // Big endian
-				{
-					buf.append(" UTF-32BE: ");
-					int b1 = (cp & 0xFF000000) >> 24;
-					int b2 = (cp & 0x00FF0000) >> 16;
-					int b3 = (cp & 0x0000FF00) >> 8;
-					int b4 = (cp & 0x000000FF);
-					buf.append(toHexString(b1, 2, true, "0x"));
-					buf.append(toHexString(b2, 2, true, " 0x"));
-					buf.append(toHexString(b3, 2, true, " 0x"));
-					buf.append(toHexString(b4, 2, true, " 0x"));
-				}
-			}
-		}
-		if (isUnicode(encoding))
-		{
-			if (isDockedLeftRight()) buf.append("\n");
-			String name =
-				UnicodeData.getCharacterName(cp);
-			if (name != null)
-				buf.append(" Name: " + name);
-			else
-				buf.append(" Name: " + " - ");
-		}
+			buf.append(" Name: " + " - ");
 
 		status.setText(buf.toString());
+	}
+
+	/** Clear the status line */
+	private void clearStatusText()
+	{
+		status.setText(" ");
+		if (isDockedLeftRight())
+			status.setRows(3);
+		else
+			status.setRows(1);
+		return;
 	}
 
 	/** Sets tableColumns depending on
@@ -893,10 +788,14 @@ public class CharacterMap extends JPanel
 
 private void setCharInBuffer(String ch)
 {
-	String bufferEncoding = view.getBuffer().getStringProperty(JEditBuffer.ENCODING);
-	if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding))
+	if (ch.equals(REPLACEMENT_CHAR)) return;
+
+	String bufferEncoding = view.getBuffer()
+		.getStringProperty(JEditBuffer.ENCODING);
+	if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding)) {
 		view.getTextArea().setSelectedText(ch);
-	else
+	}
+	else {
 		JOptionPane.showMessageDialog(view,
 			jEdit.getProperty(NAME_PREFIX + "no-insert-message-1")
 			  + bufferEncoding
@@ -905,6 +804,7 @@ private void setCharInBuffer(String ch)
 			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-3"),
 			jEdit.getProperty(NAME_PREFIX + "no-insert-message.label"),
 			JOptionPane.WARNING_MESSAGE);
+	}
 }
 //}}}
 
@@ -939,6 +839,26 @@ private void setCharInBuffer(String ch)
 		}
 
 		/**
+		 * Returns the index of a character in the glyph table.
+		 * i.e. the codepoint for the given encoding.
+		 * For Unicode, the offset of the Unicode block must be taken
+		 * into account.
+		 *
+		 * @param row Row of table containing character.
+		 * @param col Column of table containing the character.
+		 * @return Index of cell in the glyph table.
+		 */
+		public int getIndexAt(int row, int col)
+		{
+			int cell = row * tableColumns + col;
+
+			if (isUnicode(encoding))
+				return cell + getBlockOffset();
+			else
+				return cell;
+		}
+
+		/**
 		 * Generates a string containing the character stored within
 		 * the table at the given row and column. If the encoding is
 		 * unicode or utf8 this depends on the current page value
@@ -947,27 +867,33 @@ private void setCharInBuffer(String ch)
 		 * @param  col  Column of table containing required character
 		 * @return      String containing character representation of
 		 *              glyph stored within glyph table at given row
+		 *              Invalid entries are replaced by the replacement
+		 *              char (Codepoint 0xFFFD).
 		 */
 		public Object getValueAt(int row, int col)
 		{
-			int cell = row * tableColumns + col;
+			String ch;
 
-			if (isUnicode(encoding))
-			{
-				int offset = getBlockOffset();
-				//Not compatible with higher Unicode planes:
-				//return String.valueOf((char) (offset + cell));
-				return new String(Character.toChars(offset+cell));
+			if (isUnicode(encoding)) {
+				ch = new String(Character
+					.toChars(getIndexAt(row, col)));
 			}
 			else {
 				try {
-					return new String(new byte[]{
-						(byte) cell }, encoding);
+					ch = new String(new byte[]{
+						(byte) getIndexAt(row, col) },
+						encoding);
 				}
 				catch (UnsupportedEncodingException ue) {
-					return "?";
+					ch = REPLACEMENT_CHAR;
 				}
 			}
+
+			if (ch == null || ch.equals("")) {
+				ch = REPLACEMENT_CHAR;
+			}
+
+			return ch;
 		}
 
 		/**
@@ -1024,7 +950,7 @@ private void setCharInBuffer(String ch)
 		 */
 		public void stateChanged(ChangeEvent evt)
 		{
-			setStatusText(-1);
+			clearStatusText();
 			table.repaint();
 		}
 	}
@@ -1095,11 +1021,6 @@ private void setCharInBuffer(String ch)
 				row = table.rowAtPoint(p);
 				column = table.columnAtPoint(p);
 				if (row != -1 && column != -1) {
-				// if (row == -1 || column == -1) {
-				// 	setStatusText(-1);
-				// 	largeChar.setText(" ");
-				// }
-				// else {
 					String ch = getChar(row, column);
 					setCharInBuffer(ch);
 				}
@@ -1168,7 +1089,7 @@ private void setCharInBuffer(String ch)
 				column = newColumn;
 
 				if (row == -1 || column == -1) {
-					setStatusText(-1);
+					clearStatusText();
 					largeChar.setText(" ");
 				}
 				else {
@@ -1177,7 +1098,7 @@ private void setCharInBuffer(String ch)
 					largeChar.setFont(largeFont(cp));
 					superChar.setFont(superFont(cp));
 
-					setStatusText(cp);
+					setStatusText(cp, row, column);
 					largeChar.setText(ch);
 					if (displayingSuperChar) {
 						//Log.log(Log.MESSAGE, this, "Got mouseDragged at x = " + p.x + ", y = " + p.y);
@@ -1229,7 +1150,7 @@ private void setCharInBuffer(String ch)
 				column = newColumn;
 
 				if (row == -1 || column == -1) {
-					setStatusText(-1);
+					clearStatusText();
 					largeChar.setText(" ");
 				}
 				else {
@@ -1238,7 +1159,7 @@ private void setCharInBuffer(String ch)
 					largeChar.setFont(largeFont(cp));
 
 					largeChar.setText(ch);
-					setStatusText(cp);
+					setStatusText(cp, row, column);
 				}
 			}
 		}
@@ -1254,7 +1175,7 @@ private void setCharInBuffer(String ch)
 		public void mouseExited(MouseEvent evt)
 		{
 			row = -1; column = -1;
-			setStatusText(-1);
+			clearStatusText();
 			largeChar.setText(" ");
 		}
 
@@ -1303,22 +1224,12 @@ private void setCharInBuffer(String ch)
 		}
 
 		/**
-		 * Get the character of the glyph in the given table position
-		 *
-		 * @param  row     Row of the glyph table containing the character
-		 * @param  column  Column of the glyph table containing the character
-		 * @return         If the table model does not contain and data for the
-		 *                 given row and column, return a space, otherwise
-		 *                 return the glyph at the given position as a
-		 *                 one-character string.
+		 * Get the character of the glyph in the given table position.
+		 * Shortcut to getValueAt in CharTableModel.
 		 */
 		private String getChar(int row, int column)
 		{
-			String rtn = (String) table.getModel().getValueAt(row, column);
-			if (rtn == null || rtn.equals("")) {
-				rtn = " ";
-			}
-			return rtn;
+			return (String) tableModel.getValueAt(row, column);
 		}
 
 		/**
@@ -1476,7 +1387,9 @@ private void setCharInBuffer(String ch)
 				setFont(this.getFont().deriveFont(
 					(float) this.getFont().getSize() * 2/3));
 			}
-			if ((text == null) || text.isEmpty())
+			if ((text == null) || text.isEmpty()
+				|| !Character.isDefined(text.codePointAt(0)) )
+				//|| UnicodeData.isUnAssigned(text.codePointAt(0)))
 				text = " ";
 
 			super.setText(text);
@@ -1523,15 +1436,24 @@ private void setCharInBuffer(String ch)
 				((text == null) || ((String) text).isEmpty()) ?
 				-1 : ((String) text).codePointAt(0);
 
-			if (cp == -1)
+			if (cp == -1) {
 				setFont(normalFont());
-			else
-				setFont(autoFont(cp));
-
-			if ((cp != -1) && Character.isISOControl(cp))
-				setBackground(new Color(230,230,255));
-			else
 				setBackground(Color.WHITE);
+				return this;
+			}
+
+			setFont(autoFont(cp));
+
+			if (Character.isISOControl(cp)) {
+				setBackground(new Color(230,230,255));
+			}
+			//else if (UnicodeData.isUnAssigned(cp)) {
+			else if (!Character.isDefined(cp)) {
+				setBackground(Color.LIGHT_GRAY);
+			}
+			else {
+				setBackground(Color.WHITE);
+			}
 
 			setText((String) text);
 
