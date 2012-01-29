@@ -590,6 +590,12 @@ most often at the top of the list.
       <varname>${f}</varname> - the current buffer's path name.
  </para>
     </listitem>
+        <listitem>
+     <para>
+      <varname>${l}</varname> - the current TextArea's cursor's line number.
+ </para>
+    </listitem>
+
     <listitem>
      <para>
       <varname>${n}</varname> - the current buffer's name.
