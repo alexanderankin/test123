@@ -386,8 +386,8 @@ public class CharacterMap extends JPanel
 			return;
 		}
 
-		name = Character.getName(cp);
-		//name = UnicodeData.getCharacterName(cp);
+		//name = Character.getName(cp);
+		name = UnicodeData.getCharacterName(cp);
 
 		// Write the status line
 
@@ -1388,8 +1388,8 @@ private void setCharInBuffer(String ch)
 					(float) this.getFont().getSize() * 2/3));
 			}
 			if ((text == null) || text.isEmpty()
-				|| !Character.isDefined(text.codePointAt(0)) )
-				//|| UnicodeData.isUnAssigned(text.codePointAt(0)))
+				//|| !Character.isDefined(text.codePointAt(0)) )
+				|| !UnicodeData.isDefined(text.codePointAt(0)))
 				text = " ";
 
 			super.setText(text);
@@ -1447,8 +1447,8 @@ private void setCharInBuffer(String ch)
 			if (Character.isISOControl(cp)) {
 				setBackground(new Color(230,230,255));
 			}
-			//else if (UnicodeData.isUnAssigned(cp)) {
-			else if (!Character.isDefined(cp)) {
+			else if (!UnicodeData.isDefined(cp)) {
+			//else if (!Character.isDefined(cp)) {
 				setBackground(Color.LIGHT_GRAY);
 			}
 			else {

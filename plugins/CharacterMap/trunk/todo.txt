@@ -1,6 +1,5 @@
 Known Issues:
-Invalid chars
-Unicode data class performance
+- Invalid chars red, no status info
 Suggested Features:
 - Search Characters by Name
 - Make an insert dialog for control Characters and "General Punctuation"

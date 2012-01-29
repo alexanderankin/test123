@@ -235,22 +235,24 @@ public final class UnicodeData
 		// Correct the name, if it is from a block in which only
 		// first and last character are named.
 		if (name == null) {
-			name = THE_NAME_MAP.get(new Integer(
-				getBlock(codePoint).getFirstPoint()));
+			Block B = getBlock(codePoint);
+			if (B == null) return null;
+			name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
 		}
 		if (name == null) return null;
-
-		if (name.toUpperCase().trim().endsWith("FIRST>"))
-			name = (name.trim().substring(1, name.trim().length() - 8)
-				+ "-" + Integer.toHexString(codePoint))
-				.toUpperCase();
-		if (name.toUpperCase().trim().endsWith("LAST>"))
-			name = (name.trim().substring(1, name.trim().length() - 7)
-				+ "-" + Integer.toHexString(codePoint))
-				.toUpperCase();
+		//if (name.toUpperCase().trim().endsWith("FIRST>"))
+		if (name.endsWith("First>"))
+			name = (name.substring(1, name.trim().length() - 8)
+				+ "-" + Integer.toHexString(codePoint).toUpperCase());
+		if (name.endsWith("Last>"))
+			name = (name.substring(1, name.trim().length() - 7)
+				+ "-" + Integer.toHexString(codePoint).toUpperCase());
 
 		return name;
 	}
+
+	/** Remember last search result in getBlock(codepoint) */
+	private static Block getBlockPrevious = null; //getBlocks().getItem(0);
 
 	/**
 	 *  Returns the Unicode block of a character.
@@ -260,17 +262,22 @@ public final class UnicodeData
 	 */
 	public static Block getBlock(int codePoint)
 	{
-		String name;
-
 		if (!Character.isValidCodePoint(codePoint)) return null;
+
+		if ( (getBlockPrevious != null)
+			&& (getBlockPrevious.getFirstPoint() <= codePoint)
+			&& (codePoint <= getBlockPrevious.getLastPoint()) )
+			return getBlockPrevious;
 
 		Iterator<Block> I = getBlocks().iterator();
 		Block B;
 		while (I.hasNext()) {
 			B = I.next();
 			if ( (B.getFirstPoint() <= codePoint)
-				&& (codePoint <= B.getLastPoint()) )
+				&& (codePoint <= B.getLastPoint()) ) {
+				getBlockPrevious = B;
 				return B;
+			}
 		}
 		return null;
 	}
@@ -281,9 +288,9 @@ public final class UnicodeData
 	 *  @param codePoint Codepoint of the Character
 	 *  @return          Character unassigned
 	 */
-	public static boolean isUnAssigned(int codePoint)
+	public static boolean isDefined(int codePoint)
 	{
-		return (getCharacterName(codePoint) == null);
+		return (getCharacterName(codePoint) != null);
 	}
 
 //}}}
