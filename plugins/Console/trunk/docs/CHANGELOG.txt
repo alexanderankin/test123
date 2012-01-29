@@ -11,6 +11,7 @@ jEdit Console Changelog
     	          line number 
         #3481158: Add variable ($pv) for current project root dir.
         #3479436: New option: Clear console before commando/build/run.
+        #1604327: Console javac commando problems.
         Fixed layout issue in Errors Option Pane where the NOTE: was too wide.
 
     Version 4.4.4 Requires jEdit 4.4.2, JDK 1.6, ErrorList 1.9, ProjectViewer

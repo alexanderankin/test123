@@ -16,9 +16,9 @@
 		<CAPTION LABEL="Paths">
 
 		<!-- <ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/> -->
-		<ENTRY LABEL="Class path" VARNAME="classpath_env"
+		<HIST_ENTRY LABEL="Class path" VARNAME="classpath_env"
 			EVAL="jEdit.getProperty(&quot;CLASSPATH&quot;, &quot;&quot;);" />
-		<ENTRY LABEL="Source path" VARNAME="sourcepath"
+		<HIST_ENTRY LABEL="Source path" VARNAME="sourcepath"
 			EVAL="getProjectRoot(view, buffer)" />
 		<DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" />
 		<DIR_ENTRY LABEL="Output directory" VARNAME="outputpath" />
@@ -32,7 +32,7 @@
 		<TOGGLE LABEL="Show warnings" VARNAME="warn" DEFAULT="TRUE" />
 		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
 		<!-- <TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" /> -->
-		<ENTRY LABEL="Source file encoding" VARNAME="encoding"
+		<HIST_ENTRY LABEL="Source file encoding" VARNAME="encoding"
 			EVAL="buffer.getProperty(Buffer.ENCODING)" />
 
 		</CAPTION>
