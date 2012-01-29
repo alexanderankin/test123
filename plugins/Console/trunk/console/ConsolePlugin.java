@@ -45,7 +45,6 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
-import org.gjt.sp.util.ThreadUtilities;
 
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
@@ -537,6 +536,8 @@ public class ConsolePlugin extends EditPlugin
 		final SystemShell systemShell = getSystemShell();
 		view.getDockableWindowManager().showDockableWindow("console");
 		final Console console = (Console) getConsole(view);
+		if (jEdit.getBooleanProperty("console.clearBeforeExecute")) 
+			console.clear();
 		final Console.ShellState state = console.getShellState(systemShell);
 
 		console.getOutput().writeAttrs(

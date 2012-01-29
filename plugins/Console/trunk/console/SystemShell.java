@@ -12,7 +12,6 @@ import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 

@@ -15,6 +15,7 @@ import console.gui.Label;
 public class SystemOptionPane extends AbstractOptionPane
 {
 	private JComboBox prefix;
+	private JCheckBox clearBeforeExecute;
 	private JCheckBox rememberCWD;
 	private JCheckBox nodeselect;
 	private JCheckBox mergeError;
@@ -57,6 +58,10 @@ public class SystemOptionPane extends AbstractOptionPane
 		rememberCWD.setSelected(jEdit.getBooleanProperty("console.rememberCWD"));
 		addComponent(rememberCWD);	
 
+		clearBeforeExecute = new JCheckBox(jEdit.getProperty("options.console.system.clearBeforeExecute"));
+		clearBeforeExecute.setSelected(jEdit.getBooleanProperty("console.clearBeforeExecute"));
+		addComponent(clearBeforeExecute);	
+		
 		showExitStatus = new JCheckBox();
 		showExitStatus.setText(jEdit.getProperty("options.console.general.showExitStatus"));
 		showExitStatus.setSelected(jEdit.getBooleanProperty("console.processrunner.showExitStatus", true));
@@ -90,6 +95,7 @@ public class SystemOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
 //		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
+		jEdit.setBooleanProperty("console.clearBeforeExecute", clearBeforeExecute.isSelected());
 		jEdit.setBooleanProperty("console.rememberCWD", rememberCWD.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());

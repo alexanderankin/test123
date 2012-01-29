@@ -27,6 +27,7 @@ import console.*;
 import javax.swing.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 //}}}
 // {{{ commandothread class
 class CommandoThread extends Thread
@@ -34,9 +35,9 @@ class CommandoThread extends Thread
 	//{{{ CommandoThread constructor
 	/**
 	 * @param console the console to execute the command.
-	 * @param commands a Vector of CommandoHandler.Command objects
+	 * @param commands actually a Vector of command objects
 	 */
-	CommandoThread(Console console, Vector commands)
+	CommandoThread(Console console, Vector<CommandoHandler.Command> commands)
 	{
 		this.console = console;
 		this.commands = commands;
@@ -117,6 +118,6 @@ class CommandoThread extends Thread
 	} //}}}
 	// {{{ Data Members
 	private Console console;
-	private Vector<Object> commands;
+	private Vector<CommandoHandler.Command> commands;
 	// }}}
 }// }}}
