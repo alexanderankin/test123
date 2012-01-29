@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 
@@ -541,6 +542,7 @@ public class SystemShell extends Shell
 	 */
 	String expandVariables(View view, String arg)
 	{
+		
 		// StringBuffer buf = new StringBuffer();
 		String varName = null;
 		// Expand homedir
@@ -599,6 +601,14 @@ public class SystemShell extends Shell
 			{
 				expansion = expansion.substring(0, expansion.length() - 1);
 			}
+		}
+		else if (varName.equals("l"))
+		{
+			TextArea ta = view.getTextArea();
+			int caretPos = ta.getCaretPosition();
+			int line = ta.getLineOfOffset(caretPos);
+			expansion = new Integer(line).toString();
+			return expansion;
 		}
 		else if (varName.equals("u"))
 		{
