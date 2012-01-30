@@ -1,4 +1,3 @@
-# This bundle should collect the trunk versions of all jEdit plugins/trunk
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/AStylePlugin/trunk AStylePlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Activator/trunk Activator
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Ancestor/trunk Ancestor
@@ -11,6 +10,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferLocal/trunk Buffer
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferTabs/trunk BufferTabs
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Calculator/trunk Calculator
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Checkstyle/trunk Checkstyle
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CharacterMap/trunk CharacterMap
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Cipher/trunk Cipher
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ClassBrowser/trunk ClassBrowser
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Code2HTML/trunk Code2HTML
@@ -40,6 +40,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JakartaCommons/trunk Jak
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JavaInsight/trunk JavaInsight
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JavascriptScriptEnginePlugin/trunk JavascriptScriptEnginePlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JavaScriptShell/trunk JavaScriptShell
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JavascriptSideKick/trunk JavascriptSideKick
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JavaSideKick/trunk JavaSideKick
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JCompiler/trunk JCompiler
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/JDiffPlugin/trunk JDiffPlugin
@@ -62,6 +63,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PHPParser/trunk PHPParse
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PerlSideKick/trunk PerlSideKick
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectOptions/trunk ProjectOptions
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk RFCReader
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RhinoPlugin/trunk RhinoPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RubyPlugin/trunk RubyPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SQL/trunk SQL
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugin/trunk SVNPlugin
