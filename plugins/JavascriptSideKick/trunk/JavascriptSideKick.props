@@ -15,5 +15,5 @@ plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.3=plu
 plugin.com.kpouer.jedit.javascriptsidekick.JavascriptSideKickPlugin.depend.4=plugin rhino.RhinoPlugin 1.7R3
 
 
-mode.javascript.sidekick.parser=rhinojs
-sidekick.parser.rhinojs.label=Javascript (full syntax)
+mode.javascript.sidekick.parser=RhinoJS
+sidekick.parser.RhinoJS.label=Javascript (full syntax)
