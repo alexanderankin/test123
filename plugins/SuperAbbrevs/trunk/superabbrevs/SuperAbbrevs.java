@@ -176,9 +176,9 @@ public class SuperAbbrevs {
 					else
 						template = zenParser.parse(new HTMLSerializer(jEdit.getProperties()));
 				}
-				catch (Exception e)
+				catch (Throwable e)
 				{
-					Log.log(Log.WARNING, SuperAbbrevs.class, e);
+					// ignore
 				}
 			}
 
