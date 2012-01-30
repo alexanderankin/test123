@@ -73,23 +73,24 @@ public class CharacterMap extends JPanel
 	implements EBComponent
 {
 //{{{ Variables
-	/** JEdit view */
-	private View view;
 
-	/** Current System Fonts */
-	private ArrayList<Font> substitutionFonts;
-	/** Current display graphics configuration */
-	private GraphicsConfiguration graphConfig;
-
+	//{{{ General
 	/** Shortcut to CharacterMapPlugin.NAME_PREFIX */
 	private final String NAME_PREFIX = CharacterMapPlugin.NAME_PREFIX;
 	/** Shortcut to CharacterMapPlugin.OPTION_PREFIX */
 	private final String OPTION_PREFIX = CharacterMapPlugin.OPTION_PREFIX;
-	/** Replacement for invalid characters.
-	 *  Also used at the Java-internal encoding conversions. */
+	/** Replacement for invalid characters */
 	private final String REPLACEMENT_CHAR = "\uFFFD";
 
-	// Display components
+	/** JEdit view to which character map instance is attached */
+	private View view;
+	/** Current fonts for font substitution */
+	private ArrayList<Font> substitutionFonts;
+	/** Current display graphics configuration */
+	private GraphicsConfiguration graphConfig;
+	//}}}
+
+	//{{{ Display components
 	/** Combo box for font encoding information */
 	private JComboBox encodingCombo;
 	/** Listener for encoding combo settings */
@@ -118,8 +119,9 @@ public class CharacterMap extends JPanel
 	private JTextArea status;
 	/** Component displaying super glyph */
 	private CharLabel superChar;
+	//}}}
 
-	// Show the following components
+	//{{{ Show the following components
 	/** Show the encoding combo / information */
 	private boolean showEncoding;
 	/** Show the unicode blocks */
@@ -130,10 +132,11 @@ public class CharacterMap extends JPanel
 	private boolean showStatus;
 	/** Show the super glyph */
 	private boolean showSuper;
-	/** Show the Characters with Codepoints above 0xFFFF or 65536 */
+	/** Show the Characters with Codepoints above 0xFFFF or 65535 */
 	private boolean showHigherPlanes;
+	//}}}
 
-	// Font and Graphics settings
+	//{{{ Font and Graphics settings
 	/** Font size used to draw the large glyph image */
 	private float largeSize;
 	/** Font size used to draw the super-glyph */
@@ -146,6 +149,8 @@ public class CharacterMap extends JPanel
 	private boolean alwaysAntiAlias;
 	/** Display all glyphs anti-aliased */
 	private boolean antiAlias;
+	//}}}
+
 //}}}
 
 
@@ -162,6 +167,7 @@ public class CharacterMap extends JPanel
 	 */
 	public CharacterMap(View view)
 	{
+		//{{{ Initial settings
 		super(new BorderLayout(12, 12));
 
 		this.view = view;
@@ -173,9 +179,9 @@ public class CharacterMap extends JPanel
 
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
+		//}}}
 
-		// North Panel (Encoding Selector, Unicode Block Selector, Char)
-
+		//{{{ North Panel
 		JPanel northPanel = new JPanel();
 		northPanel.setLayout(gridbag);
 
@@ -295,15 +301,15 @@ public class CharacterMap extends JPanel
 		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
 
 		add(BorderLayout.NORTH, northPanel);
+		//}}}
 
-		// Center: Character Table
-
+		//{{{ Center Table
 		setTableColumns();
 		tableModel = new CharTableModel();
 
 		table = new JTable(tableModel);
 		table.setFont(normalFont());
-		table.setRowHeight(normalRowHeight());
+		table.setRowHeight(tableRowHeight());
 		table.setRowSelectionAllowed(false);
 		table.setColumnSelectionAllowed(false);
 		MouseHandler mouseHandler = new MouseHandler(this, superChar);
@@ -313,18 +319,18 @@ public class CharacterMap extends JPanel
 		table.setDefaultRenderer(Object.class, new CharTableCellRenderer());
 
 		add(BorderLayout.CENTER, new JScrollPane(table));
+		//}}}
 
-		// South Panel (Status Line)
-
+		//{{{ South Panel (Status Line)
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(gridbag);
 
 		status = new JTextArea(" ");
+		status.setRows(isDockedLeftRight() ? 3 : 1);
 		status.setEditable(false);
 		status.setOpaque(false);
 		status.setFont(new Font(Font.MONOSPACED, Font.PLAIN,
 			UIManager.getFont("Label.font").getSize()));
-		clearStatusText();
 
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
@@ -336,121 +342,25 @@ public class CharacterMap extends JPanel
 			southPanel.add(status);
 			add(BorderLayout.SOUTH, southPanel);
 		}
+		//}}}
 
+		//{{{ Final settings
 		table.repaint();
 		graphConfig = table.getGraphicsConfiguration();
+		//}}}
 	}
 //}}}
 
 
 //{{{ Auxiliary functions
-	/**
-	 * Set the value of the status string, based on the selected
-	 * character.
-	 * The index in the in the character table is reported,
-	 * For unicode/utf8, the bytecode and the unicode name are reported.
-	 *
-	 * @param cp  Codepoint (unicode) of the selected character, or -1 if none
-	 * @param row Table row of the selected character
-	 * @param col Table column of the selected character
-	 */
-	private void setStatusText(int cp, int row, int col)
-	{
-		int index;    // Table index = codepoint for current encoding
-		String ch;    // Character as unicode string
-		byte[] bytes; // Character bytecode for current encoding
-		String name;  // Character unicode name
 
-		index = tableModel.getIndexAt(row,col);
-
-		ch = new String(Character.toChars(cp));
-
-		if (!tableModel.isValidChar(ch, row, col)) {
-			clearStatusText();
-			return;
-		}
-
-		try {
-			// switch to encodings without explicit encoding marks
-			String enc = encoding.toUpperCase();
-			if (enc.contains("UTF") && enc.contains("8"))
-				enc = "UTF-8";
-			if (enc.contains("UTF") && enc.contains("16")) {
-				enc = enc.contains("LE") ?
-				"UTF-16LE" : "UTF-16BE";
-			}
-			if (enc.contains("UTF") && enc.contains("32")) {
-				enc = enc.contains("LE") ?
-				"UTF-32LE" : "UTF-32BE";
-			}
-
-			bytes = ch.getBytes(enc);
-		}
-		catch (Exception e) {
-			clearStatusText();
-			return;
-		}
-
-		//name = Character.getName(cp);
-		name = UnicodeData.getCharacterName(cp);
-
-		// Write the status line
-
-		StringBuilder buf = new StringBuilder();
-
-		buf.append(toDecString(index, 3, " Dec: "));
-		buf.append(toHexString(index, 2, true, " Hex: 0x"));
-
-		if (isDockedLeftRight()) buf.append("\n");
-
-		buf.append(" Bytes:");
-		for (int i = 0; i < bytes.length; i++)
-			buf.append(toHexString(bytes[i] & 0xFF, 2, true, " 0x"));
-
-		if (isDockedLeftRight()) buf.append("\n");
-
-		if (name != null)
-			buf.append(" Name: " + name);
-		else
-			buf.append(" Name: " + " - ");
-
-		status.setText(buf.toString());
-	}
-
-	/** Clear the status line */
-	private void clearStatusText()
-	{
-		status.setText(" ");
-		if (isDockedLeftRight())
-			status.setRows(3);
-		else
-			status.setRows(1);
-		return;
-	}
-
-	/** Sets tableColumns depending on
-	 *  plugin options and window docking state.
-	 *  @see tableColumns
-	 */
-	private void setTableColumns()
-	{
-		if (isDockedLeftRight()) {
-			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-lr");
-		}
-		else if (isDockedTopBottom()) {
-			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb");
-		}
-		else {
-			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns");
-		}
-	}
-
+	//{{{ General
 	/** Formatted output of int in hexadecimal form
 	 *  @param i       Integer to be converted
-	 *  @param digits  Minimum number of digits
-	 *                 (fill with leading zeros)
-	 *  @param upper   true: Uppercase digits; else: Lowercase
+	 *  @param digits  Minimum number of digits (fill with leading zeros)
+	 *  @param upper   true: Uppercase digits; false: Lowercase
 	 *  @param prefix  Prefix string
+	 *  @return        Formatted string
 	 */
 	public static String toHexString(int i, int digits, boolean upper, String prefix)
 	{
@@ -469,9 +379,9 @@ public class CharacterMap extends JPanel
 
 	/** Formatted output of int in decimal form
 	 *  @param i       Integer to be converted
-	 *  @param digits  Minimum number of digits
-	 *                 (fill with leading zeros)
+	 *  @param digits  Minimum number of digits (fill with leading zeros)
 	 *  @param prefix  Prefix string
+	 *  @return        Formatted string
 	 */
 	public static String toDecString(int i, int digits, String prefix)
 	{
@@ -485,23 +395,20 @@ public class CharacterMap extends JPanel
 		return myFormatter.format(i);
 	}
 
-	/** Font used to draw character glyphs in table */
+	/** Font used to draw character glyphs in table
+	 *  (normal, without font substitution)
+	 */
 	private Font normalFont()
 	{
 		return view.getTextArea().getPainter().getFont();
 	}
 
-	/** Height of tableRows depending on the normal font size */
-	private int normalRowHeight()
-	{
-		return normalFont().getSize()*4/3;
-	}
-
 	/** Font used to draw character glyphs in table.
-	 *  By default, normalFont() is returned.
-	 *  Automatic font substitution for missing characters,
-	 *  if this feature is selected in jEdit Options.
+	 *  Use font substitution for missing characters,
+	 *  if this feature is selected in jEdit options.
 	 *  @param codepoint Codepoint of character glyph to be drawn
+	 *  @return          Best font, which can show the glyph.
+	 *                   If no font is found, return normalFont()
 	 *  @see org.gjt.sp.jedit.syntax.Chunk
 	 */
 	private Font autoFont(int codepoint)
@@ -570,15 +477,6 @@ public class CharacterMap extends JPanel
 	}
 
 	/** Font used to draw the large glyph image.
-	 *  The font family is determined by autoFont().
-	 * @param codepoint Codepoint of glyph to be drawn
-	 */
-	private Font largeFont(int codepoint)
-	{
-		return autoFont(codepoint).deriveFont(largeSize);
-	}
-
-	/** Font used to draw the large glyph image.
 	 *  The font family is determined by normalFont().
 	 */
 	private Font largeFont()
@@ -586,13 +484,13 @@ public class CharacterMap extends JPanel
 		return normalFont().deriveFont(largeSize);
 	}
 
-	/** Font used to draw the super large glyph image.
+	/** Font used to draw the large glyph image.
 	 *  The font family is determined by autoFont().
-	 * @param codepoint Codepoint of glyph to be drawn
+	 *  @param codepoint Codepoint of glyph to be drawn
 	 */
-	private Font superFont(int codepoint)
+	private Font largeFont(int codepoint)
 	{
-		return autoFont(codepoint).deriveFont(superSize);
+		return autoFont(codepoint).deriveFont(largeSize);
 	}
 
 	/** Font used to draw the super large glyph image.
@@ -603,10 +501,24 @@ public class CharacterMap extends JPanel
 		return normalFont().deriveFont(superSize);
 	}
 
-	/**
-	 * Set member variables regarding anti-aliasing and
-	 * fractional font-metrics requirements from the defined
-	 * values in the jEdit properties
+	/** Font used to draw the super large glyph image.
+	 *  The font family is determined by autoFont().
+	 *  @param codepoint Codepoint of glyph to be drawn
+	 */
+	private Font superFont(int codepoint)
+	{
+		return autoFont(codepoint).deriveFont(superSize);
+	}
+
+	/** Height of tableRows depending on the normal font size */
+	private int tableRowHeight()
+	{
+		return normalFont().getSize() * 4/3;
+	}
+
+	/** Set member variables regarding anti-aliasing and
+	 *  fractional font-metrics requirements from the defined
+	 *  values in the jEdit properties
 	 */
 	private void determineAntiAliasRequirements()
 	{
@@ -622,6 +534,7 @@ public class CharacterMap extends JPanel
 		}
 	}
 
+	/** Character map window is docked left or right */
 	private boolean isDockedLeftRight()
 	{
 		String position = jEdit.getProperty(NAME_PREFIX + "dock-position",
@@ -630,14 +543,18 @@ public class CharacterMap extends JPanel
 		    || position.equalsIgnoreCase(DockableWindowManager.RIGHT);
 	}
 
+	/** Character map window is docked top or bottom */
 	private boolean isDockedTopBottom()
 	{
 		String position = jEdit.getProperty(NAME_PREFIX + "dock-position",
 			DockableWindowManager.FLOATING);
 		return position.equalsIgnoreCase(DockableWindowManager.TOP)
-		|| position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
+		    || position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
 	}
 
+	/** Encoding is Unicode
+	 *  @param enc Encoding name
+	 */
 	private boolean isUnicode(String enc)
 	{
 		return enc.toUpperCase().startsWith("UNICODE")
@@ -645,6 +562,9 @@ public class CharacterMap extends JPanel
 		|| enc.toUpperCase().startsWith("X-UTF");
 	}
 
+	/** Determine the size of the currently selected block.
+	 *  If the current encoding is not Unicode, fixed sizes are returned.
+	 */
 	private int getBlockSize()
 	{
 		if (isUnicode(encoding))
@@ -662,6 +582,10 @@ public class CharacterMap extends JPanel
 		}
 	}
 
+
+	/** Determine the offset of the currently selected block.
+	 *  If the current encoding is not Unicode, zero is returned.
+	 */
 	private int getBlockOffset()
 	{
 		if (isUnicode(encoding))
@@ -674,7 +598,9 @@ public class CharacterMap extends JPanel
 			return 0;
 		}
 	}
+	//}}}
 
+	//{{{ Encoding
 	/**
 	 * Set the charmap encoding and the encoding combo box to the input value.
 	 * If the value does not exist in the encodings list, it is stored
@@ -726,11 +652,122 @@ public class CharacterMap extends JPanel
 			view.getBuffer().propertiesChanged();
 		}
 	}
+	//}}}
 
+	//{{{ Table
+	/** Set tableColumns depending on character map options
+	 *  and window docking state.
+	 *  @see tableColumns
+	 */
+	private void setTableColumns()
+	{
+		if (isDockedLeftRight()) {
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-lr");
+		}
+		else if (isDockedTopBottom()) {
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb");
+		}
+		else {
+			tableColumns = jEdit.getIntegerProperty(OPTION_PREFIX + "columns");
+		}
+	}
+	//}}}
+
+	//{{{ Status line
+	/**
+	 * Set the value of the status string, for the given table entry.
+	 * For invalid codepoints / characters the status string is cleared.
+	 *
+	 * @param cp  Codepoint (unicode) of the selected character, or -1 if none
+	 * @param row Table row of the selected character
+	 * @param col Table column of the selected character
+	 * @see   Character.isValidCodePoint
+	 * @see   CharTableModel.isValidChar
+	 */
+	private void setStatusText(int row, int col)
+	{
+
+		if (!tableModel.isValidChar(row, col)) {
+			clearStatusText();
+			return;
+		}
+
+
+		int index;    // Table index = codepoint for current encoding
+		int cp;       // Unicode codepoint for the table index
+		String ch;    // Character as unicode string
+		byte[] bytes; // Character bytecode for current encoding
+		String name;  // Character unicode name
+
+		// Determine status line parameters
+
+		index = tableModel.getIndexAt(row,col);
+		ch = (String) tableModel.getValueAt(row,col);
+		cp = ch.codePointAt(0);
+
+		try {
+			// switch to encodings without explicit encoding marks
+			String enc = encoding.toUpperCase();
+			if (enc.contains("UTF") && enc.contains("8"))
+				enc = "UTF-8";
+			if (enc.contains("UTF") && enc.contains("16")) {
+				enc = enc.contains("LE") ?
+				"UTF-16LE" : "UTF-16BE";
+			}
+			if (enc.contains("UTF") && enc.contains("32")) {
+				enc = enc.contains("LE") ?
+				"UTF-32LE" : "UTF-32BE";
+			}
+
+			bytes = ch.getBytes(enc);
+		}
+		catch (Exception e) {
+			clearStatusText();
+			return;
+		}
+
+		//name = Character.getName(cp);
+		name = UnicodeData.getCharacterName(cp);
+
+		// Write the status line
+
+		StringBuilder buf = new StringBuilder();
+
+		buf.append(toDecString(index, 3, " Dec: "));
+		buf.append(toHexString(index, 2, true, " Hex: 0x"));
+
+		if (isDockedLeftRight()) buf.append("\n");
+
+		buf.append(" Bytes:");
+		for (int i = 0; i < bytes.length; i++)
+			buf.append(toHexString(bytes[i] & 0xFF, 2, true, " 0x"));
+
+		if (isDockedLeftRight()) buf.append("\n");
+
+		if (name != null)
+			buf.append(" Name: " + name);
+		else
+			buf.append(" Name: " + " - ");
+
+		status.setText(buf.toString());
+	}
+
+	/** Clear the status line */
+	private void clearStatusText()
+	{
+		status.setText(" ");
+		status.setRows(isDockedLeftRight() ? 3 : 1);
+		return;
+	}
+	//}}}
+
+	//{{{ Interaction with jEdit
 	/**
 	 * Implementation of EBComponent.
 	 * - Changes charmap encoding, if buffer encoding has changed in jEdit.
 	 * - Changes table row height, if text area font size has changed in jEdit.
+	 * - Change charmap encodings list if selected encodings have changed in jEdit.
+	 * - Reset Substitution fonts. (Initialisation is done in the autoFont() function)
 	 */
 	public void handleMessage(EBMessage message)
 	{
@@ -745,9 +782,9 @@ public class CharacterMap extends JPanel
 		}
 		if (message instanceof PropertiesChanged)
 		{
-			if (table.getRowHeight() != normalRowHeight())
+			if (table.getRowHeight() != tableRowHeight())
 			{
-				table.setRowHeight(normalRowHeight());
+				table.setRowHeight(tableRowHeight());
 				table.repaint();
 			}
 
@@ -772,7 +809,7 @@ public class CharacterMap extends JPanel
 		}
 	}
 
-	/** Charmap Communication with EditBus ("Remove") */
+	/** Charmap Communication with EditBus: 'Remove' */
 	@Override
 	public void addNotify()
 	{
@@ -780,7 +817,7 @@ public class CharacterMap extends JPanel
 		EditBus.addToBus(this);
 	}
 
-	/** Charmap Communication with EditBus ("Add") */
+	/** Charmap Communication with EditBus: 'Add' */
 	@Override
 	public void removeNotify()
 	{
@@ -788,147 +825,36 @@ public class CharacterMap extends JPanel
 		EditBus.removeFromBus(this);
 	}
 
-private void setCharInBuffer(String ch)
-{
-	String bufferEncoding = view.getBuffer()
-		.getStringProperty(JEditBuffer.ENCODING);
-	if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding)) {
-		view.getTextArea().setSelectedText(ch);
+	/** Write character into active jEdit Buffer.
+	 *  Don't write and issue a warning message, if the buffer is non-Unicode
+	 *  and a different encoding is chosen in character map.
+	 */
+	private void setCharInBuffer(String ch)
+	{
+		String bufferEncoding = view.getBuffer()
+			.getStringProperty(JEditBuffer.ENCODING);
+		if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding)) {
+			view.getTextArea().setSelectedText(ch);
+		}
+		else {
+			JOptionPane.showMessageDialog(view,
+				jEdit.getProperty(NAME_PREFIX + "no-insert-message-1")
+				  + bufferEncoding
+				  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-2")
+				  + encoding
+				  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-3"),
+				jEdit.getProperty(NAME_PREFIX + "no-insert-message.label"),
+				JOptionPane.WARNING_MESSAGE);
+		}
 	}
-	else {
-		JOptionPane.showMessageDialog(view,
-			jEdit.getProperty(NAME_PREFIX + "no-insert-message-1")
-			  + bufferEncoding
-			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-2")
-			  + encoding
-			  + jEdit.getProperty(NAME_PREFIX + "no-insert-message-3"),
-			jEdit.getProperty(NAME_PREFIX + "no-insert-message.label"),
-			JOptionPane.WARNING_MESSAGE);
-	}
-}
+	//}}}
+
 //}}}
 
 
 //{{{ Auxiliary classes
-	/**
-	 * Model of character data contained within the
-	 * glyph table.
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
-	 */
-	class CharTableModel extends AbstractTableModel
-	{
-		/**
-		 * @return    Number of columns in the glyph table
-		 */
-		public int getColumnCount()
-		{
-			return tableColumns;
-		}
 
-		/**
-		 * @return    Number of rows in the glyph table
-		 */
-		public int getRowCount()
-		{
-			int tableRows = (getBlockSize() - getBlockSize() % tableColumns)
-				/ tableColumns;
-			if ( getBlockSize() % tableColumns != 0 ) tableRows += 1;
-			return tableRows;
-		}
-
-		/**
-		 * Returns the index of a character in the glyph table.
-		 * i.e. the codepoint for the given encoding.
-		 * For Unicode, the offset of the Unicode block must be taken
-		 * into account.
-		 *
-		 * @param row Row of table containing character.
-		 * @param col Column of table containing the character.
-		 * @return Index of cell in the glyph table.
-		 */
-		public int getIndexAt(int row, int col)
-		{
-			int cell = row * tableColumns + col;
-
-			if (isUnicode(encoding))
-				return cell + getBlockOffset();
-			else
-				return cell;
-		}
-
-		/**
-		 * Generates a string containing the character stored within
-		 * the table at the given row and column. If the encoding is
-		 * unicode or utf8 this depends on the current page value
-		 *
-		 * @param  row  Row of table containing required character
-		 * @param  col  Column of table containing required character
-		 * @return      String containing character representation of
-		 *              glyph stored within glyph table at given row
-		 *              Invalid entries are replaced by the replacement
-		 *              char (Codepoint 0xFFFD).
-		 */
-		public Object getValueAt(int row, int col)
-		{
-			String ch;
-
-			if (isUnicode(encoding)) {
-				ch = new String(Character
-					.toChars(getIndexAt(row, col)));
-			}
-			else {
-				try {
-					ch = new String(new byte[]{
-						(byte) getIndexAt(row, col) },
-						encoding);
-				}
-				catch (UnsupportedEncodingException ue) {
-					ch = REPLACEMENT_CHAR;
-				}
-			}
-
-			if (ch == null || ch.equals("")) {
-				ch = REPLACEMENT_CHAR;
-			}
-
-			return ch;
-		}
-
-		/**
-		 * Determine, if the given character is valid.
-		 *
-		 * The function getValueAt(..) returns the replacement char
-		 * for invalid characters; however the true replacement
-		 * char at its unicode codepoint remains valid.
-		 *
-		 * @param ch    Character in String format
-		 * @param row   Table row
-		 * @param col   Table column
-		 */
-		public boolean isValidChar(String ch, int row, int col)
-		{
-			if (! ch.equals(REPLACEMENT_CHAR)) return true;
-			if (getIndexAt(row, col) == REPLACEMENT_CHAR.codePointAt(0))
-				return true;
-			else
-				return false;
-		}
-
-		/**
-		 * Determine name of column with given index
-		 *
-		 * @param  index  Column index
-		 * @return        Name of column
-		 */
-		 @Override
-		public String getColumnName(int index)
-		{
-			return null;
-		}
-	}
-
+	//{{{ Handlers
 	/**
 	 *  Handles actions performed on the encoding combo-box
 	 *
@@ -970,14 +896,21 @@ private void setCharInBuffer(String ch)
 		 */
 		public void stateChanged(ChangeEvent evt)
 		{
-			clearStatusText();
 			table.repaint();
+			clearStatusText();
 		}
 	}
 
-
+	/**
+	 *  Catches item events in the combo boxes
+	 */
 	class ItemHandler implements ItemListener
 	{
+		/**
+		 * Called when the items in the block and encoding combos
+		 * are changed. Changes the table content according to the
+		 * new settings.
+		 */
 		public void itemStateChanged(final ItemEvent evt)
 		{
 			tableModel.fireTableDataChanged();
@@ -1041,10 +974,9 @@ private void setCharInBuffer(String ch)
 				Point p = evt.getPoint();
 				row = table.rowAtPoint(p);
 				column = table.columnAtPoint(p);
-				if (row != -1 && column != -1) {
+				if (tableModel.isValidChar(row, column) ) {
 					String ch = getChar(row, column);
-					if (tableModel.isValidChar(ch, row, column))
-						setCharInBuffer(ch);
+					setCharInBuffer(ch);
 				}
 			}
 		}
@@ -1062,6 +994,7 @@ private void setCharInBuffer(String ch)
 		{
 			int button = evt.getButton();
 			if (button == MouseEvent.BUTTON3) {
+
 				if (row == -1 || column == -1) return;
 
 				Point p = evt.getPoint();
@@ -1120,7 +1053,7 @@ private void setCharInBuffer(String ch)
 					largeChar.setFont(largeFont(cp));
 					superChar.setFont(superFont(cp));
 
-					setStatusText(cp, row, column);
+					setStatusText(row, column);
 					largeChar.setText(ch);
 					if (displayingSuperChar) {
 						//Log.log(Log.MESSAGE, this, "Got mouseDragged at x = " + p.x + ", y = " + p.y);
@@ -1178,10 +1111,11 @@ private void setCharInBuffer(String ch)
 				else {
 					String ch = getChar(row, column);
 					int cp = ch.codePointAt(0);
-					largeChar.setFont(largeFont(cp));
 
+					largeChar.setFont(largeFont(cp));
 					largeChar.setText(ch);
-					setStatusText(cp, row, column);
+
+					setStatusText(row, column);
 				}
 			}
 		}
@@ -1314,7 +1248,9 @@ private void setCharInBuffer(String ch)
 			popup.hide();
 		}
 	}
+	//}}}
 
+	//{{{ GUI Component extensions
 	/**
 	 * JLabel with anti-aliasing rendering turned on if required
 	 *
@@ -1356,12 +1292,10 @@ private void setCharInBuffer(String ch)
 				 : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
 
 			// Set font and text
-			if (font != null) {
-				setFont(font);
-			}
-			else {
+			if (font == null)
 				setFont(normalFont());
-			}
+			else
+				setFont(font);
 			setText(text);
 
 			// Default Layout
@@ -1391,16 +1325,17 @@ private void setCharInBuffer(String ch)
 		}
 
 		/**
-		 * Set the text in the Label.
+		 * Set the text in the character labels
 		 * Empty strings are replaced by a single space.
-		 * Strings consisting of one control character
-		 * are replaced by a single space.
+		 * Strings consisting of a control character are converted
+		 * to numbers with smaller size.
 		 *
 		 * @param  text Text string for label
 		 */
 		@Override
 		public void setText(String text)
 		{
+			// Control chars
 			if ((text != null)
 				&& (text.length() == 1)
 				&& Character.isISOControl(text.codePointAt(0)))
@@ -1409,12 +1344,142 @@ private void setCharInBuffer(String ch)
 				setFont(this.getFont().deriveFont(
 					(float) this.getFont().getSize() * 2/3));
 			}
+			// Empty text
 			if ((text == null) || text.isEmpty()
 				//|| !Character.isDefined(text.codePointAt(0)) )
 				|| !UnicodeData.isDefined(text.codePointAt(0)))
 				text = " ";
 
 			super.setText(text);
+		}
+	}
+
+	/**
+	 * Model of character data contained within the
+	 * glyph table.
+	 *
+	 * @author     mawic
+	 * @created    June 11, 2003
+	 */
+	class CharTableModel extends AbstractTableModel
+	{
+		/**
+		 * @return    Number of columns in the glyph table
+		 */
+		public int getColumnCount()
+		{
+			return tableColumns;
+		}
+
+		/**
+		 * @return    Number of rows in the glyph table
+		 */
+		public int getRowCount()
+		{
+			int tableRows = (getBlockSize() - getBlockSize() % tableColumns)
+				/ tableColumns;
+			if ( getBlockSize() % tableColumns != 0 ) tableRows += 1;
+			return tableRows;
+		}
+
+		/**
+		 * Returns the index of a character in the glyph table.
+		 * i.e. the codepoint for the given encoding.
+		 * For Unicode blocks, the block offset is added.
+		 * For entries outside the table (row == -1 or col == -1)
+		 * return -1
+		 *
+		 * @param row Row of table containing character.
+		 * @param col Column of table containing the character.
+		 * @return Index of cell in the glyph table.
+		 */
+		public int getIndexAt(int row, int col)
+		{
+			int cell = row * tableColumns + col;
+
+			if ((row == -1) || (col == -1))
+				return -1;
+
+			if (isUnicode(encoding))
+				return cell + getBlockOffset();
+			else
+				return cell;
+		}
+
+		/**
+		 * Generates a string containing the character stored within
+		 * the table at the given row and column. If the encoding is
+		 * Unicode, this depends on the current page value.
+		 * For invalid table entries, the unicode replacement char
+		 * REPLACEMENT_CHAR is returned.
+		 *
+		 * @param  row  Row of table containing required character
+		 * @param  col  Column of table containing required character
+		 * @return      String containing character representation of
+		 *              glyph stored within glyph table at given row
+		 * @see         isValidChar
+		 */
+		public Object getValueAt(int row, int col)
+		{
+			String ch;
+
+			try {
+				if (isUnicode(encoding)) {
+					ch = new String(Character
+						.toChars(getIndexAt(row, col)));
+				}
+				else {
+					ch = new String(new byte[]{
+						(byte) getIndexAt(row, col) },
+						encoding);
+				}
+			}
+			catch (Exception ue) {
+				ch = REPLACEMENT_CHAR;
+			}
+
+			if (ch == null || ch.equals("")) {
+				ch = REPLACEMENT_CHAR;
+			}
+
+			return ch;
+		}
+
+		/**
+		 * Determine, if the character at a given index in the current
+		 * table is valid. A table index is invalid, if it does not
+		 * correspond a valid unicode entry.
+		 * This happens, if the table entry is outside the encoding range
+		 * or if it is a character from an encoding with no Unicode
+		 * or if we are outside of the table (row == -1 or col == -1)
+		 * equivalent.
+		 *
+		 * @param row   Table row
+		 * @param col   Table column
+		 * @return      Table entry is valid Unicode entry
+		 */
+		public boolean isValidChar(int row, int col)
+		{
+			String ch = (String) getValueAt(row, col);
+
+			if (! ch.equals(REPLACEMENT_CHAR)) return true;
+
+			if (getIndexAt(row, col) == REPLACEMENT_CHAR.codePointAt(0))
+				return true;
+			else
+				return false;
+		}
+
+		/**
+		 * Determine name of column with given index
+		 *
+		 * @param  index  Column index
+		 * @return        Name of column
+		 */
+		 @Override
+		public String getColumnName(int index)
+		{
+			return null;
 		}
 	}
 
@@ -1439,30 +1504,30 @@ private void setCharInBuffer(String ch)
 		/**
 		 * Method called by the table renderer to determine the
 		 * component to use to render the selected table cell.
-		 * Sets up the foreground and background colours, sets the
-		 * text to render then returns the instance of the renderer
-		 * (which is a super-class of JLabel).
+		 * Sets up the foreground and background colours,
+		 * the font and the text.
 		 * @param table Glyph table
 		 * @param text Text contained within cell at given location
 		 * @param isSelected Indicates whether cell is selected
 		 * @param hasFocus Indicates whether cell has input focus
 		 * @param row Row of selected cell in glyph table
 		 * @param column Column of selected cell in glyph table
+		 * @return Instance of the renderer (super-class of JLabel)
 		 */
 		public Component getTableCellRendererComponent(
 			JTable table, Object text,
 			boolean isSelected, boolean hasFocus,
 			int row, int column)
 		{
-			int cp =
-				((text == null) || ((String) text).isEmpty()) ?
-				-1 : ((String) text).codePointAt(0);
 
-			if (cp == -1) {
+			if ((text == null) || ((String) text).isEmpty()) {
 				setFont(normalFont());
 				setBackground(Color.WHITE);
+				setText(" ");
 				return this;
 			}
+
+			int cp = ((String) text).codePointAt(0);
 
 			setFont(autoFont(cp));
 
@@ -1470,7 +1535,7 @@ private void setCharInBuffer(String ch)
 				setBackground(new Color(220,220,255));
 			}
 			else if ( !((CharTableModel) table.getModel())
-				.isValidChar((String)text, row, column)) {
+				.isValidChar(row, column)) {
 				setBackground(new Color(255,220,220));
 			}
 			else if (!UnicodeData.isDefined(cp)) {
@@ -1486,6 +1551,8 @@ private void setCharInBuffer(String ch)
 			return this;
 		}
 	}
+	//}}}
+
 //}}}
 }
 
