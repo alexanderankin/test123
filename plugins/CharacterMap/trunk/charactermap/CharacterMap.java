@@ -365,6 +365,11 @@ public class CharacterMap extends JPanel
 
 		ch = new String(Character.toChars(cp));
 
+		if (!tableModel.isValidChar(ch, row, col)) {
+			clearStatusText();
+			return;
+		}
+
 		try {
 			// switch to encodings without explicit encoding marks
 			String enc = encoding.toUpperCase();
@@ -701,12 +706,9 @@ public class CharacterMap extends JPanel
 		if (encodingChanged)
 		{
 			blocksCombo.setEnabled(isUnicode(encoding));
-			if (isDockedLeftRight() && isUnicode(encoding))
-				status.setRows(3);
-			else
-				status.setRows(1);
 			tableModel.fireTableDataChanged();
 			table.repaint();
+			clearStatusText();
 		}
 	}
 
@@ -788,8 +790,6 @@ public class CharacterMap extends JPanel
 
 private void setCharInBuffer(String ch)
 {
-	if (ch.equals(REPLACEMENT_CHAR)) return;
-
 	String bufferEncoding = view.getBuffer()
 		.getStringProperty(JEditBuffer.ENCODING);
 	if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding)) {
@@ -897,6 +897,26 @@ private void setCharInBuffer(String ch)
 		}
 
 		/**
+		 * Determine, if the given character is valid.
+		 *
+		 * The function getValueAt(..) returns the replacement char
+		 * for invalid characters; however the true replacement
+		 * char at its unicode codepoint remains valid.
+		 *
+		 * @param ch    Character in String format
+		 * @param row   Table row
+		 * @param col   Table column
+		 */
+		public boolean isValidChar(String ch, int row, int col)
+		{
+			if (! ch.equals(REPLACEMENT_CHAR)) return true;
+			if (getIndexAt(row, col) == REPLACEMENT_CHAR.codePointAt(0))
+				return true;
+			else
+				return false;
+		}
+
+		/**
 		 * Determine name of column with given index
 		 *
 		 * @param  index  Column index
@@ -962,6 +982,7 @@ private void setCharInBuffer(String ch)
 		{
 			tableModel.fireTableDataChanged();
 			table.repaint();
+			clearStatusText();
 		}
 	}
 
@@ -1022,7 +1043,8 @@ private void setCharInBuffer(String ch)
 				column = table.columnAtPoint(p);
 				if (row != -1 && column != -1) {
 					String ch = getChar(row, column);
-					setCharInBuffer(ch);
+					if (tableModel.isValidChar(ch, row, column))
+						setCharInBuffer(ch);
 				}
 			}
 		}
@@ -1445,7 +1467,11 @@ private void setCharInBuffer(String ch)
 			setFont(autoFont(cp));
 
 			if (Character.isISOControl(cp)) {
-				setBackground(new Color(230,230,255));
+				setBackground(new Color(220,220,255));
+			}
+			else if ( !((CharTableModel) table.getModel())
+				.isValidChar((String)text, row, column)) {
+				setBackground(new Color(255,220,220));
 			}
 			else if (!UnicodeData.isDefined(cp)) {
 			//else if (!Character.isDefined(cp)) {
