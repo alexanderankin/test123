@@ -2,10 +2,9 @@ Known Issues:
 
 Suggested Features:
 - Search Characters by Name
-- Make an insert dialog for control Characters and "General Punctuation"
-- Search Blocks or Block groups, e.g. Latin, other European, Symbols...
-  (cf. http://en.wikipedia.org/wiki/File:Roadmap_to_Unicode_BMP.svg)
-- Character radical lookup search for CJK characters
+- Special table for Control Chars and block "General Punctuation"
+- Block groups, e.g. All Latin, All Symbols...
 - Blocks for east asian multi-byte encodings GBxxx, SJIS, BIG5
+- Character radical lookup search for CJK characters
 - Character info (from edict, cedict?) for CJK characters
 
