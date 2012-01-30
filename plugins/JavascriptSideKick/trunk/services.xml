@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 <SERVICES>
-	<SERVICE NAME="rhinojs" CLASS="sidekick.SideKickParser">
+	<SERVICE NAME="RhinoJS" CLASS="sidekick.SideKickParser">
 		new com.kpouer.jedit.javascriptsidekick.JavascriptSideKickParser();
 	</SERVICE>
 </SERVICES>
