@@ -28,7 +28,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 19 November 2011 | <?php /**/?>Latest Version: <a class="header_text" href="CHANGES45.txt">4.5pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES44.txt">4.4.2</a></p>
+      <p class="header_text">Last Site Update: 31 January 2012 | <?php /*?>Latest Version: <a class="header_text" href="CHANGES46.txt">4.6pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES45.txt">4.5.0</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
@@ -145,11 +145,7 @@
             </tr>
             <tr>
               <td colspan="2" class="menu_links" align="center">
-                <a href="http://sourceforge.net">
-				   <img src="http://sourceforge.net/sflogo.php?group_id=588"
-				    title="online services provided by Sourceforge.net"
-                   width="88" height="31" border="0" alt="SourceForge Logo" />
-			    </a>
+                <a href="http://sourceforge.net/projects/jedit"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=588&amp;type=10" border="0" width="80" height="15" alt="Get jEdit at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
               </td>
             </tr>
             <tr>

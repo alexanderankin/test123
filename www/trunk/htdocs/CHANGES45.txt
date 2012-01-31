@@ -2,6 +2,76 @@ jEdit 4.5 version history
        (changes since jEdit 4.4.2)
 :encoding=UTF-8:
 
+{{{ Version 4.5.0
+
+Thanks to Shlomy Reinstein, Alan Ezust, Jarek Czekalski, Michael Pradel, Evan
+Wright, Matthieu Casanova, Nathan Gray and Björn "Vampire" Kautler for contributing to this
+release.
+
+{{{ Bug Fixes
+
+- Inner class of FilteredListModel passes wrong "this" (patch# 3477759 - 
+  Michael Pradel)
+
+- Large file mode text description dialog (#3456370) (Matthieu Casanova)
+
+- VFS Browser was stuck if trying to browse a VFS that needed a session but the
+  session could not be opened (#3471386) (Matthieu Casanova)
+
+- Fixed Copy_Line macro that was copying one character of the next line
+  (#3454377) (Matthieu Casanova)
+
+- Fixed a NPE when trying to activate a plugin if one of it's dependencies is
+  missing (#2077205) (Matthieu Casanova)
+
+- When parsing buffer-local properties, there was a problem with escape
+  processing that prevented buffer-local properties to be read sometimes
+  (Bug #3438680 - Björn "Vampire" Kautler)
+
+- Building offline was prevented by a bug in Ivy, this is workarounded
+  now in the Ivy settings for jEdit. (Bug #3437212 - Björn "Vampire" Kautler)
+
+- Fixed #3163058: middle mouse button paste doesn't respect gutter selection.
+  (Shlomy Reinstein)
+
+- ":encoding=...:" was treated as buffer local property and caused
+  confusion about what encoding was used at loading/saving the buffer.
+  (SF.net patch #3434651 - Jarek Czekalski, for bug #1643580)
+
+- Fixed #3434527: Jump to wrong line with folded target (Evan Wright)
+
+- \r (0x0A, CR) could be pasted from clipboard into buffer.
+  (Bug #3142456 - Matthieu Casanova)
+
+- Added select all and select none buttons to PingPongList fixing a bug in
+  EncodingsOptionPane (#3434850) (Matthieu Casanova)
+
+- Fixed #3474515 - MiscUtilities.expandVariables does not expand ~ (Alan Ezust)
+
+}}}
+{{{ UI
+
+- Changed menus to use Mac-specific symbols for accelerator keys when using OS X
+  and the native look & feel (SF.net patch #1950147 - Nathan Gray)
+
+}}}
+{{{ Miscellaneous
+
+- Document jEdit's command line parameters into Activity Log 
+  (#2960844 - Alan Ezust)
+
+- Removed 192mb heap size limit from startup scripts.
+  Removed jedit.l4j.ini from Windows package files because no options were left.
+  NOTE:
+    Old jedit.l4j.ini won't be removed on upgrade. In that case, manual
+    removal will be required. Please look for jedit.l4j.ini in the
+    install directory after running the installer. If you found only
+    "-Xmx192M" in the file, you can remove it or the file itself.
+
+}}}
+
+}}}
+
 {{{ Version 4.5pre1
 
 Thanks to Björn "Vampire" Kautler, Matthieu Casanova, Alan Ezust, cy6erGn0m,
@@ -155,7 +225,8 @@ Eric Berry, and Eric Le Lay for contributing to this release.
   BufferIORequest.UNICODE_MAGIC_1
   BufferIORequest.UNICODE_MAGIC_2
   BufferIORequest.XML_PI_LENGTH
-  JEditBuffer.indentLine(int lineIndex, boolean canIncreaseIndent, boolean canDecreaseIndent)
+  JEditBuffer.indentLine(int lineIndex, boolean canIncreaseIndent,
+                         boolean canDecreaseIndent)
   JEditBuffer.isElectricKey(char ch)
   MiscUtilities.UTF_8_Y
   MiscUtilities.getFileParent(String path)
@@ -164,23 +235,33 @@ Eric Berry, and Eric Le Lay for contributing to this release.
   MiscUtilities.compareVersions(String v1, String v2)
   MiscUtilities.quicksort(Object[] obj, Comparator compare)
   MiscUtilities.quicksort(List list, Comparator compare)
-  MiscUtilities.copyStream(int bufferSize, ProgressObserver progress, InputStream in, OutputStream out, boolean canStop)
-  MiscUtilities.copyStream(ProgressObserver progress, InputStream in, OutputStream out, boolean canStop)
+  MiscUtilities.copyStream(int bufferSize, ProgressObserver progress,
+                           InputStream in, OutputStream out, boolean canStop)
+  MiscUtilities.copyStream(ProgressObserver progress, InputStream in,
+                           OutputStream out, boolean canStop)
   MiscUtilities.isBinary(Reader reader)
   MiscUtilities.closeQuietly(InputStream in)
   MiscUtilities.closeQuietly(OutputStream out)
   MiscUtilities.createWhiteSpace(int len, int tabSize)
   MiscUtilities.getLeadingWhiteSpaceWidth(String str, int tabSize)
   MiscUtilities.getColorHexString(Color c)
-  Chunk.init(Segment seg, TabExpander expander, float x, FontRenderContext fontRenderContext)
-  DisplayTokenHandler.init(SyntaxStyle[] styles, FontRenderContext fontRenderContext, TabExpander expander, List<Chunk> out, float wrapMargin)
+  Chunk.init(Segment seg, TabExpander expander, float x,
+             FontRenderContext fontRenderContext)
+  DisplayTokenHandler.init(SyntaxStyle[] styles,
+                           FontRenderContext fontRenderContext,
+                           TabExpander expander, List<Chunk> out,
+                           float wrapMargin)
   DisplayTokenHandler.initChunk(Chunk chunk, Segment seg)
   ParserRuleSet.getRules(char ch)
   ParserRule.EXCLUDE_MATCH
   ParserRule.NO_ESCAPE
   ParserRule.next
-  ParserRule.createRegexpSequenceRule(char hashChar, int posMatch, String seq, ParserRuleSet delegate, byte id, boolean ignoreCase)
-  ParserRule.createRegexpEOLSpanRule(char hashChar, int posMatch, String seq, ParserRuleSet delegate, byte id, byte matchType, boolean ignoreCase)
+  ParserRule.createRegexpSequenceRule(char hashChar, int posMatch, String seq,
+                                      ParserRuleSet delegate, byte id,
+                                      boolean ignoreCase)
+  ParserRule.createRegexpEOLSpanRule(char hashChar, int posMatch, String seq,
+                                     ParserRuleSet delegate, byte id,
+                                     byte matchType, boolean ignoreCase)
   PluginManagerProgress.setValue(int value)
   BracketIndentRule.getBrackets(String line)
   CloseBracketIndentRule.isMatch(String line)
@@ -206,10 +287,13 @@ Eric Berry, and Eric Le Lay for contributing to this release.
   GUIUtilities.READ_ONLY_BUFFER_ICON
   GUIUtilities.NORMAL_BUFFER_ICON
   GUIUtilities.WINDOW_ICON
-  BeanShell.runScript(View view, String path, Reader in, boolean ownNamespace, boolean rethrowBshErrors)
-  BeanShell.runScript(View view, String path, boolean ownNamespace, boolean rethrowBshErrors)
+  BeanShell.runScript(View view, String path, Reader in, boolean ownNamespace,
+                      boolean rethrowBshErrors)
+  BeanShell.runScript(View view, String path, boolean ownNamespace,
+                      boolean rethrowBshErrors)
   BeanShell.eval(View view, String command, boolean rethrowBshErrors)
-  BeanShell.eval(View view, NameSpace namespace, String command, boolean rethrowBshErrors)
+  BeanShell.eval(View view, NameSpace namespace, String command,
+                 boolean rethrowBshErrors)
   EditAction.getView(Component comp)
   EditBus.getComponents()
   JarClassLoader.getZipFile()
@@ -221,7 +305,8 @@ Eric Berry, and Eric Le Lay for contributing to this release.
   MiscUtilities.getLeadingWhiteSpace(String str)
   MiscUtilities.getTrailingWhiteSpace(String str)
   MiscUtilities.getVirtualWidth(Segment seg, int tabSize)
-  MiscUtilities.getOffsetOfVirtualColumn(Segment seg, int tabSize, int column, int[] totalVirtualWidth)
+  MiscUtilities.getOffsetOfVirtualColumn(Segment seg, int tabSize, int column,
+                                         int[] totalVirtualWidth)
   MiscUtilities.createWhiteSpace(int len, int tabSize, int start)
   MiscUtilities.globToRE(String glob)
   MiscUtilities.quicksort(Vector vector, Compare compare)
@@ -243,8 +328,10 @@ Eric Berry, and Eric Le Lay for contributing to this release.
   Registers.StringRegister
   jEdit.getActionSetForAction(EditAction action)
   jEdit.getActions()
-  jEdit.openFile(View view, String parent, String path, boolean readOnly, boolean newFile)
-  jEdit.openFile(View view, String parent, String path, boolean readOnly, boolean newFile, Hashtable props)
+  jEdit.openFile(View view, String parent, String path, boolean readOnly,
+                 boolean newFile)
+  jEdit.openFile(View view, String parent, String path, boolean readOnly,
+                 boolean newFile, Hashtable props)
   jEdit.createTextArea()
   TextArea.getMarkLine()
   VFS.DirectoryEntry
@@ -254,7 +341,8 @@ Eric Berry, and Eric Le Lay for contributing to this release.
   VFS._getDirectoryEntry(Object session, String path, Component comp)
   VFSManager.getVFSByName(String name)
   VFSManager.registerVFS(String protocol, VFS vfs)
-  VFSManager.error(final Component comp, final String error, final Object[] args)
+  VFSManager.error(final Component comp, final String error,
+                   final Object[] args)
   VFSManager.getFilesystems()
   VFSFile.name
   VFSFile.path
@@ -486,4 +574,4 @@ Eric Berry, and Eric Le Lay for contributing to this release.
 }}}
 
 jEdit buffer local properties:
-:folding=explicit:collapseFolds=2:
+:folding=explicit:collapseFolds=2:maxLineLen=80:wrap=hard:tabsize=4:
