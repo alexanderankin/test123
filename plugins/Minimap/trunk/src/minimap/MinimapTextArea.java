@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
+import org.gjt.sp.jedit.textarea.AntiAlias;
 import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditEmbeddedTextArea;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -81,6 +82,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		getPainter().setWrapGuidePainted(false);
+		getPainter().setAntiAlias(new AntiAlias(0));
 		lastFoldProp = Options.getFoldProp();
 		squarecolor = Options.getSquareColor();
 		fillsquare = Options.isSquareFilled();
@@ -242,6 +244,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			 ((message instanceof BufferUpdate) &&
 			  (((BufferUpdate) message).getWhat() == BufferUpdate.PROPERTIES_CHANGED))) {
 			EditPane.initPainter(getPainter());
+			getPainter().setAntiAlias(new AntiAlias(0));
 			squarecolor = Options.getSquareColor();
 			fillsquare = Options.isSquareFilled();
 			alpha = Options.getAlpha();
