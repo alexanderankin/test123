@@ -27,13 +27,8 @@ import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -107,6 +102,14 @@ public class CharacterMap extends JPanel
 	private DefaultComboBoxModel blocks;
 	/** Blocks in alphabetic order */
 	private boolean blocksAlphabetic;
+	/** Block navigation left */
+	private JButton blockLeft;
+	/** Block navigation right */
+	private JButton blockRight;
+	/** Listener for the Block navigation actions */
+	private ActionListener blockNavigationListener;
+	/** Panel taking the block navigation buttons */
+	private JPanel blockNavigation;
 	/** Component displaying large glyph */
 	private CharLabel largeChar;
 	/** Table containing character glyphs */
@@ -163,7 +166,7 @@ public class CharacterMap extends JPanel
 	 * properties as defined within the options pane.
 	 *
 	 * @param  view  jEdit view
-	 * @see          CharacterMapOptions
+	 * @see          CharacterMapOptionPane
 	 */
 	public CharacterMap(View view)
 	{
@@ -172,7 +175,7 @@ public class CharacterMap extends JPanel
 
 		this.view = view;
 
-		substitutionFonts = new ArrayList();
+		substitutionFonts = new ArrayList<Font>();
 
 		alwaysAntiAlias = jEdit.getBooleanProperty(OPTION_PREFIX + "anti-alias");
 		determineAntiAliasRequirements();
@@ -255,14 +258,38 @@ public class CharacterMap extends JPanel
 			while (blocks_iterator.hasNext()) blocks.addElement(blocks_iterator.next());
 		}
 		blocksCombo = new JComboBox(blocks);
+		blocksCombo.setSelectedItem(UnicodeData.getBlock("Basic Latin"));
 		blocksCombo.addItemListener(new ItemHandler());
 		blocksCombo.setEnabled(isUnicode(encoding));
-
 
 		c.weightx = 1.0;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(blocksCombo, c);
+
+		blockLeft = new JButton("<");
+		blockRight = new JButton(">");
+		blockLeft.setMargin(new Insets(1,1,1,1));
+		blockRight.setMargin(new Insets(1,1,1,1));
+
+		blockNavigationListener = new ActionHandler();
+		blockLeft.setActionCommand("block-left");
+		blockRight.setActionCommand("block-right");
+		blockLeft.addActionListener(blockNavigationListener);
+		blockRight.addActionListener(blockNavigationListener);
+
+		blockNavigation = new JPanel();
+		blockNavigation.add(blockLeft);
+		blockNavigation.add(blockRight);
+		blockLeft.setEnabled(isUnicode(encoding));
+		blockRight.setEnabled(isUnicode(encoding));
+
+		c.weightx = 0.0;
+		c.gridwidth=1;
+		if (isDockedLeftRight()) c.anchor = GridBagConstraints.NORTHEAST;
+		else c.anchor = GridBagConstraints.EAST;
+		c.fill = GridBagConstraints.NONE;
+		gridbag.setConstraints(blockNavigation,c);
 
 		showBlocks = jEdit.getBooleanProperty(OPTION_PREFIX + "blocks");
 		if (showBlocks)
@@ -288,11 +315,17 @@ public class CharacterMap extends JPanel
 		largeChar.setPreferredSize(largeCharSz);
 		gridbag.setConstraints(largeChar, c);
 
+		if (showBlocks && ! isDockedLeftRight())
+			northPanel.add(blockNavigation);
+
 		showLarge = jEdit.getBooleanProperty(OPTION_PREFIX + "large");
 		if (showLarge) {
 			northPanel.add(caption);
 			northPanel.add(largeChar);
 		}
+
+		if (showBlocks && isDockedLeftRight())
+			northPanel.add(blockNavigation);
 
 		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
 		superChar = new CharLabel(superFont(), " ");
@@ -429,7 +462,7 @@ public class CharacterMap extends JPanel
 			return f;
 
 		// If empty, determine substitution font list
-		if (substitutionFonts.size() == 0)
+		if (substitutionFonts.isEmpty())
 		{
 			// add preferred fonts
 			String family;
@@ -632,6 +665,8 @@ public class CharacterMap extends JPanel
 		if (encodingChanged)
 		{
 			blocksCombo.setEnabled(isUnicode(encoding));
+			blockLeft.setEnabled(isUnicode(encoding));
+			blockRight.setEnabled(isUnicode(encoding));
 			tableModel.fireTableDataChanged();
 			table.repaint();
 			clearStatusText();
@@ -745,9 +780,9 @@ public class CharacterMap extends JPanel
 		if (isDockedLeftRight()) buf.append("\n");
 
 		if (name != null)
-			buf.append(" Name: " + name);
+			buf.append(" Name: ").append(name);
 		else
-			buf.append(" Name: " + " - ");
+			buf.append(" Name: ").append(" - ");
 
 		status.setText(buf.toString());
 	}
@@ -757,7 +792,6 @@ public class CharacterMap extends JPanel
 	{
 		status.setText(" ");
 		status.setRows(isDockedLeftRight() ? 3 : 1);
-		return;
 	}
 	//}}}
 
@@ -874,6 +908,18 @@ public class CharacterMap extends JPanel
 			if (evt.getSource() == encodingCombo)
 			{
 				changeEncodingCharMap((String) encodingCombo.getSelectedItem());
+			}
+			else if (evt.getActionCommand().equals("block-left"))
+			{
+				int index = blocksCombo.getSelectedIndex();
+				if (index > 0)
+					blocksCombo.setSelectedIndex(index - 1);
+			}
+			else if (evt.getActionCommand().equals("block-right"))
+			{
+				int index = blocksCombo.getSelectedIndex();
+				if (index < (blocksCombo.getItemCount() - 1))
+					blocksCombo.setSelectedIndex(index + 1);
 			}
 		}
 	}
@@ -1333,7 +1379,7 @@ public class CharacterMap extends JPanel
 		 * @param  text Text string for label
 		 */
 		@Override
-		public void setText(String text)
+		public final void setText(String text)
 		{
 			// Control chars
 			if ((text != null)
@@ -1411,13 +1457,14 @@ public class CharacterMap extends JPanel
 		 * the table at the given row and column. If the encoding is
 		 * Unicode, this depends on the current page value.
 		 * For invalid table entries, the unicode replacement char
-		 * REPLACEMENT_CHAR is returned.
+		 * is returned.
 		 *
 		 * @param  row  Row of table containing required character
 		 * @param  col  Column of table containing required character
 		 * @return      String containing character representation of
 		 *              glyph stored within glyph table at given row
 		 * @see         isValidChar
+		 * @see         REPLACEMENT_CHAR
 		 */
 		public Object getValueAt(int row, int col)
 		{
@@ -1425,21 +1472,27 @@ public class CharacterMap extends JPanel
 
 			try {
 				if (isUnicode(encoding)) {
-					ch = new String(Character
-						.toChars(getIndexAt(row, col)));
+					int cp = getIndexAt(row, col);
+					if (! Character.isValidCodePoint(cp))
+						return REPLACEMENT_CHAR;
+					ch = new String(Character.toChars(cp));
 				}
 				else {
-					ch = new String(new byte[]{
-						(byte) getIndexAt(row, col) },
-						encoding);
+					byte[] indexBytes = new byte[]{
+						(byte) getIndexAt(row, col) };
+					ch = new String(indexBytes, encoding);
+
+					// Check roundtrip conversion with Unicode:
+					byte[] chBytes =  ch.getBytes(encoding);
+					if (!Arrays.equals(indexBytes, chBytes))
+						return REPLACEMENT_CHAR;
 				}
 			}
-			catch (Exception ue) {
-				ch = REPLACEMENT_CHAR;
+			catch (Exception e) {
+				return REPLACEMENT_CHAR;
 			}
-
-			if (ch == null || ch.equals("")) {
-				ch = REPLACEMENT_CHAR;
+			if ((ch == null) || (ch == "")) {
+				return REPLACEMENT_CHAR;
 			}
 
 			return ch;
