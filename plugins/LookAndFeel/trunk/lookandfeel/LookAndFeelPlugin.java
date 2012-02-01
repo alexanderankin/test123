@@ -30,27 +30,47 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIDefaults;
 
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
-public class LookAndFeelPlugin extends EditPlugin {
+public class LookAndFeelPlugin extends EBPlugin {
+
+    public static boolean loadedInitialLnF = false;
 
     public void start() {
+        jEdit.unsetProperty("lookAndFeel");
         try {
             String lnf = jEdit.getProperty("lookandfeel.lookandfeel");
-            if (lnf == null || lnf.trim().length() == 0) {
+            if (LookAndFeelPlugin.isEmpty(lnf)) {
                 return;
             }
+
             LookAndFeelInstaller installer = getInstaller(lnf);
             if (installer == null) {
-                jEdit.resetProperty("lookandfeel.lookandfeel");
+                loadedInitialLnF = false;
                 return;
             }
             installLookAndFeel(installer);
+            loadedInitialLnF = true;
+
         } catch (Exception e) {
             Log.log(Log.ERROR, this, e);
+        }
+    }
+
+    public void handleMessage(EBMessage msg) {
+        if (loadedInitialLnF) {
+            return;
+        }
+        if (msg instanceof PluginUpdate) {
+            PluginUpdate pu = (PluginUpdate) msg;
+            if (PluginUpdate.LOADED.equals(pu.getWhat())) {
+                start();
+            }
         }
     }
 
@@ -58,11 +78,14 @@ public class LookAndFeelPlugin extends EditPlugin {
      * Install a look and feel based on the given installer.
      */
     public static void installLookAndFeel(final LookAndFeelInstaller installer) {
+        if (installer == null) {
+            return;
+        }
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
+                    jEdit.unsetProperty("lookAndFeel");
                     installer.install();
-
                     UIDefaults uid = UIManager.getDefaults();
 
                     // this is a workaround for the SkinLF; it doesn't find the
@@ -72,8 +95,8 @@ public class LookAndFeelPlugin extends EditPlugin {
                     uid.put(org.gjt.sp.jedit.menu.EnhancedCheckBoxMenuItem.class, new javax.swing.JCheckBoxMenuItem().getUI());
 
                     if (jEdit.getBooleanProperty("lookandfeel.usejeditfont", false)) {
-                        Font primaryFont = jEdit.getFontProperty ("metal.primary.font");
-                        Font secondaryFont = jEdit.getFontProperty ("metal.secondary.font");
+                        Font primaryFont = jEdit.getFontProperty("metal.primary.font");
+                        Font secondaryFont = jEdit.getFontProperty("metal.secondary.font");
 
                         if (primaryFont != null && secondaryFont != null) {
                             uid.put("Button.font", primaryFont);
@@ -114,6 +137,8 @@ public class LookAndFeelPlugin extends EditPlugin {
                     }
 
                     updateAllComponentTreeUIs();
+                    
+                    jEdit.setProperty("lookAndFeel", UIManager.getLookAndFeel().getClass().getName());
                 } catch (Exception e) {
                     Log.log(Log.ERROR, LookAndFeelPlugin.class, e);
                 }
@@ -151,34 +176,45 @@ public class LookAndFeelPlugin extends EditPlugin {
         }
     }
 
-
     /**
      * Returns the list of the possible look and feel options.
      */
     public static String[] getAvailableLookAndFeels() {
-    	String[] names = ServiceManager.getServiceNames( LookAndFeelInstaller.SERVICE_NAME );
-    	Arrays.sort(names, new Comparator<String>(){
-    			public int compare(String a, String b) {
-    				if ("None".equals(a)) return -1;
-    				if ("None".equals(b)) return 1;
-    				return a.compareTo(b);
-    			}
-    	});
-    	return names;
+        String[] names = ServiceManager.getServiceNames(LookAndFeelInstaller.SERVICE_NAME);
+        Arrays.sort(names, new Comparator<String>() {
+            public int compare(String a, String b) {
+                if ("None".equals(a)) {
+                    return -1;
+                }
+                if ("None".equals(b)) {
+                    return 1;
+                }
+                return a.compareTo(b);
+            }
+        } );
+        return names;
     }
 
     /**
      * Returns the installer for the named look and feel.
      */
     public static LookAndFeelInstaller getInstaller(String name) {
-    	return (LookAndFeelInstaller)ServiceManager.getService(LookAndFeelInstaller.SERVICE_NAME, name);
+        return (LookAndFeelInstaller) ServiceManager.getService(LookAndFeelInstaller.SERVICE_NAME, name);
     }
 
     /**
      * Returns <code>true</code> if the given string is <code>null</code>
-     * or empty.
+     * or empty or contains only whitespace.
      */
     protected static boolean isEmpty(String s) {
-        return s == null || s.trim().length() == 0;
+        if (s == null || s.length() == 0) {
+            return true;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (!Character.isWhitespace(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
