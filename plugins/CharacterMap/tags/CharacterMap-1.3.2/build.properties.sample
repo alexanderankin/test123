@@ -1,0 +1,26 @@
+﻿###
+### build.properties file for CharacterMap plugin
+###
+
+
+### Directory of the installed jedit.jar
+### e.g. "../.." or "C:/Program Files/jEdit" etc.
+
+# jedit.install.dir=../..
+
+
+### Where to install the plugin
+
+# install.dir=${user.home}/.jedit/jars
+
+
+### Directory of the build-support tools
+
+# build.support=../../../build-support
+
+
+### Exclude ant runtime
+
+# build.sysclasspath=ignore
+
+

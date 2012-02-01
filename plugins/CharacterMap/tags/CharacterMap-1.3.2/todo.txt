@@ -1,0 +1,11 @@
+Known Issues:
+
+Suggested Features:
+- CJK character english translation from UniHan database
+- Search characters by name and translation
+- Special table for control chars and block "General Punctuation"
+- Block groups as defined in the Unicode documentation chapters
+  (select them in combo box and put several blocks into the table)
+- Blocks for east asian multi-byte encodings GBxxx, SJIS, BIG5
+- Character radical lookup search for CJK characters
+
