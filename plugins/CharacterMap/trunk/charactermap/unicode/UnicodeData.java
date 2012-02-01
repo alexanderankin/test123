@@ -223,6 +223,22 @@ public final class UnicodeData
 	}
 
 	/**
+	 *  Returns the Unicode block for a given block name, or
+	 *  <code>null</code> if there is no block with this name available.
+	 */
+	public static Block getBlock(String blockName)
+	{
+		Iterator<Block> I = getBlocks().iterator();
+		Block B;
+		while (I.hasNext()) {
+			B = I.next();
+			if (B.toString().equals(blockName))
+				return B;
+		}
+		return null;
+	}
+
+	/**
 	 * Returns the Unicode character name for the specified code
 	 * point, or <code>null</code> if there is no name available.
 	 */
