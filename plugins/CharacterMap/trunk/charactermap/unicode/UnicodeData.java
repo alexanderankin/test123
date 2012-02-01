@@ -250,17 +250,21 @@ public final class UnicodeData
 
 		// Correct the name, if it is from a block in which only
 		// first and last character are named.
+		boolean isFirst = false;
+		boolean isLast = false;
 		if (name == null) {
 			Block B = getBlock(codePoint);
 			if (B == null) return null;
 			name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
+			if (name == null) return null;
+			else if (name.endsWith("First>")) isFirst = true;
+			else if (name.endsWith("Last>")) isLast = true;
+			else return null;
 		}
-		if (name == null) return null;
-		//if (name.toUpperCase().trim().endsWith("FIRST>"))
-		if (name.endsWith("First>"))
+		if (isFirst)
 			name = (name.substring(1, name.trim().length() - 8)
 				+ "-" + Integer.toHexString(codePoint).toUpperCase());
-		if (name.endsWith("Last>"))
+		if (isLast)
 			name = (name.substring(1, name.trim().length() - 7)
 				+ "-" + Integer.toHexString(codePoint).toUpperCase());
 
