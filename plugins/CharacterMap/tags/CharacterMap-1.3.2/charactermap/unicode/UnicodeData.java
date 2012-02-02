@@ -355,6 +355,7 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("NKo", 0x07C0, 0x07FF),
 	new UnicodeData.Block("Samaritan", 0x0800, 0x083F),
 	new UnicodeData.Block("Mandaic", 0x0840, 0x085F),
+	new UnicodeData.Block("Arabic Extended-A", 0x08A0, 0x08FF),
 	new UnicodeData.Block("Devanagari", 0x0900, 0x097F),
 	new UnicodeData.Block("Bengali", 0x0980, 0x09FF),
 	new UnicodeData.Block("Gurmukhi", 0x0A00, 0x0A7F),
@@ -395,6 +396,7 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("Batak", 0x1BC0, 0x1BFF),
 	new UnicodeData.Block("Lepcha", 0x1C00, 0x1C4F),
 	new UnicodeData.Block("Ol Chiki", 0x1C50, 0x1C7F),
+	new UnicodeData.Block("Sundanese Supplement", 0x1CC0, 0x1CCF),
 	new UnicodeData.Block("Vedic Extensions", 0x1CD0, 0x1CFF),
 	new UnicodeData.Block("Phonetic Extensions", 0x1D00, 0x1D7F),
 	new UnicodeData.Block("Phonetic Extensions Supplement", 0x1D80, 0x1DBF),
@@ -414,7 +416,7 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("Optical Character Recognition", 0x2440, 0x245F),
 	new UnicodeData.Block("Enclosed Alphanumerics", 0x2460, 0x24FF),
 	new UnicodeData.Block("Box Drawing", 0x2500, 0x257F),
-	new UnicodeData.Block("UnicodeData.Block Elements", 0x2580, 0x259F),
+	new UnicodeData.Block("Block Elements", 0x2580, 0x259F),
 	new UnicodeData.Block("Geometric Shapes", 0x25A0, 0x25FF),
 	new UnicodeData.Block("Miscellaneous Symbols", 0x2600, 0x26FF),
 	new UnicodeData.Block("Dingbats", 0x2700, 0x27BF),
@@ -470,6 +472,7 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("Cham", 0xAA00, 0xAA5F),
 	new UnicodeData.Block("Myanmar Extended-A", 0xAA60, 0xAA7F),
 	new UnicodeData.Block("Tai Viet", 0xAA80, 0xAADF),
+	new UnicodeData.Block("Meetei Mayek Extensions", 0xAAE0, 0xAAFF),
 	new UnicodeData.Block("Ethiopic Extended-A", 0xAB00, 0xAB2F),
 	new UnicodeData.Block("Meetei Mayek", 0xABC0, 0xABFF),
 	new UnicodeData.Block("Hangul Syllables", 0xAC00, 0xD7AF),
@@ -508,6 +511,8 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("Imperial Aramaic", 0x10840, 0x1085F),
 	new UnicodeData.Block("Phoenician", 0x10900, 0x1091F),
 	new UnicodeData.Block("Lydian", 0x10920, 0x1093F),
+	new UnicodeData.Block("Meroitic Hieroglyphs", 0x10980, 0x1099F),
+	new UnicodeData.Block("Meroitic Cursive", 0x109A0, 0x109FF),
 	new UnicodeData.Block("Kharoshthi", 0x10A00, 0x10A5F),
 	new UnicodeData.Block("Old South Arabian", 0x10A60, 0x10A7F),
 	new UnicodeData.Block("Avestan", 0x10B00, 0x10B3F),
@@ -517,10 +522,15 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("Rumi Numeral Symbols", 0x10E60, 0x10E7F),
 	new UnicodeData.Block("Brahmi", 0x11000, 0x1107F),
 	new UnicodeData.Block("Kaithi", 0x11080, 0x110CF),
+	new UnicodeData.Block("Sora Sompeng", 0x110D0, 0x110FF),
+	new UnicodeData.Block("Chakma", 0x11100, 0x1114F),
+	new UnicodeData.Block("Sharada", 0x11180, 0x111DF),
+	new UnicodeData.Block("Takri", 0x11680, 0x116CF),
 	new UnicodeData.Block("Cuneiform", 0x12000, 0x123FF),
 	new UnicodeData.Block("Cuneiform Numbers and Punctuation", 0x12400, 0x1247F),
 	new UnicodeData.Block("Egyptian Hieroglyphs", 0x13000, 0x1342F),
 	new UnicodeData.Block("Bamum Supplement", 0x16800, 0x16A3F),
+	new UnicodeData.Block("Miao", 0x16F00, 0x16F9F),
 	new UnicodeData.Block("Kana Supplement", 0x1B000, 0x1B0FF),
 	new UnicodeData.Block("Byzantine Musical Symbols", 0x1D000, 0x1D0FF),
 	new UnicodeData.Block("Musical Symbols", 0x1D100, 0x1D1FF),
@@ -528,6 +538,7 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	new UnicodeData.Block("Tai Xuan Jing Symbols", 0x1D300, 0x1D35F),
 	new UnicodeData.Block("Counting Rod Numerals", 0x1D360, 0x1D37F),
 	new UnicodeData.Block("Mathematical Alphanumeric Symbols", 0x1D400, 0x1D7FF),
+	new UnicodeData.Block("Arabic Mathematical Alphabetic Symbols", 0x1EE00, 0x1EEFF),
 	new UnicodeData.Block("Mahjong Tiles", 0x1F000, 0x1F02F),
 	new UnicodeData.Block("Domino Tiles", 0x1F030, 0x1F09F),
 	new UnicodeData.Block("Playing Cards", 0x1F0A0, 0x1F0FF),
@@ -585,8 +596,8 @@ final class UnicodeCharNameMap extends HashMap<Integer,String>
 	 */
 
 // BEGIN GENERATED CODE: UnicodeData.txt, cutoff=0x10FFFF
-private static int actualSize = 23697;
-private static String[] characterNames = new String[1114110];
+private static final int actualSize = 24428;
+private static final String[] characterNames = new String[1114110];
 
 private static void loadCharacterNames0()
 {
@@ -1986,6 +1997,7 @@ private static void loadCharacterNames0()
 	characterNames[0x0587] = "ARMENIAN SMALL LIGATURE ECH YIWN";
 	characterNames[0x0589] = "ARMENIAN FULL STOP";
 	characterNames[0x058A] = "ARMENIAN HYPHEN";
+	characterNames[0x058F] = "ARMENIAN DRAM SIGN";
 	characterNames[0x0591] = "HEBREW ACCENT ETNAHTA";
 	characterNames[0x0592] = "HEBREW ACCENT SEGOL";
 	characterNames[0x0593] = "HEBREW ACCENT SHALSHELET";
@@ -2077,6 +2089,7 @@ private static void loadCharacterNames0()
 	characterNames[0x0601] = "ARABIC SIGN SANAH";
 	characterNames[0x0602] = "ARABIC FOOTNOTE MARKER";
 	characterNames[0x0603] = "ARABIC SIGN SAFHA";
+	characterNames[0x0604] = "ARABIC SIGN SAMVAT";
 	characterNames[0x0606] = "ARABIC-INDIC CUBE ROOT";
 	characterNames[0x0607] = "ARABIC-INDIC FOURTH ROOT";
 	characterNames[0x0608] = "ARABIC RAY";
@@ -2636,12 +2649,12 @@ private static void loadCharacterNames0()
 	characterNames[0x084D] = "MANDAIC LETTER AN";
 	characterNames[0x084E] = "MANDAIC LETTER AS";
 	characterNames[0x084F] = "MANDAIC LETTER IN";
-	characterNames[0x0850] = "MANDAIC LETTER AP";
-	characterNames[0x0851] = "MANDAIC LETTER ASZ";
 }
 
 private static void loadCharacterNames1()
 {
+	characterNames[0x0850] = "MANDAIC LETTER AP";
+	characterNames[0x0851] = "MANDAIC LETTER ASZ";
 	characterNames[0x0852] = "MANDAIC LETTER AQ";
 	characterNames[0x0853] = "MANDAIC LETTER AR";
 	characterNames[0x0854] = "MANDAIC LETTER ASH";
@@ -2653,6 +2666,45 @@ private static void loadCharacterNames1()
 	characterNames[0x085A] = "MANDAIC VOCALIZATION MARK";
 	characterNames[0x085B] = "MANDAIC GEMINATION MARK";
 	characterNames[0x085E] = "MANDAIC PUNCTUATION";
+	characterNames[0x08A0] = "ARABIC LETTER BEH WITH SMALL V BELOW";
+	characterNames[0x08A2] = "ARABIC LETTER JEEM WITH TWO DOTS ABOVE";
+	characterNames[0x08A3] = "ARABIC LETTER TAH WITH TWO DOTS ABOVE";
+	characterNames[0x08A4] = "ARABIC LETTER FEH WITH DOT BELOW AND THREE DOTS ABOVE";
+	characterNames[0x08A5] = "ARABIC LETTER QAF WITH DOT BELOW";
+	characterNames[0x08A6] = "ARABIC LETTER LAM WITH DOUBLE BAR";
+	characterNames[0x08A7] = "ARABIC LETTER MEEM WITH THREE DOTS ABOVE";
+	characterNames[0x08A8] = "ARABIC LETTER YEH WITH TWO DOTS BELOW AND HAMZA ABOVE";
+	characterNames[0x08A9] = "ARABIC LETTER YEH WITH TWO DOTS BELOW AND DOT ABOVE";
+	characterNames[0x08AA] = "ARABIC LETTER REH WITH LOOP";
+	characterNames[0x08AB] = "ARABIC LETTER WAW WITH DOT WITHIN";
+	characterNames[0x08AC] = "ARABIC LETTER ROHINGYA YEH";
+	characterNames[0x08E4] = "ARABIC CURLY FATHA";
+	characterNames[0x08E5] = "ARABIC CURLY DAMMA";
+	characterNames[0x08E6] = "ARABIC CURLY KASRA";
+	characterNames[0x08E7] = "ARABIC CURLY FATHATAN";
+	characterNames[0x08E8] = "ARABIC CURLY DAMMATAN";
+	characterNames[0x08E9] = "ARABIC CURLY KASRATAN";
+	characterNames[0x08EA] = "ARABIC TONE ONE DOT ABOVE";
+	characterNames[0x08EB] = "ARABIC TONE TWO DOTS ABOVE";
+	characterNames[0x08EC] = "ARABIC TONE LOOP ABOVE";
+	characterNames[0x08ED] = "ARABIC TONE ONE DOT BELOW";
+	characterNames[0x08EE] = "ARABIC TONE TWO DOTS BELOW";
+	characterNames[0x08EF] = "ARABIC TONE LOOP BELOW";
+	characterNames[0x08F0] = "ARABIC OPEN FATHATAN";
+	characterNames[0x08F1] = "ARABIC OPEN DAMMATAN";
+	characterNames[0x08F2] = "ARABIC OPEN KASRATAN";
+	characterNames[0x08F3] = "ARABIC SMALL HIGH WAW";
+	characterNames[0x08F4] = "ARABIC FATHA WITH RING";
+	characterNames[0x08F5] = "ARABIC FATHA WITH DOT ABOVE";
+	characterNames[0x08F6] = "ARABIC KASRA WITH DOT BELOW";
+	characterNames[0x08F7] = "ARABIC LEFT ARROWHEAD ABOVE";
+	characterNames[0x08F8] = "ARABIC RIGHT ARROWHEAD ABOVE";
+	characterNames[0x08F9] = "ARABIC LEFT ARROWHEAD BELOW";
+	characterNames[0x08FA] = "ARABIC RIGHT ARROWHEAD BELOW";
+	characterNames[0x08FB] = "ARABIC DOUBLE RIGHT ARROWHEAD ABOVE";
+	characterNames[0x08FC] = "ARABIC DOUBLE RIGHT ARROWHEAD ABOVE WITH DOT";
+	characterNames[0x08FD] = "ARABIC RIGHT ARROWHEAD ABOVE WITH DOT";
+	characterNames[0x08FE] = "ARABIC DAMMA WITH DOT";
 	characterNames[0x0900] = "DEVANAGARI SIGN INVERTED CANDRABINDU";
 	characterNames[0x0901] = "DEVANAGARI SIGN CANDRABINDU";
 	characterNames[0x0902] = "DEVANAGARI SIGN ANUSVARA";
@@ -3033,6 +3085,7 @@ private static void loadCharacterNames1()
 	characterNames[0x0AED] = "GUJARATI DIGIT SEVEN";
 	characterNames[0x0AEE] = "GUJARATI DIGIT EIGHT";
 	characterNames[0x0AEF] = "GUJARATI DIGIT NINE";
+	characterNames[0x0AF0] = "GUJARATI ABBREVIATION SIGN";
 	characterNames[0x0AF1] = "GUJARATI RUPEE SIGN";
 	characterNames[0x0B01] = "ORIYA SIGN CANDRABINDU";
 	characterNames[0x0B02] = "ORIYA SIGN ANUSVARA";
@@ -3705,6 +3758,8 @@ private static void loadCharacterNames1()
 	characterNames[0x0ED9] = "LAO DIGIT NINE";
 	characterNames[0x0EDC] = "LAO HO NO";
 	characterNames[0x0EDD] = "LAO HO MO";
+	characterNames[0x0EDE] = "LAO LETTER KHMU GO";
+	characterNames[0x0EDF] = "LAO LETTER KHMU NYO";
 	characterNames[0x0F00] = "TIBETAN SYLLABLE OM";
 	characterNames[0x0F01] = "TIBETAN MARK GTER YIG MGO TRUNCATED A";
 	characterNames[0x0F02] = "TIBETAN MARK GTER YIG MGO -UM RNAM BCAD MA";
@@ -4114,6 +4169,8 @@ private static void loadCharacterNames1()
 	characterNames[0x10C3] = "GEORGIAN CAPITAL LETTER WE";
 	characterNames[0x10C4] = "GEORGIAN CAPITAL LETTER HAR";
 	characterNames[0x10C5] = "GEORGIAN CAPITAL LETTER HOE";
+	characterNames[0x10C7] = "GEORGIAN CAPITAL LETTER YN";
+	characterNames[0x10CD] = "GEORGIAN CAPITAL LETTER AEN";
 	characterNames[0x10D0] = "GEORGIAN LETTER AN";
 	characterNames[0x10D1] = "GEORGIAN LETTER BAN";
 	characterNames[0x10D2] = "GEORGIAN LETTER GAN";
@@ -4159,6 +4216,9 @@ private static void loadCharacterNames1()
 	characterNames[0x10FA] = "GEORGIAN LETTER AIN";
 	characterNames[0x10FB] = "GEORGIAN PARAGRAPH SEPARATOR";
 	characterNames[0x10FC] = "MODIFIER LETTER GEORGIAN NAR";
+	characterNames[0x10FD] = "GEORGIAN LETTER AEN";
+	characterNames[0x10FE] = "GEORGIAN LETTER HARD SIGN";
+	characterNames[0x10FF] = "GEORGIAN LETTER LABIAL SIGN";
 	characterNames[0x1100] = "HANGUL CHOSEONG KIYEOK";
 	characterNames[0x1101] = "HANGUL CHOSEONG SSANGKIYEOK";
 	characterNames[0x1102] = "HANGUL CHOSEONG NIEUN";
@@ -4641,6 +4701,10 @@ private static void loadCharacterNames1()
 	characterNames[0x12F1] = "ETHIOPIC SYLLABLE DU";
 	characterNames[0x12F2] = "ETHIOPIC SYLLABLE DI";
 	characterNames[0x12F3] = "ETHIOPIC SYLLABLE DAA";
+}
+
+private static void loadCharacterNames2()
+{
 	characterNames[0x12F4] = "ETHIOPIC SYLLABLE DEE";
 	characterNames[0x12F5] = "ETHIOPIC SYLLABLE DE";
 	characterNames[0x12F6] = "ETHIOPIC SYLLABLE DO";
@@ -4690,10 +4754,6 @@ private static void loadCharacterNames1()
 	characterNames[0x1325] = "ETHIOPIC SYLLABLE THE";
 	characterNames[0x1326] = "ETHIOPIC SYLLABLE THO";
 	characterNames[0x1327] = "ETHIOPIC SYLLABLE THWA";
-}
-
-private static void loadCharacterNames2()
-{
 	characterNames[0x1328] = "ETHIOPIC SYLLABLE CHA";
 	characterNames[0x1329] = "ETHIOPIC SYLLABLE CHU";
 	characterNames[0x132A] = "ETHIOPIC SYLLABLE CHI";
@@ -6596,6 +6656,9 @@ private static void loadCharacterNames2()
 	characterNames[0x1BA8] = "SUNDANESE VOWEL SIGN PAMEPET";
 	characterNames[0x1BA9] = "SUNDANESE VOWEL SIGN PANEULEUNG";
 	characterNames[0x1BAA] = "SUNDANESE SIGN PAMAAEH";
+	characterNames[0x1BAB] = "SUNDANESE SIGN VIRAMA";
+	characterNames[0x1BAC] = "SUNDANESE CONSONANT SIGN PASANGAN MA";
+	characterNames[0x1BAD] = "SUNDANESE CONSONANT SIGN PASANGAN WA";
 	characterNames[0x1BAE] = "SUNDANESE LETTER KHA";
 	characterNames[0x1BAF] = "SUNDANESE LETTER SYA";
 	characterNames[0x1BB0] = "SUNDANESE DIGIT ZERO";
@@ -6608,6 +6671,12 @@ private static void loadCharacterNames2()
 	characterNames[0x1BB7] = "SUNDANESE DIGIT SEVEN";
 	characterNames[0x1BB8] = "SUNDANESE DIGIT EIGHT";
 	characterNames[0x1BB9] = "SUNDANESE DIGIT NINE";
+	characterNames[0x1BBA] = "SUNDANESE AVAGRAHA";
+	characterNames[0x1BBB] = "SUNDANESE LETTER REU";
+	characterNames[0x1BBC] = "SUNDANESE LETTER LEU";
+	characterNames[0x1BBD] = "SUNDANESE LETTER BHA";
+	characterNames[0x1BBE] = "SUNDANESE LETTER FINAL K";
+	characterNames[0x1BBF] = "SUNDANESE LETTER FINAL M";
 	characterNames[0x1BC0] = "BATAK LETTER A";
 	characterNames[0x1BC1] = "BATAK LETTER SIMALUNGUN A";
 	characterNames[0x1BC2] = "BATAK LETTER HA";
@@ -6684,6 +6753,10 @@ private static void loadCharacterNames2()
 	characterNames[0x1C11] = "LEPCHA LETTER FA";
 	characterNames[0x1C12] = "LEPCHA LETTER FLA";
 	characterNames[0x1C13] = "LEPCHA LETTER BA";
+}
+
+private static void loadCharacterNames3()
+{
 	characterNames[0x1C14] = "LEPCHA LETTER BLA";
 	characterNames[0x1C15] = "LEPCHA LETTER MA";
 	characterNames[0x1C16] = "LEPCHA LETTER MLA";
@@ -6742,10 +6815,6 @@ private static void loadCharacterNames2()
 	characterNames[0x1C51] = "OL CHIKI DIGIT ONE";
 	characterNames[0x1C52] = "OL CHIKI DIGIT TWO";
 	characterNames[0x1C53] = "OL CHIKI DIGIT THREE";
-}
-
-private static void loadCharacterNames3()
-{
 	characterNames[0x1C54] = "OL CHIKI DIGIT FOUR";
 	characterNames[0x1C55] = "OL CHIKI DIGIT FIVE";
 	characterNames[0x1C56] = "OL CHIKI DIGIT SIX";
@@ -6790,6 +6859,14 @@ private static void loadCharacterNames3()
 	characterNames[0x1C7D] = "OL CHIKI AHAD";
 	characterNames[0x1C7E] = "OL CHIKI PUNCTUATION MUCAAD";
 	characterNames[0x1C7F] = "OL CHIKI PUNCTUATION DOUBLE MUCAAD";
+	characterNames[0x1CC0] = "SUNDANESE PUNCTUATION BINDU SURYA";
+	characterNames[0x1CC1] = "SUNDANESE PUNCTUATION BINDU PANGLONG";
+	characterNames[0x1CC2] = "SUNDANESE PUNCTUATION BINDU PURNAMA";
+	characterNames[0x1CC3] = "SUNDANESE PUNCTUATION BINDU CAKRA";
+	characterNames[0x1CC4] = "SUNDANESE PUNCTUATION BINDU LEU SATANGA";
+	characterNames[0x1CC5] = "SUNDANESE PUNCTUATION BINDU KA SATANGA";
+	characterNames[0x1CC6] = "SUNDANESE PUNCTUATION BINDU DA SATANGA";
+	characterNames[0x1CC7] = "SUNDANESE PUNCTUATION BINDU BA SATANGA";
 	characterNames[0x1CD0] = "VEDIC TONE KARSHANA";
 	characterNames[0x1CD1] = "VEDIC TONE SHARA";
 	characterNames[0x1CD2] = "VEDIC TONE PRENKHA";
@@ -6825,6 +6902,10 @@ private static void loadCharacterNames3()
 	characterNames[0x1CF0] = "VEDIC SIGN RTHANG LONG ANUSVARA";
 	characterNames[0x1CF1] = "VEDIC SIGN ANUSVARA UBHAYATO MUKHA";
 	characterNames[0x1CF2] = "VEDIC SIGN ARDHAVISARGA";
+	characterNames[0x1CF3] = "VEDIC SIGN ROTATED ARDHAVISARGA";
+	characterNames[0x1CF4] = "VEDIC TONE CANDRA ABOVE";
+	characterNames[0x1CF5] = "VEDIC SIGN JIHVAMULIYA";
+	characterNames[0x1CF6] = "VEDIC SIGN UPADHMANIYA";
 	characterNames[0x1D00] = "LATIN LETTER SMALL CAPITAL A";
 	characterNames[0x1D01] = "LATIN LETTER SMALL CAPITAL AE";
 	characterNames[0x1D02] = "LATIN SMALL LETTER TURNED AE";
@@ -8724,6 +8805,10 @@ private static void loadCharacterNames3()
 	characterNames[0x2504] = "BOX DRAWINGS LIGHT TRIPLE DASH HORIZONTAL";
 	characterNames[0x2505] = "BOX DRAWINGS HEAVY TRIPLE DASH HORIZONTAL";
 	characterNames[0x2506] = "BOX DRAWINGS LIGHT TRIPLE DASH VERTICAL";
+}
+
+private static void loadCharacterNames4()
+{
 	characterNames[0x2507] = "BOX DRAWINGS HEAVY TRIPLE DASH VERTICAL";
 	characterNames[0x2508] = "BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL";
 	characterNames[0x2509] = "BOX DRAWINGS HEAVY QUADRUPLE DASH HORIZONTAL";
@@ -8794,10 +8879,6 @@ private static void loadCharacterNames3()
 	characterNames[0x254A] = "BOX DRAWINGS LEFT LIGHT AND RIGHT VERTICAL HEAVY";
 	characterNames[0x254B] = "BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL";
 	characterNames[0x254C] = "BOX DRAWINGS LIGHT DOUBLE DASH HORIZONTAL";
-}
-
-private static void loadCharacterNames4()
-{
 	characterNames[0x254D] = "BOX DRAWINGS HEAVY DOUBLE DASH HORIZONTAL";
 	characterNames[0x254E] = "BOX DRAWINGS LIGHT DOUBLE DASH VERTICAL";
 	characterNames[0x254F] = "BOX DRAWINGS HEAVY DOUBLE DASH VERTICAL";
@@ -9435,7 +9516,9 @@ private static void loadCharacterNames4()
 	characterNames[0x27C8] = "REVERSE SOLIDUS PRECEDING SUBSET";
 	characterNames[0x27C9] = "SUPERSET PRECEDING SOLIDUS";
 	characterNames[0x27CA] = "VERTICAL BAR WITH HORIZONTAL STROKE";
+	characterNames[0x27CB] = "MATHEMATICAL RISING DIAGONAL";
 	characterNames[0x27CC] = "LONG DIVISION";
+	characterNames[0x27CD] = "MATHEMATICAL FALLING DIAGONAL";
 	characterNames[0x27CE] = "SQUARED LOGICAL AND";
 	characterNames[0x27CF] = "SQUARED LOGICAL OR";
 	characterNames[0x27D0] = "WHITE DIAMOND WITH CENTRED DOT";
@@ -10581,6 +10664,8 @@ private static void loadCharacterNames4()
 	characterNames[0x2CEF] = "COPTIC COMBINING NI ABOVE";
 	characterNames[0x2CF0] = "COPTIC COMBINING SPIRITUS ASPER";
 	characterNames[0x2CF1] = "COPTIC COMBINING SPIRITUS LENIS";
+	characterNames[0x2CF2] = "COPTIC CAPITAL LETTER BOHAIRIC KHEI";
+	characterNames[0x2CF3] = "COPTIC SMALL LETTER BOHAIRIC KHEI";
 	characterNames[0x2CF9] = "COPTIC OLD NUBIAN FULL STOP";
 	characterNames[0x2CFA] = "COPTIC OLD NUBIAN DIRECT QUESTION MARK";
 	characterNames[0x2CFB] = "COPTIC OLD NUBIAN INDIRECT QUESTION MARK";
@@ -10626,6 +10711,8 @@ private static void loadCharacterNames4()
 	characterNames[0x2D23] = "GEORGIAN SMALL LETTER WE";
 	characterNames[0x2D24] = "GEORGIAN SMALL LETTER HAR";
 	characterNames[0x2D25] = "GEORGIAN SMALL LETTER HOE";
+	characterNames[0x2D27] = "GEORGIAN SMALL LETTER YN";
+	characterNames[0x2D2D] = "GEORGIAN SMALL LETTER AEN";
 	characterNames[0x2D30] = "TIFINAGH LETTER YA";
 	characterNames[0x2D31] = "TIFINAGH LETTER YAB";
 	characterNames[0x2D32] = "TIFINAGH LETTER YABH";
@@ -10680,6 +10767,8 @@ private static void loadCharacterNames4()
 	characterNames[0x2D63] = "TIFINAGH LETTER YAZ";
 	characterNames[0x2D64] = "TIFINAGH LETTER TAWELLEMET YAZ";
 	characterNames[0x2D65] = "TIFINAGH LETTER YAZZ";
+	characterNames[0x2D66] = "TIFINAGH LETTER YE";
+	characterNames[0x2D67] = "TIFINAGH LETTER YO";
 	characterNames[0x2D6F] = "TIFINAGH MODIFIER LETTER LABIALIZATION MARK";
 	characterNames[0x2D70] = "TIFINAGH SEPARATOR MARK";
 	characterNames[0x2D7F] = "TIFINAGH CONSONANT JOINER";
@@ -10768,6 +10857,10 @@ private static void loadCharacterNames4()
 	characterNames[0x2DE3] = "COMBINING CYRILLIC LETTER DE";
 	characterNames[0x2DE4] = "COMBINING CYRILLIC LETTER ZHE";
 	characterNames[0x2DE5] = "COMBINING CYRILLIC LETTER ZE";
+}
+
+private static void loadCharacterNames5()
+{
 	characterNames[0x2DE6] = "COMBINING CYRILLIC LETTER KA";
 	characterNames[0x2DE7] = "COMBINING CYRILLIC LETTER EL";
 	characterNames[0x2DE8] = "COMBINING CYRILLIC LETTER EM";
@@ -10844,12 +10937,18 @@ private static void loadCharacterNames4()
 	characterNames[0x2E2F] = "VERTICAL TILDE";
 	characterNames[0x2E30] = "RING POINT";
 	characterNames[0x2E31] = "WORD SEPARATOR MIDDLE DOT";
+	characterNames[0x2E32] = "TURNED COMMA";
+	characterNames[0x2E33] = "RAISED DOT";
+	characterNames[0x2E34] = "RAISED COMMA";
+	characterNames[0x2E35] = "TURNED SEMICOLON";
+	characterNames[0x2E36] = "DAGGER WITH LEFT GUARD";
+	characterNames[0x2E37] = "DAGGER WITH RIGHT GUARD";
+	characterNames[0x2E38] = "TURNED DAGGER";
+	characterNames[0x2E39] = "TOP HALF SECTION SIGN";
+	characterNames[0x2E3A] = "TWO-EM DASH";
+	characterNames[0x2E3B] = "THREE-EM DASH";
 	characterNames[0x2E80] = "CJK RADICAL REPEAT";
 	characterNames[0x2E81] = "CJK RADICAL CLIFF";
-}
-
-private static void loadCharacterNames5()
-{
 	characterNames[0x2E82] = "CJK RADICAL SECOND ONE";
 	characterNames[0x2E83] = "CJK RADICAL SECOND TWO";
 	characterNames[0x2E84] = "CJK RADICAL SECOND THREE";
@@ -12249,7 +12348,7 @@ private static void loadCharacterNames5()
 	characterNames[0x4DFE] = "HEXAGRAM FOR AFTER COMPLETION";
 	characterNames[0x4DFF] = "HEXAGRAM FOR BEFORE COMPLETION";
 	characterNames[0x4E00] = "<CJK Ideograph, First>";
-	characterNames[0x9FCB] = "<CJK Ideograph, Last>";
+	characterNames[0x9FCC] = "<CJK Ideograph, Last>";
 	characterNames[0xA000] = "YI SYLLABLE IT";
 	characterNames[0xA001] = "YI SYLLABLE IX";
 	characterNames[0xA002] = "YI SYLLABLE I";
@@ -12810,6 +12909,10 @@ private static void loadCharacterNames5()
 	characterNames[0xA22D] = "YI SYLLABLE GGUP";
 	characterNames[0xA22E] = "YI SYLLABLE GGURX";
 	characterNames[0xA22F] = "YI SYLLABLE GGUR";
+}
+
+private static void loadCharacterNames6()
+{
 	characterNames[0xA230] = "YI SYLLABLE MGIEX";
 	characterNames[0xA231] = "YI SYLLABLE MGIE";
 	characterNames[0xA232] = "YI SYLLABLE MGAT";
@@ -12898,10 +13001,6 @@ private static void loadCharacterNames5()
 	characterNames[0xA285] = "YI SYLLABLE WUO";
 	characterNames[0xA286] = "YI SYLLABLE WUOP";
 	characterNames[0xA287] = "YI SYLLABLE WOX";
-}
-
-private static void loadCharacterNames6()
-{
 	characterNames[0xA288] = "YI SYLLABLE WO";
 	characterNames[0xA289] = "YI SYLLABLE WOP";
 	characterNames[0xA28A] = "YI SYLLABLE WEX";
@@ -13874,6 +13973,14 @@ private static void loadCharacterNames6()
 	characterNames[0xA671] = "COMBINING CYRILLIC HUNDRED MILLIONS SIGN";
 	characterNames[0xA672] = "COMBINING CYRILLIC THOUSAND MILLIONS SIGN";
 	characterNames[0xA673] = "SLAVONIC ASTERISK";
+	characterNames[0xA674] = "COMBINING CYRILLIC LETTER UKRAINIAN IE";
+	characterNames[0xA675] = "COMBINING CYRILLIC LETTER I";
+	characterNames[0xA676] = "COMBINING CYRILLIC LETTER YI";
+	characterNames[0xA677] = "COMBINING CYRILLIC LETTER U";
+	characterNames[0xA678] = "COMBINING CYRILLIC LETTER HARD SIGN";
+	characterNames[0xA679] = "COMBINING CYRILLIC LETTER YERU";
+	characterNames[0xA67A] = "COMBINING CYRILLIC LETTER SOFT SIGN";
+	characterNames[0xA67B] = "COMBINING CYRILLIC LETTER OMEGA";
 	characterNames[0xA67C] = "COMBINING CYRILLIC KAVYKA";
 	characterNames[0xA67D] = "COMBINING CYRILLIC PAYEROK";
 	characterNames[0xA67E] = "CYRILLIC KAVYKA";
@@ -13902,6 +14009,7 @@ private static void loadCharacterNames6()
 	characterNames[0xA695] = "CYRILLIC SMALL LETTER HWE";
 	characterNames[0xA696] = "CYRILLIC CAPITAL LETTER SHWE";
 	characterNames[0xA697] = "CYRILLIC SMALL LETTER SHWE";
+	characterNames[0xA69F] = "COMBINING CYRILLIC LETTER IOTIFIED E";
 	characterNames[0xA6A0] = "BAMUM LETTER A";
 	characterNames[0xA6A1] = "BAMUM LETTER KA";
 	characterNames[0xA6A2] = "BAMUM LETTER U";
@@ -14135,6 +14243,8 @@ private static void loadCharacterNames6()
 	characterNames[0xA78E] = "LATIN SMALL LETTER L WITH RETROFLEX HOOK AND BELT";
 	characterNames[0xA790] = "LATIN CAPITAL LETTER N WITH DESCENDER";
 	characterNames[0xA791] = "LATIN SMALL LETTER N WITH DESCENDER";
+	characterNames[0xA792] = "LATIN CAPITAL LETTER C WITH BAR";
+	characterNames[0xA793] = "LATIN SMALL LETTER C WITH BAR";
 	characterNames[0xA7A0] = "LATIN CAPITAL LETTER G WITH OBLIQUE STROKE";
 	characterNames[0xA7A1] = "LATIN SMALL LETTER G WITH OBLIQUE STROKE";
 	characterNames[0xA7A2] = "LATIN CAPITAL LETTER K WITH OBLIQUE STROKE";
@@ -14145,6 +14255,9 @@ private static void loadCharacterNames6()
 	characterNames[0xA7A7] = "LATIN SMALL LETTER R WITH OBLIQUE STROKE";
 	characterNames[0xA7A8] = "LATIN CAPITAL LETTER S WITH OBLIQUE STROKE";
 	characterNames[0xA7A9] = "LATIN SMALL LETTER S WITH OBLIQUE STROKE";
+	characterNames[0xA7AA] = "LATIN CAPITAL LETTER H WITH HOOK";
+	characterNames[0xA7F8] = "MODIFIER LETTER CAPITAL H WITH STROKE";
+	characterNames[0xA7F9] = "MODIFIER LETTER SMALL LIGATURE OE";
 	characterNames[0xA7FA] = "LATIN LETTER SMALL CAPITAL TURNED M";
 	characterNames[0xA7FB] = "LATIN EPIGRAPHIC LETTER REVERSED F";
 	characterNames[0xA7FC] = "LATIN EPIGRAPHIC LETTER REVERSED P";
@@ -14758,6 +14871,29 @@ private static void loadCharacterNames6()
 	characterNames[0xAADD] = "TAI VIET SYMBOL SAM";
 	characterNames[0xAADE] = "TAI VIET SYMBOL HO HOI";
 	characterNames[0xAADF] = "TAI VIET SYMBOL KOI KOI";
+	characterNames[0xAAE0] = "MEETEI MAYEK LETTER E";
+	characterNames[0xAAE1] = "MEETEI MAYEK LETTER O";
+	characterNames[0xAAE2] = "MEETEI MAYEK LETTER CHA";
+	characterNames[0xAAE3] = "MEETEI MAYEK LETTER NYA";
+	characterNames[0xAAE4] = "MEETEI MAYEK LETTER TTA";
+	characterNames[0xAAE5] = "MEETEI MAYEK LETTER TTHA";
+	characterNames[0xAAE6] = "MEETEI MAYEK LETTER DDA";
+	characterNames[0xAAE7] = "MEETEI MAYEK LETTER DDHA";
+	characterNames[0xAAE8] = "MEETEI MAYEK LETTER NNA";
+	characterNames[0xAAE9] = "MEETEI MAYEK LETTER SHA";
+	characterNames[0xAAEA] = "MEETEI MAYEK LETTER SSA";
+	characterNames[0xAAEB] = "MEETEI MAYEK VOWEL SIGN II";
+	characterNames[0xAAEC] = "MEETEI MAYEK VOWEL SIGN UU";
+	characterNames[0xAAED] = "MEETEI MAYEK VOWEL SIGN AAI";
+	characterNames[0xAAEE] = "MEETEI MAYEK VOWEL SIGN AU";
+	characterNames[0xAAEF] = "MEETEI MAYEK VOWEL SIGN AAU";
+	characterNames[0xAAF0] = "MEETEI MAYEK CHEIKHAN";
+	characterNames[0xAAF1] = "MEETEI MAYEK AHANG KHUDAM";
+	characterNames[0xAAF2] = "MEETEI MAYEK ANJI";
+	characterNames[0xAAF3] = "MEETEI MAYEK SYLLABLE REPETITION MARK";
+	characterNames[0xAAF4] = "MEETEI MAYEK WORD REPETITION MARK";
+	characterNames[0xAAF5] = "MEETEI MAYEK VOWEL SIGN VISARGA";
+	characterNames[0xAAF6] = "MEETEI MAYEK VIRAMA";
 	characterNames[0xAB01] = "ETHIOPIC SYLLABLE TTHU";
 	characterNames[0xAB02] = "ETHIOPIC SYLLABLE TTHI";
 	characterNames[0xAB03] = "ETHIOPIC SYLLABLE TTHAA";
@@ -14825,6 +14961,10 @@ private static void loadCharacterNames6()
 	characterNames[0xABE0] = "MEETEI MAYEK LETTER TIL LONSUM";
 	characterNames[0xABE1] = "MEETEI MAYEK LETTER NGOU LONSUM";
 	characterNames[0xABE2] = "MEETEI MAYEK LETTER I LONSUM";
+}
+
+private static void loadCharacterNames7()
+{
 	characterNames[0xABE3] = "MEETEI MAYEK VOWEL SIGN ONAP";
 	characterNames[0xABE4] = "MEETEI MAYEK VOWEL SIGN INAP";
 	characterNames[0xABE5] = "MEETEI MAYEK VOWEL SIGN ANAP";
@@ -14950,10 +15090,6 @@ private static void loadCharacterNames6()
 	characterNames[0xF913] = "CJK COMPATIBILITY IDEOGRAPH-F913";
 	characterNames[0xF914] = "CJK COMPATIBILITY IDEOGRAPH-F914";
 	characterNames[0xF915] = "CJK COMPATIBILITY IDEOGRAPH-F915";
-}
-
-private static void loadCharacterNames7()
-{
 	characterNames[0xF916] = "CJK COMPATIBILITY IDEOGRAPH-F916";
 	characterNames[0xF917] = "CJK COMPATIBILITY IDEOGRAPH-F917";
 	characterNames[0xF918] = "CJK COMPATIBILITY IDEOGRAPH-F918";
@@ -15234,6 +15370,8 @@ private static void loadCharacterNames7()
 	characterNames[0xFA2B] = "CJK COMPATIBILITY IDEOGRAPH-FA2B";
 	characterNames[0xFA2C] = "CJK COMPATIBILITY IDEOGRAPH-FA2C";
 	characterNames[0xFA2D] = "CJK COMPATIBILITY IDEOGRAPH-FA2D";
+	characterNames[0xFA2E] = "CJK COMPATIBILITY IDEOGRAPH-FA2E";
+	characterNames[0xFA2F] = "CJK COMPATIBILITY IDEOGRAPH-FA2F";
 	characterNames[0xFA30] = "CJK COMPATIBILITY IDEOGRAPH-FA30";
 	characterNames[0xFA31] = "CJK COMPATIBILITY IDEOGRAPH-FA31";
 	characterNames[0xFA32] = "CJK COMPATIBILITY IDEOGRAPH-FA32";
@@ -16875,6 +17013,10 @@ private static void loadCharacterNames7()
 	characterNames[0x10187] = "GREEK AROURA SIGN";
 	characterNames[0x10188] = "GREEK GRAMMA SIGN";
 	characterNames[0x10189] = "GREEK TRYBLION BASE SIGN";
+}
+
+private static void loadCharacterNames8()
+{
 	characterNames[0x1018A] = "GREEK ZERO SIGN";
 	characterNames[0x10190] = "ROMAN SEXTANS SIGN";
 	characterNames[0x10191] = "ROMAN UNCIA SIGN";
@@ -17002,10 +17144,6 @@ private static void loadCharacterNames7()
 	characterNames[0x102C4] = "CARIAN LETTER NG";
 	characterNames[0x102C5] = "CARIAN LETTER II";
 	characterNames[0x102C6] = "CARIAN LETTER C-39";
-}
-
-private static void loadCharacterNames8()
-{
 	characterNames[0x102C7] = "CARIAN LETTER TT";
 	characterNames[0x102C8] = "CARIAN LETTER UUU2";
 	characterNames[0x102C9] = "CARIAN LETTER RR";
@@ -17469,6 +17607,64 @@ private static void loadCharacterNames8()
 	characterNames[0x10938] = "LYDIAN LETTER NN";
 	characterNames[0x10939] = "LYDIAN LETTER C";
 	characterNames[0x1093F] = "LYDIAN TRIANGULAR MARK";
+	characterNames[0x10980] = "MEROITIC HIEROGLYPHIC LETTER A";
+	characterNames[0x10981] = "MEROITIC HIEROGLYPHIC LETTER E";
+	characterNames[0x10982] = "MEROITIC HIEROGLYPHIC LETTER I";
+	characterNames[0x10983] = "MEROITIC HIEROGLYPHIC LETTER O";
+	characterNames[0x10984] = "MEROITIC HIEROGLYPHIC LETTER YA";
+	characterNames[0x10985] = "MEROITIC HIEROGLYPHIC LETTER WA";
+	characterNames[0x10986] = "MEROITIC HIEROGLYPHIC LETTER BA";
+	characterNames[0x10987] = "MEROITIC HIEROGLYPHIC LETTER BA-2";
+	characterNames[0x10988] = "MEROITIC HIEROGLYPHIC LETTER PA";
+	characterNames[0x10989] = "MEROITIC HIEROGLYPHIC LETTER MA";
+	characterNames[0x1098A] = "MEROITIC HIEROGLYPHIC LETTER NA";
+	characterNames[0x1098B] = "MEROITIC HIEROGLYPHIC LETTER NA-2";
+	characterNames[0x1098C] = "MEROITIC HIEROGLYPHIC LETTER NE";
+	characterNames[0x1098D] = "MEROITIC HIEROGLYPHIC LETTER NE-2";
+	characterNames[0x1098E] = "MEROITIC HIEROGLYPHIC LETTER RA";
+	characterNames[0x1098F] = "MEROITIC HIEROGLYPHIC LETTER RA-2";
+	characterNames[0x10990] = "MEROITIC HIEROGLYPHIC LETTER LA";
+	characterNames[0x10991] = "MEROITIC HIEROGLYPHIC LETTER KHA";
+	characterNames[0x10992] = "MEROITIC HIEROGLYPHIC LETTER HHA";
+	characterNames[0x10993] = "MEROITIC HIEROGLYPHIC LETTER SA";
+	characterNames[0x10994] = "MEROITIC HIEROGLYPHIC LETTER SA-2";
+	characterNames[0x10995] = "MEROITIC HIEROGLYPHIC LETTER SE";
+	characterNames[0x10996] = "MEROITIC HIEROGLYPHIC LETTER KA";
+	characterNames[0x10997] = "MEROITIC HIEROGLYPHIC LETTER QA";
+	characterNames[0x10998] = "MEROITIC HIEROGLYPHIC LETTER TA";
+	characterNames[0x10999] = "MEROITIC HIEROGLYPHIC LETTER TA-2";
+	characterNames[0x1099A] = "MEROITIC HIEROGLYPHIC LETTER TE";
+	characterNames[0x1099B] = "MEROITIC HIEROGLYPHIC LETTER TE-2";
+	characterNames[0x1099C] = "MEROITIC HIEROGLYPHIC LETTER TO";
+	characterNames[0x1099D] = "MEROITIC HIEROGLYPHIC LETTER DA";
+	characterNames[0x1099E] = "MEROITIC HIEROGLYPHIC SYMBOL VIDJ";
+	characterNames[0x1099F] = "MEROITIC HIEROGLYPHIC SYMBOL VIDJ-2";
+	characterNames[0x109A0] = "MEROITIC CURSIVE LETTER A";
+	characterNames[0x109A1] = "MEROITIC CURSIVE LETTER E";
+	characterNames[0x109A2] = "MEROITIC CURSIVE LETTER I";
+	characterNames[0x109A3] = "MEROITIC CURSIVE LETTER O";
+	characterNames[0x109A4] = "MEROITIC CURSIVE LETTER YA";
+	characterNames[0x109A5] = "MEROITIC CURSIVE LETTER WA";
+	characterNames[0x109A6] = "MEROITIC CURSIVE LETTER BA";
+	characterNames[0x109A7] = "MEROITIC CURSIVE LETTER PA";
+	characterNames[0x109A8] = "MEROITIC CURSIVE LETTER MA";
+	characterNames[0x109A9] = "MEROITIC CURSIVE LETTER NA";
+	characterNames[0x109AA] = "MEROITIC CURSIVE LETTER NE";
+	characterNames[0x109AB] = "MEROITIC CURSIVE LETTER RA";
+	characterNames[0x109AC] = "MEROITIC CURSIVE LETTER LA";
+	characterNames[0x109AD] = "MEROITIC CURSIVE LETTER KHA";
+	characterNames[0x109AE] = "MEROITIC CURSIVE LETTER HHA";
+	characterNames[0x109AF] = "MEROITIC CURSIVE LETTER SA";
+	characterNames[0x109B0] = "MEROITIC CURSIVE LETTER ARCHAIC SA";
+	characterNames[0x109B1] = "MEROITIC CURSIVE LETTER SE";
+	characterNames[0x109B2] = "MEROITIC CURSIVE LETTER KA";
+	characterNames[0x109B3] = "MEROITIC CURSIVE LETTER QA";
+	characterNames[0x109B4] = "MEROITIC CURSIVE LETTER TA";
+	characterNames[0x109B5] = "MEROITIC CURSIVE LETTER TE";
+	characterNames[0x109B6] = "MEROITIC CURSIVE LETTER TO";
+	characterNames[0x109B7] = "MEROITIC CURSIVE LETTER DA";
+	characterNames[0x109BE] = "MEROITIC CURSIVE LOGOGRAM RMT";
+	characterNames[0x109BF] = "MEROITIC CURSIVE LOGOGRAM IMN";
 	characterNames[0x10A00] = "KHAROSHTHI LETTER A";
 	characterNames[0x10A01] = "KHAROSHTHI VOWEL SIGN I";
 	characterNames[0x10A02] = "KHAROSHTHI VOWEL SIGN U";
@@ -17962,6 +18158,257 @@ private static void loadCharacterNames8()
 	characterNames[0x110BF] = "KAITHI DOUBLE SECTION MARK";
 	characterNames[0x110C0] = "KAITHI DANDA";
 	characterNames[0x110C1] = "KAITHI DOUBLE DANDA";
+	characterNames[0x110D0] = "SORA SOMPENG LETTER SAH";
+	characterNames[0x110D1] = "SORA SOMPENG LETTER TAH";
+	characterNames[0x110D2] = "SORA SOMPENG LETTER BAH";
+	characterNames[0x110D3] = "SORA SOMPENG LETTER CAH";
+	characterNames[0x110D4] = "SORA SOMPENG LETTER DAH";
+	characterNames[0x110D5] = "SORA SOMPENG LETTER GAH";
+	characterNames[0x110D6] = "SORA SOMPENG LETTER MAH";
+	characterNames[0x110D7] = "SORA SOMPENG LETTER NGAH";
+	characterNames[0x110D8] = "SORA SOMPENG LETTER LAH";
+	characterNames[0x110D9] = "SORA SOMPENG LETTER NAH";
+	characterNames[0x110DA] = "SORA SOMPENG LETTER VAH";
+	characterNames[0x110DB] = "SORA SOMPENG LETTER PAH";
+	characterNames[0x110DC] = "SORA SOMPENG LETTER YAH";
+	characterNames[0x110DD] = "SORA SOMPENG LETTER RAH";
+	characterNames[0x110DE] = "SORA SOMPENG LETTER HAH";
+	characterNames[0x110DF] = "SORA SOMPENG LETTER KAH";
+	characterNames[0x110E0] = "SORA SOMPENG LETTER JAH";
+	characterNames[0x110E1] = "SORA SOMPENG LETTER NYAH";
+	characterNames[0x110E2] = "SORA SOMPENG LETTER AH";
+	characterNames[0x110E3] = "SORA SOMPENG LETTER EEH";
+	characterNames[0x110E4] = "SORA SOMPENG LETTER IH";
+	characterNames[0x110E5] = "SORA SOMPENG LETTER UH";
+	characterNames[0x110E6] = "SORA SOMPENG LETTER OH";
+	characterNames[0x110E7] = "SORA SOMPENG LETTER EH";
+	characterNames[0x110E8] = "SORA SOMPENG LETTER MAE";
+	characterNames[0x110F0] = "SORA SOMPENG DIGIT ZERO";
+	characterNames[0x110F1] = "SORA SOMPENG DIGIT ONE";
+	characterNames[0x110F2] = "SORA SOMPENG DIGIT TWO";
+	characterNames[0x110F3] = "SORA SOMPENG DIGIT THREE";
+	characterNames[0x110F4] = "SORA SOMPENG DIGIT FOUR";
+	characterNames[0x110F5] = "SORA SOMPENG DIGIT FIVE";
+	characterNames[0x110F6] = "SORA SOMPENG DIGIT SIX";
+	characterNames[0x110F7] = "SORA SOMPENG DIGIT SEVEN";
+	characterNames[0x110F8] = "SORA SOMPENG DIGIT EIGHT";
+	characterNames[0x110F9] = "SORA SOMPENG DIGIT NINE";
+	characterNames[0x11100] = "CHAKMA SIGN CANDRABINDU";
+	characterNames[0x11101] = "CHAKMA SIGN ANUSVARA";
+	characterNames[0x11102] = "CHAKMA SIGN VISARGA";
+	characterNames[0x11103] = "CHAKMA LETTER AA";
+	characterNames[0x11104] = "CHAKMA LETTER I";
+	characterNames[0x11105] = "CHAKMA LETTER U";
+	characterNames[0x11106] = "CHAKMA LETTER E";
+	characterNames[0x11107] = "CHAKMA LETTER KAA";
+	characterNames[0x11108] = "CHAKMA LETTER KHAA";
+	characterNames[0x11109] = "CHAKMA LETTER GAA";
+	characterNames[0x1110A] = "CHAKMA LETTER GHAA";
+	characterNames[0x1110B] = "CHAKMA LETTER NGAA";
+	characterNames[0x1110C] = "CHAKMA LETTER CAA";
+	characterNames[0x1110D] = "CHAKMA LETTER CHAA";
+	characterNames[0x1110E] = "CHAKMA LETTER JAA";
+	characterNames[0x1110F] = "CHAKMA LETTER JHAA";
+	characterNames[0x11110] = "CHAKMA LETTER NYAA";
+	characterNames[0x11111] = "CHAKMA LETTER TTAA";
+	characterNames[0x11112] = "CHAKMA LETTER TTHAA";
+	characterNames[0x11113] = "CHAKMA LETTER DDAA";
+	characterNames[0x11114] = "CHAKMA LETTER DDHAA";
+	characterNames[0x11115] = "CHAKMA LETTER NNAA";
+	characterNames[0x11116] = "CHAKMA LETTER TAA";
+	characterNames[0x11117] = "CHAKMA LETTER THAA";
+	characterNames[0x11118] = "CHAKMA LETTER DAA";
+	characterNames[0x11119] = "CHAKMA LETTER DHAA";
+	characterNames[0x1111A] = "CHAKMA LETTER NAA";
+	characterNames[0x1111B] = "CHAKMA LETTER PAA";
+	characterNames[0x1111C] = "CHAKMA LETTER PHAA";
+	characterNames[0x1111D] = "CHAKMA LETTER BAA";
+	characterNames[0x1111E] = "CHAKMA LETTER BHAA";
+	characterNames[0x1111F] = "CHAKMA LETTER MAA";
+	characterNames[0x11120] = "CHAKMA LETTER YYAA";
+	characterNames[0x11121] = "CHAKMA LETTER YAA";
+	characterNames[0x11122] = "CHAKMA LETTER RAA";
+	characterNames[0x11123] = "CHAKMA LETTER LAA";
+	characterNames[0x11124] = "CHAKMA LETTER WAA";
+	characterNames[0x11125] = "CHAKMA LETTER SAA";
+	characterNames[0x11126] = "CHAKMA LETTER HAA";
+	characterNames[0x11127] = "CHAKMA VOWEL SIGN A";
+	characterNames[0x11128] = "CHAKMA VOWEL SIGN I";
+	characterNames[0x11129] = "CHAKMA VOWEL SIGN II";
+	characterNames[0x1112A] = "CHAKMA VOWEL SIGN U";
+	characterNames[0x1112B] = "CHAKMA VOWEL SIGN UU";
+	characterNames[0x1112C] = "CHAKMA VOWEL SIGN E";
+	characterNames[0x1112D] = "CHAKMA VOWEL SIGN AI";
+	characterNames[0x1112E] = "CHAKMA VOWEL SIGN O";
+	characterNames[0x1112F] = "CHAKMA VOWEL SIGN AU";
+	characterNames[0x11130] = "CHAKMA VOWEL SIGN OI";
+	characterNames[0x11131] = "CHAKMA O MARK";
+	characterNames[0x11132] = "CHAKMA AU MARK";
+	characterNames[0x11133] = "CHAKMA VIRAMA";
+	characterNames[0x11134] = "CHAKMA MAAYYAA";
+	characterNames[0x11136] = "CHAKMA DIGIT ZERO";
+	characterNames[0x11137] = "CHAKMA DIGIT ONE";
+	characterNames[0x11138] = "CHAKMA DIGIT TWO";
+	characterNames[0x11139] = "CHAKMA DIGIT THREE";
+	characterNames[0x1113A] = "CHAKMA DIGIT FOUR";
+	characterNames[0x1113B] = "CHAKMA DIGIT FIVE";
+	characterNames[0x1113C] = "CHAKMA DIGIT SIX";
+	characterNames[0x1113D] = "CHAKMA DIGIT SEVEN";
+	characterNames[0x1113E] = "CHAKMA DIGIT EIGHT";
+	characterNames[0x1113F] = "CHAKMA DIGIT NINE";
+	characterNames[0x11140] = "CHAKMA SECTION MARK";
+	characterNames[0x11141] = "CHAKMA DANDA";
+	characterNames[0x11142] = "CHAKMA DOUBLE DANDA";
+	characterNames[0x11143] = "CHAKMA QUESTION MARK";
+	characterNames[0x11180] = "SHARADA SIGN CANDRABINDU";
+	characterNames[0x11181] = "SHARADA SIGN ANUSVARA";
+	characterNames[0x11182] = "SHARADA SIGN VISARGA";
+	characterNames[0x11183] = "SHARADA LETTER A";
+	characterNames[0x11184] = "SHARADA LETTER AA";
+	characterNames[0x11185] = "SHARADA LETTER I";
+	characterNames[0x11186] = "SHARADA LETTER II";
+	characterNames[0x11187] = "SHARADA LETTER U";
+	characterNames[0x11188] = "SHARADA LETTER UU";
+	characterNames[0x11189] = "SHARADA LETTER VOCALIC R";
+	characterNames[0x1118A] = "SHARADA LETTER VOCALIC RR";
+	characterNames[0x1118B] = "SHARADA LETTER VOCALIC L";
+	characterNames[0x1118C] = "SHARADA LETTER VOCALIC LL";
+	characterNames[0x1118D] = "SHARADA LETTER E";
+	characterNames[0x1118E] = "SHARADA LETTER AI";
+	characterNames[0x1118F] = "SHARADA LETTER O";
+	characterNames[0x11190] = "SHARADA LETTER AU";
+	characterNames[0x11191] = "SHARADA LETTER KA";
+	characterNames[0x11192] = "SHARADA LETTER KHA";
+	characterNames[0x11193] = "SHARADA LETTER GA";
+	characterNames[0x11194] = "SHARADA LETTER GHA";
+	characterNames[0x11195] = "SHARADA LETTER NGA";
+	characterNames[0x11196] = "SHARADA LETTER CA";
+	characterNames[0x11197] = "SHARADA LETTER CHA";
+	characterNames[0x11198] = "SHARADA LETTER JA";
+	characterNames[0x11199] = "SHARADA LETTER JHA";
+	characterNames[0x1119A] = "SHARADA LETTER NYA";
+	characterNames[0x1119B] = "SHARADA LETTER TTA";
+	characterNames[0x1119C] = "SHARADA LETTER TTHA";
+	characterNames[0x1119D] = "SHARADA LETTER DDA";
+	characterNames[0x1119E] = "SHARADA LETTER DDHA";
+	characterNames[0x1119F] = "SHARADA LETTER NNA";
+	characterNames[0x111A0] = "SHARADA LETTER TA";
+	characterNames[0x111A1] = "SHARADA LETTER THA";
+	characterNames[0x111A2] = "SHARADA LETTER DA";
+	characterNames[0x111A3] = "SHARADA LETTER DHA";
+	characterNames[0x111A4] = "SHARADA LETTER NA";
+	characterNames[0x111A5] = "SHARADA LETTER PA";
+	characterNames[0x111A6] = "SHARADA LETTER PHA";
+	characterNames[0x111A7] = "SHARADA LETTER BA";
+	characterNames[0x111A8] = "SHARADA LETTER BHA";
+	characterNames[0x111A9] = "SHARADA LETTER MA";
+	characterNames[0x111AA] = "SHARADA LETTER YA";
+	characterNames[0x111AB] = "SHARADA LETTER RA";
+	characterNames[0x111AC] = "SHARADA LETTER LA";
+	characterNames[0x111AD] = "SHARADA LETTER LLA";
+	characterNames[0x111AE] = "SHARADA LETTER VA";
+	characterNames[0x111AF] = "SHARADA LETTER SHA";
+	characterNames[0x111B0] = "SHARADA LETTER SSA";
+	characterNames[0x111B1] = "SHARADA LETTER SA";
+	characterNames[0x111B2] = "SHARADA LETTER HA";
+	characterNames[0x111B3] = "SHARADA VOWEL SIGN AA";
+	characterNames[0x111B4] = "SHARADA VOWEL SIGN I";
+	characterNames[0x111B5] = "SHARADA VOWEL SIGN II";
+	characterNames[0x111B6] = "SHARADA VOWEL SIGN U";
+	characterNames[0x111B7] = "SHARADA VOWEL SIGN UU";
+	characterNames[0x111B8] = "SHARADA VOWEL SIGN VOCALIC R";
+	characterNames[0x111B9] = "SHARADA VOWEL SIGN VOCALIC RR";
+	characterNames[0x111BA] = "SHARADA VOWEL SIGN VOCALIC L";
+	characterNames[0x111BB] = "SHARADA VOWEL SIGN VOCALIC LL";
+	characterNames[0x111BC] = "SHARADA VOWEL SIGN E";
+	characterNames[0x111BD] = "SHARADA VOWEL SIGN AI";
+	characterNames[0x111BE] = "SHARADA VOWEL SIGN O";
+	characterNames[0x111BF] = "SHARADA VOWEL SIGN AU";
+	characterNames[0x111C0] = "SHARADA SIGN VIRAMA";
+	characterNames[0x111C1] = "SHARADA SIGN AVAGRAHA";
+	characterNames[0x111C2] = "SHARADA SIGN JIHVAMULIYA";
+	characterNames[0x111C3] = "SHARADA SIGN UPADHMANIYA";
+	characterNames[0x111C4] = "SHARADA OM";
+	characterNames[0x111C5] = "SHARADA DANDA";
+	characterNames[0x111C6] = "SHARADA DOUBLE DANDA";
+	characterNames[0x111C7] = "SHARADA ABBREVIATION SIGN";
+	characterNames[0x111C8] = "SHARADA SEPARATOR";
+	characterNames[0x111D0] = "SHARADA DIGIT ZERO";
+	characterNames[0x111D1] = "SHARADA DIGIT ONE";
+	characterNames[0x111D2] = "SHARADA DIGIT TWO";
+	characterNames[0x111D3] = "SHARADA DIGIT THREE";
+	characterNames[0x111D4] = "SHARADA DIGIT FOUR";
+	characterNames[0x111D5] = "SHARADA DIGIT FIVE";
+	characterNames[0x111D6] = "SHARADA DIGIT SIX";
+	characterNames[0x111D7] = "SHARADA DIGIT SEVEN";
+	characterNames[0x111D8] = "SHARADA DIGIT EIGHT";
+	characterNames[0x111D9] = "SHARADA DIGIT NINE";
+	characterNames[0x11680] = "TAKRI LETTER A";
+	characterNames[0x11681] = "TAKRI LETTER AA";
+	characterNames[0x11682] = "TAKRI LETTER I";
+	characterNames[0x11683] = "TAKRI LETTER II";
+	characterNames[0x11684] = "TAKRI LETTER U";
+	characterNames[0x11685] = "TAKRI LETTER UU";
+	characterNames[0x11686] = "TAKRI LETTER E";
+	characterNames[0x11687] = "TAKRI LETTER AI";
+	characterNames[0x11688] = "TAKRI LETTER O";
+	characterNames[0x11689] = "TAKRI LETTER AU";
+	characterNames[0x1168A] = "TAKRI LETTER KA";
+	characterNames[0x1168B] = "TAKRI LETTER KHA";
+	characterNames[0x1168C] = "TAKRI LETTER GA";
+	characterNames[0x1168D] = "TAKRI LETTER GHA";
+	characterNames[0x1168E] = "TAKRI LETTER NGA";
+	characterNames[0x1168F] = "TAKRI LETTER CA";
+	characterNames[0x11690] = "TAKRI LETTER CHA";
+	characterNames[0x11691] = "TAKRI LETTER JA";
+	characterNames[0x11692] = "TAKRI LETTER JHA";
+	characterNames[0x11693] = "TAKRI LETTER NYA";
+	characterNames[0x11694] = "TAKRI LETTER TTA";
+	characterNames[0x11695] = "TAKRI LETTER TTHA";
+	characterNames[0x11696] = "TAKRI LETTER DDA";
+	characterNames[0x11697] = "TAKRI LETTER DDHA";
+	characterNames[0x11698] = "TAKRI LETTER NNA";
+	characterNames[0x11699] = "TAKRI LETTER TA";
+	characterNames[0x1169A] = "TAKRI LETTER THA";
+	characterNames[0x1169B] = "TAKRI LETTER DA";
+	characterNames[0x1169C] = "TAKRI LETTER DHA";
+	characterNames[0x1169D] = "TAKRI LETTER NA";
+	characterNames[0x1169E] = "TAKRI LETTER PA";
+	characterNames[0x1169F] = "TAKRI LETTER PHA";
+	characterNames[0x116A0] = "TAKRI LETTER BA";
+	characterNames[0x116A1] = "TAKRI LETTER BHA";
+	characterNames[0x116A2] = "TAKRI LETTER MA";
+	characterNames[0x116A3] = "TAKRI LETTER YA";
+	characterNames[0x116A4] = "TAKRI LETTER RA";
+	characterNames[0x116A5] = "TAKRI LETTER LA";
+	characterNames[0x116A6] = "TAKRI LETTER VA";
+	characterNames[0x116A7] = "TAKRI LETTER SHA";
+	characterNames[0x116A8] = "TAKRI LETTER SA";
+	characterNames[0x116A9] = "TAKRI LETTER HA";
+	characterNames[0x116AA] = "TAKRI LETTER RRA";
+	characterNames[0x116AB] = "TAKRI SIGN ANUSVARA";
+	characterNames[0x116AC] = "TAKRI SIGN VISARGA";
+	characterNames[0x116AD] = "TAKRI VOWEL SIGN AA";
+	characterNames[0x116AE] = "TAKRI VOWEL SIGN I";
+	characterNames[0x116AF] = "TAKRI VOWEL SIGN II";
+	characterNames[0x116B0] = "TAKRI VOWEL SIGN U";
+	characterNames[0x116B1] = "TAKRI VOWEL SIGN UU";
+	characterNames[0x116B2] = "TAKRI VOWEL SIGN E";
+	characterNames[0x116B3] = "TAKRI VOWEL SIGN AI";
+	characterNames[0x116B4] = "TAKRI VOWEL SIGN O";
+	characterNames[0x116B5] = "TAKRI VOWEL SIGN AU";
+	characterNames[0x116B6] = "TAKRI SIGN VIRAMA";
+	characterNames[0x116B7] = "TAKRI SIGN NUKTA";
+	characterNames[0x116C0] = "TAKRI DIGIT ZERO";
+	characterNames[0x116C1] = "TAKRI DIGIT ONE";
+	characterNames[0x116C2] = "TAKRI DIGIT TWO";
+	characterNames[0x116C3] = "TAKRI DIGIT THREE";
+	characterNames[0x116C4] = "TAKRI DIGIT FOUR";
+	characterNames[0x116C5] = "TAKRI DIGIT FIVE";
+	characterNames[0x116C6] = "TAKRI DIGIT SIX";
+	characterNames[0x116C7] = "TAKRI DIGIT SEVEN";
+	characterNames[0x116C8] = "TAKRI DIGIT EIGHT";
+	characterNames[0x116C9] = "TAKRI DIGIT NINE";
 	characterNames[0x12000] = "CUNEIFORM SIGN A";
 	characterNames[0x12001] = "CUNEIFORM SIGN A TIMES A";
 	characterNames[0x12002] = "CUNEIFORM SIGN A TIMES BAD";
@@ -18618,6 +19065,10 @@ private static void loadCharacterNames8()
 	characterNames[0x1228D] = "CUNEIFORM SIGN PIRIG TIMES ZA";
 	characterNames[0x1228E] = "CUNEIFORM SIGN PIRIG OPPOSING PIRIG";
 	characterNames[0x1228F] = "CUNEIFORM SIGN RA";
+}
+
+private static void loadCharacterNames9()
+{
 	characterNames[0x12290] = "CUNEIFORM SIGN RAB";
 	characterNames[0x12291] = "CUNEIFORM SIGN RI";
 	characterNames[0x12292] = "CUNEIFORM SIGN RU";
@@ -19054,10 +19505,6 @@ private static void loadCharacterNames8()
 	characterNames[0x1306B] = "EGYPTIAN HIEROGLYPH C014";
 	characterNames[0x1306C] = "EGYPTIAN HIEROGLYPH C015";
 	characterNames[0x1306D] = "EGYPTIAN HIEROGLYPH C016";
-}
-
-private static void loadCharacterNames9()
-{
 	characterNames[0x1306E] = "EGYPTIAN HIEROGLYPH C017";
 	characterNames[0x1306F] = "EGYPTIAN HIEROGLYPH C018";
 	characterNames[0x13070] = "EGYPTIAN HIEROGLYPH C019";
@@ -20588,6 +21035,143 @@ private static void loadCharacterNames9()
 	characterNames[0x16A36] = "BAMUM LETTER PHASE-F KPA";
 	characterNames[0x16A37] = "BAMUM LETTER PHASE-F SAMBA";
 	characterNames[0x16A38] = "BAMUM LETTER PHASE-F VUEQ";
+	characterNames[0x16F00] = "MIAO LETTER PA";
+	characterNames[0x16F01] = "MIAO LETTER BA";
+	characterNames[0x16F02] = "MIAO LETTER YI PA";
+	characterNames[0x16F03] = "MIAO LETTER PLA";
+	characterNames[0x16F04] = "MIAO LETTER MA";
+	characterNames[0x16F05] = "MIAO LETTER MHA";
+	characterNames[0x16F06] = "MIAO LETTER ARCHAIC MA";
+	characterNames[0x16F07] = "MIAO LETTER FA";
+	characterNames[0x16F08] = "MIAO LETTER VA";
+	characterNames[0x16F09] = "MIAO LETTER VFA";
+	characterNames[0x16F0A] = "MIAO LETTER TA";
+	characterNames[0x16F0B] = "MIAO LETTER DA";
+	characterNames[0x16F0C] = "MIAO LETTER YI TTA";
+	characterNames[0x16F0D] = "MIAO LETTER YI TA";
+	characterNames[0x16F0E] = "MIAO LETTER TTA";
+	characterNames[0x16F0F] = "MIAO LETTER DDA";
+	characterNames[0x16F10] = "MIAO LETTER NA";
+	characterNames[0x16F11] = "MIAO LETTER NHA";
+	characterNames[0x16F12] = "MIAO LETTER YI NNA";
+	characterNames[0x16F13] = "MIAO LETTER ARCHAIC NA";
+	characterNames[0x16F14] = "MIAO LETTER NNA";
+	characterNames[0x16F15] = "MIAO LETTER NNHA";
+	characterNames[0x16F16] = "MIAO LETTER LA";
+	characterNames[0x16F17] = "MIAO LETTER LYA";
+	characterNames[0x16F18] = "MIAO LETTER LHA";
+	characterNames[0x16F19] = "MIAO LETTER LHYA";
+	characterNames[0x16F1A] = "MIAO LETTER TLHA";
+	characterNames[0x16F1B] = "MIAO LETTER DLHA";
+	characterNames[0x16F1C] = "MIAO LETTER TLHYA";
+	characterNames[0x16F1D] = "MIAO LETTER DLHYA";
+	characterNames[0x16F1E] = "MIAO LETTER KA";
+	characterNames[0x16F1F] = "MIAO LETTER GA";
+	characterNames[0x16F20] = "MIAO LETTER YI KA";
+	characterNames[0x16F21] = "MIAO LETTER QA";
+	characterNames[0x16F22] = "MIAO LETTER QGA";
+	characterNames[0x16F23] = "MIAO LETTER NGA";
+	characterNames[0x16F24] = "MIAO LETTER NGHA";
+	characterNames[0x16F25] = "MIAO LETTER ARCHAIC NGA";
+	characterNames[0x16F26] = "MIAO LETTER HA";
+	characterNames[0x16F27] = "MIAO LETTER XA";
+	characterNames[0x16F28] = "MIAO LETTER GHA";
+	characterNames[0x16F29] = "MIAO LETTER GHHA";
+	characterNames[0x16F2A] = "MIAO LETTER TSSA";
+	characterNames[0x16F2B] = "MIAO LETTER DZZA";
+	characterNames[0x16F2C] = "MIAO LETTER NYA";
+	characterNames[0x16F2D] = "MIAO LETTER NYHA";
+	characterNames[0x16F2E] = "MIAO LETTER TSHA";
+	characterNames[0x16F2F] = "MIAO LETTER DZHA";
+	characterNames[0x16F30] = "MIAO LETTER YI TSHA";
+	characterNames[0x16F31] = "MIAO LETTER YI DZHA";
+	characterNames[0x16F32] = "MIAO LETTER REFORMED TSHA";
+	characterNames[0x16F33] = "MIAO LETTER SHA";
+	characterNames[0x16F34] = "MIAO LETTER SSA";
+	characterNames[0x16F35] = "MIAO LETTER ZHA";
+	characterNames[0x16F36] = "MIAO LETTER ZSHA";
+	characterNames[0x16F37] = "MIAO LETTER TSA";
+	characterNames[0x16F38] = "MIAO LETTER DZA";
+	characterNames[0x16F39] = "MIAO LETTER YI TSA";
+	characterNames[0x16F3A] = "MIAO LETTER SA";
+	characterNames[0x16F3B] = "MIAO LETTER ZA";
+	characterNames[0x16F3C] = "MIAO LETTER ZSA";
+	characterNames[0x16F3D] = "MIAO LETTER ZZA";
+	characterNames[0x16F3E] = "MIAO LETTER ZZSA";
+	characterNames[0x16F3F] = "MIAO LETTER ARCHAIC ZZA";
+	characterNames[0x16F40] = "MIAO LETTER ZZYA";
+	characterNames[0x16F41] = "MIAO LETTER ZZSYA";
+	characterNames[0x16F42] = "MIAO LETTER WA";
+	characterNames[0x16F43] = "MIAO LETTER AH";
+	characterNames[0x16F44] = "MIAO LETTER HHA";
+	characterNames[0x16F50] = "MIAO LETTER NASALIZATION";
+	characterNames[0x16F51] = "MIAO SIGN ASPIRATION";
+	characterNames[0x16F52] = "MIAO SIGN REFORMED VOICING";
+	characterNames[0x16F53] = "MIAO SIGN REFORMED ASPIRATION";
+	characterNames[0x16F54] = "MIAO VOWEL SIGN A";
+	characterNames[0x16F55] = "MIAO VOWEL SIGN AA";
+	characterNames[0x16F56] = "MIAO VOWEL SIGN AHH";
+	characterNames[0x16F57] = "MIAO VOWEL SIGN AN";
+	characterNames[0x16F58] = "MIAO VOWEL SIGN ANG";
+	characterNames[0x16F59] = "MIAO VOWEL SIGN O";
+	characterNames[0x16F5A] = "MIAO VOWEL SIGN OO";
+	characterNames[0x16F5B] = "MIAO VOWEL SIGN WO";
+	characterNames[0x16F5C] = "MIAO VOWEL SIGN W";
+}
+
+private static void loadCharacterNames10()
+{
+	characterNames[0x16F5D] = "MIAO VOWEL SIGN E";
+	characterNames[0x16F5E] = "MIAO VOWEL SIGN EN";
+	characterNames[0x16F5F] = "MIAO VOWEL SIGN ENG";
+	characterNames[0x16F60] = "MIAO VOWEL SIGN OEY";
+	characterNames[0x16F61] = "MIAO VOWEL SIGN I";
+	characterNames[0x16F62] = "MIAO VOWEL SIGN IA";
+	characterNames[0x16F63] = "MIAO VOWEL SIGN IAN";
+	characterNames[0x16F64] = "MIAO VOWEL SIGN IANG";
+	characterNames[0x16F65] = "MIAO VOWEL SIGN IO";
+	characterNames[0x16F66] = "MIAO VOWEL SIGN IE";
+	characterNames[0x16F67] = "MIAO VOWEL SIGN II";
+	characterNames[0x16F68] = "MIAO VOWEL SIGN IU";
+	characterNames[0x16F69] = "MIAO VOWEL SIGN ING";
+	characterNames[0x16F6A] = "MIAO VOWEL SIGN U";
+	characterNames[0x16F6B] = "MIAO VOWEL SIGN UA";
+	characterNames[0x16F6C] = "MIAO VOWEL SIGN UAN";
+	characterNames[0x16F6D] = "MIAO VOWEL SIGN UANG";
+	characterNames[0x16F6E] = "MIAO VOWEL SIGN UU";
+	characterNames[0x16F6F] = "MIAO VOWEL SIGN UEI";
+	characterNames[0x16F70] = "MIAO VOWEL SIGN UNG";
+	characterNames[0x16F71] = "MIAO VOWEL SIGN Y";
+	characterNames[0x16F72] = "MIAO VOWEL SIGN YI";
+	characterNames[0x16F73] = "MIAO VOWEL SIGN AE";
+	characterNames[0x16F74] = "MIAO VOWEL SIGN AEE";
+	characterNames[0x16F75] = "MIAO VOWEL SIGN ERR";
+	characterNames[0x16F76] = "MIAO VOWEL SIGN ROUNDED ERR";
+	characterNames[0x16F77] = "MIAO VOWEL SIGN ER";
+	characterNames[0x16F78] = "MIAO VOWEL SIGN ROUNDED ER";
+	characterNames[0x16F79] = "MIAO VOWEL SIGN AI";
+	characterNames[0x16F7A] = "MIAO VOWEL SIGN EI";
+	characterNames[0x16F7B] = "MIAO VOWEL SIGN AU";
+	characterNames[0x16F7C] = "MIAO VOWEL SIGN OU";
+	characterNames[0x16F7D] = "MIAO VOWEL SIGN N";
+	characterNames[0x16F7E] = "MIAO VOWEL SIGN NG";
+	characterNames[0x16F8F] = "MIAO TONE RIGHT";
+	characterNames[0x16F90] = "MIAO TONE TOP RIGHT";
+	characterNames[0x16F91] = "MIAO TONE ABOVE";
+	characterNames[0x16F92] = "MIAO TONE BELOW";
+	characterNames[0x16F93] = "MIAO LETTER TONE-2";
+	characterNames[0x16F94] = "MIAO LETTER TONE-3";
+	characterNames[0x16F95] = "MIAO LETTER TONE-4";
+	characterNames[0x16F96] = "MIAO LETTER TONE-5";
+	characterNames[0x16F97] = "MIAO LETTER TONE-6";
+	characterNames[0x16F98] = "MIAO LETTER TONE-7";
+	characterNames[0x16F99] = "MIAO LETTER TONE-8";
+	characterNames[0x16F9A] = "MIAO LETTER REFORMED TONE-1";
+	characterNames[0x16F9B] = "MIAO LETTER REFORMED TONE-2";
+	characterNames[0x16F9C] = "MIAO LETTER REFORMED TONE-4";
+	characterNames[0x16F9D] = "MIAO LETTER REFORMED TONE-5";
+	characterNames[0x16F9E] = "MIAO LETTER REFORMED TONE-6";
+	characterNames[0x16F9F] = "MIAO LETTER REFORMED TONE-8";
 	characterNames[0x1B000] = "KATAKANA LETTER ARCHAIC E";
 	characterNames[0x1B001] = "HIRAGANA LETTER ARCHAIC YE";
 	characterNames[0x1D000] = "BYZANTINE MUSICAL SYMBOL PSILI";
@@ -21106,10 +21690,6 @@ private static void loadCharacterNames9()
 	characterNames[0x1D22F] = "GREEK INSTRUMENTAL NOTATION SYMBOL-29";
 	characterNames[0x1D230] = "GREEK INSTRUMENTAL NOTATION SYMBOL-30";
 	characterNames[0x1D231] = "GREEK INSTRUMENTAL NOTATION SYMBOL-32";
-}
-
-private static void loadCharacterNames10()
-{
 	characterNames[0x1D232] = "GREEK INSTRUMENTAL NOTATION SYMBOL-36";
 	characterNames[0x1D233] = "GREEK INSTRUMENTAL NOTATION SYMBOL-37";
 	characterNames[0x1D234] = "GREEK INSTRUMENTAL NOTATION SYMBOL-38";
@@ -22231,6 +22811,149 @@ private static void loadCharacterNames10()
 	characterNames[0x1D7FD] = "MATHEMATICAL MONOSPACE DIGIT SEVEN";
 	characterNames[0x1D7FE] = "MATHEMATICAL MONOSPACE DIGIT EIGHT";
 	characterNames[0x1D7FF] = "MATHEMATICAL MONOSPACE DIGIT NINE";
+	characterNames[0x1EE00] = "ARABIC MATHEMATICAL ALEF";
+	characterNames[0x1EE01] = "ARABIC MATHEMATICAL BEH";
+	characterNames[0x1EE02] = "ARABIC MATHEMATICAL JEEM";
+	characterNames[0x1EE03] = "ARABIC MATHEMATICAL DAL";
+	characterNames[0x1EE05] = "ARABIC MATHEMATICAL WAW";
+	characterNames[0x1EE06] = "ARABIC MATHEMATICAL ZAIN";
+	characterNames[0x1EE07] = "ARABIC MATHEMATICAL HAH";
+	characterNames[0x1EE08] = "ARABIC MATHEMATICAL TAH";
+	characterNames[0x1EE09] = "ARABIC MATHEMATICAL YEH";
+	characterNames[0x1EE0A] = "ARABIC MATHEMATICAL KAF";
+	characterNames[0x1EE0B] = "ARABIC MATHEMATICAL LAM";
+	characterNames[0x1EE0C] = "ARABIC MATHEMATICAL MEEM";
+	characterNames[0x1EE0D] = "ARABIC MATHEMATICAL NOON";
+	characterNames[0x1EE0E] = "ARABIC MATHEMATICAL SEEN";
+	characterNames[0x1EE0F] = "ARABIC MATHEMATICAL AIN";
+	characterNames[0x1EE10] = "ARABIC MATHEMATICAL FEH";
+	characterNames[0x1EE11] = "ARABIC MATHEMATICAL SAD";
+	characterNames[0x1EE12] = "ARABIC MATHEMATICAL QAF";
+	characterNames[0x1EE13] = "ARABIC MATHEMATICAL REH";
+	characterNames[0x1EE14] = "ARABIC MATHEMATICAL SHEEN";
+	characterNames[0x1EE15] = "ARABIC MATHEMATICAL TEH";
+	characterNames[0x1EE16] = "ARABIC MATHEMATICAL THEH";
+	characterNames[0x1EE17] = "ARABIC MATHEMATICAL KHAH";
+	characterNames[0x1EE18] = "ARABIC MATHEMATICAL THAL";
+	characterNames[0x1EE19] = "ARABIC MATHEMATICAL DAD";
+	characterNames[0x1EE1A] = "ARABIC MATHEMATICAL ZAH";
+	characterNames[0x1EE1B] = "ARABIC MATHEMATICAL GHAIN";
+	characterNames[0x1EE1C] = "ARABIC MATHEMATICAL DOTLESS BEH";
+	characterNames[0x1EE1D] = "ARABIC MATHEMATICAL DOTLESS NOON";
+	characterNames[0x1EE1E] = "ARABIC MATHEMATICAL DOTLESS FEH";
+	characterNames[0x1EE1F] = "ARABIC MATHEMATICAL DOTLESS QAF";
+	characterNames[0x1EE21] = "ARABIC MATHEMATICAL INITIAL BEH";
+	characterNames[0x1EE22] = "ARABIC MATHEMATICAL INITIAL JEEM";
+	characterNames[0x1EE24] = "ARABIC MATHEMATICAL INITIAL HEH";
+	characterNames[0x1EE27] = "ARABIC MATHEMATICAL INITIAL HAH";
+	characterNames[0x1EE29] = "ARABIC MATHEMATICAL INITIAL YEH";
+	characterNames[0x1EE2A] = "ARABIC MATHEMATICAL INITIAL KAF";
+	characterNames[0x1EE2B] = "ARABIC MATHEMATICAL INITIAL LAM";
+	characterNames[0x1EE2C] = "ARABIC MATHEMATICAL INITIAL MEEM";
+	characterNames[0x1EE2D] = "ARABIC MATHEMATICAL INITIAL NOON";
+	characterNames[0x1EE2E] = "ARABIC MATHEMATICAL INITIAL SEEN";
+	characterNames[0x1EE2F] = "ARABIC MATHEMATICAL INITIAL AIN";
+	characterNames[0x1EE30] = "ARABIC MATHEMATICAL INITIAL FEH";
+	characterNames[0x1EE31] = "ARABIC MATHEMATICAL INITIAL SAD";
+	characterNames[0x1EE32] = "ARABIC MATHEMATICAL INITIAL QAF";
+	characterNames[0x1EE34] = "ARABIC MATHEMATICAL INITIAL SHEEN";
+	characterNames[0x1EE35] = "ARABIC MATHEMATICAL INITIAL TEH";
+	characterNames[0x1EE36] = "ARABIC MATHEMATICAL INITIAL THEH";
+	characterNames[0x1EE37] = "ARABIC MATHEMATICAL INITIAL KHAH";
+	characterNames[0x1EE39] = "ARABIC MATHEMATICAL INITIAL DAD";
+	characterNames[0x1EE3B] = "ARABIC MATHEMATICAL INITIAL GHAIN";
+	characterNames[0x1EE42] = "ARABIC MATHEMATICAL TAILED JEEM";
+	characterNames[0x1EE47] = "ARABIC MATHEMATICAL TAILED HAH";
+	characterNames[0x1EE49] = "ARABIC MATHEMATICAL TAILED YEH";
+	characterNames[0x1EE4B] = "ARABIC MATHEMATICAL TAILED LAM";
+	characterNames[0x1EE4D] = "ARABIC MATHEMATICAL TAILED NOON";
+	characterNames[0x1EE4E] = "ARABIC MATHEMATICAL TAILED SEEN";
+	characterNames[0x1EE4F] = "ARABIC MATHEMATICAL TAILED AIN";
+	characterNames[0x1EE51] = "ARABIC MATHEMATICAL TAILED SAD";
+	characterNames[0x1EE52] = "ARABIC MATHEMATICAL TAILED QAF";
+	characterNames[0x1EE54] = "ARABIC MATHEMATICAL TAILED SHEEN";
+	characterNames[0x1EE57] = "ARABIC MATHEMATICAL TAILED KHAH";
+	characterNames[0x1EE59] = "ARABIC MATHEMATICAL TAILED DAD";
+	characterNames[0x1EE5B] = "ARABIC MATHEMATICAL TAILED GHAIN";
+	characterNames[0x1EE5D] = "ARABIC MATHEMATICAL TAILED DOTLESS NOON";
+	characterNames[0x1EE5F] = "ARABIC MATHEMATICAL TAILED DOTLESS QAF";
+	characterNames[0x1EE61] = "ARABIC MATHEMATICAL STRETCHED BEH";
+	characterNames[0x1EE62] = "ARABIC MATHEMATICAL STRETCHED JEEM";
+	characterNames[0x1EE64] = "ARABIC MATHEMATICAL STRETCHED HEH";
+	characterNames[0x1EE67] = "ARABIC MATHEMATICAL STRETCHED HAH";
+	characterNames[0x1EE68] = "ARABIC MATHEMATICAL STRETCHED TAH";
+	characterNames[0x1EE69] = "ARABIC MATHEMATICAL STRETCHED YEH";
+	characterNames[0x1EE6A] = "ARABIC MATHEMATICAL STRETCHED KAF";
+	characterNames[0x1EE6C] = "ARABIC MATHEMATICAL STRETCHED MEEM";
+	characterNames[0x1EE6D] = "ARABIC MATHEMATICAL STRETCHED NOON";
+	characterNames[0x1EE6E] = "ARABIC MATHEMATICAL STRETCHED SEEN";
+	characterNames[0x1EE6F] = "ARABIC MATHEMATICAL STRETCHED AIN";
+	characterNames[0x1EE70] = "ARABIC MATHEMATICAL STRETCHED FEH";
+	characterNames[0x1EE71] = "ARABIC MATHEMATICAL STRETCHED SAD";
+	characterNames[0x1EE72] = "ARABIC MATHEMATICAL STRETCHED QAF";
+	characterNames[0x1EE74] = "ARABIC MATHEMATICAL STRETCHED SHEEN";
+	characterNames[0x1EE75] = "ARABIC MATHEMATICAL STRETCHED TEH";
+	characterNames[0x1EE76] = "ARABIC MATHEMATICAL STRETCHED THEH";
+	characterNames[0x1EE77] = "ARABIC MATHEMATICAL STRETCHED KHAH";
+	characterNames[0x1EE79] = "ARABIC MATHEMATICAL STRETCHED DAD";
+	characterNames[0x1EE7A] = "ARABIC MATHEMATICAL STRETCHED ZAH";
+	characterNames[0x1EE7B] = "ARABIC MATHEMATICAL STRETCHED GHAIN";
+	characterNames[0x1EE7C] = "ARABIC MATHEMATICAL STRETCHED DOTLESS BEH";
+	characterNames[0x1EE7E] = "ARABIC MATHEMATICAL STRETCHED DOTLESS FEH";
+	characterNames[0x1EE80] = "ARABIC MATHEMATICAL LOOPED ALEF";
+	characterNames[0x1EE81] = "ARABIC MATHEMATICAL LOOPED BEH";
+	characterNames[0x1EE82] = "ARABIC MATHEMATICAL LOOPED JEEM";
+	characterNames[0x1EE83] = "ARABIC MATHEMATICAL LOOPED DAL";
+	characterNames[0x1EE84] = "ARABIC MATHEMATICAL LOOPED HEH";
+	characterNames[0x1EE85] = "ARABIC MATHEMATICAL LOOPED WAW";
+	characterNames[0x1EE86] = "ARABIC MATHEMATICAL LOOPED ZAIN";
+	characterNames[0x1EE87] = "ARABIC MATHEMATICAL LOOPED HAH";
+	characterNames[0x1EE88] = "ARABIC MATHEMATICAL LOOPED TAH";
+	characterNames[0x1EE89] = "ARABIC MATHEMATICAL LOOPED YEH";
+	characterNames[0x1EE8B] = "ARABIC MATHEMATICAL LOOPED LAM";
+	characterNames[0x1EE8C] = "ARABIC MATHEMATICAL LOOPED MEEM";
+	characterNames[0x1EE8D] = "ARABIC MATHEMATICAL LOOPED NOON";
+	characterNames[0x1EE8E] = "ARABIC MATHEMATICAL LOOPED SEEN";
+	characterNames[0x1EE8F] = "ARABIC MATHEMATICAL LOOPED AIN";
+	characterNames[0x1EE90] = "ARABIC MATHEMATICAL LOOPED FEH";
+	characterNames[0x1EE91] = "ARABIC MATHEMATICAL LOOPED SAD";
+	characterNames[0x1EE92] = "ARABIC MATHEMATICAL LOOPED QAF";
+	characterNames[0x1EE93] = "ARABIC MATHEMATICAL LOOPED REH";
+	characterNames[0x1EE94] = "ARABIC MATHEMATICAL LOOPED SHEEN";
+	characterNames[0x1EE95] = "ARABIC MATHEMATICAL LOOPED TEH";
+	characterNames[0x1EE96] = "ARABIC MATHEMATICAL LOOPED THEH";
+	characterNames[0x1EE97] = "ARABIC MATHEMATICAL LOOPED KHAH";
+	characterNames[0x1EE98] = "ARABIC MATHEMATICAL LOOPED THAL";
+	characterNames[0x1EE99] = "ARABIC MATHEMATICAL LOOPED DAD";
+	characterNames[0x1EE9A] = "ARABIC MATHEMATICAL LOOPED ZAH";
+	characterNames[0x1EE9B] = "ARABIC MATHEMATICAL LOOPED GHAIN";
+	characterNames[0x1EEA1] = "ARABIC MATHEMATICAL DOUBLE-STRUCK BEH";
+	characterNames[0x1EEA2] = "ARABIC MATHEMATICAL DOUBLE-STRUCK JEEM";
+	characterNames[0x1EEA3] = "ARABIC MATHEMATICAL DOUBLE-STRUCK DAL";
+	characterNames[0x1EEA5] = "ARABIC MATHEMATICAL DOUBLE-STRUCK WAW";
+	characterNames[0x1EEA6] = "ARABIC MATHEMATICAL DOUBLE-STRUCK ZAIN";
+	characterNames[0x1EEA7] = "ARABIC MATHEMATICAL DOUBLE-STRUCK HAH";
+	characterNames[0x1EEA8] = "ARABIC MATHEMATICAL DOUBLE-STRUCK TAH";
+	characterNames[0x1EEA9] = "ARABIC MATHEMATICAL DOUBLE-STRUCK YEH";
+	characterNames[0x1EEAB] = "ARABIC MATHEMATICAL DOUBLE-STRUCK LAM";
+	characterNames[0x1EEAC] = "ARABIC MATHEMATICAL DOUBLE-STRUCK MEEM";
+	characterNames[0x1EEAD] = "ARABIC MATHEMATICAL DOUBLE-STRUCK NOON";
+	characterNames[0x1EEAE] = "ARABIC MATHEMATICAL DOUBLE-STRUCK SEEN";
+	characterNames[0x1EEAF] = "ARABIC MATHEMATICAL DOUBLE-STRUCK AIN";
+	characterNames[0x1EEB0] = "ARABIC MATHEMATICAL DOUBLE-STRUCK FEH";
+	characterNames[0x1EEB1] = "ARABIC MATHEMATICAL DOUBLE-STRUCK SAD";
+	characterNames[0x1EEB2] = "ARABIC MATHEMATICAL DOUBLE-STRUCK QAF";
+	characterNames[0x1EEB3] = "ARABIC MATHEMATICAL DOUBLE-STRUCK REH";
+	characterNames[0x1EEB4] = "ARABIC MATHEMATICAL DOUBLE-STRUCK SHEEN";
+	characterNames[0x1EEB5] = "ARABIC MATHEMATICAL DOUBLE-STRUCK TEH";
+	characterNames[0x1EEB6] = "ARABIC MATHEMATICAL DOUBLE-STRUCK THEH";
+	characterNames[0x1EEB7] = "ARABIC MATHEMATICAL DOUBLE-STRUCK KHAH";
+	characterNames[0x1EEB8] = "ARABIC MATHEMATICAL DOUBLE-STRUCK THAL";
+	characterNames[0x1EEB9] = "ARABIC MATHEMATICAL DOUBLE-STRUCK DAD";
+	characterNames[0x1EEBA] = "ARABIC MATHEMATICAL DOUBLE-STRUCK ZAH";
+	characterNames[0x1EEBB] = "ARABIC MATHEMATICAL DOUBLE-STRUCK GHAIN";
+	characterNames[0x1EEF0] = "ARABIC MATHEMATICAL OPERATOR MEEM WITH HAH WITH TATWEEL";
+	characterNames[0x1EEF1] = "ARABIC MATHEMATICAL OPERATOR HAH WITH DAL";
 	characterNames[0x1F000] = "MAHJONG TILE EAST WIND";
 	characterNames[0x1F001] = "MAHJONG TILE SOUTH WIND";
 	characterNames[0x1F002] = "MAHJONG TILE WEST WIND";
@@ -22446,6 +23169,10 @@ private static void loadCharacterNames10()
 	characterNames[0x1F109] = "DIGIT EIGHT COMMA";
 	characterNames[0x1F10A] = "DIGIT NINE COMMA";
 	characterNames[0x1F110] = "PARENTHESIZED LATIN CAPITAL LETTER A";
+}
+
+private static void loadCharacterNames11()
+{
 	characterNames[0x1F111] = "PARENTHESIZED LATIN CAPITAL LETTER B";
 	characterNames[0x1F112] = "PARENTHESIZED LATIN CAPITAL LETTER C";
 	characterNames[0x1F113] = "PARENTHESIZED LATIN CAPITAL LETTER D";
@@ -22534,6 +23261,8 @@ private static void loadCharacterNames10()
 	characterNames[0x1F167] = "NEGATIVE CIRCLED LATIN CAPITAL LETTER X";
 	characterNames[0x1F168] = "NEGATIVE CIRCLED LATIN CAPITAL LETTER Y";
 	characterNames[0x1F169] = "NEGATIVE CIRCLED LATIN CAPITAL LETTER Z";
+	characterNames[0x1F16A] = "RAISED MC SIGN";
+	characterNames[0x1F16B] = "RAISED MD SIGN";
 	characterNames[0x1F170] = "NEGATIVE SQUARED LATIN CAPITAL LETTER A";
 	characterNames[0x1F171] = "NEGATIVE SQUARED LATIN CAPITAL LETTER B";
 	characterNames[0x1F172] = "NEGATIVE SQUARED LATIN CAPITAL LETTER C";
@@ -23158,12 +23887,12 @@ private static void loadCharacterNames10()
 	characterNames[0x1F539] = "SMALL BLUE DIAMOND";
 	characterNames[0x1F53A] = "UP-POINTING RED TRIANGLE";
 	characterNames[0x1F53B] = "DOWN-POINTING RED TRIANGLE";
-}
-
-private static void loadCharacterNames11()
-{
 	characterNames[0x1F53C] = "UP-POINTING SMALL RED TRIANGLE";
 	characterNames[0x1F53D] = "DOWN-POINTING SMALL RED TRIANGLE";
+	characterNames[0x1F540] = "CIRCLED CROSS POMMEE";
+	characterNames[0x1F541] = "CROSS POMMEE WITH HALF-CIRCLE BELOW";
+	characterNames[0x1F542] = "CROSS POMMEE";
+	characterNames[0x1F543] = "NOTCHED LEFT SEMICIRCLE WITH THREE DOTS";
 	characterNames[0x1F550] = "CLOCK FACE ONE OCLOCK";
 	characterNames[0x1F551] = "CLOCK FACE TWO OCLOCK";
 	characterNames[0x1F552] = "CLOCK FACE THREE OCLOCK";
@@ -23193,6 +23922,7 @@ private static void loadCharacterNames11()
 	characterNames[0x1F5FD] = "STATUE OF LIBERTY";
 	characterNames[0x1F5FE] = "SILHOUETTE OF JAPAN";
 	characterNames[0x1F5FF] = "MOYAI";
+	characterNames[0x1F600] = "GRINNING FACE";
 	characterNames[0x1F601] = "GRINNING FACE WITH SMILING EYES";
 	characterNames[0x1F602] = "FACE WITH TEARS OF JOY";
 	characterNames[0x1F603] = "SMILING FACE WITH OPEN MOUTH";
@@ -23209,30 +23939,42 @@ private static void loadCharacterNames11()
 	characterNames[0x1F60E] = "SMILING FACE WITH SUNGLASSES";
 	characterNames[0x1F60F] = "SMIRKING FACE";
 	characterNames[0x1F610] = "NEUTRAL FACE";
+	characterNames[0x1F611] = "EXPRESSIONLESS FACE";
 	characterNames[0x1F612] = "UNAMUSED FACE";
 	characterNames[0x1F613] = "FACE WITH COLD SWEAT";
 	characterNames[0x1F614] = "PENSIVE FACE";
+	characterNames[0x1F615] = "CONFUSED FACE";
 	characterNames[0x1F616] = "CONFOUNDED FACE";
+	characterNames[0x1F617] = "KISSING FACE";
 	characterNames[0x1F618] = "FACE THROWING A KISS";
+	characterNames[0x1F619] = "KISSING FACE WITH SMILING EYES";
 	characterNames[0x1F61A] = "KISSING FACE WITH CLOSED EYES";
+	characterNames[0x1F61B] = "FACE WITH STUCK-OUT TONGUE";
 	characterNames[0x1F61C] = "FACE WITH STUCK-OUT TONGUE AND WINKING EYE";
 	characterNames[0x1F61D] = "FACE WITH STUCK-OUT TONGUE AND TIGHTLY-CLOSED EYES";
 	characterNames[0x1F61E] = "DISAPPOINTED FACE";
+	characterNames[0x1F61F] = "WORRIED FACE";
 	characterNames[0x1F620] = "ANGRY FACE";
 	characterNames[0x1F621] = "POUTING FACE";
 	characterNames[0x1F622] = "CRYING FACE";
 	characterNames[0x1F623] = "PERSEVERING FACE";
 	characterNames[0x1F624] = "FACE WITH LOOK OF TRIUMPH";
 	characterNames[0x1F625] = "DISAPPOINTED BUT RELIEVED FACE";
+	characterNames[0x1F626] = "FROWNING FACE WITH OPEN MOUTH";
+	characterNames[0x1F627] = "ANGUISHED FACE";
 	characterNames[0x1F628] = "FEARFUL FACE";
 	characterNames[0x1F629] = "WEARY FACE";
 	characterNames[0x1F62A] = "SLEEPY FACE";
 	characterNames[0x1F62B] = "TIRED FACE";
+	characterNames[0x1F62C] = "GRIMACING FACE";
 	characterNames[0x1F62D] = "LOUDLY CRYING FACE";
+	characterNames[0x1F62E] = "FACE WITH OPEN MOUTH";
+	characterNames[0x1F62F] = "HUSHED FACE";
 	characterNames[0x1F630] = "FACE WITH OPEN MOUTH AND COLD SWEAT";
 	characterNames[0x1F631] = "FACE SCREAMING IN FEAR";
 	characterNames[0x1F632] = "ASTONISHED FACE";
 	characterNames[0x1F633] = "FLUSHED FACE";
+	characterNames[0x1F634] = "SLEEPING FACE";
 	characterNames[0x1F635] = "DIZZY FACE";
 	characterNames[0x1F636] = "FACE WITHOUT MOUTH";
 	characterNames[0x1F637] = "FACE WITH MEDICAL MASK";
@@ -24349,7 +25091,6 @@ static
 	loadCharacterNames11();
 }
 // END GENERATED CODE
-
 	/**
 	 * Constructor of UnicodeCharNameMap.
 	 * Should not be instantiated outside of the class UnicodeData.
