@@ -71,6 +71,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Sessions/trunk Sessions
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ShortcutSaver/trunk ShortcutSaver
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SideKick/trunk SideKick
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SmartOpen/trunk SmartOpen
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SshConsole/trunk SshConsole
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SuperAbbrevs/trunk SuperAbbrevs
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SyntaxHelper/trunk SyntaxHelper
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Tags/trunk Tags
