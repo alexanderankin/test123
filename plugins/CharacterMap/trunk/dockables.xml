@@ -4,6 +4,6 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="character-map">
-		new charactermap.CharacterMap(view);
+		new charactermap.CharacterMap(view, position);
 	</DOCKABLE>
 </DOCKABLES>

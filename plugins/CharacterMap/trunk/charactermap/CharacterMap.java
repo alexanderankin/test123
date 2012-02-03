@@ -79,6 +79,8 @@ public class CharacterMap extends JPanel
 
 	/** JEdit view to which character map instance is attached */
 	private View view;
+	/** Docking position of this character map instance */
+	private String position;
 	/** Current fonts for font substitution */
 	private ArrayList<Font> substitutionFonts;
 	/** Current display graphics configuration */
@@ -168,12 +170,13 @@ public class CharacterMap extends JPanel
 	 * @param  view  jEdit view
 	 * @see          CharacterMapOptionPane
 	 */
-	public CharacterMap(View view)
+	public CharacterMap(View view, String position)
 	{
 		//{{{ Initial settings
 		super(new BorderLayout(12, 12));
 
 		this.view = view;
+		this.position = new String(position);
 
 		substitutionFonts = new ArrayList<Font>();
 
@@ -570,8 +573,6 @@ public class CharacterMap extends JPanel
 	/** Character map window is docked left or right */
 	private boolean isDockedLeftRight()
 	{
-		String position = jEdit.getProperty(NAME_PREFIX + "dock-position",
-			DockableWindowManager.FLOATING);
 		return position.equalsIgnoreCase(DockableWindowManager.LEFT)
 		    || position.equalsIgnoreCase(DockableWindowManager.RIGHT);
 	}
@@ -579,8 +580,6 @@ public class CharacterMap extends JPanel
 	/** Character map window is docked top or bottom */
 	private boolean isDockedTopBottom()
 	{
-		String position = jEdit.getProperty(NAME_PREFIX + "dock-position",
-			DockableWindowManager.FLOATING);
 		return position.equalsIgnoreCase(DockableWindowManager.TOP)
 		    || position.equalsIgnoreCase(DockableWindowManager.BOTTOM);
 	}
@@ -867,7 +866,8 @@ public class CharacterMap extends JPanel
 	{
 		String bufferEncoding = view.getBuffer()
 			.getStringProperty(JEditBuffer.ENCODING);
-		if (bufferEncoding.equals(encoding) || isUnicode(bufferEncoding)) {
+		if (bufferEncoding.toUpperCase().equals(encoding.toUpperCase())
+			|| isUnicode(bufferEncoding)) {
 			view.getTextArea().setSelectedText(ch);
 		}
 		else {
@@ -1470,6 +1470,8 @@ public class CharacterMap extends JPanel
 		{
 			String ch;
 
+			// TODO: Make a better algorithm with the Encoder class
+			//       instead of String(byte[])
 			try {
 				if (isUnicode(encoding)) {
 					int cp = getIndexAt(row, col);

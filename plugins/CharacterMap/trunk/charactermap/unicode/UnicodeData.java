@@ -3,6 +3,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2003 Mike Dillon
+ * Copyright (C) 2012 Max Funk
  * Generated Portions Copyright (C) Unicode, Inc.
  *                    (see charactermap/unicode/LICENSE)
  *
@@ -238,6 +239,9 @@ public final class UnicodeData
 		return null;
 	}
 
+	/** Remember last search result in getCharacterName(codePoint). **/
+	private static int getCharLastPrevious = 0;
+
 	/**
 	 * Returns the Unicode character name for the specified code
 	 * point, or <code>null</code> if there is no name available.
@@ -248,31 +252,54 @@ public final class UnicodeData
 
 		String name = THE_NAME_MAP.get(new Integer(codePoint));
 
-		// Correct the name, if it is from a block in which only
-		// first and last character are named.
-		boolean isFirst = false;
-		boolean isLast = false;
-		if (name == null) {
-			Block B = getBlock(codePoint);
-			if (B == null) return null;
-			name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
-			if (name == null) return null;
-			else if (name.endsWith("First>")) isFirst = true;
-			else if (name.endsWith("Last>")) isLast = true;
-			else return null;
-		}
-		if (isFirst)
-			name = (name.substring(1, name.trim().length() - 8)
+		boolean nameIsFirst = (name != null && name.endsWith("First>"));
+		boolean nameIsLast = (name != null && name.endsWith("Last>"));
+
+		// Return chars with standard name
+		if (name != null && !nameIsFirst && !nameIsLast)
+			return name;
+
+		// Return chars named "..First>" and "..Last>".
+		if (nameIsFirst)
+			return (name.substring(1, name.trim().length() - 8)
 				+ "-" + Integer.toHexString(codePoint).toUpperCase());
-		if (isLast)
-			name = (name.substring(1, name.trim().length() - 7)
+		if (nameIsLast)
+			return (name.substring(1, name.trim().length() - 7)
 				+ "-" + Integer.toHexString(codePoint).toUpperCase());
 
-		return name;
+		// Return empty chars not from first-last block
+		Block B = getBlock(codePoint);
+		if (B == null) return null;
+		name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
+		if ((name == null) || (!name.endsWith("First>"))) return null;
+
+		// Return chars between first and last
+		int getCharLast;
+		if ((B.getFirstPoint() <= getCharLastPrevious)
+			&& (getCharLastPrevious <= B.getLastPoint())) {
+			getCharLast = getCharLastPrevious;
+		}
+		else {
+			getCharLast = B.getLastPoint();
+			String tempName;
+			while (getCharLast > B.getFirstPoint()) {
+				tempName = THE_NAME_MAP.get(new Integer(getCharLast));
+				if ((tempName != null) && tempName.endsWith("Last>"))
+					break;
+				getCharLast--;
+			}
+			getCharLastPrevious = getCharLast;
+		}
+		if (codePoint < getCharLast)
+			return (name.substring(1, name.trim().length() - 8)
+				+ "-" + Integer.toHexString(codePoint).toUpperCase());
+
+		// Char is behind last
+		return null;
 	}
 
 	/** Remember last search result in getBlock(codepoint) */
-	private static Block getBlockPrevious = null; //getBlocks().getItem(0);
+	private static Block getBlockPrevious = null;
 
 	/**
 	 *  Returns the Unicode block of a character.
