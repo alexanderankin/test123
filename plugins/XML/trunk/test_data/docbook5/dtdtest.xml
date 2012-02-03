@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+  <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V5.0//EN"
+           "http://www.oasis-open.org/docbook/xml/5.0/docbook.dtd">
+
+  <book>
+  <para> This is a short book. </para>
+  </book>
