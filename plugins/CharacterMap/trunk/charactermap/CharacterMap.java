@@ -30,6 +30,7 @@ import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
@@ -270,8 +271,8 @@ public class CharacterMap extends JPanel
 		if (isDockedLeftRight()) c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(blocksCombo, c);
 
-		blockLeft = new JButton("<");
-		blockRight = new JButton(">");
+		blockLeft = new JButton("<<");
+		blockRight = new JButton(">>");
 		blockLeft.setMargin(new Insets(1,1,1,1));
 		blockRight.setMargin(new Insets(1,1,1,1));
 
@@ -360,6 +361,7 @@ public class CharacterMap extends JPanel
 		//{{{ South Panel (Status Line)
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(gridbag);
+		southPanel.setBorder(LineBorder.createGrayLineBorder());
 
 		status = new JTextArea(" ");
 		status.setRows(isDockedLeftRight() ? 3 : 1);
@@ -1402,7 +1404,7 @@ public class CharacterMap extends JPanel
 			else if ((text == null) || text.isEmpty()
 				//|| !Character.isDefined(text.codePointAt(0)) )
 				|| !UnicodeData.isDefined(cp)
-				|| ((cp <= 0xFFFF) && Character.isSurrogate((char) cp)))
+				|| (Character.getType(cp) == Character.SURROGATE))
 				text = " ";
 
 			super.setText(text);
