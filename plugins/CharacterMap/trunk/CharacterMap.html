@@ -36,11 +36,10 @@ Quivira, Arial Unicode MS.</p>
 <p>Beside the normal characters, there are the following entries :
 <ol>
 	<li>Blue + number: ISO control characters.</li>
-	<li>Red + replacement char: Invalid characters with no Unicode
-	representation. These characters cannot be handled because the buffer
-	is internally unicode.</li>
-	<li>Grey: Unassigned characters. For future unicode versions.</li>
-	<li>White + missing font char: Characters with missing fonts.</li>
+	<li>White + replacement symbol: Characters with missing fonts.</li>
+	<li>Green: Private Use Area: User defined characters / fonts.</li>
+	<li>Grey: Not assigned to characters. For future Unicode versions and technical use.</li>
+	<li>Red + replacement symbol: Invalid table entries without Unicode representation.</li>
 </ol>
 </p>
 <p>For the encoding &quot;US-ASCII&quot;, the table contains 128 characters.
@@ -61,12 +60,10 @@ Character Map will refuse to insert characters from different encodings into
 a non-unicode buffer. If you still want to insert the character, you must change
 the encoding in the jEdit buffer options. Be careful: Some applications may require
 a specific encoding. Also, if you change to another non-Unicode encoding, some
-other characters of the buffer may not be present in the new encoding.</p>
-<p>Java works internally in Unicode. Codepoints in the table, which have no valid
-Unicode representation, are shown by a "replacement character" (in most fonts
-shown as modified question mark). This character cannot be inserted into the
-buffer. Characters with missing font representation are (again font-dependent)
-shown as small rectangles.</p>
+other characters of the buffer may not be present in the new encoding.
+Java works internally in Unicode. Codepoints from non-unicode encodings, which
+have no unicode equivalent, are shown in red as invalid characters. They cannot
+be inserted into the buffer.</p>
 
 <h2> Options </h2>
 
@@ -97,6 +94,8 @@ The following options can be specified in the option pane.
 		<li>docked l/r: if the table is docked left or right.</li>
 		<li>docked t/b: if the table is docked at top or bottom.</li>
 	</ol>
+	<li>Table colors: specify colors of the table cells for the different
+	character types (see description above).</li>
 	<li>Show status line: controls whether the status line at the bottom
 	of the window is displayed. The status line contains</li>
 	<ol>
@@ -151,6 +150,8 @@ The following options can be specified in the option pane.
 	Statusinfo: Name and bytecode for all chars and encodings.
 	Code cleaning, various small bugfixes.
 <h3>Version 1.3.3 (2012)</h3>
+	More table colors, color options.
 	Bugfixes: Layout for second floating window. Corrected Character Names.
+	Corrected unassigned entries.
 </body>
 </html>

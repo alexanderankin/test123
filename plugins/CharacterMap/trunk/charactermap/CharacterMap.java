@@ -1372,7 +1372,8 @@ public class CharacterMap extends JPanel
 
 		/**
 		 * Set the text in the character labels
-		 * Empty strings are replaced by a single space.
+		 * Empty strings, undefined chars and surrogates are replaced
+		 * by a single space.
 		 * Strings consisting of a control character are converted
 		 * to numbers with smaller size.
 		 *
@@ -1381,19 +1382,27 @@ public class CharacterMap extends JPanel
 		@Override
 		public final void setText(String text)
 		{
+			// Empty text
+			if ((text == null) || text.isEmpty()) {
+				super.setText(" ");
+				return;
+			}
+
+			int cp = text.codePointAt(0);
+
 			// Control chars
 			if ((text != null)
 				&& (text.length() == 1)
-				&& Character.isISOControl(text.codePointAt(0)))
-			{
-				text = "#" + text.codePointAt(0);
+				&& Character.isISOControl(cp)) {
+				text = "#" + cp;
 				setFont(this.getFont().deriveFont(
 					(float) this.getFont().getSize() * 2/3));
 			}
-			// Empty text
-			if ((text == null) || text.isEmpty()
+			// Undefined chars, Surrogates
+			else if ((text == null) || text.isEmpty()
 				//|| !Character.isDefined(text.codePointAt(0)) )
-				|| !UnicodeData.isDefined(text.codePointAt(0)))
+				|| !UnicodeData.isDefined(cp)
+				|| ((cp <= 0xFFFF) && Character.isSurrogate((char) cp)))
 				text = " ";
 
 			super.setText(text);
@@ -1505,8 +1514,8 @@ public class CharacterMap extends JPanel
 		 * table is valid. A table index is invalid, if it does not
 		 * correspond a valid unicode entry.
 		 * This happens, if the table entry is outside the encoding range
-		 * or if it is a character from an encoding with no Unicode
 		 * or if we are outside of the table (row == -1 or col == -1)
+		 * or if it is a character from an encoding with no Unicode
 		 * equivalent.
 		 *
 		 * @param row   Table row
@@ -1574,33 +1583,47 @@ public class CharacterMap extends JPanel
 			boolean isSelected, boolean hasFocus,
 			int row, int column)
 		{
-
+			// Catch empty text
 			if ((text == null) || ((String) text).isEmpty()) {
 				setFont(normalFont());
-				setBackground(Color.WHITE);
+				setBackground(jEdit.getColorProperty(
+					OPTION_PREFIX + "color-normal"));
 				setText(" ");
 				return this;
 			}
 
 			int cp = ((String) text).codePointAt(0);
 
+			// Set Font
 			setFont(autoFont(cp));
 
+			// Set Background
 			if (Character.isISOControl(cp)) {
-				setBackground(new Color(220,220,255));
+				setBackground(jEdit.getColorProperty(
+					OPTION_PREFIX + "color-control"));
+			}
+			else if (Character.getType(cp) == Character.PRIVATE_USE) {
+				setBackground(jEdit.getColorProperty(
+					OPTION_PREFIX + "color-private"));
 			}
 			else if ( !((CharTableModel) table.getModel())
 				.isValidChar(row, column)) {
-				setBackground(new Color(255,220,220));
+				setBackground(jEdit.getColorProperty(
+					OPTION_PREFIX + "color-invalid"));
 			}
-			else if (!UnicodeData.isDefined(cp)) {
-			//else if (!Character.isDefined(cp)) {
-				setBackground(Color.LIGHT_GRAY);
+			else if (!UnicodeData.isDefined(cp)
+			//else if (!Character.isDefined(cp)
+				|| (Character.getType(cp) == Character.SURROGATE)) {
+				setBackground(jEdit.getColorProperty(
+					OPTION_PREFIX + "color-unassigned"));
 			}
 			else {
-				setBackground(Color.WHITE);
+				setBackground(jEdit.getColorProperty(
+					OPTION_PREFIX + "color-normal"));
 			}
 
+			// Set Text
+			// (same for table cell, large char and super char)
 			setText((String) text);
 
 			return this;

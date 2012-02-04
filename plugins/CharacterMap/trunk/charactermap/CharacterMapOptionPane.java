@@ -24,12 +24,14 @@ package charactermap;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
 import java.util.ArrayList;
 import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.jEdit;
 //import org.gjt.sp.util.Log;
 //}}}
@@ -85,6 +87,17 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	private SpinnerModel spinnerModelDockLR;
 	/** Model for spinner options (docked top/bottom) */
 	private SpinnerModel spinnerModelDockTB;
+
+	/** Selector for normal character color */
+	private ColorWellButton normalColor;
+	/** Selector for control character color */
+	private ColorWellButton controlColor;
+	/** Selector for private use character color */
+	private ColorWellButton privateColor;
+	/** Selector for unassigned character color */
+	private ColorWellButton unassignedColor;
+	/** Selector for invalid character color */
+	private ColorWellButton invalidColor;
 
 	/** Checkbox controlling display of large character  */
 	private JCheckBox showLarge;
@@ -170,6 +183,18 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		column = jEdit.getIntegerProperty(OPTION_PREFIX + "columns-dock-tb");
 		columnsSpinnerDockTB.setValue(new Integer(column));
 
+		//Initialise color option components
+		normalColor = new ColorWellButton(
+			jEdit.getColorProperty(OPTION_PREFIX + "color-normal"));
+		controlColor = new ColorWellButton(
+			jEdit.getColorProperty(OPTION_PREFIX + "color-control"));
+		privateColor = new ColorWellButton(
+			jEdit.getColorProperty(OPTION_PREFIX + "color-private"));
+		unassignedColor = new ColorWellButton(
+			jEdit.getColorProperty(OPTION_PREFIX + "color-unassigned"));
+		invalidColor = new ColorWellButton(
+			jEdit.getColorProperty(OPTION_PREFIX + "color-invalid"));
+
 		//Initialise character option components
 		showLarge = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "large.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "large"));
@@ -225,6 +250,18 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		addComponent(columnsSpinnerDockLRLabel, columnsSpinnerDockLR);
 		addComponent(columnsSpinnerDockTBLabel, columnsSpinnerDockTB);
 
+		addSeparator(OPTION_PREFIX + "separator-color.label");
+		addComponent(jEdit.getProperty(OPTION_PREFIX + "color-normal.label"),
+			normalColor, GridBagConstraints.VERTICAL);
+		addComponent(jEdit.getProperty(OPTION_PREFIX + "color-control.label"),
+			controlColor, GridBagConstraints.VERTICAL);
+		addComponent(jEdit.getProperty(OPTION_PREFIX + "color-private.label"),
+			privateColor, GridBagConstraints.VERTICAL);
+		addComponent(jEdit.getProperty(OPTION_PREFIX + "color-unassigned.label"),
+			unassignedColor, GridBagConstraints.VERTICAL);
+		addComponent(jEdit.getProperty(OPTION_PREFIX + "color-invalid.label"),
+			invalidColor, GridBagConstraints.VERTICAL);
+
 		addSeparator(OPTION_PREFIX + "separator-chars.label");
 		addComponent(showLarge);
 		addComponent(largeSizeLabel, largeSize);
@@ -256,6 +293,17 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		jEdit.setIntegerProperty(OPTION_PREFIX + "columns-dock-lr", column);
 		column = ((Integer) columnsSpinnerDockTB.getValue()).intValue();
 		jEdit.setIntegerProperty(OPTION_PREFIX + "columns-dock-tb", column);
+
+		jEdit.setColorProperty(OPTION_PREFIX + "color-normal",
+			normalColor.getSelectedColor());
+		jEdit.setColorProperty(OPTION_PREFIX + "color-control",
+			controlColor.getSelectedColor());
+		jEdit.setColorProperty(OPTION_PREFIX + "color-private",
+			privateColor.getSelectedColor());
+		jEdit.setColorProperty(OPTION_PREFIX + "color-unassigned",
+			unassignedColor.getSelectedColor());
+		jEdit.setColorProperty(OPTION_PREFIX + "color-invalid",
+			invalidColor.getSelectedColor());
 
 		jEdit.setBooleanProperty(OPTION_PREFIX + "large", showLarge.isSelected());
 		jEdit.setBooleanProperty(OPTION_PREFIX + "super", showSuper.isSelected());
