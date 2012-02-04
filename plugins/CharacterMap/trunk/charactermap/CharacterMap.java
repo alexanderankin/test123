@@ -27,6 +27,7 @@ import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
@@ -123,6 +124,8 @@ public class CharacterMap extends JPanel
 	private int tableColumns;
 	/** Status information */
 	private JTextArea status;
+	/** Popup factory creating super glyph popup window */
+	private ShapedPopupFactory superPopup;
 	/** Component displaying super glyph */
 	private CharLabel superChar;
 	//}}}
@@ -333,9 +336,12 @@ public class CharacterMap extends JPanel
 
 		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
 		superChar = new CharLabel(superFont(), " ");
-		superChar.setBorder(BorderFactory.createLineBorder(Color.black));
 		showSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super");
 		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
+		// Line border
+		//superChar.setBorder(BorderFactory.createLineBorder(Color.black));
+		// Rounded border
+		superPopup = new ShapedPopupFactory();
 
 		add(BorderLayout.NORTH, northPanel);
 		//}}}
@@ -1255,8 +1261,8 @@ public class CharacterMap extends JPanel
 			int x = p.x;
 			int y = p.y;
 
-			PopupFactory factory = PopupFactory.getSharedInstance();
 			contents.setText(ch);
+
 			// Position of popup should be relative to owner component
 			// over the character in the table
 			Point ownerLoc = owner.getLocationOnScreen();
@@ -1273,7 +1279,7 @@ public class CharacterMap extends JPanel
 				int rowHeight = table.getRowHeight();
 				int columnWidth = getColumnWidth(column);
 				displayX += (columnWidth / 2) + (popupWidth / 2);
-				displayY -= (rowHeight / 2) + (popupHeight / 2);
+				//displayY -= (rowHeight / 2) + (popupHeight / 2);
 
 				GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
 				Rectangle bounds = gf.getBounds();
@@ -1286,7 +1292,7 @@ public class CharacterMap extends JPanel
 				}
 			}
 
-			popup = factory.getPopup(owner, contents, displayX, displayY);
+			popup = superPopup.getPopup(owner, contents, displayX, displayY);
 			popup.show();
 		}
 
@@ -1300,7 +1306,10 @@ public class CharacterMap extends JPanel
 
 	//{{{ GUI Component extensions
 	/**
-	 * JLabel with anti-aliasing rendering turned on if required
+	 * JLabel to display characters.
+	 * Anti-aliasing rendering is turned on if required.
+	 * Control keys are converted to readable text
+	 * Empty text, undefined and surrogate characters are converted to spaces
 	 *
 	 * @author     mawic
 	 * @created    June 11, 2003
@@ -1348,10 +1357,10 @@ public class CharacterMap extends JPanel
 
 			// Default Layout
 			setBackground(Color.WHITE);
-			setOpaque(true);
 			setForeground(Color.BLACK);
 			setHorizontalAlignment(SwingConstants.CENTER);
 			setVerticalAlignment(SwingConstants.CENTER);
+			setOpaque(true);
 		}
 
 		/**
@@ -1631,6 +1640,62 @@ public class CharacterMap extends JPanel
 			return this;
 		}
 	}
+
+	public class ShapedPopupFactory extends PopupFactory
+	{
+		@Override
+		public Popup getPopup(Component owner, Component contents, int x, int y)
+			throws IllegalArgumentException
+		{
+			// A more complete implementation would cache and reuse popups
+			return new ShapedPopup(owner, contents, x, y);
+		}
+	}
+
+	public class ShapedPopup extends Popup
+	{
+		JWindow popupWindow;
+
+		ShapedPopup(Component owner, Component contents, int displayX, int displayY)
+		{
+			popupWindow = new JWindow();
+
+			// Window Shape
+			double x = 0;
+			double y = 0;
+			double width = contents.getPreferredSize().width;
+			double height = contents.getPreferredSize().height;
+			double arcwidth = width * 1/2;
+			double archeight = height * 1/2;
+			Color color = contents.getBackground();
+
+			Shape shape = new RoundRectangle2D.Double(
+				x,y,width,height,arcwidth,archeight);
+
+			popupWindow.setShape(shape);
+			popupWindow.setBackground(color);
+
+			// Location
+			popupWindow.setLocation(displayX, displayY);
+
+			// Display contents
+			popupWindow.getContentPane().add(contents, BorderLayout.CENTER);
+			contents.invalidate();
+			JComponent parent = (JComponent) contents.getParent();
+		}
+		@Override
+		public void show() {
+			popupWindow.setVisible(true);
+			popupWindow.pack();
+		}
+		@Override
+		public void hide() {
+			popupWindow.setVisible(false);
+			popupWindow.removeAll();
+			popupWindow.dispose();
+		}
+	}
+
 	//}}}
 
 //}}}
