@@ -290,7 +290,7 @@ class EditTagDialog extends EnhancedDialog
 				}
 			}
 
-			buf.append(attr.name);
+			buf.append(attrName);
 
 			if(html && attr.name.equals(attr.value.value))
 			{
