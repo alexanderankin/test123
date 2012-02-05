@@ -1,0 +1,25 @@
+<project name="CharacterMap" default="dist">
+	<description>
+		Ant build.xml file for building the charactermap plugin
+	</description>
+	<!-- Uses build-support tools.
+	     Without build-support tools: Use build.standalone.xml -->
+
+	<!-- html documentation; no processing -->
+	<property name="docs-proc.target"
+		value="none" />
+
+	<!-- read parameters / directories from build.properties -->
+	<property file="build.properties" />
+	<property file="../build.properties" />
+
+	<!-- include the build-support tools -->
+	<property name="build.support"
+		value="../../../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
+
+	<!-- Additional files to include into jar -->
+	<selector id="packageFiles">
+		<filename name="*.html" />
+	</selector>
+</project>
