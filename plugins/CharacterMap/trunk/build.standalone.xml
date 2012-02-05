@@ -30,6 +30,9 @@
 	<!-- Default directory of jedit settings for a test run -->
 	<property name="jedit.setting.dir" location="${build.dir}/settings"/>
 
+	<!-- Default directory of additional libraries -->
+	<property name="lib.dir" location="lib"/>
+
 	<property name="jar.name"  value="CharacterMap.jar"/>
 	<property name="src.dir" location="."/>
 

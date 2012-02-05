@@ -22,16 +22,16 @@
 package charactermap;
 
 //{{{ Imports
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.GridBagConstraints;
 import java.util.ArrayList;
 import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.PluginJAR;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.ColorWellButton;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.jEdit;
 //import org.gjt.sp.util.Log;
 //}}}
@@ -107,8 +107,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 	private JLabel largeSizeLabel;
 	/** Checkbox controlling display of super-size character */
 	private JCheckBox showSuper;
-	/** Checkbox controlling whether super character is offset */
-	private JCheckBox superOffset;
 	/** Textfield containing size of super character in points */
 	private JTextField superSize;
 	/** Label for textfield containing super character size */
@@ -205,9 +203,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 
 		showSuper = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "super.label"),
 			jEdit.getBooleanProperty(OPTION_PREFIX + "super"));
-		superOffset = new JCheckBox(jEdit.getProperty(OPTION_PREFIX + "super-offset.label"),
-			jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset"));
-		superOffset.setEnabled(showSuper.isSelected());
 		superSizeLabel = new JLabel(jEdit.getProperty(OPTION_PREFIX + "super-size.label"));
 		superSizeLabel.setEnabled(showSuper.isSelected());
 		superSize = new JTextField(jEdit.getProperty(OPTION_PREFIX + "super-size"));
@@ -229,7 +224,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 				public void actionPerformed(ActionEvent evt)
 				{
 					boolean selected = showSuper.isSelected();
-					superOffset.setEnabled(selected);
 					superSizeLabel.setEnabled(selected);
 					superSize.setEnabled(selected);
 				}
@@ -266,7 +260,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		addComponent(showLarge);
 		addComponent(largeSizeLabel, largeSize);
 		addComponent(showSuper);
-		addComponent(superOffset);
 		addComponent(superSizeLabel, superSize);
 	}
 //}}}
@@ -309,7 +302,6 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty(OPTION_PREFIX + "super", showSuper.isSelected());
 		setIntegerPropertyFromTextField(OPTION_PREFIX + "large-size", largeSize, 36);
 		setIntegerPropertyFromTextField(OPTION_PREFIX + "super-size", superSize, 128);
-		jEdit.setBooleanProperty(OPTION_PREFIX + "super-offset", superOffset.isSelected());
 
 		// Reload CharacterMap.jar
 		PluginJAR jar = jEdit.getPlugin("charactermap.CharacterMapPlugin").getPluginJAR();
