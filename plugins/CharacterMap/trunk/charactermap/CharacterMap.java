@@ -152,8 +152,6 @@ public class CharacterMap extends JPanel
 	private float superSize;
 	/** Use fractional font-metrics in glyph display */
 	private boolean fracFontMetrics;
-	/** Offset the super-glyph rendering from the selected glyph */
-	private boolean offsetSuper;
 	/** Lock anti-aliasing on */
 	private boolean alwaysAntiAlias;
 	/** Display all glyphs anti-aliased */
@@ -180,7 +178,7 @@ public class CharacterMap extends JPanel
 		super(new BorderLayout(12, 12));
 
 		this.view = view;
-		this.position = new String(position);
+		this.position = position;
 
 		substitutionFonts = new ArrayList<Font>();
 
@@ -337,10 +335,6 @@ public class CharacterMap extends JPanel
 		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
 		superChar = new CharLabel(superFont(), " ");
 		showSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super");
-		offsetSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super-offset");
-		// Line border
-		//superChar.setBorder(BorderFactory.createLineBorder(Color.black));
-		// Rounded border
 		superPopup = new ShapedPopupFactory();
 
 		add(BorderLayout.NORTH, northPanel);
@@ -1263,35 +1257,36 @@ public class CharacterMap extends JPanel
 
 			contents.setText(ch);
 
-			// Position of popup should be relative to owner component
-			// over the character in the table
-			Point ownerLoc = owner.getLocationOnScreen();
-			int displayX = ownerLoc.x + x;
-			int displayY = ownerLoc.y + y;
+			// Position of popup relative to table component
+			Point tableLoc = table.getLocationOnScreen();
+			int displayX = tableLoc.x + x;
+			int displayY = tableLoc.y + y;
 
 			int popupWidth = contents.getWidth();
 			int popupHeight = contents.getHeight();
 
+			// Center popup on the character in the table
 			displayX -= (popupWidth / 2);
-			//displayY += (popupHeight / 2);
+			displayY -= (popupHeight / 2);
 
-			if (offsetSuper) {
-				int rowHeight = table.getRowHeight();
-				int columnWidth = getColumnWidth(column);
-				displayX += (columnWidth / 2) + (popupWidth / 2);
-				//displayY -= (rowHeight / 2) + (popupHeight / 2);
+			// Offset shifting popup up & right.
+			int rowHeight = table.getRowHeight();
+			displayY -= popupHeight / 2 + rowHeight;
+			//int columnWidth = getColumnWidth(column);
+			// displayX += popupWidth / 2 + columnWidth;
 
-				GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
-				Rectangle bounds = gf.getBounds();
-				int screenWidth = bounds.x + bounds.width;
-				if (displayX + popupWidth > screenWidth) {
-					displayX = screenWidth - popupWidth;
-				}
-				if (displayY < bounds.y) {
-					displayY = bounds.y;
-				}
+			// Correct if popup out of bounds
+			GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
+			Rectangle bounds = gf.getBounds();
+			int screenWidth = bounds.x + bounds.width;
+			if (displayX + popupWidth > screenWidth) {
+				displayX = screenWidth - popupWidth;
+			}
+			if (displayY < bounds.y) {
+				displayY = bounds.y;
 			}
 
+			// Display popup
 			popup = superPopup.getPopup(owner, contents, displayX, displayY);
 			popup.show();
 		}
@@ -1513,7 +1508,7 @@ public class CharacterMap extends JPanel
 			catch (Exception e) {
 				return REPLACEMENT_CHAR;
 			}
-			if ((ch == null) || (ch == "")) {
+			if ((ch == null) || (ch.isEmpty())) {
 				return REPLACEMENT_CHAR;
 			}
 
@@ -1641,8 +1636,16 @@ public class CharacterMap extends JPanel
 		}
 	}
 
+	/**
+	 *  Derived from class PopupFactory.
+	 *  Handles a user-defined Popup Class.
+	 */
 	public class ShapedPopupFactory extends PopupFactory
 	{
+		/**
+		 *  Returns a popup of class ShapedPopup
+		 *  Otherwise as getPopup in PopupFactory.
+		 */
 		@Override
 		public Popup getPopup(Component owner, Component contents, int x, int y)
 			throws IllegalArgumentException
@@ -1652,37 +1655,30 @@ public class CharacterMap extends JPanel
 		}
 	}
 
+	/**
+	 *  Displays a Popup using class ShapedWindow.
+	 */
 	public class ShapedPopup extends Popup
 	{
-		JWindow popupWindow;
+		ShapedWindow popupWindow;
 
 		ShapedPopup(Component owner, Component contents, int displayX, int displayY)
 		{
-			popupWindow = new JWindow();
-
-			// Window Shape
-			double x = 0;
-			double y = 0;
-			double width = contents.getPreferredSize().width;
-			double height = contents.getPreferredSize().height;
-			double arcwidth = width * 1/2;
-			double archeight = height * 1/2;
-			Color color = contents.getBackground();
-
-			Shape shape = new RoundRectangle2D.Double(
-				x,y,width,height,arcwidth,archeight);
-
-			popupWindow.setShape(shape);
-			popupWindow.setBackground(color);
+			popupWindow = new ShapedWindow();
 
 			// Location
 			popupWindow.setLocation(displayX, displayY);
 
+			// Set Size
+			popupWindow.setSize(new Dimension(
+				contents.getWidth()*3,
+				contents.getHeight()));
+
 			// Display contents
 			popupWindow.getContentPane().add(contents, BorderLayout.CENTER);
 			contents.invalidate();
-			JComponent parent = (JComponent) contents.getParent();
 		}
+
 		@Override
 		public void show() {
 			popupWindow.setVisible(true);
@@ -1693,6 +1689,45 @@ public class CharacterMap extends JPanel
 			popupWindow.setVisible(false);
 			popupWindow.removeAll();
 			popupWindow.dispose();
+		}
+	}
+
+	/**
+	 *  Window without decorations, with the shape
+	 *  of a rounded rectangle and gray border.
+	 */
+	public class ShapedWindow extends JWindow
+	{
+		public ShapedWindow () {
+			super();
+			setOpaque(false);
+		}
+
+		@Override
+		public void paint(Graphics g) {
+
+			// Draw component
+			paintComponents(g);
+
+			// Window shape
+			int x = 0;
+			int y = 0;
+			int w = getWidth();
+			int h = getHeight();
+			int arcwidth = w / 2;
+			int archeight = h / 2;
+			Shape shape = new RoundRectangle2D.Double(
+				x,y,w,h,arcwidth,archeight);
+			this.setShape(shape);
+
+			// Draw border
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setStroke(new BasicStroke(3f));
+			g2.setColor(Color.GRAY);
+			g2.draw(shape);
+			g2.dispose();
 		}
 	}
 
