@@ -45,7 +45,8 @@ public class SchemaToCompletion
 		
 	/** the empty namespace */
 	private static final String INHERIT = "#inherit";
-	
+	/** any local name... */
+	private static final String ANY = "__WHAT_YOU_WANT_IN_NS__";
 	/**
 	* @param	current	systemId of the mapping document, to resolve the schema URL
 	* @param	schemaFileNameOrURL	identifier of the schema to load
@@ -423,7 +424,9 @@ public class SchemaToCompletion
 		public List<Name> visitNsName(NsNameNameClass nc)
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyNameClassVisitor.class,"voidVisitNsName("+nc.getNs()+")");
-			names.add(new Name(nc.getNs(),null));
+			names.add(new Name(nc.getNs(),ANY));
+			Log.log(Log.WARNING,MyNameClassVisitor.class,
+					"doesn't handle \"any element\" in namespace in RNG schema (namespace is "+nc.getNs()+")");
 			if(nc.getExcept()!=null)
 			{
 				Log.log(Log.WARNING,MyNameClassVisitor.class,
