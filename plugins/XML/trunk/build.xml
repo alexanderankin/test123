@@ -7,10 +7,11 @@
      Before running the 'dist' target, you will need to generate the
      documentation using one of these two targets:
 
-     To use it for building your own plugin, make these changes:
+     To use this template for building your own plugin, make these changes:
 
-     - If necessary, add any dependencies to the 'project.class.path'
-       definition
+     - Change 'name' property for the <project> to the name of your plugin
+     - If necessary, add any dependencies to the 'project.class.path' definition
+     - If necessary, change the list of files in the 'packageFiles' selector
 -->
 
 <project name="XML" default="build" basedir=".">
@@ -52,22 +53,6 @@
         </or>
     </selector>
 
-    <selector id="extraFiles">
-        <and>
-            <or>
-                <filename name="actions.xml" />
-                <filename name="dockables.xml" />
-                <filename name="services.xml" />
-                <filename name="XML.props" />
-                <filename name="LICENSE" />
-                <filename name="README" />
-            </or>
-            <not>
-                <filename name="build/**/*"/>
-             </not>
-        </and>
-    </selector>
-
     <selector id="packageFiles">
             <or>
                 <filename name="docs/*.html" />
@@ -87,7 +72,7 @@
             </or>
     </selector>
 
-    <path  id="project.class.path">
+    <path id="project.class.path">
         <pathelement location="${ant.home}/lib/ant.jar" />
         <pathelement location="${lib.dir}/jing.jar"/>
         <pathelement location="${lib.dir}/trang.jar"/>
