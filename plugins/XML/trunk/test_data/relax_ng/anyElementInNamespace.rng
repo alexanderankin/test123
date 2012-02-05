@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+	 xmlns:rng="http://relaxng.org/ns/structure/1.0" xmlns:mml="http://www.w3.org/1998/Math/MathML"
+	 ns="http://docbook.org/ns/docbook">
+
+<start>
+	<element name="a">
+      <element>
+        <nsName ns="http://www.w3.org/1998/Math/MathML"/>
+        <empty/>
+      </element>
+      </element>
+</start>
+
+</grammar>
