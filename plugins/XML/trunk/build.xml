@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-
+<project name="XML" default="build" basedir=".">
 <!--
      This is a build.xml file for building the XML plugin.
 
@@ -12,9 +11,6 @@
      - If necessary, add any dependencies to the 'project.class.path' definition
      - If necessary, change the list of files in the 'packageFiles' selector
 -->
-
-<project name="XML" default="build" basedir=".">
-
     <property file="build.properties"/>
     <property file="../build.properties"/>
 
