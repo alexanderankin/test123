@@ -27,7 +27,7 @@ import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.*;
+import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
@@ -1693,16 +1693,29 @@ public class CharacterMap extends JPanel
 	 */
 	public class ShapedWindow extends JWindow
 	{
-		public ShapedWindow () {
-			super();
+
+		/** Called from all window constructors */
+		@Override
+		protected void windowInit()
+		{
+			super.windowInit();
 			setOpaque(false);
 		}
 
 		@Override
-		public void paint(Graphics g) {
+		public void repaint(long time, int x, int y,
+			int width, int height)
+		{
+			Graphics g = this.getGraphics();
+			paint(g);
+		}
 
-			// Draw component
-			paintComponents(g);
+		@Override
+		public void paint(Graphics g)
+		{
+			setOpaque(false);
+			//Graphics g = this.getGraphics();
+
 
 			// Window shape
 			int x = 0;
@@ -1711,31 +1724,36 @@ public class CharacterMap extends JPanel
 			int h = getHeight();
 			int arcwidth = w / 2;
 			int archeight = h / 2;
-			Shape shape = new RoundRectangle2D.Double(
-				x,y,w,h,arcwidth,archeight);
 
+			// ***********************************
 			// UNFORTUNATELY THERE IS NO
 			// CONDITIONAL COMPILATION.
 
 			// Java 7:
+			//Shape shape = new RoundRectangle2D.Double(
+			//	x,y,w,h,arcwidth,archeight);
 			//this.setShape(shape);
 
 			// Java 6, some newer versions:
+			//Shape shape = new RoundRectangle2D.Double(
+			//	x,y,w,h,arcwidth,archeight);
 			//com.sun.awt.AWTUtilities.setShape(this,shape);
 
-			// Otherwise: Shape remains rectangular.
-			// Comment out everything below.
+			// Fallback: Shape remains rectangular.
+			Shape shape = new Rectangle2D.Double(
+				x,y,w,h);
 
-			/*
-			// Draw border
-			Graphics2D g2 = (Graphics2D) g.create();
+			// ***********************************
+
+			Graphics2D g2 = ((Graphics2D) g);
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setStroke(new BasicStroke(3f));
+
+			paintComponents(g2);
+			g2.setStroke(new BasicStroke(5f));
 			g2.setColor(Color.GRAY);
 			g2.draw(shape);
 			g2.dispose();
-			*/
 		}
 	}
 
