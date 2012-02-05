@@ -11,13 +11,14 @@
 <li><a href="#vms">VMS</a></li>
 </ul>
 
-<p> jEdit 4.4 <b>requires</b> JDK 1.6 (aka JDK 6) or later. </p>
+<p> jEdit 4.4 <b>requires</b> JRE 1.6 (aka Java 6) or later. </p>
 
-<p> Note: jEdit has <b>not</b> been tested on OpenJDK, gnu-gcj, or IBM Java, or other Java platforms. Your mileage may vary if you try using anything other than Sun or Apple Java. </p>
+<p> Note: jEdit has <b>not</b> been tested on gnu-gcj, IBM Java, or other
+Java platforms. Your mileage may vary if you try using anything other than
+Oracle, Sun, or Apple Java. </p>
 
-<p> jEdit 4.3.x are the last releases to support Sun's JDK 1.5 (aka JDK 5) or later. </p>
-<p> jEdit 4.2final is the last release to support Java 1.3 or 1.4.
-</p>
+
+<p> jEdit 4.3.x are the last releases to support Sun's JRE 1.5 (aka Java 5) or later. </p>
 
 <h2><a name="win">Windows/Linux</a></h2>
 
@@ -28,9 +29,9 @@ a 1.6 VM (aka 6 VM) for Windows, Linux, and Solaris.</p
 <p><a href="http://www.ibm.com/developerworks/java/">IBM</a> provides
 a 1.6 VM (aka 6 VM) for Linux, AIX, and OS/390.  </p>
 
-<p>Some Linux distributions (Debian, Ubuntu) make available in the "non-free" section of 
-their repository packages like <tt>sun-java6-jdk</tt>. It may be installed in
-<tt>/usr/lib/jvm/java-6-sun</tt>.
+<p>Some Linux distributions (Debian, Ubuntu) require "non-free" section of 
+their repository to get packages like <tt>openjdk-6-jdk</tt>.
+It may be installed in a place linked from <tt>/usr/lib/jvm/default-java</tt>.
 It is possible an older/different version of <tt>java</tt> is found first in your
 <tt>PATH</tt>. Therefore, it is important to choose the correct "default" version of java. </p>
 
@@ -42,7 +43,7 @@ sh-3.1$ <b>java -version</b>
 java version "1.4.2_11"
 Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.2_11-b06)
 Java HotSpot(TM) Client VM (build 1.4.2_11-b06, mixed mode)
-sh-3.1$ <b>sudo apt-get install sun-java5-jdk</b> # or sun-java6-jdk
+sh-3.1$ <b>sudo apt-get install sun-java6-jdk</b> # or default-jdk
 </pre>
 
 <p> Maybe it is already installed but not set up as the default java. To change the default version of java at any time, use <tt>update-alternatives</tt>.  </p>
