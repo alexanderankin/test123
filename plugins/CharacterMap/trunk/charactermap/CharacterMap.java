@@ -27,7 +27,7 @@ import charactermap.unicode.UnicodeData;
 import charactermap.unicode.UnicodeData.Block;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
@@ -1669,11 +1669,6 @@ public class CharacterMap extends JPanel
 			// Location
 			popupWindow.setLocation(displayX, displayY);
 
-			// Set Size
-			popupWindow.setSize(new Dimension(
-				contents.getWidth()*3,
-				contents.getHeight()));
-
 			// Display contents
 			popupWindow.getContentPane().add(contents, BorderLayout.CENTER);
 			contents.invalidate();
@@ -1718,8 +1713,20 @@ public class CharacterMap extends JPanel
 			int archeight = h / 2;
 			Shape shape = new RoundRectangle2D.Double(
 				x,y,w,h,arcwidth,archeight);
-			this.setShape(shape);
 
+			// UNFORTUNATELY THERE IS NO
+			// CONDITIONAL COMPILATION.
+
+			// Java 7:
+			//this.setShape(shape);
+
+			// Java 6, some newer versions:
+			//com.sun.awt.AWTUtilities.setShape(this,shape);
+
+			// Otherwise: Shape remains rectangular.
+			// Comment out everything below.
+
+			/*
 			// Draw border
 			Graphics2D g2 = (Graphics2D) g.create();
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -1728,6 +1735,7 @@ public class CharacterMap extends JPanel
 			g2.setColor(Color.GRAY);
 			g2.draw(shape);
 			g2.dispose();
+			*/
 		}
 	}
 
