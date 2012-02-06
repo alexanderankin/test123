@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.StandardUtilities;
+//import java.awt.geom.RoundRectangle2D;
 //import java.util.StringTokenizer;
 //import org.gjt.sp.util.Log;
 //}}}
@@ -1277,7 +1278,7 @@ public class CharacterMap extends JPanel
 			int rowHeight = table.getRowHeight();
 			displayY -= popupHeight / 2 + rowHeight;
 			//int columnWidth = getColumnWidth(column);
-			// displayX += popupWidth / 2 + columnWidth;
+			//displayX += popupWidth / 2 + columnWidth;
 
 			// Correct if popup out of bounds
 			GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
@@ -1289,6 +1290,10 @@ public class CharacterMap extends JPanel
 			if (displayY < bounds.y) {
 				displayY = bounds.y;
 			}
+
+			// If necessary, remove superchar
+			if (displayingSuperChar)
+				popup.hide();
 
 			// Display popup
 			popup = superPopup.getPopup(owner, contents, displayX, displayY);
