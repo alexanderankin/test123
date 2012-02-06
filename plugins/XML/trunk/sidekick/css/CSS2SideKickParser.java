@@ -178,6 +178,17 @@ public class CSS2SideKickParser extends SideKickParser implements EBComponent {
                     }
                     errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
                 }
+                List<ParseError> parseWarnings = parser.getParseWarnings();
+                for ( ParseError pe : parseWarnings ) {
+                    String message = pe.message;
+                    Range range = pe.range;
+                    // addError is lame -- what if the warning spans more than one line?
+                    // Need to just deal with it...
+                    if ( range.endLine != range.startLine ) {
+                        range.endColumn = range.startColumn;
+                    }
+                    errorSource.addError( ErrorSource.WARNING, filename, range.startLine, range.startColumn, range.endColumn, message );
+                }
             }
         }
         catch ( Exception e ) {
