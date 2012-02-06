@@ -118,6 +118,8 @@ public class CharacterMap extends JPanel
 	private CharLabel largeChar;
 	/** Table containing character glyphs */
 	private JTable table;
+	/** Scroll pane containing the table */
+	private JScrollPane tablePane;
 	/** Table model for the character map */
 	private CharTableModel tableModel;
 	/** Number of columns in the table */
@@ -354,8 +356,9 @@ public class CharacterMap extends JPanel
 		table.addMouseMotionListener(mouseHandler);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		table.setDefaultRenderer(Object.class, new CharTableCellRenderer());
+		tablePane = new JScrollPane(table);
 
-		add(BorderLayout.CENTER, new JScrollPane(table));
+		add(BorderLayout.CENTER, tablePane);
 		//}}}
 
 		//{{{ South Panel (Status Line)
@@ -1205,9 +1208,10 @@ public class CharacterMap extends JPanel
 				/* + tcm.getColumnMargin() */ ;
 			}
 			int cellHeight = table.getRowHeight();
+			int scrollOffset = (int) tablePane.getViewport().getViewPosition().getY();
 
 			int px = table.getX() + cellX + (cellWidth / 2);
-			int py = table.getY() + (cellHeight * row) + (cellHeight / 2);
+			int py = table.getY() + (cellHeight * row) + scrollOffset + (cellHeight / 2);
 			Point rtn = new Point(px, py);
 			//Log.log(Log.MESSAGE, this, "Centre of cell in table is x = " + rtn.x + ", y = " + rtn.y);
 			return rtn;
