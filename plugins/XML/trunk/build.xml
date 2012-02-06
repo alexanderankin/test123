@@ -49,7 +49,7 @@
     <selector id="packageFiles">
             <or>
                 <filename name="docs/*.html" />
-                <filename name="docs/copying.txt" />
+                <filename name="docs/*.txt" />
                 <filename name="icons/*.gif" />
                 <filename name="icons/*.png" />
                 <filename name="xml/**/*.xml" />
