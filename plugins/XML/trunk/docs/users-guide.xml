@@ -12,11 +12,11 @@
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Dale</firstname><surname>Anson</surname></author>
-  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+  <author><firstname>Eric</firstname><surname>Le Lay</surname></author>
   <author><firstname>Robert</firstname><surname>McKinnon</surname></author>
   <author><firstname>Martin</firstname><surname>Raspe</surname></author>
-  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
-  <author><firstname>Eric</firstname><surname>Le Lay</surname></author>
+  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author> 
+  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -924,22 +924,11 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
       and clicking the remove button.
     </para>
   </section>
-
-  <section id="xmlindenter-contributors">
-    <title>Contributors</title>
-
-    <para>Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
-      created the plugin, formerly as part of the XSLT plugin.</para>
-
-    <para>Robert Fletcher
-      contributed code to fix bugs related to tabs in the XML.</para>
-
-  </section>
  </section>
 
 <appendix id="changes">
 <title>Change log</title> 
-<para> Click <ulink url="CHANGES.txt">here</ulink> to see the detailed changelog. </para>
+<para> Click <ulink url="docs/CHANGES.txt">here</ulink> to see the detailed changelog of the XML plugin. There are also separate changelogs for <ulink url="docs/CHANGES.xmlindenter.txt">XmlIndenter</ulink> and <ulink url="docs/CHANGES.javascript.txt">JavaScript SideKick</ulink>, two plugins that were merged into the XML plugin. </para>
 </appendix>
 
 <appendix id="feedback">
