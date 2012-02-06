@@ -45,6 +45,7 @@ import sidekick.util.*;
 public class CSS3Parser {
 
     private List<ParseError> parseErrors = new ArrayList<ParseError>();
+    private List<ParseError> parseWarnings = new ArrayList<ParseError>();
     private boolean proprietaryAsError = true;
 
     private static char hexdigits[] = { '0' ,'1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' } ;
@@ -99,6 +100,10 @@ public class CSS3Parser {
         //pe.printStackTrace();
     }
     
+    private void addWarning(ParseError pe) {
+        parseWarnings.add(pe);
+    }
+    
     /**
      * @return The list of parse exceptions found during parsing of a file.    
      */
@@ -107,6 +112,10 @@ public class CSS3Parser {
        return parseErrors;
     }
 
+    public List<ParseError> getParseWarnings() {
+        return parseWarnings;   
+    }
+    
     // regex to extract line and colun from a ParseException message
     // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
     private Pattern pePattern = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
@@ -163,7 +172,7 @@ public class CSS3Parser {
     public Location getStartLocation(Token t) {
        if (t == null)
            return new Location(0, 0);
-       return new Location(t.beginLine, t.beginColumn);
+       return new Location(t.beginLine + 1, t.beginColumn);
     }
 
     /**
@@ -173,7 +182,7 @@ public class CSS3Parser {
     public Location getEndLocation(Token t) {
        if (t == null)
            return new Location(0, 0);
-       return new Location(t.endLine, t.endColumn + 1);
+       return new Location(t.endLine + 1, t.endColumn + 1);
     }
     
     /**
@@ -200,6 +209,115 @@ public class CSS3Parser {
             }
         }
         return true;
+    }
+    
+    // these property names are defined in CSS3, but are supported by at most
+    // one browser.
+    static final String[] invalidProperties = new String[]{
+        "alignment-adjust", 					
+        "alignment-baseline",			
+        "backface-visibility", 					
+        "baseline-shift", 					
+        "bookmark-label", 					
+        "bookmark-level", 					
+        "bookmark-target",	
+        "border-image-outset", 					
+        "border-image-repeat", 					
+        "border-image-slice", 					
+        "border-image-source", 					
+        "border-image-width",
+        "box-decoration-break",
+        "box-flex-group", 					
+        "box-lines",
+        "color-profile", 					
+        "column-fill",
+        "crop", 					
+        "dominant-baseline", 					
+        "drop-initial-after-adjust", 					
+        "drop-initial-after-align", 					
+        "drop-initial-before-adjust", 					
+        "drop-initial-before-align", 					
+        "drop-initial-size", 					
+        "drop-initial-value", 					
+        "fit", 					
+        "fit-position", 					
+        "float-offset",
+        "font-stretch", 					
+        "font-size-adjust", 					
+        "grid-columns", 					
+        "grid-rows", 					
+        "hanging-punctuation", 					
+        "hyphenate-after", 					
+        "hyphenate-before", 					
+        "hyphenate-characters", 					
+        "hyphenate-lines", 					
+        "hyphenate-resource", 					
+        "hyphens", 					
+        "icon", 					
+        "image-orientation", 					
+        "image-resolution",
+        "inline-box-align", 					
+        "line-stacking", 					
+        "line-stacking-ruby", 					
+        "line-stacking-shift", 					
+        "line-stacking-strategy", 					
+        "mark", 					
+        "mark-after", 					
+        "mark-before", 					
+        "marks", 					
+        "marquee-direction", 					
+        "marquee-play-count", 					
+        "marquee-speed", 					
+        "marquee-style", 					
+        "move-to",
+        "nav-down",
+        "nav-index",
+        "nav-left",
+        "nav-right",
+        "nav-up",
+        "overflow-style",
+        "page", 					
+        "page-policy",
+        "phonemes",
+        "punctuation-trim",
+        "rest", 					
+        "rest-after", 					
+        "rest-before", 					
+        "rotation", 					
+        "rotation-point",
+        "ruby-align", 					
+        "ruby-overhang", 					
+        "ruby-position", 					
+        "ruby-span", 					
+        "size", 					
+        "string-set", 					
+        "target", 					
+        "target-name", 					
+        "target-new", 					
+        "target-position", 					
+        "text-align-last", 					
+        "text-emphasis", 					
+        "text-height",
+        "text-outline",
+        "text-wrap",
+        "voice-balance", 					
+        "voice-duration", 					
+        "voice-pitch", 					
+        "voice-pitch-range", 					
+        "voice-rate", 					
+        "voice-stress", 					
+        "voice-volume"};
+    
+    public boolean isUnsupported(String propertyName) {
+        return unsupportedPropertyNames.contains(propertyName);
+    }
+    
+    public final static HashSet<String> unsupportedPropertyNames;
+    static {
+        unsupportedPropertyNames = new HashSet<String>();
+        for (String name : invalidProperties) {
+            unsupportedPropertyNames.add(name);   
+        }
     }
     
 
@@ -1406,6 +1524,10 @@ CSSNode property() :
     }
     {
         if (notNull(t)) {
+            if (isUnsupported(t.image)) {
+                Range range = new Range( new Location( t.next.beginLine, t.next.beginColumn-1 ), new Location( t.next.endLine, t.next.endColumn ) );
+                addWarning(new ParseError(t.image + " is not supported by most browsers.", range));
+            }
             return createNode(t);   
         }
         return null;
@@ -1474,7 +1596,7 @@ List<CSSNode> declarations() :
             node=declaration() {if (node != null) nodes.add(node); }
         ) ?
         (
-            semi=";" {node.setEndLocation(getEndLocation(semi)); }
+            semi=";" {if (node != null) node.setEndLocation(getEndLocation(semi)); }
             (
                 <S>
             ) *
