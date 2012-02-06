@@ -24,7 +24,7 @@
     <property name="install.dir"  value="../"/>
     <property name="jedit.plugins.dir" value="${install.dir}" />
     <property name="lib.dir" value="lib" />
-    <property name="user-doc.xsl" location="docs/users-guide.xsl" />
+
     <!-- set this property if we wanted to chunk the user manual :
     <property name="docbook.xsl.sheet" value="html/chunk.xsl" />
     -->
