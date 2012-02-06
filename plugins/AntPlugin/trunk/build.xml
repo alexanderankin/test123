@@ -5,6 +5,7 @@
 	<property name="ant.archive" value="apache-ant-1.8.2-bin.zip"/>
 	<property name="ant.archive.docsdir" value="build/apache-ant-1.8.2/docs"/>
 	<property name="ant.archive.libdir" value="build/apache-ant-1.8.2/lib"/>
+  <property name="docs-proc.target"       value="none" />
 
 	<import file="${build.support}/plugin-build.xml" />
 
