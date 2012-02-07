@@ -127,10 +127,14 @@ public class CharacterMap extends JPanel
 	private int tableColumns;
 	/** Status information */
 	private JTextArea status;
-	/** Popup factory creating super glyph popup window */
-	private ShapedPopupFactory superPopup;
+	/** Popup factory creating super-character popup */
+	private ShapedPopupFactory superPopupFactory;
+	/** Popup containing super-character */
+	private Popup superPopup;
 	/** Component displaying super glyph */
 	private CharLabel superChar;
+	/** Indicates that the super-character rendering is active */
+	private boolean isDisplayedSuperChar;
 	//}}}
 
 	//{{{ Show the following components
@@ -335,10 +339,12 @@ public class CharacterMap extends JPanel
 		if (showBlocks && isDockedLeftRight())
 			northPanel.add(blockNavigation);
 
+		superPopupFactory = new ShapedPopupFactory();
+		superPopup = null;
 		superSize = (float) jEdit.getIntegerProperty(OPTION_PREFIX + "super-size");
 		superChar = new CharLabel(superFont(), " ");
 		showSuper = jEdit.getBooleanProperty(OPTION_PREFIX + "super");
-		superPopup = new ShapedPopupFactory();
+		isDisplayedSuperChar = false;
 
 		add(BorderLayout.NORTH, northPanel);
 		//}}}
@@ -352,7 +358,7 @@ public class CharacterMap extends JPanel
 		table.setRowHeight(tableRowHeight());
 		table.setRowSelectionAllowed(false);
 		table.setColumnSelectionAllowed(false);
-		MouseHandler mouseHandler = new MouseHandler(this, superChar);
+		MouseHandler mouseHandler = new MouseHandler(this);
 		table.addMouseListener(mouseHandler);
 		table.addMouseMotionListener(mouseHandler);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -713,6 +719,121 @@ public class CharacterMap extends JPanel
 	}
 	//}}}
 
+	//{{{ Large & super char
+	/**
+	 * Get the character of the glyph in the given table position.
+	 * Shortcut to getValueAt in CharTableModel.
+	 */
+	private String getChar(int row, int column)
+	{
+		return (String) tableModel.getValueAt(row, column);
+	}
+
+	/**
+	 *  Display the large char at the top of the window
+	 */
+	private void displayLargeChar(int row, int column)
+	{
+		String ch = getChar(row, column);
+		int cp = ch.codePointAt(0);
+		largeChar.setFont(largeFont(cp));
+		largeChar.setText(ch);
+	}
+
+	/**
+	 *  Clear the large char at the top of the window
+	 */
+	private void clearLargeChar()
+	{
+		largeChar.setText(" ");
+	}
+
+	/**
+	 * Create a popup containing the super character.
+	 * The popup is displayed at the given glyph table location
+	 *
+	 * @param row The selected glyph table row
+	 * @param column The selected glyph table column
+	 */
+	private void displaySuperChar(int row, int column)
+	{
+		// set superChar content
+		String ch = getChar(row, column);
+		int cp = ch.codePointAt(0);
+		superChar.setFont(superFont(cp));
+		superChar.setText(ch);
+
+		// Determine superChar position
+
+		// x - position of character in table
+		int x = 0;
+		TableColumnModel tcm = table.getColumnModel();
+		for (int i = 0; i < column; i++) {
+			int cellWidth = tcm.getColumn(i).getWidth();
+			x += cellWidth;
+		}
+		x += tcm.getColumn(column).getWidth() / 2;
+		x += table.getX();
+
+		// y - position of character in table
+		int y = 0;
+		int cellHeight = table.getRowHeight();
+		y += cellHeight * row + (cellHeight / 2);
+		int scrollOffset = (int) tablePane
+			.getViewport().getViewPosition().getY();
+		y += scrollOffset;
+		y += table.getY();
+
+		// Position on screen
+		Point tableLoc = table.getLocationOnScreen();
+		int displayX = tableLoc.x + x;
+		int displayY = tableLoc.y + y;
+
+		// Center popup on the character
+		int popupWidth = superChar.getWidth();
+		int popupHeight = superChar.getHeight();
+		displayX -= (popupWidth / 2);
+		displayY -= (popupHeight / 2);
+
+		// Add offset to shift popup up & right.
+		int rowHeight = table.getRowHeight();
+		displayY -= popupHeight / 2 + rowHeight;
+		//int columnWidth = getColumnWidth(column);
+		//displayX += popupWidth / 2 + columnWidth;
+
+		// Correct if popup out of bounds
+		GraphicsConfiguration gf =
+			this.getGraphicsConfiguration();
+		Rectangle bounds = gf.getBounds();
+		int screenWidth = bounds.x + bounds.width;
+		if (displayX + popupWidth > screenWidth) {
+			displayX = screenWidth - popupWidth;
+		}
+		if (displayY < bounds.y) {
+			displayY = bounds.y;
+		}
+
+		// If necessary, remove previous superchar
+		if (isDisplayedSuperChar)
+			superPopup.hide();
+
+		// Display popup
+		superPopup = superPopupFactory
+			.getPopup(this, superChar, displayX, displayY);
+		superPopup.show();
+
+		// Set flag
+		isDisplayedSuperChar = true;
+	}
+
+	/** Hide the popup containing the super character  */
+	private void hideSuperChar()
+	{
+		superPopup.hide();
+		isDisplayedSuperChar = false;
+	}
+	//}}}
+
 	//{{{ Status line
 	/**
 	 * Set the value of the status string, for the given table entry.
@@ -980,18 +1101,12 @@ public class CharacterMap extends JPanel
 	 */
 	class MouseHandler extends MouseInputAdapter
 	{
+		/** Owner of the mouse handler (= instance of character map) */
+		private CharacterMap owner;
 		/** Row in glyph table of selected glyph, -1 if no glyph selected */
 		private int row;
 		/** Column in glyph table of selected glyph, -1 if no glyph selected */
 		private int column;
-		/** Popup containing super-character */
-		private Popup popup;
-		/** Owner of the popup (the character map panel) */
-		private JPanel owner;
-		/** Contents of the popup, displays the super-sized glyph rendering */
-		private JLabel contents;
-		/** Indicates that the super-sized glyph rendering is active */
-		private boolean displayingSuperChar;
 
 		/**
 		 * Construct a mouse handler and maintain a reference
@@ -999,14 +1114,14 @@ public class CharacterMap extends JPanel
 		 * handler has been constructed, and the label that will
 		 * be displayed within the super-character popup.
 		 *
-		 * @param  owner     Container of table whose mouse events are to be handled
-		 * @param  contents  Popup contents
+		 * @param  owner Parent of the mouse handler
+		 *               (current instance of character map)
 		 */
-		public MouseHandler(JPanel owner, JLabel contents)
+		public MouseHandler(CharacterMap owner)
 		{
 			this.owner = owner;
-			this.contents = contents;
-			this.displayingSuperChar = false;
+			row = -1;
+			column = -1;
 		}
 
 		/**
@@ -1054,20 +1169,12 @@ public class CharacterMap extends JPanel
 				column = table.columnAtPoint(p);
 
 				if (showSuper) {
-					//Log.log(Log.MESSAGE, this, "Got mousePressed at x = " + p.x + ", y = " + p.y);
-					String ch = getChar(row, column);
-					int cp = ch.codePointAt(0);
-					superChar.setFont(superFont(cp));
-
-					if (popup == null) {
-						// We need to do this because the popup contents will not have
-						// been defined and the final position on screen depends
-						// on the size of the contents.
-						displaySuperChar(ch, row, column);
-						popup.hide();
+					//popup needs to be initialised once
+					if (superPopup == null) {
+						displaySuperChar(row, column);
+						hideSuperChar();
 					}
-					displaySuperChar(ch, row, column);
-					displayingSuperChar = true;
+					displaySuperChar(row, column);
 				}
 			}
 		}
@@ -1096,23 +1203,14 @@ public class CharacterMap extends JPanel
 				column = newColumn;
 
 				if (row == -1 || column == -1) {
+					clearLargeChar();
 					clearStatusText();
-					largeChar.setText(" ");
 				}
 				else {
-					String ch = getChar(row, column);
-					int cp = ch.codePointAt(0);
-					largeChar.setFont(largeFont(cp));
-					superChar.setFont(superFont(cp));
-
+					displayLargeChar(row, column);
+					if (isDisplayedSuperChar)
+						displaySuperChar(row, column);
 					setStatusText(row, column);
-					largeChar.setText(ch);
-					if (displayingSuperChar) {
-						//Log.log(Log.MESSAGE, this, "Got mouseDragged at x = " + p.x + ", y = " + p.y);
-						popup.hide();
-						// Snap click location to centre of cell in table
-						displaySuperChar(ch, row, column);
-					}
 				}
 			}
 		}
@@ -1127,10 +1225,8 @@ public class CharacterMap extends JPanel
 		 @Override
 		public void mouseReleased(MouseEvent evt)
 		{
-			int button = evt.getButton();
-			if (button == MouseEvent.BUTTON3) {
+			if (evt.getButton() == MouseEvent.BUTTON3) {
 				hideSuperChar();
-				displayingSuperChar = false;
 			}
 		}
 
@@ -1157,16 +1253,11 @@ public class CharacterMap extends JPanel
 				column = newColumn;
 
 				if (row == -1 || column == -1) {
+					clearLargeChar();
 					clearStatusText();
-					largeChar.setText(" ");
 				}
 				else {
-					String ch = getChar(row, column);
-					int cp = ch.codePointAt(0);
-
-					largeChar.setFont(largeFont(cp));
-					largeChar.setText(ch);
-
+					displayLargeChar(row, column);
 					setStatusText(row, column);
 				}
 			}
@@ -1183,127 +1274,8 @@ public class CharacterMap extends JPanel
 		public void mouseExited(MouseEvent evt)
 		{
 			row = -1; column = -1;
+			clearLargeChar();
 			clearStatusText();
-			largeChar.setText(" ");
-		}
-
-		/**
-		 * Determine the centre of the selected cell in the table
-		 * and return as an offset relative to the origin on the table
-		 * rendering
-		 *
-		 * @param  row     Cell row
-		 * @param  column  Cell column
-		 * @return         Centre point of given table cell, relative to
-		 *                 origin of table
-		 */
-		private Point getPointInTable(int row, int column)
-		{
-			TableColumnModel tcm = table.getColumnModel();
-			int cellX = 0;
-			int cellWidth = tcm.getColumn(0).getWidth();
-			for (int i = 0; i < column; i++) {
-				TableColumn tc = tcm.getColumn(i);
-				cellWidth = tc.getWidth();
-				cellX += cellWidth
-				/* + tcm.getColumnMargin() */ ;
-			}
-			int cellHeight = table.getRowHeight();
-			int scrollOffset = (int) tablePane.getViewport().getViewPosition().getY();
-
-			int px = table.getX() + cellX + (cellWidth / 2);
-			int py = table.getY() + (cellHeight * row) + scrollOffset + (cellHeight / 2);
-			Point rtn = new Point(px, py);
-			//Log.log(Log.MESSAGE, this, "Centre of cell in table is x = " + rtn.x + ", y = " + rtn.y);
-			return rtn;
-		}
-
-		/**
-		 * Determine the width (in pixels) of the given column of
-		 * the glyph table.
-		 *
-		 * @param  column  The index of the table column
-		 * @return         Width of given column in pixels
-		 */
-		private int getColumnWidth(int column)
-		{
-			TableColumnModel tcm = table.getColumnModel();
-			TableColumn tc = tcm.getColumn(column);
-			return tc.getWidth();
-		}
-
-		/**
-		 * Get the character of the glyph in the given table position.
-		 * Shortcut to getValueAt in CharTableModel.
-		 */
-		private String getChar(int row, int column)
-		{
-			return (String) tableModel.getValueAt(row, column);
-		}
-
-		/**
-		 * Create a popup containing the text within the given
-		 * string rendered with the 'super-character' options.
-		 * The popup is displayed at the given glyph table location, unless
-		 * the offset option is set in which case the popup is located
-		 * above and to the right of the selected table location. If the
-		 * calculated location of the popup would move it off the current
-		 * display, the location is altered so it is always displayed
-		 * fully
-		 * @param ch The character glyph to display
-		 * @param row The selected glyph table row
-		 * @param column The selected glyph table column
-		 */
-		private void displaySuperChar(String ch, int row, int column)
-		{
-			Point p = getPointInTable(row, column);
-			int x = p.x;
-			int y = p.y;
-
-			contents.setText(ch);
-
-			// Position of popup relative to table component
-			Point tableLoc = table.getLocationOnScreen();
-			int displayX = tableLoc.x + x;
-			int displayY = tableLoc.y + y;
-
-			int popupWidth = contents.getWidth();
-			int popupHeight = contents.getHeight();
-
-			// Center popup on the character in the table
-			displayX -= (popupWidth / 2);
-			displayY -= (popupHeight / 2);
-
-			// Offset shifting popup up & right.
-			int rowHeight = table.getRowHeight();
-			displayY -= popupHeight / 2 + rowHeight;
-			//int columnWidth = getColumnWidth(column);
-			//displayX += popupWidth / 2 + columnWidth;
-
-			// Correct if popup out of bounds
-			GraphicsConfiguration gf = CharacterMap.this.getGraphicsConfiguration();
-			Rectangle bounds = gf.getBounds();
-			int screenWidth = bounds.x + bounds.width;
-			if (displayX + popupWidth > screenWidth) {
-				displayX = screenWidth - popupWidth;
-			}
-			if (displayY < bounds.y) {
-				displayY = bounds.y;
-			}
-
-			// If necessary, remove superchar
-			if (displayingSuperChar)
-				popup.hide();
-
-			// Display popup
-			popup = superPopup.getPopup(owner, contents, displayX, displayY);
-			popup.show();
-		}
-
-		/** Hide the popup containing the super character  */
-		private void hideSuperChar()
-		{
-			popup.hide();
 		}
 	}
 	//}}}
