@@ -763,6 +763,16 @@ public class CharacterMap extends JPanel
 		superChar.setFont(superFont(cp));
 		superChar.setText(ch);
 
+		// superChar.getSize() only available after rendering
+		// so make test rendering
+		JWindow test = new JWindow();
+		test.add(superChar);
+		test.setVisible(true);
+		test.pack();
+		test.setVisible(false);
+		test.removeAll();
+		test.dispose();
+
 		// Determine superChar position
 
 		// x - position of character in table
@@ -1169,11 +1179,6 @@ public class CharacterMap extends JPanel
 				column = table.columnAtPoint(p);
 
 				if (showSuper) {
-					//popup needs to be initialised once
-					if (superPopup == null) {
-						displaySuperChar(row, column);
-						hideSuperChar();
-					}
 					displaySuperChar(row, column);
 				}
 			}
