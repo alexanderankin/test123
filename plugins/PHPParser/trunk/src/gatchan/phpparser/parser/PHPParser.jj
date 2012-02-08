@@ -1807,11 +1807,11 @@ void classBodyDeclaration(ClassDeclaration classDeclaration):
 	)
 } //}}}
 
-//{{{ commonModifiers()
+//{{{ commonModifiers() method
 /**
  * A class can contain only methods and fields.
  */
-Modifier commonModifiers() :
+Modifier commonModifiers():
 {
 	Token token;
 }
@@ -2011,7 +2011,7 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 
 //{{{ Variables
 
-//{{{ field()
+//{{{ field() method
 /**
  * One field declaration
  */
@@ -4353,7 +4353,7 @@ ClassAccess staticClassAccess(Expression expr):
 //{{{ classAccess() method
 ClassAccess classAccess(Expression prefix):
 {
-	Token lbrace, rbrace, listToken;
+	Token lbrace, rbrace, token;
 	Token classAccess;
 	Expression expression;
 }
@@ -4376,7 +4376,7 @@ ClassAccess classAccess(Expression prefix):
 			 }
 			 //}}}
 		 |
-			 //{{{ method access
+			 //{{{ method or field access
 			{
 				Expression arguments = null;
 				Token methodIdentifier;
@@ -4412,10 +4412,23 @@ ClassAccess classAccess(Expression prefix):
 				fireParseError("identifier expected","identifier",e.currentToken);
 			} //}}}
 		 |
-			 listToken = <LIST>
-			 {
-				 expression = new ConstantIdentifier(listToken);
-			 }
+		 	// other weird keyword that can be accepted as field identifiers
+		 	(
+		 		token = <LIST>
+			|
+				token = <PROTECTED>	
+			|
+				token = <PUBLIC>	
+			|
+				token = <PRIVATE>	
+			|
+				token = <STATIC>	
+			|
+				token = <FINAL>	
+		 	)
+		 	{
+				 expression = new ConstantIdentifier(token);
+			}
 		 |
 		 	expression = Variable()
 		 )
