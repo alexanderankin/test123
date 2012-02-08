@@ -40,8 +40,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-import org.gjt.sp.jedit.io.VFSManager;      // for jEdit 4.3
-//import org.gjt.sp.util.ThreadUtilities;     // for jEdit 4.4
+import org.gjt.sp.util.ThreadUtilities;
 
 /**
  * NavigatorPlugin for keeping track of where we were.
@@ -295,7 +294,7 @@ public class Navigator implements ActionListener {
      * Removes all NavPositions with the given buffer path.  This is mostly used for
      * removing nodes for Untitled buffers that have been closed since there is no way
      * to get back to those positions.
-     * @parem bufferPath The path of the buffer to remove nodes for.
+     * @param bufferPath The path of the buffer to remove nodes for.
      */
     public void removeAll(String bufferPath) {
         if (bufferPath == null) {
@@ -508,8 +507,7 @@ public class Navigator implements ActionListener {
         }
         try {
             final int caretFinal = caret;
-            //ThreadUtilities.runInDispatchThread(new Runnable()) {     // for jEdit 4.4
-            VFSManager.runInAWTThread(new Runnable() {                  // for jEdit 4.3
+            ThreadUtilities.runInDispatchThread(new Runnable() {     // for jEdit 4.4
                 public void run() {
                     editPaneForPosition.getTextArea().setCaretPosition(caretFinal, true);
                     editPaneForPosition.getTextArea().requestFocus();
@@ -555,11 +553,11 @@ public class Navigator implements ActionListener {
     }
 
     public NavStack<NavPosition> getForwardListModel() {
-        return (NavStack) forwardHistory.clone();
+        return (NavStack<NavPosition>)forwardHistory.clone();
     }
 
     public NavStack<NavPosition> getCombinedListModel() {
-        NavStack stack = new NavStack(backHistory.size() + forwardHistory.size() + (current == null ? 0 : 1));
+        NavStack<NavPosition> stack = new NavStack<NavPosition>(backHistory.size() + forwardHistory.size() + (current == null ? 0 : 1));
         if (backHistory != null && backHistory.size() > 0) {
             stack.addAll(backHistory);
         }
