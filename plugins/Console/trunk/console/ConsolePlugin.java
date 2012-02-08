@@ -529,6 +529,7 @@ public class ConsolePlugin extends EditPlugin
 			EditProjectAction ea = 
 			new EditProjectAction("pv.commands");
 			ea.actionPerformed(null);
+			cmd = project.getProperty("console."+prop);
 		}
 	
 		// Run the command in the project's root, but then return to
