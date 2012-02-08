@@ -2537,24 +2537,32 @@ MethodDeclaration methodDeclaration(int type, List<Modifier> modifiers):
 		scope = new Scope();
 		scopeStack.push(scope);
 	}
-	(
-		block = Block()
-		{
-			functionDeclaration.setStatements(block.getStatements());
-			functionDeclaration.setBodyLineStart(block.getBeginLine());
-			functionDeclaration.setBodyColumnStart(block.getBeginColumn());
-			functionDeclaration.setBodyLineEnd(block.getEndLine());
-			functionDeclaration.setBodyColumnEnd(block.getEndColumn());
-		}
-		|
-		semicolon = <SEMICOLON>
-		{
-			functionDeclaration.setBodyLineStart(semicolon.beginLine);
-			functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
-			functionDeclaration.setBodyLineEnd(semicolon.endLine);
-			functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
-		}
-	)
+	try
+	{
+		(
+			block = Block()
+			{
+				functionDeclaration.setStatements(block.getStatements());
+				functionDeclaration.setBodyLineStart(block.getBeginLine());
+				functionDeclaration.setBodyColumnStart(block.getBeginColumn());
+				functionDeclaration.setBodyLineEnd(block.getEndLine());
+				functionDeclaration.setBodyColumnEnd(block.getEndColumn());
+			}
+			|
+			semicolon = <SEMICOLON>
+			{
+				functionDeclaration.setBodyLineStart(semicolon.beginLine);
+				functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
+				functionDeclaration.setBodyLineEnd(semicolon.endLine);
+				functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
+			}
+		)
+	}
+	catch (ParseException e)
+	{
+		fireParseError("expected function body","function body",e.currentToken.next);
+	}
+	
 	{
 		currentSegment = seg;
 		scope = new Scope();
@@ -6041,8 +6049,8 @@ Block Block():
 	}
 } //}}}
 
-//{{{ BlockStatement()
-Statement BlockStatement() :
+//{{{ BlockStatement() method
+Statement BlockStatement():
 {
 	Statement statement = null;
 }
