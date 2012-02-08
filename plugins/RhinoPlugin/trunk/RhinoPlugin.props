@@ -7,3 +7,4 @@ plugin.rhino.RhinoPlugin.depend.0=jedit 04.04.02.00
 plugin.rhino.RhinoPlugin.depend.1=jdk 1.6
 plugin.rhino.RhinoPlugin.description=Rhino library packaged as a jedit plugin
 plugin.rhino.RhinoPlugin.usePluginHome=true
+plugin.rhino.RhinoPlugin.docs=doc/rhino-plugin.html
