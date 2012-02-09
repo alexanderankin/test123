@@ -59,7 +59,7 @@ sub parse_ucd_file {
 sub dump_blocks {
 	print <<JAVA;
 // BEGIN GENERATED CODE: Blocks.txt, cutoff=@{[CUTOFF_STRING]}
-private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Block[] {
+private static final List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Block[] {
 JAVA
 
 	for my $block (@_) {
