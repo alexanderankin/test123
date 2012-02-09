@@ -1,6 +1,7 @@
 Known Issues:
 
 Suggested Features:
+- Oval, anti-aliased shape in Java 6 and lightweight component for super char
 - CJK character english translation from UniHan database
 - Search characters by name and translation
 - Special table for control chars and block "General Punctuation"

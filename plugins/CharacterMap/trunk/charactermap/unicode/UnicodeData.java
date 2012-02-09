@@ -240,7 +240,7 @@ public final class UnicodeData
 	}
 
 	/** Remember last search result in getCharacterName(codePoint). **/
-	private static int getCharLastPrevious = 0;
+	private static int getCharacterNamePrevious = 0;
 
 	/**
 	 * Returns the Unicode character name for the specified code
@@ -275,9 +275,9 @@ public final class UnicodeData
 
 		// Return chars between first and last
 		int getCharLast;
-		if ((B.getFirstPoint() <= getCharLastPrevious)
-			&& (getCharLastPrevious <= B.getLastPoint())) {
-			getCharLast = getCharLastPrevious;
+		if ((B.getFirstPoint() <= getCharacterNamePrevious)
+			&& (getCharacterNamePrevious <= B.getLastPoint())) {
+			getCharLast = getCharacterNamePrevious;
 		}
 		else {
 			getCharLast = B.getLastPoint();
@@ -288,7 +288,7 @@ public final class UnicodeData
 					break;
 				getCharLast--;
 			}
-			getCharLastPrevious = getCharLast;
+			getCharacterNamePrevious = getCharLast;
 		}
 		if (codePoint < getCharLast)
 			return (name.substring(1, name.trim().length() - 8)
@@ -299,7 +299,7 @@ public final class UnicodeData
 	}
 
 	/** Remember last search result in getBlock(codepoint) */
-	private static Block getBlockPrevious = null;
+	private static Block getBlockPrevious = THE_BLOCK_LIST.get(0);
 
 	/**
 	 *  Returns the Unicode block of a character.
@@ -311,11 +311,10 @@ public final class UnicodeData
 	{
 		if (!Character.isValidCodePoint(codePoint)) return null;
 
-		if ( (getBlockPrevious != null)
-			&& (getBlockPrevious.getFirstPoint() <= codePoint)
-			&& (codePoint <= getBlockPrevious.getLastPoint()) )
+		if ( (getBlockPrevious.getFirstPoint() <= codePoint)
+			&& (codePoint <= getBlockPrevious.getLastPoint()) ) {
 			return getBlockPrevious;
-
+		}
 		Iterator<Block> I = getBlocks().iterator();
 		Block B;
 		while (I.hasNext()) {
@@ -329,6 +328,9 @@ public final class UnicodeData
 		return null;
 	}
 
+	/** Remember previous search result of isDefined(codePoint) */
+	private static int isDefinedPrevious = 0;
+
 	/**
 	 *  Character assignment in the data list.
 	 *  A character is unassigned, if it has an empty name.
@@ -337,7 +339,44 @@ public final class UnicodeData
 	 */
 	public static boolean isDefined(int codePoint)
 	{
-		return (getCharacterName(codePoint) != null);
+		// The function is equivalent to getCharacterName == null
+		// but rewritten to be faster
+
+		if (!Character.isValidCodePoint(codePoint)) return false;
+
+		String name = THE_NAME_MAP.get(new Integer(codePoint));
+
+		// names != null => Character is defined
+		if (name != null) return true;
+
+		// Empty chars not from first-last block => undefined
+		Block B = getBlock(codePoint);
+		if (B == null) return false;
+		name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
+		if ((name == null) || (!name.endsWith("First>"))) return false;
+
+		// Chars between first and last => defined
+		int getCharLast;
+		if ((B.getFirstPoint() <= isDefinedPrevious)
+			&& (isDefinedPrevious <= B.getLastPoint())) {
+			getCharLast = isDefinedPrevious;
+		}
+		else {
+			getCharLast = B.getLastPoint();
+			String tempName;
+			while (getCharLast > B.getFirstPoint()) {
+				tempName = THE_NAME_MAP.get(new Integer(getCharLast));
+				if ((tempName != null) && tempName.endsWith("Last>"))
+					break;
+				getCharLast--;
+			}
+			isDefinedPrevious = getCharLast;
+		}
+		if (codePoint < getCharLast)
+			return true;
+
+		// Char is behind last => undefined
+		return false;
 	}
 
 //}}}
@@ -600,6 +639,14 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	List<UnicodeData.Block>  getBlocks()
 	{
 		return blocks;
+	}
+
+	/**
+	 Returns an element from the List with the specified index
+	 */
+	UnicodeData.Block get(int index)
+	{
+		return blocks.get(index);
 	}
 }
 //}}}
