@@ -22,4 +22,7 @@
 	<selector id="packageFiles">
 		<filename name="*.html" />
 	</selector>
+
+	<!-- Additional targets for NetBeans -->
+	<import file="nbproject/ide-file-targets.xml" />
 </project>

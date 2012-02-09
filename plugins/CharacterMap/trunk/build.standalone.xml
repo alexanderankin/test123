@@ -110,4 +110,7 @@
 		</delete>
 	</target>
 
+	<!-- Additional targets for NetBeans -->
+	<import file="nbproject/ide-file-targets.xml" />
+
 </project>

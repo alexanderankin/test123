@@ -29,7 +29,15 @@
                     <target>build</target>
                 </action>
                 <action name="run">
-                    <target>run</target>
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>nb-run</target>
+                </action>
+                <action name="debug">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>nb-debug</target>
+                </action>
+                <action name="javadoc">
+                    <target>javadoc</target>
                 </action>
             </ide-actions>
             <view>
@@ -46,7 +54,9 @@
                     <ide-action name="build"/>
                     <ide-action name="rebuild"/>
                     <ide-action name="clean"/>
+                    <ide-action name="javadoc"/>
                     <ide-action name="run"/>
+                    <ide-action name="debug"/>
                     <action>
                         <label>Make Distribution</label>
                         <target>dist</target>
