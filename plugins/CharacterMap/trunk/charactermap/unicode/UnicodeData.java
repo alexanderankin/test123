@@ -169,11 +169,6 @@ public final class UnicodeData
 //}}}
 
 //{{{ Main class
-	/** Internally stored Unicode Block Data */
-	private static final UnicodeBlockList THE_BLOCK_LIST = new UnicodeBlockList();
-
-	/** Internally stored Unicode Character Name Data */
-	private static final UnicodeCharNameMap THE_NAME_MAP = new UnicodeCharNameMap();
 
 	/**
 	 * Returns the list of all defined Blocks from the Unicode Character
@@ -181,7 +176,7 @@ public final class UnicodeData
 	 */
 	public static List<Block> getBlocks()
 	{
-		return Collections.unmodifiableList(THE_BLOCK_LIST.getBlocks());
+		return Collections.unmodifiableList(UnicodeBlocks.getBlocks());
 	}
 
 	/**
@@ -239,67 +234,8 @@ public final class UnicodeData
 		return null;
 	}
 
-	/** Remember last search result in getCharacterName(codePoint). **/
-	private static int getCharacterNamePrevious = 0;
-
-	/**
-	 * Returns the Unicode character name for the specified code
-	 * point, or <code>null</code> if there is no name available.
-	 */
-	public static String getCharacterName(int codePoint)
-	{
-		if (!Character.isValidCodePoint(codePoint)) return null;
-
-		String name = THE_NAME_MAP.get(new Integer(codePoint));
-
-		boolean nameIsFirst = (name != null && name.endsWith("First>"));
-		boolean nameIsLast = (name != null && name.endsWith("Last>"));
-
-		// Return chars with standard name
-		if (name != null && !nameIsFirst && !nameIsLast)
-			return name;
-
-		// Return chars named "..First>" and "..Last>".
-		if (nameIsFirst)
-			return (name.substring(1, name.trim().length() - 8)
-				+ "-" + Integer.toHexString(codePoint).toUpperCase());
-		if (nameIsLast)
-			return (name.substring(1, name.trim().length() - 7)
-				+ "-" + Integer.toHexString(codePoint).toUpperCase());
-
-		// Return empty chars not from first-last block
-		Block B = getBlock(codePoint);
-		if (B == null) return null;
-		name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
-		if ((name == null) || (!name.endsWith("First>"))) return null;
-
-		// Return chars between first and last
-		int getCharLast;
-		if ((B.getFirstPoint() <= getCharacterNamePrevious)
-			&& (getCharacterNamePrevious <= B.getLastPoint())) {
-			getCharLast = getCharacterNamePrevious;
-		}
-		else {
-			getCharLast = B.getLastPoint();
-			String tempName;
-			while (getCharLast > B.getFirstPoint()) {
-				tempName = THE_NAME_MAP.get(new Integer(getCharLast));
-				if ((tempName != null) && tempName.endsWith("Last>"))
-					break;
-				getCharLast--;
-			}
-			getCharacterNamePrevious = getCharLast;
-		}
-		if (codePoint < getCharLast)
-			return (name.substring(1, name.trim().length() - 8)
-				+ "-" + Integer.toHexString(codePoint).toUpperCase());
-
-		// Char is behind last
-		return null;
-	}
-
 	/** Remember last search result in getBlock(codepoint) */
-	private static Block getBlockPrevious = THE_BLOCK_LIST.get(0);
+	private static Block getBlockPrevious = UnicodeBlocks.get(0);
 
 	/**
 	 *  Returns the Unicode block of a character.
@@ -328,6 +264,65 @@ public final class UnicodeData
 		return null;
 	}
 
+	/** Remember last search result in getCharacterName(codePoint). **/
+	private static int getCharacterNamePrevious = 0;
+
+	/**
+	 * Returns the Unicode character name for the specified code
+	 * point, or <code>null</code> if there is no name available.
+	 */
+	public static String getCharacterName(int codePoint)
+	{
+		if (!Character.isValidCodePoint(codePoint)) return null;
+
+		String name = UnicodeCharNames.get(new Integer(codePoint));
+
+		boolean nameIsFirst = (name != null && name.endsWith("First>"));
+		boolean nameIsLast = (name != null && name.endsWith("Last>"));
+
+		// Return chars with standard name
+		if (name != null && !nameIsFirst && !nameIsLast)
+			return name;
+
+		// Return chars named "..First>" and "..Last>".
+		if (nameIsFirst)
+			return (name.substring(1, name.trim().length() - 8)
+				+ "-" + Integer.toHexString(codePoint).toUpperCase());
+		if (nameIsLast)
+			return (name.substring(1, name.trim().length() - 7)
+				+ "-" + Integer.toHexString(codePoint).toUpperCase());
+
+		// Return empty chars not from first-last block
+		Block B = getBlock(codePoint);
+		if (B == null) return null;
+		name = UnicodeCharNames.get(new Integer(B.getFirstPoint()));
+		if ((name == null) || (!name.endsWith("First>"))) return null;
+
+		// Return chars between first and last
+		int getCharLast;
+		if ((B.getFirstPoint() <= getCharacterNamePrevious)
+			&& (getCharacterNamePrevious <= B.getLastPoint())) {
+			getCharLast = getCharacterNamePrevious;
+		}
+		else {
+			getCharLast = B.getLastPoint();
+			String tempName;
+			while (getCharLast > B.getFirstPoint()) {
+				tempName = UnicodeCharNames.get(new Integer(getCharLast));
+				if ((tempName != null) && tempName.endsWith("Last>"))
+					break;
+				getCharLast--;
+			}
+			getCharacterNamePrevious = getCharLast;
+		}
+		if (codePoint < getCharLast)
+			return (name.substring(1, name.trim().length() - 8)
+				+ "-" + Integer.toHexString(codePoint).toUpperCase());
+
+		// Char is behind last
+		return null;
+	}
+
 	/** Remember previous search result of isDefined(codePoint) */
 	private static int isDefinedPrevious = 0;
 
@@ -344,7 +339,7 @@ public final class UnicodeData
 
 		if (!Character.isValidCodePoint(codePoint)) return false;
 
-		String name = THE_NAME_MAP.get(new Integer(codePoint));
+		String name = UnicodeCharNames.get(new Integer(codePoint));
 
 		// names != null => Character is defined
 		if (name != null) return true;
@@ -352,7 +347,7 @@ public final class UnicodeData
 		// Empty chars not from first-last block => undefined
 		Block B = getBlock(codePoint);
 		if (B == null) return false;
-		name = THE_NAME_MAP.get(new Integer(B.getFirstPoint()));
+		name = UnicodeCharNames.get(new Integer(B.getFirstPoint()));
 		if ((name == null) || (!name.endsWith("First>"))) return false;
 
 		// Chars between first and last => defined
@@ -365,7 +360,7 @@ public final class UnicodeData
 			getCharLast = B.getLastPoint();
 			String tempName;
 			while (getCharLast > B.getFirstPoint()) {
-				tempName = THE_NAME_MAP.get(new Integer(getCharLast));
+				tempName = UnicodeCharNames.get(new Integer(getCharLast));
 				if ((tempName != null) && tempName.endsWith("Last>"))
 					break;
 				getCharLast--;
@@ -385,10 +380,10 @@ public final class UnicodeData
 
 //{{{ Unicode Block Data
 /**
- * List implementation containing the Unicode Blocks imported from the
+ * Class containing the Unicode Blocks imported from the
  * Unicode Database and auxiliary functions
  */
-final class UnicodeBlockList
+final class UnicodeBlocks
 {
 	/*
 	 * Below is a list of Unicode Blocks generated from the UCD file
@@ -401,7 +396,7 @@ final class UnicodeBlockList
 
 
 // BEGIN GENERATED CODE: Blocks.txt, cutoff=0x10FFFF
-private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Block[] {
+private static final List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Block[] {
 	new UnicodeData.Block("Basic Latin", 0x0000, 0x007F),
 	new UnicodeData.Block("Latin-1 Supplement", 0x0080, 0x00FF),
 	new UnicodeData.Block("Latin Extended-A", 0x0100, 0x017F),
@@ -629,14 +624,14 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	 * Creates a new instance of UnicodeCharNameMap. This class should not be
 	 * instantiated outside of charactermap.unicode.UnicodeData.
 	 */
-	UnicodeBlockList()
+	UnicodeBlocks()
 	{
 	}
 
 	/**
 	 Returns the Unicode Block List
 	 */
-	List<UnicodeData.Block>  getBlocks()
+	static List<UnicodeData.Block>  getBlocks()
 	{
 		return blocks;
 	}
@@ -644,7 +639,7 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 	/**
 	 Returns an element from the List with the specified index
 	 */
-	UnicodeData.Block get(int index)
+	static UnicodeData.Block get(int index)
 	{
 		return blocks.get(index);
 	}
@@ -654,11 +649,10 @@ private static List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeData.Bl
 
 //{{{ Unicode Name Data
 /**
- * Map implementation containing the Character Names imported from the
+ * Class containing the Character Names imported from the
  * Unicode Database and auxiliary functions
  */
-final class UnicodeCharNameMap extends HashMap<Integer,String>
-// original: ... extends AbstractMap<Integer,String>
+final class UnicodeCharNames
 {
 	/*
 	 * Below is a list of Unicode character descriptions generated from the
@@ -25165,192 +25159,27 @@ static
 	loadCharacterNames11();
 }
 // END GENERATED CODE
+
 	/**
 	 * Constructor of UnicodeCharNameMap.
 	 * Should not be instantiated outside of the class UnicodeData.
 	 */
-	UnicodeCharNameMap()
+	UnicodeCharNames()
 	{
 	}
 
-//	THE FOLLOWING SECTION FROM THE ORIGINAL VERSION HAS BEEN REMOVED.
-//	It implements a Set "EntrySet" with an Iterator "EntryIterator".
-//	That is only needed, if the class is derived from AbstractMap.
-//	However, the public functions "containsKey()", "get()" use just
-//	the values of the internal array, so a speciall Map Implementation
-//	is not (?) needed.
-//
-//	 /**
-//	  * A custom Set implementation wrapping the static code-point-to-name
-//	  * mapping extracted from the Unicode Character Database. This class is
-//	  * used as the backing entry set for the UnicodeCharNameMap class.
-//	  */
-//	 private static class EntrySet extends AbstractSet<Entry<Integer,String>>
-//	 {
-//		 /**
-//		  * Returns the number of entries in the code-point-to-name
-//		  * mapping. This number is included in the generated portion of
-//		  * the UnicodeCharNameMap class.
-//		  *
-//		  * @see UnicodeCharNameMap#actualSize
-//		  */
-//		 public int size() {
-//			 return actualSize;
-//		 }
-//
-//		 /**
-//		  * Returns a new iterator over the entries in this set.
-//		  */
-//		 public Iterator<Entry<Integer,String>> iterator() {
-//			 return new EntryIterator();
-//		 }
-//	 }
-//
-//	 /**
-//	  * A custom Iterator implementation wrapping the static
-//	  * code-point-to-name mapping extracted from the Unicode Character
-//	  * Database. This class is used the Iterator implementation for the
-//	  * EntrySet class. It also implements the Entry interface and returns
-//	  * itself from next(). This allows us to avoid the unnecessary creation
-//	  * of Entry objects for every code point in our table. It also means
-//	  * that you can't compare more than one Entry returned from this
-//	  * iterator, since "they" will always be the same object.
-//	  */
-//	 private static class EntryIterator implements Iterator, Entry
-//	 {
-//		 // A value of -1 indicates that hasNext has not been called
-//		 private int nextIndex = -1;
-//		 private Integer currentKey = null;
-////
-//		 // Iterator interface
-//		 public boolean hasNext()
-//		 {
-//			 // If this is the first call to hasNext(), change our
-//			 // counter from the flag value to the initial index.
-//			 if (nextIndex == -1)
-//			 {
-//				 nextIndex = 0;
-//			 }
-//
-//			 // If the next index is already past the end of the
-//			 // character name array, there can be no next mapping.
-//			 if (nextIndex >= characterNames.length) return false;
-//
-//			 // Check if there is a name at nextIndex:
-//			 // If there isn't we are at a "blank" spot in the name
-//			 // array, so advance nextIndex until we find a non-null
-//			 // entry or we hit the end of the array, otherwise,
-//			 // return true because nextIndex points to a non-null
-//			 // entry.
-//			 do
-//			 {
-//				 if (characterNames[nextIndex] != null)
-//				 {
-//					// return true;
-//				 }
-//			 }
-//			 while (++nextIndex < characterNames.length);
-//
-//			 // We fell off the end of array
-//			 return false;
-//		 }
-////
-//		 public Object next()
-//		 {
-//			 // If hasNext() has not been called, call it in case
-//			 // the first elements of characterNames have null names
-//			 if (nextIndex == -1)
-//			 {
-//				 hasNext();
-//			 }
-////
-//			 // If we are not past the end of the array and
-//			 // hasNext() has been called, we must have a valid
-//			 // index, so return this object as the next Entry after
-//			 // setting currentKey to the value to be fetched.
-//			 if (nextIndex < characterNames.length)
-//			 {
-//				 currentKey = new Integer(nextIndex++);
-//				 return this;
-//			 }
-//
-//			 throw new NoSuchElementException();
-//		 }
-//
-//		 public void remove()
-//		 {
-//			 throw new UnsupportedOperationException();
-//		 }
-////
-//		 // Map.Entry interface
-//		 public Object getKey()
-//		 {
-//			 return currentKey;
-//		 }
-//
-//		 public Object getValue()
-//		 {
-//			 return currentKey == null ? null
-//				 : characterNames[currentKey.intValue()];
-//		 }
-//
-//		 public Object setValue(Object value)
-//		 {
-//			 throw new UnsupportedOperationException();
-//		 }
-//	 }
-////
-//	 /**
-//	  * The singleton EntrySet instance used by all instances of
-//	  * UnicodeCharNameMap. It can be shared because it is completely static and
-//	  * immutable.
-//	  */
-//	 private static Set<Entry<Integer,String>> THE_ENTRY_SET = new EntrySet();
-////
-//	 /**
-//	  * Returns a Set view of the mappings in this map.
-//	  */
-//	 public Set<Entry<Integer,String>> entrySet()
-//	 {
-//		// return THE_ENTRY_SET;
-//	 }
-
 	/**
-	 * Returns <code>true</code> if this map contains a mapping for the
-	 * specified key.
-	 */
-	@Override
-	public boolean containsKey(Object key)
-	{
-		if (key instanceof Integer)
-		{
-			int i = ((Integer)key).intValue();
-			return i < characterNames.length
-				&& characterNames[i] != null;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns the value to which this Map maps the specified key. Returns
+	 * Returns the name for the specified code point. Returns
 	 * <code>null</code> if the map contains no mapping for this key.
 	 */
-	@Override
-	public String get(Object key)
+	static String get(int codePoint)
 	{
-		String value = null;
-
-		if (key instanceof Integer)
-		{
-			int i = ((Integer)key).intValue();
-			if (i < characterNames.length)
-			{
-			value = characterNames[i];
-			}
+		if (codePoint < characterNames.length) {
+			return characterNames[codePoint];
 		}
-
-		return value;
+		else {
+			return null;
+		}
 	}
 }
 //}}}
