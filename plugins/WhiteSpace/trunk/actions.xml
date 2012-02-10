@@ -8,7 +8,15 @@
             whitespace.WhiteSpaceActions.showBufferOptions(buffer, view);
         </CODE>
     </ACTION>
-
+    
+    <ACTION NAME="white-space.toggle-space-tab-other-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleSpaceTabOtherHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isSpaceTabOtherHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
 
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>

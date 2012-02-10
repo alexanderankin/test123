@@ -42,6 +42,41 @@ public class WhiteSpaceActions
     }
 
 
+    public static void toggleSpaceTabOtherHighlight(final Buffer buffer)
+    {
+        final WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) 
+            return;
+        
+        if (isSpaceTabOtherHighlightSelected(buffer))
+        {
+            // If all selected - unselect them
+            model.getSpaceHighlight().setEnabled(false);
+            model.getTabHighlight().setEnabled(false);
+            model.getWhitespaceHighlight().setEnabled(false);
+        }
+        else
+        {
+            // If none or partially selected - do select all
+            model.getSpaceHighlight().setEnabled(true);
+            model.getTabHighlight().setEnabled(true);
+            model.getWhitespaceHighlight().setEnabled(true);
+        }
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+    /** Checks whether all 3 kinds are selected simultaneously */
+    public static boolean isSpaceTabOtherHighlightSelected(final Buffer buffer) 
+    {
+        final WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return
+            model.getSpaceHighlight().isEnabled()
+            && model.getTabHighlight().isEnabled()
+            && model.getWhitespaceHighlight().isEnabled();
+    }
 
 
     public static void toggleBlockHighlight(Buffer buffer) {

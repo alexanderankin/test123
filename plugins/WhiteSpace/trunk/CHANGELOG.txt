@@ -1,5 +1,8 @@
 Whitespace plugin changelog.
 
+Version
+	A menu item for showing all whitespaces, patch #3483876 (jsot).
+
 Version 1.0.2
 	A new dialog window with WhiteSpace buffer options, duplicating plugin
 	  menu checkboxes, patch #3433672 (Jarek Czekalski)
