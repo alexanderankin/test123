@@ -5,37 +5,36 @@ import java.util.*;
 
 
 public class FunctionListParser implements FunctionListParserConstants {
-
-
-    public static void main(String args[]) throws IOException
-    {
-          FunctionListParser parser = new FunctionListParser(new StringReader(""));
-        BufferedReader in = new BufferedReader(new FileReader(
-                "c:\u005c\u005cUsers\u005c\u005cChocoPC\u005c\u005cdev\u005c\u005cjEdit\u005c\u005cplugins\u005c\u005cPHPParser\u005c\u005csrc\u005c\u005cgatchan\u005c\u005cphpparser\u005c\u005cmethodlist\u005c\u005ctest"));
-        String line = in.readLine();
-        Map<String, Function> functions = new HashMap<String, Function>();
-        while (line != null)
+        //{{{ main() method
+        public static void main(String args[]) throws IOException
         {
-                if (!line.isEmpty())
+                FunctionListParser parser = new FunctionListParser(new StringReader(""));
+                BufferedReader in = new BufferedReader(new FileReader(
+                        "c:\u005c\u005cUsers\u005c\u005cChocoPC\u005c\u005cdev\u005c\u005cjEdit\u005c\u005cplugins\u005c\u005cPHPParser\u005c\u005csrc\u005c\u005cgatchan\u005c\u005cphpparser\u005c\u005cmethodlist\u005c\u005ctest"));
+                String line = in.readLine();
+                Map<String, Function> functions = new HashMap<String, Function>();
+                while (line != null)
                 {
-                        parser.ReInit(new StringReader(line));
-                        try
+                        if (!line.isEmpty())
                         {
-                                Function function = parser.function();
-                                functions.put(function.getName(), function);
+                                parser.ReInit(new StringReader(line));
+                                try
+                                {
+                                        Function function = parser.function();
+                                        functions.put(function.getName(), function);
+                                }
+                                catch (TokenMgrError e)
+                                {
+                                        System.err.println(line);
+                                }
+                                catch (ParseException e)
+                                {
+                                        System.err.println(line);
+                                }
                         }
-                        catch (TokenMgrError e)
-                        {
-                                System.err.println(line);
-                        }
-                        catch (ParseException e)
-                        {
-                                System.err.println(line);
-                        }
+                        line = in.readLine();
                 }
-                line = in.readLine();
         }
-    }
 
 //{{{ parse() method
   final public Map<String,Function> parse() throws ParseException {
@@ -82,7 +81,6 @@ public class FunctionListParser implements FunctionListParserConstants {
   final public Function function() throws ParseException {
         String type;
         String methodName;
-        Argument argument;
         List<Argument> arguments = null;
     type = returnType();
     methodName = functionIdentifier();
@@ -127,7 +125,7 @@ public class FunctionListParser implements FunctionListParserConstants {
   final public List<Argument> firstArgument() throws ParseException {
         Argument argument;
         List<Argument> arguments = new ArrayList<Argument>();
-        List<Argument> nextArgs = new ArrayList<Argument>();
+        List<Argument> nextArgs;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VOID:
       jj_consume_token(VOID);
@@ -369,6 +367,8 @@ public class FunctionListParser implements FunctionListParserConstants {
                         argument.setAlternateType(alternateType);
                         argument.setReference(ref);
                         argument.setVarargs(varargs);
+                        if ("$...".equals(argumentName))
+                                argument.setVarargs(true);
                         argument.setDefaultValue(initializer);
                         {if (true) return argument;}
       break;
@@ -703,6 +703,16 @@ public class FunctionListParser implements FunctionListParserConstants {
     finally { jj_save(1, xla); }
   }
 
+  private boolean jj_3_2() {
+    if (jj_scan_token(OBJECT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
   private boolean jj_3R_4() {
     Token xsp;
     xsp = jj_scanpos;
@@ -711,16 +721,6 @@ public class FunctionListParser implements FunctionListParserConstants {
     if (jj_scan_token(26)) return true;
     }
     if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_scan_token(OBJECT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -1010,4 +1010,5 @@ public class FunctionListParser implements FunctionListParserConstants {
     JJCalls next;
   }
 
+          //}}}
 }

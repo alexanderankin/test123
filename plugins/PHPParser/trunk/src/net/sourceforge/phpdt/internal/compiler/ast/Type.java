@@ -159,6 +159,11 @@ public class Type implements Serializable
 			if (type == NUMBERS || type == FLOAT || type == INTEGER || type == DOUBLE)
 				return true;
 		}
+		if (this == FLOAT)
+		{
+			if (type == DOUBLE || type == INTEGER)
+				return true;
+		}
 		return false;
 	}
 
