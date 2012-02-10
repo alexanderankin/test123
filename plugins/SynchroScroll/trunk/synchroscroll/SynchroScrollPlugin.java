@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
- 
+*/
+
 package synchroscroll;
 
 import org.gjt.sp.jedit.*;
@@ -27,9 +27,8 @@ import java.util.HashMap;
 
 import javax.swing.event.EventListenerList;
 
-
 /**
- * Handles adding and removing scroll handlers to the text areas in the 
+ * Handles adding and removing scroll handlers to the text areas in the
  * various view to facilitate synchronized scrolling between text areas.
  */
 public class SynchroScrollPlugin extends EBPlugin {
@@ -38,7 +37,26 @@ public class SynchroScrollPlugin extends EBPlugin {
     static final String BASELINE = "synchroscroll.BaseLine";
 
     // map to keep track of which views are currently using syncroscrolling
-    private static HashMap<View, Boolean> scrollingMap = new HashMap<View, Boolean>();
+    private static HashMap<View, Boolean> scrollingMap = new HashMap<View, Boolean>() {
+        @Override   // don't ever return null, return false instead
+        public Boolean get(Object key) {
+            if (key == null || super.get(key) == null) {
+                return false;   
+            }
+            return super.get(key);
+        }
+    };
+
+    // map to keep track of which views are currently diffing with JDiff    
+    private static HashMap<View, Boolean> diffingMap = new HashMap<View, Boolean>() {
+        @Override   // don't ever return null, return false instead
+        public Boolean get(Object key) {
+            if (key == null || super.get(key) == null) {
+                return false;   
+            }
+            return super.get(key);
+        }
+    };
 
     public void start() { }
 
@@ -54,7 +72,7 @@ public class SynchroScrollPlugin extends EBPlugin {
         }
         scrollingMap.clear();
     }
-    
+
     /**
      * Adjusts synchroscrolling based on the message:
      * <ul>
@@ -75,7 +93,7 @@ public class SynchroScrollPlugin extends EBPlugin {
             if ( epu.CREATED.equals( epu.getWhat() ) ) {
                 EditPane editPane = epu.getEditPane();
                 View view = editPane.getView();
-                if ( scrollingMap.containsKey( view ) && scrollingMap.get( view ) ) {
+                if ( scrollingMap.get( view ) ) {
                     TextArea textArea = editPane.getTextArea();
                     removeScrollHandler( textArea );
                     addScrollHandler( view, textArea );
@@ -90,9 +108,12 @@ public class SynchroScrollPlugin extends EBPlugin {
                 if ( classname != null && "jdiff.DiffMessage".equals( classname ) ) {
                     String what = ( String ) PrivilegedAccessor.invokeMethod( message, "getWhat", null );
                     String on = ( String ) PrivilegedAccessor.getValue( message, "ON" );
+                    View view = ( View ) message.getSource();
                     if ( what != null && what.equals( on ) ) {
-                        View view = ( View ) message.getSource();
                         SynchroScrollPlugin.setScrolling( view, false );
+                        diffingMap.put(view, true);
+                    } else {
+                        diffingMap.put(view, false);
                     }
                 }
             } catch ( Exception e ) {                // NOPMD
@@ -100,29 +121,26 @@ public class SynchroScrollPlugin extends EBPlugin {
             }
         }
     }
-    
+
     /**
      * Turn on sychroscrolling if it was off, turn it off if it was on
      * @param view The View to toggle synchroscrolling for.
      */
     public static void toggleSynchroScroll( View view ) {
-        boolean scrolling = false;
-        if ( scrollingMap.containsKey( view ) ) {
-            scrolling = !scrollingMap.get( view );
-            scrollingMap.put( view, scrolling );
-        } else {
-            scrolling = true;
-            scrollingMap.put( view, scrolling );
+        if (diffingMap.get(view)) {
+            return;     // don't do anything while JDiff is working.   
         }
+        boolean scrolling = scrollingMap.get(view);
+        scrollingMap.put( view, scrolling );
         setScrolling( view, scrolling );
     }
-    
+
     /**
      * Turn off synchroscrolling for the given View.
      * @param view The View to stop synchroscrolling.
      */
-    public static void setSynchroscrollOff(View view) {
-        setScrolling(view, false);   
+    public static void setSynchroscrollOff( View view ) {
+        setScrolling( view, false );
     }
 
     // turn synchroscrolling on or off
