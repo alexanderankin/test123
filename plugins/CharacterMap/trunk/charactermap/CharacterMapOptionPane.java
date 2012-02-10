@@ -211,6 +211,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		showLarge.addActionListener(
 			new ActionListener()
 			{
+				@Override
 				public void actionPerformed(ActionEvent evt)
 				{
 					boolean selected = showLarge.isSelected();
@@ -221,6 +222,7 @@ public class CharacterMapOptionPane extends AbstractOptionPane
 		showSuper.addActionListener(
 			new ActionListener()
 			{
+				@Override
 				public void actionPerformed(ActionEvent evt)
 				{
 					boolean selected = showSuper.isSelected();

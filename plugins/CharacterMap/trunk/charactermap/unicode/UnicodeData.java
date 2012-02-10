@@ -28,7 +28,6 @@ package charactermap.unicode;
 
 import java.util.*;
 import org.gjt.sp.util.StandardUtilities;
-// import java.util.Map.Entry;  //Only if AbstractMap is used - see below.
 
 
 /**
@@ -36,6 +35,10 @@ import org.gjt.sp.util.StandardUtilities;
  * Unicode Character Database (UCD). This class provides access to a list of
  * Unicode Blocks and provides a mapping between code points and Unicode
  * character descriptions.
+ *
+ * @author   Mike Dillon
+ * @author   Max Funk
+ * @version  1.3
  */
 public final class UnicodeData
 {

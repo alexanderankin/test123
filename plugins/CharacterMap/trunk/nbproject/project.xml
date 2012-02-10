@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://www.netbeans.org/ns/project/1">
+<project xmlns="http://www.netbeans.org/ns/project/1" xmlns:ns1="null">
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>charactermap</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
             <name>charactermap</name>
-            <properties/>
+            <properties>
+                <property-file>build.properties</property-file>
+                <property-file>../build.properties</property-file>
+                <property-file>../../build.properties</property-file>
+            </properties>
             <folders>
                 <source-folder>
                     <label>Source Packages</label>
@@ -16,6 +23,9 @@
                     <type>java</type>
                     <location>.</location>
                 </source-folder>
+                <build-file>
+                    <location>${install.dir}/CharacterMap.jar</location>
+                </build-file>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -40,6 +50,11 @@
                     <target>javadoc</target>
                 </action>
             </ide-actions>
+            <export>
+                <type>jar</type>
+                <location>${install.dir}/CharacterMap.jar</location>
+                <build-target>build</build-target>
+            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -65,11 +80,13 @@
             </view>
             <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
             <compilation-unit>
                 <package-root>.</package-root>
-                <classpath mode="compile">C:\Program Files\jEdit\jedit.jar</classpath>
-                <source-level>1.5</source-level>
+                <classpath mode="compile">${jedit.install.dir}/jedit.jar:${install.dir}/*.jar</classpath>
+                <built-to>${install.dir}/CharacterMap.jar</built-to>
+                <javadoc-built-to>./build/doc/api</javadoc-built-to>
+                <source-level>1.6</source-level>
             </compilation-unit>
         </java-data>
     </configuration>
