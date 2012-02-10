@@ -2,6 +2,9 @@
  * CharacterMapPlugin.java
  *
  * Copyright (C) 2000, 2003 Slava Pestov
+ * Copyright (C) 2003 Mark Wickens
+ * Copyright (C) 2003 Mike Dillon
+ * Copyright (C) 2012 Max Funk
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,13 +25,18 @@ package charactermap;
 import org.gjt.sp.jedit.EditPlugin;
 
 /**
- * @author Slava Pestov
- * @version 1.3
+ * The Character Map Plugin.
+ *
+ * @author   Slava Pestov
+ * @author   Mark Wickens
+ * @author   Mike Dillon
+ * @author   Max Funk
+ * @version  1.3
  */
-public class CharacterMapPlugin extends EditPlugin 
+public class CharacterMapPlugin extends EditPlugin
 {
 	public static final String NAME = "character-map";
-	
+
 	public static final String NAME_PREFIX = "character-map.";
 	public static final String OPTION_PREFIX = "options.character-map.";
 }

@@ -175,7 +175,8 @@ public class CharacterMap extends JPanel
 	 * view are honoured within the character map. Selectable options are set from
 	 * properties as defined within the options pane.
 	 *
-	 * @param  view  jEdit view
+	 * @param view  jEdit view
+	 * @param position charmap docking position
 	 * @see          CharacterMapOptionPane
 	 */
 	public CharacterMap(View view, String position)
@@ -424,11 +425,12 @@ public class CharacterMap extends JPanel
 		return str;
 	}
 
-	/** Formatted output of int in decimal form
-	 *  @param i       Integer to be converted
-	 *  @param digits  Minimum number of digits (fill with leading zeros)
-	 *  @param prefix  Prefix string
-	 *  @return        Formatted string
+	/**
+	 * Formatted output of int in decimal form
+	 * @param i       Integer to be converted
+	 * @param digits  Minimum number of digits (fill with leading zeros)
+	 * @param prefix  Prefix string
+	 * @return        Formatted string
 	 */
 	public static String toDecString(int i, int digits, String prefix)
 	{
@@ -442,16 +444,16 @@ public class CharacterMap extends JPanel
 		return myFormatter.format(i);
 	}
 
-	/** Font used to draw character glyphs in table
-	 *  (normal, without font substitution)
+	/** Normal font used to draw character glyphs in table,
+	 *  without font substitution.
 	 */
 	private Font normalFont()
 	{
 		return view.getTextArea().getPainter().getFont();
 	}
 
-	/** Font used to draw character glyphs in table.
-	 *  Use font substitution for missing characters,
+	/** Font used to draw character glyphs in table,
+	 *  with font substitution for missing characters,
 	 *  if this feature is selected in jEdit options.
 	 *  @param codepoint Codepoint of character glyph to be drawn
 	 *  @return          Best font, which can show the glyph.
@@ -565,7 +567,7 @@ public class CharacterMap extends JPanel
 
 	/** Set member variables regarding anti-aliasing and
 	 *  fractional font-metrics requirements from the defined
-	 *  values in the jEdit properties
+	 *  values in the jEdit properties.
 	 */
 	private void determineAntiAliasRequirements()
 	{
@@ -719,6 +721,7 @@ public class CharacterMap extends JPanel
 	//}}}
 
 	//{{{ Large & super char
+
 	/**
 	 * Get the character of the glyph in the given table position.
 	 * Shortcut to getValueAt in CharTableModel.
@@ -937,7 +940,10 @@ public class CharacterMap extends JPanel
 	 * - Changes table row height, if text area font size has changed in jEdit.
 	 * - Change charmap encodings list if selected encodings have changed in jEdit.
 	 * - Reset Substitution fonts. (Initialisation is done in the autoFont() function)
+	 *
+	 * @param message Message from edit bus
 	 */
+	@Override
 	public void handleMessage(EBMessage message)
 	{
 		if (((message instanceof BufferUpdate)
@@ -1027,9 +1033,6 @@ public class CharacterMap extends JPanel
 	//{{{ Handlers
 	/**
 	 *  Handles actions performed on the encoding combo-box
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
 	 */
 	class ActionHandler implements ActionListener
 	{
@@ -1039,6 +1042,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  The event representing the action performed
 		 */
+		@Override
 		public void actionPerformed(ActionEvent evt)
 		{
 			if (evt.getSource() == encodingCombo)
@@ -1063,9 +1067,6 @@ public class CharacterMap extends JPanel
 
 	/**
 	 *  Catches changes to the slider value
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
 	 */
 	class SliderChangeHandler implements ChangeListener
 	{
@@ -1076,6 +1077,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt	The event representing the state change
 		 */
+		@Override
 		public void stateChanged(ChangeEvent evt)
 		{
 			table.repaint();
@@ -1093,6 +1095,7 @@ public class CharacterMap extends JPanel
 		 * are changed. Changes the table content according to the
 		 * new settings.
 		 */
+		@Override
 		public void itemStateChanged(final ItemEvent evt)
 		{
 			tableModel.fireTableDataChanged();
@@ -1104,9 +1107,6 @@ public class CharacterMap extends JPanel
 	/**
 	 * Handles mouse interaction (movement, dragging
 	 * and button activity) with the glyph table
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
 	 */
 	class MouseHandler extends MouseInputAdapter
 	{
@@ -1194,7 +1194,7 @@ public class CharacterMap extends JPanel
 		 *
 		 * @param  evt  Event containing mouse drag information
 		 */
-		 @Override
+		@Override
 		public void mouseDragged(MouseEvent evt)
 		{
 			Point p = evt.getPoint();
@@ -1290,9 +1290,6 @@ public class CharacterMap extends JPanel
 	 * Anti-aliasing rendering is turned on if required.
 	 * Control keys are converted to readable text
 	 * Empty text, undefined and surrogate characters are converted to spaces
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
 	 */
 	class CharLabel extends JLabel
 	{
@@ -1403,15 +1400,13 @@ public class CharacterMap extends JPanel
 	/**
 	 * Model of character data contained within the
 	 * glyph table.
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
 	 */
 	class CharTableModel extends AbstractTableModel
 	{
 		/**
 		 * @return    Number of columns in the glyph table
 		 */
+		@Override
 		public int getColumnCount()
 		{
 			return tableColumns;
@@ -1420,6 +1415,7 @@ public class CharacterMap extends JPanel
 		/**
 		 * @return    Number of rows in the glyph table
 		 */
+		@Override
 		public int getRowCount()
 		{
 			int tableRows = (getBlockSize() - getBlockSize() % tableColumns)
@@ -1466,6 +1462,7 @@ public class CharacterMap extends JPanel
 		 * @see         isValidChar
 		 * @see         REPLACEMENT_CHAR
 		 */
+		@Override
 		public Object getValueAt(int row, int col)
 		{
 			String ch;
@@ -1502,12 +1499,12 @@ public class CharacterMap extends JPanel
 
 		/**
 		 * Determine, if the character at a given index in the current
-		 * table is valid. A table index is invalid, if it does not
-		 * correspond a valid unicode entry.
-		 * This happens, if the table entry is outside the encoding range
-		 * or if we are outside of the table (row == -1 or col == -1)
-		 * or if it is a character from an encoding with no Unicode
-		 * equivalent.
+		 * table is valid.
+		 * A table index is invalid, if it does not correspond a valid
+		 * unicode entry. This happens, if the table entry is outside
+		 * the encoding range or if we are outside of the table
+		 * (row == -1 or col == -1) or if it is a character from an
+		 * encoding with no Unicode equivalent.
 		 *
 		 * @param row   Table row
 		 * @param col   Table column
@@ -1541,10 +1538,6 @@ public class CharacterMap extends JPanel
 	/**
 	 * Renderer for table cells based on the CharLabel
 	 * that uses anti-aliasing if required
-	 *
-	 * @author     mawic
-	 * @created    June 11, 2003
-	 * @see CharLabel
 	 */
 	class CharTableCellRenderer extends CharLabel implements TableCellRenderer
 	{
@@ -1569,6 +1562,7 @@ public class CharacterMap extends JPanel
 		 * @param column Column of selected cell in glyph table
 		 * @return Instance of the renderer (super-class of JLabel)
 		 */
+		@Override
 		public Component getTableCellRendererComponent(
 			JTable table, Object text,
 			boolean isSelected, boolean hasFocus,
@@ -1628,8 +1622,13 @@ public class CharacterMap extends JPanel
 	public class ShapedPopupFactory extends PopupFactory
 	{
 		/**
-		 *  Returns a popup of class ShapedPopup
-		 *  Otherwise as getPopup in PopupFactory.
+		 *  Returns a popup of class ShapedPopup.
+		 *  @param owner     Owner of popup window.
+		 *  @param contents  Content of popup window
+		 *  @param x         Window x position
+		 *  @param y         Window y position
+		 *  @return          Return the popup window
+		 *  @throws          IllegalArgumentException
 		 */
 		@Override
 		public Popup getPopup(Component owner, Component contents, int x, int y)
@@ -1659,11 +1658,14 @@ public class CharacterMap extends JPanel
 			contents.invalidate();
 		}
 
+		/** Show the popup window */
 		@Override
 		public void show() {
 			popupWindow.setVisible(true);
 			popupWindow.pack();
 		}
+
+		/** Hide the popup window */
 		@Override
 		public void hide() {
 			popupWindow.setVisible(false);
@@ -1679,7 +1681,10 @@ public class CharacterMap extends JPanel
 	public class ShapedWindow extends JWindow
 	{
 
-		/** Called from all window constructors */
+		/**
+		 * Initialisation, called from all window constructors
+		 * of JWindow
+		 */
 		@Override
 		protected void windowInit()
 		{
@@ -1687,6 +1692,16 @@ public class CharacterMap extends JPanel
 			setOpaque(false);
 		}
 
+		/**
+		 * The repaint() command is modified in this class to do
+		 * do a full paint().
+		 *
+		 * @param time   Time for painting
+		 * @param x      Paint region x-coordinate
+		 * @param y      Paint region y-coordinate
+		 * @param width  Paint region width
+		 * @param height Paint region height
+		 */
 		@Override
 		public void repaint(long time, int x, int y,
 			int width, int height)
@@ -1695,6 +1710,12 @@ public class CharacterMap extends JPanel
 			paint(g);
 		}
 
+		/**
+		 * The standard paint() command is modified to make
+		 * a popup with user defined border and shape
+		 *
+		 * @param g  Graphics handler of the popup
+		 */
 		@Override
 		public void paint(Graphics g)
 		{
