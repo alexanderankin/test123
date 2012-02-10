@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,46 +33,41 @@ import java.util.*;
 
 public class FunctionListParser
 {
-
-
-    public static void main(String args[]) throws IOException
-    {
-          FunctionListParser parser = new FunctionListParser(new StringReader(""));
-	BufferedReader in = new BufferedReader(new FileReader(
-		"c:\u005c\u005cUsers\u005c\u005cChocoPC\u005c\u005cdev\u005c\u005cjEdit\u005c\u005cplugins\u005c\u005cPHPParser\u005c\u005csrc\u005c\u005cgatchan\u005c\u005cphpparser\u005c\u005cmethodlist\u005c\u005ctest"));
-	String line = in.readLine();
-	Map<String, Function> functions = new HashMap<String, Function>();
-	while (line != null)
+	//{{{ main() method
+	public static void main(String args[]) throws IOException
 	{
-		if (!line.isEmpty())
+		FunctionListParser parser = new FunctionListParser(new StringReader(""));
+		BufferedReader in = new BufferedReader(new FileReader(
+			"c:\u005c\u005cUsers\u005c\u005cChocoPC\u005c\u005cdev\u005c\u005cjEdit\u005c\u005cplugins\u005c\u005cPHPParser\u005c\u005csrc\u005c\u005cgatchan\u005c\u005cphpparser\u005c\u005cmethodlist\u005c\u005ctest"));
+		String line = in.readLine();
+		Map<String, Function> functions = new HashMap<String, Function>();
+		while (line != null)
 		{
-			parser.ReInit(new StringReader(line));
-			try
+			if (!line.isEmpty())
 			{
-				Function function = parser.function();
-				functions.put(function.getName(), function);
+				parser.ReInit(new StringReader(line));
+				try
+				{
+					Function function = parser.function();
+					functions.put(function.getName(), function);
+				}
+				catch (TokenMgrError e)
+				{
+					System.err.println(line);
+				}
+				catch (ParseException e)
+				{
+					System.err.println(line);
+				}
 			}
-			catch (TokenMgrError e)
-			{
-				System.err.println(line);
-			}
-			catch (ParseException e)
-			{
-				System.err.println(line);
-			}
+			line = in.readLine();
 		}
-		line = in.readLine();
-	}
-    }
-
+	} //}}}
 }
-
-
 
 PARSER_END(FunctionListParser)
 
-
-
+//{{{ SKIP
 SKIP : {
 
     " "
@@ -85,9 +80,7 @@ SKIP : {
 
   | <"#"(
  ~["\n","\r"] )* ("\n" | "\r" | "\r\n")>
-
-}
-
+} //}}}
 
 TOKEN:
 {
@@ -201,7 +194,6 @@ Function function():
 {
 	String type;
 	String methodName;
-	Argument argument;
 	List<Argument> arguments = null;
 }
 {
@@ -229,7 +221,7 @@ List<Argument> firstArgument():
 {
 	Argument argument;
 	List<Argument> arguments = new ArrayList<Argument>();
-	List<Argument> nextArgs = new ArrayList<Argument>();
+	List<Argument> nextArgs;
 }
 {
 	(
@@ -346,6 +338,8 @@ Argument argument():
 			argument.setAlternateType(alternateType);
 			argument.setReference(ref);
 			argument.setVarargs(varargs);
+			if ("$...".equals(argumentName))
+				argument.setVarargs(true);
 			argument.setDefaultValue(initializer);
 			return argument;
 
