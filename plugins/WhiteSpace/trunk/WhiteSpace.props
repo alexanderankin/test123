@@ -1,3 +1,5 @@
+# :encoding=UTF-8:
+
 plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
 plugin.whitespace.WhiteSpacePlugin.activate=startup
 plugin.whitespace.WhiteSpacePlugin.author=André Kaplan & Nathan Jones
@@ -12,6 +14,8 @@ plugin.whitespace.WhiteSpacePlugin.description=The main feature of WhiteSpace is
 #Menu
 plugin.whitespace.WhiteSpacePlugin.menu= \
     white-space.show-buffer-options             \
+    -                                           \
+    white-space.toggle-space-tab-other-highlight          \
     -                                           \
     white-space.toggle-space-highlight          \
     white-space.toggle-tab-highlight            \
@@ -37,6 +41,7 @@ plugin.whitespace.WhiteSpacePlugin.menu= \
 
 # Action labels
 white-space.show-buffer-options.label=Show WhiteSpace buffer options
+white-space.toggle-space-tab-other-highlight.label=Show spaces, tabs and other whitespaces
 white-space.toggle-space-highlight.label=Show spaces
 white-space.toggle-leading-space-highlight.label=Show leading spaces
 white-space.toggle-inner-space-highlight.label=Show inner spaces
