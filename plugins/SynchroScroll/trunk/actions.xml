@@ -1,9 +1,14 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="synchroscroll.synchroScroll">
+	<ACTION NAME="synchroscroll.toggleSynchroScroll">
 		<CODE>
             synchroscroll.SynchroScrollPlugin.toggleSynchroScroll(view);
+        </CODE>
+	</ACTION>
+	<ACTION NAME="synchroscroll.synchroScrollOff">
+		<CODE>
+            synchroscroll.SynchroScrollPlugin.setSynchroScrollOff(view);
         </CODE>
 	</ACTION>
 </ACTIONS>

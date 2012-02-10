@@ -4,7 +4,7 @@
 
 plugin.synchroscroll.SynchroScrollPlugin.name=SynchroScroll
 plugin.synchroscroll.SynchroScrollPlugin.author=Dale Anson
-plugin.synchroscroll.SynchroScrollPlugin.version=1.0
+plugin.synchroscroll.SynchroScrollPlugin.version=1.1
 plugin.synchroscroll.SynchroScrollPlugin.activate=defer
 plugin.synchroscroll.SynchroScrollPlugin.description=Provides ability to synchronize scrolling when multiple text areas are open.
 
@@ -17,7 +17,8 @@ plugin.synchroscroll.SynchroScrollPlugin.docs=index.html
 
 # menu settings
 plugin.synchroscroll.SynchroScrollPlugin.menu.label=SynchroScroll
-plugin.synchroscroll.SynchroScrollPlugin.menu=synchroscroll.synchroScroll 
+plugin.synchroscroll.SynchroScrollPlugin.menu=synchroscroll.toggleSynchroScroll synchroscroll.synchroScrollOff 
 
 # menu labels
-synchroscroll.synchroScroll.label=Toggle Synchro Scrolling
+synchroscroll.toggleSynchroScroll.label=Toggle Synchro Scrolling
+synchroscroll.synchroScrollOff.label=Stop Synchro Scrolling
