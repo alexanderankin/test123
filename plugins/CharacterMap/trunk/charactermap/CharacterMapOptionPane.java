@@ -41,10 +41,6 @@ import org.gjt.sp.jedit.jEdit;
  * is selected in the Plugin Options... tree
  * Allows the user to customize the appearence of the
  * character map plugin.
- *
- * @author     Mark Wickens
- * @author     Max Funk
- * @version    1.3
  */
 public class CharacterMapOptionPane extends AbstractOptionPane
 {

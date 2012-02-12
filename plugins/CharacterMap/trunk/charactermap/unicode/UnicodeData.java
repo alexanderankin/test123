@@ -20,7 +20,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
  */
 
 package charactermap.unicode;
@@ -35,10 +34,6 @@ import org.gjt.sp.util.StandardUtilities;
  * Unicode Character Database (UCD). This class provides access to a list of
  * Unicode Blocks and provides a mapping between code points and Unicode
  * character descriptions.
- *
- * @author   Mike Dillon
- * @author   Max Funk
- * @version  1.3
  */
 public final class UnicodeData
 {
@@ -624,8 +619,8 @@ private static final List<UnicodeData.Block> blocks = Arrays.asList(new UnicodeD
 // END GENERATED CODE
 
 	/**
-	 * Creates a new instance of UnicodeCharNameMap. This class should not be
-	 * instantiated outside of charactermap.unicode.UnicodeData.
+	 * Empty default constructor. The class should be called only with its
+	 * static methods.
 	 */
 	UnicodeBlocks()
 	{
@@ -25164,8 +25159,8 @@ static
 // END GENERATED CODE
 
 	/**
-	 * Constructor of UnicodeCharNameMap.
-	 * Should not be instantiated outside of the class UnicodeData.
+	 * Empty default constructor. The class should be called only with its
+	 * static methods.
 	 */
 	UnicodeCharNames()
 	{
