@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<project name="Plugin Release" basedir="." default="pf.usage">
+<!-- :noTabs=true:tabSize=2: -->
+
+<!-- pf = plugin factory -->
+
+<target name="pf.usage">
+  <echo>For instructions visit https://sourceforge.net/apps/mediawiki/jedit/index.php?title=Conventions,_procedures#Releasing_a_plugin_part_II
+  </echo>
+</target>
+
+<!-- adjust once -->
+<condition property="pf.dir" value="/m/temp/30/plugin-factory"
+           else="c:/temp/30/plugin-factory"><os family="unix"/></condition>
+<condition property="prog.svn" value="svn"
+  else="C:\Program_Files\SlikSvn\bin\svn.exe"><os family="unix"/></condition>
+<condition property="prog.git" value="git"
+  else="C:\Program_Files\Git\bin\git.exe"><os family="unix"/></condition>
+<condition property="xsltproc.executable" value="xsltproc"
+  else="C:\Temp\1\xslt\bin\xsltproc.exe"><os family="unix"/></condition>
+
+<!-- adjust per plugin release -->
+<property name="plugin.name" value="CtagsInterface" />
+<property name="plugin.version" value="2.2" />
+<property name="scm.targets.file" value="git_cl.xml" />
+<property name="plugin.tag" value="release-2.2" />
+
+<!-- no need to adjust -->
+<property name="jedit.svn.url" value="https://jedit.svn.sourceforge.net/svnroot/jedit" />
+<property name="jedit.git.url" value="git://jedit.git.sourceforge.net/gitroot/jedit" />
+<property name="docbook.xsl" value="${pf.dir}\pjo\ant\docbook\xsl" />
+<property name="sandbox.dir" value="${pf.dir}/sandbox" />
+<property name="package.targets.file" value="package.xml" />
+<!-- see ${pf.dir}/pjo/ant/build.properties.sample for other properties which
+     may be set -->
+
+<target name="pf.create">
+  <mkdir dir="${pf.dir}/pjo" />
+  <mkdir dir="${pf.dir}/build-support" />
+  <exec executable="${prog.svn}" dir="${pf.dir}/pjo" ><arg line="checkout https://jedit.svn.sourceforge.net/svnroot/jedit/pjo/trunk/ ." /></exec>
+  <exec executable="${prog.svn}" dir="${pf.dir}/build-support" ><arg line="checkout https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk/ ." /></exec>
+</target>
+
+<target name="pf.update">
+  <exec executable="${prog.svn}" dir="${pf.dir}/pjo" ><arg line="update" /></exec>
+  <exec executable="${prog.svn}" dir="${pf.dir}/build-support" ><arg line="checkout https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk/ ." /></exec>
+</target>
+
+<target name="pf.init">
+</target>
+
+<target name="pf.test" depends="pf.init" >
+  <ant antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+</target>
+
+<target name="pf.download" depends="pf.init, pf.update">
+  <ant target="download" antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+</target>
+<target name="pf.build" depends="pf.init">
+  <ant target="build" antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+</target>
+<target name="pf.view" depends="pf.init">
+  <ant target="view" antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+</target>
+
+</project>
