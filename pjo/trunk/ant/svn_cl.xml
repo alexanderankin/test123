@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <project name="SVN Command Line Targets" basedir="." default="help">
+	<!-- :noTabs=false: -->
+	<property name="prog.svn" value="svn" />
 	<target name="checkout-plugin">
 		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
 		<condition property="use.tag">
@@ -10,7 +12,7 @@
 	</target>
 	<target name="checkout-plugin-trunk" unless="use.tag">
 		<property name="plugin.svn.url" value="${jedit.svn.url}/plugins/${plugin.name}/trunk" />
-		<exec executable="svn" failonerror="true">
+		<exec executable="${prog.svn}" failonerror="true">
 			<arg value="co" />
 			<arg value="${plugin.svn.url}" />
 			<arg value="${plugin.download.dir}" />
@@ -18,7 +20,7 @@
 	</target>
 	<target name="checkout-plugin-tag" if="use.tag">
 		<property name="plugin.svn.url" value="${jedit.svn.url}/plugins/${plugin.name}/tags/${plugin.tag}" />
-		<exec executable="svn" failonerror="true">
+		<exec executable="${prog.svn}" failonerror="true">
 			<arg value="co" />
 			<arg value="${plugin.svn.url}" />
 			<arg value="${plugin.download.dir}" />

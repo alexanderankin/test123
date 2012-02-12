@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <project name="Plugin Release" basedir="." default="usage">
+<!--:noTabs=false:-->
 	<property file="build.properties" />
+
 	<target name="usage">
 		<echo>build                 : Builds the downloaded plugin in the sandbox</echo>
 		<echo>                        directory. This target calls the clean,</echo>
@@ -74,6 +76,15 @@ docbookx.dtd=${docbookx.dtd}
 docbook.xsl=${docbook.xsl}
 		</echo>
 	</target>
+
+	<!-- default property values -->
+	<!-- plugin factory directory -->
+	<property name="pf.dir" value="../.." />
+	<property name="build.support"
+	          value="${pf.dir}/build-support" />
+	<property name="docbook.catalog"
+	          value="${pf.dir}/pjo/ant/docbook/4.4/docbook.cat" />
+
 	<target name="build" depends="java5">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
@@ -81,7 +92,8 @@ docbook.xsl=${docbook.xsl}
 		<plugin-build pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
 	</target>
 	<target name="copy-sample-build" if="copy.sample.build.properties">
-		<copy file="build.properties.sample" tofile="build.properties"/>
+		<copy file="build.properties.sample" tofile="build.properties"
+		      overwrite="yes" />
 	</target>
 	<target name="download">
 		<property name="scm.targets.file" value="svn_cl.xml" />
@@ -212,6 +224,11 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 				</filterchain>
 			</loadproperties>
 			<echo>@{pluginName} requires jedit version: ${plugin.jedit.version}</echo>
+			<!-- set default values for jedit directories properties -->
+			<property name="jedit.version.${plugin.jedit.version}.install.dir"
+			          value="${pf.dir}/jedit.${plugin.jedit.version}" />
+			<property name="jedit.version.${plugin.jedit.version}.settings.dir"
+			          value="${pf.dir}/jedit.${plugin.jedit.version}.settings" />
 		</sequential>
 	</macrodef>
 	<macrodef name="plugin-build">
