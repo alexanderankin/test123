@@ -25,7 +25,8 @@ package charactermap;
 import org.gjt.sp.jedit.EditPlugin;
 
 /**
- * The Character Map Plugin.
+ * The character map plugin core class.
+ * @see org.gjt.sp.jedit.EditPlugin
  *
  * @author   Slava Pestov
  * @author   Mark Wickens
@@ -35,8 +36,10 @@ import org.gjt.sp.jedit.EditPlugin;
  */
 public class CharacterMapPlugin extends EditPlugin
 {
+	/** Name used in dockables.xml and in menu actions */
 	public static final String NAME = "character-map";
-
+	/** Name prefix used for property settings */
 	public static final String NAME_PREFIX = "character-map.";
+	/** Name prefix used for option propery settings */
 	public static final String OPTION_PREFIX = "options.character-map.";
 }

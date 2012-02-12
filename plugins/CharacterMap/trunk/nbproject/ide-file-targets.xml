@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir=".." name="charactermap-IDE">
-    <!-- TODO: edit the following target according to your needs -->
+    <!-- edit the following target according to your needs -->
     <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
     <property file="${basedir}/build.properties" />
     <property file="${basedir}/../build.properties" />
@@ -26,14 +26,14 @@
     </target>
     <target name="nb-debug">
         <path id="cp">
-            <!-- TODO configure the runtime classpath for your project here: -->
+            <!-- configure the runtime classpath for your project here: -->
             <pathelement location="${jedit.install.dir}/jedit.jar" />
             <pathelement location="${install.dir}/CharacterMap.jar" />
         </path>
         <nbjpdastart addressproperty="jpda.address" name="charactermap" transport="dt_socket">
             <classpath refid="cp"/>
         </nbjpdastart>
-        <!-- TODO configure the main class for your project here: -->
+        <!-- configure the main class for your project here: -->
         <java classname="org.gjt.sp.jedit.jEdit" fork="true">
             <classpath refid="cp"/>
             <jvmarg value="-Xdebug"/>

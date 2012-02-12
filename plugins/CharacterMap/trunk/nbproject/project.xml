@@ -72,10 +72,6 @@
                     <ide-action name="javadoc"/>
                     <ide-action name="run"/>
                     <ide-action name="debug"/>
-                    <action>
-                        <label>Make Distribution</label>
-                        <target>dist</target>
-                    </action>
                 </context-menu>
             </view>
             <subprojects/>
@@ -85,9 +81,27 @@
                 <package-root>.</package-root>
                 <classpath mode="compile">${jedit.install.dir}/jedit.jar:${install.dir}/*.jar</classpath>
                 <built-to>${install.dir}/CharacterMap.jar</built-to>
-                <javadoc-built-to>./build/doc/api</javadoc-built-to>
+                <javadoc-built-to>build/doc</javadoc-built-to>
                 <source-level>1.6</source-level>
             </compilation-unit>
         </java-data>
+        <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
+            <module name="org-netbeans-modules-html-editor-lib">
+                <property name="default-html-public-id" value="HTML5"/>
+            </module>
+            <module name="org-netbeans-modules-editor-indent">
+                <node name="CodeStyle">
+                    <property name="usedProfile" value="project"/>
+                    <node name="project">
+                        <property name="spaces-per-tab" value="4"/>
+                        <property name="tab-size" value="4"/>
+                        <property name="indent-shift-width" value="4"/>
+                        <property name="expand-tabs" value="false"/>
+                        <property name="text-limit-width" value="80"/>
+                        <property name="text-line-wrap" value="none"/>
+                    </node>
+                </node>
+            </module>
+        </preferences>
     </configuration>
 </project>

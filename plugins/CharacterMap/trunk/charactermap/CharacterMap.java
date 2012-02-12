@@ -54,11 +54,6 @@ import org.gjt.sp.util.StandardUtilities;
  * A character map is a way of viewing and inserting characters contained
  * within the character set of the character encoding method used by the
  * current buffer.
- *
- * @author     Slava Pestov
- * @author     Mark Wickens
- * @author     Max Funk
- * @version    1.3
  */
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -1466,9 +1461,6 @@ public class CharacterMap extends JPanel
 		public Object getValueAt(int row, int col)
 		{
 			String ch;
-
-			// TODO: Make a better algorithm with the Encoder class
-			//       instead of String(byte[])
 			try {
 				if (isUnicode(encoding)) {
 					int cp = getIndexAt(row, col);
