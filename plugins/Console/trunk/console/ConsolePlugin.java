@@ -525,14 +525,20 @@ public class ConsolePlugin extends EditPlugin
 		
 		String cmd = project.getProperty("console."+prop);
 		if (cmd == null) cmd = "";
-		if (cmd.equals("")) {
-			// TODO: instead of warning the user, pop up the pane to edit commands
-			/*
-			EditProjectAction ea = new EditProjectAction("pv.commands");
-			ea.actionPerformed(null);
+		while (cmd.equals("")) {
+			// ask the user if they want to define the command now
+			int res = GUIUtilities.confirm(view, "console.pv.no-command",
+				new String[] { prop }, JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+
+			if (res != JOptionPane.YES_OPTION)
+				return;
+
+			projectviewer.PVActions.pvActionWrapper(
+					new projectviewer.action.EditProjectAction("pv.commands"), view, true);
+
 			cmd = project.getProperty("console."+prop);
-			*/
-			GUIUtilities.error(view, "console.pv.no-command", new String[] { prop });
+			if (cmd == null)
+				cmd = "";
 		}
 	
 		// Run the command in the project's root, but then return to

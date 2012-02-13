@@ -477,4 +477,4 @@ console.pv.no-active-project.message=Select a project in the ProjectViewer \
 	dockable and try again.
 console.pv.no-command.title=Command not found
 console.pv.no-command.message=No {0} command has been defined.\n\
-	Project commands can be edited in the project properties window.
+	Would you like to define it now?
