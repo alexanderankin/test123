@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1" xmlns:ns1="null">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>charactermap</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>charactermap</name>
+            <properties>
+                <property-file>build.properties</property-file>
+                <property-file>../build.properties</property-file>
+                <property-file>../../build.properties</property-file>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>Source Packages</label>
+                    <location>.</location>
+                </source-folder>
+                <source-folder>
+                    <label>Source Packages</label>
+                    <type>java</type>
+                    <location>.</location>
+                </source-folder>
+                <build-file>
+                    <location>${install.dir}/CharacterMap.jar</location>
+                </build-file>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>build</target>
+                </action>
+                <action name="clean">
+                    <target>clean</target>
+                </action>
+                <action name="rebuild">
+                    <target>clean</target>
+                    <target>build</target>
+                </action>
+                <action name="run">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>nb-run</target>
+                </action>
+                <action name="debug">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>nb-debug</target>
+                </action>
+                <action name="javadoc">
+                    <target>javadoc</target>
+                </action>
+            </ide-actions>
+            <export>
+                <type>jar</type>
+                <location>${install.dir}/CharacterMap.jar</location>
+                <build-target>build</build-target>
+            </export>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>Source Packages</label>
+                        <location>.</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="javadoc"/>
+                    <ide-action name="run"/>
+                    <ide-action name="debug"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
+            <compilation-unit>
+                <package-root>.</package-root>
+                <classpath mode="compile">${jedit.install.dir}/jedit.jar:${install.dir}/*.jar</classpath>
+                <built-to>${install.dir}/CharacterMap.jar</built-to>
+                <javadoc-built-to>build/doc</javadoc-built-to>
+                <source-level>1.6</source-level>
+            </compilation-unit>
+        </java-data>
+        <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
+            <module name="org-netbeans-modules-html-editor-lib">
+                <property name="default-html-public-id" value="HTML5"/>
+            </module>
+            <module name="org-netbeans-modules-editor-indent">
+                <node name="CodeStyle">
+                    <property name="usedProfile" value="project"/>
+                    <node name="project">
+                        <property name="spaces-per-tab" value="4"/>
+                        <property name="tab-size" value="4"/>
+                        <property name="indent-shift-width" value="4"/>
+                        <property name="expand-tabs" value="false"/>
+                        <property name="text-limit-width" value="80"/>
+                        <property name="text-line-wrap" value="none"/>
+                    </node>
+                </node>
+            </module>
+        </preferences>
+    </configuration>
+</project>

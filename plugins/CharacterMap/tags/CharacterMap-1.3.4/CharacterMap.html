@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="iso-8859-1" />
+	<title>CharacterMap Plugin</title>
+</head>
+
+<body>
+
+<h1>CharacterMap Plugin V1.3</h1>
+
+by Slava Pestov<br/>
+and Mike Dillon<br/>
+and Mark Wickens<br/>
+and Max Funk
+
+<h2> Introduction </h2>
+
+<p>The character map plugin displays a window showing all ASCII and extended
+characters. Clicking one will insert it into the buffer.</p>
+<p>Various encodings are supported, including full Unicode 6.1.0.</p>
+<p>To see many Unicode characters, you may need to activate font substitution
+in jEdit and to install large fonts in your system.</p>
+
+<h2> Description </h2>
+
+<p>In a dockable window a character table is shown. Clicking on a character with
+Button 1 on the mouse (typically the left button) will cause the character to be
+inserted at the cursor position in the current buffer.</p>
+<p>Additional information about the characters is given in the status line.
+Pressing and holding button 3 on the mouse (typically the right button)
+will display an enlarged version of the character overlayed at the current
+pointer position.</p>
+<p>The characters in the table are rendered in the font style and size selected
+for the text area. The anti-alias and fractional font metrics options are
+honoured. Additional fonts can be used via font substitution. Activate this feature
+in &quot;jEdit - Global Options - Text Area - Font Substitution&quot;.
+A list of preferred fonts and / or all fonts installed on the system are searched
+for characters. Large multi-script fonts are e.g. Code2000-2002,
+Quivira, Arial Unicode MS.</p>
+<p>Beside the normal characters, there are the following entries :</p>
+<ol>
+	<li>Blue + number: ISO control characters.</li>
+	<li>White + replacement symbol: Characters with missing fonts.</li>
+	<li>Green: Private Use Area: User defined characters / fonts.</li>
+	<li>Grey: Not assigned to characters. For future Unicode versions and technical use.</li>
+	<li>Red + replacement symbol: Invalid table entries without Unicode representation.</li>
+</ol>
+<p>For the encoding &quot;US-ASCII&quot;, the table contains 128 characters.
+For all other non-Unicode encodings the table contains 256 characters, that represent
+(often) the entire character set.</p>
+<p>For Unicode (UTF-8, UTF-16, UTF-32) the table displays the selected unicode block,
+shown in the blocks combo box. By default, only the &quot;basic multilingual
+plane&quot; is shown, i.e. the first 65536 unicode characters. In the options
+(see below) you can activate all Unicode planes.</p>
+<p>The encoding of the table is shown in the encoding combo box (if enabled).
+You can change it with the dropdown list or directly type it into the text field.
+Encodings typed into the text field are stored during the session, to ease later
+selection. You can change the content of the encoding combo box permanently in
+&quot;jEdit - Global Options - Encodings - Selected Encodings&quot;.</p>
+<p>The encoding of the current buffer / file is shown in the jEdit status line.
+Opening or changing a buffer resets the table to the encoding of the buffer.
+Character Map will refuse to insert characters from different encodings into
+a non-unicode buffer. If you still want to insert the character, you must change
+the encoding in the jEdit buffer options. Be careful: Some applications may require
+a specific encoding. Also, if you change to another non-Unicode encoding, some
+other characters of the buffer may not be present in the new encoding.
+Java works internally in Unicode. Codepoints from non-unicode encodings, which
+have no unicode equivalent, are shown in red as invalid characters. They cannot
+be inserted into the buffer.</p>
+
+<h2> Options </h2>
+
+<p>The following options can be specified in the option pane.</p>
+<ul>
+	<li>Show encoding combo box: Controls whether the encoding combo box
+	is displayed. By default the encoding is selected from the encoding specified
+	for the currently selected buffer.</li>
+	<li>Show Unicode blocks combo box: Controls whether the Unicode blocks
+	combo box is displayed. The blocks combo box is only enabled when editing
+	a Unicode buffer or when Unicode encoding has been specified in the
+	encoding combo box.</li>
+	<li>Sort Unicode blocks alphabetically: Alphabetic order. If the option
+	is unchecked, the blocks are in the order of the Unicode database, i.e.
+	sorted by increasing codepoints, starting with &quot;Basic Latin&quot;.</li>
+	<li>Include higher Unicode planes: Not only the blocks from plane 1
+	(Basic Multilingual Plane), but also from higher planes are shown.
+	This enables Unicode characters with codepoints > 65536 or 0xFFFF.
+	Be aware: This is a beta feature, since Java encodes these characters with
+	two elementary chars instead of one, and you may experience compatibility
+	issues in jEdit.</li>
+	<li>Always use Anti-Aliasing: If set, the character glyphs are always
+	rendered anti-aliased (smoothed). If not set the Anti-Aliasing options
+	are taken from the Global Options -> Text Area settings.</li>
+	<li>Table columns: specify the number of columns to be displayed...
+	<ol>
+		<li>floating: if the table is floating (un-docked).</li>
+		<li>docked l/r: if the table is docked left or right.</li>
+		<li>docked t/b: if the table is docked at top or bottom.</li>
+	</ol></li>
+	<li>Table colors: specify colors of the table cells for the different
+	character types (see description above).</li>
+	<li>Show status line: controls whether the status line at the bottom
+	of the window is displayed. The status line contains
+	<ol>
+		<li>the character code point in decimal and hexadecimal form,</li>
+		<li> the bytes forming the character in hexadecimal form
+		(for UTF-encoded Unicode,</li>
+		<li>the name of the character (for Unicode).</li>
+	</ol></li>
+	<li>Large character: displays a large representation of
+	the character under the cursor in the top-right hand corner of the
+	window.
+	<ol>
+		<li>Show large character: display the character.</li>
+		<li>Large character size: controls the size (in points) of the
+		large character.</li>
+	</ol></li>
+	<li>Show right-click character: displays a representation of the
+	character under the cursor when the right-mouse button is pressed
+	overlayed at the current cursor position.
+	<ol>
+		<li>Show right-click character: display the character.</li>
+		<li>Right-click character size: controls the size (in points) of the
+		right-click character.</li>
+	</ol></li>
+</ul>
+
+<h2> Version History </h2>
+
+<h3>Version 1.1 (2002)</h3>
+<h4>Slava Pestov</h4>
+	<ul>
+	<li>Original version</li>
+	</ul>
+
+<h3>Version 1.2 (2004)</h3>
+<h4>Mark Wickens</h4>
+	<ul>
+	<li>anti-aliased text</li>
+	<li>large character display</li>
+	<li>better docking support</li>
+	<li>better configuration via an options pane</li>
+	</ul>
+<h4>Mike Dillon</h4>
+	<ul>
+	<li>support for Unicode block and character names</li>
+	</ul>
+
+<h3>Version 1.3 (2011/2012)</h3>
+<h4>Max Funk</h4>
+<p>Version 1.3.1</p>
+	<ul>
+	<li>improved docking layout</li>
+	<li>Unicode 6.0.0</li>
+	<li>Unicode detection fixed</li>
+	<li>statusinfo fixed, UTF16, UTF32 added</li>
+	<li>auto-reload after option change</li>
+	<li>font substitution</li>
+	<li>correct unicode block size</li>
+	<li>code cleaning</li>
+	</ul>
+<p>Version 1.3.1</p>
+	<ul>
+	<li>all Unicode planes</li>
+	<li>change encoding / font with jEdit settings</li>
+	<li>no insertion of characters which cannot be encoded</li>
+	<li>option panel layout</li>
+	<li>better conformity to plugin standard and Java 7</li>
+	</ul>
+<p>Version 1.3.2</p>
+	<ul>
+	<li>alphabetic Unicode blocks</li>
+	<li>system font substitution</li>
+	<li>encodings list updated from jEdit</li>
+	<li>Unicode 6.1.0</li>
+	<li>colored table for invalid, unassigned and control chars</li>
+	<li>name and bytecode statusinfo for all chars and encodings</li>
+	<li>various small bugfixes</li>
+	</ul>
+<p>Version 1.3.3</p>
+	<ul>
+	<li>more table colors, color options</li>
+	<li>layout for second floating window fixed</li>
+	<li>charnames of large &quot;first-last&quot;unicode blocks</li>
+	<li>determination of unassigned chars fixed</li>
+	<li>super char position fixed</li>
+	<li>oval super char popup for Java 1.7 prepared</li>
+	</ul>
+<p>Version 1.3.4</p>
+	<ul>
+	<li>performance tweak in UnicodeData.java</li>
+	<li>code cleaning / documentation finished</li>
+	</ul>
+
+<h2> License </h2>
+
+<h3> GPL License </h3>
+
+<p>This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or any later version.</p>
+
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.</p>
+
+<h3>UCD Terms of Use</h3>
+
+<p>The files Blocks.txt and UnicodeData.txt are extracted from the Unicode
+Character Database, which is covered by the following license.</p>
+
+<h4>Disclaimer</h4>
+
+<p>The Unicode Character Database is provided as is by Unicode, Inc. No claims
+are made as to fitness for any particular purpose. No warranties of any
+kind are expressed or implied. The recipient agrees to determine
+applicability of information provided. If this file has been purchased on
+magnetic or optical media from Unicode, Inc., the sole remedy for any claim
+will be exchange of defective media within 90 days of receipt.</p>
+
+<p>This disclaimer is applicable for all other data files accompanying the
+Unicode Character Database, some of which have been compiled by the Unicode
+Consortium, and some of which have been supplied by other sources.</p>
+
+<h4>Limitations on Rights to Redistribute This Data</h4>
+
+<p>Recipient is granted the right to make copies in any form for internal
+distribution and to freely use the information supplied in the creation of
+products supporting the UnicodeTM Standard. The files in the Unicode
+Character Database can be redistributed to third parties or other
+organizations (whether for profit or not) as long as this notice and the
+disclaimer notice are retained. Information can be extracted from these
+files and used in documentation or programs, as long as there is an
+accompanying notice indicating the source.</p>
+
+<p>The file Unihan.txt contains older and inconsistent Terms of Use. That
+language is overridden by these terms.</p>
+
+</body>
+</html>
