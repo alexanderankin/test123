@@ -120,6 +120,8 @@ TOKEN:
 	|
 	<INTEGER: "integer">
 	|
+	<NUMBER: "number">
+	|
 	<DOUBLE: "double">
 	|
 	<INT: "int">
@@ -479,6 +481,8 @@ String type():
 	  <INT> { ret = "integer"; }
 	|
 	  <INTEGER> { ret = "integer"; }
+	|
+	  <NUMBER> { ret = "number"; }
 	|
 	  <OBJECT> { ret = "object"; }
 	|
