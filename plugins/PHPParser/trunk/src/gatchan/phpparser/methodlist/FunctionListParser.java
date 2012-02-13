@@ -47,6 +47,7 @@ public class FunctionListParser implements FunctionListParserConstants {
       case STRING:
       case BOOL:
       case INTEGER:
+      case NUMBER:
       case DOUBLE:
       case INT:
       case ARRAY:
@@ -93,6 +94,7 @@ public class FunctionListParser implements FunctionListParserConstants {
     case STRING:
     case BOOL:
     case INTEGER:
+    case NUMBER:
     case DOUBLE:
     case INT:
     case ARRAY:
@@ -135,6 +137,7 @@ public class FunctionListParser implements FunctionListParserConstants {
     case STRING:
     case BOOL:
     case INTEGER:
+    case NUMBER:
     case DOUBLE:
     case INT:
     case ARRAY:
@@ -281,6 +284,7 @@ public class FunctionListParser implements FunctionListParserConstants {
     case STRING:
     case BOOL:
     case INTEGER:
+    case NUMBER:
     case DOUBLE:
     case INT:
     case ARRAY:
@@ -605,6 +609,7 @@ public class FunctionListParser implements FunctionListParserConstants {
     case STRING:
     case BOOL:
     case INTEGER:
+    case NUMBER:
     case DOUBLE:
     case INT:
     case ARRAY:
@@ -645,6 +650,10 @@ public class FunctionListParser implements FunctionListParserConstants {
     case INTEGER:
       jj_consume_token(INTEGER);
                       ret = "integer";
+      break;
+    case NUMBER:
+      jj_consume_token(NUMBER);
+                     ret = "number";
       break;
     case OBJECT:
       jj_consume_token(OBJECT);
@@ -703,11 +712,6 @@ public class FunctionListParser implements FunctionListParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3_2() {
-    if (jj_scan_token(OBJECT)) return true;
-    return false;
-  }
-
   private boolean jj_3_1() {
     if (jj_3R_4()) return true;
     return false;
@@ -716,11 +720,16 @@ public class FunctionListParser implements FunctionListParserConstants {
   private boolean jj_3R_4() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(33)) {
+    if (jj_scan_token(34)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
     }
     if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_scan_token(OBJECT)) return true;
     return false;
   }
 
@@ -743,10 +752,10 @@ public class FunctionListParser implements FunctionListParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x7ff00000,0x7ff42800,0x48000,0x48000,0x48000,0x7ff42800,0x48000,0x48000,0x48000,0x48000,0x2000,0x4000,0x2000,0x200,0x4000,0x1400,0x1400,0x7fe02800,0x80000000,0x100,0x80200000,0xc0,0xc0,0x4000000,0x8000,0x84200100,0x0,0x40,0x20000800,0x4000000,0x7ff00000,0x7fe00000,};
+      jj_la1_0 = new int[] {0xfff00000,0xfff42800,0x48000,0x48000,0x48000,0xfff42800,0x48000,0x48000,0x48000,0x48000,0x2000,0x4000,0x2000,0x200,0x4000,0x1400,0x1400,0xffe02800,0x0,0x100,0x200000,0xc0,0xc0,0x8000000,0x8000,0x8200100,0x0,0x40,0x40000800,0x8000000,0xfff00000,0xffe00000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x2,0x2,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x60,0x7,0x0,0x0,0x2,0x0,0x67,0x6,0x0,0x4,0x2,0x2,0x2,};
+      jj_la1_1 = new int[] {0x4,0x4,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x5,0xc0,0xf,0x0,0x0,0x4,0x0,0xcf,0xc,0x0,0x8,0x4,0x4,0x4,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
@@ -932,7 +941,7 @@ public class FunctionListParser implements FunctionListParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[39];
+    boolean[] la1tokens = new boolean[40];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -949,7 +958,7 @@ public class FunctionListParser implements FunctionListParserConstants {
         }
       }
     }
-    for (int i = 0; i < 39; i++) {
+    for (int i = 0; i < 40; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

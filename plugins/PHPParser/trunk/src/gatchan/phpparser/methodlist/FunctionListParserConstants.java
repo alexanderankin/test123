@@ -47,35 +47,37 @@ public interface FunctionListParserConstants {
   /** RegularExpression Id. */
   int INTEGER = 23;
   /** RegularExpression Id. */
-  int DOUBLE = 24;
+  int NUMBER = 24;
   /** RegularExpression Id. */
-  int INT = 25;
+  int DOUBLE = 25;
   /** RegularExpression Id. */
-  int ARRAY = 26;
+  int INT = 26;
   /** RegularExpression Id. */
-  int LONG = 27;
+  int ARRAY = 27;
   /** RegularExpression Id. */
-  int RESOURCE = 28;
+  int LONG = 28;
   /** RegularExpression Id. */
-  int OBJECT = 29;
+  int RESOURCE = 29;
   /** RegularExpression Id. */
-  int MIXED = 30;
+  int OBJECT = 30;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 31;
+  int MIXED = 31;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 32;
+  int INTEGER_LITERAL = 32;
   /** RegularExpression Id. */
-  int FUNCTION_IDENTIFIER = 33;
+  int FLOATING_POINT_LITERAL = 33;
   /** RegularExpression Id. */
-  int IDENTIFIER = 34;
+  int FUNCTION_IDENTIFIER = 34;
   /** RegularExpression Id. */
-  int LETTER = 35;
+  int IDENTIFIER = 35;
   /** RegularExpression Id. */
-  int DIGIT = 36;
+  int LETTER = 36;
   /** RegularExpression Id. */
-  int LITERAL = 37;
+  int DIGIT = 37;
   /** RegularExpression Id. */
-  int SINGLEQUOTE_LITERAL = 38;
+  int LITERAL = 38;
+  /** RegularExpression Id. */
+  int SINGLEQUOTE_LITERAL = 39;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -106,6 +108,7 @@ public interface FunctionListParserConstants {
     "\"string\"",
     "\"bool\"",
     "\"integer\"",
+    "\"number\"",
     "\"double\"",
     "\"int\"",
     "\"array\"",

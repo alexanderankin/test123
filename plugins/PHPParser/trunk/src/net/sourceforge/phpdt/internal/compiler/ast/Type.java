@@ -42,7 +42,7 @@ public class Type implements Serializable
 	public static final int ARRAY_INT = 9;
 	public static final int RESOURCE_INT = 10;
 	public static final int VOID_INT = 11;
-	public static final int NUMBERS_INT = 12;
+	public static final int NUMBER_INT = 12;
 	public static final int DOUBLE_INT = 13;
 
 	private final int type;
@@ -57,7 +57,7 @@ public class Type implements Serializable
 	public static final Type ARRAY = new Type(ARRAY_INT);
 	public static final Type RESOURCE = new Type(RESOURCE_INT);
 	public static final Type VOID = new Type(VOID_INT);
-	public static final Type NUMBERS = new Type(NUMBERS_INT);
+	public static final Type NUMBER = new Type(NUMBER_INT);
 	public static final Type DOUBLE = new Type(DOUBLE_INT);
 
 
@@ -86,7 +86,7 @@ public class Type implements Serializable
 				return "resource";
 			case VOID_INT:
 				return "void";
-			case NUMBERS_INT:
+			case NUMBER_INT:
 				return "numbers";
 			case DOUBLE_INT:
 				return "double";
@@ -118,8 +118,8 @@ public class Type implements Serializable
 			return RESOURCE;
 		if ("void".equals(type))
 			return VOID;
-		if ("numbers".equals(type))
-			return NUMBERS;
+		if ("number".equals(type))
+			return NUMBER;
 		return new Type(OBJECT_INT, type);
 	}
 
@@ -154,9 +154,9 @@ public class Type implements Serializable
 			return true;
 		if (type == UNKNOWN)
 			return true;
-		if (this == NUMBERS)
+		if (this == NUMBER)
 		{
-			if (type == NUMBERS || type == FLOAT || type == INTEGER || type == DOUBLE)
+			if (type == NUMBER || type == FLOAT || type == INTEGER || type == DOUBLE)
 				return true;
 		}
 		if (this == FLOAT)
