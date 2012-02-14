@@ -89,7 +89,8 @@
                destdir="${classes.dir}"
                srcdir="${src.dir}"
                target="1.5"
-               source="1.5">
+			   source="1.5"
+			   includeantruntime="false">
             <!-- compilerarg value="-Xlint:unchecked"/ -->
             <classpath refid="classpathref" />
             <exclude name="**/obsolete/*"/>

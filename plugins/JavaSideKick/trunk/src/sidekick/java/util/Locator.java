@@ -60,31 +60,21 @@ public final class Locator {
 	public void refresh() {
 		classloader = new AntClassLoader();
 		
-		refreshClasspath();
-		refreshRuntime();
+		File[] classpathJars = getClassPathJars();
+		File[] runtimeJars = getRuntimeJars();
+		classpathClassNames = refreshClassNames(classpathJars);
+		runtimeClassNames = refreshClassNames(runtimeJars);
 
-		for (String jar : classpathClassNames)
-			classloader.addPathElement(jar);
+		for (File jar : classpathJars)
+			classloader.addPathElement(jar.getPath());
 	}
 
-	public void refreshClasspath() {
-		classpathClassNames = new LinkedList<String>();
-		File[] jars = getClassPathJars();
+	public LinkedList<String> refreshClassNames(File[] jars) {
+		LinkedList<String> names = new LinkedList<String>();
+		for (File jar : jars)
+			names.addAll(getClassNames(jar));
 
-		for ( int i = 0; i < jars.length; i++ ) {
-			List<String> classes = getClassNames(jars[i]);
-			classpathClassNames.addAll(classes);
-		}
-	}
-
-	public void refreshRuntime() {
-		runtimeClassNames = new LinkedList<String>();
-		File[] jars = getRuntimeJars();
-
-		for ( int i = 0; i < jars.length; i++ ) {
-			List<String> classes = getClassNames(jars[i]);
-			runtimeClassNames.addAll(classes);
-		}
+		return names;
 	}
 
 	public AntClassLoader getClassLoader() {
@@ -261,6 +251,7 @@ public final class Locator {
 		ArrayList<String> result = new ArrayList<String>(runtime.size()+classpath.size());
 		result.addAll(runtime);
 		result.addAll(classpath);
+		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "results: "+result);
 		return result;
 	}
 
@@ -275,6 +266,7 @@ public final class Locator {
 			int index = fullClassName.lastIndexOf( "/" ) + 1;
 			String className = fullClassName.substring( index );
 			if ( className.equals( name ) ) {
+				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "found it! -> "+className);
 				fullClassName = fullClassName.replaceAll( "/", "." );
 				list.add(fullClassName);
 			}

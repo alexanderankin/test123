@@ -1078,9 +1078,8 @@ public class JavaCompletionFinder {
 
 		// check in java.lang
 		Class c = validateClassName( "java.lang."+type );
-		if (c != null) {
+		if (c != null)
 			return c;
-		}
 
 		List<String> classNames = Locator.getInstance().getClassName( type );
 
@@ -1093,6 +1092,7 @@ public class JavaCompletionFinder {
 				return null;
 			}
 			else {
+				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "found the result");
 				return validateClassName( classNames.get(0), type, filename );
 			}
 		}
@@ -1181,9 +1181,9 @@ public class JavaCompletionFinder {
 			try {
 				// check the project classloader
 				AntClassLoader classloader = Locator.getInstance().getClassLoader();
-				if ( classloader == null ) {
+				if ( classloader == null )
 					throw new ClassNotFoundException();
-				}
+
 				return classloader.forceLoadClass( classname );
 			}
 			catch ( Exception pcnfe ) {
