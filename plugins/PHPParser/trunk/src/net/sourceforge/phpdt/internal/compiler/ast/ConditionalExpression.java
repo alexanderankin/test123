@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,14 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+//{{{ Imports
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
+//}}}
 
 /**
  * A ConditionalExpression is like that : booleanExpression ? trueValue : falseValue;.
@@ -39,6 +41,7 @@ public class ConditionalExpression extends OperatorExpression
 	private final Expression valueIfTrue;
 	private final Expression valueIfFalse;
 
+	//{{{ ConditionalExpression constructor
 	public ConditionalExpression(Expression condition,
 				     Expression valueIfTrue,
 				     Expression valueIfFalse)
@@ -57,8 +60,9 @@ public class ConditionalExpression extends OperatorExpression
 		else
 			this.valueIfTrue = valueIfTrue;
 		this.valueIfFalse = valueIfFalse;
-	}
+	} //}}}
 
+	//{{{ toStringExpression() method
 	@Override
 	public String toStringExpression()
 	{
@@ -76,8 +80,9 @@ public class ConditionalExpression extends OperatorExpression
 		buff.append(" : ");
 		buff.append(valueIfFalse);
 		return buff.toString();
-	}
+	} //}}}
 
+	//{{{ getOutsideVariable() method
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
@@ -86,8 +91,9 @@ public class ConditionalExpression extends OperatorExpression
 	@Override
 	public void getOutsideVariable(List<VariableUsage> list)
 	{
-	}
+	} //}}}
 
+	//{{{ getModifiedVariable() method
 	/**
 	 * get the modified variables.
 	 *
@@ -99,8 +105,9 @@ public class ConditionalExpression extends OperatorExpression
 		condition.getModifiedVariable(list);
 		valueIfTrue.getModifiedVariable(list);
 		valueIfFalse.getModifiedVariable(list);
-	}
+	} //}}}
 
+	//{{{ getUsedVariable() method
 	/**
 	 * Get the variables used.
 	 *
@@ -112,8 +119,9 @@ public class ConditionalExpression extends OperatorExpression
 		condition.getUsedVariable(list);
 		valueIfTrue.getUsedVariable(list);
 		valueIfFalse.getUsedVariable(list);
-	}
+	} //}}}
 
+	//{{{ subNodeAt() method
 	@Override
 	public AstNode subNodeAt(int line, int column)
 	{
@@ -121,8 +129,9 @@ public class ConditionalExpression extends OperatorExpression
 		if (valueIfTrue.isAt(line, column)) return valueIfTrue;
 		if (valueIfFalse.isAt(line, column)) return valueIfFalse;
 		return null;
-	}
+	} //}}}
 
+	//{{{ analyzeCode() method
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
@@ -155,5 +164,5 @@ public class ConditionalExpression extends OperatorExpression
 				beginColumn,
 				endColumn));
 		}
-	}
+	} //}}}
 }
