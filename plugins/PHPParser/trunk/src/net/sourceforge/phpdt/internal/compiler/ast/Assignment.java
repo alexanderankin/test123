@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2010 Matthieu Casanova
+ * Copyright (C) 2003, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,13 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
-import gatchan.phpparser.parser.PHPParseMessageEvent;
+//{{{ Imports
 import gatchan.phpparser.parser.PHPParserConstants;
 import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
+//}}}
 
 /**
  * An assignment.
@@ -46,6 +47,7 @@ public class Assignment extends Expression
 
 	private final int operator;
 
+	//{{{ Assignment constructor
 	/**
 	 * Create a variable.
 	 *
@@ -63,16 +65,24 @@ public class Assignment extends Expression
 		this.initialization = initialization;
 		target = variable;
 		this.operator = operator;
-	}
+	} //}}}
 
+	//{{{ getTarget() method
+	public Expression getTarget()
+	{
+		return target;
+	} //}}}
+
+	//{{{ setReference() method
 	public void setReference(boolean reference, int sourceStart, int beginLine, int beginColumn)
 	{
 		this.reference = reference;
 		this.sourceStart = sourceStart;
 		this.beginLine = beginLine;
 		this.beginColumn = beginColumn;
-	}
+	} //}}}
 
+	//{{{ toStringExpression() method
 	/**
 	 * Return the variable into String.
 	 *
@@ -91,21 +101,24 @@ public class Assignment extends Expression
 		buff.append(operatorImage);
 		buff.append(initString);
 		return buff.toString();
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		return toStringExpression();
-	}
+	} //}}}
 
+	//{{{ getOutsideVariable() method
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 */
 	@Override
 	public void getOutsideVariable(List<VariableUsage> list)
 	{
-	}
+	} //}}}
 
+	//{{{ getModifiedVariable() method
 	/**
 	 * get the modified variables.
 	 */
@@ -114,8 +127,9 @@ public class Assignment extends Expression
 	{
 		target.getModifiedVariable(list);
 		initialization.getModifiedVariable(list);
-	}
+	} //}}}
 
+	//{{{ getUsedVariable() method
 	/**
 	 * Get the variables used.
 	 */
@@ -127,8 +141,9 @@ public class Assignment extends Expression
 			target.getUsedVariable(list);
 		}
 		initialization.getUsedVariable(list);
-	}
+	} //}}}
 
+	//{{{ subNodeAt() method
 	@Override
 	public AstNode subNodeAt(int line, int column)
 	{
@@ -137,15 +152,17 @@ public class Assignment extends Expression
 		if (initialization.isAt(line, column))
 			return initialization;
 		return null;
-	}
+	} //}}}
 
+	//{{{ visitSubNodes() method
 	@Override
 	public void visitSubNodes(NodeVisitor visitor)
 	{
 		visitor.visit(target);
 		visitor.visit(initialization);
-	}
+	} //}}}
 
+	//{{{ analyzeCode() method
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
@@ -165,5 +182,5 @@ public class Assignment extends Expression
 									 sourceStart, sourceEnd, beginLine, endLine,
 									 beginColumn, endColumn));
 		}      */
-	}
+	} //}}}
 }

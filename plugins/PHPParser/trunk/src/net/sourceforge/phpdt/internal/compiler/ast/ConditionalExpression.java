@@ -60,6 +60,13 @@ public class ConditionalExpression extends OperatorExpression
 		else
 			this.valueIfTrue = valueIfTrue;
 		this.valueIfFalse = valueIfFalse;
+		if (condition instanceof Assignment)
+		{
+			// trick because I don't parse assignements correctly
+			Assignment assignment = (Assignment) condition;
+			assignment.setType(getType());
+			assignment.getTarget().setType(getType());
+		}
 	} //}}}
 
 	//{{{ toStringExpression() method
