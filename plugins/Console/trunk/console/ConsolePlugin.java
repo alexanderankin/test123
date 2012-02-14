@@ -525,7 +525,7 @@ public class ConsolePlugin extends EditPlugin
 		
 		String cmd = project.getProperty("console."+prop);
 		if (cmd == null) cmd = "";
-		while (cmd.equals("")) {
+		if (cmd.equals("")) {
 			// ask the user if they want to define the command now
 			int res = GUIUtilities.confirm(view, "console.pv.no-command",
 				new String[] { prop }, JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
@@ -533,12 +533,15 @@ public class ConsolePlugin extends EditPlugin
 			if (res != JOptionPane.YES_OPTION)
 				return;
 
-			projectviewer.PVActions.pvActionWrapper(
-					new projectviewer.action.EditProjectAction("pv.commands"), view, true);
+			project = projectviewer.config.ProjectOptions.run(
+				project, false, null, "pv.commands");
+
+			if (project == null)
+				return;
 
 			cmd = project.getProperty("console."+prop);
-			if (cmd == null)
-				cmd = "";
+			if (cmd == null || cmd.trim() == "")
+				return;
 		}
 	
 		// Run the command in the project's root, but then return to
