@@ -2,6 +2,7 @@ package classpath;
 
 import java.io.File;
 import java.util.TreeSet;
+import java.util.Iterator;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
@@ -10,6 +11,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.util.ThreadUtilities;
 
 public class ClasspathPlugin extends EBPlugin {
 
@@ -20,6 +22,11 @@ public class ClasspathPlugin extends EBPlugin {
 	 */
 	public void start() {
 		projects = new TreeSet();
+		ThreadUtilities.runInBackground(new Runnable() {
+			public void run() {
+				updateClasspath();
+			}
+		});
 	}
 
 	public void stop() {}
@@ -29,7 +36,9 @@ public class ClasspathPlugin extends EBPlugin {
 	 * This method takes into account both the global classpath and all open projects
 	 */
 	public static void updateClasspath() {
-		StringBuilder cpBuilder = new StringBuilder();
+		// use a set to make sure no location is added twice
+		// this takes care of any possible redundancies
+		TreeSet<String> path = new TreeSet<String>();
 
 		// First, add the classpath for any open projects
 		if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
@@ -37,35 +46,39 @@ public class ClasspathPlugin extends EBPlugin {
 				projectviewer.vpt.VPTProject project = (projectviewer.vpt.VPTProject) p;
 				String cp = project.getProperty("java.classpath");
 				if (cp != null && cp.length() > 0)
-					cpBuilder.append(cp+File.pathSeparator);
+					path.add(cp);
 			}
 		}
 
 		// Now add the global classpath
 		String cp = jEdit.getProperty("java.customClasspath", "");
 		if (cp.length() > 0)
-			cpBuilder.append(cp+File.pathSeparator);
+			path.add(cp);
 
 		// Include installed jars?
 		if (jEdit.getBooleanProperty("java.classpath.includeInstalled")) {
 			PluginJAR[] jars = jEdit.getPluginJARs();
 			for (int i = 0; i<jars.length; i++)
-				cpBuilder.append(jars[i].getPath()+File.pathSeparator);
+				path.add(jars[i].getPath());
 		}
 
 		// Last, do the system classpath
 		if (jEdit.getBooleanProperty("java.classpath.includeSystem")) {
 			String system = System.getProperty("java.class.path");
 			if (system.length() > 0)
-				cpBuilder.append(system+File.pathSeparator);
+				path.add(system);
 		}
 
 		// Now set the property
-		int end = cpBuilder.length()-1;
-		if (cpBuilder.charAt(end) == File.pathSeparatorChar)
-			cpBuilder.deleteCharAt(end);
-
-		jEdit.setProperty("java.classpath", cpBuilder.toString());
+		StringBuffer pathBuffer = new StringBuffer();
+		Iterator<String> iterator = path.iterator();
+		while (iterator.hasNext()) {
+			String elem = iterator.next();
+			pathBuffer.append(elem);
+			if (iterator.hasNext())
+				pathBuffer.append(File.pathSeparator);
+		}
+		jEdit.setProperty("java.classpath", pathBuffer.toString());
 
 		// If necessary, update console's var
 		updateEnv(jEdit.getBooleanProperty("java.classpath.includeWorking"));
@@ -112,22 +125,22 @@ public class ClasspathPlugin extends EBPlugin {
 	public void handleMessage(EBMessage msg) {
 		// only check project events if ProjectViewer is installed
 		if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
-		   	if (msg instanceof projectviewer.event.ViewerUpdate) {
+			if (msg instanceof projectviewer.event.ViewerUpdate) {
 				projectviewer.event.ViewerUpdate update = (projectviewer.event.ViewerUpdate) msg;
 
 				// The viewer's current 'active project' is old, so remove it
 				projectviewer.ProjectViewer viewer = update.getViewer();
 				if (viewer != null) {
-          projectviewer.vpt.VPTProject old = viewer.getActiveProject(viewer.getView());
-          if (old != null)
-            projects.remove(old);
-        }
+					projectviewer.vpt.VPTProject old = viewer.getActiveProject(viewer.getView());
+					if (old != null)
+						projects.remove(old);
+				}
 
 				if (update.getType().equals(projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED)) {
 					// New project
 					if (update.getNode() != null
-					    && update.getNode() instanceof projectviewer.vpt.VPTProject)
-            projects.add(update.getNode());
+							&& update.getNode() instanceof projectviewer.vpt.VPTProject)
+						projects.add(update.getNode());
 				}
 
 				updateClasspath();
