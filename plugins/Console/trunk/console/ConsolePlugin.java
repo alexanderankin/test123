@@ -533,11 +533,8 @@ public class ConsolePlugin extends EditPlugin
 			if (res != JOptionPane.YES_OPTION)
 				return;
 
-			project = projectviewer.config.ProjectOptions.run(
-				project, false, null, "pv.commands");
-
-			if (project == null)
-				return;
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.EditProjectAction("pv.commands"), view, true);
 
 			cmd = project.getProperty("console."+prop);
 			if (cmd == null || cmd.trim() == "")
@@ -619,7 +616,7 @@ public class ConsolePlugin extends EditPlugin
 	public static String getClassName(Buffer buffer)
 	{
 		String pkg = getPackageName(buffer);
-		String clazz = MiscUtilities.getFileNameNoExtension(buffer.getPath());
+		String clazz = MiscUtilities.getBaseName(buffer.getPath());
 		if (pkg == null)
 			return clazz;
 		else
