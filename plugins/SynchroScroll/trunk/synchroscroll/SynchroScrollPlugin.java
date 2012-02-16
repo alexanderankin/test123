@@ -38,7 +38,8 @@ public class SynchroScrollPlugin extends EBPlugin {
 
     // map to keep track of which views are currently using syncroscrolling
     private static HashMap<View, Boolean> scrollingMap = new HashMap<View, Boolean>() {
-        // don't ever return null, return false instead @Override
+        // don't ever return null, return false instead
+        @Override
         public Boolean get( Object key ) {
             if ( key == null || super.get( key ) == null ) {
                 return false;
@@ -49,7 +50,8 @@ public class SynchroScrollPlugin extends EBPlugin {
 
     // map to keep track of which views are currently diffing with JDiff
     private static HashMap<View, Boolean> diffingMap = new HashMap<View, Boolean>() {
-        // don't ever return null, return false instead @Override
+        // don't ever return null, return false instead
+        @Override
         public Boolean get( Object key ) {
             if ( key == null || super.get( key ) == null ) {
                 return false;
