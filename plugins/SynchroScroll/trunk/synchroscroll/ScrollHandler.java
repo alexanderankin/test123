@@ -24,6 +24,10 @@ import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.EditPane;
 
+/**
+ * Synchronizes both horizontal and vertical scrolling between all text areas
+ * in a View.
+ */
 public class ScrollHandler implements ScrollListener {
     
     View view;
