@@ -38,23 +38,23 @@ public class SynchroScrollPlugin extends EBPlugin {
 
     // map to keep track of which views are currently using syncroscrolling
     private static HashMap<View, Boolean> scrollingMap = new HashMap<View, Boolean>() {
-        @Override   // don't ever return null, return false instead
-        public Boolean get(Object key) {
-            if (key == null || super.get(key) == null) {
-                return false;   
+        // don't ever return null, return false instead @Override
+        public Boolean get( Object key ) {
+            if ( key == null || super.get( key ) == null ) {
+                return false;
             }
-            return super.get(key);
+            return super.get( key );
         }
     };
 
-    // map to keep track of which views are currently diffing with JDiff    
+    // map to keep track of which views are currently diffing with JDiff
     private static HashMap<View, Boolean> diffingMap = new HashMap<View, Boolean>() {
-        @Override   // don't ever return null, return false instead
-        public Boolean get(Object key) {
-            if (key == null || super.get(key) == null) {
-                return false;   
+        // don't ever return null, return false instead @Override
+        public Boolean get( Object key ) {
+            if ( key == null || super.get( key ) == null ) {
+                return false;
             }
-            return super.get(key);
+            return super.get( key );
         }
     };
 
@@ -71,6 +71,7 @@ public class SynchroScrollPlugin extends EBPlugin {
             }
         }
         scrollingMap.clear();
+        diffingMap.clear();
     }
 
     /**
@@ -87,15 +88,16 @@ public class SynchroScrollPlugin extends EBPlugin {
             ViewUpdate vu = ( ViewUpdate ) message;
             if ( vu.CLOSED.equals( vu.getWhat() ) ) {
                 scrollingMap.remove( vu.getView() );
+                diffingMap.remove( vu.getView() );
             }
         } else if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate ) message;
             if ( epu.CREATED.equals( epu.getWhat() ) ) {
                 EditPane editPane = epu.getEditPane();
                 View view = editPane.getView();
+                TextArea textArea = editPane.getTextArea();
+                removeScrollHandler( textArea );
                 if ( scrollingMap.get( view ) ) {
-                    TextArea textArea = editPane.getTextArea();
-                    removeScrollHandler( textArea );
                     addScrollHandler( view, textArea );
                 }
             }
@@ -111,9 +113,9 @@ public class SynchroScrollPlugin extends EBPlugin {
                     View view = ( View ) message.getSource();
                     if ( what != null && what.equals( on ) ) {
                         SynchroScrollPlugin.setScrolling( view, false );
-                        diffingMap.put(view, true);
+                        diffingMap.put( view, true );
                     } else {
-                        diffingMap.put(view, false);
+                        diffingMap.remove( view );
                     }
                 }
             } catch ( Exception e ) {                // NOPMD
@@ -127,10 +129,10 @@ public class SynchroScrollPlugin extends EBPlugin {
      * @param view The View to toggle synchroscrolling for.
      */
     public static void toggleSynchroScroll( View view ) {
-        if (diffingMap.get(view)) {
-            return;     // don't do anything while JDiff is working.   
+        if ( diffingMap.get( view ) ) {
+            return;            // don't do anything while JDiff is working.
         }
-        boolean scrolling = scrollingMap.get(view);
+        boolean scrolling = !scrollingMap.get( view );
         scrollingMap.put( view, scrolling );
         setScrolling( view, scrolling );
     }
