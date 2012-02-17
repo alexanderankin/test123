@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007, 2011 Matthieu Casanova
+ * Copyright (C) 2007, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,10 +20,12 @@
  */
 package gatchan.jedit.hyperlinks;
 
+//{{{ Imports
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 
 import java.awt.*;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -36,43 +38,51 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 
 	static Color color;
 
+	//{{{ HyperlinkTextAreaPainter constructor
 	public HyperlinkTextAreaPainter(JEditTextArea textArea)
 	{
 		this.textArea = textArea;
-	}
+	} //}}}
 
+	//{{{ paintValidLine() method
 	@Override
-    public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y)
+	public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y)
 	{
 		Hyperlink link = hyperLink;
 		if (link == null)
+		{
+			textArea.getPainter().resetCursor();
 			return;
-		if (link.getStartLine() != physicalLine)
+		}
+		if (link.getStartLine() != physicalLine) return;
+		Point startPoint = textArea.offsetToXY(link.getStartOffset());
+		if (startPoint == null)
+		{
+			textArea.getPainter().resetCursor();
 			return;
-        Point startPoint = textArea.offsetToXY(link.getStartOffset());
-        if (startPoint == null)
-        {
-            return;
-        }
-        int startX = startPoint.x;
-        Point endPoint = textArea.offsetToXY(link.getEndOffset());
-        if (endPoint == null)
-        {
-            return;
-        }
-        int endX = endPoint.x;
+		}
+		int startX = startPoint.x;
+		Point endPoint = textArea.offsetToXY(link.getEndOffset());
+		if (endPoint == null)
+		{
+			textArea.getPainter().resetCursor();
+			return;
+		}
+		int endX = endPoint.x;
 		gfx.setColor(color);
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
 		y += fm.getAscent();
 		gfx.drawLine(startX, y + 1, endX, y + 1);
-	}
+		textArea.getPainter().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+	} //}}}
 
+
+	//{{{ getToolTipText() method
 	@Override
-    public String getToolTipText(int x, int y)
+	public String getToolTipText(int x, int y)
 	{
 		Hyperlink link = hyperLink;
-		if (link == null)
-			return null;
+		if (link == null) return null;
 
 		int offset = textArea.xyToOffset(x, y);
 		if (hyperLink.getStartOffset() <= offset && hyperLink.getEndOffset() >= offset)
@@ -80,13 +90,17 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			return hyperLink.getTooltip();
 		}
 		return null;
-	}
+	} //}}}
 
+
+	//{{{ getHyperLink() method
 	public Hyperlink getHyperLink()
 	{
 		return hyperLink;
-	}
+	} //}}}
 
+
+	//{{{ 
 	public void setHyperLink(Hyperlink hyperLink)
 	{
 		if (hyperLink != this.hyperLink)
@@ -95,8 +109,7 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			{
 				int line = this.hyperLink.getStartLine();
 				textArea.invalidateLine(line);
-			}
-			else
+			} else
 			{
 				int lineNew = hyperLink.getStartLine();
 				textArea.invalidateLine(lineNew);
@@ -108,5 +121,6 @@ public class HyperlinkTextAreaPainter extends TextAreaExtension
 			}
 			this.hyperLink = hyperLink;
 		}
-	}
+	} //}}}
+
 }
