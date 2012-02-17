@@ -1,9 +1,27 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package classpath;
 
+//{{{ Imports
 import java.io.File;
 import java.util.TreeSet;
 import java.util.Iterator;
+
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.jEdit;
@@ -12,116 +30,97 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.util.ThreadUtilities;
+//}}}
 
+/**
+ * The classpath plugin provides a unified method for defining
+ * a classpath, both globally and on a per-project basis. The current
+ * classpath can be obtained via the static getClasspath() method,
+ * or through the environment variable $CLASSPATH in the Console's
+ * system shell.
+ *
+ * @author <a href="mailto:damienradtke@gmail.com">Damien Radtke</a>
+ */
 public class ClasspathPlugin extends EBPlugin {
 
-	private static TreeSet projects;
+	protected static TreeSet projects;
 
+	//{{{ start() : void
 	/**
-	 * Start method
+	 * Start the plugin.
 	 */
 	public void start() {
 		projects = new TreeSet();
-		ThreadUtilities.runInBackground(new Runnable() {
-			public void run() {
-				updateClasspath();
-			}
-		});
-	}
+		updateClasspath();
+	} //}}}
 
-	public void stop() {}
-
+	//{{{ stop() : void
 	/**
-	 * Update the classpath
-	 * This method takes into account both the global classpath and all open projects
+	 * Stop the plugin.
+	 */
+	public void stop() {
+
+	} //}}}
+
+	//{{{ updateClasspath() : void
+	/**
+	 * Starts a new ClasspathUpdateTask.
 	 */
 	public static void updateClasspath() {
-		// use a set to make sure no location is added twice
-		// this takes care of any possible redundancies
-		TreeSet<String> path = new TreeSet<String>();
+		ThreadUtilities.runInBackground(new ClasspathUpdateTask());
+	} //}}}
 
-		// First, add the classpath for any open projects
-		if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
-			for (Object p : projects) {
-				projectviewer.vpt.VPTProject project = (projectviewer.vpt.VPTProject) p;
-				String cp = project.getProperty("java.classpath");
-				if (cp != null && cp.length() > 0)
-					path.add(cp);
-			}
-		}
-
-		// Now add the global classpath
-		String cp = jEdit.getProperty("java.customClasspath", "");
-		if (cp.length() > 0)
-			path.add(cp);
-
-		// Include installed jars?
-		if (jEdit.getBooleanProperty("java.classpath.includeInstalled")) {
-			PluginJAR[] jars = jEdit.getPluginJARs();
-			for (int i = 0; i<jars.length; i++)
-				path.add(jars[i].getPath());
-		}
-
-		// Last, do the system classpath
-		if (jEdit.getBooleanProperty("java.classpath.includeSystem")) {
-			String system = System.getProperty("java.class.path");
-			if (system.length() > 0)
-				path.add(system);
-		}
-
-		// Now set the property
-		StringBuffer pathBuffer = new StringBuffer();
-		Iterator<String> iterator = path.iterator();
-		while (iterator.hasNext()) {
-			String elem = iterator.next();
-			pathBuffer.append(elem);
-			if (iterator.hasNext())
-				pathBuffer.append(File.pathSeparator);
-		}
-		jEdit.setProperty("java.classpath", pathBuffer.toString());
-
-		// If necessary, update console's var
-		updateEnv(jEdit.getBooleanProperty("java.classpath.includeWorking"));
-
-		// Tell anyone listening that the classpath was updated
-		EditBus.send(new ClasspathUpdate());
-	}
-
+	//{{{ updateEnv(boolean) : void
 	/**
-	 * Sets the console's CLASSPATH environment variable to the set classpath
+	 * Sets the console's CLASSPATH environment variable.
+	 *
+	 * @param includeWorking Include the current working directory
+	 *                       (".") as part of the classpath.
 	 */
 	public static void updateEnv(boolean includeWorking) {
 		if (jEdit.getPlugin("console.ConsolePlugin") != null) {
 			String cp = jEdit.getProperty("java.classpath");
-			if (includeWorking && cp.length() > 0)
-				cp = "."+File.pathSeparator+cp;
+			if (includeWorking)
+				cp = "." + (cp.length() > 0 ? File.pathSeparator : "") + cp;
 
 			console.ConsolePlugin.setSystemShellVariableValue("CLASSPATH", cp);
 		}
-	}
+	} //}}}
 
+	//{{{ getClasspath() : String
 	/**
-	 * Returns the classpath
-	 * @param refresh optional parameter to refresh the classpath first
+	 * Returns the classpath without refreshing.
 	 */
 	public static String getClasspath() {
 		return getClasspath(false);
-	}
+	} //}}}
 
+	//{{{ getClasspath(boolean) : String
+	/**
+	 * Returns the classpath.
+	 *
+	 * @param refresh If we should refresh the classpath before returning it.
+	 *                Refreshing here is not recommended as it may slow jEdit down.
+	 * @return The configured classpath.
+	 */
 	public static String getClasspath(boolean refresh) {
 		if (refresh)
 			updateClasspath();
 
 		return jEdit.getProperty("java.classpath");
-	}
+	} //}}}
 
+	//{{{ handleMessage(EBMessage) : void
 	/**
 	 * We need to keep track of a couple key events to make sure the classpath stays up-to-date:
 	 * - when a project is opened or closed
 	 * - when a project's properties have been updated (might be new addition/removal to classpath)
 	 * - when a view is opened or closed
 	 * - when a plugin jar is (un)loaded (only if installed plugins should be included)
+	 *
+	 * @param msg The EBMessage object.
 	 */
+	@EBHandler
 	public void handleMessage(EBMessage msg) {
 		// only check project events if ProjectViewer is installed
 		if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
@@ -158,6 +157,6 @@ public class ClasspathPlugin extends EBPlugin {
 			if (jEdit.getBooleanProperty("java.classpath.includeInstalled"))
 				updateClasspath();
 		}
-	}
+	} //}}}
 
 }

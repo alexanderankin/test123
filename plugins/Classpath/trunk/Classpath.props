@@ -1,7 +1,7 @@
 plugin.classpath.ClasspathPlugin.activate=startup
 plugin.classpath.ClasspathPlugin.name=Classpath
 plugin.classpath.ClasspathPlugin.author=Damien Radtke
-plugin.classpath.ClasspathPlugin.version=1.0.1
+plugin.classpath.ClasspathPlugin.version=1.2
 plugin.classpath.ClasspathPlugin.description=Maintains a global java classpath.
 plugin.classpath.ClasspathPlugin.docs=index.html
 
@@ -18,6 +18,9 @@ options.classpath.path=Classpath
 options.classpath.includeWorking=Include working directory (Console only)
 options.classpath.includeSystem=Include system classpath
 options.classpath.includeInstalled=Include installed plugins and jars (may slow down jEdit while refreshing classloader)
+
+classpath.filterDescription=Classpath elements (directories, *.jar, *.zip, .classpath)
+classpath.taskLabel=Updating classpath
 
 java.classpath=
 java.customClasspath=
