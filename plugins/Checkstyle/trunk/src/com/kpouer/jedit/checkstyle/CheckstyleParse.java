@@ -39,7 +39,6 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.util.Task;
 import org.xml.sax.InputSource;
 
-import javax.swing.text.Segment;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +60,6 @@ public class CheckstyleParse extends Task implements AuditListener
 	 * A buffer will be skipped if
 	 */
 	private boolean skip;
-
-	private Segment segment;
 
 	public CheckstyleParse(Buffer buffer, DefaultErrorSource errorSource)
 	{
@@ -242,13 +239,11 @@ public class CheckstyleParse extends Task implements AuditListener
 	@Override
 	public void auditStarted(AuditEvent auditEvent)
 	{
-		segment = new Segment();
 	}
 
 	@Override
 	public void auditFinished(AuditEvent auditEvent)
 	{
-		segment = null;
 	}
 
 	@Override
@@ -283,26 +278,16 @@ public class CheckstyleParse extends Task implements AuditListener
 			level = ErrorSource.WARNING;
 		}
 
-		int start = column == 0 ? 0 : column - 1;
-		int reduce = 0;
+		int start;
 		int lineIndex = line == 0 ? 0 : line - 1;
 		if (buffer != null && !buffer.getBooleanProperty("noTabs"))
 		{
-			int tabSize = buffer.getTabSize();
-			int maxIndent = start % tabSize;
-			buffer.getLineText(lineIndex, segment);
-			for (int i = 0; i < segment.length() && maxIndent > 0; i++)
-			{
-				if (segment.charAt(i) == '\t')
-				{
-					maxIndent--;
-					reduce = reduce + tabSize - 1;
-				}
-				else
-					break;
-			}
+			start = buffer.getOffsetOfVirtualColumn(lineIndex, column,  null);
 		}
-		start = Math.max(0, start - reduce);
+		else
+		{
+			start = column == 0 ? 0 : column - 1;
+		}
 		errorSource.addError(level,
 				     auditEvent.getFileName(),
 				     lineIndex,
