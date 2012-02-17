@@ -22,6 +22,7 @@
 package gatchan.phpparser.hyperlink;
 
 //{{{ Imports
+
 import gatchan.jedit.hyperlinks.Hyperlink;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
@@ -36,87 +37,94 @@ import org.gjt.sp.util.Log;
  */
 public class PHPHyperlink implements Hyperlink
 {
-    private final String name;
-    private final String path;
-    private final int itemLine;
-    private final int startOffset;
-    private final int endOffset;
-    private final int line;
+	private final String name;
+	private String tooltip;
+	private final String path;
+	private final int itemLine;
+	private final int startOffset;
+	private final int endOffset;
+	private final int line;
 
-    //{{{ PHPHyperlink constructor
-    public PHPHyperlink(String name, String path, int itemLine, int startOffset, int endOffset, int line)
-    {
-        this.name = name;
-        this.path = path;
-        this.itemLine = itemLine;
-        this.startOffset = startOffset;
-        this.endOffset = endOffset;
-        this.line = line;
-    } //}}}
+	//{{{ PHPHyperlink constructors
+	public PHPHyperlink(String name, String tooltip, String path, int itemLine, int startOffset, int endOffset,
+			    int line)
+	{
+		this.name = name;
+		this.tooltip = tooltip;
+		this.path = path;
+		this.itemLine = itemLine;
+		this.startOffset = startOffset;
+		this.endOffset = endOffset;
+		this.line = line;
+	}
 
-    //{{{ getStartOffset() method
-    @Override
-    public int getStartOffset()
-    {
-        return startOffset;
-    } //}}}
+	public PHPHyperlink(String name, String path, int itemLine, int startOffset, int endOffset, int line)
+	{
+		this(name, "<html><b>"+name + "</b> ("+path+")</html>", path, itemLine, startOffset, endOffset, line);
+	} //}}}
 
-    //{{{ getEndOffset() method
-    @Override
-    public int getEndOffset()
-    {
-        return endOffset;
-    } //}}}
+	//{{{ getStartOffset() method
+	@Override
+	public int getStartOffset()
+	{
+		return startOffset;
+	} //}}}
 
-    //{{{ getStartLine() method
-    @Override
-    public int getStartLine()
-    {
-        return line;
-    } //}}}
+	//{{{ getEndOffset() method
+	@Override
+	public int getEndOffset()
+	{
+		return endOffset;
+	} //}}}
 
-    //{{{ getEndLine() method
-    @Override
-    public int getEndLine()
-    {
-        return line;
-    } //}}}
+	//{{{ getStartLine() method
+	@Override
+	public int getStartLine()
+	{
+		return line;
+	} //}}}
 
-    //{{{ getTooltip() method
-    @Override
-    public String getTooltip()
-    {
-        return name;
-    } //}}}
+	//{{{ getEndLine() method
+	@Override
+	public int getEndLine()
+	{
+		return line;
+	} //}}}
 
-    //{{{ click() method
-    @Override
-    public void click(View view)
-    {
-        final Buffer buffer = jEdit.openFile(view, path);
-        VFSManager.runInAWTThread(new Runnable()
-        {
-            public void run()
-            {
-                JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+	//{{{ getTooltip() method
+	@Override
+	public String getTooltip()
+	{
+		return tooltip;
+	} //}}}
 
-                int caretPosition = buffer.getLineStartOffset(itemLine - 1) +
-                    itemLine - 1;
-                textArea.moveCaretPosition(caretPosition);
-                Log.log(Log.MESSAGE, this, "Moving to line " + itemLine + ' ' + caretPosition);
-                /*
-                Selection[] s = getSelection();
-                if (s == null)
-                  return;
+	//{{{ click() method
+	@Override
+	public void click(View view)
+	{
+		final Buffer buffer = jEdit.openFile(view, path);
+		VFSManager.runInAWTThread(new Runnable()
+		{
+			public void run()
+			{
+				JEditTextArea textArea = jEdit.getActiveView().getTextArea();
 
-                JEditTextArea textArea = editPane.getTextArea();
-                if (textArea.isMultipleSelectionEnabled())
-                  textArea.addToSelection(s);
-                else
-                  textArea.setSelection(s);
+				int caretPosition = buffer.getLineStartOffset(itemLine - 1) + itemLine - 1;
+				textArea.moveCaretPosition(caretPosition);
+				Log.log(Log.MESSAGE, this, "Moving to line " + itemLine + ' ' + caretPosition);
+				/*
+						Selection[] s = getSelection();
+						if (s == null)
+						  return;
 
-                textArea.moveCaretPosition(occur.endPos.getOffset());*/
-            }
-        });
-    } //}}}
+						JEditTextArea textArea = editPane.getTextArea();
+						if (textArea.isMultipleSelectionEnabled())
+						  textArea.addToSelection(s);
+						else
+						  textArea.setSelection(s);
+
+						textArea.moveCaretPosition(occur.endPos.getOffset());*/
+			}
+		});
+	} //}}}
 }

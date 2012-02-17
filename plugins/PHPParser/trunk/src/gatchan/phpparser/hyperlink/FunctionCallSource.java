@@ -103,7 +103,7 @@ public class FunctionCallSource implements HyperlinkDecoder<FunctionCall>
 		int wordStart = TextUtilities.findWordStart(lineSegment, lineOffset, noWordSep);
 		int wordEnd = TextUtilities.findWordEnd(lineSegment, lineOffset, noWordSep);
 		int lineStartOffset = buffer.getLineStartOffset(line);
-		Hyperlink hyperlink = new PHPHyperlink(header.getName(), header.getPath(), header.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
+		Hyperlink hyperlink = new PHPHyperlink(header.toString(), header.getPath(), header.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
 		return hyperlink;
 	} //}}}
 }
