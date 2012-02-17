@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 package gatchan.phpparser.hyperlink;
 
+//{{{ Imports
 import java.util.List;
 
 import gatchan.jedit.hyperlinks.Hyperlink;
@@ -33,6 +34,7 @@ import net.sourceforge.phpdt.internal.compiler.ast.FunctionCall;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -41,17 +43,20 @@ public class FunctionCallSource implements HyperlinkDecoder<FunctionCall>
 {
 	private HyperlinkDecoder<AstNode> defaultDecoder;
 
+	//{{{ FunctionCallSource constructor
 	public FunctionCallSource(DefaultNodeDecoder decoder)
 	{
 		defaultDecoder = decoder;
-	}
+	} //}}}
 
+	//{{{ accept() method
 	@Override
 	public boolean accept(AstNode node)
 	{
 		return node instanceof FunctionCall;
-	}
+	} //}}}
 
+	//{{{ getHyperlink() method
 	@Override
 	public Hyperlink getHyperlink(FunctionCall functionCall, Buffer buffer, int line, int lineOffset)
 	{
@@ -83,7 +88,8 @@ public class FunctionCallSource implements HyperlinkDecoder<FunctionCall>
 			for (MethodHeader methodHeader : headers)
 			{
 				header = methodHeader;
-				break;
+				if (methodHeader.getPath().equals(buffer.getPath()))
+					break;
 			}
 		}
 		else
@@ -99,5 +105,5 @@ public class FunctionCallSource implements HyperlinkDecoder<FunctionCall>
 		int lineStartOffset = buffer.getLineStartOffset(line);
 		Hyperlink hyperlink = new PHPHyperlink(header.getName(), header.getPath(), header.getBeginLine(), lineStartOffset + wordStart, lineStartOffset + wordEnd, line);
 		return hyperlink;
-	}
+	} //}}}
 }
