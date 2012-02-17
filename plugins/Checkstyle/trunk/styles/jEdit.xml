@@ -4,6 +4,7 @@
           "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
     <module name="Translation"/>
+    <module name="StrictDuplicateCode"/>
     <module name="RegexpSingleline">
        <property name="format" value="\s+$"/>
        <property name="minimum" value="0"/>
@@ -21,7 +22,10 @@
         <module name="EmptyForIteratorPad"/>
         <module name="GenericWhitespace"/>
         <module name="MethodParamPad"/>
-        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceAfter">
+		<property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+		<property name="allowLineBreaks" value="true"/>
+	</module>
         <module name="NoWhitespaceBefore"/>
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
@@ -35,7 +39,6 @@
         	<property name="shouldStartLine" value="true"/>
         </module>
         <module name="DoubleCheckedLocking"/>
-        <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="IllegalInstantiation"/>
         <module name="RedundantThrows"/>
