@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,14 +21,15 @@
 
 package gatchan.phpparser.hyperlink;
 
+//{{{ Imports
 import gatchan.jedit.hyperlinks.Hyperlink;
-import gatchan.phpparser.project.itemfinder.PHPItem;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -42,6 +43,7 @@ public class PHPHyperlink implements Hyperlink
     private final int endOffset;
     private final int line;
 
+    //{{{ PHPHyperlink constructor
     public PHPHyperlink(String name, String path, int itemLine, int startOffset, int endOffset, int line)
     {
         this.name = name;
@@ -50,38 +52,44 @@ public class PHPHyperlink implements Hyperlink
         this.startOffset = startOffset;
         this.endOffset = endOffset;
         this.line = line;
-    }
+    } //}}}
 
+    //{{{ getStartOffset() method
     @Override
     public int getStartOffset()
     {
         return startOffset;
-    }
+    } //}}}
 
+    //{{{ getEndOffset() method
     @Override
     public int getEndOffset()
     {
         return endOffset;
-    }
+    } //}}}
 
+    //{{{ getStartLine() method
     @Override
     public int getStartLine()
     {
         return line;
-    }
+    } //}}}
 
+    //{{{ getEndLine() method
     @Override
     public int getEndLine()
     {
         return line;
-    }
+    } //}}}
 
+    //{{{ getTooltip() method
     @Override
     public String getTooltip()
     {
         return name;
-    }
+    } //}}}
 
+    //{{{ click() method
     @Override
     public void click(View view)
     {
@@ -110,5 +118,5 @@ public class PHPHyperlink implements Hyperlink
                 textArea.moveCaretPosition(occur.endPos.getOffset());*/
             }
         });
-    }
+    } //}}}
 }
