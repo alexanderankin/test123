@@ -34,7 +34,6 @@ import org.gjt.sp.util.Log;
 import sidekick.SideKickParsedData;
 import sidekick.IAsset;
 import sidekick.util.ElementUtil;
-import sidekick.util.Location;
 
 import gatchan.jedit.hyperlinks.*;
 
@@ -264,7 +263,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	public Hyperlink getHyperlinkForIDREFS(Buffer buffer, int offset,
 		XmlParsedData data, String attValue, XmlDocument.Attribute att)
 	{
-		int attStart = createOffset(buffer, att.getValueStartLocation());
+		int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation());
 		// +1 for the quote around the attribute value
 		attStart++;
 		
@@ -318,7 +317,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		{
 			
 			// +1 for the quote around the attribute value
-			int attStart = createOffset(buffer, att.getValueStartLocation()) +1;
+			int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation()) +1;
 			
 			Matcher m = nsURIPairsPattern.matcher(attValue);
 			// find will accept unbalanced pairs of ns->uri
@@ -411,8 +410,8 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	public Hyperlink newJEditOpenFileHyperlink(
 		Buffer buffer, XmlDocument.Attribute att, String href)
 	{
-		int start = createOffset(buffer,att.getValueStartLocation());
-		int end= createOffset(buffer,att.getEndLocation());
+		int start = xml.ElementUtil.createOffset(buffer,att.getValueStartLocation());
+		int end= xml.ElementUtil.createOffset(buffer,att.getEndLocation());
         	int line = buffer.getLineOfOffset(start);
         	return new jEditOpenFileHyperlink(start, end, line, href);
 	}
@@ -429,40 +428,12 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	public Hyperlink newJEditOpenFileAndGotoHyperlink(
 		Buffer buffer, XmlDocument.Attribute att, String href, int gotoLine, int gotoCol)
 	{
-		int start = createOffset(buffer,att.getValueStartLocation());
-		int end= createOffset(buffer,att.getEndLocation());
+		int start = xml.ElementUtil.createOffset(buffer,att.getValueStartLocation());
+		int end= xml.ElementUtil.createOffset(buffer,att.getEndLocation());
         	int line = buffer.getLineOfOffset(start);
         	return new jEditOpenFileAndGotoHyperlink(start, end, line, href, gotoLine, gotoCol);
 	}
 
-	/*
-	 * adapted from sidekick.util.ElementUtil.createEndPosition()
-	 * TODO: maybe contribute this to ElementUtil
-	 */
-	public static int createOffset(Buffer buffer, Location loc){
-		int line = Math.max(
-		                   Math.min(loc.line - 1, buffer.getLineCount() - 1)
-		                 , 0);
-		int line_offset = buffer.getLineStartOffset(line);
-		int[] totalVirtualWidth = new int[ 1 ];
-		int column_offset = buffer.getOffsetOfVirtualColumn(
-			    Math.max( line, 0 ),
-			    Math.max( loc.column - 1, 0 ),
-			    totalVirtualWidth );
-		if ( column_offset == -1 ) {
-			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"wanted virtual column "+(loc.column-1)+", totalVirtualWitdth="+totalVirtualWidth[0]);
-			if(loc.column-1 == totalVirtualWidth[ 0 ]){
-				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"setting offset to real end of line offset");
-				column_offset = buffer.getLineLength(line);
-			}else {
-				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"setting offset to virtual width");
-				column_offset = totalVirtualWidth[ 0 ];
-			}
-			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"changed column_offset:"+column_offset);
-		}
-		return line_offset + column_offset ;
-	}
-	
 	public static HyperlinkSource create(){
 		return new FallbackHyperlinkSource(
 			Arrays.asList(new XMLHyperlinkSource(),
