@@ -311,7 +311,7 @@ public class XercesParserImpl extends XmlParser
 			catch(SAXException se)
 			{
 				// not likely : messed jars or sthing
-				Log.log(Log.ERROR,this,"error preparing to parse ¤2nd pass), please report !",se);
+				Log.log(Log.ERROR,this,"error preparing to parse 2nd pass), please report !",se);
 			}
 	
 			source = new InputSource();
