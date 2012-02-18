@@ -94,8 +94,8 @@ public class SideKickTagHighlight implements StructureMatcher
 					// FIXME: switch back to ElementUtil when fixed
 					// int start = ElementUtil.createStartPosition((Buffer)textArea.getBuffer(),startTag).getOffset();
 					// int end= ElementUtil.createEndPosition((Buffer)textArea.getBuffer(),startTag).getOffset();
-					int start = xml.hyperlinks.XMLHyperlinkSource.createOffset((Buffer)textArea.getBuffer(),startTag.getStartLocation());
-					int end=  xml.hyperlinks.XMLHyperlinkSource.createOffset((Buffer)textArea.getBuffer(),startTag.getEndLocation());
+					int start = xml.ElementUtil.createOffset((Buffer)textArea.getBuffer(),startTag.getStartLocation());
+					int end=  xml.ElementUtil.createOffset((Buffer)textArea.getBuffer(),startTag.getEndLocation());
 					tag = new TagParser.Tag(
 						start,
 						end);

@@ -52,6 +52,7 @@ import xml.CharSequenceReader;
 import xml.XmlParsedData;
 import sidekick.html.parser.html.*;
 import static sidekick.html.parser.html.HtmlDocument.*;
+import xml.ElementUtil.createOffset;
 import xml.completion.ElementDecl;
 import xml.completion.IDDecl;
 
@@ -246,7 +247,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		XmlParsedData data, String attValue, Attribute att,
 		boolean quoted)
 	{
-		int attStart = createOffset(buffer, att.getValueStartLocation());
+		int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation());
 		// +1 for the quote around the attribute value
 		if(quoted)attStart++;
 		
@@ -319,7 +320,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 				if(found != null){
 					// OpenFileAndGoto expects real line&column,
 					// not virtual column
-					int toffset = XMLHyperlinkSource.createOffset(buffer, found);
+					int toffset = xml.ElementUtil.createOffset(buffer, found);
 					int line = buffer.getLineOfOffset(toffset);
 					int column = toffset - buffer.getLineStartOffset(line);
 					// it's OK to have a path
@@ -355,7 +356,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			&& "archive".equals(attLocalName))
 		{
 			// +1 for the quote around the attribute value
-			int attStart = createOffset(buffer, att.getValueStartLocation()) +1;
+			int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation()) +1;
 			
 			Matcher m = noWSPattern.matcher(attValue);
 			while(m.find()){
@@ -473,8 +474,8 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		Buffer buffer, Attribute att, String href,
 		boolean quoted)
 	{
-		int start = createOffset(buffer,att.getValueStartLocation());
-		int end= createOffset(buffer,att.getEndLocation());
+		int start = xml.ElementUtil.createOffset(buffer,att.getValueStartLocation());
+		int end= xml.ElementUtil.createOffset(buffer,att.getEndLocation());
 		if(quoted){
 			start++;
 			end--;
@@ -497,8 +498,8 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		Buffer buffer, Attribute att, String href, int gotoLine, int gotoCol,
 		boolean quoted)
 	{
-		int start = createOffset(buffer,att.getValueStartLocation());
-		int end= createOffset(buffer,att.getEndLocation());
+		int start = xml.ElementUtil.createOffset(buffer,att.getValueStartLocation());
+		int end= xml.ElementUtil.createOffset(buffer,att.getEndLocation());
 		if(quoted){
 			start++;
 			end--;
