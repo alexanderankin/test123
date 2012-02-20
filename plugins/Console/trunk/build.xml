@@ -2,9 +2,14 @@
 <!-- ================================================== -->
 <!-- Build file for the Console plugin           -->
 <!-- :tabSize=4:indentSize=4:noTabs=false:              -->
+<!--  To use this template for building your own plugin, make these changes:
+     - Change 'name' property for the <project> to the name of your plugin
+     - If necessary, add any dependencies to the 'project.class.path' definition
+     - If necessary, change the list of files in the 'packageFiles' selector -->
 <!-- ================================================== -->
-    	<property file="build.properties" />
-    	<property file="../build.properties" />
+
+  	<property file="build.properties" />
+   	<property file="../build.properties" />
 	<property name="javadoc.packagenames"	value="console.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
     <property name="docs-proc.target"       value="xsltproc" />
