@@ -1,0 +1,10 @@
+ClassPath plugin
+CHANGELOG
+
+Version 1.0.0
+    depends on jEdit 4.3, Java 1.5, CommonControls 1.3, Console 4.4.2, ProjectViewer 3.0
+	Initial Release
+
+Version 1.0.1
+    depends on jEdit 4.3, Java 1.5, CommonControls 1.3, Console 4.4.2, ProjectViewer 3.0
+	#3443473 ClassPath breaks ProjectViewer's last node save (Jarek Czekalski)
