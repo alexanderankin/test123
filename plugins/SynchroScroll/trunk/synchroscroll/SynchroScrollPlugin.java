@@ -35,6 +35,13 @@ public class SynchroScrollPlugin extends EBPlugin {
 
     // key for component property that stores the initial top line of the text area
     static final String BASELINE = "synchroscroll.BaseLine";
+    
+    // Key for property that prevents from recursive scroll event invoking. 
+    // It is necessary because when you use setFirstLine method, then 
+    // also scroll events for TextArea is invoke ... and so on. 
+    // (see ScrollHandler.java -> method scrolledVertically -> Proportional mode)
+    static final String ISPROCESSING = "synchroscroll.IsProcessing";
+
 
     // map to keep track of which views are currently using syncroscrolling
     private static HashMap<View, Boolean> scrollingMap = new HashMap<View, Boolean>() {
@@ -126,6 +133,10 @@ public class SynchroScrollPlugin extends EBPlugin {
         }
     }
 
+    public static boolean getPluginEnabled(View view) {
+        return scrollingMap.containsKey(view) && scrollingMap.get(view);
+    }
+    
     /**
      * Turn on sychroscrolling if it was off, turn it off if it was on
      * @param view The View to toggle synchroscrolling for.
