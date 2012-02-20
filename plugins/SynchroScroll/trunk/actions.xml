@@ -5,6 +5,9 @@
 		<CODE>
             synchroscroll.SynchroScrollPlugin.toggleSynchroScroll(view);
         </CODE>
+		<IS_SELECTED>
+		    return synchroscroll.SynchroScrollPlugin.getPluginEnabled(view);
+		</IS_SELECTED>
 	</ACTION>
 	<ACTION NAME="synchroscroll.synchroScrollOff">
 		<CODE>

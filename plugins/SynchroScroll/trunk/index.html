@@ -1,15 +1,36 @@
 <html>
 <body>
 <h2>SynchroScroll</h2>
-<h3>Dale Anson, 2012</h2>
+<h3>Dale Anson, Jerzy Urban, 2012</h2>
+<p>
 A plugin to allow syncrhonized scrolling between multiple text areas.
 <p>
 When you have more than one text area visible in a view (View - Splitting -
 Split Vertically, for example), go to Plugins - SynchroScroll - Toggle
 Sychro Scrolling. Then moving the scroll bar sliders for one text area will
-automatically move the scrollbar sliders in the other text area the same 
-amount. Note that when synchro scrolling is on, ALL text areas in the view
-will scroll.
+automatically scroll the other text areas. Note that when synchro scrolling 
+is on, ALL text areas in the view will scroll.
+<p>
+SynchroScroll has two modes:
+<br>
+<br>
+1) Standard:<br>
+In standard mode, the first visible line in each text area is the baseline
+for scrolling. Each text area will be scrolled the same number of lines from
+this baseline. For example, suppose the view is split into two text areas,
+and the first visible line in the left text area is line 50 and the first 
+visible line in the right text area is line 500. Scrolling down 10 lines in
+the left text area will put the first visible line at 60, and at 510 in the
+right text area. So standard scrolling means lines are scrolled the same
+number of lines in each text area.
+<br>
+<br>
+2) Proportional:<br>
+In proportional mode, the files are scrolled based on the proportion of the
+number of lines in the files. Suppose the view is split vertically into two
+text areas, and the left text area has 100 lines and the right has 1000
+lines. Then for each line the left text area is scrolled, the right text
+area will scroll 10 lines.
 <p>
 License: GPL2
 </body>
