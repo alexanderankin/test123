@@ -1,0 +1,21 @@
+<project name="Classpath" default="build" basedir=".">
+	<property file="build.properties" />
+	<property file="../build.properties" />
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+	<property name="src.dir" value="classpath" />
+
+	<!-- jEdit installation properties. -->
+	<import file="${build.support}/plugin-build.xml" />
+
+    <selector id="packageFiles">
+		<filename name="docs/CHANGELOG.txt" />
+	</selector>
+
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
+		<pathelement location="${jedit.plugins.dir}/Console.jar" />
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar" />
+	</path>
+</project>
