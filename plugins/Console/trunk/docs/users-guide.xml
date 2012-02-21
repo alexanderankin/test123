@@ -642,8 +642,7 @@ most often at the top of the list.
     </listitem>
     <listitem>
      <para>
-      <varname>${pv}</varname> - the root directory of the current project,
-      or <literal>.</literal> if the current file is not part of a project. </para>
+      <varname>${pv}</varname> - the root directory of the current project. </para>
     </listitem>
     <listitem>
      <para>
