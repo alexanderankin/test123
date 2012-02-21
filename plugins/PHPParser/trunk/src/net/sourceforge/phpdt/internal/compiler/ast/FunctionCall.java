@@ -27,6 +27,7 @@ import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.WarningMessageClass;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class FunctionCall extends AbstractSuffixExpression
 	 */
 	private final ArgumentList args;
 
-	private Function definition;
+	private transient Function definition;
 
 	public FunctionCall(Expression clazz, boolean staticClassAccess, Expression functionName, ArgumentList args)
 	{
@@ -64,39 +65,7 @@ public class FunctionCall extends AbstractSuffixExpression
 		this.staticClassAccess = staticClassAccess;
 		this.functionName = functionName;
 		this.args = args;
-		if (clazz == null && functionName instanceof ConstantIdentifier)
-		{
-			definition = PHPParserPlugin.phpFunctionList.getFunction(getFunctionName().toString());
-			Expression[] arguments = args.getArgs();
-			if (arguments == null)
-			{
-				Function def = definition;
-				while (def != null)
-				{
-					if (def.getMinArgumentCount() == 0)
-					{
-						definition = def;
-						break;
-					}
-					def = def.getAlternative();
-				}
-			}
-			else
-			{
-				Function def = definition;
-				while (def != null)
-				{
-					if (def.getMinArgumentCount() == arguments.length)
-					{
-						definition = def;
-						break;
-					}
-					def = def.getAlternative();
-				}
-			}
-			if (definition != null)
-				setType(definition.getReturnType());
-		}
+		initFunctionDefinition();
 	}
 
 	public FunctionCall(Expression functionName, ArgumentList args)
@@ -284,6 +253,49 @@ public class FunctionCall extends AbstractSuffixExpression
 							 args.getSourceStart(),
 							 args.getSourceEnd(), args.getBeginLine(), args.getEndLine(),
 							 args.getBeginColumn(), args.getEndColumn()));
+		}
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		in.defaultReadObject();
+		initFunctionDefinition();
+	}
+
+	private void initFunctionDefinition()
+	{
+		if (clazz == null && functionName instanceof ConstantIdentifier)
+		{
+			definition = PHPParserPlugin.phpFunctionList.getFunction(getFunctionName().toString());
+			Expression[] arguments = args.getArgs();
+			if (arguments == null)
+			{
+				Function def = definition;
+				while (def != null)
+				{
+					if (def.getMinArgumentCount() == 0)
+					{
+						definition = def;
+						break;
+					}
+					def = def.getAlternative();
+				}
+			}
+			else
+			{
+				Function def = definition;
+				while (def != null)
+				{
+					if (def.getMinArgumentCount() == arguments.length)
+					{
+						definition = def;
+						break;
+					}
+					def = def.getAlternative();
+				}
+			}
+			if (definition != null)
+				setType(definition.getReturnType());
 		}
 	}
 }
