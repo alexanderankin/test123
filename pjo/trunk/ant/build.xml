@@ -72,7 +72,7 @@
 		<echo></echo>
 		<echo>Java Version:${ant.java.version} | Compiler Source: ${compiler.source} | Compiler Target: ${compiler.target}</echo>
 		<echo>
-docbookx.dtd=${docbookx.dtd}
+docbookx.dtd=${docbookx.dtd} // this is needed only for xalan
 docbook.xsl=${docbook.xsl}
 		</echo>
 	</target>
@@ -84,6 +84,7 @@ docbook.xsl=${docbook.xsl}
 	          value="${pf.dir}/build-support" />
 	<property name="docbook.catalog"
 	          value="${pf.dir}/pjo/ant/docbook/4.4/docbook.cat" />
+	<property name="docbook.xsl" value="${pf.dir}/pjo/ant/docbook/xsl/1.75.1" />
 
 	<target name="build" depends="java5">
 		<input addproperty="plugin.name" message="Plugin Name:" />
@@ -214,7 +215,8 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 					<exclude name="@{pluginName}/classes/**"/>
 					<exclude name="@{pluginName}/config/**"/>
 					<exclude name="@{pluginName}/temp/**"/>
-					<!--include name="**/@{pluginName}.props"/-->
+					<exclude name="ProjectViewer/pvdebug/**"/>
+					<!--<include name="**/@{pluginName}.props"/>-->
 					<include name="**/*.props"/>
 				</fileset>
 				<filterchain>
