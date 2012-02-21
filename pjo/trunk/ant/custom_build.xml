@@ -10,7 +10,7 @@
 </target>
 
 <!-- adjust once -->
-<condition property="pf.dir" value="/m/temp/30/plugin-factory"
+<condition property="pf.dir" value="/m/temp/7/pf"
            else="c:/temp/30/plugin-factory"><os family="unix"/></condition>
 <condition property="prog.svn" value="svn"
   else="C:\Program_Files\SlikSvn\bin\svn.exe"><os family="unix"/></condition>
@@ -20,15 +20,14 @@
   else="C:\Temp\1\xslt\bin\xsltproc.exe"><os family="unix"/></condition>
 
 <!-- adjust per plugin release -->
-<property name="plugin.name" value="CtagsInterface" />
-<property name="plugin.version" value="2.2" />
+<property name="plugin.name" value="ProjectViewer" />
+<property name="plugin.version" value="3.4.2" />
 <property name="scm.targets.file" value="git_cl.xml" />
-<property name="plugin.tag" value="release-2.2" />
+<property name="plugin.tag" value="pv_3_4_2" />
 
 <!-- no need to adjust -->
 <property name="jedit.svn.url" value="https://jedit.svn.sourceforge.net/svnroot/jedit" />
 <property name="jedit.git.url" value="git://jedit.git.sourceforge.net/gitroot/jedit" />
-<property name="docbook.xsl" value="${pf.dir}\pjo\ant\docbook\xsl" />
 <property name="sandbox.dir" value="${pf.dir}/sandbox" />
 <property name="package.targets.file" value="package.xml" />
 <!-- see ${pf.dir}/pjo/ant/build.properties.sample for other properties which
