@@ -147,6 +147,60 @@
 
     <!-- ===============================================}}} -->
 
+    <!-- {{{ Helper macros ================================ -->
+    
+    <macrodef name="check-file-var">
+        <!--Checks whether a variable ${var} is defined and whether
+        a file exists-->
+        <attribute name="var" />
+        <sequential>
+        <check-file-dir-var type="file" var="@{var}" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="check-dir-var">
+        <!--Checks whether a variable ${var} is defined and whether
+        a directory exists-->
+        <attribute name="var" />
+        <sequential>
+        <check-file-dir-var type="dir" var="@{var}" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="check-file-dir-var">
+        <!-- private -->
+        <attribute name="type" />
+        <attribute name="var" />
+        <sequential>
+        <local name="file" />
+        <local name="desc" />
+        <propertycopy name="file" from="@{var}" />
+        <condition property="desc" value="file" else="directory">
+            <equals arg1="@{type}" arg2="file" />
+        </condition>
+        <echo>Checking ${desc} ${file} from property @{var}</echo>
+        <fail message="Please set &quot;@{var}&quot; in build.properties"
+              unless="@{var}" />
+        <fail message="The ${desc} ${file} pointed by variable @{var} does not exist. Check build.properties">
+            <condition>
+                <not><available file="${file}" type="@{type}" /></not>
+            </condition>
+        </fail>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="propertycopy">
+        <!-- a workaround for indirect property expansion taken from
+        http://ant.apache.org/faq.html#propertyvalue-as-name-for-property -->
+        <attribute name="name"/>
+        <attribute name="from"/>
+        <sequential>
+            <property name="@{name}" value="${@{from}}"/>
+        </sequential>
+    </macrodef>
+
+    <!-- }}} ============================================== -->
+
     <!-- {{{ Custom javac task ============================ -->
     <presetdef name="jp.javac">
         <javac destdir="${build.classes}"
@@ -499,13 +553,11 @@
          document to be processed is defined by the
          "user-doc.xml" property, and defaults to
          "docs/users-guide.xml". The output is defined in
-         the "user-doc.out" property.                       -->
+         the "user-doc.out" property. Don't call this target directly
+         as the prerequisites are set in userdocs target.                  -->
     <target name="docs-xsltproc" description="Generate user documentation in html format with xsltproc">
-        <fail message="Please set the &quot;docbook.catalog&quot; in build.properties"
-              unless="docbook.catalog" />
-        <fail message="Please set &quot;docbook.xsl&quot; in build.properties"
-              unless="docbook.xsl" />
-
+        <check-dir-var var="docbook.xsl" />
+        <check-file-var var="docbook.catalog" />
         <exec executable="${xsltproc.executable}" dir="${build.docs}" failonerror="true">
             <arg value="--output" />
             <arg value="${user-doc.out}" />
