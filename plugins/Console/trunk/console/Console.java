@@ -736,12 +736,8 @@ implements EBComponent, DefaultFocusComponent
 	private void propertiesChanged()
 	{
 		if (jEdit.getBooleanProperty("textColors")) {
-			LookAndFeel laf = UIManager.getLookAndFeel();
-			if ( laf.getID().equals( "Metal" ) ) {
-				text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
-				text.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
-			}
-			else text.setUI( new javax.swing.plaf.basic.BasicEditorPaneUI() );
+			text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
+			text.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
 		}
 		else {
 			text.setBackground(jEdit.getColorProperty("console.bgColor"));
