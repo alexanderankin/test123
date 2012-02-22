@@ -20,7 +20,6 @@
  */
 package xml.hyperlinks;
 
-import java.io.Reader;
 import java.net.URI;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -48,15 +47,12 @@ import gatchan.jedit.hyperlinks.*;
 
 import static xml.Debug.*;
 import xml.Resolver;
-import xml.CharSequenceReader;
 import xml.XmlParsedData;
 import sidekick.html.parser.html.*;
 import static sidekick.html.parser.html.HtmlDocument.*;
-import xml.ElementUtil.createOffset;
 import xml.completion.ElementDecl;
 import xml.completion.IDDecl;
 
-import static xml.hyperlinks.XMLHyperlinkSource.createOffset;
 /**
  * Provides hyperlinks from HTML attributes.
  * Supported hyperlinks are all attributes with type URI
