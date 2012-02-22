@@ -22,6 +22,7 @@ package common.gui.itemfinder;
 
 //{{{ Imports
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -62,6 +63,7 @@ public class ItemFinderPanel<E> extends JPanel
 
 	public final RequestFocusWorker requestFocusWorker;
 	private final ItemFinder<E> itemFinder;
+	private final JScrollPane scroll;
 
 	//{{{ ItemFinderPanel constructor
 	public ItemFinderPanel(Window owner, ItemFinder<E> itemFinder)
@@ -81,7 +83,7 @@ public class ItemFinderPanel<E> extends JPanel
 
 		searchField.addKeyListener(new SearchFieldKeyAdapter());
 		searchField.getDocument().addDocumentListener(new MyDocumentListener());
-		JScrollPane scroll = new JScrollPane(itemList);
+		scroll = new JScrollPane(itemList);
 		window.setContentPane(scroll);
 
 		String label = itemFinder.getLabel();
@@ -243,17 +245,22 @@ public class ItemFinderPanel<E> extends JPanel
 			}
 			else
 			{
-				if (!window.isVisible())
-				{
-					Rectangle bounds = getBounds();
-					window.pack();
-					Point locationOnScreen = getLocationOnScreen();
-					window.setLocation(locationOnScreen.x, locationOnScreen.y + bounds.height);
-					Rectangle screenBounds = GUIUtilities.getScreenBounds();
-					int maxWidth = screenBounds.width - locationOnScreen.x;
-					int width = Math.min(window.getWidth(), maxWidth);
-					window.setSize(width, window.getHeight());
-				}
+				Rectangle bounds = getBounds();
+				Point locationOnScreen = getLocationOnScreen();
+				window.setLocation(locationOnScreen.x, locationOnScreen.y + bounds.height);
+				Rectangle screenBounds = GUIUtilities.getScreenBounds();
+				window.pack();
+
+				Dimension preferredSize = itemList.getPreferredSize();
+
+				int maxWidth = screenBounds.width - locationOnScreen.x;
+				int scrollbarWidth = scroll.getVerticalScrollBar().getPreferredSize().width;
+				int width = Math.min(preferredSize.width + scrollbarWidth, maxWidth);
+
+				int scrollbarHeight = scroll.getHorizontalScrollBar().getPreferredSize().height;
+				int height = Math.min(preferredSize.height + scrollbarHeight, 200);
+				
+				window.setSize(width, height);
 				window.setVisible(true);
 				if (itemList.getSelectedIndex() == -1)
 				{
