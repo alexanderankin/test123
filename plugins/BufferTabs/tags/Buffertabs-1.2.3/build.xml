@@ -1,0 +1,22 @@
+<project name="BufferTabs" default="build" basedir=".">
+<!--
+     This is the standard build.xml file for building the BufferTabs plugin.
+
+     To use this template for building your own plugin, make these changes:
+
+     - Change 'name' property for the <project> to the name of your plugin
+     - If necessary, add any dependencies to the 'project.class.path' definition
+     - If necessary, change the list of files in the 'packageFiles' selector
+-->
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property name="build.support" value="../../build-support" />
+    <import file="${build.support}/plugin-build.xml" />
+    <selector id="packageFiles">
+       <and>
+        <filename name="CHANGELOG.txt" />
+       </and>
+    </selector>
+    
+</project>
