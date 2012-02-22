@@ -4,6 +4,34 @@
    NavigatorPlugin actions.
 -->
 <ACTIONS>
+  <ACTION NAME="navigator-push-position">
+     <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.pushPosition(view);
+     </CODE>
+  </ACTION>
+
+  <ACTION NAME="navigator-pop-position">
+     <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.popPosition(view);
+     </CODE>
+  </ACTION>
+
+  <ACTION NAME="navigator-goto-top-position">
+     <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.gotoTopPosition(view);
+     </CODE>
+  </ACTION>
+
+  <ACTION NAME="navigator-swap-caret-and-top">
+     <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.swapCaretAndTop(view);
+     </CODE>
+  </ACTION>  
+  
    <ACTION NAME="navigator.back">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");

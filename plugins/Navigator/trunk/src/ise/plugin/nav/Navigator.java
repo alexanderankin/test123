@@ -85,6 +85,8 @@ public class Navigator implements ActionListener {
     private NavStack<NavPosition> backHistory;
     private NavPosition current = null;
     private NavStack<NavPosition> forwardHistory;
+    /** Another position stack for user push,pop interaction. */ 
+    private NavStack<NavPosition> userStack;
 
     // max size for history
     private int maxStackSize = jEdit.getIntegerProperty("navigator.maxStackSize", 512);
@@ -142,6 +144,7 @@ public class Navigator implements ActionListener {
         // set up the history stacks
         backHistory = new NavStack<NavPosition>(maxStackSize);
         forwardHistory = new NavStack<NavPosition>(maxStackSize);
+        userStack =  new NavStack<NavPosition>(maxStackSize);
         clearHistory();
         current = currentPosition();
     }
@@ -346,6 +349,7 @@ public class Navigator implements ActionListener {
      */
     public void clearHistory() {
         backHistory.clear();
+        userStack.clear();
         current = currentPosition();
         forwardHistory.clear();
         setButtonState();
@@ -616,6 +620,32 @@ public class Navigator implements ActionListener {
         notifyChangeListeners();
     }
 
+    public void pushPosition() {
+    	NavPosition now = currentPosition();
+    	userStack.push(current);
+    }
+    
+    public void popPosition() {
+    	if (userStack.isEmpty()) return;
+    	NavPosition top = userStack.pop();
+    	setPosition(top);
+    }
+
+    public void swapCaretAndTop() {
+        if (userStack.isEmpty()) return;
+    	NavPosition old = currentPosition();
+    	NavPosition current = userStack.pop();
+    	userStack.push(old);
+    	setPosition(current);
+    }
+
+    
+    public void gotoTopPosition() {
+        if (userStack.isEmpty()) return;
+	NavPosition top = userStack.lastElement();
+	setPosition(top);
+    }
+    
     /**
      * Moves to the next item in the "forward" history.
      */

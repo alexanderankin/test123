@@ -457,6 +457,34 @@ public class NavigatorPlugin extends EBPlugin {
         }
     }
     
+    public static void pushPosition(View view) {
+        Navigator navigator = getNavigator( view );
+        if ( navigator != null ) {
+            navigator.pushPosition();
+        }
+    }
+    
+    public static void popPosition(View view) {
+        Navigator navigator = getNavigator( view );
+        if ( navigator != null ) {
+            navigator.popPosition();
+        }
+    }
+
+    public static void gotoTopPosition(View view) {
+        Navigator navigator = getNavigator( view );
+        if ( navigator != null ) {
+            navigator.gotoTopPosition();
+        }
+    }
+
+    public static void swapCaretAndTop(View view) {
+        Navigator navigator = getNavigator( view );
+        if ( navigator != null ) {
+            navigator.swapCaretAndTop();
+        }
+    }
+
     public static void gotoLine(View view) {
         GoToLineDialog dialog = new GoToLineDialog(view);
         NavPosition position = dialog.getLineNumber();

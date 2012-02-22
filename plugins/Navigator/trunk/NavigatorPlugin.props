@@ -56,7 +56,8 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable - navigator-push-position navigator-pop-position navigator-goto-top-position navigator-swap-caret-and-top
+
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -106,3 +107,8 @@ mavigator.backlist.tooltip=Back history, click an item to jump to it.
 navigator.forwardlist.tooltip=Forward history, click an item to jump to it.
 navigator.current.tooltip=Current position
 navigator.removingPosition=Navigator: removing invalid position
+
+navigator-goto-top-position.label=Go to Top Positon
+navigator-push-position.label=Push Current Position
+navigator-pop-position.label=Pop Position
+navigator-swap-caret-and-top.label=Swap Caret with Top Position
