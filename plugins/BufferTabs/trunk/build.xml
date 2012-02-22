@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<project name="BufferTabs" default="build" basedir=".">
 <!--
      This is the standard build.xml file for building the BufferTabs plugin.
 
@@ -8,8 +8,6 @@
      - If necessary, add any dependencies to the 'project.class.path' definition
      - If necessary, change the list of files in the 'packageFiles' selector
 -->
-
-<project name="BufferTabs" default="build" basedir=".">
     <property name="user-doc.xml" location = "users-guide.xml"/>
     <property file="build.properties"/>
     <property file="../build.properties"/>
