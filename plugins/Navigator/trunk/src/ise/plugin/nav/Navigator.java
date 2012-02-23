@@ -35,9 +35,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.ThreadUtilities;
@@ -473,7 +475,6 @@ public class Navigator implements ActionListener {
      * @return <code>true</code> if the position was valid and set, <code>false</code>
      * if the position was invalid or otherwise could not be set.
      *
-     * NOTE: VFSManager is deprecated in jEdit 4.4 and should be replaced with ThreadUtilities.
      */
     @SuppressWarnings("deprecation")
     public boolean setPosition(NavPosition position) {
@@ -690,6 +691,7 @@ public class Navigator implements ActionListener {
     /** Push position onto user stack */
     public void pushPosition() {
     	NavPosition now = currentPosition();
+    	EditBus.send(new PositionChanging(_editPane));
     	userStack.push(current);
     }
 
@@ -697,6 +699,7 @@ public class Navigator implements ActionListener {
     public void popPosition() {
     	if (userStack.isEmpty()) return;
     	NavPosition top = userStack.pop();
+    	EditBus.send(new PositionChanging(_editPane));
     	setPosition(top);
     }
 
@@ -706,6 +709,7 @@ public class Navigator implements ActionListener {
     	NavPosition old = currentPosition();
     	NavPosition current = userStack.pop();
     	userStack.push(old);
+    	EditBus.send(new PositionChanging(_editPane));
     	setPosition(current);
     }
 
@@ -713,6 +717,7 @@ public class Navigator implements ActionListener {
     public void gotoTopPosition() {
         if (userStack.isEmpty()) return;
 	NavPosition top = userStack.lastElement();
+	EditBus.send(new PositionChanging(_editPane));
 	setPosition(top);
     }
 
