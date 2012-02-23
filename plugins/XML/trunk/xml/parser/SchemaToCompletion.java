@@ -36,6 +36,7 @@ import static xml.Debug.*;
 /**
  * converts the RNG object model to a list of CompletionInfo
  */
+@SuppressWarnings({"rawtypes", "unchecked"}) // whole class is littered with lists of AttributeDecl,ElementDecl which do not share common super type
 public class SchemaToCompletion
 {
 	private static final String RNG_DTD_COMPATIBILITY_NS =
@@ -229,6 +230,9 @@ public class SchemaToCompletion
 		}
 	}
 	
+	/**
+	 * only visitAttribute returns a non empty list of AttributeDecl
+	 */
 	private static class MyAttributeVisitor extends AbstractPatternVisitor< List<AttributeDecl> >{
 		private Map<String,String> values;
 		private List<String> data;
@@ -244,7 +248,6 @@ public class SchemaToCompletion
 			if(values!=null)throw new IllegalArgumentException("attribute//attribute isn't allowed");
 			values = new HashMap<String,String>();
 			data = new ArrayList<String>();
-			boolean savedRequired = required;
 			
 			List<Name> names = p.getNameClass().accept(new MyNameClassVisitor());
 
@@ -274,30 +277,28 @@ public class SchemaToCompletion
 				value = p.getAttributeAnnotation(RNG_DTD_COMPATIBILITY_NS,"defaultValue");
 			}
 			
+			// as soon as there are more than one name required, can't mark each attributeDecl as required !
+			required &= names.size() < 2;
+			
 			for(Name name:names){
 				attrs.add(new AttributeDecl(name.getLocalName(),
 					name.getNamespaceUri(),
 					value,
 					new ArrayList<String>(values.keySet()),
 					type,
-					savedRequired));
+					required));
 			}
-			required = savedRequired;
 			return attrs;
 		}
 				   
 		public List<AttributeDecl> visitChoice(ChoicePattern p){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitChoice()");
-			boolean savedRequired = required;
-			// only one of the choice is required : don't mark any required
-			required = false;
-			List res = new ArrayList<AttributeDecl>();
+			// here is only the choice of values, so it doesn't change the requiredness of the attribute
 			for(Pattern c: p.getChildren())
 			{
-				res.addAll(c.accept(this));
+				c.accept(this);
 			}
-			required = savedRequired;
-			return res;
+			return Collections.emptyList();
 		}
 				   
 		public List<AttributeDecl> visitElement(ElementPattern p){
@@ -320,22 +321,20 @@ public class SchemaToCompletion
 		public List<AttributeDecl> visitGroup(GroupPattern p){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitGroup()");
 			
-			List res = new ArrayList<AttributeDecl>();
 			for(Pattern c: p.getChildren())
 			{
-				res.addAll(c.accept(this));
+				c.accept(this);
 			}
-			return res;
+			return Collections.emptyList();
 		}
 				   
 		public List<AttributeDecl> visitInterleave(InterleavePattern p){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitInterleave()");
-			List res = new ArrayList<AttributeDecl>();
 			for(Pattern c: p.getChildren())
 			{
-				res.addAll(c.accept(this));
+				c.accept(this);
 			}
-			return res;
+			return Collections.emptyList();
 		}
 				   
 		public List<AttributeDecl> visitList(ListPattern p){
@@ -371,11 +370,10 @@ public class SchemaToCompletion
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitRef()");
 			if(defined.containsKey(p.getName()))
 			{
-				List res = new ArrayList<AttributeDecl>();
 				for(DefineComponent dc: defined.get(p.getName())){
-					res.addAll(dc.getBody().accept(this));
+					dc.getBody().accept(this);
 				}
-				return res;
+				return Collections.emptyList();
 			}
 			else throw new IllegalArgumentException("unknown define : "+p.getName());
 		}
@@ -580,6 +578,7 @@ public class SchemaToCompletion
 			throw new UnsupportedOperationException("visitElement(Annotation)");
 		}
 		
+		@SuppressWarnings("unchecked")
 		public List visitElement(ElementPattern p)
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"visitElement()");
@@ -879,10 +878,6 @@ public class SchemaToCompletion
 							parent.elementHash = new HashMap<String,ElementDecl>();
 						parent.elementHash.put(e.name,e);
 						parent.content.add(e.name);
-					}else
-					{
-						//null parent on ref...
-						System.err.println("toto");
 					}
 				}
 			}
@@ -934,13 +929,20 @@ public class SchemaToCompletion
 	/** replace all ElementRefDecls by their value,
 	 *  going through all elements of all CompletionInfo */
 	void resolveRefs(){
-		boolean b = true;
-		while(b){ // while not stable, apply resolveRefs(ElementDecl)
-			b = false;
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"resolving references...");
-			for(CompletionInfo i : info.values()){
-				for(ElementDecl e:i.elements){
-					b = b | resolveRefs(e);
+		if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"resolving references...");
+		for(CompletionInfo i : info.values()){
+			for(ElementDecl e:i.elements){
+				resolveRefs(e);
+			}
+		}
+		for(CompletionInfo i : info.values()){
+			for(ElementDecl e:i.elements){
+				if(e.elementHash!=null){
+					for(ElementDecl d:e.elementHash.values()){
+						if(d instanceof ElementRefDecl){
+							throw new IllegalStateException("still some undereferenced ElementRefDecl: "+d.name);
+						}
+					}
 				}
 			}
 		}
@@ -979,50 +981,72 @@ public class SchemaToCompletion
 		
 	}
 
-	/** replace all ElementRefDecls children in this ElementDecl by their content */
-	private boolean resolveRefs(ElementDecl e){
-		boolean b = false;
+	/** replace all ElementRefDecls children in this ElementDecl by their content,
+	 *  recursively dereferencing if necessary
+	 *  @see MyPatternVisitor#resolveRefs(List, boolean)
+	 */
+	private void resolveRefs(ElementDecl e){
 		if(e.elementHash != null){
-			Map<String,ElementDecl> copy = new HashMap<String,ElementDecl>(e.elementHash);
-			for(Map.Entry<String,ElementDecl> en:copy.entrySet()){
-				ElementDecl childDecl = en.getValue();
-				if(childDecl instanceof ElementRefDecl){
-					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"resolveRefs("+e.name+")=>"+childDecl.name);
-					e.elementHash.remove(en.getKey());
-					e.content.remove(en.getKey());
-					b = true;
-					ElementRefDecl ref = (ElementRefDecl)childDecl;
-					DefineComponent dc = ref.ref;
-					List res = definesContents.get(dc);
-					if(res == null)throw new IllegalArgumentException("can't find definitions for "+dc.getName()+"="+dc);
-					else {
-						for(Object o:res){
-							if(o instanceof ElementDecl){
-								ElementDecl oo = (ElementDecl)o;
-								if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"adding "+oo);
-								if(oo.name != null){
-									e.elementHash.put(oo.name,oo);
-									e.content.add(oo.name);
-								}
-							}else if(o instanceof AttributeDecl){
-								AttributeDecl oo = (AttributeDecl)o;
-								if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"adding "+oo);
-								if(ref.required){
-									e.addAttribute(oo);
-								}else{
-									e.addAttribute(oo.copy());
-								}
-							}else{
-								throw new IllegalArgumentException("what's this : "+o);
-							}
-						}
+			List res = resolveRefs(new ArrayList(e.elementHash.values()), true);
+			e.elementHash.clear();
+			e.content.clear();
+			for(Object o:res){
+				if(o instanceof ElementDecl){
+					ElementDecl oo = (ElementDecl)o;
+					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"adding "+oo);
+					if(oo.name != null){
+						e.elementHash.put(oo.name,oo);
+						e.content.add(oo.name);
 					}
+				}else if(o instanceof AttributeDecl){
+					AttributeDecl oo = (AttributeDecl)o;
+					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"adding "+oo);
+					//requiredness has already been take care of in resolveRefs(List,boolean)
+					e.addAttribute(oo);
+				}else{
+					throw new IllegalArgumentException("what's this : "+o);
 				}
 			}
 		}
-		return b;
 	}
 	
+	/**
+	 * recursively resolve references in res
+	 * @param	required	are referenced attributes required.
+	 * 						If only 1 reference in the chain of references marks attributes as non required (field ElementRefDecl.required),
+	 *						resulting attributes will be non required  
+	 * @return	list of ElementDecl or AttributeDecl
+	 */
+	private List resolveRefs(List res, boolean required){
+		List l = new ArrayList(res.size());
+		for(Object o:res){
+			if(o instanceof ElementRefDecl){
+				ElementRefDecl oref = (ElementRefDecl)o;
+				DefineComponent odc = oref.ref;
+				List ores = definesContents.get(odc);
+				if(ores == null)throw new IllegalArgumentException("can't find definitions for "+odc.getName()+"="+odc);
+				// it only takes 1 ref in <optional> to make attributes non required
+				l.addAll(resolveRefs(ores,required && oref.required));
+				 
+			} else if(o instanceof ElementDecl){
+				l.add(o);
+			}else if(o instanceof AttributeDecl){
+				AttributeDecl oo = (AttributeDecl)o;
+				if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"adding "+oo);
+				// must make a copy with correct requiredness because attribute could be referenced somewhere else
+				// where it is required
+				if(!required){
+					oo = oo.copy();
+					oo.required = false;
+				}
+				l.add(oo);
+			}else{
+				throw new IllegalArgumentException("what's this : "+o);
+			}
+		}
+		return l;
+	}
+
 	/** intermediate placeholder for a reference */
 	private static class ElementRefDecl extends ElementDecl{
 		DefineComponent ref;
