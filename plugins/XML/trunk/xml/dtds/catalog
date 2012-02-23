@@ -17,10 +17,6 @@ SYSTEM "registers.dtd" "jeditresource:/org/gjt/sp/jedit/registers.dtd"
 SYSTEM "services.dtd" "jeditresource:/org/gjt/sp/jedit/services.dtd"
 SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd"
 
--- relative to catalog --
-SYSTEM "locate.rng" "locate.rng"
-SYSTEM "relaxng.rng" "relaxng.rng"
-
 -- XHTML 1.0 DTDs --
 
 PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "xhtml1-frameset.dtd"
