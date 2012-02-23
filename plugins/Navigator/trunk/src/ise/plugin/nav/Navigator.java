@@ -620,31 +620,6 @@ public class Navigator implements ActionListener {
         notifyChangeListeners();
     }
 
-    public void pushPosition() {
-    	NavPosition now = currentPosition();
-    	userStack.push(current);
-    }
-    
-    public void popPosition() {
-    	if (userStack.isEmpty()) return;
-    	NavPosition top = userStack.pop();
-    	setPosition(top);
-    }
-
-    public void swapCaretAndTop() {
-        if (userStack.isEmpty()) return;
-    	NavPosition old = currentPosition();
-    	NavPosition current = userStack.pop();
-    	userStack.push(old);
-    	setPosition(current);
-    }
-
-    
-    public void gotoTopPosition() {
-        if (userStack.isEmpty()) return;
-	NavPosition top = userStack.lastElement();
-	setPosition(top);
-    }
     
     /**
      * Moves to the next item in the "forward" history.
@@ -708,6 +683,37 @@ public class Navigator implements ActionListener {
             notifyChangeListeners();
         }
         ignoreUpdates = false;
+    }
+
+    // -------------    USER STACK OPERATIONS ------------------------
+
+    /** Push position onto user stack */
+    public void pushPosition() {
+    	NavPosition now = currentPosition();
+    	userStack.push(current);
+    }
+
+    /** Pop position from user stack */
+    public void popPosition() {
+    	if (userStack.isEmpty()) return;
+    	NavPosition top = userStack.pop();
+    	setPosition(top);
+    }
+
+    /** Swap current and top user stack positions */
+    public void swapCaretAndTop() {
+        if (userStack.isEmpty()) return;
+    	NavPosition old = currentPosition();
+    	NavPosition current = userStack.pop();
+    	userStack.push(old);
+    	setPosition(current);
+    }
+
+    /** Go to top of user stack */
+    public void gotoTopPosition() {
+        if (userStack.isEmpty()) return;
+	NavPosition top = userStack.lastElement();
+	setPosition(top);
     }
 
     public void addChangeListener(ChangeListener listener) {
