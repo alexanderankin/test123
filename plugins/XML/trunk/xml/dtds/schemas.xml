@@ -20,4 +20,5 @@
 	<typeId id="RNG" uri="relaxng.rng"/>
 	<typeId id="LOCATE" uri="locate.rng"/>
 	<typeId id="XSD" uri="schema4schemas.xsd" />
+	<typeId id="DOCBOOK5" uri="docbook5.rnc" />
 </locatingRules>
