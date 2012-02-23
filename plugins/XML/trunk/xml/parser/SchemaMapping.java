@@ -851,7 +851,7 @@ public final class SchemaMapping
 			// TODO: what happens when there are errors in the document ?
 			ValidatorHandler verifierFilter = SchemaLoader.instance().loadJaxpGrammar(
 				null/*current*/,
-				"locate.rng",
+				"jeditresource:XML.jar!/xml/dtds/locate.rng",
 				handler,
 				null/*buffer*/);
 
