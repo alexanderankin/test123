@@ -35,11 +35,9 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.ThreadUtilities;
@@ -691,16 +689,15 @@ public class Navigator implements ActionListener {
     /** Push position onto user stack */
     public void pushPosition() {
     	NavPosition now = currentPosition();
-    	EditBus.send(new PositionChanging(_editPane));
-    	userStack.push(current);
+    	addToHistory(now);
+    	userStack.push(now);
     }
 
     /** Pop position from user stack */
     public void popPosition() {
     	if (userStack.isEmpty()) return;
-    	NavPosition top = userStack.pop();
-    	EditBus.send(new PositionChanging(_editPane));
-    	setPosition(top);
+    	addToHistory(currentPosition());
+    	setPosition(userStack.pop());
     }
 
     /** Swap current and top user stack positions */
@@ -709,7 +706,7 @@ public class Navigator implements ActionListener {
     	NavPosition old = currentPosition();
     	NavPosition current = userStack.pop();
     	userStack.push(old);
-    	EditBus.send(new PositionChanging(_editPane));
+    	addToHistory(old);
     	setPosition(current);
     }
 
@@ -717,7 +714,7 @@ public class Navigator implements ActionListener {
     public void gotoTopPosition() {
         if (userStack.isEmpty()) return;
 	NavPosition top = userStack.lastElement();
-	EditBus.send(new PositionChanging(_editPane));
+	addToHistory(currentPosition());
 	setPosition(top);
     }
 
