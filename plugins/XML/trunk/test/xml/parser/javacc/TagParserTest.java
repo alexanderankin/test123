@@ -40,7 +40,6 @@ import static xml.XMLTestUtils.*;
 
 // }}}
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
@@ -56,8 +55,8 @@ import java.awt.event.InputEvent;
 import org.gjt.sp.jedit.gui.CompletionPopup;
 
 import static xml.parser.javacc.TagParser.*;
+import xml.XMLTestUtils;
 import xml.XmlParsedData;
-import sidekick.SideKickParsedData;
 
 /**
  * unit tests for TagParser
@@ -81,7 +80,7 @@ public class TagParserTest{
     //@Test
     public void testIsInsideTagNoStart(){
     	String text = "1 > 0";
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			assertFalse(TagParser.isInsideTag(text,0)); // |1 > 0
 			assertFalse(TagParser.isInsideTag(text,2)); // 1 |> 0
@@ -96,7 +95,7 @@ public class TagParserTest{
     //@Test
     public void testIsInsideTagSimple(){
     	String text = "<a>b <c>";
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			assertFalse(TagParser.isInsideTag(text,0)); // |<a>b <c>
 			assertTrue( TagParser.isInsideTag(text,1)); // <|a>b <c>
@@ -112,7 +111,7 @@ public class TagParserTest{
     //@Test
     public void testIsInsideTagGtInAttr(){
     	String text = "<a b='>'>";
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			assertTrue( TagParser.isInsideTag(text,1)); // <|a b='>'>
 			assertTrue( TagParser.isInsideTag(text,6)); // <a b='|>'>
@@ -127,7 +126,7 @@ public class TagParserTest{
     //@Test
     public void testGetTagAtOffsetGtInAttr(){
     	String text = "<a b='>'> ";
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			assertNotNull( TagParser.getTagAtOffset(b,text,1)); // <|a b='>'>
 			assertNotNull( TagParser.getTagAtOffset(b,text,6)); // <a b='|>'>
@@ -145,7 +144,7 @@ public class TagParserTest{
     public void testGetTagAtOffsetSimple(){
     	String text = "short <";
     	Tag t;
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			assertNull(TagParser.getTagAtOffset(b,text,-1));
 			assertNull(TagParser.getTagAtOffset(b,text,text.length()+1));
@@ -154,7 +153,7 @@ public class TagParserTest{
 			close(view(),b);
 		}
 		text = "<a> </a> <b c='d'/><br/>";		
-		b = bufferWithText("xml",text);
+		b = XMLTestUtils.bufferWithText("xml",text);
 		try{
 			t = TagParser.getTagAtOffset(b,text,1);             // <|a> </a> <b c='d'/><br/>
 			assertNotNull(t);
@@ -217,7 +216,7 @@ public class TagParserTest{
     public void testGetTagAtOffsetComment(){
     	String text = "<a> <!-- comment --> </a>";
     	Tag t;
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			t = TagParser.getTagAtOffset(b,text,1);             // <|a> <!-- comment --> </a>";
 			assertNotNull(t);
@@ -237,7 +236,7 @@ public class TagParserTest{
     public void testGetTagAtOffsetNotClosed(){
     	String text = "<a <b> <c d='>";
     	Tag t;
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 	
 			t = TagParser.getTagAtOffset(b,text,1);             // <|a <b> <c d='>
@@ -264,7 +263,7 @@ public class TagParserTest{
     	Tag f;
     	Tag t;
     	
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			// find closing tag for <a>
 			f = new Tag(0,2);
@@ -304,7 +303,7 @@ public class TagParserTest{
     	Tag f;
     	Tag t;
     	
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			// find closing tag for <a>, ignoring the commented one
 			f = new Tag(0,2);
@@ -337,7 +336,7 @@ public class TagParserTest{
     	Tag f;
     	Tag t;
     	
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
     	// find closing tag for <a>
 			f = new Tag(0,2);
@@ -369,7 +368,7 @@ public class TagParserTest{
     	Tag f;
     	Tag t;
     	
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			// find closing tag for <a> (not there)
 			f = new Tag(0,2);
@@ -398,7 +397,7 @@ public class TagParserTest{
     	Tag f;
     	Tag t;
     	
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			// find closing tag for <a> (ignoring a>b)
 			f = new Tag(0,2);
@@ -438,7 +437,7 @@ public class TagParserTest{
     		messageOfClassCondition(sidekick.SideKickUpdate.class),
     		10000);
 		
-		XmlParsedData data = getXmlParsedData();
+		XmlParsedData data = XMLTestUtils.getXmlParsedData();
     	Tag t;
     	String text = b.getText(0,b.getLength());
     	
@@ -513,7 +512,7 @@ public class TagParserTest{
     	// wait for end of parsing
     	parseAndWait();
 		
-		XmlParsedData data = getXmlParsedData();
+		XmlParsedData data = XMLTestUtils.getXmlParsedData();
     	Tag t;
     	
     	// after the img (standalone)
@@ -548,7 +547,7 @@ public class TagParserTest{
 		String text = "<html><p> not closed</html> ";
     	Tag t;
     	
-     	Buffer b = bufferWithText("xml",text);
+     	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
     		// after the closing html : p is discarded
     		// not same as TagParser
@@ -563,7 +562,7 @@ public class TagParserTest{
     public void testGetAttrsContents()
     {
 		String text = "<a title= 'a \"nice\"\n title'\n a:href=\"../test\" xmlns:a\n= 'urn:a&lt;b'>";
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			Tag t = TagParser.getTagAtOffset(b, text,1);
 			assertEquals("a",t.tag);
@@ -595,7 +594,7 @@ public class TagParserTest{
     public void testGetAttrsStandaloneAndEmpty()
     {
 		String text = "<a><img src='i.png'/></a>";
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			Tag t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -632,7 +631,7 @@ public class TagParserTest{
 		List<Attr> attrs;
 		Attr a;
 
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -649,7 +648,7 @@ public class TagParserTest{
     	}
     	
 		text = "<j 'no name'>";
-    	b = bufferWithText("xml",text);
+    	b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -660,7 +659,7 @@ public class TagParserTest{
 			close(view(),b);
     	}
 		text= "<k l='1' 'not closed>";
-    	b = bufferWithText("xml",text);
+    	b = XMLTestUtils.bufferWithText("xml",text);
 		try{
 			t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -671,7 +670,7 @@ public class TagParserTest{
     	}
 
 		text= "<k p: q='qq'>";
-    	b = bufferWithText("xml",text);
+    	b = XMLTestUtils.bufferWithText("xml",text);
 		try{
 			t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -694,7 +693,7 @@ public class TagParserTest{
     	}
 
 		text = "<l &attrRef;>";
-    	b = bufferWithText("xml",text);
+    	b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -714,7 +713,7 @@ public class TagParserTest{
 		List<Attr> attrs;
 		Attr a;
 
-    	Buffer b = bufferWithText("xml",text);
+    	Buffer b = XMLTestUtils.bufferWithText("xml",text);
     	try{
 			t = TagParser.getTagAtOffset(b,text,1);
 			
@@ -733,29 +732,4 @@ public class TagParserTest{
     	}
     	
     }
-    
-   	/**
-   	 * utility method to return the XmlParsedData of current view/buffer
-   	 * fails if data is not instance of XmlParsedData
-   	 */
-    public static XmlParsedData getXmlParsedData(){
-    	Pause.pause(500);
-  		SideKickParsedData _data = SideKickParsedData.getParsedData(view());
-  		System.err.println("XMLParsedData:"+_data.getClass()+":"+_data);
-		assertTrue("no XMLParsedData in current view/buffer",
-			_data instanceof XmlParsedData);
-		
-		return (XmlParsedData)_data;
-    }
-    
-    public static Buffer bufferWithText(final String mode, final String text){
-    	return GuiActionRunner.execute(new GuiQuery<Buffer>(){
-    			public Buffer executeInEDT(){
-    				Buffer b = jEdit.newFile(view());
-    				b.setMode(mode);
-    				b.insert(0, text);
-    				return b;
-    			}
-    	});
-	}
 }

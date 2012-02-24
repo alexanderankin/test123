@@ -32,7 +32,7 @@ public class XsdElementDecl extends ElementDecl
 	 * Returns a List of ElementDecl objects which are equivalent to this one, if it is indeed
 	 * an abstract class.
 	 */
-	public List<ElementDecl> findReplacements(String prefix) 
+	public List<ElementDecl> findReplacements() 
 	{	
 
 		String subGroupName = name;
@@ -48,7 +48,7 @@ public class XsdElementDecl extends ElementDecl
 				XSElementDeclaration subGroup = element.xsed.getSubstitutionGroupAffiliation();
 				if (subGroup != null && subGroup.getName().equals(subGroupName)) 
 				{
-					retval.add(element.withPrefix(prefix));
+					retval.add(element);
 				}
 			}
 			catch (NullPointerException npe) {}

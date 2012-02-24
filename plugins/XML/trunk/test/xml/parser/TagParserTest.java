@@ -613,17 +613,4 @@ public class TagParserTest{
     	assertEquals(0,attrs.size());
     }
 
-   	/**
-   	 * utility method to return the XmlParsedData of current view/buffer
-   	 * fails if data is not instance of XmlParsedData
-   	 */
-    public static XmlParsedData getXmlParsedData(){
-    	Pause.pause(500);
-  		SideKickParsedData _data = SideKickParsedData.getParsedData(view());
-  		System.err.println("XMLParsedData:"+_data.getClass()+":"+_data);
-		assertTrue("no XMLParsedData in current view/buffer",
-			_data instanceof XmlParsedData);
-		
-		return (XmlParsedData)_data;
-    }
 }

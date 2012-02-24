@@ -23,6 +23,7 @@
 package xml.completion;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
@@ -31,24 +32,32 @@ import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.Selection;
+import org.xml.sax.helpers.NamespaceSupport;
 
 import sidekick.SideKickCompletion;
 import xml.XmlActions;
 import xml.XmlListCellRenderer;
 import xml.XmlParsedData;
 import xml.completion.ElementDecl.AttributeDecl;
+import xml.EditTagDialog;
 //}}}
 
 public class XmlCompletion extends SideKickCompletion
 {
+	private Map<String, String> namespaces;
+	private Map<String, String> namespacesToInsert;
+
 	//{{{ XmlCompletion constructor
-	public XmlCompletion(View view, List items, String txt, XmlParsedData data,
+	public XmlCompletion(View view, List items, Map<String, String> namespaces,  Map<String, String> namespacesToInsert, String txt, XmlParsedData data,
 		String closingTag)
 	{
 		super(view,txt);
 		this.items = items;
 		this.data = data;
 		this.closingTag = closingTag;
+		this.namespaces = namespaces;
+		this.namespacesToInsert = namespacesToInsert;
 	} //}}}
 
 	//{{{ getRenderer() method
@@ -139,70 +148,67 @@ public class XmlCompletion extends SideKickCompletion
 		else if (obj instanceof AttributeDecl)
 		{
 			AttributeDecl attrDecl = (AttributeDecl) obj;
-			StringBuffer buf = new StringBuffer();
-			buf.append(attrDecl.name.substring(text.length()));
+			StringBuilder buf = new StringBuilder();
+			buf.append(EditTagDialog.composeName(attrDecl.name, attrDecl.namespace, namespaces, namespacesToInsert).substring(text.length()));
 			buf.append("=\"\"");
+			
+			caret = buf.length() - 1;
+			
+			EditTagDialog.appendNamespaces(namespacesToInsert, buf);
+			if(!namespacesToInsert.isEmpty()){
+				caret = buf.length() - caret;
+			}else{
+				caret = 1;
+			}
  			insert = buf.toString();
- 			caret = 1;
 		}
 		else if(obj instanceof ElementDecl)
 		{
-			final ElementDecl element = (ElementDecl)obj;
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(element.name.substring(text.length()));
-
-			buf.append(element.getRequiredAttributesString());
-
-			if(ch == '\n' || ch == '>')
+			final ElementDecl elementDecl = (ElementDecl)obj;
+			boolean withEndOfTag = ch == '\n' || ch == '>';
+			
+			StringBuilder[]bufs = EditTagDialog.composeTag(data, elementDecl, namespaces, namespacesToInsert, withEndOfTag);
+			bufs[0].replace(0,text.length(),"");
+			if(withEndOfTag)
 			{
-				if(element.empty)
+				if(elementDecl.empty)
 				{
-					if(data.html)
-						buf.append(">");
-					else
-						buf.append(XmlActions.getStandaloneEnd());
-
 					caret = 0;
+					insert = bufs[0].toString();
 				}
 				else
 				{
-					buf.append(">");
-
-					int start = buf.length();
-
-					if(jEdit.getBooleanProperty(
-						"xml.close-complete-open"))
-					{
-						buf.append("</");
-						buf.append(element.name);
-						buf.append(">");
-					}
-
-					caret = buf.length() - start;
+					caret = bufs[1].length();
+					insert = bufs[0].toString() + bufs[1].toString();
 				}
 
-				if(ch == '\n' && element.attributes.size() != 0 &&
+				if(ch == '\n' &&
 				   jEdit.getBooleanProperty("xml.tageditor.popupOnComplete")) 
 				{
+					
 					// hide the popup first, since the edit tag
 					// dialog is modal
 					SwingUtilities.invokeLater(new Runnable()
 					{
 						public void run()
 						{
-							XmlActions.showEditTagDialog(view, element);
+							int caret = textArea.getCaretPosition();
+							Selection s = textArea.getSelectionAtOffset(caret);
+							int start = (s == null ? caret : s.getStart());
+							Selection textSel = new Selection.Range(start - text.length() - 1,start); // < is not part of text but must be removed also
+							XmlActions.showEditTagDialog(view, elementDecl, textSel, namespaces, namespacesToInsert, !elementDecl.attributes.isEmpty());
 						}
 					});
+					return;
 				}
 			}
 			else
 			{
-				buf.append(ch);
+				bufs[0].append(ch);
+				insert = bufs[0].toString();
 				caret = 0;
 			}
 
-			insert = buf.toString();
 		}
 		else if(obj instanceof EntityDecl)
 		{
@@ -230,5 +236,7 @@ public class XmlCompletion extends SideKickCompletion
 		}
 	} //}}}
 
+	
+	
 	//}}}
 }

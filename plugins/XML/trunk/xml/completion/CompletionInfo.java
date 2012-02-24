@@ -107,19 +107,19 @@ public class CompletionInfo
 	} //}}}
 
 	//{{{ getAllElements() method
-	public void getAllElements(String prefix, List<ElementDecl> out)
+	public void getAllElements(List<ElementDecl> out)
 	{
 		// only look for global elements, so use elementHash instead of elements
 		for(ElementDecl decl: elementHash.values())
 		{
 			if (decl.isAbstract()) 
 			{
-				List<ElementDecl> repls = decl.findReplacements(prefix);
+				List<ElementDecl> repls = decl.findReplacements();
 				out.addAll(repls);
 				
 				
 			}
-			else out.add(decl.withPrefix(prefix));
+			else out.add(decl);
 		}
 	} //}}}
 

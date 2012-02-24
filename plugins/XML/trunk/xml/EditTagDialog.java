@@ -28,18 +28,21 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.StandardUtilities;
 import xml.completion.*;
+import xml.completion.ElementDecl.AttributeDecl;
+import org.xml.sax.helpers.NamespaceSupport;
 //}}}
 
-class EditTagDialog extends EnhancedDialog
+public class EditTagDialog extends EnhancedDialog
 {
+
 	//{{{ EditTagDialog constructor
 	/**
 	 * elementName might not equal element.name due to case insensitivity
 	 * in HTML files.
 	 */
 	EditTagDialog(View view, String elementName, ElementDecl element,
-		Map attributeValues, boolean elementEmpty, Map entityHash,
-		List ids, boolean html)
+		Map<String, Object> attributeValues, boolean elementEmpty, Map entityHash,
+		List ids, boolean html, Map<String, String> namespaces, Map<String, String> namespacesToInsert)
 	{
 		super(view,jEdit.getProperty("xml-edit-tag.title"),true);
 
@@ -47,6 +50,8 @@ class EditTagDialog extends EnhancedDialog
 		this.element = element;
 		this.entityHash = entityHash;
 		this.html = html;
+		this.namespaces = namespaces;
+		this.namespacesToInsert = namespacesToInsert;
 
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12,12,12,12));
@@ -200,11 +205,13 @@ class EditTagDialog extends EnhancedDialog
 	private JButton cancel;
 	private String newTag;
 	private boolean isOK;
+	private Map<String, String> namespaces;
+	private Map<String, String> namespacesToInsert;
 	//}}}
 
 	//{{{ createAttributeModel() method
 	private ArrayList<Attribute> createAttributeModel(List declaredAttributes,
-		Map attributeValues, List ids)
+		Map<String,Object> attributeValues, List ids)
 	{
 		ArrayList<String> stringIDs = new ArrayList<String>(ids.size());
 		for(int i = 0; i < ids.size(); i++)
@@ -215,12 +222,14 @@ class EditTagDialog extends EnhancedDialog
 		ArrayList<Attribute> attributeModel = new ArrayList<Attribute>();
 		for(int i = 0; i < declaredAttributes.size(); i++)
 		{
-			ElementDecl.AttributeDecl attr =
-				(ElementDecl.AttributeDecl)
+			AttributeDecl attr =
+				(AttributeDecl)
 				declaredAttributes.get(i);
 
+			String attrName = composeName(attr.name, attr.namespace, namespaces, namespacesToInsert);
+
 			boolean set;
-			String value = (String)attributeValues.get(attr.name);
+			String value = (String)attributeValues.get(attrName);
 			if(value == null)
 			{
 				set = false;
@@ -247,8 +256,8 @@ class EditTagDialog extends EnhancedDialog
 					&& values.size() > 0)
 					value = (String)values.get(0);
 			}
-
-			attributeModel.add(new Attribute(set,attr.name,
+			
+			attributeModel.add(new Attribute(set,attrName,
 				value,values,attr.type,attr.required));
 		}
 
@@ -262,7 +271,7 @@ class EditTagDialog extends EnhancedDialog
 	{
 		int tagNameCase = TextUtilities.getStringCase(elementName);
 
-		StringBuffer buf = new StringBuffer("<");
+		StringBuilder buf = new StringBuilder("<");
 		buf.append(elementName);
 
 		for(int i = 0; i < attributeModel.size(); i++)
@@ -305,6 +314,8 @@ class EditTagDialog extends EnhancedDialog
 			}
 			buf.append("\"");
 		}
+
+		appendNamespaces(namespacesToInsert,buf);
 
 		if(empty.isSelected() && !html)
 			buf.append("/");
@@ -605,4 +616,127 @@ class EditTagDialog extends EnhancedDialog
 	} //}}}
 
 	//}}}
+
+	/**
+	 * create a qualified name from localname, ns and given namespaces bindings.
+	 * If no namespace, returns localname directly.
+	 * Otherwise, pre:localname is returned, where 
+	 * pre is taken from namespacesToInsert then if not found from namespaces, then is generated to be unique
+	 * among namespaces and namespacesToInsert (always of the form nsNUMBER).
+	 * @param localname				local name
+	 * @param ns					namespace localname is in
+	 * @param namespaces			already declared namespaces
+	 * @param namespacesToInsert	new namespaces (IN/OUT: a new binding may be added)
+	 * @return	the qualified name
+	 */
+	public static String composeName(String localname, String ns, Map<String,String> namespaces, Map<String, String> namespacesToInsert){
+
+		if(ns == null || "".equals(ns))
+		{
+			return localname;
+		}
+		else
+		{
+			// prefer getting from namespacesToInsert, for the case when EditTagDialog is called on a tag redefining a namespace
+			String pre = namespacesToInsert.get(ns);
+			if(pre == null)
+			{
+					pre = namespaces.get(ns);
+			}
+			if(pre == null)
+			{
+				// special case for the predefined XML namespace
+				if(NamespaceSupport.XMLNS.equals(ns))
+				{
+					pre = "xml";
+				}
+				else
+				{
+					pre = generatePrefix(namespaces, namespacesToInsert);
+					namespacesToInsert.put(ns,pre);
+				}
+			}
+
+			if("".equals(pre)){
+				return localname;
+			}else{
+				return pre + ":" + localname;
+			}
+
+		}
+	}
+	
+	/**
+	 * append xmlns:XX="..." namespace bindings for each item in namespacesToInsert to buf
+	 * @param namespacesToInsert	namespaces to declare
+	 * @param buf					buffer to append to
+	 */
+	public static void appendNamespaces(Map<String, String> namespacesToInsert, StringBuilder buf)
+	{
+		if(namespacesToInsert.isEmpty())return;
+		
+		for(Map.Entry<String, String> en: namespacesToInsert.entrySet())
+		{
+			buf.append(' ');
+			buf.append("xmlns:").append(en.getValue()).append("=\"").append(en.getKey()).append('"');
+		}
+	}
+	
+	
+	/**
+	 * create open and close tags for an ElementDecl (with required attributes).
+	 * if elementDecl.isEmpty, close tag will be empty and open tag will be standalone (if not html)
+	 * @param data	
+	 * @param elementDecl			element to create tags for
+	 * @param namespaces			namespaces in scope (no need to redeclare them)
+	 * @param namespacesToInsert	namespaces needed but not declared (will be declared)
+	 * @param withEndOfTag			shall the '>' be appended at the end of open tag ?
+	 * @return	{openTag,closeTag}
+	 */
+	public static StringBuilder[] composeTag(XmlParsedData data, ElementDecl elementDecl, Map<String,String> namespaces, Map<String, String> namespacesToInsert, boolean withEndOfTag){
+		StringBuilder buf = new StringBuilder();
+		StringBuilder close = new StringBuilder();
+		String ns = elementDecl.completionInfo.namespace;
+		String elementName = EditTagDialog.composeName(elementDecl.name, ns, namespaces, namespacesToInsert);
+		buf.append(elementName);
+		
+		buf.append(elementDecl.getRequiredAttributesString(namespaces, namespacesToInsert));
+
+		EditTagDialog.appendNamespaces(namespacesToInsert,buf);
+
+		if(withEndOfTag)
+		{
+			if(elementDecl.empty)
+			{
+				if(data.html)
+					buf.append(">");
+				else
+					buf.append(XmlActions.getStandaloneEnd());
+
+			}
+			else
+			{
+				buf.append(">");
+				close.append("</").append(elementName).append(">");
+			}
+		}
+		return new StringBuilder[]{buf, close};
+	}
+
+	/**
+	 * generate a new prefix, unique among namespaces bindings
+	 * 
+	 * @param namespaces	namespaces bindings not to override
+	 * @return	new prefix
+	 */
+	public static String generatePrefix(Map<String,String> ... namespaces) {
+		for(int i=0;;i++){
+			String pre = "ns"+i;
+			for(Map<String,String> namespace: namespaces){
+				if(!namespace.containsKey(pre)){
+					return pre;
+				}
+			}
+		}
+	}
 }
