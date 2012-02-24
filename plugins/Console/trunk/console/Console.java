@@ -740,8 +740,8 @@ implements EBComponent, DefaultFocusComponent
 			text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
 		}
 		else {
-			plainColor = jEdit.getColorProperty("console.plainColor");
-			text.setBackground(jEdit.getColorProperty("console.bgColor"));
+			plainColor = jEdit.getColorProperty("console.plainColor", Color.BLACK);
+			text.setBackground(jEdit.getColorProperty("console.bgColor", Color.WHITE));
 		}
 		text.setForeground(plainColor);
 		text.setCaretColor(jEdit.getColorProperty("console.caretColor"));
