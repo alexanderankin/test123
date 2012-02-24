@@ -736,19 +736,20 @@ implements EBComponent, DefaultFocusComponent
 	private void propertiesChanged()
 	{
 		if (jEdit.getBooleanProperty("textColors")) {
+			plainColor = jEdit.getColorProperty("view.fgColor", Color.BLACK);
 			text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
-			text.setForeground(jEdit.getColorProperty("view.fgColor", Color.BLACK));
 		}
 		else {
+			plainColor = jEdit.getColorProperty("console.plainColor");
 			text.setBackground(jEdit.getColorProperty("console.bgColor"));
-			text.setForeground(jEdit.getColorProperty("console.plainColor"));
 		}
+		text.setForeground(plainColor);
 		text.setCaretColor(jEdit.getColorProperty("console.caretColor"));
 		text.setFont(jEdit.getFontProperty("console.font"));
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
-		plainColor = jEdit.getColorProperty("console.plainColor");
+		
 	} //}}}
 
 	// {{{ handleNodeSelected()
