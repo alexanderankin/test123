@@ -86,14 +86,8 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	 */
 	public Hyperlink getHyperlink(Buffer buffer, int offset){
 		View view = jEdit.getActiveView();
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-		
-		if(!(_data instanceof XmlParsedData))
-		{
-			return null;
-		}
-		
-		XmlParsedData data = (XmlParsedData)_data;
+		XmlParsedData data = XmlParsedData.getParsedData(view, false);
+		if(data==null)return null;
 		
 		IAsset asset = data.getAssetAtOffset(offset);
 		if(asset == null){

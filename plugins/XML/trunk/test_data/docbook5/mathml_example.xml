@@ -2,7 +2,7 @@
 <!-- example adapted from http://www.sagehill.net/docbookxsl/MathML.html Copyright © 2002-2007 Sagehill Enterprises -->
 <article xmlns="http://docbook.org/ns/docbook" 
            xmlns:mml="http://www.w3.org/1998/Math/MathML" version="5.0">
-      <title>Test article</title>
+      <db:title xmlns:db="http://docbook.org/ns/docbook">Test article</db:title>
 	
       <equation>
 	<title>My MathML example</title>

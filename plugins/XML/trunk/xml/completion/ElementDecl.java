@@ -25,6 +25,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.util.StandardUtilities;
+import org.xml.sax.helpers.NamespaceSupport;
+
+import xml.EditTagDialog;
 
 public class ElementDecl
 {
@@ -118,8 +121,10 @@ public class ElementDecl
 	{
 		String ns = completionInfo.namespace;
 		String prefix = context.get(ns);
-		if(prefix == null || prefix.equals(""))
+		if(prefix == null || "".equals(prefix))
+		{
 			return this;
+		}
 		else
 		{
 			ElementDecl d =  new ElementDecl(completionInfo, prefix + ':' + name,
@@ -130,7 +135,7 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ getChildElements() method
-	public List<ElementDecl> getChildElements(String prefix)
+	public List<ElementDecl> getChildElements()
 	{
 		ArrayList<ElementDecl>children = new ArrayList<ElementDecl>(100);
 
@@ -138,15 +143,14 @@ public class ElementDecl
 		{
 			for(int i = 0; i < completionInfo.elements.size(); i++)
 			{
-				children.add(((ElementDecl)completionInfo.elements.get(i)).withPrefix(prefix));
+				children.add(((ElementDecl)completionInfo.elements.get(i)));
 			}
 		}
 		else
 		{
 			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
 			{
-				children.add(((ElementDecl)completionInfo.elementsAllowedAnywhere.get(i))
-					.withPrefix(prefix));
+				children.add(((ElementDecl)completionInfo.elementsAllowedAnywhere.get(i)));
 			}
 
 			if(content != null)
@@ -166,9 +170,9 @@ public class ElementDecl
 						
 					if(decl != null) {
 						if (decl.isAbstract())
-							children.addAll(decl.findReplacements(prefix));
+							children.addAll(decl.findReplacements());
 						else 
-							children.add(decl.withPrefix(prefix));
+							children.add(decl);
 					}
 				}
 			}
@@ -232,7 +236,7 @@ public class ElementDecl
 	 * none.
 	 * 
 	 */
-	public List<ElementDecl> findReplacements(String prefix) {
+	public List<ElementDecl> findReplacements() {
 		return null;
 	}
 	
@@ -272,21 +276,21 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ getRequiredAttributesString()
-	public String getRequiredAttributesString()
+	public String getRequiredAttributesString(Map<String,String> namespaces, Map<String, String> namespacesToInsert)
 	{
 		StringBuffer buf = new StringBuffer();
 
 		for(int i = 0; i < attributes.size(); i++)
 		{
-			AttributeDecl attr = (AttributeDecl)attributes.get(i);
+			AttributeDecl attrDecl = (AttributeDecl)attributes.get(i);
 
-			if(attr.required)
+			if(attrDecl.required)
 			{
 				buf.append(' ');
-				buf.append(attr.name);
+				buf.append(EditTagDialog.composeName(attrDecl.name, attrDecl.namespace, namespaces, namespacesToInsert));
 				buf.append("=\"");
-				if(attr.value != null)
-					buf.append(attr.value);
+				if(attrDecl.value != null)
+					buf.append(attrDecl.value);
 				buf.append('"');
 			}
 		}

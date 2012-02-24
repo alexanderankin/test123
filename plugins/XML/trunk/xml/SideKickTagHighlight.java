@@ -43,9 +43,10 @@ public class SideKickTagHighlight implements StructureMatcher
 		}
 
 		int caret = textArea.getCaretPosition();
-		SideKickParsedData parsedData = SideKickParsedData.getParsedData(((JEditTextArea)textArea).getView());
+		SideKickParsedData parsedData = XmlParsedData.getParsedData(((JEditTextArea)textArea).getView(), false);
 
-		if(parsedData == null || !(parsedData instanceof XmlParsedData)) {
+		if(parsedData == null)
+		{
 			return null;
 		}
 		else

@@ -86,15 +86,8 @@ public class XmlActions
 		}
 
 		Buffer buffer = view.getBuffer();
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		XmlParsedData data = (XmlParsedData)_data;
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
+		if(data == null)return;
 
 		String text = buffer.getText(0,buffer.getLength());
 
@@ -108,7 +101,7 @@ public class XmlActions
 		}
 
 		// use a StringTokenizer to parse the tag - WTF?!?? Why not find data?
-		HashMap attributes = new HashMap();
+		HashMap<String, Object> attributes = new HashMap<String, Object>();
 		String attributeName = null;
 		boolean seenEquals = false;
 		boolean empty = false;
@@ -190,7 +183,8 @@ loop:			for(;;)
 			Log.log(Log.ERROR, XmlActions.class, "this shouldn't happen:", io);
 		} //}}}
 
-		ElementDecl elementDecl = data.getElementDecl(tag.tag,tag.start+1);
+		// must really go inside the open tag to have it returned (hence tag.end+1)
+		ElementDecl elementDecl = data.getElementDecl(tag.tag,tag.end+1);
 		if(elementDecl == null)
 		{
 			String[] pp = { tag.tag };
@@ -198,10 +192,21 @@ loop:			for(;;)
 			return;
 		}
 
+		// tag.start+1 because  don't want the locally declared namespaces
+		Map<String,String> namespaces = data.getNamespaces(tag.start+1);
+		Map<String,String> namespacesToInsert = new HashMap<String,String>();
+	
+		// grab namespaces declared in this tag
+		for(String attrname: attributes.keySet()){
+			if(attrname.startsWith("xmlns:")){
+				namespacesToInsert.put((String)attributes.get(attrname), attrname.substring(6));
+			}
+		}
+		
 		EditTagDialog dialog = new EditTagDialog(view,tag.tag,
 			elementDecl,attributes,empty,
 			elementDecl.completionInfo.entityHash,
-			data.getSortedIds(),data.html);
+			data.getSortedIds(),data.html, namespaces, namespacesToInsert);
 
 		String newTag = dialog.getNewTag();
 
@@ -221,51 +226,59 @@ loop:			for(;;)
 		}
 	}
 
-	public static void showEditTagDialog(View view, ElementDecl elementDecl) {
-		showEditTagDialog(view, elementDecl, null);
-	}
-
-
-	public static void showEditTagDialog(View view, ElementDecl elementDecl, Selection insideTag)
+	/**
+	 * show EditTagDialog in order to insert open and close tags or edit current tag 
+	 * @param view						current view
+	 * @param elementDecl				element to insert (may not be null)
+	 * @param insideTag					Selection of the current start tag (or part of, for instance inf XmlCompletion, what has been already typed)
+	 * @param namespaces				namespace bindings in scope for current location (not those declared inside the start tag itself)
+	 * @param namespacesToInsert		namespace bindings that will have to be inserted at the end of the start tag
+	 * @param reallyShowEditTagDialog	false to disable showing the dialog at all, but insert the start and end tags nonetheless 
+	 */
+	public static void showEditTagDialog(View view, ElementDecl elementDecl, Selection insideTag, Map<String, String> namespaces, Map<String, String> namespacesToInsert, boolean reallyShowEditTagDialog)
 	{
 		Buffer buffer = view.getBuffer();
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		XmlParsedData data = (XmlParsedData)_data;
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
+		if(data == null)return;
 
 		String newTag;
 		String closingTag;
-		if(elementDecl.attributes.size() == 0)
+
+		// compute content to insert
+		if(!reallyShowEditTagDialog)
 		{
-			newTag = "<" + elementDecl.name
-				+ (!data.html && elementDecl.empty
-				? XmlActions.getStandaloneEnd() : ">");
-			if(elementDecl.empty)
-				closingTag = "";
-			else
-				closingTag = "</" + elementDecl.name + ">";
+			StringBuilder[] openclose = EditTagDialog.composeTag(data, elementDecl, namespaces, namespacesToInsert, true);
+			newTag = openclose[0].toString();
+			closingTag = openclose[1].toString();
 		}
 		else
 		{
 			EditTagDialog dialog = new EditTagDialog(view,elementDecl.name,elementDecl,
-				new HashMap(),elementDecl.empty,
+				new HashMap<String, Object>(),elementDecl.empty,
 				elementDecl.completionInfo.entityHash,
-				data.getSortedIds(),data.html);
+				data.getSortedIds(),data.html, namespaces, namespacesToInsert);
 
+			// painfully recover the qualified name of the element
 			newTag = dialog.getNewTag();
+			String newName;
+			if(newTag==null){
+				newName = "";
+			}else if(newTag.contains(" ")){
+				 newName = newTag.substring(1,newTag.indexOf(" "));
+			}else{
+				newName = newTag.substring(1, newTag.length()-1);
+			}
+			
+			
 			if(dialog.isEmpty())
 				closingTag = "";
 			else
-				closingTag = "</" + elementDecl.name + ">";
+				closingTag = "</" + newName + ">";
 		}
 
+		// really insert now
+		// TODO: there is no support for Recorder, unlike in XmlCompletion
 		if(newTag != null)
 		{
 			JEditTextArea textArea = view.getTextArea();
@@ -315,19 +328,8 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
+		XmlParsedData data = XmlParsedData.getParsedData(view,false);
 
-		XmlParsedData data;
-		
-		if(_data instanceof XmlParsedData)
-		{
-			data = (XmlParsedData)_data;
-		}
-		else
-		{
-			data = null;
-		}
-		
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
 			textArea.getCaretPosition(),data);
@@ -347,12 +349,7 @@ loop:			for(;;)
 	public static void splitTag(Tag tag, JEditTextArea textArea, String text) {
 		View view = textArea.getView();
 		textArea.setSelection(new Selection.Range(tag.start, tag.end));
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view, "xml-no-data", null);
-			return;
-		}
+		XmlParsedData data = XmlParsedData.getParsedData(view,true);
 		Selection[] s = textArea.getSelection();
 		if (s.length != 1) return;
 		Selection sel = s[0];
@@ -365,7 +362,6 @@ loop:			for(;;)
 			indent.append(" ");
 		}
 
-		XmlParsedData data = (XmlParsedData)_data;
 		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		int count = path.getPathCount();
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(count-1);
@@ -433,18 +429,13 @@ loop:			for(;;)
 		
 		// select it
 		textArea.setSelection(new Selection.Range(tag.start, tag.end));	
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view, "xml-no-data", null);
-			return;
-		}
+		XmlParsedData data = XmlParsedData.getParsedData(view,true);
+		if(data==null)return;
 		Selection[] s = textArea.getSelection();
 		if (s.length != 1) return;
 		Selection sel = s[0];
 		if (sel.getEnd() - sel.getStart() < 2) return;
 		int line = textArea.getLineOfOffset(tag.start);
-		XmlParsedData data = (XmlParsedData)_data;
 		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		int count = path.getPathCount();
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(count-1);
@@ -523,15 +514,8 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		XmlParsedData data = (XmlParsedData)_data;
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
+		if(data == null)return;
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -846,12 +830,9 @@ loop:			for(;;)
 			|| !closeCompletionOpen)
 			return;
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
+		XmlParsedData data = XmlParsedData.getParsedData(view,false);
+		if(data==null)return;
 
-		if(!(_data instanceof XmlParsedData))
-			return;
-
-		XmlParsedData data = (XmlParsedData)_data;
 
 		int caret = textArea.getCaretPosition();
 
@@ -903,12 +884,8 @@ loop:			for(;;)
 		if(XmlPlugin.isDelegated(textArea))
 			return;
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-			return;
-
-		XmlParsedData data = (XmlParsedData)_data;
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
+		if(data==null)return;
 
 		if(!buffer.isEditable() || !closeCompletion)
 		{
@@ -978,16 +955,9 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		XmlParsedData data = (XmlParsedData)_data;
-
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
+		if(data == null)return;
+		
 		Map entityHash = data.entityHash;
 
 		Selection[] selection = textArea.getSelection();
@@ -1038,15 +1008,8 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		XmlParsedData data = (XmlParsedData)_data;
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
+		if(data == null)return;
 
 		Map entityHash = data.entityHash;
 
@@ -1109,21 +1072,19 @@ loop:			for(;;)
 	//{{{ copyXPath() method
 	public static void copyXPath(View view)
 	{
-		SideKickParsedData data = SideKickParsedData.getParsedData(view);
+		XmlParsedData data = XmlParsedData.getParsedData(view, true);
 		
-		if(data == null || !(data instanceof XmlParsedData))
+		if(data == null)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 		
-		XmlParsedData xmlData = (XmlParsedData)data;
-			
 		JEditTextArea textArea = view.getTextArea();
 	
 		int pos = textArea.getCaretPosition();
 		
-		String xpath = xmlData.getXPathForPosition(pos);
+		String xpath = data.getXPathForPosition(pos);
 		
 		if(xpath!=null)
 		{

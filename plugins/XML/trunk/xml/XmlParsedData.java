@@ -32,6 +32,7 @@ import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.jedit.View;
@@ -519,7 +520,7 @@ public class XmlParsedData extends SideKickParsedData
 				String ns = (String)iter.next();
 				CompletionInfo info = (CompletionInfo)
 				mappings.get(ns);
-				info.getAllElements("", returnValue);
+				info.getAllElements(returnValue);
 			}
 		}
 		else
@@ -590,7 +591,7 @@ public class XmlParsedData extends SideKickParsedData
 					String prefix = (String)iter.next();
 					CompletionInfo info = (CompletionInfo)
 					mappings.get(prefix);
-					info.getAllElements(prefix,returnValue);
+					info.getAllElements(returnValue);
 				}
 			}
 			else
@@ -617,7 +618,7 @@ public class XmlParsedData extends SideKickParsedData
 			{
 
 				if(startParentDecl != null)
-					returnValue.addAll(startParentDecl.getChildElements(startParentPrefix));
+					returnValue.addAll(startParentDecl.getChildElements());
 
 				// add everything but the parent's prefix now
 				Iterator iter = mappings.keySet().iterator();
@@ -628,7 +629,7 @@ public class XmlParsedData extends SideKickParsedData
 					{
 						CompletionInfo info = (CompletionInfo)
 							mappings.get(prefix);
-						info.getAllElements(prefix,returnValue);
+						info.getAllElements(returnValue);
 					}
 				}
 			}
@@ -639,6 +640,21 @@ public class XmlParsedData extends SideKickParsedData
 	} //}}}
 
 	//{{{ getNamespaceBindings() method
+	/** namespace to prefix */
+	public Map<String,String> getNamespaces(int pos){
+		
+		if(html) return new HashMap<String,String>();
+		
+		if(allNamespacesBindingsAtTop){
+			return getRootNamespaceBindings();
+		}else{
+			TreePath path = getTreePathForPosition(pos);
+			if(path == null)return null;
+			else return getNamespaceBindings(path);
+		}
+	}
+	
+	/** namespace to prefix */
 	public Map<String,String> getNamespaceBindings(TreePath path){
 		Map<String,String> bindings = new HashMap<String,String>();
 		
@@ -866,10 +882,31 @@ public class XmlParsedData extends SideKickParsedData
 		return idl;
 	}//}}}
 	
-	//{{{ Private members
+	//{{{ getParsedData() method
+	/**
+	 * get parsed data as XmlParsedData.
+	 * @param	view 			current view
+	 * @param	signalError		shows an error dialog when not an XmlParsedData
+	 * @return	parsed data or null
+	 */
+	public static XmlParsedData getParsedData(View view, boolean signalError)
+	{
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
+	
+		if(_data==null || !(_data instanceof XmlParsedData))
+		{
+			if(signalError)
+			{
+				GUIUtilities.error(view,"xml-no-data",null);
+			}
+			return null;
+		}
+	
+		return (XmlParsedData)_data;
+	}//}}}
 
 	//{{{ getElementNamePrefix() method
-	private static String getElementNamePrefix(String name)
+	public static String getElementNamePrefix(String name)
 	{
 		int index = name.indexOf(':');
 		if(index == -1)
@@ -878,5 +915,13 @@ public class XmlParsedData extends SideKickParsedData
 			return name.substring(0,index);
 	} //}}}
 
-	//}}}
+	//{{{ getElementLocalName() method
+	public static String getElementLocalName(String name)
+	{
+		int index = name.indexOf(':');
+		if(index == -1)
+			return name;
+		else
+			return name.substring(index+1);
+	} //}}}
 }

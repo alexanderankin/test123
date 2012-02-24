@@ -137,14 +137,11 @@ public abstract class XmlParser extends SideKickParser
 		// could pop up a pro forma xml declaration for caret = 0
 		if (caret == 0)
 			return null;
-		SideKickParsedData _data = SideKickParsedData
-			.getParsedData(editPane.getView());
-		if(!(_data instanceof XmlParsedData))
-			return null;
+		XmlParsedData data = XmlParsedData.getParsedData(editPane.getView(), false);
+		if(data==null)return null;
+
 		if(XmlPlugin.isDelegated(editPane.getTextArea()))
 			return null;
-
-		XmlParsedData data = (XmlParsedData)_data;
 
 		Buffer buffer = editPane.getBuffer();
 		
@@ -233,7 +230,10 @@ public abstract class XmlParser extends SideKickParser
 		String word;
 
 		List allowedCompletions = new ArrayList(20);
-
+		Map<String, String> namespaces = data.getNamespaceBindings(data.getTreePathForPosition(caret));
+		Map<String, String> namespacesToInsert = new HashMap<String, String>();
+		
+		
 		if(wordStart != -1 && mode != -1)
 		{
 			String tolastchar = text.substring(wordStart + 1, caret);
@@ -251,6 +251,7 @@ public abstract class XmlParser extends SideKickParser
 
 			if(mode == ELEMENT_COMPLETE)
 			{
+				String wordWithoutPrefix = XmlParsedData.getElementLocalName(word);
 				List<ElementDecl> completions = data.getAllowedElements(buffer, lastchar);
 				TagParser.Tag tag = TagParser.findLastOpenTag(text,lastchar - 1,data);
 				if(tag != null)
@@ -276,12 +277,38 @@ public abstract class XmlParser extends SideKickParser
 
 				for(int i = 0; i < completions.size(); i++)
 				{
-					ElementDecl element = completions.get(i);
-					if(element.name.startsWith(word)
-						|| (data.html && element.name.toLowerCase()
-						.startsWith(word.toLowerCase())))
+					ElementDecl elementDecl = completions.get(i);
+					String elementName;
+					String elementNamespace = elementDecl.completionInfo.namespace;
+					if(elementNamespace == null || "".equals(elementNamespace))
 					{
-						allowedCompletions.add(element);
+						elementName = elementDecl.name;
+					}
+					else
+					{
+						String pre = namespaces.get(elementNamespace);
+						if(pre == null)
+						{
+							elementName = elementDecl.name;
+							namespacesToInsert.put(elementNamespace, pre);
+						}
+						else
+						{
+							if("".equals(pre)){
+								elementName = elementDecl.name;
+							}else{
+								elementName = pre + ":" + elementDecl.name;
+							}
+						}
+					}
+					//TODO: handle using unknown prefix ?
+					//      ie. if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix 
+					
+					if(elementName.startsWith(word)
+							|| (data.html && elementName.toLowerCase()
+							.startsWith(word.toLowerCase())))
+					{
+						allowedCompletions.add(elementDecl);
 					}
 				}
 			}
@@ -305,12 +332,11 @@ public abstract class XmlParser extends SideKickParser
 				if (decl != null)
 				{
 					completions = decl.attributes;
-					Map<String,String> namespaces = data.getNamespaceBindings(data.getTreePathForPosition(caret));
 					for (int i=0; i<completions.size(); ++i) 
 					{
 						AttributeDecl attrDecl = completions.get(i);
 						String attrName;
-						if(attrDecl.namespace == null)
+						if(attrDecl.namespace == null || "".equals(attrDecl.namespace))
 						{
 							attrName = attrDecl.name;
 						}
@@ -335,9 +361,7 @@ public abstract class XmlParser extends SideKickParser
 						}
 						if (attrName.startsWith(prefix))
 						{
-							AttributeDecl newDecl = attrDecl.copy();
-							newDecl.name = attrName;
-							allowedCompletions.add(newDecl);
+							allowedCompletions.add(attrDecl);
 						}
 					}
 				}
@@ -359,7 +383,7 @@ public abstract class XmlParser extends SideKickParser
 		if(word.endsWith("/") && allowedCompletions.size() == 0)
 			return null;
 		else
-			return new XmlCompletion(editPane.getView(),allowedCompletions,word,data,closingTag);
+			return new XmlCompletion(editPane.getView(),allowedCompletions, namespaces, namespacesToInsert, word,data,closingTag);
 	} //}}}
 
 	//{{{ Package-private members

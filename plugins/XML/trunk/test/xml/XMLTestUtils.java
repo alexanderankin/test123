@@ -41,10 +41,13 @@ import java.awt.Component;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+
+import sidekick.SideKickParsedData;
 
 import static org.gjt.sp.jedit.testframework.EBFixture.*;
 import static org.gjt.sp.jedit.testframework.TestUtils.*;
@@ -192,6 +195,31 @@ public class XMLTestUtils{
 			});
 		
 		return new JWindowFixture(TestUtils.robot(),(JWindow)completionC);
+	}
+
+	/**
+	 * utility method to return the XmlParsedData of current view/buffer
+	 * fails if data is not instance of XmlParsedData
+	 */
+	public static XmlParsedData getXmlParsedData(){
+		Pause.pause(500);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view());
+		System.err.println("XMLParsedData:"+_data.getClass()+":"+_data);
+		assertTrue("no XMLParsedData in current view/buffer",
+			_data instanceof XmlParsedData);
+		
+		return (XmlParsedData)_data;
+	}
+
+	public static Buffer bufferWithText(final String mode, final String text){
+		return GuiActionRunner.execute(new GuiQuery<Buffer>(){
+				public Buffer executeInEDT(){
+					Buffer b = jEdit.newFile(view());
+					b.setMode(mode);
+					b.insert(0, text);
+					return b;
+				}
+		});
 	}
 	
 

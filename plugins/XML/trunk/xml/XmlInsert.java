@@ -22,7 +22,10 @@ import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
@@ -214,8 +217,8 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ update() method
 	private void update()
 	{
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-		if(!(_data instanceof XmlParsedData))
+		XmlParsedData data = XmlParsedData.getParsedData(view, false);
+		if(data == null)
 		{
 			setDeclaredEntities(null);
 			setDeclaredIDs(null);
@@ -223,7 +226,6 @@ public class XmlInsert extends JPanel implements EBComponent
 		}
 		else
 		{
-			XmlParsedData data = (XmlParsedData)_data;
 			setDeclaredEntities(data.entities);
 			setDeclaredIDs(data.getSortedIds());
 			html = data.html;
@@ -326,11 +328,10 @@ public class XmlInsert extends JPanel implements EBComponent
 	{
 		Buffer buffer = view.getBuffer();
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
+		XmlParsedData data = XmlParsedData.getParsedData(view,false);
 
-		if(_data instanceof XmlParsedData)
+		if(data != null)
 		{
-			XmlParsedData data = (XmlParsedData)_data;
 
 			Selection[] selection = view.getTextArea().getSelection();
 
@@ -416,7 +417,12 @@ public class XmlInsert extends JPanel implements EBComponent
 				EditPane editPane = view.getEditPane();
 				JEditTextArea textArea = editPane.getTextArea();
 				Buffer buffer = editPane.getBuffer();
+
+				XmlParsedData data = XmlParsedData.getParsedData(view,true);
+				if(data==null)return;
+
 				int pos = textArea.getCaretPosition();
+				//FIXME: crude parsing and getting a big chunk of text here !
 				String t = buffer.getText(0, pos);
 				/* Check if we are inside a tag, and if so, wipe it out before
 				   inserting the one we just created */
@@ -432,59 +438,11 @@ public class XmlInsert extends JPanel implements EBComponent
 
 				ElementDecl element = (ElementDecl)obj;
 
+				Map<String,String> namespaces = data.getNamespaces(pos);
+				Map<String,String> namespacesToInsert = new HashMap<String,String>();
 				
-				//{{{ Handle right mouse button click
-				if(GUIUtilities.isPopupTrigger(evt))
-				{
-					String openingTag = "<" + element.name
-						+ element.getRequiredAttributesString()
-						+ (element.empty && !html
-						? XmlActions.getStandaloneEnd() : ">");
-					String closingTag;
-					if(element.empty)
-						closingTag = "";
-					else
-						closingTag = "</" + element.name + ">";
-
-					Selection[] selection = textArea.getSelection();
-
-					if(selection.length > 0)
-					{
-						try
-						{
-							buffer.beginCompoundEdit();
-
-							for(int i = 0; i < selection.length; i++)
-							{
-								buffer.insert(selection[i].getStart(),
-									openingTag);
-								buffer.insert(selection[i].getEnd(),
-									closingTag);
-							}
-						}
-						finally
-						{
-							buffer.endCompoundEdit();
-						}
-
-						textArea.selectNone();
-					}
-					else
-					{
-						textArea.setSelectedText(openingTag);
-						int caret = textArea.getCaretPosition();
-						textArea.setSelectedText(closingTag);
-						textArea.setCaretPosition(caret);
-					}
-
-					textArea.selectNone();
-					textArea.requestFocus();
-				} //}}}
-				else
-				{
-					// show edit tag dialog box
-					XmlActions.showEditTagDialog(view,element,insideTag);
-				}
+				// all the work is done in XmlActions.showEditTagDialog
+				XmlActions.showEditTagDialog(view,element,insideTag, namespaces, namespacesToInsert,GUIUtilities.isPopupTrigger(evt));
 			} //}}}
 			//{{{ Handle clicks in entity list
 			else if(evt.getSource() == entityList)
