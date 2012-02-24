@@ -10,7 +10,8 @@ jEdit Console Plugin Changelog
         #3471524: Project option pane enhancements
         #1542700: Console crashes Swing with hyperthreaded or dualcore systems
         #1604327: Console javac commando problems.
-        #3479434: InterruptedException from BufferOutput.
+        #3479434: InterruptedException from BufferOutput. 
+        Fixed bug in how Console.fgColor was set introduced in 4.4.4
 
     Version 4.4.4 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, ProjectViewer 3.4 (optional).
         Respects jEdit's "use textArea colors" appearance option.
