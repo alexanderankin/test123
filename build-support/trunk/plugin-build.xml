@@ -36,6 +36,8 @@
     -->
     <!-- ===============================================}}} -->
 
+    <import file="${build.support}/build-helper.xml" />
+
     <!-- {{{ Property definitions ========================= -->
     <!-- First loads options from the user's optional
          build.properties files in the following order:
@@ -49,7 +51,7 @@
     <property file="${basedir}/../build.properties" />
     <property file="${user.home}/.build.properties" />
     <property file="${user.home}/build.properties" />
-    <echo>${java.home}</echo>
+    <!-- <echo>plugin-build java.home=${java.home}</echo> -->
     <!-- where to find jEdit and plugins    -->
     <property name="sourceforge.user.name"
     value="${user.name}" />
@@ -146,60 +148,6 @@
     <!-- ===============================================}}} -->
 
     <!-- ===============================================}}} -->
-
-    <!-- {{{ Helper macros ================================ -->
-    
-    <macrodef name="check-file-var">
-        <!--Checks whether a variable ${var} is defined and whether
-        a file exists-->
-        <attribute name="var" />
-        <sequential>
-        <check-file-dir-var type="file" var="@{var}" />
-        </sequential>
-    </macrodef>
-
-    <macrodef name="check-dir-var">
-        <!--Checks whether a variable ${var} is defined and whether
-        a directory exists-->
-        <attribute name="var" />
-        <sequential>
-        <check-file-dir-var type="dir" var="@{var}" />
-        </sequential>
-    </macrodef>
-
-    <macrodef name="check-file-dir-var">
-        <!-- private -->
-        <attribute name="type" />
-        <attribute name="var" />
-        <sequential>
-        <local name="file" />
-        <local name="desc" />
-        <propertycopy name="file" from="@{var}" />
-        <condition property="desc" value="file" else="directory">
-            <equals arg1="@{type}" arg2="file" />
-        </condition>
-        <echo>Checking ${desc} ${file} from property @{var}</echo>
-        <fail message="Please set &quot;@{var}&quot; in build.properties"
-              unless="@{var}" />
-        <fail message="The ${desc} ${file} pointed by variable @{var} does not exist. Check build.properties">
-            <condition>
-                <not><available file="${file}" type="@{type}" /></not>
-            </condition>
-        </fail>
-        </sequential>
-    </macrodef>
-
-    <macrodef name="propertycopy">
-        <!-- a workaround for indirect property expansion taken from
-        http://ant.apache.org/faq.html#propertyvalue-as-name-for-property -->
-        <attribute name="name"/>
-        <attribute name="from"/>
-        <sequential>
-            <property name="@{name}" value="${@{from}}"/>
-        </sequential>
-    </macrodef>
-
-    <!-- }}} ============================================== -->
 
     <!-- {{{ Custom javac task ============================ -->
     <presetdef name="jp.javac">
@@ -673,6 +621,209 @@
                 inheritRefs="false" />
     </target>
     <!-- ===============================================}}} -->
+
+    <!-- {{{ get-plugin-jar-name macro ==================== -->
+<!-- Takes class-name and insert jar name for the class into output-prop
+     property. This is needed only for plugins that are dependencies for
+     other plugins. Conversion from class name to jar name is not always
+     straightforward as there are no strict rules for that. Here are some
+     rules applied and then exceptions come.
+     Requires earlier call to get-lib scripting
+     -->
+<macrodef name="get-plugin-jar-name">
+    <attribute name="class-name" />
+    <attribute name="output-prop" />
+    <sequential>
+    <local name="attr-class-name" />
+    <local name="attr-output-prop" />
+    <property name="attr-class-name" value="@{class-name}" />
+    <property name="attr-output-prop" value="@{output-prop}" />
+    <script language="beanshell" classpathref="lib.scripting.path" >   
+        sJarName = project.getProperty("attr-class-name");
+        sJarName = sJarName.replaceFirst("^.*\\.([^\\.]+)$", "$1");
+        if (sJarName.length()>9) {
+          sJarName = sJarName.replaceFirst("^(.*)Plugin", "$1");
+        }
+        if (sJarName.equals("JNA") ||
+            sJarName.equals("SVN") ||
+            sJarName.equals("JDiff") ||
+            sJarName.equals("Xerces")) sJarName += "Plugin";
+        if (sJarName.equals("Project")) sJarName = "ProjectViewer";
+        project.setProperty(project.getProperty("attr-output-prop"),
+                            sJarName);
+        //print(sJarName);
+    </script>
+    </sequential>
+</macrodef>
+<!-- ===================================================}}} -->
+
+    <!-- {{{ get-plugin-info target======================== -->
+    <!-- 
+         Parses files from src.dir using selectors compileFiles and extraFiles
+         Downloads necessary libraries into build directory.
+         Sets properties:
+             plugin.class.name - e.g. projectviewer.ProjectPlugin
+             plugin.jar.name - e.g. ProjectViewer
+             plugin.jedit.version.full - e.g. 4.4.99.0
+             plugin.jedit.version - e.g. 4.4
+             plugin.dep.X.class - e.g. CommonControlsPlugin, X=0..n
+             plugin.dep.X.version - e.g. 1.3
+             plugin.dep.X.jar.name - e.g. CommonControls
+    -->
+<target name="get-plugin-info" depends="get-lib-scripting" >
+    <local name="src.fileset" />
+    <fileset id="src.fileset" dir="${src.dir}" >
+        <or>
+            <selector refid="compileFiles" />
+            <selector refid="extraFiles" />
+        </or>
+    </fileset>
+    <script language="beanshell" classpathref="lib.scripting.path" >   
+        
+        String getPluginClassName(fs) { // {{{
+          for (f: fs.iterator()) {
+            if (f.toString().endsWith("Plugin.java")) {
+              sPluginClass = f.toString().substring(sBaseDir.length()+1);
+              sPluginClass = sPluginClass.replaceFirst("\\.java$", "");
+              sPluginClass = sPluginClass.replaceAll("[/\\\\]", ".");
+              break;
+            }
+          }
+          project.setProperty("plugin.class.name", sPluginClass);
+          return sPluginClass;
+        } //}}}
+        
+        fs = project.getReference("src.fileset");
+        sBaseDir = fs.getDir().toString();
+        //ps = new org.apache.tools.ant.types.PropertySet();
+        ps = project.createDataType("propertyset"); 
+        //ps.setProject(project);
+        project.addReference("plugin.props.set", ps); 
+        //print("no files:" + fs.size());
+        
+        sPluginClass = getPluginClassName(fs);
+        ps.appendName("plugin.class.name");
+        ps.appendName("plugin.jar.name");
+        
+        // load all props files {{{
+        props = new Properties();
+        for (f: fs.iterator()) {
+          if (f.toString().endsWith(".props")) {
+            props.load(f.getInputStream());
+          }
+        } // }}}
+        
+        // read depends
+        // see PluginJAR.checkDependencies()
+        i = 0; iPluginDep = 0;
+        sDepPropName = "plugin." + sPluginClass + ".depend.";
+        while((dep = props.getProperty(sDepPropName + i)) != null) {
+          deps = dep.split(" ");
+          if (deps[0].equals("jedit")) {
+            project.setProperty("plugin.jedit.version.full", deps[1]);
+            v = deps[1].split("\\.");
+            project.setProperty("plugin.jedit.version", v[0] + "." + v[1]);
+            ps.appendName("plugin.jedit.version.full");
+            ps.appendName("plugin.jedit.version");
+          }
+          if (deps[0].equals("optional")) {
+            // ignore the optional keyword, treat as usual plugin dep
+            deps = java.util.Arrays.copyOfRange(deps, 1, deps.length);
+          }
+          if (deps[0].equals("plugin")) {
+            //print("" + iPluginDep + deps[1] + "-" + deps[2]);
+            sPref = "plugin.dep." + iPluginDep;
+            sDepPluginClass = deps[1];
+            project.setProperty(sPref + ".class", sDepPluginClass);
+            project.setProperty(sPref + ".version", deps[2]);
+            ps.appendRegex(sPref + "\\.*");
+            m = project.createTask("get-plugin-jar-name");
+            m.setDynamicAttribute("class-name", deps[1]);
+            m.setDynamicAttribute("output-prop", sPref + ".jar.name");
+            m.execute();
+            iPluginDep++;
+          }
+          
+          i++;
+        }
+    </script>
+    <get-plugin-jar-name class-name="${plugin.class.name}"
+                         output-prop="plugin.jar.name" />
+</target>
+<!-- }}} ================================================== -->
+
+    <!-- {{{ gen-plugin-deps-ivy-file target ============== -->
+<!-- Generates an ivy.xml file specified by property plugin.deps.ivy.file
+     based on plugin.deps.ivy.template -->
+<target name="gen-plugin-deps-ivy-file"
+        depends="get-plugin-info, get-lib-scripting"
+        unless="plugin.deps.present" >
+    <script language="beanshell" classpathref="lib.scripting.path">   
+        sTemplFile = project.getProperty("plugin.deps.ivy.template");
+        sOutFile = project.getProperty("plugin.deps.ivy.file");
+        builder = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+                 .newDocumentBuilder();
+        doc = builder.parse(new File(sTemplFile));
+        docElem = doc.getDocumentElement();
+        lfNode = doc.createTextNode(System.getProperty("line.separator"));
+        info = docElem.getElementsByTagName("info").item(0);
+        info.setAttribute("module", project.getProperty("plugin.jar.name"));
+        deps = docElem.getElementsByTagName("dependencies").item(0);
+        iDep = 0;
+        while (true) {
+          sDepProp = "plugin.dep." + iDep;
+          sDepClass = project.getProperty(sDepProp + ".class");
+          if (sDepClass == null) { break; }
+          sDepJarName = project.getProperty(sDepProp + ".jar.name");
+          sDepVer = project.getProperty(sDepProp + ".version");
+
+          dep = doc.createElement("dependency");
+          dep.setAttribute("org", "jedit-plugins");
+          dep.setAttribute("name", sDepJarName);
+          dep.setAttribute("rev", sDepVer);
+          deps.appendChild(dep);
+          deps.appendChild(lfNode.cloneNode(true));
+  
+          iDep++;
+        }
+        transformer = javax.xml.transform.TransformerFactory.newInstance()
+                      .newTransformer();
+        src = new javax.xml.transform.dom.DOMSource(doc);
+        dest = new javax.xml.transform.stream.StreamResult(new File(sOutFile));
+        transformer.transform(src, dest);
+    </script>    
+</target>
+<!-- }}} ================================================== -->
+
+    <!-- {{{ check-plugin-deps-dir target ================= -->
+<!-- Checks whether the directory exists. If it exists, then
+     presence of all plugin dependencies is assumed.
+     To force re-downloading remove the ${lib.dir}/plugin-deps directory
+     -->
+<target name="check-plugin-deps-dir" >
+    <property name="plugin.deps.dir" value="${lib.dir}/plugin-deps" />
+    <condition property="plugin.deps.present">
+      <available file="${plugin.deps.dir}" type="dir" />
+    </condition>
+</target>
+<!-- }}} ================================================== -->
+
+    <!-- {{{ download-plugin-deps target ================== -->
+<!-- 
+     -->
+<target name="download-plugin-deps"
+        depends="check-plugin-deps-dir, get-lib-ivy"
+        unless="plugin.deps.present">
+    <property name="plugin.deps.ivy.template"
+              value="${build.support}/ivy.plugin.deps.template.xml" />
+    <property name="plugin.deps.ivy.file"
+              value="${basedir}/build/ivy.plugin.deps.xml" />
+    <check-file-var var="plugin.deps.ivy.template" />
+    <antcall target="gen-plugin-deps-ivy-file" />
+    <ivy:retrieve file="${plugin.deps.ivy.file}"
+                  pattern="${plugin.deps.dir}/[artifact].[ext]" />
+</target>
+<!-- }}} ================================================== -->
 
     <!-- ================================================== }}}-->
 
