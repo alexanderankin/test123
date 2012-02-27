@@ -2,6 +2,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/AStylePlugin/trunk AStyl
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Activator/trunk Activator
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Ancestor/trunk Ancestor
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/AntFarm/trunk AntFarm
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Archive/trunk Archive
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Background/trunk Background
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Beauty/trunk Beauty
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/BufferList/trunk BufferList
