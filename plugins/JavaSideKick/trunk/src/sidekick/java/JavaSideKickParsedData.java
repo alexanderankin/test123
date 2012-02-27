@@ -13,25 +13,25 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
 package sidekick.java;
 
-// Imports
-import sidekick.*;
+//{{{ Imports
 import javax.swing.tree.*;
 import java.util.*;
 
 import org.gjt.sp.util.Log;
 
+import sidekick.*;
 import sidekick.java.node.TigerNode;
+//}}}
 
 
 /**
  * Stores a buffer structure tree.
- *
  * Plugins can extend this class to persist plugin-specific information.
  * For example, the XML plugin stores code completion-related structures using
  * a subclass.
+ *
  * @author Dale Anson
  */
 public class JavaSideKickParsedData extends SideKickParsedData {

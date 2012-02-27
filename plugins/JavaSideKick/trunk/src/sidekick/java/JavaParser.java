@@ -1,32 +1,21 @@
 /*
-Copyright (c) 2005, Dale Anson
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
-* Neither the name of the <ORGANIZATION> nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package sidekick.java;
 
+//{{{ Imports
 import errorlist.*;
 
 import java.awt.event.*;
@@ -53,28 +42,34 @@ import sidekick.java.parser.*;
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.Range;
+//}}}
 
 public class JavaParser extends SideKickParser implements EBComponent {
+
+	//{{{ Private members
     private View currentView = null;
     private OptionValues optionValues = new OptionValues();
-
     private JavaCompletionFinder completionFinder = null;
-
-    public static final int JAVA_PARSER = 1;
-    public static final int JAVACC_PARSER = 2;
-
+	
     // which type of parser, java or javacc
     private int parser_type = JAVA_PARSER;
+	//}}}
 
+	//{{{ Static members
+    public static final int JAVA_PARSER = 1;
+    public static final int JAVACC_PARSER = 2;
     public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
+	//}}}
 
+	//{{{ JavaParser()
     /**
      * Defaults to parsing java files.
      */
     public JavaParser() {
         this( JAVA_PARSER );
-    }
+    } //}}}
 
+	//{{{ JavaParser(int)
     /**
      * @param type one of 'java' or 'javacc'
      */
@@ -87,8 +82,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 parser_type = JAVA_PARSER;
         }
-    }
+    } //}}}
 
+	//{{{ activate(EditPane) : void
     /**
      * This method is called when a buffer using this parser is selected
      * in the specified view.
@@ -98,13 +94,15 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public void activate( EditPane editPane ) {
         super.activate( editPane );
         currentView = editPane.getView();
-    }
+    } //}}}
 
+	//{{{ deactivate(EditPane) : void
     public void deactivate( EditPane editPane ) {
         completionFinder = null;
         super.deactivate( editPane );
-    }
+    } //}}}
 
+	//{{{ handleMessage(EBMessage) : void
     /**
      * Reparse if the option settings have changed.
      */
@@ -118,8 +116,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
             EditBus.send( new SideKickUpdate( currentView ) );
         }
-    }
+    } //}}}
 
+	//{{{ parse() : SideKickParsedData
     /**
      * Parse the current buffer in the current view.
      */
@@ -128,8 +127,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             currentView = jEdit.getActiveView();
         }
         return parse( currentView.getBuffer(), null );
-    }
+    } //}}}
 
+	//{{{ parse(Buffer, DefaultErrorSource) : SideKickParsedData
     /**
      * Parse the contents of the given buffer.
      * @param buffer the buffer to parse
@@ -231,10 +231,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
         }
 
         return parsedData;
-    }
+    } //}}}
 
-    // the parser accumulates errors as it parses.  This method passed them all to
-    // the ErrorList plugin.
+	//{{{ handleErrors(DefaultErrorSource, TigerParser, Buffer) : void
+    /**
+	 * The parser accumulates errors as it parses.  This method passed them all to
+     * the ErrorList plugin.
+	 */
     private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
         /* only show errors for java files.  If the default edit mode is "java" then by default,
         the parser will be invoked by SideKick.  It's annoying to get parse error messages for
@@ -273,8 +276,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
-    }
+    } //}}}
 
+	//{{{ addChildren(DefaultMutableTreeNode, Buffer, ExpansionModel) : void
     private void addChildren( DefaultMutableTreeNode node, Buffer buffer, ExpansionModel expansionModel ) {
         TigerNode parent = ( TigerNode ) node.getUserObject();
         List<TigerNode> children = parent.getChildren();
@@ -316,8 +320,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 }
             }
         }
-    }
+    } //}}}
 
+	//{{{ setChildPositions(Buffer, TigerNode) : void
     private void setChildPositions( Buffer buffer, TigerNode tn ) {
         for ( int i = 0; i < tn.getChildCount(); i++ ) {
             TigerNode child = tn.getChildAt( i );
@@ -325,8 +330,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
             setChildPositions( buffer, child );
         }
-    }
+    } //}}}
 
+	//{{{ getExceptionLocation(ParseException) : Range
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
@@ -360,8 +366,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             e.printStackTrace();
             return new Range();
         }
-    }
+    } //}}}
 
+	//{{{ canShow(TigerNode) : boolean
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
@@ -396,8 +403,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             return optionValues.getShowThrows();
         }
         return true;
-    }
+    } //}}}
 
+	//{{{ isVisible(TigerNode) : boolean
     // check if a node should be visible based on the 'top level' or 'member visible' settings
     private boolean isVisible( TigerNode tn ) {
         if ( ( tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE ) && tn.getParent() != null && tn.getParent().getOrdinal() == TigerNode.COMPILATION_UNIT ) {
@@ -422,8 +430,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 return true;
         }
-    }
+    } //}}}
 
+	//{{{ nodeSorter : Comparator<TigerNode>
     private Comparator<TigerNode> nodeSorter =
         new Comparator<TigerNode>() {
             /**
@@ -458,24 +467,25 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 int comp = my_ordinal.compareTo( other_ordinal );
                 return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
             }
-        };
+        }; //}}}
 
-
+	//{{{ supportsCompletion() : boolean
     /**
      * @return true, this parser does support code completion
      */
     public boolean supportsCompletion() {
         return true;
-    }
+    } //}}}
 
-
+	//{{{ complete(EditPane, int) : SideKickCompletion
     public SideKickCompletion complete( EditPane editPane, int caret ) {
         if ( completionFinder == null )
             completionFinder = new JavaCompletionFinder();
         return completionFinder.complete( editPane, caret );
-    }
+    } //}}}
 
+	//{{{ getPanel() : JPanel
     public JPanel getPanel() {
         return new JavaModeToolBar( this );
-    }
+    } //}}}
 }

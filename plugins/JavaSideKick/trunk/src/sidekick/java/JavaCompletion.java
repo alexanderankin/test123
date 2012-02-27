@@ -1,5 +1,21 @@
+/*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package sidekick.java;
 
+//{{{ Imports
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -19,6 +35,7 @@ import sidekick.SideKickParsedData;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
+//}}}
 
 public class JavaCompletion extends SideKickCompletion {
 
@@ -36,36 +53,42 @@ public class JavaCompletion extends SideKickCompletion {
 
 	private int insertionType = PARTIAL;
 
+	//{{{ JavaCompletion(View, String, List)
 	public JavaCompletion(View view, String text, List choices) {
 		super(view, text, choices);
 		determineInsertionType();
+	} //}}}
 
-	}
-
+	//{{{ JavaCompletion(View, String, int, List)
 	public JavaCompletion(View view, String text, int type, List choices) {
 		super(view, text, choices);
 		this.insertionType = type;
-	}
+	} //}}}
 
+	//{{{ getChoices() : List
 	public List getChoices() {
 		return super.items;
-	}
+	} //}}}
 
+	//{{{ determineInsertionType() : void
 	private void determineInsertionType() {
 		if (text.endsWith("."))
 			insertionType = DOT;
 		else
 			insertionType = PARTIAL;
-	}
+	} //}}}
 
+	//{{{ setInsertionType(int) : void
 	public void setInsertionType(int type) {
 		insertionType = type;
-	}
+	} //}}}
 
+	//{{{ getRenderer() : ListCellRenderer
 	public ListCellRenderer getRenderer() {
 		return new JavaCompletionRenderer();
-	}
+	} //}}}
 
+	//{{{ insert(int) : void
 	public void insert( int index ) {
 		String to_replace = text;
 		String to_insert = String.valueOf(get(index));
@@ -138,8 +161,9 @@ public class JavaCompletion extends SideKickCompletion {
 		finally {
 			buffer.endCompoundEdit();
 		}
-	}
+	} //}}}
 
+	//{{{ insertImport(JEditTextArea, String) : void
 	/**
 	 * Insert an import directly into the top of the buffer
 	 * @param textArea the text area to insert into
@@ -217,10 +241,12 @@ public class JavaCompletion extends SideKickCompletion {
 		// Quietly re-parse after import in order to update imports and class starting location
 		SideKickParsedData skpd = (new JavaParser()).parse((Buffer) buffer, null);
 		SideKickParsedData.setParsedData( view , skpd );
-	}
+	} //}}}
 
+	//{{{ JavaCompletionRenderer
 	class JavaCompletionRenderer extends DefaultListCellRenderer {
 
+		//{{{ getListCellRendererComponent() : Component
 		public Component getListCellRendererComponent(
 				JList list,
 				Object value,
@@ -241,7 +267,7 @@ public class JavaCompletion extends SideKickCompletion {
 				cmp.setBackground(list.getSelectionBackground());
 			}
 			return cmp;
-		}
-	}
+		} //}}}
+	} //}}}
 
 }
