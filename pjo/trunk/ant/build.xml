@@ -1,6 +1,22 @@
 <?xml version="1.0"?>
 <project name="Plugin Release" basedir="." default="usage">
-<!--:noTabs=false:-->
+<!-- :noTabs=false:folding=explicit:collapseFolds=1: -->
+
+	<!-- Version check with custom.build.xml {{{ -->
+	<property name="Plugin Release.version" value="1" />
+	<fail>
+	  Your custom.build.xml version
+	  (${plugin.release.custom.build.version}) does not match
+	  Plugin Release version (${Plugin Release.version}).
+	  You should probably update custom.build.xml from repository.
+	  <condition>
+	    <and>
+	      <isset property="plugin.release.custom.build.version" />
+	      <not><equals arg1="${plugin.release.custom.build.version}"
+	                   arg2="${Plugin Release.version}" /></not>
+	    </and>
+	  </condition>
+	</fail> <!-- }}} -->
 	<property file="build.properties" />
 
 	<target name="usage">
