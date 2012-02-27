@@ -24,6 +24,7 @@
 
 package archive;
 
+//{{{ Imports
 import java.awt.Component;
 
 import java.io.*;
@@ -38,11 +39,13 @@ import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.io.*;
 
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import com.aftexsw.util.bzip.*;
 
 import com.ice.tar.*;
+//}}}
 
 
 public class ArchiveVFS extends VFS {
@@ -56,6 +59,7 @@ public class ArchiveVFS extends VFS {
     public static final int    fileSeparatorLen  = 1;
 
 
+    //{{{ ArchivePath class
     public class ArchivePath {
         public String protocol;
         public String pathName;
@@ -101,17 +105,16 @@ public class ArchiveVFS extends VFS {
             return "ArchivePath[" + protocol + ":" + pathName
                 + ArchiveVFS.archiveSeparator + entryName;
         }
-    }
+    } //}}}
 
-
+    //{{{ ArchiveVFS constructor
     public ArchiveVFS() {
         super(PROTOCOL,VFS.READ_CAP | VFS.WRITE_CAP  | VFS.BROWSE_CAP);
-    }
+    } //}}}
 
-
+    //{{{ getFileName() method
     public String getFileName(String path) {
         ArchivePath archive = new ArchivePath(path);
-        String archiveProtocol = archive.protocol;
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
 
@@ -130,9 +133,9 @@ public class ArchiveVFS extends VFS {
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
         return vfs.getFileName(archivePath);
-    }
+    } //}}}
 
-
+    //{{{ getParentOfPath() method
     public String getParentOfPath(String path) {
         ArchivePath archive = new ArchivePath(path);
         String archiveProtocol = archive.protocol;
@@ -159,9 +162,9 @@ public class ArchiveVFS extends VFS {
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
         return vfs.getParentOfPath(archivePath);
-    }
+    } //}}}
 
-
+    //{{{ constructPath() method
     public String constructPath(String parent, String path) {
         // Log.log(Log.DEBUG, this, "constructPath: [" + parent + "][" + path + "]");
         if (parent.endsWith(ArchiveVFS.archiveSeparator)) {
@@ -177,24 +180,23 @@ public class ArchiveVFS extends VFS {
                 return parent + ArchiveVFS.fileSeparator + path;
             }
         }
-    }
+    } //}}}
 
-
+    //{{{ getFileSeparator() method
     public char getFileSeparator() {
         return '/';
-    }
+    } //}}}
 
-
+    //{{{ openArchiveStream() method
     protected InputStream openArchiveStream(InputStream in) throws IOException {
         return ArchiveUtilities.openArchiveStream(
             ArchiveUtilities.openCompressedStream(in)
         );
-    }
+    } //}}}
 
-
-    private void cacheDirectories(Object session, String path,
-        Component comp
-    ) {
+    //{{{ cacheDirectories() method
+    private void cacheDirectories(String path,
+        Component comp) {
         ArchivePath archive = new ArchivePath(path);
         String archiveProtocol = archive.protocol;
         String archivePath     = archive.pathName;
@@ -203,18 +205,22 @@ public class ArchiveVFS extends VFS {
         // Log.log(Log.DEBUG, this, "2. Archive Path: [" + archivePath + "]");
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
+        Object session = null;
 
         try {
+            session = vfs.createVFSSession(archivePath, comp);
+            if (session == null)
+                return;
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
 
             InputStream archiveIn = this.openArchiveStream(in);
 
             Hashtable directories = getDirectories(archiveIn,
-                    archiveProtocol, archivePath);
-
-            archiveIn.close();
-
+                archiveProtocol, archivePath);
+            
+            IOUtilities.closeQuietly(archiveIn);
+            
             if (directories == null) {
                 return;
             }
@@ -232,9 +238,15 @@ public class ArchiveVFS extends VFS {
             }
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
+            try
+            {
+                vfs._endVFSSession(session, comp);
+            } catch (IOException e) {
+            }
         }
-    }
+    } //}}}
 
+    //{{{ getDirectories() method
     private Hashtable getDirectories(InputStream source,
         String archiveProtocol, String archivePath)
         throws IOException
@@ -248,8 +260,9 @@ public class ArchiveVFS extends VFS {
         } else {
             throw new ClassCastException();
         }
-    }
+    } //}}}
 
+    //{{{ getTarDirectories() method
     private Hashtable getTarDirectories(TarInputStream source,
         String archiveProtocol, String archivePath)
         throws IOException
@@ -267,8 +280,9 @@ public class ArchiveVFS extends VFS {
         }
 
         return directories;
-    }
+    } //}}}
 
+    //{{{ getZipDirectories() method
     private Hashtable getZipDirectories(ZipInputStream source,
         String archiveProtocol, String archivePath)
             throws IOException
@@ -286,8 +300,9 @@ public class ArchiveVFS extends VFS {
         }
 
         return directories;
-    }
+    } //}}}
 
+    //{{{ _listFiles() method
     public VFSFile[] _listFiles(Object session, String path,
         Component comp)
     {
@@ -299,21 +314,20 @@ public class ArchiveVFS extends VFS {
 
         ArchivePath archive = new ArchivePath(path);
         String archiveProtocol = archive.protocol;
-        String archivePath     = archive.pathName;
 
         // We cache the archive only if it was not previously cached
         String archiveRoot = archiveProtocol + ':' + archive.pathName + ArchiveVFS.archiveSeparator;
 
         if (ArchiveDirectoryCache.getCachedDirectory(archiveRoot) == null) {
-            this.cacheDirectories(session, path, comp);
+            this.cacheDirectories(path, comp);
 
             return ArchiveDirectoryCache.getCachedDirectory(path);
         }
 
         return null;
-    }
+    } //}}}
 
-
+    //{{{ _getFile() method
     public VFSFile _getFile(Object session, String path,
         Component comp)
     {
@@ -326,8 +340,7 @@ public class ArchiveVFS extends VFS {
             return null;
         }
 
-        VFSFile[] directory = this._listFiles(
-            session,this.getParentOfPath(path),comp);
+        VFSFile[] directory = this._listFiles(session, this.getParentOfPath(path), comp);
 
         if (directory == null) {
             return null;
@@ -347,9 +360,9 @@ public class ArchiveVFS extends VFS {
         }
 
         return null;
-    }
+    } //}}}
 
-
+    //{{{ _createInputStream() method
     /**
      * Creates an input stream. This method is called from the I/O
      * thread.
@@ -381,18 +394,29 @@ public class ArchiveVFS extends VFS {
             return null;
         }
 
+        Object _session = null;
+
         try {
-            InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
+            _session = vfs.createVFSSession(archivePath, comp);
+            InputStream in = vfs._createInputStream(_session, archivePath, ignoreErrors, comp);
             InputStream archiveIn = this.openArchiveStream(in);
 
             return createInputStream(archiveIn,archiveEntry);
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
+        } finally {
+            if (_session != null) {
+                try {
+                    vfs._endVFSSession(_session, comp);
+                } catch (IOException e) {
+                }
+            }
         }
 
         return null;
-    }
+    } //}}}
 
+    //{{{ createInputStream() method
     private InputStream createInputStream(InputStream in, String path)
         throws IOException {
         if(in instanceof TarInputStream)
@@ -401,8 +425,9 @@ public class ArchiveVFS extends VFS {
             return createZipInputStream((ZipInputStream)in,path);
         else
             throw new ClassCastException();
-    }
+    } //}}}
 
+    //{{{ createZipInputStream() method
     private InputStream createZipInputStream(ZipInputStream in,
         String path) throws IOException {
         for (ZipEntry entry; (entry = in.getNextEntry()) != null; ) {
@@ -412,8 +437,9 @@ public class ArchiveVFS extends VFS {
         }
 
         return null;
-    }
+    } //}}}
 
+    //{{{ createTarInputStream() method
     public InputStream createTarInputStream(TarInputStream in,
         String path) throws IOException {
         for (TarEntry entry; (entry = in.getNextEntry()) != null;) {
@@ -426,8 +452,9 @@ public class ArchiveVFS extends VFS {
         }
 
         return null;
-    }
+    } //}}}
 
+    //{{{ _createOutputStream() method
     /**
      * This only works when saving an actual buffer!
      * Otherwise <code>_saveComplete()</code> is never called!
@@ -462,14 +489,14 @@ public class ArchiveVFS extends VFS {
         else
             VFSManager.runInAWTThread(r);
 
-		return out;
-	}
+        return out;
+	} //}}}
 
+    //{{{ addAllDirectories() method
     public static void addAllDirectories(
             Hashtable directories,
             String archiveProtocol, String archivePath,
-            String entryName, long entrySize, boolean entryIsDirectory
-    ) {
+            String entryName, long entrySize, boolean entryIsDirectory) {
         // We add all possible directories to directories hashtable
         Hashtable directoryEntries = null;
         StringTokenizer tokenizer = new StringTokenizer(entryName, ArchiveVFS.fileSeparator);
@@ -514,20 +541,23 @@ public class ArchiveVFS extends VFS {
                 )
             );
         }
-    }
+    } //}}}
 
+    //{{{ FinishSavingArchive class
     static class FinishSavingArchive implements Runnable {
         private Component comp;
         private ArchivePath archive;
         private String outputFile;
 
+        //{{{ FinishSavingArchive constructor
         FinishSavingArchive(Component comp, ArchivePath archive,
             String outputFile) {
             this.comp = comp;
             this.archive = archive;
             this.outputFile = outputFile;
-        }
+        } //}}}
 
+        //{{{ run() method
         public void run() {
             Log.log(Log.DEBUG,this,"Saved entry " + archive + " to "
                 + outputFile);
@@ -541,8 +571,13 @@ public class ArchiveVFS extends VFS {
             boolean ok = false;
 
             InputStream archiveIn = null;
+            
+            Object session = null;
             try {
-                archiveIn = vfs._createInputStream(null,
+                session = vfs.createVFSSession(archivePath, comp);
+                if (session == null)
+                    throw new IOException("Unable to create VFS session on " + vfs);
+                archiveIn = vfs._createInputStream(session,
                     archivePath,false,comp);
                 if(archiveIn == null)
                     throw new IOException("FIXME");
@@ -557,10 +592,10 @@ public class ArchiveVFS extends VFS {
                 archiveIn = ArchiveUtilities.openArchiveStream(archiveIn);
 
                 if(archiveIn instanceof ZipInputStream) {
-                    saveZipArchive((ZipInputStream)archiveIn,archive,
+                    saveZipArchive(session, (ZipInputStream)archiveIn,archive,
                         savePath,outputFile,comp);
                 } else if(archiveIn instanceof TarInputStream) {
-                    saveTarArchive((TarInputStream)archiveIn,archive,
+                    saveTarArchive(session, (TarInputStream)archiveIn,archive,
                         savePath,outputFile,comp,gzip,bzip2);
                 }
 
@@ -571,10 +606,11 @@ public class ArchiveVFS extends VFS {
                 VFSManager.error(comp,archive.pathName,"ioerror",
                     new String[] { e.toString() });
             } finally {
+                IOUtilities.closeQuietly(archiveIn);
                 try {
-                    if(archiveIn != null)
-                        archiveIn.close();
-                } catch(IOException e) {}
+                    vfs._endVFSSession(session, comp);
+                } catch (IOException e) {
+                }
             }
 
             if(ok) {
@@ -586,13 +622,14 @@ public class ArchiveVFS extends VFS {
                         new String[] { e.toString() });
                 }
             }
-        }
+        } //}}}
 
+        //{{{ saveZipArchive() method
         /**
          * Copy entries from archive.pathName to savePath; replace the
          * entry at archive.entryName with contents of outputFile.
          */
-        private void saveZipArchive(ZipInputStream archiveIn,
+        private void saveZipArchive(Object session, ZipInputStream archiveIn,
             ArchivePath archive, String savePath,
             String outputFile, Component comp) throws IOException
         {
@@ -604,7 +641,7 @@ public class ArchiveVFS extends VFS {
             long length = new File(outputFile).length();
 
             try {
-                out = vfs._createOutputStream(null,savePath,comp);
+                out = vfs._createOutputStream(session,savePath,comp);
                 out = new ZipOutputStream(out);
 
                 ZipOutputStream archiveOut = (ZipOutputStream)out;
@@ -641,16 +678,16 @@ public class ArchiveVFS extends VFS {
                     archiveOut.closeEntry();
                 }
             } finally {
-                if(out != null)
-                    out.close();
+                IOUtilities.closeQuietly(out);
             }
-        }
+        } //}}}
 
+        //{{{ saveTarArchive() method
         /**
          * Copy entries from archive.pathName to savePath; replace the
          * entry at archive.entryName with contents of outputFile.
          */
-        private void saveTarArchive(TarInputStream archiveIn,
+        private void saveTarArchive(Object session, TarInputStream archiveIn,
             ArchivePath archive, String savePath,
             String outputFile, Component comp,
             boolean gzip, boolean bzip2) throws IOException
@@ -661,9 +698,8 @@ public class ArchiveVFS extends VFS {
 
             // we need to know the length of TAR entries in advance.
             long length = new File(outputFile).length();
-
             try {
-                out = vfs._createOutputStream(null,savePath,comp);
+                out = vfs._createOutputStream(session,savePath,comp);
 
                 if(gzip)
                     out = new GZIPOutputStream(out);
@@ -705,11 +741,11 @@ public class ArchiveVFS extends VFS {
                     saved = true;
                 }
             } finally {
-                if(out != null)
-                    out.close();
+                IOUtilities.closeQuietly(out);
             }
-        }
+        } //}}}
 
+        //{{{ copy() methods
         /**
          * Copies the contents of an input stream to an output stream.
          */
@@ -728,23 +764,22 @@ public class ArchiveVFS extends VFS {
 
                 out.write(buf,0,count);
             }
-        }
+        } 
 
         /**
          * Copies the contents of a file to an output stream.
          */
-        public static void copy(String inFile, OutputStream out)
-            throws IOException
-        {
-            InputStream in = new BufferedInputStream(
-                new FileInputStream(inFile));
-            try {
-                copy(in,out);
-            } finally {
-                if(in != null)
-                    in.close();
-            }
-        }
-    }
+         public static void copy(String inFile, OutputStream out)
+         throws IOException
+         {
+             InputStream in = new BufferedInputStream(
+                 new FileInputStream(inFile));
+             try {
+                 copy(in,out);
+             } finally {
+                 IOUtilities.closeQuietly(in);
+             }
+        } //}}}
+    } //}}}
 }
 
