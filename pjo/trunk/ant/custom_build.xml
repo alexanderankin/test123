@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Plugin Release" basedir="." default="pf.usage">
+<project name="plugin-release-custom-build" basedir="." default="pf.usage">
 <!-- :noTabs=true:tabSize=2: -->
 
 <!-- pf = plugin factory -->
@@ -20,12 +20,13 @@
   else="C:\Temp\1\xslt\bin\xsltproc.exe"><os family="unix"/></condition>
 
 <!-- adjust per plugin release -->
-<property name="plugin.name" value="ProjectViewer" />
-<property name="plugin.version" value="3.4.2" />
-<property name="scm.targets.file" value="git_cl.xml" />
-<property name="plugin.tag" value="pv_3_4_2" />
+<property name="plugin.name" value="JavascriptSideKick" />
+<property name="plugin.version" value="1.0.0" />
+<property name="scm.targets.file" value="svn_cl.xml" />
+<property name="plugin.tag" value="JavascriptSideKick-1.0.0" />
 
-<!-- no need to adjust -->
+<!-- don't change this part -->
+<property name="plugin.release.custom.build.version" value="1" /> 
 <property name="jedit.svn.url" value="https://jedit.svn.sourceforge.net/svnroot/jedit" />
 <property name="jedit.git.url" value="git://jedit.git.sourceforge.net/gitroot/jedit" />
 <property name="sandbox.dir" value="${pf.dir}/sandbox" />
@@ -40,8 +41,10 @@
   <exec executable="${prog.svn}" dir="${pf.dir}/build-support" ><arg line="checkout https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk/ ." /></exec>
 </target>
 
-<target name="pf.update">
+<target name="pf.update" unless="no.pf.update" >
+  <echo>Updating ${pf.dir}/pjo</echo>
   <exec executable="${prog.svn}" dir="${pf.dir}/pjo" ><arg line="update" /></exec>
+  <echo>Updating ${pf.dir}/build-support</echo>
   <exec executable="${prog.svn}" dir="${pf.dir}/build-support" ><arg line="checkout https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk/ ." /></exec>
 </target>
 
