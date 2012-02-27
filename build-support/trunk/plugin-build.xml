@@ -644,9 +644,34 @@
         if (sJarName.length()>9) {
           sJarName = sJarName.replaceFirst("^(.*)Plugin", "$1");
         }
-        if (sJarName.equals("JNA") ||
-            sJarName.equals("SVN") ||
+        if (sJarName.equals("Antelope") ||
+            sJarName.equals("AntViz") || // {{{ similar exceptions
+            sJarName.equals("AStyle") ||
+            sJarName.equals("AStyle") ||
+            sJarName.equals("CheckStyle") ||
+            sJarName.equals("ClearCase") ||
+            sJarName.equals("Gesture") ||
+            sJarName.equals("Global") ||
+            sJarName.equals("GroovyScriptEngine") ||
+            sJarName.equals("Headline") ||
+            sJarName.equals("HexTools") ||
+            sJarName.equals("JavascriptScriptEngine") ||
+            sJarName.equals("Jazzy") ||
+            sJarName.equals("JCrontab") ||
             sJarName.equals("JDiff") ||
+            sJarName.equals("JDoc") ||
+            sJarName.equals("JFugue") ||
+            sJarName.equals("JSwat") ||
+            sJarName.equals("JTA") ||
+            sJarName.equals("JTidy") ||
+            sJarName.equals("Lucene") ||
+            sJarName.equals("Markdown") ||
+            sJarName.equals("Maven") ||
+            sJarName.equals("Rhino") ||
+            sJarName.equals("Ruby") ||
+            sJarName.equals("Saxon") ||
+            sJarName.equals("Scalac") ||
+            sJarName.equals("ScriptEngine") || // }}}
             sJarName.equals("Xerces")) sJarName += "Plugin";
         if (sJarName.equals("Project")) sJarName = "ProjectViewer";
         project.setProperty(project.getProperty("attr-output-prop"),
@@ -715,6 +740,7 @@
         
         // read depends
         // see PluginJAR.checkDependencies()
+        // props.list(System.out);
         i = 0; iPluginDep = 0;
         sDepPropName = "plugin." + sPluginClass + ".depend.";
         while((dep = props.getProperty(sDepPropName + i)) != null) {
@@ -749,6 +775,15 @@
     </script>
     <get-plugin-jar-name class-name="${plugin.class.name}"
                          output-prop="plugin.jar.name" />
+
+    <!--<dump-prop-ref refid="src.fileset" />-->
+    <dump-prop-ref refid="plugin.props.set" />
+    <fail>Property plugin.jedit.version.full not set.
+          Getting plugin properties failed.
+        <condition>
+            <not><isset property="plugin.jedit.version.full" /></not>
+        </condition>
+    </fail>
 </target>
 <!-- }}} ================================================== -->
 
