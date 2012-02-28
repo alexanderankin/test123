@@ -697,15 +697,17 @@
     -->
 <target name="get-plugin-info" depends="get-lib-scripting" >
     <local name="src.fileset" />
+    <local name="extras.fileset" />
     <fileset id="src.fileset" dir="${src.dir}" >
-        <or>
-            <selector refid="compileFiles" />
-            <selector refid="extraFiles" />
-        </or>
+        <selector refid="compileFiles" />
+    </fileset>
+    <fileset id="extras.fileset" dir="${basedir}" >
+        <selector refid="extraFiles" />
     </fileset>
     <script language="beanshell" classpathref="lib.scripting.path" >   
-        
         String getPluginClassName(fs) { // {{{
+          sPluginClass = "";
+          sBaseDir = fs.getDir().toString();
           for (f: fs.iterator()) {
             if (f.toString().endsWith("Plugin.java")) {
               sPluginClass = f.toString().substring(sBaseDir.length()+1);
@@ -718,21 +720,24 @@
           return sPluginClass;
         } //}}}
         
-        fs = project.getReference("src.fileset");
-        sBaseDir = fs.getDir().toString();
-        //ps = new org.apache.tools.ant.types.PropertySet();
+        fsSrc = project.getReference("src.fileset");
         ps = project.createDataType("propertyset"); 
-        //ps.setProject(project);
         project.addReference("plugin.props.set", ps); 
-        //print("no files:" + fs.size());
+        //print("no src files:" + fsSrc.size());
         
-        sPluginClass = getPluginClassName(fs);
+        sPluginClass = getPluginClassName(fsSrc);
+        if ("".equals(sPluginClass)) {
+          throw new RuntimeException("Plugin class name not found in "
+                                    +"source fileset");
+          }
         ps.appendName("plugin.class.name");
         ps.appendName("plugin.jar.name");
+        ps.appendName("plugin.dep.count");
         
         // load all props files {{{
         props = new Properties();
-        for (f: fs.iterator()) {
+        fsProps = project.getReference("extras.fileset");
+        for (f: fsProps.iterator()) {
           if (f.toString().endsWith(".props")) {
             props.load(f.getInputStream());
           }
@@ -772,12 +777,18 @@
           
           i++;
         }
+        project.setProperty("plugin.dep.count", "" + iPluginDep);
     </script>
     <get-plugin-jar-name class-name="${plugin.class.name}"
                          output-prop="plugin.jar.name" />
 
     <!--<dump-prop-ref refid="src.fileset" />-->
-    <dump-prop-ref refid="plugin.props.set" />
+    <!--<dump-prop-ref refid="plugin.props.set" />-->
+    <echo>Plugin properties discovered:</echo>
+    <echo>plugin.class.name: ${plugin.class.name}</echo>
+    <echo>plugin.dep.count: ${plugin.dep.count}</echo>
+    <echo></echo>
+    <echo></echo>
     <fail>Property plugin.jedit.version.full not set.
           Getting plugin properties failed.
         <condition>
@@ -789,7 +800,10 @@
 
     <!-- {{{ gen-plugin-deps-ivy-file target ============== -->
 <!-- Generates an ivy.xml file specified by property plugin.deps.ivy.file
-     based on plugin.deps.ivy.template -->
+     based on plugin.deps.ivy.template.
+     There is a problem in automatic creation of parent directory
+     of plugin.deps.ivy.file, so it must be done manually before calling
+     this target. -->
 <target name="gen-plugin-deps-ivy-file"
         depends="get-plugin-info, get-lib-scripting"
         unless="plugin.deps.present" >
