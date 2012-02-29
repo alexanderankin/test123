@@ -36,8 +36,6 @@
     -->
     <!-- ===============================================}}} -->
 
-    <import file="${build.support}/build-helper.xml" />
-
     <!-- {{{ Property definitions ========================= -->
     <!-- First loads options from the user's optional
          build.properties files in the following order:
@@ -148,6 +146,8 @@
     <!-- ===============================================}}} -->
 
     <!-- ===============================================}}} -->
+
+    <import file="${build.support}/build-helper.xml" />
 
     <!-- {{{ Custom javac task ============================ -->
     <presetdef name="jp.javac">
