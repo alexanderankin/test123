@@ -283,8 +283,7 @@ public class ConsolePane extends JTextPane
 				color = jEdit.getColorProperty("view.fgColor", Color.BLACK);
 			else
 				color = jEdit.getColorProperty("console.plainColor", Color.BLACK);
-			if (color != null)
-				style.addAttribute(StyleConstants.Foreground, color);
+			style.addAttribute(StyleConstants.Foreground, color);
 		}
 		 
 		return style;
