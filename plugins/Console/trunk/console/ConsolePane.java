@@ -29,6 +29,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import org.gjt.sp.jedit.gui.HistoryModel;
+import org.gjt.sp.jedit.jEdit;
 
 public class ConsolePane extends JTextPane
 {
@@ -274,12 +275,18 @@ public class ConsolePane extends JTextPane
 	{
 		SimpleAttributeSet style = new SimpleAttributeSet();
 
-		if (color != null)
+		if (color != null) 
 			style.addAttribute(StyleConstants.Foreground, color);
-		/*
-		 * else { style.addAttribute(StyleConstants.Foreground,
-		 * getForeground()); }
-		 */
+		else
+		{
+			if (jEdit.getBooleanProperty("textColors")) 
+				color = jEdit.getColorProperty("view.fgColor", Color.BLACK);
+			else
+				color = jEdit.getColorProperty("console.plainColor", Color.BLACK);
+			if (color != null)
+				style.addAttribute(StyleConstants.Foreground, color);
+		}
+		 
 		return style;
 	} // }}}
 
