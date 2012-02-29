@@ -10,17 +10,11 @@
 	<property file="../build.properties"/>
 
     <property name="build.support" value="../../build-support" />
-    <property name="compiler.source" value="1.5" />
-    <property name="compiler.target" value="1.5" />
     
 	<import file="${build.support}/plugin-build.xml" />
 	 
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
-
-	<target name="build.prepare" description="untar the source for jcterm">
-	  <untar  compression="gzip"  dest="${basedir}"  src="lib/jcterm-0.0.9.tar.gz" />
-	</target>
 	
 	<path id="project.class.path">
 		<pathelement location="${jedit.plugins.dir}/FTP.jar"/>
