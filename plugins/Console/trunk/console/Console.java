@@ -738,13 +738,14 @@ implements EBComponent, DefaultFocusComponent
 		if (jEdit.getBooleanProperty("textColors")) {
 			plainColor = jEdit.getColorProperty("view.fgColor", Color.BLACK);
 			text.setBackground(jEdit.getColorProperty("view.bgColor", Color.WHITE));
+			text.setCaretColor(jEdit.getColorProperty("view.caretColor", plainColor));
 		}
 		else {
 			plainColor = jEdit.getColorProperty("console.plainColor", Color.BLACK);
 			text.setBackground(jEdit.getColorProperty("console.bgColor", Color.WHITE));
+			text.setCaretColor(jEdit.getColorProperty("console.caretColor", plainColor));
 		}
 		text.setForeground(plainColor);
-		text.setCaretColor(jEdit.getColorProperty("console.caretColor"));
 		text.setFont(jEdit.getFontProperty("console.font"));
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
