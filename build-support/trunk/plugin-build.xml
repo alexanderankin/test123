@@ -36,6 +36,8 @@
     -->
     <!-- ===============================================}}} -->
 
+    <import file="build-helper.xml" />
+
     <!-- {{{ Property definitions ========================= -->
     <!-- First loads options from the user's optional
          build.properties files in the following order:
@@ -147,8 +149,6 @@
 
     <!-- ===============================================}}} -->
 
-    <import file="${build.support}/build-helper.xml" />
-
     <!-- {{{ Custom javac task ============================ -->
     <presetdef name="jp.javac">
         <javac destdir="${build.classes}"
@@ -221,7 +221,11 @@
         </and>
     </selector>
 
-    <!--{{{ Ivy setup *****============================== -->
+    <!--{{{ Ivy setttings =============================== -->
+
+    <!-- This overloads defaults from build-helper.xml
+         to have ivy.jar in the same place as jedit builder has.
+         Otherwise ivy would be put in ${build.support}/lib/ivy -->
     <property name="ivy.install.version" value="2.2.0" />
     <condition property="ivy.home" value="${env.IVY_HOME}">
       <isset property="env.IVY_HOME" />
@@ -231,38 +235,19 @@
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
     <property name="ivy.settings.file" value="${build.support}/ivysettings.xml" />
 
-    <target name="download-ivy" unless="offline">
-
-        <mkdir dir="${ivy.jar.dir}"/>
-        <!-- download Ivy from web site so that it can be used even without any special installation -->
-        <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
-             dest="${ivy.jar.file}" usetimestamp="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="init-ivy" depends="download-ivy">
-      <!-- try to load ivy here from ivy home, in case the user has not already dropped
-              it into ant's lib dir (note that the latter copy will always take precedence).
-              We will not fail as long as local lib dir exists (it may be empty) and
-              ivy is in at least one of ant's lib dir or the local lib dir. -->
-        <path id="ivy.lib.path">
-            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
-
-        </path>
-        <taskdef resource="org/apache/ivy/ant/antlib.xml"
-                 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
-    </target>
     <!--}}}-->
 
     <!-- {{{ Target: resolve ============================== -->
-     <target name="checkIvy">
-        <condition property="ivyPresent">
-            <available file="ivy.xml" type="file"/>
-        </condition>
+    <target name="check-ivy-xml" >
+        <available file="ivy.xml" type="file" property="ivy.xml.present" />
     </target>
     <target name="resolve" description="Retrieve dependencies"
-        depends="checkIvy,init-ivy" if="ivyPresent">
-            <echo>ivy.xml present, retrieving dependencies</echo>
-            <ivy:retrieve pattern="${build.lib}/[artifact].[ext]"/>
+        depends="check-ivy-xml" if="ivy.xml.present">
+        <echo>ivy.xml present, retrieving dependencies</echo>
+        <property name="lib.dir" value="${build.support}/lib" />
+        <get-ivy />
+        <ivy:retrieve pattern="${build.lib}/[artifact].[ext]"
+                      log="download-only" />
     </target>
     <!-- ===============================================}}} -->
 
