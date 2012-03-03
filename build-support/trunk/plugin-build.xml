@@ -631,7 +631,7 @@
     <!-- {{{ def-jedit-tasks target ======================= -->
     
     <target name="def-jedit-tasks"
-            depends="common-props, jedit-tasks-javadoc" >
+            depends="jedit-tasks-javadoc" >
         <mkdir dir="${jedit.classes}" />
         <copy todir="${jedit.classes}">
             <fileset dir="${jedit.src}" includes="**/antlib.xml" />
