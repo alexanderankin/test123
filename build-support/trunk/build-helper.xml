@@ -129,6 +129,17 @@ with properties from calling projects
 </macrodef>
 <!-- }}} ============================================== -->
 
+<!-- {{{ check-prop macro ============================= -->
+<!-- Checks whether a property ${prop} is set. -->
+<macrodef name="check-prop">
+    <attribute name="prop" />
+    <sequential>
+    <fail message="Property not set: @{prop}"
+          unless="@{prop}" />
+    </sequential>
+</macrodef>
+<!-- }}} ============================================== -->
+
 <!-- {{{ check-dir-var macro ========================== -->
 <!-- Checks whether a property ${var} is defined and whether
      a directory exists -->

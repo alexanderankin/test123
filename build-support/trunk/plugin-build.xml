@@ -1,12 +1,12 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jEditPlugin" default="build">
+<project name="jEditPlugin" default="build"
+         xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:jedit="antlib:org.jedit.ant"
+         >
 
     <!-- {{{ Top-Level build file for jEdit plugins. ====== -->
     <!--
         Version: $Id$
         Requires apache Ant 1.6, including optional tasks, and xerces.
-
-        :tabSize=4:indentSize=4:noTabs=true:
-        :folding=explicit:collapseFolds=2:
 
         To use this file, use the "import" task from ant
         on your plugin's build file, like this:
@@ -139,6 +139,14 @@
          automatically to the javac command.                -->
     <path id="project.class.path" />
 
+    <!-- jedit tasks properties -->
+    <property name="jedit.classes" value="${build.support}/build/classes" />
+    <property name="jedit.src" value="${build.support}/java-src" />
+    <uptodate targetfile="${build.support}/build/doc/index.html"
+              property="jedit.tasks.javadoc.uptodate" >
+        <srcfiles dir="${jedit.src}" />
+    </uptodate>
+
     <!-- {{{ Load ant-contrib library ===================== -->
     <taskdef resource="net/sf/antcontrib/antcontrib.properties" onerror="ignore">
         <classpath>
@@ -244,6 +252,7 @@
     <target name="resolve" description="Retrieve dependencies"
         depends="check-ivy-xml" if="ivy.xml.present">
         <echo>ivy.xml present, retrieving dependencies</echo>
+        <!-- lib.dir is probably already set, but to be sure -->
         <property name="lib.dir" value="${build.support}/lib" />
         <get-ivy />
         <ivy:retrieve pattern="${build.lib}/[artifact].[ext]"
@@ -571,7 +580,7 @@
 
     <!-- ===============================================}}} -->
 
-    <!-- {{{  Dependencies ================================= -->
+    <!-- {{{ Dependencies ================================= -->
 
 
     <!-- {{{ Target: build.dependencies =================== -->
@@ -607,80 +616,56 @@
     </target>
     <!-- ===============================================}}} -->
 
-    <!-- {{{ get-plugin-jar-name macro ==================== -->
-<!-- Takes class-name and insert jar name for the class into output-prop
-     property. This is needed only for plugins that are dependencies for
-     other plugins. Conversion from class name to jar name is not always
-     straightforward as there are no strict rules for that. Here are some
-     rules applied and then exceptions come.
-     Requires earlier call to get-lib scripting
-     -->
-<macrodef name="get-plugin-jar-name">
-    <attribute name="class-name" />
-    <attribute name="output-prop" />
-    <sequential>
-    <local name="attr-class-name" />
-    <local name="attr-output-prop" />
-    <property name="attr-class-name" value="@{class-name}" />
-    <property name="attr-output-prop" value="@{output-prop}" />
-    <script language="beanshell" classpathref="lib.scripting.path" >   
-        sJarName = project.getProperty("attr-class-name");
-        sJarName = sJarName.replaceFirst("^.*\\.([^\\.]+)$", "$1");
-        if (sJarName.length()>9) {
-          sJarName = sJarName.replaceFirst("^(.*)Plugin", "$1");
-        }
-        if (sJarName.equals("Antelope") ||
-            sJarName.equals("AntViz") || // {{{ similar exceptions
-            sJarName.equals("AStyle") ||
-            sJarName.equals("AStyle") ||
-            sJarName.equals("CheckStyle") ||
-            sJarName.equals("ClearCase") ||
-            sJarName.equals("Gesture") ||
-            sJarName.equals("Global") ||
-            sJarName.equals("GroovyScriptEngine") ||
-            sJarName.equals("Headline") ||
-            sJarName.equals("HexTools") ||
-            sJarName.equals("JavascriptScriptEngine") ||
-            sJarName.equals("Jazzy") ||
-            sJarName.equals("JCrontab") ||
-            sJarName.equals("JDiff") ||
-            sJarName.equals("JDoc") ||
-            sJarName.equals("JFugue") ||
-            sJarName.equals("JSwat") ||
-            sJarName.equals("JTA") ||
-            sJarName.equals("JTidy") ||
-            sJarName.equals("Lucene") ||
-            sJarName.equals("Markdown") ||
-            sJarName.equals("Maven") ||
-            sJarName.equals("Rhino") ||
-            sJarName.equals("Ruby") ||
-            sJarName.equals("Saxon") ||
-            sJarName.equals("Scalac") ||
-            sJarName.equals("ScriptEngine") || // }}}
-            sJarName.equals("Xerces")) sJarName += "Plugin";
-        if (sJarName.equals("Project")) sJarName = "ProjectViewer";
-        project.setProperty(project.getProperty("attr-output-prop"),
-                            sJarName);
-        //print(sJarName);
-    </script>
-    </sequential>
-</macrodef>
-<!-- ===================================================}}} -->
+    <!-- ================================================== }}}-->
+
+    <!-- {{{ Common targets =============================== -->
+
+    <!-- {{{ Target: clean-build-support ================== -->
+    <!-- Removes recreatable files from build.support directory -->
+    <target name="clean-build-support">
+        <delete dir="${build.support}/build" quiet="true" />
+        <delete dir="${build.support}/lib" quiet="true" />
+    </target>
+    <!-- ===============================================}}} -->
+
+    <!-- {{{ def-jedit-tasks target ======================= -->
+    
+    <target name="def-jedit-tasks"
+            depends="common-props, jedit-tasks-javadoc" >
+        <mkdir dir="${jedit.classes}" />
+        <copy todir="${jedit.classes}">
+            <fileset dir="${jedit.src}" includes="**/antlib.xml" />
+        </copy>
+        <javac srcdir="${jedit.src}" destdir="${jedit.classes}"
+               debug="true" >
+            <compilerarg value="-Xlint:deprecation"/>
+        </javac>
+        <taskdef resource="org/jedit/ant/antlib.xml"
+                 uri="antlib:org.jedit.ant" classpath="${jedit.classes}"/>
+    </target>
+    
+    <!-- ===============================================}}} -->
+
+    <!-- {{{ jedit-tasks-javadoc target =================== -->
+    
+    <target name="jedit-tasks-javadoc"
+            unless="jedit.tasks.javadoc.uptodate" >
+        <javadoc sourcepath="${jedit.src}"
+                 destdir="${build.support}/build/doc" />
+    </target>
+    
+    <!-- ===============================================}}} -->
+
+    <!-- ================================================== }}}-->
+
+    <!-- {{{ Plugin release targets ======================= -->
 
     <!-- {{{ get-plugin-info target======================== -->
     <!-- 
          Parses files from src.dir using selectors compileFiles and extraFiles
-         Downloads necessary libraries into build directory.
-         Sets properties:
-             plugin.class.name - e.g. projectviewer.ProjectPlugin
-             plugin.jar.name - e.g. ProjectViewer
-             plugin.jedit.version.full - e.g. 4.4.99.0
-             plugin.jedit.version - e.g. 4.4
-             plugin.dep.X.class - e.g. CommonControlsPlugin, X=0..n
-             plugin.dep.X.version - e.g. 1.3
-             plugin.dep.X.jar.name - e.g. CommonControls
+         and produces plugin information. Details in jedit tasks doc. 
     -->
-<target name="get-plugin-info" depends="get-lib-scripting" >
+<target name="get-plugin-info" depends="def-jedit-tasks" >
     <local name="src.fileset" />
     <local name="extras.fileset" />
     <fileset id="src.fileset" dir="${src.dir}" >
@@ -689,83 +674,10 @@
     <fileset id="extras.fileset" dir="${basedir}" >
         <selector refid="extraFiles" />
     </fileset>
-    <script language="beanshell" classpathref="lib.scripting.path" >   
-        String getPluginClassName(fs) { // {{{
-          sPluginClass = "";
-          sBaseDir = fs.getDir().toString();
-          for (f: fs.iterator()) {
-            if (f.toString().endsWith("Plugin.java")) {
-              sPluginClass = f.toString().substring(sBaseDir.length()+1);
-              sPluginClass = sPluginClass.replaceFirst("\\.java$", "");
-              sPluginClass = sPluginClass.replaceAll("[/\\\\]", ".");
-              break;
-            }
-          }
-          project.setProperty("plugin.class.name", sPluginClass);
-          return sPluginClass;
-        } //}}}
-        
-        fsSrc = project.getReference("src.fileset");
-        ps = project.createDataType("propertyset"); 
-        project.addReference("plugin.props.set", ps); 
-        //print("no src files:" + fsSrc.size());
-        
-        sPluginClass = getPluginClassName(fsSrc);
-        if ("".equals(sPluginClass)) {
-          throw new RuntimeException("Plugin class name not found in "
-                                    +"source fileset");
-          }
-        ps.appendName("plugin.class.name");
-        ps.appendName("plugin.jar.name");
-        ps.appendName("plugin.dep.count");
-        
-        // load all props files {{{
-        props = new Properties();
-        fsProps = project.getReference("extras.fileset");
-        for (f: fsProps.iterator()) {
-          if (f.toString().endsWith(".props")) {
-            props.load(f.getInputStream());
-          }
-        } // }}}
-        
-        // read depends
-        // see PluginJAR.checkDependencies()
-        // props.list(System.out);
-        i = 0; iPluginDep = 0;
-        sDepPropName = "plugin." + sPluginClass + ".depend.";
-        while((dep = props.getProperty(sDepPropName + i)) != null) {
-          deps = dep.split(" ");
-          if (deps[0].equals("jedit")) {
-            project.setProperty("plugin.jedit.version.full", deps[1]);
-            v = deps[1].split("\\.");
-            project.setProperty("plugin.jedit.version", v[0] + "." + v[1]);
-            ps.appendName("plugin.jedit.version.full");
-            ps.appendName("plugin.jedit.version");
-          }
-          if (deps[0].equals("optional")) {
-            // ignore the optional keyword, treat as usual plugin dep
-            deps = java.util.Arrays.copyOfRange(deps, 1, deps.length);
-          }
-          if (deps[0].equals("plugin")) {
-            //print("" + iPluginDep + deps[1] + "-" + deps[2]);
-            sPref = "plugin.dep." + iPluginDep;
-            sDepPluginClass = deps[1];
-            project.setProperty(sPref + ".class", sDepPluginClass);
-            project.setProperty(sPref + ".version", deps[2]);
-            ps.appendRegex(sPref + "\\.*");
-            m = project.createTask("get-plugin-jar-name");
-            m.setDynamicAttribute("class-name", deps[1]);
-            m.setDynamicAttribute("output-prop", sPref + ".jar.name");
-            m.execute();
-            iPluginDep++;
-          }
-          
-          i++;
-        }
-        project.setProperty("plugin.dep.count", "" + iPluginDep);
-    </script>
-    <get-plugin-jar-name class-name="${plugin.class.name}"
-                         output-prop="plugin.jar.name" />
+    <jedit:get-plugin-info fsSrc="src.fileset"
+                           fsExtras="extras.fileset" />
+    <jedit:get-plugin-jar-name className="${plugin.class.name}"
+                               outputProp="plugin.jar.name" />
 
     <!--<dump-prop-ref refid="src.fileset" />-->
     <!--<dump-prop-ref refid="plugin.props.set" />-->
@@ -785,47 +697,18 @@
 
     <!-- {{{ gen-plugin-deps-ivy-file target ============== -->
 <!-- Generates an ivy.xml file specified by property plugin.deps.ivy.file
-     based on plugin.deps.ivy.template.
-     There is a problem in automatic creation of parent directory
-     of plugin.deps.ivy.file, so it must be done manually before calling
-     this target. -->
+     based on plugin.deps.ivy.template. -->
 <target name="gen-plugin-deps-ivy-file"
-        depends="get-plugin-info, get-lib-scripting"
+        depends="get-plugin-info"
         unless="plugin.deps.present" >
-    <script language="beanshell" classpathref="lib.scripting.path">   
-        sTemplFile = project.getProperty("plugin.deps.ivy.template");
-        sOutFile = project.getProperty("plugin.deps.ivy.file");
-        builder = javax.xml.parsers.DocumentBuilderFactory.newInstance()
-                 .newDocumentBuilder();
-        doc = builder.parse(new File(sTemplFile));
-        docElem = doc.getDocumentElement();
-        lfNode = doc.createTextNode(System.getProperty("line.separator"));
-        info = docElem.getElementsByTagName("info").item(0);
-        info.setAttribute("module", project.getProperty("plugin.jar.name"));
-        deps = docElem.getElementsByTagName("dependencies").item(0);
-        iDep = 0;
-        while (true) {
-          sDepProp = "plugin.dep." + iDep;
-          sDepClass = project.getProperty(sDepProp + ".class");
-          if (sDepClass == null) { break; }
-          sDepJarName = project.getProperty(sDepProp + ".jar.name");
-          sDepVer = project.getProperty(sDepProp + ".version");
-
-          dep = doc.createElement("dependency");
-          dep.setAttribute("org", "jedit-plugins");
-          dep.setAttribute("name", sDepJarName);
-          dep.setAttribute("rev", sDepVer);
-          deps.appendChild(dep);
-          deps.appendChild(lfNode.cloneNode(true));
-  
-          iDep++;
-        }
-        transformer = javax.xml.transform.TransformerFactory.newInstance()
-                      .newTransformer();
-        src = new javax.xml.transform.dom.DOMSource(doc);
-        dest = new javax.xml.transform.stream.StreamResult(new File(sOutFile));
-        transformer.transform(src, dest);
-    </script>    
+    <local name="dir" />
+    <check-file-var var="plugin.deps.ivy.template" />
+    <dirname file="${plugin.deps.ivy.file}" property="dir" />
+    <mkdir dir="${dir}" />
+    <jedit:gen-plugin-deps-ivy-file
+        template="${plugin.deps.ivy.template}"
+        outFile="${plugin.deps.ivy.file}"
+    />
 </target>
 <!-- }}} ================================================== -->
 
@@ -835,7 +718,8 @@
      To force re-downloading remove the ${lib.dir}/plugin-deps directory
      -->
 <target name="check-plugin-deps-dir" >
-    <property name="plugin.deps.dir" value="${lib.dir}/plugin-deps" />
+    <mkdir dir="${build.lib}" />
+    <property name="plugin.deps.dir" value="${build.lib}/plugin-deps" />
     <condition property="plugin.deps.present">
       <available file="${plugin.deps.dir}" type="dir" />
     </condition>
@@ -843,23 +727,30 @@
 <!-- }}} ================================================== -->
 
     <!-- {{{ download-plugin-deps target ================== -->
-<!-- 
-     -->
-<target name="download-plugin-deps"
-        depends="check-plugin-deps-dir, get-lib-ivy"
-        unless="plugin.deps.present">
-    <property name="plugin.deps.ivy.template"
-              value="${build.support}/ivy.plugin.deps.template.xml" />
-    <property name="plugin.deps.ivy.file"
-              value="${basedir}/build/ivy.plugin.deps.xml" />
-    <check-file-var var="plugin.deps.ivy.template" />
-    <antcall target="gen-plugin-deps-ivy-file" />
-    <ivy:retrieve file="${plugin.deps.ivy.file}"
-                  pattern="${plugin.deps.dir}/[artifact].[ext]" />
-</target>
-<!-- }}} ================================================== -->
+    <target name="download-plugin-deps"
+            depends="check-plugin-deps-dir, get-lib-ivy, def-jedit-tasks"
+            unless="plugin.deps.present">
+        <property name="plugin.deps.ivy.template"
+                  value="${build.support}/ivy.plugin.deps.template.xml" />
+        <property name="plugin.deps.ivy.file"
+                  value="${basedir}/build/ivy.plugin.deps.xml" />
+        <check-file-var var="plugin.deps.ivy.template" />
+        <antcall target="gen-plugin-deps-ivy-file" />
+        <ivy:retrieve file="${plugin.deps.ivy.file}"
+                      pattern="${plugin.deps.dir}/[artifact].zip"
+                      log="download-only" />
+        <unzip dest="${plugin.deps.dir}">
+            <fileset dir="${plugin.deps.dir}" includes="*.zip" />
+        </unzip>
+        <delete>
+            <fileset dir="${plugin.deps.dir}" includes="*.zip" />
+        </delete>
+    </target>
+    <!-- }}} ================================================== -->
 
     <!-- ================================================== }}}-->
 
 </project>
 
+<!--    :tabSize=4:indentSize=4:noTabs=true:
+        :folding=explicit:collapseFolds=2:    -->
