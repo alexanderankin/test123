@@ -52,7 +52,7 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 public class EBFixture{
 	
 	/**
-	 * register for a certain message, run the runnable r, wait for the message.
+	 * register for a certain message, run the runnable r, wait for the message and the runnable.
 	 * @param	r	runnable to run asyncronously
 	 * @param	condition	message to wait for
 	 * @param	timeout	how long to wait for the message
@@ -60,8 +60,14 @@ public class EBFixture{
 	public static void doInBetween(Runnable r,EBCondition condition, long timeout){
 		MessageListener listen =  new MessageListener();
 		listen.registerForMessage(condition);
-		new Thread(r).start();
+		Thread t = new Thread(r);
+		t.start();
 		listen.waitForMessage(timeout);
+		try{
+			t.join(timeout);
+		}catch(InterruptedException e){
+			fail("Interrupted !");
+		}
 	}
 	
 	/**

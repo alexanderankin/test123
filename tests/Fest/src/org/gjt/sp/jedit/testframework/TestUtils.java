@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.*;
 import javax.swing.JTree;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 //{{{  jEdit
 import org.gjt.sp.jedit.*;
@@ -383,13 +384,13 @@ public class TestUtils {
     public static void selectPath( JTreeFixture treeFixture, String[] path ) {
         JTree tree = treeFixture.targetCastedTo( JTree.class );
         TreePath finalPath = getPathForStrings( treeFixture, path );
-
+        tree.setToggleClickCount(1);
         if ( !tree.isVisible( finalPath ) ) {
             TreePath parentPath = new TreePath( finalPath.getPathComponent( 0 ) );
             for ( int i = 1;i < finalPath.getPathCount();i++ ) {
                 TreePath curPath = parentPath.pathByAddingChild( finalPath.getPathComponent( i ) );
                 if ( !tree.isVisible( curPath ) ) {
-                    treeFixture.toggleRow( tree.getRowForPath( curPath.getParentPath() ) );
+                    treeFixture.expandRow( tree.getRowForPath( curPath.getParentPath() ) );
                 }
                 parentPath = curPath;
             }
@@ -399,13 +400,15 @@ public class TestUtils {
 
     }
     
-	/**
+    /**
      * Convenience method to select a path in a JTree.
+     * Path must be absolute, separator is the first char
      * @param treeFixture the JTree
      * @param path the path to select
      */
     public static void selectPath( JTreeFixture treeFixture, String path ) {
-    	String[] components = path.split("/",-1);
+    	String separator = path.substring(0,1);
+    	String[] components = path.substring(1).split(Pattern.quote(separator),-1);
     	selectPath(treeFixture, components);
     }
 	//}}}
