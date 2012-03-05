@@ -102,38 +102,6 @@ public class ElementDecl
 		}
 	} //}}}
 
-	//{{{ withPrefix()
-	public ElementDecl withPrefix(String prefix)
-	{
-		if(prefix.equals(""))
-			return this;
-		else
-		{
-			ElementDecl d =  new ElementDecl(completionInfo, prefix + ':' + name,
-				empty, any, attributes, attributeHash, content);
-			d.elementHash = elementHash;
-			return d;
-		}
-	} //}}}
-
-	//{{{ withContext()
-	public ElementDecl withContext(Map<String,String> context)
-	{
-		String ns = completionInfo.namespace;
-		String prefix = context.get(ns);
-		if(prefix == null || "".equals(prefix))
-		{
-			return this;
-		}
-		else
-		{
-			ElementDecl d =  new ElementDecl(completionInfo, prefix + ':' + name,
-				empty, any, attributes, attributeHash, content);
-			d.elementHash = elementHash;
-			return d;
-		}
-	} //}}}
-
 	//{{{ getChildElements() method
 	public List<ElementDecl> getChildElements()
 	{
@@ -141,17 +109,11 @@ public class ElementDecl
 
 		if(any)
 		{
-			for(int i = 0; i < completionInfo.elements.size(); i++)
-			{
-				children.add(((ElementDecl)completionInfo.elements.get(i)));
-			}
+			children.addAll(completionInfo.elements);
 		}
 		else
 		{
-			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
-			{
-				children.add(((ElementDecl)completionInfo.elementsAllowedAnywhere.get(i)));
-			}
+			children.addAll(completionInfo.elementsAllowedAnywhere);
 
 			if(content != null)
 			{
@@ -181,54 +143,6 @@ public class ElementDecl
 		return children;
 	} //}}}
 
-	//{{{ getChildElements() method
-	public List<ElementDecl> getChildElements(Map<String,String> namespaceContext)
-	{
-		ArrayList<ElementDecl>children = new ArrayList<ElementDecl>(100);
-
-		if(any)
-		{
-			for(int i = 0; i < completionInfo.elements.size(); i++)
-			{
-				children.add(((ElementDecl)completionInfo.elements.get(i)).withContext(namespaceContext));
-			}
-		}
-		else
-		{
-			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
-			{
-				children.add(((ElementDecl)completionInfo.elementsAllowedAnywhere.get(i))
-					.withContext(namespaceContext));
-			}
-
-			if(content != null)
-			{
-				Iterator iter = content.iterator();
-				while(iter.hasNext())
-				{
-					ElementDecl decl = null;
-					Object n = (String)iter.next();
-					if(elementHash == null){
-						//backward compatible
-						decl = (ElementDecl)completionInfo
-							.elementHash.get(n);
-					}else{
-						decl = elementHash.get(n);
-					}
-						
-					if(decl != null) {
-						if (decl.isAbstract())
-							children.addAll(decl.findReplacements(namespaceContext));
-						else 
-							children.add(decl.withContext(namespaceContext));
-					}
-				}
-			}
-		}
-		
-		return children;
-	} //}}}
-
 	/**
 	 * Finds all elements which can be replaced by this one. 
 	 *  
@@ -237,17 +151,6 @@ public class ElementDecl
 	 * 
 	 */
 	public List<ElementDecl> findReplacements() {
-		return null;
-	}
-	
-	/**
-	 * Finds all elements which can be replaced by this one. 
-	 *  
-	 * @return a list of all elements with matching substitutionGroup, or null if there are
-	 * none.
-	 * 
-	 */
-	public List<ElementDecl> findReplacements(Map<String,String> prefix) {
 		return null;
 	}
 	

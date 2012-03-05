@@ -38,6 +38,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 import sidekick.SideKickCompletion;
 import xml.XmlActions;
 import xml.XmlListCellRenderer;
+import xml.XmlListCellRenderer.WithLabel;
 import xml.XmlParsedData;
 import xml.completion.ElementDecl.AttributeDecl;
 import xml.EditTagDialog;
@@ -75,7 +76,7 @@ public class XmlCompletion extends SideKickCompletion
 	//{{{ insert() method
 	public void insert(int index)
 	{
-		insert(get(index),'\n');
+		insert((WithLabel<Object>)get(index),'\n');
 	} //}}}
 
 	//{{{ handleKeystroke() method
@@ -103,7 +104,7 @@ public class XmlCompletion extends SideKickCompletion
 		}
 
 		if(index != -1)
-			insert(get(index),ch);
+			insert((WithLabel<Object>)get(index),ch);
 		else if(ch == '>')
 			XmlActions.insertClosingTagKeyTyped(view);
 		else
@@ -118,12 +119,14 @@ public class XmlCompletion extends SideKickCompletion
 
 	//{{{ insert() method
 	/**
-	 * @param obj - an object  to insert
+	 * @param wqn - an object  to insert (label will be used for EditTagDialog)
 	 * @param ch - an additional character to insert afterwards
 	 * 
 	 */
-	private void insert(Object obj, char ch)
+	private void insert(final WithLabel<Object> wqn, char ch)
 	{
+		Object obj = wqn.element;
+		
 		Macros.Recorder recorder = view.getMacroRecorder();
 
 		String insert;
@@ -196,7 +199,7 @@ public class XmlCompletion extends SideKickCompletion
 							Selection s = textArea.getSelectionAtOffset(caret);
 							int start = (s == null ? caret : s.getStart());
 							Selection textSel = new Selection.Range(start - text.length() - 1,start); // < is not part of text but must be removed also
-							XmlActions.showEditTagDialog(view, elementDecl, textSel, namespaces, namespacesToInsert, !elementDecl.attributes.isEmpty());
+							XmlActions.showEditTagDialog(view, wqn.label, elementDecl, textSel, namespaces, namespacesToInsert, !elementDecl.attributes.isEmpty());
 						}
 					});
 					return;

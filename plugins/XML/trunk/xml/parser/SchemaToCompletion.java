@@ -106,11 +106,11 @@ public class SchemaToCompletion
 				// use a more intuitive '' key for the completion info
 				// of the no-namespace elements
 				if(infos.containsKey(INHERIT)){
-					infos.put("",infos.get(INHERIT));
+					CompletionInfo nons = infos.get(INHERIT);
+					nons.namespace = "";
+					infos.put("",nons);
 					infos.remove(INHERIT);
 				}
-				
-				
 				//{{{ put everything in cache
 				List<CacheEntry> related = new ArrayList<CacheEntry>(schemas.getSchemaDocumentMap().size());
 				

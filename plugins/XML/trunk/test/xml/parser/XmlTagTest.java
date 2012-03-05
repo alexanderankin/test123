@@ -79,8 +79,8 @@ public class XmlTagTest{
     	JTreeFixture sourceTree = sidekick.tree();
     	
 		// inspect the tree
-		selectPath(sourceTree,"ACTIONS");
-		selectPath(sourceTree,"ACTIONS/ACTION/CODE");
+		selectPath(sourceTree,"/ACTIONS");
+		selectPath(sourceTree,"/ACTIONS/ACTION/CODE");
 		
 		// ensure some coherence in the assets
 		JEditTextArea area = TestUtils.view().getTextArea();
@@ -113,7 +113,7 @@ public class XmlTagTest{
     	JTreeFixture sourceTree = sidekick.tree();
     	
 		// inspect the tree
-		selectPath(sourceTree,"chapter id=\"conventions\"");
+		selectPath(sourceTree,"/chapter id=\"conventions\"");
 		
 		/*------      test Attributes = None       ---------*/
 		
@@ -134,7 +134,7 @@ public class XmlTagTest{
     	Pause.pause(1000);
 
 		// inspect the tree
-		selectPath(sourceTree,"chapter");
+		selectPath(sourceTree,"/chapter");
 
 		/*------      test Attributes = All       ---------*/
 		
@@ -153,7 +153,7 @@ public class XmlTagTest{
     	Pause.pause(1000);
 
 		// inspect the tree
-		selectPath(sourceTree,"chapter id=\"conventions\" xml:lang=\"en\"");
+		selectPath(sourceTree,"/chapter id=\"conventions\" xml:lang=\"en\"");
     }
     
 }

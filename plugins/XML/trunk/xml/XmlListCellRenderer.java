@@ -62,7 +62,7 @@ public class XmlListCellRenderer extends JPanel implements ListCellRenderer
 	//{{{ getListCellRendererComponent() method
 	public Component getListCellRendererComponent(
 		JList list,
-		Object value,
+		Object obj,
 		int index,
 		boolean isSelected,
 		boolean cellHasFocus)
@@ -75,6 +75,11 @@ public class XmlListCellRenderer extends JPanel implements ListCellRenderer
 		setBorder(left.getBorder());
 		left.setBorder(null);
 		right.setBorder(null);
+		// objects are stored in a WithLabel,
+		// to have a preview of the qualified element name
+		// without modifying the ElementDecl (resp. AttributeDecl)
+		WithLabel<Object> wqn = (WithLabel<Object>)obj;
+		Object value = wqn.element;
 		if(value instanceof Comment)
 		{
 			left.setIcon(COMMENT_ICON);
@@ -94,13 +99,12 @@ public class XmlListCellRenderer extends JPanel implements ListCellRenderer
 		{
 			ElementDecl element = (ElementDecl)value;
 			left.setIcon(element.empty ? EMPTY_ELEMENT_ICON : ELEMENT_ICON);
-			left.setText(element.name);
+			left.setText(wqn.label);
 		}
 		/* Add a case for AttribDecl */
 		else if(value instanceof AttributeDecl)
 		{
-			AttributeDecl ad = (AttributeDecl)value;
-			left.setText(ad.name);
+			left.setText(wqn.label);
 		}
 		else if(value instanceof EntityDecl)
 		{
@@ -208,4 +212,26 @@ public class XmlListCellRenderer extends JPanel implements ListCellRenderer
 	public static class Comment {}
 
 	public static class CDATA {}
+
+	/**
+	 * store a completion with its label for preview
+	 */
+	public static class WithLabel<Q extends Object>
+	{
+		public String label;
+		public Q element;
+		
+		/** label will be null */
+		public WithLabel(Q element)
+		{
+			this(null, element);
+		}
+
+		public WithLabel(String qname, Q element)
+		{
+			this.label = qname;
+			this.element = element;
+		}
+
+	}
 }

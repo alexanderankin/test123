@@ -114,6 +114,21 @@ public class XMLTestUtils{
 			,10000);
 	}
 
+	/** open, parse and wait for SideKickUpdate in one go, to be sure not to miss the message */
+	public static Buffer openParseAndWait(final String path){
+		final Buffer[] ret = new Buffer[1];
+		doInBetween(
+			new Runnable(){
+				public void run(){
+					ret[0] = openFile(path);
+					action("sidekick-parse");
+				}
+			},
+			messageOfClassCondition(sidekick.SideKickUpdate.class)
+			,10000);
+		return ret[0];
+	}
+
 	public static void gotoPositionAndWait(int pos){
 		gotoPosition(pos);
 		Pause.pause(500);
