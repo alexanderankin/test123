@@ -4,5 +4,5 @@
 <documentElement localName="ACTIONS" typeId="ACTIONS"/>
 <uri pattern="*.rng" typeId="RNG"/>
 <typeId id="ACTIONS" uri="actions.rng"/>
-<typeId id="RNG" uri="relaxng.rng"/>
+<typeId id="RNG" uri="jeditresource:XML.jar!/xml/dtds/relaxng.rng"/>
 </locatingRules>

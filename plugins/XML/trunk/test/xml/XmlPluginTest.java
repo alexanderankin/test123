@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import org.fest.assertions.ObjectArrayAssert;
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
 import org.fest.swing.finder.*;
@@ -78,28 +79,107 @@ public class XmlPluginTest{
     public void testAbstractSubstitution() throws IOException{
     	File xml = new File(testData,"abstract_substitution/abstract_element_instance.xml");
     	
-    	TestUtils.openFile(xml.getPath());
-    	parseAndWait();
+    	final Buffer b = openParseAndWait(xml.getPath());
     	
-    	action("xml-insert-float",1);
-    	
-    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-    	
-		// go into the file
-		gotoPositionAndWait(530);
+    	try{
+	    	gotoPositionAndWait(348);
+			GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					view().getTextArea().setSelectedText("<");
+				}
+			});
+			
+			action("sidekick-complete",1);
+			
+			JWindowFixture completion;
+			
+			completion = XMLTestUtils.completionPopup();
+			completion.requireVisible();
+			ObjectArrayAssert al = assertThat(xmlListContents(completion.list()));
+			
+			// reportTitle is in the report namespace. It's proposed without prefix
+			al.contains("reportTitle");
+			// comment is abstract: it's not proposed
+			al.excludes("ns0:comment");
+			// some concrete comments are proposed, in a generated prefix (ns0)
+			al.contains("ns0:customerComment");
+			JListFixture list = completion.list().cellReader(xmlListCellReader());
+			
+			list.selectItem("reportTitle");
+			
+			// inserted, without IPO namespace
+			assertTrue(b.getText().contains("<reportTitle></reportTitle>"));
+			assertFalse(b.getText(348,b.getLength()-348).contains("http://www.example.com/IPO"));
+			
+			action("undo",1);
+			
+			// now, try to insert element with generated prefix
+			GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					view().getTextArea().setSelectedText("<");
+				}
+			});
+			
+			action("sidekick-complete",1);
 
-		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:shipComment");
-		assertThat(xmlListContents(insert.list("elements"))).excludes("ipo:comment").excludes("comment");
-		assertThat(xmlListContents(insert.list("elements"))).excludes("ipo:otherComment").excludes("otherComment");
-		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:concreteOtherComment");
-		
-		// go into the customerComment
-		gotoPositionAndWait(483);
-		
-		Pause.pause(500);
-		assertThat(xmlListContents(insert.list("elements"))).contains("customerId");
+			completion = XMLTestUtils.completionPopup();
+			completion.requireVisible();
+			assertThat(xmlListContents(completion.list())).contains("ns0:customerComment");
+			
+			list = completion.list().cellReader(xmlListCellReader());
 
-		insert.close();
+			int iRT = list.item("ns0:customerComment").index();
+			for(int i=0;i<iRT;i++){
+				list.pressAndReleaseKeys(KeyEvent.VK_DOWN);
+			}
+			list.pressAndReleaseKeys(KeyEvent.VK_SPACE);
+			
+			assertTrue(b.getText().contains("<ns0:customerComment xmlns:ns0=\"http://www.example.com/IPO\""));
+
+			action("undo",1);
+			
+			// now, try to insert element with chosen prefix
+			GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					view().getTextArea().setSelectedText("<ipo:");
+				}
+			});
+			
+			action("sidekick-complete",1);
+
+			completion = XMLTestUtils.completionPopup();
+			completion.requireVisible();
+			// reportTitle can't be there because we chose a new prefix
+			assertThat(xmlListContents(completion.list())).contains("ipo:customerComment").excludes("reportTitle");
+			
+			list = completion.list().cellReader(xmlListCellReader());
+
+			list.selectItem("ipo:customerComment");
+			
+			assertTrue(b.getText().contains("<ipo:customerComment xmlns:ipo=\"http://www.example.com/IPO\""));
+			
+			parseAndWait();
+			
+			Pause.pause(1000);
+			// try to insert customerId 
+			// now, try to insert element with chosen prefix
+			GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					view().getTextArea().setSelectedText("<");
+				}
+			});
+			
+			action("sidekick-complete",1);
+
+			completion = XMLTestUtils.completionPopup();
+			completion.requireVisible();
+			assertThat(xmlListContents(completion.list())).contains("customerId");
+			
+			
+    	}finally{
+    		// discard changes
+    		TestUtils.close(view(), b);
+    	}
     }
     
     /** Tests XML Plugin's completion
@@ -109,10 +189,8 @@ public class XmlPluginTest{
     public void testAttributesCompletion() throws IOException{
     	File xml = new File(testData,"attributes_completion/attributes.xml");
     	
-    	TestUtils.openFile(xml.getPath());
+    	openParseAndWait(xml.getPath());
     	
-    	parseAndWait();
-		
 		// aa, ab
 		gotoPositionAndWait(493);
 		
@@ -219,11 +297,8 @@ public class XmlPluginTest{
 	public void testCompoundDocuments(){
     	File xml = new File(testData,"compound_documents/fragment1.xml");
     	
-    	TestUtils.openFile(xml.getPath());
+    	openParseAndWait(xml.getPath());
     	
-		// wait for end of parsing
-    	parseAndWait();
-
     	action("xml-insert-float",1);
     	
     	
@@ -237,7 +312,7 @@ public class XmlPluginTest{
 		// ids declared in other fragment appear heare
 		assertThat(xmlListContents(insert.list("ids"))).contains("testing [element: <chapter>]");
 		
-		insert.list("ids").item("testing [element: <chapter>]").click(MouseButton.RIGHT_BUTTON);
+		insert.list("ids").cellReader(xmlListCellReader()).item("testing [element: <chapter>]").click(MouseButton.RIGHT_BUTTON);
 		
 		
 		Pause.pause(1000);
@@ -576,9 +651,7 @@ public class XmlPluginTest{
 	public void testImportSchemaRNG(){
     	File xml = new File(testData,"import_schema/relax_ng/instance.xml");
     	
-    	final Buffer b = TestUtils.openFile(xml.getPath());
-    	
-    	parseAndWait();
+    	final Buffer b = openParseAndWait(xml.getPath());
     	
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
@@ -705,7 +778,7 @@ public class XmlPluginTest{
 			public  String 	valueFrom(Component c) {
 				if(c instanceof XmlListCellRenderer){
 					return ((XmlListCellRenderer)c).getMainText();
-				}else return null;
+				}else return "argh";
 			}
 		});
 	

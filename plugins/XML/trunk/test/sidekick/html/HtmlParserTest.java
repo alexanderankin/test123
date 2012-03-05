@@ -62,9 +62,7 @@ public class HtmlParserTest{
     public void testErrorInCss(){
     	File xml = new File(testData,"html/error_in_css.html");
     	
-    	TestUtils.openFile(xml.getPath());
-    	
-    	parseAndWait();
+    	openParseAndWait(xml.getPath());
     	
     	action("sidekick-tree");
     	
@@ -72,7 +70,7 @@ public class HtmlParserTest{
     	JTreeFixture sourceTree = sidekick.tree();
     	
 		// inspect the tree
-		selectPath(sourceTree,"<html>&lt;html&gt;/<head>/<STYLE>");
+		selectPath(sourceTree,",<html>&lt;html&gt;,<head>,<STYLE type=\"text/css\">");
 		
 		// ensure some coherence in the assets
 		JEditTextArea area = TestUtils.view().getTextArea();
@@ -82,6 +80,7 @@ public class HtmlParserTest{
 		action("error-list-show",1);
 		
     	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+    	errorlist.resizeWidthTo(1024);
     	errorlist.tree().selectRow(1);
     	assertEquals(";",area.getSelectedText());
     	assertEquals(2,area.getCaretLine());

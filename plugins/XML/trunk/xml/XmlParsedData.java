@@ -149,7 +149,6 @@ public class XmlParsedData extends SideKickParsedData
 	} //}}}
 
 	//{{{ getElementDecl(String,int) method
-	// FIXME: pass buffer as parameter, 
 	public ElementDecl getElementDecl(String name, int pos)
 	{
 		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
@@ -162,7 +161,7 @@ public class XmlParsedData extends SideKickParsedData
 	
 		if(html)
 		{
-			decl = getElementDeclInternal(name,pos);
+			decl = getElementDeclHTML(name,pos);
 		}
 		else
 		{
@@ -220,7 +219,7 @@ public class XmlParsedData extends SideKickParsedData
 					{
 						if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
 							"SideKick tree is in sync");
-						decl = getElementDecl(parentNode,parentXmlTag);
+						decl = getElementDeclFromSideKick(parentNode,parentXmlTag);
 					}
 					else 
 					{
@@ -256,36 +255,15 @@ public class XmlParsedData extends SideKickParsedData
 		}
 		return decl;
 	}
-	/**
-	 * @param	ancestorDecl	ElementDecl to inspect; never the one looked for
-	 * @param	visitedDecls	avoid lopping by storing visited decls
-	 */
-	ElementDecl findElementDeclInDescendants(ElementDecl ancestorDecl,String namespace,String localName, List<ElementDecl> visitedDecls){
-		if(visitedDecls.contains(ancestorDecl))return null;
-		if(ancestorDecl.elementHash != null){
-			for(ElementDecl child : ancestorDecl.elementHash.values()){
-				ElementDecl res = null;
-				if(child.name.equals(localName) && namespace.equals(child.completionInfo.namespace)){
-					return child;
-				}else{
-					visitedDecls.add(ancestorDecl);
-					res = findElementDeclInDescendants(child,namespace,localName,visitedDecls);
-					if(res != null)return res;
-					else visitedDecls.remove(visitedDecls.size()-1);
-				}
-			}
-		}
-		return null;
-	}
 	//}}}
 	
 	//{{{ getElementDeclInternal(name, pos) method
 	/**
-	 * finds a global declaration of an element, returns it with correct prefix
+	 * finds a global declaration of an element, returns it without prefix
 	 * @param	name	qualified name (with prefix) of an element
 	 * @param	pos	used to get the namespace bindings
 	 */
-	public ElementDecl getElementDeclInternal(String name,int pos)
+	private ElementDecl getElementDeclHTML(String name,int pos)
 	{
 		if(html)
 			name = name.toLowerCase();
@@ -313,23 +291,17 @@ public class XmlParsedData extends SideKickParsedData
 			return null;
 		else
 		{
-			String lName;
-			int prefixLen = prefix.length();
-			if(prefixLen == 0)
-				lName = name;
-			else
-				lName = name.substring(prefixLen + 1);
-
+			String lName = getElementLocalName(name);
 			ElementDecl decl = info.elementHash.get(lName);
 			if(decl == null)
 				return null;
 			else
-				return decl.withPrefix(prefix);
+				return decl;
 		}
 	} //}}}
 
 	//{{{ getElementDecl() method
-	public ElementDecl getElementDecl(DefaultMutableTreeNode node,XmlTag tag)
+	private ElementDecl getElementDeclFromSideKick(DefaultMutableTreeNode node,XmlTag tag)
 	{
 		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
 			"getElementDecl("+node+","+tag.getName()+")");
@@ -342,10 +314,8 @@ public class XmlParsedData extends SideKickParsedData
 			String prefix =  tag.getPrefix();
 			String lName = tag.getLocalName();
 
-			ElementDecl decl;
 			if(!info.nameConflict && info.elementHash != null) {
-				decl = info.elementHash.get(lName);
-				return decl.withPrefix(prefix);
+				return info.elementHash.get(lName);
 			}
 			else
 			{
@@ -353,17 +323,16 @@ public class XmlParsedData extends SideKickParsedData
 				if(parentNode.getUserObject() instanceof XmlTag)
 				{
 					XmlTag parentTag = (XmlTag)parentNode.getUserObject();
-					ElementDecl parentDecl = getElementDecl(parentNode,parentTag);
+					ElementDecl parentDecl = getElementDeclFromSideKick(parentNode,parentTag);
 					if(parentDecl != null && parentDecl.elementHash!=null && parentDecl.elementHash.containsKey(lName))
 					{
-						return parentDecl.elementHash.get(lName).withPrefix(prefix);
+						return parentDecl.elementHash.get(lName);
 					}
 				}
 				else if(info.elementHash != null)
 				{
 					// at root node : allowed to use a global ElementDecl
-					decl = info.elementHash.get(lName);
-					return decl.withPrefix(prefix);
+					return info.elementHash.get(lName);
 				}
 				return null;
 			}
@@ -497,9 +466,12 @@ public class XmlParsedData extends SideKickParsedData
 	/** @return a list containing Elements or Attributes */
 	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)
 	{
+		/*{{{ debug only */
 		IAsset asset = getAssetAtOffset(pos);
 		if(Debug.DEBUG_COMPLETION && asset != null)Log.log(Log.DEBUG, XmlParsedData.class,
 			("asset at "+pos+" is :"+asset+" ("+asset.getStart().getOffset()+","+asset.getEnd().getOffset()+")"));
+		/* }}} */
+		
 		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
 
 		TagParser.Tag parentTag = null;
@@ -514,45 +486,17 @@ public class XmlParsedData extends SideKickParsedData
 		if(parentTag == null)
 		{
 			// add everything
-			Iterator iter = mappings.keySet().iterator();
-			while(iter.hasNext())
-			{
-				String ns = (String)iter.next();
-				CompletionInfo info = (CompletionInfo)
-				mappings.get(ns);
+			for(CompletionInfo info: mappings.values()) {
 				info.getAllElements(returnValue);
 			}
 		}
 		else
 		{
 			ElementDecl parentDecl = null;
-			//String parentPrefix = getElementNamePrefix(parentTag.tag);
-			//String parentLocalName = "".equals(parentPrefix) ? parentTag.tag : parentTag.tag.substring(parentPrefix.length()+1);
 
-
-			if(html)
-			{
-				parentDecl = getElementDeclInternal(parentTag.tag,pos);
-				returnValue.addAll(parentDecl.getChildElements(Collections.<String,String>emptyMap()));
-			}
-			else
-			{
-				TreePath path = null;
-				Map<String,String> bindings = null;
-				
-				if(allNamespacesBindingsAtTop){
-					if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class, "allNamespacesBindingsAtTop");
-					bindings = getRootNamespaceBindings();
-				}else {
-					path = getTreePathForPosition(pos);
-					bindings = getNamespaceBindings(path);
-				}
-
-				parentDecl = getElementDecl(parentTag.tag,parentTag.start+1);
-				if(parentDecl != null){
-					if(bindings == null)bindings = Collections.<String,String>emptyMap();
-					returnValue.addAll(parentDecl.getChildElements(bindings));
-				}
+			parentDecl = getElementDecl(parentTag.tag,parentTag.start+1);
+			if(parentDecl != null){
+				returnValue.addAll(parentDecl.getChildElements());
 			}
 		}
 		Collections.sort(returnValue, new ElementDecl.Compare());
@@ -560,37 +504,40 @@ public class XmlParsedData extends SideKickParsedData
 	} //}}}
 
 	//{{{ getAllowedElements() method
-	/* called by updateTagList only */
-	// FIXME: use new algorithms
-	public List getAllowedElements(Buffer buffer, int startPos, int endPos)
+	/** get allowed elements at startPos.
+	 *  called by updateTagList only.
+	 *  ensures:
+	 *  - that startPos and endPos are not inside a tag (then returns all global elements),
+	 *  - that both startPos and endPos have a parent (may be different) or none has
+	 *    (then return startPos parent declaration's children).
+	 * 	DO KEEP in sync with the other getAllowedElements() !!
+	 *  @see XmlParsedData#getAllowedElements(Buffer, int) 
+	 */
+	public List<ElementDecl> getAllowedElements(Buffer buffer, int startPos, int endPos)
 	{
-		ArrayList returnValue = new ArrayList();
-
+		ArrayList<ElementDecl> returnValue = new ArrayList<ElementDecl>();
+		CharSequence bufferText = buffer.getSegment(0, buffer.getLength());
+		
 		// make sure we are not inside a tag
-		if(TagParser.isInsideTag(buffer.getText(0,startPos),startPos)) {
+		if(TagParser.isInsideTag(bufferText,startPos)) {
 			return returnValue;
 		}
 
 		// make sure we are not inside a tag
-		if(TagParser.isInsideTag(buffer.getText(0,endPos),endPos)) {
+		if(TagParser.isInsideTag(bufferText,endPos)) {
 			return returnValue;
 		}
 
 		TagParser.Tag startParentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,startPos),startPos,this);
+			bufferText,startPos,this);
 
 		TagParser.Tag endParentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,endPos),endPos,this);
+			bufferText,endPos,this);
 
 		if(startParentTag == null) { 
 			if(endParentTag == null) {
 				// add everything
-				Iterator iter = mappings.keySet().iterator();
-				while(iter.hasNext())
-				{
-					String prefix = (String)iter.next();
-					CompletionInfo info = (CompletionInfo)
-					mappings.get(prefix);
+				for(CompletionInfo info: mappings.values()) {
 					info.getAllElements(returnValue);
 				}
 			}
@@ -602,6 +549,9 @@ public class XmlParsedData extends SideKickParsedData
 		}
 		else
 		{
+			// it's not clear to me what situation this covers : if start and end parent tags
+			// are not the same, why do we require that they are in same prefix ?
+			// especially since only chilren of start parent are proposed 
 			String startParentPrefix = getElementNamePrefix(startParentTag.tag);
 			ElementDecl startParentDecl = getElementDecl(startParentTag.tag,startParentTag.start+1);
 
@@ -616,22 +566,7 @@ public class XmlParsedData extends SideKickParsedData
 				return returnValue;
 			else
 			{
-
-				if(startParentDecl != null)
-					returnValue.addAll(startParentDecl.getChildElements());
-
-				// add everything but the parent's prefix now
-				Iterator iter = mappings.keySet().iterator();
-				while(iter.hasNext())
-				{
-					String prefix = (String)iter.next();
-					if(!prefix.equals(startParentPrefix))
-					{
-						CompletionInfo info = (CompletionInfo)
-							mappings.get(prefix);
-						info.getAllElements(returnValue);
-					}
-				}
+				returnValue.addAll(startParentDecl.getChildElements());
 			}
 		}
 
@@ -640,8 +575,10 @@ public class XmlParsedData extends SideKickParsedData
 	} //}}}
 
 	//{{{ getNamespaceBindings() method
-	/** namespace to prefix */
-	public Map<String,String> getNamespaces(int pos){
+	/** namespace to prefix
+	 *  (from sidekick) 
+	 **/
+	public Map<String,String> getNamespaceBindings(int pos){
 		
 		if(html) return new HashMap<String,String>();
 		
@@ -655,7 +592,7 @@ public class XmlParsedData extends SideKickParsedData
 	}
 	
 	/** namespace to prefix */
-	public Map<String,String> getNamespaceBindings(TreePath path){
+	private Map<String,String> getNamespaceBindings(TreePath path){
 		Map<String,String> bindings = new HashMap<String,String>();
 		
 		if(path == null)return bindings;
@@ -673,7 +610,7 @@ public class XmlParsedData extends SideKickParsedData
 	//}}}
 	
 	//{{{ getRootNamespaceBindings() method
-	public Map<String,String> getRootNamespaceBindings(){
+	private Map<String,String> getRootNamespaceBindings(){
 		Map<String,String> bindings;
 		
 		if(!html && root != null && root.getChildCount() > 0){
@@ -695,7 +632,7 @@ public class XmlParsedData extends SideKickParsedData
 	//}}}
 
 	//{{{ getNamespaceForPrefix() method
-	public String getNamespaceForPrefix(String prefix, int pos){
+	private String getNamespaceForPrefix(String prefix, int pos){
 		
 		if(html)return null;
 		
@@ -726,7 +663,7 @@ public class XmlParsedData extends SideKickParsedData
 	//}}}
 	
 	//{{{ getNS() method
-	public String getNS(Map<String,String> nsToPrefix, String prefix){
+	private String getNS(Map<String,String> nsToPrefix, String prefix){
 		for(Map.Entry<String,String> en:nsToPrefix.entrySet()){
 			if(prefix.equals(en.getValue())){
 				return en.getKey();

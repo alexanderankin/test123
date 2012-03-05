@@ -24,6 +24,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.gjt.sp.jedit.msg.*;
@@ -32,6 +33,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import sidekick.*;
+import xml.XmlListCellRenderer.WithLabel;
 import xml.completion.*;
 import xml.parser.TagParser;
 //}}}
@@ -250,7 +252,7 @@ public class XmlInsert extends JPanel implements EBComponent
 		if(elements == null)
 		{
 			DefaultListModel model = new DefaultListModel();
-			model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
+			model.addElement(new WithLabel<String>("",jEdit.getProperty("xml-insert.not-parsed")));
 			elementList.setModel(model);
 		}
 		else
@@ -271,17 +273,22 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredEntities() method
-	private void setDeclaredEntities(List entities)
+	private void setDeclaredEntities(List<EntityDecl> entities)
 	{
 		if(entities == null)
 		{
 			DefaultListModel model = new DefaultListModel();
-			model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
+			model.addElement(new WithLabel<String>(jEdit.getProperty("xml-insert.not-parsed")));
 			entityList.setModel(model);
 		}
 		else
 		{
-			ArrayListModel model = new ArrayListModel(entities);
+			List<WithLabel<EntityDecl>> nentities = new ArrayList<WithLabel<EntityDecl>>(entities.size());
+			for(EntityDecl e:entities){
+				nentities.add(new WithLabel<EntityDecl>(e));
+			}
+
+			ArrayListModel model = new ArrayListModel(nentities);
 			entityList.setModel(model);
 
 			if(model.getSize() != 0)
@@ -298,17 +305,23 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredIDs() method
-	private void setDeclaredIDs(List ids)
+	private void setDeclaredIDs(List<IDDecl> ids)
 	{
 		if(ids == null)
 		{
 			DefaultListModel model = new DefaultListModel();
-			model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
+			model.addElement(new WithLabel<String>(jEdit.getProperty("xml-insert.not-parsed")));
 			idList.setModel(model);
 		}
 		else
 		{
-			ArrayListModel model = new ArrayListModel(ids);
+			
+			List<WithLabel<IDDecl>> nids = new ArrayList<WithLabel<IDDecl>>(ids.size());
+			for(IDDecl id:ids){
+				nids.add(new WithLabel<IDDecl>(id));
+			}
+			
+			ArrayListModel model = new ArrayListModel(nids);
 			idList.setModel(model);
 
 			if(model.getSize() != 0)
@@ -334,17 +347,60 @@ public class XmlInsert extends JPanel implements EBComponent
 		{
 
 			Selection[] selection = view.getTextArea().getSelection();
-
+			List<ElementDecl> l;
 			if(selection.length > 0) {
-				setDeclaredElements(data.getAllowedElements(
-					buffer,
-					selection[0].getStart(),
-					selection[0].getEnd()));
+				l = data.getAllowedElements(
+						buffer,
+						selection[0].getStart(),
+						selection[0].getEnd());
 			}
-			else {
-				setDeclaredElements(data.getAllowedElements(
+			else
+			{
+				l = (data.getAllowedElements(
 					buffer,view.getTextArea().getCaretPosition()));
 			}
+			
+			List<WithLabel<ElementDecl>> nl = new ArrayList<WithLabel<ElementDecl>>(l.size());
+			Map<String, String> namespaces = data.getNamespaceBindings(view.getTextArea().getCaretPosition());
+			Map<String, String> localNamespacesToInsert = new HashMap<String, String>();
+			for(ElementDecl elementDecl: l){
+				String elementName;
+				String elementNamespace = elementDecl.completionInfo.namespace;
+				// elementDecl.name is the local name, now we must find a qualified name
+				if(elementNamespace == null || "".equals(elementNamespace))
+				{
+					elementName = elementDecl.name;
+				}
+				else
+				{
+					String pre = namespaces.get(elementNamespace);
+					if(pre == null)
+					{
+						pre = localNamespacesToInsert.get(elementNamespace);
+					}
+					if(pre == null)
+					{
+						// handle elements in undeclared namespace and no prefix.
+						// Generate a new prefix.
+						// Store it locally, so that the declaration is not inserted when this completion is not chosen.
+						// If it's chosen, a prefix (maybe different) will be generated
+						pre = EditTagDialog.generatePrefix(namespaces, localNamespacesToInsert);
+						localNamespacesToInsert.put(elementNamespace,pre);
+						elementName = pre + ":" + elementDecl.name;
+					}
+					else
+					{
+						if("".equals(pre)){
+							elementName = elementDecl.name;
+						}else{
+							elementName = pre + ":" + elementDecl.name;
+						}
+					}
+				}
+				
+				nl.add(new WithLabel<ElementDecl>(elementName, elementDecl));
+			}
+			setDeclaredElements(nl);
 		}
 		else
 		{
@@ -422,27 +478,27 @@ public class XmlInsert extends JPanel implements EBComponent
 				if(data==null)return;
 
 				int pos = textArea.getCaretPosition();
-				//FIXME: crude parsing and getting a big chunk of text here !
-				String t = buffer.getText(0, pos);
 				/* Check if we are inside a tag, and if so, wipe it out before
 				   inserting the one we just created */
-				if (TagParser.isInsideTag(t, pos)) {
-					int openAngle = t.lastIndexOf('<');
-					insideTag = new Selection.Range(openAngle, pos);
+				CharSequence text = buffer.getSegment(0, buffer.getLength());
+				TagParser.Tag current = TagParser.getTagAtOffset(text,pos);
+				if (current!=null && current.start < pos && current.end >= pos) {
+					insideTag = new Selection.Range(current.start, current.end+1);
 				}
 				
 				idList.setSelectedIndex(index);
-				Object obj = elementList.getModel().getElementAt(index);
+				WithLabel<Object> wqn = (WithLabel<Object>)elementList.getModel().getElementAt(index);
+				Object obj = wqn.element;
 				if(!(obj instanceof ElementDecl))
 					return;
 
 				ElementDecl element = (ElementDecl)obj;
 
-				Map<String,String> namespaces = data.getNamespaces(pos);
+				Map<String,String> namespaces = data.getNamespaceBindings(pos);
 				Map<String,String> namespacesToInsert = new HashMap<String,String>();
 				
 				// all the work is done in XmlActions.showEditTagDialog
-				XmlActions.showEditTagDialog(view,element,insideTag, namespaces, namespacesToInsert,GUIUtilities.isPopupTrigger(evt));
+				XmlActions.showEditTagDialog(view,wqn.label, element,insideTag, namespaces, namespacesToInsert,GUIUtilities.isPopupTrigger(evt));
 			} //}}}
 			//{{{ Handle clicks in entity list
 			else if(evt.getSource() == entityList)
@@ -452,7 +508,8 @@ public class XmlInsert extends JPanel implements EBComponent
 				if(index == -1)
 					return;
 
-				Object obj = entityList.getModel().getElementAt(index);
+				WithLabel<Object> wl = (WithLabel<Object>) entityList.getModel().getElementAt(index);
+				Object obj = wl.element;
 				if(!(obj instanceof EntityDecl))
 					return;
 
@@ -472,7 +529,8 @@ public class XmlInsert extends JPanel implements EBComponent
 					return;
 
 				idList.setSelectedIndex(index);
-				Object obj = idList.getModel().getElementAt(index);
+				WithLabel<Object> wl = (WithLabel<Object>) idList.getModel().getElementAt(index);
+				Object obj = wl.element;
 				if(!(obj instanceof IDDecl))
 					return;
 

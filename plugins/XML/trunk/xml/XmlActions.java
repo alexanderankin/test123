@@ -89,7 +89,7 @@ public class XmlActions
 		XmlParsedData data = XmlParsedData.getParsedData(view, true);
 		if(data == null)return;
 
-		String text = buffer.getText(0,buffer.getLength());
+		CharSequence text = buffer.getSegment(0,buffer.getLength());
 
 		int caret = textArea.getCaretPosition();
 
@@ -110,8 +110,8 @@ public class XmlActions
 		 * the escape character, so we have to work around it here. */
 		char backslashSub = 127;
 		StreamTokenizer st = new StreamTokenizer(new StringReader(
-			text.substring(tag.start + tag.tag.length() + 1,
-			tag.end - 1)
+			text.subSequence(tag.start + tag.tag.length() + 1,
+			tag.end - 1).toString()
 			.replace('\\',backslashSub)));
 		st.resetSyntax();
 		st.wordChars('!',255);
@@ -193,7 +193,7 @@ loop:			for(;;)
 		}
 
 		// tag.start+1 because  don't want the locally declared namespaces
-		Map<String,String> namespaces = data.getNamespaces(tag.start+1);
+		Map<String,String> namespaces = data.getNamespaceBindings(tag.start+1);
 		Map<String,String> namespacesToInsert = new HashMap<String,String>();
 	
 		// grab namespaces declared in this tag
@@ -229,13 +229,14 @@ loop:			for(;;)
 	/**
 	 * show EditTagDialog in order to insert open and close tags or edit current tag 
 	 * @param view						current view
+	 * @param elementName				qualified element name to insert
 	 * @param elementDecl				element to insert (may not be null)
 	 * @param insideTag					Selection of the current start tag (or part of, for instance inf XmlCompletion, what has been already typed)
 	 * @param namespaces				namespace bindings in scope for current location (not those declared inside the start tag itself)
 	 * @param namespacesToInsert		namespace bindings that will have to be inserted at the end of the start tag
 	 * @param reallyShowEditTagDialog	false to disable showing the dialog at all, but insert the start and end tags nonetheless 
 	 */
-	public static void showEditTagDialog(View view, ElementDecl elementDecl, Selection insideTag, Map<String, String> namespaces, Map<String, String> namespacesToInsert, boolean reallyShowEditTagDialog)
+	public static void showEditTagDialog(View view, String elementName, ElementDecl elementDecl, Selection insideTag, Map<String, String> namespaces, Map<String, String> namespacesToInsert, boolean reallyShowEditTagDialog)
 	{
 		Buffer buffer = view.getBuffer();
 
@@ -249,32 +250,24 @@ loop:			for(;;)
 		if(!reallyShowEditTagDialog)
 		{
 			StringBuilder[] openclose = EditTagDialog.composeTag(data, elementDecl, namespaces, namespacesToInsert, true);
+			// composeTag doesn't insert the <
+			openclose[0].insert(0, '<');
 			newTag = openclose[0].toString();
 			closingTag = openclose[1].toString();
 		}
 		else
 		{
-			EditTagDialog dialog = new EditTagDialog(view,elementDecl.name,elementDecl,
+			EditTagDialog dialog = new EditTagDialog(view,elementName,elementDecl,
 				new HashMap<String, Object>(),elementDecl.empty,
 				elementDecl.completionInfo.entityHash,
 				data.getSortedIds(),data.html, namespaces, namespacesToInsert);
 
-			// painfully recover the qualified name of the element
 			newTag = dialog.getNewTag();
-			String newName;
-			if(newTag==null){
-				newName = "";
-			}else if(newTag.contains(" ")){
-				 newName = newTag.substring(1,newTag.indexOf(" "));
-			}else{
-				newName = newTag.substring(1, newTag.length()-1);
-			}
-			
 			
 			if(dialog.isEmpty())
 				closingTag = "";
 			else
-				closingTag = "</" + newName + ">";
+				closingTag = "</" + elementName + ">";
 		}
 
 		// really insert now
@@ -346,7 +339,7 @@ loop:			for(;;)
 	/**
 	 * Splits tag at caret, so that attributes are on separate lines.
 	 */
-	public static void splitTag(Tag tag, JEditTextArea textArea, String text) {
+	public static void splitTag(Tag tag, JEditTextArea textArea, CharSequence text) {
 		View view = textArea.getView();
 		textArea.setSelection(new Selection.Range(tag.start, tag.end));
 		XmlParsedData data = XmlParsedData.getParsedData(view,true);
@@ -423,7 +416,7 @@ loop:			for(;;)
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
 		int pos = textArea.getCaretPosition();
-		String text = buffer.getText(0,buffer.getLength());
+		CharSequence text = buffer.getSegment(0,buffer.getLength());
 		Tag tag = TagParser.getTagAtOffset(text, pos);
 		if (tag == null) return; // we're not in a tag;
 		
@@ -502,7 +495,7 @@ loop:			for(;;)
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
 		int pos = textArea.getCaretPosition();
-		String text = buffer.getText(0,buffer.getLength());
+		CharSequence text = buffer.getSegment(0,buffer.getLength());
 		Tag t = TagParser.getTagAtOffset(text, pos);
 		if (t != null && t.end != pos) { // getTagAtOffset will return a tag if you are just after it
 			splitTag(t, textArea, text);
@@ -580,9 +573,9 @@ loop:			for(;;)
 		{
 			buffer.beginCompoundEdit();
 
-			String text = buffer.getText(off,len);
-			for (int i = text.indexOf('<');
-				i != -1; i = text.indexOf('<', ++i))
+			CharSequence text = buffer.getSegment(off,len);
+			for (int i = TagParser.indexOf(text, '<',0);
+				i != -1; i = TagParser.indexOf(text,'<', ++i))
 			{
 				TagParser.Tag tag = TagParser.getTagAtOffset(text,i + 1);
 				if (tag == null)
@@ -625,7 +618,7 @@ loop:			for(;;)
 	//{{{ xmlMatchTag() method
 	public static void xmlMatchTag(JEditTextArea textArea)
 	{
-		String text = textArea.getText();
+		CharSequence text = textArea.getBuffer().getSegment(0,textArea.getBufferLength());
 		int caret = textArea.getCaretPosition();
 
 		// De-Select previous selection
@@ -666,7 +659,7 @@ loop:			for(;;)
 
 		final int step = 2;
 
-		String text = textArea.getText();
+		CharSequence text = textArea.getBuffer().getSegment(0, textArea.getBufferLength());
 		boolean isSel = textArea.getSelectionCount() == 1;
 		int caret, pos;
 
@@ -735,7 +728,7 @@ loop:			for(;;)
 	 *  Selects tag at caret. Also returns it. Returns null if there is no tag.
 	 * */
 	public static Tag selectTag(JEditTextArea textArea) {
-		String text = textArea.getText();
+		CharSequence text = textArea.getBuffer().getSegment(0, textArea.getBufferLength());
 		int pos = textArea.getCaretPosition();
 		Tag t = TagParser.getTagAtOffset(text, pos);
 		if (t == null) return null;
@@ -752,7 +745,7 @@ loop:			for(;;)
 
 		final int step = 2;
 
-		String text = textArea.getText();
+		CharSequence text = textArea.getBuffer().getSegment(0,textArea.getBufferLength());
 		boolean isSel = textArea.getSelectionCount() == 1;
 		int caret, pos;
 
@@ -836,7 +829,7 @@ loop:			for(;;)
 
 		int caret = textArea.getCaretPosition();
 
-		String text = buffer.getText(0,caret);
+		CharSequence text = buffer.getSegment(0,caret);
 
 		TagParser.Tag tag = TagParser.getTagAtOffset(text,caret - 1);
 		if(tag == null)
@@ -896,7 +889,7 @@ loop:			for(;;)
 		if(caret == 1)
 			return;
 
-		String text = buffer.getText(0,buffer.getLength());
+		CharSequence text = buffer.getSegment(0,buffer.getLength());
 
 		if(text.charAt(caret - 2) != '<')
 			return;

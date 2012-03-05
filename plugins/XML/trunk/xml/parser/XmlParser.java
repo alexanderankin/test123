@@ -26,6 +26,7 @@ import sidekick.*;
 import xml.completion.*;
 import xml.completion.ElementDecl.AttributeDecl;
 import xml.*;
+import xml.XmlListCellRenderer.WithLabel;
 
 /**
  * This is the common base class for both HTML and XML Parsers.
@@ -207,10 +208,10 @@ public abstract class XmlParser extends SideKickParser
 				insideQuote = !insideQuote;
 			}
 			// whitespace is not allowed in element tag names or entities;
-			// in xml mode attributes can only occur in Token.MARKUP or Token.END
+			// in xml mode attributes can only occur in Token.MARKUP or Token.END (or Token.OPERATOR when just typing the colon)
 			// this solves the problem of attributes defined with ' for xml mode
 			// xsl mode parses the markup more finely so the logic gets more complex but probably could be done
-			else if (Character.isWhitespace(ch) && !(token.id == Token.MARKUP || token.id == Token.END) && modename.equals("xml")) {
+			else if (Character.isWhitespace(ch) && !(token.id == Token.MARKUP || token.id == Token.END || (token.id == Token.OPERATOR && text.charAt(lastchar) == ':')) && modename.equals("xml")) {
 			  	return null;
 			}
 			// whitespace is not allowed in element tags or entities;
@@ -230,8 +231,9 @@ public abstract class XmlParser extends SideKickParser
 		String word;
 
 		List allowedCompletions = new ArrayList(20);
-		Map<String, String> namespaces = data.getNamespaceBindings(data.getTreePathForPosition(caret));
+		Map<String, String> namespaces = data.getNamespaceBindings(caret);
 		Map<String, String> namespacesToInsert = new HashMap<String, String>();
+		Map<String, String> localNamespacesToInsert = new HashMap<String, String>();
 		
 		
 		if(wordStart != -1 && mode != -1)
@@ -252,19 +254,20 @@ public abstract class XmlParser extends SideKickParser
 			if(mode == ELEMENT_COMPLETE)
 			{
 				String wordWithoutPrefix = XmlParsedData.getElementLocalName(word);
+				String wordPrefix = XmlParsedData.getElementNamePrefix(word);
 				List<ElementDecl> completions = data.getAllowedElements(buffer, lastchar);
 				TagParser.Tag tag = TagParser.findLastOpenTag(text,lastchar - 1,data);
 				if(tag != null)
 					closingTag = tag.tag;
 
 				if("!--".startsWith(word))
-					allowedCompletions.add(new XmlListCellRenderer.Comment());
+					allowedCompletions.add(new WithLabel(new XmlListCellRenderer.Comment()));
 				if(!data.html && "![CDATA[".startsWith(word))
-					allowedCompletions.add(new XmlListCellRenderer.CDATA());
+					allowedCompletions.add(new WithLabel(new XmlListCellRenderer.CDATA()));
 				if(closingTag != null && ("/" + closingTag).startsWith(word))
 				{
 					if(word.length() == 0 || !jEdit.getBooleanProperty("xml.close-complete"))
-						allowedCompletions.add(new XmlListCellRenderer.ClosingTag(closingTag));
+						allowedCompletions.add(new WithLabel(new XmlListCellRenderer.ClosingTag(closingTag)));
 					else
 					{
 						// just insert immediately
@@ -280,6 +283,7 @@ public abstract class XmlParser extends SideKickParser
 					ElementDecl elementDecl = completions.get(i);
 					String elementName;
 					String elementNamespace = elementDecl.completionInfo.namespace;
+					// elementDecl.name is the local name, now we must find a qualified name
 					if(elementNamespace == null || "".equals(elementNamespace))
 					{
 						elementName = elementDecl.name;
@@ -289,8 +293,31 @@ public abstract class XmlParser extends SideKickParser
 						String pre = namespaces.get(elementNamespace);
 						if(pre == null)
 						{
-							elementName = elementDecl.name;
-							namespacesToInsert.put(elementNamespace, pre);
+							pre = localNamespacesToInsert.get(elementNamespace);
+						}
+						if(pre == null)
+						{
+							// handle using unknown prefix
+							// if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix 
+							if(!"".equals(wordPrefix)
+									&& elementDecl.name.startsWith(wordWithoutPrefix))
+							{
+								pre = wordPrefix;
+								namespacesToInsert.put(elementNamespace, pre);
+								localNamespacesToInsert.put(elementNamespace, pre);
+								elementName = pre + ":" + elementDecl.name;
+								
+							}
+							else
+							{
+								// handle elements in undeclared namespace and no prefix.
+								// Generate a new prefix.
+								// Store it locally, so that the declaration is not inserted when this completion is not chosen.
+								// If it's chosen, a prefix (maybe different) will be generated
+								pre = EditTagDialog.generatePrefix(namespaces, localNamespacesToInsert);
+								localNamespacesToInsert.put(elementNamespace,pre);
+								elementName = pre + ":" + elementDecl.name;
+							}
 						}
 						else
 						{
@@ -301,14 +328,12 @@ public abstract class XmlParser extends SideKickParser
 							}
 						}
 					}
-					//TODO: handle using unknown prefix ?
-					//      ie. if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix 
 					
 					if(elementName.startsWith(word)
 							|| (data.html && elementName.toLowerCase()
 							.startsWith(word.toLowerCase())))
 					{
-						allowedCompletions.add(elementDecl);
+						allowedCompletions.add(new XmlListCellRenderer.WithLabel<ElementDecl>(elementName,elementDecl));
 					}
 				}
 			}
@@ -320,13 +345,15 @@ public abstract class XmlParser extends SideKickParser
 					EntityDecl entity = completions.get(i);
 					if(entity.name.startsWith(word))
 					{
-						allowedCompletions.add(entity);
+						allowedCompletions.add(new WithLabel(entity));
 					}
 				}
 			}
 			else if (mode == ATTRIB_COMPLETE) 
 			{
 				String prefix = text.substring(attribStart, caret);
+				String wordWithoutPrefix = XmlParsedData.getElementLocalName(prefix);
+				String wordPrefix = XmlParsedData.getElementNamePrefix(prefix);
 				ElementDecl decl = data.getElementDecl(word,caret);
 				List<AttributeDecl> completions;
 				if (decl != null)
@@ -352,6 +379,28 @@ public abstract class XmlParser extends SideKickParser
 								else
 								{
 									attrName = attrDecl.name;
+									// handle using unknown prefix
+									// if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix 
+									if(!"".equals(wordPrefix) && !"xml".equals(wordPrefix)
+											&& attrName.startsWith(wordWithoutPrefix))
+									{
+										pre = wordPrefix;
+										namespacesToInsert.put(attrDecl.namespace, pre);
+										attrName = pre + ":" + attrDecl.name;
+									}
+									else
+									{
+										// handle attribute in undeclared namespace and no prefix.
+										// Generate a new prefix.
+										// Store it locally, so that the declaration is not inserted when this completion is not chosen.
+										// If it's chosen, a prefix (maybe different) will be generated again
+										pre = EditTagDialog.generatePrefix(namespaces, localNamespacesToInsert);
+										localNamespacesToInsert.put(attrDecl.namespace,pre);
+										attrName = pre + ":" + attrDecl.name;
+										// this can get cumbersome, if one types 'a' expecting to get 'someprefix:attribute' because
+										// attribute will not be proposed. On the other hand if we don't put the prefix, one cannot distinguish between
+										// ns1:attr and ns2:attr...
+									}
 								}
 							}
 							else
@@ -361,7 +410,7 @@ public abstract class XmlParser extends SideKickParser
 						}
 						if (attrName.startsWith(prefix))
 						{
-							allowedCompletions.add(attrDecl);
+							allowedCompletions.add(new XmlListCellRenderer.WithLabel<AttributeDecl>(attrName,attrDecl));
 						}
 					}
 				}

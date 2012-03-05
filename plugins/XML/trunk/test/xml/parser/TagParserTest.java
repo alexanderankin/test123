@@ -451,11 +451,8 @@ public class TagParserTest{
     public void testFindLastOpenTagHTML(){
     	final File in = new File(testData,"tagparser/test.html");
     	
-    	Buffer b = openFile(in.getPath());
+    	Buffer b = openParseAndWait(in.getPath());
     	
-    	// wait for end of parsing
-    	parseAndWait();
-		
 		XmlParsedData data = getXmlParsedData();
 		String text = b.getText(0, b.getLength());
     	Tag t;

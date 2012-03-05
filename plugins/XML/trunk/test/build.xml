@@ -90,7 +90,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/XmlPluginTest.java"/>
+        <filename name="sidekick/html/HtmlParserTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either

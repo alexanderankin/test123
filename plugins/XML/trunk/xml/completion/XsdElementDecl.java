@@ -24,6 +24,7 @@ public class XsdElementDecl extends ElementDecl
 		xsed = element;
 	}
 	
+	@Override
 	public boolean isAbstract() {
 		return xsed.getAbstract();
 	}
@@ -32,6 +33,7 @@ public class XsdElementDecl extends ElementDecl
 	 * Returns a List of ElementDecl objects which are equivalent to this one, if it is indeed
 	 * an abstract class.
 	 */
+	@Override
 	public List<ElementDecl> findReplacements() 
 	{	
 

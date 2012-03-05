@@ -32,13 +32,13 @@ public class TagParser
 	public static final int T_END_TAG = 2;
 
 	//{{{ getTagAtOffset() method
-	public static Tag getTagAtOffset(String text, int pos)
+	public static Tag getTagAtOffset(CharSequence text, int pos)
 	{
 		if(pos < 0 || pos > text.length())
 			return null;
 
 		// Get the last '<' before current position.
-		int startTag = text.lastIndexOf('<', pos - 1);			// -1 because don't want to return something when cursor is here:  |<a>
+		int startTag = lastIndexOf(text, '<', pos - 1);			// -1 because don't want to return something when cursor is here:  |<a>
 		if(startTag == -1 || startTag + 2 >= text.length()) // at least 2 chars after '<'
 			return null;
 
@@ -52,7 +52,7 @@ public class TagParser
 				endTag = i+1;
 				break;
 			}else if(ch == '\'' || ch == '"'){
-				int nextQuote = text.indexOf(ch,i+1);
+				int nextQuote = indexOf(text, ch,i+1);
 				if(nextQuote == -1)
 				{
 					System.err.println("quote is not closed !");
@@ -103,14 +103,14 @@ public class TagParser
 		}
 
 		Tag tag = new Tag(startTag,endTag);
-		tag.tag   = text.substring(startTagName, endTagName);
+		tag.tag   = text.subSequence(startTagName, endTagName).toString();
 		tag.type  = tagType;
 
 		return tag;
 	} //}}}
 
 	//{{{ getMatchingTag() method
-	public static Tag getMatchingTag(String text, Tag tag)
+	public static Tag getMatchingTag(CharSequence text, Tag tag)
 	{
 		if (tag.type == T_START_TAG)
 			return findEndTag(text, tag);
@@ -120,7 +120,7 @@ public class TagParser
 	} //}}}
 
 	//{{{ findLastOpenTag() method
-	public static Tag findLastOpenTag(String text, int pos,
+	public static Tag findLastOpenTag(CharSequence text, int pos,
 		XmlParsedData data)
 	{
 		Stack<String> tagStack = new Stack<String>();
@@ -235,9 +235,9 @@ public class TagParser
 
 	//{{{ isInsideTag() method
 	//it doesn't skip comments and such but it works ???
-	public static boolean isInsideTag(String text, int pos)
+	public static boolean isInsideTag(CharSequence text, int pos)
 	{
-		int start = text.lastIndexOf('<',pos);
+		int start = lastIndexOf(text, '<',pos);
 
 		if(start > -1 && start < pos) 
 		{
@@ -250,7 +250,7 @@ public class TagParser
 					end = i;
 					break;
 				}else if(ch == '\'' || ch == '"'){
-					int nextQuote = text.indexOf(ch,i+1);
+					int nextQuote = indexOf(text,ch,i+1);
 					if(nextQuote == -1)
 					{
 						System.err.println("quote is not closed !");
@@ -277,7 +277,7 @@ public class TagParser
 	//{{{ Private members
 
 	//{{{ findEndTag() method
-	private static Tag findEndTag(String text, Tag startTag)
+	private static Tag findEndTag(CharSequence text, Tag startTag)
 	{
 		int tagCounter = 0;
 
@@ -343,7 +343,7 @@ public class TagParser
 	} //}}}
 
 	//{{{ findStartTag() method
-	private static Tag findStartTag(String text, Tag endTag)
+	private static Tag findStartTag(CharSequence text, Tag endTag)
 	{
 		int tagCounter = 0;
 
@@ -412,7 +412,7 @@ public class TagParser
 
 	//{{{ getAttrs() method
 	// works only for XML : all attributes must be quote
-	public static List<Attr> getAttrs(String text, Tag tag)
+	public static List<Attr> getAttrs(CharSequence text, Tag tag)
 	{
 		if (tag.type == T_START_TAG || tag.type == T_STANDALONE_TAG)
 		{
@@ -457,7 +457,7 @@ public class TagParser
 				}
 				else if( ch == '\'' || ch == '"' )
 				{
-					int nextQuote = text.indexOf(ch,i+1);
+					int nextQuote = indexOf(text,ch,i+1);
 					if(nextQuote == -1)
 					{
 						System.err.println("quote is not closed !");
@@ -466,8 +466,8 @@ public class TagParser
 					else
 					{
 						Attr a = new Attr(startAttrName,nextQuote+1);
-						a.name = text.substring(startAttrName,endAttrName);
-						a.val = text.substring(i, nextQuote+1);
+						a.name = text.subSequence(startAttrName,endAttrName).toString();
+						a.val = text.subSequence(i, nextQuote+1).toString();
 						attrs.add(a);
 						
 						startAttrName=-1;
@@ -489,6 +489,31 @@ public class TagParser
 		}
 	} //}}}
 	
+	/**
+	 * replacement for String.lastIndexOf on CharSequence
+	 * @param	pos	position from which to look (backward)
+	 * */
+	public static int lastIndexOf(CharSequence text, int c, int pos){
+		int len = text.length();
+		if(pos>=len) pos = len -1;
+		for(int i=pos; i>= 0; i--){
+			if(text.charAt(i) == c)return i;
+		}
+		return -1;
+	}
+	
+	/**
+	 * replacement for String.indexOf on CharSequence
+	 * @param	pos	position from which to look (forward)
+	 * */
+	public static int indexOf(CharSequence text, int c, int pos){
+		int len = text.length();
+		if(pos>=len)return -1;
+		for(int i=pos; i<len ; i++){
+			if(text.charAt(i) == c)return i;
+		}
+		return -1;
+	}
 	//}}}
 
 	//{{{ Tag class

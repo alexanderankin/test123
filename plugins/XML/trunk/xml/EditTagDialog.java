@@ -220,13 +220,15 @@ public class EditTagDialog extends EnhancedDialog
 		}
 
 		ArrayList<Attribute> attributeModel = new ArrayList<Attribute>();
+		// keep original list of namespaces to insert, otherwise it gets polluted by namespaces of attributes not inserted
+		Map<String,String> localNamespacesToInsert = new HashMap<String,String>(namespacesToInsert);
 		for(int i = 0; i < declaredAttributes.size(); i++)
 		{
 			AttributeDecl attr =
 				(AttributeDecl)
 				declaredAttributes.get(i);
 
-			String attrName = composeName(attr.name, attr.namespace, namespaces, namespacesToInsert);
+			String attrName = composeName(attr.name, attr.namespace, namespaces, localNamespacesToInsert);
 
 			boolean set;
 			String value = (String)attributeValues.get(attrName);
@@ -257,7 +259,7 @@ public class EditTagDialog extends EnhancedDialog
 					value = (String)values.get(0);
 			}
 			
-			attributeModel.add(new Attribute(set,attrName,
+			attributeModel.add(new Attribute(set,attrName,attr.namespace,
 				value,values,attr.type,attr.required));
 		}
 
@@ -270,7 +272,9 @@ public class EditTagDialog extends EnhancedDialog
 	private void updateTag()
 	{
 		int tagNameCase = TextUtilities.getStringCase(elementName);
-
+		// only append namespaces really used or in the original namespacesToInsert
+		Map<String,String> localNamespacesToInsert = new HashMap<String,String>(namespacesToInsert);
+		
 		StringBuilder buf = new StringBuilder("<");
 		buf.append(elementName);
 
@@ -298,7 +302,16 @@ public class EditTagDialog extends EnhancedDialog
 					break;
 				}
 			}
-
+			else
+			{
+				String prefix = XmlParsedData.getElementNamePrefix(attrName);
+				if(!NamespaceSupport.XMLNS.equals(attr.namespace)
+					&& !namespaces.containsKey(attr.namespace)
+					&& !localNamespacesToInsert.containsKey(attr.namespace))
+				{
+					localNamespacesToInsert.put(attr.namespace,prefix);
+				}
+			}
 			buf.append(attrName);
 
 			if(html && attr.name.equals(attr.value.value))
@@ -315,7 +328,7 @@ public class EditTagDialog extends EnhancedDialog
 			buf.append("\"");
 		}
 
-		appendNamespaces(namespacesToInsert,buf);
+		appendNamespaces(localNamespacesToInsert,buf);
 
 		if(empty.isSelected() && !html)
 			buf.append("/");
@@ -352,18 +365,20 @@ public class EditTagDialog extends EnhancedDialog
 		boolean set;
 
 		String name;
+		String namespace;
 		Value value;
 		String type;
 		boolean required;
 		//}}}
 
 		//{{{ Attribute constructor
-		Attribute(boolean set, String name,
+		Attribute(boolean set, String name, String namespace,
 			String value, ArrayList values,
 			String type, boolean required)
 		{
 			this.set = set;
 			this.name = name;
+			this.namespace = namespace;
 			this.value = new Value(value,values);
 			this.type = type;
 			this.required = required;
@@ -684,7 +699,7 @@ public class EditTagDialog extends EnhancedDialog
 	
 	
 	/**
-	 * create open and close tags for an ElementDecl (with required attributes).
+	 * create open and close tags for an ElementDecl (with required attributes but without starting &lt; angle bracket).
 	 * if elementDecl.isEmpty, close tag will be empty and open tag will be standalone (if not html)
 	 * @param data	
 	 * @param elementDecl			element to create tags for
@@ -730,13 +745,15 @@ public class EditTagDialog extends EnhancedDialog
 	 * @return	new prefix
 	 */
 	public static String generatePrefix(Map<String,String> ... namespaces) {
+		String pre;
 		for(int i=0;;i++){
-			String pre = "ns"+i;
+			pre = "ns"+i;
+			boolean notSeen = true;
 			for(Map<String,String> namespace: namespaces){
-				if(!namespace.containsKey(pre)){
-					return pre;
-				}
+				notSeen &= !namespace.containsKey(pre);
+				if(!notSeen)break;
 			}
+			if(notSeen)return pre;
 		}
 	}
 }
