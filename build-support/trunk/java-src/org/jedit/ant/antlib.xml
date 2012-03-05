@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <antlib>
-   <taskdef name="gen-plugin-deps-ivy-file" classname="org.jedit.ant.GenPluginDepsIvyFileTask"/>
-   <taskdef name="get-plugin-info" classname="org.jedit.ant.GetPluginInfoTask"/>
-   <taskdef name="get-plugin-jar-name" classname="org.jedit.ant.GetPluginJarNameTask"/>
+  <typedef name="plugininfo" classname="org.jedit.ant.PluginInfoType"/>
+
+  <taskdef name="gen-plugin-deps-ivy-file" classname="org.jedit.ant.GenPluginDepsIvyFileTask"/>
+  <taskdef name="get-plugin-info" classname="org.jedit.ant.GetPluginInfoTask"/>
+  <taskdef name="get-plugin-jar-name" classname="org.jedit.ant.GetPluginJarNameTask"/>
 </antlib>

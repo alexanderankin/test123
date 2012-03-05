@@ -40,10 +40,12 @@ public class GetPluginJarNameTask extends Task
   private String sOutputProp;
   
   /** To be used as a non-task
-      @return Never <code>null</code>. When no other clue
+      @return <code>null</code> if <code>sClassName</code>
+              is <code>null</code>. When no other clue - 
               <code>sClassName</code> */
   public static String getJarName(String sClassName)
   {
+    if (sClassName == null) { return null; }
     String sJarName = sClassName;
     sJarName = sJarName.replaceFirst("^.*\\.([^\\.]+)$", "$1");
     if (sJarName.length()>9) {
