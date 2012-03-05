@@ -49,6 +49,7 @@ public abstract class XmlParser extends SideKickParser
 		} else {
 			highlight = new SideKickTagHighlight();
 		}
+		htmlHighlight = new TagHighlight();
 	} //}}}
 
 	//{{{ stop() method
@@ -67,13 +68,28 @@ public abstract class XmlParser extends SideKickParser
 	{
 		super.activate(editPane);
 		if(jEdit.getBooleanProperty("xml.tag-highlight"))
-			editPane.getTextArea().addStructureMatcher(highlight);
+		{
+			StructureMatcher h;
+			// revert to classic TagHighlight for HTML modes
+			if(editPane.getBuffer().getMode().getName().equals("html")
+					|| editPane.getBuffer().getMode().getName().equals("jsp"))
+			{
+				h = htmlHighlight;
+			}
+			else
+			{
+				h = highlight;
+			}
+			editPane.getTextArea().addStructureMatcher(h);
+		}
 	} //}}}
 
 	//{{{ deactivate() method
 	public void deactivate(EditPane editPane)
 	{
+		// don't bother to remember which one it was... 
 		editPane.getTextArea().removeStructureMatcher(highlight);
+		editPane.getTextArea().removeStructureMatcher(htmlHighlight);
 	} //}}}
 
 	//{{{ supportsCompletion() method
@@ -441,5 +457,6 @@ public abstract class XmlParser extends SideKickParser
 
 	//{{{ Private members
 	private StructureMatcher highlight;
+	private StructureMatcher htmlHighlight;
 	//}}}
 }

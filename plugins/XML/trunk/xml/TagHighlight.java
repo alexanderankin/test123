@@ -21,9 +21,14 @@ import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 import sidekick.SideKickActions;
-import xml.parser.javacc.TagParser;
+import xml.parser.TagParser;
 //}}}
 
+/**
+ * StructureMatcher finding the matching tag (open/close).
+ * This one uses xml.TagParser to find tags, contrary to SideKickTagHighlight, which uses xml.parser.javacc.TagParser
+ * @see SideKickTagHighlight
+ * */
 public class TagHighlight implements StructureMatcher
 {
 	//{{{ getMatch() method
@@ -44,14 +49,14 @@ public class TagHighlight implements StructureMatcher
 		// Also, the first parse could get only the buffer up to caret or
 		// caret +1000 characters to get a full tag and then the relevant part of the buffer's content (before or after).
 		// this would speed up matching near the begining of a big buffer
-		TagParser.Tag current = TagParser.getTagAtOffset(buffer,text,caret);
+		TagParser.Tag current = TagParser.getTagAtOffset(text,caret);
 
 		if(current == null) {
 			return null;
 		}
 		else
 		{
-			TagParser.Tag tag = TagParser.getMatchingTag(buffer,text,current);
+			TagParser.Tag tag = TagParser.getMatchingTag(text,current);
 			if(tag != null)
 			{
 				tag.startLine = textArea.getLineOfOffset(tag.start);

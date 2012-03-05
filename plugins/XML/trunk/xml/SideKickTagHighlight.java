@@ -30,7 +30,12 @@ import sidekick.util.ElementUtil;
 import xml.parser.javacc.*;
 import xml.parser.XmlTag;
 //}}}
-
+/**
+ * StructureMatcher finding the matching tag (open/close).
+ * It uses 
+ *  - first the current SideKick tree to go to the open tag very fase
+ *  - then xml.parser.javacc.TagParser, which will really parse this part of the buffer to get tag boundaries
+ * */
 public class SideKickTagHighlight implements StructureMatcher
 {
 	//{{{ getMatch() method
