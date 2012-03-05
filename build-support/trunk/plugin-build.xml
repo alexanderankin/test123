@@ -668,16 +668,16 @@
 <target name="get-plugin-info" depends="def-jedit-tasks" >
     <local name="src.fileset" />
     <local name="extras.fileset" />
-    <fileset id="src.fileset" dir="${src.dir}" >
-        <selector refid="compileFiles" />
-    </fileset>
-    <fileset id="extras.fileset" dir="${basedir}" >
-        <selector refid="extraFiles" />
-    </fileset>
-    <jedit:get-plugin-info fsSrc="src.fileset"
-                           fsExtras="extras.fileset" />
-    <jedit:get-plugin-jar-name className="${plugin.class.name}"
-                               outputProp="plugin.jar.name" />
+    <jedit:get-plugin-info>
+        <jedit:plugininfo>
+            <fsSrc dir="${src.dir}" >
+                <selector refid="compileFiles" />
+            </fsSrc>
+            <fsExtras dir="${basedir}" >
+                <selector refid="extraFiles" />
+            </fsExtras>
+        </jedit:plugininfo>
+    </jedit:get-plugin-info>
 
     <!--<dump-prop-ref refid="src.fileset" />-->
     <!--<dump-prop-ref refid="plugin.props.set" />-->

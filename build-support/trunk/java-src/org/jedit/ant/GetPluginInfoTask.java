@@ -32,9 +32,9 @@ import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.resources.FileResourceIterator;
 
-/** Takes fileset ids as arguments: <code>fsSrc</code> and
-    <code>fsExtras</code> and generates plugin information.
-    Sets the following properties:<ul>
+/** Takes <code>plugininfo</code> as nested argument and stores the plugin
+    info as properties.
+    <p>The following properties are set:<ul>
     <li>plugin.class.name - e.g. projectviewer.ProjectPlugin
     <li>plugin.jar.name - e.g. ProjectViewer
     <li>plugin.jedit.version.full - e.g. 4.4.99.0
@@ -44,137 +44,33 @@ import org.apache.tools.ant.types.resources.FileResourceIterator;
     <li>plugin.dep.X.jar.name - e.g. CommonControls
     </ul>
     and a property set <code>plugin.props.set</code>.
+    Properties names and property set name may be prefixed if
+    the <code>prefix</code> attribute is specified. When providing this
+    attribute include a dot at the end.
     */
 
 public class GetPluginInfoTask extends Task
 {
-  private FileSet fsSrc;
-  private FileSet fsExtras;
-  private Project p;
-  private PropertySet ps;
-  
-  //{{{ getPluginClassName method 
-  /** Gets an <code>Iterator</code> over objects implementing
-      <code>toString</code> and discovers the plugin name.
-      The strings are treated as filenames and the filename ending
-      with <code>Plugin.java</code> denotes the plugin name.
-      This is the same as done in
-      <code>org.gjt.sp.jedit.PluginJAR.generateCache()</code>.
-      @param sBaseDir The base directory will be substracted from plugin
-                      filename to get only the part containing the
-                      package name. May be <code>null</code>
-      @param it The <code>iterator</code> over <code>Object</code>s,
-                which implement <code>toString()</code>
-      @return <code>null</code> if not a plugin.
-      */
-  public static String getPluginClassName(String sBaseDir, Iterator it) {
-    String sPluginClass = null;
-    while (it.hasNext()) {
-      String sFile = it.next().toString();
-      if (sFile.endsWith("Plugin.java")) {
-        sPluginClass = sFile.substring(sBaseDir.length()+1);
-        sPluginClass = sPluginClass.replaceFirst("\\.java$", "");
-        sPluginClass = sPluginClass.replaceAll("[/\\\\]", ".");
-        break;
-      }
-    }
-    return sPluginClass;
-  } //}}}
-
-  //{{{ parsePropse method 
-  /** Reads dependencies from properties.
-    * See <code>PluginJAR.checkDependencies()</code> */
-  private void parseProps(String sPluginClass, Properties props)
-  {
-    int i, iPluginDep;
-    i = 0; iPluginDep = 0;
-    String sDepPropName = "plugin." + sPluginClass + ".depend.";
-    String sDep;
-    while((sDep = props.getProperty(sDepPropName + i)) != null) {
-      String asDeps[] = sDep.split(" ");
-      if (asDeps[0].equals("jedit")) {
-        p.setProperty("plugin.jedit.version.full", asDeps[1]);
-        String v[] = asDeps[1].split("\\.");
-        getProject().setProperty("plugin.jedit.version", v[0] + "." + v[1]);
-        ps.appendName("plugin.jedit.version.full");
-        ps.appendName("plugin.jedit.version");
-      }
-      if (asDeps[0].equals("optional")) {
-        // ignore the optional keyword, treat as usual plugin dep
-        asDeps = java.util.Arrays.copyOfRange(asDeps, 1, asDeps.length);
-      }
-      if (asDeps[0].equals("plugin")) {
-        //print("" + iPluginDep + asDeps[1] + "-" + asDeps[2]);
-        String sPref = "plugin.dep." + iPluginDep;
-        String sDepPluginClass = asDeps[1];
-        p.setProperty(sPref + ".class", sDepPluginClass);
-        p.setProperty(sPref + ".version", asDeps[2]);
-        ps.appendRegex(sPref + "\\.*");
-        String sJarName = GetPluginJarNameTask.getJarName(asDeps[1]);
-        p.setProperty(sPref + ".jar.name", sJarName);
-        iPluginDep++;
-      }
-      
-      i++;
-    }
-    p.setProperty("plugin.dep.count", "" + iPluginDep);
-  } //}}}
+  private PluginInfoType pi;
+  private String sPrefix = "";
   
   @Override
   public void execute()
   {
-    p = getProject();
-    if (fsSrc == null) {
-      throw new BuildException("fsSrc parameter not specified.");
+    if (pi == null) {
+      throw new BuildException("pluginInfo not provided");
     }
-    if (fsExtras == null) {
-      throw new BuildException("fsSrc parameter not specified.");
-    }
-        
-    String sPluginClass = getPluginClassName(fsSrc.getDir().toString(),
-                                             fsSrc.iterator());
-    getProject().setProperty("plugin.class.name", sPluginClass);
-    ps = (PropertySet)getProject().createDataType("propertyset"); 
-    getProject().addReference("plugin.props.set", ps); 
-    //print("no src files:" + fsSrc.size());
-        
-    ps.appendName("plugin.class.name");
-    ps.appendName("plugin.jar.name");
-    ps.appendName("plugin.dep.count");
-
-    // load all props files {{{
-    Properties props = new Properties();
-    FileResourceIterator it = (FileResourceIterator)fsExtras.iterator();
-    while (it.hasNext()) {
-      FileResource fr = (FileResource)it.next();
-      if (fr.toString().endsWith(".props")) {
-        try {
-          props.load(fr.getInputStream());
-        }
-        catch (java.io.IOException e) {
-          throw new BuildException(e);
-        }
-      }
-    } // }}}
-    
-    parseProps(sPluginClass, props);
+    pi.setProjectProperties(sPrefix);
   }
   
-  public void setFsSrc(String sId)
+  public void add(PluginInfoType pi)
   {
-    Object o = getProject().getReference(sId);
-    if (o == null || !(o instanceof FileSet)) {
-      throw new BuildException("Fileset id fsSrc not correct.");
-    }
-    fsSrc = (FileSet)o;
+    this.pi = pi;
   }
 
-  public void setFsExtras(String sId)
+  public void setPrefix(String s)
   {
-    Object o = getProject().getReference(sId);
-    if (o == null || !(o instanceof FileSet)) {
-      throw new BuildException("Fileset id fsExtras not correct.");
-    }
-    fsExtras = (FileSet)o;
+    sPrefix = s;
   }
+  
 }
