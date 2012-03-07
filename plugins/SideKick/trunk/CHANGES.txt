@@ -1,8 +1,7 @@
  :encoding=UTF-8:maxLineLen=80:wrap=hard:folding=explicit:collapseFolds=1:
-
  jEdit SideKick Plugin Changelog
 
- Version 1.3
+    Version 1.3
         Sidekick unable to clear checkbox tree/combo follows caret (#3445893 -
         Shlomy)
         Integration with Markersets (#3392131 - shlomy).
