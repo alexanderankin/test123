@@ -149,7 +149,10 @@ public abstract class ProcessRunner
 		}
 		/* cmd, in contrast, can accept multiple arguments */
 		else {
+			// to make sure the arguments are quoted properly, wrap them in parentheses
+			arglist.add("(");
 			arglist.addAll(args);
+			arglist.add(")");
 		}
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		Map<String, String> processEnv = processBuilder.environment();
