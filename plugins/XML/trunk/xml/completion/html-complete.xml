@@ -3,14 +3,32 @@
 <!-- The element list was automatically generated from
      xhtml1-transitional.dtd -->
 
-<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd" 
+[
+    <!-- 
+        html 5 content groups with minor adjustments for backward compatibility
+        with html 4
+    -->
+    <!ENTITY flowContent "a|abbr|address|area|article|aside|audio|b|bdi|bdo|blockquote|body|br|button|canvas|cite|code|command|data|datalist|del|details|dfn|div|dl|em|embed|fieldset|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|hr|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|math|menu|meta|meter|nav|noscript|object|ol|output|p|pre|progress|q|ruby|s|samp|script|section|select|small|span|strong|style|sub|sup|svg|table|textarea|time|u|ul|var|video|wbr">
+    <!ENTITY flowNoInteractiveContent "abbr|address|area|article|aside|audio|b|bdi|bdo|blockquote|body|br|canvas|cite|code|command|data|datalist|del|dfn|div|dl|em|fieldset|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|hr|i|img|ins|kbd|link|map|mark|math|meta|meter|nav|noscript|ol|output|p|pre|progress|q|ruby|s|samp|script|section|small|span|strong|style|sub|sup|svg|table|time|u|ul|var|wbr">
+    <!ENTITY headerFooterContent "a|abbr|address|area|article|aside|audio|b|bdi|bdo|blockquote|body|br|button|canvas|cite|code|command|data|datalist|del|details|dfn|div|dl|em|embed|fieldset|figure|form|h1|h2|h3|h4|h5|h6|hgroup|hr|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|math|menu|meta|meter|nav|noscript|object|ol|output|p|pre|progress|q|ruby|s|samp|script|section|select|small|span|strong|style|sub|sup|svg|table|textarea|time|u|ul|var|video|wbr">
+    <!ENTITY addressContent "a|abbr|area|audio|b|bdi|bdo|blockquote|body|br|button|canvas|cite|code|command|data|datalist|del|details|dfn|div|dl|em|embed|fieldset|figure|form|h1|h2|h3|h4|h5|h6|hgroup|hr|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|math|menu|meta|meter|noscript|object|ol|output|p|pre|progress|q|ruby|s|samp|script|select|small|span|strong|style|sub|sup|svg|table|textarea|time|u|ul|var|video|wbr">
+    <!ENTITY formContent "a|abbr|address|area|article|aside|audio|b|bdi|bdo|blockquote|body|br|button|canvas|cite|code|command|data|datalist|del|details|dfn|div|dl|em|embed|fieldset|figure|footer|h1|h2|h3|h4|h5|h6|header|hgroup|hr|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|math|menu|meta|meter|nav|noscript|object|ol|output|p|pre|progress|q|ruby|s|samp|script|section|select|small|span|strong|style|sub|sup|svg|table|textarea|time|u|ul|var|video|wbr">
+    <!ENTITY phrasingContent "a|abbr|area|audio|b|bdi|bdo|br|button|canvas|cite|code|command|data|datalist|del|dfn|em|embed|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|math|meta|meter|noscript|object|output|progress|q|ruby|s|samp|script|select|small|span|strong|sub|sup|svg|textarea|time|u|var|video|wbr">
+    <!ENTITY phrasingNoInteractiveContent "abbr|area|b|bdi|bdo|br|canvas|cite|code|command|data|datalist|del|dfn|em|i|img|input|ins|kbd|link|map|mark|math|meta|meter|noscript|output|progress|q|ruby|s|samp|script|small|span|strong|sub|sup|svg|time|u|var|wbr">
+    <!ENTITY sectioningContent "article|aside|nav|section">
+    <!ENTITY headingContent "h1|h2|h3|h4|h5|h6|hgroup">
+    <!ENTITY embeddingEontent "audio|canvas|embed|iframe|img|math|object|svg|video">
+    <!ENTITY interactiveContent "a|audio|button|details|embed|iframe|img|input|keygen|label|menu|object|select|textarea|video">
+    <!ENTITY palpableContent "a|abbr|address|article|aside|audio|b|bdi|bdo|blockquote|button|canvas|cite|code|data|details|dfn|div|dl|em|embed|fieldset|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|i|iframe|img|input|ins|kbd|keygen|label|map|mark|math|menu|meter|nav|object|ol|output|p|pre|progress|q|ruby|s|samp|section|select|small|span|strong|sub|sup|svg|table|textarea|time|u|ul|var|video">
+    <!ENTITY metadataContent "base|command|link|meta|noscript|script|style|title">
+]>
 
 <dtd>
 
 <element-list>
 
-<element name="a"
-content="(br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+<element name="a" content="(&flowNoInteractiveContent;)" >
 <attribute name="accesskey" type="CDATA" />
 <attribute name="charset" type="CDATA" />
 <attribute name="class" type="CDATA" />
@@ -44,7 +62,7 @@ content="(br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|f
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="abbr"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -64,7 +82,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="acronym"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -84,7 +102,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="address"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&addressContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -104,7 +122,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="applet"
-content="(param|p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(param|&flowContent;)" >
 <attribute name="align" type="(top|middle|bottom|left|right)" />
 <attribute name="alt" type="CDATA" />
 <attribute name="archive" type="CDATA" />
@@ -152,7 +170,7 @@ content="EMPTY" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="b"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -184,7 +202,7 @@ content="EMPTY" >
 <attribute name="size" type="CDATA" required="true" />
 </element>
 <element name="bdo"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" required="true" />
 <attribute name="id" type="ID" />
@@ -204,7 +222,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="big"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -224,7 +242,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="blockquote"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="cite" type="CDATA" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -245,7 +263,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="body"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="alink" type="CDATA" />
 <attribute name="background" type="CDATA" />
 <attribute name="bgcolor" type="CDATA" />
@@ -281,7 +299,7 @@ content="EMPTY" >
 <attribute name="title" type="CDATA" />
 </element>
 <element name="button"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|table|br|span|bdo|object|applet|img|map|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|ins|del|script|noscript)" >
+content="(&phrasingNoInteractiveContent;)" >
 <attribute name="accesskey" type="CDATA" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -309,7 +327,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="caption"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(top|bottom|left|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -330,7 +348,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="center"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -350,7 +368,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="cite"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -370,7 +388,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="code"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -442,7 +460,7 @@ content="(col)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="dd"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -462,7 +480,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="del"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="cite" type="CDATA" />
 <attribute name="class" type="CDATA" />
 <attribute name="datetime" type="CDATA" />
@@ -484,7 +502,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="dfn"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -525,7 +543,7 @@ content="(li)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="div"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -567,7 +585,7 @@ content="(dt|dd)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="dt"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -587,7 +605,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="em"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -607,7 +625,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="fieldset"
-content="(legend|p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(legend|&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -627,7 +645,7 @@ content="(legend|p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|add
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="font"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="color" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -640,7 +658,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="form"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&formContent;)" >
 <attribute name="accept" type="CDATA" />
 <attribute name="accept-charset" type="CDATA" />
 <attribute name="action" type="CDATA" required="true" />
@@ -669,7 +687,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="h1"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -690,7 +708,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="h2"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -711,7 +729,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="h3"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -732,7 +750,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="h4"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -753,7 +771,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="h5"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -774,7 +792,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="h6"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -795,7 +813,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="head"
-content="(script|style|meta|link|object|isindex|title|script|style|meta|link|object|isindex|base|script|style|meta|link|object|isindex|base|script|style|meta|link|object|isindex|title|script|style|meta|link|object|isindex)" >
+content="(&metadataContent;)" >
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="lang" type="NMTOKEN" />
 <attribute name="profile" type="CDATA" />
@@ -833,7 +851,7 @@ content="(head|body)" >
 <attribute name="xmlns" value="http://www.w3.org/1999/xhtml" type="CDATA" />
 </element>
 <element name="i"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -853,7 +871,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="iframe"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="align" type="(top|middle|bottom|left|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="frameborder" value="1" type="(1|0)" />
@@ -935,13 +953,13 @@ content="EMPTY" >
 <attribute name="style" type="CDATA" />
 <attribute name="tabindex" type="CDATA" />
 <attribute name="title" type="CDATA" />
-<attribute name="type" value="text" type="(text|password|checkbox|radio|submit|reset|file|hidden|image|button)" />
+<attribute name="type" value="text" type="(hidden|text|search|tel|url|email|password|datetime|date|month|week|time|datetime-local|number|range|color|checkbox|radio|file|submit|image|reset|button)" />
 <attribute name="usemap" type="CDATA" />
 <attribute name="value" type="CDATA" />
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="ins"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="cite" type="CDATA" />
 <attribute name="class" type="CDATA" />
 <attribute name="datetime" type="CDATA" />
@@ -974,7 +992,7 @@ content="EMPTY" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="kbd"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -994,7 +1012,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="label"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="accesskey" type="CDATA" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -1018,7 +1036,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="legend"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="accesskey" type="CDATA" />
 <attribute name="align" type="(top|bottom|left|right)" />
 <attribute name="class" type="CDATA" />
@@ -1040,7 +1058,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="li"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1090,7 +1108,7 @@ content="EMPTY" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="map"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|ins|del|script|noscript|area)" >
+content="(&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" required="true" />
@@ -1142,7 +1160,7 @@ content="EMPTY" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="noframes"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1162,7 +1180,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="noscript"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1182,7 +1200,7 @@ content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|ce
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="object"
-content="(param|p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(param|&flowContent;)" >
 <attribute name="align" type="(top|middle|bottom|left|right)" />
 <attribute name="archive" type="CDATA" />
 <attribute name="border" type="CDATA" />
@@ -1288,7 +1306,7 @@ content="()" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="p"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="align" type="(left|center|right)" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -1317,7 +1335,7 @@ content="EMPTY" >
 <attribute name="valuetype" value="data" type="(data|ref|object)" />
 </element>
 <element name="pre"
-content="(a|br|span|bdo|map|tt|i|b|u|s|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1339,7 +1357,7 @@ content="(a|br|span|bdo|map|tt|i|b|u|s|em|strong|dfn|code|q|sub|sup|samp|kbd|var
 <attribute name="xml:space" value="preserve" type="(preserve)" />
 </element>
 <element name="q"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="cite" type="CDATA" />
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
@@ -1360,7 +1378,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="s"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1380,7 +1398,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="samp"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1437,7 +1455,7 @@ content="(optgroup|option)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="small"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1457,7 +1475,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="span"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1477,7 +1495,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="strike"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1497,7 +1515,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="strong"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1527,7 +1545,7 @@ content="()" >
 <attribute name="xml:space" value="preserve" type="(preserve)" />
 </element>
 <element name="sub"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1547,7 +1565,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="sup"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1620,7 +1638,7 @@ content="(tr)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="td"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="abbr" type="CDATA" />
 <attribute name="align" type="(left|center|right|justify|char)" />
 <attribute name="axis" type="CDATA" />
@@ -1709,7 +1727,7 @@ content="(tr)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="th"
-content="(p|h1|h2|h3|h4|h5|h6|div|ul|ol|dl|menu|dir|pre|hr|blockquote|address|center|noframes|isindex|fieldset|table|form|a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&flowContent;)" >
 <attribute name="abbr" type="CDATA" />
 <attribute name="align" type="(left|center|right|justify|char)" />
 <attribute name="axis" type="CDATA" />
@@ -1798,7 +1816,7 @@ content="(th|td)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="tt"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1818,7 +1836,7 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="u"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1860,7 +1878,7 @@ content="(li)" >
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
 <element name="var"
-content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)" >
+content="(&phrasingContent;)" >
 <attribute name="class" type="CDATA" />
 <attribute name="dir" type="(ltr|rtl)" />
 <attribute name="id" type="ID" />
@@ -1879,6 +1897,123 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <attribute name="title" type="CDATA" />
 <attribute name="xml:lang" type="NMTOKEN" />
 </element>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<!--                 Elements for HTML 5                                     -->
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<element name="article" content="(&flowContent;)"></element>
+<element name="aside" content="(&flowContent;)"></element>
+<element name="audio" content="(track)">
+<attribute name="src" type="CDATA"/> 
+<attribute name="crossorigin" type="CDATA"/> 
+<attribute name="preload" type="CDATA"/> 
+<attribute name="autoplay" type="CDATA"/> 
+<attribute name="mediagroup" type="CDATA"/> 
+<attribute name="loop" type="CDATA"/> 
+<attribute name="muted" type="CDATA"/> 
+<attribute name="controls" type="CDATA"/>
+</element>
+
+<element name="bdi" content="(&phrasingContent;)"></element>
+<element name="canvas" content="(a|button|input)">
+<attribute name="width" type="CDATA"/>
+<attribute name="height" type="CDATA"/>
+</element>
+
+<element name="command" content="EMPTY">
+<attribute name="type" type="CDATA"/> 
+<attribute name="label" type="CDATA"/> 
+<attribute name="icon" type="CDATA"/> 
+<attribute name="disabled" type="CDATA"/> 
+<attribute name="checked" type="CDATA"/>
+</element>
+
+<element name="data" content="(&phrasingContent;)">
+<attribute name="value" type="CDATA"/>
+</element>
+
+<element name="datalist" content="(&phrasingContent;|option)">
+<attribute name="option" type="CDATA"/>
+</element>
+
+<element name="details" content="(summary|&flowContent;)">
+<attribute name="open" type="CDATA"/>
+</element>
+
+<element name="embed" content="EMPTY">
+<attribute name="src" type="CDATA"/>
+<attribute name="type" type="CDATA"/>
+<attribute name="width" type="CDATA"/>
+<attribute name="height" type="CDATA"/>
+</element>
+
+<element name="figcaption" content="(&flowContent;)"></element>
+<element name="figure" content="(figcaption|&flowContent;)"></element>
+<element name="footer" content="(&headerFooterContent;)"></element>
+<element name="header" content="(&headerFooterContent;)"></element>
+<element name="hgroup" content="(h1|h2|h3|h4|h5|h6)"></element>
+<element name="keygen" content="EMPTY">
+<attribute name="autofocus" type="CDATA"/>
+<attribute name="challenge" type="CDATA"/>
+<attribute name="disabled" type="CDATA"/>
+<attribute name="form" type="CDATA"/>
+<attribute name="keytype" type="CDATA"/>
+<attribute name="name" type="CDATA"/>
+</element>
+<element name="mark" content="(&phrasingContent;)"></element>
+<element name="meter" content="(&phrasingContent;)">
+<attribute name="value" type="CDATA"/>
+<attribute name="min" type="CDATA"/>
+<attribute name="max" type="CDATA"/>
+<attribute name="low" type="CDATA"/>
+<attribute name="high" type="CDATA"/>
+<attribute name="optimum" type="CDATA"/>
+</element>
+<element name="nav" content="(&flowContent;)"></element>
+<element name="output" content="(&phrasingContent;)">
+<attribute name="for" type="CDATA"/>
+<attribute name="form" type="CDATA"/>
+<attribute name="name" type="CDATA"/>
+</element>
+<element name="progress" content="(&phrasingContent;)">
+<attribute name="value" type="CDATA"/>
+<attribute name="max" type="CDATA"/>
+</element>
+<element name="rp" content="(&phrasingContent;)"></element>
+<element name="rt" content="(&phrasingContent;)"></element>
+<element name="ruby" content="(rt|rp|&phrasingContent;)"></element>
+<element name="section" content="(&flowContent;)"></element>
+<element name="source" content="EMPTY">
+<attribute name="src" type="CDATA"/>
+<attribute name="type" type="CDATA"/>
+<attribute name="media" type="CDATA"/>
+</element>
+<element name="summary" content="(&phrasingContent;)"></element>
+<element name="time" content="(&phrasingContent;)">
+<attribute name="datetime" type="CDATA"/>
+<attribute name="pubdate" type="CDATA"/>
+</element>
+<element name="track" content="EMPTY">
+<attribute name="default" type="CDATA"/>
+<attribute name="kind" type="CDATA"/>
+<attribute name="label" type="CDATA"/>
+<attribute name="src" type="CDATA"/>
+<attribute name="srclang" type="CDATA"/>
+</element>
+<element name="video" content="(track)">
+<attribute name="src" type="CDATA"/>
+<attribute name="crossorigin" type="CDATA"/>
+<attribute name="poster" type="CDATA"/>
+<attribute name="preload" type="CDATA"/>
+<attribute name="autoplay" type="CDATA"/>
+<attribute name="mediagroup" type="CDATA"/>
+<attribute name="loop" type="CDATA"/>
+<attribute name="muted" type="CDATA"/>
+<attribute name="controls" type="CDATA"/>
+<attribute name="width" type="CDATA"/>
+<attribute name="height" type="CDATA"/>
+</element>
+<element name="wbr" content="EMPTY"></element>
 
 </element-list>
 
