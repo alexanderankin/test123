@@ -787,6 +787,50 @@
             <value>auto</value>
             <value>inherit</value>
         </property>
+        
+        <!-- obsolete? -->
+        <property name="ascent"></property>
+        <property name="azimuth"></property>
+        <property name="baseline"></property>
+        <property name="cap-eight"></property>
+        <property name="centerline"></property>
+        <property name="cue"></property>
+        <property name="cue-after"></property>
+        <property name="cue-before"></property>
+        <property name="definition-src"></property>
+        <property name="descent"></property>
+        <property name="elevation"></property>
+        <property name="font-stretch"></property>
+        <property name="handing-punctuation"></property>
+        <property name="hyphenate-characters"></property>
+        <property name="mathline"></property>
+        <property name="panoise-1"></property>
+        <property name="pause"></property>
+        <property name="pause-after"></property>
+        <property name="pause-before"></property>
+        <property name="pitch"></property>
+        <property name="pitch-range"></property>
+        <property name="play-during"></property>
+        <property name="richness"></property>
+        <property name="slope"></property>
+        <property name="speak"></property>
+        <property name="speak-header-cell"></property>
+        <property name="speak-headers"></property>
+        <property name="speak-numeral"></property>
+        <property name="speak-punctuation"></property>
+        <property name="speech-rate"></property>
+        <property name="src"></property>
+        <property name="stemh"></property>
+        <property name="stemv"></property>
+        <property name="stress"></property>
+        <property name="text-emphasis"></property>
+        <property name="topline"></property>
+        <property name="unicode-range"></property>
+        <property name="units-per-em"></property>
+        <property name="voice-family"></property>
+        <property name="volume"></property>
+        <property name="x-height"></property>
+        
 		
 		<!-- added for css3 -->
         <property name="@font-face"></property>
