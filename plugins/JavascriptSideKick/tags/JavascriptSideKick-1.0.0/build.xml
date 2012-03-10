@@ -1,0 +1,21 @@
+<project name="JavascriptSideKick" default="build" basedir=".">
+
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="dist.target" value="dist.complete"/>
+	<property name="compiler.source" value="1.6"/>
+	<property name="compiler.debug" value="true"/>
+	<property name="compiler.target" value="1.6"/>
+	<property name="docs-proc.target" value="none"/>
+	<property name="jedit.plugins.dir" value="${install.dir}"/>
+	<property name="docs-proc.target" value="none"/>
+	<property name="src.dir" location="src" />
+	<import file="${build.support}/plugin-build.xml"/>
+
+
+	<selector id="packageFiles">
+		<filename name="docs/*.html" />
+	</selector>
+</project>
