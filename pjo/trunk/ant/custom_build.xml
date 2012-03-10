@@ -24,9 +24,10 @@
 <property name="plugin.version" value="1.0.0" />
 <property name="scm.targets.file" value="svn_cl.xml" />
 <property name="plugin.tag" value="JavascriptSideKick-1.0.0" />
+<!--<property name="plugin.tag" value="trunk" />-->
 
 <!-- don't change this part -->
-<property name="plugin.release.custom.build.version" value="1" /> 
+<property name="plugin.release.custom.build.version" value="2" /> 
 <property name="jedit.svn.url" value="https://jedit.svn.sourceforge.net/svnroot/jedit" />
 <property name="jedit.git.url" value="git://jedit.git.sourceforge.net/gitroot/jedit" />
 <property name="sandbox.dir" value="${pf.dir}/sandbox" />
@@ -51,18 +52,33 @@
 <target name="pf.init">
 </target>
 
-<target name="pf.test" depends="pf.init" >
+<presetdef name="ant-pf">
   <ant antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
-</target>
+</presetdef>
 
-<target name="pf.download" depends="pf.init, pf.update">
-  <ant target="download" antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+<target name="pf.dynamic" depends="pf.init">
+  <ant-pf target="${target}" />
 </target>
 <target name="pf.build" depends="pf.init">
-  <ant target="build" antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+  <ant-pf target="build" />
+</target>
+<target name="pf.download" depends="pf.init, pf.update">
+  <ant-pf target="download" />
+</target>
+<target name="pf.download-deps" depends="pf.init">
+  <ant-pf target="download-deps" />
+</target>
+<target name="pf.package" depends="pf.init">
+  <ant-pf target="package" />
+</target>
+<target name="pf.reset" depends="pf.init">
+  <ant-pf target="reset" />
+</target>
+<target name="pf.test" depends="pf.init">
+  <ant-pf target="usage" />
 </target>
 <target name="pf.view" depends="pf.init">
-  <ant target="view" antfile="${pf.dir}/pjo/ant/build.xml" dir="${pf.dir}/pjo/ant" />
+  <ant-pf target="view" />
 </target>
 
 </project>

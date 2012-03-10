@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
-<project name="Plugin Release" basedir="." default="usage">
+<project name="PluginRelease" basedir="." default="usage">
 <!-- :noTabs=false:folding=explicit:collapseFolds=1: -->
 
+<!-- TODO:
+     # view with manually specified jedit version
+  -->
+
 	<!-- Version check with custom.build.xml {{{ -->
-	<property name="Plugin Release.version" value="1" />
+	<property name="Plugin Release.version" value="2" />
 	<fail>
 	  Your custom.build.xml version
 	  (${plugin.release.custom.build.version}) does not match
@@ -43,6 +47,11 @@
 		<echo></echo>
 		<echo>download-svn          : Uses svn_cl.xml to download the desired</echo>
 		<echo>                        plugin.</echo>
+		<echo></echo>
+		<echo>download-deps         : Downloads plugins specified as</echo>
+		<echo>                        dependencies of the object plugin.</echo>
+		<echo>                        Then recursively do it for the</echo>
+		<echo>                        downloaded plugins.</echo>
 		<echo></echo>
 		<echo>package               : Packages plugin distributables into the 4</echo>
 		<echo>                        package files required for release. Release</echo>
@@ -135,6 +144,13 @@ docbook.xsl=${docbook.xsl}
 		<property name="scm.targets.file" value="svn_cl.xml" />
 		<antcall target="download" />
 	</target>
+	<target name="download-deps">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<plugin-jedit-version pluginName="${plugin.name}"
+		                      pluginVersion="${plugin.version}" />
+		<download-plugin-deps-rec pluginJeditVersion="${plugin.jedit.version}" />
+	</target>
 	<target name="java5">
 		<property name="compiler.source" value="1.5" />
 		<property name="compiler.target" value="1.5" />
@@ -197,6 +213,25 @@ jedit.version.04.03.settings.dir=${jedit.version.04.03.settings.dir}
 jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		</echo>
 	</target>
+	<macrodef name="download-plugin-deps-rec">
+		<attribute name="pluginJeditVersion" />
+		<sequential>
+			<property name="jedit.install.dir"
+			          value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<property name="install.dir" value="${jedit.settings.dir}/jars" />
+			<property name="plugin.dir" value="${sandbox.dir}/${plugin.name}-${plugin.version}/${plugin.name}" />
+			<property name="lib.dir" value="${plugin.dir}/../lib" />
+			<property name="plugin.deps.rec.dir" value="${lib.dir}/plugin-deps" />
+			<ant antfile="build.xml" dir="${plugin.dir}"
+					 target="download-plugin-deps-rec">
+			</ant>
+			<copy todir="${install.dir}">
+				<fileset dir="${lib.dir}/plugin-deps"
+			           includes="*.jar" />
+			</copy>
+		</sequential>
+	</macrodef>
 	<macrodef name="jedit-reset">
 		<attribute name="pluginJeditVersion" />
 		<sequential>
@@ -211,6 +246,7 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
 			<delete dir="@{pluginDownloadDir}" />
+			<delete dir="@{pluginDownloadDir}/../lib" />
 			<mkdir dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}" />
 			<ant antfile="${scm.targets.file}" target="checkout-plugin">
 				<property name="plugin.name" value="@{pluginName}" />
