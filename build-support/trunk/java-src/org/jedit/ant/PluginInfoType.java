@@ -43,7 +43,7 @@ import org.apache.tools.ant.types.resources.FileResourceIterator;
     jar contents instead of filesets.
     */
 
-public class PluginInfoType extends DataType
+public class PluginInfoType extends DataType implements Cloneable
 {
   // input parameters
   private FileSet fsSrc;
@@ -53,13 +53,35 @@ public class PluginInfoType extends DataType
   // plugin info
   private String sClass;
   private String sJar;
+  private String sVersion;
   private String sJeditVersionShort;
   private String sJeditVersionFull;
-  private ArrayList<Dep> deps = new ArrayList<Dep>();
+  private DepList deps = new DepList();
   
   /** Whether the info is already filled. */
   private boolean bFilled;
   private Project p;
+  
+  //{{{ filled method
+  /** Returns <code>PluginInfoType</code> object that is ok to operate on.
+      That is: filled and being not a reference. Serves as a shorthand */
+  private PluginInfoType filled()
+  {
+    if (isReference()) { return getRef().filled(); }
+    fill();
+    return this;
+  }
+  
+  //{{{ get... methods
+  public String getClassName() { return filled().sClass; }
+  public String getJarName() { return filled().sJar; }
+  public String getVersion() { return filled().sVersion; }
+  public String getJeditVersionShort() { return filled().sJeditVersionShort; }
+  public String getJeditVersionFull() { return filled().sJeditVersionFull; }
+  public int getDepCount() { return filled().deps.size(); }
+  public String getDepsString() { return filled().deps.toString(); }
+  public Dep getDep(int i) { return filled().deps.get(i); }
+  //}}}
   
   //{{{ getPluginClassName method 
   /** Gets an <code>Iterator</code> over objects implementing
@@ -79,13 +101,21 @@ public class PluginInfoType extends DataType
     String sPluginClass = null;
     while (it.hasNext()) {
       String sFile = it.next().toString();
-      if (sFile.endsWith("Plugin.java") ||
-          sFile.endsWith("Plugin.class") ) {
+      sFile = sFile.replaceFirst("\\.class", ".java");
+      // There are some class ending with Plugin not being real plugins.
+      // For example in XML plugin.
+      // How to tell them? Donna. Inserting exceptions for them.
+      // TODO: One coulde try all potential plugin classes until finds
+      //       the one specifing jedit version. Too difficult.
+      if (sFile.endsWith("Plugin.java")
+          && !sFile.endsWith("CssSideKickPlugin.java")
+          && !sFile.endsWith("HtmlSideKickPlugin.java")
+          && !sFile.endsWith("JavaScriptSideKickPlugin.java")) {
         sPluginClass = sFile;
         if (sBaseDir != null) {
           sPluginClass = sPluginClass.substring(sBaseDir.length()+1);
         }
-        sPluginClass = sPluginClass.replaceFirst("\\.((java)|(class))$", "");
+        sPluginClass = sPluginClass.replaceFirst("\\.java$", "");
         sPluginClass = sPluginClass.replaceAll("[/\\\\]", ".");
         break;
       }
@@ -146,6 +176,7 @@ public class PluginInfoType extends DataType
       }
     } // }}}
 
+    sVersion = props.getProperty("plugin." + sClass + ".version", "");
     parseProps(sClass, props);
     bFilled = true;
   } //}}}
@@ -222,13 +253,25 @@ public class PluginInfoType extends DataType
     if (isReference()) { return getRef().toString(); }
     String s;
     if (!bFilled) { fill(); }
-    s = "Plugin class name: " + sClass + ", jar name: " + sJar + "\n";
+    s = "Plugin class name: " + sClass + ", jar name: " + sJar;
+    s += ", version: " + sVersion + "\n";
     s += "jedit version: " + sJeditVersionFull;
     s += ", dependencies count: " + deps.size() + "\n";
-    for (Dep dep: deps) {
-      s += "dependency: " + dep.sJar + " " + dep.sVersion + "\n";
-    }
+    s += deps.toString();
     return s; 
+  }
+  
+  public PluginInfoType clone()
+  {
+    if (isReference()) { return getRef().clone(); }
+    PluginInfoType piNew = null;
+    try {
+      piNew = (PluginInfoType)super.clone();
+      piNew.deps = this.deps.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new BuildException(e);
+    }
+    return piNew;
   }
   
   //{{{ setProjectProperties() method
@@ -263,6 +306,39 @@ public class PluginInfoType extends DataType
     }
   } //}}}
   
+  //{{{ joinDeps method
+  /** Adds dependencies from <code>pi</code> to current dependencies.
+      @return <code>true</code> if there were new dependencies. */
+  public boolean joinDeps(PluginInfoType pi2, StringBuilder sb)
+  {
+    boolean bNewDeps = false;
+    for (int i2 = 0; i2 < pi2.getDepCount(); i2++) {
+      int iState = 1;   // 0 - same, 1 - new, 2 - update
+      Dep dep2 = pi2.getDep(i2);
+      for (Dep dep: this.filled().deps) {
+        if (dep.getJarName().equals(dep2.getJarName())) {
+          if (Misc.compareStrings(dep.getVersion(), dep2.getVersion(), true)
+                   < 0) {
+            iState = 2;
+            dep.sVersion = dep2.getVersion();
+          } else {
+            iState = 0;
+          }
+          break;
+        }
+      }
+      if (iState == 1) {
+        this.filled().deps.add(dep2);
+      }
+      if (iState != 0) {
+        sb.append(dep2.getJarName() + " " + dep2.getVersion() + " (" +
+                  (iState == 2 ? "update" : "new") + ")\n");
+        bNewDeps = true;
+      }
+    }
+    return bNewDeps;
+  } //}}}
+
   //{{{ Dep class
   /** Plugin dependency information */
   public static class Dep
@@ -270,5 +346,59 @@ public class PluginInfoType extends DataType
     String sClass;
     String sVersion;
     String sJar;
+    
+    //{{{ get... methods
+    public String getClassName() { return sClass; }
+    public String getJarName() { return sJar; }
+    public String getVersion() { return sVersion; }
+    //}}}
+
+  } //}}}
+
+  //{{{ DepList class
+  /** A list of dependencies being plugins */
+  public static class DepList implements Iterable<Dep>, Cloneable
+  {
+    private ArrayList<Dep> a = new ArrayList<Dep>();
+
+    // several methods imitating ArrayList {{{
+    public void add(Dep d)
+    {
+      a.add(d);
+    }
+
+    public Dep get(int i)
+    {
+      return a.get(i);
+    }
+
+    public int size()
+    {
+      return a.size();
+    }
+    
+    public Iterator<Dep> iterator()
+    {
+      return a.iterator();
+    }
+    
+    @SuppressWarnings (value="unchecked")
+    public DepList clone()
+    {
+      DepList depsNew = new DepList();
+      depsNew.a = (ArrayList)this.a.clone();
+      return depsNew;
+    }
+    //}}}
+    
+    public String toString()
+    {
+      StringBuilder sb = new StringBuilder();
+      for (Dep dep: a) {
+        sb.append("dependency: " + dep.sJar + " " + dep.sVersion + "\n");
+      }
+      return sb.toString();
+    }
+ 
   } //}}}
 }

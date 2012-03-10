@@ -35,17 +35,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-/** Generates an <code>ivy.xml</code> file specified by property
-    plugin.deps.ivy.file based on plugin.deps.ivy.template.
-    There is a problem in automatic creation of parent directory
-    of plugin.deps.ivy.file, so it must be done manually before calling
-    this target.
+/** Generates an <code>ivy.xml</code> file specified by <code>outFile</code>
+    based on <code>template</code> ivy file. The dependencies are taken
+    from obligatory nested <code>plugininfo</code> element.
+    I had problems with automatic creation of parent directory
+    of <code>outFile</code>, so it must be done manually before calling
+    this task.
     */
 
 public class GenPluginDepsIvyFileTask extends Task
 {
   private String sTemplateFile;
   private String sOutFile;
+  private PluginInfoType pi;
   private Project p;
   
   @Override
@@ -58,6 +60,9 @@ public class GenPluginDepsIvyFileTask extends Task
     if (sOutFile == null) {
       throw new BuildException("\"outFile\" parameter not specified.");
     }
+    if (pi == null) {
+      throw new BuildException("Nested \"plugininfo\" data not specified.");
+    }
 
     try {
       DocumentBuilder builder = DocumentBuilderFactory.newInstance()
@@ -66,25 +71,17 @@ public class GenPluginDepsIvyFileTask extends Task
       Element docElem = doc.getDocumentElement();
       Node lfNode = doc.createTextNode(System.getProperty("line.separator"));
       Element info = (Element)docElem.getElementsByTagName("info").item(0);
-      info.setAttribute("module", p.getProperty("plugin.jar.name"));
+      info.setAttribute("module", pi.getJarName());
       Element deps = (Element)docElem.getElementsByTagName("dependencies")
                                      .item(0);
-      int iDep = 0;
-      while (true) {
-        String sDepProp = "plugin.dep." + iDep;
-        String sDepClass = p.getProperty(sDepProp + ".class");
-        if (sDepClass == null) { break; }
-        String sDepJarName = p.getProperty(sDepProp + ".jar.name");
-        String sDepVer = p.getProperty(sDepProp + ".version");
-  
+      for (int iDep=0; iDep<pi.getDepCount(); iDep++) {                                             
+        PluginInfoType.Dep depInfo = pi.getDep(iDep);
         Element dep = doc.createElement("dependency");
         dep.setAttribute("org", "jedit-plugins-zip");
-        dep.setAttribute("name", sDepJarName);
-        dep.setAttribute("rev", sDepVer);
+        dep.setAttribute("name", depInfo.getJarName());
+        dep.setAttribute("rev", depInfo.getVersion());
         deps.appendChild(dep);
         deps.appendChild(lfNode.cloneNode(true));
-  
-        iDep++;
       }
       Transformer transformer = TransformerFactory.newInstance()
                                        .newTransformer();
@@ -114,6 +111,11 @@ public class GenPluginDepsIvyFileTask extends Task
   public void setOutFile(String s)
   {
     sOutFile = s;
+  }
+
+  public void add(PluginInfoType pi)
+  {
+    this.pi = pi;
   }
 
 }
