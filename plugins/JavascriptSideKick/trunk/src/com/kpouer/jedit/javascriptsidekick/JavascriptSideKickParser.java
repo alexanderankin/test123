@@ -19,24 +19,14 @@
 */
 package com.kpouer.jedit.javascriptsidekick;
 
-import java.util.List;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.util.Log;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ast.AstNode;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.Name;
-import org.mozilla.javascript.ast.NodeVisitor;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 
@@ -47,7 +37,7 @@ public class JavascriptSideKickParser extends SideKickParser
 {
 	public JavascriptSideKickParser()
 	{
-		super("rhinojs");
+		super("RhinoJS");
 	}
 
 	@Override
