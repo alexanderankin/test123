@@ -631,17 +631,20 @@
     <!-- {{{ def-jedit-tasks target ======================= -->
     
     <target name="def-jedit-tasks"
-            depends="jedit-tasks-javadoc" >
+            depends="get-lib-ivy, jedit-tasks-javadoc" >
         <mkdir dir="${jedit.classes}" />
         <copy todir="${jedit.classes}">
             <fileset dir="${jedit.src}" includes="**/antlib.xml" />
         </copy>
         <javac srcdir="${jedit.src}" destdir="${jedit.classes}"
-               debug="true" >
-            <compilerarg value="-Xlint:deprecation"/>
+               debug="true" classpathref="ivy.jar.path" >
+            <compilerarg value="-Xlint:deprecation,unchecked"/>
         </javac>
         <taskdef resource="org/jedit/ant/antlib.xml"
-                 uri="antlib:org.jedit.ant" classpath="${jedit.classes}"/>
+                 uri="antlib:org.jedit.ant"
+                 classpath="${jedit.classes}"
+                 classpathref="ivy.jar.path"
+                 />
     </target>
     
     <!-- ===============================================}}} -->
@@ -649,9 +652,15 @@
     <!-- {{{ jedit-tasks-javadoc target =================== -->
     
     <target name="jedit-tasks-javadoc"
-            unless="jedit.tasks.javadoc.uptodate" >
+            depends="get-lib-ivy"
+            unless="${jedit.tasks.javadoc.uptodate}" >
         <javadoc sourcepath="${jedit.src}"
-                 destdir="${build.support}/build/doc" />
+                 destdir="${build.support}/build/doc">
+            <classpath refid="ivy.jar.path" />
+            <classpath>
+                <pathelement path="${java.class.path}" />
+            </classpath>
+        </javadoc>
     </target>
     
     <!-- ===============================================}}} -->
@@ -669,7 +678,7 @@
     <local name="src.fileset" />
     <local name="extras.fileset" />
     <jedit:get-plugin-info>
-        <jedit:plugininfo>
+        <jedit:plugininfo id="cur.plugin.info">
             <fsSrc dir="${src.dir}" >
                 <selector refid="compileFiles" />
             </fsSrc>
@@ -684,8 +693,6 @@
     <echo>Plugin properties discovered:</echo>
     <echo>plugin.class.name: ${plugin.class.name}</echo>
     <echo>plugin.dep.count: ${plugin.dep.count}</echo>
-    <echo></echo>
-    <echo></echo>
     <fail>Property plugin.jedit.version.full not set.
           Getting plugin properties failed.
         <condition>
@@ -707,8 +714,9 @@
     <mkdir dir="${dir}" />
     <jedit:gen-plugin-deps-ivy-file
         template="${plugin.deps.ivy.template}"
-        outFile="${plugin.deps.ivy.file}"
-    />
+        outFile="${plugin.deps.ivy.file}" >
+        <jedit:plugininfo refid="cur.plugin.info" />
+    </jedit:gen-plugin-deps-ivy-file>
 </target>
 <!-- }}} ================================================== -->
 
@@ -726,7 +734,24 @@
 </target>
 <!-- }}} ================================================== -->
 
+    <!-- {{{ check-plugin-deps-rec-dir target ============= -->
+<!-- Sets up the property and the directory for plugin dependencies. -->
+    <target name="check-plugin-deps-rec-dir" >
+        <mkdir dir="${build.lib}" />
+        <property name="plugin.deps.rec.dir"
+                  value="${build.lib}/plugin-deps-rec" />
+        <condition property="plugin.deps.rec.present">
+            <available file="${plugin.deps.rec.dir}" type="dir" />
+        </condition>
+    </target>
+<!-- }}} ================================================== -->
+
     <!-- {{{ download-plugin-deps target ================== -->
+    <!-- Downloads plugins being plugin dependencies, but only those
+         directly specified in properties files.
+         This is done only once, as the existence
+         of the directory blocks the target. May be used for plugin
+         building. For running - recursive dependencies are required. -->
     <target name="download-plugin-deps"
             depends="check-plugin-deps-dir, get-lib-ivy, def-jedit-tasks"
             unless="plugin.deps.present">
@@ -735,16 +760,40 @@
         <property name="plugin.deps.ivy.file"
                   value="${basedir}/build/ivy.plugin.deps.xml" />
         <check-file-var var="plugin.deps.ivy.template" />
-        <antcall target="gen-plugin-deps-ivy-file" />
+        <antcall target="gen-plugin-deps-ivy-file"
+                 inheritrefs="true" />
         <ivy:retrieve file="${plugin.deps.ivy.file}"
                       pattern="${plugin.deps.dir}/[artifact].zip"
                       log="download-only" />
+        <!-- Usually ivy creates the directory, but some plugins just
+             don't have any plugin dependencies specified. To make
+             subsequent targets safe, the directory must be created now. -->
+        <mkdir dir="${plugin.deps.dir}" />
         <unzip dest="${plugin.deps.dir}">
             <fileset dir="${plugin.deps.dir}" includes="*.zip" />
         </unzip>
         <delete>
             <fileset dir="${plugin.deps.dir}" includes="*.zip" />
         </delete>
+    </target>
+    <!-- }}} ================================================== -->
+
+    <!-- {{{ download-plugin-deps-rec target ================== -->
+    <!-- Unlike non-recursive download - this is not blocked by the
+         existance of the directory.                            -->
+    <target name="download-plugin-deps-rec"
+            depends="check-plugin-deps-rec-dir, get-lib-ivy, def-jedit-tasks,
+                     get-plugin-info" >
+        <property name="plugin.deps.ivy.template"
+                  value="${build.support}/ivy.plugin.deps.template.xml" />
+        <check-file-var var="plugin.deps.ivy.template" />
+        <jedit:download-plugin-deps-rec
+            todir="${plugin.deps.rec.dir}"
+            ivyfilesdir="${build.dir}"
+            template="${plugin.deps.ivy.template}" >
+            <jedit:plugininfo refid="cur.plugin.info" />
+        </jedit:download-plugin-deps-rec>
+
     </target>
     <!-- }}} ================================================== -->
 
