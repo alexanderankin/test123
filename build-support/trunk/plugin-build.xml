@@ -81,8 +81,8 @@
     <property name="compiler.deprecation"   value="off" />
     <property name="compiler.verbose"       value="off" />
     <property name="compiler.nowarn"        value="off" />
-    <property name="compiler.target"        value="1.5" />
-    <property name="compiler.source"        value="1.5" />
+    <property name="compiler.target"        value="1.6" />
+    <property name="compiler.source"        value="1.6" />
     <property name="compiler.listfiles"     value="no" />
     <property name="compiler.fork"          value="no" />
     <property name="compiler.bootclasspath" value="${java.home}/lib/rt.jar"/>
@@ -629,7 +629,7 @@
     <!-- ===============================================}}} -->
 
     <!-- {{{ def-jedit-tasks target ======================= -->
-    
+
     <target name="def-jedit-tasks"
             depends="get-lib-ivy, jedit-tasks-javadoc" >
         <mkdir dir="${jedit.classes}" />
@@ -646,11 +646,11 @@
                  classpathref="ivy.jar.path"
                  />
     </target>
-    
+
     <!-- ===============================================}}} -->
 
     <!-- {{{ jedit-tasks-javadoc target =================== -->
-    
+
     <target name="jedit-tasks-javadoc"
             depends="get-lib-ivy"
             unless="${jedit.tasks.javadoc.uptodate}" >
@@ -662,7 +662,7 @@
             </classpath>
         </javadoc>
     </target>
-    
+
     <!-- ===============================================}}} -->
 
     <!-- ================================================== }}}-->
@@ -670,9 +670,9 @@
     <!-- {{{ Plugin release targets ======================= -->
 
     <!-- {{{ get-plugin-info target======================== -->
-    <!-- 
+    <!--
          Parses files from src.dir using selectors compileFiles and extraFiles
-         and produces plugin information. Details in jedit tasks doc. 
+         and produces plugin information. Details in jedit tasks doc.
     -->
 <target name="get-plugin-info" depends="def-jedit-tasks" >
     <local name="src.fileset" />
