@@ -1,9 +1,0 @@
-<ivy-module version="2.0">
-    <info organisation="jedit-plugins" module="JavascriptSideKick"/>
-    <dependencies>
-        <dependency org="jedit-plugins" name="SideKick" rev="1.2"/>
-        <dependency org="jedit-plugins" name="ErrorList" rev="1.9"/>
-        <dependency org="org.mozilla" name="rhino" rev="1.7R3"/>
-	<dependency org="junit" name="junit" rev="4.8.2"/>
-    </dependencies>
-</ivy-module>
