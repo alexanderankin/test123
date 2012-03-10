@@ -72,12 +72,12 @@
  ProjectViewer and make changes to the System shell's current directory.
  </para></listitem>
 
- <listitem><para> The ability to query the ProjectViewer for the "current root
- directory" to run build commands from. This is used by the Console commandos
- for "ant", "make", and "qmake", and perhaps others<footnote><para> If you
- wish to use these commando buttons without the projectviewer, right click on
+ <listitem><para> The ability to query the ProjectViewer for the "current project 
+ root" to run build commands from. This is used by the Console commandos,
+ for "ant", "make", and "qmake", and possibly others<footnote><para> If you
+ wish to use these commando buttons without the ProjectViewer, right click on
  the commando buttons, "customize" and edit the XML file, removing the lines
- that refer to projectviewer. </para></footnote>. </para></listitem>
+ that refer to ProjectViewer. </para></footnote>. </para></listitem>
 
 </orderedlist>
 
@@ -642,7 +642,8 @@ most often at the top of the list.
     </listitem>
     <listitem>
      <para>
-      <varname>${pv}</varname> - the root directory of the current project. </para>
+      <varname>${p}</varname> - the root directory of the current project,
+      if there is one active in ProjectViewer. </para>
     </listitem>
     <listitem>
      <para>
