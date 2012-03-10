@@ -634,7 +634,7 @@ public class SystemShell extends Shell
 		}
 		else if (varName.equals("ROOT"))
 			expansion = ConsolePlugin.getPackageRoot(buffer);
-		else if (varName.equals("pv"))		
+		else if (varName.equals("p"))		
 			expansion = BeanShell.eval(view, BeanShell.getNameSpace(),
 				"getProjectRoot(view, buffer)").toString();
 		else if (varName.equals("BROWSER_DIR"))
