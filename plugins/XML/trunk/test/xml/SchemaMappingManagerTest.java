@@ -103,8 +103,8 @@ public class SchemaMappingManagerTest {
 		
 		//choose in the VFS browser
 		dialogF.button("browse").click();
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
+		Pause.pause(1000);
 		browseDialog.table("file").selectCell(
 			browseDialog.table("file").cell(schema.getName()));
 		browseDialog.button("ok").click();
@@ -152,7 +152,7 @@ public class SchemaMappingManagerTest {
 		
 		//choose in the VFS browser
 		dialogF.button("browse").click();
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
 		
 		browseDialog.table("file").selectCell(
 			browseDialog.table("file").cell("actions.rng"));

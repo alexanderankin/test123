@@ -175,7 +175,7 @@ public class VFSFileTextFieldTest{
 
 		frame.textBox("xml.translate.output.prompt").showPopupMenu().menuItemWithPath("Select destination").click();
 		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);
@@ -191,7 +191,7 @@ public class VFSFileTextFieldTest{
 		
 		frame.button("xml.translate.output.select").click();
 		
-		browseDialog = findDialogByTitle("File Browser");
+		browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);
