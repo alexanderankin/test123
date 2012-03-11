@@ -40,7 +40,6 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import static xml.parser.SchemaMapping.*;
-import static xml.parser.SchemaMapping.Rule;
 
 /**
  * $Id$
@@ -69,7 +68,7 @@ public class SchemaMappingTest{
     }
     
     @Test
-    public void testBuiltInSchema()  throws URISyntaxException{
+    public void testBuiltInSchema()  throws URISyntaxException, IllegalArgumentException, IOException, SAXException{
     	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
     	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString(), new DefaultHandler());
     	assertNotNull(m);
@@ -355,7 +354,7 @@ public class SchemaMappingTest{
     }
  
 	@Test
-    public void testBase() throws MalformedURLException, URISyntaxException{
+    public void testBase() throws URISyntaxException, IllegalArgumentException, IOException, SAXException{
      	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
     	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString(), new DefaultHandler());
     	assertNotNull(m);
@@ -375,7 +374,7 @@ public class SchemaMappingTest{
 	
 	
 	@Test
-	public void testIncludeMapping() throws MalformedURLException, URISyntaxException{
+	public void testIncludeMapping() throws MalformedURLException, URISyntaxException, SAXException{
      	
 		try{
 			new SchemaMapping.IncludeMapping(null, (String)null, new DefaultHandler());
@@ -424,7 +423,7 @@ public class SchemaMappingTest{
 	}
 	
 	@Test
-	public void testIncludeMappingIncludedMappingBroken() throws MalformedURLException{
+	public void testIncludeMappingIncludedMappingBroken() throws MalformedURLException, IllegalArgumentException, SAXException{
 		File broken = new File(testData, "broken_schemas_xml/malformed/schemas.xml");
      	
     	SchemaMapping m = new SchemaMapping();
@@ -492,7 +491,7 @@ public class SchemaMappingTest{
 	}
 	
 	@Test
-	public void testToDocument() throws MalformedURLException, URISyntaxException, IOException{
+	public void testToDocument() throws MalformedURLException, URISyntaxException, IOException, IllegalArgumentException, SAXException{
      	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
     	SchemaMapping m = new SchemaMapping();
 
