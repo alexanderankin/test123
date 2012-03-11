@@ -349,6 +349,8 @@ public class XmlInsert extends JPanel implements EBComponent
 			Selection[] selection = view.getTextArea().getSelection();
 			List<ElementDecl> l;
 			if(selection.length > 0) {
+				// in multiple selection mode, elements that are not allowed for the other selections
+				// are still proposed. Not a big deal, apparently
 				l = data.getAllowedElements(
 						buffer,
 						selection[0].getStart(),
@@ -497,8 +499,9 @@ public class XmlInsert extends JPanel implements EBComponent
 				Map<String,String> namespaces = data.getNamespaceBindings(pos);
 				Map<String,String> namespacesToInsert = new HashMap<String,String>();
 				
+				// on left click, show the Edit Tag dialog, on right click, don't show the Edit Tag dialog
 				// all the work is done in XmlActions.showEditTagDialog
-				XmlActions.showEditTagDialog(view,wqn.label, element,insideTag, namespaces, namespacesToInsert,GUIUtilities.isPopupTrigger(evt));
+				XmlActions.showEditTagDialog(view,wqn.label, element,insideTag, namespaces, namespacesToInsert,!GUIUtilities.isPopupTrigger(evt));
 			} //}}}
 			//{{{ Handle clicks in entity list
 			else if(evt.getSource() == entityList)
