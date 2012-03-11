@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.*;
 import sidekick.util.*;
+import org.gjt.sp.jedit.jEdit;
 
 
 /**
@@ -356,8 +357,7 @@ public class CSS3Parser implements CSS3ParserConstants {
           jj_consume_token(-1);
           throw new ParseException();
         }
-                // TODO: put message in properties file
-                addException ( new ParseException ("Do not mix html within CSS."));
+                addException ( new ParseException (jEdit.getProperty("sidekick.css.parser.CSS3Parser.dont-html")));
       }
       label_2:
       while (true) {

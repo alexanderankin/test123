@@ -372,6 +372,8 @@ options.sidekick.html.showBlockElements.label=Show Block HTML Tags only
 options.sidekick.html.showJspElements.label=Show JSP Tags
 
 
+# error messages
+sidekick.css.parser.CSS3Parser.dont-html=Do not mix html within CSS.
 # }}}
 # {{{ JavaScript Properties
 
