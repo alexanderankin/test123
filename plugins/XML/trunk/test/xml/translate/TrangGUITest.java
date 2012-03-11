@@ -159,7 +159,7 @@ public class TrangGUITest{
 		
 		f.button("xml.translate.input.select").click();
 		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);

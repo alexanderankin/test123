@@ -188,7 +188,7 @@ public class VFSFileListTest{
 
 		frame.list("xml.translate.xml-inputs").showPopupMenu().menuItemWithPath("Add").click();
 		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);
@@ -205,7 +205,7 @@ public class VFSFileListTest{
 		
 		frame.button("xml.translate.xml-inputs.add").click();
 		
-		browseDialog = findDialogByTitle("File Browser");
+		browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);
