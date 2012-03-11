@@ -92,7 +92,7 @@ public class TagParser
 				if(endTagName == endTag - 1)
 					endTagName = i;
 			}
-			else if(ch == '<')					// FIXME: what is this for ? not closed tag (see:  <a | <b> )
+			else if(ch == '<')					// not closed tag (see:  <a | <b> )
 				return null;
 			else if(ch == '/' && i == endTag - 2)
 			{
