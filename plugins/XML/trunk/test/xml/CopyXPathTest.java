@@ -191,7 +191,12 @@ public class CopyXPathTest{
 		// go into the b:created element
 		gotoPositionAndWait(161);
 		
+		ClickT clickT = new ClickT(Option.OK);
+		clickT.start();
+		
 		action("xml-copy-xpath");
+		
+		clickT.waitForClick();
 		
 		assertEquals("NULL",Registers.getRegister('$').toString());
 	}
