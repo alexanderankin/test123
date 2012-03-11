@@ -359,7 +359,6 @@ public class XmlParsedData extends SideKickParsedData
 			parent = (DefaultMutableTreeNode)steps[1];
 			if( ! (parent.getUserObject() instanceof XmlTag))
 			{
-				// TODO: maybe implement it also for HTML
 				return null;
 			}
 			Map<String,String> prefixToNS = new HashMap<String,String>();
