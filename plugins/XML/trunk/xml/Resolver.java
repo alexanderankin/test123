@@ -960,7 +960,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	
 	public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException
 	{
-		// TODO Auto-generated method stub
+		// not used in jEdit
 		return null;
 	}
 
