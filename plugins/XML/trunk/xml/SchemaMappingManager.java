@@ -48,6 +48,9 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import common.gui.OkCancelButtons;
 import ise.java.awt.KappaLayout;
@@ -73,7 +76,6 @@ public final class SchemaMappingManager
 	//{{{ promptSchemaForBuffer() method
 	/**
 	 * - let the user choose a schema file from the VFSBrowser
-	 * TODO: clarify property on the buffer vs schema-mapping
 	 */
 	public static void promptSchemaForBuffer(View view, Buffer buffer)
 	{
@@ -91,8 +93,8 @@ public final class SchemaMappingManager
 				MiscUtilities.getParentOfPath(
 					buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
 		
-			lMapping = getLocalSchemaMapping(buffer);
-			gMapping = getGlobalSchemaMapping();
+			lMapping = getLocalSchemaMapping(buffer, new LoggingErrorHandler(jEdit.getProperty("xml.local-schema")));
+			gMapping = getGlobalSchemaMapping(new LoggingErrorHandler(jEdit.getProperty("xml.global-schema")));
 		
 			// always prefer the explicit schema
 			String oldSchemaAuto = buffer.getStringProperty(BUFFER_AUTO_SCHEMA_PROP);
@@ -369,9 +371,9 @@ public final class SchemaMappingManager
 			Log.log(Log.ERROR,SchemaMappingManager.class,mfue);
 		}
 		
-		SchemaMapping lMapping = getLocalSchemaMapping(buffer);
-		SchemaMapping gMapping = getGlobalSchemaMapping();
-		SchemaMapping bMapping = getBuiltInSchemaMapping();
+		SchemaMapping lMapping = getLocalSchemaMapping(buffer, new LoggingErrorHandler(jEdit.getProperty("xml.local-schema")));
+		SchemaMapping gMapping = getGlobalSchemaMapping(new LoggingErrorHandler(jEdit.getProperty("xml.global-schema")));
+		SchemaMapping bMapping = getBuiltInSchemaMapping(new LoggingErrorHandler(jEdit.getProperty("xml.builtin-schema")));
 		
 		Map<String,SchemaMapping> allTypeIds = new HashMap<String,SchemaMapping>();
 		
@@ -474,7 +476,11 @@ public final class SchemaMappingManager
 	//}}}
 	
 	//{{{ getGlobalSchemaMapping() method
-	public static SchemaMapping getGlobalSchemaMapping()
+	/**
+	 * @param errorHandler	notified of errors loading the global schemas.xml
+	 * @return	schema mapping rules in JEDIT_SETTINGS/plugins/xml.XMLPLugin/schemas.xml
+	 */
+	public static SchemaMapping getGlobalSchemaMapping(ErrorHandler errorHandler)
 	{
 		String schemaURL = jEdit.getProperty(SCHEMA_MAPPING_PROP);
 		SchemaMapping mapping = null;
@@ -482,14 +488,26 @@ public final class SchemaMappingManager
 		if(schemaURL != null)
 		{
 			Log.log(Log.DEBUG,SchemaMappingManager.class,"global mapping="+schemaURL);
-			mapping = SchemaMapping.fromDocument(schemaURL);
+			try {
+				mapping = SchemaMapping.fromDocument(schemaURL,errorHandler);
+			} catch (IOException e) {
+				mapping = null;
+				Log.log(Log.ERROR,SchemaMappingManager.class,
+						"Error loading global schema mapping: '"+schemaURL+"'",e);
+			} catch (SAXException e) {
+				mapping = null;
+			}
 		}
 		return mapping;
 	}
 	//}}}
 	
 	//{{{ getBuiltInSchemaMapping() method
-	public static SchemaMapping getBuiltInSchemaMapping()
+	/**
+	 * @param errorHandler	notified of errors/warning loading builtin schema mapping (not likely)
+	 * @return	mappings shipped with this plugin : jeditresource:XML.jar!/xml/dtds/schemas.xml
+	 */
+	public static SchemaMapping getBuiltInSchemaMapping(ErrorHandler errorHandler)
 	{
 		java.net.URL schemaURL = SchemaMappingManager.class.getClassLoader().getResource(BUILT_IN_SCHEMA);
 		
@@ -499,7 +517,15 @@ public final class SchemaMappingManager
 		}
 		else
 		{
-			return SchemaMapping.fromDocument(schemaURL.toString());
+			try {
+				return SchemaMapping.fromDocument(schemaURL.toString(),errorHandler);
+			} catch (IOException e) {
+				Log.log(Log.ERROR,SchemaMappingManager.class,
+						"Error loading local schema mapping : '"+schemaURL+"'",e);
+				return null;
+			} catch (SAXException e) {
+				return null;
+			}
 		}
 	}
 	//}}}
@@ -508,7 +534,7 @@ public final class SchemaMappingManager
 	/**
 	* @return schemas.xml next to buffer or null if it doesn't exist
 	*/
-	public static SchemaMapping getLocalSchemaMapping(Buffer buffer)
+	public static SchemaMapping getLocalSchemaMapping(Buffer buffer, ErrorHandler errorHandler)
 	{
 		SchemaMapping mapping;
 		
@@ -524,7 +550,7 @@ public final class SchemaMappingManager
 			if(SchemaMapping.resourceExists(uriSpecificSchema))
 			{
 					String schemaURL = uriSpecificSchema.toString();
-					mapping = SchemaMapping.fromDocument(schemaURL);
+					mapping = SchemaMapping.fromDocument(schemaURL, errorHandler);
 			}
 			else
 			{
@@ -539,6 +565,13 @@ public final class SchemaMappingManager
 			Log.log(Log.ERROR,SchemaMappingManager.class,
 				"Error converting path for fromDocument : '"+specificSchema+"'",ue);
 			mapping = null;
+		} catch (IOException e) {
+			mapping = null;
+			Log.log(Log.ERROR,SchemaMappingManager.class,
+					"Error loading local schema mapping : '"+specificSchema+"'",e);
+		} catch (SAXException e) {
+			// logging has already been taken care of
+			mapping = null;
 		}
 		return mapping;
 	}
@@ -548,23 +581,23 @@ public final class SchemaMappingManager
 	/**
 	* @return local SchemaMapping or global SchemaMapping or built-in SchemaMapping
 	*/
-	public static SchemaMapping getSchemaMappingForBuffer(Buffer buffer)
+	public static SchemaMapping getSchemaMappingForBuffer(Buffer buffer, ErrorHandler errorHandler)
 	{
 		SchemaMapping mapping;
 		
-		// local schema-mapping
-		mapping  = getLocalSchemaMapping(buffer);
+		// local schema-mapping ; be sure not to continue on validation error by encapsulating the errorHandler in a LoggingErrorHandler
+		mapping  = getLocalSchemaMapping(buffer, new LoggingErrorHandler(jEdit.getProperty(jEdit.getProperty("xml.local-schema")), errorHandler));
 		
 		if(mapping == null)
 		{
-			mapping = getGlobalSchemaMapping();
+			mapping = getGlobalSchemaMapping(new LoggingErrorHandler(jEdit.getProperty(jEdit.getProperty("xml.global-schema")), errorHandler));
 		}
 		
 		if(mapping == null)
 		{
 			Log.log(Log.DEBUG, SchemaMappingManager.class,
 				"no settings => using built-in schema mapping file");
-			mapping = getBuiltInSchemaMapping();
+			mapping = getBuiltInSchemaMapping(new LoggingErrorHandler(jEdit.getProperty(jEdit.getProperty("xml.builtin-schema")), errorHandler));
 		}
 		return mapping;
 	}
@@ -607,7 +640,7 @@ public final class SchemaMappingManager
 		// it points to the global schemaMapping, to get all
 		// the builtin rules
 		if(!schemas.exists()){
-			SchemaMapping builtinMapping = getBuiltInSchemaMapping();
+			SchemaMapping builtinMapping = getBuiltInSchemaMapping(new LoggingErrorHandler(jEdit.getProperty("xml.builtin-schema")));
 			SchemaMapping tmp = new SchemaMapping();
 			tmp.ensureIncluded(builtinMapping);
 			try{
@@ -633,4 +666,41 @@ public final class SchemaMappingManager
 		return b.getBooleanProperty(BUFFER_ENABLE_SCHEMA_MAPPING_PROP);
 	}
 	//}}}
+	
+	//{{{ LoggingErrorHandler class
+	/** logs errors and warnings to Activity Log and rethrow exception on error and fatalError to prevent
+	 *  invalid documents to result in invalid SchemaMappings.
+	 */
+	public static class LoggingErrorHandler implements ErrorHandler{
+		private String resourceName;
+		private ErrorHandler errorHandler;
+
+		public LoggingErrorHandler(String resourceName){
+		}
+		
+		public LoggingErrorHandler(String property, ErrorHandler errorHandler) {
+			this.resourceName = resourceName;
+			this.errorHandler = errorHandler;
+		}
+
+		@Override
+		public void error(SAXParseException exception) throws SAXException {
+			Log.log(Log.WARNING, SchemaMappingManager.class, jEdit.getProperty("xml.SchemaMappingManager.error",new Object[]{resourceName,exception.getSystemId(),exception.getLineNumber(),exception.getLocalizedMessage()}));
+			if(errorHandler != null)errorHandler.error(exception);
+			throw exception;
+		}
+		
+		@Override
+		public void fatalError(SAXParseException exception) throws SAXException {
+			Log.log(Log.WARNING, SchemaMappingManager.class, jEdit.getProperty("xml.SchemaMappingManager.fatal-error",new Object[]{resourceName,exception.getSystemId(),exception.getLineNumber(),exception.getLocalizedMessage()}));
+			if(errorHandler != null)errorHandler.fatalError(exception);
+			throw exception;
+		}
+		
+		@Override
+		public void warning(SAXParseException exception) throws SAXException {
+			Log.log(Log.NOTICE, SchemaMappingManager.class, jEdit.getProperty("xml.SchemaMappingManager.warning",new Object[]{resourceName,exception.getSystemId(),exception.getLineNumber(),exception.getLocalizedMessage()}));
+			if(errorHandler != null)errorHandler.warning(exception);
+		}
+	}
 }

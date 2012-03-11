@@ -35,7 +35,9 @@ import static xml.XMLTestUtils.*;
 
 import java.io.*;
 import java.net.*;
-import org.xml.sax.*;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import static xml.parser.SchemaMapping.*;
 import static xml.parser.SchemaMapping.Rule;
@@ -69,7 +71,7 @@ public class SchemaMappingTest{
     @Test
     public void testBuiltInSchema()  throws URISyntaxException{
     	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
-    	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString());
+    	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString(), new DefaultHandler());
     	assertNotNull(m);
     	
     	// 2 built-in rules
@@ -355,7 +357,7 @@ public class SchemaMappingTest{
 	@Test
     public void testBase() throws MalformedURLException, URISyntaxException{
      	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
-    	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString());
+    	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString(), new DefaultHandler());
     	assertNotNull(m);
 
     	
@@ -376,7 +378,7 @@ public class SchemaMappingTest{
 	public void testIncludeMapping() throws MalformedURLException, URISyntaxException{
      	
 		try{
-			new SchemaMapping.IncludeMapping(null, (String)null);
+			new SchemaMapping.IncludeMapping(null, (String)null, new DefaultHandler());
 			fail("should throw an exception");
 		}catch(IllegalArgumentException iae){
 			//fine
@@ -390,14 +392,14 @@ public class SchemaMappingTest{
 		}
 		
 		try{
-			new SchemaMapping.IncludeMapping(null, "relative");
+			new SchemaMapping.IncludeMapping(null, "relative", new DefaultHandler());
 			fail("should throw an exception");
 		}catch(IllegalArgumentException iae){
 			//fine
 		}
 		
 		try{
-			new SchemaMapping.IncludeMapping(null, "\\//");
+			new SchemaMapping.IncludeMapping(null, "\\//", new DefaultHandler());
 			fail("should throw an exception");
 		}catch(IllegalArgumentException iae){
 			//fine
@@ -407,7 +409,7 @@ public class SchemaMappingTest{
      	
     	SchemaMapping m = new SchemaMapping();
     	
-    	m.addRule(new SchemaMapping.IncludeMapping(null, builtin.toString()));
+    	m.addRule(new SchemaMapping.IncludeMapping(null, builtin.toString(), new DefaultHandler()));
     	    	
     	// used the include rule AND used the base uri of the included schema
     	assertEquals(new Result(builtin,"relaxng.rng"),m.getSchemaForDocument(null, "actions.rng",
@@ -419,6 +421,21 @@ public class SchemaMappingTest{
     	// rule base
     	assertEquals(new Result(null,"else.rng"),
     		m.getSchemaForDocument(null, "actions.xml",null,null,"TOTO",true));
+	}
+	
+	@Test
+	public void testIncludeMappingIncludedMappingBroken() throws MalformedURLException{
+		File broken = new File(testData, "broken_schemas_xml/malformed/schemas.xml");
+     	
+    	SchemaMapping m = new SchemaMapping();
+    	final Object[] errors = new Object[1];
+    	new SchemaMapping.IncludeMapping(null, broken.toURI().toURL().toString(), new DefaultHandler(){
+    		@Override
+    		public void fatalError(SAXParseException e) throws SAXException {
+    			errors[0] = e;
+    		}
+    	});
+    	    	
 	}
 	
 	@Test
@@ -480,9 +497,9 @@ public class SchemaMappingTest{
     	SchemaMapping m = new SchemaMapping();
 
 		Mapping r;
-    	r = new SchemaMapping.IncludeMapping(null, builtin.toString());
+    	r = new SchemaMapping.IncludeMapping(null, builtin.toString(), new DefaultHandler());
     	m.addRule(r);
-    	r = new SchemaMapping.IncludeMapping(null, builtin.toString());
+    	r = new SchemaMapping.IncludeMapping(null, builtin.toString(), new DefaultHandler());
     	r.setExplicitBase("file:///a.xml");
     	m.addRule(r);
     	
@@ -533,14 +550,14 @@ public class SchemaMappingTest{
     	
     	File f = File.createTempFile("schemamappingtest",".xml");
     	try{
-    		m.toDocument(f.getPath());
+    		m.toDocument(f.toURI().toURL().toString());
     	}catch(IOException ioe){
     		fail("should not throw an exception : "+ioe);
     	}
     	
     	SchemaMapping m2 = null;
     	try{
-    		m2 = SchemaMapping.fromDocument(f.toURL().toString());
+    		m2 = SchemaMapping.fromDocument(f.toURL().toString(), new DefaultHandler());
     	}catch(IOException ioe){
     		fail("should not throw an exception : "+ioe);
     	}

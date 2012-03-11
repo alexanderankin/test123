@@ -87,20 +87,21 @@ public class XercesParserImpl extends XmlParser
 		
 		if(text.length() == 0)return data;
 		
-		SchemaMapping mapping;
-		if(SchemaMappingManager.isSchemaMappingEnabled(buffer))
-		{
-			mapping = SchemaMappingManager.getSchemaMappingForBuffer(buffer);
-		}
-		else
-		{
-			mapping = null;
-		}
 
 		ErrorListErrorHandler errorHandler = new ErrorListErrorHandler(
 				 errorSource
 				,buffer.getPath()
 			);
+		
+		SchemaMapping mapping;
+		if(SchemaMappingManager.isSchemaMappingEnabled(buffer))
+		{
+			mapping = SchemaMappingManager.getSchemaMappingForBuffer(buffer, errorHandler);
+		}
+		else
+		{
+			mapping = null;
+		}
 		
 		MyEntityResolver resolver = new MyEntityResolver(buffer, errorHandler);
 

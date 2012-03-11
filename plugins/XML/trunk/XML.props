@@ -535,6 +535,14 @@ xml.translate.xsd.any-attribute-process-contents=skip
 
 # }}}
 
+# error handling for schema mappings
+xml.builtin-schema=built-in schema mapping
+xml.global-schema=global schema mapping
+xml.local-schema=schemas.xml in buffer's directory
+xml.SchemaMappingManager.error=error loading {1} ({2} line {3}): {4}
+xml.SchemaMappingManager.fatalError=fatal error loading {1} ({2} line {3}): {4}
+xml.SchemaMappingManager.warning=warning loading {1} ({2} line {3}): {4}
+
 # enable new features by default
 buffer.xml.xinclude=true
 buffer.xml.xinclude.fixup-base-uris=true
