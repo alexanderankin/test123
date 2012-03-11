@@ -74,8 +74,6 @@ public class SchemaMappingManagerTest {
     /**
     * test the dialog box with file paths
     *
-    * FIXME: the test is failing due to my French locale/keyboard layout.
-    *        test it again with FEST-SWING version > Nov. 2009
     */
 	@Test
 	public void testChooseSchemaDialogOnFile() throws java.net.MalformedURLException
