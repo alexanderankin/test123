@@ -56,7 +56,7 @@ import static xml.Debug.*;
  * This component is only interested in introducing Validators, not providing
  * completion.
  *
- * TODO: if the inserted VerifierFilter doesn't implement EntityResolver2,
+ * If the inserted VerifierFilter doesn't implement EntityResolver2,
  *       entity resolution might fail. finding a test case is not easy,
  *       since resolution is mainly used to load a schema...
  *
@@ -180,7 +180,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		
 		setContentHandler(verifierFilter);
 		
-		// FIXME: very add-hoc, but who uses other extensions for one's schema ?
+		// very add-hoc, but who uses other extensions for one's schema ?
 		if(schemaURL.endsWith("rng") || schemaURL.endsWith("rnc")){
 		    // take care of using the resolved schemaURL !
 			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),this.schemaURL,getErrorHandler(),requestingBuffer);
