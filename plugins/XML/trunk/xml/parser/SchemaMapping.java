@@ -825,10 +825,12 @@ public final class SchemaMapping
 	
 	/** deserialize an xml document describing the mapping rules (schemas.xml)
 	 * @param	url	url of the document to read
+	 * @param	errorHandler	error handler notified of errors encountered when loading the schema
 	 * @return	new SchemaMapping taken from the document at url, or null
 	 * @throws	IllegalArgumentException	if the url is null
 	 */
-	public static SchemaMapping fromDocument(String url){
+	public static SchemaMapping fromDocument(String url, ErrorHandler errorHandler)
+	throws IOException, SAXException, IllegalArgumentException{
 		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,
 			"fromDocument("+url+")");
 		if(url==null)throw new IllegalArgumentException("url can't be null");
@@ -845,7 +847,7 @@ public final class SchemaMapping
 			
 			XMLReader reader = XMLReaderFactory.createXMLReader();
 			reader.setEntityResolver(xml.Resolver.instance());
-			DefaultHandler handler = new MyHandler(mapping);
+			DefaultHandler handler = new MyHandler(mapping, errorHandler);
 
 			// the input document will be validated, so no error message in the handler
 			// TODO: what happens when there are errors in the document ?
@@ -860,6 +862,7 @@ public final class SchemaMapping
 			reader.setContentHandler(verifierFilter);
 			verifierFilter.setContentHandler(handler);
 			
+			reader.setErrorHandler(handler);
 			verifierFilter.setErrorHandler(handler);
 			
 			// for schemas loaded from VFS, resolve the URL, so that an octet
@@ -872,19 +875,12 @@ public final class SchemaMapping
 		}
 		catch (SAXException se)
 		{
-			String msg = "error loading schema mapping '"+url+"'";
-			Throwable t = se.getException();
-			if(msg != null){
-				msg+=": "+se.getMessage();
-			}
-			if(t!=null){
-				msg+=" caused by "+t;
-			}
-			Log.log(Log.WARNING, SchemaMapping.class, msg);
+			return null;
 		}
 		catch(IOException e)
 		{
 			Log.log(Log.ERROR,SchemaMapping.class,"I/O error loading schema mapping '"+url+"': "+e.getClass()+": "+e.getMessage());
+			return null;
 		}
 		return mapping;
 	}
@@ -969,13 +965,17 @@ public final class SchemaMapping
 	{
 		private SchemaMapping mapping;
 		private Stack<URI> baseURIs;
+		private ErrorHandler errorHandler;
 		
-		MyHandler(SchemaMapping mapping)
+		MyHandler(SchemaMapping mapping, ErrorHandler errorHandler)
 		{
 			this.mapping = mapping;
+			this.errorHandler = errorHandler;
 			baseURIs = new Stack<URI>();
 			baseURIs.push(mapping.baseURI);
 		}
+		
+		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes)
 		throws SAXException
 		{
@@ -1072,7 +1072,7 @@ public final class SchemaMapping
 				{
 					newRule = new IncludeMapping(
 						baseURIs.peek(),
-						attributes.getValue("","rules"));
+						attributes.getValue("","rules"), errorHandler);
 					
 				}
 			}
@@ -1098,9 +1098,35 @@ public final class SchemaMapping
 			}
 		}
 		
+		@Override
 		public void endElement(String uri, String localName, String qName)
 		{
 			baseURIs.pop();
+		}
+		
+		/**
+		 * notifies the error handler
+		 */
+		@Override
+		public void error(SAXParseException e) throws SAXException {
+			errorHandler.error(e);
+		}
+		
+		/**
+		 * notifies the error handler then rethrows the exception
+		 */
+		@Override
+		public void fatalError(SAXParseException e) throws SAXException {
+			errorHandler.fatalError(e);
+			throw e;
+		}
+		
+		/**
+		 * notifies the error handler
+		 */
+		@Override
+		public void warning(SAXParseException e) throws SAXException {
+			errorHandler.warning(e);
 		}
 	}
 	
@@ -1185,9 +1211,12 @@ public final class SchemaMapping
 		/**
 		 * @param	baseURI	base URL to resolve rules (may be null if rules is absolute)
 		 * @param	rules	URL where to find the rules
+		 * @param	errorHandler	notified of errors resulting from loading the referenced schema mapping
 		 * @throws	IllegalArgumentException	if the url is malformed
 		 */
-		public IncludeMapping(URI baseURI, String rules){
+		public IncludeMapping(URI baseURI, String rules, ErrorHandler errorHandler)
+		throws SAXException, IllegalArgumentException
+		{
 			super(baseURI);
 			if(rules==null)throw new IllegalArgumentException("rules can't be null");
 			
@@ -1201,12 +1230,14 @@ public final class SchemaMapping
 					else url = baseURI.resolve(rules);
 				}
 				
-				mapping = SchemaMapping.fromDocument(url.toURL().toExternalForm());
+				mapping = SchemaMapping.fromDocument(url.toURL().toExternalForm(), errorHandler);
 				
 			}catch(MalformedURLException mfue){
 				throw new IllegalArgumentException("rules '"+rules+"' must be an URL",mfue);
 			}catch(URISyntaxException use){
 				throw new IllegalArgumentException("rules '"+rules+"' must be an URL",use);
+			}catch(IOException ioe){
+				throw new SAXException("error loading "+rules+"for inclusion from "+baseURI,ioe);
 			}
 
 			this.rules = rules;
