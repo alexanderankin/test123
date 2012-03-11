@@ -327,8 +327,6 @@ public class XSDSchemaToCompletion{
 			//indeed, it's possible (like for XMLSchema-instance),
 			//when one uses getModelForNamespace("http://www.w3.org/2001/XMLSchema-instance")
 			//or http://www.w3.org/XML/1998/namespace : see network.xml : base, lang, space
-			// FIXME: now the attributes appear in the edit tag dialog, but in the same namespace
-			// as the other attributes (no mixed namespace support for elements either)
 			System.err.println("look! " + attribute.getName());
 			for(CompletionInfo info : infos.values()){
 				for(ElementDecl e:info.elements){
