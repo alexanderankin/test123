@@ -504,7 +504,7 @@ public class XmlParsedData extends SideKickParsedData
 	} //}}}
 
 	//{{{ getAllowedElements() method
-	/** get allowed elements at startPos.
+	/** get allowed elements at startPos or endPos.
 	 *  called by updateTagList only.
 	 *  ensures:
 	 *  - that startPos and endPos are not inside a tag (then returns all global elements),
@@ -549,24 +549,19 @@ public class XmlParsedData extends SideKickParsedData
 		}
 		else
 		{
-			// it's not clear to me what situation this covers : if start and end parent tags
-			// are not the same, why do we require that they are in same prefix ?
-			// especially since only chilren of start parent are proposed 
-			String startParentPrefix = getElementNamePrefix(startParentTag.tag);
 			ElementDecl startParentDecl = getElementDecl(startParentTag.tag,startParentTag.start+1);
 
-			String endParentPrefix = getElementNamePrefix(endParentTag.tag);
 			ElementDecl endParentDecl = getElementDecl(endParentTag.tag,endParentTag.start+1);
 
 			if(startParentDecl == null)
 				return returnValue;
 			else if(endParentDecl == null)
 				return returnValue;
-			else if(!startParentPrefix.equals(endParentPrefix))
-				return returnValue;
 			else
 			{
 				returnValue.addAll(startParentDecl.getChildElements());
+				// only return elements allowed both at startPos and endPos
+				returnValue.retainAll(endParentDecl.getChildElements());
 			}
 		}
 
