@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.*;
 import sidekick.util.*;
+import org.gjt.sp.jedit.jEdit;
 
 /** Token Manager. */
 public class CSS3ParserTokenManager implements CSS3ParserConstants
