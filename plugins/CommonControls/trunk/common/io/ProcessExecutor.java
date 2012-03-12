@@ -1,5 +1,5 @@
 /*
- * (c) 2010 Marcelo Vanzin
+ * (c) 2012 Marcelo Vanzin
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
