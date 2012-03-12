@@ -605,7 +605,7 @@ public class NavigatorPlugin extends EBPlugin {
                 // create Navigator for EditPane scope
                 createNavigator( editPane );
             }
-            else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) && jEdit.getIntegerProperty("navigator.scope") == EDITPANE_SCOPE ) {
+            else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) ) {
                 EditPane editPane = epu.getEditPane();
                 editPaneNavigatorMap.remove( editPane );
             }
