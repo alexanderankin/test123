@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="minimap-show" NO_REPEAT="TRUE">
+		<CODE>
+			minimap.MinimapPlugin.show(editPane);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="minimap-hide" NO_REPEAT="TRUE">
+		<CODE>
+			minimap.MinimapPlugin.hide(editPane);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="minimap-toggle" NO_REPEAT="TRUE">
+		<CODE>
+			minimap.MinimapPlugin.toggle(editPane);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="minimap-show-all" NO_REPEAT="TRUE">
+		<CODE>
+			minimap.MinimapPlugin.showAll();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="minimap-hide-all" NO_REPEAT="TRUE">
+		<CODE>
+			minimap.MinimapPlugin.hideAll();
+		</CODE>
+	</ACTION>
+</ACTIONS>
+
