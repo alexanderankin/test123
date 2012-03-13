@@ -16,12 +16,16 @@ import common.gui.util.*;
  *
  * @author    mace
  * @version   $Revision$ modified $Date$ by $Author$
+ * @see org.gjt.sp.jedit.gui.PingPongList
+ * @deprecated use org.gjt.sp.jedit.gui.PingPongList
+ *
  */
+ @Deprecated
 public class SelectionListPanel extends JPanel {
 	/** The constant referring to the left list */
-	public final static int LEFT = 0;
+	public static final int LEFT = 0;
 	/** The constant referring to the right list */
-	public final static int RIGHT = 1;
+	public static final int RIGHT = 1;
 	protected String title = "Select some options";
 	protected ConstraintFactory cf;
 	protected JButton moveRight;

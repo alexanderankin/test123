@@ -30,6 +30,7 @@ import org.gjt.sp.util.Log;
  *	@since		CC 0.9.0
  *  @deprecated see org.gjt.sp.util.ThreadUtilities
  */
+ @Deprecated
 public final class WorkRequest
 {
 
