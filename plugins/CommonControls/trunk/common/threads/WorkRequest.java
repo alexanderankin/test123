@@ -28,6 +28,7 @@ import org.gjt.sp.util.Log;
  *
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
+ *  @deprecated see org.gjt.sp.util.ThreadUtilities
  */
 public final class WorkRequest
 {

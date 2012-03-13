@@ -201,7 +201,7 @@ import javax.swing.Timer;
  * @param <V> the type used for carrying out intermediate results by this
  *        {@code SwingWorker's} {@code publish} and {@code process} methods
  *
- * @deprecated use javax.swingworker, as of Java 1.6, which is basically the same class.
+ * @deprecated use javax.swing.SwingWorker, as of Java 1.6.
  * 
  */
 public abstract class SwingWorker<T, V> implements Future<T>, Runnable {

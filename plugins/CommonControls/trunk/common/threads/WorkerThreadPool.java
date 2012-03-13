@@ -44,6 +44,7 @@ import org.gjt.sp.util.Log;
  *
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
+ *  @deprecated   use java.util.concurrent.ThreadPoolExecutor and java.util.concurrent.Future 
  */
 public class WorkerThreadPool
 {
