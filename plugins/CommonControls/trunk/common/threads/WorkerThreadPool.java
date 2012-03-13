@@ -38,14 +38,13 @@ import org.gjt.sp.util.Log;
  *	<p>This is a less featureful version of Java 5's "ThreadPoolExecutor" and
  *	"Future" classes, with the benefit that they run on 1.4.</p>
  *
- *	@see	#addRequest(Runnable)
- *	@see	#addRequests(Runnable[])
- *	@see	WorkRequest
- *
+ *	
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
+    @see org.gjt.sp.util.ThreadUtilities
  *  @deprecated   use java.util.concurrent.ThreadPoolExecutor and java.util.concurrent.Future 
  */
+@Deprecated 
 public class WorkerThreadPool
 {
 

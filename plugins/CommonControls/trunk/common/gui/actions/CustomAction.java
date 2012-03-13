@@ -6,13 +6,15 @@ import javax.swing.*;
 
 
 /**
- * Description of the Class
+ * An old class that probably should not be used anymore. 
  *
  * @author     mace
  * @created    October 24, 2002
  * @modified   $Date$ by $Author$
  * @version    $Revision$
+ * @deprecated
  */
+ @Deprecated
 public abstract class CustomAction extends AbstractAction {
 	public final static int CTRL = KeyEvent.CTRL_MASK;
 	public final static int ALT = KeyEvent.ALT_MASK;
