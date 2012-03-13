@@ -56,7 +56,8 @@
    </listitem>
   </itemizedlist>
 
- <bridgehead> ProjectViewer Integration </bridgehead>
+ <section>
+ <title> ProjectViewer Integration </title>
 
  <para> Console has an optional dependency on ProjectViewer.
  What this means is that it has some extra features which you can see if you
@@ -81,6 +82,7 @@
 
 </orderedlist>
 
+</section>
 
  </chapter>
 
