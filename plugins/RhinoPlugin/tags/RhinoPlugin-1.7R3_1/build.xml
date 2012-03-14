@@ -1,0 +1,25 @@
+<project name="RhinoPlugin" default="build" basedir=".">
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="dist.target" value="dist.complete"/>
+	<property name="compiler.source" value="1.6"/>
+	<property name="compiler.target" value="1.6"/>
+	<property name="docs-proc.target" value="none"/>
+	<property name="jedit.plugins.dir" value="${install.dir}"/>
+	<property name="docs-proc.target" value="none"/>
+	<import file="${build.support}/plugin-build.xml"/>
+	
+	<selector id="packageFiles">
+      <or>
+         <filename name="doc/rhino-plugin.html" />
+      </or>
+   </selector>
+
+	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${build.dir}/lib">
+				<include name="rhino.jar" />
+			</fileset>
+		</copy>
+	</target>
+</project>

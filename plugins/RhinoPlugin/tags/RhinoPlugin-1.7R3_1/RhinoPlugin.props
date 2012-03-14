@@ -1,0 +1,11 @@
+# Plugin properties
+plugin.rhino.RhinoPlugin.name=RhinoPlugin
+plugin.rhino.RhinoPlugin.activate=defer
+plugin.rhino.RhinoPlugin.author=http://www.mozilla.org/rhino/
+plugin.rhino.RhinoPlugin.version=1.7R3_1
+plugin.rhino.RhinoPlugin.depend.0=jedit 04.04.99.00
+plugin.rhino.RhinoPlugin.depend.1=jdk 1.6
+plugin.rhino.RhinoPlugin.description=Rhino library packaged as a jedit plugin
+plugin.rhino.RhinoPlugin.jars=rhino.jar
+plugin.rhino.RhinoPlugin.usePluginHome=true
+plugin.rhino.RhinoPlugin.docs=doc/rhino-plugin.html
