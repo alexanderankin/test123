@@ -24,13 +24,15 @@ import org.gjt.sp.util.Log;
 
 /**
  *	<p>A work request to the thread pool. Allow other threads to wait until
- *	the "runnable" is finished.</p>
+ *	the "runnable" is finished. This is basically a concurrent.Future implementation.
  *
+ *  @see java.util.concurrent.Future
+ *  @see org.gjt.sp.jedit.util.Task 
+ *  @see org.gjt.sp.jedit.util.ThreadUtilities
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
- *  @deprecated see org.gjt.sp.util.ThreadUtilities
  */
- @Deprecated
+ 
 public final class WorkRequest
 {
 
@@ -97,4 +99,3 @@ public final class WorkRequest
 	}
 
 }
-
