@@ -33,8 +33,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 options {
   JAVA_UNICODE_ESCAPE = true;
-  ERROR_REPORTING = false;
+  //ERROR_REPORTING = true;
   STATIC = false;
+  //DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN(TigerParser)
@@ -143,9 +144,15 @@ public class TigerParser
         return new Location(m.beginLine, m.beginColumn);
    }
 
+   public void error_skipto(int kind, ParseException pe) {
+       if (pe == null) {
+           pe = generateParseException();  // generate the exception object.
+       }
+       addException(pe);
+       error_skipto(kind);
+   }
+   
    public void error_skipto(int kind) {
-       ParseException e = generateParseException();  // generate the exception object.
-       addException(e);
        Token t = null;
        int i = 0;
        do {
@@ -160,6 +167,7 @@ public class TigerParser
    private List<ErrorNode> exceptions = new ArrayList<ErrorNode>();
 
    private void addException(ParseException pe) {
+       pe.printStackTrace();
        ErrorNode en = new ErrorNode(pe);
        exceptions.add(en);
    }
@@ -1148,7 +1156,7 @@ CUNode CompilationUnit(int tab_size):
        )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1176,7 +1184,7 @@ CUNode JavaCompilationUnit(int tab_size):
        )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1196,7 +1204,7 @@ String PackageDeclaration():
         "package" name=Name() ";"   ////
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1225,7 +1233,7 @@ ImportNode ImportDeclaration():
         st="import" [ "static" ] name=Name() [ "." "*" ] et=";" ////
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1315,7 +1323,7 @@ TigerNode TypeDeclaration():
           )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1355,7 +1363,7 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
       [ LOOKAHEAD(2) <SEMICOLON> ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1406,7 +1414,7 @@ List<TigerNode> ExtendsList(boolean isInterface):
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (extendsMoreThanOne && !isInterface)
@@ -1433,7 +1441,7 @@ List<TigerNode> ImplementsList(boolean isInterface):
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (isInterface)
@@ -1467,7 +1475,7 @@ TigerNode EnumDeclaration(Modifier m):
            return null;
         }
         else
-            error_skipto(SEMICOLON);
+            error_skipto(SEMICOLON, pe);
     }
     {
         if (t == null) {
@@ -1501,12 +1509,13 @@ TigerNode EnumBody():
 {
     try {
         start_t="{"
-        constant = EnumConstant(){constants.add(constant);} ( "," constant=EnumConstant(){constants.add(constant);} )*
+        constant = EnumConstant(){constants.add(constant);} ( "," constant=EnumConstant(){if (constant != null) constants.add(constant);} )*
         [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
         end_t="}"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(RBRACE, pe);
+        end_t = start_t;
     }
     {
         TigerNode node = new TigerNode();
@@ -1530,7 +1539,10 @@ TigerNode EnumConstant():
         t=<IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        // This grammar expects commas to be followed by EnumConstants, but
+        // neither javac nor the language spec says it has to, so something like
+        // public enum {ACE, BASE, CASE, } is allowed.
+        return null;
     }
     {
         if (t != null) {
@@ -1571,7 +1583,7 @@ String TypeParameters():
     }
     catch(ParseException pe) {
         pe.printStackTrace();
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return s + ">";
@@ -1591,8 +1603,8 @@ String TypeParameter():
 
     }
     catch(ParseException pe) {
-        pe.printStackTrace();
-        error_skipto(SEMICOLON);
+        //pe.printStackTrace();
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1627,7 +1639,7 @@ String TypeBound():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return s;
@@ -1660,7 +1672,7 @@ TigerNode ClassOrInterfaceBody(boolean isInterface):
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (start_t != null) {
@@ -1725,7 +1737,7 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
           )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -1775,7 +1787,7 @@ FieldNode FieldDeclaration(Modifier m):
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (m.beginColumn == -1)
@@ -1803,7 +1815,7 @@ VariableDeclarator VariableDeclarator():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (list != null) {
@@ -1822,7 +1834,7 @@ VariableDeclarator VariableDeclaratorId():
         t=<IDENTIFIER> ( "[" "]" )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if ( t == null)
@@ -1847,7 +1859,7 @@ List<TigerNode> VariableInitializer():
           a=Expression()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (a != null)
@@ -1870,7 +1882,7 @@ List<TigerNode> ArrayInitializer():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -1902,7 +1914,7 @@ TigerNode MethodDeclaration(Modifier m):
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (m_node == null)
@@ -1946,7 +1958,7 @@ MethodNode MethodDeclarator():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (t == null)
@@ -1981,7 +1993,7 @@ List<TigerNode> FormalParameters():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return params;
@@ -2025,7 +2037,7 @@ Parameter FormalParameter():
       )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return param;
@@ -2055,7 +2067,7 @@ ConstructorNode ConstructorDeclaration(Modifier m):
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         cn.setName(t.image);
@@ -2086,7 +2098,7 @@ TigerNode ExplicitConstructorInvocation():
         [ LOOKAHEAD(2) tn=PrimaryExpression() "." ] "super" Arguments() ";"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -2107,7 +2119,7 @@ TigerNode Initializer():
         [ t="static" ] block=Block()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (t != null && block != null) {
@@ -2139,7 +2151,7 @@ Type Type():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 
     {
@@ -2162,7 +2174,7 @@ Type ReferenceType():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         s.setIsArray(isArray);
@@ -2211,7 +2223,7 @@ Type ClassOrInterfaceType():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return s;
@@ -2242,7 +2254,7 @@ List<TigerNode> TypeArguments():
     }
     catch(ParseException pe) {
         pe.printStackTrace();
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -2265,7 +2277,7 @@ Type TypeArgument():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return type;
@@ -2287,7 +2299,7 @@ Type WildcardBounds():
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (type != null)
@@ -2324,7 +2336,7 @@ Type PrimitiveType():
           )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
       if (t != null) {
@@ -2357,7 +2369,7 @@ Type ResultType():
           )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return s;
@@ -2408,7 +2420,7 @@ NameNode Name():
         )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         Type type = null;
@@ -2441,7 +2453,7 @@ List<TigerNode> NameList():
         ( "," tn=Name() { nameList.add(tn); } )*    ////
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return nameList;
@@ -2477,7 +2489,7 @@ List<TigerNode> Expression():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2502,7 +2514,7 @@ List<TigerNode> ConditionalExpression():
         a=ConditionalOrExpression() [ "?" b=Expression(){if (b != null) a.addAll(b);} ":" c=Expression(){if (c != null) a.addAll(c);} ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2519,7 +2531,7 @@ List<TigerNode> ConditionalOrExpression():
         a=ConditionalAndExpression() ( "||" b=ConditionalAndExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2536,7 +2548,7 @@ List<TigerNode> ConditionalAndExpression():
         a=InclusiveOrExpression() ( "&&" b=InclusiveOrExpression(){ if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2553,7 +2565,7 @@ List<TigerNode> InclusiveOrExpression():
         a=ExclusiveOrExpression() ( "|" b=ExclusiveOrExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2570,7 +2582,7 @@ List<TigerNode> ExclusiveOrExpression():
         a=AndExpression() ( "^" b=AndExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2587,7 +2599,7 @@ List<TigerNode> AndExpression():
         a=EqualityExpression() ( "&" b=EqualityExpression(){if (b != null) a.addAll(b);} )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2605,7 +2617,7 @@ List<TigerNode> EqualityExpression():
         a = InstanceOfExpression() ( ( "==" | "!=" ) b = InstanceOfExpression(){ if (b != null) a.addAll(b); } )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2622,7 +2634,7 @@ List<TigerNode> InstanceOfExpression():
         a=RelationalExpression() [ "instanceof" t=Type() ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (a != null && t != null) {
@@ -2642,7 +2654,7 @@ List<TigerNode> RelationalExpression():
         a=ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) b=ShiftExpression(){ if (b != null) a.addAll(b); } )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2659,7 +2671,7 @@ List<TigerNode> ShiftExpression():
         a=AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) b=AdditiveExpression() { if (b != null) a.addAll(b); })*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2676,7 +2688,7 @@ List<TigerNode> AdditiveExpression():
         a=MultiplicativeExpression() ( ( "+" | "-" ) b=MultiplicativeExpression() { if (b != null) a.addAll(b); } )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2694,7 +2706,7 @@ List<TigerNode> MultiplicativeExpression():
         a=UnaryExpression() { if (a != null) list.add(a); } ( ( "*" | "/" | "%" ) b=UnaryExpression() { if (b != null) list.add(b); } )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -2716,7 +2728,7 @@ TigerNode UnaryExpression():
           tn = UnaryExpressionNotPlusMinus()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -2732,7 +2744,7 @@ TigerNode PreIncrementExpression():
         "++" tn=PrimaryExpression()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -2748,7 +2760,7 @@ TigerNode PreDecrementExpression():
         "--" tn=PrimaryExpression()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -2769,7 +2781,7 @@ TigerNode UnaryExpressionNotPlusMinus():
           tn = PostfixExpression()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -2794,7 +2806,7 @@ void CastLookahead():
           "(" Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 }
 
@@ -2807,7 +2819,7 @@ TigerNode PostfixExpression():
         tn = PrimaryExpression() [ "++" | "--" ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -2827,7 +2839,7 @@ TigerNode CastExpression():
           "(" t= Type() ")" tn=UnaryExpressionNotPlusMinus()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (tn != null) {
@@ -2865,7 +2877,7 @@ TigerNode PrimaryExpression():
         )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         TigerNode tn = new TigerNode();
@@ -2889,7 +2901,7 @@ List<TigerNode> MemberSelector():
         "." a=TypeArguments() <IDENTIFIER>
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -2928,7 +2940,7 @@ List<TigerNode> PrimaryPrefix():
             tn = Name() { if (tn != null ) expressions.add(tn); }   ////
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return expressions;
@@ -2958,7 +2970,7 @@ List<TigerNode> PrimarySuffix():
           list=Arguments()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         //Log.log("===== PrimarySuffix returning: " + list);
@@ -2983,7 +2995,7 @@ void Literal():
           NullLiteral()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 }
 
@@ -3010,7 +3022,7 @@ List<TigerNode> Arguments():
         "(" [ a=ArgumentList() ] ")"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return a;
@@ -3027,7 +3039,7 @@ List<TigerNode> ArgumentList():
         a=Expression() {if (a != null) list.addAll(a);} ( "," b=Expression() {if (b != null) list.addAll(b); } )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3054,7 +3066,7 @@ List<TigerNode> AllocationExpression():
             )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3078,7 +3090,7 @@ List<TigerNode> ArrayDimsAndInits():
           ( "[" "]" )+ ArrayInitializer()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3134,7 +3146,7 @@ TigerNode Statement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
   {
       /* somehow this causes all heap memory to get used up. Need to figure out
@@ -3155,7 +3167,7 @@ void AssertStatement():
         "assert" Expression() [ ":" Expression() ] ";"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 }
 
@@ -3166,7 +3178,7 @@ void LabeledStatement():
         <IDENTIFIER> ":" Statement()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 }
 
@@ -3183,7 +3195,7 @@ BlockNode Block():
         start_t="{" ( child=BlockStatement() { bn.addChild(child); })* end_t="}"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
@@ -3210,7 +3222,7 @@ TigerNode BlockStatement():
              )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -3230,7 +3242,7 @@ BlockNode TokenMgrDeclBlock():
         start_t="{" ( child=TokenMgrDeclBlockStatement() { bn.addChild(child); })* end_t="}"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
@@ -3266,7 +3278,7 @@ TigerNode TokenMgrDeclBlockStatement():
              )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return tn;
@@ -3314,7 +3326,7 @@ LocalVariableNode LocalVariableDeclaration():
       )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return lvn;
@@ -3354,7 +3366,7 @@ TigerNode StatementExpression():
           ]
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (list != null) {
@@ -3380,7 +3392,7 @@ BlockNode SwitchStatement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (start_t != null)
@@ -3402,7 +3414,7 @@ List<TigerNode> SwitchLabel():
           "default" ":"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3428,7 +3440,7 @@ BlockNode IfStatement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (start_t != null) {
@@ -3461,7 +3473,7 @@ BlockNode WhileStatement():
         start_t="while" "(" expression=Expression() ")" kids=Statement()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
   {
       bn.setStartLocation(getLocation(start_t));
@@ -3490,7 +3502,7 @@ BlockNode DoStatement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (start_t != null)
@@ -3528,7 +3540,7 @@ BlockNode ForStatement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         if (start_t != null) {
@@ -3562,7 +3574,7 @@ List<TigerNode> ForInit():
         a=StatementExpressionList() { if (a != null) list.addAll(a); }
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3580,7 +3592,7 @@ List<TigerNode> StatementExpressionList():
         a=StatementExpression() { if (a != null) list.add(a); } ( "," b=StatementExpression() { if (b != null) list.add(b); } )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3594,7 +3606,7 @@ void ForUpdate():
         StatementExpressionList()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
 }
 
@@ -3619,7 +3631,7 @@ List<TigerNode> ReturnStatement():
         "return" [ list=Expression() ] ";"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3635,7 +3647,7 @@ List<TigerNode> ThrowStatement():
         "throw" list=Expression() ";"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
         return list;
@@ -3655,7 +3667,7 @@ BlockNode SynchronizedStatement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);
+        error_skipto(SEMICOLON, pe);
     }
     {
       bn.setStartLocation(getLocation(start_t));
@@ -3736,7 +3748,7 @@ BlockNode TryStatement():
         ]
     }
     catch(ParseException pe) {
-        error_skipto(RBRACE);
+        error_skipto(RBRACE, pe);
     }
     {
         bn.addChildren(nodes);
@@ -3807,7 +3819,7 @@ List<TigerNode> NormalAnnotation():
         "@" nn=Name(){nn.setName("@" + nn.getName());} "(" [ mvp=MemberValuePairs() ] ")"
     }
     catch(ParseException pe) {
-        error_skipto(RPAREN);   
+        error_skipto(RPAREN, pe);   
     }
    
    {
@@ -3831,7 +3843,7 @@ List<TigerNode> MarkerAnnotation():
     "@" nn=Name(){nn.setName("@" + nn.getName());}
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);    // TODO is there a better token to skip to?   
+        error_skipto(SEMICOLON, pe);    // TODO is there a better token to skip to?   
     }
     
     {
@@ -3852,7 +3864,7 @@ List<TigerNode> SingleMemberAnnotation():
     "@" nn=Name(){nn.setName("@" + nn.getName());list.add(nn);} "(" mv=MemberValue(){list.addAll(mv);} ")"
     }
     catch(ParseException pe) {
-        error_skipto(RPAREN);   
+        error_skipto(RPAREN, pe);   
     }
     
     {
@@ -3870,7 +3882,7 @@ List<TigerNode> MemberValuePairs():
     mvp=MemberValuePair(){list.addAll(mvp);} ( "," mvp=MemberValuePair(){list.addAll(mvp);} )*
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
+        error_skipto(SEMICOLON, pe);   
     }
     
     {
@@ -3889,7 +3901,7 @@ List<TigerNode> MemberValuePair():
     t=<IDENTIFIER> "=" mv=MemberValue()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
+        error_skipto(SEMICOLON, pe);   
     }
     
     {
@@ -3913,8 +3925,8 @@ List<TigerNode> MemberValue():
          |
            list = ConditionalExpression()
     }
-    catch(ParseException e) {
-        error_skipto(SEMICOLON);
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON, pe);
     }
    
    {
@@ -3932,7 +3944,7 @@ List<TigerNode>  MemberValueArrayInitializer():
     "{" (mv=MemberValue(){list.addAll(mv);} ( LOOKAHEAD(2) "," mv=MemberValue(){list.addAll(mv);} )* [ "," ])? "}"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
+        error_skipto(SEMICOLON, pe);   
     }
   
   {
@@ -3954,7 +3966,7 @@ TigerNode AnnotationTypeDeclaration(Modifier m):
         st="@" "interface" t=<IDENTIFIER> body=AnnotationTypeBody()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
+        error_skipto(SEMICOLON, pe);   
     }
     
     {
@@ -3982,7 +3994,7 @@ List<TigerNode> AnnotationTypeBody():
     st="{" ( tn=AnnotationTypeMemberDeclaration(){list.add(tn);} )* et="}"
     }
     catch(ParseException pe) {
-        error_skipto(RBRACKET);   
+        error_skipto(RBRACKET, pe);   
     }
     
     {
@@ -4023,7 +4035,7 @@ TigerNode AnnotationTypeMemberDeclaration():
      ( ";" )
  }
  catch(ParseException pe) {
-    error_skipto(SEMICOLON);   
+    error_skipto(SEMICOLON, pe);   
  }
    
    {
@@ -4042,7 +4054,7 @@ List<TigerNode> DefaultValue():
   t="default" mv=MemberValue()
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
+        error_skipto(SEMICOLON, pe);   
     }
   
   {
