@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<project name="FoldViewer" default="dist" basedir=".">
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property file="${user.home}/.build.properties"/>
+    <property file="${user.home}/build.properties"/>
+
+    <property name="jar.name" value="${ant.project.name}.jar"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="classes"/>
+    <property name="docs.dir" value="docs"/>
+    <property name="src.dir" value=""/>
+
+
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="."/>
+    </path>
+
+
+    <!-- For compile source files -->
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac deprecation="on" destdir="${classes.dir}" srcdir=".">
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <!-- For create arhive -->
+    <target name="dist" depends="compile">
+        <mkdir dir="${build.dir}"/>
+        <jar jarfile="${build.dir}/${jar.name}">
+            <fileset dir="classes">
+                <include name="**/*.class"/>
+            </fileset>
+            <fileset dir=".">
+                <include name="**/*.props"/>
+                <include name="docs/**/*.html"/>
+                <include name="actions.xml"/>
+                <include name="dockables.xml"/>
+                <include name="services.xml"/>
+            </fileset>
+        </jar>
+        <copy todir="${install.dir}">
+            <fileset dir="${build.dir}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    
+    <!-- Clean old stuff. -->
+    <target name="clean" description="Clean old stuff.">
+        <!--<delete dir="${doc.dir}"/>-->
+        <delete dir="${build.dir}"/>
+        <delete dir="${classes.dir}"/>
+
+        <!--<mkdir dir="${docs.dir}"/>-->
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+    
+</project>
