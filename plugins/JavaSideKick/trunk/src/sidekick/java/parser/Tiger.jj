@@ -167,7 +167,6 @@ public class TigerParser
    private List<ErrorNode> exceptions = new ArrayList<ErrorNode>();
 
    private void addException(ParseException pe) {
-       pe.printStackTrace();
        ErrorNode en = new ErrorNode(pe);
        exceptions.add(en);
    }
@@ -1914,7 +1913,7 @@ TigerNode MethodDeclaration(Modifier m):
         )
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON, pe);
+        error_skipto(RBRACE, pe);
     }
     {
         if (m_node == null)
@@ -3195,7 +3194,7 @@ BlockNode Block():
         start_t="{" ( child=BlockStatement() { bn.addChild(child); })* end_t="}"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON, pe);
+        error_skipto(RBRACE, pe);
     }
     {
         bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
@@ -3392,7 +3391,7 @@ BlockNode SwitchStatement():
 
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON, pe);
+        error_skipto(RBRACE, pe);
     }
     {
         if (start_t != null)
@@ -3414,7 +3413,7 @@ List<TigerNode> SwitchLabel():
           "default" ":"
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON, pe);
+        error_skipto(COLON, pe);
     }
     {
         return list;
@@ -3802,6 +3801,7 @@ List<TigerNode> Annotation():
     }
     catch(ParseException pe) {
         // TODO: what to do here?
+        addException(pe);
     }
    {
         return list;   
