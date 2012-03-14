@@ -27,8 +27,8 @@ import org.gjt.sp.util.Log;
  *	the "runnable" is finished. This is basically a concurrent.Future implementation.
  *
  *  @see java.util.concurrent.Future
- *  @see org.gjt.sp.jedit.util.Task 
- *  @see org.gjt.sp.jedit.util.ThreadUtilities
+ *  @see org.gjt.sp.util.Task
+ *  @see org.gjt.sp.util.ThreadUtilities
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
  */
