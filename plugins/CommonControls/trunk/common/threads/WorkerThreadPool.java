@@ -35,16 +35,16 @@ import org.gjt.sp.util.Log;
  *	if they so desire. Just remember to shut down the threads when
  *	the plugin is unloaded.</p>
  *
- *	<p>This is a less featureful version of Java 5's "ThreadPoolExecutor" and
- *	"Future" classes, with the benefit that they run on 1.4.</p>
- *
+ *	<p>This is a version of Java 5's java.util.concurrent.ThreadPoolExecutor 
+ *	with one addition:
+ *     addRequests() will start the runnables at the same time, or 
+ *        wait until size threads are available in the pool.
  *	
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
-    @see org.gjt.sp.util.ThreadUtilities
- *  @deprecated   use java.util.concurrent.ThreadPoolExecutor and java.util.concurrent.Future 
+ *  @see org.gjt.sp.util.ThreadUtilities 
  */
-@Deprecated 
+
 public class WorkerThreadPool
 {
 
