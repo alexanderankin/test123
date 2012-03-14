@@ -30,7 +30,7 @@ public class FVOptionPane extends AbstractOptionPane {
 	
 	//{{{ constructor.
 	public FVOptionPane() {
-		super(jEdit.getProperty("options.foldviewer.label"));
+		super("foldviewer");
 	} 
 	//}}}
 	
