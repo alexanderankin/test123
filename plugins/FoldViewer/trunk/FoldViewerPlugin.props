@@ -15,8 +15,8 @@ plugin.foldviewer.FoldViewerPlugin.usePluginHome=true
 plugin.foldviewer.FoldViewerPlugin.description=FoldViewer shows you the content of a collapsed fold as tooltip
 
 # Depends
-plugin.foldviewer.FoldViewerPlugin.depend.0=jedit 04.03.99.00
-plugin.foldviewer.FoldViewerPlugin.depend.1=jdk 1.5
+plugin.foldviewer.FoldViewerPlugin.depend.0=jedit 04.05.99.00
+plugin.foldviewer.FoldViewerPlugin.depend.1=jdk 1.6
 
 # plugin option pane
 plugin.foldviewer.FoldViewerPlugin.option-pane=foldviewer
