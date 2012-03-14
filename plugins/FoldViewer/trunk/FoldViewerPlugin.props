@@ -10,6 +10,7 @@
 plugin.foldviewer.FoldViewerPlugin.activate=startup
 plugin.foldviewer.FoldViewerPlugin.name=FoldViewer
 plugin.foldviewer.FoldViewerPlugin.author=Denis Koryavov
+plugin.foldviewer.FoldViewerPlugin.docs=index.html
 plugin.foldviewer.FoldViewerPlugin.version=1.1
 plugin.foldviewer.FoldViewerPlugin.usePluginHome=true
 plugin.foldviewer.FoldViewerPlugin.description=FoldViewer shows you the content of a collapsed fold as tooltip

@@ -40,6 +40,7 @@
                 <include name="actions.xml"/>
                 <include name="dockables.xml"/>
                 <include name="services.xml"/>
+                <include name="index.html"/>
             </fileset>
         </jar>
         <copy todir="${install.dir}">
