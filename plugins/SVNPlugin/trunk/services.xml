@@ -16,10 +16,10 @@
     <SERVICE CLASS="projectviewer.config.VersionControlService" NAME="Subversion">
         ise.plugin.svn.pv.VersionControlState.getInstance();
     </SERVICE>
-    
-    <SERVICE CLASS="projectviewer.importer.ImporterFileFilter" NAME="svn">
+<!-- This is redundant since it is offered from the version control service -->
+<!--    <SERVICE CLASS="projectviewer.importer.ImporterFileFilter" NAME="svn">
         ise.plugin.svn.pv.VersionControlState.getInstance().getFilter();
-    </SERVICE>
+    </SERVICE> -->
     
 </SERVICES>
 
