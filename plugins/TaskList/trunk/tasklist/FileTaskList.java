@@ -60,10 +60,11 @@ public class FileTaskList extends AbstractTreeTaskList {
     }
     
     private void findPaths(VFSFile file, Set<String> paths) {
-        if (file.getType() == VFSFile.FILE && !file.isHidden() && file.isReadable() && !Binary.isBinary(file.getPath())) {
+        boolean showHidden = jEdit.getBooleanProperty("tasklist.scan-hidden-files", false);
+        if (file.getType() == VFSFile.FILE && showHidden && file.isReadable() && !Binary.isBinary(file.getPath())) {
             paths.add(file.getPath());   
         }
-        else if (file.getType() == VFSFile.DIRECTORY && !file.isHidden() ) {
+        else if (file.getType() == VFSFile.DIRECTORY && showHidden ) {
             String dir = file.getPath();
             try {
                 VFSFile[] children = file.getVFS()._listFiles(null, dir, view);

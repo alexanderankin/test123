@@ -55,6 +55,7 @@ options.tasklist.general.buffer.display.fullpath=Complete Path
 options.tasklist.general.buffer.display.namedir=Filename (Directory)
 options.tasklist.general.buffer.display.nameonly=Filename Only
 options.tasklist.general.show-open-files=Show tasks for all open files
+options.tasklist.general.scan-hidden-files=Include hidden files in task scanning
 options.tasklist.general.show-project-files=Show tasks for all project files
 
 tasklist.buffer.display=Filename (Directory)

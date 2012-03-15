@@ -81,6 +81,13 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 		            jEdit.getBooleanProperty( "tasklist.show-open-files", true )
 		        ) );
 
+		addComponent( Box.createVerticalStrut( 3 ) );
+
+		addComponent( scanHiddenFiles = new JCheckBox(
+		            jEdit.getProperty( "options.tasklist.general.scan-hidden-files" ),
+		            jEdit.getBooleanProperty( "tasklist.scan-hidden-files", false )
+		        ) );
+
 		if ( PVHelper.isProjectViewerAvailable() ) {
 			addComponent( Box.createVerticalStrut( 3 ) );
 
@@ -136,8 +143,11 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty( "tasklist.show-open-files",
 		        showOpenFiles.isSelected() );
 
+		jEdit.setBooleanProperty( "tasklist.scan-hidden-files",
+		        showOpenFiles.isSelected() );
+
 		jEdit.setBooleanProperty( "tasklist.show-project-files",
-		        showProjectFiles.isSelected() );
+		        scanHiddenFiles.isSelected() );
 
 		jEdit.setBooleanProperty( "tasklist.single-click-selection",
 		        allowSingleClick.isSelected() );
@@ -188,6 +198,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 	private JComboBox sortCriteria;
 	private JComboBox sortDirection;
 	private JCheckBox showOpenFiles;
+	private JCheckBox scanHiddenFiles;
 	private JCheckBox showProjectFiles;
 	private JCheckBox allowSingleClick;
 	private JCheckBox highlightTasks;
