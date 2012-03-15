@@ -1,0 +1,39 @@
+#-----------------------------------
+# Properties for SynchroScroll Plugin
+#-----------------------------------
+
+plugin.synchroscroll.SynchroScrollPlugin.name=SynchroScroll
+plugin.synchroscroll.SynchroScrollPlugin.author=Dale Anson, Jerzy Urban
+plugin.synchroscroll.SynchroScrollPlugin.version=1.1
+plugin.synchroscroll.SynchroScrollPlugin.activate=defer
+plugin.synchroscroll.SynchroScrollPlugin.description=Provides ability to synchronize scrolling when multiple text areas are open.
+
+# dependencies
+plugin.synchroscroll.SynchroScrollPlugin.depend.0=jdk 1.6
+plugin.synchroscroll.SynchroScrollPlugin.depend.1=jedit 04.04.02.00
+
+# docs
+plugin.synchroscroll.SynchroScrollPlugin.docs=index.html
+
+# menu settings
+plugin.synchroscroll.SynchroScrollPlugin.menu.label=SynchroScroll
+plugin.synchroscroll.SynchroScrollPlugin.menu=synchroscroll.toggleSynchroScroll synchroscroll.synchroScrollOff 
+
+# menu labels
+synchroscroll.toggleSynchroScroll.label=Toggle Synchro Scrolling
+synchroscroll.synchroScrollOff.label=Stop Synchro Scrolling
+
+# option pane settings
+plugin.synchroscroll.SynchroScrollPlugin.option-pane=SynchroScrollPluginPane
+
+options.SynchroScrollPluginPane.label=Synchro Scroll
+options.SynchroScrollPluginPane.code=new synchroscroll.SynchroScrollPane();
+
+options.SynchroScrollPluginPane.standardMode.title=Standard mode
+options.SynchroScrollPluginPane.standardMode.value=true
+
+options.SynchroScrollPluginPane.proportionalMode.title=Proportional mode
+options.SynchroScrollPluginPane.proportionalMode.value=false
+
+options.SynchroScrollPluginPane.labelModeInfo.title=Synchronization mode
+
