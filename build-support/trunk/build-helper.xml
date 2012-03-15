@@ -162,6 +162,9 @@ with properties from calling projects
 <target name="download-ivy" unless="jbh.ivy.no-download">
   <echo>Downloading ivy.jar to ${ivy.jar.file}</echo>
   <property name="ivy.install.version" value="2.2.0" />
+  <local name="ivy.dir" />
+  <dirname property="ivy.dir" file="${ivy.jar.file}" />
+  <mkdir dir="${ivy.dir}" />
   <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
    dest="${ivy.jar.file}" />
 </target>
