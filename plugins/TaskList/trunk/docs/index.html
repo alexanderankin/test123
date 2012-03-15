@@ -11,17 +11,42 @@
 <p>Copyright (C) 2002 John Gellene, 2003-2004 Ollie Rutherfurd, 2009 Dale Anson<p>
 <a name="summary"></a>
 <h2>Summary</h2>
+<p>
+TaskList searches through your files for "to do" items and presents those in a 
+clickable tree format for easy access. 
+
 <p>This plugin provides a dockable list of comments extracted from
-the comments in a file being edited in jEdit. The display shows an icon
+the comments (or all text) in a file being edited in jEdit. The display shows an icon
 representing the type of comment, the line where the comment appears and
 the comment text. You can jump to a comment by double-clicking on the
 corresponding row of the table. The comment text in the buffer can be
 highlighted as a user option.<p>
 <p>
-TaskList uses the mode of the file to find comments.  Some modes do not designate comments, such as
+By default, TaskList uses the mode of the file to find comments.  Some modes do not designate comments, such as
 'text' mode and 'hex' mode.  These two modes are not parsed for comments.  As edit modes are regularly 
 added to jEdit, there may be other modes that do not contain comments, so no tasks will be shown for
-those modes.
+those modes. 
+<p>
+It is possible for TaskList to parse complete files rather than just comments. This 
+may be somewhat slower, but does allow for the possibility of finding tasks in text 
+and hex files. This setting is done per mode, so, for example, TaskList can be set to look
+for tasks in the comments in C files, look in the entire file for text files, and
+skip hex files altogether. This makes it possible for TaskList to be used as a
+sort of document outliner. For example, you could have tasks set up for the &lt;h1&gt;, &lt;h2&gt;,
+&lt;h3&gt;, &lt;h4&gt;, and &lt;h5&gt; tags in html files, set TaskList to parse
+the complete file (rather than just comments) in html files, and then TaskList will
+present a decent outline of your html files.
+<p>
+In general, binary files are not parsed for comments. TaskList uses an extensive
+list of filename extensions to decide if a file is binary before opening it, which
+greatly improves performance. However, it is impossible to determine binary files
+by name alone, so the once the file is opened, it is scanned for binary content.
+If it is determined that the file is indeed binary, it will not be parsed for tasks.
+Unfortunately, the mere act of opening a binary file in jEdit can cause jEdit to
+display messages about encoding errors. 
+<p>
+The types of files that are considered binary are configurable in the plugin 
+options.
 <p>
 
 <a name="default-tags"></a>
@@ -44,7 +69,7 @@ DEBUG_ICON</td>
 </tr>
 <tr>
 <td>DONE</td>
-<td><img src="../icons/stock_spellcheck-16.png" />
+<td><img src="../icons/Done.gif" />
 DONE_ICON
 </td>
 </tr>
@@ -254,6 +279,18 @@ Ollie Rutherfurd at <ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink
 mailing list (for which membership is required).<p>
 <a name="version-history"></a>
 <h2>Version History</h2>
+<h2>Version 2.5</h2>
+<ul>
+<li>Fix for tracker 3464344, some tree highlighting and key  handling issues.</li>
+<li>Better checking for binary files.</li>
+<li>Ability to parse whole files rather than just comments.</li>
+<li>Fix for tracker 3466508, refresh dockable on task type pattern change.</li>
+<li>Skip hidden files and directories to improve performance. Added option
+to check hidden files.</li>
+<li>Fix for tracker 3469508, case-insentivie not honored for task types.</li>
+<li>Applied patch from Jarek for buffer loading, tracker 3474766.</li>
+</ul>
+
 <a name="version-2-1-january-2010"></a>
 <h2>Version 2.1, January, 2010</h2>
 <ul>
