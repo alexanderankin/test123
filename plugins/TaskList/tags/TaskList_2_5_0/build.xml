@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+
+<!--
+
+	This is the standard build.xml file for building the TaskList plugin.
+	
+	The 'dist' target compiles the plugin, generates documentation, and creates
+	the JAR file.  Before running the 'dist' target, you will need to choose
+	whether to generate the documentation using one of these two targets:
+
+	To use this template for building your own plugin, make these changes:
+
+	- Change 'name' property for the <project> to the name of your plugin
+	- Change definition of 'jedit.install.dir' to point to the directory
+	containing jedit.jar
+	- If necessary, add any dependencies to the 'project.class.path' definition
+	- If necessary, change the list of files in the 'dist' target
+	- If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets to
+	reflect the appropriate values for your documentation
+
+-->
+
+<project name="TaskList" default="dist" basedir=".">
+	
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property file="${user.home}/.build.properties"/>
+    <property file="${user.home}/build.properties"/>
+	
+    <property name="jar.name" value="${ant.project.name}.jar"/>
+	
+    <property name="jedit.install.dir" value="../.."/>
+    <property name="src.dir" value="."/>
+    <property name="install.dir" value=".."/>
+    <property name="build.dir" value="build"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+	
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${src.dir}"/>
+        <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+    </path>
+
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
+	
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+    </target>
+	
+    <target name="compile" depends="init">
+        <javac  debug="on" 
+             deprecation="on" destdir="${build.dir}" 
+             source="${compiler.source}" 
+             srcdir="${src.dir}" 
+             target="${compiler.target}"
+             bootclasspath="${compiler.bootclasspath}"
+             extdirs="${compiler.extdirs}">
+            <classpath refid="project.class.path"/>
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+    </target>
+	
+    <!--
+    <target name="dist" depends="clean,compile">
+    -->
+    <target name="dist" depends="clean, compile">
+        <mkdir dir="${install.dir}"/>
+        <jar jarfile="${install.dir}/${jar.name}">
+            <fileset dir="${build.dir}"/>
+            <fileset dir="${src.dir}">
+                <include name="actions.xml"/>
+                <include name="browser.actions.xml"/>
+                <include name="dockables.xml"/>
+                <include name="**/*.props"/>
+                <include name="services.xml"/>
+                <include name="**/*.html"/>
+                <include name="**/*.gif"/>
+                <include name="**/*.png"/>
+            </fileset>
+        </jar>
+        <antcall target="reload"/>
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${jar.name}</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
+    </target>
+	
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+	
+    <target name="tags">
+        <exec executable="ctags">
+            <arg value="-R" />
+            <arg path="." />
+        </exec>
+    </target>
+
+</project>
