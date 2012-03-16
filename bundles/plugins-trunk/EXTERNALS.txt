@@ -28,7 +28,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk ErrorLis
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FTP/trunk FTP
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FastOpen/trunk FastOpen
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FirstMate/trunk FirstMate
-https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FoldViewer FoldViewer
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/FoldViewer/trunk FoldViewer
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GdbPlugin/trunk GdbPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/GnuRegexp/trunk GnuRegexp
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/HelperLauncher/trunk HelperLauncher
