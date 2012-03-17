@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <project name="SshConsole" default="build" basedir="."> 
   <description>
   	This is the build.xml file for building the SshConsole
