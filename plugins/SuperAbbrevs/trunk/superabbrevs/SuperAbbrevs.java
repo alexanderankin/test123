@@ -206,7 +206,6 @@ public class SuperAbbrevs {
 			char c = abbrev.charAt(i);
 			if (c == '>')
 				closedAt = i;
-
 			if (closedAt != -1)
 			{
 				if (c == '<')
