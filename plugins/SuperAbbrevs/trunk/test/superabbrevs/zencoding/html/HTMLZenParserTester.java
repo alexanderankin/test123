@@ -21,7 +21,6 @@
 
 package superabbrevs.zencoding.html;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -29,6 +28,7 @@ import java.io.StringReader;
 import java.util.Properties;
 
 import junit.framework.TestCase;
+import org.gjt.sp.util.IOUtilities;
 import superabbrevs.zencoding.ZenParser;
 
 /**
@@ -39,7 +39,8 @@ public class HTMLZenParserTester extends TestCase
 	private ZenSerializer serializer;
 	public void testXML()
 	{
-		serializer = new XMLSerializer();
+		Properties props = getProps();
+		serializer = new MLSerializer("xml", props);
 		doTest("#name.b", "<div id=\"name\" class=\"b\">$1</div>");
 		doTest(".a#b", "<div id=\"b\" class=\"a\">$1</div>");
 		doTest("div#name", "<div id=\"name\">$1</div>");
@@ -110,10 +111,8 @@ public class HTMLZenParserTester extends TestCase
 
 	public void testHTML() throws IOException
 	{
-		Properties props = new Properties();
-		Reader reader = new FileReader("SuperAbbrevs.props");
-		props.load(reader);
-		serializer = new HTMLSerializer(props);
+		Properties props = getProps();
+		serializer = new MLSerializer("html", props);
 		doTest("#name.b", "<div id=\"name\" class=\"b\">$1</div>");
 		doTest(".a#b", "<div id=\"b\" class=\"a\">$1</div>");
 		doTest("div#name", "<div id=\"name\">$1</div>");
@@ -181,6 +180,26 @@ public class HTMLZenParserTester extends TestCase
 		doTest("p>{here}", "<p>here</p>");
 		doTest("p>{Click }+a{here}+{ to continue}", "<p>Click <a href=\"$1\">here</a> to continue</p>");
 		doTest("img", "<img alt=\"$1\" src=\"$2\">$3</img>");
+	}
+
+	private static Properties getProps()
+	{
+		Properties props = new Properties();
+		Reader reader = null;
+		try
+		{
+			reader = new FileReader("SuperAbbrevs.props");
+			props.load(reader);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			IOUtilities.closeQuietly(reader);
+		}
+		return props;
 	}
 
 	private void doTest(String tested, String value)

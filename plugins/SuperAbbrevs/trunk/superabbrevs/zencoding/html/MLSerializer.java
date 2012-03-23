@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,19 +21,43 @@
 
 package superabbrevs.zencoding.html;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Properties;
 
 /**
  * @author Matthieu Casanova
  */
-public class XMLSerializer implements ZenSerializer
+public class MLSerializer implements ZenSerializer
 {
 	private int index;
 
-	protected Map<String,String> getAttributes(Tag tag)
+	private final String mode;
+	private final Properties props;
+
+	public MLSerializer(String mode, Properties props)
 	{
-		return tag.attributes;
+		this.mode = mode;
+		this.props = props;
+	}
+
+	protected Map<String, String> getAttributes(Tag tag)
+	{
+		Map<String, String> attributes = new HashMap<String, String>();
+		String baseName = "defaultattributes.html." + tag.name + '.';
+		for (int i = 0; i < 100; i++)
+		{
+			String baseProperty = baseName + i;
+			String attribute = props.getProperty(baseProperty);
+			if (attribute != null)
+			{
+				String value = props.getProperty(baseProperty + ".value");
+				attributes.put(attribute, value);
+			}
+			else break;
+		}
+		attributes.putAll(tag.attributes);
+		return attributes;
 	}
 	
 	public void toString(Tag tag, int indent, StringBuilder builder, boolean skipIndent)
