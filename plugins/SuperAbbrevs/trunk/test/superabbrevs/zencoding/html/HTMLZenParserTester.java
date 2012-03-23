@@ -47,9 +47,7 @@ public class HTMLZenParserTester extends TestCase
 		doTest("div.name", "<div class=\"name\">$1</div>");
 		doTest("div.one.two", "<div class=\"one two\">$1</div>");
 		doTest("div#name.one.two", "<div id=\"name\" class=\"one two\">$1</div>");
-		doTest("head>link", "<head>\n" +
-				    "\t<link>$1</link>\n" +
-				    "</head>");
+		doTest("head>link", "<head>\n" + "\t<link rel=\"stylesheet\" href=\"$1\">$2</link>\n" + "</head>");
 		doTest("table>tr>td", "<table>\n" +
 				      "\t<tr>\n" +
 				      "\t\t<td>$1</td>\n" +
@@ -79,34 +77,24 @@ public class HTMLZenParserTester extends TestCase
 					       "\t<p class=\"one\">$1</p>\n" +
 					       "\t<p class=\"two\">$2</p>\n" +
 					       "</div>");
-		doTest("select>option#item-$*3", "<select>\n" +
-						 "\t<option id=\"item-1\">$1</option>\n" +
-						 "\t<option id=\"item-2\">$2</option>\n" +
-						 "\t<option id=\"item-3\">$3</option>\n" +
-						 "</select>");
-		doTest("div#page>div.logo+ul#navigation>li*5>a", "<div id=\"page\">\n" +
-								 "\t<div class=\"logo\">$1</div>\n" +
-								 "\t<ul id=\"navigation\">\n" +
-								 "\t\t<li>\n" +
-								 "\t\t\t<a>$2</a>\n" +
-								 "\t\t</li>\n" +
-								 "\t\t<li>\n" +
-								 "\t\t\t<a>$3</a>\n" +
-								 "\t\t</li>\n" +
-								 "\t\t<li>\n" +
-								 "\t\t\t<a>$4</a>\n" +
-								 "\t\t</li>\n" +
-								 "\t\t<li>\n" +
-								 "\t\t\t<a>$5</a>\n" +
-								 "\t\t</li>\n" +
-								 "\t\t<li>\n" +
-								 "\t\t\t<a>$6</a>\n" +
-								 "\t\t</li>\n" +
-								 "\t</ul>\n" +
-								 "</div>");
+		doTest("select>option#item-$*3", "<select id=\"$1\" name=\"$2\">\n"
+						 + "\t<option id=\"item-1\" value=\"$3\">$4</option>\n"
+						 + "\t<option id=\"item-2\" value=\"$5\">$6</option>\n"
+						 + "\t<option id=\"item-3\" value=\"$7\">$8</option>\n" + "</select>");
+		doTest("div#page>div.logo+ul#navigation>li*5>a", "<div id=\"page\">\n"
+								 + "\t<div class=\"logo\">$1</div>\n"
+								 + "\t<ul id=\"navigation\">\n" + "\t\t<li>\n"
+								 + "\t\t\t<a href=\"$2\">$3</a>\n" + "\t\t</li>\n"
+								 + "\t\t<li>\n" + "\t\t\t<a href=\"$4\">$5</a>\n"
+								 + "\t\t</li>\n" + "\t\t<li>\n"
+								 + "\t\t\t<a href=\"$6\">$7</a>\n" + "\t\t</li>\n"
+								 + "\t\t<li>\n" + "\t\t\t<a href=\"$8\">$9</a>\n"
+								 + "\t\t</li>\n" + "\t\t<li>\n"
+								 + "\t\t\t<a href=\"$10\">$11</a>\n" + "\t\t</li>\n"
+								 + "\t</ul>\n" + "</div>");
 		doTest("p{here}", "<p>here</p>");
 		doTest("p>{here}", "<p>here</p>");
-		doTest("p>{Click }+a{here}+{ to continue}", "<p>Click <a>here</a> to continue</p>");
+		doTest("p>{Click }+a{here}+{ to continue}", "<p>Click <a href=\"$1\">here</a> to continue</p>");
 	}
 
 	public void testHTML() throws IOException
