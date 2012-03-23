@@ -1,26 +1,26 @@
-plugin.buffertabs.BufferTabsPlugin.description=Affiche des onglets pour passer d'un tampon à un autre
+plugin.buffertabs.BufferTabsPlugin.description=Affiche des onglets pour passer d'un tampon Ã  un autre
 
 # Actions
-buffertabs.insert-name.label=Insérer le nom du fichier
-buffertabs.insert-path.label=Insérer le chemin du fichier
+buffertabs.insert-name.label=InsÃ©rer le nom du fichier
+buffertabs.insert-path.label=InsÃ©rer le chemin du fichier
 buffertabs.copy-name.label=Copier le nom du fichier
 buffertabs.copy-path.label=Copier le chemin du fichier
 buffertabs.closeall-except-active.label=Fermer tous les autres
-buffertabs.toggle-docks.label=Ancrer/détacher
-global-bufferset.label=Jeu de tampons général
-view-bufferset.label=Jeu de tampons de la fenêtre
-editpane-bufferset.label=Jeu de tampons du panneau d'édition
+buffertabs.toggle-docks.label=Ancrer/dÃ©tacher
+global-bufferset.label=Jeu de tampons gÃ©nÃ©ral
+view-bufferset.label=Jeu de tampons de la fenÃªtre
+editpane-bufferset.label=Jeu de tampons du panneau d'Ã©dition
 
 # Option labels
-options.buffertabs.enable.label=Activer BufferTabs par défaut
-options.buffertabs.icons.label=Utiliser les icônes pour signaler le changement d'état du tampon
-options.buffertabs.nostretch.label=Ne pas étirer les onglets pour remplir les lignes
+options.buffertabs.enable.label=Activer BufferTabs par dÃ©faut
+options.buffertabs.icons.label=Utiliser les icÃ´nes pour signaler le changement d'Ã©tat du tampon
+options.buffertabs.nostretch.label=Ne pas Ã©tirer les onglets pour remplir les lignes
 options.buffertabs.wrap.label=Placer les onglets dans plusieurs lignes s'ils sont trop nombreux pour une seule ligne visible
 options.buffertabs.popup.label=Activer le menu contextuel (clic droit)
-options.buffertabs.closeButton.label=Afficher le bouton de fermeture sur les onglets (uniquement à partir de Java 1.6)
+options.buffertabs.closeButton.label=Afficher le bouton de fermeture sur les onglets (uniquement Ã  partir de Java 1.6)
 options.buffertabs.location.label=Emplacement des onglets :
 options.buffertabs.color-tabs.label=Activer les onglets de couleur
-options.buffertabs.color-selected.label=Colorer les onglets sélectionnés :
+options.buffertabs.color-selected.label=Colorer les onglets sÃ©lectionnÃ©s :
 options.buffertabs.color-mute.label=Pas de couleur
 options.buffertabs.color-variation.label=Afficher de petites variations dans les couleurs d'onglets
 options.buffertabs.color-background.label=Colorer le fond des onglets
@@ -33,14 +33,14 @@ options.buffertabs.close-tab-on.single-middle-click.label=clic milieu
 options.buffertabs.close-tab-on.label=Fermer l'onglet au :
 options.buffertabs.mouse-options.label=Options de souris
 options.buffertabs.layout-and-style-options.label=Options de disposition et de style
-options.buffertabs.toggle-docks-on.label=Ancrer/détacher les zones au :
+options.buffertabs.toggle-docks-on.label=Ancrer/dÃ©tacher les zones au :
 
 # Miscelaneous labels
 buffertabs.reorderBuffersDisabled.label=Positionnement d'onglets
 buffertabs.bufferTabPositioningDisabled.label=<html>\
-	La position des onglets de tampons ne peut être modifiée manuellement car l'option<br>\
-	"Trier les jeux de tampon" (Options générales / Affichage) est sélectionnée. Que souhaitez-vous faire ?</html>
+	La position des onglets de tampons ne peut Ãªtre modifiÃ©e manuellement car l'option<br>\
+	"Trier les jeux de tampon" (Options gÃ©nÃ©rales / Affichage) est sÃ©lectionnÃ©e. Que souhaitez-vous faire ?</html>
 buffertabs.disableBufferSorting.label=\
-	Désactiver l'option "Trier les jeux de tampon" pour permettre le positionnement manuel des onglets.
+	DÃ©sactiver l'option "Trier les jeux de tampon" pour permettre le positionnement manuel des onglets.
 buffertabs.keepBufferSorting.label=\
-	Conserver la sélection de l'option "Trier les jeux de tampon" et ainsi éviter le repositionnement manuel.
+	Conserver la sÃ©lection de l'option "Trier les jeux de tampon" et ainsi Ã©viter le repositionnement manuel.
