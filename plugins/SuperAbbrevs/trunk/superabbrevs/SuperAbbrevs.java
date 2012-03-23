@@ -204,15 +204,12 @@ public class SuperAbbrevs {
 		int closedAt = -1;
 		for (int i = abbrev.length() - 1;i>=0;i--) {
 			char c = abbrev.charAt(i);
-			if (closedAt == -1) 
-			{
-				if (c == '>')
-					closedAt = i;
+			if (c == '>')
+				closedAt = i;
 
-			}
-			else 
+			if (closedAt != -1)
 			{
-				if (c == '>'  || c == '<')
+				if (c == '<')
 				{
 					abbrev = abbrev.substring(closedAt + 1);
 					break;
