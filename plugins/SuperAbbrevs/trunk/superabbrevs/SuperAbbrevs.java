@@ -1,5 +1,6 @@
 // jedit mode line :folding=explicit:collapseFolds=1:
 package superabbrevs;
+
 import java.util.*;
 import java.io.*;
 
@@ -15,6 +16,7 @@ import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
 import superabbrevs.zencoding.html.*;
 import superabbrevs.zencoding.ZenParser;
+import superabbrevs.zencoding.html.TokenMgrError;
 
 import javax.swing.JOptionPane;
 
@@ -135,55 +137,38 @@ public class SuperAbbrevs {
 			// for the tab key
 			textArea.insertTabAndIndent();
 		} else {
-			String abbrev = null;
-			boolean zen = false;
 			String mode = getMode(textArea, buffer);
-			if (jEdit.getBooleanProperty("options.superabbrevs.zencoding") &&
-			        jEdit.getProperty("options.superabbrevs.zencoding.modes").contains(mode))
-			{
-				String lineText = buffer.getLineText(textArea.getCaretLine()).trim();
-
-				if (!lineText.isEmpty() && (Character.isLetter(lineText.charAt(0))
-					|| lineText.charAt(0) == '.' || lineText.charAt(0) == '#')) {
-					abbrev = lineText;
-					for (int i = 0;i<abbrev.length();i++)
-					{
-						if (!Character.isLetter(abbrev.charAt(i))) {
-							zen = true;
-							break;
-						}
-					}
-				}
-			}
-			if (abbrev == null) {
-				// get the abbrevation before the caret
-				abbrev = getAbbrev(textArea, buffer);
-			}
-
+			String abbrev = getAbbrev(textArea, buffer);
 			// if the abbreviation is empty we use the default behavior for the
 			// tab key
-			if (abbrev.trim().equals("")){
+			if (abbrev.trim().isEmpty())
+			{
 				textArea.insertTabAndIndent();
 				return;
 			}
-			String template = null;
-			if (/*"html".equals(mode) && test mode to get other ZenCoding Parser in the future */ zen) {
-				ZenParser zenParser = new HTMLZenParser(new StringReader(abbrev));
-				try
+			String template = getTemplateString(mode, abbrev);
+
+			if (template == null)
+			{
+				if (jEdit.getBooleanProperty("options.superabbrevs.zencoding") &&
+				    jEdit.getProperty("options.superabbrevs.zencoding.modes").contains(mode))
 				{
-					if ("xml".equals(mode))
-						template = zenParser.parse(new XMLSerializer());
-					else
-						template = zenParser.parse(new HTMLSerializer(jEdit.getProperties()));
-				}
-				catch (Throwable e)
-				{
-					// ignore
+					abbrev = buffer.getLineText(textArea.getCaretLine()).trim();
+					abbrev = stripTags(abbrev);
+					ZenParser zenParser = new HTMLZenParser(new StringReader(abbrev));
+					try
+					{
+						template = zenParser.parse(new MLSerializer(mode, jEdit.getProperties()));
+					}
+					catch (TokenMgrError e)
+					{
+					}
+					catch (Exception e)
+					{
+						Log.log(Log.WARNING, SuperAbbrevs.class, e);
+					}
 				}
 			}
-
-			if (template == null || template.isEmpty())
-				template = getTemplateString(mode, abbrev);
 
 			if(template!=null){
 				// Support for soft tabs
@@ -212,6 +197,30 @@ public class SuperAbbrevs {
 				textArea.insertTabAndIndent();
 			}
 		}
+	}
+
+	private static String stripTags(String abbrev)
+	{
+		int closedAt = -1;
+		for (int i = abbrev.length() - 1;i>=0;i--) {
+			char c = abbrev.charAt(i);
+			if (closedAt == -1) 
+			{
+				if (c == '>')
+					closedAt = i;
+
+			}
+			else 
+			{
+				if (c == '>'  || c == '<')
+				{
+					abbrev = abbrev.substring(closedAt + 1);
+					break;
+				}
+			}
+
+		}
+		return abbrev;
 	}
 
 	/**
