@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
@@ -141,33 +142,27 @@ public class SuperAbbrevs {
 			String abbrev = getAbbrev(textArea, buffer);
 			// if the abbreviation is empty we use the default behavior for the
 			// tab key
+			String template;
 			if (abbrev.trim().isEmpty())
 			{
-				textArea.insertTabAndIndent();
-				return;
+				abbrev = getZenCodingAbbrevs(textArea, buffer, mode);
+				template = getZenCodingTemplate(abbrev, mode);
+				if (template == null)
+				{
+					textArea.insertTabAndIndent();
+					return;
+				}
 			}
-			String template = getTemplateString(mode, abbrev);
+			else
+			{
+				template = getTemplateString(mode, abbrev);
+			}
+
 
 			if (template == null)
 			{
-				if (jEdit.getBooleanProperty("options.superabbrevs.zencoding") &&
-				    jEdit.getProperty("options.superabbrevs.zencoding.modes").contains(mode))
-				{
-					abbrev = buffer.getLineText(textArea.getCaretLine()).trim();
-					abbrev = stripTags(abbrev);
-					ZenParser zenParser = new HTMLZenParser(new StringReader(abbrev));
-					try
-					{
-						template = zenParser.parse(new MLSerializer(mode, jEdit.getProperties()));
-					}
-					catch (TokenMgrError e)
-					{
-					}
-					catch (Exception e)
-					{
-						Log.log(Log.WARNING, SuperAbbrevs.class, e);
-					}
-				}
+				abbrev = getZenCodingAbbrevs(textArea, buffer, mode);
+				template = getZenCodingTemplate(abbrev, mode);
 			}
 
 			if(template!=null){
@@ -197,6 +192,36 @@ public class SuperAbbrevs {
 				textArea.insertTabAndIndent();
 			}
 		}
+	}
+	
+	private static String getZenCodingTemplate(String abbrev, String mode)
+	{
+		String template = null;
+		ZenParser zenParser = new HTMLZenParser(new StringReader(abbrev));
+		try
+		{
+			template = zenParser.parse(new MLSerializer(mode, jEdit.getProperties()));
+		}
+		catch (TokenMgrError e)
+		{
+		}
+		catch (Exception e)
+		{
+			Log.log(Log.WARNING, SuperAbbrevs.class, e);
+		}
+		return template;
+	}
+
+	private static String getZenCodingAbbrevs(TextArea textArea, Buffer buffer,String mode)
+	{
+		if (jEdit.getBooleanProperty("options.superabbrevs.zencoding") &&
+		    jEdit.getProperty("options.superabbrevs.zencoding.modes").contains(mode))
+		{
+			String abbrev = buffer.getLineText(textArea.getCaretLine()).trim();
+			abbrev = stripTags(abbrev);
+			return abbrev;
+		}
+		return "";
 	}
 
 	private static String stripTags(String abbrev)
