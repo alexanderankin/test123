@@ -109,7 +109,9 @@
         your mouse cursor is near a fold guide. </para>
         </listitem>
 
-        <listitem><para><emphasis>On save actions</emphasis>: </para>
+        <listitem><para><emphasis>On save actions</emphasis> Currently, changing settings
+        here only applies to to newly opened buffers, and not the ones that are already
+        open. </para>
             <itemizedlist>
                 <listitem><para>Remove trailing whitespaces</para></listitem>
                 <listitem><para>
@@ -148,8 +150,7 @@
 
     <para>
     WhiteSpace default options are available under:
-        <guimenu>Utilities</guimenu>&gt;
-        <guisubmenu>Global Options</guisubmenu>&gt;
+        <guimenu>Plugins</guimenu>&gt;
         <guimenu>Plugin Options</guimenu>&gt;
         <guisubmenu>WhiteSpace</guisubmenu>.
     </para>
@@ -231,16 +232,16 @@
                     The default escape character is &#92; (backslash). E.g.
                     <screen>
 Some Text&#92;<inlinemediaobject>
-    <imageobject>  
+    <imageobject>
         <imagedata fileref="space.gif" format="GIF"/></imageobject>
 </inlinemediaobject>
 <inlinemediaobject>
-    <imageobject> 
+    <imageobject>
         <imagedata fileref="tab.gif" format="GIF"/>  </imageobject>
 
 </inlinemediaobject><inlinemediaobject>
     <imageobject>
-        <imagedata fileref="tab.gif" format="GIF"/> 
+        <imagedata fileref="tab.gif" format="GIF"/>
     </imageobject>
 </inlinemediaobject></screen>
                     will be replaced by
@@ -291,7 +292,7 @@ Some Text&#92;<inlinemediaobject>
     <title>Buffer Options</title>
 
     <para>
-    The Buffer options are available from the
+    The Buffer options for WhiteSpace are available from the
         <guimenu>Plugins</guimenu>&gt;
         <guisubmenu>WhiteSpace</guisubmenu>
     menu.
