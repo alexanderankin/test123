@@ -1,0 +1,11 @@
+# Encoding: UTF-8
+# Translator: Jojaba [http://jojaba.free.fr]
+
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.description=MibSideKick est un analyseur Mib
+
+# Option pane
+options.mibsidekick.label=Mib SideKick
+
+messages.mibsidekick.searchPath=Chemins de recherche Mib
+messages.mibsidekick.addPath=Ajouter le chemin
+messages.mibsidekick.removePath=Supprimer le chemin sélectionné

@@ -1,0 +1,24 @@
+# Encoding: UTF-8
+# Translator: Jojaba [http://jojaba.free.fr]
+
+
+plugin.firstmate.FirstMatePlugin.description=La fonction principale de First Mate est le couplage automatique de caractères (exemple : ajout automatique d'un "]" quand un "[" est saisi)
+
+options.firstmate.label=First Mate
+options.firstmate.auto-enable=Activer le couplage automatique de caractères au démarrage
+options.firstmate.no-apostrophe-after-letter=Ne pas coupler automatiquement une apostrophe suivant une lettre
+options.firstmate.undo-on-backspace=Supprimer le caractère couplé lors de la suppression arrière
+options.firstmate.wrap-selections=Caractères couplés autour des sélections
+
+firstmate-enabled.label=Coupler les caractères automatiquement
+firstmate-ignore-next.label=Ignorer le suivant
+
+newline-indent-newline.label=Nouvelle ligne, retrait et aller à la ligne
+newline-and-indent.label=Aller en fin de ligne, ajouter une nouvelle ligne et retrait
+semicolon-at-eol.label=Insérer un point-virgule en fin de ligne
+semicolon-at-eol-and-newline.label=Insérer un point-virgule en fin de ligne puis nouvelle ligne
+colon-at-eol.label=Insérer un double-point en fin de ligne
+colon-at-eol-and-newline.label=Insérer un double-point en fin de ligne puis nouvelle ligne
+comma-at-eol.label=Insérer une virgule en fin de ligne
+comma-at-eol-and-newline.label=Insérer une virgule en fin de ligne puis nouvelle ligne
+

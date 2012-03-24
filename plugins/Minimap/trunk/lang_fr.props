@@ -1,0 +1,25 @@
+# Encoding: UTF-8
+# Translator: Jojaba [http://jojaba.free.fr]
+
+plugin.minimap.MinimapPlugin.description=Affiche une minicarte pour la zone de texte.
+
+minimap-show.label=Afficher la minicarte du panneau d'édition courant
+minimap-hide.label=Masquer la minicarte du panneau d'édition courant
+minimap-toggle.label=Afficher/masquer la minicarte du panneau d'édition courant
+minimap-show-all.label=Afficher les minicartes de tous les panneaux d'édition
+minimap-hide-all.label=Masquer les minicartes de tous les panneaux d'édition
+
+# options
+options.minimap.label=Minimap
+
+# labels
+labels.minimap.fontFamily=Famille de police :
+labels.minimap.fontSize=Taille de la police :
+labels.minimap.auto=Ajouter automatiquement une minicarte à tous les panneaux d'édition
+labels.minimap.side=Afficher la minicarte de ce côté du panneau d'édition :
+labels.minimap.scroll=Autoriser le défilement indépendant de la minicarte
+labels.minimap.fold=Activer les replis dans la minicarte
+labels.minimap.time=Fréquence de mise à jour de l'état des replis (en millisecondes):
+labels.minimap.squarecolor=Couleur du cadre :
+labels.minimap.fillsquare=Remplir le cadre
+labels.minimap.alpha=Transparence de la carte :

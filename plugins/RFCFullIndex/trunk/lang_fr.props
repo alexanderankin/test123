@@ -1,0 +1,6 @@
+# Encoding: UTF-8
+# Translator: Jojaba [http://jojaba.free.fr]
+
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.description=Indexation complète de RFC pour utilisation du plugin RFCReader
+
+service.rfcindex.full.label=Indexation complète
