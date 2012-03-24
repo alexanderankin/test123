@@ -1,0 +1,18 @@
+# Encoding: UTF-8
+# Translator: Jojaba [http://jojaba.free.fr]
+
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader est un plugin rendant la lecture des fichiers RFC plus plaisante
+
+openRFC.label=Ouvrir le fichier RFC
+rfc-panel.label=Liste RFC
+rfc-panel.title=Liste RFC
+# Option pane
+options.rfcreader.label=RFC Reader
+
+options.mirror.label=Miroir :
+options.indexService.label=Service d'indexation :
+
+rfcreader.searchLabel.label=Recherche de RFC :
+
+options.rfcreader.index=titre
+service.rfcindex.title.label=Index des titres
