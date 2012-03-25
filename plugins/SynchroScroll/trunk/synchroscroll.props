@@ -10,14 +10,15 @@ plugin.synchroscroll.SynchroScrollPlugin.description=Provides ability to synchro
 
 # dependencies
 plugin.synchroscroll.SynchroScrollPlugin.depend.0=jdk 1.6
-plugin.synchroscroll.SynchroScrollPlugin.depend.1=jedit 04.04.02.00
+# See jEdit.getBuild() to understand version numbering scheme.
+plugin.synchroscroll.SynchroScrollPlugin.depend.1=jedit 04.04.99.00
 
 # docs
 plugin.synchroscroll.SynchroScrollPlugin.docs=index.html
 
 # menu settings
 plugin.synchroscroll.SynchroScrollPlugin.menu.label=SynchroScroll
-plugin.synchroscroll.SynchroScrollPlugin.menu=synchroscroll.toggleSynchroScroll synchroscroll.synchroScrollOff 
+plugin.synchroscroll.SynchroScrollPlugin.menu=synchroscroll.toggleSynchroScroll synchroscroll.synchroScrollOff
 
 # menu labels
 synchroscroll.toggleSynchroScroll.label=Toggle Synchro Scrolling
