@@ -30,13 +30,13 @@ import javax.swing.JDialog;
 import org.gjt.sp.jedit.View;
 //}}}
 
-/**
- * The ItemFinderWindow is a Window that contains a SearchField and a list of items.
- * When typing in the search field, the item list is updated, and when selecting an item of that list, an action is
+/** A Window that contains a SearchField and a list of items.
+ * When typing in the search field, the item list is updated,
+ * and when selecting an item of that list, an action is
  * triggered.
  * To use it, you have to implement {@link ItemFinder}.
  *
- * Then you have two choice : instantiate {@link ItemFinderWindow} and make it visible.
+ * Then you have two choices : instantiate {@link ItemFinderWindow} and make it visible,
  * or use {@link ItemFinderWindow#showWindow(View, ItemFinder)} that will create the window and show it.
  * @author Matthieu Casanova
  */
