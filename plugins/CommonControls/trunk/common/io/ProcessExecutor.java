@@ -35,8 +35,7 @@ import org.gjt.sp.util.Log;
 import common.threads.WorkerThreadPool;
 import common.threads.WorkRequest;
 
-/**
- * A class that encapsulates running a process and processing its streams.
+/** A class that encapsulates running a process and processing its streams.
  *
  * <p>This class uses the CommonControls thread pool to monitor the process's
  * input and output streams, and allows the caller to easily parse the outputs

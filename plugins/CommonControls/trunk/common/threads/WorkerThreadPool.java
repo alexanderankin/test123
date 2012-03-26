@@ -1,5 +1,5 @@
 /*
- * WorkerThreadPool.java - a thread pool.
+ * WorkerThreadPool.java - a thread pool that handles groups of requests.
  * Copyright (c) 2005 Marcelo Vanzin
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
@@ -26,23 +26,21 @@ import java.util.List;
 
 import org.gjt.sp.util.Log;
 
-/**
- *	A thread pool that handles requests (<i>Runnable</i> objects) and provides
- *	some extra functionality.
+/** A thread pool that handles groups of requests (<i>Runnable</i> objects).
  *
- *	<p>User's are encouraged to use the shared instance by calling
+ *	<p>Users are encouraged to use the shared instance by calling
  *	{@link #getSharedInstance()}, but they can instantiate new pools
  *	if they so desire. Just remember to shut down the threads when
  *	the plugin is unloaded.</p>
  *
- *	<p>This is a version of Java 5's java.util.concurrent.ThreadPoolExecutor 
+ *	<p>This is a version of Java 5's java.util.concurrent.ThreadPoolExecutor
  *	with one addition:
- *     addRequests() will start the runnables at the same time, or 
+ *     addRequests() will start the runnables at the same time, or
  *        wait until size threads are available in the pool.
- *	
+ *
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
- *  @see org.gjt.sp.util.ThreadUtilities 
+ *  @see org.gjt.sp.util.ThreadUtilities
  */
 
 public class WorkerThreadPool
