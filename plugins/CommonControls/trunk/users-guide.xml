@@ -438,7 +438,7 @@
         </para>
       </formalpara>
 
-      <para>A text field with an "attached" button that opens up a JFileChooser
+      <para>A text field with an "attached" button that opens up a  File Chooser
       so the user can pick up a file or directory.</para>
     </sect1>
 
