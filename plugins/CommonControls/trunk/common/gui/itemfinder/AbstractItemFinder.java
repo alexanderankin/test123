@@ -23,8 +23,7 @@ package common.gui.itemfinder;
 
 import javax.swing.*;
 
-/**
- * An abstract ItemFinder, it has no label, default cellrenderer and width.
+/** An abstract ItemFinder, it has no label, default cellrenderer and width.
  * @author Matthieu Casanova
  */
 public abstract class AbstractItemFinder<E> implements ItemFinder<E>

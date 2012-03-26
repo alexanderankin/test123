@@ -1,5 +1,5 @@
 /*
- * OkCancelButtons.java - a button pane for EnhancedDialog instances.
+ * FileTextField.java - an input field with a button that opens a file chooser.
  * Copyright (c) 2005 Marcelo Vanzin
  *
  * :tabSize=4:indentSize=4:noTabs=false:
@@ -39,9 +39,8 @@ import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.jEdit;
 //}}}
 
-/**
- *	A widget that shows a text field with a button that opens up a file
- *	chooser. By default the chooser will only allow files to be selected.
+/** A widget that shows a text field with a button that opens up a file chooser.
+ *	By default the chooser will only allow files to be selected.
  *
  *  @author		Marcelo Vanzin
  *	@version	$Id$

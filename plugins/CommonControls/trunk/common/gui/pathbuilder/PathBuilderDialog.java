@@ -26,8 +26,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 
-/**
- * A generic dialog to hold a PathBuilder component.<p>
+/** A generic dialog to hold a PathBuilder component.
+ *  A path in this context means a list of directories
+ *  separated by a OS-specific path separator character.
  *
  * This dialog can be used from anywhere to allow the user to create a path.
  * The dialog should be initialised with the current value of the path, and

@@ -34,8 +34,7 @@ import javax.swing.text.*;
 
 import org.gjt.sp.jedit.jEdit;
 
-/**
- * The PathBuilder is a component that allows a user to build a
+/** A component that allows a user to build a
  * classpath by selecting directories files using a filesystem
  * browser.<p>
  */
@@ -99,9 +98,9 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      * The file selection mode. By default it is FILES_AND_DIRECTORIES.<p>
      */
     private int fileSelectionMode;
-    
+
     /**
-     * A list of external action listeners added by users of this class.    
+     * A list of external action listeners added by users of this class.
      */
     private java.util.List<ActionListener> actionListeners = null;
 
@@ -127,7 +126,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
     public PathBuilder() {
         this("Classpath Elements");
     }
-    
+
     /**
      * Creates a new PathBuilder.<p>
      *
@@ -413,9 +412,9 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
 		            pathElementModel.add(files[i].getPath());
 		    } else
 		        pathElementModel.add(chooser.getSelectedFile().getPath());
-		
+
 		    if(elements.size() == 1)
-		        pathElementTable.setRowSelectionInterval(0, 0);               
+		        pathElementTable.setRowSelectionInterval(0, 0);
 
 		    startDirectory = chooser.getCurrentDirectory().getPath();
             }
@@ -447,11 +446,11 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
 
         // update the move up/down buttons
         valueChanged(null);
-        
+
         // notify external action listeners
         if (actionListeners != null) {
             for (ActionListener actionListener : actionListeners) {
-                actionListener.actionPerformed(new ActionEvent(this, 0, ""));   
+                actionListener.actionPerformed(new ActionEvent(this, 0, ""));
             }
         }
     }
@@ -491,15 +490,15 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
             moveDown.setEnabled(true);
         }
     }
-    
+
     /**
      * Users of this class may add action listeners to be notified when
-     * paths are changed.  Each action listener is called when ever the 
+     * paths are changed.  Each action listener is called when ever the
      * 'add', 'remove', or 'move' buttons are pressed.
      */
     public void addActionListener(ActionListener listener) {
         if (actionListeners == null) {
-            actionListeners = new ArrayList<ActionListener>();   
+            actionListeners = new ArrayList<ActionListener>();
         }
         actionListeners.add(listener);
     }
@@ -512,7 +511,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
         public PathElementTableModel(String title) {
             this.title = title;
         }
-        
+
         public int getRowCount() {
             return elements.size();
         }
