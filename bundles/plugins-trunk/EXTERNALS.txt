@@ -81,6 +81,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Templates/trunk Template
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextAutocomplete/trunk TextAutocomplete
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextFilter/trunk TextFilter
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextTools/trunk TextTools
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/VoxSpell/trunk VoxSpell
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/WincryptCipher/trunk WincryptCipher
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XInsert/trunk XInsert
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk XML
