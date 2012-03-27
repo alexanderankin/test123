@@ -7,7 +7,7 @@
   -->
 
 	<!-- Version check with custom.build.xml {{{ -->
-	<property name="Plugin Release.version" value="2" />
+	<property name="Plugin Release.version" value="3" />
 	<fail>
 	  Your custom.build.xml version
 	  (${plugin.release.custom.build.version}) does not match
@@ -22,6 +22,8 @@
 	  </condition>
 	</fail> <!-- }}} -->
 	<property file="build.properties" />
+  <property name="build.support" location="../../build-support" />
+  <import file="${build.support}/build-helper.xml" />
 
 	<target name="usage">
 		<echo>build                 : Builds the downloaded plugin in the sandbox</echo>
@@ -111,6 +113,19 @@ docbook.xsl=${docbook.xsl}
 	          value="${pf.dir}/pjo/ant/docbook/4.4/docbook.cat" />
 	<property name="docbook.xsl" value="${pf.dir}/pjo/ant/docbook/xsl/1.75.1" />
 
+	<selector id="selPluginProps" >
+		<and>
+			<filename name="build/**" negate="true" />
+			<filename name="dist/**" negate="true" />
+			<filename name="classes/**" negate="true" />
+			<filename name="config/**" negate="true" />
+			<filename name="temp/**" negate="true" />
+			<filename name="ProjectViewer/pvdebug/**" negate="true" />
+			<!--<include name="**/@{pluginName}.props"/>-->
+			<filename name="**/*.props"/>
+		</and>
+	</selector>
+
 	<target name="build" depends="java5">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
@@ -127,6 +142,7 @@ docbook.xsl=${docbook.xsl}
 		<input addproperty="plugin.version" message="Version:" />
 		<input addproperty="plugin.tag" message="Release Tag:" defaultvalue="trunk" />
 		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
+		<antcall target="edit-props" />
 	</target>
 	<target name="download-bzr">
 		<property name="scm.targets.file" value="bzr_cl.xml" />
@@ -150,6 +166,26 @@ docbook.xsl=${docbook.xsl}
 		<plugin-jedit-version pluginName="${plugin.name}"
 		                      pluginVersion="${plugin.version}" />
 		<download-plugin-deps-rec pluginJeditVersion="${plugin.jedit.version}" />
+	</target>
+	<target name="edit-props" depends="cache-lib-scripting"
+	                          if="prog.edit" >
+		<set-plugin-props-all />
+		<!-- after the macro we have fsPluginProps set -->
+		<script language="beanshell" classpathref="lib.scripting.path" >
+			fsProps = project.getReference("fsPluginProps");
+			it = fsProps.iterator();
+			sPropFiles = "";
+			while (it.hasNext()) {
+				sPropFiles += it.next() + " ";
+			}
+			if (!sPropFiles.equals(""))
+				project.setProperty("prop-files-spaced", sPropFiles);
+		</script>
+		<echo>Command for property files: ${prog.edit} ${prop-files-spaced}</echo> 
+		<check-prop prop="prop-files-spaced" />
+		<exec executable="${prog.edit}">
+			<arg line="${prop-files-spaced}" />
+		</exec>
 	</target>
 	<target name="java5">
 		<property name="compiler.source" value="1.5" />
@@ -261,15 +297,9 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		<attribute name="pluginVersion" />
 		<sequential>
 			<loadproperties>
-				<fileset dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}">
-					<exclude name="@{pluginName}/build/**"/>
-					<exclude name="@{pluginName}/dist/**"/>
-					<exclude name="@{pluginName}/classes/**"/>
-					<exclude name="@{pluginName}/config/**"/>
-					<exclude name="@{pluginName}/temp/**"/>
-					<exclude name="ProjectViewer/pvdebug/**"/>
-					<!--<include name="**/@{pluginName}.props"/>-->
-					<include name="**/*.props"/>
+				<fileset id="fsPluginProps"
+				 dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}">
+					<selector refid="selPluginProps" />
 				</fileset>
 				<filterchain>
 					<tokenfilter>
@@ -351,6 +381,43 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 				<arg value="-noserver"/>
 				<arg value="-settings=${jedit.settings.dir}"/>
 			</java>
+		</sequential>
+	</macrodef>
+	<macrodef name="set-plugin-props-simple">
+	<!-- sets plugin properties which do not require knowing jedit version -->
+		<sequential>
+			<check-prop prop="plugin.name" />
+			<check-prop prop="plugin.version" />
+			<check-dir-var var="sandbox.dir" />
+			<property name="plugin.dir" value="${sandbox.dir}/${plugin.name}-${plugin.version}/${plugin.name}" />
+			<property name="lib.dir" value="${plugin.dir}/../lib" />
+			<property name="plugin.deps.rec.dir" value="${lib.dir}/plugin-deps" />
+
+			<property name="jedit.install.dir"
+			          value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<property name="install.dir" value="${jedit.settings.dir}/jars" />
+		</sequential>
+	</macrodef>
+	<macrodef name="set-plugin-props-all">
+		<!-- sets all plugin properties, including those for which jedit
+		     version must be first recognized -->
+		<sequential>
+			<set-plugin-props-simple />
+			<plugin-jedit-version pluginName="${plugin.name}"
+			                      pluginVersion="${plugin.version}" />
+			<set-plugin-props-jedit jeditVersion="${plugin.jedit.version}" />
+		</sequential>
+	</macrodef>
+	<macrodef name="set-plugin-props-jedit">
+		<!-- sets properties for a given jedit version -->
+		<attribute name="jeditVersion" />
+		<sequential>
+			<property name="jedit.install.dir"
+			          value="${jedit.version.@{jeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir"
+			          value="${jedit.version.@{jeditVersion}.settings.dir}" />
+			<property name="install.dir" value="${jedit.settings.dir}/jars" />
 		</sequential>
 	</macrodef>
 </project>
