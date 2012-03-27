@@ -9,7 +9,7 @@
     <property file="../build.properties" />
     <property name="build.support" value="../build-support" />
 
-    <property name="javadoc.packagenames" value="common.*" />
+    <property name="javadoc.packagenames" value="common.*, ise.*" />
     <property name="plugin.dependencies" value="" />
     <property name="dist.target" value="dist.complete" />
     <property name="user-doc.xml" value="${basedir}/users-guide.xml" />

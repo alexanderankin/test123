@@ -34,9 +34,8 @@ import javax.swing.text.*;
 
 import org.gjt.sp.jedit.jEdit;
 
-/** A component that allows a user to build a
- * classpath by selecting directories files using a filesystem
- * browser.<p>
+/** A component that allows a user to compose a classpath or search path string.
+ * The user can select directories or files using a filesystem browser.
  */
 public class PathBuilder extends JPanel implements ActionListener, ListSelectionListener {
     /**
