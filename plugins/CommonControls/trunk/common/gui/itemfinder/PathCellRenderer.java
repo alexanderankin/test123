@@ -29,8 +29,7 @@ import javax.swing.JList;
 import org.gjt.sp.jedit.MiscUtilities;
 //}}}
 
-/**
- * A list cell renderer that renders path.
+/** A list cell renderer that renders path.
  * @author Matthieu Casanova
  */
 public class PathCellRenderer extends DefaultListCellRenderer

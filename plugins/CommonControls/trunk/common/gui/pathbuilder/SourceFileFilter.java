@@ -1,7 +1,6 @@
 package common.gui.pathbuilder;
 
 /*
- * PathBuilder.java
  * Part of the JSwat plugin for the jEdit text editor
  * Copyright (C) 2001 David Taylor
  * dtaylo11@bigpond.net.au
