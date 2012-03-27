@@ -18,6 +18,8 @@
   else="C:\Program_Files\Git\bin\git.exe"><os family="unix"/></condition>
 <condition property="xsltproc.executable" value="xsltproc"
   else="C:\Temp\1\xslt\bin\xsltproc.exe"><os family="unix"/></condition>
+<condition property="prog.edit" value="gedit"
+  else="notepad.exe"><os family="unix"/></condition>
 
 <!-- adjust per plugin release -->
 <property name="plugin.name" value="JavascriptSideKick" />
@@ -27,7 +29,7 @@
 <!--<property name="plugin.tag" value="trunk" />-->
 
 <!-- don't change this part -->
-<property name="plugin.release.custom.build.version" value="2" /> 
+<property name="plugin.release.custom.build.version" value="3" /> 
 <property name="jedit.svn.url" value="https://jedit.svn.sourceforge.net/svnroot/jedit" />
 <property name="jedit.git.url" value="git://jedit.git.sourceforge.net/gitroot/jedit" />
 <property name="sandbox.dir" value="${pf.dir}/sandbox" />
