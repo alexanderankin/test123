@@ -29,10 +29,15 @@ This file should be imported to use its functionality.
 
 depends="get-lib-ivy"
 depends="get-lib-scripting"
+depends="cache-lib-scripting"
 <get-lib name=xxx />
+<cache-lib name=xxx />
   to support a new library add it as a conf to ivy.xml file
   and create a target get-lib-xxx
 <propertycopy name= from= /> - set property @{name} to ${${from}}
+<check-file-var var= /> - checks whether file exists
+<check-dir-var var= /> - checks whether dir exists
+<check-prop prop= /> - checks whether property is set
 
 Properties considered private are prefixed with jbh. to avoid conflicts
 with properties from calling projects
@@ -56,6 +61,40 @@ with properties from calling projects
   <property name="jbh.ivy.file" value="${jbh.dir}/ivy.xml" /> 
   </sequential>
 </macrodef>
+<!-- }}} ============================================== -->
+
+<!-- {{{ jbh.create-lib-dir macro ===================== -->
+<macrodef name="jbh.create-lib-dir">
+  <sequential>
+  <fail unless="lib.dir">Property lib.dir must be defined.</fail>
+  <mkdir dir="${lib.dir}" />
+  <available property="lib.dir.ok" type="dir" file="${lib.dir}" />
+  <fail unless="lib.dir.ok">Directory ${lib.dir} does not exist.</fail>
+  <mkdir dir="${lib.dir}/ivy" />
+  <property name="ivy.jar.file" value="${lib.dir}/ivy/ivy.jar" />
+  </sequential>
+</macrodef>
+<!-- }}} ============================================== -->
+
+<!-- {{{ jbh.set-ivy-jar-file target ================== -->
+<!-- if not yet set, sets it to a file under lib.dir -->
+<target name="jbh.set-ivy-jar-file" unless="ivy.jar.file" >
+  <sequential>
+    <fail message="Either lib.dir or ivy.jar.file property must be set" >
+    <condition>
+      <or>
+        <not><isset property="lib.dir" /></not>
+        <not><isset property="ivy.jar.file" /></not>
+      </or>
+    </condition>
+  </fail>
+  <mkdir dir="${lib.dir}" />
+  <available property="lib.dir.ok" type="dir" file="${lib.dir}" />
+  <fail unless="lib.dir.ok">Directory ${lib.dir} does not exist.</fail>
+  <mkdir dir="${lib.dir}/ivy" />
+  <property name="ivy.jar.file" value="${lib.dir}/ivy/ivy.jar" />
+  </sequential>
+</target>
 <!-- }}} ============================================== -->
 
 <!-- }}} ============================================== -->
@@ -178,6 +217,20 @@ with properties from calling projects
 </target>
 <!-- }}} ============================================== -->
   
+<!-- {{{ set-def-ivy-jar-file target ================== -->
+<!-- sets ivy.jar.file to a default value -->
+<target name="set-def-ivy-jar-file" >
+  <property environment="env" />
+  <condition property="ivy.home" value="${env.IVY_HOME}">
+    <isset property="env.IVY_HOME" />
+  </condition>
+  <property name="ivy.home" value="${user.home}/.ivy2" />
+  <property name="ivy.jar.dir" value="${ivy.home}/lib" />
+  <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+</target>
+<!-- }}} ============================================== -->
+
+
 <!-- {{{ get-lib target =============================== -->
 <!-- Private. Use macrodef get-lib instead -->
 <!-- Separate target is necessary here, because we need to set a property
@@ -200,13 +253,15 @@ with properties from calling projects
      Defines ivy tasks.  -->
 <macrodef name="get-ivy" >
   <sequential>
+  <fail message="Either lib.dir or ivy.jar.file property must be set" >
+    <condition>
+      <and>
+        <not><isset property="lib.dir" /></not>
+        <not><isset property="ivy.jar.file" /></not>
+      </and>
+    </condition>
+  </fail>
   <jbh.set-properties />
-  <fail unless="lib.dir">Property lib.dir must be defined.</fail>
-  <mkdir dir="${lib.dir}" />
-  <available property="lib.dir.ok" type="dir" file="${lib.dir}" />
-  <fail unless="lib.dir.ok">Directory ${lib.dir} does not exist.</fail>
-  <mkdir dir="${lib.dir}/ivy" />
-  <property name="ivy.jar.file" value="${lib.dir}/ivy/ivy.jar" />
   <condition property="jbh.ivy.no-download" value="true">
     <and>
       <not><isset property="force-download" /></not>
@@ -244,6 +299,7 @@ with properties from calling projects
   <attribute name="name" />
   <sequential>
     <jbh.set-properties />
+    <jbh.create-lib-dir />
     <check-file-var var="jbh.ivy.file" />
     <get-ivy />
     <echo>Getting library @{name} into ${lib.dir}</echo>
@@ -259,14 +315,48 @@ with properties from calling projects
 
 <!-- }}} ============================================== -->
 
-<!-- {{{ specific get-lib targets ===================== -->
-<target name="get-lib-ivy" unless="get.lib.ivy.done">
+<!-- {{{ cache-lib macro ============================== -->
+
+<!-- Gets @name library path into the path with id lib.@{name}.path.
+     The files are referenced directly from ivy cache.
+     
+     Example of usage:
+      <cache-lib name="scripting" />
+      <script language="beanshell" classpathref="lib.scripting.path" >   
+        print("hi");
+      </script>
+
+     -->
+<macrodef name="cache-lib">
+  <attribute name="name" />
+  <sequential>
+    <jbh.set-properties />
+    <check-file-var var="jbh.ivy.file" />
+    <get-ivy />
+    <echo>Getting path of library @{name} into id lib.@{name}.path</echo>
+    <ivy:cachepath file="${jbh.ivy.file}" conf="@{name}"
+                   pathid="lib.@{name}.path"
+                   log="downloadonly" />
+    <property name="cache.lib.@{name}.done" value="true" />
+  </sequential>
+</macrodef>
+
+<!-- }}} ============================================== -->
+
+<!-- {{{ specific get-lib and cache-lib targets ======= -->
+<target name="get-lib-ivy" depends="set-def-ivy-jar-file" 
+                           unless="get.lib.ivy.done">
   <get-ivy />
 </target>
 
 <target name="get-lib-scripting" depends="get-lib-ivy"
         unless="get.lib.scripting.done" >
   <get-lib name="scripting" />
+</target>
+
+<target name="cache-lib-scripting" depends="get-lib-ivy"
+        unless="cache.lib.scripting.done" >
+  <cache-lib name="scripting" />
 </target>
 <!-- }}} ============================================== -->
   
