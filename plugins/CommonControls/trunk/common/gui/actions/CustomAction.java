@@ -5,8 +5,7 @@ import java.net.*;
 import javax.swing.*;
 
 
-/**
- * An old class that probably should not be used anymore. 
+/** An old class that probably should not be used anymore.
  *
  * @author     mace
  * @created    October 24, 2002

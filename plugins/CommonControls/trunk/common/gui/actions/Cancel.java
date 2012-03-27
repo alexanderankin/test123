@@ -3,8 +3,7 @@ package common.gui.actions;
 import java.awt.event.*;
 import javax.swing.*;
 
-/**
- * An old class that probably shouldn't be used anymore.
+/** An old class that probably shouldn't be used anymore.
  *
  * @author     mace
  * @created    May 28, 2003

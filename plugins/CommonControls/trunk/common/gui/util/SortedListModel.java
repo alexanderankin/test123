@@ -3,6 +3,8 @@ package common.gui.util;
 import javax.swing.*;
 import java.util.*;
 
+
+/** An AbstractListModel that can sort() itself.  */
 public class SortedListModel extends AbstractListModel {
 	private ArrayList _elements = new ArrayList();
 	private Comparator comparator;
