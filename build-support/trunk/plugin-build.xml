@@ -223,6 +223,7 @@
                 <filename name="**/dockables.xml" />
                 <filename name="**/services.xml" />
                 <filename name="**/*.props" />
+                <filename name="**/lang_*.properties" />
                 <filename name="**/LICENSE" />
                 <filename name="**/README" />
             </or>
