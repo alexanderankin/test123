@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Source file(s)">
+
+		<FILE_ENTRY LABEL="Source file(s)" VARNAME="source"
+			EVAL="buffer.getPath()" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="Paths">
+
+		<!-- <ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/> -->
+		<ENTRY LABEL="Include" VARNAME="include" />
+		<DIR_ENTRY LABEL="Output directory" VARNAME="outputdir" EVAL="buffer.getDirectory()" />
+		<ENTRY LABEL="Output file name" VARNAME="executable"
+			EVAL="n=buffer.getName();if (n.lastIndexOf('.') != -1) { n=n.substring(0, n.lastIndexOf('.')); };n" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="Compilation flags">
+
+		<ENTRY LABEL="Additional parameters" VARNAME="params" />
+		<CHOICE LABEL="Optimize" VARNAME="optimize" DEFAULT="none">
+			<OPTION LABEL="None" VALUE="none" />
+			<OPTION LABEL="Level 1" VALUE="1" />
+			<OPTION LABEL="Level 2" VALUE="2" />
+			<OPTION LABEL="Level 3" VALUE="3" />
+		</CHOICE>
+		<CHOICE LABEL="Compile to" VARNAME="compileto" DEFAULT="exec">
+			<OPTION LABEL="Executable" VALUE="exec" />
+			<OPTION LABEL="Assembly" VALUE="assembly" />
+			<OPTION LABEL="Object" VALUE="object" />
+			<OPTION LABEL="Preprocessed source" VALUE="preproc" />
+		</CHOICE>
+		<TOGGLE LABEL="Generate debug info" VARNAME="debug" DEFAULT="FALSE" />
+		<TOGGLE LABEL="Verbose on error" VARNAME="verbose" DEFAULT="FALSE" />
+		
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append((buffer.getMode().getName().equals("c++")) ? "g++" : "gcc");
+
+			if(!include.equals(""))
+			{
+				tokenizer = new StringTokenizer(include, File.pathSeparator);
+				while (tokenizer.hasMoreTokens()) {
+					buf.append(" -I\""+tokenizer.nextToken()+"\"");
+				}
+			}
+			
+			if (debug)
+			{
+				buf.append(" -g");
+			}
+			
+			if (compileto.equals("assembly")) buf.append(" -S");
+			else if (compileto.equals("object")) buf.append(" -c");
+			else if (compileto.equals("preproc")) buf.append(" -E");
+			
+			if (!optimize.equals("none"))
+			{
+				buf.append(" -O"+optimize);
+			}
+				
+			
+			if (params.length() > 0)
+			{
+				buf.append(" "+params);
+			}
+			
+			if (!outputdir.endsWith(File.separator)) outputdir += File.separator;
+			buf.append(" -o \""+outputdir+executable+"\"");
+			
+			buf.append(" \"");
+			buf.append(source);
+			buf.append('"');
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
