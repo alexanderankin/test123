@@ -11,7 +11,7 @@ plugin.console.ConsolePlugin.docs=index.html
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
 # See jEdit.getBuild() to understand jEdit's version numbering scheme.
-plugin.console.ConsolePlugin.depend.0=jedit 04.05.99.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.04.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.2
