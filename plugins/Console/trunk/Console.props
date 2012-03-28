@@ -5,17 +5,16 @@ plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
 plugin.console.ConsolePlugin.version=4.5
 
-# new jEdit 4.3 plugin API for short description.
+# jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
-# points to a file relative to the root of the jar
-plugin.console.ConsolePlugin.longdescription=description.html
 plugin.console.ConsolePlugin.docs=index.html
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
+# See jEdit.getBuild() to understand jEdit's version numbering scheme.
 plugin.console.ConsolePlugin.depend.0=jedit 04.05.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
-plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.1
+plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.2
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
@@ -461,7 +460,7 @@ mode.tex.commando.run=yap
 mode.javacc.commando.compile=javacc
 mode.c.commando.compile=gcc
 mode.c.commando.run=execute
-mode.c++.commando.compile=make
+mode.c++.commando.compile=g++
 mode.c++.commando.run=execute
 mode.python.commando.compile=python
 mode.perl.commando.compile=perl
@@ -478,3 +477,6 @@ console.pv.no-active-project.message=Select a project in the ProjectViewer \
 console.pv.no-command.title=Command not found
 console.pv.no-command.message=No {0} command has been defined.\n\
 	Would you like to define it now?
+
+# Sensible Defaults Department
+console.dock-position=bottom
