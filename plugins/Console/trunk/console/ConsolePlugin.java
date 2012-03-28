@@ -533,8 +533,8 @@ public class ConsolePlugin extends EditPlugin
 			if (res != JOptionPane.YES_OPTION)
 				return;
 
-			projectviewer.PVActions.pvActionWrapper(
-				new projectviewer.action.EditProjectAction("pv.commands"), view, true);
+			projectviewer.PVActions.editProject(project,
+			                                    "pv.commands");
 
 			cmd = project.getProperty("console."+prop);
 			if (cmd == null || cmd.trim() == "")
