@@ -27,8 +27,7 @@ import javax.swing.event.EventListenerList;
  * closes the tab.
 
  * This is a Java 5 version of a feature added to JTabbedPane in Java 1.6.
- * This means that for new code, you can probably use the JTabbedPane instead.
- * deprecated?
+ * @deprecated use javax.swing.JTabbedPane
  */
 public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     MouseMotionListener {
