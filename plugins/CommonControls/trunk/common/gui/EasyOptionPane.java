@@ -46,7 +46,8 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-/**
+/** An Optionpane with a meta-language interpreter for quickly creating GUIs.
+ *
  *	An extension of AbstractOptionPane that makes it easier for
  *	implementing classes to create the gui by using a list of strings
  *	with the description of what the components should be.

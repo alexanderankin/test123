@@ -36,8 +36,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultInputHandler;
 import org.gjt.sp.util.Log;
 // }}}
-/**
- * A popup control for displaying a arbitrary list of items.
+/** A popup control for displaying a arbitrary list of items.
  */
 public class PopupList
    implements FocusListener, WindowListener
