@@ -6,10 +6,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=false: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-	"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
-<book>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
 <bookinfo><title>Jython Interpreter plugin user's guide</title>
 

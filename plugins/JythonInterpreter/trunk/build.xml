@@ -1,8 +1,8 @@
-<project name="JythonInterpreter" default="build" basedir=".">
+<project name="JythonInterpreter" default="dist" basedir=".">
 <!--
 	 This is a build.xml file for building the JythonInterpreter plugin.
 
-	 The 'dist' target compiles the plugin and creates the JAR file.
+	 The 'dist' target compiles the plugin, documentation, and creates the JAR file.
 	 Before running the 'dist' target, you will need to generate the
 	 documentation using one of these two targets:
 
@@ -16,6 +16,7 @@
   <property file="../build.properties"/>
   <property name="docs-proc.target"       value="xsltproc" />
   <property name="src.dir" location="."/>
+  <property name="javadoc.packagenames"	value="jython.*" />
   <property name="user-doc.xml" location = "users-guide.xml"/>
   <import file="${build.support}/plugin-build.xml" />
 
