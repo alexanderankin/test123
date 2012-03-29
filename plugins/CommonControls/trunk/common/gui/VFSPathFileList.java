@@ -41,9 +41,9 @@ import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.jEdit;
 
-/**
- * A component that contains a JList with a list of path,
- * and two buttons add and remove to add paths.
+/** A component that contains a JList with a list of paths,
+ *  and two buttons add and remove to add paths.
+ *
  * This can be used in option panes.
  * The property given in the constructor contains the list of paths
  * separated by the File.pathSeparator

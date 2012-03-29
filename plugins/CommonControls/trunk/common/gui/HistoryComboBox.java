@@ -7,11 +7,13 @@ import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 
-/**
- * A Combo Box that remembers a given number of previous entries, even between jEdit runs.
+/** A Combo Box that remembers a given number of previous entries, even between jEdit runs.
  *
  * @author    mace
  * @version   $Revision$ modified $Date$ by $Author$
+ * @see org.gjt.sp.jedit.gui.HistoryTextField
+ *
+ * Should this be deprecated? I don't see the point of this class if we also have HistoryTextField.
  */
 public class HistoryComboBox extends JComboBox {
 	private Stack entries;

@@ -10,8 +10,8 @@ import org.gjt.sp.jedit.*;
 import common.gui.actions.*;
 import common.gui.util.*;
 
-/**
- * A panel with two lists, allowing the user to move items between them.
+/** A panel with two lists, allowing the user to move items between them.
+ *
  * All methods ensure that an element cannot appear in both lists simultaneously.
  *
  * @author    mace

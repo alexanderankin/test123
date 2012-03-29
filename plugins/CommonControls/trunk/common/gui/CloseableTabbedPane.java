@@ -18,15 +18,17 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.event.EventListenerList;
 
-
-/**
- * A JTabbedPane which has a close ('X') icon on each tab.
+/** A JTabbedPane which has a close ('X') icon on each tab.
  *
  * To add a tab, use the method addTab(String, Component)
  *
  * To have an extra icon on each tab (e.g. like in JBuilder, showing the file
  * type) use the method addTab(String, Component, Icon). Only clicking the 'X'
  * closes the tab.
+
+ * This is a Java 5 version of a feature added to JTabbedPane in Java 1.6.
+ * This means that for new code, you can probably use the JTabbedPane instead.
+ * deprecated?
  */
 public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     MouseMotionListener {
@@ -384,7 +386,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
             if ( doPaintCloseIcon ) {
                 x_pos = x;
                 y_pos = y;
-                int x_p = x;    
+                int x_p = x;
                 int y_p = y + 1;
 
                 //

@@ -34,8 +34,7 @@ import javax.swing.table.*;
 import org.gjt.sp.util.Log;
 
 
-/**
- * An extension of the default Swing JTable, that passes action key events,
+/** An extension of the default Swing JTable, that passes action key events,
  * displays tooltips and autoresizes columns.<p>
  *
  * In detail, the following features are provided:<p>
