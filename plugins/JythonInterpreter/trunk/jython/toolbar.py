@@ -21,7 +21,7 @@ from javax.swing import JToolBar, JButton
 from java.awt import Insets
 from org.gjt.sp.jedit import jEdit, GUIUtilities
 
-class ToolbarHandler:
+class ToolbarHandler(object):
 	""" Utility class to simplify the toolbar creation process """
 	def __init__(self, actions = None):
 		self.actions = actions

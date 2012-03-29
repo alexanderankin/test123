@@ -18,8 +18,9 @@
  */
 package jython;
 
-import org.gjt.sp.jedit.*;
-import org.python.util.*;
+import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.Macros.Macro;
 
 public class JythonHandler extends Macros.Handler
 {
@@ -38,10 +39,12 @@ public class JythonHandler extends Macros.Handler
 		return new Macros.Macro(this, macroName, label, path);
 	}
 
-	public void runMacro(View view, Macros.Macro macro)
+	@Override
+	public void runMacro(View view, Macro macro)
 	{
 		JythonExecutor.execMacro(view, macro.getPath());
 	}
+
 }
 
 // :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

@@ -3,7 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 <DOCKABLES>
 	<DOCKABLE NAME="jython-dockable">
-		new jython.JythonDocker("jython.JythonPlugin", "jython", "console", "_createConsole", view);
+		new jython.JythonDocker("jython.JythonPlugin", "jython", "jiconsole", "_createConsole", view);
 	</DOCKABLE>
 	<DOCKABLE NAME="jython-browser-dockable">
 		new jython.JythonDocker("jython.JythonPlugin", "jython", "pathbrowser", "_createBrowser", view);

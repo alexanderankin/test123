@@ -49,7 +49,7 @@ class ConsoleToBuffer(Console):
 		pass
 
 	def printErrorMsg(self, msg, filename, lineno):
-		self.addOutput(self.errorColor, "\n" + msg)
+		self.addOutput(self.errorColor, u"\n" + msg)
 
 	def printError(self, e):
 		from org.python.core import PyException
@@ -59,7 +59,7 @@ class ConsoleToBuffer(Console):
 			self.reflectChanges = 0
 			out = ByteArrayOutputStream()
 			e.printStackTrace(PrintStream(out))
-			self.addOutput(self.errorColor, "\n%s" % str(out)[:-1])
+			self.addOutput(self.errorColor, u"\n%s" % unicode(out)[:-1])
 
 	def clear(self):
 		pass

@@ -148,7 +148,7 @@ def __registerParser():
         parser = PythonParser()
         sidekick.SideKickPlugin.registerParser(parser)
     except Exception,e:
-        print str(e)
+        print unicode(e)
 
 
 def __unregisterParser():
@@ -159,7 +159,7 @@ def __unregisterParser():
         parser = PythonParser()
         sidekick.SideKickPlugin.unregisterParser(parser)
     except Exception,e:
-        print str(e)
+        print unicode(e)
 
 
 if __name__ in ('__main__','main'):
