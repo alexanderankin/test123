@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<DOCKABLES>
+	<DOCKABLE NAME="jython-dockable">
+		new jython.JythonDocker("jython.JythonPlugin", "jython", "jiconsole", "_createConsole", view);
+	</DOCKABLE>
+	<DOCKABLE NAME="jython-browser-dockable">
+		new jython.JythonDocker("jython.JythonPlugin", "jython", "pathbrowser", "_createBrowser", view);
+	</DOCKABLE>
+</DOCKABLES>
+
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->

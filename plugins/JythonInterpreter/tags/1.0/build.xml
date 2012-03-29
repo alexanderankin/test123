@@ -1,0 +1,51 @@
+<project name="JythonInterpreter" default="build" basedir=".">
+<!--
+	 This is a build.xml file for building the JythonInterpreter plugin.
+
+	 The 'dist' target compiles the plugin and creates the JAR file.
+	 Before running the 'dist' target, you will need to generate the
+	 documentation using one of these two targets:
+
+	 To use it for building your own plugin, make these changes:
+
+	 - If necessary, add any dependencies to the 'project.class.path'
+		 definition
+	 - If necessary, change the list of files in the 'dist' targtet
+-->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <property name="docs-proc.target"       value="xsltproc" />
+  <property name="src.dir" location="."/>
+  <property name="user-doc.xml" location = "users-guide.xml"/>
+  <import file="${build.support}/plugin-build.xml" />
+
+	<!-- please use jython 2.5.3b1 or later -->
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${install.dir}/jython.jar"/>
+		<pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+	</path>
+
+    <target name="build.prepare">
+        <copy todir="${install.dir}">
+          <fileset dir="lib" includes="*.jar" />
+        </copy>
+    </target>
+
+
+    <selector id="packageFiles">
+      <and>
+       <not>
+         <filename name="**test**" />
+       </not>
+	   <or>
+	      <filename name="**/*.html"/>
+          <filename name="**/*.gif"/>
+          <filename name="**/*.py"/>
+       </or>
+      </and>
+     </selector>
+
+</project>
