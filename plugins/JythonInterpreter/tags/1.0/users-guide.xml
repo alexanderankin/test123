@@ -1,0 +1,737 @@
+<?xml version="1.0"?>
+
+<!-- JythonInterpreter user's guide -->
+<!-- (C) 2001 Carlos Quiroz -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=false: -->
+
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+
+<bookinfo><title>Jython Interpreter plugin user's guide</title>
+
+ <authorgroup>
+	<author><firstname>Carlos</firstname><surname>Quiroz</surname></author>
+	<author><firstname>Ollie</firstname><surname>Rutherfurd</surname></author>
+	<author><firstname>Roland</firstname><surname>Walter</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+	<para>
+	 Permission is granted to copy, distribute and/or modify this document
+	 under the terms of the GNU Free Documentation License, Version 1.1 or
+	 any later version published by the Free Software Foundation; with no
+	 <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+	 <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+	 the license can be found in the file <filename>COPYING.DOC.txt</filename>
+	 included with jEdit.
+	</para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="intro"><title>General Information</title>
+	<para>
+		This plugin embeds a Jython Interpreter (<ulink url="http://www.jython.org">Jython</ulink>
+		is an implementation of Python integrated with Java) into jEdit. It
+		allows the user to run Jython commands as usual, and integrates with jEdit
+		by easily running and importing the current buffer. Jython can also be used to customize
+		jEdit in the same way as BeanShell does, with macros and plugins now being possible
+		to be written in Jython. As a primary example most of the plugin itself is built in
+		such a fashion.
+	</para>
+
+	<para>
+		The interpreter can be opened by selecting
+			<guimenu>Plugins</guimenu>
+		&gt;
+			<guisubmenu>Jython Interpreter</guisubmenu>.
+		The interpreter window can be set to dock into the view in
+			<guimenu>Utilities</guimenu>
+		&gt;
+			<guimenu>Global Options</guimenu>
+		&gt;
+			<guimenu>Docking</guimenu>.
+		The interpreter is not loaded until runtime, this reduces the memory requirements until
+		the interpreter is really needed. This behavior can be modified by selecting Load
+		interpreter at startup in the options window. Also if any plugin or macro is run it will
+		load the interpreter in case it is not already running.
+		You also have the <guisubmenu>About</guisubmenu> for JythonInterpreter and the
+			<guisubmenu>Check jython version...</guisubmenu>
+		which will verify if you have the correct jython version in your classpath.
+	</para>
+
+	<para>
+		The interpreter window has a text area for entering commands and as output area. On top
+		there is a toolbar for fast access to commands.
+	</para>
+
+	<para>
+		The text area behaves much like the original Jython Interpreter. Previously entered
+		strings can be recalled with the
+			<guimenu>CTRL+UP</guimenu>
+		and
+			<guimenu>CTRL+DOWN</guimenu>
+		keys. This can be optionally set to UP/DOWN in the Options dialog box
+	</para>
+
+	<para>
+		The interpreter is based on Jython 2.5 and tested on Sun's JDK 1.5 and Sun's JDK 1.6,
+		jEdit 4.3.2, in Linux. The API of Jython changed in 2.5, so you cannot use older
+		versions.
+	</para>
+
+</chapter>
+
+<chapter id="toolbar"><title>JythonInterpreter toolbar</title>
+	<para>
+		Since version 0.6 JythonInterpreter features a toolbar which make easy to execute several
+		operations:
+	</para>
+
+	<para>The available buttons are:</para>
+	<itemizedlist>
+		<listitem>
+			<formalpara><title>Run current buffer:</title>
+			<para>
+				It will run the current selected buffer. It will ask you if you want to
+				save the file if the file is unsaved. The output will go to the text area
+			</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Run current buffer to another buffer:</title>
+				<para>
+					Same as before, but the output will appear in another buffer.
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Import current buffer</title>
+				<para>
+					It will import the current buffer.
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Edit JythonPath</title>
+				<para>
+					Opens a dialog box which allows you to edit the JythonPath. You can add/remove/edit
+					entries as well as moving them up and down
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Browse Path</title>
+				<para>
+				It opens the Path Browser, which allows you to easily open python files. It doesn't
+				yet works with compressed python files
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Save session: </title>
+				<para>
+				Exports the current interactive session to a new buffer
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Restart and clean session: </title>
+
+			<para>
+				Restarts the interpreter and cleans the session
+			</para>
+			</formalpara>
+		</listitem>
+				<listitem>
+			<formalpara>
+				<title>Check buffer with tabnanny: </title>
+
+			<para>
+				Checks the current buffer with tabnnany to find indentation problems
+			</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>About: </title>
+
+			<para>
+				Opens the about dialog box
+			</para>
+			</formalpara>
+		</listitem>
+	</itemizedlist>
+
+</chapter>
+
+<chapter id="extras"><title>Some extras</title>
+<para>
+The Interpreter is based on the Jython's Interactive Console, so all commands
+available there are available here as well.
+</para>
+
+<para>
+The current buffer object is always available as a Jython
+object called buffer. This makes very easy to run the currently edited file
+as execfile(buffer.getPath())
+</para>
+
+<para>
+If the projectviewer plugin is installed, the path of the current project will
+be added to the jython class path so that any java classes in the current project
+can be used within the interpreter.
+</para>
+
+<para>
+The same variables normally available at BeanShell are available in Jython, namely:
+</para>
+
+<itemizedlist>
+	<listitem><formalpara><title>buffer</title><para/></formalpara></listitem>
+	<listitem><formalpara><title>editPane</title><para/></formalpara></listitem>
+	<listitem><formalpara><title>textArea</title><para/></formalpara></listitem>
+	<listitem><formalpara><title>view</title><para/></formalpara></listitem>
+</itemizedlist>
+
+<para>The interpreter is running on its own independent thread and the current task
+will be <quote>attempted</quote> to be stopped by the stop button</para>
+
+<para>Pressing restart will clear completly the interpreter. Notice that the
+startup scripts will be loaded again.</para>
+
+</chapter>
+
+<chapter id="sidekick">
+	<title>SideKick parser</title>
+	<para>The JythonInterpreter plugin includes a python parser adapted for
+	the SideKick parser. To use it just open a python file and the sidekick
+	plugin window.
+	</para>
+	<para>
+	In version 0.9.1 there were errrors in the loading part unless the
+	Autoload ALL JARs options was checked.
+	</para>
+</chapter>
+
+<chapter id="options">
+	<title>Options</title>
+	<para>Several options have been added and can be Found at
+	 <guimenu>Utilities</guimenu>
+	 <guisubmenu>Global Options</guisubmenu>
+	 <guisubmenu>Plugins</guisubmenu>
+	 <guisubmenu>Jython Interpreter</guisubmenu>
+	</para>
+
+	<para>The options are:</para>
+	<itemizedlist>
+		<listitem>
+			<formalpara>
+				<title>Load Interpreter at the begining:</title>
+				<para>
+				If selected the interpreter will be loaded automatically at startup,
+				instead of waiting for the first command.
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Autoload plugins' JARS:</title>
+				<para>
+				If selected the interpreter will add all the jars from plugins to the
+				cache and system path making them avaiable for scripting.
+				</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Autosave before run/import</title>
+
+			<para>
+				If set files will be automatically saved when run or import.
+			</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Confirm save before run/import</title>
+
+			<para>
+				If set and the autosave option is not set, it will ask if you want to save
+				the file before run/import. Disable if you don't want to be bugged
+			</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Save JythonPath on modification</title>
+
+			<para>
+				If set the path will be saved locally if you modify it by the PathEditor dialog
+				box. In this way the next time the interpreter is used it will use the complete path
+			</para>
+			</formalpara>
+		</listitem>
+		<listitem>
+			<formalpara>
+				<title>Override default registry: </title>
+
+			<para>
+			 Allows to use custom values for the Jython registry. Notice that empty values
+			 won't be set as empty. The loading of custom properties after Jython has started
+			 for the first time has no effect, so changes will be valid the next time jEdit is
+			 run. For details about registr refer to <ulink url="http://www.jython.org/docs/registry.html">
+			 The Jython Registry</ulink>
+			</para>
+			</formalpara>
+		</listitem>
+	</itemizedlist>
+</chapter>
+
+<chapter id="macros">
+	<title>Macros</title>
+		<para>
+			Since version 0.8 JythohInterpreter uses the MacroHandler mechanism avaiable as jEdit 4.0pre6 and avobe.
+			This means that jython macros can be executed and treated exactly like BeanShell macros.
+			Macros have access to the 4 standard variables view, buffer, textArea and editPane
+		</para>
+		<para>
+			To make a macro just create a python file (Don't forget the py extension) and put it in a macros dir
+		</para>
+		<para>
+			Aditionally you can script all other plugins. To do that enable loading the plugins jar option. That will
+			cause the interpreter to include all jars in your .jedit/jars dir and you can use that to do
+			plugins scripting.
+		</para>
+		<para>
+			Finally the utils module has a new BufferList class. This class is a wrapper around
+			a buffer but which acts as a jython list, where every element on the list is a buffer line.
+			For instance a code like this would print the whole Buffer to the console.
+			<programlisting>
+def f():
+	from utils import BufferList
+
+	b = BufferList(buffer)
+	for l in b:
+		print l
+
+f()
+			</programlisting>
+			Run it directly in the interpreter window it would print itself.
+		</para>
+		<para>
+			You can use all the range of list standard functions like BufferList(buffer)[0:2:] to get
+			all buffer's even lines and so on.
+		</para>
+</chapter>
+
+<chapter id="plugins">
+	<title>Plugins</title>
+	<para>Jython Plugins can be built by creating a normal plugin and adding
+	<guimenu>.py</guimenu> files to the plugin's jar. Of course you also need to add
+	the dependency on JythonInterpreter 0.9.8 or higher.
+	When your plugin needs to execute something you call the JythonExecutor.executePlugin(pluginName, dir, module, function)
+	or JythonExecutor.executePlugin(pluginName, dir, module, function, args)
+	</para>
+
+	<para>Where:
+		<itemizedlist>
+			<listitem><para>pluginName: is the name of the plugin class like jython.JythonPlugin</para></listitem>
+			<listitem><para>dir: is the subdir in the jar where the module.py file is</para></listitem>
+			<listitem><para>module: module to be imported</para></listitem>
+			<listitem><para>function: Function to be called</para></listitem>
+			<listitem><para>args: Optional args as an Object[ ]</para></listitem>
+		</itemizedlist>
+	</para>
+
+	<para>As an example the Plugin itself intializes with a call
+	execPlugin("jython.JythonPlugin", "jython", "init", "_start");
+	</para>
+</chapter>
+
+<chapter id="credits">
+<title>Credits</title>
+<itemizedlist>
+	<listitem><para>Mike Dillon: Contribution of MacroHandler
+		API adaptor for JythonInterpreter</para></listitem>
+	<listitem><para>Oliver Rutherfurd: Contribution of init.py,
+		Python parser for SideKick, bugfixes, and
+		many suggestions</para></listitem>
+	<listitem><para>Jason Madar: Projectviewer integration and
+		some bugfixes</para></listitem>
+</itemizedlist>
+</chapter>
+
+<appendix id="todo"><title>ToDo</title>
+
+	<itemizedlist>
+	 <listitem><para>
+		Add syntax coloring to the interpreter
+	 </para></listitem>
+	 <listitem><para>
+		Add auto tabbing
+	 </para></listitem>
+	 <listitem><para>
+		Improve path browser
+	 </para></listitem>
+	 <listitem><para>
+		Option to profile programs
+	 </para></listitem>
+	 <listitem><para>
+		Debugger
+	 </para></listitem>
+	</itemizedlist>
+</appendix>
+
+<appendix id="changes"><title>Change log</title>
+	<itemizedlist>
+	<listitem>
+	        <para><emphasis role="bold">Version 1.0</emphasis>
+	        	requires jEdit 4.4, Java 1.6, SideKick 1.2, ErrorList 1.9, ProjectViewer 3.4.2. </para>
+	        <itemizedlist><listitem><para>
+	        	Updated to use/include Jython 2.5.3b1 (Roland Walter)
+	        	</para></listitem>
+	        </itemizedlist>
+	</listitem>
+	<listitem>
+		<para><emphasis role="bold">Version 0.9.6</emphasis>
+			requires jEdit 4.2pre11, SideKick 0.3, ErrorList 1.3.2</para>
+		<itemizedlist>
+			<listitem>
+				<para>Includes an updated version of Jython 2.1
+					that works on JDK 1.5.</para>
+			</listitem>
+			<listitem>
+				<para>Added optional dependency on ProjectViewer.</para>
+			</listitem>
+			<listitem>
+				<para><literal>buffer</literal>, <literal>editPane</literal>,
+					<literal>textArea</literal>, and <literal>view</literal>
+					are now locals in macros.</para>
+			</listitem>
+			<listitem>
+				<para><literal>__name__</literal> is set to
+					<literal>&quot;__main__&quot;</literal> for macros.</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+
+	<listitem>
+		<para><emphasis role="bold">Version 0.9.5</emphasis>
+			requires jEdit 4.2pre, SideKick 0.1, ErrorList 1.3.1</para>
+		<itemizedlist>
+			<listitem>
+				<para>Converted option panes to Java.</para>
+			</listitem>
+			<listitem>
+				<para>Fixed bugs in executing python startup scripts.</para>
+			</listitem>
+			<listitem>
+				<para>"jython" directory no longer created or used in jEdit
+					home directory.  Use a startup script instead if you
+					wish to have a script executed when jEdit is starting.</para>
+			</listitem>
+			<listitem>
+				<para>Traceback displayed when there's an error
+					executing a macro.</para>
+			</listitem>
+			<listitem>
+				<para>Removed old macro execution method: "_execMacro".</para>
+			</listitem>
+			<listitem>
+				<para>Removed support for executing user's
+					"jython\jedit.py" on startup.</para>
+			</listitem>
+			<listitem>
+				<para>Added AWT error handler to catch jython exception using AWT.</para>
+			</listitem>
+			<listitem>
+				<para>Fixed bugs in path handler. Now it can also load one path and mutiple jars at the same time. It uses jEdit VFS.</para>
+			</listitem>
+			<listitem>
+				<para>Added button to invoke tabnanny	</para>
+			</listitem>
+			<listitem>
+				<para>If project list is installed its classpath is added to the interpreter</para>
+			</listitem>
+			<listitem>
+				<para>Compatible with jEdit 4.2pre7</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+
+	<listitem>
+		<para><emphasis role="bold">Version 0.9.2</emphasis>
+			requires jEdit 4.0pre6, SideKick 0.1</para>
+		<itemizedlist>
+			<listitem>
+				<para>Fixed bug where PythonParser wouldn't work
+					if "Autoload Plugin JARS" wasn't set to `true`
+					(default setting is false).  Now SideKick.jar is
+					always imported.</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+
+	<listitem>
+		<para>
+			<emphasis role="bold">Version 0.9.1</emphasis>
+				requires jEdit 4.0pre6, SideKick 0.1</para>
+		<itemizedlist>
+			<listitem>
+				<para>Integrated Python parser for SideKick plugin.</para>
+			</listitem>
+			<listitem>
+				<para>Fixed label properties used for option panes.</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+
+	<listitem>
+		<para>
+			<emphasis role="bold">Version 0.9</emphasis>
+			requires jEdit 4.0.6</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Fixed bugs #606782, #536885, #524056</para>
+			</listitem>
+			<listitem>
+				<para>Added option to uset UP/DOWN for history navigation</para>
+			</listitem>
+			<listitem>
+				<para>Added option to reuse the export to file</para>
+			</listitem>
+			<listitem>
+				<para>Added option for the export to file to remember the original source file. When export to is pressed it will use again the original source file</para>
+			</listitem>
+			<listitem>
+				<para>Removed all old Console dependencies</para>
+			</listitem>
+			<listitem>
+				<para>Added option pane to define colors and font</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+	<listitem>
+		<para>
+			<emphasis role="bold">Version 0.8</emphasis>
+			requires jEdit 4.0.6</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Updated to jEdit 4.0.6 and uses the new Macro Handler API (Mike Dillon)</para>
+			</listitem>
+			<listitem>
+				<para>Removed custom namespace to ensure macro compability</para>
+			</listitem>
+			<listitem>
+				<para>Added option to autoload all plugins' jars</para>
+			</listitem>
+			<listitem>
+				<para>Added export session</para>
+			</listitem>
+			<listitem>
+				<para>Removed deprecated functions</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+	<listitem>
+		<para>
+			<emphasis role="bold">Version 0.7</emphasis>
+			requires jEdit 3.2.2, the EditBus plugin 1.0.1.</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Updated to jEdit 4.0.4 using new Dockables APi</para>
+			</listitem>
+			<listitem>
+				<para>Added jython.JythonDocker class to adapt to the new Dockables API</para>
+			</listitem>
+			<listitem>
+				<para>Improved caching of jars</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
+
+	<listitem><para><emphasis role="bold">Version 0.6.3</emphasis> requires
+	jEdit 3.2.2, the EditBus plugin 1.0.1.</para>
+
+	<itemizedlist>
+	 <listitem><para>
+		Updated to jython 2.1.
+	 </para></listitem>
+	 <listitem><para>
+		Last version for jEdit 3.xx
+	 </para></listitem>
+	</itemizedlist>
+	</listitem>
+	<listitem><para><emphasis role="bold">Version 0.6</emphasis> requires
+	jEdit 3.2.2, the EditBus plugin 1.0.1.</para>
+
+	<itemizedlist>
+	 <listitem><para>
+		Completely redesigned GUI, with a toolbar and a text area, direclty editable.
+	 </para></listitem>
+	 <listitem><para>
+		New implementation mostly in Jython
+	 </para></listitem>
+	 <listitem><para>
+		New run current buffer button
+	 </para></listitem>
+	 <listitem><para>
+		New run current buffer to another buffer button
+	 </para></listitem>
+	 <listitem><para>
+		New import current buffer button
+	 </para></listitem>
+	 <listitem><para>
+		New JythonPath editor
+	 </para></listitem>
+	 <listitem><para>
+		New PathBrowser
+	 </para></listitem>
+	 <listitem><para>
+		Improved error handling, including an Error button which allows to jump to the
+		error source
+	 </para></listitem>
+	 <listitem><para>
+		Check jython version, which verify if the right version is in use
+	 </para></listitem>
+	 <listitem><para>
+		History moved to CTRL+UP and CTRL+DOWN keys
+	 </para></listitem>
+	 <listitem><para>
+		Documentation moved to DockBook
+	 </para></listitem>
+	</itemizedlist>
+
+	</listitem>
+
+	<listitem><para><emphasis role="bold">Version 0.5</emphasis> requires
+	jEdit 3.1final, the EditBus plugin 1.0.1.</para>
+
+	 <itemizedlist>
+		<listitem><para>
+		 Improved init.py.
+		</para></listitem>
+
+		<listitem><para>
+		 Added output.
+		</para></listitem>
+
+		<listitem><para>
+		 Completly rebuilt execPlugin mehtod, using jython 2.1a3 features. Old
+			method is deprecated.
+		</para></listitem>
+
+		<listitem><para>
+		 Fixed wrong location of the help file.
+		</para></listitem>
+
+		<listitem><para>
+		 Removed Console dependency.
+		</para></listitem>
+
+		<listitem><para>
+		 Added jython 2.1a3 bundle if you don't have jython already.
+		</para></listitem>
+
+	</itemizedlist>
+
+	</listitem>
+
+
+	<listitem><para><emphasis role="bold">Version 0.4</emphasis> requires
+	Requires jEdit 3.1final, EditBus 1.0, and Console 2.6.</para>
+	 <itemizedlist>
+		<listitem><para>
+		 Improved init.py
+		</para></listitem>
+
+		<listitem><para>
+		 Added execPlugin mehtod
+		</para></listitem>
+
+		<listitem><para>
+		 Removed jython distribution for size issues
+		</para></listitem>
+	 </itemizedlist>
+	</listitem>
+
+	<listitem><para><emphasis role="bold">Version 0.3</emphasis> requires
+	Requires jEdit 3.1final, EditBus 1.0, and Console 2.6.</para>
+
+	 <itemizedlist>
+		<listitem><para>
+		 Added option to customize the jython registry
+		</para></listitem>
+
+		<listitem><para>
+		 Added static method to execute macros
+		</para></listitem>
+
+		<listitem><para>
+		 Added init method
+		</para></listitem>
+
+		<listitem><para>
+		 Integrated jython distribution
+		</para></listitem>
+	 </itemizedlist>
+
+	 </listitem>
+	<listitem><para><emphasis role="bold">Version 0.2</emphasis> requires
+	Requires jEdit 3.1final, EditBus 1.0, and Console 2.6.</para>
+
+	 <itemizedlist>
+		<listitem><para>
+		 Detects if jython is not available and displays a nicer message
+		</para></listitem>
+
+		<listitem><para>
+		 Interpreter runs in its own thread
+		</para></listitem>
+
+		<listitem><para>
+		 Stop enabled
+		</para></listitem>
+
+		<listitem><para>
+		 Added restart
+		</para></listitem>
+
+		<listitem><para>
+		 The namespace for shell variables can be customized
+		</para></listitem>
+
+		<listitem><para>
+		 Added options pane
+		</para></listitem>
+	</itemizedlist>
+
+	 </listitem>
+
+	 <listitem><para><emphasis role="bold">Version 0.1</emphasis> requires
+	Requires jEdit 3.1final, EditBus 1.0, and Console 2.6.</para>
+
+	 <itemizedlist>
+		<listitem><para>
+		 Initial release
+		</para></listitem>
+
+		<listitem><para>
+		 Uses a modified Console.jar included in the distribution jar
+		</para></listitem>
+	</itemizedlist>
+	</listitem>
+</itemizedlist>
+</appendix>
+</book>
