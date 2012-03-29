@@ -3,7 +3,7 @@
 plugin.jython.JythonPlugin.name=Jython Interpreter
 plugin.jython.JythonPlugin.title=Jython Interpreter
 plugin.jython.JythonPlugin.version=1.0
-plugin.jython.JythonPlugin.author=Carlos Quiroz, Roland Walter
+plugin.jython.JythonPlugin.author=Carlos Quiroz, Ollie Rutherfurd, Roland Walter
 plugin.jython.JythonPlugin.docs=index.html
 
 plugin.jython.JythonPlugin.depend.0=jedit 04.04.99.01
@@ -140,7 +140,7 @@ jython.fontstyle=0
 
 jython.about.copyright=Copyright
 jython.about.title=About...
-jython.about.about=Jython Interpreter 0.9.8, By Carlos Quiroz & Ollie Rutherfurd
+jython.about.about=jEdit Jython Interpreter plugin 1.0 by Carlos Quiroz, Ollie Rutherfurd, Roland Walter
 
 # Strings
 
