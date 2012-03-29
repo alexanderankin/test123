@@ -1,0 +1,57 @@
+TODO:
+
+for 0.9.3:
+
+- include some sample jython macros in the JAR, and on first use of the
+  plugin or invocation of plugins-jython-reinstall sample macros, copy
+  them to ~/.jedit/jython
+- update docs
+
+Bugs:
+	- Prompt should be defined by sys.ps1, sys.ps2
+	- look into Reinout's class path problems
+	- do path mods work?
+	- does load interp at startup work?
+	- execute in swing thread?
+
+Whishes:
+- Class browser
+	- Fix to add modules
+	- Fix to add jar/zip files
+- Syntax colors:
+	- use the same jedit colors
+- Debugger
+- Code completion
+	- Probably based on SpeedJava
+- Autotab, you should also be able to select whether to use tabs or spaces
+- Configurable toolbar
+	- Export session to buffer
+	- Run buffer and reuse
+	- Clean session
+	- Run and profile (version 0,7)
+- Options
+	- Base colors
+	- Base font
+- Error handling:
+	- Connect to ErrorList (ErrorList does not support multiline errors)
+- Text:
+	- Add more text navigation
+
+Fixes:
+	- Fixed exception when del at the last character
+	- Delete works on selections too
+	- Home works in every line
+	- solved bugs when history is empty
+	- Error button kumps to the right line
+	- Fixed focus going to the wrong place for non-docked widnows
+	- cachedir is set to jython/cachedir if not already defined
+
+New Features:
+	- Edit path in path browser
+	- Added error button tooltip, and better image
+	- Added edit path button
+	- Added default buttons for path handler and center on screen
+	- History and path are persistant
+	- Added about button
+
+.. :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:
