@@ -18,12 +18,17 @@
  */
 package jython;
 
-import java.io.*;
-import java.util.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
-import org.python.core.*;
-import org.python.util.*;
+import java.io.ByteArrayOutputStream;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
+import org.python.core.PyException;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.core.PyStringMap;
+import org.python.core.PySystemState;
+import org.python.util.InteractiveInterpreter;;
 
 public class JeditConsole extends InteractiveInterpreter {
 	private boolean onProcess = false;
@@ -107,7 +112,7 @@ public class JeditConsole extends InteractiveInterpreter {
 
 /**
  * JythonCommand objects are commands to be executed by the interpreter. The
- * commands are accumulted in the interpreter queue
+ * commands are accumulated in the interpreter queue.
  */
 interface JythonCommand {
 	/**

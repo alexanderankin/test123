@@ -23,7 +23,7 @@ from javax.swing import JDialog, JPanel, JButton, JList, BorderFactory,\
 from java.awt import BorderLayout, Insets, FlowLayout, GridBagLayout, GridBagConstraints
 from org.gjt.sp.jedit import jEdit, GUIUtilities
 from utils import FileDialogFilter, centerDialog, xmlroot
-from init import _getUsersJythonDir, PathLoader
+from init import _getUsersJythonDir
 
 class PathDialog(JDialog):
 	""" The PathDialog class is a small popup dialog which has an entry field
@@ -128,17 +128,18 @@ class PyPathHandler(JDialog):
 		self.model.remove(self.pathlist.selectedIndex)
 
 	def export(self):
+		import codecs
 		import os.path
 		filename = os.path.join(_getUsersJythonDir(), "jython.xml")
 		try:
 			import sys
-			f = open(filename, "w")
+			f = codecs.open(filename, "w", encoding="UTF-8")
 			xmlroot(f)
 			f.write("\n<JythonInterpreter>\n")
 			i=0
 			for path in sys.path:
 				i += 1
-				f.write('\t<pathentry path="%s" order="%s"/>\n' % (path, i))
+				f.write(u'\t<pathentry path="%s" order="%d"/>\n' % (path, i))
 			f.write("</JythonInterpreter>\n")
 			f.close()
 		except IOError, msg:

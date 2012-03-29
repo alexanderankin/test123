@@ -16,6 +16,7 @@
  <authorgroup>
 	<author><firstname>Carlos</firstname><surname>Quiroz</surname></author>
 	<author><firstname>Ollie</firstname><surname>Rutherfurd</surname></author>
+	<author><firstname>Roland</firstname><surname>Walter</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -33,13 +34,13 @@
 
 <chapter id="intro"><title>General Information</title>
 	<para>
-		This plugins embedds a Jython Interpreter (<ulink url="http://www.jython.org">Jython</ulink>
+		This plugin embeds a Jython Interpreter (<ulink url="http://www.jython.org">Jython</ulink>
 		is an implementation of Python integrated with Java) into jEdit. It
 		allows the user to run Jython commands as usual, and integrates with jEdit
-		by easily running and importing the current buffer. Jython can also be used to customise
+		by easily running and importing the current buffer. Jython can also be used to customize
 		jEdit in the same way as BeanShell does, with macros and plugins now being possible
-		to be written in Jython. As a primarly example most of the plugin itself is built in
-		such a fashion
+		to be written in Jython. As a primary example most of the plugin itself is built in
+		such a fashion.
 	</para>
 
 	<para>
@@ -54,12 +55,12 @@
 		&gt;
 			<guimenu>Docking</guimenu>.
 		The interpreter is not loaded until runtime, this reduces the memory requirements until
-		the interpreter is really needed. This behaviour can be modified by selecting Load
+		the interpreter is really needed. This behavior can be modified by selecting Load
 		interpreter at startup in the options window. Also if any plugin or macro is run it will
 		load the interpreter in case it is not already running.
 		You also have the <guisubmenu>About</guisubmenu> for JythonInterpreter and the
 			<guisubmenu>Check jython version...</guisubmenu>
-		which will verify if you have the correct jython version in your classpath
+		which will verify if you have the correct jython version in your classpath.
 	</para>
 
 	<para>
@@ -72,15 +73,14 @@
 		strings can be recalled with the
 			<guimenu>CTRL+UP</guimenu>
 		and
-			<guimenu>CTR+DOWN</guimenu>
+			<guimenu>CTRL+DOWN</guimenu>
 		keys. This can be optionally set to UP/DOWN in the Options dialog box
 	</para>
 
 	<para>
-		The interpreter is based on Jython 2.1 and tested on Sun's JDK 1.3.1 and Sun's JDK 1.4,
-		jEdit 4.0.4, in Linux. Since the way of loading modules the plugin won't
-		work unless the jython version is 2.1 or hight, this due that the plugin needs the ability to
-		load modules zipped in jar files
+		The interpreter is based on Jython 2.5 and tested on Sun's JDK 1.5 and Sun's JDK 1.6,
+		jEdit 4.3.2, in Linux. The API of Jython changed in 2.5, so you cannot use older
+		versions.
 	</para>
 
 </chapter>
@@ -94,79 +94,81 @@
 	<para>The available buttons are:</para>
 	<itemizedlist>
 		<listitem>
-			<formalpara>
-				<title>Run current buffer:</title>
-			</formalpara>
+			<formalpara><title>Run current buffer:</title>
 			<para>
 				It will run the current selected buffer. It will ask you if you want to
 				save the file if the file is unsaved. The output will go to the text area
 			</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Run current buffer to another buffer:</title>
+				<para>
+					Same as before, but the output will appear in another buffer.
+				</para>
 			</formalpara>
-			<para>
-				Same as before, but the output will appear in another buffer.
-			</para>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Import current buffer</title>
+				<para>
+					It will import the current buffer.
+				</para>
 			</formalpara>
-			<para>
-				It will import the current buffer.
-			</para>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Edit JythonPath</title>
+				<para>
+					Opens a dialog box which allows you to edit the JythonPath. You can add/remove/edit
+					entries as well as moving them up and down
+				</para>
 			</formalpara>
-			<para>
-				Opens a dialog box which allows you to edit the JythonPath. You can add/remove/edit
-				entries as well as moving them up and down
-			</para>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Browse Path</title>
-			</formalpara>
-			<para>
+				<para>
 				It opens the Path Browser, which allows you to easily open python files. It doesn't
 				yet works with compressed python files
-			</para>
+				</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Save session: </title>
-			</formalpara>
-			<para>
+				<para>
 				Exports the current interactive session to a new buffer
-			</para>
+				</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Restart and clean session: </title>
-			</formalpara>
+
 			<para>
 				Restarts the interpreter and cleans the session
 			</para>
+			</formalpara>
 		</listitem>
 				<listitem>
 			<formalpara>
 				<title>Check buffer with tabnanny: </title>
-			</formalpara>
+
 			<para>
 				Checks the current buffer with tabnnany to find indentation problems
 			</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>About: </title>
-			</formalpara>
+
 			<para>
 				Opens the about dialog box
 			</para>
+			</formalpara>
 		</listitem>
 	</itemizedlist>
 
@@ -195,13 +197,13 @@ The same variables normally available at BeanShell are available in Jython, name
 </para>
 
 <itemizedlist>
-	<listitem><formalpara><title>buffer</title></formalpara></listitem>
-	<listitem><formalpara><title>editPane</title></formalpara></listitem>
-	<listitem><formalpara><title>textArea</title></formalpara></listitem>
-	<listitem><formalpara><title>view</title></formalpara></listitem>
+	<listitem><formalpara><title>buffer</title><para/></formalpara></listitem>
+	<listitem><formalpara><title>editPane</title><para/></formalpara></listitem>
+	<listitem><formalpara><title>textArea</title><para/></formalpara></listitem>
+	<listitem><formalpara><title>view</title><para/></formalpara></listitem>
 </itemizedlist>
 
-<para>The interpreter is running on it's own independent thread and the current task
+<para>The interpreter is running on its own independent thread and the current task
 will be <quote>attempted</quote> to be stopped by the stop button</para>
 
 <para>Pressing restart will clear completly the interpreter. Notice that the
@@ -235,51 +237,54 @@ startup scripts will be loaded again.</para>
 		<listitem>
 			<formalpara>
 				<title>Load Interpreter at the begining:</title>
-			</formalpara>
-			<para>
+				<para>
 				If selected the interpreter will be loaded automatically at startup,
 				instead of waiting for the first command.
-			</para>
+				</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Autoload plugins' JARS:</title>
+				<para>
+				If selected the interpreter will add all the jars from plugins to the
+				cache and system path making them avaiable for scripting.
+				</para>
 			</formalpara>
-			<para>
-				If selected the interpreter will add all the jars from plugins to the cache and system path
-				making them avaiable for scripting.
-			</para>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Autosave before run/import</title>
-			</formalpara>
+
 			<para>
 				If set files will be automatically saved when run or import.
 			</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Confirm save before run/import</title>
-			</formalpara>
+
 			<para>
 				If set and the autosave option is not set, it will ask if you want to save
 				the file before run/import. Disable if you don't want to be bugged
 			</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Save JythonPath on modification</title>
-			</formalpara>
+
 			<para>
 				If set the path will be saved locally if you modify it by the PathEditor dialog
 				box. In this way the next time the interpreter is used it will use the complete path
 			</para>
+			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
 				<title>Override default registry: </title>
-			</formalpara>
+
 			<para>
 			 Allows to use custom values for the Jython registry. Notice that empty values
 			 won't be set as empty. The loading of custom properties after Jython has started
@@ -287,6 +292,7 @@ startup scripts will be loaded again.</para>
 			 run. For details about registr refer to <ulink url="http://www.jython.org/docs/registry.html">
 			 The Jython Registry</ulink>
 			</para>
+			</formalpara>
 		</listitem>
 	</itemizedlist>
 </chapter>
@@ -332,18 +338,18 @@ f()
 	<title>Plugins</title>
 	<para>Jython Plugins can be built by creating a normal plugin and adding
 	<guimenu>.py</guimenu> files to the plugin's jar. Of course you also need to add
-	the dependency on JythonInterpreter 0.5 or higher.
+	the dependency on JythonInterpreter 0.9.8 or higher.
 	When your plugin needs to execute something you call the JythonExecutor.executePlugin(pluginName, dir, module, function)
 	or JythonExecutor.executePlugin(pluginName, dir, module, function, args)
 	</para>
 
 	<para>Where:
 		<itemizedlist>
-			<listitem>pluginName: is the name of the plugin class like jython.JythonPlugin</listitem>
-			<listitem>dir: is the subdir in the jar where the module.py file is</listitem>
-			<listitem>module: module to be imported</listitem>
-			<listitem>function: Function to be called</listitem>
-			<listitem>args: Optional args as an Object[ ]</listitem>
+			<listitem><para>pluginName: is the name of the plugin class like jython.JythonPlugin</para></listitem>
+			<listitem><para>dir: is the subdir in the jar where the module.py file is</para></listitem>
+			<listitem><para>module: module to be imported</para></listitem>
+			<listitem><para>function: Function to be called</para></listitem>
+			<listitem><para>args: Optional args as an Object[ ]</para></listitem>
 		</itemizedlist>
 	</para>
 
@@ -355,13 +361,13 @@ f()
 <chapter id="credits">
 <title>Credits</title>
 <itemizedlist>
-	<listitem>Mike Dillon: Contribution of MacroHandler
-		API adaptor for JythonInterpreter</listitem>
-	<listitem>Oliver Rutherfurd: Contribution of init.py,
+	<listitem><para>Mike Dillon: Contribution of MacroHandler
+		API adaptor for JythonInterpreter</para></listitem>
+	<listitem><para>Oliver Rutherfurd: Contribution of init.py,
 		Python parser for SideKick, bugfixes, and
-		many suggestions</listitem>
-	<listitem>Jason Madar: Projectviewer integration and
-		some bugfixes</listitem>
+		many suggestions</para></listitem>
+	<listitem><para>Jason Madar: Projectviewer integration and
+		some bugfixes</para></listitem>
 </itemizedlist>
 </chapter>
 
@@ -388,6 +394,10 @@ f()
 
 <appendix id="changes"><title>Change log</title>
 	<itemizedlist>
+	<listitem>
+	        <para><emphasis role="bold">Version 0.9.8</emphasis>
+	        	requires jEdit 4.3, Jython 2.5</para>
+	</listitem>
 	<listitem>
 		<para><emphasis role="bold">Version 0.9.6</emphasis>
 			requires jEdit 4.2pre11, SideKick 0.3, ErrorList 1.3.2</para>

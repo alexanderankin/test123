@@ -40,7 +40,7 @@ class ShowDialog(EnhancedDialog):
 		panel.border = EmptyBorder(10, 10, 10, 10)
 		self.header = JCheckBox(jEdit.getProperty("jython.export.header"), 0)
 		panel.add(self.header)
-		self.prompts = JCheckBox(jEdit.getProperty("jython.export.propmts"), 0)
+		self.prompts = JCheckBox(jEdit.getProperty("jython.export.prompts"), 0)
 		panel.add(self.prompts)
 		self.errors = JCheckBox(jEdit.getProperty("jython.export.errors"), 0)
 		panel.add(self.errors)

@@ -27,6 +27,10 @@ import org.gjt.sp.jedit.gui.*;
 
 public class GUIOptionsPane extends AbstractOptionPane
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	//{{{ GUIOptionsPane constructor
 	public GUIOptionsPane()
 	{

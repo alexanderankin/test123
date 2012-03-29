@@ -19,16 +19,9 @@
 
 package jython;
 
-import java.util.Vector;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
-import org.gjt.sp.jedit.OptionGroup;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.msg.EditorStarted;
-
-import jython.options.*;
 
 /**
  *  JythonInterpreter plugin class

@@ -26,7 +26,7 @@ import sys
 
 class ErrorButton(JButton):
 	"""
-		Class error button, it disaplys a little button which can be used to
+		Class error button, it displays a little button which can be used to
 		jump to the error source
 	"""
 	def __init__(self, view, handler):
@@ -38,10 +38,10 @@ class ErrorButton(JButton):
 		self.alignY = 1
 		self.actionPerformed = self.action
 		self.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
-		self.toolTipText = "Jump to error file %s:%s" % (str(handler[0]), str(handler[1]))
+		self.toolTipText = u"Jump to error file %s:%s" % (unicode(handler[0]), unicode(handler[1]))
 
 	def action(self, event):
-		if self.handler.list[0] != "<console>":
+		if self.handler[0] != "<console>":
 			buffer = None
 			if (os.path.isfile(self.handler[0])):
 				buffer = jEdit.openFile(self.view, self.handler[0])
@@ -65,9 +65,7 @@ class ErrorButton(JButton):
 			if buffer:
 				self.view.buffer = buffer
 				lineNo = int(self.handler[1]) - 1
-				line = buffer.defaultRootElement.getElement(lineNo)
-				if line:
-					end = line.startOffset
-					self.view.textArea.moveCaretPosition(end)
+				end = buffer.getLineStartOffset(lineNo)
+				self.view.textArea.moveCaretPosition(end)
 
 # :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

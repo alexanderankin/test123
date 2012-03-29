@@ -18,16 +18,36 @@
  */
 package jython;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.util.*;
-import org.python.core.*;
-import org.python.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Properties;
 
-import projectviewer.PVActions;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+import org.gjt.sp.util.Log;
+
+import org.python.core.Py;
+import org.python.core.PyException;
+import org.python.core.PyList;
+import org.python.core.PyModule;
+import org.python.core.PyNone;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.core.PyStringMap;
+import org.python.core.PySystemState;
+import org.python.core.imp;
+
+import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
 
 /**
@@ -64,7 +84,7 @@ public class JythonExecutor implements Runnable {
 	/**
 	 *  Queue of commands
 	 */
-	private Vector queue;
+	private ArrayList<JythonCommand> queue;
 
 	/**
 	 *  Signals whether the thread has been interrupted
@@ -83,12 +103,12 @@ public class JythonExecutor implements Runnable {
 	 */
 	private boolean useInternalLib            = false;
 
-	private PySystemState sys = null;
+	//private PySystemState sys = null;
 
 	private PyStringMap originalLocals = null;
 
 	/**
-	 *  Private constructo to enforce the singleton
+	 *  Private constructor to enforce the singleton
 	 */
 	private void JythonExecutor() {
 	}
@@ -189,7 +209,7 @@ public class JythonExecutor implements Runnable {
 	 * @param  view  Description of Parameter
 	 */
 	public static void checkVersion(View view) {
-		if (PySystemState.hexversion < 33620131) {
+		if (PySystemState.hexversion < 33882352) {
 			GUIUtilities.error(view, "jython.check.wrong", new Object[]{PySystemState.version});
 		} else {
 			GUIUtilities.message(view, "jython.check.right", new Object[]{PySystemState.version});
@@ -234,7 +254,7 @@ public class JythonExecutor implements Runnable {
 		if (buffer != null && buffer.getPath() != null) {
 			JythonCommand command = new ExecuteCommand(buffer, view, console);
 			try {
-				queue.addElement(command);
+				queue.add(command);
 				synchronized (lock) {
 					lock.notify();
 				}
@@ -254,7 +274,7 @@ public class JythonExecutor implements Runnable {
 	public void importBuffer(View view, Buffer buffer, Console console) {
 		JythonCommand command = new ImportCommand(buffer, view, console);
 		try {
-			queue.addElement(command);
+			queue.add(command);
 			synchronized (lock) {
 				lock.notify();
 			}
@@ -274,11 +294,11 @@ public class JythonExecutor implements Runnable {
 	 * @param  command  command
 	 * @param  console  Target console
 	 */
-	public void exec(View view, String command, Console console) {
+	public void execute(View view, String command, Console console) {
 		Log.log(Log.DEBUG, this, command);
 		try {
 			JythonCommand entry = new LineCommand(command, view, console);
-			queue.addElement(entry);
+			queue.add(entry);
 			synchronized (lock) {
 				lock.notify();
 			}
@@ -310,8 +330,8 @@ public class JythonExecutor implements Runnable {
 					if (interrupted) {
 						return;
 					}
-					JythonCommand command  = (JythonCommand)queue.elementAt(0);
-					queue.removeElementAt(0);
+					JythonCommand command  = queue.get(0);
+					queue.remove(0);
 					command.execute(interpreter);
 				}
 			} catch (Throwable ex) {
@@ -408,7 +428,7 @@ public class JythonExecutor implements Runnable {
 			// Add the projectviewer's path to the jython interpreter's classpath
 			// Do nothing if the projectviewer plugin is not installed
 			if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
-				VPTProject currentProject = PVActions.getCurrentProject(jEdit.getActiveView());
+				VPTProject currentProject = ProjectViewer.getActiveProject(jEdit.getActiveView());
 				if (currentProject != null) {
 					String path = currentProject.getRootPath();
 					if (path != null) sys.path.insert(0, new PyString(path));
@@ -441,7 +461,7 @@ public class JythonExecutor implements Runnable {
 			interpreter.runsource("from org.gjt.sp.jedit import jEdit");
 			interpreter.runsource("from org.gjt.sp.jedit import View");
 			lock = new Object();
-			queue = new Vector();
+			queue = new ArrayList<JythonCommand>();
 			interrupted = false;
 			interpreterThread = new Thread(this);
 			interpreterThread.start();
@@ -464,7 +484,7 @@ public class JythonExecutor implements Runnable {
 			view = jEdit.getFirstView();
 		}
 
-		// If a starup script is being executed a view
+		// If a startup script is being executed a view
 		// won't yet exist.  We'll still make the jEdit
 		// variables available to macros, but they'll
 		// be set to None.
@@ -478,10 +498,10 @@ public class JythonExecutor implements Runnable {
 		}
 
 		PySystemState sys =Py.getSystemState();
-		PyObject py_view = (view != null ? new PyJavaInstance(view) : Py.None);
-		PyObject py_buffer = (buffer != null ? new PyJavaInstance(buffer) : Py.None);
-		PyObject py_editPane = (editPane != null ? new PyJavaInstance(editPane) : Py.None);
-		PyObject py_textArea = (textArea != null ? new PyJavaInstance(textArea) : Py.None);
+		PyObject py_view = (view != null ? Py.java2py(view) : Py.None);
+		PyObject py_buffer = (buffer != null ? Py.java2py(buffer) : Py.None);
+		PyObject py_editPane = (editPane != null ? Py.java2py(editPane) : Py.None);
+		PyObject py_textArea = (textArea != null ? Py.java2py(textArea) : Py.None);
 
 		PyObject init = ((PyStringMap)sys.modules).get(new PyString("init"));
 		init.__setattr__("view", py_view);
@@ -540,11 +560,16 @@ public class JythonExecutor implements Runnable {
 
 				interpreter.pushLine("import " + module);
 
-				if (sys.modules.__getitem__(new PyString(module)) instanceof PyNone) {
+				Log.log(Log.DEBUG, this, "Imported " + module);
+
+				PyObject amodule = null;
+				try {
+					amodule = sys.modules.__getitem__(new PyString(module));
+				} catch (PyException e) {
 					Log.log(Log.ERROR, this, "Executing plugin failed " + plugin + ", module " + module);
 					return null;
 				}
-				PyModule amodule = (PyModule)sys.modules.__getitem__(new PyString(module));
+				//PyObject amodule = sys.modules.__getitem__(new PyString(module));
 
 				if (args == null) {
 					result = amodule.invoke(function.intern());

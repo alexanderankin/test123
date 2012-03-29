@@ -18,7 +18,7 @@
 """
 from org.gjt.sp.jedit.gui import HistoryModel
 
-class History:
+class History(object):
 	"""
 		The class history handles the history management basically wrapping the
 		built-in jEdit's history capabilities

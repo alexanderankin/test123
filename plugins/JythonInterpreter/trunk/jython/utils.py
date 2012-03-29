@@ -48,7 +48,7 @@ def getIconFromPlugin(plugin, image):
 	from javax.swing import ImageIcon
 	ePlugin = jEdit.getPlugin(plugin);
 	if ePlugin:
-		loader = ePlugin.getJAR().getClassLoader()
+		loader = ePlugin.getPluginJAR().getClassLoader()
 		try:
 			URL = loader.getResource(image)
 			if URL:
@@ -67,7 +67,7 @@ def centerDialog(dialog):
 	dialog.setLocation((ssize.width-size.width)/2, \
 		(ssize.height-size.height)/2)
 
-class BufferList:
+class BufferList(object):
 	def __init__(self, buffer):
 		self.buffer = buffer
 
@@ -131,6 +131,6 @@ class BufferList:
 
 def xmlroot(file):
 	""" writes the base xml declaration """
-	file.write('<?xml version="1.0"?>')
+	file.write('<?xml version="1.0" encoding="UTF-8"?>')
 
 # :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

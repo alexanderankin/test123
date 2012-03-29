@@ -68,7 +68,7 @@ class BrowserCellRenderer(DefaultTreeCellRenderer):
 		return self.__openIcon
 
 
-class PathBrowser:
+class PathBrowser(object):
 	def __init__(self, view):
 		model = DefaultTreeModel(PathBrowserTreeItem())
 		self.tree = JTree(model, mousePressed = self.__mousePressed)
@@ -113,7 +113,7 @@ class DirBrowserTreeItem(DefaultMutableTreeNode):
 		if not self.packages:
 			return self.dir
 		else:
-			return str(self.packages[-1]) + ": package"
+			return unicode(self.packages[-1]) + u": package"
 
 	__str__ = toString
 
@@ -151,13 +151,13 @@ class DirBrowserTreeItem(DefaultMutableTreeNode):
 		for nn, name, file in packages:
 			if self.isJar or self.isZip:
 				#print self.zipfile + "/" + str(name)
-				item = DirBrowserTreeItem(file + "/" + str(name), self.packages + [name])
+				item = DirBrowserTreeItem(file + "/" + unicode(name), self.packages + [name])
 			else:
 				item = DirBrowserTreeItem(file, self.packages + [name])
 			sublist.append(item)
 		for nn, name in self.listmodules(names):
 			if self.isJar or self.isZip:
-				item = ModuleBrowserTreeItem("archive:" + self.dir[:self.dir.find(".jar")+4]+ "!/" + nn)
+				item = ModuleBrowserTreeItem(u"archive:" + self.dir[:self.dir.find(".jar")+4]+ u"!/" + nn)
 			else:
 				item = ModuleBrowserTreeItem(os.path.join(self.dir, name))
 			sublist.append(item)
@@ -240,9 +240,9 @@ class ModuleBrowserTreeItem(DefaultMutableTreeNode):
 										else:
 												sname = sup.name
 												if sup.module != cl.module:
-														sname = "%s.%s" % (sup.module, sname)
+														sname = u"%s.%s" % (sup.module, sname)
 										supers.append(sname)
-								s = s + "(%s)" % string.join(supers, ", ")
+								s = s + u"(%s)" % u", ".join(supers)
 						items.append((cl.lineno, s))
 						self.classes[s] = cl
 		items.sort()

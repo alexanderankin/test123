@@ -26,14 +26,26 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.StringTokenizer;
-import javax.swing.*;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 public class RegistryOptionsPane extends AbstractOptionPane
 	implements ActionListener
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	//{{{ constructor
 	public RegistryOptionsPane()
 	{

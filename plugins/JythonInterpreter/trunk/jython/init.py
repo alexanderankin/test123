@@ -1,6 +1,7 @@
 # $Id: init.py,v 1.14 2003/05/27 21:26:15 tibu Exp $
 
-from xmllib import XMLParser
+from xml.sax import handler, make_parser
+from org.gjt.sp.util import Log
 
 def _getUsersJythonDir():
 	from org.gjt.sp.jedit.jEdit import getSettingsDirectory
@@ -10,65 +11,60 @@ def _getUsersJythonDir():
 	try:
 		if not os.path.exists(dirpath):
 			os.makedirs(dirpath)
-	except IOError:
-		pass
-	except OSError:
-		pass
+	except IOError, e:
+		Log.log(Log.DEBUG, _getUsersJythonDir, u"Creating directory %s failed: %s" %
+			(dirpath, unicode(e)))
+	except OSError, e:
+		Log.log(Log.DEBUG, _getUsersJythonDir, u"Creating directory %s failed: %s" %
+			(dirpath, unicode(e)))
 	return dirpath
 
 def _start():
 	"""
-	Adds the following directories to jython's path
-
-		[jEdit user's home dir]\jython
-
-	Will try to create directories if they don't exist.
-	Then, if a file 'jedit.py' exists in either directory, this
-	exec'd.  This can be used to setup Jython interpreter: import
-	packages, run scripts, etc...
-
-	Author Oliver Rutherfurd
-
+	Sets up the sys.path from the file jython.xml in the user's
+	jython directory that is in the settings directory.
 	"""
 	import os
 	import sys
 	from org.gjt.sp.jedit import jEdit
 
-	parser = PathLoader()
+	content = None
 	try:
 		filename = os.path.join(_getUsersJythonDir(), "jython.xml")
-		f = open(filename, 'r')
-		content = f.read()
-		f.close()
-		parser.feed(content)
-		parser.close()
+		Log.log(Log.DEBUG, _start, u"jython.xml: %s" % filename)
+		if os.path.isfile(filename):
+			parser = make_parser()
+			contentHandler = PathLoaderContentHandler()
+			parser.setContentHandler(contentHandler)
+			parser.parse(filename)
 	except Exception, e:
-		pass
+		Log.log(Log.ERROR, _start, u"Reading jython.xml failed: %s" % unicode(e))
 
 
-class PathLoader(XMLParser):
-	""" This class parses the jython.xml file and adds the path entries
-	"""
-	def __init__(self, **kw):
-		apply(XMLParser.__init__, (self,), kw)
+class PathLoaderContentHandler(handler.ContentHandler):
+	def __init__(self):
+		self.level = 0
 
-	def unknown_starttag(self, tag, attrs):
+	def startElement(self, name, attrs):
 		import sys
-		if tag == "pathentry":
-			if not attrs["path"] in sys.path:
-				sys.path.insert(int(attrs["order"]), attrs["path"])
+		if 'pathentry' == name:
+			self.level += 1
+			path = attrs['path']
+			order = int(attrs['order'])
+			if not path in sys.path:
+				sys.path.insert(order-1, path)
 
-	def close(self):
-		try:
-			XMLParser.close(self)
-		except:
-			pass
+	def endElement(self, name):
+		if 'pathentry' == name:
+			self.level -= 1
+
 
 
 if __name__ in ("__main__","main"):
 	try:
 		_start()
 	finally:
-		del XMLParser
+		del handler
+		del make_parser
 
 # :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:
