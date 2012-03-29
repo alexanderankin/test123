@@ -36,6 +36,9 @@ import org.gjt.sp.jedit.jEdit;
 
 /** A component that allows a user to compose a classpath or search path string.
  * The user can select directories or files using a filesystem browser.
+ *
+ * @see common.gui.VFSPathFileList
+ *
  */
 public class PathBuilder extends JPanel implements ActionListener, ListSelectionListener {
     /**

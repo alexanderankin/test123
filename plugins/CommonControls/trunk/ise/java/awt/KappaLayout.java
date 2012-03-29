@@ -13,10 +13,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/**
- * KappaLayout, a Java layout manager.<br>
- * Copyright (C) 2000, Dale Anson<br>
- *<br>
+/** KappaLayout, a Java layout manager.
+ *  Copyright (C) 2000, Dale Anson
+ *
  * This library is free software; you can redistribute it and/or<br>
  * modify it under the terms of the GNU Lesser General Public<br>
  * License as published by the Free Software Foundation; either<br>
@@ -194,7 +193,7 @@ public class KappaLayout implements LayoutManager2, Serializable {
    public static final int NW = 8;  // northwest
 
    /**
-    * Convenience setting for width (w) or height (h), causes component to use 
+    * Convenience setting for width (w) or height (h), causes component to use
     * Remaining cells.
     */
    public static final int R = Integer.MAX_VALUE;
@@ -495,8 +494,8 @@ public class KappaLayout implements LayoutManager2, Serializable {
    }
 
    /**
-    * Required by LayoutManager2. Will NOT add component if either component or 
-    * constraints are null, or if constraints is not a String or 
+    * Required by LayoutManager2. Will NOT add component if either component or
+    * constraints are null, or if constraints is not a String or
     * Kappa/LambdaLayout.Constraint.
     */
    public void addLayoutComponent( Component comp, Object constraint ) {
@@ -734,7 +733,7 @@ public class KappaLayout implements LayoutManager2, Serializable {
    public void invalidateLayout( Container c ) {
       /* I would think this is the right thing to do, but doing this causes
       the layout to be wrong every time.  Also causes the stretch option to
-      fail.  
+      fail.
       _size_unknown = true;
       */
    }

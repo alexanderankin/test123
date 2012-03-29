@@ -9,10 +9,9 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.io.Serializable;
 
-/**
- * LambdaLayout, a Java layout manager.<br>
- * Copyright (C) 2001, Dale Anson<br>
- *<br>
+/** LambdaLayout, a Java layout manager.
+ * Copyright (C) 2001, Dale Anson
+ *
  * This library is free software; you can redistribute it and/or<br>
  * modify it under the terms of the GNU Lesser General Public<br>
  * License as published by the Free Software Foundation; either<br>
@@ -154,7 +153,7 @@ public class LambdaLayout extends KappaLayout implements LayoutManager2, Seriali
          }
 
          // do the layout. Components are handled by columns, top to bottom,
-         // left to right. 
+         // left to right.
          Point cell = new Point();
          for ( int current_col = 0; current_col < _col_count; current_col++ ) {
             // adjust x for previous column widths
