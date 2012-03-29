@@ -395,15 +395,19 @@ f()
 <appendix id="changes"><title>Change log</title>
 	<itemizedlist>
 	<listitem>
-	        <para><emphasis role="bold">Version 0.9.8</emphasis>
-	        	requires jEdit 4.3, Jython 2.5</para>
+	        <para><emphasis role="bold">Version 1.0</emphasis>
+	        	requires jEdit 4.4, Java 1.6, SideKick 1.3, ErrorList 1.9, ProjectViewer 3.4.2. </para>
+	        <itemizedlist><listitem><para>
+	        	Updated to use/include Jython 2.5.3b1 (Roland Walter)
+	        	</para></listitem>
+	        </itemizedlist>
 	</listitem>
 	<listitem>
 		<para><emphasis role="bold">Version 0.9.6</emphasis>
 			requires jEdit 4.2pre11, SideKick 0.3, ErrorList 1.3.2</para>
 		<itemizedlist>
 			<listitem>
-				<para>Includes an updated version of Jython 2.1 
+				<para>Includes an updated version of Jython 2.1
 					that works on JDK 1.5.</para>
 			</listitem>
 			<listitem>
@@ -415,7 +419,7 @@ f()
 					are now locals in macros.</para>
 			</listitem>
 			<listitem>
-				<para><literal>__name__</literal> is set to 
+				<para><literal>__name__</literal> is set to
 					<literal>&quot;__main__&quot;</literal> for macros.</para>
 			</listitem>
 		</itemizedlist>

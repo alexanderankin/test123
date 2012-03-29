@@ -1,4 +1,4 @@
-<project name="JythonInterpreter" default="dist" basedir=".">
+<project name="JythonInterpreter" default="build" basedir=".">
 <!--
 	 This is a build.xml file for building the JythonInterpreter plugin.
 
@@ -19,7 +19,7 @@
   <property name="user-doc.xml" location = "users-guide.xml"/>
   <import file="${build.support}/plugin-build.xml" />
 
-	<!-- please use jython 2.5 -->
+	<!-- please use jython 2.5.3b1 or later -->
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/jython.jar"/>
