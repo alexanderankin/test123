@@ -394,7 +394,7 @@ f()
 	<itemizedlist>
 	<listitem>
 	        <para><emphasis role="bold">Version 1.0</emphasis>
-	        	requires jEdit 4.4, Java 1.6, SideKick 1.3, ErrorList 1.9, ProjectViewer 3.4.2. </para>
+	        	requires jEdit 4.4, Java 1.6, SideKick 1.2, ErrorList 1.9, ProjectViewer 3.4.2. </para>
 	        <itemizedlist><listitem><para>
 	        	Updated to use/include Jython 2.5.3b1 (Roland Walter)
 	        	</para></listitem>
