@@ -10,7 +10,7 @@ plugin.jython.JythonPlugin.depend.0=jedit 04.04.99.01
 plugin.jython.JythonPlugin.depend.1=jdk 1.6
 plugin.jython.JythonPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.jython.JythonPlugin.depend.3=plugin sidekick.SideKickPlugin 1.3
-plugin.jython.JythonPlugin.depend.4=optional plugin projectviewer.ProjectViewer 3.4.2
+plugin.jython.JythonPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.4.2
 plugin.jython.JythonPlugin.jars=jython.jar jythonlib.jar
 plugin.jython.JythonPlugin.description=The JythonInterpreter plugin embeds a Jython shell into jEdit. It adds support for macros and plugins written in Python/Jython, and a SideKick service for code browsing. Jython 2.5 is included.
 # jedit 4.3 properties
