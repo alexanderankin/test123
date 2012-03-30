@@ -32,13 +32,13 @@ import org.apache.lucene.util.Version;
 public class SourceCodeAnalyzer extends Analyzer
 {
 	@Override
-	public TokenStream tokenStream(String fieldName, Reader reader)
+	public final TokenStream tokenStream(String fieldName, Reader reader)
 	{
 		return new SourceCodeTokenizer(reader);
 	}
 
 	@Override
-	public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException
+	public final TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException
 	{
 		Tokenizer tokenizer = (Tokenizer) getPreviousTokenStream();
 		if (tokenizer == null)
