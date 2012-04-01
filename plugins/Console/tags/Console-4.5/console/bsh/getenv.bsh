@@ -1,0 +1,9 @@
+/* Returns environment variable value. */
+getenv(String env)
+{
+	import console.ConsolePlugin;
+
+	return ConsolePlugin.getSystemShellVariableValue(null,env);
+}
+
+help.getenv = "usage: getenv ( env )";
