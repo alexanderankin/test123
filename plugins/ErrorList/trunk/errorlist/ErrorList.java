@@ -27,8 +27,6 @@ package errorlist;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
@@ -57,13 +55,13 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.EnhancedTreeCellRenderer;
+import org.jedit.core.FileOpenerService;
 
 import errorlist.ErrorSource.Error;
 
-import org.jedit.core.FileOpenerService;
 //}}}
 
-public class ErrorList extends JPanel implements DefaultFocusComponent, ActionListener
+public class ErrorList extends JPanel implements DefaultFocusComponent
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
 		ErrorList.class.getResource("error.png"));
@@ -73,7 +71,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent, ActionLi
 		ErrorSource.ERROR, ErrorSource.WARNING };
 
 	//{{{ data members
-	private JPopupMenu contextMenu;
 	private View view;
 	private JLabel status;
 	private DefaultMutableTreeNode errorRoot;
@@ -89,11 +86,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent, ActionLi
 	{
 		this.view = view;
 
-		contextMenu = new JPopupMenu("ErrorList");
-		JMenuItem copyItem = new JMenuItem(jEdit.getProperty("copy.label"));
-		contextMenu.add(copyItem);
-		copyItem.addActionListener(this);
-		setComponentPopupMenu(contextMenu);
 		setLayout(new BorderLayout());
 
 		errors = new Vector<Error>();
@@ -552,30 +544,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent, ActionLi
 	{
 		toggleType(ErrorSource.WARNING);
 	} //}}}
-
-	//{{{ actionPerformed method
-	/** The only actionhandler we have is for the "copy" menu event from the popup menu */
-	public void actionPerformed(ActionEvent e)
-	{
-		TreeSelectionModel tsm = errorTree.getSelectionModel();
-		if (tsm.getSelectionCount() == 0) {
-			// copy entire thing into clipboard
-
-		}
-		else {
-			TreePath[] selectedPaths = tsm.getSelectionPaths();
-			Object root = errorModel.getRoot();
-			for (int i=0; i<selectedPaths.length; ++i) {
-
-
-
-			}
-
-		}
-
-
-	}//}}}
-
 
 	//{{{ handleErrorSourceMessage() method
 	@EBHandler
