@@ -335,7 +335,12 @@ public class DefaultErrorSource extends ErrorSource
 			this.source = source;
 
 			this.type = type;
+			this.path = path;
 
+			// Shortened name used in display
+			name = MiscUtilities.getFileName(path);
+
+			/*
 			// Create absolute path
 			if(MiscUtilities.isURL(path))
 				this.path = path;
@@ -345,15 +350,15 @@ public class DefaultErrorSource extends ErrorSource
 					.getProperty("user.dir"),path);
 				this.path = MiscUtilities.resolveSymlinks(
 					this.path);
-			}
+			}*/
 
 			this.lineIndex = lineIndex;
 			this.start = start;
 			this.end = end;
 			this.error = error;
 
-			// Shortened name used in display
-			name = MiscUtilities.getFileName(path);
+
+
 
 			// If the buffer is open and loaded, this creates
 			// a floating position
@@ -406,7 +411,7 @@ public class DefaultErrorSource extends ErrorSource
 		public void setFilePath(String newPath)
 		{
 			path = newPath;
-			name = path.substring(path.lastIndexOf('/'));
+			name = MiscUtilities.getFileName(path);
 		}// }}}
 
 		//{{{ getFileName() method
