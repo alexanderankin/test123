@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2003 Slava Pestov
- * 
+ *
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@ package errorlist;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
@@ -57,9 +59,11 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.EnhancedTreeCellRenderer;
 
 import errorlist.ErrorSource.Error;
+
+import org.jedit.core.FileOpenerService;
 //}}}
 
-public class ErrorList extends JPanel implements DefaultFocusComponent
+public class ErrorList extends JPanel implements DefaultFocusComponent, ActionListener
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
 		ErrorList.class.getResource("error.png"));
@@ -69,6 +73,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		ErrorSource.ERROR, ErrorSource.WARNING };
 
 	//{{{ data members
+	private JPopupMenu contextMenu;
 	private View view;
 	private JLabel status;
 	private DefaultMutableTreeNode errorRoot;
@@ -78,12 +83,17 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private Vector<Integer> filteredTypes;
 	private Map<Integer, JToggleButton> toggleButtons;
         // }}}
-	
+
 	//{{{ ErrorList constructor
 	public ErrorList(View view)
 	{
 		this.view = view;
 
+		contextMenu = new JPopupMenu("ErrorList");
+		JMenuItem copyItem = new JMenuItem(jEdit.getProperty("copy.label"));
+		contextMenu.add(copyItem);
+		copyItem.addActionListener(this);
+		setComponentPopupMenu(contextMenu);
 		setLayout(new BorderLayout());
 
 		errors = new Vector<Error>();
@@ -95,7 +105,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		toolBar.add(status);
 		toolBar.add(Box.createHorizontalStrut(30));
 		toggleButtons = new HashMap<Integer, JToggleButton>();
-		
+
 		JToggleButton toggleBtn = new JToggleButton(ERROR_ICON, true);
 		toggleBtn.setSelected(! filteredTypes.contains(Integer.valueOf(
 			ErrorSource.ERROR)));
@@ -105,7 +115,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			jEdit.getActionContext(),
 			"error-list-toggle-errors"));
 		toolBar.add(toggleBtn);
-		
+
 		toggleButtons.put(Integer.valueOf(ErrorSource.ERROR), toggleBtn);
 
 		toolBar.add(Box.createHorizontalStrut(3));
@@ -121,7 +131,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		toolBar.add(toggleBtn);
 		toggleButtons.put(Integer.valueOf(ErrorSource.WARNING), toggleBtn);
 		toolBar.add(Box.createGlue());
-		
+
 		JButton btn = new RolloverButton(GUIUtilities.loadIcon(
 			"PreviousFile.png"));
 		btn.setToolTipText(jEdit.getProperty(
@@ -167,10 +177,10 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		toolBar.add(btn);
 
 		toolBar.add(Box.createHorizontalStrut(6));
-		
 
-		
-		
+
+
+
 		add(BorderLayout.NORTH,toolBar);
 
 		// Can't just use "" since the renderer expects string nodes
@@ -207,7 +217,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		scroller.setPreferredSize(new Dimension(640,200));
 		add(BorderLayout.CENTER,scroller);
 		updateStatus();
-		
+
 		load();
 	} //}}}
 
@@ -536,12 +546,36 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	{
 		toggleType(ErrorSource.ERROR);
 	} //}}}
-	
+
 	//{{{ toggleWarnings() method
 	public void toggleWarnings()
 	{
 		toggleType(ErrorSource.WARNING);
 	} //}}}
+
+	//{{{ actionPerformed method
+	/** The only actionhandler we have is for the "copy" menu event from the popup menu */
+	public void actionPerformed(ActionEvent e)
+	{
+		TreeSelectionModel tsm = errorTree.getSelectionModel();
+		if (tsm.getSelectionCount() == 0) {
+			// copy entire thing into clipboard
+
+		}
+		else {
+			TreePath[] selectedPaths = tsm.getSelectionPaths();
+			Object root = errorModel.getRoot();
+			for (int i=0; i<selectedPaths.length; ++i) {
+
+
+
+			}
+
+		}
+
+
+	}//}}}
+
 
 	//{{{ handleErrorSourceMessage() method
 	@EBHandler
@@ -595,7 +629,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	} //}}}
 
 	//{{{ Private members
-	
+
 	//{{{ updateList() method
 	private void updateList()
 	{
@@ -609,7 +643,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		updateStatus();
 	}
 	//}}}
-	
+
 	//{{{ toggleType() method
 	private void toggleType(int errType)
 	{
@@ -626,7 +660,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		updateList();
 	}
 	//}}}
-	
+
 	//{{{ updateStatus() method
 	private void updateStatus()
 	{
@@ -640,7 +674,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			else
 				warningCount++;
 		}
-		
+
 		int shownWarningCount = 0;
 		int shownErrorCount = 0;
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
@@ -680,7 +714,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			if (error.getErrorSource() == source)
 				it.remove();
 		}
-				
+
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -737,7 +771,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		if (filteredTypes.contains(Integer.valueOf(error.getErrorType())))
 			return true;
 		// Check if the filename pattern should be excluded
-		Pattern filter = ErrorListPlugin.getFilenameFilter(); 
+		Pattern filter = ErrorListPlugin.getFilenameFilter();
 		if (filter != null) {
 			String path = error.getFilePath();
 			boolean match = filter.matcher(path).matches();
@@ -747,7 +781,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		return false;
 	}
 	//}}}
-	
+
 	//{{{ addError() method
 	private void addError(ErrorSource.Error error, boolean init)
 	{
@@ -756,7 +790,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			addErrorToTree(error, init);
 	}
 	//}}}
-	
+
 	//{{{ addErrorToTree() method
 	private void addErrorToTree(ErrorSource.Error error,
 		boolean init)
@@ -817,7 +851,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		removeErrorFromTree(error);
 	}
 	//}}}
-	
+
 	//{{{ removeErrorFromTree() method
 	private void removeErrorFromTree(ErrorSource.Error error)
 	{
@@ -860,6 +894,9 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	//{{{ openError() method
 	private void openError(final ErrorSource.Error error)
 	{
+		if (error.getFilePath().equals(error.getFileName())) {
+			FileOpenerService.open(error.getFileName(), view);
+		}
 		final Buffer buffer;
 		if(error.getBuffer() != null)
 			buffer = error.getBuffer();
@@ -1130,5 +1167,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			}
 		}
 	} //}}}
+
 
 }

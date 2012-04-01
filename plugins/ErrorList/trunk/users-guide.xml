@@ -450,6 +450,14 @@ errorSource.addError(new ErrorSource.DefaultError(
 
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
+
+ <listitem><formalpara><title>Version 2.0</title> <para> Requires JDK 1.6, and jEdit 5.0pre1. </para></formalpara>
+ <itemizedlist>
+   <listitem><para> Uses new FileOpenerService for filenames where no path is
+   known. </para></listitem>
+ </itemizedlist>
+ </listitem>
+
  <listitem>
  <formalpara><title>Version 1.9</title> <para>requires JDK 1.5, and jEdit 4.3.99.00. </para> </formalpara>
  <itemizedlist>
