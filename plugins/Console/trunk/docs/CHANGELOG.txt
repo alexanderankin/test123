@@ -12,7 +12,6 @@ jEdit Console Plugin Changelog
         #1542700: Console crashes Swing with hyperthreaded or dualcore systems
         #1604327: Console javac commando problems.
         #3479434: InterruptedException from BufferOutput.
-        Small bugfix in the way Errors are created and sent to ErrorList
       [Damien Radtke]
         #1894889 - windows commands now wrapped in parentheses to prevent space issues
 
