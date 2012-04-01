@@ -3,14 +3,14 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.5
+plugin.console.ConsolePlugin.version=4.5.1
 
 # jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
 plugin.console.ConsolePlugin.docs=index.html
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
-# See jEdit.getBuild() to understand jEdit's version numbering scheme.
+# Try to target one stable release earlier than current stable if possible.
 plugin.console.ConsolePlugin.depend.0=jedit 04.04.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
@@ -154,7 +154,8 @@ options.console.compile-run.interpreter=Interpreter
 options.console.compile-run.help=<HTML>Useful environment variables:<BLOCKQUOTE> \
 	$f - full path of the current buffer<BR /> \
 	$d - parent directory of the current buffer<BR /> \
-	$n - name of the current buffer</BLOCKQUOTE> \
+	$n - name of the current buffer <br />\
+	$p - root of current project <br /></BLOCKQUOTE> \
 	Read the Console plugin documentation for a full list of available \
 	environment variables.</HTML>
 

@@ -1,17 +1,22 @@
 :encoding=UTF-8:
 
 jEdit Console Plugin Changelog
-    Version 4.5 Requires jEdit 4.5, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.1 (optional).
+
+    Version 4.5.1 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
+      [Alan Ezust]
+        Small bugfix in the way Errors are created and sent to ErrorList.
+
+    Version 4.5 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
       [Alan Ezust]
         Fixed layout issue in Errors Option Pane where the NOTE: was too wide.
         Fixed bug in how Console.fgColor was set introduced in 4.4.4
         #3479436: New option: Clear console before commando/build/run.
-        #2940948: Add variable ($l) for current TextArea's cursors's line number 
+        #2940948: Add variable ($l) for current TextArea's cursors's line number
         #3481158: Add variable ($p) for current project root dir.
         #3471524: Project option pane enhancements
         #1542700: Console crashes Swing with hyperthreaded or dualcore systems
         #1604327: Console javac commando problems.
-        #3479434: InterruptedException from BufferOutput. 
+        #3479434: InterruptedException from BufferOutput.
       [Damien Radtke]
         #1894889 - windows commands now wrapped in parentheses to prevent space issues
 
@@ -277,4 +282,4 @@ jEdit Console Plugin Changelog
         was set in the global namespace.
 
 :maxLineLen=90:wrap=hard:folding=indent:collapseFolds=2:
-:noTabs=true:tabSize=4:indent=4:    
+:noTabs=true:tabSize=4:indent=4:
