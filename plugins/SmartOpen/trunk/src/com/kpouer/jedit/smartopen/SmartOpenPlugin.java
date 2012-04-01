@@ -315,7 +315,13 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 	} //}}}
 
-	//{{{ smartOpenDialog() method
+	//{{{ smartOpenDialog() methods
+	public static void smartOpenDialog(View view, String fileName)
+	{
+		ItemFinder<String> itemFinder = new FileItemFinder();
+		ItemFinderWindow.showWindow(view, itemFinder, fileName);
+	}
+
 	public static void smartOpenDialog(View view)
 	{
 		ItemFinder<String> itemFinder = new FileItemFinder();
