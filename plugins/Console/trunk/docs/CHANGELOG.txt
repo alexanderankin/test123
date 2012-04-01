@@ -1,11 +1,6 @@
 :encoding=UTF-8:
 
 jEdit Console Plugin Changelog
-
-    Version 4.5.1 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
-      [Alan Ezust]
-        Small bugfix in the way Errors are created and sent to ErrorList.
-
     Version 4.5 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
       [Alan Ezust]
         Fixed layout issue in Errors Option Pane where the NOTE: was too wide.
@@ -17,6 +12,7 @@ jEdit Console Plugin Changelog
         #1542700: Console crashes Swing with hyperthreaded or dualcore systems
         #1604327: Console javac commando problems.
         #3479434: InterruptedException from BufferOutput.
+        Small bugfix in the way Errors are created and sent to ErrorList
       [Damien Radtke]
         #1894889 - windows commands now wrapped in parentheses to prevent space issues
 
