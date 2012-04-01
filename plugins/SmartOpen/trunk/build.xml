@@ -11,6 +11,7 @@
 	<property name="compiler.target" value="1.6"/>
 	<property name="debug" value="on"/>
 	<property name="jedit.plugins.dir" value="${install.dir}"/>
+	<property name="src.dir" location="src" />
 
 	<import file="${build.support}/plugin-build.xml"/>
 
