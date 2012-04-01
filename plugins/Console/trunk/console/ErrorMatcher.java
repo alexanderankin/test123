@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000, 2001 Slava Pestov
- * Copyright (c) 2005 Alan Ezust
+ * Copyright (c) 2005, 2012 Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@
 package console;
 
 // {{{ Imports
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -362,7 +363,10 @@ public class ErrorMatcher implements Cloneable
 		String t = matchLine(text);
 		if (t == null)
 			return null;
+		// ???: Sometimes directory is not valid. How can we know that?
 		String _filename = MiscUtilities.constructPath(directory, file);
+		File f = new File(_filename);
+		if (!f.exists()) _filename = file;
 		try
 		{
 			return new DefaultError(errorSource, type, _filename,
