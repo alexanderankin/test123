@@ -453,8 +453,8 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <listitem><formalpara><title>Version 2.0</title> <para> Requires JDK 1.6, and jEdit 5.0pre1. </para></formalpara>
  <itemizedlist>
-   <listitem><para> Uses new FileOpenerService for filenames where no path is
-   known. </para></listitem>
+   <listitem><para> Uses FileOpenerService for filenames where no path is
+   given. (#3481157 - Alan Ezust) </para></listitem>
  </itemizedlist>
  </listitem>
 
