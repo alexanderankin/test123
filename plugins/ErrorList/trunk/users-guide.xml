@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
-
 <!-- ErrorList user's guide -->
 <!-- (C) 2001, 2005 Slava Pestov -->
-
 <!-- jEdit buffer-local properties: -->
-<!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
+<!-- :tabSize=1:indentSize=1:wrap=hard:maxLineLen=90:noTabs=true:folding=sidekick: -->
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <articleinfo><title>ErrorList plugin user's guide</title>
@@ -40,6 +38,17 @@
   If you would like to use it from your plugin, see <xref linkend="api" />.
  </para>
 
+ <formalpara><title>FileOpenerService and FastOpen/SmartOpen. </title>
+ <para>
+   In projects with multiple subfolders, a build error message may not report the
+   complete pathname of the file with the error, and ErrorList may not know where the file
+   is. In such a case, it can use a <literal>FileOpenerService</literal>, such as
+   <literal>FastOpen</literal> or <literal>SmartOpen</literal>, to open the file
+   for you. Since each of these plugins can search the current project or the open buffers,
+   this gives you flexibility on how ErrorList can open the files it is displaying
+   errors for in the dockable. To use a FileOpenerService, simply install one of these
+   plugins: SmartOpen or FastOpen. </para>
+ </formalpara>
 </section>
 
 <section id="window"><title>The error list window</title>
@@ -187,7 +196,8 @@
 
   <glossentry>
      <glossterm> Auto-refocus on text area </glossterm>
-     <glossdef><para> Give the TextArea keyboard focus after the ErrorList is shown </para></glossdef>
+     <glossdef><para> Give the TextArea keyboard focus after the ErrorList is shown
+     </para></glossdef>
   </glossentry>
 
   <glossentry>
@@ -197,13 +207,17 @@
 
   <glossentry>
      <glossterm> Filename Filters </glossterm>
-     <glossdef><para> Select whether you want the glob pattern to be for inclusion or exclusion, and enter a glob pattern below. For example: <literal>*.{c,h}</literal> specifies all C source and header files.  See Appendix D. "Glob Patterns" in the jEdit users guide for more details.
+     <glossdef><para> Select whether you want the glob pattern to be for inclusion or
+     exclusion, and enter a glob pattern below. For example: <literal>*.{c,h}</literal>
+     specifies all C source and header files.  See Appendix D. "Glob Patterns" in the
+     jEdit users guide for more details.
      </para></glossdef>
   </glossentry>
 
   <glossentry>
     <glossterm> Show Icons instead of Underlines </glossterm>
-    <glossdef><para> To make jEdit more "eclipse-like" put icons in the gutter instead of underlines. </para></glossdef>
+    <glossdef><para> To make jEdit more "eclipse-like" put icons in the gutter instead of
+    underlines. </para></glossdef>
     </glossentry>
 
   </glosslist>
@@ -451,38 +465,47 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
- <listitem><formalpara><title>Version 2.0</title> <para> Requires JDK 1.6, and jEdit 5.0pre1. </para></formalpara>
+ <listitem><formalpara><title>Version 2.0</title> <para> Requires Java 1.6, and jEdit
+ 5.0pre1. </para></formalpara>
  <itemizedlist>
-   <listitem><para> Uses FileOpenerService for filenames where no path is
-   given. (#3481157 - Alan Ezust) </para></listitem>
+   <listitem><para> Uses jEdit 5's FileOpenerService for filenames when no full path is
+   available in the error message. (#3481157 - Alan Ezust) </para></listitem>
  </itemizedlist>
  </listitem>
 
  <listitem>
- <formalpara><title>Version 1.9</title> <para>requires JDK 1.5, and jEdit 4.3.99.00. </para> </formalpara>
+ <formalpara><title>Version 1.9</title> <para>requires Java 1.5, and jEdit 4.3. </para>
+ </formalpara>
  <itemizedlist>
- <listitem><para> Fixed deadlock condition arising from new EditBus behavior in jEdit 4.4 (Kazutoshi Satoda) </para></listitem>
+ <listitem><para> Fixed deadlock condition arising from new EditBus behavior in jEdit 4.4
+ (Kazutoshi Satoda) </para></listitem>
  </itemizedlist>
   </listitem>
   <listitem>
- <formalpara><title>Version 1.8</title> <para>requires JDK 1.5, and jEdit 4.3pre7. </para> </formalpara>
+ <formalpara><title>Version 1.8</title> <para>requires Java 1.5, and jEdit 4.3pre7. </para>
+ </formalpara>
  <itemizedlist>
- <listitem><para> display error.extraMessages in GutterIcon (Dwayne Bernard - # 1854405) </para></listitem>
- <listitem><para> Remembers state of error/warning buttons (Shlomy Reinstein) </para></listitem>
- <listitem><para> Automatically Show on Errors no longer shows when only hidden warnings pass through (#2907190 - Shlomy Reinstein) </para></listitem>
- <listitem><para> No longer displays ErrorList when adding a zero-length ErrorSource. (#1869137  - Alan Ezust) </para></listitem>
- <listitem><para> Enable multiple errors at different offsets in a same line. (Patch #2011885 - kerik) </para></listitem>
+ <listitem><para> display error.extraMessages in GutterIcon (Dwayne Bernard - # 1854405)
+ </para></listitem>
+ <listitem><para> Remembers state of error/warning buttons (Shlomy Reinstein)
+ </para></listitem>
+ <listitem><para> Automatically Show on Errors no longer shows when only hidden warnings
+ pass through (#2907190 - Shlomy Reinstein) </para></listitem>
+ <listitem><para> No longer displays ErrorList when adding a zero-length ErrorSource.
+ (#1869137  - Alan Ezust) </para></listitem>
+ <listitem><para> Enable multiple errors at different offsets in a same line. (Patch
+ #2011885 - kerik) </para></listitem>
  </itemizedlist>
  </listitem>
 
  <listitem>
- <formalpara><title>Version 1.7</title> <para>requires JDK 1.5, and jEdit 4.3pre7. </para> </formalpara>
+ <formalpara><title>Version 1.7</title> <para>requires Java 1.5, and jEdit 4.3pre7. </para> </formalpara>
  <itemizedlist>
  <listitem><para> <classname>DefaultErrorSource.DefaultError</classname> has new method: <methodname>setFilePath()</methodname> (for SshConsole). </para></listitem>
  </itemizedlist>
  </listitem>
  <listitem>
- <formalpara><title>Version 1.6</title> <para>requires JDK 1.5, and jEdit 4.3pre7. </para> </formalpara>
+ <formalpara><title>Version 1.6</title> <para>requires Java 1.5, and jEdit 4.3pre7. </para> </formalpara>
  <itemizedlist>
  <listitem><para> New option to hide warnings (patch 1719791 by Shlomy Reinstein) </para></listitem>
  <listitem><para> New options to filter files based on filename globs. (Shlomy Reinstein) </para></listitem>
@@ -492,7 +515,7 @@ errorSource.addError(new ErrorSource.DefaultError(
  </listitem>
 
  <listitem><formalpara><title>Version 1.5</title>
- <para>requires JDK 1.4, and jEdit 4.2 final. </para></formalpara>
+ <para>requires Java 1.4, and jEdit 4.2 final. </para></formalpara>
  <itemizedlist>
    <listitem><para>Bugfix to avoid displaying duplicate errors (k_satoda). </para></listitem>
    <listitem><para>New option: autoRefocusTextArea:

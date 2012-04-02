@@ -60,7 +60,7 @@ import org.jedit.core.FileOpenerService;
 import errorlist.ErrorSource.Error;
 
 //}}}
-
+/** The dockable ErrorList component */
 public class ErrorList extends JPanel implements DefaultFocusComponent
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
