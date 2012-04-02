@@ -363,7 +363,7 @@ public class ErrorMatcher implements Cloneable
 		String t = matchLine(text);
 		if (t == null)
 			return null;
-		// ???: Sometimes directory is not valid. How can we know that?
+		// Sometimes directory is not valid
 		String _filename = MiscUtilities.constructPath(directory, file);
 		File f = new File(_filename);
 		if (!f.exists()) _filename = file;
