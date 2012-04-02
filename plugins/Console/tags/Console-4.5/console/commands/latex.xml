@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Source file">
+			<FILE_ENTRY LABEL="Source file" VARNAME="source" />
+		</CAPTION>
+
+		<CAPTION LABEL="Paths">
+        <!--
+			<DIR_ENTRY LABEL="Include directory" VARNAME="include_directory"
+				EVAL="MiscUtilities.getParentOfPath(buffer.getPath())"/>
+                -->
+       
+        <CHOICE LABEL="Working Dir" VARNAME="makeIn" DEFAULT="projectroot">
+            <OPTION LABEL="Project Root" VALUE="projectroot" />
+            <OPTION LABEL="Source Dir" VALUE="sourcedir" />
+            <OPTION LABEL="Custom Location" VALUE="customloc" />
+        </CHOICE>
+
+        <DIR_ENTRY LABEL="Source Dir" 
+         VARNAME = "sourcedir"
+         EVAL = 'new File(buffer.getPath()).getParent()' />    
+		<!-- <CAPTION LABEL="Config"> -->
+        <DIR_ENTRY LABEL="Project Root" 
+         VARNAME = "projectroot"
+         EVAL = 'getProjectRoot(view, buffer)' />
+         <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />         
+
+         </CAPTION>
+		<CAPTION LABEL="Font options">
+			<ENTRY LABEL="font-max" VARNAME="font_max"/>
+			<ENTRY LABEL="font-mem-size" VARNAME="font_mem_size"/>
+		</CAPTION>
+
+		<CAPTION LABEL="Compilation options">
+			<TOGGLE LABEL="Insert source specials" VARNAME="src_specials"/>
+			<TOGGLE LABEL="Show C/C++ style error messages" VARNAME="c_style_errors"/>
+			<TOGGLE LABEL="Enable the \write18 construct" VARNAME="shell_escape"/>
+			<TOGGLE LABEL="Suppress all output (except errors)" VARNAME="silent"/>
+			<TOGGLE LABEL="Process a TCX table" VARNAME="tcx"/>
+		</CAPTION>
+
+		<CAPTION LABEL="Output options">
+			<CHOICE LABEL="Output format" VARNAME="format" DEFAULT="dvi">
+				<OPTION LABEL="DVI" VALUE="dvi"/>
+				<OPTION LABEL="PDF" VALUE="pdf"/>
+			</CHOICE>
+
+            <CHOICE LABEL="Interaction mode" VARNAME="interaction" DEFAULT="nonstopmode">
+				<OPTION LABEL="batchmode" VALUE="batchmode"/>
+				<OPTION LABEL="nonstopmode" VALUE="nonstopmode"/>
+				<OPTION LABEL="scrollmode" VALUE="scrollmode"/>
+				<OPTION LABEL="errorstopmode" VALUE="errorstopmode"/>
+			</CHOICE> 
+            <TOGGLE LABEL="Halt on Error"   VARNAME="haltonerror" DEFAULT="TRUE" />
+
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+			<COMMAND CONFIRM="FALSE" SHELL="System">
+        if (makeIn.equals("projectroot")) {
+            location = projectroot;
+        }
+        else if (makeIn.equals("customloc")) {
+            location = customlocation;
+        }
+        else location=sourcedir;
+		return "cd " + location;
+		</COMMAND>
+
+	
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+
+			if(format.equals("dvi"))
+				buf.append("latex");
+			else
+				buf.append("pdflatex");
+
+			if(!font_max.equals(""))
+			{
+				buf.append(" -font-max \"");
+				buf.append(font_max);
+				buf.append('"');
+			}
+			
+			if(!font_mem_size.equals(""))
+			{
+				buf.append(" -font-mem-size \"");
+				buf.append(font_mem_size);
+				buf.append('"');
+			}
+
+<!--			if(!include_directory.equals(""))
+			{
+				buf.append(" -include-directory \"");
+				buf.append(include_directory);
+				buf.append('"');
+			} -->
+
+			if(!interaction.equals(""))
+			{
+				buf.append(" -interaction ");
+				buf.append(interaction);
+			}
+            
+            
+            if (haltonerror)
+                buf.append(" -halt-on-error");
+                
+			if(src_specials)
+				buf.append(" -src-specials");
+
+			if(c_style_errors)
+				buf.append(" -file-line-error");
+
+			if(shell_escape)
+				buf.append(" -shell-escape");
+
+			if(silent)
+				buf.append(" -silent");
+
+			if(tcx)
+				buf.append(" -tcx");
+
+			buf.append(" \"");
+			source = source.replace('\\','/');
+			buf.append(source);
+			buf.append('"');
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
