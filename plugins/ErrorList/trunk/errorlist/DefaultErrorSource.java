@@ -323,7 +323,8 @@ public class DefaultErrorSource extends ErrorSource
 		 * Creates a new default error.
 		 * @param source The ErrorSource
 		 * @param type The error type
-		 * @param path The path
+		 * @param path The absolute path, or just a filename, in which case
+		     ErrorList will try to open the file using a FileOpenerService
 		 * @param lineIndex The line Index
 		 * @param start The start offset
 		 * @param end The end offset
@@ -333,32 +334,16 @@ public class DefaultErrorSource extends ErrorSource
 			int lineIndex, int start, int end, String error)
 		{
 			this.source = source;
-
 			this.type = type;
 			this.path = path;
 
 			// Shortened name used in display
-			name = MiscUtilities.getFileName(path);
-
-			/*
-			// Create absolute path
-			if(MiscUtilities.isURL(path))
-				this.path = path;
-			else
-			{
-				this.path = MiscUtilities.constructPath(System
-					.getProperty("user.dir"),path);
-				this.path = MiscUtilities.resolveSymlinks(
-					this.path);
-			}*/
+			this.name = MiscUtilities.getFileName(path);
 
 			this.lineIndex = lineIndex;
 			this.start = start;
 			this.end = end;
 			this.error = error;
-
-
-
 
 			// If the buffer is open and loaded, this creates
 			// a floating position
