@@ -97,7 +97,7 @@ public class ConsolePlugin extends EditPlugin
 	 {
 		return shellSwitchActions;
 	} // }}}
-	 
+
 	// {{{ getAllCommands()
 	/**
 	   @return all commands that are represented as
@@ -243,7 +243,7 @@ public class ConsolePlugin extends EditPlugin
 			String key = "commando." + name;
 			if (allCommands.contains(key)) {
 				// skip over those that have user overridden versions already loaded
-				
+
 				continue;
 			}
 
@@ -365,14 +365,14 @@ public class ConsolePlugin extends EditPlugin
 	{
 		SystemShell systemShell = getSystemShell();
 		String mode = buffer.getMode().getName();
-		
+
 		// Check for a custom compile command
 		if (jEdit.getBooleanProperty("mode."+mode+".compile.use-custom")) {
 			String command = jEdit.getProperty("mode."+mode+".compile.custom", "");
 			view.getDockableWindowManager().showDockableWindow("console");
 			Console console = (Console) getConsole(view);
 			Console.ShellState state = console.getShellState(systemShell);
-			
+
 			if (buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
@@ -386,11 +386,11 @@ public class ConsolePlugin extends EditPlugin
 				else if (result != JOptionPane.NO_OPTION)
 					return;
 			}
-			
+
 			systemShell.execute(console, null, state, null, command);
 			return;
 		}
-		
+
 		// If it got here, run commando as normal
 		String compiler = buffer.getStringProperty("commando.compile");
 		if (compiler == null || compiler.length() == 0)
@@ -437,14 +437,14 @@ public class ConsolePlugin extends EditPlugin
 	{
 		SystemShell systemShell = getSystemShell();
 		String mode = buffer.getMode().getName();
-		
+
 		// Check for a custom compile command
 		if (jEdit.getBooleanProperty("mode."+mode+".run.use-custom")) {
 			String command = jEdit.getProperty("mode."+mode+".run.custom", "");
 			view.getDockableWindowManager().showDockableWindow("console");
 			Console console = (Console) getConsole(view);
 			Console.ShellState state = console.getShellState(systemShell);
-			
+
 			if (buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
@@ -458,11 +458,11 @@ public class ConsolePlugin extends EditPlugin
 				else if (result != JOptionPane.NO_OPTION)
 					return;
 			}
-			
+
 			systemShell.execute(console, null, state, null, command);
 			return;
 		}
-		
+
 		// If it got here, run commando as normal
 		String interpreter = buffer.getStringProperty("commando.run");
 		if (interpreter == null || interpreter.length() == 0)
@@ -503,7 +503,7 @@ public class ConsolePlugin extends EditPlugin
 	public static void compileProject(View view) {
 		runProjectCommand(view, "compile");
 	} // }}}
-	
+
 	// {{{ runProject() method
 	public static void runProject(View view) {
 		runProjectCommand(view, "run");
@@ -515,14 +515,14 @@ public class ConsolePlugin extends EditPlugin
 			GUIUtilities.error(view, "console.pv.not-installed", null);
 			return;
 		}
-		
+
 		projectviewer.vpt.VPTProject project =
 			projectviewer.ProjectViewer.getActiveProject(view);
 		if (project == null) {
 			GUIUtilities.error(view, "console.pv.no-active-project", null);
 			return;
 		}
-		
+
 		String cmd = project.getProperty("console."+prop);
 		if (cmd == null) cmd = "";
 		if (cmd.equals("")) {
@@ -540,13 +540,14 @@ public class ConsolePlugin extends EditPlugin
 			if (cmd == null || cmd.trim() == "")
 				return;
 		}
-	
+
 		// Run the command in the project's root, but then return to
 		// the original working directory
 		final SystemShell systemShell = getSystemShell();
 		view.getDockableWindowManager().showDockableWindow("console");
 		final Console console = (Console) getConsole(view);
-		if (jEdit.getBooleanProperty("console.clearBeforeExecute")) 
+		console.setShell("System");
+		if (jEdit.getBooleanProperty("console.clearBeforeExecute"))
 			console.clear();
 		final Console.ShellState state = console.getShellState(systemShell);
 
@@ -555,7 +556,7 @@ public class ConsolePlugin extends EditPlugin
 				"\n"+cmd+"\n");
 		systemShell.executeInDir(console, null, state, null, cmd, project.getRootPath());
 	} // }}}
-	
+
 	// {{{ getPackageName() method
 	/**
 	 * A utility method that returns the name of the package containing the
@@ -616,7 +617,7 @@ public class ConsolePlugin extends EditPlugin
 	public static String getClassName(Buffer buffer)
 	{
 		String pkg = getPackageName(buffer);
-		// TODO: update to use jEdit 5.0 API after 5.0 is released. 
+		// TODO: update to use jEdit 5.0 API after 5.0 is released.
 //		String clazz = MiscUtilities.getBaseName(buffer.getPath());
 		String clazz = MiscUtilities.getFileNameNoExtension(buffer.getPath());
 		if (pkg == null)
