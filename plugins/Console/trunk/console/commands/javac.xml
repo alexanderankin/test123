@@ -16,8 +16,8 @@
 		<CAPTION LABEL="Paths">
 
 		<!-- <ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/> -->
-		<HIST_ENTRY LABEL="Class path" VARNAME="classpath_env"
-			EVAL="jEdit.getProperty(&quot;CLASSPATH&quot;, &quot;&quot;);" />
+		<HIST_ENTRY LABEL="Classpath" VARNAME="classpath"
+			EVAL="getBufferClassPath(buffer);" />
 		<HIST_ENTRY LABEL="Source path" VARNAME="sourcepath"
 			EVAL="getProjectRoot(view, buffer)" />
 		<DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" />
@@ -43,9 +43,7 @@
 			buf = new StringBuffer();
 			buf.append("javac");
 			
-			jEdit.setProperty("CLASSPATH", classpath_env);
-			setenv("CLASSPATH", classpath_env);
-			classpath = getBufferClassPath(buffer);
+			buffer.setProperty("java.classpath", classpath);
 
 			/* if(!bootclasspath.equals(""))
 			{
@@ -108,7 +106,7 @@
 			buf.append('"');
 
 			// return value
-			buf.toString();
+			return buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

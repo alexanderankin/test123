@@ -61,15 +61,16 @@
 	</UI>
 
 	<COMMANDS>
-			<COMMAND CONFIRM="FALSE" SHELL="System">
-        if (makeIn.equals("projectroot")) {
-            location = projectroot;
-        }
-        else if (makeIn.equals("customloc")) {
-            location = customlocation;
-        }
-        else location=sourcedir;
-		return "cd " + location;
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+			if (makeIn.equals("projectroot")) {
+				location = projectroot;
+			}
+			else if (makeIn.equals("customloc")) {
+				location = customlocation;
+			}
+			else location=sourcedir;
+
+			return "%cd \"" + location + "\"";
 		</COMMAND>
 
 	
