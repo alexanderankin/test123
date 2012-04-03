@@ -4,8 +4,12 @@ getBufferClassPath(buffer)
 {
 	import console.ConsolePlugin;
 
-	return "$CLASSPATH" + File.pathSeparator
-		+ ConsolePlugin.getPackageRoot(buffer);
+	String cp = buffer.getProperty("java.classpath");
+	if (cp == null || cp.equals(""))
+		return getenv("CLASSPATH") + File.pathSeparator
+			+ ConsolePlugin.getPackageRoot(buffer);
+	
+	return cp;
 }
 
 help.getBufferClassPath = "usage: getBufferClassPath ( buffer )";

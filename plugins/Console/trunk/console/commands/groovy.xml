@@ -9,7 +9,10 @@
 		<CAPTION LABEL="Source file(s)">
 
 		<FILE_ENTRY LABEL="Source file(s)" VARNAME="source"
-			EVAL="buffer.getPath()" />
+			EVAL="buffer.getPath();" />
+
+		<FILE_ENTRY LABEL="Classpath" VARNAME="classpath"
+			EVAL="getBufferClassPath(buffer);" />
 
 		</CAPTION>
 
@@ -21,9 +24,13 @@
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
 			buf.append("groovy ");
-			buf.append(" \"");
-			buf.append(source);
-			buf.append("\"");
+
+			buffer.setProperty("java.classpath", classpath);
+
+			if (!classpath.equals(""))
+				buf.append("-cp \"" + classpath + "\" ");
+
+			buf.append(" \"" + source + "\"");
 
 			// return value
 			return buf.toString();

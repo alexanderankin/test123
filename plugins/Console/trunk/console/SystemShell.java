@@ -219,8 +219,7 @@ public class SystemShell extends Shell
 
 		String commandName = args.elementAt(0);
 		// check for drive letter changedirs (windows only)
-		if (OperatingSystem.isWindows()
-			&& commandName.endsWith(":")) {
+		if (OperatingSystem.isWindows() && commandName.endsWith(":")) {
 			char driveLetter = commandName.charAt(0);
 			args = state.changeDrive(driveLetter);
 			commandName = args.elementAt(0);
