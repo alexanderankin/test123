@@ -142,7 +142,7 @@ docbook.xsl=${docbook.xsl}
 		<input addproperty="plugin.version" message="Version:" />
 		<input addproperty="plugin.tag" message="Release Tag:" defaultvalue="trunk" />
 		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
-		<antcall target="edit-props" />
+		<antcall target="post-download" />
 	</target>
 	<target name="download-bzr">
 		<property name="scm.targets.file" value="bzr_cl.xml" />
@@ -167,10 +167,10 @@ docbook.xsl=${docbook.xsl}
 		                      pluginVersion="${plugin.version}" />
 		<download-plugin-deps-rec pluginJeditVersion="${plugin.jedit.version}" />
 	</target>
-	<target name="edit-props" depends="cache-lib-scripting"
-	                          if="prog.edit" >
-		<set-plugin-props-all />
-		<!-- after the macro we have fsPluginProps set -->
+	<target name="edit-props"
+	        depends="cache-lib-scripting, set-plugin-props-all"
+	        if="prog.edit" >
+		<!-- set-plugin-props-all sets also fsPluginProps set -->
 		<script language="beanshell" classpathref="lib.scripting.path" >
 			fsProps = project.getReference("fsPluginProps");
 			it = fsProps.iterator();
@@ -201,11 +201,26 @@ docbook.xsl=${docbook.xsl}
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-package pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 	</target>
+	<!-- triggered after download -->
+	<target name="post-download"
+	        depends="edit-props, report-ivy-file"
+	        unless="no.post.download" >
+	</target>
+	<target name="report-ivy-file"
+	        depends="cache-lib-scripting, set-plugin-props-all" >
+		<script language="beanshell" classpathref="lib.scripting.path" >
+			f = new File(project.getProperty("plugin.dir"), "ivy.xml");
+			project.log("ivy.xml " + ( f.exists() ? "present" : "absent" ) );
+		</script>
+	</target>
 	<target name="reset">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<jedit-reset pluginJeditVersion="${plugin.jedit.version}" />
+	</target>
+	<target name="set-plugin-props-all">
+		<set-plugin-props-all />
 	</target>
 	<target name="setup">
 		<input addproperty="use.sample.build.properties" message="Would you like to use the sample build.properties file (y/n)?" />
