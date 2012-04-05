@@ -200,11 +200,36 @@ docbook.xsl=${docbook.xsl}
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-package pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<antcall target="post-package" />
 	</target>
 	<!-- triggered after download -->
 	<target name="post-download"
 	        depends="edit-props, report-ivy-file"
 	        unless="no.post.download" >
+	</target>
+	<!-- triggered after package -->
+	<target name="post-package"
+	        depends="cache-lib-scripting, set-plugin-props-simple"
+	        unless="no.post.package" >
+		<script language="beanshell" classpathref="lib.scripting.path" >
+			import java.awt.Toolkit;
+			import java.awt.datatransfer.Clipboard;
+			import java.awt.datatransfer.StringSelection;
+
+			dirPar = (new File(project.getProperty("plugin.dir"))).getParent();
+			dir = new File(dirPar, "packages");
+			files = dir.list();
+			Arrays.sort(files);
+			for (fileName : files) {
+				file = new File(dir, fileName);
+				project.log(fileName + " " + file.length());
+				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+				StringSelection sel = new StringSelection("" + file.length());
+				clip.setContents(sel, this);
+				javax.swing.JOptionPane.showMessageDialog(null,  
+					"Filesize of " + fileName + ": " + file.length() + " in clipboard");
+			}
+		</script>
 	</target>
 	<target name="report-ivy-file"
 	        depends="cache-lib-scripting, set-plugin-props-all" >
@@ -221,6 +246,9 @@ docbook.xsl=${docbook.xsl}
 	</target>
 	<target name="set-plugin-props-all">
 		<set-plugin-props-all />
+	</target>
+	<target name="set-plugin-props-simple">
+		<set-plugin-props-simple />
 	</target>
 	<target name="setup">
 		<input addproperty="use.sample.build.properties" message="Would you like to use the sample build.properties file (y/n)?" />
@@ -436,3 +464,5 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		</sequential>
 	</macrodef>
 </project>
+
+<!-- :noTabs=false: -->
