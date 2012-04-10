@@ -104,6 +104,8 @@ class CommandoThread extends Thread
 						Output out = console.getOutput();
 						if (command.toBuffer)
 							out = new BufferOutput(console, command.mode);
+						// TODO: if running in the system shell and command.dir is set,
+						// change the console to that directory before running
 						console.run(shell, null,  out, null, command.command);
 					}
 				});

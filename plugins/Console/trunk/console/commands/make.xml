@@ -10,7 +10,7 @@
 		<CAPTION LABEL="Makefile settings (if applicable)">
 			<ENTRY LABEL="Rule name" VARNAME="ruleName" DEFAULT=""/>
 			<ENTRY LABEL="Makefile name" VARNAME="makefile" DEFAULT="Makefile"/>
-			<TOGGLE LABEL="Search for Makefile" VARNAME="search" DEFAULT="true"/>
+			<!-- <TOGGLE LABEL="Search for Makefile" VARNAME="search" DEFAULT="true"/> -->
 		</CAPTION>
 		<CAPTION LABEL="Advanced">
 			<ENTRY LABEL="Additional parameters" VARNAME="params" DEFAULT=""/>
@@ -20,53 +20,20 @@
 	<COMMANDS>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
-			fileTarget = MiscUtilities.getFileNameNoExtension(buffer.getName());
+			buf.append("make");
 
-			file = new File(makefile);
-			if (!search || file.exists()) {
-				buf.append("make");
-
-				if (file.exists()) {
-					buf.append(" -f \""+makefile+"\"");
-					if (!ruleName.equals(""))
-						buf.append(" "+ruleName);
-				}
-				else
-					buf.append(" \""+fileTarget+"\"");
-
-				if (!params.equals(""))
-					buf.append(" "+params);
-
-				return buf.toString();
+			if (new File(makefile).exists()) {
+				buf.append(" -f \""+makefile+"\"");
+				if (!ruleName.equals(""))
+					buf.append(" "+ruleName);
 			}
-			else {
-				dir = buffer.getDirectory();
-				file = new File(dir, makefile);
-				while (!file.exists()) {
-					newDir = MiscUtilities.getParentOfPath(dir);
-					if (newDir == dir) {
-						// we've reached the top, no point in continuing
-						dir = null;
-						break;
-					}
-					dir = newDir;
-					file = new File(dir, makefile);
-				}
+			else
+				buf.append(" "+MiscUtilities.getFileNameNoExtension(buffer.getName());
 
-				if (dir != null) {
-					buf.append("(cd \""+dir+"\" &amp;&amp; make -f \""+makefile+"\"");
-					if (!ruleName.equals(""))
-						buf.append(" "+ruleName);
-				}
-				else
-					buf.append("make \""+fileTarget+"\"");
+			if (!params.equals(""))
+				buf.append(" "+params);
 
-				if (!params.equals(""))
-					buf.append(" "+params);
-
-				if (dir != null) buf.append(")");
-				return buf.toString();
-			}
+			return buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>
