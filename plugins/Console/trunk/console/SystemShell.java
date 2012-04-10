@@ -55,7 +55,6 @@ public class SystemShell extends Shell
 	private boolean initialized;
 
 	private byte[] lineSep;
-
 	// }}}
 
 	// {{{ SystemShell constructor
@@ -169,7 +168,6 @@ public class SystemShell extends Shell
 	public void execute(final Console console, String input, final Output output, Output error,
 		String command)
 	{
-
 		if (error == null)
 			error = output;
 		ConsoleState state = getConsoleState(console);

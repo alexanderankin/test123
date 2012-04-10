@@ -104,6 +104,8 @@ public class CommandoHandler extends DefaultHandler
 			mode = value;
 		else if(aname == "SHELL")
 			shell = value;
+		else if(aname == "DIR")
+			dir = value;
 	} //}}}
 
 	//{{{ charData() method
@@ -177,10 +179,11 @@ public class CommandoHandler extends DefaultHandler
 			{
 				scripts.add(new Script(
 					confirm,toBuffer,mode,
-					shell,code));
+					shell,code,dir));
 				confirm = false;
 				toBuffer = false;
 				shell = code = null;
+				dir = ".";
 			}
 			else
 			{
@@ -214,6 +217,13 @@ public class CommandoHandler extends DefaultHandler
 					else
 						nameSpace.setVariable(varName,defaultValue);
 
+					if (dir != ".")
+					{
+						dir = String.valueOf(BeanShell.eval(view, tmp, dir));
+						if (dir == null)
+							dir = ".";
+					}
+
 					// this stores This instances
 					// we call valueChanged() on
 					// them to update namespace
@@ -228,6 +238,7 @@ public class CommandoHandler extends DefaultHandler
 				}
 
 				label = varName = defaultValue = eval = null;
+				dir = ".";
 			}
 
 			popElement();
@@ -268,6 +279,7 @@ public class CommandoHandler extends DefaultHandler
 	private String mode;
 	private String shell;
 	private String code;
+	private String dir;
 
 	private Vector<Option> options;
 
@@ -304,15 +316,17 @@ public class CommandoHandler extends DefaultHandler
 		String mode;
 		String shell;
 		String code;
+		String dir;
 
 		Script(boolean confirm, boolean toBuffer, String mode,
-			String shell, String code)
+			String shell, String code, String dir)
 		{
 			this.confirm = confirm;
 			this.toBuffer = toBuffer;
 			this.mode = mode;
 			this.shell = shell;
 			this.code = code;
+			this.dir = dir;
 		}
 
 		Command getCommand()
@@ -321,7 +335,7 @@ public class CommandoHandler extends DefaultHandler
 			if(command == null)
 				return null;
 			return new Command(confirm,toBuffer,mode,
-				shell,String.valueOf(command));
+				shell,dir,String.valueOf(command));
 		}
 	} //}}}
 
@@ -333,15 +347,17 @@ public class CommandoHandler extends DefaultHandler
 		boolean toBuffer;
 		String mode;
 		String shell;
+		String dir;
 		String command;
 
 		Command(boolean confirm, boolean toBuffer, String mode,
-			String shell, String command)
+			String shell, String dir, String command)
 		{
 			this.confirm = confirm;
 			this.toBuffer = toBuffer;
 			this.mode = mode;
 			this.shell = shell;
+			this.dir = dir;
 			this.command = command;
 		}
 	} //}}}
