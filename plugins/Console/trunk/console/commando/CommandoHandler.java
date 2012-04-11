@@ -37,7 +37,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import org.gjt.sp.jedit.bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.Primitive;
 import org.gjt.sp.jedit.bsh.This;
+import org.gjt.sp.jedit.bsh.UtilEvalError;
 
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.InputSource;
@@ -177,13 +179,18 @@ public class CommandoHandler extends DefaultHandler
 			}
 			else if(tag == "COMMAND")
 			{
+				if (dir != null)
+				{
+					NameSpace tmp = new NameSpace(BeanShell.getNameSpace(), "commando");
+					dir = String.valueOf(BeanShell.eval(view, tmp, dir));
+				}
+
 				scripts.add(new Script(
 					confirm,toBuffer,mode,
 					shell,code,dir));
 				confirm = false;
 				toBuffer = false;
-				shell = code = null;
-				dir = ".";
+				shell = code = dir = null;
 			}
 			else
 			{
@@ -217,13 +224,6 @@ public class CommandoHandler extends DefaultHandler
 					else
 						nameSpace.setVariable(varName,defaultValue);
 
-					if (dir != ".")
-					{
-						dir = String.valueOf(BeanShell.eval(view, tmp, dir));
-						if (dir == null)
-							dir = ".";
-					}
-
 					// this stores This instances
 					// we call valueChanged() on
 					// them to update namespace
@@ -237,8 +237,7 @@ public class CommandoHandler extends DefaultHandler
 					Log.log(Log.ERROR,this,e);
 				}
 
-				label = varName = defaultValue = eval = null;
-				dir = ".";
+				label = varName = defaultValue = eval = dir = null;
 			}
 
 			popElement();
@@ -334,6 +333,17 @@ public class CommandoHandler extends DefaultHandler
 			Object command = BeanShell.eval(view,nameSpace,code);
 			if(command == null)
 				return null;
+			
+			// check if DIR was set dynamically
+			try {
+				Object DIR = Primitive.unwrap(nameSpace.getVariable("DIR"));
+				if (DIR != null)
+					this.dir = (String)DIR;
+			}
+			catch (UtilEvalError e) {
+				e.printStackTrace();
+			}
+
 			return new Command(confirm,toBuffer,mode,
 				shell,dir,String.valueOf(command));
 		}

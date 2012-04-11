@@ -156,6 +156,13 @@ public class SystemShell extends Shell
 	public void executeInDir(final Console console, String input, final Output output, Output error,
 			String command, String dir)
 	{
+		try {
+			output.print(console.getInfoColor(), jEdit.getProperty(
+						"console.shell.runInDir", new String[] { dir, command }));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		ConsoleState state = getConsoleState(console);
 		String cwd = state.currentDirectory;
 

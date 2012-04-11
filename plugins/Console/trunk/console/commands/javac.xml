@@ -7,34 +7,27 @@
 <COMMANDO>
 	<UI>
 		<CAPTION LABEL="Source file(s)">
-
-		<FILE_ENTRY LABEL="Source file(s)" VARNAME="source"
-			EVAL="buffer.getPath()" />
-
+			<FILE_ENTRY LABEL="Source file(s)" VARNAME="source" EVAL="buffer.getPath()" />
 		</CAPTION>
 
 		<CAPTION LABEL="Paths">
-
-		<!-- <ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/> -->
-		<HIST_ENTRY LABEL="Classpath" VARNAME="classpath"
-			EVAL="getBufferClassPath(buffer);" />
-		<HIST_ENTRY LABEL="Source path" VARNAME="sourcepath"
-			EVAL="getProjectRoot(view, buffer)" />
-		<DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" />
-		<DIR_ENTRY LABEL="Output directory" VARNAME="outputpath" />
-
+			<HIST_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
+			<!-- <HIST_ENTRY LABEL="Source path" VARNAME="sourcepath" EVAL="getProjectRoot(view, buffer);" /> -->
+			<!-- <DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" /> -->
+			<DIR_ENTRY LABEL="Output directory" VARNAME="outputpath" />
 		</CAPTION>
 
 		<CAPTION LABEL="Compilation flags">
+			<TOGGLE LABEL="Generate debug info" VARNAME="debug" />
+			<TOGGLE LABEL="Optimize" VARNAME="optimize" />
+			<TOGGLE LABEL="Show warnings" VARNAME="warn" DEFAULT="TRUE" />
+			<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
+			<HIST_ENTRY LABEL="Source file encoding" VARNAME="encoding"
+				EVAL="buffer.getProperty(Buffer.ENCODING);" />
+		</CAPTION>
 
-		<TOGGLE LABEL="Generate debug info" VARNAME="debug" />
-		<TOGGLE LABEL="Optimize" VARNAME="optimize" />
-		<TOGGLE LABEL="Show warnings" VARNAME="warn" DEFAULT="TRUE" />
-		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
-		<!-- <TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" /> -->
-		<HIST_ENTRY LABEL="Source file encoding" VARNAME="encoding"
-			EVAL="buffer.getProperty(Buffer.ENCODING)" />
-
+		<CAPTION LABEL="Advanced">
+			<ENTRY LABEL="Additional parameters" VARNAME="params"/>
 		</CAPTION>
 	</UI>
 
@@ -45,40 +38,21 @@
 			
 			buffer.setProperty("java.classpath", classpath);
 
-			/* if(!bootclasspath.equals(""))
-			{
-				buf.append(" -bootclasspath \"");
-				buf.append(bootclasspath);
-				buf.append('"');
-			} */
-
 			if(!classpath.equals(""))
-			{
-				buf.append(" -classpath \"");
-				buf.append(classpath);
-				buf.append('"');
-			}
+				buf.append(" -classpath \""+classpath+"\"");
 
+			/*
 			if(!sourcepath.equals(""))
-			{
-				buf.append(" -sourcepath \"");
-				buf.append(sourcepath);
-				buf.append('"');
-			}
+				buf.append(" -sourcepath \""+sourcepath+"\"");
+			*/
 
+			/*
 			if(!extdirs.equals(""))
-			{
-				buf.append(" -extdirs \"");
-				buf.append(extdirs);
-				buf.append('"');
-			}
+				buf.append(" -extdirs \""+extdirs+"\"");
+			*/
 
 			if(!outputpath.equals(""))
-			{
-				buf.append(" -d \"");
-				buf.append(outputpath);
-				buf.append('"');
-			}
+				buf.append(" -d \""+outputpath+"\"");
 
 			if(debug)
 				buf.append(" -g");
@@ -92,18 +66,13 @@
 			if(deprecation)
 				buf.append(" -deprecation");
 
-			/* if(verbose)
-				buf.append(" -verbose"); */
-
 			if(!encoding.equals(""))
-			{
-				buf.append(" -encoding ");
-				buf.append(encoding);
-			}
+				buf.append(" -encoding "+encoding);
 
-			buf.append(" \"");
-			buf.append(source);
-			buf.append('"');
+			if (!params.equals(""))
+				buf.append(" "+params);
+
+			buf.append(" \""+source+"\"");
 
 			// return value
 			return buf.toString();
