@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,8 +34,6 @@ public interface Index
 	 */
 	void close();
 
-	boolean isOptimized();
-	void optimize();
 	void commit();
 	void reindex(ProgressObserver progressObserver);
 

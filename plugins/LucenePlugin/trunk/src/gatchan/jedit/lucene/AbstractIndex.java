@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2012 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
  */
 package gatchan.jedit.lucene;
 
+//{{{ Imports
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -56,11 +58,14 @@ public class AbstractIndex
 	protected List<ActivityListener> listeners = new ArrayList<ActivityListener> ();
 	private final Map<IndexReader, Integer> readerMap = new ConcurrentHashMap<IndexReader, Integer>();
 
+	//{{{ AbstractIndex constructor
 	public AbstractIndex(File path)
 	{
 		this.path = path;
-	}
+	} //}}}
 
+
+	//{{{ close() method
 	public void close()
 	{
 		Log.log(Log.DEBUG, this, "close()");
@@ -96,8 +101,9 @@ public class AbstractIndex
 		{
 			Log.log(Log.DEBUG, this, "The index was not closed");
 		}
-	}
+	} //}}}
 
+	//{{{ openWriter() method
 	protected void openWriter()
 	{
 		if (writer != null)
@@ -124,14 +130,16 @@ public class AbstractIndex
 		{
 			Log.log(Log.ERROR, this, "Unable to open IndexWriter", e);
 		}
-	}
+	} //}}}
 
+	//{{{ getSearcher() method
 	protected IndexSearcher getSearcher()
 	{
 		initReader();
 		return new MyIndexSearcher(reader);
-	}
+	} //}}}
 
+	//{{{ initReader() method
 	private void initReader()
 	{
 		if (reader == null)
@@ -176,8 +184,9 @@ public class AbstractIndex
 				Log.log(Log.ERROR, this, "Unable to open reopen IndexReader", e);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ closeWriter() method
 	protected void closeWriter()
 	{
 		if (writer != null)
@@ -192,14 +201,9 @@ public class AbstractIndex
 			}
 			writer = null;
 		}
-	}
+	} //}}}
 
-	public boolean isOptimized()
-	{
-		initReader();
-		return reader == null || reader.isOptimized();
-	}
-
+	//{{{ optimize() method
 	/**
 	 * Optimize the index.
 	 * It is necessary to commit after that
@@ -218,8 +222,9 @@ public class AbstractIndex
 				Log.log(Log.ERROR, this, "Error while optimizing index", e);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ commit() method
 	public void commit()
 	{
 		if (writer != null)
@@ -233,14 +238,16 @@ public class AbstractIndex
 				Log.log(Log.ERROR, this, "Error while commiting index", e);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ readPlus() method
 	private void readPlus(IndexReader reader)
 	{
 		int count = readerMap.get(reader);
 		readerMap.put(reader, count + 1);
-	}
+	} //}}}
 
+	//{{{ readMinus() method
 	private void readMinus(IndexReader reader)
 	{
 		int count = readerMap.get(reader) - 1;
@@ -250,8 +257,9 @@ public class AbstractIndex
 			IOUtilities.closeQuietly(reader);
 			readerMap.remove(reader);
 		}
-	}
+	} //}}}
 
+	//{{{ MyIndexSearcher class
 	private class MyIndexSearcher extends IndexSearcher
 	{
 		private MyIndexSearcher(IndexReader r)
@@ -266,20 +274,23 @@ public class AbstractIndex
 			super.close();
 			readMinus(reader);
 		}
-	}
+	} //}}}
 
+	//{{{ setAnalyzer() method
 	public void setAnalyzer(Analyzer analyzer)
 	{
 		this.analyzer = analyzer;
-	}
+	} //}}}
 
+	//{{{ getAnalyzer() method
 	public Analyzer getAnalyzer()
 	{
 		if (analyzer == null)
 			analyzer = new SourceCodeAnalyzer();
 		return analyzer;
-	}
+	} //}}}
 
+	//{{{ closeSearcher() method
 	protected static void closeSearcher(IndexSearcher searcher)
 	{
 		try
@@ -290,15 +301,18 @@ public class AbstractIndex
 		{
 			Log.log(Log.ERROR, AbstractIndex.class, e, e);
 		}
-	}
+	} //}}}
 
+	//{{{ addActivityListener() method
 	public void addActivityListener(ActivityListener al)
 	{
 		listeners.add(al);
-	}
+	} //}}}
 
+	//{{{ removeActivityListener() method
 	public void removeActivityListener(ActivityListener al)
 	{
 		listeners.remove(al);
-	}
+	} //}}}
+
 }

@@ -22,7 +22,6 @@ package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 
 import javax.swing.*;
@@ -106,7 +105,6 @@ public class IndexManagement extends AbstractOptionPane
 		private final JTextField indexNameField;
 		private String indexName;
 
-		private final JButton optimize;
 		private final JButton delete;
 		private final JButton reindex;
 
@@ -117,7 +115,6 @@ public class IndexManagement extends AbstractOptionPane
 			indexNameField = new JTextField();
 			indexNameField.setEditable(false);
 
-			optimize = new JButton("Optimize");
 			delete = new JButton("Delete");
 			reindex = new JButton("Re-index");
 
@@ -134,31 +131,23 @@ public class IndexManagement extends AbstractOptionPane
 			layout.putConstraint(SpringLayout.NORTH, indexNameField, 5, SpringLayout.NORTH, this);
 			layout.putConstraint(SpringLayout.EAST, this, 5, SpringLayout.EAST, indexNameField);
 
-			// optimize
-			layout.putConstraint(SpringLayout.WEST, optimize, 5, SpringLayout.WEST, this);
-			layout.putConstraint(SpringLayout.NORTH, optimize, 10, SpringLayout.SOUTH, indexNameLabel);
-
 			// delete
-			layout.putConstraint(SpringLayout.WEST, delete, 5, SpringLayout.EAST, optimize);
 			layout.putConstraint(SpringLayout.NORTH, delete, 10, SpringLayout.SOUTH, indexNameLabel);
 
 			// reindex
 			layout.putConstraint(SpringLayout.WEST, reindex, 5, SpringLayout.EAST, delete);
 			layout.putConstraint(SpringLayout.NORTH, reindex, 10, SpringLayout.SOUTH, indexNameLabel);
 
-			optimize.setEnabled(false);
 			delete.setEnabled(false);
 			reindex.setEnabled(false);
 
 			add(indexNameLabel);
 			add(indexNameField);
-			add(optimize);
 			add(delete);
 			add(reindex);
 
 
 			ActionListener actionListener = new MyActionListener();
-			optimize.addActionListener(actionListener);
 			delete.addActionListener(actionListener);
 			reindex.addActionListener(actionListener);
 
@@ -170,14 +159,11 @@ public class IndexManagement extends AbstractOptionPane
 			indexNameField.setText(name);
 			if (name == null)
 			{
-				optimize.setEnabled(false);
 				delete.setEnabled(false);
 				reindex.setEnabled(false);
 			}
 			else
 			{
-				Index index = LucenePlugin.instance.getIndex(name);
-				optimize.setEnabled(!index.isOptimized());
 				delete.setEnabled(true);
 				reindex.setEnabled(true);
 			}
@@ -188,16 +174,7 @@ public class IndexManagement extends AbstractOptionPane
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if (e.getSource() == optimize)
-				{
-					indexList.setEnabled(false);
-					optimize.setEnabled(false);
-					reindex.setEnabled(false);
-					delete.setEnabled(false);
-					OptimizeTask wr = new OptimizeTask(indexName);
-					ThreadUtilities.runInBackground(wr);
-				}
-				else if (e.getSource() == delete)
+				if (e.getSource() == delete)
 				{
 					Log.log(Log.NOTICE, this, "Delete " + indexName + " asked");
 					LucenePlugin.instance.removeIndex(indexName);
@@ -207,46 +184,12 @@ public class IndexManagement extends AbstractOptionPane
 				else if (e.getSource() == reindex)
 				{
 					indexList.setEnabled(false);
-					optimize.setEnabled(false);
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
 					ReindexTask wr = new ReindexTask(indexName, new GUIEnabledRunnable(indexName));
 					ThreadUtilities.runInBackground(wr);
 				}
 			}
-		}
-
-		private class OptimizeTask extends Task
-		{
-			private final String indexName;
-
-			private OptimizeTask(String indexName)
-			{
-				this.indexName = indexName;
-			}
-
-			@Override
-			public void _run()
-			{
-				try
-				{
-					setMaximum(2L);
-					Log.log(Log.NOTICE, this, "Optimize " + indexName + " asked");
-					Index index = LucenePlugin.instance.getIndex(indexName);
-					setStatus("Optimize " + indexName);
-					index.optimize();
-					setValue(1L);
-					setStatus("Commit " + indexName);
-					index.commit();
-					setValue(2L);
-					Log.log(Log.NOTICE, this, "Optimize " + indexName + " DONE");
-				}
-				finally
-				{
-					ThreadUtilities.runInDispatchThread(new GUIEnabledRunnable(indexName));
-				}
-			}
-
 		}
 
 		private class GUIEnabledRunnable implements Runnable
