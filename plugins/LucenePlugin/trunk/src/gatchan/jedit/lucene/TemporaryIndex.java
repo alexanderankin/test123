@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2012 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -83,25 +83,6 @@ public class TemporaryIndex implements Index
 		catch (IOException e)
 		{
 			Log.log(Log.ERROR, this, e);
-		}
-	}
-
-	@Override
-	public boolean isOptimized()
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void optimize()
-	{
-		try
-		{
-			writer.optimize();
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, this, "Error while optimizing index", e);
 		}
 	}
 
