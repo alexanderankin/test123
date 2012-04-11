@@ -46,7 +46,7 @@ class ReindexTask extends Task
 	{
 		try
 		{
-			setMaximum(5L);
+			setMaximum(4L);
 			Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
 			final Index index = LucenePlugin.instance.getIndex(indexName);
 			setStatus("Reindex " + indexName);
@@ -77,21 +77,17 @@ class ReindexTask extends Task
 			}
 			setValue(1L);
 			Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
-			Log.log(Log.NOTICE, this, "Optimize index:" + indexName);
-			setStatus("Optimize " + indexName);
-			index.optimize();
-			setValue(2L);
 			setStatus("Commit " + indexName);
 			index.commit();
-			setValue(3L);
+			setValue(2L);
 			Log.log(Log.NOTICE, this, "Optimize index:" + indexName + "DONE");
 			Log.log(Log.NOTICE, this, "Optimize Central Index");
 			setStatus("Optimize Central Index");
 			LucenePlugin.CENTRAL.optimize();
-			setValue(4L);
+			setValue(3L);
 			setStatus("Commit Central Index");
 			LucenePlugin.CENTRAL.commit();
-			setValue(5L);
+			setValue(4L);
 			Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
 		}
 		finally
