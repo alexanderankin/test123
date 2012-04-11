@@ -447,7 +447,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			Index index = new TemporaryIndex(CURRENT_BUFFER);
 			jEdit.getActiveView().getBuffer().getPath();
 			index.addFile(jEdit.getActiveView().getBuffer().getPath());
-			index.optimize();
 			index.commit();
 			return index;
 		}
@@ -457,7 +456,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			Buffer[] buffers = jEdit.getBuffers();
 			for (Buffer buffer : buffers)
 				index.addFile(buffer.getPath());
-			index.optimize();
 			index.commit();
 			return index;
 		}
