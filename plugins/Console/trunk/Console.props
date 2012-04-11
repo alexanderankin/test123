@@ -277,6 +277,8 @@ console.shell.error.working-dir=Current working directory does not exist: {0}\n\
 	Use "cd" to change directories first.
 console.shell.exited=Process {0} exited with code {1}
 
+console.shell.runInDir={0}> {1}
+
 ### BeanShell
 
 console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
