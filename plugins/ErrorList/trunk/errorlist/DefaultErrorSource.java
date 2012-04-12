@@ -335,10 +335,7 @@ public class DefaultErrorSource extends ErrorSource
 		{
 			this.source = source;
 			this.type = type;
-			this.path = path;
-
-			// Shortened name used in display
-			this.name = MiscUtilities.getFileName(path);
+			setFilePath(path); // also sets the name
 
 			this.lineIndex = lineIndex;
 			this.start = start;
