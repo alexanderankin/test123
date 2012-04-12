@@ -8,27 +8,37 @@
 <COMMANDO>
 	<UI>
 		<CAPTION LABEL="Buildfile settings">
+			<TOGGLE LABEL="Search for Buildfile" VARNAME="search" DEFAULT="TRUE"/>
 			<ENTRY LABEL="Buildfile name" VARNAME="buildfile" DEFAULT="build.xml"/>
 			<ENTRY LABEL="Rule name(s)" VARNAME="rules" DEFAULT=""/>
 		</CAPTION>
 		<CAPTION LABEL="Advanced">
 			<HIST_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
 			<TOGGLE LABEL="Strip adornments (Emacs style)" VARNAME="emacs" DEFAULT="FALSE"/>
+			<ENTRY LABEL="Additional parameters" VARNAME="args" DEFAULT=""/>
 		</CAPTION>
 	</UI>
 
 	<COMMANDS>
-		<COMMAND SHELL="System" CONFIRM="FALSE">
+		<COMMAND SHELL="System">
 			buf = new StringBuffer();
 			buf.append("ant");
 
-			buf.append(" -s \""+buildfile+"\"");
+			if (search) {
+				buf.append(" -s \""+buildfile+"\"");
+			}
+			else {
+				buf.append(" -f \""+buildfile+"\"");
+			}
 
 			if (!classpath.equals(""))
 				buf.append(" -lib \""+classpath+"\"");
 
 			if (emacs)
 				buf.append(" -e");
+
+			if (!args.equals(""))
+				buf.append(" "+args);
 
 			if (!rules.equals(""))
 				buf.append(" "+rules);
