@@ -34,7 +34,7 @@
 	</UI>
 
 	<COMMANDS>
-		<COMMAND SHELL="System" CONFIRM="FALSE">
+		<COMMAND SHELL="System">
 			buf = new StringBuffer();
 			if (buffer.getMode().getName().equals("c++")) buffer.append("g++");
 			else buffer.append("gcc");
@@ -42,9 +42,8 @@
 			if(!include.equals(""))
 			{
 				tokenizer = new StringTokenizer(include, File.pathSeparator);
-				while (tokenizer.hasMoreTokens()) {
+				while (tokenizer.hasMoreTokens())
 					buf.append(" -I\""+tokenizer.nextToken()+"\"");
-				}
 			}
 			
 			if (debug)
@@ -63,12 +62,10 @@
 			if (!outputdir.endsWith(File.separator)) outputdir += File.separator;
 			buf.append(" -o \""+outputdir+executable+"\"");
 			
-			buf.append(" \"");
-			buf.append(source);
-			buf.append('"');
+			buf.append(" \""+source+"\"");
 
 			// return value
-			buf.toString();
+			return buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

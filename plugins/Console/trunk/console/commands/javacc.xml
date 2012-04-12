@@ -30,7 +30,7 @@
 	</UI>
 
 	<COMMANDS>
-		<COMMAND SHELL="System" CONFIRM="FALSE">
+		<COMMAND SHELL="System">
 			buf = new StringBuffer();
 			buf.append("javacc");
 

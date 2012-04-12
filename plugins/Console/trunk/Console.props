@@ -383,6 +383,7 @@ console.error.generic.message=$3
 ### Commando
 
 commando.default=ant \
+	diff \
     execute \
     gcc \
 	ghc \
@@ -394,14 +395,14 @@ commando.default=ant \
 	make \
 	perl \
 	python \
-	diff \
 	qmake \
-	yap \
+	ruby \
 	jmk \
 	hugs \
 	jikes \
 	openjade_HTML \
-	openjade_PDF
+	openjade_PDF \
+	yap
 
 commando.toolbar.enabled=false
 commando.title=Commando
@@ -454,9 +455,9 @@ commando.no-command.message=Unknown commando: {0}
 ### Default compilers and interpreters
 
 mode.batch.commando.run=execute
-mode.c.commando.compile=gcc
+mode.c.commando.compile=make
 mode.c.commando.run=execute
-mode.c++.commando.compile=gcc
+mode.c++.commando.compile=make
 mode.c++.commando.run=execute
 mode.haskell.commando.compile=ghc
 mode.haskell.commando.run=execute
@@ -469,6 +470,7 @@ mode.latex.commando.compile=latex
 mode.makefile.commando.compile=make
 mode.perl.commando.run=perl
 mode.python.commando.run=python
+mode.ruby.commando.run=ruby
 mode.shellscript.commando.run=execute
 mode.tex.commando.compile=latex
 mode.tex.commando.run=yap

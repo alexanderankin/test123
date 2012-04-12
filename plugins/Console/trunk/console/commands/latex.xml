@@ -61,21 +61,16 @@
 	</UI>
 
 	<COMMANDS>
-		<COMMAND CONFIRM="FALSE" SHELL="System">
+		<COMMAND SHELL="System">
+			buf = new StringBuffer();
+
 			if (makeIn.equals("projectroot")) {
-				location = projectroot;
+				DIR = projectroot;
 			}
 			else if (makeIn.equals("customloc")) {
-				location = customlocation;
+				DIR = customlocation;
 			}
-			else location=sourcedir;
-
-			return "%cd \"" + location + "\"";
-		</COMMAND>
-
-	
-		<COMMAND SHELL="System" CONFIRM="FALSE">
-			buf = new StringBuffer();
+			else DIR = sourcedir;
 
 			if(format.equals("dvi"))
 				buf.append("latex");
@@ -134,7 +129,7 @@
 			buf.append('"');
 
 			// return value
-			buf.toString();
+			return buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

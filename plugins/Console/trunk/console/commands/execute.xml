@@ -15,13 +15,14 @@
 	</UI>
 
 	<COMMANDS>
-		<COMMAND SHELL="System" CONFIRM="FALSE">
+		<COMMAND SHELL="System">
 			buf = new StringBuffer();
 			buf.append("\""+source+"\"");
 			
 			if (params.length() > 0)
 				buf.append(" "+params);
 
+			// return value
 			return buf.toString();
 		</COMMAND>
 	</COMMANDS>

@@ -8,7 +8,7 @@
 <COMMANDO>
 	<UI>
 		<CAPTION LABEL="Makefile settings (if applicable)">
-			<TOGGLE LABEL="Look for Makefile" VARNAME="search" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Search for Makefile" VARNAME="search" DEFAULT="TRUE"/>
 			<ENTRY LABEL="Makefile name" VARNAME="makefile" DEFAULT="Makefile"/>
 			<ENTRY LABEL="Rule name" VARNAME="ruleName" DEFAULT=""/>
 		</CAPTION>
@@ -16,12 +16,12 @@
 			<TOGGLE LABEL="Dry run" VARNAME="dry" DEFAULT="FALSE"/>
 			<TOGGLE LABEL="Keep going on fail" VARNAME="keep" DEFAULT="FALSE"/>
 			<ENTRY LABEL="Number of jobs" VARNAME="jobs" DEFAULT=""/>
-			<ENTRY LABEL="Additional parameters" VARNAME="params" DEFAULT=""/>
+			<ENTRY LABEL="Additional parameters" VARNAME="args" DEFAULT=""/>
 		</CAPTION>
 	</UI>
 
 	<COMMANDS>
-		<COMMAND SHELL="System" CONFIRM="FALSE">
+		<COMMAND SHELL="System">
 			buf = new StringBuffer();
 			buf.append("make");
 
@@ -55,11 +55,11 @@
 			if (keep)
 				buf.append(" -k");
 
-			if (!params.equals(""))
-				buf.append(" "+params);
+			if (!args.equals(""))
+				buf.append(" "+args);
 
 			if (!ruleName.equals(""))
-			buf.append(" "+ruleName);
+				buf.append(" "+ruleName);
 
 			// return value
 			return buf.toString();

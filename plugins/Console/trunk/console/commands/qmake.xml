@@ -27,22 +27,25 @@
 	</UI>
 
 	<COMMANDS>
-        <COMMAND CONFIRM="FALSE" SHELL="System">
-        if (makeIn.equals("projectroot")) {
-            location = projectroot;
-        }
-        else if (makeIn.equals("customloc")) {
-            location = customlocation;
-        }
-        else location=sourcedir;
-		return "cd \"" + location + "\"";
-		</COMMAND>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
-			buf.append("qmake ");
-			if (makeProject) buf.append("-project ");
-			buf.append(projectFile);
-			buf.toString();
+			buf.append("qmake");
+
+			if (makeIn.equals("projectroot")) {
+				DIR = projectroot;
+			}
+			else if (makeIn.equals("customloc")) {
+				DIR = customDIR;
+			}
+			else DIR = sourcedir;
+
+			if (makeProject)
+				buf.append(" -project");
+
+			buf.append(" "+projectFile);
+			
+			// return value
+			return buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>
