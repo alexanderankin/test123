@@ -2,12 +2,12 @@ commandoTOGGLE(view,pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
 	value = ns.getVariable(var);
-	if("true".equals(value))
+	if("true".equalsIgnoreCase(value))
 	{
 		toggle.setSelected(true);
 		ns.setVariable(var,true);
 	}
-	else if("false".equals(value))
+	else if("false".equalsIgnoreCase(value))
 		ns.setVariable(var,false);
 
 	valueChanged()

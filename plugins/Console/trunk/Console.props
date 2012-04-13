@@ -382,7 +382,8 @@ console.error.generic.message=$3
 
 ### Commando
 
-commando.default=ant \
+commando.default=\
+	ant \
 	diff \
     execute \
     gcc \
@@ -393,15 +394,11 @@ commando.default=ant \
 	javacc \
 	latex \
 	make \
+	mcs \
 	perl \
 	python \
 	qmake \
 	ruby \
-	jmk \
-	hugs \
-	jikes \
-	openjade_HTML \
-	openjade_PDF \
 	yap
 
 commando.toolbar.enabled=false
@@ -457,6 +454,8 @@ commando.no-command.message=Unknown commando: {0}
 mode.batch.commando.run=execute
 mode.c.commando.compile=make
 mode.c.commando.run=execute
+mode.c#.commando.compile=mcs
+mode.c#.commando.run=execute
 mode.c++.commando.compile=make
 mode.c++.commando.run=execute
 mode.haskell.commando.compile=ghc
@@ -464,8 +463,6 @@ mode.haskell.commando.run=execute
 mode.java.commando.compile=javac
 mode.java.commando.run=java
 mode.javacc.commando.compile=javacc
-mode.jmk.commando.compile=jmk
-mode.jmk.commando.run=jmk
 mode.latex.commando.compile=latex
 mode.makefile.commando.compile=make
 mode.perl.commando.run=perl
