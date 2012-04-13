@@ -27,7 +27,7 @@
 		</CAPTION>
 
 		<CAPTION LABEL="Advanced">
-			<ENTRY LABEL="Additional parameters" VARNAME="params"/>
+			<ENTRY LABEL="Additional parameters" VARNAME="args"/>
 		</CAPTION>
 	</UI>
 
@@ -69,8 +69,8 @@
 			if(!encoding.equals(""))
 				buf.append(" -encoding "+encoding);
 
-			if (!params.equals(""))
-				buf.append(" "+params);
+			if (!args.equals(""))
+				buf.append(" "+args);
 
 			buf.append(" \""+source+"\"");
 
