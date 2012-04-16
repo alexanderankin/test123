@@ -8,8 +8,7 @@
 	<UI>
 		<CAPTION LABEL="Source file(s)">
 			<FILE_ENTRY LABEL="Source file(s)" VARNAME="scriptname" EVAL="buffer.getPath();" />
-			<FILE_ENTRY LABEL="Classpath" VARNAME="classpath"
-				EVAL="getBufferClassPath(buffer);" />
+			<PATH_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
 		</CAPTION>
 		<CAPTION LABEL="Advanced">
 			<ENTRY LABEL="Additional parameters" VARNAME="args"/>

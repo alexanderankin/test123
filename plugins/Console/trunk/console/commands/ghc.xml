@@ -6,7 +6,7 @@
 		<CAPTION LABEL="Files">
 			<ENTRY LABEL="Source file(s)" VARNAME="source" EVAL="buffer.getPath();"/>
 			<ENTRY LABEL="Output file name" VARNAME="output" EVAL="getBufferOutputName(buffer);"/>
-			<ENTRY LABEL="Module search path" VARNAME="include"/>
+			<PATH_ENTRY LABEL="Module search path" VARNAME="include"/>
 		</CAPTION>
 		<CAPTION LABEL="Options">
 			<TOGGLE LABEL="Compile and link imported modules" VARNAME="make" DEFAULT="true"/>
