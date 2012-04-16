@@ -8,7 +8,7 @@
 			<FILE_ENTRY LABEL="Source file(s)" VARNAME="source" EVAL="buffer.getPath()" />
 			<DIR_ENTRY LABEL="Output directory" VARNAME="outputdir" EVAL="buffer.getDirectory()" />
 			<ENTRY LABEL="Output file name" VARNAME="executable" EVAL="getBufferOutputName(buffer);" />
-			<ENTRY LABEL="Include" VARNAME="include" />
+			<PATH_ENTRY LABEL="Include" VARNAME="include" />
 		</CAPTION>
 
 		<CAPTION LABEL="Options">

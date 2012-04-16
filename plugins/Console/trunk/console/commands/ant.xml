@@ -13,7 +13,7 @@
 			<ENTRY LABEL="Rule name(s)" VARNAME="rules" DEFAULT=""/>
 		</CAPTION>
 		<CAPTION LABEL="Advanced">
-			<HIST_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
+			<PATH_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
 			<TOGGLE LABEL="Strip adornments (Emacs style)" VARNAME="emacs" DEFAULT="FALSE"/>
 			<ENTRY LABEL="Additional parameters" VARNAME="args" DEFAULT=""/>
 		</CAPTION>

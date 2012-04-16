@@ -25,8 +25,7 @@
 			<OPTION LABEL="Classic" VALUE="classic" />
 		</CHOICE> -->
 
-		<ENTRY LABEL="Classpath" VARNAME="classpath"
-			EVAL="getBufferClassPath(buffer);" />
+		<PATH_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
 
 		<!-- <TOGGLE LABEL="Verbose class loading" VARNAME="verbose_class" />
 		<TOGGLE LABEL="Verbose garbage collection" VARNAME="verbose_gc" />

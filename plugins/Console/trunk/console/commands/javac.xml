@@ -11,7 +11,7 @@
 		</CAPTION>
 
 		<CAPTION LABEL="Paths">
-			<HIST_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
+			<PATH_ENTRY LABEL="Classpath" VARNAME="classpath" EVAL="getBufferClassPath(buffer);" />
 			<!-- <HIST_ENTRY LABEL="Source path" VARNAME="sourcepath" EVAL="getProjectRoot(view, buffer);" /> -->
 			<!-- <DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" /> -->
 			<DIR_ENTRY LABEL="Output directory" VARNAME="outputpath" />
