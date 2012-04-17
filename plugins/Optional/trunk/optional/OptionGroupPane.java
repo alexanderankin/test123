@@ -202,9 +202,6 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		stage.revalidate();
 		stage.repaint();
 
-		if (!isShowing())
-			addNotify();
-
 		currentPane = optionPane;
 	} // }}}
 
