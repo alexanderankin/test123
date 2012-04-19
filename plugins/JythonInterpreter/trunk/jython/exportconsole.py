@@ -19,7 +19,10 @@
 
 from jython import Console
 from org.gjt.sp.jedit import jEdit, GUIUtilities
-from javax.swing.text import SimpleAttributeSet, BadLocationException, StyleConstants
+from javax.swing.text import SimpleAttributeSet
+from javax.swing.text import BadLocationException
+from javax.swing.text import StyleConstants
+from javax.swing.text import Segment
 
 class ConsoleToBuffer(Console):
 	def __init__(self, view, buffer):
@@ -76,11 +79,15 @@ class ConsoleToBuffer(Console):
 		l.clean()
 
 	def addOutput(self, color, msg):
-		style = SimpleAttributeSet()
-		if color:
-			style.addAttribute(StyleConstants.Foreground,color)
+		# Makes no sense without Buffer.insertString()
+		#style = SimpleAttributeSet()
+		#if color:
+		#	style.addAttribute(StyleConstants.Foreground,color)
 		try:
-			self.target.insertString(self.target.length, msg, style)
+			# Buffer.insertString() was removed in jEdit 4.5.
+			# insert() shall be used.
+			#self.target.insertString(self.target.length, msg, style)
+			self.target.insert(self.target.length, msg)
 		except BadLocationException:
 			Log.log(Log.ERROR, self, "")
 		if jEdit.getBooleanProperty("options.jython.cleanDirtyFlag"):
