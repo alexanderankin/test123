@@ -2,7 +2,7 @@
 
 plugin.jython.JythonPlugin.name=Jython Interpreter
 plugin.jython.JythonPlugin.title=Jython Interpreter
-plugin.jython.JythonPlugin.version=1.0
+plugin.jython.JythonPlugin.version=1.0.1
 plugin.jython.JythonPlugin.author=Carlos Quiroz, Ollie Rutherfurd, Roland Walter
 plugin.jython.JythonPlugin.docs=index.html
 
@@ -27,7 +27,7 @@ plugin.jython.JythonPlugin.menu=jython-dockable \
 #jython-interpreter=jython-dockable - jython-check-version jython-about
 jython-dockable.label=Jython Interpreter
 jython-about.label=About...
-jython-check-version.label=Check jython version...
+jython-check-version.label=Check Jython version...
 
 
 # Options pane
@@ -72,14 +72,14 @@ options.jython.install=true
 
 options.jython.autoload=false
 options.jython.registry.override=false
-options.jython.registry.count=6
+options.jython.registry.count=4
 options.jython.registry.name.0=python.path
 options.jython.registry.name.1=python.cachedir
 options.jython.registry.name.2=python.verbose
 options.jython.registry.name.3=python.security.respectJavaAccessibility
-options.jython.registry.name.4=python.jythonc.compiler
-options.jython.registry.name.5=python.jythonc.classpath
-options.jython.registry.name.6=python.jythonc.compileropts
+#options.jython.registry.name.4=python.jythonc.compiler
+#options.jython.registry.name.5=python.jythonc.classpath
+#options.jython.registry.name.6=python.jythonc.compileropts
 
 options.jython.python.verbose.values=debug comment message warning error
 
@@ -113,18 +113,9 @@ options.jython.upDownFlagTitle=Use UP/DOWN for history (on restart)
 options.jython.registry.override=false
 options.jython.overrideTitle=Override default registry
 
-options.jython.registryTitle=Jython Registry
-options.jython.registry.count=6
-options.jython.registry.name.0=python.path
-options.jython.registry.name.1=python.cachedir
-options.jython.registry.name.2=python.verbose
-options.jython.registry.name.3=python.security.respectJavaAccessibility
-options.jython.registry.name.4=python.jythonc.compiler
-options.jython.registry.name.5=python.jythonc.classpath
-options.jython.registry.name.6=python.jythonc.compileropts
 
-options.jython.codeCompletionFlag=false
-options.jython.codeCompletionTitle=Enable code completion in the interpreter Window (Experimental)
+#options.jython.codeCompletionFlag=false
+#options.jython.codeCompletionTitle=Enable code completion in the interpreter Window (Experimental)
 
 # GUI options
 
@@ -140,7 +131,7 @@ jython.fontstyle=0
 
 jython.about.copyright=Copyright
 jython.about.title=About...
-jython.about.about=jEdit Jython Interpreter plugin 1.0 by Carlos Quiroz, Ollie Rutherfurd, Roland Walter
+jython.about.about=jEdit Jython Interpreter plugin 1.0.1 by Carlos Quiroz, Ollie Rutherfurd, Roland Walter
 
 # Strings
 
@@ -158,10 +149,10 @@ jython.console.restartquestion=Are you sure?
 
 # Check version dialog box strings
 
-jython.check.wrong.message=JythonInterpreter requires jython version 2.5 at least, instead found version {0}, verify your classpath
-jython.check.wrong.title=Wrong jython version
+jython.check.wrong.message=JythonInterpreter requires Jython version 2.5 at least, instead found version {0}, verify your classpath
+jython.check.wrong.title=Wrong Jython version
 jython.check.right.message=Correct version {0} found
-jython.check.right.title=Right jython version
+jython.check.right.title=Right Jython version
 
 jython.pathhandler.title=Jython Path
 jython.pathhandler.pathborder=Path entries
@@ -180,7 +171,7 @@ jython.export.propmts=Export propmts
 jython.export.title=Export Session
 jython.export.errors=Export tracebacks
 
-jython.check-error.message=JythonInterpreter requires jython version 2.5 or higher
+jython.check-error.message=JythonInterpreter requires Jython version 2.5 or higher
 jython.check-error.title=JythonInterpreter version check
 
 jython.exec-macro.message=Error in macro {0}: {1} {2}\n{3}
@@ -201,7 +192,7 @@ jython.jython-awt-error.message=An AWT error occurred running Jython.
 jython.tooltip-run=Run current buffer
 jython.tooltip-run-another=Run current buffer to another buffer
 jython.tooltip-import=Import/reload current buffer
-jython.tooltip-path=Edit jython path
+jython.tooltip-path=Edit Jython path
 jython.tooltip-browse-path=Browse Path
 jython.tooltip-restart=Restart and clean session
 jython.tooltip-about=About...
@@ -211,4 +202,4 @@ jython.tooltip-stop=Stop current
 jython.tooltip-tabnanny=Check buffer with tabnanny
 
 jython.tabnanny.success.title=Tabnanny
-jython.tabnanny.success.message=Tabnanny didn\'t find any errors
+jython.tabnanny.success.message=Tabnanny did not find any errors

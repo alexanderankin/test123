@@ -80,7 +80,7 @@ class jiconsole(Console):
 	BANNER = (InteractiveConsole.getDefaultBanner(), jEdit.getProperty("console-second-line"))
 
 	def __init__(self, view):
-		""" Constructor, initialized all the main variables and layout """
+		""" Constructor, initializes all the main variables and layout """
 		# Initializes variables
 		self.view = view
 		self.history = History(self)
@@ -199,7 +199,7 @@ class jiconsole(Console):
 			JythonExecutor.getExecutor().execBuffer(self.view, buffer, self)
 
 	def runBufferToWindow(self, event):
-		""" Runs the current buffer to and exports the result to another window """
+		""" Runs the current buffer and exports the result to another window """
 		from exportconsole import ConsoleToBuffer
 		buffer = self.__buffer()
 		if buffer:
@@ -346,7 +346,7 @@ class jiconsole(Console):
 
 	def printResult(self, msg):
 		""" Prints the results of an operation """
-		self.__addOutput(self.output.foreground, "\n" + str(msg))
+		self.__addOutput(self.output.foreground, "\n" + unicode(msg))
 
 	def printOnProcess(self):
 		""" Prints the process symbol """
@@ -357,12 +357,12 @@ class jiconsole(Console):
 		self.__addOutput(self.infoColor, "\n" + jiconsole.PROMPT)
 
 	def printErrorMsg(self, msg, file, line):
-		self.__addOutput(self.errorColor, "\n" + str(msg))
+		self.__addOutput(self.errorColor, "\n" + unicode(msg))
 		self.__addErrorButton((file, line))
 
 	def printError(self, e):
 		import org
-		self.__addOutput(self.errorColor, "\n%s" % str(e)[:-1])
+		self.__addOutput(self.errorColor, u"\n%s" % unicode(e)[:-1])
 
 		if isinstance(e, org.python.core.PySyntaxError):
 			self.__addErrorButton((e.value[1][0], e.value[1][1]))

@@ -9,7 +9,7 @@
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 
-<bookinfo><title>Jython Interpreter plugin user's guide</title>
+<bookinfo><title>Jython Interpreter Plugin User's Guide</title>
 
  <authorgroup>
 	<author><firstname>Carlos</firstname><surname>Quiroz</surname></author>
@@ -57,8 +57,8 @@
 		interpreter at startup in the options window. Also if any plugin or macro is run it will
 		load the interpreter in case it is not already running.
 		You also have the <guisubmenu>About</guisubmenu> for JythonInterpreter and the
-			<guisubmenu>Check jython version...</guisubmenu>
-		which will verify if you have the correct jython version in your classpath.
+			<guisubmenu>Check Jython version...</guisubmenu>
+		which will verify if you have the correct Jython version in your classpath.
 	</para>
 
 	<para>
@@ -72,18 +72,18 @@
 			<guimenu>CTRL+UP</guimenu>
 		and
 			<guimenu>CTRL+DOWN</guimenu>
-		keys. This can be optionally set to UP/DOWN in the Options dialog box
+		keys. This can be optionally set to UP/DOWN in the Options dialog box.
 	</para>
 
 	<para>
-		The interpreter is based on Jython 2.5 and tested on Sun's JDK 1.5 and Sun's JDK 1.6,
-		jEdit 4.3.2, in Linux. The API of Jython changed in 2.5, so you cannot use older
-		versions.
+		The interpreter is based on Jython 2.5 and tested on Sun's JDK 1.6,
+		jEdit 4.5.1, in Linux. The API of Jython changed in version 2.5, so you 
+		cannot use older versions.
 	</para>
 
 </chapter>
 
-<chapter id="toolbar"><title>JythonInterpreter toolbar</title>
+<chapter id="toolbar"><title>JythonInterpreter Toolbar</title>
 	<para>
 		Since version 0.6 JythonInterpreter features a toolbar which make easy to execute several
 		operations:
@@ -95,7 +95,7 @@
 			<formalpara><title>Run current buffer:</title>
 			<para>
 				It will run the current selected buffer. It will ask you if you want to
-				save the file if the file is unsaved. The output will go to the text area
+				save the file if the file is unsaved. The output will go to the text area.
 			</para>
 			</formalpara>
 		</listitem>
@@ -109,7 +109,7 @@
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>Import current buffer</title>
+				<title>Import current buffer:</title>
 				<para>
 					It will import the current buffer.
 				</para>
@@ -117,54 +117,54 @@
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>Edit JythonPath</title>
+				<title>Edit JythonPath:</title>
 				<para>
 					Opens a dialog box which allows you to edit the JythonPath. You can add/remove/edit
-					entries as well as moving them up and down
+					entries as well as moving them up and down.
 				</para>
 			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>Browse Path</title>
+				<title>Browse Path:</title>
 				<para>
 				It opens the Path Browser, which allows you to easily open python files. It doesn't
-				yet works with compressed python files
+				yet works with compressed python files.
 				</para>
 			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>Save session: </title>
+				<title>Save session:</title>
 				<para>
-				Exports the current interactive session to a new buffer
+				Exports the current interactive session to a new buffer.
 				</para>
 			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>Restart and clean session: </title>
+				<title>Restart and clean session:</title>
 
 			<para>
-				Restarts the interpreter and cleans the session
+				Restarts the interpreter and cleans the session.
 			</para>
 			</formalpara>
 		</listitem>
 				<listitem>
 			<formalpara>
-				<title>Check buffer with tabnanny: </title>
+				<title>Check buffer with tabnanny:</title>
 
 			<para>
-				Checks the current buffer with tabnnany to find indentation problems
+				Checks the current buffer with tabnnany to find indentation problems.
 			</para>
 			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>About: </title>
+				<title>About:</title>
 
 			<para>
-				Opens the about dialog box
+				Opens the about dialog box.
 			</para>
 			</formalpara>
 		</listitem>
@@ -172,7 +172,7 @@
 
 </chapter>
 
-<chapter id="extras"><title>Some extras</title>
+<chapter id="extras"><title>Some Extras</title>
 <para>
 The Interpreter is based on the Jython's Interactive Console, so all commands
 available there are available here as well.
@@ -180,13 +180,13 @@ available there are available here as well.
 
 <para>
 The current buffer object is always available as a Jython
-object called buffer. This makes very easy to run the currently edited file
-as execfile(buffer.getPath())
+object called buffer. This makes it very easy to run the currently edited file
+as execfile(buffer.getPath()).
 </para>
 
 <para>
 If the projectviewer plugin is installed, the path of the current project will
-be added to the jython class path so that any java classes in the current project
+be added to the jython classpath so that any java classes in the current project
 can be used within the interpreter.
 </para>
 
@@ -202,7 +202,7 @@ The same variables normally available at BeanShell are available in Jython, name
 </itemizedlist>
 
 <para>The interpreter is running on its own independent thread and the current task
-will be <quote>attempted</quote> to be stopped by the stop button</para>
+will be <quote>attempted</quote> to be stopped by the stop button.</para>
 
 <para>Pressing restart will clear completly the interpreter. Notice that the
 startup scripts will be loaded again.</para>
@@ -210,7 +210,7 @@ startup scripts will be loaded again.</para>
 </chapter>
 
 <chapter id="sidekick">
-	<title>SideKick parser</title>
+	<title>SideKick Parser</title>
 	<para>The JythonInterpreter plugin includes a python parser adapted for
 	the SideKick parser. To use it just open a python file and the sidekick
 	plugin window.
@@ -234,7 +234,7 @@ startup scripts will be loaded again.</para>
 	<itemizedlist>
 		<listitem>
 			<formalpara>
-				<title>Load Interpreter at the begining:</title>
+				<title>Load Interpreter at the beginning:</title>
 				<para>
 				If selected the interpreter will be loaded automatically at startup,
 				instead of waiting for the first command.
@@ -246,7 +246,7 @@ startup scripts will be loaded again.</para>
 				<title>Autoload plugins' JARS:</title>
 				<para>
 				If selected the interpreter will add all the jars from plugins to the
-				cache and system path making them avaiable for scripting.
+				cache and system path making them available for scripting.
 				</para>
 			</formalpara>
 		</listitem>
@@ -265,7 +265,7 @@ startup scripts will be loaded again.</para>
 
 			<para>
 				If set and the autosave option is not set, it will ask if you want to save
-				the file before run/import. Disable if you don't want to be bugged
+				the file before run/import. Disable if you don't want to be bugged.
 			</para>
 			</formalpara>
 		</listitem>
@@ -275,20 +275,21 @@ startup scripts will be loaded again.</para>
 
 			<para>
 				If set the path will be saved locally if you modify it by the PathEditor dialog
-				box. In this way the next time the interpreter is used it will use the complete path
+				box. In this way the next time the interpreter is used it will use the complete path.
 			</para>
 			</formalpara>
 		</listitem>
 		<listitem>
 			<formalpara>
-				<title>Override default registry: </title>
+				<title>Override default registry:</title>
 
 			<para>
 			 Allows to use custom values for the Jython registry. Notice that empty values
 			 won't be set as empty. The loading of custom properties after Jython has started
 			 for the first time has no effect, so changes will be valid the next time jEdit is
-			 run. For details about registr refer to <ulink url="http://www.jython.org/docs/registry.html">
-			 The Jython Registry</ulink>
+			 run. For details about registry refer to 
+			 <ulink url="http://wiki.python.org/jython/UserGuide#the-jython-registry">
+			 The Jython Registry</ulink>.
 			</para>
 			</formalpara>
 		</listitem>
@@ -298,16 +299,20 @@ startup scripts will be loaded again.</para>
 <chapter id="macros">
 	<title>Macros</title>
 		<para>
-			Since version 0.8 JythohInterpreter uses the MacroHandler mechanism avaiable as jEdit 4.0pre6 and avobe.
+			Since version 0.8 JythohInterpreter uses the MacroHandler mechanism available
+			 as jEdit 4.0pre6 and above.
 			This means that jython macros can be executed and treated exactly like BeanShell macros.
-			Macros have access to the 4 standard variables view, buffer, textArea and editPane
+			Macros have access to the 4 standard variables view, buffer, textArea and editPane.
 		</para>
 		<para>
-			To make a macro just create a python file (Don't forget the py extension) and put it in a macros dir
+			To make a macro just create a python file (Don't forget the py extension) 
+			and put it in a macros directory.
 		</para>
 		<para>
-			Aditionally you can script all other plugins. To do that enable loading the plugins jar option. That will
-			cause the interpreter to include all jars in your .jedit/jars dir and you can use that to do
+			Aditionally you can script all other plugins. To do that enable loading 
+			the plugins jar option. That will
+			cause the interpreter to include all jars in your .jedit/jars directory
+			 and you can use that to do
 			plugins scripting.
 		</para>
 		<para>
@@ -337,8 +342,9 @@ f()
 	<para>Jython Plugins can be built by creating a normal plugin and adding
 	<guimenu>.py</guimenu> files to the plugin's jar. Of course you also need to add
 	the dependency on JythonInterpreter 0.9.8 or higher.
-	When your plugin needs to execute something you call the JythonExecutor.executePlugin(pluginName, dir, module, function)
-	or JythonExecutor.executePlugin(pluginName, dir, module, function, args)
+	When your plugin needs to execute something you call the 
+	JythonExecutor.executePlugin(pluginName, dir, module, function)
+	or JythonExecutor.executePlugin(pluginName, dir, module, function, args).
 	</para>
 
 	<para>Where:
@@ -366,6 +372,7 @@ f()
 		many suggestions</para></listitem>
 	<listitem><para>Jason Madar: Projectviewer integration and
 		some bugfixes</para></listitem>
+	<listitem><para>Roland Walter: Ported to Jython 2.5 and jEdit 4.4</para></listitem>
 </itemizedlist>
 </chapter>
 
@@ -392,6 +399,16 @@ f()
 
 <appendix id="changes"><title>Change log</title>
 	<itemizedlist>
+	<listitem><para><emphasis role="bold">Version 1.0.1</emphasis></para>
+		<itemizedlist>
+			<listitem><para>Replaced call of since jEdit 4.5 nonexistent Java method in
+			script exportconsole.py.</para>
+			</listitem>
+			<listitem>
+				<para>Removed plugin options for features not supported by Jython 2.5.</para>
+			</listitem>
+		</itemizedlist>
+	</listitem>
 	<listitem>
 	        <para><emphasis role="bold">Version 1.0</emphasis>
 	        	requires jEdit 4.4, Java 1.6, SideKick 1.2, ErrorList 1.9, ProjectViewer 3.4.2. </para>
@@ -439,7 +456,7 @@ f()
 					wish to have a script executed when jEdit is starting.</para>
 			</listitem>
 			<listitem>
-				<para>Traceback displayed when there's an error
+				<para>Traceback displayed when there is an error
 					executing a macro.</para>
 			</listitem>
 			<listitem>
@@ -453,16 +470,17 @@ f()
 				<para>Added AWT error handler to catch jython exception using AWT.</para>
 			</listitem>
 			<listitem>
-				<para>Fixed bugs in path handler. Now it can also load one path and mutiple jars at the same time. It uses jEdit VFS.</para>
+				<para>Fixed bugs in path handler. Now it can also load one path
+				 and mutiple jars at the same time. It uses jEdit VFS.</para>
 			</listitem>
 			<listitem>
 				<para>Added button to invoke tabnanny	</para>
 			</listitem>
 			<listitem>
-				<para>If project list is installed its classpath is added to the interpreter</para>
+				<para>If project list is installed its classpath is added to the interpreter.</para>
 			</listitem>
 			<listitem>
-				<para>Compatible with jEdit 4.2pre7</para>
+				<para>Compatible with jEdit 4.2pre7.</para>
 			</listitem>
 		</itemizedlist>
 	</listitem>
@@ -504,19 +522,20 @@ f()
 				<para>Fixed bugs #606782, #536885, #524056</para>
 			</listitem>
 			<listitem>
-				<para>Added option to uset UP/DOWN for history navigation</para>
+				<para>Added option to use UP/DOWN for history navigation.</para>
 			</listitem>
 			<listitem>
-				<para>Added option to reuse the export to file</para>
+				<para>Added option to reuse the export to file.</para>
 			</listitem>
 			<listitem>
-				<para>Added option for the export to file to remember the original source file. When export to is pressed it will use again the original source file</para>
+				<para>Added option for the export to file to remember the original source file. 
+				When export to is pressed it will use again the original source file.</para>
 			</listitem>
 			<listitem>
-				<para>Removed all old Console dependencies</para>
+				<para>Removed all old Console dependencies.</para>
 			</listitem>
 			<listitem>
-				<para>Added option pane to define colors and font</para>
+				<para>Added option pane to define colors and font.</para>
 			</listitem>
 		</itemizedlist>
 	</listitem>
@@ -527,19 +546,19 @@ f()
 
 		<itemizedlist>
 			<listitem>
-				<para>Updated to jEdit 4.0.6 and uses the new Macro Handler API (Mike Dillon)</para>
+				<para>Updated to jEdit 4.0.6 and uses the new Macro Handler API (Mike Dillon).</para>
 			</listitem>
 			<listitem>
-				<para>Removed custom namespace to ensure macro compability</para>
+				<para>Removed custom namespace to ensure macro compatibility.</para>
 			</listitem>
 			<listitem>
-				<para>Added option to autoload all plugins' jars</para>
+				<para>Added option to autoload all plugins' jars.</para>
 			</listitem>
 			<listitem>
-				<para>Added export session</para>
+				<para>Added export session.</para>
 			</listitem>
 			<listitem>
-				<para>Removed deprecated functions</para>
+				<para>Removed deprecated functions.</para>
 			</listitem>
 		</itemizedlist>
 	</listitem>
@@ -550,13 +569,13 @@ f()
 
 		<itemizedlist>
 			<listitem>
-				<para>Updated to jEdit 4.0.4 using new Dockables APi</para>
+				<para>Updated to jEdit 4.0.4 using new Dockables API.</para>
 			</listitem>
 			<listitem>
-				<para>Added jython.JythonDocker class to adapt to the new Dockables API</para>
+				<para>Added jython.JythonDocker class to adapt to the new Dockables API.</para>
 			</listitem>
 			<listitem>
-				<para>Improved caching of jars</para>
+				<para>Improved caching of jars.</para>
 			</listitem>
 		</itemizedlist>
 	</listitem>
@@ -569,7 +588,7 @@ f()
 		Updated to jython 2.1.
 	 </para></listitem>
 	 <listitem><para>
-		Last version for jEdit 3.xx
+		Last version for jEdit 3.xx.
 	 </para></listitem>
 	</itemizedlist>
 	</listitem>
@@ -578,38 +597,38 @@ f()
 
 	<itemizedlist>
 	 <listitem><para>
-		Completely redesigned GUI, with a toolbar and a text area, direclty editable.
+		Completely redesigned GUI, with a toolbar and a text area, directly editable.
 	 </para></listitem>
 	 <listitem><para>
-		New implementation mostly in Jython
+		New implementation mostly in Jython.
 	 </para></listitem>
 	 <listitem><para>
-		New run current buffer button
+		New run current buffer button.
 	 </para></listitem>
 	 <listitem><para>
-		New run current buffer to another buffer button
+		New run current buffer to another buffer button.
 	 </para></listitem>
 	 <listitem><para>
-		New import current buffer button
+		New import current buffer button.
 	 </para></listitem>
 	 <listitem><para>
-		New JythonPath editor
+		New JythonPath editor.
 	 </para></listitem>
 	 <listitem><para>
-		New PathBrowser
+		New PathBrowser.
 	 </para></listitem>
 	 <listitem><para>
 		Improved error handling, including an Error button which allows to jump to the
-		error source
+		error source.
 	 </para></listitem>
 	 <listitem><para>
-		Check jython version, which verify if the right version is in use
+		Check jython version, which verify if the right version is in use.
 	 </para></listitem>
 	 <listitem><para>
-		History moved to CTRL+UP and CTRL+DOWN keys
+		History moved to CTRL+UP and CTRL+DOWN keys.
 	 </para></listitem>
 	 <listitem><para>
-		Documentation moved to DockBook
+		Documentation moved to DockBook.
 	 </para></listitem>
 	</itemizedlist>
 

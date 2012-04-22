@@ -1,5 +1,5 @@
 """
- pathbrowser.py - The path browser. It consists of a window containig
+ pathbrowser.py - The path browser. It consists of a window containing
  the path entries and allowing for opening those files
 
  Copyright (C) 2001 Carlos Quiroz
@@ -171,9 +171,6 @@ class DirBrowserTreeItem(DefaultMutableTreeNode):
 
 	def iszipdir(self, file, entry):
 		return entry.isDirectory()
-#			return 0
-#		init = os.path.join(file, "__init__.py")
-#		return os.path.exists(init)
 
 	def listmodules(self, allnames):
 		modules = {}
