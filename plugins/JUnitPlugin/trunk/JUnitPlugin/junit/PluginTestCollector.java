@@ -105,7 +105,7 @@ public class PluginTestCollector{
 					// remove .class
 					String className = prefix+c.getName().substring(0,c.getName().length()-6);
 					try{
-						Class cl = loader.loadClass(className,false);
+						Class cl = loader.loadClass(className);
 						d.addChild(Description.createSuiteDescription(cl));
 					}catch(ClassNotFoundException e){
 						Log.log(Log.WARNING,PluginTestCollector.class,"test class not found: "+className);

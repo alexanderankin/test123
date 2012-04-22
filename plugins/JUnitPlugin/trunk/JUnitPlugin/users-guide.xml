@@ -52,7 +52,7 @@
     <para>
       The <application>JUnitPlugin</application> allows users to run JUnit tests
       from jEdit.
-      It comes bundled with an unmodified version of junit (currently junit 4.8.2).
+      It comes bundled with an unmodified version of junit (currently junit 4.10, including hamcrest).
       It's source code may be downloaded from https://github.com/KentBeck/junit
     </para>
   </chapter>
@@ -102,6 +102,15 @@ public class JUnit4Suite{
     <itemizedlist>
     
     <listitem>
+        <para>
+          <emphasis role="bold">Version 0.7</emphasis>
+        requires jEdit 4.4, JDK 1.6, and ProjectViewer 3.4.2</para>
+        <itemizedlist>
+      <listitem><para>Now based on junit-4.10.</para></listitem>
+      </itemizedlist>
+      </listitem>
+
+      <listitem>
         <para>
           <emphasis role="bold">Version 0.6</emphasis>
         requires jEdit 4.3 final+, JDK 1.6, and ProjectViewer 3.0.1+</para>

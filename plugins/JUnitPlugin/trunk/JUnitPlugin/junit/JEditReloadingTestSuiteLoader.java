@@ -17,11 +17,11 @@ public class JEditReloadingTestSuiteLoader  {
         
         public Class load(String suiteClassName) throws ClassNotFoundException {
                 JEditTestCaseClassLoader loader = new JEditTestCaseClassLoader(this.classPath);
-                return loader.loadClass(suiteClassName, true);
+                return loader.loadClass(suiteClassName);
         }
         
         public Class reload(Class aClass) throws ClassNotFoundException {
                 JEditTestCaseClassLoader loader = new JEditTestCaseClassLoader(this.classPath);
-                return loader.loadClass(aClass.getName(), true);
+                return loader.loadClass(aClass.getName());
         }
 }
