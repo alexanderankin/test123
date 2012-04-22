@@ -352,9 +352,7 @@ class JUnitDockable extends JPanel {
                                 );
                         return;
                 }
-                // is it possible to jump directly to a give panel
-                // of ProjectViewer's options ?
-                ProjectOptions.run(pr, false, null);
+                projectviewer.PVActions.editProject(pr, "junit.pconfig");
                 runner.setClassPath(JUnitPlugin.getClassPath());
         } 
         //}}}

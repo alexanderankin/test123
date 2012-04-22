@@ -61,11 +61,11 @@ public class JEditTestCaseClassLoader{
 	}
 	
 	//{{{ loadClass method.
-	public synchronized Class loadClass(String name, boolean resolve) 
+	public synchronized Class loadClass(String name) 
 	throws ClassNotFoundException 
 	{
 		try {
-			return Class.forName(name, resolve,loader);
+			return loader.loadClass(name);
 		} catch (ClassNotFoundException e) {
 			throw new ClassNotFoundException(name);
 		}
