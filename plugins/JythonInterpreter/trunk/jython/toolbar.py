@@ -24,11 +24,15 @@ from org.gjt.sp.jedit import jEdit, GUIUtilities
 class ToolbarHandler(object):
 	""" Utility class to simplify the toolbar creation process """
 	def __init__(self, actions = None):
+		'''actions is a list of tuples with three items:
+		icon, tooltip name, function.
+		'''
 		self.actions = actions
 
 	def createToolbar(self):
 		toolBar = JToolBar()
 		margin = Insets(1,1,1,1)
+		# This must be a list comprehension.
 		[self.createButton(toolBar, i, t ,f) for (i,t,f) in self.actions]
 		return toolBar
 

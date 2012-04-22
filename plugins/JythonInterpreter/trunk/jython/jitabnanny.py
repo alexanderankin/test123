@@ -32,18 +32,6 @@ class NannyNag(Exception):
         return self.line
 
 def check(file):
-    #if os.path.isdir(file) and not os.path.islink(file):
-      #  if verbose:
-     #       print "%s: listing directory" % `file`
-     #  names = os.listdir(file)
-    #    for name in names:
-    #        fullname = os.path.join(file, name)
-    #        if (os.path.isdir(fullname) and
-    #            not os.path.islink(fullname) or
-     #           os.path.normcase(name[-3:]) == ".py"):
-    #            check(fullname)
-     #   return
-
     try:
         f = open(file)
     except IOError, msg:

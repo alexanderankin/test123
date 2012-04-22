@@ -22,9 +22,10 @@
 
 package jython.options;
 
-import javax.swing.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
+import javax.swing.JCheckBox;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
 
 public class GeneralOptionsPane extends AbstractOptionPane
 {
@@ -77,10 +78,11 @@ public class GeneralOptionsPane extends AbstractOptionPane
 			"options.jython.upDownFlagTitle")));
 		upDownFlag.getModel().setSelected(jEdit.getBooleanProperty(
 			"options.jython.upDownFlag"));
-		addComponent(codeCompletionFlag = new JCheckBox(jEdit.getProperty(
-			"options.jython.codeCompletionTitle")));
-		codeCompletionFlag.getModel().setSelected(jEdit.getBooleanProperty(
-			"options.jython.codeCompletionFlag"));
+		// Code completion was never implemented.
+//		addComponent(codeCompletionFlag = new JCheckBox(jEdit.getProperty(
+//			"options.jython.codeCompletionTitle")));
+//		codeCompletionFlag.getModel().setSelected(jEdit.getBooleanProperty(
+//			"options.jython.codeCompletionFlag"));
 	} //}}}
 
 	//{{{ _save() method
@@ -104,8 +106,9 @@ public class GeneralOptionsPane extends AbstractOptionPane
 			append.getModel().isSelected());
 		jEdit.setBooleanProperty("options.jython.upDownFlag",
 			upDownFlag.getModel().isSelected());
-		jEdit.setBooleanProperty("options.jython.codeCompletionFlag",
-			codeCompletionFlag.getModel().isSelected());
+		// Code completion was never implemented
+//		jEdit.setBooleanProperty("options.jython.codeCompletionFlag",
+//			codeCompletionFlag.getModel().isSelected());
 	}
 	//}}}
 
@@ -119,7 +122,7 @@ public class GeneralOptionsPane extends AbstractOptionPane
 	private JCheckBox reuseOutputBuffer;
 	private JCheckBox append;
 	private JCheckBox upDownFlag;
-	private JCheckBox codeCompletionFlag;
+//	private JCheckBox codeCompletionFlag;
 	//}}}
 }
 

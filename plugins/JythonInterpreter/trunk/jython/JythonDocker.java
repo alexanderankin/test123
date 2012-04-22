@@ -39,6 +39,11 @@ import org.gjt.sp.jedit.jEdit;
 public class JythonDocker extends JPanel {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Creates a JythonDocker which will call the function "function" in the given module, dir
 	 * and plugin. It will display a standard message while loading
 	 *

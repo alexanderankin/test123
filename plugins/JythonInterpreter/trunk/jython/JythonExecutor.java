@@ -40,7 +40,6 @@ import org.python.core.Py;
 import org.python.core.PyException;
 import org.python.core.PyList;
 import org.python.core.PyModule;
-import org.python.core.PyNone;
 import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.core.PyStringMap;
@@ -110,7 +109,7 @@ public class JythonExecutor implements Runnable {
 	/**
 	 *  Private constructor to enforce the singleton
 	 */
-	private void JythonExecutor() {
+	private JythonExecutor() {
 	}
 
 
@@ -346,6 +345,7 @@ public class JythonExecutor implements Runnable {
 	 *
 	 * @return    The interpreter single instance
 	 */
+	@SuppressWarnings("static-access")
 	protected synchronized JeditConsole getInterpreter() {
 		if (interpreter == null) {
 			// verify if it has been ever initialised
@@ -371,9 +371,7 @@ public class JythonExecutor implements Runnable {
 				if (classpath != null) {
 					// check if jython is in the classpath
 					int jpy  = classpath.toLowerCase().indexOf("jython.jar");
-					if (jpy == -1) {
-						useInternalLib = true;
-						}
+					useInternalLib = (jpy == -1);
 				}
 				// Modify cachedir property if has not been set before
 				if (useInternalLib && !props.containsKey("python.cachedir")) {
@@ -540,6 +538,7 @@ public class JythonExecutor implements Runnable {
 	 * @param  delete    Indicates whether to delete the imported module
 	 * @param  args      Function arguments
 	 */
+	@SuppressWarnings("static-access")
 	private PyObject execPlugin(String plugin, String dir, String module, String function, boolean delete, Object args[]) {
 		EditPlugin ePlugin  = jEdit.getPlugin(plugin);
 		getInterpreter();

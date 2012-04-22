@@ -1,5 +1,5 @@
 """
- console.py - The console window
+ popup.py - The console window
  Copyright (C) 2001 Carlos Quiroz
 
  This program is free software; you can redistribute it and/or

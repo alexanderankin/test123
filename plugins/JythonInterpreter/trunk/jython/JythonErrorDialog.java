@@ -42,6 +42,11 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 public class JythonErrorDialog extends EnhancedDialog
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	//{{{ constructors
 	public JythonErrorDialog(View view, Throwable t)
 	{

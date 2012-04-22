@@ -105,30 +105,31 @@ public class RegistryOptionsPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("options.jython.registry.value.3")
 		);
 
+		// Jython 2.5+ does not support jythonc anymore.
 		// python.jythonc.compiler
-		panel = new JPanel(new BorderLayout(2,2));
-		browseForCompiler = new JButton("...");
-		browseForCompiler.addActionListener(this);
-		panel.add(
-			compiler = new JTextField(
-				jEdit.getProperty("options.jython.registry.value.4"))
-			,BorderLayout.CENTER
-		);
-		panel.add(browseForCompiler, BorderLayout.EAST);
-		addComponent(
-			jEdit.getProperty("options.jython.registry.name.4"),panel);
-
-		// python.jythonc.classpath
-		addComponent(jEdit.getProperty("options.jython.registry.name.5"),
-			classpath = new JTextField(
-				jEdit.getProperty("options.jython.registry.value.5"))
-		);
-
-		// python.jythonc.compileropts
-		addComponent(jEdit.getProperty("options.jython.registry.name.6"),
-			compilerOpts = new JTextField(
-				jEdit.getProperty("options.jython.registry.value.6"))
-		);
+//		panel = new JPanel(new BorderLayout(2,2));
+//		browseForCompiler = new JButton("...");
+//		browseForCompiler.addActionListener(this);
+//		panel.add(
+//			compiler = new JTextField(
+//				jEdit.getProperty("options.jython.registry.value.4"))
+//			,BorderLayout.CENTER
+//		);
+//		panel.add(browseForCompiler, BorderLayout.EAST);
+//		addComponent(
+//			jEdit.getProperty("options.jython.registry.name.4"),panel);
+//
+//		// python.jythonc.classpath
+//		addComponent(jEdit.getProperty("options.jython.registry.name.5"),
+//			classpath = new JTextField(
+//				jEdit.getProperty("options.jython.registry.value.5"))
+//		);
+//
+//		// python.jythonc.compileropts
+//		addComponent(jEdit.getProperty("options.jython.registry.name.6"),
+//			compilerOpts = new JTextField(
+//				jEdit.getProperty("options.jython.registry.value.6"))
+//		);
 
 		// control shouldn't be enabled unless override is true
 		enableControls();
@@ -153,15 +154,16 @@ public class RegistryOptionsPane extends AbstractOptionPane
 		// python.security.respectJavaAccessibility
 		jEdit.setBooleanProperty("options.jython.registry.value.3", 
 			respectJavaAccessibility.getModel().isSelected());
+		// Jython 2.5+ does not support jythonc anymore.
 		// python.jythonc.compiler
-		jEdit.setProperty("options.jython.registry.value.4", 
-			compiler.getText());
-		// python.jythonc.classpath
-		jEdit.setProperty("options.jython.registry.value.5", 
-			classpath.getText());
-		// python.jythonc.compileropts
-		jEdit.setProperty("options.jython.registry.value.6", 
-			compilerOpts.getText());
+//		jEdit.setProperty("options.jython.registry.value.4", 
+//			compiler.getText());
+//		// python.jythonc.classpath
+//		jEdit.setProperty("options.jython.registry.value.5", 
+//			classpath.getText());
+//		// python.jythonc.compileropts
+//		jEdit.setProperty("options.jython.registry.value.6", 
+//			compilerOpts.getText());
 	}
 	//}}}
 
@@ -181,16 +183,17 @@ public class RegistryOptionsPane extends AbstractOptionPane
 				cache.setText(dirs[0]);
 			}
 		}
-		else if(evt.getSource() == browseForCompiler)
-		{
-			String[] files = GUIUtilities.showVFSFileDialog(null,
-				compiler.getText(),
-				VFSBrowser.OPEN_DIALOG, false);
-			if(files != null && files.length == 1)
-			{
-				compiler.setText(files[0]);
-			}
-		}
+		// Jython 2.5+ does not support jythonc anymore.
+//		else if(evt.getSource() == browseForCompiler)
+//		{
+//			String[] files = GUIUtilities.showVFSFileDialog(null,
+//				compiler.getText(),
+//				VFSBrowser.OPEN_DIALOG, false);
+//			if(files != null && files.length == 1)
+//			{
+//				compiler.setText(files[0]);
+//			}
+//		}
 	} //}}}
 
 	//{{{ enableControls() method
@@ -202,10 +205,10 @@ public class RegistryOptionsPane extends AbstractOptionPane
 		browseForCache.setEnabled(enabled);
 		verbose.setEnabled(enabled);
 		respectJavaAccessibility.setEnabled(enabled);
-		compiler.setEnabled(enabled);
-		browseForCompiler.setEnabled(enabled);
-		classpath.setEnabled(enabled);
-		compilerOpts.setEnabled(enabled);
+//		compiler.setEnabled(enabled);
+//		browseForCompiler.setEnabled(enabled);
+//		classpath.setEnabled(enabled);
+//		compilerOpts.setEnabled(enabled);
 	} //}}}
 
 	//{{{ instance variables
@@ -215,10 +218,10 @@ public class RegistryOptionsPane extends AbstractOptionPane
 	private JButton browseForCache;
 	private JComboBox verbose;
 	private JCheckBox respectJavaAccessibility;
-	private JTextField compiler;
-	private JButton browseForCompiler;
-	private JTextField classpath;
-	private JTextField compilerOpts;
+//	private JTextField compiler;
+//	private JButton browseForCompiler;
+//	private JTextField classpath;
+//	private JTextField compilerOpts;
 	//}}}
 }
 
