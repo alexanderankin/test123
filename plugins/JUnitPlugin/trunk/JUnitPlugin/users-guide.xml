@@ -106,7 +106,8 @@ public class JUnit4Suite{
           <emphasis role="bold">Version 0.7</emphasis>
         requires jEdit 4.4, JDK 1.6, and ProjectViewer 3.4.2</para>
         <itemizedlist>
-      <listitem><para>Now based on junit-4.10.</para></listitem>
+      <listitem><para>Now based on junit-4.10 and includes hamcrest classes
+      (fixes plugin bug #3519395 "JUnit run tests error" - Eric Le Lay).</para></listitem>
       </itemizedlist>
       </listitem>
 
