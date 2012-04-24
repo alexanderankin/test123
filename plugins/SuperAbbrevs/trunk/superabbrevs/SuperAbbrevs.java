@@ -19,6 +19,7 @@ import superabbrevs.zencoding.html.*;
 import superabbrevs.zencoding.ZenParser;
 import superabbrevs.zencoding.html.TokenMgrError;
 
+import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
 
@@ -142,15 +143,18 @@ public class SuperAbbrevs {
 			String abbrev = getAbbrev(textArea, buffer);
 			// if the abbreviation is empty we use the default behavior for the
 			// tab key
-			String template;
+			String template = null;
 			if (abbrev.trim().isEmpty())
 			{
 				abbrev = getZenCodingAbbrevs(textArea, buffer, mode);
-				template = getZenCodingTemplate(abbrev, mode);
-				if (template == null)
+				if (!abbrev.isEmpty())
 				{
-					textArea.insertTabAndIndent();
-					return;
+					template = getZenCodingTemplate(abbrev, mode);
+					if (template == null)
+					{
+						textArea.insertTabAndIndent();
+						return;
+					}
 				}
 			}
 			else
@@ -162,7 +166,8 @@ public class SuperAbbrevs {
 			if (template == null)
 			{
 				abbrev = getZenCodingAbbrevs(textArea, buffer, mode);
-				template = getZenCodingTemplate(abbrev, mode);
+				if (!abbrev.isEmpty())
+					template = getZenCodingTemplate(abbrev, mode);
 			}
 
 			if(template!=null){
@@ -212,7 +217,8 @@ public class SuperAbbrevs {
 		return template;
 	}
 
-	private static String getZenCodingAbbrevs(TextArea textArea, Buffer buffer,String mode)
+	@Nonnull
+	private static String getZenCodingAbbrevs(TextArea textArea, Buffer buffer, CharSequence mode)
 	{
 		if (jEdit.getBooleanProperty("options.superabbrevs.zencoding") &&
 		    jEdit.getProperty("options.superabbrevs.zencoding.modes").contains(mode))
@@ -249,9 +255,9 @@ public class SuperAbbrevs {
 	 * size.
 	 */
     private static String spaces(int size) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder(size);
         for (int i = 0; i < size; i++) {
-            buf.append(" ");
+            buf.append(' ');
         }
         return buf.toString();
     }
@@ -271,18 +277,21 @@ public class SuperAbbrevs {
 			textArea.shiftIndentLeft();
 		} else {
 			String abbrev = getAbbrev(textArea, buffer);
-			if (!abbrev.trim().equals("")){
+			if (abbrev.trim().isEmpty())
+			{
+				textArea.shiftIndentLeft();
+			}
+			else
+			{
 				Hashtable abbrevs = loadAbbrevs(getMode(textArea, buffer));
 
-        String expansion = "";
-        if (abbrevs != null && abbrevs.get(abbrev) != null){
-          expansion = (String)abbrevs.get(abbrev);
-        }
+				String expansion = "";
+				if (abbrevs != null && abbrevs.get(abbrev) != null)
+				{
+					expansion = (String) abbrevs.get(abbrev);
+				}
 
-				AddAbbrevDialog dialog =
-					new AddAbbrevDialog(view,abbrev,expansion);
-			} else {
-				textArea.shiftIndentLeft();
+				AddAbbrevDialog dialog = new AddAbbrevDialog(view, abbrev, expansion);
 			}
 		}
 	}
@@ -306,7 +315,7 @@ public class SuperAbbrevs {
 			String abbrev = getAbbrev(textArea, buffer);
 
 			// if the abbreviation is empty, beep
-			if (abbrev.trim().equals("")){
+			if (abbrev.trim().isEmpty()){
 				textArea.getToolkit().beep();
 				return;
 			}
@@ -500,6 +509,7 @@ public class SuperAbbrevs {
 	/**
 	 * Get the abbreviation before the caret
 	 */
+	@Nonnull
 	private static String getAbbrev(JEditTextArea textArea, Buffer buffer){
 		// in the following i will refere to the line where the caret resides
 		// as the current line.
