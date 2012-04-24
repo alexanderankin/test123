@@ -161,6 +161,19 @@ You can close unused connections at any other time using the
 
 </chapter>
 
+<chapter id="troubleshooting"><title>Troubleshooting</title>
+
+<itemizedlist>
+<listitem><para>Problems were reported on connecting to ftp servers
+from Windows 7. Probably there is a bug in Windows firewall.
+There are workarounds for that, see our bug tracker entry #3491410,
+<ulink url="https://sourceforge.net/tracker/index.php?func=detail&amp;aid=3491410&amp;group_id=588&amp;atid=565475" />
+</para></listitem>
+
+</itemizedlist>
+
+</chapter>
+
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
@@ -172,7 +185,11 @@ You can close unused connections at any other time using the
  		</para>
  		<itemizedlist>
  			<listitem><para>Re-ask for connection details if no key-file exists</para></listitem>
- 			<listitem><para>Fixed problem with authentication on some sFTP servers (promptKeyboardInteractive method impelented) </para></listitem>
+ 			<listitem><para>Fixed problem with authentication on some sFTP servers
+ 			(promptKeyboardInteractive method impelented) </para></listitem>
+ 			<listitem><para>Added troubleshooting section in user's guide, to
+ 			point to possible workaround for the Windows 7 firewall bug.
+ 			</para></listitem>
  		</itemizedlist>
  	</listitem>
  	 	
