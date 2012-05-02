@@ -21,12 +21,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.NamespaceSupport;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.Locator;
 import org.xml.sax.Attributes;
 
 import javax.xml.validation.ValidatorHandler;
+import javax.xml.validation.TypeInfoProvider;
 
 import java.util.Map;
 import java.util.Enumeration;
@@ -34,8 +36,6 @@ import java.util.Enumeration;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import javax.swing.SwingUtilities;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.Buffer;
@@ -199,45 +199,31 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	 * @param	input	input to parse
 	 */
 	@Override
-	public void parse(final InputSource input)
+	public void parse(InputSource input)throws SAXException,IOException
 	{
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
 				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE input ("+input.getPublicId()+","+input.getSystemId()+")");
 				documentElement=true;
 				publicId = input.getPublicId();
 				systemId = input.getSystemId();
 				docElementNamespaces.pushContext();
-				try {
-					SchemaAutoLoader.super.parse(input);
-				}
-				catch(Exception e) {		// NOPMD
-				}
+
+		super.parse(input);
 			}
-		} );
-	}
 	
 	/**
 	 * capture sytem  ID to find a matching schema mapping
 	 * @param	systemId	systemId of the input to parse
 	 */
 	@Override
-	public void parse(final String systemId)
+	public void parse(String systemId)throws SAXException,IOException
 	{
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this, "PARSE systemId " + SchemaAutoLoader.this.systemId);
-				SchemaAutoLoader.this.documentElement=true;
-				SchemaAutoLoader.this.publicId = null;
-				SchemaAutoLoader.this.systemId = systemId;
-				SchemaAutoLoader.this.docElementNamespaces.pushContext();
-				try {
-					SchemaAutoLoader.super.parse(systemId);
-				}
-				catch(Exception e) {	// NOPMD
-				}
-			}
-		} );
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE systemId "+systemId);
+		documentElement=true;
+		publicId = null;
+		systemId = systemId;
+		docElementNamespaces.pushContext();
+
+		super.parse(systemId);
 	}
 	
 	@Override
@@ -273,7 +259,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 				//namespaces are off
 				prefix = "";
 			}else{
-				prefix = qName.equals(localName)? "" : qName.substring(0,qName.indexOf(':'));
+				prefix = qName.equals(localName)? "" : qName.substring(0,qName.indexOf(":"));
 			}
 			
 			String politeSystemId = xml.PathUtilities.pathToURL(systemId);
