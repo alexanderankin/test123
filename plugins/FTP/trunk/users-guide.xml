@@ -199,7 +199,9 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			Requires Java 1.5+ and jEdit 4.3pre17+.
  		</para>
  		<itemizedlist>
- 			<listitem><para>Added local file backup (pre-alpha version)</para></listitem>
+ 			<listitem><para>Added local file backup (pre-alpha version) for jEdit
+ 			up to 4.5.x. Newer jEdit does it itself.
+ 			</para></listitem>
  		</itemizedlist>
  	</listitem>
 

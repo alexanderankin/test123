@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.ThreadUtilities;
 
 /**
@@ -453,7 +454,17 @@ public class FtpVFS extends VFS
 	/**{@inheritDoc}*/
 	@Override
 	public void _backup(Object session, String path, Component comp) throws IOException {
-		
+
+		// Since jEdit 5.0pre1 there is a default implementation,
+		// which was empty before. 
+		if (StandardUtilities.compareStrings(jEdit.getBuild(),
+				"05.00.00.00", false) > 0)
+		{
+			// jEdit 5
+			super._backup(session, path, comp);
+			return;
+		}
+
 		Buffer buffer = jEdit.getBuffer(path);
 		if (buffer == null)
 			return;
