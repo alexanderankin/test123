@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!-- any element in namespace MathML can go into a -->
+<a xmlns="http://docbook.org/ns/docbook">
+<!-- if asking for completion, will be proposed __WHAT_YOU_WANT,
+     since completion doesn't support name classes for now !
+  -->
+<b xmlns="http://www.w3.org/1998/Math/MathML"/>
+</a>
