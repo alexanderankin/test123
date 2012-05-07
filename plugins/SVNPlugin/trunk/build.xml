@@ -64,12 +64,9 @@
             <pathelement path="${java.class.path}"/>
 
             <!-- SVNKit jars -->
-            <pathelement location="${lib.dir}/trilead.jar"/>
-            <pathelement location="${lib.dir}/svnkit-cli.jar"/>
-            <pathelement location="${lib.dir}/svnkit.jar"/>
-            <!-- jna.jar is now provided by the JNAPlugin
-            <pathelement location="${lib.dir}/jna.jar"/>
-            -->
+            <fileset dir="${lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
 
             <!-- required for jEdit plugin -->
             <pathelement location="${jedit.install.dir}/jedit.jar" />
