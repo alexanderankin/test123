@@ -150,7 +150,7 @@ public class MergeAction extends SVNAction {
             }
         }
         Runner runner = new Runner();
-        panel.addWorker( "Log", runner );
+        panel.addWorker( "Merge", runner );
         runner.execute();
     }
 }
