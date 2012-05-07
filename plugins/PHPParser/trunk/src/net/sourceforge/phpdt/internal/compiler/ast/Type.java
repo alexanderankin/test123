@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2011 Matthieu Casanova
+ * Copyright (C) 2003, 2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,9 +20,11 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+//{{{ Imports
 import org.gjt.sp.util.Log;
 
 import java.io.Serializable;
+//}}}
 
 /**
  * The php types.
@@ -61,6 +63,7 @@ public class Type implements Serializable
 	public static final Type DOUBLE = new Type(DOUBLE_INT);
 
 
+	//{{{ toString() method
 	public String toString()
 	{
 		switch (type)
@@ -94,8 +97,9 @@ public class Type implements Serializable
 				Log.log(Log.ERROR, this, "net.sourceforge.phpdt.internal.compiler.ast.Type unknown : " + type);
 				return null;
 		}
-	}
+	} //}}}
 
+	//{{{ fromString() method
 	public static Type fromString(String type)
 	{
 		if ("boolean".equals(type) || "bool".equals(type))
@@ -121,10 +125,11 @@ public class Type implements Serializable
 		if ("number".equals(type))
 			return NUMBER;
 		return new Type(OBJECT_INT, type);
-	}
+	} //}}}
 
 	private final String className;
 
+	//{{{ Type constructors
 	public Type(int type)
 	{
 		this(type, null);
@@ -134,18 +139,21 @@ public class Type implements Serializable
 	{
 		this.type = type;
 		this.className = className;
-	}
+	} //}}}
 
+	//{{{ getType() method 
 	public int getType()
 	{
 		return type;
-	}
+	} //}}}
 
+	//{{{ getClassName() method
 	public String getClassName()
 	{
 		return className;
-	}
+	} //}}}
 
+	//{{{ isCompatibleWith() method
 	public boolean isCompatibleWith(Type type)
 	{
 		if (type == this)
@@ -165,8 +173,9 @@ public class Type implements Serializable
 				return true;
 		}
 		return false;
-	}
+	} //}}}
 
+	//{{{ isEmpty() method
 	/**
 	 * Tell if the type is empty.
 	 *
@@ -175,5 +184,5 @@ public class Type implements Serializable
 	public boolean isEmpty()
 	{
 		return type == UNKNOWN_INT || type == NULL_INT;
-	}
+	} //}}}
 }
