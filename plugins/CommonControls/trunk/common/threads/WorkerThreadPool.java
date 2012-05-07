@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.gjt.sp.util.Log;
-
 /** A thread pool that handles groups of requests (<i>Runnable</i> objects).
  *
  *	<p>Users are encouraged to use the shared instance by calling
@@ -229,7 +227,6 @@ public class WorkerThreadPool
 				}
 				if (work != null)
 				{
-					Log.log(Log.NOTICE, this, "Executing request: " + work.getRunnable());
 					work.run();
 					work = null;
 				}
