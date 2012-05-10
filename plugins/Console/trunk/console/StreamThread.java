@@ -200,6 +200,12 @@ class StreamThread extends Thread
 	// {{{ flushLine() method
 	private void flushLine(Output output, String eol)
 	{
+		// make sure that output isn't null
+		if (output == null)
+		{
+			output = this.process.getConsole().getOutput();
+		}
+
 		// we need to write the line break to the output, but we
 		// can't pass it to the "processLine()" method or the
 		// regexps won't recognize anything.
