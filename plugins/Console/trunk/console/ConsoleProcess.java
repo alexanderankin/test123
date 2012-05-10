@@ -148,14 +148,20 @@ class ConsoleProcess
 	// {{{ methods
 	// {{{ showExit method
 	synchronized void showExit () {
+		// make sure error isn't null
+		if (this.error == null)
+		{
+			this.error = this.console.getOutput();
+		}
+		
 		boolean showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
 		if (showExitStatus) {
 			Object[] pp = { args[0], Integer.valueOf(exitCode) };
 			String msg = jEdit.getProperty("console.shell.exited", pp);
-			if (exitCode == 0)
-				error.print(console.getInfoColor(), msg);
+			if (this.exitCode == 0)
+				this.error.print(console.getInfoColor(), msg);
 			else
-				error.print(console.getErrorColor(), msg);
+				this.error.print(console.getErrorColor(), msg);
 		}
 
 		// console.getShell().printPrompt(console, output);
@@ -201,15 +207,17 @@ class ConsoleProcess
 
 			try
 			{
-				process.destroy();
-				output.commandDone();
+				this.process.destroy();
+				if (this.output != null)
+					this.output.commandDone();
 			}
 			catch (Exception e) {
 				Log.log(Log.WARNING, this, e.getMessage());
 			}
-			process = null;
 			
-			if (console != null)
+			this.process = null;
+			
+			if (this.console != null)
 			{
 /*				error.print(console.getErrorColor(), jEdit.getProperty(
 						"console.shell.killed", pp)); */
