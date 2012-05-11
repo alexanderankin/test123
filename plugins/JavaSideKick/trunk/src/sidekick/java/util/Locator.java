@@ -251,7 +251,7 @@ public final class Locator {
 		ArrayList<String> result = new ArrayList<String>(runtime.size()+classpath.size());
 		result.addAll(runtime);
 		result.addAll(classpath);
-		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "results: "+result);
+		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "class names for '" + name + "': "+result);
 		return result;
 	}
 

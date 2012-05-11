@@ -1,21 +1,20 @@
-/*
-* This program is free software; you can redistribute it and/or
-* modify it under the terms of the GNU General Public License
-* as published by the Free Software Foundation; either version 2
-* of the License, or any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+/* 
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *                    Version 2, December 2004
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ *  0. You just DO WHAT THE FUCK YOU WANT TO.
+ *  
+ */
 package sidekick.java;
 
-//{{{ Imports
+// Imports
 import java.lang.reflect.*;
 import java.util.*;
 import javax.swing.*;
@@ -31,7 +30,6 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import sidekick.SideKickParsedData;
 import sidekick.util.Location;
-//}}}
 
 /**
  * Finds 2 kinds of completions, word completions and method/field completions,
@@ -60,35 +58,66 @@ import sidekick.util.Location;
 public class JavaCompletionFinder {
 	
 	private JavaSideKickParsedData data = null;
+	private CUNode rootNode = null;
+	private JavaParser parser = null;
 	private EditPane editPane = null;
+	private Buffer buffer = null;
+	private View view = null;
 	private int caret = 0;
 
 	public JavaCompletion complete( EditPane editPane, int caret ) {
 		this.editPane = editPane;
 		this.caret = caret;
+		this.buffer = editPane.getBuffer();
+		this.view = editPane.getView();
+		this.parser = new JavaParser();
 		
 		SideKickParsedData skpd = null;
 		if ( jEdit.getBooleanProperty("sidekick.java.parseOnComplete") ) {
-			skpd = (new sidekick.java.JavaParser()).parse();
+			skpd = this.parser.parse(buffer, null);
+			rootNode = (CUNode) buffer.getProperty("javasidekick.compilationUnit");
+			/*
+			if (skpd == null) {
+				// Parsing failed
+				// Assuming it's because the user is in the middle of writing code,
+				// then we can try to re-parse with the current line omitted.
+				Buffer temp = jEdit.openTemporary(view, System.getProperty("java.io.tmpdir"),
+						view.getBuffer().getName(), true);
+				temp.insert(0, buffer.getText());
+				temp.setMode(jEdit.getMode("java"));
+				
+				int line = temp.getLineOfOffset(caret);
+				int start = temp.getLineStartOffset(line);
+				temp.remove(start, temp.getLineStartOffset(line + 1) - start);
+
+				skpd = this.parser.parse(temp, null);
+				if (skpd == null) {
+					// Still didn't work, oh well.
+					org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.ERROR, this, "Failed to parse buffer.");
+					return null;
+				}
+			}
+			*/
 		}
 		else {
-			skpd = SideKickParsedData.getParsedData( editPane.getView() );
+			skpd = SideKickParsedData.getParsedData(view);
+			if ( skpd == null ) {
+				// QUESTION: Does this remove the dependency on the dockable for completion?
+				skpd = this.parser.parse(buffer, null);
+				//GUIUtilities.error(editPane.getView(), "sidekick.java.msg.bufferNotParsed", null);
+			}
+
+			rootNode = (CUNode) buffer.getProperty("javasidekick.compilationUnit");
 		}
 
-		if ( skpd == null ) {
-			// QUESTION: Does this remove the dependency on the dockable for completion?
-			skpd = (new sidekick.java.JavaParser()).parse();
-			//GUIUtilities.error(editPane.getView(), "sidekick.java.msg.bufferNotParsed", null);
-			//return null;
-		}
 
-		SideKickParsedData.setParsedData( editPane.getView() , skpd );
+		SideKickParsedData.setParsedData( view, skpd );
 
 		if ( skpd instanceof JavaSideKickParsedData ) {
 			data = ( JavaSideKickParsedData ) skpd;
 		}
 		else {
-			GUIUtilities.error(editPane.getView(), "sidekick.java.msg.bufferNotParsed", null);
+			GUIUtilities.error(view, "sidekick.java.msg.bufferNotParsed", null);
 			return null;
 		}
 
@@ -205,7 +234,7 @@ public class JavaCompletionFinder {
 	}
 
 	private JavaCompletion getPossibleCompletions( String word ) {
-		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Get possible completions on "+word);
+		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "getting possible completions on: "+word);
 		if ( word == null || word.length() == 0 )
 			return null;
 
@@ -268,11 +297,12 @@ public class JavaCompletionFinder {
 			} else {
 				c = validateClassName(_word);
 				if (c == null) {
-					c = getClassForType(_word, (CUNode) data.root.getUserObject() );
+					//c = getClassForType(_word, (CUNode) data.root.getUserObject() );
+					c = getClassForType(_word, rootNode);
 				}
 			}
 			if (c != null) {
-				return new JavaCompletion( editPane.getView(), _word, JavaCompletion.CONSTRUCTOR,
+				return new JavaCompletion( view, _word, JavaCompletion.CONSTRUCTOR,
 						getConstructorsForClass(c) );
 			}
 		}
@@ -315,7 +345,7 @@ public class JavaCompletionFinder {
 	}
 
 	private JavaCompletion getPossibleQualifiedCompletions( String word ) {
-		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting qualified completions");
+		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "getting qualified completions on: " + word);
 
 		String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
@@ -440,8 +470,10 @@ public class JavaCompletionFinder {
 				
 				// Class?
 				c = validateClassName(token);
-				if (c == null)
-					c = getClassForType(token, (CUNode) data.root.getUserObject());
+				if (c == null) {
+					//c = getClassForType(token, (CUNode) data.root.getUserObject());
+					c = getClassForType(token, rootNode);
+				}
 
 				static_only = (c != null);
 				if (c == null) {
@@ -454,14 +486,16 @@ public class JavaCompletionFinder {
 						if (array_access && type.endsWith("[]"))
 							type = type.substring(0, type.length()-2);
 
-						c = getClassForType(type, (CUNode) data.root.getUserObject());
+						//c = getClassForType(type, (CUNode) data.root.getUserObject());
+						c = getClassForType(type, rootNode);
 					}
 
 					if (c == null) {
 						// Method?
 						MethodNode methodNode = getLocalMethod(token);
 						if (methodNode != null) {
-							c = getClassForType(methodNode.getReturnType().getName(), (CUNode) data.root.getUserObject());
+							//c = getClassForType(methodNode.getReturnType().getName(), (CUNode) data.root.getUserObject());
+							c = getClassForType(methodNode.getReturnType().getName(), rootNode);
 						}
 
 						if (c == null) {
@@ -469,13 +503,14 @@ public class JavaCompletionFinder {
 							EnumNode enumNode = getLocalEnum(token);
 							if (enumNode != null)
 								// ???: Not sure if this handles enums correctly...
-								return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, getMembersForEnum(enumNode));
+								return new JavaCompletion( view, word, JavaCompletion.DOT, getMembersForEnum(enumNode));
 
 							if (c == null) {
 								// Class?
 								ClassNode classNode = getLocalClass(token);
 								if (classNode != null) {
-									c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
+									//c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
+									c = getClassForType(classNode.getType(), rootNode);
 								}
 
 								if (c == null && parent.getOrdinal() == TigerNode.CLASS) {
@@ -489,8 +524,8 @@ public class JavaCompletionFinder {
 									if (castToken.startsWith("(") && castToken.endsWith(")")) {
 										int open = castToken.lastIndexOf("(");
 										int close = castToken.indexOf(")");
-										c = getClassForType( castToken.substring(open+1, close),
-												(CUNode) data.root.getUserObject());
+										//c = getClassForType( castToken.substring(open+1, close), (CUNode) data.root.getUserObject());
+										c = getClassForType( castToken.substring(open+1, close), rootNode);
 									}
 								}
 							}
@@ -553,8 +588,10 @@ public class JavaCompletionFinder {
 
 				// Class?
 				c = validateClassName(halfWord);
-				if (c == null)
-					c = getClassForType(halfWord, (CUNode) data.root.getUserObject());
+				if (c == null) {
+					//c = getClassForType(halfWord, (CUNode) data.root.getUserObject());
+					c = getClassForType(halfWord, rootNode);
+				}
 
 				static_only = (c != null);
 
@@ -563,7 +600,8 @@ public class JavaCompletionFinder {
 					FieldNode node = getLocalVariable(halfWord);
 
 					if (node != null) {
-						c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
+						//c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
+						c = getClassForType(node.getType(), rootNode);
 						if (c == null)
 							return null;
 					}
@@ -586,7 +624,7 @@ public class JavaCompletionFinder {
 				if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
 					return null;
 				}
-				return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
+				return new JavaCompletion( view, word, JavaCompletion.DOT, members );
 			}
 		}
 
@@ -605,7 +643,7 @@ public class JavaCompletionFinder {
 			}
 
 			Collections.sort(candids);
-			return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, candids );
+			return new JavaCompletion( view, word, JavaCompletion.DOT, candids );
 		}
 
 		return getLocalVariableCompletion( word );
@@ -613,7 +651,7 @@ public class JavaCompletionFinder {
 
 
 	private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
-		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
+		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "getting non-qualified completions on: " + word);
 		word = word.substring(word.lastIndexOf("(")+1);
 		
 		List<String> pkgs = Locator.getInstance().getClassName(word);
@@ -623,7 +661,7 @@ public class JavaCompletionFinder {
 			for (int i = 0; i < pkgs.size(); i++) 
 				pkgCandidates.add(new JavaCompletionCandidate(pkgs.get(i), TigerLabeler.getClassIcon()));
 
-			return new JavaCompletion(editPane.getView(), word, JavaCompletion.PACKAGE, pkgCandidates);
+			return new JavaCompletion(view, word, JavaCompletion.PACKAGE, pkgCandidates);
 		}
 		// partialword
 		// find all fields/variables declarations, methods, and classes in scope
@@ -685,11 +723,13 @@ public class JavaCompletionFinder {
 		for ( JavaCompletionCandidate choice : choices ) {
 			list.add(choice);
 		}
+		
 		JavaCompletion jc = getSuperCompletion( word );
 		if ( jc != null ) {
 			// TODO: Convert this to JavaCompletionCandidate
 			list.addAll( jc.getChoices() );
 		}
+		
 		if ( list.size() > 0 ) {
 			// don't show the completion popup if the only choice is an
 			// exact match for the word
@@ -697,7 +737,7 @@ public class JavaCompletionFinder {
 				return null;
 			else {
 				Collections.sort( list );
-				return new JavaCompletion( editPane.getView(), word, list );
+				return new JavaCompletion( view, word, list );
 			}
 		}
 		return null;
@@ -725,12 +765,22 @@ public class JavaCompletionFinder {
 	public Class getSuperclassForNode(ClassNode cn) {
 		Class c = null;
 		ExtendsNode superclass = getExtendsNode(cn);
-		if (superclass != null)
-			c = getClassForType(superclass.getName(), (CUNode) data.root.getUserObject());
+		if (superclass != null) {
+			//c = getClassForType(superclass.getName(), (CUNode) data.root.getUserObject());
+			c = getClassForType(superclass.getName(), rootNode);
+		}
 		else {
-			c = getClassForType(cn.getName(), (CUNode) data.root.getUserObject());
-			if (c != null)
-				c = c.getSuperclass();
+			//c = getClassForType(cn.getName(), rootNode);
+			// TODO: need a way to get the package for this classnode
+			// this call should *not* check for all classes with the same name
+			try {
+				c = Class.forName(cn.getName());
+				if (c != null)
+					return c.getSuperclass();
+			}
+			catch (ClassNotFoundException e) {
+				// ignore
+			}
 		}
 		
 		if (c == null) {
@@ -773,7 +823,7 @@ public class JavaCompletionFinder {
 			else
 				return null;    // shouldn't get here
 		}
-
+		
 		// find the superclass of the enclosing class
 		/*
 		Class c = getClassForType( tn.getName(), ( CUNode ) data.root.getUserObject() );
@@ -799,7 +849,7 @@ public class JavaCompletionFinder {
 		}
 
 
-		return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
+		return new JavaCompletion( view, word, JavaCompletion.DOT, m );
 	}
 
 
@@ -833,7 +883,8 @@ public class JavaCompletionFinder {
 			TigerNode child = tn.getChildAt(i);
 			if (child.getOrdinal() == TigerNode.EXTENDS) {
 				// Add members of the superclass
-				Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject());
+				//Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject());
+				Class c = getClassForType(child.getName(), rootNode);
 				if (c != null)
 					members.addAll(getMembersForClass(c, word, false, false));
 			}
@@ -849,7 +900,7 @@ public class JavaCompletionFinder {
 			}
 		}
 
-		return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, list );
+		return new JavaCompletion( view, word, JavaCompletion.DOT, list );
 	}
 
 
@@ -881,11 +932,12 @@ public class JavaCompletionFinder {
 			if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
 				return null;
 			}
-			return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
+			return new JavaCompletion( view, word, JavaCompletion.DOT, m );
 		} else {
-			Class c = getClassForType( classname, (CUNode) data.root.getUserObject() );
+			//Class c = getClassForType( classname, (CUNode) data.root.getUserObject() );
+			Class c = getClassForType( classname, rootNode );
 			if (c != null) {
-				return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT,
+				return new JavaCompletion( view, word, JavaCompletion.DOT,
 						getMembersForClass( c ));
 			}
 			return null;
@@ -910,11 +962,12 @@ public class JavaCompletionFinder {
 				insertionType = JavaCompletion.DOT;
 			}
 			String type = lvn.getType();
-			Class c = getClassForType( type, ( CUNode ) data.root.getUserObject() );
+			//Class c = getClassForType( type, ( CUNode ) data.root.getUserObject() );
+			Class c = getClassForType( type, rootNode );
 			if ( c != null ) {
 				List m = getMembersForClass( c );
 				if ( m != null ) {
-					return new JavaCompletion( editPane.getView(), word, insertionType, m );
+					return new JavaCompletion( view, word, insertionType, m );
 				}
 			}
 		}
@@ -1104,12 +1157,11 @@ public class JavaCompletionFinder {
 			return null;
 		else {
 			if (classNames.size() > 1) {
-				GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+				GUIUtilities.error(view, "options.sidekick.java.ambiguousClass",
 						new String[] { type });
 				return null;
 			}
 			else {
-				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "found the result");
 				return validateClassName( classNames.get(0), type, filename );
 			}
 		}
@@ -1297,7 +1349,8 @@ public class JavaCompletionFinder {
 					members.add(new JavaCompletionCandidate(child.getName(), TigerLabeler.getClassIcon()));
 					break;
 				case TigerNode.EXTENDS:
-					Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject() );
+					//Class c = getClassForType(child.getName(), (CUNode) data.root.getUserObject() );
+					Class c = getClassForType(child.getName(), rootNode );
 					if (c == null)
 						return null;
 					members.addAll(getMembersForClass(c, filter));
@@ -1408,7 +1461,7 @@ public class JavaCompletionFinder {
 		catch ( NoClassDefFoundError ncdfe ) {
 			// TODO: logging to the activity log is useless for the end user.  Need to
 			// find a better way to let them know about this problem.
-			editPane.getView().getStatus().setMessage("Class not in classpath: " + ncdfe.getMessage());
+			view.getStatus().setMessage("Class not in classpath: " + ncdfe.getMessage());
 			return null;
 		}
 		List members = new ArrayList( list );
