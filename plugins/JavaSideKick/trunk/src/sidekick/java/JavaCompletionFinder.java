@@ -76,40 +76,16 @@ public class JavaCompletionFinder {
 		if ( jEdit.getBooleanProperty("sidekick.java.parseOnComplete") ) {
 			skpd = this.parser.parse(buffer, null);
 			rootNode = (CUNode) buffer.getProperty("javasidekick.compilationUnit");
-			/*
-			if (skpd == null) {
-				// Parsing failed
-				// Assuming it's because the user is in the middle of writing code,
-				// then we can try to re-parse with the current line omitted.
-				Buffer temp = jEdit.openTemporary(view, System.getProperty("java.io.tmpdir"),
-						view.getBuffer().getName(), true);
-				temp.insert(0, buffer.getText());
-				temp.setMode(jEdit.getMode("java"));
-				
-				int line = temp.getLineOfOffset(caret);
-				int start = temp.getLineStartOffset(line);
-				temp.remove(start, temp.getLineStartOffset(line + 1) - start);
-
-				skpd = this.parser.parse(temp, null);
-				if (skpd == null) {
-					// Still didn't work, oh well.
-					org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.ERROR, this, "Failed to parse buffer.");
-					return null;
-				}
-			}
-			*/
 		}
 		else {
 			skpd = SideKickParsedData.getParsedData(view);
 			if ( skpd == null ) {
-				// QUESTION: Does this remove the dependency on the dockable for completion?
 				skpd = this.parser.parse(buffer, null);
-				//GUIUtilities.error(editPane.getView(), "sidekick.java.msg.bufferNotParsed", null);
 			}
 
 			rootNode = (CUNode) buffer.getProperty("javasidekick.compilationUnit");
+			
 		}
-
 
 		SideKickParsedData.setParsedData( view, skpd );
 
@@ -123,22 +99,19 @@ public class JavaCompletionFinder {
 
 		// get the word just before the caret.  It might be a partial word, that's okay.
 		String word = getWordAtCursor( editPane.getBuffer() );
-		//System.out.println("word = "+word);
 		if ( word == null || word.length() == 0 ) {
 			return null;
 		}
 
 		/*
-			initial completion goals:
-			1. partial word: get matching fields and methods in the class
-			2. words ending with dot: get matching fields and methods in the
-				class for the type represented by the word.
-			3. words ending with "(": get constructors
-			4. class name: get packages
-		*/
-		//long start = System.currentTimeMillis();
+		 * initial completion goals:
+		 * 1. partial word: get matching fields and methods in the class
+		 * 2. words ending with dot: get matching fields and methods in the
+		 * 	class for the type represented by the word.
+		 * 3. words ending with "(": get constructors
+		 * 4. class name: get packages
+		 */
 		JavaCompletion completion = getPossibleCompletions( word );
-		//Log.log(Log.DEBUG, this, "time: " + (System.currentTimeMillis() - start));
 		return completion ;
 	}
 	
@@ -147,11 +120,13 @@ public class JavaCompletionFinder {
 			return "";
 		if ( data == null )
 			return null;
+		
 		// get the text in the current asset just before the cursor
 		TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
 		if ( tn == null ) {
 			return null;
 		}
+		
 		int start = tn.getStart().getOffset();
 		if ( caret - start < 0 ) {
 			return "";
@@ -195,6 +170,7 @@ public class JavaCompletionFinder {
 					}
 				}
 			}
+			
 			// Skip over parentheses
 			if (buffer.getText(i, 1).equals(")")) {
 				i = TextUtilities.findMatchingBracket(buffer, line, offset);
@@ -211,7 +187,6 @@ public class JavaCompletionFinder {
 		if ( word_break_chars == null ) {
 			word_break_chars = "";
 		}
-		//word_break_chars += "!;{}()";        // NOPMD
 		word_break_chars += "!;{}";        // NOPMD
 
 		// remove line enders and tabs
@@ -229,7 +204,7 @@ public class JavaCompletionFinder {
 				break;
 			}
 		}
-		//org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG,this,"Word at cursor: "+text);
+		
 		return text;
 	}
 
@@ -253,27 +228,6 @@ public class JavaCompletionFinder {
 		// needs work.  This doesn't feel right, hand parsing a cast could
 		// be difficult as there are several variations in the depth of
 		// parens.
-		/*
-		int start = -1;
-		if ((start = word.lastIndexOf('(')) != -1) {
-			int index = word.indexOf(')', start);
-			if (index > (start + 1)) {
-				String cast = word.substring(start + 1, index);
-				if (cast != null && cast.length() > 0) {
-					Class c = getClassForType( cast, ( CUNode ) data.root.getUserObject() );
-					if ( c != null ) {
-						// filter the members of the class by the part of the word
-						// following the last dot.  The completion will replace this
-						// part of a word
-						String filter = word.substring( word.lastIndexOf( '.' ) + 1 );
-						List members = getMembersForClass( c, filter );
-						if ( members != null && members.size() > 0 )
-							return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
-					}
-				}
-			}
-		}
-		*/
 
 		char lastChar = word.charAt(word.length() - 1);
 		if (lastChar == ')')
@@ -296,10 +250,8 @@ public class JavaCompletionFinder {
 				}
 			} else {
 				c = validateClassName(_word);
-				if (c == null) {
-					//c = getClassForType(_word, (CUNode) data.root.getUserObject() );
+				if (c == null)
 					c = getClassForType(_word, rootNode);
-				}
 			}
 			if (c != null) {
 				return new JavaCompletion( view, _word, JavaCompletion.CONSTRUCTOR,
@@ -318,14 +270,11 @@ public class JavaCompletionFinder {
 	}
 
 	public static ArrayList<String> tokenizeQual(String qualification) {
-		/*
-		Buffer temp = jEdit.openTemporary(jEdit.getActiveView(), System.getProperty("java.io.tmpdir"),
-			"jeditQualifiedTokenizer", true);
-			*/
 		JEditBuffer temp = new JEditBuffer();
 		temp.insert(0, qualification);
 		ArrayList<String> list = new ArrayList<String>();
 		int i = 0, j = 0;
+		
 		while (true) {
 			int dot = qualification.indexOf(".", j);
 			int paren = qualification.indexOf("(", j);
@@ -341,20 +290,25 @@ public class JavaCompletionFinder {
 			i = dot+1;
 			j = i;
 		}
+		
 		return list;
 	}
 
+	/**
+	 * Get qualified completions for the given word.
+	 * A qualified completion is one that contains a dot, which could be:
+	 * - a reference using either "super" or "this"
+	 * - a fully-qualified class name
+	 * - accessing a variable or class field/method
+	 */
 	private JavaCompletion getPossibleQualifiedCompletions( String word ) {
 		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "getting qualified completions on: " + word);
-
 		String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
-		// might have super.something
 		if ( "super".equals( qualification ) ) {
 			return getSuperCompletion( word.substring("super.".length()) );
 		}
 
-		// might have this.something or Class.this.something
 		if ( "this".equals( qualification ) ) {
 			return getThisCompletion( word.substring("this.".length()) );
 		}
@@ -391,11 +345,11 @@ public class JavaCompletionFinder {
 			}
 			if (paren != -1 && paren < dot) {
 				j = TextUtilities.findMatchingBracket(temp, 0, paren);
-                if (j == -1) {
-                    j = paren + 1;
-                    i = j;
-                }
-                continue;
+				if (j == -1) {
+					j = paren + 1;
+					i = j;
+				}
+				continue;
 			}
 			list.add(qualification.substring(i, dot));
 			i = dot+1;
@@ -444,7 +398,7 @@ public class JavaCompletionFinder {
 					static_only = false;
 					break;
 				} catch (ClassNotFoundException e) {
-					org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.ERROR, this, "Whoops! java.lang.Class does not exist!");
+					org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.ERROR, this, "Something went seriously fuckin' wrong...");
 				}
 			}
 
@@ -589,7 +543,6 @@ public class JavaCompletionFinder {
 				// Class?
 				c = validateClassName(halfWord);
 				if (c == null) {
-					//c = getClassForType(halfWord, (CUNode) data.root.getUserObject());
 					c = getClassForType(halfWord, rootNode);
 				}
 
@@ -600,7 +553,6 @@ public class JavaCompletionFinder {
 					FieldNode node = getLocalVariable(halfWord);
 
 					if (node != null) {
-						//c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
 						c = getClassForType(node.getType(), rootNode);
 						if (c == null)
 							return null;
@@ -649,13 +601,19 @@ public class JavaCompletionFinder {
 		return getLocalVariableCompletion( word );
 	}
 
-
+	/**
+	 * Get non-qualified completions for the given word.
+	 * Non-qualified completions are ones that don't have a dot, which could be
+	 * - a variable, method, or class name
+	 * - a constructor
+	 */
 	private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
 		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "getting non-qualified completions on: " + word);
 		word = word.substring(word.lastIndexOf("(")+1);
 		
+		// check if this word is a valid unqualified class name
+		// if it is, then return all possible fully-qualified class names
 		List<String> pkgs = Locator.getInstance().getClassName(word);
-
 		if (pkgs != null && pkgs.size() > 0) {
 			ArrayList pkgCandidates = new ArrayList(pkgs.size());
 			for (int i = 0; i < pkgs.size(); i++) 
@@ -663,6 +621,7 @@ public class JavaCompletionFinder {
 
 			return new JavaCompletion(view, word, JavaCompletion.PACKAGE, pkgCandidates);
 		}
+		
 		// partialword
 		// find all fields/variables declarations, methods, and classes in scope
 		TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
@@ -682,13 +641,9 @@ public class JavaCompletionFinder {
 			}
 			
 			List children = tn.getChildren();
-			//Macros.message(jEdit.getActiveView(), tn.toString());
 			if ( children != null ) {
 				for ( Iterator it = children.iterator(); it.hasNext(); ) {
 					TigerNode child = (TigerNode) it.next();
-					if (child.getOrdinal() == TigerNode.CLASS) {
-						//debug(child.dump());
-					}
 					Icon icon = null;
 					switch ( child.getOrdinal() ) {
 						case TigerNode.CONSTRUCTOR:
@@ -716,8 +671,8 @@ public class JavaCompletionFinder {
 			}
 			do {
 				tn = tn.getParent();
-			} while (tn != null && (tn.getOrdinal() == TigerNode.FIELD || tn.getOrdinal() == TigerNode.VARIABLE));
-			//|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+			}
+			while (tn != null && (tn.getOrdinal() == TigerNode.FIELD || tn.getOrdinal() == TigerNode.VARIABLE));
 		}
 		List list = new ArrayList( choices.size() );
 		for ( JavaCompletionCandidate choice : choices ) {
@@ -1464,6 +1419,7 @@ public class JavaCompletionFinder {
 			view.getStatus().setMessage("Class not in classpath: " + ncdfe.getMessage());
 			return null;
 		}
+		
 		List members = new ArrayList( list );
 		Collections.sort( members );
 		return members;

@@ -101,7 +101,6 @@ public final class Locator {
 				String name = classes[ i ].getAbsolutePath();
 				name = name.substring( base.length()+1, name.lastIndexOf( '.' ) );
 				name = name.replace(File.separator, "/");
-				//name = name.replaceAll( "/", "." );
 				allclasses.add( name );
 			}
 
@@ -109,8 +108,7 @@ public final class Locator {
 			public boolean accept( File pathname ) {
 				return pathname.isDirectory();
 			}
-		}
-		);
+		});
 		for ( int i = 0; i < directories.length; i++ )
 			allclasses.addAll( getDirClassNames( directories[ i ], base ) );
 
@@ -146,7 +144,6 @@ public final class Locator {
 		}
 		catch ( Exception e ) {
 			Log.log(Log.ERROR, this, "Error opening jar file: "+jar+" ("+e+")");
-			//e.printStackTrace();
 		}
 		return names;
 	}
@@ -155,7 +152,6 @@ public final class Locator {
 	 * @return a list of File objects for each element in the classpath
 	 */
 	public File[] getClassPathJars() {
-		//String classpath = System.getProperty( "java.class.path" );
 		String classpath = ClasspathPlugin.getClasspath();
 		if ( classpath == null || classpath.length() == 0 )
 			return null;
@@ -175,11 +171,6 @@ public final class Locator {
 	 * java.ext.dirs and java.endorsed.dirs
 	 */
 	public File[] getRuntimeJars() {
-		/*
-		if ( runtimeJars != null )
-			return copyOf( runtimeJars );
-		*/
-
 		// get runtime jars based on java.home setting
 		File java_lib = null;             // location of $JAVA_HOME/lib
 		File[] libs = null;               // actual files from lib dir
@@ -314,18 +305,21 @@ public final class Locator {
 	public List<String> getClassesForPath( String path ) {
 		String pathSep = System.getProperty( "path.separator" );
 		String[] paths = path.split( pathSep );
+		
 		// paths can be either jars, zips, directories, or individual classes
 		// directories can contain individual classes.
 		List<String> allnames = new ArrayList<String>();
 		for ( int i = 0; i < paths.length; i++ ) {
 			path = paths[ i ];
 			File f = new File( path );
+			
 			// check for jar or zip
 			if ( path.toLowerCase().endsWith( ".jar" ) || path.toLowerCase().endsWith( ".zip" ) ) {
 				List<String> names = getJarClassNames( f );
 				if ( names != null )
 					allnames.addAll( names );
 			}
+			
 			// check for individual class
 			else if ( path.toLowerCase().endsWith( ".class" ) )
 				allnames.add( f.getName().substring( 0, f.getName().lastIndexOf( "." ) ) );
