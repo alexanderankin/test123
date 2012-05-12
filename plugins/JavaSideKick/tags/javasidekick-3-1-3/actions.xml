@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="javasidekick-insert-import">
+		<CODE>
+			sidekick.java.JavaSideKickPlugin.insertImportAtCursor(editPane);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="javasidekick-refresh-global">
+		<CODE>
+			sidekick.java.util.Locator.getInstance().refreshGlobal();
+		</CODE>
+	</ACTION>
+</ACTIONS>
