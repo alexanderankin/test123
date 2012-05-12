@@ -180,8 +180,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
  	<listitem>
  		<para>
- 			<emphasis role="bold">Version 0.9.9</emphasis>
- 			Requires Java 1.5+ and jEdit 4.4.2
+ 			<emphasis role="bold">Version 1.0.0</emphasis>
+ 			Requires Java 1.5+ and jEdit 4.5.0
  		</para>
  		<itemizedlist>
  			<listitem><para>Re-ask for connection details if no key-file exists</para></listitem>
@@ -190,15 +190,6 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			<listitem><para>Added troubleshooting section in user's guide, to
  			point to possible workaround for the Windows 7 firewall bug.
  			</para></listitem>
- 		</itemizedlist>
- 	</listitem>
- 	 	
- 	<listitem>
- 		<para>
- 			<emphasis role="bold">Version 0.9.8</emphasis>
- 			Requires Java 1.5+ and jEdit 4.3pre17+.
- 		</para>
- 		<itemizedlist>
  			<listitem><para>Added local file backup (pre-alpha version) for jEdit
  			up to 4.5.x. Newer jEdit does it itself.
  			</para></listitem>
