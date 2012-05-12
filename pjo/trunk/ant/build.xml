@@ -183,7 +183,7 @@ docbook.xsl=${docbook.xsl}
 		</script>
 		<echo>Command for property files: ${prog.edit} ${prop-files-spaced}</echo> 
 		<check-prop prop="prop-files-spaced" />
-		<exec executable="${prog.edit}">
+		<exec executable="${prog.edit}" spawn="true" >
 			<arg line="${prop-files-spaced}" />
 		</exec>
 	</target>
