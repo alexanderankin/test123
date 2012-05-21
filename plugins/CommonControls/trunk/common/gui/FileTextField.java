@@ -36,6 +36,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.jEdit;
 //}}}
 
@@ -96,25 +98,25 @@ public class FileTextField extends JPanel
 
 	/**
 	 *	Sets the file selection mode.
-	 *
-	 *	@see	JFileChooser#setFileSelectionMode(int)
+	 * @param mode can be 
+	   {@link org.gjt.sp.jedit.browser.VFSBrowser#OPEN_DIALOG},
+	 * {@link org.gjt.sp.jedit.browser.VFSBrowser#SAVE_DIALOG}, or
+	 * {@link org.gjt.sp.jedit.browser.VFSBrowser#CHOOSE_DIRECTORY_DIALOG}.
 	 */
 	public void setFileSelectionMode(int mode)
 	{
-		this.selectionMode = mode;
+		if (mode == JFileChooser.DIRECTORIES_ONLY) 
+			this.selectionMode = VFSBrowser.CHOOSE_DIRECTORY_DIALOG;
+		else this.selectionMode = mode;
 	}
 
 	public void actionPerformed(ActionEvent ae)
 	{
 		// Used for selected and executable file
-		JFileChooser chooser = new ModalJFileChooser();
-		chooser.setFileSelectionMode(selectionMode);
-		chooser.setSelectedFile(new File(text.getText()));
-		if (chooser.showDialog(this, jEdit.getProperty("common.gui.filetextfield.choose"))
-				!= JFileChooser.APPROVE_OPTION)
-			return;
-
-		File f = chooser.getSelectedFile();
+		String[] results = GUIUtilities.showVFSFileDialog(null, text.getText(), this.selectionMode, false);
+		if (results.length < 1) return;
+		File f = new File(results[0]);
+		
 		if (forceExists && (!f.exists() || !f.canRead())) {
 			Component parent = SwingUtilities.getAncestorOfClass(javax.swing.JDialog.class, this);
 			if (parent == null) {
