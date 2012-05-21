@@ -49,6 +49,8 @@ import org.gjt.sp.jedit.jEdit;
  * separated by the File.pathSeparator
  * Calling save() will save the paths to that property.
  *
+ * @see common.gui.pathbuilder.PathBuilder
+ *
  * @author Matthieu Casanova
  */
 public class VFSPathFileList extends JPanel
