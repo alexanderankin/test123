@@ -114,7 +114,7 @@ public class FileTextField extends JPanel
 	{
 		// Used for selected and executable file
 		String[] results = GUIUtilities.showVFSFileDialog(null, text.getText(), this.selectionMode, false);
-		if (results.length < 1) return;
+		if (results == null || results.length < 1) return;
 		File f = new File(results[0]);
 		
 		if (forceExists && (!f.exists() || !f.canRead())) {
@@ -122,6 +122,7 @@ public class FileTextField extends JPanel
 			if (parent == null) {
 				parent = SwingUtilities.getAncestorOfClass(javax.swing.JFrame.class, this);
 			}
+			if (parent == null) parent = this;
 			JOptionPane.showMessageDialog(parent,
 				jEdit.getProperty("common.gui.filetextfield.file_not_found"),
 				jEdit.getProperty("common.gui.error"),
