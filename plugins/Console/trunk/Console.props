@@ -76,7 +76,7 @@ options.console.system.label=System Shell
 options.console.system.code=new console.options.SystemOptionPane();
 options.console.general.commando.toolbar=ToolBar enabled
 options.console.general.rememberCWD=Remember current working directory
-options.console.toolbar.buttons=Commando Buttons
+options.console.toolbar.buttons=Visible Commands/Buttons
 options.console.general.shellprefix=Shell Prefix:
 options.console.general.shellprefix.tooltip=(Experimental) - you can execute commands inside alternate shells with this option.
 options.console.general.font=Font:
@@ -104,9 +104,9 @@ stream - helps ErrorList get correct path information for multi-dir Makefiles
 options.console.general.pathdirs=Subshell extra PATH:
 options.console.general.pathdirs.tooltip=OS-dependent PATH string to be (pre|a)pended to subshells
 options.console.general.pathdirs.append=Append extra dirs to path
-options.console.toolbar.label=Toolbar Options
+options.console.toolbar.label=Commando
 options.console.toolbar.code = new console.options.ToolBarOptionPane();
-options.console.toolbarcaption=Toolbar Options:
+options.console.toolbarcaption=Commands
 
 options.console.errors.label=Error Patterns
 options.console.errors.code=new console.options.ErrorsOptionPane();
