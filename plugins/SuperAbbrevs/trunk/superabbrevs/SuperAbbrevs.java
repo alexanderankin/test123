@@ -123,7 +123,7 @@ public class SuperAbbrevs {
 	//{{{ key handlers
 	/**
 	 * Method tab(View view, JEditTextArea textArea, Buffer buffer)
-	 * The method that desides what action should be taken for the tab key
+	 * The method that decide what action should be taken for the tab key
 	 */
 	public static void tab(View view, JEditTextArea textArea, Buffer buffer) {
 
@@ -223,14 +223,23 @@ public class SuperAbbrevs {
 		if (jEdit.getBooleanProperty("options.superabbrevs.zencoding") &&
 		    jEdit.getProperty("options.superabbrevs.zencoding.modes").contains(mode))
 		{
-			String abbrev = buffer.getLineText(textArea.getCaretLine()).trim();
-			abbrev = stripTags(abbrev);
+			int caretLine = textArea.getCaretLine();
+			int lineStartOffset = textArea.getLineStartOffset(caretLine);
+			String abbrev = buffer.getText(lineStartOffset, textArea.getCaretPosition() - lineStartOffset).trim();
+			for (int i = abbrev.length() - 1;i>=0;i--) {
+				if (Character.isWhitespace(abbrev.charAt(i))) {
+					abbrev = abbrev.substring(i);
+					break;
+				}
+			}
+
+//			abbrev = stripTags(abbrev);
 			return abbrev;
 		}
 		return "";
 	}
 
-	private static String stripTags(String abbrev)
+/*	private static String stripTags(String abbrev)
 	{
 		int closedAt = -1;
 		for (int i = abbrev.length() - 1;i>=0;i--) {
@@ -248,7 +257,7 @@ public class SuperAbbrevs {
 
 		}
 		return abbrev;
-	}
+	} */
 
 	/**
 	 * @return a string containing the number of spaces specified by the given
