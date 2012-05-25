@@ -123,7 +123,7 @@ public class SuperAbbrevs {
 	//{{{ key handlers
 	/**
 	 * Method tab(View view, JEditTextArea textArea, Buffer buffer)
-	 * The method that decide what action should be taken for the tab key
+	 * The method that decides what action should be taken for the tab key
 	 */
 	public static void tab(View view, JEditTextArea textArea, Buffer buffer) {
 
