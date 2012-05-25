@@ -24,7 +24,6 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSFile;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.ThreadUtilities;
