@@ -25,8 +25,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +33,6 @@ import java.util.Map;
 import javax.swing.text.Segment;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
@@ -1097,37 +1094,8 @@ loop:			for(;;)
 	{
 		closeCompletion = jEdit.getBooleanProperty(
 			"xml.close-complete");
-		
-		if(closeCompletionOpen != jEdit.getBooleanProperty(
-				"xml.close-complete-open"))
-		{
-			closeCompletionOpen = !closeCompletionOpen;
-			SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				/* with the jEdit 5 Keymap API, it's no more possible
-				 * to define a shortcut with action-name.shortcut=X in the XML.props
-				 * => so set it programatically !
-				 * */
-				try {
-					// test the presence of the jEdit 5 KeyMap API
-					Class.forName("org.jedit.keymap.Keymap");
-	
-					// OK, the KeyMap API exists
-					String shortcut = ">";
-					// shortcut will be undefined when closeCompletionOpen is not active
-					String actionName = closeCompletionOpen? "xml-insert-closing-tag" : null;
-				
-					Class c = Class.forName("xml.JEdit5Support");
-					Method m = c.getDeclaredMethod("setShortcut", new Class[]{String.class,String.class});
-					m.invoke(null, actionName, shortcut);
-				} catch (ClassNotFoundException e) {
-					// NOPMD: don't log an error when org.jedit.keymap.Keymap is not found
-				} catch (Exception e) {
-					Log.log(Log.WARNING, XmlActions.class, "error setting shortcut to implement 'insert closing tag when opening tag is typed'",e);
-				}
-			}});
-
-		}
+		closeCompletionOpen = jEdit.getBooleanProperty(
+			"xml.close-complete-open");
 		standaloneExtraSpace = jEdit.getBooleanProperty(
 			"xml.standalone-extra-space");
 	} //}}}
