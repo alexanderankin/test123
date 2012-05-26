@@ -1,7 +1,7 @@
 :encoding=UTF-8:maxLineLen=80:wrap=hard:folding=indent:
 XML Plugin Change log
 
-    Version 2.8.3 Requires jEdit 4.4, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.2, BeautyPlugin 0.7.0, CommonControls 1.3, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
+    Version 2.8.3-jedit-5.0 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
         Updated html completion to support HTML 5. (Dale Anson)
         Updated css completion to support same keywords as css mode for CSS 3.
         (Dale Anson)
