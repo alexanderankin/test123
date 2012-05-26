@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- :xml.root=root.xml: -->
+<!-- This is one part of a compound document, see root.xml -->
+<chapter xml:id="testing">
+    <title>Testing jEdit</title>
+    <section xml:id="testing-section">
+     <title>Title</title>
+    </section>
+</chapter>

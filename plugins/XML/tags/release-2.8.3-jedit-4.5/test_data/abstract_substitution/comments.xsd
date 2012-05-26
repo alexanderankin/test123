@@ -1,0 +1,35 @@
+<schema targetNamespace="http://www.example.com/IPO"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ipo="http://www.example.com/IPO">
+
+  <annotation>
+    <documentation xml:lang="en">
+      declare a substitution group for comment.
+		That is shipComment and custommerComment can replace comment everywhere.
+		comment is abstract so it can't appear in abstract_element_instance.xml
+    </documentation>
+  </annotation>
+
+  <element name="comment" abstract="true"/>
+
+  <element name="shipComment" type="string"
+         substitutionGroup="ipo:comment"/>
+  
+  <!-- customerComment is defined like para in docbook
+       see plugin bug #3002849 - XML 2.7: XSD completion is shallow
+    -->
+  <element name="customerComment"
+         substitutionGroup="ipo:comment">
+    <complexType mixed="true">
+    	<sequence>
+         <element name="customerId" type="string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+  </element>
+  
+  <!-- test when the inheriting element is itself abstract -->
+  <element name="otherComment" abstract="true" substitutionGroup="ipo:comment"/>
+  
+  <element name="concreteOtherComment" substitutionGroup="ipo:otherComment" type="string"/>
+</schema>
+
