@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- this sample comes from XML Schemas - Part 0 : Primer (2nd ed.).
+     The abstract type isn't handled specifically in the XercesParserImpl.java
+	 code.
+	 This document validates, because the xsi:type of transport is specified.
+  -->
+<transport xmlns="http://cars.example.com/schema"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="Car"
+		   xsi:schemaLocation="http://cars.example.com/schema
+		   abstract_type.xsd"/>
+
