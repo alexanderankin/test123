@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<doc xmlns:xlink="http://www.w3.org/1999/xlink"
+          xlink:href="http://www.jedit.org/"
+  >
+  <s xml:base="http://base.com/section/">
+  	<a xlink:href="../file.html"/>
+  	
+  	<a xml:base="http://newbase.com/" 
+  	     xlink:href="file.html"/>
+
+  	<a xml:base="subsection/" 
+  	     xlink:href="file.html"/>
+
+  </s>
+</doc>

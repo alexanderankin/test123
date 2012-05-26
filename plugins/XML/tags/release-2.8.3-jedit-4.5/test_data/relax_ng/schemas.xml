@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+<uri resource="anyElementInNamespace.xml" uri="anyElementInNamespace.rng"/>
+<documentElement localName="ACTIONS" typeId="ACTIONS"/>
+<uri pattern="*.rng" typeId="RNG"/>
+<typeId id="ACTIONS" uri="actions.rng"/>
+<typeId id="RNG" uri="jeditresource:XML.jar!/xml/dtds/relaxng.rng"/>
+</locatingRules>

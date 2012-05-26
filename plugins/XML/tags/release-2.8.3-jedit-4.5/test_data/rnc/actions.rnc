@@ -1,0 +1,19 @@
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+att-bool = "TRUE" | "FALSE"
+# ACTIONS element
+ACTIONS = element ACTIONS { ACTIONS-attlist, ACTION+ }
+ACTIONS-attlist &= empty
+# ACTION element
+ACTION = element ACTION { ACTION-attlist, CODE, IS_SELECTED? }
+ACTION-attlist &=
+  attribute NAME { xsd:ID },
+  [ a:defaultValue = "FALSE" ] attribute NO_REPEAT { att-bool }?,
+  [ a:defaultValue = "FALSE" ] attribute NO_RECORD { att-bool }?,
+  [ a:defaultValue = "FALSE" ] attribute NO_REMEMBER_LAST { att-bool }?
+# ACTION children
+CODE = element CODE { CODE-attlist, text }
+CODE-attlist &= empty
+IS_SELECTED = element IS_SELECTED { IS_SELECTED-attlist, text }
+IS_SELECTED-attlist &= empty
+start = ACTIONS
