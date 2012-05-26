@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	this is the classic actions.dtd convert to XSD via trang
+  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:simpleType name="att-bool">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="TRUE"/>
+      <xs:enumeration value="FALSE"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- ACTIONS element -->
+  <xs:element name="ACTIONS">
+    <xs:complexType>
+      <xs:sequence>
+	  	<!-- this reference requires that even an existing element name is added
+		     to parent.content (see XercesParserImpl.xsElementToElementDecl() )
+		  -->
+        <xs:element maxOccurs="unbounded" ref="ACTION"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- ACTION element -->
+  <xs:element name="ACTION">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CODE"/>
+        <xs:element minOccurs="0" ref="IS_SELECTED"/>
+      </xs:sequence>
+      <xs:attribute name="NAME" use="required" type="xs:ID"/>
+      <xs:attribute name="NO_REPEAT" default="FALSE" type="att-bool"/>
+      <xs:attribute name="NO_RECORD" default="FALSE" type="att-bool"/>
+      <xs:attribute name="NO_REMEMBER_LAST" default="FALSE" type="att-bool"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- ACTION children -->
+  <xs:element name="CODE" type="xs:string"/>
+  <xs:element name="IS_SELECTED" type="xs:string"/>
+</xs:schema>

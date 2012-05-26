@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<!--
+  - invalid file (remove the double N to fix it)
+  - the XSD schema is loaded via schemas.xml: it's ../simple/actions.xsd
+  -->
+<ACTIONS>
+   	<!-- this element is wrong => must see an error -->
+    <ACTIONN NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTIONN>
+   	<!-- when you turn on the XML option to show all attributes,
+   	     you should see the default attributes (NO_REPEAT=false, ...).
+   	     It means that xml content augmentation by the schema works
+   	  -->
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>

@@ -1,0 +1,8 @@
+<!ENTITY nbsp   "&#x00A0;">
+<!ENTITY test   "some text">
+
+<!ELEMENT p ( #PCDATA ) >
+
+<!ELEMENT r ( p+ ) >
+
+
