@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<xmltask
+
+source="${com.lollipoplearning.basedir}/web/WEB-INF/web.xml"
+dest="${com.lollipoplearning.builddir}/web.xml"
+public="//Sun Microsystems, Inc.//DTD Web
+Application 2.3//EN"
+system="http://java.sun.com/dtd/web-app_2_3.dtd"
+report="false">
+<insert path="/web-app/servlet-mapping[1]"
+file="${com.lollipoplearning.builddir}/web.inc"
+position="before" />
+</xmltask>

@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<purchaseReport
+  xmlns="http://www.example.com/Report"
+  	xmlns:ipo="http://www.example.com/IPO"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  >
+  <!-- this one is wrong, and XML Insert doesn't propose it -->
+  <ipo:comment></ipo:comment>
+  <!--  that one is correct : -->
+  <comment>
+  		<!-- the completion information is here -->
+  		<ipo:comment>erjrj
+		<!-- no completion information here : only string content -->
+		</ipo:comment>
+  </comment>
+  
+</purchaseReport>
