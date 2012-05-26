@@ -36,7 +36,8 @@ public class HtmlCollector extends HtmlVisitor {
     protected boolean collected;
     protected static Set dontMatch = new HashSet(
     	Arrays.asList("AREA", "BASE", "BASEFONT", "BR", "COL", "HR", "IMG",
-    				  "INPUT", "ISINDEX", "LINK", "META", "PARAM"));
+    				  "INPUT", "ISINDEX", "LINK", "META", "PARAM",
+    				  "COMMAND", "EMBED", "KEYGEN", "SOURCE", "TRACK", "WBR"));
 
     private static class TagStackEntry {
         String tagName;

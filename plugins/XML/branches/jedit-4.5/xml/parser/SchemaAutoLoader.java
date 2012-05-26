@@ -201,14 +201,14 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	@Override
 	public void parse(InputSource input)throws SAXException,IOException
 	{
-		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE input ("+input.getPublicId()+","+input.getSystemId()+")");
-		documentElement=true;
-		publicId = input.getPublicId();
-		systemId = input.getSystemId();
-		docElementNamespaces.pushContext();
+				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE input ("+input.getPublicId()+","+input.getSystemId()+")");
+				documentElement=true;
+				publicId = input.getPublicId();
+				systemId = input.getSystemId();
+				docElementNamespaces.pushContext();
 
 		super.parse(input);
-	}
+			}
 	
 	/**
 	 * capture sytem  ID to find a matching schema mapping
