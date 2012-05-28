@@ -23,6 +23,9 @@
 package console;
 
 
+
+import org.gjt.sp.jedit.gui.HistoryText;
+
 public class ConsoleHistoryText extends HistoryText
 {
 	private ConsolePane pane;

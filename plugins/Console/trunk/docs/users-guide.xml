@@ -57,7 +57,7 @@
   </itemizedlist>
 
   <para> This plugin includes a library, 
-  <ulink url="https://sourceforge.net/projects/jcfunc/">jcfunc.jar</ulink>
+  <ulink url="https://sourceforge.net/projects/jcfunc/">jcfunc</ulink>
   which is used for parsing ANSI vt100 color codes. 
   </para>
 
