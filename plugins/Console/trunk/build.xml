@@ -10,7 +10,7 @@
 
   	<property file="build.properties" />
    	<property file="../build.properties" />
-	<property name="javadoc.packagenames"	value="console.*" />
+	<property name="javadoc.packagenames"	value="console.*,jcfunc.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
     <property name="docs-proc.target"       value="xsltproc" />
 	<property name="dist.target" 			value="dist.complete" />
@@ -18,13 +18,7 @@
 
 	<import file="${build.support}/plugin-build.xml" />
 
-	
-	<!-- Prepare for build - ensure extra jar is in the right place -->
-    <target name="build.prepare">
-        <copy todir="${install.dir}">
-          <fileset dir="lib" includes="jcfunc.jar" />
-        </copy>
-    </target>
+
 
 	
     <!-- Extra files that get put into the jar file, above and beyond
@@ -48,7 +42,6 @@
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/ErrorList.jar" />
 		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
-		<pathelement location="${jedit.plugins.dir}/jcfunc.jar" />
 	</path>
 </project>
 
