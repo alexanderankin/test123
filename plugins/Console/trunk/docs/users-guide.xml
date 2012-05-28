@@ -56,6 +56,11 @@
    </listitem>
   </itemizedlist>
 
+  <para> This plugin includes a library, 
+  <ulink url="https://sourceforge.net/projects/jcfunc/">jcfunc.jar</ulink>
+  which is used for parsing ANSI vt100 color codes. 
+  </para>
+
  <section>
  <title> ProjectViewer Integration </title>
 

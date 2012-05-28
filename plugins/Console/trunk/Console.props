@@ -16,6 +16,8 @@ plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.2
 
+plugin.console.ConsolePlugin.jars=jcfunc.jar
+
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
 	commando - commando-compile commando-run console-clear - \
