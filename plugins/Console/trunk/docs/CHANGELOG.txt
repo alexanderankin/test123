@@ -1,6 +1,11 @@
 :encoding=UTF-8:
 
 jEdit Console Plugin Changelog
+
+    Version 4.5.1 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
+      [Artem Bryantsev] 
+        ANSI escape code parser for Console plugin
+
     Version 4.5 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
       [Alan Ezust]
         Fixed layout issue in Errors Option Pane where the NOTE: was too wide.

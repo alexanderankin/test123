@@ -31,12 +31,19 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import errorlist.DefaultErrorSource;
 
+import java.util.regex.*;
+import java.util.ArrayList;
+import jcfunc.*;
+import jcfunc.parameters.*;
+import org.gjt.sp.util.StringList;
 // }}}
 
 /**
@@ -57,8 +64,14 @@ class StreamThread extends Thread
 	CommandOutputParser copt = null;
 
 	private StringBuilder lineBuffer;
-	private boolean pendingCr;
-	private int uncoloredWritten;
+	private int shiftUCW;
+	private int ANSI_BEHAVIOUR;
+	private Pattern termsPattern = Pattern.compile("\r?\n");
+	private escMatcher ansi_Matcher;
+	private SimpleAttributeSet commonAttrs;
+	private Color defaultColor, bgColor, caretColor;
+	private int prevErrorStatus = -1;
+	private SimpleAttributeSet lastLineAttrs = null;
 	// }}}
 
 	// {{{ StreamThread constructor
@@ -69,14 +82,67 @@ class StreamThread extends Thread
 	{
 		this.process = process;
 		this.in = in;
+		this.defaultColor = defaultColor;
+		
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
 		DefaultErrorSource es = console.getErrorSource();
+		
 		copt = new CommandOutputParser(console.getView(), es, defaultColor);
 		copt.setDirectory(currentDirectory);
+		
 		lineBuffer = new StringBuilder(100);
-		pendingCr = false;
-		uncoloredWritten = 0;
+		shiftUCW = 0;
+
+		this.bgColor    = console.getConsolePane().getBackground();
+		this.caretColor = console.getConsolePane().getCaretColor();
+		
+		commonAttrs = new SimpleAttributeSet();
+		StyleConstants.setBackground(commonAttrs, bgColor);
+		StyleConstants.setForeground(commonAttrs, defaultColor);
+		
+		lastLineAttrs =  new SimpleAttributeSet(commonAttrs);
+		
+		// choose matcher's mode
+		int ansi_mode = Sequences.MODE_7BIT;
+		if ( jEdit.getProperty("options.ansi-escape.mode").contentEquals("8bit") ) ansi_mode = Sequences.MODE_8BIT;
+		
+		ansi_Matcher = new escMatcher(ansi_mode, Pattern.DOTALL);
+		
+		// define matcher's behaviour
+		ANSI_BEHAVIOUR = -1;		// ignor all 
+		String str = jEdit.getProperty("options.ansi-escape.behaviour");
+		if ( str.contentEquals("remove") )
+		{
+			ANSI_BEHAVIOUR = 0;	// remove all
+		}
+		else if ( str.contentEquals("parse") )
+		{
+			ANSI_BEHAVIOUR = 1;	// parse
+		}
+			
+		// fill parsing control function's list
+		StringList funcs     = StringList.split( jEdit.getProperty("options.ansi-escape.func-list").toLowerCase(), "\\s+");
+		String avaible_funcs = jEdit.getProperty("options.ansi-escape.func-list-values");
+		
+		int i = 0;
+		while ( i < funcs.size() )
+		{
+			if ( !avaible_funcs.contains( funcs.get(i) ) )
+			{
+				str = funcs.remove(i);
+				str = null;
+				i--;
+			}
+			
+			i++;
+		}
+		
+		CF[] func_arr = new CF[funcs.size()];
+		for (i = 0; i < funcs.size(); i++)
+			func_arr[i] = CF.valueOf(CF.class, funcs.get(i).toUpperCase() );
+		
+		ansi_Matcher.setPatterns(func_arr);
 	} // }}}
 
 	// {{{ run() method
@@ -105,56 +171,45 @@ class StreamThread extends Thread
 				}
 				else if (read == -1)
 				{
-					if (pendingCr)
+					if (lineBuffer.length() > 0)
 					{
-						flushLine(output, "\r");
-					}
-					else if (lineBuffer.length() > 0)
-					{
-						flushLine(output, "");
+						printString(output, lineBuffer.toString(), false);
 					}
 					break;
 				}
-
-				for (int i = 0; i < read; i++)
+				
+				String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
+				
+				// remove all sequencies
+				if ( ANSI_BEHAVIOUR == 0 && ansi_Matcher.matches(line) )
 				{
-					char c = input[i];
-					if (c == '\n')
-					{
-						if (pendingCr)
-						{
-							flushLine(output, "\r\n");
-						}
-						else
-						{
-							flushLine(output, "\n");
-						}
-					}
-					else
-					{
-						if (pendingCr)
-						{
-							flushLine(output, "\r");
-						}
-		
-						if (c == '\r')
-						{
-							pendingCr = true;
-						}
-						else
-						{
-							lineBuffer.append(c);
-						}
-					}
+					lineBuffer.setLength(0);
+					line = lineBuffer.append( ansi_Matcher.removeAll(line) ).toString();
 				}
-
-				// Following output shows unterminated lines
-				// such as prompt of interactive programs.
-				if (lineBuffer.length() > uncoloredWritten)
+				
+				Matcher matcher = termsPattern.matcher(line);
+				
+				int bPosition = 0;
+				while ( matcher.find() )
+				{									// -> "111\n" -> "222\n" -> "333\n"
+					printString(output, line.substring( bPosition, matcher.end() ), false);
+					bPosition = matcher.end();
+				}
+				if (bPosition > 0)
+					lineBuffer.delete(0, bPosition);
+				
+				if ( bPosition < lineBuffer.length() )
 				{
-					String tail = lineBuffer.substring(uncoloredWritten);
-					output.writeAttrs(null, tail);
-					uncoloredWritten += tail.length();
+					try
+					{
+						// wait 50 msec
+						if ( !inputReady(isr, 50) )
+							printString(output, lineBuffer.toString(), true);// -> "444"
+					}
+					catch (Exception e3)
+					{
+						printString(output, lineBuffer.toString(), true);
+					}
 				}
 			}
 		}
@@ -190,45 +245,227 @@ class StreamThread extends Thread
 		}
 	} // }}}
 
-	// {{{ abort() method
+	//{{{ abort() method
 	void abort()
 	{
 		aborted = true;
 		interrupt();
-	} // }}}
-
-	// {{{ flushLine() method
-	private void flushLine(Output output, String eol)
-	{
-		// make sure that output isn't null
-		if (output == null)
-		{
-			output = this.process.getConsole().getOutput();
-		}
-
-		// we need to write the line break to the output, but we
-		// can't pass it to the "processLine()" method or the
-		// regexps won't recognize anything.
-		String line = lineBuffer.toString();
-		copt.processLine(line);
-		AttributeSet color = ConsolePane.colorAttributes(copt.getColor());
-		if (uncoloredWritten > 0)
-		{
-			output.setAttrs(uncoloredWritten, color);
-			output.writeAttrs(color,
-				lineBuffer.substring(uncoloredWritten) + eol);
-		}
-		else try 
-		{
-			output.writeAttrs(color, line + eol);
-		} catch (Exception err) {
-			Log.log (Log.ERROR, this, "Can't Flush:", err);
-		}
-
-		lineBuffer.setLength(0);
-		pendingCr = false;
-		uncoloredWritten = 0;
 	} //}}}
+	
+	//{{{ printString() method
+	/*
+	 * output - Console output
+	 * str    - printed string
+	 * isUnterminated - flag: is 'str' unterminated string?
+	 */
+	private void printString(Output output, String str, boolean isUnterminated)
+	{
+		ArrayList<Description> seqs = null;
+		SimpleAttributeSet lineAttrs = null;
+		
+		boolean needANSIparsing = ANSI_BEHAVIOUR == 1 && ansi_Matcher.matches(str);
+		
+		// error/warning parser
+		int errorStatus = copt.processLine(str);
+		
+		// look for ANSI escape sequencies 
+		if (needANSIparsing)
+		{
+			seqs = ansi_Matcher.parse(str, true);
+			str  = ansi_Matcher.removeAll(str); // => str's length is changed
+		}
+		
+		// choose color of full line 
+		if (isUnterminated)
+		{
+			shiftUCW += str.length();
+		}
+		else
+		{
+			if (errorStatus != prevErrorStatus)
+			{
+				lineAttrs = new SimpleAttributeSet(commonAttrs);
+				
+				StyleConstants.setForeground( lineAttrs, copt.getColor() );
+				
+				lastLineAttrs   = lineAttrs;
+				prevErrorStatus = errorStatus; 
+			}
+			else
+			{
+				lineAttrs = lastLineAttrs;
+			}
+			
+			if ( shiftUCW > 0 )
+			{
+				output.setAttrs(shiftUCW, lineAttrs);
+				shiftUCW = 0;
+			}
+		}
+		
+		// write line to output with/without color
+		try 
+		{
+			if (seqs == null) // no any ANSI escape sequencies
+			{
+				output.writeAttrs(lineAttrs, str);
+			}
+			else 
+			{
+				boolean firstFlushed = false;
+				
+				// go over functions
+				for ( Description descr: seqs )
+				{
+					// if first sequence does not situated at line's begining
+					// should output preceding substring
+					if ( !firstFlushed )
+					{
+						if (descr.bPosition > 0) {
+							flushSubtring(output, str, lineAttrs, 0, descr.bPosition);
+						}
+						firstFlushed = true;
+					}
+					
+					switch (descr.function)
+					{
+					//{{{ SGR
+					case SGR:
+						SimpleAttributeSet funcAttrs = new SimpleAttributeSet(lineAttrs);
+						int intensity = 0; 
+						Color clr = null;
+						
+						// go over SGR's parameters
+						for (int value: descr.parameters)
+						{
+							paramSGR valSGR = paramSGR.getEnumValue(value);
+							
+							switch (valSGR)
+							{
+							case Reset:
+								break;
+							case Bright:
+								intensity = 1;
+								break;
+							case Faint :
+								intensity = -1;
+								break;
+							case Italic:
+								StyleConstants.setItalic(funcAttrs, true);
+								break;
+							case Underline_Single:
+							case Underline_Doubly:
+								StyleConstants.setUnderline(funcAttrs, true);
+								break;
+							case CrossedOut:
+								StyleConstants.setStrikeThrough(funcAttrs, true);
+								break;
+							case Normal_Int:
+								intensity = 0;
+								break;
+							case Normal_Style:
+								StyleConstants.setItalic(funcAttrs, false);
+								break;
+							case Underline_NGT:
+								StyleConstants.setUnderline(funcAttrs, false);
+								break;
+							case CrossedOut_NGT:
+								StyleConstants.setStrikeThrough(funcAttrs, false);
+								break;
+							case Color_Text_Black   :
+							case Color_Text_Red     :
+							case Color_Text_Green   :
+							case Color_Text_Yellow  :
+							case Color_Text_Blue    :
+							case Color_Text_Magenta :
+							case Color_Text_Cyan    :
+							case Color_Text_White   :
+							case Color_Text_Reserved:
+								clr = paramSGR.getColor(valSGR);
+								
+								switch (intensity)
+								{
+								case  1:
+									clr = clr.darker();
+									break;
+								case -1:
+									clr = clr.brighter();
+									break;
+								}
+								
+								StyleConstants.setForeground(funcAttrs, clr == null ? defaultColor : clr);
+								break;
+							case Color_Bkgr_Black   :
+							case Color_Bkgr_Red     :
+							case Color_Bkgr_Green   :
+							case Color_Bkgr_Yellow  :
+							case Color_Bkgr_Blue    :
+							case Color_Bkgr_Magenta :
+							case Color_Bkgr_Cyan    :
+							case Color_Bkgr_White   :
+							case Color_Bkgr_Reserved:
+								clr = paramSGR.getColor(valSGR);
 
+								switch (intensity)
+								{
+								case  1:
+									clr = clr.darker();
+									break;
+								case -1:
+									clr = clr.brighter();
+									break;
+								}
+								
+								StyleConstants.setBackground(funcAttrs, clr == null ? defaultColor : clr);
+								break;
+							default:
+								break;
+							}
+						}
+						
+						flushSubtring(output, str, funcAttrs, descr.bPosition, descr.ePosition);
+						break;
+					//}}}
+					case NUL:
+					default :
+						flushSubtring(output, str, lineAttrs, descr.bPosition, descr.ePosition);	
+						break;
+					}
+				}
+			}
+		}
+		catch (Exception err)
+		{
+			Log.log (Log.ERROR, this, "Can't Flush:", err);
+		}		
+	} //}}}
+	
+	//{{{ inputReady() method
+	private boolean inputReady(InputStreamReader isr, int time)
+		throws IOException, InterruptedException
+	{
+		if (isr == null)
+			return false;
+		
+		for (int i = 0; i < time; i++) {
+			if ( isr.ready() )
+			{
+				return true;
+			}
+			else
+			{
+				sleep(1);
+			}
+		}
+		
+		return false;
+	} //}}}
+	
+	//{{{ flushSubtring() method
+	private void flushSubtring(Output output, String str, SimpleAttributeSet localAttrs, int bpos, int epos)
+	{
+		if (epos - bpos > 0)
+			output.writeAttrs( localAttrs, str.substring(bpos, epos) );
+	} //}}}
 } // }}}
 
