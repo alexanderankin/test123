@@ -16,6 +16,7 @@ plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.2
 
+# Library for parsing ansi vt100 color codes. 
 plugin.console.ConsolePlugin.jars=jcfunc.jar
 
 # Menu
@@ -489,9 +490,9 @@ console.pv.no-command.message=No {0} command has been defined.\n\
 console.dock-position=bottom
 
 ### ANSI escape sequencies
-options.ansi-escape.behaviour-caption=Parser's behaviour:
-options.ansi-escape.behaviour-values=ignor remove parse
-options.ansi-escape.behaviour=ignor
+options.ansi-escape.behaviour-caption=Parser behaviour:
+options.ansi-escape.behaviour-values=ignore remove parse
+options.ansi-escape.behaviour=ignore
 options.ansi-escape.mode-caption=Representation's mode:
 options.ansi-escape.mode-values=7bit 8bit
 options.ansi-escape.mode=7bit

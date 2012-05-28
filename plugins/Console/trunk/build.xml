@@ -18,16 +18,18 @@
 
 	<import file="${build.support}/plugin-build.xml" />
 
-    <!-- Extra files that get put into the jar file, above and beyond
-         the default set (which always includes actions,dockables,services.xml,
-         *.props, etc -->
-
+	
+	<!-- Prepare for build - ensure extra jar is in the right place -->
     <target name="build.prepare">
         <copy todir="${install.dir}">
-          <fileset dir="lib" includes="*.jar" />
+          <fileset dir="lib" includes="jcfunc.jar" />
         </copy>
     </target>
 
+	
+    <!-- Extra files that get put into the jar file, above and beyond
+         the default set (which always includes actions,dockables,services.xml,
+         *.props, etc -->
     <selector id="packageFiles">
 	  <or>
 		<filename name="**/LICENSE" />
@@ -41,7 +43,7 @@
 	  </or>
     </selector>
 
-	<!-- Add needed plugins to the classpath. -->
+	<!-- Add needed jars to the classpath. -->
 	<path id="project.class.path">
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/ErrorList.jar" />
