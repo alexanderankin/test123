@@ -285,11 +285,12 @@ public class ErrorMatcher implements Cloneable
 			return isValid;
 		}
 		internalName();
-
+		
+		int compileFlags = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
 		if ((error != null) && (error.length() > 0))
 			try
 			{
-				errorRE = Pattern.compile(error, Pattern.CASE_INSENSITIVE);
+				errorRE = Pattern.compile(error, compileFlags);
 			}
 			catch (PatternSyntaxException pse)
 			{
@@ -301,7 +302,7 @@ public class ErrorMatcher implements Cloneable
 		{
 			try
 			{
-				warningRE = Pattern.compile(warning, Pattern.CASE_INSENSITIVE);
+				warningRE = Pattern.compile(warning, compileFlags);
 			}
 			catch (PatternSyntaxException pse)
 			{
@@ -315,7 +316,7 @@ public class ErrorMatcher implements Cloneable
 		{
 			try
 			{
-				extraRE = Pattern.compile(extraPattern, Pattern.CASE_INSENSITIVE);
+				extraRE = Pattern.compile(extraPattern, compileFlags);
 			}
 			catch (PatternSyntaxException pse)
 			{

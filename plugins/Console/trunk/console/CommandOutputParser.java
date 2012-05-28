@@ -154,12 +154,12 @@ public class CommandOutputParser
 				// in dir:" + directory);
 				lastError = error;
 				lastMatcher = m;
-				int type = lastError.getErrorType();
-				if (type == ErrorSource.ERROR)
+				retval = lastError.getErrorType();
+				if (retval == ErrorSource.ERROR)
 				{
 					color = console.getErrorColor();
 				}
-				else if (type == ErrorSource.WARNING)
+				else if (retval == ErrorSource.WARNING)
 				{
 					color = console.getWarningColor();
 				}

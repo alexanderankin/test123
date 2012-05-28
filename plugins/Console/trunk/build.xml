@@ -22,6 +22,12 @@
          the default set (which always includes actions,dockables,services.xml,
          *.props, etc -->
 
+    <target name="build.prepare">
+        <copy todir="${install.dir}">
+          <fileset dir="lib" includes="*.jar" />
+        </copy>
+    </target>
+
     <selector id="packageFiles">
 	  <or>
 		<filename name="**/LICENSE" />
@@ -40,6 +46,7 @@
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/ErrorList.jar" />
 		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
+		<pathelement location="${jedit.plugins.dir}/jcfunc.jar" />
 	</path>
 </project>
 
