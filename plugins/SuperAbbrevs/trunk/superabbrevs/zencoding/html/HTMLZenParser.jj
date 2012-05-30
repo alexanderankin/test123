@@ -8,7 +8,7 @@ PARSER_BEGIN(HTMLZenParser)
 /*
  * ZenCoding JavaCC parser
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -110,6 +110,7 @@ String parse(ZenSerializer serializer):
 }
 {
 	tag(tag)
+	<EOF>
 	{
 		return serializer.serialize(tag);
 	}
