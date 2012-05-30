@@ -212,7 +212,7 @@ public class SuperAbbrevs {
 		}
 		catch (Exception e)
 		{
-			Log.log(Log.WARNING, SuperAbbrevs.class, e);
+//			Log.log(Log.WARNING, SuperAbbrevs.class, e);
 		}
 		return template;
 	}
