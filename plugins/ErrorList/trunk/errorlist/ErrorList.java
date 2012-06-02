@@ -190,14 +190,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		errorTree.setRootVisible(false);
 		errorTree.setShowsRootHandles(true);
 
-		ErrorSource[] sources = ErrorSource.getErrorSources();
-
-		for(int i = 0; i < sources.length; i++)
-		{
-			ErrorSource source = sources[i];
-			addErrorSource(source, source.getAllErrors());
-		}
-
 		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
