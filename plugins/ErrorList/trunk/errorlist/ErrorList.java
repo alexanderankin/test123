@@ -195,7 +195,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		for(int i = 0; i < sources.length; i++)
 		{
 			ErrorSource source = sources[i];
-			addErrorSource(source);
+			addErrorSource(source, source.getAllErrors());
 		}
 
 		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
@@ -553,7 +553,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 
 		if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
 		{
-			addErrorSource(message.getErrorSource());
+			addErrorSource(message.getErrorSource(),
+			               message.getErrors());
 			updateStatus();
 		}
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
@@ -575,9 +576,9 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	} //}}}
 
 	//{{{ addErrorSource() method
-	private void addErrorSource(ErrorSource source)
+	private void addErrorSource(ErrorSource source,
+	                            ErrorSource.Error[] errors)
 	{
-		ErrorSource.Error[] errors = source.getAllErrors();
 		if(errors == null || errors.length == 0)
 			return;
 

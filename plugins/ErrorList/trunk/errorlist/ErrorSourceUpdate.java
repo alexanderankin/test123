@@ -32,7 +32,9 @@ public class ErrorSourceUpdate extends EBMessage
 {
 	//{{{ Message types
 	/**
-	 * An error source has been added.
+	 * An error source has been added. The message contains the errors
+	 * collected by the source up to the moment of sending the message,
+	 * available through <code>getErrors</code>.
 	 */
 	public static final Object ERROR_SOURCE_ADDED = "ERROR_SOURCE_ADDED";
 
@@ -42,12 +44,14 @@ public class ErrorSourceUpdate extends EBMessage
 	public static final Object ERROR_SOURCE_REMOVED = "ERROR_SOURCE_REMOVED";
 
 	/**
-	 * An error has been added.
+	 * An error has been added. The message contains the error,
+	 * available through <code>getError</code>.
 	 */
 	public static final Object ERROR_ADDED = "ERROR_ADDED";
 
 	/**
-	 * An error has been removed.
+	 * An error has been removed. The message contains the error,
+	 * available through <code>getError</code>.
 	 */
 	public static final Object ERROR_REMOVED = "ERROR_REMOVED";
 
@@ -57,17 +61,14 @@ public class ErrorSourceUpdate extends EBMessage
 	public static final Object ERRORS_CLEARED = "ERRORS_CLEARED";
 	//}}}
 
-	//{{{ ErrorSourceUpdate constructor
+	//{{{ ErrorSourceUpdate constructors
 	/**
-	 * Creates a new error source update message.
-	 * @param source The message source
+	 * Creates a new error source update message. This constructor
+	 * does not fill neither <code>error</code> nor <code>errors</code>.
 	 * @param what What changed
 	 * @param errorSource The error source
-	 * @param error The error. Null unless what is ERROR_ADDED or
-	 * ERROR_REMOVED
 	 */
-	public ErrorSourceUpdate(ErrorSource errorSource, Object what,
-		ErrorSource.Error error)
+	public ErrorSourceUpdate(ErrorSource errorSource, Object what)
 	{
 		super(null);
 		if(what == null || errorSource == null)
@@ -75,8 +76,39 @@ public class ErrorSourceUpdate extends EBMessage
 
 		this.what = what;
 		this.errorSource = errorSource;
+	}
+
+	/**
+	 * Creates a new error source update message, with
+	 * <code>error</code> member filled.
+	 * @param what What changed
+	 * @param errorSource The error source
+	 * @param error The error. Null unless <code>what</code> is
+	 * <code>ERROR_ADDED</code> or <code>ERROR_REMOVED</code>
+	 */
+	public ErrorSourceUpdate(ErrorSource errorSource, Object what,
+		ErrorSource.Error error)
+	{
+		this(errorSource, what);
 		this.error = error;
-	} //}}}
+	}
+
+	/**
+	 * Creates a new error source update message with
+	 * <code>errors</code> member. Used only by
+	 * <code>ERROR_SOURCE_ADDED</code>.
+	 * @param what What changed
+	 * @param errorSource The error source
+	 * @param errors The errors
+	 */
+	public ErrorSourceUpdate(ErrorSource errorSource, Object what,
+		ErrorSource.Error[] errors)
+	{
+		this(errorSource, what);
+		this.errors = errors;
+	}
+
+	//}}}
 
 	//{{{ getWhat() method
 	/**
@@ -98,11 +130,22 @@ public class ErrorSourceUpdate extends EBMessage
 
 	//{{{ getError() method
 	/**
-	 * Returns the error involved. Null if what is ERRORS_CLEARED.
+	 * Returns the error involved. Null unless <code>what</code>
+	 * is <code>ERROR_ADDED</code> or <code>ERROR_REMOVED</code>.
 	 */
 	public ErrorSource.Error getError()
 	{
 		return error;
+	} //}}}
+
+	//{{{ getErrors() method
+	/**
+	 * Returns the errors involved. Only for
+	 * <code>ERROR_SOURCE_ADDED</code>, otherwise <code>null</code>.
+	 */
+	public ErrorSource.Error[] getErrors()
+	{
+		return errors;
 	} //}}}
 
 	//{{{ paramString() method
@@ -117,5 +160,6 @@ public class ErrorSourceUpdate extends EBMessage
 	private Object what;
 	private ErrorSource errorSource;
 	private ErrorSource.Error error;
+	private ErrorSource.Error[] errors;
 	//}}}
 }

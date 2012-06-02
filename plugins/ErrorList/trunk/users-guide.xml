@@ -470,6 +470,8 @@ errorSource.addError(new ErrorSource.DefaultError(
    <listitem><para> Uses jEdit 5's <literal>FileOpenerService</literal> for filenames when
    no full path is supplied to the DefaultError. (#3481157 - Alan Ezust)
    </para></listitem>
+   <listitem><para> Fixed a deadlock and concurrency issues.
+   (#3526070, #3530999 Jarek Czekalski) </para></listitem>
  </itemizedlist>
  </listitem>
 
