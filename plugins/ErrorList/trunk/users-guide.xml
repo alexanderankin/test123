@@ -472,6 +472,8 @@ errorSource.addError(new ErrorSource.DefaultError(
    </para></listitem>
    <listitem><para> Fixed a deadlock and concurrency issues.
    (#3526070, #3530999 Jarek Czekalski) </para></listitem>
+   <listitem><para> Fixed errors appearing twice at first time. 
+   (#3028049 Jarek Czekalski) </para></listitem>
  </itemizedlist>
  </listitem>
 

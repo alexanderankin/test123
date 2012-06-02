@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2003 Slava Pestov
+ * Copyright (C) 2012 Jarek Czekalski
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -98,7 +99,7 @@ public class ErrorListPlugin extends EditPlugin
 			if (showOnError && (jEdit.getActiveView() != null) &&
 				(! isErrorFiltered(error)))
 			{
-				showErrorList(jEdit.getActiveView());
+				showErrorList(jEdit.getActiveView(), message);
 			}
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
@@ -128,7 +129,7 @@ public class ErrorListPlugin extends EditPlugin
 			if ((what == ErrorSourceUpdate.ERROR_SOURCE_ADDED) &&
 				showOnError && (jEdit.getActiveView() != null) && doErrorsExist())
 			{
-				showErrorList(jEdit.getActiveView());
+				showErrorList(jEdit.getActiveView(), message);
 			}
 		}
 	} //}}}
@@ -269,7 +270,7 @@ public class ErrorListPlugin extends EditPlugin
 				return true;
 		}
 		return false;
-	}
+	} //}}}
 
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
@@ -342,10 +343,25 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ showErrorList() method
-	private void showErrorList(View view)
+	/**
+	 * @param message The message that triggered the window. It must be
+	 * given here, because this message will not reach the ErrorList
+	 * window in a usual way.
+	 */
+	private void showErrorList(View view, ErrorSourceUpdate message)
 	{
-		DockableWindowManager dockableWindowManager = view.getDockableWindowManager();
-		dockableWindowManager.addDockableWindow("error-list");
+		DockableWindowManager dwm = view.getDockableWindowManager();
+		boolean bFirstTime;
+		bFirstTime = (dwm.getDockableWindow("error-list") == null);
+		dwm.addDockableWindow("error-list");
+		if (bFirstTime && message != null)
+		{
+			// The dockable did not receive the message that was
+			// to trigger it, so it is delivered manually.
+			ErrorList list;
+			list = (ErrorList)dwm.getDockableWindow("error-list");
+			list.handleErrorSourceMessage(message);
+		}
 	} //}}}
 
 	//{{{ invalidateLineInAllViews() method
