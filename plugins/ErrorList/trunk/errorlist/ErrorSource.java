@@ -42,22 +42,34 @@ public abstract class ErrorSource
 
 	//{{{ registerErrorSource() method
 	/**
-	 * Registers an error source.
+	 * Registers an error source, making the errors visible.
 	 * @param errorSource The error source
 	 */
 	public static void registerErrorSource(ErrorSource errorSource)
 	{
-		if(errorSource.registered)
-			return;
-
-		synchronized(errorSources)
+		// We must block potential addError calls during
+		// source registering. The number of errors must not
+		// change now. Synchronization on the source will do.
+		synchronized(errorSource)
 		{
-			errorSources.addElement(errorSource);
-			errorSource.registered = true;
-			cachedErrorSources = null;
+			if(errorSource.registered)
+				return;
+			synchronized(errorSources)
+			{
+				errorSources.addElement(errorSource);
+				errorSource.registered = true;
+				cachedErrorSources = null;
+			}
+			// It is important that at the moment of registering
+			// the source to gui, it is registered with the
+			// number of errors from the moment of switching
+			// the `registered` flag, that is from now.
+			// Hence we pack the errors into the message.
+			EditBus.sendAsync(new ErrorSourceUpdate(
+				errorSource,
+				ErrorSourceUpdate.ERROR_SOURCE_ADDED,
+				errorSource.getAllErrors()));
 		}
-		EditBus.send(new ErrorSourceUpdate(errorSource,
-			ErrorSourceUpdate.ERROR_SOURCE_ADDED,null));
 	} //}}}
 
 	//{{{ unregisterErrorSource() method
@@ -78,8 +90,11 @@ public abstract class ErrorSource
 			errorSource.registered = false;
 			cachedErrorSources = null;
 		}
-		EditBus.send(new ErrorSourceUpdate(errorSource,
-			ErrorSourceUpdate.ERROR_SOURCE_REMOVED,null));
+		// No additional care is needed when removing the
+		// error source. It doesn't matter if new errors are
+		// added to the source before the gui unregisters it.
+		EditBus.sendAsync(new ErrorSourceUpdate(errorSource,
+			ErrorSourceUpdate.ERROR_SOURCE_REMOVED));
 	} //}}}
 
 	//{{{ getErrorSources() method

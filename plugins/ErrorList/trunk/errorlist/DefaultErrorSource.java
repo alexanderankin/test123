@@ -69,7 +69,7 @@ public class DefaultErrorSource extends ErrorSource
 	/**
 	 * Returns all errors.
 	 */
-	public ErrorSource.Error[] getAllErrors()
+	public synchronized ErrorSource.Error[] getAllErrors()
 	{
 		if(errors.size() == 0)
 			return null;
@@ -159,7 +159,7 @@ public class DefaultErrorSource extends ErrorSource
 				public void run()
 				{
 					ErrorSourceUpdate message = new ErrorSourceUpdate(
-						DefaultErrorSource.this, ErrorSourceUpdate.ERRORS_CLEARED, null);
+						DefaultErrorSource.this, ErrorSourceUpdate.ERRORS_CLEARED);
 					EditBus.send(message);
 				}
 			});
