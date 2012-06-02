@@ -29,21 +29,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.regex.*;
+import java.util.ArrayList;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 import errorlist.DefaultErrorSource;
 
-import java.util.regex.*;
-import java.util.ArrayList;
 import jcfunc.*;
 import jcfunc.parameters.*;
-import org.gjt.sp.util.StringList;
 // }}}
 
 /**
@@ -66,7 +67,8 @@ class StreamThread extends Thread
 	private StringBuilder lineBuffer;
 	private int shiftUCW;
 	private int ANSI_BEHAVIOUR;
-	private Pattern termsPattern = Pattern.compile("\r?\n");
+	private Pattern eolPattern;
+	private Pattern eolReplacingPattern;
 	private escMatcher ansi_Matcher;
 	private SimpleAttributeSet commonAttrs;
 	private Color defaultColor, bgColor, caretColor;
@@ -82,7 +84,6 @@ class StreamThread extends Thread
 	{
 		this.process = process;
 		this.in = in;
-		this.defaultColor = defaultColor;
 		
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
@@ -93,9 +94,20 @@ class StreamThread extends Thread
 		
 		lineBuffer = new StringBuilder(100);
 		shiftUCW = 0;
-
-		this.bgColor    = console.getConsolePane().getBackground();
-		this.caretColor = console.getConsolePane().getCaretColor();
+		
+		eolPattern = Pattern.compile("\n");
+		if ( OperatingSystem.isWindows() )
+		{
+			eolReplacingPattern = Pattern.compile("\r\n");
+		}
+		else if ( OperatingSystem.isMacOS() )
+		{
+			eolReplacingPattern = Pattern.compile("\r");
+		} // otherwise == null
+		
+		this.defaultColor = defaultColor;
+		this.bgColor      = console.getConsolePane().getBackground();
+		this.caretColor   = console.getConsolePane().getCaretColor();
 		
 		commonAttrs = new SimpleAttributeSet();
 		StyleConstants.setBackground(commonAttrs, bgColor);
@@ -134,13 +146,14 @@ class StreamThread extends Thread
 				str = null;
 				i--;
 			}
-			
 			i++;
 		}
 		
 		CF[] func_arr = new CF[funcs.size()];
 		for (i = 0; i < funcs.size(); i++)
+		{
 			func_arr[i] = CF.valueOf(CF.class, funcs.get(i).toUpperCase() );
+		}
 		
 		ansi_Matcher.setPatterns(func_arr);
 	} // }}}
@@ -180,14 +193,22 @@ class StreamThread extends Thread
 				
 				String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
 				
-				// remove all sequencies
+				// convert all line breaks to internall "standart": "\n"
+				// for known systems only
+				if (eolReplacingPattern != null)
+				{
+					lineBuffer.setLength(0);
+					line = lineBuffer.append( eolReplacingPattern.matcher(line).replaceAll("\n") ).toString();
+				}
+			
+				// remove all ANSI escape sequences
 				if ( ANSI_BEHAVIOUR == 0 && ansi_Matcher.matches(line) )
 				{
 					lineBuffer.setLength(0);
 					line = lineBuffer.append( ansi_Matcher.removeAll(line) ).toString();
 				}
 				
-				Matcher matcher = termsPattern.matcher(line);
+				Matcher matcher = eolPattern.matcher(line);
 				
 				int bPosition = 0;
 				while ( matcher.find() )
@@ -195,20 +216,29 @@ class StreamThread extends Thread
 					printString(output, line.substring( bPosition, matcher.end() ), false);
 					bPosition = matcher.end();
 				}
+				// remove already printed substrings
 				if (bPosition > 0)
+				{
 					lineBuffer.delete(0, bPosition);
-				
-				if ( bPosition < lineBuffer.length() )
+				}
+			
+				// there is some unterminated "tail":  -> "444"
+				if ( lineBuffer.length() > 0 )
 				{
 					try
 					{
-						// wait 50 msec
+						// wait ~50 msec...
 						if ( !inputReady(isr, 50) )
-							printString(output, lineBuffer.toString(), true);// -> "444"
+						{
+							// ... and print "tail"
+							printString(output, lineBuffer.toString(), true);
+							lineBuffer.setLength(0);
+						}
 					}
 					catch (Exception e3)
 					{
 						printString(output, lineBuffer.toString(), true);
+						lineBuffer.setLength(0);
 					}
 				}
 			}
@@ -254,7 +284,7 @@ class StreamThread extends Thread
 	
 	//{{{ printString() method
 	/*
-	 * output - Console output
+	 * output - Console/Buffer output
 	 * str    - printed string
 	 * isUnterminated - flag: is 'str' unterminated string?
 	 */
@@ -268,7 +298,7 @@ class StreamThread extends Thread
 		// error/warning parser
 		int errorStatus = copt.processLine(str);
 		
-		// look for ANSI escape sequencies 
+		// look for ANSI escape sequences 
 		if (needANSIparsing)
 		{
 			seqs = ansi_Matcher.parse(str, true);
@@ -306,7 +336,7 @@ class StreamThread extends Thread
 		// write line to output with/without color
 		try 
 		{
-			if (seqs == null) // no any ANSI escape sequencies
+			if (seqs == null) // no any ANSI escape sequences
 			{
 				output.writeAttrs(lineAttrs, str);
 			}
@@ -322,7 +352,7 @@ class StreamThread extends Thread
 					if ( !firstFlushed )
 					{
 						if (descr.bPosition > 0) {
-							flushSubtring(output, str, lineAttrs, 0, descr.bPosition);
+							flushSubstring(output, str, lineAttrs, 0, descr.bPosition);
 						}
 						firstFlushed = true;
 					}
@@ -423,12 +453,12 @@ class StreamThread extends Thread
 							}
 						}
 						
-						flushSubtring(output, str, funcAttrs, descr.bPosition, descr.ePosition);
+						flushSubstring(output, str, funcAttrs, descr.bPosition, descr.ePosition);
 						break;
 					//}}}
 					case NUL:
 					default :
-						flushSubtring(output, str, lineAttrs, descr.bPosition, descr.ePosition);	
+						flushSubstring(output, str, lineAttrs, descr.bPosition, descr.ePosition);	
 						break;
 					}
 				}
@@ -461,8 +491,8 @@ class StreamThread extends Thread
 		return false;
 	} //}}}
 	
-	//{{{ flushSubtring() method
-	private void flushSubtring(Output output, String str, SimpleAttributeSet localAttrs, int bpos, int epos)
+	//{{{ flushSubstring() method
+	private void flushSubstring(Output output, String str, SimpleAttributeSet localAttrs, int bpos, int epos)
 	{
 		if (epos - bpos > 0)
 			output.writeAttrs( localAttrs, str.substring(bpos, epos) );
