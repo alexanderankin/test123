@@ -42,6 +42,7 @@ public class SideKickCompletionPopup extends CompletionPopup
 		this.view = view;
 		this.parser = parser;
 		this.complete = complete;
+		addWindowListener(new WindowHandler());
 
 		reset(new Candidates(), active);
 	}
@@ -203,6 +204,24 @@ public class SideKickCompletionPopup extends CompletionPopup
 			complete = newComplete;
 			setLocation(getLocation(textArea, caret, complete));
 			reset(new Candidates(), active);
+		}
+	} //}}}
+
+	//{{{ WindowHandler class
+	private class WindowHandler extends WindowAdapter
+	{
+		@Override
+		public void windowOpened(WindowEvent e)
+		{
+			SideKick sk = SideKickPlugin.getSideKick(view);
+			sk.cancelParseWithDelay();
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e)
+		{
+			SideKick sk = SideKickPlugin.getSideKick(view);
+			sk.parseOnKeyStroke(view.getBuffer());
 		}
 	} //}}}
 
