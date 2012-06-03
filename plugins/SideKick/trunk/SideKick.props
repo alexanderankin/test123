@@ -3,7 +3,8 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust,Shlomy Reinstein, Matthieu Casanova
-plugin.sidekick.SideKickPlugin.version=1.3
+# just before the release change the version number to 1.4 (and remove this comment)
+plugin.sidekick.SideKickPlugin.version=1.3.1
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.05.99.00
 plugin.sidekick.SideKickPlugin.depend.1=jdk 1.6

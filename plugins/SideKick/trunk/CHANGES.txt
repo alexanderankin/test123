@@ -1,6 +1,9 @@
  :encoding=UTF-8:maxLineLen=80:wrap=hard:folding=explicit:collapseFolds=1:
  jEdit SideKick Plugin Changelog
 
+    Version 1.4
+        Fixed #2311948, auto-displayed ErrorList kills CompletionPopup
+          (Jarek Czekalski)
     Version 1.3
         Sidekick unable to clear checkbox tree/combo follows caret (#3445893 -
         Shlomy)

@@ -451,6 +451,28 @@ public class SideKick
 		}
 	} //}}}
 
+	//{{{ cancelParseWithDelay() method
+	void cancelParseWithDelay()
+	{
+		if(keystrokeTimer != null)
+			keystrokeTimer.stop();
+	} //}}}
+
+	//{{{ parseOnKeyStroke method
+	/** This method is fired by buffer inserts/removals, to trigger
+	  * "parse on keystroke". In special cases, like completion popup
+	  * dismiss, it is invoked to simulate keystroke. */
+	void parseOnKeyStroke(JEditBuffer buffer)
+	{
+		if(buffer != SideKick.this.buffer)
+		{
+			return;
+		}
+		
+		if(buffer.getBooleanProperty("sidekick.keystroke-parse"))
+			parseWithDelay();
+	} //}}}
+
 	//{{{ sendUpdate() method
 	private void sendUpdate()
 	{
@@ -595,17 +617,6 @@ public class SideKick
 	 * @since jedit 4.3pre2
 	 */
 	class BufferChangeListener extends BufferAdapter {
-
-		private void parseOnKeyStroke(JEditBuffer buffer)
-		{
-			if(buffer != SideKick.this.buffer)
-			{
-				return;
-			}
-
-			if(buffer.getBooleanProperty("sidekick.keystroke-parse"))
-				parseWithDelay();
-		}
 
 
 		public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
