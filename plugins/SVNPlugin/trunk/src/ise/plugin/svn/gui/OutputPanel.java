@@ -34,11 +34,10 @@ import java.util.logging.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import ise.plugin.svn.*;
+import ise.plugin.svn.library.ButtonTabComponent;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.SwingWorker;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
-import common.gui.CloseableTabbedPane;
 
 /**
  * Wraps a tabbed pane to show output.  There is always a 'console' tab that
@@ -49,7 +48,8 @@ import common.gui.CloseableTabbedPane;
  */
 public class OutputPanel extends JPanel {
 
-    private CloseableTabbedPane tabs;
+    //private CloseableTabbedPane tabs;
+    private JTabbedPane tabs;
 
     // used to generate unique name for this panel
     static int COUNT = 0;
@@ -70,9 +70,10 @@ public class OutputPanel extends JPanel {
         logger.removeHandler( handler );
         logger.addHandler( handler );
 
-        tabs = new CloseableTabbedPane();
-        Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
-        tabs.setCloseIcons(close_icon, close_icon, close_icon);
+        //tabs = new CloseableTabbedPane();
+        tabs = new JTabbedPane();
+        //Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
+        //tabs.setCloseIcons(close_icon, close_icon, close_icon);
         tabs.addTab( "SVN Console", getConsolePanel() );
         add( tabs );
 
@@ -153,6 +154,7 @@ public class OutputPanel extends JPanel {
         JScrollBar bar = scroller.getVerticalScrollBar();
         bar.setUnitIncrement( 15 );
         final Component c = tabs.add( name, scroller );
+        tabs.setTabComponentAt(tabs.getTabCount() - 1, new ButtonTabComponent(tabs));
         tabs.setSelectedComponent( c );
     }
 
