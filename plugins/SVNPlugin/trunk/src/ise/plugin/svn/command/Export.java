@@ -119,6 +119,7 @@ public class Export {
         // clean up
         out.flush();
         out.close();
+        clientManager.dispose();
 
         // fetch the accumulated data from the handler
         update_data = handler.getData();

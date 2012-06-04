@@ -130,7 +130,8 @@ public class Blame {
 
         out.flush();
         out.close();
-
+        clientManager.dispose();
+        
         return model;
     }
     public static void main ( String[] args ) {

@@ -210,13 +210,17 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 ConsolePrintStream out = new ConsolePrintStream( jEdit.getActiveView() );
                 @Override
                 protected Object doInBackground() {
+                    SVNClientManager clientManager = SVNClientManager.newInstance();
                     try {
                         out.println(jEdit.getProperty("ips.Converting_svn_working_copy_format_to_", "Converting svn working copy format to ") + new_wc_format + "...");
-                        SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
+                        SVNWCClient wc_client = clientManager.getWCClient();
                         wc_client.doSetWCFormat( projectRoot, wcf );
                     }
                     catch ( Exception e ) {
                         JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty( "ips.Unable_to_convert_working_copy_file_format>", "Unable to convert working copy file format:" ) + "\n" + e.getMessage(), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
+                    }
+                    finally {
+                        clientManager.dispose();   
                     }
                     return null;
                 }
@@ -241,8 +245,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         if ( wcVersion != -1 ) {
             return wcVersion;
         }
+        SVNClientManager clientManager = SVNClientManager.newInstance();
         try {
-            SVNStatusClient st_client = SVNClientManager.newInstance().getStatusClient();
+            SVNStatusClient st_client = clientManager.getStatusClient();
             SVNStatus status = st_client.doStatus( projectRoot, false );
             wcVersion = status.getWorkingCopyFormat();
             return wcVersion;
@@ -250,6 +255,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         catch ( Exception e ) {
             return jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
 
+        }
+        finally {
+            clientManager.dispose();   
         }
     }
 

@@ -122,6 +122,7 @@ public class Property {
                     }
                 }
             }
+            clientManager.dispose();
         }
         out.flush();
         out.close();
@@ -198,6 +199,7 @@ public class Property {
         }
         out.flush();
         out.close();
+        clientManager.dispose();
     }
 
     private void mergeResults( TreeMap<String, Properties> handler_results ) {

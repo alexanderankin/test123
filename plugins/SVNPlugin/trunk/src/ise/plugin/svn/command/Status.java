@@ -75,6 +75,9 @@ public class Status {
         catch(Exception e) {        // NOPMD
             return null;    // unknown status
         }
+        finally {
+            clientManager.dispose();   
+        }
         return status;
     }
 
@@ -136,6 +139,8 @@ public class Status {
         }
         StatusData status_data = handler.getResults();
         status_data.setRevision( revision );
+        clientManager.dispose();
+        
         return status_data;
     }
 }

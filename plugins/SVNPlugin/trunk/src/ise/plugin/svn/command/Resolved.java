@@ -104,6 +104,7 @@ public class Resolved {
 
         out.flush();
         out.close();
+        clientManager.dispose();
         return results;
     }
 }

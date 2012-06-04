@@ -136,6 +136,7 @@ public class Commit {
             out.flush();
         }
         out.close();
+        clientManager.dispose();
 
         CommitInfo ci = new CommitInfo();
         ci.setAuthor(info.getAuthor());

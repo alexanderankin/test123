@@ -43,6 +43,7 @@ import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.data.*;
+import ise.plugin.svn.pv.VersionControlState;
 import ise.plugin.svn.*;
 import java.util.logging.*;
 import ise.plugin.svn.command.*;
@@ -189,29 +190,16 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         project.setRootPath( path );
         saveProjectSVNInfo( project.getName() );
         project.setProperty( VersionControlService.VC_SERVICE_KEY, "Subversion" );
+        // It would be better to be able to instantiate the filter here
+        // and call its getId member. Or to make filter's id a constant
+        // string accessible here.
+        projectviewer.importer.ImportUtils.setImportFilterId(project,
+                               "ise.plugin.svn.pv.VersionControlState$1");
 
         // show the 'create project' dialog
-        ProjectOptions.run( project, true, null );
-
-        // get the group as set in the 'create project' dialog
-        VPTGroup group = ( VPTGroup ) project.getParent();
-        if ( group == null ) {
-            group = VPTRoot.getInstance();
-        }
-
-        // actually add the project to ProjectManager and set it as the active project
-        ProjectManager.getInstance().addProject( project, group );
-        ProjectViewer.setActiveNode( jEdit.getActiveView(), project );
-
-        // import the checked out files into the project. This next line is a suggestion
-        // from Marcelo that will automatically choose the 'Use CVS or SVN Entries' for
-        // importing the files.
-        projectviewer.importer.ImportUtils.saveFilter( project.getProperties(), new projectviewer.importer.CVSEntriesFilter(), "projectviewer.import" );
-        RootImporter ipi = new RootImporter( project, null, ProjectViewer.getViewer( jEdit.getActiveView() ), jEdit.getActiveView() );
-        // DONE: this doesn't work any more, change in PV API? It appears the locking code
-        // has been removed from PV and this next line isn't needed any more.
-        //ipi.setLockProject( false );
-        ipi.doImport();
+        // By default import will be done after creation.
+        projectviewer.PVActions.createProject(project, null,
+                         projectviewer.action.AddProjectAction.NO_FLAGS);
 
         // now show ProjectViewer
         getView().getDockableWindowManager().showDockableWindow( "projectviewer" );

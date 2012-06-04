@@ -115,6 +115,7 @@ public class Add {
 
         out.flush();
         out.close();
+        clientManager.dispose();
         return results;
     }
 }

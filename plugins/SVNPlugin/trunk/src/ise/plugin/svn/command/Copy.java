@@ -166,6 +166,7 @@ public class Copy {
         finally {
             out.flush();
             out.close();
+            clientManager.dispose();
         }
         
         return results;
