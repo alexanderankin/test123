@@ -96,6 +96,7 @@ public class Checkout {
 
         out.flush();
         out.close();
+        clientManager.dispose();
 
         // possibly change working copy format
         int current_wc_format = getWCVersion( localPath );

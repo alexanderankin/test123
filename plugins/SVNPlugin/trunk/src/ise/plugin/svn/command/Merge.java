@@ -159,6 +159,9 @@ public class Merge {
         catch ( Exception ignored ) {   // NOPMD
             //e.printStackTrace();
         }
+        finally {
+            clientManager.dispose();   
+        }
         return handler.getResults();
     }
 

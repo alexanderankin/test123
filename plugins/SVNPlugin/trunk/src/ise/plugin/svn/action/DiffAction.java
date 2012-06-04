@@ -280,6 +280,7 @@ public class DiffAction extends SVNAction {
                     client.doGetFileContents( new File( filepath ), SVNRevision.UNDEFINED, SVNRevision.BASE, false, os );
                     os.flush();
                     os.close();
+                    cm.dispose();
                 }
                 else {
                     remote1 = br.getFile( url, svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );

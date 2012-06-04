@@ -97,6 +97,8 @@ public class Cleanup {
         out.println("Done.");
         out.flush();
         out.close();
+        clientManager.dispose();
+        
         return "Done.";
     }
 }

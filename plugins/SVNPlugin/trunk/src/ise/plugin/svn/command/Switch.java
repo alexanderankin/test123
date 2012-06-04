@@ -108,6 +108,7 @@ public class Switch {
 
         out.flush();
         out.close();
+        clientManager.dispose();
 
         // fetch the accumulated data from the handler
         data = handler.getData();

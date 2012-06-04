@@ -101,6 +101,8 @@ public class Delete {
             }
             out.flush();
             out.close();
+            clientManager.dispose();
+            
             return results;
         }
         else {
@@ -150,6 +152,7 @@ public class Delete {
                 out.flush();
             }
             out.close();
+            clientManager.dispose();
 
             results.addPaths( data.getPaths() );
             return results;

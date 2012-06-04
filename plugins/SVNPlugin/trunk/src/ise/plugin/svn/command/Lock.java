@@ -117,6 +117,8 @@ public class Lock {
 
         out.flush();
         out.close();
+        clientManager.dispose();
+        
         return results;
     }
 }

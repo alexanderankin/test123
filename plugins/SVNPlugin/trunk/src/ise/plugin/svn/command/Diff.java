@@ -125,6 +125,8 @@ public class Diff {
                 client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), SVNDepth.INFINITY, false, diff_output, ( Collection ) null );
             }
         }
+        clientManager.dispose();
+        
         return diff_output.toString();
     }
 }

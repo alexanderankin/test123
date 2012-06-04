@@ -83,7 +83,8 @@ public class CommitAction extends SVNAction {
             // check for /tag/ and warn user if it appears they are
             // trying to commit to a tag directory
             List<String> possible_tags = new ArrayList<String>();
-            SVNWCClient client = SVNClientManager.newInstance().getWCClient();
+            SVNClientManager manager = SVNClientManager.newInstance();
+            SVNWCClient client = manager.getWCClient();
             Set<String> keys = paths.keySet();
             for ( String path : keys ) {
                 try {
@@ -96,13 +97,15 @@ public class CommitAction extends SVNAction {
                     e.printStackTrace();
                 }
             }
+            manager.dispose();
+            
             if ( possible_tags != null && possible_tags.size() > 0 ) {
-                StringBuffer msg = new StringBuffer();
+                StringBuffer msg = new StringBuffer(50);
                 msg.append( "It appears you may be attempting to commit some files to a tag:\n\n" );
                 for ( String path : possible_tags ) {
-                    msg.append( path ).append( "\n" );
+                    msg.append( path ).append( '\n' );
                 }
-                msg.append( "\n" );
+                msg.append( '\n' );
                 msg.append( "Are you sure you want to commit these files?" );
                 int no = JOptionPane.showConfirmDialog( getView(), msg, jEdit.getProperty( "ips.Confirm_Commit", "Confirm Commit" ), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
                 if ( no == JOptionPane.NO_OPTION ) {
