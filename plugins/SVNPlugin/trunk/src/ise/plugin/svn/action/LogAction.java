@@ -39,7 +39,7 @@ import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.Logger;
-import common.swingworker.*;
+import ise.plugin.svn.library.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
@@ -144,7 +144,7 @@ public class LogAction extends SVNAction {
                 }
 
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
                         data.getOut().printError( "Stopped 'Log' action." );

@@ -34,7 +34,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.event.*;
 import ise.plugin.svn.*;
-import common.swingworker.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 import org.gjt.sp.jedit.GUIUtilities;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -75,7 +75,7 @@ public class StopPanel extends JPanel {
         button.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    worker.cancel( true );
+                    worker.doCancel( true );
                     removeWorker( worker );
                     final JButton b = (JButton) ae.getSource();
                     SwingUtilities.invokeLater( new Runnable() {

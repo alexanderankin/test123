@@ -35,7 +35,8 @@ import ise.plugin.svn.gui.ErrorPanel;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
-import common.swingworker.SwingWorker;
+//import ise.plugin.svn.library.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -136,7 +137,7 @@ public class InfoAction extends SVNAction {
                 }
 
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
                         data.getOut().printError( "Stopped 'Info' action." );

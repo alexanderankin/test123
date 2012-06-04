@@ -38,7 +38,7 @@ import ise.plugin.svn.gui.SwitchDialog;
 import ise.plugin.svn.gui.UpdateResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import common.swingworker.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -128,7 +128,7 @@ public class SwitchAction extends SVNAction {
                 }
 
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
                         data.getOut().printError( "Stopped 'Switch' action." );

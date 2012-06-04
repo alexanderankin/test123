@@ -35,7 +35,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import ise.plugin.svn.*;
 import ise.plugin.svn.library.GUIUtils;
-import common.swingworker.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import common.gui.CloseableTabbedPane;

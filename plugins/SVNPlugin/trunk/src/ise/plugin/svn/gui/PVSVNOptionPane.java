@@ -41,7 +41,7 @@ import ise.java.awt.KappaLayout;
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.PasswordHandler;
-import common.swingworker.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.io.*;
@@ -225,7 +225,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                     return null;
                 }
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     out.printError( jEdit.getProperty("ips.Unable_to_stop_conversion_of_working_file_format.", "Unable to stop conversion of working file format.") );
                     return false;
                 }

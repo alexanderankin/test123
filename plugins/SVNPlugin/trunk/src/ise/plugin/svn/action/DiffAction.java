@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import common.swingworker.*;
+import ise.plugin.svn.library.SwingWorker;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.BrowseRepository;
@@ -316,7 +316,7 @@ public class DiffAction extends SVNAction {
         }
 
         @Override
-        public boolean cancel( boolean mayInterruptIfRunning ) {
+        public boolean doCancel( boolean mayInterruptIfRunning ) {
             boolean cancelled = super.cancel( mayInterruptIfRunning );
             if ( cancelled ) {
                 data.getOut().printError( "Stopped 'Diff' action." );
@@ -415,7 +415,7 @@ public class DiffAction extends SVNAction {
         }
 
         @Override
-        public boolean cancel( boolean mayInterruptIfRunning ) {
+        public boolean doCancel( boolean mayInterruptIfRunning ) {
             boolean cancelled = super.cancel( mayInterruptIfRunning );
             if ( cancelled ) {
                 data.getOut().printError( "Stopped 'Diff' action." );

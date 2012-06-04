@@ -63,6 +63,9 @@ public class Info {
         catch(SVNException e) {        // NOPMD
             return false;
         }
+        finally {
+            clientManager.dispose();   
+        }
     }
 
     public List<SVNInfo> info( SVNData data ) throws CommandInitializationException, SVNException {
@@ -130,6 +133,8 @@ public class Info {
                 results.add( result );
             }
         }
+        
+        clientManager.dispose();
 
         return results;
     }
