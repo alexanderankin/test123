@@ -122,7 +122,7 @@ public class Diff {
         else {
             // File, rev, rev -- from PV, working file against revision
             for ( File file : localPaths ) {
-                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), SVNDepth.INFINITY, false, diff_output, ( Collection ) null );
+                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), SVNDepth.INFINITY, false, diff_output, ( Collection<String> ) null );
             }
         }
         clientManager.dispose();
