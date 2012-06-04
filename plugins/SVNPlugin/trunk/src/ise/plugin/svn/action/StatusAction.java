@@ -43,7 +43,7 @@ import ise.plugin.svn.command.Status;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.gui.StatusResultsPanel;
-import common.swingworker.*;
+import ise.plugin.svn.library.SwingWorker;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.gjt.sp.jedit.View;
@@ -140,7 +140,7 @@ public class StatusAction extends SVNAction {
             }
 
             @Override
-            public boolean cancel( boolean mayInterruptIfRunning ) {
+            public boolean doCancel( boolean mayInterruptIfRunning ) {
                 boolean cancelled = super.cancel( mayInterruptIfRunning );
                 if ( cancelled ) {
                     data.getOut().printError( "Stopped 'Status' action." );

@@ -47,7 +47,7 @@ import ise.plugin.svn.pv.VersionControlState;
 import ise.plugin.svn.*;
 import java.util.logging.*;
 import ise.plugin.svn.command.*;
-import common.swingworker.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -128,7 +128,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
             }
 
             @Override
-            public boolean cancel( boolean mayInterruptIfRunning ) {
+            public boolean doCancel( boolean mayInterruptIfRunning ) {
                 boolean cancelled = super.cancel( mayInterruptIfRunning );
                 if ( cancelled ) {
                     data.getOut().printError( "Stopped 'Checkout' action." );

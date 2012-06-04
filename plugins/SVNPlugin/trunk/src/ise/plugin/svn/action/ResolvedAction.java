@@ -40,7 +40,7 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Resolved;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
-import common.swingworker.*;
+import ise.plugin.svn.library.SwingWorker;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 
@@ -148,7 +148,7 @@ public class ResolvedAction extends SVNAction {
                 }
 
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
                         data.getOut().printError( "Stopped 'Resolved' action." );

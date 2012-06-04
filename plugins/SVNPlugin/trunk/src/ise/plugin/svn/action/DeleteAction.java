@@ -40,7 +40,7 @@ import ise.plugin.svn.gui.DeleteDialog;
 import ise.plugin.svn.gui.RemoteDeleteDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import common.swingworker.SwingWorker;
+import ise.plugin.svn.library.SwingWorker;
 
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -155,7 +155,7 @@ public class DeleteAction extends SVNAction {
                 }
 
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
                         data.getOut().printError( "Stopped 'Delete' action." );

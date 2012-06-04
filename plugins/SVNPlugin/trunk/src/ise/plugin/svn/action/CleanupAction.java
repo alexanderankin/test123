@@ -34,7 +34,7 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Cleanup;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.io.ConsolePrintStream;
-import common.swingworker.*;
+import ise.plugin.svn.library.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
@@ -105,7 +105,7 @@ public class CleanupAction extends SVNAction {
                 }
 
                 @Override
-                public boolean cancel( boolean mayInterruptIfRunning ) {
+                public boolean doCancel( boolean mayInterruptIfRunning ) {
                     boolean cancelled = super.cancel( mayInterruptIfRunning );
                     if ( cancelled ) {
                         data.getOut().printError( "Stopped 'Cleanup' action." );
