@@ -98,7 +98,7 @@ public class CSS3Parser {
     private void addException(ParseException pe) {
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
-        //pe.printStackTrace();
+        pe.printStackTrace();
     }
     
     private void addWarning(ParseError pe) {
@@ -377,9 +377,9 @@ TOKEN [IGNORE_CASE] :/* basic tokens */
   | <#_IDENT : ( <MINUS> )? <NMSTART> ( <NMCHAR> )* >
   | <#NAME : ( <NMCHAR> )+ >
   | <#NUM : (
-    ["0"-"9"] )+ | (
-    ["0"-"9"] )* "." (
-    ["0"-"9"] )+ >
+    ( <MINUS> )? ["0"-"9"] )+ | (
+    ( <MINUS> )? ["0"-"9"] )* "." (
+    ( <MINUS> )? ["0"-"9"] )+ >
   | <#_STRING : <STRING1> | <STRING2> >
   | <#_INVALID : <INVALID1> | <INVALID2> >
   | <#_URL : (
