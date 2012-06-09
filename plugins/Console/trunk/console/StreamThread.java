@@ -96,14 +96,10 @@ class StreamThread extends Thread
 		shiftUCW = 0;
 		
 		eolPattern = Pattern.compile("\n");
-		if ( OperatingSystem.isWindows() )
+		if ( !OperatingSystem.isX11() )
 		{
-			eolReplacingPattern = Pattern.compile("\r\n");
+			eolReplacingPattern = Pattern.compile( System.getProperty("line.separator") );
 		}
-		else if ( OperatingSystem.isMacOS() )
-		{
-			eolReplacingPattern = Pattern.compile("\r");
-		} // otherwise == null
 		
 		this.defaultColor = defaultColor;
 		this.bgColor      = console.getConsolePane().getBackground();
@@ -194,7 +190,6 @@ class StreamThread extends Thread
 				String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
 				
 				// convert all line breaks to internall "standart": "\n"
-				// for known systems only
 				if (eolReplacingPattern != null)
 				{
 					lineBuffer.setLength(0);
@@ -225,20 +220,15 @@ class StreamThread extends Thread
 				// there is some unterminated "tail":  -> "444"
 				if ( lineBuffer.length() > 0 )
 				{
-					try
+					if ( !isr.ready() )
 					{
-						// wait ~50 msec...
-						if ( !inputReady(isr, 50) )
+						sleep(50);
+						
+						if ( !isr.ready() )
 						{
-							// ... and print "tail"
 							printString(output, lineBuffer.toString(), true);
 							lineBuffer.setLength(0);
 						}
-					}
-					catch (Exception e3)
-					{
-						printString(output, lineBuffer.toString(), true);
-						lineBuffer.setLength(0);
 					}
 				}
 			}
@@ -468,27 +458,6 @@ class StreamThread extends Thread
 		{
 			Log.log (Log.ERROR, this, "Can't Flush:", err);
 		}		
-	} //}}}
-	
-	//{{{ inputReady() method
-	private boolean inputReady(InputStreamReader isr, int time)
-		throws IOException, InterruptedException
-	{
-		if (isr == null)
-			return false;
-		
-		for (int i = 0; i < time; i++) {
-			if ( isr.ready() )
-			{
-				return true;
-			}
-			else
-			{
-				sleep(1);
-			}
-		}
-		
-		return false;
 	} //}}}
 	
 	//{{{ flushSubstring() method
