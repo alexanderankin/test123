@@ -93,7 +93,7 @@ public class CommandoButton extends JButton implements ActionListener
 		customize.addActionListener(this);
 		contextMenu.add(customize);
 		if (command.isUser()) {
-			setBackground(Color.GREEN);
+			// setBackground(Color.GREEN);
 			setToolTipText(jEdit.getProperty("console.commando.button.customized.tooltiptext"));
 			if (command.isOverriding()) {
 				unCustomize = new JMenuItem(jEdit.getProperty("commando.uncustomize"));
