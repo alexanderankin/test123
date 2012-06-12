@@ -161,11 +161,10 @@
   </para></listitem>
 
  </itemizedlist>
- <bridgehead> Toolbar Options </bridgehead>
+ <bridgehead> Commando Options </bridgehead>
 
  <para> Console has an optional toolbar that displays commando commands.
- The commands can be executed by keyboard shortcuts even if the toolbar is not
- enabled. You can check and un-check which commands show up in the menus and
+ You can check and un-check which commands show up in the menus and
  toolbars. </para>
 
  <bridgehead> Error Patterns Options </bridgehead>

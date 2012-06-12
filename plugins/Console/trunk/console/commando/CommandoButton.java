@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import console.ConsolePlugin;
 // }}}
 
+// {{{ CommandoButon class
 /**
  * A view for a CommandoCommand
  * 
@@ -69,7 +70,7 @@ public class CommandoButton extends JButton implements ActionListener
 	
 	// }}}
 
-    // {{{ ctor 
+    // {{{ initialization 
 	public CommandoButton(CommandoCommand command)
 	{
 		this.command = command;
@@ -107,7 +108,7 @@ public class CommandoButton extends JButton implements ActionListener
 	}
     // }}}
     
-	// {{{ unCustomize
+    // {{{ unCustomize
 	public void unCustomizeButton() 
 	{
 		String userDir = ConsolePlugin.getUserCommandDirectory();
@@ -131,9 +132,9 @@ public class CommandoButton extends JButton implements ActionListener
 		browser.delete(vfl);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {	ConsolePlugin.rescanCommands();	}});
-	}
+	} // }}}
 	
-    // {{{ Customize 
+    // {{{ customize 
 	public void customize()
 	{
 		String userDir = ConsolePlugin.getUserCommandDirectory();
@@ -184,4 +185,4 @@ public class CommandoButton extends JButton implements ActionListener
 	}
     // }}}
 
-}
+} // }}}

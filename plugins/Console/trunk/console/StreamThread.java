@@ -96,10 +96,8 @@ class StreamThread extends Thread
 		shiftUCW = 0;
 		
 		eolPattern = Pattern.compile("\n");
-		if ( !OperatingSystem.isX11() )
-		{
+		if (!System.getProperty("line.separator").equals("\n"))
 			eolReplacingPattern = Pattern.compile( System.getProperty("line.separator") );
-		}
 		
 		this.defaultColor = defaultColor;
 		this.bgColor      = console.getConsolePane().getBackground();
