@@ -29,8 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.logging.*;
+import java.util.concurrent.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -70,12 +72,12 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
 
     private StopPanel stopPanel = null;
 
-    private LinkedList<StyledMessage> messageQueue = new LinkedList<StyledMessage>();
+    private SerialExecutor messageProcessor = new SerialExecutor(Executors.newFixedThreadPool(10));
 
     /**
      * Green
      */
-    private Color GREEN = new Color(0, 153, 51);
+    private Color GREEN = new Color(0, 153, 51 );
     private Color foreground = Color.BLACK;
 
     private SimpleAttributeSet attributeSet = null;
@@ -83,60 +85,58 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     /**
      * Platform line separator.
      */
-    public static final String LS = System.getProperty("line.separator");
+    public static final String LS = System.getProperty( "line.separator" );
 
     /**
      * Constructor
      */
     public SubversionGUILogHandler() {
-        contentPanel = new JPanel(new BorderLayout());
+        contentPanel = new JPanel( new BorderLayout() );
 
         // this value lets the CloseableTabbedPane know not to allow closing
         // of the SVN Console.
-        contentPanel.putClientProperty("isCloseable", Boolean.FALSE);
+        contentPanel.putClientProperty( "isCloseable", Boolean.FALSE );
 
         textPane = new JTextPane();
-        textPane.setName("svn console output");
+        textPane.setName( "svn console output" );
 
         try {
             LookAndFeel laf = UIManager.getLookAndFeel();
-            if (laf.getID().equals("Nimbus")) {
+            if ( laf.getID().equals( "Nimbus" ) ) {
                 // stupid hack for Nimbus look and feel where JTextPane and
                 // JEditorPane don't honor setBackground.
-                textPane.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
+                textPane.setUI( new javax.swing.plaf.basic.BasicEditorPaneUI() );
             }
-            textPane.setBackground(jEdit.getColorProperty("view.bgColor"));
-            foreground = jEdit.getColorProperty("view.fgColor");
-            textPane.setForeground(foreground);
-        } catch (Exception e) {
-            textPane.setBackground(Color.WHITE);
-            textPane.setForeground(Color.BLACK);
+            textPane.setBackground( jEdit.getColorProperty( "view.bgColor" ) );
+            foreground = jEdit.getColorProperty( "view.fgColor" );
+            textPane.setForeground( foreground );
+        } catch ( Exception e ) {
+            textPane.setBackground( Color.WHITE );
+            textPane.setForeground( Color.BLACK );
             foreground = Color.BLACK;
         }
 
         // use the same font as the jEdit text area
         Font currentFont = jEdit.getFirstView().getEditPane().getTextArea().getPainter().getFont();
-        textPane.setFont(currentFont);
+        textPane.setFont( currentFont );
 
-        textPane.setCaretPosition(0);
+        textPane.setCaretPosition(0 );
 
         attributeSet = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(attributeSet, currentFont.getFamily());
-        StyleConstants.setBold(attributeSet, currentFont.isBold());
-        StyleConstants.setItalic(attributeSet, currentFont.isItalic());
-        StyleConstants.setFontSize(attributeSet, currentFont.getSize());
+        StyleConstants.setFontFamily( attributeSet, currentFont.getFamily() );
+        StyleConstants.setBold( attributeSet, currentFont.isBold() );
+        StyleConstants.setItalic( attributeSet, currentFont.isItalic() );
+        StyleConstants.setFontSize( attributeSet, currentFont.getSize() );
 
         // layout the panel
-        contentPanel.add(new JScrollPane(textPane), BorderLayout.CENTER);
-        JPanel bottom_panel = new JPanel(new BorderLayout());
-        bottom_panel.add(getControlPanel(), BorderLayout.EAST);
-        bottom_panel.add(getStopPanel(), BorderLayout.WEST);
-        contentPanel.add(bottom_panel, BorderLayout.SOUTH);
+        contentPanel.add( new JScrollPane( textPane ), BorderLayout.CENTER );
+        JPanel bottom_panel = new JPanel( new BorderLayout() );
+        bottom_panel.add( getControlPanel(), BorderLayout.EAST );
+        bottom_panel.add( getStopPanel(), BorderLayout.WEST );
+        contentPanel.add( bottom_panel, BorderLayout.SOUTH );
 
         // set the formatter
-        setFormatter(new LogFormatter());
-
-        messageProcessor.start();
+        setFormatter( new LogFormatter() );
     }
 
     public class LogFormatter extends Formatter {
@@ -144,7 +144,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
          * @param record
          * @return Description of the Returned Value
          */
-        public String format(LogRecord record) {
+        public String format( LogRecord record ) {
             return record.getMessage() + LS;
         }
     }
@@ -168,8 +168,8 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      * Finish out the log.
      */
     public void close() {
-        if (getFormatter() != null) {
-            publish(new LogRecord(Level.INFO, getFormatter().getTail(this)));
+        if ( getFormatter() != null ) {
+            publish( new LogRecord( Level.INFO, getFormatter().getTail( this ) ) );
         }
     }
 
@@ -177,8 +177,8 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      * Flush the log.
      */
     public void flush() {
-        if (getFormatter() != null) {
-            publish(new LogRecord(Level.INFO, getFormatter().getTail(this)));
+        if ( getFormatter() != null ) {
+            publish( new LogRecord( Level.INFO, getFormatter().getTail( this ) ) );
         }
     }
 
@@ -186,11 +186,11 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      * Starts the log.
      */
     public void open() {
-        if (getFormatter() != null) {
+        if ( getFormatter() != null ) {
             int index = textPane.getDocument().getLength();
             try {
-                textPane.getDocument().insertString(index, getFormatter().getHead(SubversionGUILogHandler.this), null);
-            } catch (Exception e) {                // NOPMD
+                textPane.getDocument().insertString( index, getFormatter().getHead( SubversionGUILogHandler.this ), null );
+            } catch ( Exception e ) {                // NOPMD
                 // Log.log( e );
             }
         }
@@ -201,55 +201,51 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      *
      * @param lr  the LogRecord to write.
      */
-    public void publish(final LogRecord lr) {
-        if (lr == null) {
+    public void publish( final LogRecord lr ) {
+        if ( lr == null ) {
             // nothing to do
             return;
         }
-        if (textPane == null) {
+        if ( textPane == null ) {
             // nowhere to display the message
             return;
         }
         String msg = lr.getMessage();
-        if (msg == null) {
+        if ( msg == null ) {
             // no message to display
             return;
         }
 
-        if (getFormatter() != null) {
-            msg = getFormatter().format(lr);
+        if ( getFormatter() != null ) {
+            msg = getFormatter().format( lr );
         }
 
-        if (lr.getLevel().equals(Level.WARNING)) {
-            StyleConstants.setForeground(attributeSet, GREEN);
-        } else if (lr.getLevel().equals(Level.SEVERE)) {
-            StyleConstants.setForeground(attributeSet, Color.RED);
-        } else if (lr.getLevel().equals(Level.INFO)) {
-            StyleConstants.setForeground(attributeSet, foreground);
+        if ( lr.getLevel().equals( Level.WARNING ) ) {
+            StyleConstants.setForeground( attributeSet, GREEN );
+        } else if ( lr.getLevel().equals( Level.SEVERE ) ) {
+            StyleConstants.setForeground( attributeSet, Color.RED );
+        } else if ( lr.getLevel().equals( Level.INFO ) ) {
+            StyleConstants.setForeground( attributeSet, foreground );
         } else {
-            StyleConstants.setForeground(attributeSet, foreground);
+            StyleConstants.setForeground( attributeSet, foreground );
         }
-        queueMessage(new StyledMessage(msg, attributeSet));
+        queueMessage( new StyledMessage( msg, attributeSet ) );
     }
 
-    private void queueMessage(StyledMessage sm) {
-        messageQueue.addLast(sm);
-    }
-
-    private void processMessage(final StyledMessage sm) {
-        SwingUtilities.invokeLater(new Runnable() {
+    private void queueMessage( final StyledMessage sm ) {
+        messageProcessor.execute( new Runnable() {
             public void run() {
                 try {
                     int index = textPane.getDocument().getLength();
                     int caret_position = textPane.getCaretPosition();
-                    textPane.getDocument().insertString(index, sm.message, sm.attributes);
-                    if (doTail) {
-                        textPane.setCaretPosition(index + sm.message.length());
+                    textPane.getDocument().insertString( index, sm.message, sm.attributes );
+                    if ( doTail ) {
+                        textPane.setCaretPosition( index + sm.message.length() );
                     } else {
-                        textPane.setCaretPosition(caret_position);
+                        textPane.setCaretPosition( caret_position );
                     }
 
-                } catch (BadLocationException e) {
+                } catch ( BadLocationException e ) {
                     e.printStackTrace();
                 }
             }
@@ -257,35 +253,35 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     }
 
     public StopPanel getStopPanel() {
-        if (stopPanel == null) {
+        if ( stopPanel == null ) {
             stopPanel = new StopPanel();
         }
         return stopPanel;
     }
 
     private JPanel getControlPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        final JCheckBox tail_cb = new JCheckBox("Tail");
-        tail_cb.setSelected(true);
-        tail_cb.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        JPanel panel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
+        final JCheckBox tail_cb = new JCheckBox( "Tail" );
+        tail_cb.setSelected( true );
+        tail_cb.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
                 doTail = tail_cb.isSelected();
-                if (doTail) {
-                    textPane.setCaretPosition(textPane.getDocument().getLength());
+                if ( doTail ) {
+                    textPane.setCaretPosition( textPane.getDocument().getLength() );
                 }
             }
         }
-       );
-        RolloverButton clear_btn = new RolloverButton(GUIUtilities.loadIcon("Clear.png"));
-        clear_btn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        );
+        RolloverButton clear_btn = new RolloverButton( GUIUtilities.loadIcon( "Clear.png" ) );
+        clear_btn.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
                 textPane.selectAll();
-                textPane.replaceSelection("");
+                textPane.replaceSelection( "" );
             }
         }
-       );
-        panel.add(tail_cb);
-        panel.add(clear_btn);
+        );
+        panel.add( tail_cb );
+        panel.add( clear_btn );
         return panel;
     }
 
@@ -293,30 +289,40 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         public String message;
         public SimpleAttributeSet attributes;
 
-        public StyledMessage(String msg, SimpleAttributeSet set) {
+        public StyledMessage( String msg, SimpleAttributeSet set ) {
             message = msg;
             attributes = set;
         }
     }
 
-    Thread messageProcessor = new Thread() {
-        public void run() {
-            setPriority(Thread.MIN_PRIORITY);
-            while (true) {
-                while (!messageQueue.isEmpty()) {
+    class SerialExecutor implements Executor {
+        final Queue<Runnable> tasks = new ArrayDeque<Runnable>();
+        final Executor executor;
+        Runnable active;
+
+        SerialExecutor( Executor executor ) {
+            this.executor = executor;
+        }
+
+        public synchronized void execute( final Runnable r ) {
+            tasks.offer( new Runnable() {
+                public void run() {
                     try {
-                        processMessage(messageQueue.removeFirst());
-                    } catch (Exception e) {     // NOPMD
-                        // ignored
+                        SwingUtilities.invokeLater(r);
+                    } finally {
+                        scheduleNext();
                     }
-                    yield();
                 }
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    // ignored
-                }
+            } );
+            if ( active == null ) {
+                scheduleNext();
             }
         }
-    };
+
+        protected synchronized void scheduleNext() {
+            if ( ( active = tasks.poll() ) != null ) {
+                executor.execute( active );
+            }
+        }
+    }
 }
