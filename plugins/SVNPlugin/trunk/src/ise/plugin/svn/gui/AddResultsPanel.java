@@ -76,7 +76,7 @@ public class AddResultsPanel extends JPanel {
         con.p = 3;
 
         // show paths scheduled for add
-        List<String> paths = results.getPaths();
+        Set<String> paths = results.getPaths();
         if ( paths != null && paths.size() > 0 ) {
             JPanel top_panel = new JPanel( new BorderLayout() );
             String good_label_text = "";

@@ -37,7 +37,7 @@ import java.util.*;
 public class AddResults {
 
     // paths to be added
-    private List<String> paths = new ArrayList<String>();
+    private Set<String> paths = new TreeSet<String>();
 
     // paths that can't be added and the reason why
     private TreeMap<String, String> error_paths = new TreeMap<String, String>();
@@ -55,7 +55,7 @@ public class AddResults {
         }
     }
 
-    public List<String> getPaths() {
+    public Set<String> getPaths() {
         return paths;
     }
 
