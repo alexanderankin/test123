@@ -19,8 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package voxspellcheck;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.Character;
 
+import java.lang.ClassCastException;
+import java.lang.Exception;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.HashSet;
@@ -71,10 +75,10 @@ public class VoxSpellPlugin extends EBPlugin
     
     private static TreeMap<String, SpellCheck> checkers;
     //private static OffsetTrie checker = null;
-    private static WordTrie user_checker = null;
-    private static WordTrie ignore_checker = null;
-    private static SuggestionTree suggestions = null;
-    private static String prop_key = "VoxSpellExtension";
+    private static WordTrie user_checker;
+    private static WordTrie ignore_checker;
+    private static SuggestionTree suggestions;
+    private static final String prop_key = "VoxSpellExtension";
     
     public static SuggestionTree getSuggestionTree()
     {
@@ -85,12 +89,12 @@ public class VoxSpellPlugin extends EBPlugin
     {
         try {
             return (VoxSpellPainter)ep.getClientProperty(prop_key);
-        } catch (java.lang.ClassCastException ex) {
+        } catch (ClassCastException ex) {
             return null;
         }
     }
     
-    static protected void scheduleLater(final Runnable task)
+    protected static void scheduleLater(final Runnable task)
     {
          Runnable runner = new Runnable() {
             public void run() {
@@ -105,7 +109,7 @@ public class VoxSpellPlugin extends EBPlugin
         new Thread(runner).start();
     }
     
-    static protected void scheduleEditPaneUpdate(final EditPane editpane)
+    protected static void scheduleEditPaneUpdate(final EditPane editpane)
     {
         final Runnable task = new Runnable() {
             public void run() {
@@ -115,24 +119,23 @@ public class VoxSpellPlugin extends EBPlugin
         scheduleLater(task);
     }
     
-    static public void updateEditPane(EditPane editpane)
+    public static void updateEditPane(EditPane editpane)
     {
         if (editpane == null)
             return;
-        
-        VoxSpellPainter painter = null;
-        Buffer buffer = editpane.getBuffer();
+
+		Buffer buffer = editpane.getBuffer();
         TextArea text_area = editpane.getTextArea();
         
         if (buffer == null) {
             scheduleEditPaneUpdate(editpane);
             return;
         }
-        
-        painter = getVoxSpellPainter(editpane);
-        if (painter == null) {
+
+		VoxSpellPainter painter = getVoxSpellPainter(editpane);
+		if (painter == null) {
             String s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
-            if (s.equals("true")) {
+            if ("true".equals(s)) {
                 startSpelling(editpane);
             }
             painter = getVoxSpellPainter(editpane);
@@ -174,9 +177,9 @@ public class VoxSpellPlugin extends EBPlugin
         updateEditPane(editpane);
     }
    
-    public void handleMessage(EBMessage msg)
+    @Override
+	public void handleMessage(EBMessage msg)
     {
-        EditPane editpane = null;
         if (msg instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate)msg;
             View view = bu.getView();
@@ -184,20 +187,19 @@ public class VoxSpellPlugin extends EBPlugin
                 updateActiveView();
                 return;
             }
-            editpane = view.getEditPane();
+			EditPane editpane = view.getEditPane();
             updateEditPane(editpane);
         } else if (msg instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate)msg;
-            editpane = epu.getEditPane();
+			EditPane editpane = epu.getEditPane();
             updateEditPane(editpane);
         }
     }
     
-    private static void loadDict(PluginJAR plugin_jar) throws java.io.IOException
+    private static void loadDict(PluginJAR plugin_jar) throws IOException
     {
-        ZipFile zip;
-        zip = plugin_jar.getZipFile();
-        for (Enumeration e = zip.entries();
+		ZipFile zip = plugin_jar.getZipFile();
+		for (Enumeration e = zip.entries();
              e.hasMoreElements();)
         {
             ZipEntry entry = (ZipEntry)e.nextElement();
@@ -226,7 +228,7 @@ public class VoxSpellPlugin extends EBPlugin
         File user_dict = new File(settings_dir + "/user_dict");
         try {
             user_dict.createNewFile();
-        } catch (java.io.IOException ex) {
+        } catch (IOException ex) {
             Log.log(Log.ERROR, ex, ex);
             return null;
         }
@@ -242,14 +244,14 @@ public class VoxSpellPlugin extends EBPlugin
         FileInputStream input;
         try {
             input = new FileInputStream(user_dict);
-        } catch (java.io.FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             Log.log(Log.ERROR, ex, "IOException " + ex);
             return;
         }
         
         try {
             user_checker.read(new DataInputStream(input));
-        } catch (java.io.IOException ex) {
+        } catch (IOException ex) {
             Log.log(Log.ERROR, ex, ex);
             return;
         }
@@ -263,7 +265,7 @@ public class VoxSpellPlugin extends EBPlugin
     
     public static void startSpelling(EditPane editpane)
     {
-        if (checkers.size() == 0 || ignore_checker == null || user_checker == null) {
+        if (checkers.isEmpty() || ignore_checker == null || user_checker == null) {
             Log.log(Log.ERROR, editpane, "Not checking spelling, plugin is not" +
                     "initialized");
             return;
@@ -292,7 +294,8 @@ public class VoxSpellPlugin extends EBPlugin
         }
     }
     
-    public void start()
+    @Override
+	public void start()
     {
         if (this.ignore_checker == null) {
             this.ignore_checker = new WordTrie();
@@ -303,7 +306,7 @@ public class VoxSpellPlugin extends EBPlugin
             this.checkers = new TreeMap<String, SpellCheck>();
             try {
                 loadDict(getPluginJAR());
-            } catch (java.io.IOException ex) {
+            } catch (IOException ex) {
                 Log.log(Log.ERROR, this, "Could not load dictionary: " + ex);
                 return;
             }
@@ -321,13 +324,14 @@ public class VoxSpellPlugin extends EBPlugin
         View view = view = jEdit.getActiveView();
         if (view != null) {
             String s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
-            if (s.equals("true")) {
+            if ("true".equals(s)) {
                 startSpelling(view.getEditPane());
             }
         }
     }
     
-    public void stop()
+    @Override
+	public void stop()
     {
         View[] views = jEdit.getViews();
         for (View v : views) {
@@ -342,7 +346,7 @@ public class VoxSpellPlugin extends EBPlugin
         int caret = textarea.getCaretPosition();
         int line = textarea.getLineOfOffset(caret);
         String text = textarea.getLineText(line);
-        if (text.trim().equals(""))
+        if (text.trim().isEmpty())
             return;
         int line_start = textarea.getLineStartOffset(line);
         int line_offset = caret - line_start;
@@ -353,8 +357,7 @@ public class VoxSpellPlugin extends EBPlugin
             Selection sel = new Selection.Range(word_start + line_start,
                                                 word_end + line_start);
             textarea.setSelection(sel);
-        } catch (java.lang.Exception ex) {
-            ;
+        } catch (Exception ex) {
         }
     }
     
@@ -386,7 +389,7 @@ public class VoxSpellPlugin extends EBPlugin
         if (suggestions == null)
             return null;
         
-        if (word.trim().equals(""))
+        if (word.trim().isEmpty())
             return null;
 
         Vector<String> words = suggestions.getSuggestions(word);
@@ -412,7 +415,7 @@ public class VoxSpellPlugin extends EBPlugin
         FileOutputStream output;
         try {
             output = new FileOutputStream(user_dict);
-        } catch (java.io.FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             Log.log(Log.ERROR, ex, "FileNotFoundException " + ex);
             return;
         }
@@ -421,7 +424,7 @@ public class VoxSpellPlugin extends EBPlugin
             user_checker.write(new DataOutputStream(output));
             output.flush();
             output.close();
-        } catch (java.io.IOException ex) {
+        } catch (IOException ex) {
             Log.log(Log.ERROR, ex, "EncodingException " + ex);
         }
     }
@@ -434,7 +437,7 @@ public class VoxSpellPlugin extends EBPlugin
         user_checker.addWord(word);
         textarea.repaint();
         
-        if (word.length() > 0)
+        if (suggestions != null && !word.isEmpty())
             suggestions.addWord(word);
         
         writeUserDict();
@@ -446,7 +449,7 @@ public class VoxSpellPlugin extends EBPlugin
         if (sel == null)
             selectWordAtCaret(textarea);
         String word = textarea.getSelectedText().trim();
-        if ((word != null) && (word.length() > 0)) {
+        if (word != null && !word.isEmpty()) {
             addWord(word, textarea);
         }
     }
@@ -468,7 +471,7 @@ public class VoxSpellPlugin extends EBPlugin
         if (word == null)
             return;
         word = word.trim();
-        if ((word != null) && (word.length() > 0)) {
+        if (word != null && !word.isEmpty()) {
             ignoreWord(word, textarea);
         }
     }
@@ -490,7 +493,7 @@ public class VoxSpellPlugin extends EBPlugin
         if (word == null)
             return;
         word = word.trim();
-        if ((word != null) && (word.length() > 0)) {
+        if (word != null && !word.isEmpty()) {
             resetWord(word, textarea);
         }
     }
