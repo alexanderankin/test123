@@ -42,7 +42,6 @@ import java.util.ArrayList;
  */
 public class escMatcher
 {
-//{{{ escMatcher class
 	//{{{ data members
 	private int MATCH_MODE;
 	private int COMPILE_FLAG;
@@ -113,24 +112,18 @@ public class escMatcher
 		
 		workPatterns.clear();
 		
-		String str;
+		boolean is8bit = (MATCH_MODE == Sequences.MODE_8BIT);
+		
 		for ( Map.Entry<CF, Sequences.Record> entry: newMap.entrySet() ) {
 			// CF.CSI ? => ignor
 			if (entry.getKey() == CF.CSI) continue;
 			
-			if (MATCH_MODE == Sequences.MODE_7BIT) {
-				str = entry.getValue().pattern7;
-				
-			} else if (MATCH_MODE == Sequences.MODE_8BIT) {
-				str = entry.getValue().pattern8;
-				
-			} else {
-				str = entry.getValue().pattern7;
-				
-			}
+			String str = is8bit ?
+					entry.getValue().pattern8 :
+					entry.getValue().pattern7 ;
 			
 			// 7bit: CF.LS0 == CF.LS1 == null
-			// 8bit: CF.SI == CF.SO == null
+			// 8bit: CF.SI  == CF.SO  == null
 			if (str != null)
 				workPatterns.put(entry.getKey(), Pattern.compile(str));
 			
@@ -220,12 +213,12 @@ public class escMatcher
 			int newBegining = matcher.start();
 			
 			if (prevBegining != -1)
-				internalList.add( inputString.substring(prevBegining, newBegining) );
+				internalList.add( new String( inputString.substring(prevBegining, newBegining) ) );
 			
 			prevBegining = newBegining;
 		}
 		if (prevBegining != -1)
-			internalList.add( inputString.substring(prevBegining) );
+			internalList.add( new String( inputString.substring(prevBegining) ) );
 		
 		/*  process found strings  */
 		if ( !internalList.isEmpty() ) {
@@ -234,6 +227,7 @@ public class escMatcher
 			if (ignorSequences)
 				inputString = removeAll(inputString);
 			
+			// last position of entering into 'inputString'
 			int position = 0;
 			
 			// go over strings
@@ -260,6 +254,9 @@ public class escMatcher
 				}
 
 				int[] params;
+				// result[0] - new position in 'inputString'
+				// result[1] - first character of (sequence or data)
+				// result[2] - index of character, which follows after LAST character of (sequence or data)
 				int[] result = {0, 0, 0};
 				
 				if (matcher != null) {
@@ -320,6 +317,4 @@ public class escMatcher
 		
 		return returnedList;
 	} //}}}
-	
- //}}}	
 }

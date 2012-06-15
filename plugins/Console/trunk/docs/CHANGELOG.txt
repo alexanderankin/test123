@@ -4,6 +4,7 @@ jEdit Console Plugin Changelog
 
     Version 4.5.1 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev] 
+        Updated jcfunc.* to version 1.1. See /jcfunc/changelog.txt.
         Fixed some minor bugs in StreamThread.
         #3530817 - Console wrong LF after running a command to buffer (Windows).
         Patch #3530149 - ANSI escape code parser for Console plugin (FR #2510255).

@@ -495,7 +495,7 @@ public class Sequences
 		String   str = ""; 
 		
 		switch (func) {
-		    //{{{ defines functions without parameters 		
+		    //{{{ defines functions without parameters 
 		    case ACK : return  new Record( getC0(C0.ACK) );
 		    case APC : return  new Record( getC1(C1.APC, ESC) );
 		    case BEL : return  new Record( getC0(C0.BEL) );
@@ -559,7 +559,7 @@ public class Sequences
 		    case VT  : return  new Record( getC0(C0.VT ) );
 		    case VTS : return  new Record( getC1(C1.VTS, ESC) );
 		    //}}}
-		    //{{{ defines functions with any paraeters
+		    //{{{ defines functions with any parameters
 	    	    case CBT : str = Pn  + Sym.Z_UP;		return  new Record(CSI[0] + str, CSI[1] + str);      
 		    case CHA : str = Pn  + Sym.G_UP;		return  new Record(CSI[0] + str, CSI[1] + str);
 		    case CHT : str = Pn  + Sym.I_UP;		return  new Record(CSI[0] + str, CSI[1] + str);                   
@@ -693,7 +693,7 @@ public class Sequences
 	/**
 	   Returns control function's RegExp-pattern.
 	   @param cmd control function
-	   @param mode mode of control function's repersentation @see Sequencies.MODE_7BIT and Sequencies.MODE_8BIT
+	   @param mode mode of control function's repersentation, MODE_7BIT and MODE_8BIT
 	 */
 	public static String getCFPattern(CF cmd, int mode)
 	{
@@ -709,29 +709,84 @@ public class Sequences
 	//{{{ getCommonCFPattern() method
 	/**
 	   Returns common control function's RegExp-pattern, which matches any sequence.
-	   @param mode mode of control function's repersentation @see Sequencies.MODE_7BIT and Sequencies.MODE_8BIT
-	   @param exceptLF_CR enables skipping following symbols: Line Feed ("\u000A") and Carriage Return ("\u000D")
+	   @param mode mode of control function's repersentation, MODE_7BIT or MODE_8BIT
+	   @param exceptLF_CR enables skipping following symbols: Line Feed and Carriage Return
 	 */
 	public static String getCommonCFPattern(int mode, boolean exceptLF_CR)
 	{
+		if (exceptLF_CR) {
+			return getCommonCFPattern(mode, new C0[]{C0.LF, C0.CR}, null, null);
+		} else {
+			return getCommonCFPattern(mode, null, null, null);
+		}
+	}
+	
+	/**
+	   Returns common control function's RegExp-pattern, which matches any sequence.
+	   @param mode mode of control function's repersentation, MODE_7BIT or MODE_8BIT
+	   @param exclC0Set array of excluded C0-functions
+	   @param exclC1Set array of excluded C1-functions
+	   @param exclSymSet array of excluded symbols (from CSI-functions)
+	 */
+	public static String getCommonCFPattern(int mode, C0[] exclC0Set, C1[] exclC1Set, Sym[] exclSymSet)
+	{
+		StringBuilder retStr = new StringBuilder();
 		String ESC = "";
-		String c0func = exceptLF_CR ?
-					String.format("[%s-%s&&[^%s%s]]", getC0(C0.NUL)[0], getC0(C0.IS1)[0],
-									  getC0(C0.LF )[0], getC0(C0.CR )[0]  ) :
-					String.format("[%s-%s]"         , getC0(C0.NUL)[0], getC0(C0.IS1)[0]  );
+		int index = (mode == MODE_7BIT) ? 0 : 1;
 		
-		String c1func = mode == MODE_7BIT ?
-		       			String.format("%s[%s-%s]", getC0(C0.ESC)[0], getC1(C1.BPH, ESC)[0], getC1(C1.APC, ESC)[0] ) :
-		       			String.format("[%s-%s]"  ,                   getC1(C1.BPH, ESC)[1], getC1(C1.APC, ESC)[1] );
+		retStr.append("(?:");
+		
+		// CSI
+		retStr.append( mode == MODE_7BIT ?
+		       			String.format("(?:%s%s|%s)", getC0(C0.ESC)[index], getC1(C1.CSI, ESC)[index], getC0(C0.ESC)[index] ) :
+		       			String.format("(?:%s|%s)"  , 			   getC1(C1.CSI, ESC)[index], getC0(C0.ESC)[index] )
+		     ).append( Pna
+		     ).append( String.format("%s?[%s-%s%s%s%s", Sym.SPCE, Sym.AT, Sym.O_DN, Sym.STRK, Sym.CBRR, Sym.TWDL)
+		     );
+		     
+		if (exclSymSet != null && exclSymSet.length > 0) {
+			retStr.append("&&[^");
+			
+			for ( Sym element: exclSymSet ) {
+				retStr.append(element);
+			}
+			
+			retStr.append("]");
+		}
+		retStr.append("])|");
+		
+		// C0
+		retStr.append( String.format("[%s-%s", getC0(C0.NUL)[index], getC0(C0.IS1)[index]) );
+		
+		if (exclC0Set != null && exclC0Set.length > 0) {
+			retStr.append("&&[^");
+			
+			for ( C0 element: exclC0Set ) {
+				retStr.append( getC0(element)[index] );
+			}
+			
+			retStr.append("]");
+		}
+		retStr.append("]|");
+		
+		// C1
+		retStr.append( mode == MODE_7BIT ?
+		       			String.format("%s[%s-%s", getC0(C0.ESC)[index], getC1(C1.BPH, ESC)[index], getC1(C1.APC, ESC)[index] ) :
+		       			String.format("[%s-%s"  , 			getC1(C1.BPH, ESC)[index], getC1(C1.APC, ESC)[index] )
+		     );
 		       			
-		String csi    = (mode == MODE_7BIT ?
-		       			String.format("(?:%s%s|%s)", getC0(C0.ESC)[0], getC1(C1.CSI, ESC)[0], getC0(C0.ESC)[0] ) :
-		       			String.format("(?:%s|%s)"  ,                   getC1(C1.CSI, ESC)[1], getC0(C0.ESC)[1] ) )
-		       	      + Pna
-		       	      + String.format("%s?[%s-%s%s%s%s]", Sym.SPCE, Sym.AT, Sym.O_DN, Sym.STRK, Sym.CBRR, Sym.TWDL);
+		if (exclC1Set != null && exclC1Set.length > 0) {
+			retStr.append("&&[^");
+			
+			for ( C1 element: exclC1Set ) {
+				retStr.append( getC1(element, ESC)[index] );
+			}
+			
+			retStr.append("]");
+		}
+		retStr.append("]");
 		
-		
-		return String.format("(?:%s)|%s|%s", csi, c0func, c1func);
+		return retStr.toString();
 	} //}}}
 	
 	//{{{ inner Record class
@@ -778,6 +833,5 @@ public class Sequences
 			return String.format("%-35s : %-35s", pattern7, pattern8);
 		}
 	}//}}}
-	
-} //}}}
+}
 
