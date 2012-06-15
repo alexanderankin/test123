@@ -143,8 +143,8 @@ public class ConsolePlugin extends EditPlugin
 	 *
 	 * @return -1 if no error/warning, or an ErrorType.
 	 *      Possible values are:
-	 * 	@see ErrorSource.ERROR
-	 * 	@see ErrorSource.WARNING
+	 * 	@see ErrorSource#ERROR
+	 * 	@see ErrorSource#WARNING
 	 *
 	 * Although it is possible derived ErrorSources will return custom error codes.
 	 */

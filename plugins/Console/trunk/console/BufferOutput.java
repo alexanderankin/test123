@@ -43,7 +43,7 @@ import org.gjt.sp.util.ThreadUtilities;
  *
  *  Output to buffer implementation.
  *
- *  @todo - add better docs here.
+ *  TODO: add better docs here.
  *
  */
 
