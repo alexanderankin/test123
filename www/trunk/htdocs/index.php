@@ -28,7 +28,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 10 June 2012 | <?php /**/?>Latest Version: <a class="header_text" href="CHANGES50.txt">5.0pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES45.txt">4.5.1</a></p>
+      <p class="header_text">Last Site Update: 16 June 2012 | <?php /**/?>Latest Version: <a class="header_text" href="CHANGES50.txt">5.0pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES45.txt">4.5.2</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
