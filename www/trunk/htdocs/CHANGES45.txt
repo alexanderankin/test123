@@ -2,6 +2,36 @@ jEdit 4.5 version history
        (changes since jEdit 4.4.2)
 :encoding=UTF-8:
 
+{{{ Version 4.5.2
+
+Thanks to Björn "Vampire" Kautler, Alan Ezust, Jarek Czekalski, 
+and Matthieu Casanova for contributing to this release.
+
+{{{ Bug Fixes
+
+- Fixed freezes on hypersearch with encoding errors.
+  (#3502585 Jarek Czekalski)
+
+- Fixed IO error when changing VFS Browser filter content
+  (#3502820 Matthieu Casanova)
+
+- Fixed NPE when opening View option pane for the first time on a fresh
+  installation (#3520577 Matthieu Casanova)
+
+- Fixed favorites menu actions (#3512250 Matthieu Casanova)
+
+- Remove jar cache when unloading a plugin (#3514022 Matthieu Casanova)
+
+}}}
+{{{ UI
+
+- Changed error list dialog size to a fixed size of 80x25 characters.
+  (Jarek Czekalski)
+
+}}}
+
+}}}
+
 {{{ Version 4.5.1
 
 Thanks to Björn "Vampire" Kautler, Matthieu Casanova, Kazutoshi Satoda,
@@ -182,6 +212,7 @@ Eric Berry, and Eric Le Lay for contributing to this release.
 
 }}}
 {{{ API Changes
+
 
 - New method TextAreaPainter.getRenderingHints() expose the rendering
   hints (patch #2973861) (Anthony Keeley)
