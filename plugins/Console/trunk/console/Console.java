@@ -440,7 +440,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getShellState() method
 	/**
-	 * @returns the Output of a Shell, assuming the Shell was already created....
+	 * @return the Output of a Shell, assuming the Shell was already created....
 	 *
 	 * @since Console 4.0.2.
 	 */
