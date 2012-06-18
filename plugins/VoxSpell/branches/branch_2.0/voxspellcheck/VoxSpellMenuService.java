@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JMenuItem;
 
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.gui.DynamicContextMenuService;
@@ -20,7 +21,10 @@ public class VoxSpellMenuService extends DynamicContextMenuService
 	@Override
 	public JMenuItem[] createMenu(JEditTextArea ta, MouseEvent evt)
     {
-        EditPane ep = ta.getView().getEditPane();
+		JEditBuffer buffer = ta.getBuffer();
+		if (buffer == null)
+			return null;
+		EditPane ep = ta.getView().getEditPane();
         if (ep == null)
             return null;
         VoxSpellPainter painter = VoxSpellPlugin.getVoxSpellPainter(ep);
@@ -36,7 +40,7 @@ public class VoxSpellMenuService extends DynamicContextMenuService
         
         StringBuffer word = new StringBuffer();
         JMenuItem[] items = null;
-		SpellCheck checker = VoxSpellPlugin.getCheckerForBuffer(ta.getBuffer());
+		SpellCheck checker = VoxSpellPlugin.getCheckerForBuffer(buffer);
         if (painter.check(checker, pos, word)) {
             // Check to see if it was ignored or added to the user dictionary.
             // If it was then add the ability to reset.
