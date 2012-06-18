@@ -21,7 +21,7 @@
 <a aa="" > <!-- see : no completion popup here -->text area a1</a>
 
 <a aa="foo" />
-<!-- XXX:  see: no completion popup here -->
+<!-- XXX:  see: no completion popup here Bug# 3533666 -->
 
 <!-- the slash inside aa doesn't prevent the completion popup (aa|ab) in start tag -->
 <a aa="../" ></a>

@@ -1,7 +1,7 @@
 /*
  * TagParser.java - a few very simple but fast methods used for tag highlighting
  * and such
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000 Scott Wyatt, 2001 Andre Kaplan
