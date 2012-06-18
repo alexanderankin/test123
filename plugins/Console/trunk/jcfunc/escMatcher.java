@@ -24,6 +24,7 @@ package jcfunc;
 import java.util.regex.*;
 import java.util.Map;
 import java.util.EnumMap;
+import java.util.TreeMap;
 import java.util.ArrayList;
 
 /**
@@ -58,20 +59,6 @@ public class escMatcher
 	private Pattern returnPattern(String str)
 	{
 		return Pattern.compile(str, COMPILE_FLAG);
-	} //}}}
-	
-	//{{{ getPositions() method
-	private int[] getPositions(String substr, String str, int startPos)
-	{
-		int[] result = new int[3];
-		int len = substr.length();
-		
-		
-		result[0] = result[1] = result[2] = str.indexOf(substr, startPos);
-		result[0] += len; 
-		result[2] += len;
-		
-		return result;
 	} //}}}
 	
 	//{{{ constructor
@@ -203,36 +190,39 @@ public class escMatcher
 			return null;
 		
 		ArrayList<Description> returnedList = null;
-		ArrayList<String> internalList = new ArrayList<String>();
+		TreeMap<Integer, String> internalMap = new TreeMap<Integer, String>();
 		
 		/*  looks for any sequences  */
 		Matcher matcher = basePattern.matcher(inputString);
 		
+		// result[0] - last entering in the input string
+		// result[1] - first character of (sequence or data)
+		// result[2] - index of character, which follows after LAST character of (sequence or data)
+		int[] result = {0, 0, 0};
 		int prevBegining = -1;
 		while ( matcher.find() ) {
 			int newBegining = matcher.start();
 			
-			if (prevBegining != -1)
-				internalList.add( new String( inputString.substring(prevBegining, newBegining) ) );
+			if (prevBegining != -1) {
+				internalMap.put( new Integer(prevBegining), new String( inputString.substring(prevBegining, newBegining) ) );
+				
+			} else {
+				result[0] = newBegining;
+			}
 			
 			prevBegining = newBegining;
 		}
 		if (prevBegining != -1)
-			internalList.add( new String( inputString.substring(prevBegining) ) );
+			internalMap.put( new Integer(prevBegining), new String( inputString.substring(prevBegining) ) );
 		
 		/*  process found strings  */
-		if ( !internalList.isEmpty() ) {
-			returnedList = new ArrayList<Description>( internalList.size() );
-			
-			if (ignorSequences)
-				inputString = removeAll(inputString);
-			
-			// last position of entering into 'inputString'
-			int position = 0;
+		if (internalMap.size() > 0) {
+			returnedList = new ArrayList<Description>( internalMap.size() );
 			
 			// go over strings
-			for ( String processingStr: internalList ) {
+			for ( Map.Entry<Integer, String> keyValue: internalMap.entrySet() ) {
 				
+				String processingStr = keyValue.getValue();
 				CF foundCF = null;
 				matcher    = null;
 				
@@ -252,13 +242,9 @@ public class escMatcher
 					foundCF = notFound;
 					matcher = null;
 				}
-
-				int[] params;
-				// result[0] - new position in 'inputString'
-				// result[1] - first character of (sequence or data)
-				// result[2] - index of character, which follows after LAST character of (sequence or data)
-				int[] result = {0, 0, 0};
 				
+				// parameters
+				int[] params;
 				if (matcher != null) {
 					/* extracts parameters from the substring
 					 *
@@ -283,33 +269,19 @@ public class escMatcher
 					for (int i = 0; i < strArr.length; i++)
 						params[i] = Integer.decode(strArr[i]);
 					
-					if (ignorSequences) {
-						if ( end < processingStr.length() ) {
-							result = getPositions(processingStr.substring(end), inputString, position);
-							
-						} else {
-							result[1] = result[2] = position;
-						}
-						
-					} else {
-						result = getPositions(processingStr, inputString, position);
-						
-					}
-						
 				} else {
 					params = new int[0];
 					
-					if (ignorSequences) {
-						result = getPositions(removeAll(processingStr), inputString, position);
-						
-					} else {
-						result = getPositions(processingStr, inputString, position);
-						
-					}
-						
 				}
 				
-				position = result[0];
+				// indexes
+				result[2] = result[1] = result[0];
+				if (ignorSequences) {
+					result[2] += removeAll(processingStr).length();
+				} else {
+					result[2] += processingStr.length();
+				}
+				result[0] = result[2]; // shift and save last entering
 				
 				returnedList.add( new Description(result[1], result[2], foundCF, params) );
 			}
