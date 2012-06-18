@@ -1,4 +1,13 @@
 
+jcfunc version 1.1.1
+        Fixed bug in escMatcher.parse(): incorrect indexes of control function
+        at the following conditions:
+            + this function is the first in a string
+            + and no data substring follows immediately after this function
+            + and another function follows after this function
+            + and some data substring foregoes this function
+        f.e. "some_text_FUNC1FUNC2_another_text"
+
 jcfunc version 1.1
         Overloaded Sequences.getCommonCFPattern().
         Minor code's corrections (memory consuption, comments).
