@@ -117,9 +117,11 @@ public class ConsolePlugin extends EditPlugin
 		// systemCommandDirectory = MiscUtilities.constructPath(".",
 		// "commando");
 
+		// Normally plugins don't use this directory. 
 		String settings = jEdit.getSettingsDirectory();
 		if (settings != null)
 		{
+			// TODO: MIGRATE this to use getPluginHome() API ?
 			consoleDirectory = MiscUtilities.constructPath(settings, "console");
 
 			userCommandDirectory = MiscUtilities.constructPath(consoleDirectory,

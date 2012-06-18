@@ -31,13 +31,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.*;
 import java.util.ArrayList;
-
-import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 
@@ -187,7 +184,7 @@ class StreamThread extends Thread
 				
 				String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
 				
-				// convert all line breaks to internall "standart": "\n"
+				// convert all line breaks to internal "standard": "\n"
 				if (eolReplacingPattern != null)
 				{
 					lineBuffer.setLength(0);

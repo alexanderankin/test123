@@ -148,7 +148,7 @@ implements EBComponent, DefaultFocusComponent
 	{
 		EditBus.addToBus(this);
 		addProjectListener();
-		errorSource = new DefaultErrorSource("error parsing");
+		errorSource = new DefaultErrorSource("error parsing", view);
 	} //}}}
 
 	void addProjectListener()
