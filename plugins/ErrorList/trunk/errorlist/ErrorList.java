@@ -542,21 +542,20 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	public void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
 		Object what = message.getWhat();
-
+		ErrorSource es = message.getErrorSource();
+		View v = es.getView();	
+		// Ignore messages that are not meant for me
+		if ((v != null) && (v != this.view)) return;
 		if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
 		{
 			addErrorSource(message.getErrorSource(),
-			               message.getErrors());
+						   message.getErrors());
 			updateStatus();
 		}
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
-			ErrorSource es = message.getErrorSource();
-			View v = es.getView();
-			if ((v == null) || (v == this.view)) {
-				addError(message.getError(),false);
-				updateStatus();
-			}
+			addError(message.getError(),false);
+			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
