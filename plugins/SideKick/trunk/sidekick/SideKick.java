@@ -533,7 +533,7 @@ public class SideKick
 		{
 			this.parser = parser;
 			this.buffer = buffer;
-			errorSource = new DefaultErrorSource("SideKick");
+			errorSource = new DefaultErrorSource("SideKick", view);
 		}
 		
 		@Override
