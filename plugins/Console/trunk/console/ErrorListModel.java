@@ -1,3 +1,6 @@
+/* :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ */
 package console;
 // {{{ imports
 import java.util.ArrayList;
@@ -46,7 +49,8 @@ public class ErrorListModel extends DefaultListModel
 		jEdit.setProperty("console.errors.list", m_default.join(" ") );
 		restore();
     } // }}}
-	// {{{
+
+	// {{{ save
 	public void save()
 	{
 		StringList visible = new StringList();
@@ -81,9 +85,6 @@ public class ErrorListModel extends DefaultListModel
 		}
 
     } // }}}
-
-
-
 
 	// {{{ removeElementAt
 	public void removeElementAt(int index)

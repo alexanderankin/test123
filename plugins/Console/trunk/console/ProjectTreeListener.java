@@ -2,7 +2,7 @@
  * ProjectTreeListener.java - for listening to ProjectViewer
  * events in the Console.
 
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * (c) 2005, 2009 by Alan Ezust
