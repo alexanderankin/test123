@@ -1,6 +1,6 @@
 /*
  * DefaultErrorSource.java - Default error source
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2005 Slava Pestov
@@ -32,7 +32,8 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-/**
+/** An implementation of ErrorSource that is suitable for Plugins to extend.
+ * 
  * @author Slava Pestov
  */
 public class DefaultErrorSource extends ErrorSource
@@ -40,12 +41,19 @@ public class DefaultErrorSource extends ErrorSource
 	//{{{ DefaultErrorSource constructor
 	/**
 	 * Creates a new default error source.
+	 * @param v  which view we want errors to be sent to.
+	 *           if null, errors may be sent to all Views. 
 	 */
-	public DefaultErrorSource(String name)
+	public DefaultErrorSource(String name, View v)
 	{
 		errors = new LinkedHashMap<String, ErrorListForPath>();
 		this.name = name;
-	} //}}}
+		this.view = v;
+	}
+	
+	public DefaultErrorSource(String name) {
+		this(name, null);
+	}//}}}
 
 	//{{{ getName() method
 	/**
@@ -56,6 +64,11 @@ public class DefaultErrorSource extends ErrorSource
 		return name;
 	} //}}}
 
+	public View getView() {
+		return view;	
+		
+	}
+	
 	//{{{ getErrorCount() method
 	/**
 	 * Returns the number of errors in this source.
@@ -288,6 +301,7 @@ public class DefaultErrorSource extends ErrorSource
 
 	//{{{ Protected members
 	protected String name;
+	protected View view;
 	protected int errorCount;
 	protected Map<String, ErrorListForPath> errors;
 	//}}}
