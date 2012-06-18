@@ -1,6 +1,6 @@
 /*
  * ErrorSource.java - An error source
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999 Slava Pestov
@@ -31,7 +31,10 @@ import java.util.Vector;
 //}}}
 
 /**
- * A named error source.
+ * Abstract interface for a named error source. 
+ *
+ * Most plugins can more easily extend DefaultErrorSource instead of
+ * implementing all the abstract methods in this class. 
  * 
  * @author Slava Pestov
  * @version $Id$
@@ -125,6 +128,11 @@ public abstract class ErrorSource
 	 */
 	public void addError(final DefaultError error) {}
 	// }}}
+	
+	/** @return the View this ErrorSource belongs to, 
+	  * or null if the errors should be sent to all Views. 
+	  */
+	public View getView() {return null;}
 	
 	//{{{ Constants
 	/**

@@ -1,6 +1,6 @@
 /*
  * ErrorList.java - Error list window
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2003 Slava Pestov
@@ -551,8 +551,12 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		}
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
-			addError(message.getError(),false);
-			updateStatus();
+			ErrorSource es = message.getErrorSource();
+			View v = es.getView();
+			if ((v == null) || (v == this.view)) {
+				addError(message.getError(),false);
+				updateStatus();
+			}
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
