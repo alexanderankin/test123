@@ -344,107 +344,15 @@ class StreamThread extends Thread
 					
 					switch (descr.function)
 					{
-					//{{{ SGR
-					case SGR:
-						SimpleAttributeSet funcAttrs = new SimpleAttributeSet(lineAttrs);
-						int intensity = 0; 
-						Color clr = null;
-						
-						// go over SGR's parameters
-						for (int value: descr.parameters)
-						{
-							paramSGR valSGR = paramSGR.getEnumValue(value);
+						case SGR:
+							SimpleAttributeSet funcAttrs = processSGRparameters(descr.parameters, lineAttrs);
 							
-							switch (valSGR)
-							{
-							case Reset:
-								break;
-							case Bright:
-								intensity = 1;
-								break;
-							case Faint :
-								intensity = -1;
-								break;
-							case Italic:
-								StyleConstants.setItalic(funcAttrs, true);
-								break;
-							case Underline_Single:
-							case Underline_Doubly:
-								StyleConstants.setUnderline(funcAttrs, true);
-								break;
-							case CrossedOut:
-								StyleConstants.setStrikeThrough(funcAttrs, true);
-								break;
-							case Normal_Int:
-								intensity = 0;
-								break;
-							case Normal_Style:
-								StyleConstants.setItalic(funcAttrs, false);
-								break;
-							case Underline_NGT:
-								StyleConstants.setUnderline(funcAttrs, false);
-								break;
-							case CrossedOut_NGT:
-								StyleConstants.setStrikeThrough(funcAttrs, false);
-								break;
-							case Color_Text_Black   :
-							case Color_Text_Red     :
-							case Color_Text_Green   :
-							case Color_Text_Yellow  :
-							case Color_Text_Blue    :
-							case Color_Text_Magenta :
-							case Color_Text_Cyan    :
-							case Color_Text_White   :
-							case Color_Text_Reserved:
-								clr = paramSGR.getColor(valSGR);
-								
-								switch (intensity)
-								{
-								case  1:
-									clr = clr.darker();
-									break;
-								case -1:
-									clr = clr.brighter();
-									break;
-								}
-								
-								StyleConstants.setForeground(funcAttrs, clr == null ? defaultColor : clr);
-								break;
-							case Color_Bkgr_Black   :
-							case Color_Bkgr_Red     :
-							case Color_Bkgr_Green   :
-							case Color_Bkgr_Yellow  :
-							case Color_Bkgr_Blue    :
-							case Color_Bkgr_Magenta :
-							case Color_Bkgr_Cyan    :
-							case Color_Bkgr_White   :
-							case Color_Bkgr_Reserved:
-								clr = paramSGR.getColor(valSGR);
-
-								switch (intensity)
-								{
-								case  1:
-									clr = clr.darker();
-									break;
-								case -1:
-									clr = clr.brighter();
-									break;
-								}
-								
-								StyleConstants.setBackground(funcAttrs, clr == null ? defaultColor : clr);
-								break;
-							default:
-								break;
-							}
-						}
-						
-						flushSubstring(output, str, funcAttrs, descr.bPosition, descr.ePosition);
-						break;
-					//}}}
-					case NUL:
-					default :
-						flushSubstring(output, str, lineAttrs, descr.bPosition, descr.ePosition);	
-						break;
+							flushSubstring(output, str, funcAttrs, descr.bPosition, descr.ePosition);
+							break;
+						case NUL:
+						default :
+							flushSubstring(output, str, lineAttrs, descr.bPosition, descr.ePosition);	
+							break;
 					}
 				}
 			}
@@ -454,6 +362,105 @@ class StreamThread extends Thread
 			Log.log (Log.ERROR, this, "Can't Flush:", err);
 		}		
 	} //}}}
+	
+	//{{{ processSGRparameters() method
+	private SimpleAttributeSet processSGRparameters(int[] parameters, SimpleAttributeSet baseAttrs)
+	{
+		SimpleAttributeSet funcAttrs = new SimpleAttributeSet(baseAttrs);
+		int intensity = 0; 
+		Color clr = null;
+		
+		// go over SGR's parameters
+		for (int value: parameters)
+		{
+			paramSGR valSGR = paramSGR.getEnumValue(value);
+			
+			switch (valSGR)
+			{
+			case Reset:
+				return baseAttrs;
+			case Bright:
+				intensity = 1;
+				break;
+			case Faint :
+				intensity = -1;
+				break;
+			case Italic:
+				StyleConstants.setItalic(funcAttrs, true);
+				break;
+			case Underline_Single:
+			case Underline_Doubly:
+				StyleConstants.setUnderline(funcAttrs, true);
+				break;
+			case CrossedOut:
+				StyleConstants.setStrikeThrough(funcAttrs, true);
+				break;
+			case Normal_Int:
+				intensity = 0;
+				break;
+			case Normal_Style:
+				StyleConstants.setItalic(funcAttrs, false);
+				break;
+			case Underline_NGT:
+				StyleConstants.setUnderline(funcAttrs, false);
+				break;
+			case CrossedOut_NGT:
+				StyleConstants.setStrikeThrough(funcAttrs, false);
+				break;
+			case Color_Text_Black   :
+			case Color_Text_Red     :
+			case Color_Text_Green   :
+			case Color_Text_Yellow  :
+			case Color_Text_Blue    :
+			case Color_Text_Magenta :
+			case Color_Text_Cyan    :
+			case Color_Text_White   :
+			case Color_Text_Reserved:
+				clr = paramSGR.getColor(valSGR);
+				
+				switch (intensity)
+				{
+				case  1:
+					clr = clr.darker();
+					break;
+				case -1:
+					clr = clr.brighter();
+					break;
+				}
+				
+				StyleConstants.setForeground(funcAttrs, clr == null ? defaultColor : clr);
+				break;
+			case Color_Bkgr_Black   :
+			case Color_Bkgr_Red     :
+			case Color_Bkgr_Green   :
+			case Color_Bkgr_Yellow  :
+			case Color_Bkgr_Blue    :
+			case Color_Bkgr_Magenta :
+			case Color_Bkgr_Cyan    :
+			case Color_Bkgr_White   :
+			case Color_Bkgr_Reserved:
+				clr = paramSGR.getColor(valSGR);
+
+				switch (intensity)
+				{
+				case  1:
+					clr = clr.darker();
+					break;
+				case -1:
+					clr = clr.brighter();
+					break;
+				}
+				
+				StyleConstants.setBackground(funcAttrs, clr == null ? defaultColor : clr);
+				break;
+			default:
+				break;
+			}
+		}
+		
+		return funcAttrs;
+	}
+	//}}}
 	
 	//{{{ flushSubstring() method
 	private void flushSubstring(Output output, String str, SimpleAttributeSet localAttrs, int bpos, int epos)
