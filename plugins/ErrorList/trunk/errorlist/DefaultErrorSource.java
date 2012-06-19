@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2005 Slava Pestov
+ * Parts (C) 2005, 2012 by the All Volunteer Development Team (tm)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,17 +33,17 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-/** An implementation of ErrorSource that is suitable for Plugins to extend.
+/** A concrete implementation of ErrorSource that is suitable for Plugins to use/extend.
  * 
  * @author Slava Pestov
  */
 public class DefaultErrorSource extends ErrorSource
 {
-	//{{{ DefaultErrorSource constructor
+	//{{{ DefaultErrorSource constructors
 	/**
 	 * Creates a new default error source.
-	 * @param v  which view we want errors to be sent to.
-	 *           if null, errors may be sent to all Views. 
+	 * @param v  which View we want errors to be sent to.
+	             if null, errors may be sent to all Views. 
 	 */
 	public DefaultErrorSource(String name, View v)
 	{
@@ -51,27 +52,30 @@ public class DefaultErrorSource extends ErrorSource
 		this.view = v;
 	}
 	
+	/** @deprecated please specify a View using the other ctor. */
+	@Deprecated
 	public DefaultErrorSource(String name) {
 		this(name, null);
 	}//}}}
 
 	//{{{ getName() method
 	/**
-	 * Returns a string description of this error source.
+	 * @return a string description of this error source.
 	 */
 	public String getName()
 	{
 		return name;
 	} //}}}
 
+	//{{{ getView() method
+	/** @return the View that messages should be displayed in */
 	public View getView() {
 		return view;	
-		
-	}
+	}//}}}
 	
 	//{{{ getErrorCount() method
 	/**
-	 * Returns the number of errors in this source.
+	 * @return the number of errors in this source.
 	 */
 	public int getErrorCount()
 	{
@@ -80,7 +84,7 @@ public class DefaultErrorSource extends ErrorSource
 
 	//{{{ getAllErrors() method
 	/**
-	 * Returns all errors.
+	 * @return all errors.
 	 */
 	public synchronized ErrorSource.Error[] getAllErrors()
 	{
@@ -99,7 +103,7 @@ public class DefaultErrorSource extends ErrorSource
 
 	//{{{ getFileErrorCount() method
 	/**
-	 * Returns the number of errors in the specified file.
+	 * @return the number of errors in the specified file.
 	 * @param path The full path name
 	 */
 	public int getFileErrorCount(String path)
@@ -113,7 +117,7 @@ public class DefaultErrorSource extends ErrorSource
 
 	//{{{ getFileErrors() method
 	/**
-	 * Returns all errors in the specified file.
+	 * @return all errors in the specified file.
 	 * @param path The full path name
 	 */
 	public ErrorSource.Error[] getFileErrors(String path)
@@ -127,7 +131,7 @@ public class DefaultErrorSource extends ErrorSource
 
 	//{{{ getLineErrors() method
 	/**
-	 * Returns all errors in the specified line range.
+	 * @return all errors in the specified line range.
 	 * @param path The file path
 	 * @param startLineIndex The line number
 	 * @param endLineIndex The line number
