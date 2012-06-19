@@ -129,10 +129,11 @@ public abstract class ErrorSource
 	public void addError(final DefaultError error) {}
 	// }}}
 	
+	// {{{ getView()
 	/** @return the View this ErrorSource belongs to, 
 	  * or null if the errors should be sent to all Views. 
 	  */
-	public View getView() {return null;}
+	public View getView() {return null;} // }}}
 	
 	//{{{ Constants
 	/**
