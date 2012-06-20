@@ -93,36 +93,40 @@ public class PropertyParser implements PropertyParserConstants {
   final public List<Property> Properties() throws ParseException {
     List<Property> list = new ArrayList<Property>();
     Property p = null;
-    label_1:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMENT:
-      case BARE_KEY:
-      case KEY:
-        ;
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        break label_1;
-      }
-      if (jj_2_1(2)) {
-        Comment();
-      } else {
+    try {
+      label_1:
+      while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMENT:
         case BARE_KEY:
         case KEY:
-          p = Property();
-                if (p != null)
-                    list.add(p);
+          ;
           break;
         default:
-          jj_la1[1] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[0] = jj_gen;
+          break label_1;
+        }
+        if (jj_2_1(2)) {
+          Comment();
+        } else {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case BARE_KEY:
+          case KEY:
+            p = Property();
+                    if (p != null)
+                        list.add(p);
+            break;
+          default:
+            jj_la1[1] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
         }
       }
+      jj_consume_token(0);
+    } catch (TokenMgrError tme) {
+        addException(new ParseException(tme.getMessage()));
     }
-    jj_consume_token(0);
         /* always sort the list by property name -- could make the caller do
         this and just return the properties in the original order */
         Collections.sort(list);
@@ -219,14 +223,14 @@ public class PropertyParser implements PropertyParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(4)) return true;
-    return false;
-  }
-
   private boolean jj_3_2() {
     if (jj_scan_token(KEY)) return true;
     if (jj_scan_token(EQUALS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_scan_token(4)) return true;
     return false;
   }
 

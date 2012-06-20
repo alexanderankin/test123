@@ -169,7 +169,7 @@ SKIP:
 
     |
 
-    <OTHER: ~[]  >
+    <OTHER: ~[]  > 
 }
 
 <ParseEquals> TOKEN :
@@ -203,23 +203,28 @@ List<Property> Properties() :
     Property p = null;
 }
 {
-    /* Property files are simple, there are either comments or properties,
-    there is nothing else. */
-    (
-        LOOKAHEAD(2)
+    try {
+        /* Property files are simple, there are either comments or properties,
+        there is nothing else. */
         (
-            Comment()
-        )
-        |
-        (
-            p = Property()
-            {
-                if (p != null)
-                    list.add(p);
-            }
-        )
-    )*
-    <EOF>
+            LOOKAHEAD(2)
+            (
+                Comment()
+            )
+            |
+            (
+                p = Property()
+                {
+                    if (p != null)
+                        list.add(p);
+                }
+            )
+        )*
+        <EOF>
+    }
+    catch (TokenMgrError tme) {
+        addException(new ParseException(tme.getMessage()));   
+    }
 
     {
         /* always sort the list by property name -- could make the caller do
