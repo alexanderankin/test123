@@ -47,7 +47,6 @@ import sidekick.property.parser.property.Token;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
-
 public class PropertyParser extends SideKickParser {
 
     private static final String NAME = "properties";
@@ -78,12 +77,12 @@ public class PropertyParser extends SideKickParser {
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new PropertySideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
-
-        StringReader reader = new StringReader( buffer.getText( 0, buffer.getLength() ) );
+        sidekick.property.parser.property.PropertyParser parser = null;
+        StringReader reader = new StringReader( buffer.getText(0, buffer.getLength() ) );
         try {
             /* create the property parser property Property Parser -- I think
             this thing is going to parse some properties...! */
-            sidekick.property.parser.property.PropertyParser parser = new sidekick.property.parser.property.PropertyParser( reader );
+            parser = new sidekick.property.parser.property.PropertyParser( reader );
 
             // this makes the locations returned by the parser more accurate
             parser.setTabSize( buffer.getTabSize() );
@@ -95,18 +94,17 @@ public class PropertyParser extends SideKickParser {
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode( property );
                 root.add( node );
             }
-            ElementUtil.convert(buffer, root);
-            handleErrors( buffer, errorSource, parser.getExceptions() );
-        }
-        catch ( Exception e ) {
-            //e.printStackTrace();
-        }
-        finally {
+            ElementUtil.convert( buffer, root );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        } finally {
+            if ( parser != null ) {
+                handleErrors( buffer, errorSource, parser.getExceptions() );
+            }
             reader.close();
         }
         return parsedData;
     }
-
 
     /* the parser accumulates errors as it parses.  This method passed them all
     to the ErrorList plugin. */
@@ -134,19 +132,20 @@ public class PropertyParser extends SideKickParser {
             Pattern p = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
             Matcher m = p.matcher( pe.getMessage() );
             if ( m.matches() ) {
-                String ln = m.group( 2 );
-                String cn = m.group( 4 );
+                String ln = m.group(2 );
+                String cn = m.group(4 );
                 int line_number = -1;
                 int column_number = 0;
-                if ( ln != null )
+                if ( ln != null ) {
                     line_number = Integer.parseInt( ln );
-                if ( cn != null )
+                }
+                if ( cn != null ) {
                     column_number = Integer.parseInt( cn );
+                }
                 return line_number > -1 ? new Location( line_number - 1, column_number ) : null;
             }
             return new Location( 0, 0 );
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             return new Location( 0, 0 );
         }
     }
