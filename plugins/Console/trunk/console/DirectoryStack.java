@@ -1,5 +1,5 @@
 /*
- * DirectoryStack.java - A running process
+ * DirectoryStack.java - Keeps track of directories on a stack.
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  * 
