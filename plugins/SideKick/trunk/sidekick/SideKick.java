@@ -262,7 +262,7 @@ public class SideKick
 	@EBHandler
 	public void handleBufferChange(BufferChanging bmsg) {
 		buffer = bmsg.getBuffer();
-		buffer.setProperty(SideKickPlugin.PARSER_PROPERTY, null);
+		// buffer.setProperty(SideKickPlugin.PARSER_PROPERTY, null);
 	} //}}}
 	
 
