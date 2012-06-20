@@ -222,8 +222,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	 * This method is called by jEdit when ErrorList is shown by invoking
 	 * <code>DockableWindowManager.showDockableWindow(String)</code>, in
 	 * order to request the focus on some component of the Dockable.
-	 * In this implementation, the method does nothing, so that ErrorList
-	 * never requests focus automatically. If you really want to request
+	 * Depending on the options, will focus on the ErrorList tree or the
+	 * View's TextArea.  If you really want to request
 	 * the focus on ErrorList, use the {@link #focus()} method.
 	 */
 	public void focusOnDefaultComponent()
