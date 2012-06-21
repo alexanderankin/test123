@@ -85,11 +85,11 @@ public class Navigator implements ActionListener {
     private NavStack<NavPosition> backHistory;
     private NavPosition current = null;
     private NavStack<NavPosition> forwardHistory;
-    /** Another position stack for user push,pop interaction. */ 
+    /** Another position stack for user push,pop interaction. */
     private NavStack<NavPosition> userStack;
 
     // max size for history
-    private int maxStackSize = jEdit.getIntegerProperty("navigator.maxStackSize", 512);
+    private int maxStackSize = jEdit.getIntegerProperty( "navigator.maxStackSize", 512 );
 
     // forward and back button models
     private DefaultButtonModel backButtonModel;
@@ -115,13 +115,13 @@ public class Navigator implements ActionListener {
      * @param vw
      * @param position
      */
-    public Navigator(View view) {
+    public Navigator( View view ) {
         this.view = view;
         init();
 
     }
 
-    public Navigator(EditPane editPane) {
+    public Navigator( EditPane editPane ) {
         this._editPane = editPane;
         this.view = editPane.getView();
         init();
@@ -134,17 +134,17 @@ public class Navigator implements ActionListener {
 
         // set up button models
         backButtonModel = new DefaultButtonModel();
-        backButtonModel.setActionCommand(Navigator.BACK);
-        backButtonModel.addActionListener(this);
+        backButtonModel.setActionCommand( Navigator.BACK );
+        backButtonModel.addActionListener( this );
 
         forwardButtonModel = new DefaultButtonModel();
-        forwardButtonModel.setActionCommand(Navigator.FORWARD);
-        forwardButtonModel.addActionListener(this);
+        forwardButtonModel.setActionCommand( Navigator.FORWARD );
+        forwardButtonModel.addActionListener( this );
 
         // set up the history stacks
-        backHistory = new NavStack<NavPosition>(maxStackSize);
-        forwardHistory = new NavStack<NavPosition>(maxStackSize);
-        userStack =  new NavStack<NavPosition>(maxStackSize);
+        backHistory = new NavStack<NavPosition>( maxStackSize );
+        forwardHistory = new NavStack<NavPosition>( maxStackSize );
+        userStack = new NavStack<NavPosition>( maxStackSize );
         clearHistory();
         current = currentPosition();
     }
@@ -157,7 +157,7 @@ public class Navigator implements ActionListener {
         return _editPane;
     }
 
-    public void setEditPane(EditPane editPane) {
+    public void setEditPane( EditPane editPane ) {
         _editPane = editPane;
     }
 
@@ -183,46 +183,46 @@ public class Navigator implements ActionListener {
     private NavPosition currentPosition() {
         EditPane editPane = getEditPane();
         JEditTextArea textarea = null;
-        if (editPane != null) {
+        if ( editPane != null ) {
             // edit pane scope
             textarea = editPane.getTextArea();
         } else {
             // view scope
             editPane = view.getEditPane();
-            if (editPane != null) {
+            if ( editPane != null ) {
                 // editPane could be null on Navigator startup
                 textarea = editPane.getTextArea();
             }
         }
 
-        if (textarea == null) {
+        if ( textarea == null ) {
             // textarea could be null on startup -- Navigator will be loaded by
             // jEdit before there is a View or EditPane
             return null;
         }
 
         Buffer buffer = editPane.getBuffer();
-        if (buffer == null || (buffer.getLength() == 0 && buffer.getName().startsWith("Untitled")) || !buffer.isLoaded()) {
+        if ( buffer == null || ( buffer.getLength() == 0 && buffer.getName().startsWith( "Untitled" ) ) || !buffer.isLoaded() ) {
             // skip empty untitled buffers
             return null;
         }
 
         buffer.readLock();
         int caretPosition = textarea.getCaretPosition();
-        String linetext = textarea.getLineText(textarea.getCaretLine());
+        String linetext = textarea.getLineText( textarea.getCaretLine() );
         buffer.readUnlock();
-        return new NavPosition(editPane, buffer, caretPosition, linetext);
+        return new NavPosition( editPane, buffer, caretPosition, linetext );
     }
 
     /**
      * Updates to current position unless ignoreUpdates is set.
      */
     public void addToHistory() {
-        if (ignoreUpdates) {
-            return ;
+        if ( ignoreUpdates ) {
+            return;
         }
         NavPosition np = currentPosition();
-        addToHistory(np);
+        addToHistory( np );
     }
 
     /**
@@ -232,22 +232,22 @@ public class Navigator implements ActionListener {
      * @param position
      *                an instance of NavPosition.
      */
-    private void addToHistory(NavPosition position) {
-        if (position == null) {
-            return ;
+    private void addToHistory( NavPosition position ) {
+        if ( position == null ) {
+            return;
         }
-        if (position.equals(current)) {
+        if ( position.equals( current ) ) {
             // don't add the same position twice in a row
-            return ;
+            return;
         }
-        if (current == null) {
+        if ( current == null ) {
             // first time addToHistory is called
             current = position;
             notifyChangeListeners();
-            return ;
+            return;
         }
 
-        backHistory.push(current);
+        backHistory.push( current );
         current = position;
         forwardHistory.clear();
         setButtonState();
@@ -262,19 +262,19 @@ public class Navigator implements ActionListener {
      * @param ae
      *                the action event to kick a response.
      */
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getActionCommand().equals(BACK)) {
+    public void actionPerformed( ActionEvent ae ) {
+        if ( ae.getActionCommand().equals( BACK ) ) {
             goBack();
-        } else if (ae.getActionCommand().equals(FORWARD)) {
+        } else if ( ae.getActionCommand().equals( FORWARD ) ) {
             goForward();
-        } else if (ae.getActionCommand().equals(CAN_GO_BACK)) {
-            backButtonModel.setEnabled(true);
-        } else if (ae.getActionCommand().equals(CANNOT_GO_BACK)) {
-            backButtonModel.setEnabled(false);
-        } else if (ae.getActionCommand().equals(CAN_GO_FORWARD)) {
-            forwardButtonModel.setEnabled(true);
-        } else if (ae.getActionCommand().equals(CANNOT_GO_FORWARD)) {
-            forwardButtonModel.setEnabled(false);
+        } else if ( ae.getActionCommand().equals( CAN_GO_BACK ) ) {
+            backButtonModel.setEnabled( true );
+        } else if ( ae.getActionCommand().equals( CANNOT_GO_BACK ) ) {
+            backButtonModel.setEnabled( false );
+        } else if ( ae.getActionCommand().equals( CAN_GO_FORWARD ) ) {
+            forwardButtonModel.setEnabled( true );
+        } else if ( ae.getActionCommand().equals( CANNOT_GO_FORWARD ) ) {
+            forwardButtonModel.setEnabled( false );
         }
     }
 
@@ -283,11 +283,11 @@ public class Navigator implements ActionListener {
      *
      * @param position an invalid node
      */
-    public void remove(NavPosition position) {
-        view.getStatus().setMessage(jEdit.getProperty("navigator.removingPosition", "Navigator: removing invalid position") + ": " + position.plainText());
-        backHistory.remove(position);
-        forwardHistory.remove(position);
-        if (current.equals(position)) {
+    public void remove( NavPosition position ) {
+        view.getStatus().setMessage( jEdit.getProperty( "navigator.removingPosition", "Navigator: removing invalid position" ) + ": " + position.plainText() );
+        backHistory.remove( position );
+        forwardHistory.remove( position );
+        if ( current.equals( position ) ) {
             current = currentPosition();
         }
         notifyChangeListeners();
@@ -299,23 +299,23 @@ public class Navigator implements ActionListener {
      * to get back to those positions.
      * @param bufferPath The path of the buffer to remove nodes for.
      */
-    public void removeAll(String bufferPath) {
-        if (bufferPath == null) {
+    public void removeAll( String bufferPath ) {
+        if ( bufferPath == null ) {
             return;
         }
-        for (int i = backHistory.getSize() - 1; i >= 0; i--) {
-            NavPosition pos = backHistory.getElementAt(i);
-            if (bufferPath.equals(pos.path)) {
-                backHistory.removeElementAt(i);
+        for ( int i = backHistory.getSize() - 1; i >= 0; i-- ) {
+            NavPosition pos = backHistory.getElementAt( i );
+            if ( bufferPath.equals( pos.path ) ) {
+                backHistory.removeElementAt( i );
             }
         }
-        for (int i = forwardHistory.getSize() - 1; i >= 0; i--) {
-            NavPosition pos = forwardHistory.getElementAt(i);
-            if (bufferPath.equals(pos.path)) {
-                forwardHistory.removeElementAt(i);
+        for ( int i = forwardHistory.getSize() - 1; i >= 0; i-- ) {
+            NavPosition pos = forwardHistory.getElementAt( i );
+            if ( bufferPath.equals( pos.path ) ) {
+                forwardHistory.removeElementAt( i );
             }
         }
-        if (current == null || bufferPath.equals(current.path)) {
+        if ( current == null || bufferPath.equals( current.path ) ) {
             current = currentPosition();
         }
         notifyChangeListeners();
@@ -328,10 +328,10 @@ public class Navigator implements ActionListener {
      * history, and 1 in current).
      * @param size the new size, must be greater than 0.
      */
-    public void setMaxHistorySize(int size) {
-        if (size > 0) {
-            backHistory.setMaxSize(size);
-            forwardHistory.setMaxSize(size);
+    public void setMaxHistorySize( int size ) {
+        if ( size > 0 ) {
+            backHistory.setMaxSize( size );
+            forwardHistory.setMaxSize( size );
             maxStackSize = size;
         }
     }
@@ -360,8 +360,8 @@ public class Navigator implements ActionListener {
      * Sets the state of the navigation buttons.
      */
     private void setButtonState() {
-        backButtonModel.setEnabled(backHistory.size() > 0);
-        forwardButtonModel.setEnabled(forwardHistory.size() > 0);
+        backButtonModel.setEnabled( backHistory.size() > 0 );
+        forwardButtonModel.setEnabled( forwardHistory.size() > 0 );
     }
 
     /**
@@ -373,16 +373,16 @@ public class Navigator implements ActionListener {
      * containing the buffer if one is found.  If not, returns the current
      * EditPane for the View.
      */
-    private EditPane findEditPane(NavPosition position) {
-        if (NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE) {
-            if (getEditPane() == null) {
-                setEditPane(view.getEditPane());
+    private EditPane findEditPane( NavPosition position ) {
+        if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
+            if ( getEditPane() == null ) {
+                setEditPane( view.getEditPane() );
             }
             return getEditPane();
         }
 
-        for (EditPane editPane : view.getEditPanes()) {
-            if (editPane.hashCode() == position.editPane) {
+        for ( EditPane editPane : view.getEditPanes() ) {
+            if ( editPane.hashCode() == position.editPane ) {
                 // this is the preferred edit pane
                 return editPane;
             }
@@ -390,10 +390,10 @@ public class Navigator implements ActionListener {
 
         // didn't find the preferred edit pane, probably because it was closed,
         // so search all edit panes
-        for (EditPane editPane : view.getEditPanes()) {
+        for ( EditPane editPane : view.getEditPanes() ) {
             Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
-            for (Buffer buffer : buffers) {
-                if (position.path.equals(buffer.getPath())) {
+            for ( Buffer buffer : buffers ) {
+                if ( position.path.equals( buffer.getPath() ) ) {
                     // found an edit pane containing the buffer.  Set the
                     // preferred edit pane to the one where we found it.
                     position.editPane = editPane.hashCode();
@@ -413,8 +413,8 @@ public class Navigator implements ActionListener {
      * Validates the given position.  If invalid, the position will be removed
      * from the history lists.
      */
-    private boolean validatePosition(NavPosition position) {
-        if (position == null) {
+    private boolean validatePosition( NavPosition position ) {
+        if ( position == null ) {
             return false;
         }
 
@@ -422,39 +422,39 @@ public class Navigator implements ActionListener {
         ignoreUpdates = true;
 
         // see if the buffer is already open in one of the current edit panes
-        final EditPane editPaneForPosition = findEditPane(position);
+        final EditPane editPaneForPosition = findEditPane( position );
         Buffer[] buffers = editPaneForPosition.getBufferSet().getAllBuffers();
         Buffer buffer = null;
         String path = position.path;
-        for (Buffer b : buffers) {
-            if (path.equals(b.getPath())) {
+        for ( Buffer b : buffers ) {
+            if ( path.equals( b.getPath() ) ) {
                 buffer = b;
                 break;
             }
         }
 
-        if (buffer == null) {
+        if ( buffer == null ) {
             // if here, then the buffer was not open in any edit pane.  Do not
             // create a new edit pane for it, just open the buffer in the EditPane
             // that was found by findEditPane.
-            if (position.name != null && position.name.startsWith("Untitled")) {
+            if ( position.name != null && position.name.startsWith( "Untitled" ) ) {
                 // buffer isn't open and it was an untitled buffer, just skip it.
-                remove(position);
+                remove( position );
                 ignoreUpdates = false;
                 return false;
             }
-            buffer = jEdit.openFile(view, position.path);
-            if (buffer == null) {
+            buffer = jEdit.openFile( view, position.path );
+            if ( buffer == null ) {
                 // maybe the file was deleted, so there is nothing to open
-                remove(position);
+                remove( position );
                 ignoreUpdates = false;
                 return false;
             }
         }
 
-        if (position.lineno >= buffer.getLineCount()) {
+        if ( position.lineno >= buffer.getLineCount() ) {
             // the line no longer exists in the buffer, probably due to editing
-            remove(position);
+            remove( position );
             ignoreUpdates = false;
             return false;
         }
@@ -474,13 +474,13 @@ public class Navigator implements ActionListener {
      * if the position was invalid or otherwise could not be set.
      *
      */
-    @SuppressWarnings("deprecation")
-    public boolean setPosition(NavPosition position) {
+    @SuppressWarnings( "deprecation" )
+    public boolean setPosition( NavPosition position ) {
         // validate the position
-        if (position == null) {
+        if ( position == null ) {
             return false;
         }
-        if (!validatePosition(position)) {
+        if ( !validatePosition( position ) ) {
             return false;
         }
 
@@ -488,35 +488,35 @@ public class Navigator implements ActionListener {
         ignoreUpdates = true;
 
         // see if the buffer is already open in one of the current edit panes
-        final EditPane editPaneForPosition = findEditPane(position);
+        final EditPane editPaneForPosition = findEditPane( position );
         Buffer[] buffers = editPaneForPosition.getBufferSet().getAllBuffers();
         Buffer buffer = null;
         String path = position.path;
-        for (Buffer b : buffers) {
-            if (path.equals(b.getPath())) {
+        for ( Buffer b : buffers ) {
+            if ( path.equals( b.getPath() ) ) {
                 buffer = b;
                 break;
             }
         }
 
         // have EditPane and Buffer, display and move the caret
-        editPaneForPosition.setBuffer(buffer);
+        editPaneForPosition.setBuffer( buffer );
         int caret = position.caret;
-        if (caret > buffer.getLength()) {
+        if ( caret > buffer.getLength() ) {
             caret = buffer.getLength();
         }
-        if (caret < 0) {
+        if ( caret < 0 ) {
             caret = 0;
         }
         try {
             final int caretFinal = caret;
-            ThreadUtilities.runInDispatchThread(new Runnable() {     // for jEdit 4.4
+            ThreadUtilities.runInDispatchThread( new Runnable() {                // for jEdit 4.4
                 public void run() {
-                    editPaneForPosition.getTextArea().setCaretPosition(caretFinal, true);
+                    editPaneForPosition.getTextArea().setCaretPosition( caretFinal, true );
                     editPaneForPosition.getTextArea().requestFocus();
                 }
             } );
-        } catch (NullPointerException npe) {            // NOPMD
+        } catch ( NullPointerException npe ) {            // NOPMD
             npe.printStackTrace();
             // sometimes Buffer.markTokens throws a NPE here, catch
             // it and silently ignore it.
@@ -529,46 +529,46 @@ public class Navigator implements ActionListener {
      * Show a popup containing the back history list.
      */
     public NavHistoryPopup backList() {
-        if (backHistory.size() == 0) {
-            JOptionPane.showMessageDialog(view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE);
+        if ( backHistory.size() == 0 ) {
+            JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return null;
         }
-        return new NavHistoryPopup(view, this, (Vector) backHistory.clone());
+        return new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
     }
 
     /**
      * Show a popup containing the forward history list.
      */
     public NavHistoryPopup forwardList() {
-        if (forwardHistory.size() == 0) {
-            JOptionPane.showMessageDialog(view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE);
+        if ( forwardHistory.size() == 0 ) {
+            JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return null;
         }
-        return new NavHistoryPopup(view, this, (Vector) forwardHistory.clone());
+        return new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
 
     public NavStack<NavPosition> getBackListModel() {
-        return (NavStack) backHistory.clone();
+        return ( NavStack ) backHistory.clone();
     }
 
     public NavPosition getCurrentPosition() {
-        return current == null ? null : new NavPosition(current);
+        return current == null ? null : new NavPosition( current );
     }
 
     public NavStack<NavPosition> getForwardListModel() {
-        return (NavStack<NavPosition>)forwardHistory.clone();
+        return ( NavStack<NavPosition> ) forwardHistory.clone();
     }
 
     public NavStack<NavPosition> getCombinedListModel() {
-        NavStack<NavPosition> stack = new NavStack<NavPosition>(backHistory.size() + forwardHistory.size() + (current == null ? 0 : 1));
-        if (backHistory != null && backHistory.size() > 0) {
-            stack.addAll(backHistory);
+        NavStack<NavPosition> stack = new NavStack<NavPosition>( backHistory.size() + forwardHistory.size() + ( current == null ? 0 : 1 ) );
+        if ( backHistory != null && backHistory.size() > 0 ) {
+            stack.addAll( backHistory );
         }
-        if (current != null) {
-            stack.add(current);
+        if ( current != null ) {
+            stack.add( current );
         }
-        if (forwardHistory != null && forwardHistory.size() > 0) {
-            stack.addAll(forwardHistory);
+        if ( forwardHistory != null && forwardHistory.size() > 0 ) {
+            stack.addAll( forwardHistory );
         }
         return stack;
     }
@@ -578,10 +578,10 @@ public class Navigator implements ActionListener {
      */
     public void combinedList() {
         NavStack<NavPosition> stack = getCombinedListModel();
-        if (stack.size() > 0) {
-            new NavHistoryPopup(view, this, (Vector) stack, current);
+        if ( stack.size() > 0 ) {
+            new NavHistoryPopup( view, this, ( Vector ) stack, current );
         } else {
-            JOptionPane.showMessageDialog(view, "No history items", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog( view, "No history items", "Info", JOptionPane.INFORMATION_MESSAGE );
         }
     }
 
@@ -589,13 +589,13 @@ public class Navigator implements ActionListener {
      * Moves to the previous item in the "back" history.
      */
     public void goBack() {
-        if (backHistory == null || backHistory.size() == 0) {
+        if ( backHistory == null || backHistory.size() == 0 ) {
             // nowhere to go
-            return ;
+            return;
         }
-        if (current == null) {
+        if ( current == null ) {
             // haven't been anywhere yet
-            return ;
+            return;
         }
 
         // Possibly record current position.  Due to receiving mostly
@@ -604,35 +604,68 @@ public class Navigator implements ActionListener {
         // before going back.
         // TODO: validate positions?
         NavPosition now = currentPosition();
-        if (!current.equals(now)) {
-            NavPosition item = forwardHistory.push(now);
-            if (item == null) {
-                forwardHistory.push(current);
+        if ( !current.equals( now ) ) {
+            NavPosition item = forwardHistory.push( now );
+            if ( item == null ) {
+                forwardHistory.push( current );
                 current = backHistory.pop();
             }
         } else {
-            forwardHistory.push(current);
+            forwardHistory.push( current );
             current = backHistory.pop();
         }
-        setPosition(current);
+        setPosition( current );
         setButtonState();
         notifyChangeListeners();
     }
 
-    
+    /**
+     * Moves to the previous file in the "back" history
+     * Leaves marker so subsequent file jumps return to the same position
+     */
+    public void goBackFile() {
+        // go to previous file
+        NavPosition start = current;
+        while ( current.path == start.path && backHistory.size() != 0 ) {
+            goBack();
+        }
+        // reset if didn't get there
+        if ( current.path == start.path ) {
+            while ( !current.equals( start ) && forwardHistory.size() != 0 ) {
+                goForward();
+            }
+            return;
+        }
+        // have jumped files so set marker
+        removeFileJumps( start.path );
+        start.fileJump = true;
+        // check for jump marker in new file
+        NavPosition prevEnd = current;
+        while ( current.path.equals( prevEnd.path ) && current.fileJump == false && backHistory.size() != 0 ) {
+            goBack();
+        }
+        // roll forward to last NavPosition in new file if no marker found
+        if ( current.path != prevEnd.path ) {
+            while ( !current.equals( prevEnd ) && forwardHistory.size() != 0 ) {
+                goForward();
+            }
+            current.fileJump = true;
+        }
+    }
+
     /**
      * Moves to the next item in the "forward" history.
      */
     public void goForward() {
-        if (forwardHistory.size() == 0) {
+        if ( forwardHistory.size() == 0 ) {
             // nowhere to go
-            return ;
+            return;
         }
-        if (current != null) {
-            backHistory.push(current);
+        if ( current != null ) {
+            backHistory.push( current );
         }
         NavPosition possible = forwardHistory.peek();
-        if (setPosition(possible)) {
+        if ( setPosition( possible ) ) {
             current = forwardHistory.pop();
             setButtonState();
             notifyChangeListeners();
@@ -640,44 +673,97 @@ public class Navigator implements ActionListener {
     }
 
     /**
+     * Moves to the next file in the "forward" history
+     * Leaves marker so subsequent file jumps return to the same position
+     */
+    public void goForwardFile() {
+        // go to next file
+        NavPosition first = current;
+        while ( current.path == first.path && forwardHistory.size() != 0 ) {
+            goForward();
+        }
+        // reset if didn't get there
+        if ( current.path == first.path ) {
+            while ( !current.equals( first ) && backHistory.size() != 0 ) {
+                goBack();
+            }
+            return;
+        }
+        // have jumped files so set marker
+        removeFileJumps( first.path );
+        first.fileJump = true;
+        // check for jump marker in new file
+        NavPosition nextStart = current;
+        while ( current.path.equals( nextStart.path ) && current.fileJump == false && forwardHistory.size() != 0 ) {
+            goForward();
+        }
+        // roll back to first NavPosition in new file if no marker found
+        if ( current.path != nextStart.path ) {
+            while ( !current.equals( nextStart ) && backHistory.size() != 0 ) {
+                goBack();
+            }
+        }
+    }
+
+    /**
+     * Removes file jump markers for the given path.
+     * @param bufferPath The file to remove the jump markers from.
+     */
+    public void removeFileJumps( String bufferPath ) {
+        if ( bufferPath == null ) {
+            return;
+        }
+        for ( NavPosition pos : backHistory ) {
+            if ( bufferPath.equals( pos.path ) ) {
+                pos.fileJump = false;
+            }
+        }
+        for ( NavPosition pos : forwardHistory ) {
+            if ( bufferPath.equals( pos.path ) ) {
+                pos.fileJump = false;
+            }
+        }
+    }
+
+    /**
      * Jumps to a specific position in the history.
      * @param position the position to jump to.
      */
-    public void jump(NavPosition position) {
-        if (position == null) {
+    public void jump( NavPosition position ) {
+        if ( position == null ) {
             return;
         }
         ignoreUpdates = true;
         // find the position.  If it is in the back history, copy all positions
         // after it to the forward history, vice versa if it is in the forward
         // history.
-        if (backHistory.contains(position)) {
-            forwardHistory.push(current);
-            while (true) {
+        if ( backHistory.contains( position ) ) {
+            forwardHistory.push( current );
+            while ( true ) {
                 current = backHistory.pop();
-                if (current.equals(position)) {
+                if ( current.equals( position ) ) {
                     break;
                 }
-                forwardHistory.push(current);
+                forwardHistory.push( current );
             }
-        } else if (forwardHistory.contains(position)) {
-            backHistory.push(current);
-            while (true) {
+        } else if ( forwardHistory.contains( position ) ) {
+            backHistory.push( current );
+            while ( true ) {
                 current = forwardHistory.pop();
-                if (current.equals(position)) {
+                if ( current.equals( position ) ) {
                     break;
                 }
-                backHistory.push(current);
+                backHistory.push( current );
             }
         } else {
             // this shouldn't happen, since the given position should have been
             // picked from either the backList or the forwardList.  If somehow
             // we do get here, then 'position' is a new position, so just insert
             // it into the history at the current history location.
-            backHistory.push(current);
+            backHistory.push( current );
             current = position;
         }
-        if (setPosition(current)) {
+        if ( setPosition( current ) ) {
             setButtonState();
             notifyChangeListeners();
         }
@@ -688,62 +774,68 @@ public class Navigator implements ActionListener {
 
     /** Push position onto user stack */
     public void pushPosition() {
-    	NavPosition now = currentPosition();
-    	addToHistory(now);
-    	userStack.push(now);
+        NavPosition now = currentPosition();
+        addToHistory( now );
+        userStack.push( now );
     }
 
     /** Pop position from user stack */
     public void popPosition() {
-    	if (userStack.isEmpty()) return;
-    	addToHistory(currentPosition());
-    	setPosition(userStack.pop());
+        if ( userStack.isEmpty() ) {
+            return;
+        }
+        addToHistory( currentPosition() );
+        setPosition( userStack.pop() );
     }
 
     /** Swap current and top user stack positions */
     public void swapCaretAndTop() {
-        if (userStack.isEmpty()) return;
-    	NavPosition old = currentPosition();
-    	NavPosition current = userStack.pop();
-    	userStack.push(old);
-    	addToHistory(old);
-    	setPosition(current);
+        if ( userStack.isEmpty() ) {
+            return;
+        }
+        NavPosition old = currentPosition();
+        NavPosition current = userStack.pop();
+        userStack.push( old );
+        addToHistory( old );
+        setPosition( current );
     }
 
     /** Go to top of user stack */
     public void gotoTopPosition() {
-        if (userStack.isEmpty()) return;
-	NavPosition top = userStack.lastElement();
-	addToHistory(currentPosition());
-	setPosition(top);
+        if ( userStack.isEmpty() ) {
+            return;
+        }
+        NavPosition top = userStack.lastElement();
+        addToHistory( currentPosition() );
+        setPosition( top );
     }
 
-    public void addChangeListener(ChangeListener listener) {
-        if (changeListeners == null) {
+    public void addChangeListener( ChangeListener listener ) {
+        if ( changeListeners == null ) {
             changeListeners = new HashSet<ChangeListener>();
         }
-        changeListeners.add(listener);
+        changeListeners.add( listener );
     }
 
-    public void removeChangeListener(ChangeListener listener) {
-        if (changeListeners != null) {
-            changeListeners.remove(listener);
+    public void removeChangeListener( ChangeListener listener ) {
+        if ( changeListeners != null ) {
+            changeListeners.remove( listener );
         }
     }
 
     private void notifyChangeListeners() {
-        if (changeListeners == null) {
+        if ( changeListeners == null ) {
             return;
         }
-        ChangeEvent event = new ChangeEvent(this);
-        for (ChangeListener listener : changeListeners) {
-            listener.stateChanged(event);
+        ChangeEvent event = new ChangeEvent( this );
+        for ( ChangeListener listener : changeListeners ) {
+            listener.stateChanged( event );
         }
     }
 
-    public void addListDataListener(ListDataListener listener) {
-        backHistory.addListDataListener(listener);
-        forwardHistory.addListDataListener(listener);
+    public void addListDataListener( ListDataListener listener ) {
+        backHistory.addListDataListener( listener );
+        forwardHistory.addListDataListener( listener );
     }
 
     /**
@@ -755,35 +847,35 @@ public class Navigator implements ActionListener {
      * @param numLines The number of lines inserted.
      * @param length The number of characters inserted.
      */
-    public void contentInserted(Buffer buffer, int startLine, int offset, int numLines, int length) {
-        if (buffer == null) {
+    public void contentInserted( Buffer buffer, int startLine, int offset, int numLines, int length ) {
+        if ( buffer == null ) {
             return;
         }
         String bufferPath = buffer.getPath();
-        if (bufferPath == null) {
+        if ( bufferPath == null ) {
             return;
         }
-        if (numLines == 0 || length == 0) {
+        if ( numLines == 0 || length == 0 ) {
             return;
         }
 
         // note that setPosition uses NavPosition.caret to calculate where to move to,
         // so only need to use the offset to determine if this change applies
-        for (int i = backHistory.size() - 1; i >= 0; i--) {
-            NavPosition pos = backHistory.getElementAt(i);
-            if (bufferPath.equals(pos.path) && pos.caret > offset) {
+        for ( int i = backHistory.size() - 1; i >= 0; i-- ) {
+            NavPosition pos = backHistory.getElementAt( i );
+            if ( bufferPath.equals( pos.path ) && pos.caret > offset ) {
                 pos.lineno += numLines;
                 pos.caret += length;
             }
         }
-        for (int i = forwardHistory.size() - 1; i >= 0; i--) {
-            NavPosition pos = forwardHistory.getElementAt(i);
-            if (bufferPath.equals(pos.path) && pos.caret > offset) {
+        for ( int i = forwardHistory.size() - 1; i >= 0; i-- ) {
+            NavPosition pos = forwardHistory.getElementAt( i );
+            if ( bufferPath.equals( pos.path ) && pos.caret > offset ) {
                 pos.lineno += numLines;
                 pos.caret += length;
             }
         }
-        if (current != null && bufferPath.equals(current.path) && current.caret > offset) {
+        if ( current != null && bufferPath.equals( current.path ) && current.caret > offset ) {
             current.lineno += numLines;
             current.caret += length;
         }
@@ -800,44 +892,44 @@ public class Navigator implements ActionListener {
      * @param numLines The number of lines inserted.
      * @param length The number of characters inserted.
      */
-    public void contentRemoved(Buffer buffer, int startLine, int offset, int numLines, int length) {
-        if (buffer == null) {
+    public void contentRemoved( Buffer buffer, int startLine, int offset, int numLines, int length ) {
+        if ( buffer == null ) {
             return;
         }
         String bufferPath = buffer.getPath();
-        if (bufferPath == null) {
+        if ( bufferPath == null ) {
             return;
         }
 
         // note that setPosition uses NavPosition.caret to calculate where to move to,
         // so only need to use the offset to determine if this change applies
         int endOffset = offset + length;
-        for (int i = backHistory.size() - 1; i >= 0; i--) {
-            NavPosition pos = backHistory.getElementAt(i);
-            if (bufferPath.equals(pos.path)) {
-                if (pos.caret >= offset && pos.caret < endOffset) {
-                    backHistory.removeElementAt(i);
-                } else if (pos.caret >= endOffset) {
+        for ( int i = backHistory.size() - 1; i >= 0; i-- ) {
+            NavPosition pos = backHistory.getElementAt( i );
+            if ( bufferPath.equals( pos.path ) ) {
+                if ( pos.caret >= offset && pos.caret < endOffset ) {
+                    backHistory.removeElementAt( i );
+                } else if ( pos.caret >= endOffset ) {
                     pos.lineno -= numLines;
                     pos.caret -= length;
                 }
             }
         }
-        for (int i = forwardHistory.size() - 1; i >= 0; i--) {
-            NavPosition pos = forwardHistory.getElementAt(i);
-            if (bufferPath.equals(pos.path)) {
-                if (pos.caret >= offset && pos.caret < endOffset) {
-                    forwardHistory.removeElementAt(i);
-                } else if (pos.caret >= endOffset) {
+        for ( int i = forwardHistory.size() - 1; i >= 0; i-- ) {
+            NavPosition pos = forwardHistory.getElementAt( i );
+            if ( bufferPath.equals( pos.path ) ) {
+                if ( pos.caret >= offset && pos.caret < endOffset ) {
+                    forwardHistory.removeElementAt( i );
+                } else if ( pos.caret >= endOffset ) {
                     pos.lineno -= numLines;
                     pos.caret -= length;
                 }
             }
         }
-        if (current != null && bufferPath.equals(current.path)) {
-            if (current.caret >= offset && current.caret < endOffset) {
+        if ( current != null && bufferPath.equals( current.path ) ) {
+            if ( current.caret >= offset && current.caret < endOffset ) {
                 current = currentPosition();
-            } else if (current.caret >= endOffset) {
+            } else if ( current.caret >= endOffset ) {
                 current.lineno -= numLines;
                 current.caret -= length;
             }

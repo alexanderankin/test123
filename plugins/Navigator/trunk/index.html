@@ -88,14 +88,30 @@
    The default is 10 rows.
    </li>
   </ul>
+  <h3>Moving Around with Navigator</h3>
   <p>
-  The Navigator works in a "visible" or an "invisible" way. I find it is handy to use shortcut keys for the actions
-  "back" and "forward".
+  The Navigator works in a "visible" or an "invisible" way. I find it is handy to assign shortcut keys for the actions
+  "back" and "forward" so movement can be done with the keyboard only.
   <p>
   <b>Tip: </b>Bind the actions to Alt+RIGHT and Alt+LEFT and get used to them, because those shortcuts work in
   IE/Firefox/Konqueror/Chrome/Opera/most browsers too.
   <p>
-  The Navigator buttons can become visible in many ways. Adding buttons directly via <tt>Global Options - Toolbar</tt> is <b>not</b> recommended. Instead use one of these methods below. </p>
+  Navigator keeps track of the caret positions within the files you have visited. Going back takes you to those
+  previous positions, then it is possible to go forward. The default settings record by caret position, which
+  provides the most grandularity for the history. If you want to go back or forward to a different file, you can use the
+  'back by file' or 'forward by file' actions. I've assigned Alt+PageDown and Alt+PageUp for these, which makes it very
+  convenient to move quickly between locations in two files while still maintaining the granular navigation history
+  within a file.
+  <p>
+  With 'group by line' selected, movements within a line are not recorded, so some granularity is lost. Each 'back' or
+  'forward' will move to the next line, not any position within a line.
+  <p>
+  With 'group by file' selected, only the last location visited within a file is recorded, so a lot of granularity
+  is lost. Each 'back' or 'forward' will move to the next file, not any position within a file. Using the 'back by file'
+  or 'forward by file' actions is probably more useful than using 'group by file'.
+  <p>
+  The Navigator buttons can become visible in many ways. Adding buttons directly via <tt>Global Options - Toolbar</tt> 
+  is <b>not</b> recommended. Instead use one of these methods below. </p>
   <ol>
    <li>
     Go to Plugins - Plugin Options - Navigator and check "Show Navigator on toolbar".  This was broken for about 7 years,
@@ -179,6 +195,14 @@
   <h3>Changelog </h3>
 
   <ul>
+   <li>
+    <b> Version 2.5 </b>
+    <ul>
+    <li> Fixed group by line, it wasn't actually working since last release. </li>
+    <li> #3520045 - added patch from Tom Power for jump by file. </li>
+    </ul>
+   </li>
+  
    <li>
     <b> Version 2.4 </b>
     <ul>

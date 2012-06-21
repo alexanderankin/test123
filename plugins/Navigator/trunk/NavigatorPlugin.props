@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
-plugin.ise.plugin.nav.NavigatorPlugin.version=2.4
+plugin.ise.plugin.nav.NavigatorPlugin.version=2.5
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=Tracks position changes, \
     and provides "Back" and "Forward" actions similar to a web \
@@ -56,7 +56,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable - navigator-push-position navigator-pop-position navigator-goto-top-position navigator-swap-caret-and-top
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backFile navigator.backList navigator.forward navigator.forwardFile navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable - navigator-push-position navigator-pop-position navigator-goto-top-position navigator-swap-caret-and-top
 
 #navigator.toolbar
 
@@ -64,6 +64,8 @@ plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList nav
 # the plugins menu for this plugin.
 navigator.back.label=Back
 navigator.back.icon=ArrowL.png
+
+navigator.backFile.label=Back file
 
 navigator.backList.label=Show back list
 navigator.backList.icon=ArrowD.png
@@ -74,6 +76,8 @@ navigator.showdockable.label=Show Navigator Dockable
 
 navigator.forward.label=Forward
 navigator.forward.icon=ArrowR.png
+
+navigator.forwardFile.label=Forward file
 
 navigator.forwardList.label=Show forward list
 navigator.forwardList.icon=ArrowU.png
