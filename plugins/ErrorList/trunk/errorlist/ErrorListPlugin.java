@@ -3,8 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2003 Slava Pestov
- * Copyright (C) 2012 Jarek Czekalski
+ * Copyright (C) 1999-2012 Slava Pestov, Shlomy Reinstein, Jarek Czekalski
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -322,7 +321,7 @@ public class ErrorListPlugin extends EditPlugin
 		}
 	} //}}}
 
-	//{{{ uninitTextArea() method
+	//{{{ uninitEditPane() method
 	private void uninitEditPane(EditPane editPane)
 	{
 		JEditTextArea textArea = editPane.getTextArea();
