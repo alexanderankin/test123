@@ -39,10 +39,9 @@ public class Dockable extends JPanel implements ChangeListener, EBComponent {
     private JLabel currentLabel = null;
     private JPanel flipPanel = null;
 
+    private NavToolBar toolbar = null;
     private JButton options = null;
     private JButton clear = null;
-    private JButton back;
-    private JButton forward;
 
     private NavHistoryList backList = null;
     private NavHistoryList forwardList = null;
@@ -122,14 +121,9 @@ public class Dockable extends JPanel implements ChangeListener, EBComponent {
         showCaretOffset.setSelected(jEdit.getBooleanProperty("navigator.showCaretOffset", true));
 
         // buttons
+        toolbar = new NavToolBar(client);
         options = new SquareButton(GUIUtilities.loadIcon("22x22/actions/document-properties.png"));
         options.setToolTipText(jEdit.getProperty("navigator.options.label", "Options"));
-        back = new SquareButton(GUIUtilities.loadIcon("ArrowL.png"));
-        back.setModel(client.getBackModel());
-        back.setToolTipText(jEdit.getProperty("navigator.back.label", "Back"));
-        forward = new SquareButton(GUIUtilities.loadIcon("ArrowR.png"));
-        forward.setModel(client.getForwardModel());
-        forward.setToolTipText(jEdit.getProperty("navigator.forward.label", "Forward"));
         clear = new SquareButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
         clear.setToolTipText(jEdit.getProperty("navigator.clearHistory.label", "Clear history"));
 
@@ -175,8 +169,7 @@ public class Dockable extends JPanel implements ChangeListener, EBComponent {
         flipPanel.add(controlPanel, BorderLayout.SOUTH);
 
         JPanel buttonPanel = new JPanel(new KappaLayout());
-        buttonPanel.add("0, 0, 1, 3, 0,, 3", back);
-        buttonPanel.add("1, 0, 1, 3, 0,, 3", forward);
+        buttonPanel.add("0, 0, 2, 3, 0,, 3", toolbar);
         buttonPanel.add("2, 0, 1, 3, 0,, 3", clear);
         buttonPanel.add("3, 0, 1, 3, 0,, 3", options);
 
@@ -280,24 +273,6 @@ public class Dockable extends JPanel implements ChangeListener, EBComponent {
             }
         } );
 
-        back.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                if (me.getButton() == MouseEvent.BUTTON3) {
-                    NavHistoryPopup popup = NavigatorPlugin.backList(client.getView());
-                    GUIUtilities.showPopupMenu(popup, back, me.getX(), me.getY());
-                }
-            }
-        } );
-
-        forward.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                if (me.getButton() == MouseEvent.BUTTON3) {
-                    NavHistoryPopup popup = NavigatorPlugin.forwardList(client.getView());
-                    GUIUtilities.showPopupMenu(popup, forward, me.getX(), me.getY());
-                }
-            }
-        } );
-
         backList.addMouseListener(new MouseHandler(backList));
         forwardList.addMouseListener(new MouseHandler(forwardList));
 
@@ -359,8 +334,7 @@ public class Dockable extends JPanel implements ChangeListener, EBComponent {
             ViewUpdate vu = (ViewUpdate)msg;
             if (ViewUpdate.EDIT_PANE_CHANGED.equals(vu.getWhat())) {
                 client = NavigatorPlugin.createNavigator(vu.getView().getEditPane());
-                back.setModel(client.getBackModel());
-                forward.setModel(client.getForwardModel());
+                toolbar.updateComponents(client);
                 client.addChangeListener(this);
                 stateChanged(null);
             }
