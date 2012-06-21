@@ -39,6 +39,13 @@
       </CODE>
    </ACTION>
 
+   <ACTION NAME="navigator.backFile">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.goBackFile(view);
+      </CODE>
+   </ACTION>
+   
    <ACTION NAME="navigator.backList">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
@@ -60,6 +67,13 @@
       </CODE>
    </ACTION>
 
+   <ACTION NAME="navigator.forwardFile">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.goForwardFile(view);
+      </CODE>
+   </ACTION>
+   
    <ACTION NAME="navigator.combinedList">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");

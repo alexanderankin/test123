@@ -55,6 +55,9 @@ public class NavPosition {
 
     // text of the caret line, used for back and forward list display
     public String linetext = "";
+    
+    // page jump marker
+    public Boolean fileJump = false;
 
     /**
      * @param view the View containing the editPane
@@ -92,7 +95,10 @@ public class NavPosition {
 
     /**
      * Two NavPositions are equal to each other if they have the same
-     * path, line number, and caret position.
+     * path, line number, and caret position. This is based on user settings,
+     * if group by file, then they are equal if the paths are the same, if 
+     * group by line, then they are equal if the path and line number are the
+     * same. Otherwise, path, line number, and caret position are considered.
      */
     @Override
     public boolean equals(Object obj) {
@@ -110,11 +116,17 @@ public class NavPosition {
         NavPosition other = (NavPosition) obj;
 
         // check fields
+        boolean groupByFile = jEdit.getBooleanProperty("navigator.groupByFile", false);
         boolean groupByLine = jEdit.getBooleanProperty("navigator.groupByLine", false);
-        if (groupByLine) {
+        if (groupByFile) {
+            return path.equalsIgnoreCase(other.path);   
+        }
+        else if (groupByLine) {
             return (path.equalsIgnoreCase(other.path) && lineno == other.lineno);
         }
-        return (path.equalsIgnoreCase(other.path) && lineno == other.lineno && caret == other.caret);
+        else {
+            return (path.equalsIgnoreCase(other.path) && lineno == other.lineno && caret == other.caret);
+        }
     }
 
     @Override
