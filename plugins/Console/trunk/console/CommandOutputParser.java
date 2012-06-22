@@ -56,6 +56,7 @@ public class CommandOutputParser
 	protected Console console;
 	Color defaultColor;
 	Color color;
+	static final int DEFAULT = -1;
 	// }}}
 
 	// {{{ Constructors
@@ -106,9 +107,9 @@ public class CommandOutputParser
 	 */
 	public int processLine(String text, boolean disp)
 	{
-		int retval = -1;
+		int retval = DEFAULT;
 		if (text == null)
-			return -1;
+			return DEFAULT;
 
 		if (directoryStack.processLine(text))
 		{
