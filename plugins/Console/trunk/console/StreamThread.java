@@ -39,6 +39,7 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 
 import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 import jcfunc.*;
 import jcfunc.parameters.*;
@@ -60,7 +61,11 @@ class StreamThread extends Thread
 
 	private InputStream in;
 	CommandOutputParser copt = null;
-
+	
+	private final int DEFAULT = CommandOutputParser.DEFAULT;
+	private final int WARNING = ErrorSource.WARNING;
+	private final int ERROR   = ErrorSource.ERROR;
+	
 	private StringBuilder lineBuffer;
 	private int shiftUCW;
 	private int ANSI_BEHAVIOUR;
@@ -70,7 +75,7 @@ class StreamThread extends Thread
 	private SimpleAttributeSet commonAttrs;
 	private Color defaultColor, bgColor, caretColor;
 	private int prevErrorStatus = -1;
-	private SimpleAttributeSet lastLineAttrs = null;
+	private SimpleAttributeSet defaultAttrs, warningAttrs, errorAttrs;
 	// }}}
 
 	// {{{ StreamThread constructor
@@ -96,7 +101,7 @@ class StreamThread extends Thread
 		if (!System.getProperty("line.separator").equals("\n"))
 			eolReplacingPattern = Pattern.compile( System.getProperty("line.separator") );
 		
-		this.defaultColor = defaultColor;
+		this.defaultColor = defaultColor; 
 		this.bgColor      = console.getConsolePane().getBackground();
 		this.caretColor   = console.getConsolePane().getCaretColor();
 		
@@ -104,7 +109,7 @@ class StreamThread extends Thread
 		StyleConstants.setBackground(commonAttrs, bgColor);
 		StyleConstants.setForeground(commonAttrs, defaultColor);
 		
-		lastLineAttrs =  new SimpleAttributeSet(commonAttrs);
+		defaultAttrs = setDefaultAttrs(null);
 		
 		// choose matcher's mode
 		int ansi_mode = Sequences.MODE_7BIT;
@@ -276,19 +281,17 @@ class StreamThread extends Thread
 	private void printString(Output output, String str, boolean isUnterminated)
 	{
 		ArrayList<Description> seqs = null;
-		SimpleAttributeSet lineAttrs = null;
-		
-		boolean needANSIparsing = ANSI_BEHAVIOUR == 1 && ansi_Matcher.matches(str);
-		
-		// error/warning parser
-		int errorStatus = copt.processLine(str);
+		SimpleAttributeSet currentAttrs = null;
 		
 		// look for ANSI escape sequences 
-		if (needANSIparsing)
+		if ( ANSI_BEHAVIOUR == 1 && ansi_Matcher.matches(str) )
 		{
 			seqs = ansi_Matcher.parse(str, true);
 			str  = ansi_Matcher.removeAll(str); // => str's length is changed
 		}
+		
+		// error/warning parser
+		int errorStatus = copt.processLine(str);
 		
 		// choose color of full line 
 		if (isUnterminated)
@@ -297,23 +300,11 @@ class StreamThread extends Thread
 		}
 		else
 		{
-			if (errorStatus != prevErrorStatus)
-			{
-				lineAttrs = new SimpleAttributeSet(commonAttrs);
-				
-				StyleConstants.setForeground( lineAttrs, copt.getColor() );
-				
-				lastLineAttrs   = lineAttrs;
-				prevErrorStatus = errorStatus; 
-			}
-			else
-			{
-				lineAttrs = lastLineAttrs;
-			}
+			currentAttrs = updateCurrentAttrs( errorStatus, copt.getColor() );
 			
 			if ( shiftUCW > 0 )
 			{
-				output.setAttrs(shiftUCW, lineAttrs);
+				output.setAttrs(shiftUCW, currentAttrs);
 				shiftUCW = 0;
 			}
 		}
@@ -323,7 +314,7 @@ class StreamThread extends Thread
 		{
 			if (seqs == null) // no any ANSI escape sequences
 			{
-				output.writeAttrs(lineAttrs, str);
+				output.writeAttrs(currentAttrs, str);
 			}
 			else 
 			{
@@ -337,7 +328,7 @@ class StreamThread extends Thread
 					if ( !firstFlushed )
 					{
 						if (descr.bPosition > 0) {
-							flushSubstring(output, str, lineAttrs, 0, descr.bPosition);
+							flushSubstring(output, str, currentAttrs, 0, descr.bPosition);
 						}
 						firstFlushed = true;
 					}
@@ -345,13 +336,14 @@ class StreamThread extends Thread
 					switch (descr.function)
 					{
 						case SGR:
-							SimpleAttributeSet funcAttrs = processSGRparameters(descr.parameters, lineAttrs);
+							defaultAttrs = setDefaultAttrs( processSGRparameters(descr.parameters, defaultAttrs) );
+							currentAttrs = updateCurrentAttrs( errorStatus, copt.getColor() );
 							
-							flushSubstring(output, str, funcAttrs, descr.bPosition, descr.ePosition);
+							flushSubstring(output, str, currentAttrs, descr.bPosition, descr.ePosition);
 							break;
 						case NUL:
 						default :
-							flushSubstring(output, str, lineAttrs, descr.bPosition, descr.ePosition);	
+							flushSubstring(output, str, currentAttrs, descr.bPosition, descr.ePosition);	
 							break;
 					}
 				}
@@ -378,7 +370,7 @@ class StreamThread extends Thread
 			switch (valSGR)
 			{
 			case Reset:
-				return baseAttrs;
+				return null;
 			case Bright:
 				intensity = 1;
 				break;
@@ -467,6 +459,42 @@ class StreamThread extends Thread
 	{
 		if (epos - bpos > 0)
 			output.writeAttrs( localAttrs, str.substring(bpos, epos) );
+	} //}}}
+	
+	//{{{ setDefaultAttrs() method
+	private SimpleAttributeSet setDefaultAttrs(SimpleAttributeSet newAttrs)
+	{
+		return newAttrs == null ? commonAttrs : newAttrs;
+	} //}}}
+	
+	//{{{ setNondefaultAttrs() method
+	private SimpleAttributeSet setNondefaultAttrs(SimpleAttributeSet nondefAttrs, Color color)
+	{
+		if (nondefAttrs == null)
+		{
+			nondefAttrs = new SimpleAttributeSet(commonAttrs);
+			StyleConstants.setForeground(nondefAttrs, color);
+		}
+		
+		return nondefAttrs;
+	} //}}}
+	
+	//{{{ updateCurrentAttrs() method
+	private SimpleAttributeSet updateCurrentAttrs(int errorStatus, Color errorColor)
+	{
+		switch (errorStatus)
+		{
+			case DEFAULT:
+				return defaultAttrs;
+			case WARNING:
+				warningAttrs = setNondefaultAttrs(warningAttrs, errorColor);
+				return warningAttrs;
+			case ERROR:
+				errorAttrs   = setNondefaultAttrs(errorAttrs  , errorColor);
+				return errorAttrs;
+		}
+		
+		return defaultAttrs;
 	} //}}}
 } // }}}
 
