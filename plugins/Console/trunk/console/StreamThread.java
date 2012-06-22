@@ -23,7 +23,6 @@
 package console;
 
 // {{{ Imports
-
 import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,8 +72,7 @@ class StreamThread extends Thread
 	private Pattern eolReplacingPattern;
 	private escMatcher ansi_Matcher;
 	private SimpleAttributeSet commonAttrs;
-	private Color defaultColor, bgColor, caretColor;
-	private int prevErrorStatus = -1;
+	private Color defaultColor;
 	private SimpleAttributeSet defaultAttrs, warningAttrs, errorAttrs;
 	// }}}
 
@@ -99,21 +97,24 @@ class StreamThread extends Thread
 		
 		eolPattern = Pattern.compile("\n");
 		if (!System.getProperty("line.separator").equals("\n"))
+		{
 			eolReplacingPattern = Pattern.compile( System.getProperty("line.separator") );
+		}
 		
 		this.defaultColor = defaultColor; 
-		this.bgColor      = console.getConsolePane().getBackground();
-		this.caretColor   = console.getConsolePane().getCaretColor();
 		
 		commonAttrs = new SimpleAttributeSet();
-		StyleConstants.setBackground(commonAttrs, bgColor);
+		StyleConstants.setBackground(commonAttrs, console.getConsolePane().getBackground());
 		StyleConstants.setForeground(commonAttrs, defaultColor);
 		
 		defaultAttrs = setDefaultAttrs(null);
 		
 		// choose matcher's mode
 		int ansi_mode = Sequences.MODE_7BIT;
-		if ( jEdit.getProperty("options.ansi-escape.mode").contentEquals("8bit") ) ansi_mode = Sequences.MODE_8BIT;
+		if ( jEdit.getProperty("options.ansi-escape.mode").contentEquals("8bit") )
+		{
+			ansi_mode = Sequences.MODE_8BIT;
+		}
 		
 		ansi_Matcher = new escMatcher(ansi_mode, Pattern.DOTALL);
 		
@@ -160,7 +161,7 @@ class StreamThread extends Thread
 		InputStreamReader isr = null;
 		try
 		{
-			 isr = new InputStreamReader(in, jEdit.getProperty("console.encoding") );
+			isr = new InputStreamReader(in, jEdit.getProperty("console.encoding") );
 		}
 		catch (UnsupportedEncodingException uee)
 		{
@@ -283,9 +284,23 @@ class StreamThread extends Thread
 		ArrayList<Description> seqs = null;
 		SimpleAttributeSet currentAttrs = null;
 		
+		//{{{ style's relations
+/*      escape-Attrs      commonAttrs
+ *          |               |    |
+ *          +-------+-------+    |
+ *                  |            +-----+------------------+
+ *                  |                  |                  |
+ *            defaultAttrs        warningAttrs       errorAttrs
+ *                  |                  |                  |
+ *                  +------------------+------------------+
+ *                                     |
+ *                                currentAttrs
+ */
+    	//}}}
+		
 		// look for ANSI escape sequences 
 		if ( ANSI_BEHAVIOUR == 1 && ansi_Matcher.matches(str) )
-		{
+		{                         
 			seqs = ansi_Matcher.parse(str, true);
 			str  = ansi_Matcher.removeAll(str); // => str's length is changed
 		}
@@ -336,6 +351,9 @@ class StreamThread extends Thread
 					switch (descr.function)
 					{
 						case SGR:
+							// new default style's creation:
+							//   1. always cancel previous escape-style
+							//   2. if no any escape-styles (resetting) - setup commonAttrs
 							defaultAttrs = setDefaultAttrs( processSGRparameters(descr.parameters, defaultAttrs) );
 							currentAttrs = updateCurrentAttrs( errorStatus, copt.getColor() );
 							
