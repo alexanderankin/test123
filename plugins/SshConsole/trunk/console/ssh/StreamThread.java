@@ -55,7 +55,7 @@ class StreamThread extends Thread
 		this.console = console;
 		ConsoleState cs = ConnectionManager.getConsoleState(console);
 		String currentDirectory = cs.getPath();
-		DefaultErrorSource es = new SecureErrorSource(cs);
+		DefaultErrorSource es = new SecureErrorSource(cs, console.getView());
 		copt = new CommandOutputParser(console.getView(), es, defaultColor);
 		copt.setDirectory(currentDirectory);
 		cs.setDirectoryChangeListener( copt);

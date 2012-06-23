@@ -20,6 +20,7 @@ package console.ssh;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
 import errorlist.DefaultErrorSource;
@@ -38,8 +39,8 @@ public class SecureErrorSource extends DefaultErrorSource
 	
 	ConsoleState consoleState;
 	
-	public SecureErrorSource(ConsoleState cs) {
-		super("sshconsole");
+	public SecureErrorSource(ConsoleState cs, View v) {
+		super("sshconsole", v);
 		ErrorSource.registerErrorSource(this);
 		consoleState = cs;
 	}
