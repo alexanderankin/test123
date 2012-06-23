@@ -12,7 +12,7 @@ jEdit Console Plugin Changelog
       [Damien Radtke]
         #2194479 - Fixed NPE when running detached processes that print to stderr. 
       [Alan Ezust]
-        #3536039: Console displays same errors in all views
+        #3536039: Console no longer displays same errors in all views
 
     Version 4.5 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, and ProjectViewer 3.4.2 (optional).
       [Alan Ezust]
@@ -31,17 +31,17 @@ jEdit Console Plugin Changelog
         #1894889 - windows commands now wrapped in parentheses to prevent space issues
 
     Version 4.4.4 Requires jEdit 4.4.2, Java 1.6, ErrorList 1.9, ProjectViewer 3.4 (optional).
-        Respects jEdit's "use textArea colors" appearance option.
+        Respects jEdit's "use textArea colors" appearance option (Alan Ezust)
         ProjectViewer option pane for defining commands to compile and run
         project. (#3153058 - Damien Radtke)
-        Bug fixes (2360096, 2933787, 3475731, 3475732)
+        Bug fixes (2360096, 2933787, 3475731, 3475732 - Alan Ezust)
 
     Version 4.4.3 Requires jEdit 4.4pre1, Java 1.6, ErrorList 1.9, ProjectViewer 3.0 (optional).
-        API fixes for compatibility with jEdit 4.5.
+        API fixes for compatibility with jEdit 4.5. (Alan Ezust)
         New general option to set favorite shell, or remember previous selected
-        shell.
+        shell. (Alan Ezust)
         No longer generates hidden commandos in the dialog (available via
-        combobox selector).
+        combobox selector). (Alan Ezust)
         Configurable command history size (#2648110 - Eric Le Lay).
         Avoided occasional performance down with large output when maximum
         scroll buffer size is not set. (Kazutoshi Satoda).
@@ -62,7 +62,7 @@ jEdit Console Plugin Changelog
         Added an "uncustomize" context menu item for Commando Buttons that
         override same-named commando.xml files from the jar, to easily restore
         them to the previous state, as well as indicators via tooltip and color,
-        that a button has been customized.
+        that a button has been customized. (Alan Ezust)
 
     Version 4.4 Requires jEdit 4.3pre17, Java 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional).
         Updated to listen to ProjectViewer 2.9 project switch events.
