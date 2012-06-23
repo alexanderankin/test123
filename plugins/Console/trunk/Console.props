@@ -15,7 +15,7 @@ plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.depend.0=jedit 05.00.01.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.0
-plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.2
+plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.4
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
