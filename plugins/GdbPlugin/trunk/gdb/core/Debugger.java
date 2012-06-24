@@ -438,7 +438,9 @@ public class Debugger implements DebuggerTool {
 				return;
 			final String getCurrentPosition = "-file-list-exec-source-file";
 			String reason = res.getStringValue("reason");
-			if (reason.equals("breakpoint-hit")) {
+			if (reason == null) {
+				commandManager.add(getCurrentPosition, new StoppedHandler());
+			} else if (reason.equals("breakpoint-hit")) {
 				int bkptno = Integer.parseInt(res.getStringValue("bkptno"));
 				commandManager.add(getCurrentPosition, new BreakpointHitHandler(bkptno));
 			} else if (reason.startsWith("exited")) {
