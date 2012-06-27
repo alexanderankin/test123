@@ -22,6 +22,7 @@ options.voxspellcheck.use_custom_color=false
 options.voxspellcheck.use_custom_color.title=Use custom underline color?
 options.voxspellcheck.default_language=en
 options.voxspellcheck.default_language.title=Default language
+options.voxspellcheck.available_languages=en de fr pl
 
 plugin.voxspellcheck.VoxSpellPlugin.menu=voxspellcheck.start voxspellcheck.stop - \
     voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset - \
