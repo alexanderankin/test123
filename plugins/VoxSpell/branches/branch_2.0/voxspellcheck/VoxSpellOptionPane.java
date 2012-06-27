@@ -1,4 +1,3 @@
-
 /*
 Copyright (C) 2008 Matthew Gilbert
 
@@ -49,8 +48,10 @@ public class VoxSpellOptionPane extends AbstractOptionPane
     private JCheckBox start_checking_on_activate;
     private JCheckBox use_custom_color;
     private Color color;
+
+	private JComboBox defaultLanguage;
     
-    private static String color_button_text = "Click here to select a new underline color";
+    private static final String color_button_text = "Click here to select a new underline color";
     
     private class CustomButton extends JButton
     {
@@ -58,7 +59,7 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         protected int width, height;
         protected int x, y;
         
-        public CustomButton(String title)
+        private CustomButton(String title)
         {
             super(title);
             
@@ -74,10 +75,11 @@ public class VoxSpellOptionPane extends AbstractOptionPane
             Rectangle2D r = font.getStringBounds(color_button_text, new FontRenderContext(null, true, true));
             width = (int)r.getWidth();
             height = (int)r.getHeight();
-            this.setSize((int)width + 10, getHeight());
+            this.setSize(width + 10, getHeight());
         }
         
-        protected void paintComponent(Graphics g)
+        @Override
+		protected void paintComponent(Graphics g)
         {
             Graphics2D gfx = (Graphics2D)g;
             
@@ -101,12 +103,16 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         super("VoxSpellOptionPane");
     }
     
-    public void _init()
+    @Override
+	public void _init()
     {
-        String s;
-        boolean b;
-        s = jEdit.getProperty("options.voxspellcheck.all_text_modes");
-        all_text_modes = new JTextField(s);
+		String property = jEdit.getProperty("options.voxspellcheck.available_languages");
+		String[] languages = property.split(" ");
+		defaultLanguage = new JComboBox(languages);
+		defaultLanguage.setSelectedItem(jEdit.getProperty("options.voxspellcheck.default_language"));
+		addComponent(new JLabel("Default language:"), defaultLanguage);
+		String s = jEdit.getProperty("options.voxspellcheck.all_text_modes");
+		all_text_modes = new JTextField(s);
         addComponent(new JLabel("Modes where all text is checked: "), all_text_modes);
         
         s = jEdit.getProperty("options.voxspellcheck.non_markup_modes");
@@ -114,14 +120,14 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         addComponent(new JLabel("Modes where only plain text (not syntax highlighted) is checked: "), non_markup_modes);
         
         s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
-        b = s.equals("true");
-        s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate.title");
+		boolean b = s.equals("true");
+		s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate.title");
         start_checking_on_activate = new JCheckBox(s, b);
         addComponent(start_checking_on_activate);
         
         JPanel panel = new JPanel(new FlowLayout());
         s = jEdit.getProperty("options.voxspellcheck.use_custom_color");
-        b = s.equals("true");
+        b = "true".equals(s);
         s = jEdit.getProperty("options.voxspellcheck.use_custom_color.title");
         use_custom_color = new JCheckBox(s, b);
         use_custom_color.setActionCommand("enable");
@@ -157,12 +163,12 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         addComponent(panel);
     }
     
-    public void _save()
+    @Override
+	public void _save()
     {
-        String s;
-        
-        s = all_text_modes.getText();
-        jEdit.setProperty("options.voxspellcheck.all_text_modes", s);
+
+		String s = all_text_modes.getText();
+		jEdit.setProperty("options.voxspellcheck.all_text_modes", s);
         
         s = non_markup_modes.getText();
         jEdit.setProperty("options.voxspellcheck.non_markup_modes", s);
@@ -174,5 +180,7 @@ public class VoxSpellOptionPane extends AbstractOptionPane
         jEdit.setProperty("options.voxspellcheck.use_custom_color", s);
         
         jEdit.setColorProperty("options.voxspellcheck.custom_color", color);
+
+		jEdit.setProperty("options.voxspellcheck.default_language", defaultLanguage.getSelectedItem().toString());
     }
 }
