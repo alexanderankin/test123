@@ -33,7 +33,6 @@ import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.xml.sax.helpers.NamespaceSupport;
 
 import sidekick.SideKickCompletion;
 import xml.XmlActions;

@@ -199,6 +199,8 @@ public abstract class XmlParser extends SideKickParser
 		for(int i = lastchar; i >= 1; i--)
 		{
 			char ch = text.charAt(i);
+			if(ch == '>') 
+				return null; // completely outside a tag
 			if(ch == '<')
 			{
 				wordStart = i;
