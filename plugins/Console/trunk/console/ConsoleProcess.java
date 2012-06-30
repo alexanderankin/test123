@@ -76,12 +76,12 @@ class ConsoleProcess
 		this.currentDirectory = consoleState.currentDirectory;
 		this.console = console;
 
-		if (foreground)
-		{
+		//if (foreground)
+		//{
 			this.output = output;
 			this.error = new ErrorOutput(console);
 			this.consoleState = consoleState;
-		}
+		//}
 
 		try
 		{
