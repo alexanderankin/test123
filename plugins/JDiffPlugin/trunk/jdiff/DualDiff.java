@@ -185,6 +185,7 @@ public class DualDiff implements EBComponent {
                 // not my buffers
                 return ;
             }
+            // TODO: need to trigger a refresh when svn plugin does a revert
             if (bu.getWhat() == BufferUpdate.LOADED || bu.getWhat() == BufferUpdate.SAVED || bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
                 refresh();
             }
