@@ -51,12 +51,13 @@ class ConsoleProcess
 	private String[] args;
 	// {{{ Threads for handling the streams of running subprocesses
 	private InputThread stdin;
-	private StreamThread stdout;
-	private StreamThread stderr;
+	private OutputThread stdout;
+	private OutputThread stderr;
 	// }}}
 	private int threadDoneCount = 0;
 	private int exitCode = 834;
 	private boolean stopped;
+	private boolean foreground;
 
 	/*
 	 * AWT thread writes stdin to this pipe, and the input thread writes it to
@@ -75,34 +76,52 @@ class ConsoleProcess
 		this.args = args;
 		this.currentDirectory = consoleState.currentDirectory;
 		this.console = console;
-
-		//if (foreground)
-		//{
+		this.foreground = foreground;
+		
+		if (foreground)
+		{
 			this.output = output;
 			this.error = new ErrorOutput(console);
 			this.consoleState = consoleState;
-		//}
+		}
+		else
+		{
+			/* There is no necessity keep any output, because this process works in the background.
+			   For same reason ErrorOutput instance is turned to Log. */
+			this.error = new ErrorOutput(null);
+		}
 
 		try
 		{
-			// Streams for getting user input
-			pipeIn = new PipedInputStream();
-			pipeOut = new PipedOutputStream(pipeIn);
-			process = ProcessRunner.getProcessRunner().exec(args, env,
-					currentDirectory);
+			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
+			
+			process = ProcessRunner.getProcessRunner().exec(args, env, currentDirectory, merge && foreground);
 			if (process == null)
 			{
 				String str = StringList.join(args, " ");
 				throw new RuntimeException( "Unrecognized command: " + str );
 			}
-			console.startAnimation();
-			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
-			/* Yes, there is one more thread we created but do not "count" - otherwise it would be (merge ? 4 : 3) 
-			   Console does not wait for the stdin stream/thread to be closed before considering the process
-			   "stopped". However, if the user does signal an EOF, that will still cause the stdin thread to
-			   terminate, and the count to decrease, which means that sometimes we may miss some trailing output
-			   from stdout or stderr (whichever stream is closed last). */
-			threadDoneCount = merge ? 2 : 3;
+
+			if (foreground)
+			{
+				// Streams for getting user input
+				pipeIn = new PipedInputStream();
+				pipeOut = new PipedOutputStream(pipeIn);
+				
+				console.startAnimation();
+				/* Yes, there is one more thread we created but do not "count" - otherwise it would be (merge ? 4 : 3) 
+				   Console does not wait for the stdin stream/thread to be closed before considering the process
+				   "stopped". However, if the user does signal an EOF, that will still cause the stdin thread to
+				   terminate, and the count to decrease, which means that sometimes we may miss some trailing output
+				   from stdout or stderr (whichever stream is closed last). */
+				threadDoneCount = merge ? 2 : 3;
+			}
+			else
+			{
+				/* There is only one thread processing an error output. */
+				threadDoneCount = 1;
+			}
+			
 			new Thread() {
 				public void run() {
 					try
@@ -120,23 +139,28 @@ class ConsoleProcess
 				}
 			}.start();
 
-
-			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
-			stdout.start();
-			if (merge)
+			if (foreground) // we need stdin, stdout and probably separate stderr
 			{
-				stderr = null;
+				stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
+				stdout.start();
+				if (merge)
+				{
+					stderr = null;
+				}
+				else
+				{
+					stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
+					stderr.start();
+				}
+	
+				stdin = new InputThread(this, process.getOutputStream());
+				stdin.start();
 			}
-			else
+			else // we need stderr only
 			{
-				stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
+				stderr = new ErrorThread(this, process.getErrorStream(), console.getErrorColor());
 				stderr.start();
 			}
-
-			
-			stdin = new InputThread(this, process.getOutputStream());
-			stdin.start();
-
 		}
 		catch (Exception ioe)
 		{
@@ -155,7 +179,9 @@ class ConsoleProcess
 		}
 		
 		boolean showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
-		if (showExitStatus) {
+		/* if subprocess worked in the background - it's useful to know
+		   what's happened when it stopped */
+		if (!foreground || showExitStatus) {
 			Object[] pp = { args[0], Integer.valueOf(exitCode) };
 			String msg = jEdit.getProperty("console.shell.exited", pp);
 			if (this.exitCode == 0)
@@ -199,7 +225,7 @@ class ConsoleProcess
 			stopped = true;
 			try
 			{
-				pipeOut.close();
+				if (pipeOut != null) pipeOut.close();
 			} catch (IOException e)
 			{
 				Log.log(Log.WARNING, this, e.getMessage());
@@ -313,9 +339,9 @@ class ConsoleProcess
 	{
 
 		threadDoneCount--;
-                if (threadDoneCount > 0) return;
+		if (threadDoneCount > 0) return;
 
-                if ((!stopped) && (process != null))
+		if ((!stopped) && (process != null))
 		{
 
 			// we don't want unkillable processes to hang
@@ -327,6 +353,13 @@ class ConsoleProcess
 				jEdit.checkBufferStatus(console.getView());				
 			}
 		});
+	}
+	// }}}
+	
+	// {{{ isForeground() method
+	public boolean isForeground()
+	{
+		return foreground;
 	}
 	// }}}
 	// }}}

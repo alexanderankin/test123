@@ -4,6 +4,8 @@ jEdit Console Plugin Changelog
 
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
+        #3539123 - Fixed NPE when running in background command/application tries
+                   to write something to stdout or stderr.
         #3536568 - Console colors a text incorrectly using escape functions.
         Updated jcfunc.* to version 1.1. See /jcfunc/changelog.txt.
         Fixed some minor bugs in StreamThread.

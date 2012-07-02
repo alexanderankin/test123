@@ -51,7 +51,7 @@ import jcfunc.parameters.*;
  */
 
 // {{{ class StreamThread
-class StreamThread extends Thread
+class StreamThread extends OutputThread
 {
 	// {{{ Private members
 	private ConsoleProcess process;
