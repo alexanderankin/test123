@@ -274,7 +274,7 @@ public class SystemShell extends Shell
 				// run in background
 				args.removeElementAt(args.size() - 1);
 				foreground = false;
-				//output.commandDone();
+				output.commandDone();
 				// error.commandDone();
 			}
 			else

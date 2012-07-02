@@ -109,6 +109,16 @@ public abstract class ProcessRunner
 	 */
 	Process exec(String[] args, Map<String, String> env, String dir) throws IOException
 	{
+		boolean merge = jEdit.getBooleanProperty( "console.processrunner.mergeError", true);
+		return exec(args, env, dir, merge);
+	}
+	
+	/*
+	 * Method with a new signature. In general case the parent process decides that
+	 * there is necessity to merge OutputStream and ErrorStream of the subprocess.
+	 */
+	Process exec(String[] args, Map<String, String> env, String dir, boolean merge) throws IOException
+	{
 		String prefix = jEdit.getProperty("console.shell.prefix", "osdefault");
 		StringList arglist = new StringList();
 		if (prefix == null || prefix.length() < 1) {
@@ -161,7 +171,6 @@ public abstract class ProcessRunner
 		prependUserPath(processEnv);
 		processBuilder.directory(new File(dir));
 		// Merge stdout and stderr
-		boolean merge = jEdit.getBooleanProperty( "console.processrunner.mergeError", true);
 		processBuilder.redirectErrorStream( merge );
 		processBuilder.command(arglist.toArray());
 		try
