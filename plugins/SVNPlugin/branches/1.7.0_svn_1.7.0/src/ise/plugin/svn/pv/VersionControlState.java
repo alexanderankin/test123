@@ -72,6 +72,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
 
     // hashtable rather than hashmap as synchronization is needed. This caches
     // the last known status of a file.
+    // QUESTION: serialize this for faster start up for ProjectViewer?
     private static Hashtable<String, FileStatus> cache = new Hashtable<String, FileStatus>();
 
     private static class SingletonHolder {
