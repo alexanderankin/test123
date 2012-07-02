@@ -3,8 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2003 Slava Pestov
- * Java 1.5 version (c) 2005 by Alan Ezust
+ * Copyright (C) 2001-2012 Slava Pestov, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
