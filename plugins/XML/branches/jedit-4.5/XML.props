@@ -7,7 +7,7 @@ plugin.xml.XmlPlugin.version=2.8.4
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jdk 1.6
-plugin.xml.XmlPlugin.depend.1=jedit 05.00.01.00
+plugin.xml.XmlPlugin.depend.1=jedit 04.05.99.01
 plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.9.1
 plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
 plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 1.3
