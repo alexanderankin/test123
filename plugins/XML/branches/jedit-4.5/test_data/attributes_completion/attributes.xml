@@ -20,6 +20,12 @@
 <!-- when asking for completion inside <a> start tag, aa or ab is proposed -->
 <a aa="" > <!-- see : no completion popup here -->text area a1</a>
 
+<a aa="foo" />
+<!-- XXX:  see: no completion popup here: fixes Bug# 3533666 -->
+
+<a aa="x > y" >
+<!-- FIXME: the > inside the first attribute prevents the completion popup from showing after it -->
+</a>
 <!-- the slash inside aa doesn't prevent the completion popup (aa|ab) in start tag -->
 <a aa="../" ></a>
 
