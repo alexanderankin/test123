@@ -46,6 +46,26 @@
         </or>
     </selector>
 
+    <!-- need to override the selector to prevent inclusion of test_data (see plugin bug #3531320)
+         and inclusion of build/extras again (why did nobody complain about it ?)
+      -->
+    <selector id="extraFiles">
+      <and>
+        <not><filename name="test_data/**"/></not>
+        <not><filename name="${build.dir}/**"/></not>
+        <or>
+          <filename name="**/actions.xml" />
+          <filename name="**/browser.actions.xml" />
+          <filename name="**/dockables.xml" />
+          <filename name="**/services.xml" />
+          <filename name="**/*.props" />
+          <filename name="**/lang_*.properties" />
+          <filename name="**/LICENSE" />
+          <filename name="**/README" />
+	</or>
+      </and>
+    </selector>
+
     <selector id="packageFiles">
             <or>
                 <filename name="docs/*.html" />

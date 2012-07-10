@@ -1,6 +1,6 @@
 /*
  * XmlParser.java
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000, 2003 Slava Pestov
@@ -199,6 +199,8 @@ public abstract class XmlParser extends SideKickParser
 		for(int i = lastchar; i >= 1; i--)
 		{
 			char ch = text.charAt(i);
+			if(ch == '>') 
+				return null; // completely outside a tag
 			if(ch == '<')
 			{
 				wordStart = i;
