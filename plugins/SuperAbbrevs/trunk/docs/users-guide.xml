@@ -10,6 +10,7 @@
     <copyright>
       <year>2005</year>
       <year>2010</year>
+      <year>2012</year>
       <holder>Sune Simonsen</holder>
     </copyright>
 
@@ -46,6 +47,13 @@
     	You can define, edit or delete abbreviations from this optionpane. 
       This will be explained further in <xref linkend="UsingPlugin"/>. 
     </para>
+    <para>
+      Additionnaly, you can use the Zen Coding syntax. Zen Coding is an editor 
+      plugin for high-speed HTML, XML, XSL (or any other structured code format) 
+      coding and editing. His core of is a powerful abbreviation engine which 
+      allows you to expand expressions—similar to CSS selectors—into HTML code. 
+      For further information please look into the <xref linkend="ZenCoding"/> section. 
+    </para>
   </chapter>
 
   <chapter id="UsingPlugin"><title>Using the plugin</title>
@@ -58,7 +66,8 @@
       of the variable, it changes everywhere the variable is placed in the
       template. By pressing the TAB key once more, the
       next variable is selected. If you want to jump back to an earlier variable 
-      you should just press S+TAB. </para>
+      you should just press S+TAB.
+    </para>
     </section>
     <section id="expandselection"><title>Expand an abbreviation on a selection</title>
     <para>
@@ -66,7 +75,8 @@
       the <guimenu>Show expandsion dialog</guimenu> action in the 
       <guimenu>Plugins</guimenu> menu. Type in the abbreviation and press ENTER.
       The abbreviation will be expanded and the selection will be available to
-      the template generating code. </para>
+      the template generating code.
+    </para>
     </section>
     <section id="add"><title>Add a new abbreviation</title>
     <para>
@@ -76,7 +86,8 @@
       abbreviation and the template according to the syntax explained in <xref
       linkend="WritingTemplates"/>. Press the Ok button. The abbreviation is not saved
       yet - you must press Apply or the Ok button, at the bottom of the
-      optionpane, to save all the changes you made to the abbreviations. </para>
+      optionpane, to save all the changes you made to the abbreviations.
+    </para>
     </section>
     <section id="addInline"><title>Add a new abbreviation from the buffer</title>
     <para>
@@ -85,7 +96,7 @@
       same way as in <xref linkend="add"/> - the only difference is that there are two
       buttons instead of the Ok button, one for adding the abbreviation to the
       <emphasis>global</emphasis> mode and one for adding it to the current mode.
-     </para>
+    </para>
     </section>
     <section id="edit"><title>Edit a existing abbreviation</title>
     <para>
@@ -95,7 +106,7 @@
       The abbreviation is not saved yet, you still have to press Apply or the Ok button, 
       at the bottom of the optionpane, to save all the changes you made to the 
       abbreviations.
-      </para>
+    </para>
     </section>
     <section id="editInline"><title>Add a new abbreviation from the buffer</title>
     <para>
@@ -236,5 +247,93 @@ public void set${1=firstUp(s)}($2 $1){
 </table>
 ]]></programlisting>
     </para>
+  </chapter>
+  
+  <chapter id="ZenCoding"><title>Zen Coding</title>
+    <para>
+    	Below, the features of Zen Coding engine:
+    </para>
+    <itemizedlist>
+        <listitem>
+        <para>
+            ID and CLASS attributes: <code>div#page.section.main</code>. 
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Custom attributes: <code>div[title]</code>, <code>a[title="Hello world" rel]</code>,
+            <code>td[colspan=2]</code>. 
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Element multiplication: <code>li*5</code> will output li tag five times. 
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Item numbering with <code>$</code> character: <code>li.item$*3</code> will output li tag
+            three times, replacing <code>$</code> character with item number.  
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Multiple <code>$</code> characters in a row are used as zero padding, 
+            i.e.: <code>li.item$$$</code> → <code>li.item001</code>. 
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Abbreviation groups with unlimited nesting: 
+            <code>div#page>(div#header>ul#nav>li*4>a)+(div#page>(h1>span)+p*2)+div#footer</code>. 
+            You can literally write a full document markup with just a single line.  
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Filters support. For example <code>div#content|e</code> will expand in 
+            <programlisting><![CDATA[&lt;div id="content"&gt;]]></programlisting>.
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            div tag name can be omitted when writing element starting from ID or 
+            CLASS: <code>#content>.section</code> is the same as <code>div#content>div.section</code>.  
+        </para>
+        </listitem>
+        <listitem>
+        <para>
+            Text support: <code>p>{Click }+a{here}+{ to continue}</code>. 
+        </para>
+        </listitem>
+    </itemizedlist>
+    <para>
+    	The example <code>div#page>div.logo+ul#navigation>li*5>a[title]</code> will expand in:
+    </para>
+    <para>
+      <programlisting><![CDATA[
+ <div id="page">
+ 	<div class="logo"></div>
+ 	<ul id="navigation">
+ 		<li>
+ 			<a title="" href=""></a>
+ 		</li>
+ 		<li>
+ 			<a title="" href=""></a>
+ 		</li>
+ 		<li>
+ 			<a title="" href=""></a>
+ 		</li>
+ 		<li>
+ 			<a title="" href=""></a>
+ 		</li>
+ 		<li>
+ 			<a title="" href=""></a>
+ 		</li>
+ 	</ul>
+ </div>
+]]></programlisting>
+    </para>
+    
   </chapter>
 </book>
