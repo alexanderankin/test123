@@ -29,7 +29,7 @@ public class SchemeEditor extends JPanel {
         installUI(null);
         installListeners();
     }
-    
+
     public SchemeEditor(EditorScheme scheme) {
         super();
         installUI(scheme);
@@ -39,12 +39,20 @@ public class SchemeEditor extends JPanel {
     private void installUI(EditorScheme scheme) {
         setLayout(new BorderLayout());
 
-        // scheme chooser.  Only load editable schemes.
+        // set up the scheme chooser.  Load all schemes, even if they are read-only,
+        // so the user can select an existing theme as the basis for a new scheme.
         List<EditorScheme> schemes = EditorSchemePlugin.getSchemes();
+
+        // keep a copy of the current scheme so it is easy to revert
+        EditorScheme original = new EditorScheme();
+        original.getFromCurrent();
+        original.setName(jEdit.getProperty("editor-scheme.selector.currentscheme"));
+        schemes.add(0, original);
+
         schemeChooser = new JComboBox(schemes.toArray(new EditorScheme[schemes.size()]));
         schemeChooser.setRenderer(new EditorSchemeSelectorDialog.EditorSchemeListCellRenderer());
         if (scheme != null) {
-            schemeChooser.setSelectedItem(scheme);   
+            schemeChooser.setSelectedItem(scheme);
         }
 
         // new button
@@ -93,7 +101,7 @@ public class SchemeEditor extends JPanel {
     }
 
     private void installListeners() {
-        schemeChooser.addActionListener (new ActionListener() {
+        schemeChooser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 EditorScheme scheme = (EditorScheme) schemeChooser.getSelectedItem();
                 deleteButton.setEnabled(! scheme.getReadOnly());
@@ -115,28 +123,28 @@ public class SchemeEditor extends JPanel {
         }
        );
 
-        newButton.addActionListener (new ActionListener() {
+        newButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 newScheme();
             }
         }
        );
 
-        deleteButton.addActionListener (new ActionListener() {
+        deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 deleteScheme();
             }
         }
        );
 
-        applyAutomatically.addActionListener (new ActionListener() {
+        applyAutomatically.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 jEdit.setBooleanProperty("editor-scheme.autoapply", applyAutomatically.isSelected());
             }
         }
        );
 
-        saveButton.addActionListener (new ActionListener() {
+        saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 EditorScheme scheme = (EditorScheme) schemeChooser.getSelectedItem();
                 try {
@@ -150,17 +158,17 @@ public class SchemeEditor extends JPanel {
     }
 
     void deleteScheme() {
-        EditorScheme scheme = (EditorScheme)schemeChooser.getSelectedItem();    
+        EditorScheme scheme = (EditorScheme) schemeChooser.getSelectedItem();
         if (scheme.getReadOnly()) {
             // can't delete a read-only scheme
-            return;   
+            return;
         }
         String filename = scheme.getFilename();
         File file = new File(filename);
         file.delete();
         schemeChooser.removeItem(scheme);
     }
-    
+
     void newScheme() {
         String name = "";
         String fileName = "";
@@ -170,7 +178,7 @@ public class SchemeEditor extends JPanel {
                 return;
             }
 
-            fileName = MiscUtilities.constructPath (EditorScheme.getDefaultDir(), name.replace(' ', '_') + EditorScheme.EXTENSION);
+            fileName = MiscUtilities.constructPath(EditorScheme.getDefaultDir(), name.replace(' ', '_') + EditorScheme.EXTENSION);
 
             File file = new File(fileName);
             if (file.exists()) {
