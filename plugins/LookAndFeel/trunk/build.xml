@@ -95,6 +95,7 @@
 				<pathelement location="${jedit.install.dir}/jedit.jar"/>
 				<fileset refid="libraries" />
 				<pathelement location="${src.dir}"/>
+				<pathelement location="${jedit.plugins.dir}/EditorScheme.jar"/>
 		</path>
 	<!-- }}} -->
 		

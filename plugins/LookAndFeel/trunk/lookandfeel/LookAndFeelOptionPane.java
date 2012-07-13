@@ -21,11 +21,13 @@
 package lookandfeel;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,15 +62,33 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 		addComponent( useFont = new JCheckBox(
 		            jEdit.getProperty( "lookandfeel.usejeditfont.label" ),
 		            jEdit.getBooleanProperty( "lookandfeel.usejeditfont", false ) ) );
+		addComponent( Box.createVerticalStrut(6));
 
 		addComponent( jEdit.getProperty( "lookandfeel.lookandfeel.label" ), lookAndFeels );
+		addComponent( Box.createVerticalStrut(6));
 		addComponent( lnfOptionPanel = new JPanel( new BorderLayout() ) );
+		addComponent( Box.createVerticalStrut(6));
+		JButton button = new JButton(jEdit.getProperty("lookandfeel.chooseeditorscheme.label"));
+		button.setToolTipText(jEdit.getProperty("lookandfeel.chooseeditorschemetooltip.label"));
+		addComponent(button);
+		button.addActionListener( 
+			new ActionListener() {
+				public void actionPerformed( ActionEvent ae ) {
+					new editorscheme.EditorSchemeSelectorDialog(jEdit.getActiveView());
+				}
+			}
+		);
+
+		addComponent( Box.createVerticalStrut(11));
+		addSeparator();
 		addComponent( Box.createVerticalStrut(11));
 		addComponent( new JLabel(jEdit.getProperty( "lookandfeel.message.restart.message" ) ));
+
 		int idx = indexOf( lnfs, jEdit.getProperty( "lookandfeel.lookandfeel" ) );
 		lookAndFeels.setSelectedIndex( idx < 0 ? 0 : idx );
 		itemStateChanged( null );
 		lookAndFeels.addItemListener( this );
+		
 	}
 
 

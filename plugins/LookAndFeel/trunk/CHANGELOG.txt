@@ -1,5 +1,11 @@
 CHANGELOG for LookAndFeel plugin
 ================================
+Version 1.7
+-----------
+* Integration with the Editor Scheme plugin so the scheme can be chosen on the
+same option pane as when choosing the look and feel. It's nice to be able to 
+set all the colors in one place.
+
 
 Version 1.6
 -----------
