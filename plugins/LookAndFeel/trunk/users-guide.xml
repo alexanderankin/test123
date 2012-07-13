@@ -110,6 +110,15 @@
       feel implementations for details.
     </para>
     </sect1>
+    <sect1 id="select-editor-scheme">
+      <title>Selecting an Editor Scheme</title>
+      <para>
+      You can select from available editor color schemes by clicking the button
+      labeled '<guilabel>Choose Editor Scheme</guilabel>' and selecting a color
+      scheme from the dialog. The editor color schemes are provided by the Editor 
+      Scheme plugin.
+    </para>
+    </sect1>
     <sect1 id="saving-config">
       <title>Saving Your Configuration</title>
       <para>
