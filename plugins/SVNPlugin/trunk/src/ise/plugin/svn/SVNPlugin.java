@@ -86,15 +86,28 @@ public class SVNPlugin extends EBPlugin {
             return storageDir;   
         }
         try {
-            File homeDir = jEdit.getPlugin( "ise.plugin.svn.SVNPlugin" ).getPluginHome();
-            if ( !homeDir.exists() ) {
-                homeDir.mkdir();
+            File homeDir = SVNPlugin.getPluginHomeDir();
+            if (homeDir == null) {
+                return null;   
             }
             storageDir = new File(homeDir, ".subversion");
             if (!storageDir.exists()) {
                 storageDir.mkdir();   
             }
             return storageDir;
+        }
+        catch ( Exception ignored ) {
+            return null;
+        }
+    }
+    
+    public static File getPluginHomeDir() {
+        try {
+            File homeDir = jEdit.getPlugin( "ise.plugin.svn.SVNPlugin" ).getPluginHome();
+            if ( !homeDir.exists() ) {
+                homeDir.mkdir();
+            }
+            return homeDir;
         }
         catch ( Exception ignored ) {
             return null;

@@ -10,12 +10,19 @@ import projectviewer.event.ProjectUpdate;
 import projectviewer.event.ViewerUpdate;
 import projectviewer.ProjectViewer;
 
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
@@ -24,6 +31,8 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
+import ise.plugin.svn.PVHelper;
+import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.command.Status;
 import ise.plugin.svn.io.*;
@@ -79,7 +88,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
     }
 
     private VersionControlState() {
-
+        EditBus.addToBus( this );
     }
 
     public static VersionControlState getInstance() {
@@ -158,6 +167,16 @@ public class VersionControlState implements VersionControlService, EBComponent {
 
     // check if the file has been changed by checking the timestamp
     FileStatus checkModified( String path ) {
+        // attempt to load the status cache. On start up, the project loaded message
+        // is sent before this plugin is loaded, so the initial cache loading doesn't
+        // happen from handleMessage. The only time the cache size should be 0 is on
+        // start up.
+        if ( cache.size() == 0 ) {
+            VPTProject project = PVHelper.getProjectForFile( path );
+            if ( project != null ) {
+                loadCache( project.getName() );
+            }
+        }
         FileStatus status = cache.get( path );
         File f = new File( path );
         if ( status == null ) {
@@ -228,7 +247,11 @@ public class VersionControlState implements VersionControlService, EBComponent {
      *
      * @param proj The project.
      */
-    public void dissociate( VPTProject proj ) { }
+    public void dissociate( VPTProject project ) {
+        if ( project != null ) {
+            deleteCache( project.getName() );
+        }
+    }
 
     /**
      * This method should return the option pane to be shown. As with
@@ -267,27 +290,27 @@ public class VersionControlState implements VersionControlService, EBComponent {
     public ImporterFileFilter getFilter() {
         return new ImporterFileFilter() {
             public String getRecurseDescription() {
-                return jEdit.getProperty("ips.Use_SVN_entries", "Use SVN entries");
+                return jEdit.getProperty( "ips.Use_SVN_entries", "Use SVN entries" );
             }
 
             @Override
             public boolean accept( String path ) {
-                if (path == null) {
+                if ( path == null ) {
                     return false;
                 }
-                File file = new File(path);
-                if (!file.exists()) {
-                    return false;   
+                File file = new File( path );
+                if ( !file.exists() ) {
+                    return false;
                 }
-                return Info.isWorkingCopy(new File(path));
+                return Info.isWorkingCopy( new File( path ) );
             }
-            
-            public boolean accept(VFSFile file) {
-                return accept(file.getPath());   
+
+            public boolean accept( VFSFile file ) {
+                return accept( file.getPath() );
             }
-            
+
             public String getDescription() {
-                return jEdit.getProperty("ips.Import_files_in_under_SVN_version_control_only.", "Import files in under SVN version control only.");    
+                return jEdit.getProperty( "ips.Import_files_in_under_SVN_version_control_only.", "Import files in under SVN version control only." );
             }
         };
     }
@@ -327,13 +350,26 @@ public class VersionControlState implements VersionControlService, EBComponent {
             }
         } else if ( msg instanceof ViewerUpdate ) {
             // reload cache with new project files
-            ViewerUpdate vu = ( ViewerUpdate ) msg;
+            final ViewerUpdate vu = ( ViewerUpdate ) msg;
             if ( ViewerUpdate.Type.PROJECT_LOADED.equals( vu.getType() ) ) {
-                reloadCache( vu.getViewer() );
+                String projectName = vu.getNode().getName();
+                boolean loaded = loadCache( projectName );
+                if ( ! loaded ) {
+                    SwingUtilities.invokeLater( new Runnable() {
+                        public void run() {
+                            reloadCache( vu.getViewer() );
+                        }
+                    } );
+                }
+            } else if ( ViewerUpdate.Type.PROJECT_UNLOADING.equals( vu.getType() ) ) {
+                String projectName = vu.getNode().getName();
+                saveCache( projectName );
             }
         }
     }
 
+    // loads the status cache by starting with a project and recursing through
+    // each child item in the project root.  
     void reloadCache( ProjectViewer pv ) {
         if ( pv == null ) {
             return;
@@ -349,6 +385,93 @@ public class VersionControlState implements VersionControlService, EBComponent {
         getNodeState( ( VPTNode ) node );
         for ( int i = 0; i < node.getChildCount(); i++ ) {
             reloadCache( node.getChildAt( i ) );
+        }
+    }
+
+    // saves status cache to disk
+    void saveCache( String projectName ) {
+        File storageDir = SVNPlugin.getPluginHomeDir();
+        if ( storageDir != null ) {
+            try {
+                File cacheDir = new File( storageDir, projectName );
+                if ( !cacheDir.exists() ) {
+                    cacheDir.mkdir();
+                }
+                File cacheFile = new File( cacheDir, "statusCache.obj" );
+                if ( cacheFile.exists() ) {
+                    cacheFile.delete();
+                }
+                FileOutputStream fileOut = new FileOutputStream( cacheFile, false );
+                ObjectOutputStream objectOut = new ObjectOutputStream( fileOut );
+                for ( String key : cache.keySet() ) {
+                    FileStatus fs = cache.get( key );
+                    if ( fs != null ) {
+                        objectOut.writeObject( key );
+                        objectOut.writeLong( fs.timestamp );
+                        objectOut.writeInt( fs.status );
+                    }
+                }
+                objectOut.close();
+            } catch ( Exception ignored ) {                // NOPMD
+            }
+        }
+    }
+
+    // loads the status cache from disk if possible
+    boolean loadCache( String projectName ) {
+        File storageDir = SVNPlugin.getPluginHomeDir();
+        if ( storageDir != null ) {
+            ObjectInputStream objectIn = null;
+            try {
+                File cacheDir = new File( storageDir, projectName );
+                if ( !cacheDir.exists() ) {
+                    return false;
+                }
+                File cacheFile = new File( cacheDir, "statusCache.obj" );
+                if ( !cacheFile.exists() ) {
+                    return false;
+                }
+                FileInputStream fileIn = new FileInputStream( cacheFile );
+                objectIn = new ObjectInputStream( fileIn );
+                cache = new Hashtable<String, FileStatus>();
+                while ( true ) {
+                    String key = ( String ) objectIn.readObject();
+                    long timestamp = objectIn.readLong();
+                    int status = objectIn.readInt();
+                    cache.put( key, new FileStatus( timestamp, status ) );
+                    // loop ends on EOFException. Seems a little lame...
+                }
+            } catch ( EOFException eof ) {
+                // this is expected and indicates the cache was fully read from disk
+                return true;
+            } catch ( Exception ignored ) {
+                return false;
+            } finally {
+                try {
+                    objectIn.close();
+                } catch ( Exception ignored ) {                    // NOPMD
+                }
+            }
+
+        }
+        return false;
+    }
+
+    // removes any files associated with this project
+    void deleteCache( String projectName ) {
+        File storageDir = SVNPlugin.getPluginHomeDir();
+        if ( storageDir != null ) {
+            try {
+                File cacheDir = new File( storageDir, projectName );
+                if ( cacheDir.exists() ) {
+                    File[] files = cacheDir.listFiles();
+                    for ( File file : files ) {
+                        file.delete();
+                    }
+                    cacheDir.delete();
+                }
+            } catch ( Exception ignored ) {                // NOPMD
+            }
         }
     }
 }

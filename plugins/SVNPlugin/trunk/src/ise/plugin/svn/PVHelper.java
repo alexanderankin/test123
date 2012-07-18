@@ -96,7 +96,7 @@ public class PVHelper {
      * project contains the file.
      */
     public static String getProjectRoot( String filename ) {
-        VPTProject project = getProjectNameForFile( filename );
+        VPTProject project = getProjectForFile( filename );
         return project == null ? "" : project.getRootPath();
     }
 
@@ -104,7 +104,7 @@ public class PVHelper {
      * @return the name of the project containing the given filename, or null if
      * no project contains the file.
      */
-    public static VPTProject getProjectNameForFile( String filename ) {
+    public static VPTProject getProjectForFile( String filename ) {
         // the simplest check
         if ( filename == null ) {
             return null;
@@ -149,7 +149,7 @@ public class PVHelper {
      * but username and/or password can be null.
      */
     public static String[] getSVNLogin( String filename ) {
-        VPTProject project = getProjectNameForFile( filename );
+        VPTProject project = getProjectForFile( filename );
         if ( project == null ) {
             return new String[] {null, null};
         }
