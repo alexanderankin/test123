@@ -645,3 +645,5 @@ ips.Converting_svn_working_copy_format_to_=Converting svn working copy format to
 ips.Unable_to_stop_conversion_of_working_file_format.=Unable to stop conversion of working file format.
 ips.Completed_converting_working_copy_format_to_=Completed converting working copy format to 
 ips.Converting=Converting
+ips.Caution!_It_will_not_be_possible_to_convert_to_an_older_working_copy_format.\n\nConvert_anyway?\n\n=Caution! It will not be possible to convert to an older working copy format.\n\nConvert anyway?\n\n
+ips.Converting_to_1.7_working_format=Converting to 1.7 working format
