@@ -94,6 +94,7 @@
             <!-- compilerarg value="-Xlint:unchecked"/ -->
             <classpath refid="classpathref" />
             <exclude name="**/obsolete/*"/>
+            <exclude name="**/test/*"/>
         </javac>
          <copy todir="${classes.dir}/${icons}" overwrite="no">
             <fileset dir="${src.dir}/${icons}">
