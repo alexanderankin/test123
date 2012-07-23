@@ -647,7 +647,13 @@ public class BufferList extends JPanel implements EBComponent
 					node.setExpanded(true);
 					if (node != rootNode)
 					{
-						distinctDirs.put(node.getUserPath(), node);
+						String comparablePath = node.getUserPath();
+						VFS vfs = VFSManager.getVFSForPath(comparablePath);
+						if ((vfs.getCapabilities() & VFS.CASE_INSENSITIVE_CAP) != 0)
+						{
+							comparablePath = comparablePath.toUpperCase();
+						}
+						distinctDirs.put(comparablePath, node);
 					}
 				}
 				else

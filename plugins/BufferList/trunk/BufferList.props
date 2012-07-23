@@ -22,6 +22,8 @@
 plugin.bufferlist.BufferListPlugin.activate=defer
 plugin.bufferlist.BufferListPlugin.name=BufferList
 plugin.bufferlist.BufferListPlugin.author=Dirk Moebius
+# this plugin marks the versions with dates in help file, so do it
+# in BufferList.html after bumping version number
 plugin.bufferlist.BufferListPlugin.version=1.4
 plugin.bufferlist.BufferListPlugin.docs=BufferList.html
 plugin.bufferlist.BufferListPlugin.usePluginHome=true
