@@ -22,6 +22,27 @@
 			executable can not be found on your system path.
 		</para>
 	</chapter>
+	<chapter id="interpreters"><title>Specifying Interpreters</title>
+		<para>
+			The plugin supports specifying multiple Python interpreters in the Plugin Options menu.
+			By default, only one interpreter is provided, which is simply the command "python".
+			Others can be added easily, and can be switched to in the Plugins menu. Switching
+			to a different interpreter will restart the current session if one is already running.
+		</para>
+		<para>
+			For each interpreter, you may also define a list of parameters to pass in when it is
+			started. Be aware when adding parameters that no advanced parsing is done on them,
+			so quoted strings will not work as expected. In addition, the "-i" parameter (inspect
+			interactively) is always passed in and never needs to be specified; if the plugin detects
+			ipython as the interpreter, then "-noreadline" is passed in as well.
+		</para>
+		<para>
+			NOTE: some Python implementations may not work with this plugin. IronPython, for example,
+			fails for God knows what reason. All testing has been done with the default interpreter,
+			so if you run into any problems using a different one, try switching to the default
+			interpreter provided by python.org.
+		</para>
+	</chapter>
 	<chapter id="actions"><title>Evaluating Code</title>
 		<para>
 			The easiest way to evaluate code in the shell is to simply type it in and hit enter.
