@@ -475,11 +475,9 @@ SELECT * FROM user WHERE user=?</programlisting>
         </formalpara>
         <itemizedlist>
           <listitem>
-            <para>Changed the classname for Microsoft SQL driver, to
-<classname>com.microsoft.sqlserver.jdbc.SQLServerDriver</classname>.
-The previous name,
-<classname>com.microsoft.jdbc.sqlserver.SQLServerDriver</classname>,
-was for 2000 driver.
+            <para>Changed the classname and connection string
+            for Microsoft SQL Driver, to adjust it for
+            <emphasis>Microsoft JDBC Driver 4.0 for SQL Server</emphasis>.
             </para>
           </listitem>
         </itemizedlist>
