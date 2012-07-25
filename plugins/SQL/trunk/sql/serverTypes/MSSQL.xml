@@ -6,7 +6,8 @@
 
 <!--The name of the JDBC driver -->
   <driverClass>com.microsoft.sqlserver.jdbc.SQLServerDriver</driverClass>
-  <!-- The old name, for MSSQL 2000: com.microsoft.jdbc.sqlserver.SQLServerDriver -->
+  <!-- The old name, for MSSQL 2000: com.microsoft.jdbc.sqlserver.SQLServerDriver
+       The connection string is also slightly different, see farther -->
 
   <vfs>
     <driverClass>sql.serverTypes.SybaseVFS</driverClass>
@@ -31,7 +32,8 @@
   See DriverManager.getConnection() function.
   Parameters named "user" and "password" are used directly in the function call.
 -->
-    <string>jdbc:microsoft:sqlserver://{host}:{port};DatabaseName={dbName}{extra}</string>
+    <string>jdbc:sqlserver://{host}:{port};DatabaseName={dbName}{extra}</string>
+    <!-- for MSSQL 2000 the prefix is: jdbc:microsoft:sqlserver:// -->
   </connection>
 
   <statements>
