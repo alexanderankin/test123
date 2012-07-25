@@ -208,7 +208,7 @@
             </row>
 
             <row>
-              <entry>Microsoft SQL Server 2000</entry>
+              <entry>Microsoft SQL Server</entry>
 
               <entry>Y</entry>
 
@@ -467,6 +467,23 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 1.09</title>
+          <!-- changelog for this version is probably incomplete -->
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Changed the classname for Microsoft SQL driver, to
+<classname>com.microsoft.sqlserver.jdbc.SQLServerDriver</classname>.
+The previous name,
+<classname>com.microsoft.jdbc.sqlserver.SQLServerDriver</classname>,
+was for 2000 driver.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
       <listitem>
         <formalpara>
           <title>Version 1.08</title>

@@ -5,7 +5,8 @@
 <serverType name="Microsoft SQL Server">
 
 <!--The name of the JDBC driver -->
-  <driverClass>com.microsoft.jdbc.sqlserver.SQLServerDriver</driverClass>
+  <driverClass>com.microsoft.sqlserver.jdbc.SQLServerDriver</driverClass>
+  <!-- The old name, for MSSQL 2000: com.microsoft.jdbc.sqlserver.SQLServerDriver -->
 
   <vfs>
     <driverClass>sql.serverTypes.SybaseVFS</driverClass>
