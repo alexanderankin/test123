@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="python-eval-selected">
+		<CODE>
+			text = textArea.getSelectedText();
+			if (text == null) {
+				return;
+			}
+			wm.addDockableWindow("console");
+			dockable = wm.getDockableWindow("console");
+			shell = console.Shell.getShell("Python");
+			shell.eval(dockable, text);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="python-eval-buffer">
+		<CODE>
+			wm.addDockableWindow("console");
+			dockable = wm.getDockableWindow("console");
+			shell = console.Shell.getShell("Python");
+			if (buffer.isNewFile()) {
+				shell.eval(dockable, buffer.getText(0, buffer.getLength()));
+			} else {
+				shell.evalBuffer(dockable, buffer);
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="python-eval-file">
+		<CODE>
+			dialog = new VFSFileChooserDialog(view, buffer.getDirectory(),
+				VFSBrowser.OPEN_DIALOG, false, true);
+			files = dialog.getSelectedFiles();
+			if (files != null) {
+				wm.addDockableWindow("console");
+				dockable = wm.getDockableWindow("console");
+				shell = console.Shell.getShell("Python");
+				f = new File(files[0]);
+				buffer = jEdit.openTemporary(view, f.getParent(), f.getName(),
+					false);
+				shell.evalBuffer(dockable, buffer);
+			}
+		</CODE>
+	</ACTION>
+</ACTIONS>
