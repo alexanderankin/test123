@@ -67,6 +67,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.StandardUtilities;
 
 // }}}
@@ -432,6 +433,10 @@ public class BufferList extends JPanel implements EBComponent
 		{
 			handlePropertiesChanged();
 		}
+		else if (message instanceof ViewUpdate)
+		{
+			handleViewUpdate((ViewUpdate) message);
+		}
 	} // }}}
 
 	// {{{ -handleBufferUpdate(BufferUpdate) : void
@@ -489,6 +494,20 @@ public class BufferList extends JPanel implements EBComponent
 		}
 		// set new cell renderer to change fonts:
 		tree.setCellRenderer(new BufferListRenderer(view));
+	} // }}}
+	
+	// {{{ -handleViewUpdate(ViewUpdate) : void
+	private void handleViewUpdate(ViewUpdate vu)
+	{
+		View v = vu.getView();
+		if (v != view)
+		{
+			return; // not for this BufferList instance
+		}
+		if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+		{
+			currentBufferChanged();
+		}
 	} // }}}
 
 	// {{{ -updateBufferCounts() : void
