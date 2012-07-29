@@ -1,0 +1,23 @@
+This is a program to exploit the XML Export from Sourceforge
+to generate offline browseable views of the Trackers.
+
+It is meant for people going on vacation with their laptops
+and wanting to hack on jEdit without or with limited internet access.
+I found it useful to unearth old bugs.
+
+The tables can be sorted by clicking on the headers.
+Hold Shift to be able to sort on multiple columns.
+
+How to use this ?
+
+1 - install SaxonPlugin in jEdit
+2 - ./filter.sh path/to/sf/export.xml .
+3 - ./transform.sh filtered.xml res
+4 - firefox res/index.html
+
+Includes an unmodified version of jQuery TableSorter plugin:
+Copyright (c) 2007 Christian Bach
+Examples and docs at: http://tablesorter.com
+Dual licensed under the MIT and GPL licenses:
+http://www.opensource.org/licenses/mit-license.php
+http://www.gnu.org/licenses/gpl.html
