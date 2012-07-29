@@ -44,14 +44,19 @@ install SaxonPlugin in jEdit and/or modify the 'jar' variable in this script"
 fi
 
 echo Preparing...
-mkdir -p $destdir
+mkdir -p "$destdir"
 for i in "$mydir/style.css" \
 	 "$mydir/jquery-latest.js" \
 	 "$mydir/jquery.metadata.js" \
 	 "$mydir/jquery.tablesorter.js" ; do
 	
-	cp -v $i $destdir
+	cp -v $i "$destdir"
 done
+echo "Signature: 8a477f597d28d172789f06886806bc55
+# This file is a cache directory tag created by (application name).
+# For information about cache directory tags, see:
+#http://www.brynosaurus.com/cachedir/" > "$destdir/CACHEDIR.TAG"
+
 
 echo Running transformation...
 java -jar "$jar" "-s:$source" "-xsl:$stylesheet" "-o:$output"
