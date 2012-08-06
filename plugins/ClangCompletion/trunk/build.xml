@@ -17,7 +17,7 @@
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
 	<property name="build.support" value="../../build-support" />
-	<property name="install.dir" value="C:\Users\Administrator.wujiayi-PC\AppData\Roaming\jEdit\jars" />
+	<property name="install.dir" value="C:\Documents and Settings\Administrator\Application Data\jEdit\jars" />
 	<property name="jedit.install.dir" value="D:\Program Files\jEdit" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
 	<!-- /mark:properties -->
