@@ -1,0 +1,23 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.clangcompletion.ClangCompletionPlugin.activate=defer
+plugin.clangcompletion.ClangCompletionPlugin.author=wujiayish@msn.com
+plugin.clangcompletion.ClangCompletionPlugin.description=Fill this in
+plugin.clangcompletion.ClangCompletionPlugin.docs=docs/ClangCompletion.html
+plugin.clangcompletion.ClangCompletionPlugin.longdescription=description.html
+plugin.clangcompletion.ClangCompletionPlugin.name=ClangCompletion
+plugin.clangcompletion.ClangCompletionPlugin.usePluginHome=true
+plugin.clangcompletion.ClangCompletionPlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.clangcompletion.ClangCompletionPlugin.depend.0=jedit 05.00.01.00
+plugin.clangcompletion.ClangCompletionPlugin.depend.1=jdk 1.6
+plugin.clangcompletion.ClangCompletionPlugin.depend.2=plugin completion.CompletionPlugin 0.3
+plugin.clangcompletion.ClangCompletionPlugin.depend.3=plugin errorlist.ErrorListPlugin 2.0
+plugin.clangcompletion.ClangCompletionPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.4.4
+# }}} Dependencies
+
+plugin.projectviewer.clangcompletion.main.ClangCompletionPlugin.option-pane=ClangCompletion-Configuration
+options.ClangCompletion-Configuration.label=ClangCompletion
+options.ClangCompletion-Configuration.code=new clangcompletion.ClangCompletionConfiguration()
