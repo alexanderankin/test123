@@ -261,7 +261,7 @@ public class ClangCompletionConfiguration extends AbstractOptionPane
 	
 		public OptionPane getOptionPane(VPTProject proj)
 		{
-			return new ProjectDependencies(proj);
+			return new ClangCompletionConfiguration(proj);
 		}
 	}
 }
