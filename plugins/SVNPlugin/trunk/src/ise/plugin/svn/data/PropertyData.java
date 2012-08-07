@@ -122,6 +122,6 @@ public class PropertyData extends CheckoutData {
     }
 
     public String getValue() {
-        return value == null ? null : new String( value );
+        return value;
     }
 }

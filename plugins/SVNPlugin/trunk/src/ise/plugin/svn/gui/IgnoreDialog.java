@@ -81,7 +81,7 @@ public class IgnoreDialog extends JDialog {
 
         final JTextField pattern_field = new JTextField();
         pattern_field.setEnabled( false );
-        int extension_index = pathfilename.lastIndexOf( "." );
+        int extension_index = pathfilename.lastIndexOf( '.' );
         if ( extension_index > 0 ) {
             pattern_field.setText( "*" + pathfilename.substring( extension_index ) );
         }

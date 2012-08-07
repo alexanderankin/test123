@@ -192,7 +192,7 @@ public class Base64 {
     */
    private static byte[] encode3to4( byte[] b4, byte[] threeBytes, int numSigBytes ) {
       encode3to4( threeBytes, 0, numSigBytes, b4, 0 );
-      return b4;
+      return b4;        // NOPMD
    }   // end encode3to4
 
 
@@ -338,19 +338,19 @@ public class Base64 {
          try {
             oos.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}       // NOPMD
          try {
             gzos.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}       // NOPMD
          try {
             b64os.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}       // NOPMD
          try {
             baos.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}       // NOPMD
       }   // end finally
 
       // Return value according to relevant encoding.
@@ -470,15 +470,15 @@ public class Base64 {
             try {
                gzos.close();
             }
-            catch ( Exception e ) {}
+            catch ( Exception e ) {}        // NOPMD
             try {
                b64os.close();
             }
-            catch ( Exception e ) {}
+            catch ( Exception e ) {}        // NOPMD
             try {
                baos.close();
             }
-            catch ( Exception e ) {}
+            catch ( Exception e ) {}        // NOPMD
          }   // end finally
 
          // Return value according to relevant encoding.
@@ -729,7 +729,7 @@ public class Base64 {
                bytes = baos.toByteArray();
 
             }   // end try
-            catch ( java.io.IOException e ) {
+            catch ( java.io.IOException e ) {        // NOPMD
                // Just return originally-decoded bytes
             }   // end catch
 
@@ -737,15 +737,15 @@ public class Base64 {
                try {
                   baos.close();
                }
-               catch ( Exception e ) {}
+               catch ( Exception e ) {}        // NOPMD
                try {
                   gzis.close();
                }
-               catch ( Exception e ) {}
+               catch ( Exception e ) {}        // NOPMD
                try {
                   bais.close();
                }
-               catch ( Exception e ) {}
+               catch ( Exception e ) {}        // NOPMD
             }   // end finally
 
          }   // end if: gzipped
@@ -792,11 +792,11 @@ public class Base64 {
          try {
             bais.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}        // NOPMD
          try {
             ois.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}        // NOPMD
       }   // end finally
 
 
@@ -831,7 +831,7 @@ public class Base64 {
          try {
             bos.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}        // NOPMD
       }   // end finally
 
 
@@ -864,7 +864,7 @@ public class Base64 {
          try {
             bos.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}        // NOPMD
       }   // end finally
 
 
@@ -973,7 +973,7 @@ public class Base64 {
          try {
             bis.close();
          }
-         catch ( Exception e ) {}
+         catch ( Exception e ) {}        // NOPMD
       }   // end finally
 
 

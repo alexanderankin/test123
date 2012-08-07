@@ -53,7 +53,6 @@ public class OutputPanel extends JPanel {
 
     // used to generate unique name for this panel
     static int COUNT = 0;
-    private int myIndex;
 
     // the logger for this panel, this logger should only log to this panel
     // via the handler
@@ -64,8 +63,7 @@ public class OutputPanel extends JPanel {
     public OutputPanel() {
         super( new BorderLayout() );
 
-        myIndex = ++COUNT;
-        logger = Logger.getLogger( "ise.plugin.svn.Subversion" + myIndex );
+        logger = Logger.getLogger( "ise.plugin.svn.Subversion" + ++COUNT );
         logger.setLevel( Level.ALL );
         logger.removeHandler( handler );
         logger.addHandler( handler );

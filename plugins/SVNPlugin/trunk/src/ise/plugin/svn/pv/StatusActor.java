@@ -37,7 +37,6 @@ import javax.swing.JOptionPane;
 import projectviewer.vpt.VPTNode;
 
 import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.library.SwingWorker;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.action.StatusAction;
 

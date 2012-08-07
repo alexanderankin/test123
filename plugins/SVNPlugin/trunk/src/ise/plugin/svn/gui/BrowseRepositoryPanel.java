@@ -358,17 +358,19 @@ public class BrowseRepositoryPanel extends JPanel {
     public String getUrl( TreePath path ) {
         DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
         RepositoryData data = chooser.getSelectedRepository();
-        String url;
+        StringBuilder url;
         String filepath;
         if ( node.isExternal() ) {
             String rep = node.getRepositoryLocation();
-            url = rep.substring( 0, rep.lastIndexOf( '/' ) );
+            url = new StringBuilder(rep.substring( 0, rep.lastIndexOf( '/' ) ));
             filepath = rep.substring( rep.lastIndexOf( '/' ) + 1 );
-            return url + filepath;
+            return url.append(filepath).toString();
         }
         else {
-            url = data.getURL();
-            url = url.endsWith( "/" ) ? url : url + "/";
+            url = new StringBuilder(data.getURL());
+            if (url.lastIndexOf("/") != url.length() - 1) {
+                url.append('/');   
+            }
             Object[] parts = path.getPath();
             StringBuilder sb = new StringBuilder();
             for ( int i = 1; i < parts.length; i++ ) {
@@ -378,7 +380,7 @@ public class BrowseRepositoryPanel extends JPanel {
             while ( filepath.startsWith( "/" ) ) {
                 filepath = filepath.substring( 1 );
             }
-            return url + filepath;
+            return url.append(filepath).toString();
         }
     }
 

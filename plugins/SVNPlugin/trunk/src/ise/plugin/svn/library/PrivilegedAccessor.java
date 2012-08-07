@@ -160,14 +160,14 @@ public class PrivilegedAccessor {
             methods = getSuperclassMethods( c );
             c = c.getSuperclass();
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(47);
         sb.append( "No method named " ).append( methodName ).append( " found in " ).append( instance.getClass().getName() ).append( " with parameters (" );
         for ( int x = 0; x < classTypes.length; x++ ) {
             sb.append( classTypes[ x ].getName() );
             if ( x < classTypes.length - 1 )
                 sb.append( ", " );
         }
-        sb.append( ")" );
+        sb.append( ')' );
         throw new NoSuchMethodException( sb.toString() );
 
     }
@@ -324,14 +324,14 @@ public class PrivilegedAccessor {
                 return constructor.newInstance( args );
             }
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(46);
         sb.append( "No constructor found for " ).append( c.getName() ).append( " with parameters (" );
         for ( int x = 0; x < classTypes.length; x++ ) {
             sb.append( classTypes[ x ].getName() );
             if ( x < classTypes.length - 1 )
                 sb.append( ", " );
         }
-        sb.append( ")" );
+        sb.append( ')' );
         throw new NoSuchMethodException( sb.toString() );
     }
 }

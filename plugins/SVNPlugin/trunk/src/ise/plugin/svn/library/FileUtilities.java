@@ -49,7 +49,7 @@ public class FileUtilities {
     * @param to             where to put it
     * @exception Exception  most likely an IOException
     */
-   public static void copy(File from, File to) throws Exception {
+   public static void copy(File from, File to) throws Exception {        // NOPMD
       copyFile(from, to);
    }
 
@@ -61,7 +61,7 @@ public class FileUtilities {
     * @param to             file to write
     * @exception Exception  most likely an IOException
     */
-   public static void copy(InputStream is, File to) throws Exception {
+   public static void copy(InputStream is, File to) throws Exception {        // NOPMD
       copyToFile(is, to);
    }
 
@@ -74,7 +74,7 @@ public class FileUtilities {
     * @param close          whether to close the input stream when done
     * @exception Exception  most likely an IOException
     */
-   public static void copy(InputStream is, boolean close, File to) throws Exception {
+   public static void copy(InputStream is, boolean close, File to) throws Exception {        // NOPMD
       copyToFile(is, close, to);
    }
 
@@ -86,7 +86,7 @@ public class FileUtilities {
     * @param os           stream to copy to
     * @exception Exception  most likely an IOException
     */
-   public static void copy(InputStream is, OutputStream os) throws Exception {
+   public static void copy(InputStream is, OutputStream os) throws Exception {        // NOPMD
       copyToStream(is, os);
    }
 
@@ -98,7 +98,7 @@ public class FileUtilities {
     * @param w             Writer to write to
     * @exception Exception  most likely an IOException
     */
-   public static void copy(Reader r, Writer w) throws Exception {
+   public static void copy(Reader r, Writer w) throws Exception {        // NOPMD
       copyToWriter(r, w);
    }
 
@@ -110,7 +110,7 @@ public class FileUtilities {
     * @param to             where to put it
     * @exception Exception  most likely an IOException
     */
-   public static void copyFile( File from, File to ) throws Exception {
+   public static void copyFile( File from, File to ) throws Exception {        // NOPMD
       if ( !from.exists() )
          return ;
       FileInputStream in = new FileInputStream( from );
@@ -136,7 +136,7 @@ public class FileUtilities {
     * @param to             file to write
     * @exception Exception  most likely an IOException
     */
-   public static void copyToFile( InputStream from, File to ) throws Exception {
+   public static void copyToFile( InputStream from, File to ) throws Exception {        // NOPMD
       copyToFile( from, true, to );
    }
 
@@ -149,7 +149,7 @@ public class FileUtilities {
     * @param close          whether to close the input stream when done
     * @exception Exception  most likely an IOException
     */
-   public static void copyToFile( InputStream from, boolean close, File to ) throws Exception {
+   public static void copyToFile( InputStream from, boolean close, File to ) throws Exception {        // NOPMD
       FileOutputStream out = new FileOutputStream( to );
       byte[] buffer = new byte[ BUFFER_SIZE ];
       int bytes_read;
@@ -173,7 +173,7 @@ public class FileUtilities {
     * @param to             file to write
     * @exception Exception  most likely an IOException
     */
-   public static void copyToStream( InputStream from, OutputStream to ) throws Exception {
+   public static void copyToStream( InputStream from, OutputStream to ) throws Exception {        // NOPMD
       byte[] buffer = new byte[ BUFFER_SIZE ];
       int bytes_read;
       while ( true ) {
@@ -194,7 +194,7 @@ public class FileUtilities {
     * @param to             Writer to write to
     * @exception Exception  most likely an IOException
     */
-   public static void copyToWriter( Reader from, Writer to ) throws Exception {
+   public static void copyToWriter( Reader from, Writer to ) throws Exception {        // NOPMD
       char[] buffer = new char[ BUFFER_SIZE ];
       int chars_read;
       while ( true ) {

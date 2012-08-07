@@ -114,7 +114,7 @@ public class Diff {
         if ( data.getRevision2() == null ) {
             data.setRevision2( SVNRevision.WORKING );
         }
-        if ( data.pathsAreURLs() ) {
+        if ( data.pathsAreURLs() ) {        // NOPMD
             // URL, rev, rev -- from SVN Browser, remote file against revision
             /// TODO:
             //client.doDiff( SVNURL.parseURIDecoded( paths.get( 0 ) ), SVNRevision.create( 0 ), data.getRevision1(), data.getRevision2(), false, false, diff_output );

@@ -140,7 +140,7 @@ public class Command
                 if (!visitor.process(line))
                     break;
             br.close();
-        } catch (IOException ioe) {
+        } catch (IOException ioe) {     // NOPMD
             // not gonna happen for StringReader.
         }
     }

@@ -152,7 +152,7 @@ public class IgnoreAction extends SVNAction {
                         set.add( filename );
                         StringBuffer sb = new StringBuffer();
                         for ( String i : set ) {
-                            sb.append( i ).append( "\n" );
+                            sb.append( i ).append( '\n' );
                         }
                         data.setValue( sb.toString() );
 

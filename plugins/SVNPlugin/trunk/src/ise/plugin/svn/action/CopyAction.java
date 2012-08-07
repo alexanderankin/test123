@@ -315,10 +315,10 @@ public class CopyAction extends SVNAction {
                     }
                 }
 
-                private void checkDestination( File destination ) throws Exception {
+                private void checkDestination( File destination ) throws Exception {        // NOPMD
                     // destination must be a directory and must exist
                     if ( !destination.exists() || !destination.isDirectory() ) {
-                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\n" + title + " destination must be an existing directory under version control." );
+                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\n" + title + " destination must be an existing directory under version control." );        // NOPMD
                     }
                 }
             }

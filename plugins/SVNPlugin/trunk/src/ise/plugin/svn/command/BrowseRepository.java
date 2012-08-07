@@ -334,7 +334,7 @@ public class BrowseRepository {
                     }
                 }
                 String filename = filepath.substring( 0, index ) + "-" + ( revision < 0L ? "HEAD" : String.valueOf( revision ) ) + filepath.substring( index );
-                filename = System.getProperty( "java.io.tmpdir" ) + "/" + filename;
+                filename = new StringBuilder(System.getProperty( "java.io.tmpdir" )).append('/').append(filename).toString();
                 outfile = new SVNFile( filename );
                 if ( outfile.exists() ) {
                     outfile.delete();

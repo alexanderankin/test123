@@ -142,97 +142,97 @@ public class Info {
 
     public void handleInfo( SVNInfo info, PrintStream out ) {
         StringBuffer sb = new StringBuffer(512 );
-        sb.append( "\n" );
+        sb.append( '\n' );
         if ( !info.isRemote() ) {
-            sb.append( "Path: " + SVNFormatUtil.formatPath( info.getFile() ) + "\n" );
+            sb.append( "Path: ").append(SVNFormatUtil.formatPath( info.getFile() )).append('\n' );
         } else if ( info.getPath() != null ) {
             String path = info.getPath();
             path = path.replace( '/', File.separatorChar );
-            sb.append( "Path: " + path + "\n" );
+            sb.append( "Path: ").append(path).append('\n');
         }
         if ( info.getKind() != SVNNodeKind.DIR ) {
             if ( info.isRemote() ) {
-                sb.append( "Name: " + SVNPathUtil.tail( info.getPath() ) + "\n" );
+                sb.append( "Name: ").append(SVNPathUtil.tail( info.getPath() )).append('\n');
             } else {
-                sb.append( "Name: " + info.getFile().getName() + "\n" );
+                sb.append( "Name: ").append(info.getFile().getName()).append('\n');
             }
         }
-        sb.append( "URL: " + info.getURL() + "\n" );
+        sb.append( "URL: ").append(info.getURL()).append('\n');
         if ( info.getRepositoryRootURL() != null ) {
-            sb.append( "Repository Root: " + info.getRepositoryRootURL() + "\n" );
+            sb.append( "Repository Root: ").append(info.getRepositoryRootURL()).append('\n');
         }
         if ( info.isRemote() && info.getRepositoryUUID() != null ) {
-            sb.append( "Repository UUID: " + info.getRepositoryUUID() + "\n" );
+            sb.append( "Repository UUID: ").append(info.getRepositoryUUID()).append('\n');
         }
         if ( info.getRevision() != null && info.getRevision().isValid() ) {
-            sb.append( "Revision: " + info.getRevision() + "\n" );
+            sb.append( "Revision: ").append(info.getRevision()).append('\n');
         }
         if ( info.getKind() == SVNNodeKind.DIR ) {
-            sb.append( "Node Kind: directory" + "\n" );
+            sb.append( "Node Kind: directory\n" );
         } else if ( info.getKind() == SVNNodeKind.FILE ) {
-            sb.append( "Node Kind: file" + "\n" );
+            sb.append( "Node Kind: file\n" );
         } else if ( info.getKind() == SVNNodeKind.NONE ) {
-            sb.append( "Node Kind: none" + "\n" );
+            sb.append( "Node Kind: none\n" );
         } else {
-            sb.append( "Node Kind: unknown" + "\n" );
+            sb.append( "Node Kind: unknown\n" );
         }
         if ( info.getSchedule() == null && !info.isRemote() ) {
-            sb.append( "Schedule: normal" + "\n" );
+            sb.append( "Schedule: normal\n" );
         } else if ( !info.isRemote() ) {
-            sb.append( "Schedule: " + info.getSchedule() + "\n" );
+            sb.append( "Schedule: ").append(info.getSchedule()).append('\n');
         }
         if ( info.getAuthor() != null ) {
-            sb.append( "Last Changed Author: " + info.getAuthor() + "\n" );
+            sb.append( "Last Changed Author: ").append(info.getAuthor()).append('\n');
         }
         if ( info.getCommittedRevision() != null && info.getCommittedRevision().getNumber() >= 0 ) {
-            sb.append( "Last Changed Rev: " + info.getCommittedRevision() + "\n" );
+            sb.append( "Last Changed Rev: ").append(info.getCommittedRevision()).append('\n');
         }
         if ( info.getCommittedDate() != null ) {
-            sb.append( "Last Changed Date: " + formatDate( info.getCommittedDate() ) + "\n" );
+            sb.append( "Last Changed Date: ").append(formatDate( info.getCommittedDate() )).append('\n');
         }
         if ( !info.isRemote() ) {
             if ( info.getTextTime() != null ) {
-                sb.append( "Text Last Updated: " + formatDate( info.getTextTime() ) + "\n" );
+                sb.append( "Text Last Updated: ").append(formatDate( info.getTextTime() )).append('\n' );
             }
             if ( info.getPropTime() != null ) {
-                sb.append( "Properties Last Updated: " + formatDate( info.getPropTime() ) + "\n" );
+                sb.append( "Properties Last Updated: ").append(formatDate( info.getPropTime() )).append( '\n' );
             }
             if ( info.getChecksum() != null ) {
-                sb.append( "Checksum: " + info.getChecksum() + "\n" );
+                sb.append( "Checksum: ").append(info.getChecksum()).append('\n');
             }
             if ( info.getCopyFromURL() != null ) {
-                sb.append( "Copied From URL: " + info.getCopyFromURL() + "\n" );
+                sb.append( "Copied From URL: ").append( info.getCopyFromURL() ).append( '\n' );
             }
             if ( info.getCopyFromRevision() != null && info.getCopyFromRevision().getNumber() >= 0 ) {
-                sb.append( "Copied From Rev: " + info.getCopyFromRevision() + "\n" );
+                sb.append( "Copied From Rev: " ).append( info.getCopyFromRevision() ).append( '\n' );
             }
             if ( info.getConflictOldFile() != null ) {
-                sb.append( "Conflict Previous Base File: " + info.getConflictOldFile().getName() + "\n" );
+                sb.append( "Conflict Previous Base File: " ).append( info.getConflictOldFile().getName() ).append( '\n' );
             }
             if ( info.getConflictWrkFile() != null ) {
-                sb.append( "Conflict Previous Working File: " + info.getConflictWrkFile().getName() + "\n" );
+                sb.append( "Conflict Previous Working File: " ).append( info.getConflictWrkFile().getName() ).append( '\n' );
             }
             if ( info.getConflictNewFile() != null ) {
-                sb.append( "Conflict Current Base File: " + info.getConflictNewFile().getName() + "\n" );
+                sb.append( "Conflict Current Base File: " ).append( info.getConflictNewFile().getName() ).append( '\n' );
             }
             if ( info.getPropConflictFile() != null ) {
-                sb.append( "Conflict Properties File: " + info.getPropConflictFile().getName() + "\n" );
+                sb.append( "Conflict Properties File: " ).append( info.getPropConflictFile().getName() ).append( '\n' );
             }
         }
         if ( info.getLock() != null ) {
             SVNLock lock = info.getLock();
-            sb.append( "Lock Token: " + lock.getID() + "\n" );
-            sb.append( "Lock Owner: " + lock.getOwner() + "\n" );
-            sb.append( "Lock Created: " + formatDate( lock.getCreationDate() ) + "\n" );
+            sb.append( "Lock Token: " ).append( lock.getID() );
+            sb.append( "\nLock Owner: " ).append( lock.getOwner() );
+            sb.append( "\nLock Created: " ).append( formatDate( lock.getCreationDate() ) ).append( '\n' );
             if ( lock.getComment() != null ) {
                 sb.append( "Lock Comment " );
                 int lineCount = getLineCount( lock.getComment() );
                 if ( lineCount == 1 ) {
                     sb.append( "(1 line)" );
                 } else {
-                    sb.append( "(" + lineCount + " lines)" );
+                    sb.append( '(' ).append( lineCount ).append( " lines)" );
                 }
-                sb.append( ":\n" + lock.getComment() + "\n" );
+                sb.append( ":\n" ).append( lock.getComment() ).append( '\n' );
             }
         }
         out.println( sb.toString() );
@@ -247,8 +247,7 @@ public class Info {
         int count = 1;
         BreakIterator boundary = BreakIterator.getLineInstance();
         boundary.setText( s );
-        int start = boundary.first();
-        for ( int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next() ) {
+        for ( int end = boundary.next(); end != BreakIterator.DONE; end = boundary.next() ) {
             ++count;
         }
         return count;

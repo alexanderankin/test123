@@ -38,7 +38,6 @@ import ise.plugin.svn.gui.LogDialog;
 import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.Logger;
 import ise.plugin.svn.library.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.io.*;
