@@ -65,6 +65,7 @@ public class Merge {
      * Fills a MergeResults based on the given MergeData.
      * @param data MergeData containing the information necessary to do a merge.
      */
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public MergeResults doMerge( MergeData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 
@@ -207,38 +208,38 @@ public class Merge {
                 StringBuffer sb = new StringBuffer();
                 if ( event.getNodeKind() != SVNNodeKind.DIR ) {
                     if ( event.getContentsStatus() == SVNStatusType.CHANGED ) {
-                        sb.append( "U" );
+                        sb.append( 'U' );
                         results.addUpdated( filename );
                     }
                     else if ( event.getContentsStatus() == SVNStatusType.CONFLICTED ) {
-                        sb.append( "C" );
+                        sb.append( 'C' );
                         results.addConflicted( filename );
                     }
                     else if ( event.getContentsStatus() == SVNStatusType.MERGED ) {
-                        sb.append( "G" );
+                        sb.append( 'G' );
                         results.addMerged( filename );
                     }
                     else {
-                        sb.append( " " );
+                        sb.append( ' ' );
                     }
                 }
                 else {
                     sb.append( ' ' );
                 }
                 if ( event.getPropertiesStatus() == SVNStatusType.CHANGED ) {
-                    sb.append( "U" );
+                    sb.append( 'U' );
                     results.addUpdated( filename );
                 }
                 else if ( event.getPropertiesStatus() == SVNStatusType.CONFLICTED ) {
-                    sb.append( "C" );
+                    sb.append( 'C' );
                     results.addConflicted( filename );
                 }
                 else if ( event.getPropertiesStatus() == SVNStatusType.MERGED ) {
-                    sb.append( "G" );
+                    sb.append( 'G' );
                     results.addMerged( filename );
                 }
                 else {
-                    sb.append( " " );
+                    sb.append( ' ' );
                 }
                 if ( sb.toString().trim().length() > 0 ) {
                     out.println( sb.toString() + "  " + filename );

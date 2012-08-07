@@ -55,6 +55,7 @@ public class Blame {
     /**
      * @return a list of revision and author, one entry per line of the file.
      */
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public BlameModel getBlame( LogData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 

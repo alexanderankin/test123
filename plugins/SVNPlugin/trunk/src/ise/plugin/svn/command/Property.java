@@ -132,6 +132,7 @@ public class Property {
      * Fills a map of Properties based on the given data.
      * @param data data object containing the information necessary to fetch properties.
      */
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public void doGetProperties( PropertyData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 

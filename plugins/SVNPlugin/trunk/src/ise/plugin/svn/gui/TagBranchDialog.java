@@ -205,6 +205,7 @@ public class TagBranchDialog extends JDialog {
         kl.makeColumnsSameWidth( 0, 1 );
 
         ok_btn.addActionListener( new ActionListener() {
+                    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
                     public void actionPerformed( ActionEvent ae ) {
                         try {
                             source = SVNURL.parseURIDecoded( toCopy );

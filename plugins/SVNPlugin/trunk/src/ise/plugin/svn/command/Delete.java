@@ -50,6 +50,7 @@ import ise.plugin.svn.SVNPlugin;
 
 public class Delete {
 
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public DeleteResults delete( DeleteData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 

@@ -192,6 +192,7 @@ public class SwitchDialog extends JDialog {
         kl.makeColumnsSameWidth( 0, 1 );
 
         ok_btn.addActionListener( new ActionListener() {
+                    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
                     public void actionPerformed( ActionEvent ae ) {
                         try {
                             from_url = SVNURL.parseURIDecoded( from.getText() );
