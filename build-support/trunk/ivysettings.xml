@@ -3,10 +3,10 @@
     <resolvers>
         <ibiblio name="maven" m2compatible="true" usepoms="false"/>
         <url name="jedit-plugins-resolver">
-            <artifact pattern="jar:http://${mirror}.dl.sourceforge.net/sourceforge/jedit-plugins/[artifact]-[revision]-bin.zip!/[artifact].jar" />
+            <artifact pattern="jar:http://${artifactPath}/[artifact]-[revision]-bin.zip!/[artifact].jar" />
         </url>
         <url name="jedit-plugins-zip-resolver">
-            <artifact pattern="http://${mirror}.dl.sourceforge.net/sourceforge/jedit-plugins/[artifact]-[revision]-bin.zip" />
+            <artifact pattern="http://${artifactPath}/[artifact]-[revision]-bin.zip" />
         </url>
     </resolvers>
     <modules>
