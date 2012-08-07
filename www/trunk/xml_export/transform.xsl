@@ -32,9 +32,10 @@
     
     <!-- {{{ local:include_status(current)
        modify this function to include also Closed tickets -->
+	<xsl:variable name="status_to_include" select="('Open','Pending')" as="xs:string*"/>
     <xsl:function name="local:include_status" as="xs:string*">
         <xsl:param name="current" as="node()"/>
-        <xsl:sequence select="$current/ancestor-or-self::tracker/statuses/status[name = ('Open','Pending')]/id"/>
+        <xsl:sequence select="$current/ancestor-or-self::tracker/statuses/status[name = $status_to_include]/id"/>
     </xsl:function><!-- }}} -->
     
     <!-- {{{ local:status_name(current,status_id) -->
@@ -78,6 +79,8 @@
             <body>
                 <h1>Export from SF @ <xsl:value-of select="local:format_date(../export_details/time)"/></h1>
     	
+                <xsl:call-template name="foreword"/>
+
                 <a name="top"/>
                 <h2>Contents</h2>
                 <ul>
@@ -165,18 +168,16 @@
                 <a style="margin:0 30% 0 30%; text-align:center; display:block" href="../index.html" title="index of all trackers">Global index</a><!-- fixme: how to get the base output url ? -->
                 <a id="online" href="{url}">See it online !</a><!-- }}} -->
 
-                <h1>
-                    <xsl:value-of select="name"/>
-                </h1>
-                <p>
-                    <xsl:value-of select="description"/>
-                </p>
+                <h1><xsl:value-of select="name"/> <span class="subtitle"> - <xsl:value-of select="description"/></span></h1>
             
+                <xsl:call-template name="foreword"/>
+
                 <xsl:apply-templates select="statuses" />
                 
                 <xsl:apply-templates select="tracker_items">
                 <xsl:with-param name="item-directory" select="''"/>
                 </xsl:apply-templates>
+
                 </body>
             </html>
             </xsl:result-document>
@@ -414,5 +415,16 @@
 
     </xsl:template><!-- }}} -->
     
+    <!-- {{{ foreword template
+      warning that it's not live
+      -->
+    <xsl:template name="foreword">
+		<p class="descr">This list reflects the state from <xsl:value-of select="local:format_date(ancestor-or-self::trackers/../export_details/time)"/>.<br/>
+		It is not the live jEdit trackers. For the live trackers, got to <a href="http://sourceforge.net/tracker/?group_id=588">the jEdit project on Sourceforge</a>.
+		<br/>
+		It doesn't contain every tickets, but only those in the state <xsl:value-of select="string-join($status_to_include,', ')"/>.
+		</p>
+    </xsl:template>
+    <!-- }}} -->
     <!-- }}} -->
 </xsl:stylesheet>
