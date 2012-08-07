@@ -172,6 +172,7 @@ public class ExportDialog extends JDialog {
         kl.makeColumnsSameWidth( 0, 1 );
 
         ok_btn.addActionListener( new ActionListener() {
+                    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
                     public void actionPerformed( ActionEvent ae ) {
                         if ( path.getText() == null || path.getText().length() == 0 ) {
                             JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Please_select_a_destination_directory_for_the_export.", "Please select a destination directory for the export."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );

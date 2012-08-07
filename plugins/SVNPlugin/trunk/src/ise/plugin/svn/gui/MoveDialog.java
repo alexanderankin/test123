@@ -331,6 +331,7 @@ public class MoveDialog extends JDialog {
         ok_btn.requestFocus();
     }
 
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public CopyData getData() {
         if ( canceled ) {
             return null;

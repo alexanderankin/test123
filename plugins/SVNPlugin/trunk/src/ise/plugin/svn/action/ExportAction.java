@@ -79,6 +79,7 @@ public class ExportAction extends SVNAction {
      * @param view the View in which to display results
      * @param sourceUrl what to export
      */
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public ExportAction( View view, String username, String password, List<String> sourceUrls ) {
         super( view, jEdit.getProperty( "ips.Export", "Export" ) );
         if ( sourceUrls == null )

@@ -328,6 +328,7 @@ public class CopyDialog extends JDialog {
         commentList.save();
     }
 
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public CopyData getData() {
         if ( canceled ) {
             return null;

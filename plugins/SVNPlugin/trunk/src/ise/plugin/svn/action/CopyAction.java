@@ -127,6 +127,7 @@ public class CopyAction extends SVNAction {
                 private int where2where;
                 private String errorMessage = null;
 
+                @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
                 @Override
                 public TreeMap<String, SVNCommitInfo> doInBackground() {
                     TreeMap<String, SVNCommitInfo> results = new TreeMap<String, SVNCommitInfo>();
@@ -208,7 +209,7 @@ public class CopyAction extends SVNAction {
                                     // the new file names of the copies
                                     if ( data.getDestinationFile().isDirectory() ) {
                                         String path = url.getPath();
-                                        String name = path.substring( path.lastIndexOf( "/" ) );
+                                        String name = path.substring( path.lastIndexOf( '/' ) );
                                         File f = new File( data.getDestinationFile(), name );
                                         destination = f.getAbsolutePath();
                                     }

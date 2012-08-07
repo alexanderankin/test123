@@ -51,9 +51,12 @@ public class Lock {
     public LockResults lock( CommitData data ) throws CommandInitializationException, SVNException {
         return doLock( data, true );
     }
+    
     public LockResults unlock( CommitData data ) throws CommandInitializationException, SVNException {
         return doLock( data, false );
     }
+    
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     private LockResults doLock( CommitData data, boolean lock ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 

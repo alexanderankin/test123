@@ -79,6 +79,7 @@ public class Info {
         return results;
     }
 
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public List<SVNInfo> getInfo( SVNData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 

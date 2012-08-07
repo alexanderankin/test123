@@ -293,6 +293,7 @@ public class LogResultsPanel extends JPanel {
     /**
      * Create the context menu.
      */
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     private JPopupMenu getPopupMenu( final LogTable table, final int col, final int row, final int x, final int y ) {
         final int[] rows = table.getSelectedRows();
         JPopupMenu popup = new JPopupMenu();

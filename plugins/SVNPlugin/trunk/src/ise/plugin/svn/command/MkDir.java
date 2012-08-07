@@ -47,6 +47,7 @@ import ise.plugin.svn.data.CommitInfo;
 
 public class MkDir {
 
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public CommitData mkdir( CommitData cd ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 

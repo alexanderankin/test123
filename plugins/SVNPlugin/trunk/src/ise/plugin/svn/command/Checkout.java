@@ -54,6 +54,7 @@ import org.gjt.sp.jedit.jEdit;
 
 public class Checkout {
 
+    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
     public long doCheckout( CheckoutData cd ) throws CommandInitializationException, SVNException {
         if ( cd == null ) {
             throw new CommandInitializationException( "CheckoutData is null." );
