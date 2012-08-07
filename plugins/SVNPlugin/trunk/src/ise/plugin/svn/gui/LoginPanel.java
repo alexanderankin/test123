@@ -39,9 +39,7 @@ import ise.plugin.svn.library.PasswordHandler;
 
 public class LoginPanel extends JPanel {
 
-    private JLabel username_label;
     private HistoryTextField username;
-    private JLabel password_label;
     private JPasswordField password;
 
     /**
@@ -69,13 +67,13 @@ public class LoginPanel extends JPanel {
         p = PasswordHandler.decryptPassword(p);
 
         // username field
-        username_label = new JLabel( jEdit.getProperty("ips.Username>", "Username:") );
+        JLabel username_label = new JLabel( jEdit.getProperty("ips.Username>", "Username:") );
         username = new HistoryTextField(USERNAME);
         username.setText(u);
         username.setColumns(30);
 
         // password field
-        password_label = new JLabel( jEdit.getProperty("ips.Password>", "Password:") );
+        JLabel password_label = new JLabel( jEdit.getProperty("ips.Password>", "Password:") );
         password = new JPasswordField( p, 30 );
 
         add( "0, 0, 1, 1, W,  , 3", username_label );

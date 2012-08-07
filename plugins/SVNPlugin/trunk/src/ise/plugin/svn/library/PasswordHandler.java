@@ -99,7 +99,7 @@ public class PasswordHandler {
      * @exception PasswordHandlerException  Description of Exception
      */
     public String encrypt(String password) throws PasswordHandlerException {
-        if (password == null || password.trim().length() == 0)
+        if (password == null || password.trim().length() == 0)        // NOPMD
             throw new IllegalArgumentException("Password cannot be null or empty.");
 
         try {

@@ -48,7 +48,6 @@ import javax.swing.text.DocumentFilter.FilterBypass;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
-import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.data.CommitData;
 import ise.plugin.svn.data.PropertyData;

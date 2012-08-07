@@ -51,20 +51,20 @@ public class MergeData extends SVNData implements Serializable {
     private boolean dryRun = true;
     private boolean ignoreAncestry = true;
 
+    
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append( "MergeData[" );
-        sb.append( "fromPath=" ).append( fromPath == null ? "null" : fromPath ).append( "," );
-        sb.append( "fromFile=" ).append( fromFile == null ? "null" : fromFile.getAbsolutePath() ).append( "," );
-        sb.append( "toPath=" ).append( toPath == null ? "null" : toPath ).append( "," );
-        sb.append( "toFile=" ).append( toFile == null ? "null" : toFile.getAbsolutePath() ).append( "," );
-        sb.append( "destFile=" ).append( destFile == null ? "null" : destFile.getAbsolutePath() ).append( "," );
-        sb.append( "startRevision=" ).append( startRevision == null ? "null" : startRevision.toString() ).append( "," );
-        sb.append( "endRevision=" ).append( endRevision == null ? "null" : endRevision.toString() ).append( "," );
-        sb.append( "recursive=" ).append( recursive ).append( "," );
-        sb.append( "force=" ).append( force ).append( "," );
-        sb.append( "dryRun=" ).append( dryRun ).append( "," );
-        sb.append( "ignoreAncestry=" ).append( ignoreAncestry ).append( "," );
+        StringBuffer sb = new StringBuffer(127);
+        sb.append( "MergeData[fromPath=" ).append( fromPath == null ? "null" : fromPath );
+        sb.append( ",fromFile=" ).append( fromFile == null ? "null" : fromFile.getAbsolutePath() );
+        sb.append( ",toPath=" ).append( toPath == null ? "null" : toPath );
+        sb.append( ",toFile=" ).append( toFile == null ? "null" : toFile.getAbsolutePath() );
+        sb.append( ",destFile=" ).append( destFile == null ? "null" : destFile.getAbsolutePath() );
+        sb.append( ",startRevision=" ).append( startRevision == null ? "null" : startRevision.toString() );
+        sb.append( ",endRevision=" ).append( endRevision == null ? "null" : endRevision.toString() );
+        sb.append( ",recursive=" ).append( recursive );
+        sb.append( ",force=" ).append( force );
+        sb.append( ",dryRun=" ).append( dryRun );
+        sb.append( ",ignoreAncestry=" ).append( ignoreAncestry ).append(']');
         return sb.toString();
     }
 
@@ -76,7 +76,7 @@ public class MergeData extends SVNData implements Serializable {
             return jEdit.getProperty("ips.Invalid_start_revision.", "Invalid start revision.");
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(62);
         sb.append( "svn merge " );
 
         // flags
@@ -100,12 +100,12 @@ public class MergeData extends SVNData implements Serializable {
             // svn merge [-c M | -r N:M] SOURCE WCPATH
             if ( startRevision != null && startRevision.equals( endRevision ) ) {
                 String sr = startRevision.getNumber() == -1 ? "HEAD" : String.valueOf( startRevision.getNumber() );
-                sb.append( "-c " ).append( sr ).append( " " );
+                sb.append( "-c " ).append( sr ).append( ' ' );
             }
             else if ( startRevision != null && endRevision != null ) {
                 String sr = startRevision.getNumber() == -1 ? "HEAD" : String.valueOf( startRevision.getNumber() );
                 String er = endRevision.getNumber() == -1 ? "HEAD" : String.valueOf( endRevision.getNumber() );
-                sb.append( "-r " ).append( sr ).append( ":" ).append( er ).append( " " );
+                sb.append( "-r " ).append( sr ).append( ':' ).append( er ).append( ' ' );
             }
             if ( toFile != null ) {
                 sb.append( toFile );
@@ -113,7 +113,7 @@ public class MergeData extends SVNData implements Serializable {
             else {
                 sb.append( toPath );
             }
-            sb.append( " " );
+            sb.append( ' ' );
             if ( destFile == null ) {
                 return jEdit.getProperty("ips.Invalid_working_copy.", "Invalid working copy.");
             }
@@ -130,10 +130,10 @@ public class MergeData extends SVNData implements Serializable {
             if ( endRevision == null ) {
                 return jEdit.getProperty("ips.Invalid_end_revision.", "Invalid end revision.");
             }
-            sb.append( fromFile == null ? fromPath : fromFile.getAbsolutePath() ).append( "@" );
-            sb.append( startRevision.getNumber() ).append( " " );
-            sb.append( toFile == null ? toPath : toFile.getAbsolutePath() ).append( "@" );
-            sb.append( endRevision.getNumber() ).append( " " );
+            sb.append( fromFile == null ? fromPath : fromFile.getAbsolutePath() ).append( '@' );
+            sb.append( startRevision.getNumber() ).append( ' ' );
+            sb.append( toFile == null ? toPath : toFile.getAbsolutePath() ).append( '@' );
+            sb.append( endRevision.getNumber() ).append( ' ' );
             if ( destFile == null ) {
                 return jEdit.getProperty("ips.Invalid_working_copy.", "Invalid working copy.");
             }

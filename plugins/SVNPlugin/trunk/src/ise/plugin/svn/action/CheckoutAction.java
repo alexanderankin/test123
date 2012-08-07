@@ -32,18 +32,13 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.*;
-import projectviewer.ProjectManager;
-import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectOptions;
 import projectviewer.config.VersionControlService;
-import projectviewer.importer.RootImporter;
 import projectviewer.vpt.*;
 import ise.plugin.svn.gui.CheckoutDialog;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.data.*;
-import ise.plugin.svn.pv.VersionControlState;
 import ise.plugin.svn.*;
 import java.util.logging.*;
 import ise.plugin.svn.command.*;
@@ -181,7 +176,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         // checkout as the default project name.  The UI will let the user
         // change it if they want.
         String path = data.getPaths().get( 0 );
-        int index = path.lastIndexOf( "/" );
+        int index = path.lastIndexOf( '/' );
         index = index == -1 ? 0 : index + 1;
         String project_name = path.substring( index );
         final VPTProject project = new VPTProject( project_name );

@@ -50,7 +50,7 @@ import ise.plugin.svn.gui.component.BlameModel;
 public class Blame {
 
     private ArrayList<String> results = new ArrayList<String>();
-    private PrintStream out = null;
+    private PrintStream out = null;        // NOPMD
 
     /**
      * @return a list of revision and author, one entry per line of the file.

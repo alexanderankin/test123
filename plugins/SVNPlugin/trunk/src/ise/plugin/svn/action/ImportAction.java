@@ -54,8 +54,6 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class ImportAction extends SVNAction {
 
-    private ImportDialog dialog = null;
-
     /**
      * @param view the View in which to display results
      * @param username the username for the svn repository
@@ -67,7 +65,7 @@ public class ImportAction extends SVNAction {
 
 
     public void actionPerformed( ActionEvent ae ) {
-        dialog = new ImportDialog( getView() );
+        ImportDialog dialog = new ImportDialog( getView() );
         GUIUtils.center( getView(), dialog );
         dialog.setVisible( true );
         final CopyData data = dialog.getData();

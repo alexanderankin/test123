@@ -35,7 +35,6 @@ import java.util.logging.*;
 import projectviewer.vpt.VPTNode;
 
 import ise.plugin.svn.action.ResolvedAction;
-import ise.plugin.svn.library.SwingWorker;
 
 /**
  * Action for ProjectViewer's context menu to execute an svn resolve.

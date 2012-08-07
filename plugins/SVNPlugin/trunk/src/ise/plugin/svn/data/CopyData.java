@@ -72,9 +72,9 @@ public class CopyData extends SVNData implements Serializable {
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(62);
         sb.append( title );
-        sb.append( "[" );
+        sb.append( '[' );
         if ( sourceFile != null ) {
             sb.append( "sourceFile:" ).append( sourceFile ).append( ", " );
         }
@@ -93,10 +93,10 @@ public class CopyData extends SVNData implements Serializable {
                 sb.append( url.toString() ).append( ", " );
             }
         }
-        sb.append( "destinationFile:" ).append( destinationFile ).append( ", " );
-        sb.append( "destinationURL:" ).append( destinationURL ).append( ", " );
-        sb.append( "isMove:" ).append( isMove ).append( ", " );
-        sb.append( "message:" ).append( message ).append( "]" );
+        sb.append( "destinationFile:" ).append( destinationFile );
+        sb.append( ", destinationURL:" ).append( destinationURL );    
+        sb.append( ", isMove:" ).append( isMove );
+        sb.append( ", message:" ).append( message ).append( ']' );
         return sb.toString();
     }
 

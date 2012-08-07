@@ -88,7 +88,7 @@ public class DiffData extends SVNData {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(40);
         sb.append( "DiffData[\n" );
         List paths = getPaths();
         if ( paths != null && paths.size() > 0 ) {

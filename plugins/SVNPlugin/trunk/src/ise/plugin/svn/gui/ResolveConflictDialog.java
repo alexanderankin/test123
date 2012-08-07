@@ -51,7 +51,6 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 public class ResolveConflictDialog extends JDialog implements EBComponent {
-    private ButtonGroup bg = null;
     private JRadioButton merge_rb = new JRadioButton( jEdit.getProperty( "ips.Do_manual_merge_with_JDiff", "Do manual merge with JDiff" ) );
     private JRadioButton keep_mine_rb = new JRadioButton( jEdit.getProperty( "ips.Keep_mine", "Keep mine" ) );
     private JRadioButton keep_theirs_rb = new JRadioButton( jEdit.getProperty( "ips.Use_theirs", "Use theirs" ) );
@@ -140,7 +139,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
         contents.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // conflict choices
-        bg = new ButtonGroup();
+        ButtonGroup bg = new ButtonGroup();
         bg.add( merge_rb );
         bg.add( keep_mine_rb );
         bg.add( keep_theirs_rb );

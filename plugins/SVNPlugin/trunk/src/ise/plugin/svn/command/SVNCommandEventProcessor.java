@@ -140,27 +140,27 @@ public class SVNCommandEventProcessor implements ISVNEventHandler {
             StringBuffer sb = new StringBuffer();
             if (event.getNodeKind() != SVNNodeKind.DIR) {
                 if (event.getContentsStatus() == SVNStatusType.CHANGED) {
-                    sb.append("U");
+                    sb.append('U');
                 } else if (event.getContentsStatus() == SVNStatusType.CONFLICTED) {
-                    sb.append("C");
+                    sb.append('C');
                 } else if (event.getContentsStatus() == SVNStatusType.MERGED) {
-                    sb.append("G");
+                    sb.append('G');
                 } else {
-                    sb.append(" ");
+                    sb.append(' ');
                 }
             } else {
                 sb.append(' ');
             }
             if (event.getPropertiesStatus() == SVNStatusType.CHANGED) {
-                sb.append("U");
+                sb.append('U');
             } else if (event.getPropertiesStatus() == SVNStatusType.CONFLICTED) {
-                sb.append("C");
+                sb.append('C');
             } else if (event.getPropertiesStatus() == SVNStatusType.MERGED) {
-                sb.append("G");
+                sb.append('G');
             } else {
-                sb.append(" ");
+                sb.append(' ');
             }
-            if (sb.toString().trim().length() != 0) {
+            if (sb.toString().trim().length() != 0) {        // NOPMD
                 if (myIsExternal) {
                     myIsExternalChanged = true;
                 } else {
@@ -168,9 +168,9 @@ public class SVNCommandEventProcessor implements ISVNEventHandler {
                 }
             }
             if (event.getLockStatus() == SVNStatusType.LOCK_UNLOCKED) {
-                sb.append("B");
+                sb.append('B');
             } else {
-                sb.append(" ");
+                sb.append(' ');
             }
             if (sb.toString().trim().length() > 0) {
                 myPrintStream.println( sb.toString() + "  " + SVNFormatUtil.formatPath(event.getFile()));

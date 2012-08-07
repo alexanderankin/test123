@@ -105,8 +105,7 @@ public class CommitAction extends SVNAction {
                 for ( String path : possible_tags ) {
                     msg.append( path ).append( '\n' );
                 }
-                msg.append( '\n' );
-                msg.append( "Are you sure you want to commit these files?" );
+                msg.append( "\nAre you sure you want to commit these files?" );
                 int no = JOptionPane.showConfirmDialog( getView(), msg, jEdit.getProperty( "ips.Confirm_Commit", "Confirm Commit" ), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
                 if ( no == JOptionPane.NO_OPTION ) {
                     return ;

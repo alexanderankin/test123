@@ -33,7 +33,6 @@ import javax.swing.tree.TreePath;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.data.*;
-import ise.plugin.svn.library.Logger;
 
 import java.util.*;
 

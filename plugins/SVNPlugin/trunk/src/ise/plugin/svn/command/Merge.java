@@ -241,7 +241,7 @@ public class Merge {
                 else {
                     sb.append( ' ' );
                 }
-                if ( sb.toString().trim().length() > 0 ) {
+                if ( sb.toString().trim().length() > 0 ) {      // NOPMD
                     out.println( sb.toString() + "  " + filename );
                 }
             }

@@ -34,7 +34,6 @@ import java.util.*;
 import java.util.logging.*;
 import projectviewer.vpt.VPTNode;
 
-import ise.plugin.svn.library.SwingWorker;
 
 import ise.plugin.svn.action.RevertAction;
 

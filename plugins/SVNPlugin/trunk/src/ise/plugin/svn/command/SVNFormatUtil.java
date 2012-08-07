@@ -77,10 +77,12 @@ public class SVNFormatUtil {
         return formatted.toString();
     }
     
-    /**
+    /**
+
      * @param file Path relative to the program home directory, or absolute path.
      * @return Formatted path or null if <code>file</code> is null.
-     */
+     */
+
     public static String formatPath(File file) {
         if (file == null) {
             return null;   
@@ -99,7 +101,7 @@ public class SVNFormatUtil {
         // remove all "./"
         path = condensePath(path);
         path = path.replace('/', File.separatorChar);
-        if (path.trim().length() == 0) {
+        if (path.trim().length() == 0) {        // NOPMD
             path = ".";
         }
         return path;
