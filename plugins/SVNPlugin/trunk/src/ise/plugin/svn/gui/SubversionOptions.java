@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
 import ise.java.awt.KappaLayout;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
+import org.tmatesoft.svn.core.internal.wc17.db.ISVNWCDb;
 
 /**
  * Plugin option pane.
@@ -45,7 +46,6 @@ public class SubversionOptions implements OptionPane {
     private JPanel panel = null;
     private JCheckBox useTsvnTemplate = null;
     private JSpinner maxLogs = null;
-    private JLabel fileformat_label;
     private JComboBox fileformat;
 
     public SubversionOptions( ) { }
@@ -72,11 +72,11 @@ public class SubversionOptions implements OptionPane {
 
         JLabel maxLogsLabel = new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) );
 
-        fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6"} );
+        JLabel fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7"} );
         fileformat.setEditable( false );
         String wc_item;
-        int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
+        int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_16 );
         switch ( default_wc_format ) {
             case SVNAdminAreaFactory.WC_FORMAT_13:
                 wc_item = "1.3";
@@ -87,6 +87,9 @@ public class SubversionOptions implements OptionPane {
             case SVNAdminAreaFactory.WC_FORMAT_15:
                 wc_item = "1.5";
                 break;
+            case ISVNWCDb.WC_FORMAT_17:
+                wc_item = "1.7";
+                break;                
             case SVNAdminAreaFactory.WC_FORMAT_16:
             default:
                 wc_item = "1.6";
@@ -119,11 +122,14 @@ public class SubversionOptions implements OptionPane {
         else if ( new_wc_format.equals( "1.4" ) ) {
             wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
         }
-        else if ( new_wc_format.equals( "1.6" ) ) {
-            wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
+        else if ( new_wc_format.equals( "1.5" ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
+        }
+        else if ( new_wc_format.equals("1.7")) {
+            wc_format = ISVNWCDb.WC_FORMAT_17;
         }
         else {
-            wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
         }
         jEdit.setIntegerProperty( "ise.plugin.svn.defaultWCVersion", wc_format );
     }
