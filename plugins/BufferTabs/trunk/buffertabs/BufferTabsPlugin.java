@@ -1,5 +1,7 @@
 /*
  * BufferTabsPlugin.java - Main class of the BufferTabs plugin for jEdit.
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
  * Copyright (C) 1999, 2000 Jason Ginchereau
  * Copyright (C) 2000, 2001, 2002, 2003 Andre Kaplan
  * Copyright (C) 2003 Kris Kopicki

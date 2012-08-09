@@ -1,5 +1,7 @@
 /*
  * BufferTabsOptionPane.java - Option pane for BufferTabs
+* :tabSize=4:indentSize=4:noTabs=false:
+* :folding=explicit:collapseFolds=1:
  * Copyright (C) 1999, 2000 Jason Ginchereau, Andre Kaplan
  * Copyright (C) 2000, 2001, 2002, 2003 Andre Kaplan
  * Copyright (C) 2003 Chris Samuels
