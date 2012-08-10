@@ -27,43 +27,46 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     private ClangCompletionCandidate()
     {
     	super("");
-    	renderer = new ClangCompletionRenderer();
+    	renderer = new DefaultListCellRenderer();
     }
-    
+    /*
     @Override
     public ListCellRenderer getCellRenderer()
     {
         return renderer;
     }
-    
+	*/    
     public static ClangCompletionCandidate parse(String clangOutput)
     {
     	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
     	String[] splits = clangOutput.split(":");
-    	if(splits.length < 2)
+    	if(splits.length < 3)
     	{
     		return null;
     	}
     	
+    	/*
+    	//delete regexp to speed up
     	if(!splits[0].matches("\\s*COMPLETION\\s*"))
     	{
     		return null;
     	}
+    	*/
     	
     	candidate.description = splits[1].trim();
     	//System.out.println(splits[1].trim());
-    	
+    	/*  ignore labeltext for now 
     	if(splits.length>2)
     	{
     		//System.out.println(splits[2]);
     		candidate.labelText = splits[2];
     	}
-    	
+    	*/
     	return candidate;
     }
     
     @Override
-    public String getDescription ()
+    public String getDescription()
     {
         return description;
     }
@@ -71,6 +74,8 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public boolean isValid (View view)
     {
+    	return true;
+    	/*
         String prefix = CompletionUtil.getCompletionPrefix(view);
         if (prefix == null || prefix.length() == 0) 
         {
@@ -86,14 +91,15 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
         {
         	return false;
         }
+        */
     }
     
     @Override
     public String getLabelText()
     {
-        return labelText;
+        return description;
     }
-    
+    /*
     @Override
     public boolean equals(Object obj)
     {
@@ -105,4 +111,5 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     	}
     	return false;
     }
+    */
 }

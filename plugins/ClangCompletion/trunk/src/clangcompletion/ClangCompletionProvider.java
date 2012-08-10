@@ -58,6 +58,13 @@ public class ClangCompletionProvider implements CompletionProvider
 	@Override
 	public List<CompletionCandidate> getCompletionCandidates(View view)
 	{
+		String prefix = CompletionUtil.getCompletionPrefix(view);
+		if(prefix == null || prefix.trim().length() == 0)
+		{
+			return new ArrayList<CompletionCandidate>();
+		}
+		prefix = prefix.toLowerCase();
+		
 		Buffer buffer = view.getBuffer(); 
 		buffer.autosave();
 		
@@ -78,6 +85,11 @@ public class ClangCompletionProvider implements CompletionProvider
 		}else //if(buffer.getMode().equals(jEdit.getMode("c++")))
 		{
 			xparam = "c++";
+		}
+		
+		if(buffer.getFile().getName().endsWith("hpp") || buffer.getFile().getName().endsWith("h"))
+		{
+			xparam += "-header";
 		}
 		
 		String path = buffer.getPath();
@@ -164,23 +176,17 @@ public class ClangCompletionProvider implements CompletionProvider
 			while(input != null)
 			{
 				ClangCompletionCandidate candidate = ClangCompletionCandidate.parse(input);
-				if(candidate != null && !codeCompletions.contains(candidate))
+				
+				if(candidate != null && candidate.getDescription().toLowerCase().startsWith(prefix))
 				{
+					//if(candidate != null && !codeCompletions.contains(candidate) )
 					codeCompletions.add(candidate );
+					
 				}
 				input = reader.readLine();
 			}
 			
-			/*
-			reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-			input = reader.readLine();
-			while(input!=null)
-			{
-				System.out.println("stderr: " + input);
-				parseError(input);
-				input = reader.readLine();
-			}
-			*/
+			
 		}catch(IOException ex)
 		{
 			System.out.println(ex);
