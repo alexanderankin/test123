@@ -38,9 +38,10 @@ public class JavaScriptHandler extends Handler {
 		return path.endsWith(".js");
 	}//}}}
 
-	//{{{ creatMacro method
+	//{{{ createMacro method
 	public Macro createMacro(String macroName, String path) {
-		String name = path.substring(0, path.length() - 3);
+		// Remove '.js'
+		String name = macroName.substring(0, macroName.length() - 3);
 		return new Macro(this,
 						name,
 						Macro.macroNameToLabel(name),
