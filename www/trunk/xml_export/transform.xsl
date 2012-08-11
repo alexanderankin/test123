@@ -81,6 +81,10 @@
     	
                 <xsl:call-template name="foreword"/>
 
+
+                <p class="descr">You can grab
+                an archived version of all these pages <a href="Export.tgz">here</a>.</p>
+
                 <a name="top"/>
                 <h2>Contents</h2>
                 <ul>
@@ -420,7 +424,7 @@
       -->
     <xsl:template name="foreword">
 		<p class="descr">This list reflects the state from <xsl:value-of select="local:format_date(ancestor-or-self::trackers/../export_details/time)"/>.<br/>
-		It is not the live jEdit trackers. For the live trackers, got to <a href="http://sourceforge.net/tracker/?group_id=588">the jEdit project on Sourceforge</a>.
+		It is not the live jEdit trackers. For the live trackers, go to <a href="http://sourceforge.net/tracker/?group_id=588">the jEdit project on Sourceforge</a>.
 		<br/>
 		It doesn't contain every tickets, but only those in the state <xsl:value-of select="string-join($status_to_include,', ')"/>.
 		</p>
