@@ -223,28 +223,5 @@ public class ClangCompletionProvider implements CompletionProvider
 		return completionModes;
 	}
 	
-	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):\\s*(.+)"); 
-	
-	private void parseError(String clangOutput)
-	{
-		//System.out.println("error: " + clangOutput);
-		final Matcher matcher = errorPattern.matcher(clangOutput);
-		if(matcher.find() && matcher.groupCount() >= 3)
-		{
-			SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						ClangCompletionPlugin.errorSrc.addError(new DefaultError(ClangCompletionPlugin.errorSrc,
-							ErrorSource.ERROR, 
-							matcher.group(1), 
-							Integer.parseInt(matcher.group(2)), 
-							0,
-							0,
-							matcher.group(3) ));
-					}
-				});
-		}
-	}
 	
 }
