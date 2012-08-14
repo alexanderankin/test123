@@ -98,6 +98,18 @@ public class ClangCompletionProvider implements CompletionProvider
 			path = buffer.getAutosaveFile().getPath();
 		}
 		
+		ArrayList<String> args = new ArrayList<String>();
+		args.add("clang");
+		args.add("-cc1");    
+		args.add("-w");
+		args.add("-fsyntax-only");
+		args.add("-fno-caret-diagnostics");
+		args.add("-fdiagnostics-print-source-range-info");
+		args.add("-code-completion-at="+path+":"+line+":"+column);
+		args.add(path);
+		args.add("-x");
+		args.add(xparam);
+		/*
 		StringBuilder cmd = new StringBuilder("clang -cc1 -w -fsyntax-only -fno-caret-diagnostics -fdiagnostics-print-source-range-info -code-completion-at=");
 		cmd.append(path);
 		cmd.append(":" );
@@ -108,7 +120,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		cmd.append(path );
 		cmd.append(" -x " );
 		cmd.append(xparam );
-		
+		*/
 		VPTProject project = ProjectViewer.getActiveProject(view);
 		HashMap<String, Vector<String>> properties = ClangCompletionConfiguration.getProperties(project.getName());
 		Vector<String> includes = properties.get(ClangCompletionConfiguration.INCLUDES);
@@ -116,9 +128,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		{
 			for(int i = 0; i < includes.size(); i++)
 			{
-				cmd.append(" -I\"" );
-				cmd.append(includes.get(i));
-				cmd.append("\"" );
+				args.add("-I"  +includes.get(i) );
 			}
 		}
 		
@@ -127,9 +137,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		{
 			for(int i = 0; i < definitions.size(); i++)
 			{
-				cmd.append(" -D\"" );
-				cmd.append(definitions.get(i));
-				cmd.append("\"" );
+				args.add("-D"  +definitions.get(i) );
 			}
 		}
 		
@@ -138,16 +146,24 @@ public class ClangCompletionProvider implements CompletionProvider
 		{
 			for(int i = 0; i < arguments.size(); i++)
 			{
-				cmd.append(" " );
-				cmd.append(arguments.get(i));
+				args.add(arguments.get(i));
 			}
 		}
 		
 		List<CompletionCandidate> codeCompletions = new ArrayList<CompletionCandidate>();
+		
+		StringBuilder cmd = new StringBuilder();
+		for(int i = 0; i < args.size();i++)
+		{
+			cmd.append(args.get(i));
+		}
 		System.out.println(cmd);
+		
 		try
 		{
-			final Process process = Runtime.getRuntime().exec(cmd.toString());
+			String [] argsArr = new String[args.size()]; 
+			args.toArray(argsArr);
+			final Process process = Runtime.getRuntime().exec(argsArr);
 			
 			new Thread()
 			{
