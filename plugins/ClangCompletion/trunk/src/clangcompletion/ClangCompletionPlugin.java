@@ -10,6 +10,7 @@ public class ClangCompletionPlugin extends EditPlugin
 	public static  DefaultErrorSource errorSrc;
 	public void start()
 	{
+		new BufferWatcher();
 		if(errorSrc == null)
 		{
 			errorSrc = new DefaultErrorSource(this.getClass().getName());
