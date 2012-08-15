@@ -13,22 +13,16 @@
 */
 package xml;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
 import org.fest.swing.finder.*;
 import org.fest.swing.edt.*;
 import org.fest.swing.timing.*;
 import org.fest.swing.core.matcher.*;
 
 import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
 
 import static xml.XMLTestUtils.*;
 import static org.gjt.sp.jedit.testframework.EBFixture.*;
@@ -38,8 +32,6 @@ import static org.gjt.sp.jedit.testframework.TestUtils.*;
 // }}}
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFS;
@@ -47,10 +39,6 @@ import org.gjt.sp.jedit.io.VFS;
 import java.io.*;
 import java.net.*;
 import javax.swing.text.JTextComponent;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
 
 /**
 * Various tests for the xml-prompt-schema and xml-prompt-typeid actions
@@ -90,7 +78,7 @@ public class SchemaMappingManagerTest {
 		
 		dialogF.textBox("path").requireEditable().requireText(MiscUtilities.getParentOfPath(buf.toString()));
 		dialogF.checkBox("relative").requireEnabled().requireNotSelected();
-		dialogF.textBox("relative_path").requireEnabled().requireText(new File(MiscUtilities.getParentOfPath(buf.toString())).toURL().toString());
+		dialogF.textBox("relative_path").requireEnabled().requireText(new File(MiscUtilities.getParentOfPath(buf.toString())).toURI().toURL().toString());
 		
 		File schema = new File(testData.getPath(),"relax_ng/actions.rng");
 		
@@ -109,8 +97,8 @@ public class SchemaMappingManagerTest {
 			browseDialog.table("file").cell(schema.getName()));
 		browseDialog.button("ok").click();
 		dialogF.textBox("path").requireText(schema.toString());
-		dialogF.textBox("relative_path").requireText(schema.toURL().toString());
-		assertEquals(schema.toURL().toString(),dialog.schemaURL.toString());
+		dialogF.textBox("relative_path").requireText(schema.toURI().toURL().toString());
+		assertEquals(schema.toURI().toURL().toString(),dialog.schemaURL.toString());
 		
 		//make the path relative
 		dialogF.checkBox("relative").click();
@@ -176,7 +164,7 @@ public class SchemaMappingManagerTest {
 		
 		assertThat(new File(relax_ng,"schemas.xml")).exists();
 
-		assertEquals(new File(relax_ng,"actions.rng").toURL().toString(),
+		assertEquals(new File(relax_ng,"actions.rng").toURI().toURL().toString(),
 			buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP));
 	}
 

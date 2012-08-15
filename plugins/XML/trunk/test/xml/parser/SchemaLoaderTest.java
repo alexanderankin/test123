@@ -14,32 +14,28 @@
 package xml.parser;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-import static xml.XMLTestUtils.*;
-
-// }}}
-
-import java.io.*;
-import java.net.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
 import javax.xml.validation.ValidatorHandler;
+
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import com.thaiopensource.xml.sax.DraconianErrorHandler;
+// }}}
 
 
 /**
@@ -87,7 +83,7 @@ public class SchemaLoaderTest{
 			
 		// test that it accepts valid content
     	File goodActions = new File(testData,"relax_ng/valid_actions.xml");
-		reader.parse(new InputSource(goodActions.toURL().toString()));
+		reader.parse(new InputSource(goodActions.toURI().toURL().toString()));
 
 		
 		// test that it throws errors 
@@ -101,7 +97,7 @@ public class SchemaLoaderTest{
 		verifierFilter.setErrorHandler(new DraconianErrorHandler());
     	
 		try{
-			reader.parse(new InputSource(badActions.toURL().toString()));
+			reader.parse(new InputSource(badActions.toURI().toURL().toString()));
 			fail("should throw an exception");
 		}catch(SAXParseException spe){
 			assertNotNull(spe.getMessage());
@@ -134,7 +130,7 @@ public class SchemaLoaderTest{
 			
 		// test that it accepts valid content
     	File goodActions = new File(testData,"relax_ng/valid_actions.xml");
-		reader.parse(new InputSource(goodActions.toURL().toString()));
+		reader.parse(new InputSource(goodActions.toURI().toURL().toString()));
 
 		
 		// test that it throws errors 
@@ -148,7 +144,7 @@ public class SchemaLoaderTest{
 		verifierFilter.setErrorHandler(new DraconianErrorHandler());
     	
 		try{
-			reader.parse(new InputSource(badActions.toURL().toString()));
+			reader.parse(new InputSource(badActions.toURI().toURL().toString()));
 			fail("should throw an exception");
 		}catch(SAXParseException spe){
 			assertNotNull(spe.getMessage());
@@ -159,7 +155,7 @@ public class SchemaLoaderTest{
     @Test
     public void testNoSchemaThere(){
     	try{
-			ValidatorHandler verifierFilter = l.loadJaxpGrammar(
+			l.loadJaxpGrammar(
 					null,
 					"file:/not_there",
 					new DraconianErrorHandler(),
@@ -177,7 +173,7 @@ public class SchemaLoaderTest{
    public void testBrokenSchema(){
     	File brokenSchema = new File(testData,"dir with space/actions.xsd");
     	try{
-			ValidatorHandler verifierFilter = l.loadJaxpGrammar(
+			l.loadJaxpGrammar(
 					null,
 					brokenSchema.toURI().toString(),
 					new DraconianErrorHandler(),

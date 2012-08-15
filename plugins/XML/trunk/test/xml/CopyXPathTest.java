@@ -14,39 +14,30 @@
 package xml;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.gjt.sp.jedit.testframework.EBFixture.doInBetween;
+import static org.gjt.sp.jedit.testframework.EBFixture.messageOfClassCondition;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static xml.XMLTestUtils.gotoPositionAndWait;
+import static xml.XMLTestUtils.parseAndWait;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.awt.datatransfer.StringSelection;
+import java.io.File;
+import java.io.IOException;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static xml.XMLTestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.TestUtils;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.Registers;
-
-import java.io.*;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.TestUtils.ClickT;
+import org.gjt.sp.jedit.testframework.TestUtils.Option;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+// }}}
 
 /**
  * Various tests for the XMLActions actions
@@ -84,33 +75,33 @@ public class CopyXPathTest{
     		messageOfClassCondition(sidekick.SideKickUpdate.class),
     		10000);
 		
-		Registers.getRegister('$').setValue("NULL");
+		Registers.getRegister('$').setTransferable(new StringSelection("NULL"));
 		
 		// before the root element
 		gotoPositionAndWait(22);
 		
 		action("xml-copy-xpath");
-		assertEquals("NULL",Registers.getRegister('$').toString());
+		assertEquals("NULL",RegisterToString());
 
 		// go into the ACTIONS element
 		gotoPositionAndWait(151);
 		
 		action("xml-copy-xpath");
-		assertEquals("/ACTIONS",Registers.getRegister('$').toString());
+		assertEquals("/ACTIONS",RegisterToString());
 
 		// go into the second ACTION element
 		gotoPositionAndWait(325);
 		
 		action("xml-copy-xpath");
-		assertEquals("/ACTIONS/ACTION[2]",Registers.getRegister('$').toString());
+		assertEquals("/ACTIONS/ACTION[2]",RegisterToString());
 
-		Registers.getRegister('$').setValue("NULL");
+		Registers.getRegister('$').setTransferable(new StringSelection("NULL"));
 
 		// after the closing tag of the root element
 		gotoPositionAndWait(431);
 
 		action("xml-copy-xpath");
-		assertEquals("NULL",Registers.getRegister('$').toString());
+		assertEquals("NULL",RegisterToString());
 	}
 
 	/**
@@ -138,7 +129,7 @@ public class CopyXPathTest{
 					action("xml-copy-xpath");
 				}
 		});
-		assertEquals("/a:document/b:created[1]",Registers.getRegister('$').toString());
+		assertEquals("/a:document/b:created[1]",RegisterToString());
 		
 		
 		// go into the first trap
@@ -149,8 +140,8 @@ public class CopyXPathTest{
 					action("xml-copy-xpath");
 				}
 		});
-		assertTrue(Registers.getRegister('$').toString().startsWith("/a:document/"));
-		assertNotSame("/a:document/a:trap[1]",Registers.getRegister('$').toString());
+		assertTrue(RegisterToString().startsWith("/a:document/"));
+		assertNotSame("/a:document/a:trap[1]",RegisterToString());
 
 		// go into the 2nd trap
 		gotoPositionAndWait(774);
@@ -160,7 +151,7 @@ public class CopyXPathTest{
 					action("xml-copy-xpath");
 				}
 		});
-		assertEquals("/a:document/a:trap[1]",Registers.getRegister('$').toString());
+		assertEquals("/a:document/a:trap[1]",RegisterToString());
 		
 		// go into the 3rd trap
 		gotoPositionAndWait(1018);
@@ -170,7 +161,7 @@ public class CopyXPathTest{
 					action("xml-copy-xpath");
 				}
 		});
-		assertEquals("/a:document/a:trap[2]",Registers.getRegister('$').toString());
+		assertEquals("/a:document/a:trap[2]",RegisterToString());
 	}
 	
 	/**
@@ -186,7 +177,7 @@ public class CopyXPathTest{
     	parseAndWait();
 
 		// set the register to a known value
-		Registers.getRegister('$').setValue("NULL");
+		Registers.getRegister('$').setTransferable(new StringSelection("NULL"));
 		
 		// go into the b:created element
 		gotoPositionAndWait(161);
@@ -198,7 +189,7 @@ public class CopyXPathTest{
 		
 		clickT.waitForClick();
 		
-		assertEquals("NULL",Registers.getRegister('$').toString());
+		assertEquals("NULL",RegisterToString());
 	}
 	
 	/**
@@ -217,7 +208,7 @@ public class CopyXPathTest{
 		
 		action("xml-copy-xpath");
 		
-		assertEquals("NULL",Registers.getRegister('$').toString());
+		assertEquals("NULL",RegisterToString());
 		
 		// go into the html
 		gotoPositionAndWait(117);
@@ -226,7 +217,7 @@ public class CopyXPathTest{
 		
 		Pause.pause(500);
 		
-		assertEquals("/html",Registers.getRegister('$').toString());
+		assertEquals("/html", RegisterToString());
 		
 		// go into the css, right into @import, which is a CSS node
 		gotoPositionAndWait(300);
@@ -234,14 +225,19 @@ public class CopyXPathTest{
 		action("xml-copy-xpath");
 		
 		// style turns to uppercase in sidekick
-		assertEquals("/html/head[1]/STYLE[1]",Registers.getRegister('$').toString());
+		assertEquals("/html/head[1]/STYLE[1]", RegisterToString());
 		
 		// go into the body (second link)
 		gotoPositionAndWait(659);
 		
 		action("xml-copy-xpath");
 		
-		assertEquals("/html/body[1]/div[2]/p[2]/a[1]",Registers.getRegister('$').toString());
+		assertEquals("/html/body[1]/div[2]/p[2]/a[1]", RegisterToString());
 
+	}
+	
+	@SuppressWarnings("deprecation")
+	private static String RegisterToString(){
+		return Registers.getRegister('$').toString();
 	}
 }

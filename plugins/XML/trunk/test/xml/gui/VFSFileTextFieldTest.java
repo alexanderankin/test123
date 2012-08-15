@@ -14,44 +14,33 @@
 package xml.gui;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
-import java.util.regex.Pattern;
-import javax.swing.text.*;
-import javax.swing.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.findDialogByTitle;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.text.JTextComponent;
+
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.Containers;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+// }}}
 
 /**
  * unit tests for VFSFileTextField

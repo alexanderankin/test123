@@ -14,49 +14,37 @@
 package xml.parser.javacc;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.gjt.sp.jedit.testframework.EBFixture.doInBetween;
+import static org.gjt.sp.jedit.testframework.EBFixture.messageOfClassCondition;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.close;
+import static org.gjt.sp.jedit.testframework.TestUtils.openFile;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static xml.XMLTestUtils.parseAndWait;
+import static xml.parser.javacc.TagParser.T_END_TAG;
+import static xml.parser.javacc.TagParser.T_STANDALONE_TAG;
+import static xml.parser.javacc.TagParser.T_START_TAG;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-import static xml.XMLTestUtils.*;
-
-// }}}
-
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
-import java.util.regex.Pattern;
-import javax.swing.text.*;
-import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import static xml.parser.javacc.TagParser.*;
 import xml.XMLTestUtils;
 import xml.XmlParsedData;
+import xml.parser.javacc.TagParser.Attr;
+import xml.parser.javacc.TagParser.Tag;
+// }}}
 
 /**
  * unit tests for TagParser

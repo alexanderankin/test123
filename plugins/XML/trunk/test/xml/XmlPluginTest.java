@@ -14,41 +14,46 @@
 package xml;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.fest.assertions.ObjectArrayAssert;
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.driver.*;
-import org.fest.swing.cell.*;
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static xml.XMLTestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.gjt.sp.jedit.testframework.EBFixture.simplyWaitForMessageOfClass;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.close;
+import static org.gjt.sp.jedit.testframework.TestUtils.requireEmpty;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static xml.XMLTestUtils.gotoPositionAndWait;
+import static xml.XMLTestUtils.openParseAndWait;
+import static xml.XMLTestUtils.parseAndWait;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import java.io.File;
+import java.io.IOException;
+
+import org.fest.assertions.ObjectArrayAssert;
+import org.fest.swing.cell.JListCellReader;
+import org.fest.swing.core.MouseButton;
+import org.fest.swing.driver.BasicJListCellReader;
+import org.fest.swing.driver.CellRendererReader;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JListFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.TestUtils.ClickT;
+import org.gjt.sp.jedit.testframework.TestUtils.Option;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import xml.XMLTestUtils.JWindowFixture;
+// }}}
 
 /**
  * integration tests using test_data

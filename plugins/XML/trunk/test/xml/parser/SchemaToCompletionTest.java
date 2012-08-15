@@ -14,31 +14,25 @@
 package xml.parser;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
 import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import static xml.XMLTestUtils.*;
-// }}}
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import xml.completion.*;
+import xml.completion.CompletionInfo;
+import xml.completion.ElementDecl;
 import xml.completion.ElementDecl.AttributeDecl;
+// }}}
 
 /**
  * $Id$

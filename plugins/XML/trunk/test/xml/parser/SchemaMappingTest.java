@@ -14,32 +14,41 @@
 package xml.parser;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static xml.XMLTestUtils.assertInputStreamEquals;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
 import org.gjt.sp.jedit.testframework.TestUtils;
-
-import static xml.XMLTestUtils.*;
-// }}}
-
-import java.io.*;
-import java.net.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import static xml.parser.SchemaMapping.*;
+import xml.parser.SchemaMapping.DefaultRule;
+import xml.parser.SchemaMapping.DoctypeRule;
+import xml.parser.SchemaMapping.DocumentElementRule;
+import xml.parser.SchemaMapping.Mapping;
+import xml.parser.SchemaMapping.NamespaceRule;
+import xml.parser.SchemaMapping.Result;
+import xml.parser.SchemaMapping.Rule;
+import xml.parser.SchemaMapping.TransformURI;
+import xml.parser.SchemaMapping.URIPatternRule;
+import xml.parser.SchemaMapping.URIResourceRule;
+// }}}
 
 /**
  * $Id$
@@ -426,7 +435,6 @@ public class SchemaMappingTest{
 	public void testIncludeMappingIncludedMappingBroken() throws MalformedURLException, IllegalArgumentException, SAXException{
 		File broken = new File(testData, "broken_schemas_xml/malformed/schemas.xml");
      	
-    	SchemaMapping m = new SchemaMapping();
     	final Object[] errors = new Object[1];
     	new SchemaMapping.IncludeMapping(null, broken.toURI().toURL().toString(), new DefaultHandler(){
     		@Override
@@ -468,26 +476,26 @@ public class SchemaMappingTest{
     	File existsXSD = new File(testData,"simple/actions.xsd");
 
     	// pattern matches and result exists
-    	assertEquals(new Result(null,existsXSD.toURL().toString()),
-    		r.getSchemaForDocument(null, existsXML.toURL().toString(),null,null,null,true));
+    	assertEquals(new Result(null,existsXSD.toURI().toURL().toString()),
+    		r.getSchemaForDocument(null, existsXML.toURI().toURL().toString(),null,null,null,true));
     	
     	// test doesn't match
     	assertNull(r.getSchemaForDocument(null, "test.txt",null,null,null,true));
 
     	// test no result resource
     	File noXSD = new File(testData,"dtd/actions.xml");
-    	assertNull(r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null,true));
+    	assertNull(r.getSchemaForDocument(null, noXSD.toURI().toURL().toString(),null,null,null,true));
 
     	// test result relative to base
-    	r = new TransformURI(existsXML.toURL().toURI(),"*.xml","../simple/*.xsd");
+    	r = new TransformURI(existsXML.toURI().toURL().toURI(),"*.xml","../simple/*.xsd");
     	
-    	assertEquals(new Result(existsXML.toURL().toURI(),"../simple/actions.xsd"),
+    	assertEquals(new Result(existsXML.toURI().toURL().toURI(),"../simple/actions.xsd"),
     		r.getSchemaForDocument(null, "actions.xml",null,null,null,true));
 
     	r = new TransformURI(null,"*.xml","../simple/*.xsd");
 
-    	assertEquals(new Result(null,new File(noXSD.getParentFile(),"../simple/actions.xsd").toURL().toString()),
-    		r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null,true));
+    	assertEquals(new Result(null,new File(noXSD.getParentFile(),"../simple/actions.xsd").toURI().toURL().toString()),
+    		r.getSchemaForDocument(null, noXSD.toURI().toURL().toString(),null,null,null,true));
 	}
 	
 	@Test
@@ -556,7 +564,7 @@ public class SchemaMappingTest{
     	
     	SchemaMapping m2 = null;
     	try{
-    		m2 = SchemaMapping.fromDocument(f.toURL().toString(), new DefaultHandler());
+    		m2 = SchemaMapping.fromDocument(f.toURI().toURL().toString(), new DefaultHandler());
     	}catch(IOException ioe){
     		fail("should not throw an exception : "+ioe);
     	}

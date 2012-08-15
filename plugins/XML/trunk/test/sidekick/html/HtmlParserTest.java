@@ -14,31 +14,23 @@
 package sidekick.html;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.selectPath;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static xml.XMLTestUtils.openParseAndWait;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static xml.XMLTestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JTreeFixture;
 import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import java.io.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+// }}}
 
 /**
  * $Id$
