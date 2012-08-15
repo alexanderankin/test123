@@ -14,42 +14,33 @@
 package xml.cache;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.gjt.sp.jedit.testframework.TestUtils.close;
+import static org.gjt.sp.jedit.testframework.TestUtils.openFile;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static xml.XMLTestUtils.parseAndWait;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static xml.XMLTestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.TestUtils;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.Registers;
-
-import java.io.*;
 import javax.xml.XMLConstants;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import xml.PathUtilities;
+// }}}
 
 /**
  * unit tests for the Cache mechanism
@@ -97,7 +88,7 @@ public class CacheTest{
 		assertEquals(en,v);
 		
 		// no overwrite
-		CacheEntry en3 = cache.put("path","key","another value");
+		cache.put("path","key","another value");
 		v = cache.get("path","key");
 		assertEquals(value,v.getCachedItem());
 		assertEquals(en,v);
@@ -162,7 +153,7 @@ public class CacheTest{
 		File importxsd = new File(testData,"import_schema/import.xsd");
 		File sourcexsd = new File(testData,"import_schema/source.xsd");
 
-		Buffer b = openFile(test.getPath());
+		openFile(test.getPath());
 		
 		parseAndWait();
 		
@@ -175,7 +166,7 @@ public class CacheTest{
 		
 		Pause.pause(5000);
 		// open source.xsd => invalidate everything
-		final Buffer b2 = openFile(sourcexsd.getPath());
+		openFile(sourcexsd.getPath());
 		Pause.pause(5000);
 		assertNull(cache.get(importxsd.getPath(),XMLConstants.W3C_XML_SCHEMA_NS_URI));
 		assertNull(cache.get(sourcexsd.getPath(),XMLConstants.W3C_XML_SCHEMA_NS_URI));
@@ -230,7 +221,7 @@ public class CacheTest{
 		File test = new File(testData,"dtd/actions.xml");
 		String actionsdtd = xml.Resolver.instance().resolveEntityToPath(null,null,null,"actions.dtd");
 
-		Buffer b = openFile(test.getPath());
+		openFile(test.getPath());
 		
 		parseAndWait();
 		
@@ -238,7 +229,7 @@ public class CacheTest{
 		assertNotNull(cache.get(actionsdtd,"CompletionInfo"));
 		
 		// open actions.dtd => invalidate everything
-		final Buffer b2 = openFile(actionsdtd);
+		openFile(actionsdtd);
 		Pause.pause(5000);
 		assertNull(cache.get(actionsdtd,XMLConstants.XML_DTD_NS_URI));
 		assertNull(cache.get(actionsdtd,"CompletionInfo"));

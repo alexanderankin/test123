@@ -14,37 +14,34 @@
 package xml;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static xml.XMLTestUtils.assertInputStreamEquals;
+import static xml.XMLTestUtils.assertReaderEquals;
+import static xml.XMLTestUtils.reactivatePlugin;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-import static xml.XMLTestUtils.*;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-// }}}
-
-import java.io.*;
-import org.xml.sax.*;
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.PluginJAR;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
 import org.gjt.sp.jedit.Buffer;
-
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.TestUtils.ClickT;
+import org.gjt.sp.jedit.testframework.TestUtils.Option;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+// }}}
 
 /**
  * $Id$
@@ -138,23 +135,23 @@ public class ResolverTest{
 	public void testNetworkMode() throws IOException, SAXException{
 		
 		
-		resolver.setNetworkMode(Resolver.LOCAL);
-		assertEquals(Resolver.LOCAL,resolver.getNetworkMode());
+		Resolver.setNetworkMode(Resolver.LOCAL);
+		assertEquals(Resolver.LOCAL,Resolver.getNetworkMode());
 		try{
 			resolver.resolveEntity(null,"http://www.jedit.org/index.php");		
 			fail("should throw IOException");
 		}catch(IOException ioe){
 			//that's fine
 		}
-		resolver.setNetworkMode(Resolver.ALWAYS);
-		assertEquals(Resolver.ALWAYS,resolver.getNetworkMode());
+		Resolver.setNetworkMode(Resolver.ALWAYS);
+		assertEquals(Resolver.ALWAYS,Resolver.getNetworkMode());
 
 		InputSource res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
 		assertEquals("http://www.jedit.org/index.php",res.getSystemId());
 	
 		resolver.clearCache();
-		resolver.setNetworkMode(Resolver.ASK);
-		assertEquals(Resolver.ASK,resolver.getNetworkMode());
+		Resolver.setNetworkMode(Resolver.ASK);
+		assertEquals(Resolver.ASK,Resolver.getNetworkMode());
 		
 		// accept downloading
 		ClickT clickT = new ClickT(Option.YES);
@@ -205,7 +202,7 @@ public class ResolverTest{
 
 		// the file is in the cache : even if we set it to NEVER
 		// we can use the cached one
-		resolver.setNetworkMode(Resolver.LOCAL);
+		Resolver.setNetworkMode(Resolver.LOCAL);
 		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
 		assertEquals("http://www.jedit.org/index.php",res.getSystemId());
 
@@ -235,9 +232,9 @@ public class ResolverTest{
 		// the resolver returns null, since the publicId can't be resolved
 		res = resolver.resolveEntity("-//FUNNY LOOKING PUBLIC ID//EN",null);
 		assertNull(res);
-		res = resolver.resolveEntity("-//FUNNY LOOKING PUBLIC ID//EN", actual.toURL().toString());
+		res = resolver.resolveEntity("-//FUNNY LOOKING PUBLIC ID//EN", actual.toURI().toURL().toString());
 		assertNotNull(res);
-		assertEquals(actual.toURL().toString(),res.getSystemId());
+		assertEquals(actual.toURI().toURL().toString(),res.getSystemId());
 		
 	}
 	
@@ -247,7 +244,7 @@ public class ResolverTest{
 	@Test
 	public void testSaveOnExit() throws IOException, SAXException{
 
-		resolver.setNetworkMode(Resolver.ASK);
+		Resolver.setNetworkMode(Resolver.ASK);
 		resolver.clearCache();
 
 		// cache some URLs
@@ -255,7 +252,7 @@ public class ResolverTest{
 		ClickT clickT = new ClickT(Option.YES);
 		clickT.start();
 		
-		InputSource res = resolver.resolveEntity("-//testSaveOnExit.ACCEPT//","http://www.jedit.org/index.php");
+		resolver.resolveEntity("-//testSaveOnExit.ACCEPT//","http://www.jedit.org/index.php");
 		
 		clickT.waitForClick();
 		
@@ -263,7 +260,7 @@ public class ResolverTest{
 		clickT.start();
 		
 		try{
-			res = resolver.resolveEntity("-//testSaveOnExit.REFUSE//", "http://www.w3.org/");
+			resolver.resolveEntity("-//testSaveOnExit.REFUSE//", "http://www.w3.org/");
 			fail("should throw an exception");
 		}catch(IOException ioe){
 			//fine : we refused
@@ -274,7 +271,7 @@ public class ResolverTest{
 
 		// the choice of the user to ignore a publicId is not saved
 		// so asking for the same public id with a different system id succeeds
-		res = resolver.resolveEntity("-//testSaveOnExit.REFUSE//","http://www.jedit.org/index.php");
+		resolver.resolveEntity("-//testSaveOnExit.REFUSE//","http://www.jedit.org/index.php");
 
 		//reactivate the plugin
 		reactivatePlugin(XmlPlugin.class);
@@ -282,10 +279,10 @@ public class ResolverTest{
 		// verify that it has been saved
 		
 		// saved the systemId
-		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
+		resolver.resolveEntity(null,"http://www.jedit.org/index.php");
 		
 		// saved the publicId
-		res = resolver.resolveEntity("-//testSaveOnExit.ACCEPT//",null);
+		resolver.resolveEntity("-//testSaveOnExit.ACCEPT//",null);
 		
 		
 		// the choice of the user to ignore a resource is not saved
@@ -294,7 +291,7 @@ public class ResolverTest{
 		clickT.start();
 		
 		try{
-			res = resolver.resolveEntity(null,"http://www.w3.org/");
+			resolver.resolveEntity(null,"http://www.w3.org/");
 			fail("should throw an exception");
 		}catch(IOException ioe){
 			//fine : we refused
@@ -307,7 +304,7 @@ public class ResolverTest{
 		clickT = new ClickT(Option.YES);
 		clickT.start();
 		
-		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
+		resolver.resolveEntity(null,"http://www.jedit.org/index.php");
 		
 		clickT.waitForClick();
 		

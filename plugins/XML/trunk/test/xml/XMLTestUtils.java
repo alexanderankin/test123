@@ -14,43 +14,42 @@
 package xml;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.gjt.sp.jedit.testframework.EBFixture.doInBetween;
+import static org.gjt.sp.jedit.testframework.EBFixture.messageOfClassCondition;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.gotoPosition;
+import static org.gjt.sp.jedit.testframework.TestUtils.openFile;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.awt.Component;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.exception.WaitTimedOutError;
+import javax.swing.JWindow;
 
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
+import org.fest.swing.core.ComponentMatcher;
+import org.fest.swing.core.Robot;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiQuery;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.ContainerFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.testframework.EBFixture.EBCondition;
+import org.gjt.sp.jedit.testframework.EBFixture.MessageListener;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
-// }}}
-
-import java.io.*;
-import java.awt.Dialog;
-import javax.swing.JWindow;
-import java.awt.Component;
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.PluginJAR;
-
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.msg.PluginUpdate;
-
 import sidekick.SideKickParsedData;
-
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
+// }}}
 
 /**
  * a handful of utility methods.
@@ -141,7 +140,7 @@ public class XMLTestUtils{
 	 * 
 	 * @param	editPluginClass	the main class of the plugin to deactivate and reactivate
 	 */
-	public static final void reactivatePlugin(Class editPluginClass){
+	public static final void reactivatePlugin(Class<?> editPluginClass){
 		final PluginJAR jar = jEdit.getPlugin(editPluginClass.getName()).getPluginJAR();
 		
 		assertNotNull(jar);

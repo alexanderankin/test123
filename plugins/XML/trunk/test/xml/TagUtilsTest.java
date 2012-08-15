@@ -14,38 +14,24 @@
 package xml;
 
 // {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.gjt.sp.jedit.testframework.EBFixture.simplyWaitForMessageOfClass;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.close;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static xml.XMLTestUtils.gotoPositionAndWait;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static xml.XMLTestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+// }}}
 
 /**
  * tests for Split/Join/Close/etc.
