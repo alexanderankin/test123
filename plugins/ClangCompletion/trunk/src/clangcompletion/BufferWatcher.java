@@ -97,6 +97,9 @@ public class BufferWatcher
 				args.add("-x");
 				args.add(xparam);
 				
+				clearErrors();
+				
+				
 				VPTProject project = ProjectViewer.getActiveProject(bu.getView());
 				HashMap<String, Vector<String>> properties = ClangCompletionConfiguration.getProperties(project.getName());
 				Vector<String> includes = properties.get(ClangCompletionConfiguration.INCLUDES);
@@ -189,6 +192,16 @@ public class BufferWatcher
 		}
 	}
 	
+	private void clearErrors()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					jEdit.getAction("error-list-clear").invoke(null);
+				}
+			});
+	}
 	
 	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):\\s*(.+)"); 
 	
