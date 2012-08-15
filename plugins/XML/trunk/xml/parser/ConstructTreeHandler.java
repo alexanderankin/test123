@@ -29,6 +29,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
+import xml.NamespaceBindings;
 import xml.XmlParsedData;
 
 //{{{ Handler class
@@ -46,7 +47,7 @@ class ConstructTreeHandler extends DefaultHandler2 implements ContentHandler
 	CharSequence text;
 	XmlParsedData data;
 	
-	HashMap<String, String> declaredPrefixes;
+	NamespaceBindings declaredPrefixes;
 	Stack<DefaultMutableTreeNode> currentNodeStack;
 	Locator loc;
 	boolean empty;
@@ -79,7 +80,7 @@ class ConstructTreeHandler extends DefaultHandler2 implements ContentHandler
 	//{{{ startPrefixMapping() method
 	public void startPrefixMapping(String prefix, String uri)
 	{
-		if(declaredPrefixes == null)declaredPrefixes = new HashMap<String,String>();
+		if(declaredPrefixes == null)declaredPrefixes = new NamespaceBindings();
 		declaredPrefixes.put(uri,prefix);
 
 		

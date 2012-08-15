@@ -22,6 +22,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import sidekick.Asset;
+import xml.NamespaceBindings;
 import xml.XmlListCellRenderer;
 import java.util.Map;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class XmlTag extends Asset
 	public boolean empty;
 	public String namespace;
 	/** namespace -> prefix */
-	public Map<String,String> namespaceBindings;
+	public NamespaceBindings namespaceBindings;
 	private StringBuilder characters = new StringBuilder();
 	//}}}
 
@@ -45,7 +46,7 @@ public class XmlTag extends Asset
 	{
 		super(name);
 		this.namespace = namespace;
-		this.namespaceBindings = new HashMap<String,String>();
+		this.namespaceBindings = new NamespaceBindings();
 		this.start = this.end = start;
 		this.attributes = new AttributesImpl(attributes);
 

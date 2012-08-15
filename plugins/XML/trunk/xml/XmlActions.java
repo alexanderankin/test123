@@ -196,8 +196,8 @@ loop:			for(;;)
 		}
 
 		// tag.start+1 because  don't want the locally declared namespaces
-		Map<String,String> namespaces = data.getNamespaceBindings(tag.start+1);
-		Map<String,String> namespacesToInsert = new HashMap<String,String>();
+		NamespaceBindings namespaces = data.getNamespaceBindings(tag.start+1);
+		NamespaceBindings namespacesToInsert = new NamespaceBindings();
 	
 		// grab namespaces declared in this tag
 		for(String attrname: attributes.keySet()){
@@ -239,7 +239,7 @@ loop:			for(;;)
 	 * @param namespacesToInsert		namespace bindings that will have to be inserted at the end of the start tag
 	 * @param reallyShowEditTagDialog	false to disable showing the dialog at all, but insert the start and end tags nonetheless 
 	 */
-	public static void showEditTagDialog(View view, String elementName, ElementDecl elementDecl, Selection insideTag, Map<String, String> namespaces, Map<String, String> namespacesToInsert, boolean reallyShowEditTagDialog)
+	public static void showEditTagDialog(View view, String elementName, ElementDecl elementDecl, Selection insideTag, NamespaceBindings namespaces, NamespaceBindings namespacesToInsert, boolean reallyShowEditTagDialog)
 	{
 		Buffer buffer = view.getBuffer();
 

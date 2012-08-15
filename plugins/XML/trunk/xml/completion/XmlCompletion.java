@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.Selection;
 
 import sidekick.SideKickCompletion;
+import xml.NamespaceBindings;
 import xml.XmlActions;
 import xml.XmlListCellRenderer;
 import xml.XmlListCellRenderer.WithLabel;
@@ -45,11 +46,11 @@ import xml.EditTagDialog;
 
 public class XmlCompletion extends SideKickCompletion
 {
-	private Map<String, String> namespaces;
-	private Map<String, String> namespacesToInsert;
+	private NamespaceBindings namespaces;
+	private NamespaceBindings namespacesToInsert;
 
 	//{{{ XmlCompletion constructor
-	public XmlCompletion(View view, List items, Map<String, String> namespaces,  Map<String, String> namespacesToInsert, String txt, XmlParsedData data,
+	public XmlCompletion(View view, List items, NamespaceBindings namespaces,  NamespaceBindings namespacesToInsert, String txt, XmlParsedData data,
 		String closingTag)
 	{
 		super(view,txt);
@@ -151,12 +152,12 @@ public class XmlCompletion extends SideKickCompletion
 		{
 			AttributeDecl attrDecl = (AttributeDecl) obj;
 			StringBuilder buf = new StringBuilder();
-			buf.append(EditTagDialog.composeName(attrDecl.name, attrDecl.namespace, namespaces, namespacesToInsert).substring(text.length()));
+			buf.append(NamespaceBindings.composeName(attrDecl.name, attrDecl.namespace, namespaces, namespacesToInsert, false).substring(text.length()));
 			buf.append("=\"\"");
 			
 			caret = buf.length() - 1;
 			
-			EditTagDialog.appendNamespaces(namespacesToInsert, buf);
+			namespacesToInsert.appendNamespaces(buf);
 			if(!namespacesToInsert.isEmpty()){
 				caret = buf.length() - caret;
 			}else{

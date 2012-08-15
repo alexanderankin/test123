@@ -249,9 +249,9 @@ public abstract class XmlParser extends SideKickParser
 		String word;
 
 		List allowedCompletions = new ArrayList(20);
-		Map<String, String> namespaces = data.getNamespaceBindings(caret);
-		Map<String, String> namespacesToInsert = new HashMap<String, String>();
-		Map<String, String> localNamespacesToInsert = new HashMap<String, String>();
+		NamespaceBindings namespaces = data.getNamespaceBindings(caret);
+		NamespaceBindings namespacesToInsert = new NamespaceBindings();
+		NamespaceBindings localNamespacesToInsert = new NamespaceBindings();
 		
 		
 		if(wordStart != -1 && mode != -1)
@@ -308,10 +308,12 @@ public abstract class XmlParser extends SideKickParser
 					}
 					else
 					{
-						String pre = namespaces.get(elementNamespace);
+						// this code is very similar to EditTagDialog.composeName()
+						// difference is how we take into account unknown prefix and have namespacesToInsert and localNamespacesToInsert
+						String pre = namespaces.getPrefix(elementNamespace);
 						if(pre == null)
 						{
-							pre = localNamespacesToInsert.get(elementNamespace);
+							pre = localNamespacesToInsert.getPrefix(elementNamespace);
 						}
 						if(pre == null)
 						{
@@ -332,7 +334,7 @@ public abstract class XmlParser extends SideKickParser
 								// Generate a new prefix.
 								// Store it locally, so that the declaration is not inserted when this completion is not chosen.
 								// If it's chosen, a prefix (maybe different) will be generated
-								pre = EditTagDialog.generatePrefix(namespaces, localNamespacesToInsert);
+								pre = NamespaceBindings.generatePrefix(namespaces, localNamespacesToInsert);
 								localNamespacesToInsert.put(elementNamespace,pre);
 								elementName = pre + ":" + elementDecl.name;
 							}
@@ -369,6 +371,8 @@ public abstract class XmlParser extends SideKickParser
 			}
 			else if (mode == ATTRIB_COMPLETE) 
 			{
+				// word contains element name
+				// prefix contains what was typed of the attribute
 				String prefix = text.substring(attribStart, caret);
 				String wordWithoutPrefix = XmlParsedData.getElementLocalName(prefix);
 				String wordPrefix = XmlParsedData.getElementNamePrefix(prefix);
@@ -381,14 +385,22 @@ public abstract class XmlParser extends SideKickParser
 					{
 						AttributeDecl attrDecl = completions.get(i);
 						String attrName;
+						
+						// this code is very similar to ELEMENT_COMPLETE case
+						// difference is how we take into account xml namespace (always use xml: prefix)
 						if(attrDecl.namespace == null || "".equals(attrDecl.namespace))
 						{
 							attrName = attrDecl.name;
 						}
 						else
 						{
-							String pre = namespaces.get(attrDecl.namespace);
-							if(pre == null)
+							String pre = namespaces.getPrefix(attrDecl.namespace);
+							// for attributes, empty prefix means no namespace, not current default namespace, so generate...
+							if(pre == null || "".equals(pre))
+							{
+								pre = localNamespacesToInsert.getPrefix(attrDecl.namespace);
+							}
+							if(pre == null || "".equals(pre))
 							{
 								if(attrDecl.namespace.equals(NamespaceSupport.XMLNS))
 								{
@@ -398,12 +410,13 @@ public abstract class XmlParser extends SideKickParser
 								{
 									attrName = attrDecl.name;
 									// handle using unknown prefix
-									// if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix 
+									// if users types "xl:" and xlink ns is undeclared use xl as prefix (xl:href for instance)
 									if(!"".equals(wordPrefix) && !"xml".equals(wordPrefix)
 											&& attrName.startsWith(wordWithoutPrefix))
 									{
 										pre = wordPrefix;
 										namespacesToInsert.put(attrDecl.namespace, pre);
+										localNamespacesToInsert.put(attrDecl.namespace, pre);
 										attrName = pre + ":" + attrDecl.name;
 									}
 									else
@@ -412,7 +425,7 @@ public abstract class XmlParser extends SideKickParser
 										// Generate a new prefix.
 										// Store it locally, so that the declaration is not inserted when this completion is not chosen.
 										// If it's chosen, a prefix (maybe different) will be generated again
-										pre = EditTagDialog.generatePrefix(namespaces, localNamespacesToInsert);
+										pre = NamespaceBindings.generatePrefix(namespaces, localNamespacesToInsert);
 										localNamespacesToInsert.put(attrDecl.namespace,pre);
 										attrName = pre + ":" + attrDecl.name;
 										// this can get cumbersome, if one types 'a' expecting to get 'someprefix:attribute' because
