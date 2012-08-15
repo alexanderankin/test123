@@ -363,8 +363,8 @@ public class XmlInsert extends JPanel implements EBComponent
 			}
 			
 			List<WithLabel<ElementDecl>> nl = new ArrayList<WithLabel<ElementDecl>>(l.size());
-			Map<String, String> namespaces = data.getNamespaceBindings(view.getTextArea().getCaretPosition());
-			Map<String, String> localNamespacesToInsert = new HashMap<String, String>();
+			NamespaceBindings namespaces = data.getNamespaceBindings(view.getTextArea().getCaretPosition());
+			NamespaceBindings localNamespacesToInsert = new NamespaceBindings();
 			for(ElementDecl elementDecl: l){
 				String elementName;
 				String elementNamespace = elementDecl.completionInfo.namespace;
@@ -375,10 +375,10 @@ public class XmlInsert extends JPanel implements EBComponent
 				}
 				else
 				{
-					String pre = namespaces.get(elementNamespace);
+					String pre = namespaces.getPrefix(elementNamespace);
 					if(pre == null)
 					{
-						pre = localNamespacesToInsert.get(elementNamespace);
+						pre = localNamespacesToInsert.getPrefix(elementNamespace);
 					}
 					if(pre == null)
 					{
@@ -386,7 +386,7 @@ public class XmlInsert extends JPanel implements EBComponent
 						// Generate a new prefix.
 						// Store it locally, so that the declaration is not inserted when this completion is not chosen.
 						// If it's chosen, a prefix (maybe different) will be generated
-						pre = EditTagDialog.generatePrefix(namespaces, localNamespacesToInsert);
+						pre = NamespaceBindings.generatePrefix(namespaces, localNamespacesToInsert);
 						localNamespacesToInsert.put(elementNamespace,pre);
 						elementName = pre + ":" + elementDecl.name;
 					}
@@ -496,8 +496,8 @@ public class XmlInsert extends JPanel implements EBComponent
 
 				ElementDecl element = (ElementDecl)obj;
 
-				Map<String,String> namespaces = data.getNamespaceBindings(pos);
-				Map<String,String> namespacesToInsert = new HashMap<String,String>();
+				NamespaceBindings namespaces = data.getNamespaceBindings(pos);
+				NamespaceBindings namespacesToInsert = new NamespaceBindings();
 				
 				// on left click, show the Edit Tag dialog, on right click, don't show the Edit Tag dialog
 				// all the work is done in XmlActions.showEditTagDialog

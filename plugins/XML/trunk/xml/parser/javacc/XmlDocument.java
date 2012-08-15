@@ -22,6 +22,7 @@ import javax.swing.text.Position;
 
 import sidekick.html.parser.html.HtmlDocument;
 import sidekick.util.*;
+import xml.NamespaceBindings;
 
 /**
  * Represents an XML document as a sequence of elements.  The defined
@@ -175,7 +176,7 @@ public class XmlDocument {
         public boolean emptyTag = false;
     	public String namespace;
     	/** namespace -> prefix */
-    	public Map<String,String> namespaceBindings;
+    	public NamespaceBindings namespaceBindings;
 
         
         public Tag( String name, AttributeList a ) {

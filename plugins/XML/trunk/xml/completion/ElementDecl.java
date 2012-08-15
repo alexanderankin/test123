@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 import org.gjt.sp.util.StandardUtilities;
 import org.xml.sax.helpers.NamespaceSupport;
 
-import xml.EditTagDialog;
+import xml.NamespaceBindings;
 
 public class ElementDecl
 {
@@ -179,7 +179,7 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ getRequiredAttributesString()
-	public String getRequiredAttributesString(Map<String,String> namespaces, Map<String, String> namespacesToInsert)
+	public String getRequiredAttributesString(NamespaceBindings namespaces, NamespaceBindings namespacesToInsert)
 	{
 		StringBuffer buf = new StringBuffer();
 
@@ -190,7 +190,7 @@ public class ElementDecl
 			if(attrDecl.required)
 			{
 				buf.append(' ');
-				buf.append(EditTagDialog.composeName(attrDecl.name, attrDecl.namespace, namespaces, namespacesToInsert));
+				buf.append(NamespaceBindings.composeName(attrDecl.name, attrDecl.namespace, namespaces, namespacesToInsert, false));
 				buf.append("=\"");
 				if(attrDecl.value != null)
 					buf.append(attrDecl.value);

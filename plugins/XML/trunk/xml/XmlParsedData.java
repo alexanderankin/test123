@@ -166,7 +166,7 @@ public class XmlParsedData extends SideKickParsedData
 		else
 		{
 			TreePath path = null;
-			Map<String,String> bindings = null;
+			NamespaceBindings bindings = null;
 			
 			if(allNamespacesBindingsAtTop){
 				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
@@ -189,7 +189,7 @@ public class XmlParsedData extends SideKickParsedData
 				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
 					"only 1 completionInfo, for ns "+info.namespace);
 			}else{
-				String NS = getNS(bindings,prefix);
+				String NS = bindings.getNamespace(prefix);
 				info = mappings.get(NS);
 				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
 					"many completionInfos ("+mappings.keySet()+"); getting for NS ="+NS);
@@ -572,9 +572,9 @@ public class XmlParsedData extends SideKickParsedData
 	/** namespace to prefix
 	 *  (from sidekick) 
 	 **/
-	public Map<String,String> getNamespaceBindings(int pos){
+	public NamespaceBindings getNamespaceBindings(int pos){
 		
-		if(html) return new HashMap<String,String>();
+		if(html) return new NamespaceBindings();
 		
 		if(allNamespacesBindingsAtTop){
 			return getRootNamespaceBindings();
@@ -586,8 +586,8 @@ public class XmlParsedData extends SideKickParsedData
 	}
 	
 	/** namespace to prefix */
-	private Map<String,String> getNamespaceBindings(TreePath path){
-		Map<String,String> bindings = new HashMap<String,String>();
+	private NamespaceBindings getNamespaceBindings(TreePath path){
+		NamespaceBindings bindings = new NamespaceBindings();
 		
 		if(path == null)return bindings;
 		if(html)return bindings;
@@ -604,8 +604,8 @@ public class XmlParsedData extends SideKickParsedData
 	//}}}
 	
 	//{{{ getRootNamespaceBindings() method
-	private Map<String,String> getRootNamespaceBindings(){
-		Map<String,String> bindings;
+	private NamespaceBindings getRootNamespaceBindings(){
+		NamespaceBindings bindings;
 		
 		if(!html && root != null && root.getChildCount() > 0){
 			TreeNode node = root.getChildAt(0);
@@ -614,10 +614,10 @@ public class XmlParsedData extends SideKickParsedData
 			if(o instanceof XmlTag){
 				bindings = ((XmlTag)o).namespaceBindings;
 			}else {
-				bindings = Collections.emptyMap();
+				bindings = new NamespaceBindings();
 			}
 		}else {
-			bindings = Collections.emptyMap();
+			bindings = new NamespaceBindings();
 		}
 		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
 			"getRootNamespaceBindings()=>"+bindings);
@@ -631,9 +631,9 @@ public class XmlParsedData extends SideKickParsedData
 		if(html)return null;
 		
 		if(allNamespacesBindingsAtTop){
-			Map<String,String> bindings=getRootNamespaceBindings();
+			NamespaceBindings bindings=getRootNamespaceBindings();
 			if(bindings != null){
-				String ns = getNS(bindings,prefix);
+				String ns = bindings.getNamespace(prefix);
 				if(ns != null)return ns;
 			}
 		}else{
@@ -644,26 +644,14 @@ public class XmlParsedData extends SideKickParsedData
 			for(int i=pathObjs.length-1;i>0;i--){  //first object (i==0) is a SourceAsset for the file
 				XmlTag t = (XmlTag)pathObjs[i];
 				if(t.namespaceBindings != null){
-					for(Map.Entry<String,String> binding: t.namespaceBindings.entrySet()){
-						if(binding.getValue().equals(prefix))return binding.getKey();
-					}
+					String ns = t.namespaceBindings.getNamespace(prefix);
+					if(!"".equals(ns))return ns;
 				}
 			}
 		}
 		// no namespace is "" in the mappings
 		if("".equals(prefix))return "";
 		else return null;
-	}
-	//}}}
-	
-	//{{{ getNS() method
-	private String getNS(Map<String,String> nsToPrefix, String prefix){
-		for(Map.Entry<String,String> en:nsToPrefix.entrySet()){
-			if(prefix.equals(en.getValue())){
-				return en.getKey();
-			}
-		}
-		return "";
 	}
 	//}}}
 	
