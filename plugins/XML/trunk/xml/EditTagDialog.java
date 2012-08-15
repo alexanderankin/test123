@@ -305,7 +305,7 @@ public class EditTagDialog extends EnhancedDialog
 			else
 			{
 				String prefix = XmlParsedData.getElementNamePrefix(attrName);
-				if(!"".equals(attr.namespace)
+				if(attr.namespace!=null && !"".equals(attr.namespace)
 					&& !NamespaceSupport.XMLNS.equals(attr.namespace)
 					&& !namespaces.containsKey(attr.namespace)
 					&& !localNamespacesToInsert.containsKey(attr.namespace))
