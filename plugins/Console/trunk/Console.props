@@ -119,7 +119,7 @@ options.console.errors.info=NOTE: Test/Commit each change to test the regex. \n\
 Otherwise, your changes are lost when you click "ok/apply".
 
 options.console.errors.reload=Reload
-options.console.errors.reload.tooltip=restore values from properties
+options.console.errors.reload.tooltip=Factory reset
 
 options.console.errors.checking.title=Checking Regular Expression
 options.console.errors.checking.message={0}
