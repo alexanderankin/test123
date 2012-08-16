@@ -487,6 +487,9 @@ console.pv.no-command.message=No {0} command has been defined.\n\
 # Sensible Defaults Department
 console.dock-position=bottom
 
+options.console.errors.reset-confirm.title=Factory Reset Error Matchers
+options.console.errors.reset-confirm.message=Resets all custom error matchers to factory defaults. Are you sure?
+
 ### ANSI escape sequencies
 options.ansi-escape.behaviour-caption=Parser behaviour:
 options.ansi-escape.behaviour-values=ignore remove parse
