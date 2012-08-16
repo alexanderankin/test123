@@ -207,9 +207,19 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			Object source = evt.getSource();
 			
 			if (source == reset) {
-				errorListModel.reset();
-				errorList.setModel(errorListModel);
-				errorList.repaint();
+				// ask user: are you sure? 
+				int answer = GUIUtilities.confirm(
+					ErrorsOptionPane.this,
+					"options.console.errors.reset-confirm",
+					null,
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+				if(answer == JOptionPane.YES_OPTION)
+				{
+					errorListModel.reset();
+					errorList.setModel(errorListModel);
+					errorList.repaint();
+				}
 			}
 			
 			if(source == add)
