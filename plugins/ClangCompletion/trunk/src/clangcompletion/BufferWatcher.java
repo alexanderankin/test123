@@ -203,25 +203,25 @@ public class BufferWatcher
 			});
 	}
 	
-	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):\\s*(.+)"); 
+	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):\\s*(\\w+):(.+)"); 
 	
 	private void parseError(String clangOutput)
 	{
 		System.out.println("error: " + clangOutput);
 		final Matcher matcher = errorPattern.matcher(clangOutput);
-		if(matcher.find() && matcher.groupCount() >= 3)
+		if(matcher.find() && matcher.groupCount() >= 5)
 		{
 			SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
 						ClangCompletionPlugin.errorSrc.addError(new DefaultError(ClangCompletionPlugin.errorSrc,
-							ErrorSource.ERROR, 
+							matcher.group(4).trim().equals("error")?ErrorSource.ERROR:ErrorSource.WARNING, 
 							matcher.group(1), 
 							Integer.parseInt(matcher.group(2)) - 1, 
 							0,
 							0,
-							matcher.group(3) ));
+							matcher.group(5) ));
 					}
 				});
 		}
