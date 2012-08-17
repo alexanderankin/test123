@@ -17,8 +17,8 @@
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
 	<property name="build.support" value="../../build-support" />
-	<property name="install.dir" value="C:\Documents and Settings\Administrator\Application Data\jEdit\jars" />
-	<property name="jedit.install.dir" value="D:\Program Files\jEdit" />
+	<property name="install.dir" value="/home/wingser/.jedit/jars" />
+	<property name="jedit.install.dir" value="/usr/share/jEdit" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
 	<!-- /mark:properties -->
 	<import file="${build.support}/plugin-build.xml" />
@@ -48,6 +48,8 @@
 	<pathelement path="${jedit.plugins.dir}/Completion.jar" />
 	<pathelement path="${jedit.plugins.dir}/ErrorList.jar" />
 	<pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
+	<pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
+	<pathelement path="${jedit.plugins.dir}/SuperAbbrevs.jar"/>
 	<!-- /mark:plugins -->
 	</path>
 	
