@@ -1,3 +1,4 @@
 2.0 (unreleased)
 -new php abbreviations (patch #3515099, Jojaba)
 -new css abbreviations (patch #3514977, Jojaba)
+-new html abbreviations (patch #3514975, Jojaba)
