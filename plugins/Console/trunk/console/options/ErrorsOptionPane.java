@@ -56,14 +56,14 @@ import console.gui.PanelStack;
 //{{{ ErrorsOptionPane class
 /**
  * A view/editor for an ErrorListModel.
- * 
+ *
  * Shows a list of the current ErrorMatchers which can be used, and permits the easy
  * editing of them.
  */
 public class ErrorsOptionPane extends AbstractOptionPane
 {
 	//{{{ Instance variables
-	
+
 	// Model for storing all of the ErrorMatchers
 	private ErrorListModel errorListModel;
 
@@ -71,7 +71,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	private JList errorList;
 
 	PanelStack panelStack;
-	
+
 	private JButton add;
 	private JButton remove;
 	private JButton reset;
@@ -79,17 +79,17 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	private JButton down;
 	//}}}
 
-	
+
 	// {{{ Public members
-	
+
 	//{{{ ErrorsOptionPane constructor
 	public ErrorsOptionPane()
 	{
 		super("console.errors");
 	} //}}}
-	
+
 	// }}}
-	
+
 	//{{{ Protected members
 
 	//{{{ _init() method
@@ -102,7 +102,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		errorListModel = ErrorListModel.load();
 		errorList = new JList();
 		errorList.setModel(errorListModel);
-		JScrollPane jsp =new JScrollPane(errorList); 
+		JScrollPane jsp =new JScrollPane(errorList);
 		jsp.setMinimumSize(new Dimension(125, 300));
 		errorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		errorList.addListSelectionListener(new ListHandler());
@@ -113,17 +113,17 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		// errors.add(jsp);
 		String title = jEdit.getProperty("options.console.errors.caption");
 		jsp.setBorder(new TitledBorder(title));
-		
+
 		Box westBox = new Box(BoxLayout.Y_AXIS);
 		westBox.add(jsp);
 		// add(jsp, BorderLayout.WEST);
 
-		
+
 		panelStack = new PanelStack();
 //		errors.add(panelStack);
 		//add(errors, BorderLayout.CENTER);
 		add(panelStack, BorderLayout.CENTER);
-		
+
 		JPanel buttons = new JPanel();
 		buttons.setBorder(new EmptyBorder(6,0,0,0));
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
@@ -145,7 +145,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		down.setToolTipText(jEdit.getProperty("common.moveDown"));
 		buttons.add(down);
 		reset = new RolloverButton(GUIUtilities.loadIcon("Reload.png"));
-		reset.setToolTipText(jEdit.getProperty("options.console.errors.reload.tooltip"));
+		reset.setToolTipText(jEdit.getProperty("options.console.errors.reset.tooltip"));
 		buttons.add(reset);
 
 	        ActionHandler handler = new ActionHandler();
@@ -167,7 +167,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	{
 		errorListModel = ErrorListModel.load();
 	}
-	
+
 	//{{{ _save() method
 	protected void _save()
 	{
@@ -175,11 +175,11 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//}}}
-	
+
 	//{{{ Private members
 
 	//{{{ updateButtons() method
-	
+
 	private void updateButtons()
 	{
 		ErrorMatcher matcher = (ErrorMatcher)errorList.getSelectedValue();
@@ -188,7 +188,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			String internalName = matcher.internalName();
 			if (!panelStack.raise(internalName)) {
 				ErrorMatcherPanel panel = new ErrorMatcherPanel(internalName, matcher);
-				
+
 				panelStack.add(internalName, panel);
 				panelStack.raise(internalName);
 				validateTree();
@@ -201,27 +201,26 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
-		
+
 		public void actionPerformed(ActionEvent evt)
 		{
 			Object source = evt.getSource();
-			
+
 			if (source == reset) {
-				// ask user: are you sure? 
+				// ask user: are you sure?
 				int answer = GUIUtilities.confirm(
-					ErrorsOptionPane.this,
+					errorList,
 					"options.console.errors.reset-confirm",
 					null,
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
-				if(answer == JOptionPane.YES_OPTION)
-				{
+				if(answer == JOptionPane.YES_OPTION) {
 					errorListModel.reset();
 					errorList.setModel(errorListModel);
 					errorList.repaint();
 				}
 			}
-			
+
 			if(source == add)
 			{
 				/* Open a dialog and ask for the name: */
@@ -245,7 +244,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 					errorList.setSelectedIndex(errorListModel.size() - 1);
 				errorList.repaint();
 			}
-			
+
 			else if(source == up)
 			{
 				int index = errorList.getSelectedIndex();
@@ -263,7 +262,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				errorListModel.insertElementAt(matcher, index+1);
 				errorList.setSelectedIndex(index+1);
 				errorList.repaint();
-			} 
+			}
 
 		}
 	} //}}}

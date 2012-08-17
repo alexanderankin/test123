@@ -118,8 +118,11 @@ options.console.errors.apply.tooltip=Test Regex and Commit changes if regex pars
 options.console.errors.info=NOTE: Test/Commit each change to test the regex. \n\
 Otherwise, your changes are lost when you click "ok/apply".
 
+options.console.errors.reset=Reset
+options.console.errors.reset.tooltip=Factory Reset
+
 options.console.errors.reload=Reload
-options.console.errors.reload.tooltip=Factory reset
+options.console.errors.reload.tooltip=Reload from properties
 
 options.console.errors.checking.title=Checking Regular Expression
 options.console.errors.checking.message={0}
