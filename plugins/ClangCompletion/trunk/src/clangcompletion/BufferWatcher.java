@@ -45,6 +45,7 @@ import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
 public class BufferWatcher
 {
+	private  int numOfClangThreadWorking = 0;
 	
 	public BufferWatcher()
 	{
@@ -59,6 +60,15 @@ public class BufferWatcher
 	@EBHandler
 	public void handleBufferUpdate(BufferUpdate bu)
 	{
+		synchronized(this)
+		{
+			if(numOfClangThreadWorking > 0)
+			{
+				System.out.println("numOfClangThreadWorking: " + numOfClangThreadWorking);
+				return;
+			}
+		}
+		System.out.println("handleBufferUpdate");
 		// TOOD: handleBufferUpdate was called 4 times and throw exceptions when save a source file.
 		if (( bu.getWhat() == BufferUpdate.SAVED) )
 		{
@@ -149,6 +159,10 @@ public class BufferWatcher
 					{
 						public void run()
 						{
+							synchronized(this)
+							{
+								numOfClangThreadWorking++;
+							}
 							try
 							{
 								BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -160,9 +174,14 @@ public class BufferWatcher
 									input = reader.readLine();
 									
 								}
-							}catch(IOException ex)
+							}catch(Exception ex)
 							{
 								ex.printStackTrace();
+							}
+							
+							synchronized(this)
+							{
+								numOfClangThreadWorking--;
 							}
 						}
 					}.start();
@@ -171,6 +190,11 @@ public class BufferWatcher
 					{
 						public void run()
 						{
+							synchronized(this)
+							{
+								numOfClangThreadWorking++;
+							}
+							
 							try
 							{
 								BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -179,9 +203,14 @@ public class BufferWatcher
 								{
 									input = reader.readLine();
 								}
-							}catch(IOException ex)
+							}catch(Exception ex)
 							{
 								ex.printStackTrace();
+							}
+							
+							synchronized(this)
+							{
+								numOfClangThreadWorking--;
 							}
 						}
 					}.start();

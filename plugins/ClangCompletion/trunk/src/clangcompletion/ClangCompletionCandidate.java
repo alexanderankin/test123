@@ -27,15 +27,15 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     private ClangCompletionCandidate()
     {
     	super("");
-    	renderer = new DefaultListCellRenderer();
+    	renderer = new ClangCompletionRenderer();
     }
-    /*
+    
     @Override
     public ListCellRenderer getCellRenderer()
     {
         return renderer;
     }
-	*/    
+ 
     public static ClangCompletionCandidate parse(String clangOutput)
     {
     	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
@@ -54,6 +54,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     	*/
     	
     	candidate.description = splits[1].trim();
+    	candidate.labelText =  candidate.description + splits[2].trim();
     	//System.out.println(splits[1].trim());
     	/*  ignore labeltext for now 
     	if(splits.length>2)
@@ -97,7 +98,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public String getLabelText()
     {
-        return description;
+        return labelText;
     }
     /*
     @Override
