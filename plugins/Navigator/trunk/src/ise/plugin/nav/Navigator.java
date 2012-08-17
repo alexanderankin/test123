@@ -624,6 +624,14 @@ public class Navigator implements ActionListener {
      * Leaves marker so subsequent file jumps return to the same position
      */
     public void goBackFile() {
+        if ( backHistory == null || backHistory.size() == 0 ) {
+            // nowhere to go
+            return;
+        }
+        if ( current == null ) {
+            // haven't been anywhere yet
+            return;
+        }
         // go to previous file
         NavPosition start = current;
         while ( current.path == start.path && backHistory.size() != 0 ) {
@@ -677,6 +685,14 @@ public class Navigator implements ActionListener {
      * Leaves marker so subsequent file jumps return to the same position
      */
     public void goForwardFile() {
+        if ( forwardHistory == null || forwardHistory.size() == 0 ) {
+            // nowhere to go
+            return;
+        }
+        if ( current == null ) {
+            // haven't been anywhere yet
+            return;
+        }
         // go to next file
         NavPosition first = current;
         while ( current.path == first.path && forwardHistory.size() != 0 ) {
