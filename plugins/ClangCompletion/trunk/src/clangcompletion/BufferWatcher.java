@@ -77,7 +77,9 @@ public class BufferWatcher
 				xparam = "c++";
 			}
 			
-			if(xparam != null)
+			// Do not check header files because in most case clang cannot compile
+			// a header file correctly without implementation cpp sources.
+			if(xparam != null && !path.endsWith("hpp") && !path.endsWith("h"))
 			{
 			
 				if(buffer.getFile().getName().endsWith("hpp") || buffer.getFile().getName().endsWith("h"))
@@ -203,7 +205,7 @@ public class BufferWatcher
 			});
 	}
 	
-	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):\\s*(\\w+):(.+)"); 
+	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*(\\w+):(.+)"); 
 	
 	private void parseError(String clangOutput)
 	{

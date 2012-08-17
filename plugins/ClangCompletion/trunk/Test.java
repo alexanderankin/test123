@@ -19,13 +19,13 @@ import javax.swing.SwingUtilities;
 
 public class Test
 {
-	private static Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):\\s*(\\w+):(.+)"); 
+	private static Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*(\\w+):(.+)"); 
 	private static String test0 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:95:3: error: use of undeclared identifier 'ssonBattleFinished'; did you mean 'onBattleFinished'?";
 	private static String test1 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene/battle_layer.h:130:7: note: 'onBattleFinished' declared here";
 	private static String test2 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:100:2: error: use of undeclared identifier 'ss'";
 	private static String test3 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:102:27: error: use of undeclared identifier 'pAni'";
 	private static String test4 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:103:86: error: use of undeclared identifier 'pAni'";
-	
+	private static String test5 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:493:46:{493:3-493:17}: error: too few arguments to function call, expected 3, have 2";
 	public static void main(String args[])
 	{
 		parseError(test0);
@@ -33,6 +33,7 @@ public class Test
 		parseError(test2);
 		parseError(test3);
 		parseError(test4);
+		parseError(test5);
 	}
 	
 	private static void parseError(String clangOutput)
