@@ -3,6 +3,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
@@ -93,27 +94,74 @@ public class SuperAbbrevsIO {
 			copy(url,file);
 		}
 	}
-	
-	private static void copyFileFromResourceDir(String filename) {
-		copyFileFromResourceDir(filename,false);
+
+	public static void mergeAbbrevs(String name, long lastModified)
+	{
+		File modeFile = getModeFile(name);
+		if (!modeFile.exists())
+			return;
+		if (modeFile.lastModified() < lastModified)
+		{
+			// the abbrevs need to be updated
+			Hashtable hashtable = readModeFile(name);
+			URL url = getResource(RESOURCE_DIR+"/"+name);
+			if (url == null)
+				return;
+			ObjectInput input = null;
+			try
+			{
+				InputStream in = url.openStream();
+				input = new ObjectInputStream(in);
+				Hashtable newTable = (Hashtable) input.readObject();
+				hashtable.putAll(newTable);
+				writeModeFile(name, hashtable);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			catch (ClassNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if (input != null)
+				{
+					try
+					{
+						input.close();
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
-	
+
 	public static void writeDefaultAbbrevs(){
+		EditPlugin plugin = jEdit.getPlugin("SuperAbbrevsPlugin");
+		String path = plugin.getPluginJAR().getPath();
+		File jar = new File(path);
+		long lastModified = jar.lastModified();
 		Mode[] modes = jEdit.getModes();
 		for(int i = 0; i < modes.length; i++){
 			String name = modes[i].getName();
 			// would be nicer if I knew how to iterate the files in the resource 
 			// directory
-			copyFileFromResourceDir(name);
+			copyFileFromResourceDir(name, false);
+			mergeAbbrevs(name, lastModified);
 		}
 	}
 	
 	public static void writeDefaultVariables() {
-		copyFileFromResourceDir(VARIABLES_FILE);
+		copyFileFromResourceDir(VARIABLES_FILE, false);
 	}
 	
 	public static void writeDefaultAbbrevFunctions(){
-		copyFileFromResourceDir(ABBREVS_FUNCTION_FILE);
+		copyFileFromResourceDir(ABBREVS_FUNCTION_FILE, false);
 	}
 	
 	public static void writeDefaultTemplateGenerationFunctions(){
