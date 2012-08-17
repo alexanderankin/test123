@@ -155,7 +155,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		StringBuilder cmd = new StringBuilder();
 		for(int i = 0; i < args.size();i++)
 		{
-			cmd.append(args.get(i));
+			cmd.append(args.get(i) +" ");
 		}
 		System.out.println(cmd);
 		
