@@ -12,6 +12,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.TextArea;
 
+import superabbrevs.SuperAbbrevs;
 
 import completion.service.CompletionCandidate;
 import completion.util.*;
@@ -36,10 +37,32 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
         return renderer;
     }
  
+    @Override
+    public void complete (View view)
+    {
+        TextArea textArea = view.getTextArea();
+        String prefix = CompletionUtil.getCompletionPrefix(view);
+        int caret = textArea.getCaretPosition();
+        JEditBuffer buffer = textArea.getBuffer();
+        if (prefix.length() > 0)
+        {
+            buffer.remove(caret - prefix.length(), prefix.length());
+        }
+        
+        // Check if a parametrized abbreviation is needed
+        String sig = getDescription();
+        System.out.println(sig);
+        if (sig != null && sig.length() != 0)
+        {
+        	String abbrev = createAbbrev(sig);
+        	SuperAbbrevs.expandAbbrev(view, abbrev, null);
+        }
+    }
+    
     public static ClangCompletionCandidate parse(String clangOutput)
     {
     	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
-    	String[] splits = clangOutput.split(":");
+    	String[] splits = clangOutput.split(":", 3);
     	if(splits.length < 3)
     	{
     		return null;
@@ -54,7 +77,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     	*/
     	
     	candidate.description = splits[1].trim();
-    	candidate.labelText =  candidate.description + splits[2].trim();
+    	candidate.labelText =   splits[2].trim();
     	//System.out.println(splits[1].trim());
     	/*  ignore labeltext for now 
     	if(splits.length>2)
@@ -69,7 +92,18 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public String getDescription()
     {
-        return description;
+    	String result = labelText;
+    	int i;
+    	i = labelText.lastIndexOf("]");
+    	if(i > 0)
+    	{
+    		//delete retturn value;
+    		result = result.substring(i+1);
+    	}
+    	
+    	result = result.replace("<#","");
+    	result = result.replace("#>","");
+        return result;
     }
     
     @Override
