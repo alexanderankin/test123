@@ -1,5 +1,7 @@
 TODO:
 add pch support.
 add more configuration.
+
+DONE:
 lock clang syntax check to avoid mutiple clang process being invoke at same time.
 provide better completation ui.
