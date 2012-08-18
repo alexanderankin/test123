@@ -32,6 +32,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -76,7 +77,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private DefaultMutableTreeNode errorRoot;
 	private DefaultTreeModel errorModel;
 	private JTree errorTree;
-	private Vector<Error> errors;
+	private HashSet<Error> errors;
 	private Vector<Integer> filteredTypes;
 	private Map<Integer, JToggleButton> toggleButtons;
         // }}}
@@ -88,7 +89,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 
 		setLayout(new BorderLayout());
 
-		errors = new Vector<Error>();
+		errors = new HashSet<Error>();
 		filteredTypes = new Vector<Integer>();
 		initFilteredTypes();
 
@@ -189,6 +190,14 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		errorTree.setCellRenderer(new ErrorCellRenderer());
 		errorTree.setRootVisible(false);
 		errorTree.setShowsRootHandles(true);
+
+		ErrorSource[] sources = ErrorSource.getErrorSources();
+
+		for(int i = 0; i < sources.length; i++)
+		{
+			ErrorSource source = sources[i];
+			addErrorSource(source, source.getAllErrors());
+		}
 
 		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
@@ -599,8 +608,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	{
 		errorRoot.removeAllChildren();
 		errorModel.reload(errorRoot);
-		for (int i = 0; i < errors.size(); i++) {
-			Error error = (Error) errors.get(i);
+		for (Error error : errors) {
 			if (! isFiltered(error))
 				addErrorToTree(error, false);
 		}
@@ -630,9 +638,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	{
 		int warningCount = 0;
 		int errorCount = 0;
-		for (int i = 0; i < errors.size(); i++)
+		for (ErrorSource.Error error : errors)
 		{
-			ErrorSource.Error error = (ErrorSource.Error) errors.get(i);
 			if(error.getErrorType() == ErrorSource.ERROR)
 				errorCount++;
 			else
@@ -749,9 +756,15 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	//{{{ addError() method
 	private void addError(ErrorSource.Error error, boolean init)
 	{
+		// Due to thread issues a given error may come here twice,
+		// so we need to check whether this is a new error
+		int c = errors.size();
 		errors.add(error);
-		if (! isFiltered(error))
-			addErrorToTree(error, init);
+		if (errors.size() > c)
+		{
+			if (! isFiltered(error))
+				addErrorToTree(error, init);
+		}
 	}
 	//}}}
 

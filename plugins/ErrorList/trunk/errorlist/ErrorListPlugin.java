@@ -98,7 +98,7 @@ public class ErrorListPlugin extends EditPlugin
 			if (showOnError && (jEdit.getActiveView() != null) &&
 				(! isErrorFiltered(error)))
 			{
-				showErrorList(jEdit.getActiveView(), message);
+				showErrorList(jEdit.getActiveView());
 			}
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
@@ -128,7 +128,7 @@ public class ErrorListPlugin extends EditPlugin
 			if ((what == ErrorSourceUpdate.ERROR_SOURCE_ADDED) &&
 				showOnError && (jEdit.getActiveView() != null) && doErrorsExist())
 			{
-				showErrorList(jEdit.getActiveView(), message);
+				showErrorList(jEdit.getActiveView());
 			}
 		}
 	} //}}}
@@ -342,25 +342,10 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ showErrorList() method
-	/**
-	 * @param message The message that triggered the window. It must be
-	 * given here, because this message will not reach the ErrorList
-	 * window in a usual way.
-	 */
-	private void showErrorList(View view, ErrorSourceUpdate message)
+	private void showErrorList(View view)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
-		boolean bFirstTime;
-		bFirstTime = (dwm.getDockableWindow("error-list") == null);
 		dwm.addDockableWindow("error-list");
-		if (bFirstTime && message != null)
-		{
-			// The dockable did not receive the message that was
-			// to trigger it, so it is delivered manually.
-			ErrorList list;
-			list = (ErrorList)dwm.getDockableWindow("error-list");
-			list.handleErrorSourceMessage(message);
-		}
 	} //}}}
 
 	//{{{ invalidateLineInAllViews() method
