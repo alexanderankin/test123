@@ -117,6 +117,10 @@
               <td width="12"><img src="images/button.png" width="12" height="12" /></td>
               <td><a class="menu_links" href="http://community.jedit.org/">jEdit Community</a></td>
             </tr>         
+            <tr>
+              <td width="12"><img src="images/button.png" width="12" height="12" /></td>
+              <td><a class="menu_links" href="http://community.jedit.org/wiki/">jEdit Wiki</a></td>
+            </tr>         
             <tr bgcolor="#BBBBBB">
               <td colspan="2"><span class="menu_headings">Help</span></td>
             </tr>
