@@ -26,6 +26,8 @@ package macosx;
 import javax.swing.*;
 import java.util.regex.Pattern;
 import java.io.File;
+import java.awt.Window;
+import java.lang.reflect.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.options.*;
@@ -193,6 +195,9 @@ public class MacOSXPlugin extends EBPlugin
 		{
 			ViewUpdate msg = (ViewUpdate)message;
 			refreshProxyIcon(msg.getView());
+			
+			if (msg.getWhat() == ViewUpdate.CREATED)
+				enableFullScreenMode(msg.getView());
 		}
 		else if(message instanceof EditPaneUpdate)
 		{
@@ -306,6 +311,26 @@ public class MacOSXPlugin extends EBPlugin
 		
 		return state;
 	}
+	
+	public void enableFullScreenMode(View view)
+	{
+		if (fullScreenFailed)
+			return;
+		
+		try
+		{
+			// FullScreenUtilities.setWindowCanFullScreen(view, true);
+			Class<?> Util = Class.forName("com.apple.eawt.FullScreenUtilities");
+			Class arguments[] = new Class[] { java.awt.Window.class, Boolean.TYPE };
+			Method setWindowCanFullScreen = Util.getMethod("setWindowCanFullScreen", arguments);
+			setWindowCanFullScreen.invoke(Util, view, true);
+		}
+		catch (Exception e)
+		{
+			Log.log(Log.DEBUG, this, "Unable to enable OS X native full screen mode: " + e);
+			fullScreenFailed = true;
+		}
+	}
 
 	//{{{ osok() method
 	private boolean osok()
@@ -329,4 +354,10 @@ public class MacOSXPlugin extends EBPlugin
 
 		return true;
 	}//}}}
+
+	//{{{ Instance variables
+	
+	// If unable to enable full screen mode (e.g., running on OSX 10.6 or earlier), don't keep trying
+	private boolean fullScreenFailed = false;
+	//}}}
 }
