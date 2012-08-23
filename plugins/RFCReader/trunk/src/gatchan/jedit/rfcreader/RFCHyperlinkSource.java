@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007-2010 Matthieu Casanova
+ * Copyright (C) 2007-2012 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -142,25 +142,39 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		{
 			int pos = lineText.indexOf("....");
 			if (pos < wordStart)
-				return null;
-			int i;
-			for (i = 0;i<lineText.length();i++)
 			{
-				if (!Character.isWhitespace(lineText.charAt(i)))
+				pos = lineText.indexOf(". . . .");
+			}
+			if (pos < wordStart)
+			{
+				return null;
+			}
+			int firstNonWhitespacePos;
+			for (firstNonWhitespacePos = 0;firstNonWhitespacePos<lineText.length();firstNonWhitespacePos++)
+			{
+				if (!Character.isWhitespace(lineText.charAt(firstNonWhitespacePos)))
 					break;
 			}
-			pos -= i;
-			String txt = lineText.substring(i);
+			for (int i = pos - 1; i >= 0; i--)
+			{
+				if (!Character.isWhitespace(lineText.charAt(i)))
+				{
+					pos = i + 1;
+					break;
+				}
+			}
+			String txt = lineText.substring(firstNonWhitespacePos, pos);
 			int spacePos = txt.indexOf(' ');
-			String tooltip = txt.substring(spacePos + 1, pos - 1).trim();
+			String tooltip = txt.substring(spacePos + 1).trim();
 			String num = txt.substring(0, spacePos);
 			if (num.endsWith("."))
 			{
-				num = num.substring(0, num.length() - 2);
+				num = num.substring(0, num.length() - 1);
 			}
 			String pattern = num + "\\.?\\s+" + tooltip;
-			currentLink = new ChapterHyperlink(lineStart + i, i+lineStart + pos - 1, line,
-				tooltip, pattern, buffer.getPath());
+			currentLink = new ChapterHyperlink(lineStart + firstNonWhitespacePos,
+											   lineStart + pos, line, tooltip, pattern,
+											   buffer.getPath());
 			return currentLink;
 		}
 		else
@@ -185,6 +199,8 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		if (seg.length() < 50)
 			return true;
 		if (seg.contains("...."))
+			return true;
+		if (seg.contains(". . . ."))
 			return true;
 		return false;
 	}
