@@ -40,7 +40,7 @@ import java.io.IOException;
 public class RFCIndexTitle extends AbstractRFCIndex
 {
 	/** increment this */
-	int INDEX_VERSION = 3;
+	int INDEX_VERSION = 4;
 
 	public RFCIndexTitle() throws IOException
 	{
