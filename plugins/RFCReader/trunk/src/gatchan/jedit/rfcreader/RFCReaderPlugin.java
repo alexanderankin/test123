@@ -92,8 +92,11 @@ public class RFCReaderPlugin extends EditPlugin
 		if (!s.equals(currentService))
 		{
 			currentService = s;
-			index.close();
-			index = null;
+			if (index != null)
+			{
+				index.close();
+				index = null;
+			}
 		}
 	}
 
