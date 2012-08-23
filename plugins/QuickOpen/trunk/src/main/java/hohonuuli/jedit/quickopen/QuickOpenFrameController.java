@@ -64,6 +64,13 @@ public class QuickOpenFrameController {
                 directory = new File(path);
             }
             catch (Exception e) {
+                /*
+                 We end up here when : 
+                   1) jEdit is first started and no clicks in the VFSBrowser have been made AND
+                   2) No files are opened AND
+                   3) User tries to use quickopen
+                 */
+                // TODO Grab whatever the default directory used by jEdit is and set it here.
                 Log.log(Log.MESSAGE, this, "Failed to parse directory of current buffer", e);
             }
 
