@@ -192,8 +192,8 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		if (seg.length() < 3)
 			return false;
 
-		boolean digit = Character.isDigit(seg.charAt(0));
-		if (!digit)
+		char firstChar = seg.charAt(0);
+		if (!Character.isDigit(firstChar) && firstChar != 'A')
 			return false;
 
 		if (seg.length() < 50)
