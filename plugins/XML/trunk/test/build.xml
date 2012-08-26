@@ -90,7 +90,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="sidekick/html/HtmlParserTest.java"/>
+        <filename name="xml/XmlPluginTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
@@ -136,4 +136,11 @@
             <reference refid="project.test.sysproperties"/>
         </ant>
     </target>
+
+    <target name="report" description="produce reports">
+        <ant antfile="${test.framework.home}/build.xml" target="-report" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+
 </project>

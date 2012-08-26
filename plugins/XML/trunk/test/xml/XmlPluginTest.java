@@ -40,6 +40,7 @@ import org.fest.swing.driver.BasicJListCellReader;
 import org.fest.swing.driver.CellRendererReader;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
+import org.fest.swing.exception.ComponentLookupException;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JListFixture;
 import org.fest.swing.timing.Pause;
@@ -215,12 +216,27 @@ public class XmlPluginTest{
 		try{
 			completion = XMLTestUtils.completionPopup();
 			fail("shouldn't be there");
-		}catch(Throwable e){
-			//fine
+		}catch(ComponentLookupException e){
+			// it's OK
 		}
 		
+		Pause.pause(500);
+
+		// aa, ab
+		gotoPositionAndWait(653);
+		
+		action("sidekick-complete",1);
+		
+		completion = XMLTestUtils.completionPopup();
+		
+		completion.requireVisible();
+		assertThat(xmlListContents(completion.list())).containsOnly("aa","ab");
+		completion.list().pressAndReleaseKeys(KeyEvent.VK_ESCAPE);
+		
+		Pause.pause(500);
+
 		// aa,ab
-		gotoPositionAndWait(657);
+		gotoPositionAndWait(860);
 		action("sidekick-complete",1);
 		completion = XMLTestUtils.completionPopup();
 		
@@ -230,7 +246,7 @@ public class XmlPluginTest{
 		Pause.pause(500);
 
 		// aa,ab
-		gotoPositionAndWait(771);
+		gotoPositionAndWait(974);
 		action("sidekick-complete",1);
 		completion = XMLTestUtils.completionPopup();
 
@@ -240,24 +256,39 @@ public class XmlPluginTest{
 		Pause.pause(500);
 
 		
-		gotoPositionAndWait(834);
+		gotoPositionAndWait(1037);
 		action("sidekick-complete",1);
 		try{
 			completion = XMLTestUtils.completionPopup();
 			fail("shouldn't be there");
-		}catch(Throwable e){
-			//fine
+		}catch(ComponentLookupException e){
+			// it's OK
 		}
 		
-		gotoPositionAndWait(850);
+		gotoPositionAndWait(1052);
 		action("sidekick-complete",1);
 		try{
 			completion = XMLTestUtils.completionPopup();
 			fail("shouldn't be there");
-		}catch(Throwable e){
-			//fine
+		}catch(ComponentLookupException e){
+			// it's OK
 		}
-	}
+
+		// P bug #3533666 : should be nothing, is aa, ab
+		gotoPositionAndWait(573);
+		
+		action("sidekick-complete",1);
+		Pause.pause(500);
+		
+		try{
+			completion = XMLTestUtils.completionPopup();
+			fail("shouldn't be there");
+		}catch(ComponentLookupException e){
+			// it's OK
+		}
+
+    
+    }
 	
 	/** an error in an online schema : navigate to it via Error List*/
 	@Test

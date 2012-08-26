@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JTreeFixture;
+import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.testframework.TestUtils;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.junit.AfterClass;
@@ -70,6 +71,10 @@ public class HtmlParserTest{
 		
 		// ensure that errors in CSS are reported at the correct location
 		action("error-list-show",1);
+
+    	action("sidekick.parser.html-switch");
+
+		Pause.pause(2000);
 		
     	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
     	errorlist.resizeWidthTo(1024);
