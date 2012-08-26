@@ -18,6 +18,9 @@
 package xml.parser;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.xml.sax.helpers.NamespaceSupport;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -27,6 +30,7 @@ import xml.completion.*;
 import xml.completion.ElementDecl.AttributeDecl;
 import xml.*;
 import xml.XmlListCellRenderer.WithLabel;
+import javax.swing.text.Segment;
 
 /**
  * This is the common base class for both HTML and XML Parsers.
@@ -82,6 +86,8 @@ public abstract class XmlParser extends SideKickParser
 			}
 			editPane.getTextArea().addStructureMatcher(h);
 		}
+		// I set it to true by default and will run it for some time, see if it's satisfying
+		tryModesSuperSet = jEdit.getBooleanProperty("xml.try-modes-superset",true);
 	} //}}}
 
 	//{{{ deactivate() method
@@ -120,8 +126,8 @@ public abstract class XmlParser extends SideKickParser
 	// This patch uses syntax information to improve the validity of
 	// completion popups in a number of ways, including reducing
 	// attribute completion popups in text areas.
-	// This relies on XML text areas being unparsed, Token.NULL.
-	// This true for the two xml modes I'm aware of: xml and xsl
+	// This relies on the actual token for supported modes (currently xml, xsl, ant, maven, html, tld)
+	// and the supported mode names.
 	//
 	// If a new xml-derived edit mode say, xhtml/css, parsed the css syntax
 	// and then used this complete method, attribute popups would appear in
@@ -132,13 +138,6 @@ public abstract class XmlParser extends SideKickParser
 	// xml derived syntaxes. Or process syntax in parallel to jEdit with a
 	// custom rules set
 	//
-	// jEdit syntax Token.END represents the newline character(s) at the end of each
-	// line. It is a visual marker that does not correspond to XML syntax.
-	// XML allows newlines in at least text areas, attribute values, comments, CDATA.
-	// I have treated Token.END as whitespace and attribute completion will pop up
-	// incorrectly in some circumstances at the start of lines after the first line,
-	// such as when a text area spans multiple lines
-	//
 	// Additional fixes:
 	// enable attribute completion after attribute values that contain /
 	// enable attribute completion for elements that span multiple lines
@@ -148,6 +147,7 @@ public abstract class XmlParser extends SideKickParser
 	// more exceptions in the code than keystroke activation
 	//
 	// Greg Knittl 2009-06-19
+	// (edited Eric Le Lay 2012-08-26)
 	{
 		// caret can be at 0 when invoking completion from SideKick plugin menu
 		// or through backspace
@@ -164,7 +164,6 @@ public abstract class XmlParser extends SideKickParser
 		
 		int lastchar = caret - 1;
 		int lastcharLine = buffer.getLineOfOffset(lastchar);
-		String text = buffer.getText(0,caret);
 		int lineStart = buffer.getLineStartOffset(lastcharLine);
 		
 		// get syntax tokens for the line of character before the caret
@@ -173,78 +172,188 @@ public abstract class XmlParser extends SideKickParser
 		DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
 		buffer.markTokens(lastcharLine,tokenHandler);
 		Token token = tokenHandler.getTokens();
-
+		// save last < opening a tag
+		Token openTag = null;
+		// save last 5 tokens : '<'  '/'  prefix  ':'  tagname
+		TokenRingBuffer lastTokens = new TokenRingBuffer(5);
 		while(token.id != Token.END)
 		{
 			int next = lineStart + token.length;
+			
+			lastTokens.write(token);
+
 			if (lineStart <= lastchar && next > lastchar)
 				break;
+			
+			
+			// save last <
+			if(token.length == 1
+					&& (token.id == Token.MARKUP || token.id == Token.KEYWORD2)
+					&& buffer.getSegment(lineStart, token.length).charAt(0) == '<')
+			{
+				openTag = token;
+			}
+			
 			lineStart = next;
 			token = token.next;
 		}
 		
-		// could test for comments and return at this point
-		// continuing allows some completion within comments
-		// for example when comments contain lines of valid xml
+		// special case for completion at start of line:
+		// can't read whitespace followed by word to trigger attribute complete,
+		// so use rule context from line before.
+		// It's hard-coded for every supported mode.
+		lineStart = buffer.getLineStartOffset(buffer.getLineOfOffset(caret));
+		boolean caretIsAtLineStart = lineStart == caret;
 		
 		String modename = buffer.getMode().getName();
 		
-		int mode = -1;
-		boolean insideQuote = false;
-		int wordStart = -1;
-		int attribStart = -1;
-		// iterate backwards towards start of file to find a tag
-		// or the & indicating the start of an entity
-		// i >= 1 enables attribute completion for elements spanning multiple lines
-		for(int i = lastchar; i >= 1; i--)
-		{
-			char ch = text.charAt(i);
-			if(ch == '>') 
-				return null; // completely outside a tag
-			if(ch == '<')
-			{
-				wordStart = i;
-				if (mode == -1) 
-					mode = ELEMENT_COMPLETE;
-				break;
+		lineStart = buffer.getLineStartOffset(lastcharLine);
+		lastTokens.mark();
+		Context ctx = new Context();
+		
+		if(caretIsAtLineStart){
+			String ruleSet = tokenHandler.getLineContext().rules.getName();
+			if("xml".equals(modename)){
+				if("xml::TAGS".equals(ruleSet)){
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = caret;
+				}
+			}else if("xsl".equals(modename)){
+				if("xsl::TAGS".equals(ruleSet) || "xsl::XSLTAGS".equals(ruleSet)){
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = caret;
+				}
+			}else if("ant".equals(modename)){
+				if("ant::TAGS".equals(ruleSet)){
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = caret;
+				}
+			}else if("maven".equals(modename)){
+				if("maven::TAGS".equals(ruleSet)){
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = caret;
+				}
+			}else if("tld".equals(modename)){
+				if("tld::TAGS".equals(ruleSet)){
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = caret;
+				}
+			}else if("html".equals(modename)){
+				if("html::TAGS".equals(ruleSet)){
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = caret;
+				}
 			}
-			if(ch == '&')
-			{
-				// & and ATTRIBUTE_COMPLETE is invalid because it implies whitespace in the entity
-				// can occur with attributes enclosed by misinterpreted 's that contain an entity followed by a space
-				if (mode == ATTRIB_COMPLETE) 
-					return null;
-				wordStart = i;
-				if (mode == -1) 
-					mode = ENTITY_COMPLETE;
-				break;
-			}
-			// " in text area or ' delimiting attribute values break this logic
-			// xslt often uses multiple levels of quotes for XPath
-			else if (ch == '"') 
-			{
-				insideQuote = !insideQuote;
-			}
-			// whitespace is not allowed in element tag names or entities;
-			// in xml mode attributes can only occur in Token.MARKUP or Token.END (or Token.OPERATOR when just typing the colon)
-			// this solves the problem of attributes defined with ' for xml mode
-			// xsl mode parses the markup more finely so the logic gets more complex but probably could be done
-			else if (Character.isWhitespace(ch) && !(token.id == Token.MARKUP || token.id == Token.END || (token.id == Token.OPERATOR && text.charAt(lastchar) == ':')) && modename.equals("xml")) {
-			  	return null;
-			}
-			// whitespace is not allowed in element tags or entities;
-			// no attributes allowed in text area (Token.NULL) or comments (Token.COMMENT1) so exit
-			else if (Character.isWhitespace(ch) && (token.id == Token.NULL || token.id == Token.COMMENT1)) {
-			  	return null;
-			}
-			// no break to allow loop to iterate back to find next < or &
-			// add test for not Token.NULL (text area)
-			else if (Character.isWhitespace(ch) && token.id != Token.NULL && !insideQuote && mode == -1) {
-				attribStart = i+1;
-				mode = ATTRIB_COMPLETE;
+		}else{
+			
+			// Taking the union of every mode is shorter.
+			// Then it would work for other modes reusing xml TAGS rules.
+			// see for instance javadoc in java file.
+			// Yes, you have to set the parser as xml for this to work, which results immediately in an error!
+			// But it is still seducing...
+			if(tryModesSuperSet){
+				byte[] LT_TYPE = {Token.MARKUP, Token.KEYWORD2};
+				byte[] WS_TYPE = {Token.MARKUP, Token.KEYWORD2};
+				byte[] WORD_TYPE = {Token.MARKUP, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3, Token.KEYWORD4, Token.OPERATOR, Token.FUNCTION};
+				byte[] COLON_TYPE = {Token.OPERATOR, Token.LABEL, Token.MARKUP};
+				byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3, Token.KEYWORD4, Token.OPERATOR, Token.FUNCTION, Token.MARKUP};
+				byte[] ENT_TYPE = {Token.LITERAL2};
+				ctx = getMode(lastTokens, buffer, lineStart,
+						LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+			}else{
+				if("xml".equals(modename) || "xsl".equals(modename)){
+					byte[] LT_TYPE = {Token.MARKUP};
+					byte[] WS_TYPE = {Token.MARKUP};
+					byte[] WORD_TYPE = {Token.MARKUP};
+					byte[] COLON_TYPE = {Token.OPERATOR};
+					byte[] PREFIX_TYPE = {Token.LABEL};
+					byte[] ENT_TYPE = {Token.LITERAL2};
+					ctx = getMode(lastTokens, buffer, lineStart,
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+				}
+				if(ctx.mode == -1 && "xsl".equals(modename)){
+					lastTokens.reset();
+					byte[] LT_TYPE = {Token.KEYWORD2};
+					byte[] WS_TYPE = {Token.KEYWORD2};
+					byte[] WORD_TYPE = {Token.KEYWORD1,Token.KEYWORD2};
+					byte[] COLON_TYPE = {Token.LABEL};
+					byte[] PREFIX_TYPE = {Token.LABEL};
+					byte[] ENT_TYPE = {Token.LITERAL2};
+					ctx = getMode(lastTokens, buffer, lineStart,
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+				}
+				if(ctx.mode  == -1 && "ant".equals(modename)){
+					//note: last word can contain =
+					lastTokens.reset();
+					byte[] LT_TYPE = {Token.MARKUP};
+					byte[] WS_TYPE = {Token.MARKUP};
+					byte[] WORD_TYPE = {Token.MARKUP, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3, Token.KEYWORD4, Token.OPERATOR, Token.FUNCTION};
+					byte[] COLON_TYPE = {Token.LABEL};
+					byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3, Token.KEYWORD4, Token.OPERATOR, Token.FUNCTION};
+					byte[] ENT_TYPE = {Token.LITERAL2};
+					ctx = getMode(lastTokens, buffer, lineStart,
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+				}
+				if(ctx.mode == -1 && "html".equals(modename)){
+					byte[] LT_TYPE = {Token.MARKUP};
+					byte[] WS_TYPE = {Token.MARKUP};
+					byte[] WORD_TYPE = {Token.MARKUP, Token.KEYWORD1};
+					byte[] COLON_TYPE = {Token.MARKUP};
+					byte[] PREFIX_TYPE = {Token.MARKUP, Token.KEYWORD1};
+					byte[] ENT_TYPE = {Token.LITERAL2};
+					lastTokens.reset();
+					ctx = getMode(lastTokens, buffer, lineStart,
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+				}
+				if(ctx.mode == -1 && "maven".equals(modename)){
+					//note: last word can contain =
+					byte[] LT_TYPE = {Token.MARKUP};
+					byte[] WS_TYPE = {Token.MARKUP};
+					byte[] WORD_TYPE = {Token.MARKUP, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3};
+					byte[] COLON_TYPE = {Token.LABEL};
+					byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3};
+					byte[] ENT_TYPE = {Token.LITERAL2};
+					lastTokens.reset();
+					ctx = getMode(lastTokens, buffer, lineStart,
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+				}
+				if(ctx.mode == -1 && "tld".equals(modename)){
+					//note: last word can contain =
+					byte[] LT_TYPE = {Token.MARKUP};
+					byte[] WS_TYPE = {Token.MARKUP};
+					byte[] WORD_TYPE = {Token.MARKUP, Token.KEYWORD1, Token.KEYWORD2};
+					byte[] COLON_TYPE = {Token.LABEL};
+					byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2};
+					byte[] ENT_TYPE = {Token.LITERAL2};
+					lastTokens.reset();
+					ctx = getMode(lastTokens, buffer, lineStart,
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+				}
 			}
 		}
-		if (insideQuote) mode=-1;
+		
+		// fix for modes not highlighting entities in attribute values (see patch #3559971)
+		if(ctx.mode == -1){
+			int start = Math.max(lineStart, caret - 100);
+			Matcher m = entP.matcher(buffer.getSegment(start, caret - start));
+			if(m.matches()){
+				ctx.mode = ENTITY_COMPLETE;
+				ctx.wordStart = start + m.start(1);
+			}
+		}
+
+		// comments and CDATA sections are not recognised using the syntax highlighting
+		// because this would be to complex to make them work inside element tag (another 5,6 cases)
+		// or within themselves (that is illegal, but useful when editing). 
+		if(ctx.mode == -1){
+			int start = Math.max(lineStart, caret - 100);
+			Matcher m = commentCDATAP.matcher(buffer.getSegment(start, caret - start));
+			if(m.matches()){
+				ctx.mode = ELEMENT_COMPLETE;
+				ctx.wordStart = start + m.start(1);
+			}
+		}
+		
 		String closingTag = null;
 		String word;
 
@@ -254,27 +363,43 @@ public abstract class XmlParser extends SideKickParser
 		NamespaceBindings localNamespacesToInsert = new NamespaceBindings();
 		
 		
-		if(wordStart != -1 && mode != -1)
+		if(ctx.mode != -1)
 		{
-			String tolastchar = text.substring(wordStart + 1, caret);
-			// avoid ArrayIndexOutOfBoundsException for < or & followed by one or more spaces
-			if (tolastchar.trim().length() == 0)
-				word = "";
-			else
-			{
-				String firstSpace = tolastchar.split("\\s")[0];
-				if (firstSpace.length() > 0)
-					word = firstSpace;
-				else
-					word = text.substring(wordStart + 1, caret);
+			if(ctx.wordStart == -1){
+				// attrib=>find element!
+				if(openTag!=null){
+					ctx.wordStart = lineStart+openTag.offset+openTag.length;
+					String tolastchar = buffer.getSegment(ctx.wordStart, caret-ctx.wordStart).toString();
+					if (tolastchar.trim().length() == 0)
+						word = "";
+					else
+					{
+						String firstSpace = tolastchar.split("\\s")[0];
+						if (firstSpace.length() > 0)
+							word = firstSpace;
+						else
+							word = buffer.getSegment(ctx.wordStart, caret-ctx.wordStart).toString();
+					}
+				}else{
+					int start = TagParser.lastIndexOf(buffer.getSegment(0, lastchar),'<',lastchar - 1);
+					if(start < 0){
+						throw new IllegalStateException("can't find opening of tag??");
+					}else{
+						ctx.wordStart = start+1; // +1 because start is index of '<' and we only want the tag name
+						int end = Math.min(start+100, buffer.getLineEndOffset(buffer.getLineOfOffset(start))); // assume tag name is less than 100 chars
+						word = buffer.getText(start+1,end).split("\\s")[0];
+					}
+				}
+			}else{
+				word = buffer.getSegment(ctx.wordStart, caret - ctx.wordStart).toString();
 			}
 
-			if(mode == ELEMENT_COMPLETE)
+			if(ctx.mode == ELEMENT_COMPLETE)
 			{
 				String wordWithoutPrefix = XmlParsedData.getElementLocalName(word);
 				String wordPrefix = XmlParsedData.getElementNamePrefix(word);
 				List<ElementDecl> completions = data.getAllowedElements(buffer, lastchar);
-				TagParser.Tag tag = TagParser.findLastOpenTag(text,lastchar - 1,data);
+				TagParser.Tag tag = TagParser.findLastOpenTag(buffer.getSegment(0, lastchar - 1), lastchar-1,data);
 				if(tag != null)
 					closingTag = tag.tag;
 
@@ -357,7 +482,7 @@ public abstract class XmlParser extends SideKickParser
 					}
 				}
 			}
-			else if (mode == ENTITY_COMPLETE)
+			else if (ctx.mode == ENTITY_COMPLETE)
 			{
 				List<EntityDecl> completions = data.entities;
 				for(int i = 0; i < completions.size(); i++)
@@ -369,11 +494,11 @@ public abstract class XmlParser extends SideKickParser
 					}
 				}
 			}
-			else if (mode == ATTRIB_COMPLETE) 
+			else if (ctx.mode == ATTRIB_COMPLETE) 
 			{
 				// word contains element name
 				// prefix contains what was typed of the attribute
-				String prefix = text.substring(attribStart, caret);
+				String prefix = buffer.getText(ctx.attribStart, caret - ctx.attribStart);
 				String wordWithoutPrefix = XmlParsedData.getElementLocalName(prefix);
 				String wordPrefix = XmlParsedData.getElementNamePrefix(prefix);
 				ElementDecl decl = data.getElementDecl(word,caret);
@@ -466,6 +591,228 @@ public abstract class XmlParser extends SideKickParser
 			return new XmlCompletion(editPane.getView(),allowedCompletions, namespaces, namespacesToInsert, word,data,closingTag);
 	} //}}}
 
+	private static class Context {
+		int mode = -1;
+		int wordStart = -1;
+		int attribStart = -1;
+	}
+	
+	private final char lt = '<';
+	private final char colon = ':';
+	private final char amp = '&';
+	private final char slash = '/';
+	private final Pattern ws = Pattern.compile("\\s+");
+	private final Pattern wordP = Pattern.compile("[\\w-_]+(=[\"']?)?");// = to match attribute names in xsl mode where = is part of the name token
+	private final Pattern entP = Pattern.compile(".*&([\\w_-]*)$");
+	private final Pattern commentCDATAP = Pattern.compile(".*<((!-?-?)|(!\\[(C(D(A(T(A\\[?)?)?)?)?)?))");
+	private Context getMode(TokenRingBuffer lastTokens, Buffer buffer, int lineStart,
+				byte[] LT_TYPE, byte[] WS_TYPE, byte[] WORD_TYPE, byte[] COLON_TYPE, byte[] PREFIX_TYPE,
+				byte[] ENT_TYPE){
+		Context ctx = new Context();
+		if(!lastTokens.isEmpty()){
+			Token last = lastTokens.popLast();
+			CharSequence img = buffer.getSegment(lineStart+last.offset, last.length);
+			if(matches(last,LT_TYPE, img, lt)){
+				ctx.mode = ELEMENT_COMPLETE;
+				ctx.wordStart = lineStart+last.offset+last.length;
+			}else if(matches(last,WS_TYPE,img, ws)){
+				ctx.mode = ATTRIB_COMPLETE;
+				ctx.attribStart = lineStart+last.offset+last.length;
+			}else if(matches(last,LT_TYPE,img, slash)){
+				if(!lastTokens.isEmpty()){
+					last = lastTokens.popLast();
+					img = buffer.getSegment(lineStart+last.offset, last.length);
+					if(matches(last,LT_TYPE,img, lt)){
+						ctx.mode = ELEMENT_COMPLETE;
+						ctx.wordStart = lineStart+last.offset+last.length;
+					}
+				}
+			}else if(matches(last,WORD_TYPE, img, wordP)){
+				if(!lastTokens.isEmpty()){
+					last = lastTokens.popLast();
+					img = buffer.getSegment(lineStart+last.offset, last.length);
+					if(matches(last,LT_TYPE,img, lt)){
+						ctx.mode = ELEMENT_COMPLETE;
+						ctx.wordStart = lineStart+last.offset+last.length;
+					}else if(matches(last,WS_TYPE,img, ws)){
+						ctx.mode = ATTRIB_COMPLETE;
+						ctx.attribStart = lineStart+last.offset+last.length;
+					}else if(matches(last,LT_TYPE,img, slash)){
+						if(!lastTokens.isEmpty()){
+							last = lastTokens.popLast();
+							img = buffer.getSegment(lineStart+last.offset, last.length);
+							if(matches(last,LT_TYPE,img, lt)){
+								ctx.mode = ELEMENT_COMPLETE;
+								ctx.wordStart = lineStart+last.offset+last.length;
+							}
+						}
+					}else if(matches(last, COLON_TYPE, img, colon)){
+						if(!lastTokens.isEmpty()){
+							last = lastTokens.popLast();
+							img = buffer.getSegment(lineStart+last.offset, last.length);
+							if(matches(last, PREFIX_TYPE, img, wordP)){
+								if(!lastTokens.isEmpty()){
+									last = lastTokens.popLast();
+									img = buffer.getSegment(lineStart+last.offset, last.length);
+									if(matches(last,LT_TYPE, img, lt)){
+										ctx.mode = ELEMENT_COMPLETE;
+										ctx.wordStart = lineStart+last.offset+last.length;
+									}else if(matches(last,WS_TYPE,img, ws)){
+										ctx.mode = ATTRIB_COMPLETE;
+										ctx.attribStart = lineStart+last.offset+last.length;
+									}else if(matches(last,LT_TYPE,img, slash)){
+										if(!lastTokens.isEmpty()){
+											last = lastTokens.popLast();
+											img = buffer.getSegment(lineStart+last.offset, last.length);
+											if(matches(last,LT_TYPE,img, lt)){
+												ctx.mode = ELEMENT_COMPLETE;
+												ctx.wordStart = lineStart+last.offset+last.length;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}else{
+					// word at beginning of line => attribute
+					ctx.mode = ATTRIB_COMPLETE;
+					ctx.attribStart = lineStart;
+				}
+			}else if(matches(last, COLON_TYPE,img, colon)){
+				if(!lastTokens.isEmpty()){
+					last = lastTokens.popLast();
+					img = buffer.getSegment(lineStart+last.offset, last.length);
+					if(matches(last, PREFIX_TYPE, img, wordP)){
+						if(!lastTokens.isEmpty()){
+							last = lastTokens.popLast();
+							img = buffer.getSegment(lineStart+last.offset, last.length);
+							if(matches(last,LT_TYPE,img, lt)){
+								ctx.mode = ELEMENT_COMPLETE;
+								ctx.wordStart = lineStart+last.offset+last.length;
+							}else if(matches(last,WS_TYPE,img, ws)){
+								ctx.mode = ATTRIB_COMPLETE;
+								ctx.attribStart = lineStart+last.offset+last.length;
+							}else if(matches(last,LT_TYPE,img, slash)){
+								if(!lastTokens.isEmpty()){
+									last = lastTokens.popLast();
+									img = buffer.getSegment(lineStart+last.offset, last.length);
+									if(matches(last,LT_TYPE,img, lt)){
+										ctx.mode = ELEMENT_COMPLETE;
+										ctx.wordStart = lineStart+last.offset+last.length;
+									}
+								}
+							}
+						}
+					}
+				}
+			}else if(matches(last,ENT_TYPE, img, amp)){
+				ctx.mode = ENTITY_COMPLETE;
+				ctx.wordStart = lineStart+last.offset+last.length;
+			}else if(matches(last,ENT_TYPE, img, wordP)){
+				if(!lastTokens.isEmpty()){
+					last = lastTokens.popLast();
+					img = buffer.getSegment(lineStart+last.offset, last.length);
+					if(matches(last, ENT_TYPE, img, amp)){
+						ctx.mode = ENTITY_COMPLETE;
+						ctx.wordStart = lineStart+last.offset+last.length;
+					}
+				}
+			}
+		}	
+		return ctx;
+	}
+		
+	 private boolean matches(Token last, byte[] types, CharSequence img, char wanted) {
+		 if(last.length != 1)return false;
+		 boolean okType = false;
+		 for(int i=0;i<types.length;i++){
+			 if(last.id == types[i]){
+				 okType = true;
+				 break;
+			 }
+		 }
+		 return okType
+				 && img.charAt(0) == wanted;
+	}
+
+	 private boolean matches(Token last, byte[] types, CharSequence img, Pattern wanted) {
+		 boolean okType = false;
+		 for(int i=0;i<types.length;i++){
+			 if(last.id == types[i]){
+				 okType = true;
+				 break;
+			 }
+		 }
+		 return okType
+				 && wanted.matcher(img).matches();
+	}
+
+	private boolean isWord(CharSequence s) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean isWS(CharSequence s) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	static class TokenRingBuffer {
+		private final Token[] tokens;
+		public final int size;
+		private int start = 0;
+		private int end = 0;
+		private int savedStart = -1;
+		private int savedEnd = -1;
+		
+		public TokenRingBuffer(int size) {
+			this.size = size;
+			tokens = new Token[size+1];
+		}
+		
+		public boolean isEmpty(){
+			return start == end;
+		}
+		
+		public void write(Token t){
+			tokens[end] = t;
+			end = (end + 1 ) % tokens.length;
+			if(start == end){
+				start = (start + 1) % tokens.length;
+			}
+			savedStart = -1;
+		}
+		
+		public Token popFirst(){
+			Token ret = tokens[start];
+			start = (start + 1) % tokens.length;
+			return ret;
+		}
+		
+		public Token popLast(){
+			end = end -1;
+			if(end < 0){
+				end = tokens.length - 1;
+			}
+			return tokens[end];
+		}
+		
+		public void mark(){
+			savedStart = start;
+			savedEnd = end;
+		}
+		
+		public boolean reset(){
+			if(savedStart == -1)return false;
+			else {
+				start = savedStart;
+				end = savedEnd;
+				return true;
+			}
+		}
+	}
+	
 	//{{{ Package-private members
 	boolean stopped;
 	//}}}
@@ -473,5 +820,6 @@ public abstract class XmlParser extends SideKickParser
 	//{{{ Private members
 	private StructureMatcher highlight;
 	private StructureMatcher htmlHighlight;
+	private boolean tryModesSuperSet;
 	//}}}
 }
