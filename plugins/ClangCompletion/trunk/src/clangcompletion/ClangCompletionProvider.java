@@ -193,7 +193,7 @@ public class ClangCompletionProvider implements CompletionProvider
 			{
 				ClangCompletionCandidate candidate = ClangCompletionCandidate.parse(input);
 				
-				if(candidate != null && candidate.getDescription().toLowerCase().startsWith(prefix))
+				if(candidate != null /* && candidate.getDescription().toLowerCase().startsWith(prefix) */)
 				{
 					//if(candidate != null && !codeCompletions.contains(candidate) )
 					codeCompletions.add(candidate );
