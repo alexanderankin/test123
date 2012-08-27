@@ -27,3 +27,7 @@ options.hyperlink.color.value=#3333ff
 
 hyperlink.defaultSource.label=Default source
 hyperlink.defaultSource=None
+
+mode.c.hyperlink.source=C:include
+mode.c++.hyperlink.source=C:include
+mode.objective-c.hyperlink.source=C:include
