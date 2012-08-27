@@ -100,21 +100,23 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     		//delete retturn value;
     		result = result.substring(i+1);
     	}
-    	
+    	//COMPLETION: setText : [#void#][#CommonDialogLayer::#]setText(<#const char *text#>{#, <#int text_id#>#})
     	result = result.replace("<#","");
     	result = result.replace("#>","");
+    	result = result.replace("{#","");
+    	result = result.replace("#}","");
         return result;
     }
     
     @Override
     public boolean isValid (View view)
     {
-    	return true;
-    	/*
+    	//return true;
+    	
         String prefix = CompletionUtil.getCompletionPrefix(view);
         if (prefix == null || prefix.length() == 0) 
         {
-            return true;
+            return false;
         }
         
         // System.out.println(description.startsWith("mai"));
@@ -126,7 +128,6 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
         {
         	return false;
         }
-        */
     }
     
     @Override

@@ -23,7 +23,7 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import javax.swing.SwingUtilities;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
@@ -45,7 +45,7 @@ import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
 public class BufferWatcher
 {
-	private  int numOfClangThreadWorking = 0;
+	private  AtomicInteger numOfClangThreadWorking = new AtomicInteger();
 	
 	public BufferWatcher()
 	{
@@ -60,16 +60,12 @@ public class BufferWatcher
 	@EBHandler
 	public void handleBufferUpdate(BufferUpdate bu)
 	{
-		synchronized(this)
+		if(numOfClangThreadWorking.intValue() > 0)
 		{
-			if(numOfClangThreadWorking > 0)
-			{
-				System.out.println("numOfClangThreadWorking: " + numOfClangThreadWorking);
-				return;
-			}
+			return;
 		}
+		
 		System.out.println("handleBufferUpdate");
-		// TOOD: handleBufferUpdate was called 4 times and throw exceptions when save a source file.
 		if (( bu.getWhat() == BufferUpdate.SAVED) )
 		{
 			Buffer buffer = bu.getBuffer();
@@ -144,7 +140,7 @@ public class BufferWatcher
 				StringBuilder cmd = new StringBuilder();
 				for(int i = 0; i < args.size();i++)
 				{
-					cmd.append(args.get(i));
+					cmd.append(args.get(i)+" ");
 				}
 				System.out.println(cmd);
 				
@@ -159,10 +155,8 @@ public class BufferWatcher
 					{
 						public void run()
 						{
-							synchronized(this)
-							{
-								numOfClangThreadWorking++;
-							}
+							
+							numOfClangThreadWorking.addAndGet(1);
 							try
 							{
 								BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -177,11 +171,9 @@ public class BufferWatcher
 							}catch(Exception ex)
 							{
 								ex.printStackTrace();
-							}
-							
-							synchronized(this)
+							}finally
 							{
-								numOfClangThreadWorking--;
+								numOfClangThreadWorking.addAndGet(-1);
 							}
 						}
 					}.start();
@@ -190,10 +182,7 @@ public class BufferWatcher
 					{
 						public void run()
 						{
-							synchronized(this)
-							{
-								numOfClangThreadWorking++;
-							}
+							numOfClangThreadWorking.addAndGet(1);
 							
 							try
 							{
@@ -206,11 +195,9 @@ public class BufferWatcher
 							}catch(Exception ex)
 							{
 								ex.printStackTrace();
-							}
-							
-							synchronized(this)
+							}finally
 							{
-								numOfClangThreadWorking--;
+								numOfClangThreadWorking.addAndGet(-1);
 							}
 						}
 					}.start();
@@ -242,6 +229,7 @@ public class BufferWatcher
 		final Matcher matcher = errorPattern.matcher(clangOutput);
 		if(matcher.find() && matcher.groupCount() >= 5)
 		{
+			
 			SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
@@ -255,6 +243,7 @@ public class BufferWatcher
 							matcher.group(5) ));
 					}
 				});
+			
 		}
 	}
 }
