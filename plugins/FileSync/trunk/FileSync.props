@@ -1,0 +1,30 @@
+#-----------------------------------
+# Properties for FileSync Plugin
+#-----------------------------------
+
+plugin.filesync.FileSyncPlugin.name=FileSync
+plugin.filesync.FileSyncPlugin.author=Dale Anson
+plugin.filesync.FileSyncPlugin.version=1.0
+plugin.filesync.FileSyncPlugin.activate=startup
+plugin.filesync.FileSyncPlugin.description=Synchronizes project files to another directory.
+plugin.filesync.FileSyncPlugin.usePluginHome=true
+
+# dependencies
+plugin.filesync.FileSyncPlugin.depend.0=jdk 1.6.0
+plugin.filesync.FileSyncPlugin.depend.1=jedit 04.05.99.00
+plugin.filesync.FileSyncPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.4.4
+plugin.filesync.FileSyncPlugin.depend.3=plugin CommonControlsPlugin 1.5
+plugin.filesyncFileSyncPlugin.jars=commons-io-2.4.jar
+
+# docs
+plugin.filesync.FileSyncPlugin.docs=index.html
+
+# titles for DockableWindowManager
+filesync.title=FileSync
+
+# ProjectViewer option pane
+plugin.projectviewer.filesync.FileSyncPlugin.option-pane=filesync.pv.options
+options.filesync.pv.options.label=FileSync settings
+options.filesync.pv.options.code=new filesync.PVOptionPane();
+
+filesync.SyncAll=FileSync - Sync All Files
