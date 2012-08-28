@@ -1,0 +1,10 @@
+<project name="Make" default="build" basedir=".">
+	<property file="../build.properties" />
+	<property name="build.dir" value="build"/>
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<path id="project.class.path">
+		<pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
+		<pathelement path="${jedit.plugins.dir}/ErrorList.jar" />
+	</path>
+</project>

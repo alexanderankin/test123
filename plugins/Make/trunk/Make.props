@@ -1,0 +1,14 @@
+plugin.make.MakePlugin.activate=defer
+plugin.make.MakePlugin.author=Damien Radtke
+plugin.make.MakePlugin.description=Make adds support to ProjectViewer and the built-in file browser \
+	for running project builds based on local buildfiles.
+plugin.make.MakePlugin.longdescription=description.html
+plugin.make.MakePlugin.docs=index.html
+plugin.make.MakePlugin.name=Make
+plugin.make.MakePlugin.usePluginHome=false
+plugin.make.MakePlugin.version=1.0
+
+plugin.make.MakePlugin.depend.0=jedit 04.03.99.00
+plugin.make.MakePlugin.depend.1=jdk 1.5
+plugin.make.MakePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.make.MakePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.4
