@@ -22,3 +22,7 @@ plugin.clangcompletion.ClangCompletionPlugin.depend.5=plugin SuperAbbrevsPlugin 
 plugin.projectviewer.clangcompletion.main.ClangCompletionPlugin.option-pane=ClangCompletion-Configuration
 options.ClangCompletion-Configuration.label=ClangCompletion
 options.ClangCompletion-Configuration.code=new clangcompletion.ClangCompletionConfiguration()
+
+plugin.clangcompletion.ClangCompletionPlugin.option-pane=optionpane
+options.optionpane.code=new clangcompletion.ClangCompletionOptionPane();
+options.optionpane.label=ClangCompletion

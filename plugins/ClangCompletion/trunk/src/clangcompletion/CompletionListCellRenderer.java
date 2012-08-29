@@ -6,10 +6,10 @@ import javax.swing.*;
 import completion.util.*;
 
 
-public class ClangCompletionRenderer extends DefaultListCellRenderer
+public class CompletionListCellRenderer extends DefaultListCellRenderer
 {
 
-    public ClangCompletionRenderer()
+    public CompletionListCellRenderer()
     {
     }
 

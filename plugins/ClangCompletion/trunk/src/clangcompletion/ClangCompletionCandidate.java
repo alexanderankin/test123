@@ -28,7 +28,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     private ClangCompletionCandidate()
     {
     	super("");
-    	renderer = new ClangCompletionRenderer();
+    	renderer = new CompletionListCellRenderer();
     }
     
     @Override
