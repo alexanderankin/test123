@@ -1,6 +1,6 @@
 package clangcompletion;
 //{{{ Imports
-import java.io.BufferedReader;
+import java.io.*;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -140,16 +140,24 @@ public class ClangCompletionProvider implements CompletionProvider
 				args.add("-D"  +definitions.get(i) );
 			}
 		}
+		tryGeneratePth(project);
+		File filePth = new File(ClangCompletionPlugin.pluginHome, project.getName()+".pth");
+		if(filePth.exists())
+		{
+			args.add("-include-pth");
+			args.add(filePth.getPath() );
+		}
 		
+		/*
 		Vector<String> arguments = properties.get(ClangCompletionConfiguration.ARGUMENTS);
 		if(arguments != null)
 		{
-			for(int i = 0; i < arguments.size(); i++)
-			{
-				args.add(arguments.get(i));
-			}
+		for(int i = 0; i < arguments.size(); i++)
+		{
+		args.add(arguments.get(i));
 		}
-		
+		}
+		*/
 		List<CompletionCandidate> codeCompletions = new ArrayList<CompletionCandidate>();
 		
 		StringBuilder cmd = new StringBuilder();
@@ -223,5 +231,70 @@ public class ClangCompletionProvider implements CompletionProvider
 		return completionModes;
 	}
 	
-	
+	private void tryGeneratePth(VPTProject project)
+	{
+		File filePth = new File(ClangCompletionPlugin.pluginHome, project.getName()+".pth");
+		if(!filePth.exists())
+		{
+			HashMap<String, Vector<String>> properties = ClangCompletionConfiguration.getProperties(project.getName());
+			
+			
+			ArrayList<String> args = new ArrayList<String>();
+			args.add("clang");
+			args.add("-cc1");    
+			args.add("-w");
+			
+			Vector<String> precompileds = properties.get(ClangCompletionConfiguration.PRECOMPILEDS);
+			if(precompileds != null)
+			{
+				for(int i = 0; i < precompileds.size(); i++)
+				{
+					args.add(precompileds.get(i) );
+				}
+			}
+			args.add("-emit-pth");
+			args.add("-o");
+			args.add(filePth.getPath());
+			
+			
+			Vector<String> includes = properties.get(ClangCompletionConfiguration.INCLUDES);
+			if(includes != null)
+			{
+				for(int i = 0; i < includes.size(); i++)
+				{
+					args.add("-I"  +includes.get(i) );
+				}
+			}
+			
+			
+			
+			Vector<String> definitions = properties.get(ClangCompletionConfiguration.DEFINITIONS);
+			if(definitions != null)
+			{
+				for(int i = 0; i < definitions.size(); i++)
+				{
+					args.add("-D"  +definitions.get(i) );
+				}
+			}
+			
+			args.add("-x");
+			args.add("c++-header");
+			
+			StringBuilder cmd = new StringBuilder();
+			for(int i = 0; i < args.size();i++)
+			{
+				cmd.append(args.get(i) +" ");
+			}
+			System.out.println(cmd);
+			
+			try
+			{
+				String [] argsArr = new String[args.size()]; 
+				args.toArray(argsArr);
+				Process process = Runtime.getRuntime().exec(argsArr);
+			}catch(IOException ex)
+			{
+			}
+		}
+	}
 }
