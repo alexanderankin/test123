@@ -4,7 +4,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2005 by Slava Pestov, Alan Ezust
+ * Copyright (C) 2005, 2012 by Slava Pestov, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -131,10 +131,6 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		message = new JTextField(20);
 
 		addComponent(label, message, GridBagConstraints.HORIZONTAL);
-
-
-
-
 
 
 		label = new Label("options.console.errors.testarea.label",
