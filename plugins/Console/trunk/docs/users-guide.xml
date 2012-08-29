@@ -345,7 +345,7 @@ most often at the top of the list.
   errors, warnings, and extra lines. </para>
 
   <para> The order of patterns on this list matters: more specific
-  patterns should be earlier on the list.
+  patterns (for applications that you use) should be earlier on the list.
   Patterns for applications you do not use can be safely removed from
   this list, and this can speed things up during output parsing. </para>
 

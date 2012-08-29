@@ -348,6 +348,7 @@ class ConsoleProcess
 			// jEdit
 			stop();
 		}
+		if (jEdit.getBooleanProperty("console.checkForChangedBuffers"))
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				jEdit.checkBufferStatus(console.getView());				

@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2003, 2005 Slava Pestov, Alan Ezust
+ * Copyright (C) 1999, 2012 Slava Pestov, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -148,8 +148,8 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		reset.setToolTipText(jEdit.getProperty("options.console.errors.reset.tooltip"));
 		buttons.add(reset);
 
-	        ActionHandler handler = new ActionHandler();
-	        add.addActionListener(handler);
+        ActionHandler handler = new ActionHandler();
+        add.addActionListener(handler);
 		remove.addActionListener(handler);
 		up.addActionListener(handler);
 		down.addActionListener(handler);

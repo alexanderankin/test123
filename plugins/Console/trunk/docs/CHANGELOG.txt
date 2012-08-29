@@ -2,6 +2,11 @@
 
 jEdit Console Plugin Changelog
 
+    Version 5.? 
+      [Alan Ezust]
+        New System Shell option: check for changed buffers after command execution. 
+        3558537: Console: restore values from properties destroys user custom error patterns.
+
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
         #3539123 - Fixed NPE when running in background command/application tries
