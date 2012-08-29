@@ -6,6 +6,6 @@
 		new clangcompletion.ClangCompletionProvider();
 	</SERVICE>
 	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ClangCompletion OptionsService">
-		new clangcompletion.ClangCompletionConfiguration.ClangCompletionOptionService();
+		new clangcompletion.ProjectsOptionPane.ClangCompletionOptionService();
 	</SERVICE>
 </SERVICES>

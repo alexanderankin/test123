@@ -20,7 +20,7 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OptionGroup;
-import org.gjt.sp.jedit.OptionPane;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.View;
@@ -31,7 +31,7 @@ import projectviewer.ProjectManager;
 import projectviewer.config.OptionsService;
 import projectviewer.vpt.VPTProject;
 import projectviewer.ProjectViewer;
-public class ClangCompletionConfiguration extends AbstractOptionPane
+public class ProjectsOptionPane extends AbstractOptionPane
 {
 	public static final String DEFINITIONS = "CLANG_DEFINITIONS";
 	
@@ -45,7 +45,7 @@ public class ClangCompletionConfiguration extends AbstractOptionPane
 	
 	private VPTProject project;
 	
-	public ClangCompletionConfiguration(VPTProject project)
+	public ProjectsOptionPane(VPTProject project)
 	{
 		super("ClangCompletion-Configuration");
 		this.project = project;
@@ -130,14 +130,7 @@ public class ClangCompletionConfiguration extends AbstractOptionPane
 		}
 	}
 	
-	private void clearPthBuffer()
-	{
-		View view =  jEdit.getActiveView();
-		VPTProject project = ProjectViewer.getActiveProject(view);
-		File filePth = new File(ClangCompletionPlugin.pluginHome, project.getName()+".pth");
-		System.out.println(filePth);
-		filePth.delete();
-	}
+	
 	
 	private JList createListPrecompileds(String title, final DefaultListModel model, final Callable<String> callable)
 	{
@@ -159,7 +152,11 @@ public class ClangCompletionConfiguration extends AbstractOptionPane
 						model.add(index + 1, s);
 						list.setSelectedIndex(index + 1);
 						
-						clearPthBuffer();
+						File pth = Util.getPTHFileOfActiveProject();
+						if(pth != null)
+						{
+							pth.delete();
+						}
 					}
 				}catch(Exception ex)
 				{
@@ -183,18 +180,33 @@ public class ClangCompletionConfiguration extends AbstractOptionPane
 					{
 						list.setSelectedIndex(model.size() - 1);
 					}
-					clearPthBuffer();
+					File pth = Util.getPTHFileOfActiveProject();
+					if(pth != null)
+					{
+						pth.delete();
+					}
 				}
 			}
 		});
 		
 		
-		JButton refresh = new RolloverButton(GUIUtilities.loadIcon("Clear.png"));
+		JButton refresh = new RolloverButton(GUIUtilities.loadIcon("Reload.png"));
 		refresh.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					clearPthBuffer();
+					File pth = Util.getPTHFileOfActiveProject();
+					if(pth != null)
+					{
+						pth.delete();
+					}
+					Util.generatePTHFileForActiveProject();
+					try
+					{
+						Thread.sleep(1000);
+					}catch(Exception ex)
+					{
+					}
 				}
 			});
 		
@@ -353,7 +365,7 @@ public class ClangCompletionConfiguration extends AbstractOptionPane
 	
 		public OptionPane getOptionPane(VPTProject proj)
 		{
-			return new ClangCompletionConfiguration(proj);
+			return new ProjectsOptionPane(proj);
 		}
 	}
 }

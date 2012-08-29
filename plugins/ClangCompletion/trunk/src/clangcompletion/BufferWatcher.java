@@ -23,7 +23,7 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import javax.swing.SwingUtilities;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
@@ -43,171 +43,124 @@ import clangcompletion.ClangCompletionPlugin;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
-public class BufferWatcher
+public class BufferWatcher implements ClangBuilderListener
 {
-	private  AtomicInteger numOfClangThreadWorking = new AtomicInteger();
+	private  AtomicBoolean isClangBuilderAlive = new AtomicBoolean();
+	
+	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*(\\w+):(.+)"); 
+	
+	private   DefaultErrorSource errorSrc;
 	
 	public BufferWatcher()
 	{
 		EditBus.addToBus(this);
+		errorSrc = new DefaultErrorSource(this.getClass().getName());
+		ErrorSource.registerErrorSource(errorSrc);
 	}
 	
 	public void shutdown()
 	{
 		EditBus.removeFromBus(this);
+		if(errorSrc != null)
+		{
+			errorSrc = null;
+			ErrorSource.unregisterErrorSource(errorSrc);
+		}
 	}
 	
 	@EBHandler
 	public void handleBufferUpdate(BufferUpdate bu)
 	{
-		if(numOfClangThreadWorking.intValue() > 0)
-		{
-			return;
-		}
-		
-		System.out.println("handleBufferUpdate");
-		if (( bu.getWhat() == BufferUpdate.SAVED) )
+		if (( bu.getWhat() == BufferUpdate.SAVED) && jEdit.getBooleanProperty("clangcompletion.parse_buffer", true))
 		{
 			Buffer buffer = bu.getBuffer();
 			String path = buffer.getPath();
 			
-			String xparam = null;
-			if(buffer.getMode().equals(jEdit.getMode("c")))
+			ClangBuilder builder = new ClangBuilder();
+			builder.add("-cc1");    
+			builder.add("-w");
+			builder.add("-fsyntax-only");
+			builder.add("-fno-caret-diagnostics");
+			builder.add("-fdiagnostics-print-source-range-info");
+			builder.add(path);
+			if(!builder.setTarget(buffer))
 			{
-				xparam = "c";
-			}else if(buffer.getMode().equals(jEdit.getMode("objective-c")))
-			{
-				xparam = "objective-c";
-			}else if(buffer.getMode().equals(jEdit.getMode("c++")))
-			{
-				xparam = "c++";
+				return;
 			}
 			
 			// Do not check header files because in most case clang cannot compile
 			// a header file correctly without implementation cpp sources.
-			if(xparam != null && !path.endsWith("hpp") && !path.endsWith("h"))
+			if(Util.isHeaderFile(buffer.getFile()))
 			{
+				return;
+			}
 			
-				if(buffer.getFile().getName().endsWith("hpp") || buffer.getFile().getName().endsWith("h"))
-				{
-					xparam += "-header";
-				}
-				
-				final ArrayList<String> args = new ArrayList<String>();
-				args.add("clang");
-				args.add("-cc1");    
-				args.add("-w");
-				args.add("-fsyntax-only");
-				args.add("-fno-caret-diagnostics");
-				args.add("-fdiagnostics-print-source-range-info");
-				//args.add("-code-completion-at="+path+":"+line+":"+column);
-				args.add(path);
-				args.add("-x");
-				args.add(xparam);
-				
-				clearErrors();
-				
-				
-				VPTProject project = ProjectViewer.getActiveProject(bu.getView());
-				HashMap<String, Vector<String>> properties = ClangCompletionConfiguration.getProperties(project.getName());
-				Vector<String> includes = properties.get(ClangCompletionConfiguration.INCLUDES);
-				if(includes != null)
-				{
-					for(int i = 0; i < includes.size(); i++)
-					{
-						args.add("-I"  +includes.get(i) );
-					}
-				}
-				
-				Vector<String> definitions = properties.get(ClangCompletionConfiguration.DEFINITIONS);
-				if(definitions != null)
-				{
-					for(int i = 0; i < definitions.size(); i++)
-					{
-						args.add("-D"  +definitions.get(i) );
-					}
-				}
-				
-				Vector<String> arguments = properties.get(ClangCompletionConfiguration.ARGUMENTS);
-				if(arguments != null)
-				{
-					for(int i = 0; i < arguments.size(); i++)
-					{
-						args.add(arguments.get(i));
-					}
-				}
-				
-				StringBuilder cmd = new StringBuilder();
-				for(int i = 0; i < args.size();i++)
-				{
-					cmd.append(args.get(i)+" ");
-				}
-				System.out.println(cmd);
-				
-				String [] argsArr = new String[args.size()]; 
-				args.toArray(argsArr);
+			clearErrors();
+			
+			VPTProject project = ProjectViewer.getActiveProject(bu.getView());
+			HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
+			Vector<String> includes = properties.get(ProjectsOptionPane.INCLUDES);
+			if(includes != null)
+			{
+				builder.addIncludes(includes);
+			}
+			
+			Vector<String> definitions = properties.get(ProjectsOptionPane.DEFINITIONS);
+			if(definitions != null)
+			{
+				builder.addDefinitions(definitions);
+			}
+			
+			builder.setListener(this);
+			System.out.println(builder);
+			if(!isClangBuilderAlive.get())
+			{
 				try
 				{
-					final Process process = Runtime.getRuntime().exec(argsArr);
-					
-					
-					new Thread()
-					{
-						public void run()
-						{
-							
-							numOfClangThreadWorking.addAndGet(1);
-							try
-							{
-								BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-								String input = reader.readLine();
-								while(input!=null)
-								{
-									//System.out.println("stderr: " + input);
-									parseError(input);
-									input = reader.readLine();
-									
-								}
-							}catch(Exception ex)
-							{
-								ex.printStackTrace();
-							}finally
-							{
-								numOfClangThreadWorking.addAndGet(-1);
-							}
-						}
-					}.start();
-					
-					new Thread()
-					{
-						public void run()
-						{
-							numOfClangThreadWorking.addAndGet(1);
-							
-							try
-							{
-								BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-								String input = reader.readLine();
-								while(input != null)
-								{
-									input = reader.readLine();
-								}
-							}catch(Exception ex)
-							{
-								ex.printStackTrace();
-							}finally
-							{
-								numOfClangThreadWorking.addAndGet(-1);
-							}
-						}
-					}.start();
-					
+					isClangBuilderAlive.set(true);
+					builder.exec();
 				}catch(IOException ex)
 				{
+					isClangBuilderAlive.set(false);
 					ex.printStackTrace();
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void errorRecieved(String line)
+	{
+		System.out.println("error: " + line);
+		final Matcher matcher = errorPattern.matcher(line);
+		if(matcher.find() && matcher.groupCount() >= 5)
+		{
+			
+			SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						errorSrc.addError(new DefaultError(errorSrc,
+							matcher.group(4).trim().equals("error")?ErrorSource.ERROR:ErrorSource.WARNING, 
+							matcher.group(1), 
+							Integer.parseInt(matcher.group(2)) - 1, 
+							0,
+							0,
+							matcher.group(5) ));
+					}
+				});
+			
+		}
+	}
+	
+	public void outputRecieved(String line)
+	{
+		
+	}
+	
+	public void exited()
+	{
+		isClangBuilderAlive.set(false);
 	}
 	
 	private void clearErrors()
@@ -221,29 +174,4 @@ public class BufferWatcher
 			});
 	}
 	
-	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*(\\w+):(.+)"); 
-	
-	private void parseError(String clangOutput)
-	{
-		System.out.println("error: " + clangOutput);
-		final Matcher matcher = errorPattern.matcher(clangOutput);
-		if(matcher.find() && matcher.groupCount() >= 5)
-		{
-			
-			SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						ClangCompletionPlugin.errorSrc.addError(new DefaultError(ClangCompletionPlugin.errorSrc,
-							matcher.group(4).trim().equals("error")?ErrorSource.ERROR:ErrorSource.WARNING, 
-							matcher.group(1), 
-							Integer.parseInt(matcher.group(2)) - 1, 
-							0,
-							0,
-							matcher.group(5) ));
-					}
-				});
-			
-		}
-	}
 }
