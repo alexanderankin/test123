@@ -1,6 +1,8 @@
 commandoLONG_ENTRY(view,pane,ns,label,var,options)
 {
 	entry = new JTextArea(4,20);
+	entry.setLineWrap(true);
+	entry.setWrapStyleWord(true);
 	value = ns.getVariable(var);
 	if(value != null)
 		entry.setText(value.toString());
