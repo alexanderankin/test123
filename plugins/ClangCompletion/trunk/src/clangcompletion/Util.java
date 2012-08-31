@@ -62,6 +62,12 @@ public class Util
 			builder.addDefinitions(definitions);
 		}
 		
+		Vector<String> arguments = properties.get(ProjectsOptionPane.ARGUMENTS);
+		if(arguments != null)
+		{
+			builder.addArguments(arguments);
+		}
+		
 		builder.add("-x");
 		builder.add("c++-header");
 		

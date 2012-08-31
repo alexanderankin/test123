@@ -113,6 +113,13 @@ public class ClangCompletionProvider implements CompletionProvider
 		{
 			builder.addDefinitions(definitions);
 		}
+		
+		Vector<String> arguments = properties.get(ProjectsOptionPane.ARGUMENTS);
+		if(arguments != null)
+		{
+			builder.addArguments(arguments);
+		}
+		
 		//tryGeneratePth(project);
 		File filePth = Util.getPTHFileOfActiveProject();
 		if(filePth.exists())
