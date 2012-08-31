@@ -9,7 +9,7 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,6 +109,13 @@ public class BufferWatcher implements ClangBuilderListener
 			if(definitions != null)
 			{
 				builder.addDefinitions(definitions);
+			}
+			
+			File filePth = Util.getPTHFileOfActiveProject();
+			if(filePth.exists())
+			{
+				builder.add("-include-pth");
+				builder.add(filePth.getPath() );
 			}
 			
 			builder.setListener(this);

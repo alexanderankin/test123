@@ -114,7 +114,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     	//return true;
     	
         String prefix = CompletionUtil.getCompletionPrefix(view);
-        if (prefix == null || prefix.length() == 0) 
+        if (prefix == null /* || prefix.length() == 0 */) 
         {
             return false;
         }

@@ -61,11 +61,11 @@ public class ClangCompletionProvider implements CompletionProvider
 		
 		
 		final Vector<CompletionCandidate> codeCompletions = new Vector<CompletionCandidate>();
-		String prefix = CompletionUtil.getCompletionPrefix(view);
+		/*String prefix = CompletionUtil.getCompletionPrefix(view);
 		if(prefix == null || prefix.trim().length() == 0)
 		{
 			return codeCompletions;
-		}
+		}*/
 		
 		Buffer buffer = view.getBuffer(); 
 		buffer.autosave();
