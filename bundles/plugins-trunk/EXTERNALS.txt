@@ -66,6 +66,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectOptions/trunk Pro
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk RFCReader
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RhinoPlugin/trunk RhinoPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RubyPlugin/trunk RubyPlugin
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SpellCheck/trunk SpellCheck
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SQL/trunk SQL
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugin/trunk SVNPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Sessions/trunk Sessions
@@ -90,4 +91,3 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XQuery/trunk XQuery
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XSLT/trunk XSLT
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XSearch/trunk XSearch
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Xrefactory/trunk Xrefactory
-
