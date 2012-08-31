@@ -15,13 +15,13 @@ be updated, added, or deleted. This is particularly handy for web application
 development, saving your file in jEdit can now automatically copy that file
 to your web server. For remote servers, you can still use FileSync by mounting
 a directory from the remote server to your local file system with webdav or
-sshfs, for example, then setting FileSync to save to the mount point.
+sshfs or smb, for example, then setting FileSync to save to the mount point.
 <p>
 Configuration is per project, so use the project properties to set which files
 in your project get copied where.
 <p>
 NOTE: It is not required that a file actually belong to a project to be
-included in a file sync. 
+included in a file sync. It just needs to be in a project directory.
 <p>
 <img src="pvoptionpane.jpg"></img>
 <p>
@@ -39,13 +39,13 @@ For each directory:
 <li><strong>Source</strong> - This is a directory in your project.</li>
 <li><strong>Include</strong> - This is a wildcard string that uses '?' and
 '*' to represent a single or multiple (zero or more) wildcard characters.
-This is the same as often found on DOS/Unix command lines. The include string
+This is the same glob pattern used by jEdit. The include string
 check is case-sensitive on Unix and Unix-like systems (Linux and Mac) and is
 case-insentive on Windows. Multiple include strings can be supplied at once
 by using a comma to separate the strings.</li>
 <li><strong>Exclude</strong> - This is a wildcard string that uses '?' and
 '*' to represent a single or multiple (zero or more) wildcard characters.
-This is the same as often found on DOS/Unix command lines. The exclude string
+This is the same glob pattern used by jEdit. The exclude string
 check is case-sensitive on Unix and Unix-like systems (Linux and Mac) and is
 case-insentive on Windows.</li>
 <li><strong>Target</li> - This is where to copy the included files.</li>
@@ -64,9 +64,13 @@ removes all files from your defined target directories, then uses your sync
 definitions to repopulate those directories.
 <p>
 The glob wildcards used by this plugin are the same glob
-patterns supported by jEdit. See the details in jEdit's help files, in 
-particular, the section in Appendix D titled "Glob Patterns". Here are a few 
-wildcard examples for include and exclude filters:
+patterns supported by jEdit, including using the (re) prefix to indicate the
+glob is actually a regular expression. See the details in jEdit's help files, 
+in particular, the section in Appendix D titled "Glob Patterns". One minor
+difference is that file name matching is case-insensitive on Windows and
+case-sensitive on all other operating systems.
+<p>
+Here are a few examples for include and exclude filters:
 <br>
 *.txt will match c.txt<br>
 *.jpg will not match c.txt<br>
@@ -89,11 +93,17 @@ folder to be copied, but the folder itself will be empty.
 <br>
 Here are a few more examples from jEdit's help file:
 <br>
-* - all files.<br>
-*.java - all files whose names end with “.java”.<br>
-*.[ch] - all files whose names end with either “.c” or “.h”.<br>
-*.{c,cpp,h,hpp,cxx,hxx} - all C or C++ files.<br>
-[^#]* - all files whose names do not start with “#”.<br>
+* will match all files.<br>
+*.java will match all files whose names end with “.java”.<br>
+*.[ch] will match all files whose names end with either “.c” or “.h”.<br>
+*.{c,cpp,h,hpp,cxx,hxx} will match all C or C++ files.<br>
+[^#]* will match all files whose names do not start with “#”.<br>
+<br>
+<br>
+Here is an example of using the (re) prefix to indicate the glob pattern is
+actually a regular expression:
+<br>
+(re).*\.(h|c(c|pp)?) will match *.c, *.cpp, *.h, *.cc
 <br>
 <p>
 Credits

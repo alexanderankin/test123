@@ -5,7 +5,7 @@
 plugin.filesync.FileSyncPlugin.name=FileSync
 plugin.filesync.FileSyncPlugin.author=Dale Anson
 plugin.filesync.FileSyncPlugin.version=1.0
-plugin.filesync.FileSyncPlugin.activate=startup
+plugin.filesync.FileSyncPlugin.activate=defer
 plugin.filesync.FileSyncPlugin.description=Synchronizes project files to another directory.
 plugin.filesync.FileSyncPlugin.usePluginHome=true
 

@@ -91,7 +91,7 @@ public class FileSyncPlugin extends EBPlugin {
     /**
      * sync a single file
      * @param projectName The name of the project that the file belongs to.
-     * @ param filename The name of the file to sync.
+     * @param filename The name of the file to sync.
      */
     protected static void syncFile( String projectName, String filename ) {
         FileSyncPlugin.syncFile( projectName, filename, false );
@@ -100,7 +100,7 @@ public class FileSyncPlugin extends EBPlugin {
     /**
      * remove a single file from the sync destination
      * @param projectName The name of the project that the file belongs to.
-     * @ param filename The name of the file to remove.
+     * @param filename The name of the file to remove.
      */
     protected static void removeFile( String projectName, String filename ) {
         FileSyncPlugin.syncFile( projectName, filename, true );
@@ -330,6 +330,7 @@ public class FileSyncPlugin extends EBPlugin {
     }
 
     /**
+     * @param projectName The project to find properties for.
      * @return A Properties. It may be empty, but it won't be null.
      */
     protected static Properties getSyncProperties( String projectName ) {
