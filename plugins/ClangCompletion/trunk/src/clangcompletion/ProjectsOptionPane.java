@@ -39,9 +39,11 @@ public class ProjectsOptionPane extends AbstractOptionPane
 	
 	public static final String PRECOMPILEDS = "CLANG_PRECOMPILEDS";
 	
-	private JList definitions, includes, precompileds;
+	public static final String ARGUMENTS = "CLANG_ARGUMENTS";
 	
-	private DefaultListModel definitionModel, includesModel, precompiledsModel;
+	private JList definitions, includes, precompileds, arguments;
+	
+	private DefaultListModel definitionModel, includesModel, precompiledsModel, argumentsModel;
 	
 	private VPTProject project;
 	
@@ -62,7 +64,7 @@ public class ProjectsOptionPane extends AbstractOptionPane
 				return showIncludeSelectionDialog();
 			}
 		});
-		addSeparator();
+		//addSeparator();
 		
 		definitionModel = getListModel(DEFINITIONS);
 		definitions = createList("Pre-compiled definition:", definitionModel, new Callable<String>()
@@ -72,17 +74,27 @@ public class ProjectsOptionPane extends AbstractOptionPane
 				return ShowInputDefinitionDialog();
 			}
 		});
-		addSeparator();
+		//addSeparator();
+		
+		argumentsModel = getListModel(ARGUMENTS);
+		arguments = createList("Additional arguments:", argumentsModel, new Callable<String>()
+		{
+			public String call()
+			{
+				return ShowInputArgumentsDialog();
+			}
+		});
+		//addSeparator();
 		
 		precompiledsModel = getListModel(PRECOMPILEDS);
-		precompileds = createListPrecompileds("Pre-compiled headers:", precompiledsModel, new Callable<String>()
+		precompileds = createListPrecompileds("Pre-compiled headers(PTH):", precompiledsModel, new Callable<String>()
 		{
 			public String call()
 			{
 				return ShowInputPrecompiledsDialog();
 			}
 		});
-		addSeparator();
+		//addSeparator();
 	}
 
 	private void setListModel(String propertyName, DefaultListModel model)
@@ -134,9 +146,9 @@ public class ProjectsOptionPane extends AbstractOptionPane
 	
 	private JList createListPrecompileds(String title, final DefaultListModel model, final Callable<String> callable)
 	{
-		addComponent(new JLabel(title));
+		//addComponent(new JLabel(title));
 		final JList list = new JList(model);
-		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
+		
 		JPanel buttons = new JPanel();
 		JButton add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
 		add.addActionListener(new ActionListener()
@@ -209,19 +221,20 @@ public class ProjectsOptionPane extends AbstractOptionPane
 					}
 				}
 			});
-		
+		buttons.add(new JLabel(title));
 		buttons.add(add);
 		buttons.add(remove);
 		buttons.add(refresh);
 		addComponent(buttons);
+		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
 		return list;
 	}
 	
 	private JList createList(String title, final DefaultListModel model, final Callable<String> callable)
 	{
-		addComponent(new JLabel(title));
+		//addComponent(new JLabel(title));
 		final JList list = new JList(model);
-		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
+		
 		JPanel buttons = new JPanel();
 		JButton add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
 		add.addActionListener(new ActionListener()
@@ -263,10 +276,11 @@ public class ProjectsOptionPane extends AbstractOptionPane
 			}
 		});
 		
-		
+		buttons.add(new JLabel(title));
 		buttons.add(add);
 		buttons.add(remove);
 		addComponent(buttons);
+		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
 		return list;
 	}
 
@@ -284,6 +298,12 @@ public class ProjectsOptionPane extends AbstractOptionPane
 		{
 			return null;			
 		}
+	}
+	
+	 private String ShowInputArgumentsDialog()
+	{
+		return  (String) JOptionPane.showInputDialog(this, "Input argument:", "Argument", 
+			JOptionPane.QUESTION_MESSAGE);
 	}
 	
 	private String ShowInputDefinitionDialog()
@@ -314,6 +334,7 @@ public class ProjectsOptionPane extends AbstractOptionPane
 		setListModel(DEFINITIONS, definitionModel);
 		setListModel(INCLUDES, includesModel);
 		setListModel(PRECOMPILEDS, precompiledsModel);
+		setListModel(ARGUMENTS, argumentsModel);
 	}
 	
 	public static Vector<String> getListProperty(VPTProject project, String propertyName)
@@ -352,6 +373,9 @@ public class ProjectsOptionPane extends AbstractOptionPane
 		
 		Vector<String> precompileds = getListProperty(project, PRECOMPILEDS);
 		map.put(PRECOMPILEDS, precompileds);
+		
+		Vector<String> arguments = getListProperty(project, ARGUMENTS);
+		map.put(ARGUMENTS, arguments);
 		
 		return map; 
 	}

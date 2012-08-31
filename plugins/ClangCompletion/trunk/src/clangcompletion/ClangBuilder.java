@@ -53,6 +53,15 @@ public class ClangBuilder
 		}
 	}
 	
+	public void addArguments(Collection<String> args)
+	{
+		Iterator<String> iterator = args.iterator();
+		while(iterator.hasNext())
+		{
+			cmds.add( iterator.next());
+		}
+	}
+	
 	public String toString()
 	{
 		StringBuilder cmd = new StringBuilder();

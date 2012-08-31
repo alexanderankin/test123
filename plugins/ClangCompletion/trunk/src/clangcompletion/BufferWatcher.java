@@ -47,7 +47,7 @@ public class BufferWatcher implements ClangBuilderListener
 {
 	private  AtomicBoolean isClangBuilderAlive = new AtomicBoolean();
 	
-	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*(\\w+):(.+)"); 
+	private Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*([^:]+):(.+)");
 	
 	private   DefaultErrorSource errorSrc;
 	
@@ -111,6 +111,12 @@ public class BufferWatcher implements ClangBuilderListener
 				builder.addDefinitions(definitions);
 			}
 			
+			Vector<String> arguments = properties.get(ProjectsOptionPane.ARGUMENTS);
+			if(arguments != null)
+			{
+				builder.addArguments(arguments);
+			}
+			
 			File filePth = Util.getPTHFileOfActiveProject();
 			if(filePth.exists())
 			{
@@ -148,7 +154,7 @@ public class BufferWatcher implements ClangBuilderListener
 					public void run()
 					{
 						errorSrc.addError(new DefaultError(errorSrc,
-							matcher.group(4).trim().equals("error")?ErrorSource.ERROR:ErrorSource.WARNING, 
+							matcher.group(4).indexOf("error") >= 0?ErrorSource.ERROR:ErrorSource.WARNING, 
 							matcher.group(1), 
 							Integer.parseInt(matcher.group(2)) - 1, 
 							0,

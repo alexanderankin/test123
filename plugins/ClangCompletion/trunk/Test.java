@@ -19,8 +19,8 @@ import javax.swing.SwingUtilities;
 
 public class Test
 {
-	private static Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*(\\w+):(.+)"); 
-	private static String test0 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:95:3: error: use of undeclared identifier 'ssonBattleFinished'; did you mean 'onBattleFinished'?";
+	private static Pattern errorPattern = Pattern.compile("((?:\\w:)?[^:]+?):(\\d+):(\\d+):[\\d:\\-\\{\\}]*\\s*([^:]+):(.+)"); 
+	private static String test0 = "/Users/wangyifu/Developer/workspace/trunk/BDMobile/BDCasino/DDZ/Client/ios/ddz_pp/ddz/ios/main.m:9:9: fatal error: 'UIKit/UIKit.h' file not found";
 	private static String test1 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene/battle_layer.h:130:7: note: 'onBattleFinished' declared here";
 	private static String test2 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:100:2: error: use of undeclared identifier 'ss'";
 	private static String test3 = "D:\\Developer\\workspace\\trunk\\BDMobile\\BDYY\\Client\\Classes\\scene\\battle_layer.cpp:102:27: error: use of undeclared identifier 'pAni'";
