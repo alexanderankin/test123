@@ -537,7 +537,7 @@ public class Project
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(objIn);
+			IOUtilities.closeQuietly((Closeable) objIn);
 		}
 	}
 
@@ -651,7 +651,7 @@ public class Project
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(objOut);
+			IOUtilities.closeQuietly((Closeable) objOut);
 		}
 	}
 
