@@ -149,7 +149,10 @@
     <title>Default Options</title>
 
     <para>
-    WhiteSpace default options are available under:
+    WhiteSpace default options affect newly opened buffers only. For seeing or 
+    changing the properties on already open buffers, see 
+    <xref linkend="buffer_options"/>. 
+    Default options are available under:
         <guimenu>Plugins</guimenu>&gt;
         <guimenu>Plugin Options</guimenu>&gt;
         <guisubmenu>WhiteSpace</guisubmenu>.
