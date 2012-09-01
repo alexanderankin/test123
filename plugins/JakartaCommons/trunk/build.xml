@@ -18,21 +18,8 @@
         <property name="install.dir" value=".."/>
         <property name="build.dir" value="build"/>
 
-        <property name="compiler.debug" 			value="yes"/>
-        <property name="compiler.deprecation" value="yes"/>
-        <property name="compiler.optimize"    value="no"/>
-        <property name="compiler.verbose"	    value="no"/>
         <!-- }}} -->
 
-        <!-- {{{ Patterns -->
-        <!--
-                Put patterns here that should be included in the plugin jar from
-                the source directory.
-        -->
-        <patternset id="include-from-source">
-                <include name="**/*.props"/>
-        </patternset>
-        <!-- }}} -->
 
         <!-- {{{ Paths -->
         <path id="project.class.path">
@@ -45,6 +32,11 @@
         <!-- {{{ 'init' target -->
         <target name="init" description="Initializes this project">
                 <mkdir dir="${build.dir}"/>
+                <copy todir="${install.dir}">
+                    <fileset dir="${lib.dir}">
+                        <include name="*.jar"/>
+                    </fileset>
+                </copy>
         </target>
         <!-- }}} -->
 
@@ -76,11 +68,6 @@
                                 <exclude name="build.properties"/>
                         </fileset>
                 </jar>
-                <copy todir="${install.dir}">
-                    <fileset dir="${lib.dir}">
-                        <include name="*.jar"/>
-                    </fileset>
-                </copy>
         </target>
         <!-- }}} -->
 
