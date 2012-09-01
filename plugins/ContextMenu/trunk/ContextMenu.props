@@ -41,3 +41,25 @@ plugin.contextmenu.ContextMenuPlugin.menu=contextmenu.customize
 
 contextmenu.customize-mode=Customize This Menu (mode-specific)...
 
+# Sensible defaults department
+mode.c++.contextmenu.label=c++
+mode.c++.contextmenu=C/Include_Guard C/Toggle_Header_Source commando.make
+
+mode.beanshell.contextmenu.label=beanshell
+mode.beanshell.contextmenu=Misc/Evaluate_Buffer_in_BeanShell eval eval-selection
+
+mode.python.contextmenu.label=python
+mode.python.contextmenu=python-eval-buffer python-eval-selected python-eval-file
+
+mode.java.contextmenu.label=java
+mode.java.contextmenu=javasidekick-insert-import javasidekick-refresh-global
+
+mode.pl-sql.contextmenu.label=sql
+mode.pl-sql.contextmenu=sql.publishSelection sql.publishBuffer sql.toolbar.toggle sql.repeatLastQuery sql.resultSet-toggle sql.preprocessors.BeanShellEvaluator sql.chooseCurrentServer
+
+mode.html.contextmenu.label=html
+mode.html.contextmenu=infoviewer.open-buffer
+
+mode.xml.contextmenu.label=xml
+mode.xml.contextmenu=xml-match-tag xml-chars-to-entities xml-entities-to-chars xmlindenter.indent xml-copy-xpath xml/Xml-Lint xml-split-tag xml-join-tag infoviewer.open-buffer sidekick-complete xml-clear-cache xml-open-schema
+
