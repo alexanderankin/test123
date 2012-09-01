@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2009, Dale Anson
+Copyright (c) 2012, Dale Anson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -25,6 +25,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 
 package filesync;
 
@@ -182,6 +183,9 @@ public class FileSyncPlugin extends EBPlugin {
             IOFileFilter includeFilter = null;
             String[] includes = include.split( "," );
             for ( String in : includes ) {
+                if (in == null || in.isEmpty()) {
+                    continue;   
+                }
                 if ( includeFilter == null ) {
                     includeFilter = new GlobFileFilter( in.trim() );
                 } else {
@@ -191,11 +195,14 @@ public class FileSyncPlugin extends EBPlugin {
 
             IOFileFilter excludeFilter = null;
             String[] excludes = exclude.split( "," );
-            for ( String in : excludes ) {
+            for ( String ex : excludes ) {
+                if (ex == null || ex.isEmpty()) {
+                    continue;   
+                }
                 if ( excludeFilter == null ) {
-                    excludeFilter = new GlobFileFilter( in.trim() );
+                    excludeFilter = new GlobFileFilter( ex.trim() );
                 } else {
-                    excludeFilter = FileFilterUtils.or( excludeFilter, new GlobFileFilter( in.trim() ) );
+                    excludeFilter = FileFilterUtils.or( excludeFilter, new GlobFileFilter( ex.trim() ) );
                 }
             }
 

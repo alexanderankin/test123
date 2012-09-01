@@ -48,18 +48,29 @@ public class FileSyncPVAction extends projectviewer.action.Action {
     }
 
     public void prepareForNode( final VPTNode node ) {
-        project = node.findProjectFor(node);
+        project = node.findProjectFor( node );
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        if (project != null) {
+        if ( project != null ) {
             String projectName = project.getName();
-            
-            // remove all files
-            FileSyncPlugin.removeAllFiles(projectName);
-            
+
+            // maybe remove all files
+            int delete = JOptionPane.showConfirmDialog( viewer, jEdit.getProperty("filesync.Delete_existing_files_from_target_before_sync?", "Delete existing files from target before sync?"), jEdit.getProperty("filesync.Delete_files_from_target?", "Delete files from target?"), JOptionPane.YES_NO_CANCEL_OPTION );
+            switch ( delete ) {
+                case JOptionPane.YES_OPTION:
+                    FileSyncPlugin.removeAllFiles( projectName );
+                    break;
+                case JOptionPane.NO_OPTION:
+                    // do nothing on no
+                    break;
+                default:
+                    // do nothing on cancel
+                    return;
+            }
+
             // add all files
-            FileSyncPlugin.syncAllFiles(projectName);
+            FileSyncPlugin.syncAllFiles( projectName );
         }
     }
 }

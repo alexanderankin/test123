@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2007, Dale Anson
+Copyright (c) 2012, Dale Anson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
