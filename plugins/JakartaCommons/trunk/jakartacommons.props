@@ -9,8 +9,8 @@ plugin.jakartacommons.JakartaCommonsPlugin.activate=defer
 plugin.jakartacommons.JakartaCommonsPlugin.name=Jakarta Commons
 plugin.jakartacommons.JakartaCommonsPlugin.author=Konstantin Pribluda, Dale Anson
 plugin.jakartacommons.JakartaCommonsPlugin.version=0.7
-plugin.jakartacommons.JakartaCommonsPlugin.depend.0=jedit 04.00.99.00
-plugin.jakartacommons.JakartaCommonsPlugin.depend.1=jdk 1.4.0
+plugin.jakartacommons.JakartaCommonsPlugin.depend.0=jedit 04.04.99.00
+plugin.jakartacommons.JakartaCommonsPlugin.depend.1=jdk 1.6.0
 plugin.jakartacommons.JakartaCommonsPlugin.description=Jakarta Commons, a bundle of several commonly used jars from the Jakarta Commons project.
 
 plugin.jakartacommons.JakartaCommonsPlugin.menu=unescape-unicode-selection
