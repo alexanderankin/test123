@@ -356,7 +356,7 @@ class ConsoleProcess
 		if (StandardUtilities.compareStrings(jEdit.getBuild(), "05.01.00.01", false) >= 0) {
 			if (check > 0) doCheck = true;
 		}
-		else if (check != 4) doCheck = true;
+		else doCheck = true;
 		if (doCheck) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
