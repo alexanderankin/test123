@@ -154,8 +154,6 @@ options.console.compile-run.mode=Mode
 options.console.compile-run.compiler=Compiler
 options.console.compile-run.interpreter=Interpreter
 
-options.console.system.checkForChangedBuffers=Check for changed buffers after executing commands
-
 # Because this uses a JLabel, the HTML formatting is necessary
 options.console.compile-run.help=<HTML>Useful environment variables:<BLOCKQUOTE> \
 	$f - full path of the current buffer<BR /> \
@@ -491,7 +489,6 @@ console.pv.no-command.message=No {0} command has been defined.\n\
 
 # Sensible Defaults Department
 console.dock-position=bottom
-console.checkForChangedBuffers=true
 options.console.errors.reset-confirm.title=Factory Reset Error Matchers
 options.console.errors.reset-confirm.message=Resets all custom error matchers to factory defaults. Are you sure?
 

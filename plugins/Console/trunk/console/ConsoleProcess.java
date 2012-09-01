@@ -32,8 +32,11 @@ import java.io.PipedOutputStream;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.options.GeneralOptionPane;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.StringList;
+import org.gjt.sp.jedit.options.GeneralOptionPane;
 
 // }}}
 
@@ -348,12 +351,19 @@ class ConsoleProcess
 			// jEdit
 			stop();
 		}
-		if (jEdit.getBooleanProperty("console.checkForChangedBuffers"))
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				jEdit.checkBufferStatus(console.getView());				
-			}
-		});
+		boolean doCheck = false;
+		final int check = jEdit.getIntegerProperty("checkFileStatus");
+		if (StandardUtilities.compareStrings(jEdit.getBuild(), "05.01.00.01", false) >= 0) {
+			if (check > 0) doCheck = true;
+		}
+		else if (check != 4) doCheck = true;
+		if (doCheck) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						jEdit.checkBufferStatus(console.getView(), check != GeneralOptionPane.checkFileStatus_focus);
+					}
+			});
+		}
 	}
 	// }}}
 	
@@ -365,3 +375,4 @@ class ConsoleProcess
 	// }}}
 	// }}}
 } // }}}
+

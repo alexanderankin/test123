@@ -2,10 +2,11 @@
 
 jEdit Console Plugin Changelog
 
-    Version 5.? 
+    Version 5.1  Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Alan Ezust]
-        New System Shell option: check for changed buffers after command execution. 
-        3558537: Console: restore values from properties destroys user custom error patterns.
+        Observe jEdit's general option "Check for changed files" and check after command
+        executions too. 
+        #3558537 - restore values from properties destroys user custom error patterns.
 
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
