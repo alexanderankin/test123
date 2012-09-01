@@ -20,11 +20,23 @@
 
 package jakartacommons;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 /**
-* really a no-op here. provided to make plugin manager happy
+* 
 */
 public class JakartaCommonsPlugin extends EditPlugin {
-
+	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
+		if (textArea.getSelectionCount() != 1) return;
+		Selection[] selections = textArea.getSelection();
+		int len = selections[0].getEnd() - selections[0].getStart();
+		String text = buffer.getText(selections[0].getStart(), len);
+		String esctext = StringEscapeUtils.unescapeJava(text);	
+		buffer.remove(selections[0].getStart(), len);
+		buffer.insert(selections[0].getStart(), esctext);	
+	}
 }

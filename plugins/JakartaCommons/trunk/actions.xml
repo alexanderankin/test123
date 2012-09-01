@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="unescape-unicode-selection">
+		<CODE>
+			jakartacommons.JakartaCommonsPlugin.unescapeUnicodeSelection(textArea, buffer);
+		</CODE>
+	</ACTION>
+</ACTIONS>
