@@ -26,7 +26,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
 
 /**
-* Contains implementations for action(s) that use jakarta commons libs. 
+* Contains implementations for actions that use jakarta commons libs.
 */
 public class JakartaCommonsPlugin extends EditPlugin {
 
@@ -41,11 +41,10 @@ public class JakartaCommonsPlugin extends EditPlugin {
 	    using Java conventions. 
 	    @author Alan Ezust 
 	*/
-	
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		String text = selectedText(textArea, buffer);
 		if (text == null) return;
-		String esctext = StringEscapeUtils.unescapeJava(text);	
+		String esctext = StringEscapeUtils.unescapeJava(text);
 		buffer.remove(selections[0].getStart(), text.length());
 		buffer.insert(selections[0].getStart(), esctext);	
 	}
@@ -54,12 +53,11 @@ public class JakartaCommonsPlugin extends EditPlugin {
 	    using Java conventions. 
 	    @author Alan Ezust 
 	*/
-
 	public static void escapeUnicodeSelection(TextArea textArea, Buffer buffer) {
-		String text = selectedText(textArea, buffer);		
-		String esctext = StringEscapeUtils.escapeJava(text);	
+		String text = selectedText(textArea, buffer);
+		if (text == null) return;
+		String esctext = StringEscapeUtils.escapeJava(text);
 		buffer.remove(selections[0].getStart(), text.length());
-		buffer.insert(selections[0].getStart(), esctext);	
+		buffer.insert(selections[0].getStart(), esctext);
 	}
-
 }
