@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2007, Dale Anson
+Copyright (c) 2012, Dale Anson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -47,7 +47,7 @@ import projectviewer.vpt.VPTProject;
 /**
  * Option pane for setting the project files to sync and where to sync them to.
  * DONE: add checkboxes for includes and excludes for case-sensitivity. -- done,
- * but not here. This is handled in the GlobFileFilter instead, whee case-sensitivity
+ * but not here. This is handled in the GlobFileFilter instead, where case-sensitivity
  * is based on the operating system.
  * DONE: add checkboxes for excluding cvs, svn, and git folders.
  */
@@ -84,7 +84,7 @@ public class PVOptionPane extends AbstractOptionPane {
     private void initComponents() {
         setBorder( BorderFactory.createEmptyBorder(11, 11, 11, 11 ) );
 
-        enableSync = new JCheckBox( "Enable file sync" );
+        enableSync = new JCheckBox( jEdit.getProperty("filesync.Enable_file_sync", "Enable file sync") );
         enableSync.setSelected( props.getProperty( "enableSync", "false" ).equals( "true" ) ? true : false );
 
         syncTree = new JTree();
@@ -98,21 +98,21 @@ public class PVOptionPane extends AbstractOptionPane {
         syncTree.setSelectionModel( selectionModel );
 
         JPanel buttonPanel = new JPanel( new KappaLayout() );
-        addButton = new JButton( "Add" );
-        editButton = new JButton( "Edit" );
-        removeButton = new JButton( "Remove" );
+        addButton = new JButton( jEdit.getProperty("filesync.Add", "Add") );
+        editButton = new JButton( jEdit.getProperty("filesync.Edit", "Edit") );
+        removeButton = new JButton( jEdit.getProperty("filesync.Remove", "Remove") );
         buttonPanel.add( "0, 0, 1, 1, 0, w, 3", addButton );
         buttonPanel.add( "0, 1, 1, 1, 0, w, 3", editButton );
         buttonPanel.add( "0, 2, 1, 1, 0, w, 3", removeButton );
 
         JPanel scmPanel = new JPanel( new KappaLayout() );
-        JLabel scmLabel = new JLabel( "Auto-exclude SCM folders:" );
+        JLabel scmLabel = new JLabel( jEdit.getProperty("filesync.Auto-exclude_SCM_folders>", "Auto-exclude SCM folders:") );
         cvs = new JCheckBox( "cvs" );
         svn = new JCheckBox( "svn" );
         git = new JCheckBox( "git" );
-        cvs.setSelected( true );
-        svn.setSelected( true );
-        git.setSelected( true );
+        cvs.setSelected( props.getProperty( "noCvs", "true" ).equals( "true" ) ? true : false );
+        svn.setSelected( props.getProperty( "noSvn", "true" ).equals( "true" ) ? true : false );
+        git.setSelected( props.getProperty( "noGit", "true" ).equals( "true" ) ? true : false );
         scmPanel.add( "0, 1, 1, 1, W, w, 3", scmLabel );
         scmPanel.add( "1, 1, 1, 1, W, w, 3", cvs );
         scmPanel.add( "2, 1, 1, 1, W, w, 3", svn );
@@ -163,20 +163,32 @@ public class PVOptionPane extends AbstractOptionPane {
                         treePath = treePath.getParentPath();
                         break;
                 }
-                // delete the files
+                // maybe delete the files
+                int delete = JOptionPane.showConfirmDialog( PVOptionPane.this, jEdit.getProperty("filesync.Delete_files_from_target?", "Delete files from target?"), jEdit.getProperty("filesync.Delete_files_from_target?", "Delete files from target?"), JOptionPane.YES_NO_CANCEL_OPTION );
                 DefaultMutableTreeNode sourceNode = ( DefaultMutableTreeNode ) treePath.getLastPathComponent();
-                String target = String.valueOf( ( ( DefaultMutableTreeNode ) sourceNode.getChildAt(2 ) ).getUserObject() );
-                if ( target.indexOf( ": " ) > 0 ) {
-                    target = target.substring( target.indexOf( ": " ) + 2 );
+                switch ( delete ) {
+                case JOptionPane.YES_OPTION:
+                    String target = String.valueOf( ( ( DefaultMutableTreeNode ) sourceNode.getChildAt(2 ) ).getUserObject() );
+                        if ( target.indexOf( ": " ) > 0 ) {
+                            target = target.substring( target.indexOf( ": " ) + 2 );
+                        }
+                        FileSyncPlugin.removeFiles( new File( target ) );
+                        // also do the "no" option
+                    case JOptionPane.NO_OPTION:
+                        // remove the node from the tree
+                        DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) sourceNode.getParent();
+                        root.remove( sourceNode );
+                        ( ( DefaultTreeModel ) syncTree.getModel() ).nodeStructureChanged( root );
+                        syncTree.validate();
+                        syncTree.repaint();
+                        for (int i = 0; i < syncTree.getRowCount(); i++) {
+                            syncTree.expandRow(i);   
+                        }
+                        break;
+                    default:
+                        // do nothing on cancel
                 }
-                FileSyncPlugin.removeFiles(new File(target));
-                
-                // remove the node from the tree
-                DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) sourceNode.getParent();
-                root.remove( sourceNode );
-                ( ( DefaultTreeModel ) syncTree.getModel() ).nodeStructureChanged( root );
-                syncTree.validate();
-                syncTree.repaint();
+
             }
         }
         );
@@ -207,24 +219,24 @@ public class PVOptionPane extends AbstractOptionPane {
         }
 
         final View view = jEdit.getActiveView();
-        final JDialog dialog = new JDialog( view, "Sync Files", true );
+        final JDialog dialog = new JDialog( view, jEdit.getProperty("filesync.Sync_Files", "Sync Files"), true );
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( BorderFactory.createEmptyBorder(11, 11, 11, 11 ) );
 
-        JLabel sourceLabel = new JLabel( "Source:" );
+        JLabel sourceLabel = new JLabel( jEdit.getProperty("filesync.Source>", "Source:") );
         final JTextField sourceField = new JTextField( source == null ? "" : source );
-        JButton sourceBrowse = new JButton( "Browse..." );
-        JLabel includesLabel = new JLabel( "Includes:" );
+        JButton sourceBrowse = new JButton( jEdit.getProperty("filesync.Browse...", "Browse...") );
+        JLabel includesLabel = new JLabel( jEdit.getProperty("filesync.Includes>", "Includes:") );
         final JTextField includesField = new JTextField( includes == null ? "*" : includes );
-        JLabel excludesLabel = new JLabel( "Excludes:" );
+        JLabel excludesLabel = new JLabel( jEdit.getProperty("filesync.Excludes>", "Excludes:") );
         final JTextField excludesField = new JTextField( excludes == null ? "" : excludes );
-        JLabel targetLabel = new JLabel( "Target:" );
+        JLabel targetLabel = new JLabel( jEdit.getProperty("filesync.Target>", "Target:") );
         final JTextField targetField = new JTextField( target == null ? "" : target );
-        JButton targetBrowse = new JButton( "Browse..." );
+        JButton targetBrowse = new JButton( jEdit.getProperty("filesync.Browse...", "Browse...") );
 
         JPanel buttonPanel = new JPanel( new KappaLayout() );
-        JButton okayButton = new JButton( "Ok" );
-        JButton cancelButton = new JButton( "Cancel" );
+        JButton okayButton = new JButton( jEdit.getProperty("filesync.Ok", "Ok") );
+        JButton cancelButton = new JButton( jEdit.getProperty("filesync.Cancel", "Cancel") );
         buttonPanel.add( "0, 0, 1, 1, 0, wh, 3", okayButton );
         buttonPanel.add( "1, 0, 1, 1, 0, wh, 3", cancelButton );
 
@@ -247,25 +259,25 @@ public class PVOptionPane extends AbstractOptionPane {
         okayButton.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent ae ) {
                 if ( sourceField.getText().isEmpty() ) {
-                    JOptionPane.showMessageDialog( dialog, "Source directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( dialog, jEdit.getProperty("filesync.Source_directory_is_required.", "Source directory is required."), jEdit.getProperty("filesync.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return;
                 }
                 File file = new File( sourceField.getText() );
                 if ( !file.exists() ) {
-                    JOptionPane.showMessageDialog( dialog, "Source directory does not exist.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( dialog, jEdit.getProperty("filesync.Source_directory_does_not_exist.", "Source directory does not exist."), jEdit.getProperty("filesync.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return;
                 }
                 if ( includesField.getText().isEmpty() ) {
-                    JOptionPane.showMessageDialog( dialog, "Includes is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( dialog, jEdit.getProperty("filesync.Includes_is_required.", "Includes is required."), jEdit.getProperty("filesync.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return;
                 }
                 if ( targetField.getText().isEmpty() ) {
-                    JOptionPane.showMessageDialog( dialog, "Target directory is required.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( dialog, jEdit.getProperty("filesync.Target_directory_is_required.", "Target directory is required."), jEdit.getProperty("filesync.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return;
                 }
                 file = new File( targetField.getText() );
                 if ( !file.exists() ) {
-                    JOptionPane.showMessageDialog( dialog, "Target directory does not exist.", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog( dialog, jEdit.getProperty("filesync.Target_directory_does_not_exist.", "Target directory does not exist."), jEdit.getProperty("filesync.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                     return;
                 }
                 dialog.dispose();
