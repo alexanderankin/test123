@@ -13,9 +13,10 @@ plugin.jakartacommons.JakartaCommonsPlugin.depend.0=jedit 04.04.99.00
 plugin.jakartacommons.JakartaCommonsPlugin.depend.1=jdk 1.6.0
 plugin.jakartacommons.JakartaCommonsPlugin.description=Jakarta Commons, a bundle of several commonly used jars from the Jakarta Commons project.
 
-plugin.jakartacommons.JakartaCommonsPlugin.menu=unescape-unicode-selection
+plugin.jakartacommons.JakartaCommonsPlugin.menu=unescape-unicode-selection escape-unicode-selection
 
 unescape-unicode-selection.label=Unescape Unicode in Selection
+escape-unicode-selection.label=Escape Unicode in Selection
 
 # included jar files
 plugin.jakartacommons.JakartaCommonsPlugin.jars=\

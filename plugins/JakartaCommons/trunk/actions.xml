@@ -7,4 +7,10 @@
 			jakartacommons.JakartaCommonsPlugin.unescapeUnicodeSelection(textArea, buffer);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="escape-unicode-selection">
+		<CODE>
+			jakartacommons.JakartaCommonsPlugin.escapeUnicodeSelection(textArea, buffer);
+		</CODE>
+	</ACTION>
+	
 </ACTIONS>

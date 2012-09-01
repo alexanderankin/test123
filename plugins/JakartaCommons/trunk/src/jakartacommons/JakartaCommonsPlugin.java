@@ -26,21 +26,40 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
 
 /**
-* Contains implementations for action(s) that use parts of the jakara commons libs. 
+* Contains implementations for action(s) that use jakarta commons libs. 
 */
 public class JakartaCommonsPlugin extends EditPlugin {
 
+	static Selection[] selections;
+	public static String selectedText(TextArea textArea, Buffer buffer) {
+		if (textArea.getSelectionCount() != 1) return null;
+		selections = textArea.getSelection();
+		int len = selections[0].getEnd() - selections[0].getStart();
+		return buffer.getText(selections[0].getStart(), len);
+	}
 	/** Unescape unicode characters that are selected in current TextArea
 	    using Java conventions. 
 	    @author Alan Ezust 
 	*/
+	
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
-		if (textArea.getSelectionCount() != 1) return;
-		Selection[] selections = textArea.getSelection();
-		int len = selections[0].getEnd() - selections[0].getStart();
-		String text = buffer.getText(selections[0].getStart(), len);
+		String text = selectedText(textArea, buffer);
+		if (text == null) return;
 		String esctext = StringEscapeUtils.unescapeJava(text);	
-		buffer.remove(selections[0].getStart(), len);
+		buffer.remove(selections[0].getStart(), text.length());
 		buffer.insert(selections[0].getStart(), esctext);	
 	}
+
+	/** Escape unicode characters that are selected in current TextArea
+	    using Java conventions. 
+	    @author Alan Ezust 
+	*/
+
+	public static void escapeUnicodeSelection(TextArea textArea, Buffer buffer) {
+		String text = selectedText(textArea, buffer);		
+		String esctext = StringEscapeUtils.escapeJava(text);	
+		buffer.remove(selections[0].getStart(), text.length());
+		buffer.insert(selections[0].getStart(), esctext);	
+	}
+
 }
