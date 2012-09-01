@@ -1,13 +1,8 @@
-<?xml version="1.0"?>
-
+<project name="JakartaCommons" default="dist" basedir=".">
 <!--
-
                  This is a modified version of the standard build.xml file for building
                  a jEdit plugin.  It doesn't do much.
-
 -->
-
-<project name="JakartaCommons" default="dist" basedir=".">
         <!-- {{{ Properties -->
         <property file="build.properties"/>
         <property file="../build.properties"/>
@@ -22,7 +17,6 @@
 
         <property name="install.dir" value=".."/>
         <property name="build.dir" value="build"/>
-
 
         <property name="compiler.debug" 			value="yes"/>
         <property name="compiler.deprecation" value="yes"/>
@@ -43,6 +37,7 @@
         <!-- {{{ Paths -->
         <path id="project.class.path">
                 <pathelement location="${jedit.install.dir}/jedit.jar"/>
+                <pathelement location="${install.dir}/commons-lang-2.3.jar" />
         </path>
         <!-- }}} -->
 
@@ -74,6 +69,9 @@
                  <jar jarfile="${install.dir}/${jar.name}">
                         <fileset dir="${build.dir}"/>
                         <fileset dir="${basedir}">
+                                  <include name="*.html" />
+                                  <include name="actions.xml" />
+
                                 <include name="**/*.props"/>
                                 <exclude name="build.properties"/>
                         </fileset>
@@ -86,15 +84,12 @@
         </target>
         <!-- }}} -->
 
-
-
         <!-- {{{ 'clean' target -->
         <target name="clean" description="Clean project directory">
                 <delete dir="${build.dir}"/>
                 <delete>
                         <fileset dir="." defaultexcludes="no">
                                 <include name="**/*~"/>
-                                <include name="**/*.html"/>
                                 <include name="docbook-wrapper.xsl"/>
                                 <include name="default-users-guide.xsl"/>
                         </fileset>
