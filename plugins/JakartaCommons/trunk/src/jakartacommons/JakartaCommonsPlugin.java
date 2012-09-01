@@ -1,7 +1,6 @@
 /*
  * JakartaCommonsPlugin.java
  * Copyright (c) 2002 Konstantin Pribluda (kpribluda@j-tec-team.de)
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -20,16 +19,21 @@
 
 package jakartacommons;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
 
 /**
-* 
+* Contains implementations for action(s) that use parts of the jakara commons libs. 
 */
 public class JakartaCommonsPlugin extends EditPlugin {
+
+	/** Unescape unicode characters that are selected in current TextArea
+	    using Java conventions. 
+	    @author Alan Ezust 
+	*/
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		if (textArea.getSelectionCount() != 1) return;
 		Selection[] selections = textArea.getSelection();
