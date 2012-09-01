@@ -18,7 +18,6 @@ public class SystemOptionPane extends AbstractOptionPane
 	private JCheckBox clearBeforeExecute;
 	private JCheckBox rememberCWD;
 	private JCheckBox nodeselect;
-	private JCheckBox fileStatusCheck;
 	private JCheckBox mergeError;
 	private JCheckBox showExitStatus;
 //	private JCheckBox pvselect;
@@ -51,13 +50,10 @@ public class SystemOptionPane extends AbstractOptionPane
 		pathDirs = new JTextField(jEdit.getProperty("console.shell.pathdirs"));
 		addComponent(pathLabel, pathDirs);
 
-		fileStatusCheck = new JCheckBox(jEdit.getProperty("options.console.system.checkForChangedBuffers"));
-		fileStatusCheck.setSelected(jEdit.getBooleanProperty("console.checkForChangedBuffers"));
-		addComponent(fileStatusCheck);
-		
 		pathDirsAppend = new JCheckBox(jEdit.getProperty("options.console.general.pathdirs.append"));
 		pathDirsAppend.setSelected(jEdit.getBooleanProperty("console.shell.pathdirs.append"));
 		addComponent(pathDirsAppend);
+
 		
 		rememberCWD = new JCheckBox(jEdit.getProperty("options.console.general.rememberCWD"));
 		rememberCWD.setSelected(jEdit.getBooleanProperty("console.rememberCWD"));
@@ -102,7 +98,6 @@ public class SystemOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
 		jEdit.setBooleanProperty("console.clearBeforeExecute", clearBeforeExecute.isSelected());
 		jEdit.setBooleanProperty("console.rememberCWD", rememberCWD.isSelected());
-		jEdit.setBooleanProperty("console.checkForChangedBuffers", fileStatusCheck.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
