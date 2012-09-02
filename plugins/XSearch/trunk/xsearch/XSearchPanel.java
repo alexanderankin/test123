@@ -1364,7 +1364,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 					.isSelected());
 			}
 			else if (searchAllBuffers.isSelected())
-				fileset = new AllBufferSet(filter);
+				fileset = new AllBufferSet(filter, view);
 			else if (searchProject.isSelected())
 				fileset = new ProjectViewerListSet(view);
 			else if (searchDirectory.isSelected())
