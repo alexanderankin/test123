@@ -969,7 +969,7 @@ public class SearchAndReplace
 			hyperSearch(view, false);
 			break;
 		case XSearch.SEARCH_TYPE_ALL_BUFFERS:
-			setSearchFileSet(new org.gjt.sp.jedit.search.AllBufferSet("*"));
+			setSearchFileSet(new org.gjt.sp.jedit.search.AllBufferSet("*", view));
 			hyperSearch(view, false);
 			break;
 		case XSearch.SEARCH_TYPE_PROJECT:

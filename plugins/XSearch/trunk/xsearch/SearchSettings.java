@@ -28,6 +28,7 @@ import java.util.Stack;
 
 
 import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.search.AllBufferSet;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
 import org.gjt.sp.jedit.search.DirectoryListSet;
@@ -128,7 +129,7 @@ public class SearchSettings
 				int dirLength = Integer.parseInt(setString.substring(ofs, ofs+5));
 				ofs += 5;
 				if (dirLength == 0)
-					fileset = new AllBufferSet(filter);
+					fileset = new AllBufferSet(filter, jEdit.getActiveView());
 				else {
 					String dir = setString.substring(ofs, ofs+dirLength);
 					ofs += dirLength;
@@ -338,9 +339,10 @@ public class SearchSettings
 				((DirectoryListSet)source).getDirectory(),
 				((DirectoryListSet)source).getFileFilter(),
 				((DirectoryListSet)source).isRecursive());
-		else if (source instanceof AllBufferSet)
-			clone = new AllBufferSet(
-				((AllBufferSet)source).getFileFilter());
+		else if (source instanceof AllBufferSet) {
+			AllBufferSet orig = (AllBufferSet) source;
+			clone = new AllBufferSet(orig.getFileFilter(), orig.getView());
+		}
 		else clone = new CurrentBufferSet();
 		return clone;
 	}
