@@ -127,7 +127,7 @@ public class ErrorListSpellCheckerTest{
 			fail(spe.toString());
 		}
 		
-		ErrorListValidatorTest.waitForMessage(new ErrorSourceUpdate(new DefaultErrorSource("Dummy"),ErrorSourceUpdate.ERROR_ADDED,null),10000);
+		ErrorListValidatorTest.waitForMessage(new ErrorSourceUpdate(new DefaultErrorSource("Dummy"),ErrorSourceUpdate.ERROR_ADDED),10000);
 
 		
 		ErrorSource[] sources = ErrorSource.getErrorSources();
@@ -190,7 +190,7 @@ public class ErrorListSpellCheckerTest{
 			spe.printStackTrace(System.err);
 			fail(spe.toString());
 		}
-		ErrorListValidatorTest.waitForMessage(new ErrorSourceUpdate(new DefaultErrorSource("Dummy"),ErrorSourceUpdate.ERROR_ADDED,null),10000);
+		ErrorListValidatorTest.waitForMessage(new ErrorSourceUpdate(new DefaultErrorSource("Dummy"),ErrorSourceUpdate.ERROR_ADDED),10000);
 
 		
 		ErrorSource[] sources = ErrorSource.getErrorSources();
