@@ -54,7 +54,7 @@ public class BufferWatcher implements ClangBuilderListener
 	public BufferWatcher()
 	{
 		EditBus.addToBus(this);
-		errorSrc = new DefaultErrorSource(this.getClass().getName());
+		errorSrc = new DefaultErrorSource(this.getClass().getName(), jEdit.getActiveView());
 		ErrorSource.registerErrorSource(errorSrc);
 	}
 	
@@ -78,7 +78,7 @@ public class BufferWatcher implements ClangBuilderListener
 			
 			ClangBuilder builder = new ClangBuilder();
 			builder.add("-cc1");    
-			builder.add("-w");
+			builder.add("-fblocks");
 			builder.add("-fsyntax-only");
 			builder.add("-fno-caret-diagnostics");
 			builder.add("-fdiagnostics-print-source-range-info");
@@ -90,7 +90,7 @@ public class BufferWatcher implements ClangBuilderListener
 			
 			// Do not check header files because in most case clang cannot compile
 			// a header file correctly without implementation cpp sources.
-			if(Util.isHeaderFile(buffer.getFile()))
+			if(Util.isHeaderFile(buffer.getPath()))
 			{
 				return;
 			}
