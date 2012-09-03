@@ -99,7 +99,7 @@ public class ClangBuilder
 			return false;
 		}
 		
-		if(Util.isHeaderFile(buffer.getFile()))
+		if(Util.isHeaderFile(buffer.getPath()))
 		{
 			xparam += "-header";
 		}

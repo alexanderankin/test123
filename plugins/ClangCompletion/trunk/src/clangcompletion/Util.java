@@ -4,11 +4,19 @@ import java.io.*;
 import java.util.*;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
+import completion.util.CompletionUtil;
+import completion.util.BaseCompletionCandidate;
+import org.gjt.sp.jedit.textarea.TextArea;
 public class Util
 {
 	public static boolean isHeaderFile(File f)
 	{
 		return f.getName().endsWith(".hpp") || f.getName().endsWith(".h");
+	}
+	    
+	public static boolean isHeaderFile(String f)
+	{
+		return f.endsWith(".hpp") || f.endsWith(".h");
 	}
 	
 	public static File getPTHFileOfActiveProject()
@@ -17,6 +25,36 @@ public class Util
 		VPTProject project = ProjectViewer.getActiveProject(view);
 		return  new File(EditPlugin.getPluginHome(ClangCompletionPlugin.class), project.getName()+".pth");
 	}
+	
+	public static String getCompletionPrefix(View view)
+   {
+   	   String prefix = CompletionUtil.getCompletionPrefix(view);
+   	   if(prefix != null && prefix.trim().length() > 0)
+   	   {
+   	   	   return prefix;
+   	   }
+   	   
+   	   TextArea textArea = view.getTextArea();
+       int caret = textArea.getCaretPosition() - 1;
+       if (caret <= 0) 
+       {
+           return "";
+       }
+       String token = textArea.getText(caret, 1);
+       if(token.equals("."))
+       {
+       	   return token;
+       }else if(--caret >=0)
+       {
+       	   token = textArea.getText(caret, 1) + token;
+       	   if(token.equals("->") || token.equals("::"))
+       	   {
+       	   	   return token;
+       	   }
+       }
+	   
+       return "";
+   }
 	
 	public static boolean generatePTHFileForActiveProject()
 	{
@@ -32,7 +70,8 @@ public class Util
 		HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
 		
 		ClangBuilder builder = new ClangBuilder();
-		builder.add("-cc1");    
+		builder.add("-cc1"); 
+		builder.add("-fblocks");
 		builder.add("-w");
 		
 		Vector<String> precompileds = properties.get(ProjectsOptionPane.PRECOMPILEDS);

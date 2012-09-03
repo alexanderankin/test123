@@ -61,13 +61,13 @@ public class ClangCompletionProvider implements CompletionProvider
 		
 		
 		final Vector<CompletionCandidate> codeCompletions = new Vector<CompletionCandidate>();
-		/*String prefix = CompletionUtil.getCompletionPrefix(view);
+		String prefix = Util.getCompletionPrefix(view);
 		if(prefix == null || prefix.trim().length() == 0)
 		{
 			return codeCompletions;
-		}*/
+		}
 		
-		Buffer buffer = view.getBuffer(); 
+		Buffer buffer = view.getBuffer();
 		buffer.autosave();
 		
 		TextArea textArea = view.getTextArea();
@@ -85,7 +85,8 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		
 		ClangBuilder builder = new ClangBuilder();
-		builder.add("-cc1");    
+		builder.add("-cc1");  
+		builder.add("-fblocks");
 		builder.add("-w");
 		builder.add("-fsyntax-only");
 		builder.add("-fno-caret-diagnostics");
