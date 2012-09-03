@@ -63,7 +63,7 @@ It can use various engines to perform the spell-checking.
    </listitem>
    <listitem>
     <para>highlight misspelled words for easy access (uses ErrorList);
-    this can be automatically invoke at save;</para>
+    this can be automatically invoked at save;</para>
    </listitem>
    <listitem>
     <para>an editable user dictionary for each language;</para>
@@ -93,7 +93,7 @@ It can use various engines to perform the spell-checking.
   in the Unix world. A windows port also exists, but it's for an old version.
   </para>
   <para>The interactions with Aspell are done via a pipe : the SpellCheck plugin
-  invokes the Aspell executable, send lines via standard input and gets results
+  invokes the Aspell executable, sends lines via standard input and gets results
   by parsing the output. This leads to slow interactions but is quite independent
   of the way Aspell is installed.</para>
   <para>Aspell is not bundled with this plugin, 
@@ -113,8 +113,10 @@ It can use various engines to perform the spell-checking.
   <para>A version of Hunspell is bundled for:
   <itemizedlist>
   <listitem><para>Mac OS X PPC32</para></listitem>
-  <listitem><para>Mac OS X x86</para></listitem>
+  <listitem><para>Mac OS X x86 (32 bits)</para></listitem>
+  <listitem><para>Mac OS X x86 (64 bits))</para></listitem>
   <listitem><para>Windows x86 (32 bits)</para></listitem>
+  <listitem><para>Windows x86 (64 bits)</para></listitem>
   <listitem><para>Linux x86 (32 bits)</para></listitem>
   <listitem><para>Linux x86 (64 bits)</para></listitem>
   </itemizedlist>
@@ -155,7 +157,7 @@ It can use various engines to perform the spell-checking.
     <para>Aspell 0.50 or better (I am using Aspell 0.60.5).</para>
    </listitem>
    <listitem>
-    <para>Hunspell 1.1.12 or better (this is the bundled version)</para>
+    <para>Hunspell 1.3.2 or better (this is the bundled version)</para>
    </listitem>
    <listitem>
     <para>VoxSpell plugin 1.0.1 ( TODO: verify that the patch was applied)</para>
@@ -628,6 +630,12 @@ To run the tests, <command>cd</command> to the plugin root directory and type <c
 <section id="changelog"><title>Change Log</title>
 
 <itemizedlist>
+<listitem><para>Release 008 (XXX, YYYY) - <ulink url="mailto:kerik-sf@users.sourceforge.net">E. Le Lay</ulink></para>
+  <para>Maintainance release.</para>
+  <itemizedlist>
+    <listitem><para>support hunspell on Windows x86 64 bits JVM</para></listitem>
+  </itemizedlist>
+</listitem>
 <listitem><para>Release 007 (November, 2011) - <ulink url="mailto:kerik-sf@users.sourceforge.net">E. Le Lay</ulink></para>
   <para>Maintainance release.</para>
   <itemizedlist>

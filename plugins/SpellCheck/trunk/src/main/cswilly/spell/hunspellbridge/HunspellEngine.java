@@ -22,7 +22,7 @@
 
 package cswilly.spell.hunspellbridge;
 
-import com.stibocatalog.hunspell.Hunspell;
+import dk.dren.hunspell.Hunspell;
 
 import java.util.List;
 import java.util.ArrayList;
