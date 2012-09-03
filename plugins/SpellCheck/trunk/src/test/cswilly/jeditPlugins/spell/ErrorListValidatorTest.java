@@ -118,7 +118,7 @@ public class ErrorListValidatorTest{
 		valid.done();
 		
 		
-		waitForMessage(new ErrorSourceUpdate(valid,ErrorSourceUpdate.ERROR_ADDED,null),10000);
+		waitForMessage(new ErrorSourceUpdate(valid,ErrorSourceUpdate.ERROR_ADDED),10000);
 
 		
 		ErrorSource[] sources = ErrorSource.getErrorSources();
