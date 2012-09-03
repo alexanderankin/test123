@@ -55,7 +55,7 @@ import cswilly.spell.hunspellbridge.HunspellSuggestionValidator;
 
 import cswilly.jeditPlugins.spell.SpellCheckPlugin;
 
-import com.stibocatalog.hunspell.Hunspell;
+import dk.dren.hunspell.Hunspell;
 
 import static cswilly.jeditPlugins.spell.hunspellbridge.HunspellDictsManager.Dictionary;
 
@@ -204,7 +204,8 @@ public class HunspellEngineManager implements EngineManager{
 				else{
 					File f = new File(libName);
 					if(!f.exists())Log.log(Log.WARNING,HunspellEngineManager.class,"The library file doesn't exist...");
-					hspl = Hunspell.getInstance(f.getParent(),f.getName());
+					// XXX: can't choose the library name, this way
+					hspl = Hunspell.getInstance(f.getParent());
 				}
 			}catch(Exception e){
 				throw new SpellException("Unable to load Hunspell",e);
