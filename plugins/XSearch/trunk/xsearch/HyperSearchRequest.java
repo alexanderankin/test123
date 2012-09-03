@@ -39,7 +39,7 @@ import org.gjt.sp.util.Log;  // for debugging
 
 //}}}
 
-class HyperSearchRequest extends WorkRequest
+class HyperSearchRequest extends Task
 {
 	//{{{ HyperSearchRequest constructor
 	public HyperSearchRequest(View view, SearchMatcher matcher,
@@ -66,7 +66,7 @@ class HyperSearchRequest extends WorkRequest
 	} //}}}
 
 	//{{{ run() method
-	public void run()
+	public void _run()
 	{
 		setStatus(jEdit.getProperty("hypersearch-status"));  // added 4.1pre5
 		org.gjt.sp.jedit.search.SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
@@ -118,7 +118,7 @@ loop:
 					if(currentTime - lastStatusTime > 250)
 					{
 						results.setSearchStatus(searchingCaption + file);
-						setProgressValue(current);
+						setValue(current);
 						lastStatusTime = currentTime;
 					}
 
@@ -132,17 +132,7 @@ loop:
 		}
 		catch(final Exception e)
 		{
-			Log.log(Log.ERROR,this,e);
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					SearchAndReplace.handleError(view,e);
-				}
-			});
-		}
-		catch(WorkThread.Abort a)
-		{
+			Log.log(Log.ERROR,this, "HyperSearch Requset failed. ", e);
 		}
 		finally
 		{
@@ -217,7 +207,7 @@ loop:
 	//{{{ searchInSelection() method
 	private int searchInSelection(Buffer buffer) throws Exception
 	{
-		setAbortable(false);
+		setCancellable(false);
 
 		int resultCount = 0;
 
@@ -250,7 +240,7 @@ loop:
 			buffer.readUnlock();
 		}
 
-		setAbortable(true);
+		setCancellable(true);
 
 		return resultCount;
 	} //}}}
@@ -266,7 +256,7 @@ loop:
 	private int doHyperSearch(Buffer buffer, int start, int end)
 		throws Exception
 	{
-		setAbortable(false);
+		setCancellable(false);
 
 		final DefaultMutableTreeNode bufferNode = new DefaultMutableTreeNode(
 			//buffer.getPath());
@@ -279,7 +269,7 @@ loop:
 			rootSearchNode.insert(bufferNode,rootSearchNode.getChildCount());
 		}
 
-		setAbortable(true);
+		setCancellable(true);
 
 		return resultCount;
 	} //}}}
