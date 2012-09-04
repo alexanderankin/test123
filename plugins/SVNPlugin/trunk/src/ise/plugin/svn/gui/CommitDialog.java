@@ -210,9 +210,11 @@ public class CommitDialog extends JDialog {
         // middle panel        
         // text area for comment entry, autofill with tsvn template if it is available
         comment = new JTextPane();
+        /*
         comment.setBackground( view.getBackground() );
         comment.setCaretColor( view.getEditPane().getTextArea().getPainter().getCaretColor() );
         comment.setSelectionColor( view.getEditPane().getTextArea().getPainter().getSelectionColor() );
+        */
         if ( commitMessageTemplate != null ) {
             comment.setText( commitMessageTemplate );
         }
