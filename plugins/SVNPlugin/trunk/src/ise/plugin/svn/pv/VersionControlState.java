@@ -10,12 +10,7 @@ import projectviewer.event.ProjectUpdate;
 import projectviewer.event.ViewerUpdate;
 import projectviewer.ProjectViewer;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -344,8 +339,12 @@ public class VersionControlState implements VersionControlService, EBComponent {
             ProjectUpdate pu = ( ProjectUpdate ) msg;
             if ( ProjectUpdate.Type.FILES_CHANGED.equals( pu.getType() ) ) {
                 Collection<VPTFile> files = pu.getAddedFiles();
-                for ( VPTFile file : files ) {
-                    getStatus( file.getNodePath() );
+                if (files != null) {
+                    for ( VPTFile file : files ) {
+                        if (file != null) {
+                            getStatus( file.getNodePath() );
+                        }
+                    }
                 }
             }
         } else if ( msg instanceof ViewerUpdate ) {
@@ -431,7 +430,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
                 if ( !cacheFile.exists() ) {
                     return false;
                 }
-                FileInputStream fileIn = new FileInputStream( cacheFile );
+                InputStream fileIn = new BufferedInputStream(new FileInputStream( cacheFile ));
                 objectIn = new ObjectInputStream( fileIn );
                 cache = new Hashtable<String, FileStatus>();
                 while ( true ) {
@@ -448,7 +447,9 @@ public class VersionControlState implements VersionControlService, EBComponent {
                 return false;
             } finally {
                 try {
-                    objectIn.close();
+                    if (objectIn != null) {
+                        objectIn.close();
+                    }
                 } catch ( Exception ignored ) {                    // NOPMD
                 }
             }
