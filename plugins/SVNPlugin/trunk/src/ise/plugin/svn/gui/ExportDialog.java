@@ -133,7 +133,7 @@ public class ExportDialog extends JDialog {
 
         // revision selection panels
         revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Export_from_this_revision>", "Export from this revision:"), SwingConstants.VERTICAL, data.getSourceURLs() == null );
-        peg_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Using_this_peg_revision>", "Using this peg revision:"), SwingConstants.VERTICAL, false, false, true, false, false );
+        peg_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Using_this_peg_revision>", "Using this peg revision:"), SwingConstants.VERTICAL, false, false, false, true, false, false );
 
         // destination
         JLabel path_label = new JLabel( jEdit.getProperty("ips.Export_to_this_directory>", "Export to this directory:") );
