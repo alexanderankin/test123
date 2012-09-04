@@ -34,7 +34,6 @@ public class XInsertReader {
   public XInsertReader() { }
 
   public static boolean read(XTree tree, InputStream inputStream, String file) {
-    InputStreamReader reader = new InputStreamReader(inputStream);
     XInsertHandler xmh = new XInsertHandler(tree);
 	try
 	{
@@ -42,7 +41,7 @@ public class XInsertReader {
 		parser.setErrorHandler(xmh);
 		parser.setContentHandler(xmh);
 		parser.setEntityResolver(xmh);
-		parser.parse(new InputSource(reader));
+		parser.parse(new InputSource(inputStream));
 	} catch(SAXParseException e) {
       Log.log(Log.ERROR,tree,"XInsert: Error parsing grammar " + file);
       Log.log(Log.ERROR,tree,"XInsert: Error occured at line " + e.getLineNumber() +
@@ -57,13 +56,7 @@ public class XInsertReader {
       // Should NEVER happend !
       e.printStackTrace();
       return false;
-    } finally {
-		try {
-		  reader.close();
-		} catch (IOException ioe) { 
-				ioe.printStackTrace(); 
-		}
-	}
+    }
     return true;
   }
 }
