@@ -1,4 +1,3 @@
-
 <project name="SVNPlugin" default="dist" basedir=".">
 
     <!-- read build.props to override properties set below -->
