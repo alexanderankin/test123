@@ -14,6 +14,7 @@ public class RevisionSelectionPanelModel {
     private boolean showHead = true;
     private boolean showWorking = false;
     private boolean showBase = true;
+    private boolean showPrevious = true;
     private boolean showDate = true;
     private boolean showNumber = true;
     private SVNRevision defaultRevision = SVNRevision.HEAD;
@@ -118,6 +119,21 @@ public class RevisionSelectionPanelModel {
      */
     public void setShowBase( boolean showBase ) {
         this.showBase = showBase;
+    }
+
+    /**
+     * Returns the value of showPrevious.
+     */
+    public boolean getShowPrevious() {
+        return showPrevious;
+    }
+
+    /**
+     * Sets the value of showPrevious.
+     * @param showPrevious The value to assign showPrevious.
+     */
+    public void setShowPrevious( boolean showPrevious ) {
+        this.showPrevious = showPrevious;
     }
 
     /**

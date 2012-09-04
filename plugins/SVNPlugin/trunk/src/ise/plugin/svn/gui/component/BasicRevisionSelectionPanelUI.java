@@ -144,6 +144,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         private ButtonGroup bg = null;
         private JRadioButton head_rb = new JRadioButton( jEdit.getProperty( "ips.HEAD", "HEAD" ) );
         private JRadioButton base_rb = new JRadioButton( jEdit.getProperty( "ips.BASE", "BASE" ) );
+        private JRadioButton previous_rb = new JRadioButton( jEdit.getProperty( "ips.PREVIOUS", "PREVIOUS" ) );
         private JRadioButton working_rb = new JRadioButton( jEdit.getProperty( "ips.WORKING", "WORKING" ) );
         private JRadioButton revision_number_rb = new JRadioButton( jEdit.getProperty( "ips.Revision", "Revision" ) + ":" );
         private RevisionTextField revision_number = null;
@@ -163,6 +164,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             bg.add( date_rb );
             bg.add( head_rb );
             bg.add( base_rb );
+            bg.add( previous_rb );
             bg.add( working_rb );
             
             // set up the revision number entry field
@@ -212,8 +214,11 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 if ( controller.getModel().getShowBase() ) {
                     add( "0, 2, 1, 1, W, , 3", base_rb );
                 }
+                if ( controller.getModel().getShowPrevious() ) {
+                    add( "0, 3, 1, 1, W, , 3", previous_rb );
+                }
                 if ( controller.getModel().getShowWorking() ) {
-                    add( "0, 3, 1, 1, W, , 3", working_rb );
+                    add( "0, 4, 1, 1, W, , 3", working_rb );
                 }
                 add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createHorizontalStrut( 21, true ) );
                 if ( controller.getModel().getShowNumber() ) {
@@ -234,17 +239,20 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 if ( controller.getModel().getShowBase() ) {
                     add( "0, 2, 2, 1, W, , 3", base_rb );
                 }
+                if ( controller.getModel().getShowPrevious() ) {
+                    add( "0, 3, 2, 1, W, , 3", previous_rb );
+                }
                 if ( controller.getModel().getShowWorking() ) {
-                    add( "0, 3, 2, 1, W, , 3", working_rb );
+                    add( "0, 4, 2, 1, W, , 3", working_rb );
                 }
                 if ( controller.getModel().getShowNumber() ) {
-                    add( "0, 4, 1, 1, W, w, 3", revision_number_rb );
-                    add( "1, 4, 1, 1, W, , 3", revision_number );
+                    add( "0, 5, 1, 1, W, w, 3", revision_number_rb );
+                    add( "1, 5, 1, 1, W, , 3", revision_number );
                 }
                 if ( controller.getModel().getShowDate() ) {
-                    add( "0, 5, 1, 1, W, , 3", date_rb );
-                    add( "1, 5, 1, 1, W, , 3", date_spinner );
-                    add( "2, 5, 1, 1,  , , 3", date_popup );
+                    add( "0, 6, 1, 1, W, , 3", date_rb );
+                    add( "1, 6, 1, 1, W, , 3", date_spinner );
+                    add( "2, 6, 1, 1,  , , 3", date_popup );
                 }
             }
             
@@ -393,6 +401,9 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 else if ( controller.getModel().getShowBase() && SVNRevision.BASE.equals( newRevision ) ) {
                     base_rb.setSelected( true );
                 }
+                else if ( controller.getModel().getShowPrevious() && SVNRevision.PREVIOUS.equals( newRevision ) ) {
+                    previous_rb.setSelected( true );
+                }
                 else if ( controller.getModel().getShowWorking() && SVNRevision.WORKING.equals( newRevision ) ) {
                     working_rb.setSelected( true );
                 }
@@ -420,6 +431,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         public void setEnabled( boolean b ) {
             head_rb.setEnabled( b );
             base_rb.setEnabled( b );
+            previous_rb.setEnabled( b );
             revision_number_rb.setEnabled( b );
             date_rb.setEnabled( b );
             working_rb.setEnabled( b );

@@ -64,18 +64,19 @@ public class RevisionSelectionPanel extends JComponent {
      * @param showWorking if true, WORKING will be shown as a revision choice.
      */
     public RevisionSelectionPanel( String title, int direction, boolean showWorking ) {
-        this( title, direction, true, true, true, true, showWorking );
+        this( title, direction, true, true, true, true, true, showWorking );
     }
 
     /**
      * Fully specify which revision choices to show.
      */
-    public RevisionSelectionPanel( String title, int direction, boolean showHead, boolean showBase, boolean showNumber, boolean showDate, boolean showWorking ) {
+    public RevisionSelectionPanel( String title, int direction, boolean showHead, boolean showBase, boolean showPrevious, boolean showNumber, boolean showDate, boolean showWorking ) {
         model = new RevisionSelectionPanelModel();
         model.setTitle( title );
         model.setDirection( direction );
         model.setShowHead( showHead );
         model.setShowBase( showBase );
+        model.setShowPrevious( showPrevious );
         model.setShowNumber( showNumber );
         model.setShowDate( showDate );
         model.setShowWorking( showWorking );
@@ -259,6 +260,22 @@ public class RevisionSelectionPanel extends JComponent {
      */
     public void setShowBase( boolean showBase ) {
         model.setShowBase( showBase );
+        fireStateChanged();
+    }
+
+    /**
+     * Returns the value of showPrevious.
+     */
+    public boolean getShowPrevious() {
+        return model.getShowPrevious();
+    }
+
+    /**
+     * Sets the value of showPrevious.
+     * @param showPrevious The value to assign showPrevious.
+     */
+    public void setShowPrevious( boolean showPrevious ) {
+        model.setShowPrevious( showPrevious );
         fireStateChanged();
     }
 
