@@ -72,6 +72,7 @@ public abstract class NodeActor implements ActionListener {
         projectRoot = project_root;
         this.username = username;
         this.password = password;
+        hasDirectory = false;
         for (VPTNode node : n) {
             if (node.isDirectory()) {
                 hasDirectory = true;
