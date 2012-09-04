@@ -33,8 +33,11 @@ import java.util.*;
 
 import org.gjt.sp.jedit.MiscUtilities;
 
+
+
 public class CheckoutData extends SVNData {
     private String url = "";
+    private int wc_format = -1;
 
     public CheckoutData(){}
 
@@ -67,6 +70,14 @@ public class CheckoutData extends SVNData {
      */
     public void setURL( String url ) {
         this.url = url;
+    }
+    
+    public void setWorkingCopyFormat(int wc_format) {
+        this.wc_format = wc_format;   
+    }
+    
+    public int getWorkingCopyFormat() {
+        return wc_format;   
     }
 
 }

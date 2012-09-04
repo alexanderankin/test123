@@ -37,7 +37,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-
+import org.tmatesoft.svn.core.internal.wc2.SvnWcGeneration;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
 
 import org.tmatesoft.svn.core.SVNException;
@@ -86,9 +86,14 @@ public class Checkout {
         // use the svnkit client manager
         SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  cd.getUsername(), cd.getDecryptedPassword() ) );
 
-        // get a commit client
+        // get a client for checkout
         SVNUpdateClient client = clientManager.getUpdateClient();
-
+        int wc_format = cd.getWorkingCopyFormat();
+        if (wc_format == -1) {
+            wc_format = jEdit.getIntegerProperty("ise.plugin.svn.defaultWCVersion");
+        }
+        client.getOperationsFactory().setPrimaryWcGeneration(wc_format == SVNAdminAreaFactory.WC_FORMAT_16 ? SvnWcGeneration.V16 : SvnWcGeneration.V17);
+ 
         // set an event handler so that messages go to the data streams for display
         client.setEventHandler( new SVNCommandEventProcessor( out, cd.getErr(), false ) );
 
