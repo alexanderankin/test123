@@ -49,6 +49,7 @@ public class DiffActor extends NodeActor {
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
             DiffData data = new DiffData();
+            data.setSvnDiff(hasDirectory);
             DiffDialog dialog = new DiffDialog( view, data );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
@@ -60,7 +61,7 @@ public class DiffActor extends NodeActor {
             data.setUsername( username );
             data.setPassword( password );
             data.setRecursive( hasDirectory );
-            data.setSvnDiff( hasDirectory || nodes.size() > 1 );
+            data.setSvnDiff( hasDirectory || data.getSvnDiff() ); // tracker 3555542
             DiffAction action = new DiffAction( view, data );
             action.actionPerformed( ae );
         }
