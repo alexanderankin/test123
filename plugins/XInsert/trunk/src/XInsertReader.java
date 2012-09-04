@@ -56,6 +56,12 @@ public class XInsertReader {
       // Should NEVER happend !
       e.printStackTrace();
       return false;
+    } finally {
+      try {
+        inputStream.close();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
     }
     return true;
   }
