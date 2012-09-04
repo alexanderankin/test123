@@ -50,6 +50,8 @@ import ise.plugin.svn.library.PasswordHandler;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
+import org.tmatesoft.svn.core.internal.wc17.db.ISVNWCDb;
 
 /**
  * Dialog for obtaining the url and local directory for a checkout from a
@@ -62,6 +64,7 @@ public class CheckoutDialog extends JDialog {
 
     private HistoryTextField url = null;
     private HistoryTextField path = null;
+    private JComboBox fileformat = null;
     private HistoryTextField username = null;
     private JPasswordField password = null;
 
@@ -180,6 +183,14 @@ public class CheckoutDialog extends JDialog {
                 }
                                     );
 
+        // working copy format
+        JLabel fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
+        fileformat = new JComboBox( new String[] {"1.6", "1.7"} );
+        fileformat.setEditable( false );
+        int wc_format = jEdit.getIntegerProperty("ise.plugin.svn.defaultWCVersion");
+        fileformat.setSelectedIndex(wc_format == SVNAdminAreaFactory.WC_FORMAT_16 ? 0 : 1);
+        
+        
         // username field
         JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
         username = new HistoryTextField( USERNAME );
@@ -243,14 +254,17 @@ public class CheckoutDialog extends JDialog {
         panel.add( "1, 1, 2, 1, 0, w, 3", path );
         panel.add( "3, 1, 1, 1, 0, w, 3", browse_btn );
 
-        panel.add( "0, 2, 1, 1, E,  , 3", username_label );
-        panel.add( "1, 2, 2, 1, 0, w, 3", username );
+        panel.add( "0, 2, 1, 1, E,  , 3", fileformat_label );
+        panel.add( "1, 2, 2, 1, 0, w, 3", fileformat );
 
-        panel.add( "0, 3, 1, 1, E,  , 3", password_label );
-        panel.add( "1, 3, 2, 1, 0, w, 3", password );
+        panel.add( "0, 3, 1, 1, E,  , 3", username_label );
+        panel.add( "1, 3, 2, 1, 0, w, 3", username );
 
-        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
-        panel.add( "0, 5, 4, 1, E,  , 0", btn_panel );
+        panel.add( "0, 4, 1, 1, E,  , 3", password_label );
+        panel.add( "1, 4, 2, 1, 0, w, 3", password );
+
+        panel.add( "0, 5, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 10, true ) );
+        panel.add( "0, 6, 4, 1, E,  , 0", btn_panel );
 
         setContentPane( panel );
         pack();
@@ -270,6 +284,7 @@ public class CheckoutDialog extends JDialog {
         List<String> paths = new ArrayList<String>();
         paths.add( path.getText() );
         cd.setPaths( paths );
+        cd.setWorkingCopyFormat(fileformat.getSelectedIndex() == 0 ? SVNAdminAreaFactory.WC_FORMAT_16 : ISVNWCDb.WC_FORMAT_17);
         return cd;
     }
 
