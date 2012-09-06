@@ -470,6 +470,7 @@ errorSource.addError(new ErrorSource.DefaultError(
    <listitem><para> Fixed errors not appearing without manual dockable activation,
    a bug introduced in version 2.0
    (#3556671 Jarek Czekalski) </para></listitem>
+   <listitem><para> Added squiggle underline style (Matthieu Casanova) </para></listitem>
  </itemizedlist>
  </listitem>
 
