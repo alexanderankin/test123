@@ -63,6 +63,7 @@ import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.util.AwtRunnableQueue;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 
@@ -891,7 +892,7 @@ public class SearchAndReplace
 			else
 				s = null;
 			if (hyperRangeUpper == -1 && hyperRangeLower == -1)
-				VFSManager.runInWorkThread(new HyperSearchRequest(view, matcher,
+				AwtRunnableQueue.INSTANCE.runAfterIoTasks(new HyperSearchRequest(view, matcher,
 					results, s));
 			else
 			{
@@ -899,7 +900,7 @@ public class SearchAndReplace
 					: hyperRangeUpper;
 				int hyLo = hyperRangeLower == -1 ? hyperRangeUpper
 					: hyperRangeLower;
-				VFSManager.runInWorkThread(new HyperSearchRequest(view, matcher,
+				AwtRunnableQueue.INSTANCE.runAfterIoTasks(new HyperSearchRequest(view, matcher,
 					results, s, hyUp, hyLo));
 			}
 			return true;
