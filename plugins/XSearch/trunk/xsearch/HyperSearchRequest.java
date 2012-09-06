@@ -28,7 +28,6 @@ import javax.swing.tree.*;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -136,7 +135,7 @@ loop:
 		}
 		finally
 		{
-			VFSManager.runInAWTThread(new Runnable()
+			AwtRunnableQueue.INSTANCE.runAfterIoTasks(new Runnable()
 			{
 				public void run()
 				{
