@@ -36,7 +36,6 @@ error-list-previous-error-file.label=Go to Previous File With Errors
 error-list-clear.label=Clear Error List
 error-list-toggle-errors.label=Toggle Display of Errors
 error-list-toggle-warnings.label=Toggle Display of Warnings
-error-list.showOnError=true
 
 # Option pane
 plugin.errorlist.ErrorListPlugin.option-pane=error-list
@@ -63,7 +62,7 @@ error-list.status.many-error-one-warning={0} errors, {1} warning
 error-list.status.one-error-one-warning={0} error, {1} warning
 
 # Settings
-error-list.showOnError=false
+error-list.showOnError=true
 error-list.showErrorOverview=true
 error-list.autoCloseOnNoErrors=false
 error-list.warningColor=#ffa800
