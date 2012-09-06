@@ -737,7 +737,9 @@ most often at the top of the list.
   <para> One of jEdit's best kept secrets is the interactive Console BeanShell, which provides a command line interface into the current running JVM, allowing you to inspect or invoke methods on objects in memory, or create instances of any class loaded in the JVM. This makes the Console BeanShell a powerful debugging tool for jEdit or plugin development.
   </para>
 
-  <para> There are many predefined variables you can use from this shell. Be sure to check <literal>jEdit's user guide - Writing Macros - Macro Basics - BeanShell Commands</literal> for more details. </para>
+  <para> There are many predefined variables you can use from this shell. 
+  Be sure to check <ulink url="jeditresource:/doc/users-guide/bsh-commands.html">
+  BeanShell Commands</ulink> for more details. </para>
 
  </chapter>
 
