@@ -3,7 +3,7 @@ plugin.errorlist.ErrorListPlugin.activate=defer
 
 plugin.errorlist.ErrorListPlugin.name=ErrorList
 plugin.errorlist.ErrorListPlugin.author=Slava Pestov
-plugin.errorlist.ErrorListPlugin.version=2.0
+plugin.errorlist.ErrorListPlugin.version=2.1
 plugin.errorlist.ErrorListPlugin.docs=index.html
 # See jEdit.getBuild() to understand build numbering scheme.
 plugin.errorlist.ErrorListPlugin.depend.0=jedit 05.00.01.00
@@ -67,3 +67,4 @@ error-list.showErrorOverview=true
 error-list.autoCloseOnNoErrors=false
 error-list.warningColor=#ffa800
 error-list.errorColor=#ff0000
+error-list.underlineStyle=squiggle

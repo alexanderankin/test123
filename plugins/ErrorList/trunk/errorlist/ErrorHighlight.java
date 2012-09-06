@@ -25,6 +25,8 @@ package errorlist;
  //{{{ Imports
 import javax.swing.text.Segment;
 import java.awt.*;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.EditPane;
 //}}}
@@ -40,6 +42,7 @@ public class ErrorHighlight extends TextAreaExtension
 	} //}}}
 
 	//{{{ paintScreenLineRange() method
+	@Override
 	public void paintValidLine(Graphics2D gfx, int screenLine,
 		int physicalLine, int start, int end, int y)
 	{
@@ -67,6 +70,7 @@ public class ErrorHighlight extends TextAreaExtension
 	} //}}}
 
 	//{{{ getToolTipText() method
+	@Override
 	public String getToolTipText(int x, int y)
 	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
@@ -158,8 +162,34 @@ public class ErrorHighlight extends TextAreaExtension
 			endX = textArea.offsetToXY(line,end,point).x;
 
 		gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
-		gfx.drawLine(startX,y + 1,endX,y + 1);
+		if ("squiggle".equals(jEdit.getProperty("error-list.underlineStyle")))
+		{
+			paintSquiggle(gfx, startX, endX, y+2);
+		}
+		else
+		{
+			paintLine(gfx, startX, endX, y+1);
+		}
 	} //}}}
 
+	//{{{ paintLine() method
+	private static void paintLine(Graphics2D gfx, int x1, int x2, int y)
+	{
+		gfx.drawLine(x1, y, x2, y);
+	} //}}}
+
+	//{{{ paintSquiggle() method
+	protected static void paintSquiggle(Graphics gfx, int x1, int x2, int y)
+	{
+		int x = x1;
+		int delta = -2;
+		while (x < x2)
+		{
+			gfx.drawLine(x,y, x+2,y+delta);
+			y += delta;
+			delta = -delta;
+			x += 2;
+		}
+	} //}}}
 	//}}}
 }

@@ -42,6 +42,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _init() method
+	@Override
 	protected void _init()
 	{
 		addComponent(showOnError = new JCheckBox(jEdit.getProperty(
@@ -68,8 +69,23 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		showUnderlines.setSelected(jEdit.getBooleanProperty(
 			ErrorListPlugin.SHOW_UNDERLINES));
 
-		addComponent(showIconsInGutter = new JCheckBox(jEdit.getProperty(
-			"options.error-list.gutterIcons")));
+		JPanel underLineStylePanel = new JPanel();
+		underLineStylePanel.add(underLineStyle = new JRadioButton("underline"));
+		underLineStylePanel.add(squiggleLineStyle = new JRadioButton("squiggle"));
+		ButtonGroup underLineStyleGroup = new ButtonGroup();
+		underLineStyleGroup.add(underLineStyle);
+		underLineStyleGroup.add(squiggleLineStyle);
+		if ("squiggle".equals(jEdit.getProperty("error-list.underlineStyle")))
+		{
+			squiggleLineStyle.setSelected(true);
+		}
+		else
+		{
+			underLineStyle.setSelected(true);
+		}
+		addComponent(underLineStylePanel);
+
+		addComponent(showIconsInGutter = new JCheckBox(jEdit.getProperty("options.error-list.gutterIcons")));
 		showIconsInGutter.setSelected(jEdit.getBooleanProperty(
 			ErrorListPlugin.SHOW_ICONS_IN_GUTTER));
 		
@@ -102,6 +118,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _save() method
+	@Override
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("error-list.showOnError",showOnError
@@ -124,6 +141,10 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			showUnderlines.isSelected());
 		jEdit.setBooleanProperty(ErrorListPlugin.SHOW_ICONS_IN_GUTTER,
 			showIconsInGutter.isSelected());
+		if (squiggleLineStyle.isSelected())
+			jEdit.setProperty("error-list.underlineStyle", "squiggle");
+		else
+			jEdit.setProperty("error-list.underlineStyle", "underline");
 	} //}}}
 
 	//{{{ Private members
@@ -138,5 +159,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	private JTextField filenameFilter;
 	private JCheckBox showUnderlines;
 	private JCheckBox showIconsInGutter;
+	private JRadioButton underLineStyle;
+	private JRadioButton squiggleLineStyle;
 	//}}}
 }
