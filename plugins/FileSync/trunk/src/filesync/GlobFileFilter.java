@@ -33,6 +33,7 @@ import java.util.regex.*;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.gjt.sp.util.StandardUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * A glob file filter. This is a little better than the wildcard filter provided
@@ -62,9 +63,9 @@ public class GlobFileFilter extends AbstractFileFilter {
         // convert the glob filter string to a regex
         filter = StandardUtilities.globToRE(filter);
         if (IOCase.SYSTEM.isCaseSensitive()) {
-            pattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-        } else {
             pattern = Pattern.compile(filter);
+        } else {
+            pattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
         }
     }
     
