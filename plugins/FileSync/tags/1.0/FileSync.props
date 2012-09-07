@@ -1,0 +1,57 @@
+#-----------------------------------
+# Properties for FileSync Plugin
+#-----------------------------------
+
+plugin.filesync.FileSyncPlugin.name=FileSync
+plugin.filesync.FileSyncPlugin.author=Dale Anson
+plugin.filesync.FileSyncPlugin.version=1.0
+plugin.filesync.FileSyncPlugin.activate=defer
+plugin.filesync.FileSyncPlugin.description=Synchronizes project files to another directory.
+plugin.filesync.FileSyncPlugin.usePluginHome=true
+
+# dependencies
+plugin.filesync.FileSyncPlugin.depend.0=jdk 1.6.0
+plugin.filesync.FileSyncPlugin.depend.1=jedit 04.05.99.00
+plugin.filesync.FileSyncPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.4.4
+plugin.filesync.FileSyncPlugin.depend.3=plugin CommonControlsPlugin 1.5
+plugin.filesyncFileSyncPlugin.jars=commons-io-2.4.jar
+
+# docs
+plugin.filesync.FileSyncPlugin.docs=index.html
+
+# titles for DockableWindowManager
+filesync.title=FileSync
+
+# ProjectViewer option pane
+plugin.projectviewer.filesync.FileSyncPlugin.option-pane=filesync.pv.options
+options.filesync.pv.options.label=FileSync settings
+options.filesync.pv.options.code=new filesync.PVOptionPane();
+
+# localizable strings
+filesync.Add=Add
+filesync.Auto-exclude_SCM_folders>=Auto-exclude SCM folders:
+filesync.Browse...=Browse...
+filesync.Cancel=Cancel
+filesync.Delete_existing_files_from_target_before_sync?=Delete existing files from target before sync?
+filesync.Delete_files_from_target?=Delete files from target?
+filesync.Edit=Edit
+filesync.Enable_file_sync=Enable file sync
+filesync.Error=Error
+filesync.Exclude>_=Exclude: 
+filesync.Excludes>=Excludes:
+filesync.Filter_cannot_be_empty.=Filter cannot be empty.
+filesync.Include>_=Include: 
+filesync.Includes>=Includes:
+filesync.Includes_is_required.=Includes is required.
+filesync.Ok=Ok
+filesync.Remove=Remove
+filesync.Source>=Source:
+filesync.Source>_=Source: 
+filesync.Source_directory_does_not_exist.=Source directory does not exist.
+filesync.Source_directory_is_required.=Source directory is required.
+filesync.SyncAll=FileSync - Sync All Files
+filesync.Sync_Files=Sync Files
+filesync.Target>=Target:
+filesync.Target>_=Target: 
+filesync.Target_directory_does_not_exist.=Target directory does not exist.
+filesync.Target_directory_is_required.=Target directory is required.
