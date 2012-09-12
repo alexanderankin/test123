@@ -70,7 +70,7 @@ public class PluginInfoType extends DataType implements Cloneable
     if (isReference()) { return getRef().filled(); }
     fill();
     return this;
-  }
+  } //}}}
   
   //{{{ get... methods
   public String getClassName() { return filled().sClass; }
@@ -135,6 +135,9 @@ public class PluginInfoType extends DataType implements Cloneable
     if (sJarIn != null) {
       // process jar file to get the info
       try {
+        log("Property files will be read from jar: ",
+            Project.MSG_VERBOSE);
+        log(sJarIn, Project.MSG_VERBOSE);
         zip = new ZipFile(sJarIn);
         sBaseDir = null;
         itSrc = Collections.list(zip.entries()).iterator();
@@ -143,6 +146,9 @@ public class PluginInfoType extends DataType implements Cloneable
         throw new BuildException(ioe);
       }
     } else {
+      log("Property files will be read from fileset with parent directory: ",
+          Project.MSG_VERBOSE);
+      log(fsSrc.getDir().toString(), Project.MSG_VERBOSE);
       // filesets given as source for the info
       if (fsSrc == null) {
         throw new BuildException("fsSrc parameter not specified.");
@@ -166,9 +172,13 @@ public class PluginInfoType extends DataType implements Cloneable
           if (sJarIn != null) {
             ZipEntry zipEntry = (ZipEntry)entry;
             props.load(zip.getInputStream(zipEntry));
+            log("Properties read from jar entry: " + zipEntry.getName(),
+                Project.MSG_VERBOSE);
           } else {
             FileResource fr = (FileResource)entry;
             props.load(fr.getInputStream());
+            log("Properties read from file: " + fr.getFile().toString(),
+                Project.MSG_VERBOSE);
           }
         } catch (java.io.IOException e) {
           throw new BuildException(e);
@@ -216,39 +226,39 @@ public class PluginInfoType extends DataType implements Cloneable
     }
   } //}}}
 
-  public void setJar(String s)
+  public void setJar(String s) //{{{
   {
     sJarIn = s;
     checkAttr();
-  }
+  } //}}}
 
-  public void addFsSrc(FileSet fs)
+  public void addFsSrc(FileSet fs) //{{{
   {
     fsSrc = fs;
     checkAttr();
-  }
+  } //}}}
 
-  public void addFsExtras(FileSet fs)
+  public void addFsExtras(FileSet fs) //{{{
   {
     fsExtras = fs;
     checkAttr();
-  }
+  } //}}}
 
-  private void checkAttr()
+  private void checkAttr() //{{{
   {
     p = getProject();
     if (sJarIn != null && (fsSrc != null || fsExtras != null)) {
       throw new BuildException("jar and fsSrc/Extras " +
                                "are mutually exclusive."); 
     }
-  }
+  } //}}}
   
-  protected PluginInfoType getRef() {
+  protected PluginInfoType getRef() { //{{{
     return (PluginInfoType) getCheckedRef(PluginInfoType.class,
                                           "plugininfotype");
-  }
+  } //}}}
 
-  public String toString()
+  public String toString() //{{{
   {
     if (isReference()) { return getRef().toString(); }
     String s;
@@ -259,9 +269,9 @@ public class PluginInfoType extends DataType implements Cloneable
     s += ", dependencies count: " + deps.size() + "\n";
     s += deps.toString();
     return s; 
-  }
+  } //}}}
   
-  public PluginInfoType clone()
+  public PluginInfoType clone() //{{{
   {
     if (isReference()) { return getRef().clone(); }
     PluginInfoType piNew = null;
@@ -272,7 +282,7 @@ public class PluginInfoType extends DataType implements Cloneable
       throw new BuildException(e);
     }
     return piNew;
-  }
+  } //}}}
   
   //{{{ setProjectProperties() method
   /** Stores plugin info in project properties. For details see
