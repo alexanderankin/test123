@@ -37,6 +37,11 @@ public class ClangBuilder
 	
 	public void addIncludes(Collection<String> args)
 	{
+		if(args == null)
+		{
+			return;
+		}
+		
 		Iterator<String> iterator = args.iterator();
 		while(iterator.hasNext())
 		{
@@ -46,6 +51,11 @@ public class ClangBuilder
 	
 	public void addDefinitions(Collection<String> args)
 	{
+		if(args == null)
+		{
+			return;
+		}
+		
 		Iterator<String> iterator = args.iterator();
 		while(iterator.hasNext())
 		{
@@ -55,6 +65,11 @@ public class ClangBuilder
 	
 	public void addArguments(Collection<String> args)
 	{
+		if(args == null)
+		{
+			return;
+		}
+		
 		Iterator<String> iterator = args.iterator();
 		while(iterator.hasNext())
 		{
