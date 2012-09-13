@@ -7,7 +7,7 @@
   -->
 
 	<!-- Version check with custom.build.xml {{{ -->
-	<property name="Plugin Release.version" value="3" />
+	<property name="Plugin Release.version" value="4" />
 	<fail>
 	  Your custom.build.xml version
 	  (${plugin.release.custom.build.version}) does not match
@@ -31,6 +31,12 @@
 		<echo>                        and build targets of the downloaded plugin.</echo>
 		<echo>                        This task will put any "distributables" in</echo>
 		<echo>                        [sandbox]/[name]-[version]/dist</echo>
+		<echo></echo>
+		<echo>call-plugin           : Calls a target whose name is in "target"</echo>
+		<echo>                        property, running ant file</echo>
+		<echo>                        of the currently selected plugin.</echo>
+		<echo>                        This is used for running plugin</echo>
+		<echo>                        specific targets.</echo>
 		<echo></echo>
 		<echo>download              : Uses the SCM targets to download a plugin</echo>
 		<echo>                        into the sandbox directory. The plugin is</echo>
@@ -131,6 +137,14 @@ docbook.xsl=${docbook.xsl}
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-build pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}"/>
+	</target>
+	<target name="call-plugin">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<call-plugin-macro pluginJeditVersion="${plugin.jedit.version}"
+		                   pluginName="${plugin.name}"
+		                   pluginVersion="${plugin.version}"/>
 	</target>
 	<target name="copy-sample-build" if="copy.sample.build.properties">
 		<copy file="build.properties.sample" tofile="build.properties"
@@ -292,6 +306,21 @@ jedit.version.04.03.settings.dir=${jedit.version.04.03.settings.dir}
 jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		</echo>
 	</target>
+	<macrodef name="call-plugin-macro">
+		<attribute name="pluginJeditVersion" />
+		<attribute name="pluginName" />
+		<attribute name="pluginVersion" />
+		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
+		<sequential>
+			<property name="jedit.install.dir"
+			          value="${jedit.version.@{pluginJeditVersion}.install.dir}" />
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<property name="install.dir" value="${jedit.settings.dir}/jars" />
+			<property name="jedit.plugins.dir" value="${install.dir}" />
+			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true"
+			     target="${target}"/>
+		</sequential>
+	</macrodef>
 	<macrodef name="download-plugin-deps-rec">
 		<attribute name="pluginJeditVersion" />
 		<sequential>
