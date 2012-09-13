@@ -89,23 +89,16 @@ public class Util
 		builder.add("-o");
 		builder.add(filePth.getPath());
 		
-		Vector<String> includes = properties.get(ProjectsOptionPane.INCLUDES);
-		if(includes != null)
+		Vector<String> sysroots = properties.get(ProjectsOptionPane.SYSROOT);
+		if(sysroots != null && sysroots.size() > 0 && sysroots.get(0).trim().length() > 0)
 		{
-			builder.addIncludes(includes);
+			builder.add("-isysroot");
+			builder.add(sysroots.get(0));
 		}
 		
-		Vector<String> definitions = properties.get(ProjectsOptionPane.DEFINITIONS);
-		if(definitions != null)
-		{
-			builder.addDefinitions(definitions);
-		}
-		
-		Vector<String> arguments = properties.get(ProjectsOptionPane.ARGUMENTS);
-		if(arguments != null)
-		{
-			builder.addArguments(arguments);
-		}
+		builder.addIncludes(properties.get(ProjectsOptionPane.INCLUDES));
+		builder.addDefinitions(properties.get(ProjectsOptionPane.DEFINITIONS));
+		builder.addArguments(properties.get(ProjectsOptionPane.ARGUMENTS));
 		
 		builder.add("-x");
 		builder.add("c++-header");

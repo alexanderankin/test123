@@ -16,6 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import javax.swing.JTextField;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -41,11 +43,15 @@ public class ProjectsOptionPane extends AbstractOptionPane
 	
 	public static final String ARGUMENTS = "CLANG_ARGUMENTS";
 	
+	public static final String SYSROOT = "CLANG_SYSROOT";
+	
 	private JList definitions, includes, precompileds, arguments;
 	
 	private DefaultListModel definitionModel, includesModel, precompiledsModel, argumentsModel;
 	
 	private VPTProject project;
+	
+	private JTextField sysrootPathTF;
 	
 	public ProjectsOptionPane(VPTProject project)
 	{
@@ -56,6 +62,12 @@ public class ProjectsOptionPane extends AbstractOptionPane
 	@Override
 	protected void _init()
 	{
+		String sysrootVal = project.getProperty( SYSROOT);
+		sysrootVal = sysrootVal == null?"":sysrootVal;
+		sysrootPathTF = new JTextField(sysrootVal , 40);
+		addComponent("  Sys Root:", sysrootPathTF);
+		addSeparator();
+		
 		includesModel = getListModel(INCLUDES);
 		includes = createList("Includes:", includesModel,  new Callable<String>()
 		{
@@ -75,7 +87,6 @@ public class ProjectsOptionPane extends AbstractOptionPane
 			}
 		});
 		//addSeparator();
-		
 		argumentsModel = getListModel(ARGUMENTS);
 		arguments = createList("Additional arguments:", argumentsModel, new Callable<String>()
 		{
@@ -94,7 +105,9 @@ public class ProjectsOptionPane extends AbstractOptionPane
 				return ShowInputPrecompiledsDialog();
 			}
 		});
-		//addSeparator();
+		
+		
+		
 	}
 
 	private void setListModel(String propertyName, DefaultListModel model)
@@ -331,6 +344,7 @@ public class ProjectsOptionPane extends AbstractOptionPane
 	@Override
 	protected void _save()
 	{
+		project.setProperty(SYSROOT, sysrootPathTF.getText());
 		setListModel(DEFINITIONS, definitionModel);
 		setListModel(INCLUDES, includesModel);
 		setListModel(PRECOMPILEDS, precompiledsModel);
@@ -376,6 +390,14 @@ public class ProjectsOptionPane extends AbstractOptionPane
 		
 		Vector<String> arguments = getListProperty(project, ARGUMENTS);
 		map.put(ARGUMENTS, arguments);
+		
+		String sysrootVal = project.getProperty( SYSROOT);
+		if(sysrootVal != null)
+		{
+			Vector<String> sysrootVector = new Vector<String>();
+			sysrootVector.add(sysrootVal);
+			map.put(SYSROOT, sysrootVector);
+		}
 		
 		return map; 
 	}
