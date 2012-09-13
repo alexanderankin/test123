@@ -29,7 +29,7 @@
 <!--<property name="plugin.tag" value="trunk" />-->
 
 <!-- don't change this part -->
-<property name="plugin.release.custom.build.version" value="3" /> 
+<property name="plugin.release.custom.build.version" value="4" /> 
 <property name="jedit.svn.url" value="https://jedit.svn.sourceforge.net/svnroot/jedit" />
 <property name="jedit.git.url" value="git://jedit.git.sourceforge.net/gitroot/jedit" />
 <property name="sandbox.dir" value="${pf.dir}/sandbox" />
@@ -63,6 +63,9 @@
 </target>
 <target name="pf.build" depends="pf.init">
   <ant-pf target="build" />
+</target>
+<target name="pf.call" depends="pf.init">
+  <ant-pf target="call-plugin" />
 </target>
 <target name="pf.download" depends="pf.init, pf.update">
   <ant-pf target="download" />
