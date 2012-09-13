@@ -12,3 +12,11 @@ plugin.make.MakePlugin.depend.0=jedit 04.03.99.00
 plugin.make.MakePlugin.depend.1=jdk 1.5
 plugin.make.MakePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.make.MakePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.4
+
+make.msg.reload=Reload Targets
+make.msg.reload.starting=Reloading targets...
+make.msg.reload.done=Reloading targets... done.
+
+plugin.make.MakePlugin.menu=make.outputPanel
+make.outputPanel.label=Show Output Panel
+make.outputPanel.title=Output

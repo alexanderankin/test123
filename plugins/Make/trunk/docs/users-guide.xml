@@ -1,4 +1,29 @@
 <?xml version="1.0"?>
 <book>
-	<!-- TODO: document -->
+    <bookinfo>
+		<title>Make</title>
+		<author>
+			<firstname>Damien</firstname>
+			<surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+	    <para>
+	        The Make plugin is, simply put, used to build projects. Unlike Console,
+	        Make is very buildfile-centric. It recognizes several different buildfiles
+	        out of the box and provides a graphical interface to building a project
+	        by selecting one of its targets.
+	    </para>
+	</chapter>
+	<chapter id="buildfiles"><title>Supported Buildfiles</title>
+	    <para>
+	        Make supports the following buildfiles out of the box:
+	    </para>
+	    <!-- TODO: figure out the syntax for this -->
+	    <ul>
+	        <li>Make</li>
+	        <li>Ant ("build.xml")</li>
+	        <li>MSBuild ("*.sln", "*.csproj")</li>
+	    </ul>
+	</chapter>
 </book>

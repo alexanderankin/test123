@@ -16,6 +16,7 @@ package make;
 
 import errorlist.*;
 import java.util.LinkedList;
+import java.util.Iterator;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.jEdit;
@@ -24,10 +25,14 @@ import org.gjt.sp.jedit.ServiceManager;
 public class MakePlugin extends EBPlugin {
 	private static DefaultErrorSource errors;
 	private static LinkedList<BuildfileProvider> providers;
+	public static StringBuilder output;
+	
+	public static final String TARGET_CACHE_PROPERTY = "make.cache";
 	
 	public void start() {
 		errors = new DefaultErrorSource("Make");
 		ErrorSource.registerErrorSource(errors);
+		output = new StringBuilder();
 		
 		providers = new LinkedList<BuildfileProvider>();
 		String[] providerNames = ServiceManager.getServiceNames("make.BuildfileProvider");
@@ -79,5 +84,80 @@ public class MakePlugin extends EBPlugin {
 	
 	public static void clearErrors() {
 		errors.clear();
+	}
+	
+	/**
+	 * If there's a list of targets cached for the given path, return it.
+	 * Otherwise return null.
+	 */
+	public static LinkedList<BuildTarget> getCachedTargets(String path) {
+		String prop = TARGET_CACHE_PROPERTY + "." + path;
+		String saved = jEdit.getProperty(prop);
+		if (saved == null || saved.length() == 0) {
+			return null;
+		}
+		
+		String[] names = saved.split(",");
+		LinkedList<BuildTarget> targets = new LinkedList<BuildTarget>();
+		for (int i = 0; i<names.length; i++) {
+			String name = names[i];
+			targets.add(new BuildTarget(name, jEdit.getProperty(prop + "." + name, "")));
+		}
+		
+		return targets;
+	}
+	
+	/**
+	 * Cache a list of targets. These are saved as temporary properties, so they should
+	 * only exist for this session.
+	 */
+	public static void cacheTargets(String path, LinkedList<BuildTarget> targets) {
+		String prop = TARGET_CACHE_PROPERTY + "." + path;
+		LinkedList<String> names = new LinkedList<String>();
+		
+		for (BuildTarget target : targets) {
+			names.add(target.name);
+			jEdit.setTemporaryProperty(prop + "." + target.name, target.desc);
+		}
+		
+		StringBuilder namesBuilder = new StringBuilder();
+		Iterator<String> iter = names.iterator();
+		while (iter.hasNext()) {
+			namesBuilder.append(iter.next());
+			if (iter.hasNext())
+				namesBuilder.append(",");
+		}
+		
+		jEdit.setTemporaryProperty(prop, namesBuilder.toString());
+	}
+	
+	public static void clearCachedTargets(String path) {
+		String prop = TARGET_CACHE_PROPERTY + "." + path;
+		String saved = jEdit.getProperty(prop);
+		if (saved == null) {
+			return;
+		}
+		
+		String[] names = saved.split(",");
+		for (int i = 0; i<names.length; i++) {
+			jEdit.unsetProperty(prop + "." + names[i]);
+		}
+		
+		jEdit.unsetProperty(prop);
+	}
+	
+	public static void clearOutput() {
+		output = new StringBuilder();
+	}
+	
+	public static void writeToOutput(String line) {
+		output.append(line + System.getProperty("line.separator"));
+		
+		OutputPanel panel = (OutputPanel)jEdit.getActiveView().getDockableWindowManager().getDockable("make.outputPanel");
+		if (panel != null) {
+			String str = output.toString();
+			panel.textArea.setText(str);
+			panel.textArea.setCaretPosition(str.length());
+		}
 	}
 }

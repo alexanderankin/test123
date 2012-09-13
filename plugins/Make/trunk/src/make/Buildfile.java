@@ -17,6 +17,7 @@ package make;
 import java.io.*;
 import java.util.LinkedList;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.util.ThreadUtilities;
 
@@ -31,12 +32,19 @@ public abstract class Buildfile {
 	}
 	
 	public void parseTargets() {
-		this.targets = new LinkedList<BuildTarget>();
-		this._parseTargets();
+		String path = this.getPath();
+		this.targets = MakePlugin.getCachedTargets(path);
+		
+		if (this.targets == null) {
+			this.targets = new LinkedList<BuildTarget>();
+			this._parseTargets();
+			MakePlugin.cacheTargets(path, this.targets);
+		}
 	}
 	
 	public void runTarget(final BuildTarget target) {
 		MakePlugin.clearErrors();
+		MakePlugin.clearOutput();
 		ThreadUtilities.runInBackground(new Thread() {
 				public void run() {
 					try {
@@ -46,8 +54,8 @@ public abstract class Buildfile {
 						BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 						String line;
 						while ((line = reader.readLine()) != null) {
-							System.out.println(line);
 							status.setMessageAndClear(line);
+							MakePlugin.writeToOutput(line);
 							_processErrors(line);
 						}
 					} catch (Exception e) {
@@ -55,6 +63,10 @@ public abstract class Buildfile {
 					}
 				}
 		});
+	}
+	
+	public String getPath() {
+		return MiscUtilities.constructPath(this.dir.getPath(), this.name);
 	}
 	
 	public abstract String getName();
