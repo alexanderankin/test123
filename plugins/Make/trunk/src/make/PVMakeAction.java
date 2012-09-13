@@ -16,11 +16,16 @@ package make;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import javax.swing.*;
+import java.io.File;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.util.ThreadUtilities;
+import org.gjt.sp.util.Log;
+
 import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.action.Action;
@@ -29,7 +34,10 @@ public class PVMakeAction extends Action {
 	private Buildfile file;
 	
 	public JComponent getMenuItem() {
-		this.cmItem = new JMenu("Make");
+		if (this.cmItem == null) {
+			this.cmItem = new JMenu();
+		}
+		
 		return this.cmItem;
 	}
 	
@@ -38,6 +46,7 @@ public class PVMakeAction extends Action {
 	}
 	
 	public void prepareForNode(VPTNode node) {
+		// if this node is a file, check if it's a valid buildfile
 		if (node.isFile()) {
 			VFSFile nodeFile = ((VPTFile)node).getFile();
 			this.file = MakePlugin.getBuildfileForPath(MiscUtilities.getParentOfPath(nodeFile.getPath()), nodeFile.getName());
@@ -48,7 +57,9 @@ public class PVMakeAction extends Action {
 			} else {
 				this.cmItem.setVisible(false);
 			}
-		} else if (node.isProject()) {
+		}
+		// if this node is a project, scan the root's children for a valid buildfile
+		else if (node.isProject()) {
 			this.file = null;
 			File root = new File(((VPTProject)node).getRootPath());
 			File[] files = root.listFiles();
@@ -92,5 +103,23 @@ public class PVMakeAction extends Action {
 			
 			this.cmItem.add(item);
 		}
+		
+		this.cmItem.add(new JSeparator());
+		
+		JMenuItem reloadItem = new JMenuItem(jEdit.getProperty("make.msg.reload", "Reload Targets"));
+		this.cmItem.add(reloadItem);
+		reloadItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					final StatusBar status = jEdit.getActiveView().getStatus();
+					status.setMessage(jEdit.getProperty("make.msg.reload.starting", "Reloading targets..."));
+					ThreadUtilities.runInBackground(new Runnable() {
+							public void run() {
+								MakePlugin.clearCachedTargets(file.getPath());
+								file.parseTargets();
+								status.setMessageAndClear(jEdit.getProperty("make.msg.reload.done", "Reloading targets... done."));
+							}
+					});
+				}
+		});
 	}
 }

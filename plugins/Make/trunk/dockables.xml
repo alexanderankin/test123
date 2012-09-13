@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="make.outputPanel" MOVABLE="true">
+        return new make.OutputPanel();
+    </DOCKABLE>
+</DOCKABLES>
+
