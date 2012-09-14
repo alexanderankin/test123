@@ -24,6 +24,10 @@ make.msg.parse-error.title=Couldn't Find Targets
 make.msg.parse-error.message=There was an error parsing buildfile targets. \
 	Please make sure the build tool is on your system PATH, then restart jEdit \
 	and try again.
+make.msg.build-starting.output=--- Starting Build ---
+make.msg.build-starting.status=Running build...
+make.msg.build-succeeded=Build succeeded
+make.msg.build-failed=Build failed
 
 plugin.make.MakePlugin.menu=make.outputPanel
 make.outputPanel.label=Show Output Panel

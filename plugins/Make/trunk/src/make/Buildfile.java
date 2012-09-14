@@ -50,25 +50,66 @@ public abstract class Buildfile {
 	}
 	
 	public void runTargetWithParams(final BuildTarget target, final HashMap<String, String> params) {
-		MakePlugin.clearErrors();
-		MakePlugin.clearOutput();
-		ThreadUtilities.runInBackground(new Thread() {
-				public void run() {
-					try {
-						StatusBar status = jEdit.getActiveView().getStatus();
-						Process p = _runTarget(target, params);
-						BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-						String line;
-						while ((line = reader.readLine()) != null) {
-							status.setMessageAndClear(line);
-							MakePlugin.writeToOutput(line);
-							_processErrors(line);
+		try {
+			final StatusBar status = jEdit.getActiveView().getStatus();
+			final Process p = _runTarget(target, params);
+			
+			MakePlugin.clearErrors();
+			MakePlugin.clearOutput();
+			MakePlugin.writeToOutput(jEdit.getProperty("make.msg.build-starting.output", "--- Starting Build ---"));
+			MakePlugin.writeToOutput("");
+			status.setMessage(jEdit.getProperty("make.msg.build-starting.title", "Running build..."));
+			
+			// catch stdout
+			ThreadUtilities.runInBackground(new Thread() {
+					public void run() {
+						try {
+							BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+							String line;
+							while ((line = reader.readLine()) != null) {
+								MakePlugin.writeToOutput(line);
+								_processErrors(line);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
-				}
-		});
+			});
+			
+			// catch stderr
+			ThreadUtilities.runInBackground(new Thread() {
+					public void run() {
+						try {
+							BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+							String line;
+							while ((line = reader.readLine()) != null) {
+								MakePlugin.writeToOutput(line);
+								_processErrors(line);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+			});
+			
+			// wait for build
+			ThreadUtilities.runInBackground(new Thread() {
+					public void run() {
+						try {
+							int exitCode = p.waitFor();
+							if (exitCode == 0) {
+								status.setMessageAndClear(jEdit.getProperty("make.msg.build-succeeded", "Build succeeded"));
+							} else {
+								status.setMessageAndClear(jEdit.getProperty("make.msg.build-failed", "Build failed"));
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getPath() {
