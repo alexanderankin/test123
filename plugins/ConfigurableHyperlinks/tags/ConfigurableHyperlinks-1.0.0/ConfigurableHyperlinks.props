@@ -1,0 +1,17 @@
+# ConfigurableHyperlinks jEdit Plugin
+# Author: Patrick Eibl
+
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.activate=startup
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.name=ConfigurableHyperlinks
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.author=Patrick Eibl
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.version=1.0.0
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.docs=docs/ConfigurableHyperlinks.html
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.depend.0=jdk 1.6
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.depend.1=jedit 04.05.99.00
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.depend.2=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 1.1.0
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.description=Allows user to specify hyperlink types with regexes and beanshell code through an xml file.
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.usePluginHome=true
+
+plugin.configurablehyperlinks.ConfigurableHyperlinksPlugin.menu=reload-hyperlinks-xml open-hyperlinks-xml
+reload-hyperlinks-xml.label=Reload hyperlinks.xml
+open-hyperlinks-xml.label=Open hyperlinks.xml
