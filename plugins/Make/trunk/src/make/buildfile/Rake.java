@@ -95,7 +95,20 @@ public class Rake extends Buildfile {
 	}
 	
 	protected Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException {
-		return Runtime.getRuntime().exec(new String[] { this.rake, "-f", this.name, target.name }, null, this.dir);
+		String fullTarget = target.name;
+		if (target.params.size() > 0) {
+			StringBuilder paramBuilder = new StringBuilder();
+			Iterator<String> iter = target.params.iterator();
+			while (iter.hasNext()) {
+				paramBuilder.append(iter.next());
+				if (iter.hasNext())
+					paramBuilder.append(",");
+			}
+			
+			fullTarget = fullTarget + "[" + paramBuilder.toString() + "]";
+		}
+		
+		return Runtime.getRuntime().exec(new String[] { this.rake, "-f", this.name, fullTarget }, null, this.dir);
 	}
 	
 	protected void _processErrors(String line) {

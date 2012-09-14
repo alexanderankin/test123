@@ -57,7 +57,6 @@ public abstract class Buildfile {
 					try {
 						StatusBar status = jEdit.getActiveView().getStatus();
 						Process p = _runTarget(target, params);
-						// TODO: set up an error source so that ErrorList can catch them
 						BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 						String line;
 						while ((line = reader.readLine()) != null) {
