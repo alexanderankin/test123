@@ -89,7 +89,7 @@ public class Rake extends Buildfile {
 			}
 			
 			return true;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -113,6 +113,5 @@ public class Rake extends Buildfile {
 	}
 	
 	protected void _processErrors(String line) {
-		// TODO: implement
 	}
 }

@@ -23,7 +23,7 @@ public class BuildTarget {
 	
 	public BuildTarget(String name, String desc) {
 		this.name = name;
-		this.desc = desc;
+		this.desc = (desc == null ? "" : desc);
 		this.params = new LinkedList<String>();
 	}
 }
