@@ -1,0 +1,24 @@
+# Plugin properties
+plugin.optional.OptionalPlugin.name=Optional
+plugin.optional.OptionalPlugin.activate=startup
+
+plugin.optional.OptionalPlugin.author=Alan Ezust
+plugin.optional.OptionalPlugin.version=1.0.4
+plugin.optional.OptionalPlugin.docs=index.html
+plugin.optional.OptionalPlugin.depend.0=jedit 05.00.02.00
+plugin.optional.OptionalPlugin.depend.1=jdk 1.6
+plugin.optional.OptionalPlugin.description=Improves navigability of the Global/Plugin/Buffer option panes by bringing them all into a single tab layout. Now you can switch between them without closing the dialog. Saves mouse-motions!
+plugin.optional.OptionalPlugin.longdescription=description.html
+
+# Plugin Menu
+plugin.optional.OptionalPlugin.menu = combined-options
+
+
+optional.title-template={0} {1}
+
+Combined\ Options.y=100
+Combined\ Options.x=100
+Combined\ Options.height=600
+Combined\ Options.width=800
+
+optional.combined-options.shortcut=C+F12
