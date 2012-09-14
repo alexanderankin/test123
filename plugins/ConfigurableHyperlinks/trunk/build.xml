@@ -1,0 +1,31 @@
+<project name="ConfigurableHyperlinks" default="build" basedir=".">
+
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+	<property name="docs-proc.target"       value="xsltproc" />
+	
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="dist.target" value="dist.complete" />
+	<property name="src.dir" location="src" />
+	
+	<property name="plugin.dependencies" 	value="Hyperlinks" />
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+	
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<selector id="packageFiles">
+		<or>
+			<filename name="docs/*" />
+		</or>
+	</selector>
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar" />
+		<pathelement location="../.jedit/jars/Hyperlinks.jar" />
+	</path>
+
+</project>
