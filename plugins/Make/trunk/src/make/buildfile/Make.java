@@ -61,7 +61,7 @@ public class Make extends Buildfile {
 				}
 			}
 			return true;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}

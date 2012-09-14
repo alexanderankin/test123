@@ -22,10 +22,43 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.util.ThreadUtilities;
 
+/**
+ * Abstract representation of a buildfile. When creating your own, override _only_
+ * the abstract methods.
+ */
 public abstract class Buildfile {
 	protected File dir;
 	protected String name;
 	public LinkedList<BuildTarget> targets;
+	
+	/**
+	 * Return the name of the build system that uses this buildfile, e.g. "Ant"
+	 */
+	public abstract String getName();
+	
+	/**
+	 * Parse available build targets. This is usually done by querying the build system
+	 * itself, e.g. running "ant -projecthelp" in a separate process and parsing its
+	 * output. Each target should be an instance of the BuildTarget class and added to
+	 * the 'targets' LinkedList. See any of the classes in the make.buildfile package
+	 * for working examples.
+	 * @return true on success, false on failure. Failure is usually caused by an IOException
+	 */
+	protected abstract boolean _parseTargets();
+	
+	/**
+	 * Run this build. Parameters beyond the target are rare, but are used in some build systems
+	 * e.g. rake install["villainy"]
+	 * @return the Process for the running build
+	 */
+	protected abstract Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException;
+	
+	/**
+	 * Take a line of output from the build system and parse it to determine if it's reporting
+	 * an error. If it is, then MakePlugin.addError() should be called to make sure it gets
+	 * added to Error List.
+	 */
+	protected abstract void _processErrors(String line);
 	
 	public Buildfile(String dir, String name) {
 		this.dir = new File(dir);
@@ -115,9 +148,4 @@ public abstract class Buildfile {
 	public String getPath() {
 		return MiscUtilities.constructPath(this.dir.getPath(), this.name);
 	}
-	
-	public abstract String getName();
-	protected abstract boolean _parseTargets();
-	protected abstract Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException;
-	protected abstract void _processErrors(String line);
 }

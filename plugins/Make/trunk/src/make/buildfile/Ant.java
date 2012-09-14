@@ -57,7 +57,7 @@ public class Ant extends Buildfile {
 	
 	protected boolean _parseTargets() {
 		try {
-			Process p = Runtime.getRuntime().exec(new String[] { this.ant, "-p", "-f", this.name}, null, this.dir);
+			Process p = Runtime.getRuntime().exec(new String[] { this.ant, "-projecthelp", "-f", this.name}, null, this.dir);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			
 			Pattern pat = Pattern.compile("^\\s(\\S+)\\s*?(\\S.*)$");
@@ -79,7 +79,7 @@ public class Ant extends Buildfile {
 				}
 			}
 			return true;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}

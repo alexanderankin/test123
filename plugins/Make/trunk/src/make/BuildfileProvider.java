@@ -14,6 +14,7 @@
  */
 package make;
 
+
 public interface BuildfileProvider {
 	/**
 	 * Returns true if the provided filename is a valid name
@@ -21,6 +22,10 @@ public interface BuildfileProvider {
 	 * and is only used in MakePlugin.getBuildfileForPath().
 	 */
 	public boolean accept(String filename);
-	
+
+	/**
+	 * Should return a new instance of your buildfile, given
+	 * a full path split by directory and filename.
+	 */
 	public Buildfile createFor(String dir, String filename);
 }
