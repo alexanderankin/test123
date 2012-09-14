@@ -31,10 +31,15 @@ make.msg.parse-error.message=There was an error parsing buildfile targets. \
 	and try again.
 make.msg.make-project.title=Build Project
 make.msg.make-project.message=Target to run:
+make.msg.no-project-found.title=No Project Found
+make.msg.no-project-found.message=Please open up a project in the ProjectViewer plugin and try again.
+make.msg.no-buildfile-found.title=No Buildfile Found
+make.msg.no-buildfile-found.message=No valid buildfile was found in this project's root.
 
-plugin.make.MakePlugin.menu=make.outputPanel
+plugin.make.MakePlugin.menu=make.outputPanel make-project
 make.outputPanel.label=Show Output Panel
 make.outputPanel.title=Output
+make-project.label=Build current project...
 
 make.buildfile.ant=build.xml
 make.buildfile.make=Makefile|.*\\.mk
