@@ -15,14 +15,16 @@
 package make;
 
 import errorlist.*;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.Iterator;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.ServiceManager;
+import projectviewer.vpt.*;
 
-public class MakePlugin extends EBPlugin {
+public class MakePlugin extends EditPlugin {
 	private static DefaultErrorSource errors;
 	private static LinkedList<BuildfileProvider> providers;
 	public static StringBuilder output;
@@ -45,29 +47,45 @@ public class MakePlugin extends EBPlugin {
 		ErrorSource.unregisterErrorSource(errors);
 	}
 	
-	public void handleMessage(EBMessage msg) {
-		// if ProjectViewer is installed, handle its messages
-		if (jEdit.getPlugin("projectViewer.ProjectPlugin") != null) {
-			if (handleProjectMessage(msg))
-				return;
-		}
-	}
-	
-	/**
-	 * Handle ProjectViewer-specific events.
-	 * @return true if it was a PV message, otherwise false
-	 */
-	private boolean handleProjectMessage(EBMessage msg) {
-		return false;
-	}
-	
 	public static Buildfile getBuildfileForPath(String dir, String name) {
 		for (BuildfileProvider provider : providers) {
 			if (provider.accept(name)) {
 				return provider.createFor(dir, name);
 			}
 		}
-		
+		return null;
+	}
+	
+	public static Buildfile getBuildfileForFile(VPTFile fileNode) {
+		File file = new File(fileNode.getNodePath());
+		return MakePlugin.getBuildfileForPath(MiscUtilities.getParentOfPath(file.getParent()), file.getName());
+	}
+	
+	public static Buildfile getBuildfileForProject(VPTProject project) {
+		Buildfile file = null;
+		File root = new File(project.getRootPath());
+		File[] files = root.listFiles();
+		if (files != null) {
+			for (int i = 0; i<files.length; i++) {
+				if ((file = MakePlugin.getBuildfileForPath(files[i].getParent(), files[i].getName())) != null) {
+					return file;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static Buildfile getBuildfileForDirectory(VPTDirectory directory) {
+		Buildfile file = null;
+		File dir = new File(directory.getNodePath());
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (int i = 0; i<files.length; i++) {
+				if ((file = MakePlugin.getBuildfileForPath(files[i].getParent(), files[i].getName())) != null) {
+					return file;
+				}
+			}
+		}
 		return null;
 	}
 	
