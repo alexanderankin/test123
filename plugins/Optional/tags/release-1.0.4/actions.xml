@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<!-- overridden from jEdit's actions.xml -->
+
+	<ACTION NAME="buffer-options" >
+		<CODE>
+			new optional.CombinedOptions(view, 2);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="global-options" >
+		<CODE>
+			new optional.CombinedOptions(view, 0);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="plugin-options" >
+		<CODE>
+			new optional.CombinedOptions(view, 1);
+		</CODE>
+	</ACTION>
+    	<!-- This is our own action: -->
+	<ACTION NAME="combined-options">
+		<CODE>
+			optional.CombinedOptions.combinedOptions(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+

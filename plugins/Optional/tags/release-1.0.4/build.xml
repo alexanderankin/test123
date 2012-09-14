@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<!--
+     This is a build.xml file for building the Optional plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+     Before running the 'dist' target, you will need to generate the
+     documentation using one of these two targets:
+
+     - 'docs-xsltproc': Creates documentation using the xsltproc tool
+
+     To use it for building your own plugin, make these changes:
+
+     - Change definition of 'jar.name' to the name of your plugin's JAR file
+     - If necessary, add any dependencies to the 'project.class.path'
+       definition
+     - If necessary, change the list of files in the 'dist' targtet
+-->
+
+<project name="Optional" default="build" basedir=".">
+
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+
+    <property name="docbook.xsl.sheet" value="html/onechunk.xsl" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+    <property name="compiler.target" value="1.5" />
+    <property name="compiler.source" value="1.5" />
+
+    <import file="${build.support}/plugin-build.xml" />
+
+
+    <selector id="packageFiles">
+		<filename name="CHANGELOG.txt" />
+	</selector>
+
+</project>
