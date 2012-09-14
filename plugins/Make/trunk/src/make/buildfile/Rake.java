@@ -19,6 +19,7 @@ import make.*;
 import java.io.*;
 import java.util.regex.*;
 import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.HashMap;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
