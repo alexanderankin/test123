@@ -40,9 +40,10 @@
 <para>
  Just install it and you'll notice the difference immediately.
  Initially, you should see the same option panes as you did before,
- but now there are tabs.  This makes it much easier to switch between global/plugin options,
- something I find myself doing quite often. I only added Buffer Options for completeness,
- but I find I rarely need it.
+ but there is a Buffer Options tab. I only added Buffer Options for completeness,
+ but I find I rarely need it. The first two tabs are now part of jEdit core, so
+ this plugin is available for the few people who actually do want to switch between
+ Buffer and the other two tabs without closing a dialog. 
 </para>
 <para>
  The <emphasis role="bold">Global Options</emphasis>,
