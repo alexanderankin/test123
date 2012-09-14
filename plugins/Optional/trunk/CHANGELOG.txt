@@ -10,3 +10,5 @@ History:
             can add new ones without them being hidden by Optional (Matthieu Casanova)
 1.0.3       Scrollbars added around optionpanes. (Dale Anson)
 1.0.4       Persistent splitter positions. (Alan Ezust)
+            Refactored to use jEdit 5 APIs. 
+            
