@@ -18,10 +18,14 @@ import errorlist.*;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Iterator;
+import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.View;
+import projectviewer.ProjectViewer;
 import projectviewer.vpt.*;
 
 public class MakePlugin extends EditPlugin {
@@ -186,6 +190,53 @@ public class MakePlugin extends EditPlugin {
 			String str = output.toString();
 			panel.textArea.setText(str);
 			panel.textArea.setCaretPosition(str.length());
+		}
+	}
+	
+	public static void makeProject(View view) {
+		ProjectViewer viewer = projectviewer.ProjectViewer.getViewer(view);
+		if (viewer == null) {
+			GUIUtilities.error(view, "make.msg.no-project-found", new String[] {});
+			return;
+		}
+		
+		VPTProject project = viewer.getActiveProject(view);
+		if (project == null) {
+			GUIUtilities.error(view, "make.msg.no-project-found", new String[] {});
+			return;
+		}
+		
+		Buildfile buildfile = make.MakePlugin.getBuildfileForProject(project);
+		if (buildfile == null) {
+			GUIUtilities.error(view, "make.msg.no-buildfile-found", new String[] {});
+			return;
+		}
+		
+		BuildTarget[] targets = new BuildTarget[buildfile.targets.size()];
+		int i = 0;
+		for (BuildTarget target : buildfile.targets) {
+			targets[i++] = target;
+		}
+		
+		BuildTarget def = targets[0];
+		String defName = jEdit.getProperty("make.make-project.default." + buildfile.getPath(), "");
+		if (defName.length() > 0) {
+			for (i = 0; i<targets.length; i++) {
+				if (defName.equals(targets[i].name)) {
+					def = targets[i];
+					break;
+				}
+			}
+		}
+		
+		BuildTarget t = (BuildTarget)JOptionPane.showInputDialog(view,
+		    	jEdit.getProperty("make.msg.make-project.message", "Target to run:"),
+		    	jEdit.getProperty("make.msg.make-project.title", "Build Project"),
+		    	JOptionPane.PLAIN_MESSAGE, null, targets, def);
+		
+		if (t != null) {
+			buildfile.runTarget(t);
+			jEdit.setTemporaryProperty("make.make-project.default." + buildfile.getPath(), t.name);
 		}
 	}
 }

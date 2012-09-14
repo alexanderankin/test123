@@ -26,4 +26,8 @@ public class BuildTarget {
 		this.desc = (desc == null ? "" : desc);
 		this.params = new LinkedList<String>();
 	}
+
+	public String toString() {
+		return this.name;
+	}
 }

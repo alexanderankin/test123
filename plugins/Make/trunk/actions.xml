@@ -4,27 +4,7 @@
 <ACTIONS>
 	<ACTION NAME="make-project">
 		<CODE>
-		    viewer = projectviewer.ProjectViewer.getViewer(view);
-		    if (viewer == null) { return; }
-		    
-		    project = viewer.getActiveProject(view);
-		    if (project == null) { return; }
-		    
-		    buildfile = make.MakePlugin.getBuildfileForProject(project);
-		    if (buildfile == null) { return; }
-		    
-		    String[] targets = new String[buildfile.targets.size()];
-		    int i = 0;
-		    for (make.BuildTarget target : buildfile.targets) {
-		    	targets[i++] = target.name;
-		    }
-		    
-		    t = JOptionPane.showInputDialog(view,
-		    	jEdit.getProperty("make.msg.make-project.message", "Target to run:"),
-		    	jEdit.getProperty("make.msg.make-project.title", "Build Project"),
-		    	JOptionPane.PLAIN_MESSAGE, null, targets, targets[0]);
-		    
-		    // TODO: kick off the build
+		    make.MakePlugin.makeProject(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
