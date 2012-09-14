@@ -16,10 +16,11 @@ package make.provider;
 
 import make.BuildfileProvider;
 import make.buildfile.Make;
+import org.gjt.sp.jedit.jEdit;
 
 public class MakeProvider implements BuildfileProvider {
 	public boolean accept(String filename) {
-		return "Makefile".equals(filename) || filename.endsWith(".mk");
+		return filename.matches(jEdit.getProperty("make.buildfile.make", "Makefile|.*\\.mk"));
 	}
 	
 	public Make createFor(String dir, String filename) {

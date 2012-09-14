@@ -92,16 +92,25 @@ public class MakePlugin extends EBPlugin {
 	 */
 	public static LinkedList<BuildTarget> getCachedTargets(String path) {
 		String prop = TARGET_CACHE_PROPERTY + "." + path;
-		String saved = jEdit.getProperty(prop);
-		if (saved == null || saved.length() == 0) {
-			return null;
-		}
-		
-		String[] names = saved.split(",");
 		LinkedList<BuildTarget> targets = new LinkedList<BuildTarget>();
-		for (int i = 0; i<names.length; i++) {
-			String name = names[i];
-			targets.add(new BuildTarget(name, jEdit.getProperty(prop + "." + name, "")));
+		
+		for (int i = 0; true; i++) {
+			String name = jEdit.getProperty(prop + "." + i + ".name");
+			if (name == null || name.length() == 0) {
+				break;
+			}
+			String desc = jEdit.getProperty(prop + "." + i + ".desc");
+			BuildTarget target = new BuildTarget(name, desc);
+			for (int j = 0; true; j++) {
+				String param = jEdit.getProperty(prop + "." + i + ".param." + j);
+				if (param == null || param.length() == 0) {
+					break;
+				} else {
+					target.params.add(param);
+				}
+			}
+			
+			targets.add(target);
 		}
 		
 		return targets;
@@ -115,35 +124,36 @@ public class MakePlugin extends EBPlugin {
 		String prop = TARGET_CACHE_PROPERTY + "." + path;
 		LinkedList<String> names = new LinkedList<String>();
 		
+		int i = 0;
 		for (BuildTarget target : targets) {
-			names.add(target.name);
-			jEdit.setTemporaryProperty(prop + "." + target.name, target.desc);
+			jEdit.setTemporaryProperty(prop + "." + i + ".name", target.name);
+			jEdit.setTemporaryProperty(prop + "." + i + ".desc", target.desc);
+			int j = 0;
+			for (String p : target.params) {
+				jEdit.setTemporaryProperty(prop + "." + i + ".param." + j, p);
+				j++;
+			}
+			i++;
 		}
-		
-		StringBuilder namesBuilder = new StringBuilder();
-		Iterator<String> iter = names.iterator();
-		while (iter.hasNext()) {
-			namesBuilder.append(iter.next());
-			if (iter.hasNext())
-				namesBuilder.append(",");
-		}
-		
-		jEdit.setTemporaryProperty(prop, namesBuilder.toString());
 	}
 	
 	public static void clearCachedTargets(String path) {
 		String prop = TARGET_CACHE_PROPERTY + "." + path;
-		String saved = jEdit.getProperty(prop);
-		if (saved == null) {
-			return;
+		for (int i = 0; true; i++) {
+			if (jEdit.getProperty(prop + "." + i + ".name") == null) {
+				break;
+			}
+			
+			jEdit.unsetProperty(prop + "." + i + ".name");
+			jEdit.unsetProperty(prop + "." + i + ".desc");
+			for (int j = 0; true; j++) {
+				String paramProp = prop + "." + i + ".param." + j;
+				if (jEdit.getProperty(paramProp, "").length() == 0) {
+					break;
+				}
+				jEdit.unsetProperty(paramProp);
+			}
 		}
-		
-		String[] names = saved.split(",");
-		for (int i = 0; i<names.length; i++) {
-			jEdit.unsetProperty(prop + "." + names[i]);
-		}
-		
-		jEdit.unsetProperty(prop);
 	}
 	
 	public static void clearOutput() {

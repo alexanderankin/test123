@@ -15,15 +15,15 @@
 package make.provider;
 
 import make.BuildfileProvider;
-import make.buildfile.MSBuild;
+import make.buildfile.Rake;
 import org.gjt.sp.jedit.jEdit;
 
-public class MSBuildProvider implements BuildfileProvider {
+public class RakeProvider implements BuildfileProvider {
 	public boolean accept(String filename) {
-		return filename.matches(jEdit.getProperty("make.buildfile.msbuild", ".*\\.sln|.*\\.csproj"));
+		return filename.matches(jEdit.getProperty("make.buildfile.rake", "Rakefile"));
 	}
 	
-	public MSBuild createFor(String dir, String filename) {
-		return new MSBuild(dir, filename);
+	public Rake createFor(String dir, String filename) {
+		return new Rake(dir, filename);
 	}
 }

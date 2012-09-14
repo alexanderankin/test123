@@ -20,6 +20,8 @@ import javax.swing.*;
 import java.io.File;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.gui.StatusBar;
@@ -31,6 +33,8 @@ import projectviewer.vpt.*;
 import projectviewer.action.Action;
 
 public class PVMakeAction extends Action {
+	public static final String BUILDFILE_PROP = "make.buildfile";
+	
 	private Buildfile file;
 	
 	public JComponent getMenuItem() {
@@ -52,16 +56,19 @@ public class PVMakeAction extends Action {
 			this.file = MakePlugin.getBuildfileForPath(MiscUtilities.getParentOfPath(nodeFile.getPath()), nodeFile.getName());
 			if (this.file != null) {
 				this.cmItem.setVisible(true);
+				this.cmItem.setEnabled(true);
 				((JMenu)this.cmItem).setText(this.file.getName());
 				this.fillMenu(this.file);
 			} else {
 				this.cmItem.setVisible(false);
 			}
 		}
-		// if this node is a project, scan the root's children for a valid buildfile
+		// if this node is a project, scan its root for a valid buildfile
 		else if (node.isProject()) {
+			this.cmItem.setVisible(true);
+			VPTProject project = (VPTProject)node;
 			this.file = null;
-			File root = new File(((VPTProject)node).getRootPath());
+			File root = new File(project.getRootPath());
 			File[] files = root.listFiles();
 			if (files != null) {
 				for (int i = 0; i<files.length; i++) {
@@ -72,11 +79,12 @@ public class PVMakeAction extends Action {
 			}
 			
 			if (this.file != null) {
-				this.cmItem.setVisible(true);
+				this.cmItem.setEnabled(true);
 				((JMenu)this.cmItem).setText(this.file.getName());
 				fillMenu(this.file);
 			} else {
-				this.cmItem.setVisible(false);
+				((JMenu)this.cmItem).setText(jEdit.getProperty("make.msg.no-buildfile", "No buildfile found"));
+				this.cmItem.setEnabled(false);
 			}
 		} else {
 			this.cmItem.setVisible(false);
@@ -90,24 +98,60 @@ public class PVMakeAction extends Action {
 	private void fillMenu(final Buildfile file) {
 		this.cmItem.removeAll();
 		for (final BuildTarget target : file.targets) {
-			JMenuItem item = new JMenuItem(target.name);
-			if (target.desc != null) {
-				item.setToolTipText(target.desc);
+			if (target.params.size() == 0) {
+				JMenuItem item = new JMenuItem(target.name);
+				if (target.desc != null) {
+					item.setToolTipText(target.desc);
+				}
+				
+				item.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							file.runTarget(target);
+						}
+				});
+				
+				this.cmItem.add(item);
+			} else {
+				JMenu submenu = new JMenu(target.name);
+				if (target.desc != null) {
+					submenu.setToolTipText(target.desc);
+				}
+				
+				JMenuItem runWithParams = new JMenuItem(jEdit.getProperty("make.msg.run-with-params", "Specify parameters..."));
+				JMenuItem runWithoutParams = new JMenuItem(jEdit.getProperty("make.msg.run-without-params", "Run with defaults"));
+				
+				runWithParams.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							View view = jEdit.getActiveView();
+							ParameterDialog dialog = new ParameterDialog(view,
+								jEdit.getProperty("make.msg.parameter-dialog.title", "Specify Build Parameters"),
+								target.params);
+							dialog.setLocationRelativeTo(view);
+							dialog.setVisible(true);
+							
+							if (dialog.ok) {
+								file.runTargetWithParams(target, dialog.valueMap);
+							}
+						}
+				});
+				
+				runWithoutParams.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							file.runTarget(target);
+						}
+				});
+				
+				submenu.add(runWithParams);
+				submenu.add(runWithoutParams);
+				this.cmItem.add(submenu);
 			}
-			
-			item.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						file.runTarget(target);
-					}
-			});
-			
-			this.cmItem.add(item);
 		}
 		
 		this.cmItem.add(new JSeparator());
 		
 		JMenuItem reloadItem = new JMenuItem(jEdit.getProperty("make.msg.reload", "Reload Targets"));
 		this.cmItem.add(reloadItem);
+		
 		reloadItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					final StatusBar status = jEdit.getActiveView().getStatus();
@@ -115,7 +159,9 @@ public class PVMakeAction extends Action {
 					ThreadUtilities.runInBackground(new Runnable() {
 							public void run() {
 								MakePlugin.clearCachedTargets(file.getPath());
-								file.parseTargets();
+								if (!file.parseTargets()) {
+									GUIUtilities.error(jEdit.getActiveView(), "make.msg.parse-error", new String[] {});
+								}
 								status.setMessageAndClear(jEdit.getProperty("make.msg.reload.done", "Reloading targets... done."));
 							}
 					});

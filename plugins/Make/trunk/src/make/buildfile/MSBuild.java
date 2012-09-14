@@ -18,6 +18,7 @@ import errorlist.ErrorSource;
 import make.*;
 import java.io.*;
 import java.util.regex.*;
+import java.util.HashMap;
 import org.gjt.sp.jedit.MiscUtilities;
 
 public class MSBuild extends Buildfile {
@@ -57,15 +58,16 @@ public class MSBuild extends Buildfile {
 		return "MSBuild";
 	}
 	
-	protected void _parseTargets() {
+	protected boolean _parseTargets() {
 		// Just stick to the three standard targets
 		// TODO: consider adding configuration support
 		this.targets.add(new BuildTarget("Build", null));
 		this.targets.add(new BuildTarget("Rebuild", null));
 		this.targets.add(new BuildTarget("Clean", null));
+		return true;
 	}
 	
-	protected Process _runTarget(BuildTarget target) throws IOException {
+	protected Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException {
 		System.out.println("running, toolsPath = " + this.toolsPath);
 		String msbuild = MiscUtilities.constructPath(this.toolsPath, "msbuild.exe");
 		// "Rebuild" should be passed to msbuild as "Clean;Build"

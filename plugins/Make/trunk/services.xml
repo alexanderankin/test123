@@ -13,4 +13,7 @@
     <SERVICE CLASS="make.BuildfileProvider" NAME="MSBuild">
         new make.provider.MSBuildProvider();
     </SERVICE>
+    <SERVICE CLASS="make.BuildfileProvider" NAME="Rake">
+        new make.provider.RakeProvider();
+    </SERVICE>
 </SERVICES>
