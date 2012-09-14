@@ -22,6 +22,8 @@
 package optional;
 
 import org.gjt.sp.jedit.EditPlugin;
+import org.jedit.options.*;
+
 
 /**
   Plugin for replacing option dialogs.
