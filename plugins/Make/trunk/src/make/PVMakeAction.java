@@ -22,7 +22,6 @@ import java.io.File;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.util.ThreadUtilities;
@@ -52,8 +51,7 @@ public class PVMakeAction extends Action {
 	public void prepareForNode(VPTNode node) {
 		// if this node is a file, check if it's a valid buildfile
 		if (node.isFile()) {
-			VFSFile nodeFile = ((VPTFile)node).getFile();
-			this.file = MakePlugin.getBuildfileForPath(MiscUtilities.getParentOfPath(nodeFile.getPath()), nodeFile.getName());
+			this.file = MakePlugin.getBuildfileForFile((VPTFile)node);
 			if (this.file != null) {
 				this.cmItem.setVisible(true);
 				this.cmItem.setEnabled(true);
@@ -66,17 +64,7 @@ public class PVMakeAction extends Action {
 		// if this node is a project, scan its root for a valid buildfile
 		else if (node.isProject()) {
 			this.cmItem.setVisible(true);
-			VPTProject project = (VPTProject)node;
-			this.file = null;
-			File root = new File(project.getRootPath());
-			File[] files = root.listFiles();
-			if (files != null) {
-				for (int i = 0; i<files.length; i++) {
-					this.file = MakePlugin.getBuildfileForPath(files[i].getParent(), files[i].getName());
-					if (this.file != null)
-						break;
-				}
-			}
+			this.file = MakePlugin.getBuildfileForProject((VPTProject)node);
 			
 			if (this.file != null) {
 				this.cmItem.setEnabled(true);

@@ -7,13 +7,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 /*
  * TODO: try implementing this with GridBagLayout to get the labels
  * to align.
  */
  
-public class ParameterDialog extends JDialog {
+public class ParameterDialog extends EnhancedDialog {
 	public HashMap<String, String> valueMap;
 	public boolean ok;
 	private HashMap<String, JTextField> fieldMap;
@@ -34,7 +35,6 @@ public class ParameterDialog extends JDialog {
 		
 		for (String p : params) {
 			JTextField field = new JTextField(20);
-			field.addKeyListener(new FieldListener());
 			this.fieldMap.put(p, field);
 			
 			Box fieldBox = Box.createHorizontalBox();
@@ -61,16 +61,13 @@ public class ParameterDialog extends JDialog {
 		
 		okBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					save();
-					ok = true;
-					dispose();
+					ok();
 				}
 		});
 		
 		cancelBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ok = false;
-					dispose();
+					cancel();
 				}
 		});
 		
@@ -91,22 +88,14 @@ public class ParameterDialog extends JDialog {
 		}
 	}
 	
-	class FieldListener extends KeyAdapter {
-		public void keyPressed(KeyEvent e) {
-			int code = e.getKeyCode();
-			switch (code) {
-				case KeyEvent.VK_ENTER:
-					save();
-					ok = true;
-					dispose();
-					break;
-				case KeyEvent.VK_ESCAPE:
-					ok = false;
-					dispose();
-					break;
-				default:
-					break;
-			}
-		}
+	public void ok() {
+		save();
+		this.ok = true;
+		dispose();
+	}
+	
+	public void cancel() {
+		this.ok = false;
+		dispose();
 	}
 }
