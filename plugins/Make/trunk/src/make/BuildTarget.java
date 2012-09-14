@@ -14,12 +14,16 @@
  */
 package make;
 
+import java.util.LinkedList;
+
 public class BuildTarget {
 	public String name;
 	public String desc;
+	public LinkedList<String> params;
 	
 	public BuildTarget(String name, String desc) {
 		this.name = name;
 		this.desc = desc;
+		this.params = new LinkedList<String>();
 	}
 }

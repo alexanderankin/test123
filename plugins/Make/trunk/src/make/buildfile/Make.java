@@ -17,14 +17,11 @@ package make.buildfile;
 import make.*;
 import java.io.*;
 import java.util.regex.*;
+import java.util.HashMap;
 
 public class Make extends Buildfile {
-	public Make(String dir) {
-		this(dir, null);
-	}
-	
 	public Make(String dir, String name) {
-		super(dir, name != null ? name : "Makefile");
+		super(dir, name);
 		this.parseTargets();
 	}
 	
@@ -32,7 +29,7 @@ public class Make extends Buildfile {
 		return "Make";
 	}
 	
-	protected void _parseTargets() {
+	protected boolean _parseTargets() {
 		try {
 			Process p = Runtime.getRuntime().exec(new String[] { "make", "-r", "-p", "-n", "-f", this.name}, null, this.dir);
 			// apparently it hangs if you wait for it. Not sure why.
@@ -60,15 +57,17 @@ public class Make extends Buildfile {
 				
 				Matcher mat = pat.matcher(line);
 				if (mat.find()) {
-					this.targets.add(new BuildTarget(mat.group(1), null));
+					this.targets.add(new BuildTarget(mat.group(1), ""));
 				}
 			}
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
-	protected Process _runTarget(BuildTarget target) throws IOException {
+	protected Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException {
 		return Runtime.getRuntime().exec(new String[] { "make", "-f", this.name, target.name }, null, this.dir);
 	}
 	

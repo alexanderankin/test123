@@ -16,6 +16,7 @@ package make;
 
 import java.io.*;
 import java.util.LinkedList;
+import java.util.HashMap;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.StatusBar;
@@ -31,25 +32,31 @@ public abstract class Buildfile {
 		this.name = name;
 	}
 	
-	public void parseTargets() {
+	public boolean parseTargets() {
 		String path = this.getPath();
 		this.targets = MakePlugin.getCachedTargets(path);
 		
-		if (this.targets == null) {
-			this.targets = new LinkedList<BuildTarget>();
-			this._parseTargets();
+		if (this.targets.size() == 0) {
+			boolean success = this._parseTargets();
 			MakePlugin.cacheTargets(path, this.targets);
+			return success;
+		} else {
+			return true;
 		}
 	}
 	
-	public void runTarget(final BuildTarget target) {
+	public void runTarget(BuildTarget target) {
+		this.runTargetWithParams(target, new HashMap<String, String>());
+	}
+	
+	public void runTargetWithParams(final BuildTarget target, final HashMap<String, String> params) {
 		MakePlugin.clearErrors();
 		MakePlugin.clearOutput();
 		ThreadUtilities.runInBackground(new Thread() {
 				public void run() {
 					try {
 						StatusBar status = jEdit.getActiveView().getStatus();
-						Process p = _runTarget(target);
+						Process p = _runTarget(target, params);
 						// TODO: set up an error source so that ErrorList can catch them
 						BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 						String line;
@@ -70,7 +77,7 @@ public abstract class Buildfile {
 	}
 	
 	public abstract String getName();
-	protected abstract void _parseTargets();
-	protected abstract Process _runTarget(BuildTarget target) throws IOException;
+	protected abstract boolean _parseTargets();
+	protected abstract Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException;
 	protected abstract void _processErrors(String line);
 }

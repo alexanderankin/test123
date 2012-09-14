@@ -19,6 +19,7 @@ import make.*;
 import java.io.*;
 import java.util.regex.*;
 import java.util.LinkedList;
+import java.util.HashMap;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.MiscUtilities;
 
@@ -32,12 +33,8 @@ public class Ant extends Buildfile {
 	private String errorMsg;
 	private LinkedList<String> errorExtraMsgs;
 	
-	public Ant(String dir) {
-		this(dir, null);
-	}
-	
 	public Ant(String dir, String name) {
-		super(dir, name != null ? name : "build.xml");
+		super(dir, name);
 		
 		// find the ant executable
 		this.ant = "ant" + (OperatingSystem.isWindows() ? ".bat" : "");
@@ -58,7 +55,7 @@ public class Ant extends Buildfile {
 		return "Ant";
 	}
 	
-	protected void _parseTargets() {
+	protected boolean _parseTargets() {
 		try {
 			Process p = Runtime.getRuntime().exec(new String[] { this.ant, "-p", "-f", this.name}, null, this.dir);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -81,12 +78,14 @@ public class Ant extends Buildfile {
 					this.targets.add(new BuildTarget(mat.group(1), mat.group(2)));
 				}
 			}
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
-	protected Process _runTarget(BuildTarget target) throws IOException {
+	protected Process _runTarget(BuildTarget target, HashMap<String, String> params) throws IOException {
 		return Runtime.getRuntime().exec(new String[] { this.ant, "-f", this.name, target.name }, null, this.dir);
 	}
 	

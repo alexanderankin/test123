@@ -16,10 +16,11 @@ package make.provider;
 
 import make.BuildfileProvider;
 import make.buildfile.Ant;
+import org.gjt.sp.jedit.jEdit;
 
 public class AntProvider implements BuildfileProvider {
 	public boolean accept(String filename) {
-		return "build.xml".equals(filename);
+		return filename.matches(jEdit.getProperty("make.buildfile.ant", "build.xml"));
 	}
 	
 	public Ant createFor(String dir, String filename) {
