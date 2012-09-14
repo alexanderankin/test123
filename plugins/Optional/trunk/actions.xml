@@ -23,7 +23,7 @@
 		</CODE>
 	</ACTION>
     	<!-- This is our own action: -->
-	<ACTION NAME="optional.combined-options">
+	<ACTION NAME="combined-options">
 		<CODE>
 			optional.CombinedOptions.combinedOptions(view);
 		</CODE>
