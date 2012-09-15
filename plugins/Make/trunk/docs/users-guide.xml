@@ -35,13 +35,12 @@
 	    <para>
 	        Make supports the following build systems out of the box:
 	    </para>
-	    <!-- TODO: figure out the syntax for this -->
-	    <ul>
-	        <li>Make</li>
-	        <li>Ant</li>
-	        <li>MSBuild</li>
-	        <li>Rake</li>
-	    </ul>
+	    <itemizedlist>
+	        <listitem><para>Make</para></listitem>
+	        <listitem><para>Ant</para></listitem>
+	        <listitem><para>MSBuild</para></listitem>
+	        <listitem><para>Rake</para></listitem>
+	    </itemizedlist>
 	    <para>
 	        If you don't see your favorite build system listed here, then you can request
 	        a new one be added by going to jEdit's Sourceforge development page and opening
