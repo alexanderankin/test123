@@ -20,13 +20,13 @@ plugin.python.shell.PythonShellPlugin.depend.2=plugin procshell.ProcessShellPlug
 # Menu {{{
 plugin.python.shell.PythonShellPlugin.menu=console.shell.Python-show \
 	python-eval-selected \
-	python-eval-buffer \
-	python-eval-file \
+	python-exec-buffer \
+	python-exec-file \
 	-
 plugin.python.shell.PythonShellPlugin.menu.code=new python.shell.PythonShellMenuProvider();
-python-eval-selected.label=Evaluate Selection in Python shell
-python-eval-buffer.label=Evaluate Buffer in Python shell
-python-eval-file.label=Evaluate file in Python shell ...
+python-eval-selected.label=Evaluate selection in Python shell
+python-exec-buffer.label=Execute current buffer in Python shell
+python-exec-file.label=Execute file in Python shell ...
 console.shell.Python-show.label=Show Python Shell
 # }}} Menu
 
