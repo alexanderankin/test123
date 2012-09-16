@@ -84,18 +84,30 @@ public class PythonShell extends ProcessShell {
 	 * Evaluate text.
 	 */
 	public void eval(Console console, String str) {
-		str += "\n";
-		str = str.replace("\n", "\\n");
-		str = str.replace("\t", "\\t");
-		str = str.replace("\"", "\\\"");
-		send(console, "exec(\""+str+"\")");
+		str = this.clean(str + "\n");
+		super.send(console, "eval(\""+str+"\")");
 	}
 	
 	/**
-	 * Evaluate a buffer.
+	 * Execute text.
 	 */
-	public void evalBuffer(Console console, Buffer buffer) {
-		send(console, "execfile(\""+buffer.getPath().replace("\\", "/")+"\")");
+	public void exec(Console console, String str) {
+		str = this.clean(str + "\n");
+		super.send(console, "exec(\""+str+"\")");
+	}
+	
+	/**
+	 * Execute a buffer.
+	 */
+	public void execBuffer(Console console, Buffer buffer) {
+		this.exec(console, buffer.getText(0, buffer.getLength()));
+	}
+	
+	/**
+	 * Execute a file.
+	 */
+	public void execFile(Console console, String path) {
+		super.send(console, "execfile(\""+path.replace("\\", "/")+"\")");
 	}
 	
 	/**
@@ -125,5 +137,9 @@ public class PythonShell extends ProcessShell {
 	public void restart(Console console) {
 		this.stop(console);
 		this.start(console, console.getOutput(), null);
+	}
+	
+	private String clean(String str) {
+		return str.replace("\n", "\\n").replace("\t", "\\t").replace("\"", "\\\"");
 	}
 }

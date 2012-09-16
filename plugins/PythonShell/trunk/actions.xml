@@ -11,22 +11,24 @@
 			wm.addDockableWindow("console");
 			dockable = wm.getDockableWindow("console");
 			shell = console.Shell.getShell("Python");
+			dockable.setShell(shell);
 			shell.eval(dockable, text);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="python-eval-buffer">
+	<ACTION NAME="python-exec-buffer">
 		<CODE>
 			wm.addDockableWindow("console");
 			dockable = wm.getDockableWindow("console");
 			shell = console.Shell.getShell("Python");
+			dockable.setShell(shell);
 			if (buffer.isNewFile()) {
-				shell.eval(dockable, buffer.getText(0, buffer.getLength()));
+				shell.exec(dockable, buffer.getText(0, buffer.getLength()));
 			} else {
-				shell.evalBuffer(dockable, buffer);
+				shell.execBuffer(dockable, buffer);
 			}
 		</CODE>
 	</ACTION>
-	<ACTION NAME="python-eval-file">
+	<ACTION NAME="python-exec-file">
 		<CODE>
 			dialog = new VFSFileChooserDialog(view, buffer.getDirectory(),
 				VFSBrowser.OPEN_DIALOG, false, true);
@@ -35,10 +37,11 @@
 				wm.addDockableWindow("console");
 				dockable = wm.getDockableWindow("console");
 				shell = console.Shell.getShell("Python");
+				dockable.setShell(shell);
 				f = new File(files[0]);
 				buffer = jEdit.openTemporary(view, f.getParent(), f.getName(),
 					false);
-				shell.evalBuffer(dockable, buffer);
+				shell.execBuffer(dockable, buffer);
 			}
 		</CODE>
 	</ACTION>
