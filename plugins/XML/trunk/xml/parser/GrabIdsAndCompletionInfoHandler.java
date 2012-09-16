@@ -74,6 +74,8 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	Locator loc;
 	/** at root of document (no startElement() seen yet)*/
 	boolean root = true;
+	/** seen the buffer we're interested in */
+	boolean seenBuffer = false;
 	
 	/** used to retrieve CompletionInfos for different namespaces (RNG) */
 	SchemaAutoLoader schemaAutoLoader;
@@ -265,8 +267,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 			}
 		}
 
-		if(!buffer.getPath().equals(currentURI))
-			return;
+		seenBuffer |= buffer.getPath().equals(currentURI);
 
 	} //}}}
 	
@@ -326,6 +327,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 					dtdCompletionInfo = (CompletionInfo)ce.getCachedItem();
 					data.setCompletionInfo("", dtdCompletionInfo);
 				}
+				seenBuffer |= buffer.getPath().equals(xml.PathUtilities.urlToPath(realLocation));
 			}
 			catch(IOException ioe)
 			{

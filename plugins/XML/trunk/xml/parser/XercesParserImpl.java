@@ -193,7 +193,6 @@ public class XercesParserImpl extends XmlParser
 			Log.log(Log.ERROR,this,"unexpected error preparing XML parser, please report",se);
 		}
 
-		//TODO
 		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
 			buffer);
 		if(info != null)
@@ -282,6 +281,16 @@ public class XercesParserImpl extends XmlParser
 		
 		// {{{ and parse again to get the SideKick tree (required to get the xi:include elements in the tree)
 		if(!(errorParsing instanceof StoppedException)){
+			
+			// don't print a warning if rootDocument == null, 
+			// because it may be that we didn't see because there was an error before first element, parsing an empty XML document, etc.. 
+			if(!handler.seenBuffer && rootDocument!=null){
+				String msg = "Current buffer has not been parsed. It may not be reacheable from root document. Check that you didn't forget to xi:include it...";
+				Log.log(Log.WARNING, this, msg);
+				errorSource.addError(ErrorSource.WARNING,buffer.getPath(),
+					0,0,0,msg);
+			}
+			
 			ConstructTreeHandler treeHandler = new ConstructTreeHandler(this, buffer, text, errorHandler, data, resolver);
 			reader = null;
 			try
@@ -307,6 +316,13 @@ public class XercesParserImpl extends XmlParser
 				
 				reader.setContentHandler(treeHandler);
 				reader.setEntityResolver(resolver);
+				
+				// report errors and warnings correctly if not referenced from root document
+				// (this may be temporary, whatever...)
+				if(!handler.seenBuffer && rootDocument != null){
+					reader.setErrorHandler(errorHandler);
+				}
+
 				
 			}
 			catch(SAXException se)
@@ -342,7 +358,7 @@ public class XercesParserImpl extends XmlParser
 					Log.log(Log.ERROR,this,"I/O error upon snd reparse :"+e.getClass()+": "+e.getMessage());
 				}
 			}
-			catch(SAXParseException e) //NOPMD: handled by ErrorHandler
+			catch(SAXParseException se) // NOPMD: got it in the first parse or, if buffer not parsed because of xml.root, caught by ErrorListErrorHandler
 			{
 			}
 			catch(SAXException se)

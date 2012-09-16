@@ -613,6 +613,11 @@ public class XmlParsedData extends SideKickParsedData
 			Object o = dmtn.getUserObject();
 			if(o instanceof XmlTag){
 				bindings = ((XmlTag)o).namespaceBindings;
+				if(bindings == null){
+					// this can happen, see test_data/xinclude/error_not_referenced_in_users_guide.xml, when typing <para
+					// and choosing a completion...
+					bindings = new NamespaceBindings();
+				}
 			}else {
 				bindings = new NamespaceBindings();
 			}
