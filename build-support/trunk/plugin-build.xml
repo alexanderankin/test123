@@ -6,7 +6,7 @@
     <!-- {{{ Top-Level build file for jEdit plugins. ====== -->
     <!--
         Version: $Id$
-        Requires apache Ant 1.6, including optional tasks, and xerces.
+        Requires apache Ant 1.8.2, including optional tasks, and xerces.
 
         To use this file, use the "import" task from ant
         on your plugin's build file, like this:
@@ -275,8 +275,8 @@
          compiler.deprecation: deprecation option (off)
          compiler.verbose: the verbose option (off)
          compiler.nowarn: the nowarn option (off)
-         compiler.target: the target option (1.5)
-         compiler.source: the source option (1.5)
+         compiler.target: the target option (1.6)
+         compiler.source: the source option (1.6)
          compiler.listfiles: the listfiles option (no)      -->
     <target name="compile"
             description="Compile the plugin's classes" depends="resolve">
