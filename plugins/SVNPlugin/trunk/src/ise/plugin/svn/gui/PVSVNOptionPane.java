@@ -80,7 +80,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private JLabel password_label;
     private JPasswordField password;
     private JLabel fileformat_label;
-    private JComboBox fileformat;
+    private JComboBox<String> fileformat;
 
     private int wcVersion = -1;
 
@@ -123,7 +123,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
         String wc_item;
         int current_wc_format = getWCVersion();
-        System.out.println("+++++ current_wc_format = " + current_wc_format);
+        //System.out.println("+++++ current_wc_format = " + current_wc_format);
         switch ( current_wc_format ) {
             case SVNAdminAreaFactory.WC_FORMAT_13:
                 wc_item = "1.3";
@@ -144,9 +144,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         }
         if ( current_wc_format == ISVNWCDb.WC_FORMAT_17 ) {
-            fileformat = new JComboBox( new String[] {"1.7"} );
+            fileformat = new JComboBox<String>( new String[] {"1.7"} );
         } else {
-            fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7"} );
+            fileformat = new JComboBox<String>( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7"} );
         }
         fileformat.setEditable( false );
         fileformat.setSelectedItem( wc_item );

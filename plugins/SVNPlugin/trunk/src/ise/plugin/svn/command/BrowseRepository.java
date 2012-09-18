@@ -263,14 +263,14 @@ public class BrowseRepository {
         SVNRepository repository = null;
         long rev = -1;
         try {
-            repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
-            String pwd = null;
-            if ( password != null && password.length() > 0 ) {
-                pwd = PasswordHandler.decryptPassword( password );
-            }
-            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  username, pwd );
-            repository.setAuthenticationManager( authManager );
             if ( revision.getDate() != null ) {
+                repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
+                String pwd = null;
+                if ( password != null && password.length() > 0 ) {
+                    pwd = PasswordHandler.decryptPassword( password );
+                }
+                ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  username, pwd );
+                repository.setAuthenticationManager( authManager );
                 rev = repository.getDatedRevision( revision.getDate() );
             }
             else {

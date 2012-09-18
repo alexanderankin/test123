@@ -58,7 +58,8 @@ public class RepositoryData extends CheckoutData {
     }
 
     public String toString() {
-        return "RepositoryData[name=" + getName() + ", url=" + getURL() + ", username=" + getUsername() + ", password=" + getPassword() + "]";
+        return getName();
+        //return "RepositoryData[name=" + getName() + ", url=" + getURL() + ", username=" + getUsername() + ", password=" + getPassword() + "]";
     }
 
     /**
