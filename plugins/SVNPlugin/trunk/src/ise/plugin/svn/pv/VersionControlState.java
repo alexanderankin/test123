@@ -14,7 +14,6 @@ import java.io.*;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.EditBus;
@@ -25,6 +24,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.util.ThreadUtilities;
 
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.SVNPlugin;
@@ -169,7 +169,12 @@ public class VersionControlState implements VersionControlService, EBComponent {
         if ( cache.size() == 0 ) {
             VPTProject project = PVHelper.getProjectForFile( path );
             if ( project != null ) {
-                loadCache( project.getName() );
+                final String projectName = project.getName();
+                ThreadUtilities.runInBackground(new Runnable(){
+                        public void run() {
+                            loadCache( projectName );
+                        }
+                });
             }
         }
         FileStatus status = cache.get( path );
@@ -354,7 +359,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
                 String projectName = vu.getNode().getName();
                 boolean loaded = loadCache( projectName );
                 if ( ! loaded ) {
-                    SwingUtilities.invokeLater( new Runnable() {
+                    ThreadUtilities.runInBackground( new Runnable() {
                         public void run() {
                             reloadCache( vu.getViewer() );
                         }
@@ -430,7 +435,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
                 if ( !cacheFile.exists() ) {
                     return false;
                 }
-                InputStream fileIn = new BufferedInputStream(new FileInputStream( cacheFile ));
+                InputStream fileIn = new BufferedInputStream(new FileInputStream( cacheFile ), Math.min(64 * 1024, (int)cacheFile.length()));
                 objectIn = new ObjectInputStream( fileIn );
                 cache = new Hashtable<String, FileStatus>();
                 while ( true ) {

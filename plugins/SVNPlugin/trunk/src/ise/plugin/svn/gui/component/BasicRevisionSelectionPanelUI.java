@@ -273,6 +273,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             revision_number_rb.addActionListener( al );
             date_rb.addActionListener( al );
             head_rb.addActionListener( al );
+            previous_rb.addActionListener( al );
             base_rb.addActionListener( al );
             if ( controller.getModel().getShowWorking() ) {
                 working_rb.addActionListener( al );
@@ -305,6 +306,13 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         controller.getModel().setRevision( SVNRevision.HEAD );
+                    }
+                }
+            );
+            previous_rb.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        controller.getModel().setRevision( SVNRevision.PREVIOUS );
                     }
                 }
             );
@@ -364,6 +372,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                     }
                     ;
             JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty( "ips.DateFormat", "dd MMM yyyy HH:mm" ) );
+            date_spinner.setEnabled( false );
             date_editor.getTextField().addPropertyChangeListener( new PropertyChangeListener() {
                         // this is necessary because JSpinner won't automatically keep its internal
                         // model up to date.
@@ -388,13 +397,11 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             date_spinner.setPreferredSize( new Dimension( 150, date_spinner.getPreferredSize().height ) );
             date_spinner.setForeground( foreground );
             date_spinner.setBackground( background );
-            date_spinner.setEnabled( false );
             return date_spinner;
         }
         
         private void adjustRadioButtons() {
                 SVNRevision newRevision = controller.getModel().getRevision();
-
                 if ( controller.getModel().getShowHead() && SVNRevision.HEAD.equals( newRevision ) ) {
                     head_rb.setSelected( true );
                 }

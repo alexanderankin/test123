@@ -99,11 +99,11 @@ public class Diff {
         );
 
         // actually do the diff
-        // File, rev, file, rev -- TODO
+        // TODO: File, rev, file, rev
         // File, rev, rev -- from PV, working file against revision
-        // File, rev, URL, rev -- TODO
-        // URL, rev, rev -- TODO from SVN Browser, remote file against revision
-        // URL, rev, URL, rev -- TODO
+        // TODO: File, rev, URL, rev
+        // TODO: URL, rev, rev -- from SVN Browser, remote file against revision
+        // TODO: URL, rev, URL, rev
         // for all, use ancestry = false
 
         // where to put the resulting output
