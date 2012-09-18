@@ -69,7 +69,7 @@ public class DiffLineOverview extends JComponent implements LineProcessor, EBCom
 
     /**
      * Perform a diff on 2 lines.
-     * TODO: is this actually used?
+     * NOTE: this isn't actually used from anywhere.
      */
     public void processLines( String leftLine, String rightLine ) {
         if ( leftLine == null || rightLine == null ) {
