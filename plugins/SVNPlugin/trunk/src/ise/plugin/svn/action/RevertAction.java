@@ -45,8 +45,11 @@ import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+
+import jdiff.DualDiffManager;
 
 
 /**
@@ -175,6 +178,7 @@ public class RevertAction extends SVNAction {
                             Buffer buffer = jEdit.getBuffer( path );
                             if ( buffer != null ) {
                                 buffer.reload( RevertAction.this.getView() );
+                                DualDiffManager.refreshFor(RevertAction.this.getView());
                             }
                         }
                     }
