@@ -486,7 +486,7 @@ public class DualDiff implements EBComponent {
                 }
 
                 // move the caret to the start of the first line of the diff
-                int caret_position = textArea0.getLineStartOffset(line);
+                int caret_position = textArea0.getLineStartOffset(Math.min(line, textArea0.getLineCount() - 1));
                 textArea0.setCaretPosition(caret_position, false);
 
                 // scroll so line is visible
@@ -502,7 +502,7 @@ public class DualDiff implements EBComponent {
 
                 // move caret in other text area to start of diff hunk
                 // and scroll to it
-                caret_position = textArea1.getLineStartOffset(hunk.first1 >= textArea1.getLineCount() ? textArea1.getLineCount() - 1 : hunk.first1);
+                caret_position = textArea1.getLineStartOffset(Math.min(hunk.first1, textArea1.getLineCount() - 1));
                 textArea1.setCaretPosition(caret_position, false);
                 textArea1.setFirstLine(caret_position - distance);
 
@@ -540,7 +540,7 @@ public class DualDiff implements EBComponent {
                 }
 
                 // move the caret to the start of the first line of the diff
-                int caret_position = textArea1.getLineStartOffset(line);
+                int caret_position = textArea1.getLineStartOffset(Math.min(line, textArea1.getLineCount() - 1));
                 textArea1.setCaretPosition(caret_position, false);
 
                 // scroll so line is visible
@@ -556,7 +556,7 @@ public class DualDiff implements EBComponent {
 
                 // move caret in other text area to start of diff hunk
                 // and scroll to it
-                caret_position = textArea0.getLineStartOffset(hunk.first0 >= textArea0.getLineCount() ? textArea0.getLineCount() - 1 : hunk.first0);
+                caret_position = textArea0.getLineStartOffset(Math.min(hunk.first0, textArea0.getLineCount() - 1));
                 textArea0.setCaretPosition(caret_position, false);
                 textArea0.setFirstLine(caret_position - distance);
 
@@ -599,7 +599,7 @@ public class DualDiff implements EBComponent {
                     int line = hunk.first0;                    // first line of diff hunk
 
                     // move caret to start of diff hunk
-                    int caret_position = textArea0.getLineStartOffset(line);
+                    int caret_position = textArea0.getLineStartOffset(Math.min(line, textArea0.getLineCount() - 1));
                     textArea0.setCaretPosition(caret_position, false);
 
                     // scroll so line is visible
@@ -615,7 +615,7 @@ public class DualDiff implements EBComponent {
 
                     // move caret in other text area to start of diff hunk
                     // and scroll to it
-                    caret_position = textArea1.getLineStartOffset(hunk.first1);
+                    caret_position = textArea1.getLineStartOffset(Math.min(hunk.first1, textArea1.getLineCount() - 1));
                     textArea1.setCaretPosition(caret_position, false);
                     textArea1.setFirstLine(hunk.first1 - distance);
 
@@ -659,7 +659,7 @@ public class DualDiff implements EBComponent {
                     int line = hunk.first1;                    // first line of hunk
 
                     // move caret to start of diff hunk
-                    int caret_position = textArea1.getLineStartOffset(line);
+                    int caret_position = textArea1.getLineStartOffset(Math.min(line, textArea1.getLineCount() - 1));
                     textArea1.setCaretPosition(caret_position, false);
 
                     // scroll so line is visible
@@ -675,7 +675,7 @@ public class DualDiff implements EBComponent {
 
                     // move caret in other text area to start of diff hunk
                     // and scroll to it
-                    caret_position = textArea0.getLineStartOffset(hunk.first0);
+                    caret_position = textArea0.getLineStartOffset(Math.min(hunk.first0, textArea0.getLineCount() - 1));
                     textArea0.setCaretPosition(caret_position, false);
                     textArea0.setFirstLine(hunk.first0 - distance);
 
@@ -708,7 +708,7 @@ public class DualDiff implements EBComponent {
         int line = hunk.first0;
         
         // move caret to start of diff hunk
-        int caret_position = textArea0.getLineStartOffset(line);
+        int caret_position = textArea0.getLineStartOffset(Math.min(line, textArea0.getLineCount()));
         textArea0.setCaretPosition(caret_position, false);
         
         // scroll so line is visible
@@ -724,7 +724,7 @@ public class DualDiff implements EBComponent {
 
         // move caret in other text area to start of diff hunk
         // and scroll to it
-        caret_position = textArea1.getLineStartOffset(hunk.first1);
+        caret_position = textArea1.getLineStartOffset(Math.min(hunk.first1, textArea1.getLineCount() - 1));
         textArea1.setCaretPosition(caret_position, false);
         textArea1.setFirstLine(hunk.first1 - distance);
 
@@ -749,7 +749,7 @@ public class DualDiff implements EBComponent {
         int line = hunk.first1;
         
         // move caret to start of diff hunk
-        int caret_position = textArea1.getLineStartOffset(line);
+        int caret_position = textArea1.getLineStartOffset(Math.min(line, textArea1.getLineCount() - 1));
         textArea1.setCaretPosition(caret_position, false);
         
         // scroll so line is visible
@@ -765,7 +765,7 @@ public class DualDiff implements EBComponent {
 
         // move caret in other text area to start of diff hunk
         // and scroll to it
-        caret_position = textArea0.getLineStartOffset(hunk.first0);
+        caret_position = textArea0.getLineStartOffset(Math.min(hunk.first0, textArea0.getLineCount() - 1));
         textArea0.setCaretPosition(caret_position, false);
         textArea0.setFirstLine(hunk.first0 - distance);
 
@@ -794,7 +794,7 @@ public class DualDiff implements EBComponent {
         int line = hunk.first0;
         
         // move caret to start of diff hunk
-        int caret_position = textArea0.getLineStartOffset(line);
+        int caret_position = textArea0.getLineStartOffset(Math.min(line, textArea0.getLineCount() - 1));
         textArea0.setCaretPosition(caret_position, false);
         
         // scroll so line is visible
@@ -810,7 +810,7 @@ public class DualDiff implements EBComponent {
 
         // move caret in other text area to start of diff hunk
         // and scroll to it
-        caret_position = textArea1.getLineStartOffset(hunk.first1);
+        caret_position = textArea1.getLineStartOffset(Math.min(hunk.first1, textArea1.getLineCount() - 1));
         textArea1.setCaretPosition(caret_position, false);
         textArea1.setFirstLine(hunk.first1 - distance);
 
@@ -839,7 +839,7 @@ public class DualDiff implements EBComponent {
         int line = hunk.first1;
         
         // move caret to start of diff hunk
-        int caret_position = textArea1.getLineStartOffset(line);
+        int caret_position = textArea1.getLineStartOffset(Math.min(line, textArea1.getLineCount() - 1));
         textArea1.setCaretPosition(caret_position, false);
         
         // scroll so line is visible
@@ -855,7 +855,7 @@ public class DualDiff implements EBComponent {
 
         // move caret in other text area to start of diff hunk
         // and scroll to it
-        caret_position = textArea0.getLineStartOffset(hunk.first0);
+        caret_position = textArea0.getLineStartOffset(Math.min(hunk.first0, textArea0.getLineCount() - 1));
         textArea0.setCaretPosition(caret_position, false);
         textArea0.setFirstLine(hunk.first0 - distance);
 
