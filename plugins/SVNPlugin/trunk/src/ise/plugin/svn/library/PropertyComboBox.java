@@ -37,11 +37,11 @@ import org.gjt.sp.jedit.jEdit;
  * file.  Loads at most 10 items plus a "-- Select --" item that is not actually
  * selectable.
  */
-public class PropertyComboBox extends JComboBox<String> {
+public class PropertyComboBox extends JComboBox {
 
     public static final String SELECT = "-- Select --";
     private String propertyPrefix = null;
-    DefaultComboBoxModel<String> model = null;
+    DefaultComboBoxModel model = null;
 
     public PropertyComboBox( String propertyPrefix ) {
         if ( propertyPrefix == null || propertyPrefix.length() == 0 ) {
@@ -68,7 +68,7 @@ public class PropertyComboBox extends JComboBox<String> {
                 values.push( SELECT );
             }
         }
-        model = new DefaultComboBoxModel<String>( values );
+        model = new DefaultComboBoxModel( ( Vector ) values );
 
         if ( model.getSize() > 0 && model.getIndexOf( SELECT ) < 0 ) {
             model.insertElementAt( SELECT, 0 );
