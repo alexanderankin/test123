@@ -79,6 +79,14 @@ public class ProjectTaskList extends AbstractTreeTaskList {
         }
         return jEdit.getBooleanProperty( "tasklist.show-project-files", true );
     }
+    
+    @Override
+    protected boolean canAutoRun() {
+        if ( project == null ) {
+            project = ProjectViewer.getActiveProject( view );
+        }
+        return project == null ? false : jEdit.getBooleanProperty("tasklist.pv.autoscan." + project.getName(), true);   
+    }
 
     @Override
     protected List<String> getBuffersToScan() {
@@ -108,11 +116,17 @@ public class ProjectTaskList extends AbstractTreeTaskList {
     public void handleMessage( EBMessage msg ) {
         if ( msg.getClass().getName().equals( "projectviewer.event.ViewerUpdate" ) ) {
             ViewerUpdate vu = ( ViewerUpdate ) msg;
-            if ( ViewerUpdate.Type.PROJECT_LOADED.equals( vu.getType() ) && vu.getView().equals( view ) ) {
+            if ( ViewerUpdate.Type.PROJECT_LOADED.equals( vu.getType() ) && vu.getView().equals( view ) && canAutoRun() ) {
                 project = ( VPTProject ) vu.getNode();
                 if ( project != null ) {
                     loadFiles();
                 }
+            }
+        }
+        else if (msg instanceof ParseBufferMessage) {
+            ParseBufferMessage pbm = ( ParseBufferMessage ) msg;
+            if ( ParseBufferMessage.DO_PARSE_PROJECT.equals( pbm.getWhat() ) ) {
+                loadFiles();
             }
         }
         else {

@@ -105,6 +105,7 @@ public class TaskList extends JPanel implements EBComponent {
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_PROJECT ) );
                 }
             }
         );

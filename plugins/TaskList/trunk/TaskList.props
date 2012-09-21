@@ -165,6 +165,13 @@ tasklist.table.sort-column=1
 tasklist.table.sort-ascending=true
 tasklist.highlight.tasks=false
 
+# ProjectViewer option pane
+# ProjectViewer option pane
+plugin.projectviewer.tasklist.TaskListPlugin.option-pane=tasklist.pv.options
+options.tasklist.pv.options.label=Task List settings
+options.tasklist.pv.options.code=new tasklist.options.PVOptionPane();
+tasklist.pv.autoscan=Automatically scan for tasks when project opens
+
 # Plugin option pane dialog icons
 tasklist.icons=stock_about-16.png \
 	stock_attach-16.png \

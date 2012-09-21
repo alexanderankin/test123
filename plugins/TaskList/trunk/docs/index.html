@@ -172,18 +172,33 @@ menu (which you can tie to a keyboard shortcut), or by using the "Refresh" butto
 TaskList will also display a list of all tasks in all open files.  This tab can be turned off in the plugin options.
 <p>
 
+<h2>Project Viewer Integration</h2>
 <p>
 If the ProjectViewer plugin is installed, TaskList can find all tasks in
 the current project.  For large projects, this can take a long time.
-You can turn off the project tab in the plugin options.
 <p>
+You can turn off parsing of all projects by unchecking the box in the TaskList
+options, General, "Show tasks for all project files".
+<p>
+You can also turn off parsing of a single project in the ProjectViewer
+properties for the project.
+<p>
+<img src="pv_options.jpg">
 
 <p>
-You can also find the tasks in just part of a project by right clicking on a file or directory in Project Viewer and selecting "Find Tasks" from the popup menu.  This can be more useful in large projects.  A new tab will be opened for each such action.  These tabs can be closed individually when they are no longer needed.
+You can also find the tasks in just part of a project by right clicking on a 
+file or directory in Project Viewer and selecting "Find Tasks" from the popup 
+menu.  This can be more useful in large projects.  A new tab will be opened 
+for each such action.  These tabs can be closed individually when they are 
+no longer needed.
 <p>
 
+<h2>File Browser Integration</h2>
 <p>
-You can also find tasks using the File System Browser by right clicking on a file or directory and selecting "Find Tasks" from the plugins menu.   A new tab will be opened for each such action.  These tabs can be closed individually when they are no longer needed.
+You can also find tasks using the File System Browser by right clicking on a 
+file or directory and selecting "Find Tasks" from the plugins menu.   A new 
+tab will be opened for each such action.  These tabs can be closed individually 
+when they are no longer needed.
 <p>
 
 <p>
@@ -199,6 +214,18 @@ The TaskList dockable provides a "Filter" menu that lets you show or hide certai
 <p>The <code>General</code> options pane allows you to change the appearance of the
 TaskList table display, including default sorting criteria, and
 highlighting of commented buffer text.<p>
+
+<img src="general_options.jpg">
+
+<p>
+Most of these should be self-explanatory. 
+<ul>
+<li>"Show tasks for all project files" must be checked for the "Project" tab
+to be visible, regardless of whether the "Automatically scan for tasks when project opens"
+is set in the Project Viewer options.
+</ul>
+<p>
+
 <a name="task-types"></a>
 <h2>Task Types</h2>
 <p>The <code>Task Types</code> options pane allows you to add, delete, or edit comment
