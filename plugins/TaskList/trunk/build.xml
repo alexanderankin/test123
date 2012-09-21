@@ -83,6 +83,7 @@
                 <include name="services.xml"/>
                 <include name="**/*.html"/>
                 <include name="**/*.gif"/>
+                <include name="**/*.jpg"/>
                 <include name="**/*.png"/>
             </fileset>
         </jar>

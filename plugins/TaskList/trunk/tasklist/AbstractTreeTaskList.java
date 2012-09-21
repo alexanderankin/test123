@@ -59,7 +59,9 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         }
         );
 
-        loadFiles();
+        if (canAutoRun()) {
+            loadFiles();
+        }
     }
 
     /**
@@ -128,6 +130,16 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
      */
     protected boolean canRun() {
         return true;
+    }
+    
+    /**
+     * Default implementation returns <code>true</code>.  Subclasses may override
+     * this based on their particular needs.
+     * @return true if this class is allowed to automatically load and display 
+     * tasks for files.
+     */
+    protected boolean canAutoRun() {
+        return true;   
     }
 
     /**
