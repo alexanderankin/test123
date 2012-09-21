@@ -64,7 +64,7 @@ public class CheckoutDialog extends JDialog {
 
     private HistoryTextField url = null;
     private HistoryTextField path = null;
-    private JComboBox<String> fileformat = null;
+    private JComboBox fileformat = null;
     private HistoryTextField username = null;
     private JPasswordField password = null;
 
@@ -185,7 +185,7 @@ public class CheckoutDialog extends JDialog {
 
         // working copy format
         JLabel fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox<String>( new String[] {"1.6", "1.7"} );
+        fileformat = new JComboBox( new String[] {"1.6", "1.7"} );
         fileformat.setEditable( false );
         int wc_format = jEdit.getIntegerProperty("ise.plugin.svn.defaultWCVersion");
         fileformat.setSelectedIndex(wc_format == SVNAdminAreaFactory.WC_FORMAT_16 ? 0 : 1);

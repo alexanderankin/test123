@@ -80,7 +80,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private JLabel password_label;
     private JPasswordField password;
     private JLabel fileformat_label;
-    private JComboBox<String> fileformat;
+    private JComboBox fileformat;
 
     private int wcVersion = -1;
 
@@ -144,9 +144,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         }
         if ( current_wc_format == ISVNWCDb.WC_FORMAT_17 ) {
-            fileformat = new JComboBox<String>( new String[] {"1.7"} );
+            fileformat = new JComboBox( new String[] {"1.7"} );
         } else {
-            fileformat = new JComboBox<String>( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7"} );
+            fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7"} );
         }
         fileformat.setEditable( false );
         fileformat.setSelectedItem( wc_item );
