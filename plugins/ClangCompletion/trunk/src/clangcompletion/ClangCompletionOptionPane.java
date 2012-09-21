@@ -55,7 +55,7 @@ public class ClangCompletionOptionPane extends AbstractOptionPane
 		addComponent("Clang Path: ", clangPathTF);
 		
 		passBufferCheckBox = new JCheckBox(
-			"Parse buffer on file saved",
+			"Parse buffer on file save",
 			jEdit.getBooleanProperty("clangcompletion.parse_buffer", true));
 		addComponent(passBufferCheckBox);
 	}
