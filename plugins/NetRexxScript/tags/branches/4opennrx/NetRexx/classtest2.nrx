@@ -1,7 +1,0 @@
-
--- This script demonstrates a compiled class that calls another compiled class
---  A compiled version is placed in the sample macro directory
-
-say "this is classtest2"
-
-classtest.main([String 'bingo'])
