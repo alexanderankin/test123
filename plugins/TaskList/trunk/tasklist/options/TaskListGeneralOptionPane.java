@@ -144,10 +144,10 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 		        showOpenFiles.isSelected() );
 
 		jEdit.setBooleanProperty( "tasklist.scan-hidden-files",
-		        showOpenFiles.isSelected() );
+		        scanHiddenFiles.isSelected() );
 
 		jEdit.setBooleanProperty( "tasklist.show-project-files",
-		        scanHiddenFiles.isSelected() );
+		        showProjectFiles.isSelected() );
 
 		jEdit.setBooleanProperty( "tasklist.single-click-selection",
 		        allowSingleClick.isSelected() );
