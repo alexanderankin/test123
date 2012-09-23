@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>NetRexx at Once</title></head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);" alink="#ff0000" link="#0000ff" vlink="#800080">
+
+<a name="TYPES"></a>
+<center>
+<h1><font color="#ff0000">NetRexx at Once</font></h1>
+<h2><font color="#ff0000">Quick Guide for Java Developers</font></h2>
+</center>
+
+<hr><a href="netrexxAtOnce.html">[Index]</a> <a href="netrexxAtOnce02.html">[Previous Chapter]</a> <a href="netrexxAtOnce04.html">[Next Chapter]</a>
+
+<h2><font color="#ff0000">3. Types</font></h2>
+<p>To work with NetRexx you need to use only one type: the REXX type.
+This is a powerful String class that can be used as a usual String, a
+floating number, a whole number and so on. However you can still use
+basic types (e.g. int, double etc.) for better performance. A useful
+feature is the ability to set the precision of numbers.
+</p><p><a name="TYPE REXX"></a>
+</p><h3><font color="#ff0000">3.1 NetRexx Strings</font></h3>
+<p>In the following two paragraphs we'll see the operators that work with the REXX type and the use of the PARSE instruction.
+
+</p><p><a name="TYPE REXX OP"></a>
+</p><h4><font color="#ff0000">3.1.1 Operators</font></h4>
+<p>These are the operators used in Java compared to the ones of NetRexx:
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b></td><td bgcolor="#ccffff"><b>NetRexx</b></td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre><b>Unary on numbers</b>
+-  <i>negation</i>
+~  <i>bitwise complement</i>
+++ <i>increment</i>
+-- <i>decrement</i>
+</pre>
+</td><td bgcolor="#ccffff">
+<pre><b>Unary on numbers</b>
+- <i>negation</i>
+.
+.
+.
+</pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<ul>
+<li>No operators working on <b>bitfields</b>.
+</li><li>No <b>increment</b> or <b>decrement</b> operators.
+</li></ul></td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre><b>Binary on numbers</b>
++   <i>addition</i>
+-   <i>subtraction</i>
+*   <i>multiplication</i>
+/   <i>division</i>
+%   <i>modulus</i>
+&amp;   <i>bitwise and</i>
+|   <i>bitwise or</i>
+^   <i>bitwise xor</i>
+&lt;&lt;  <i>left shift</i>
+&gt;&gt;  <i>right shift (sign propagating)</i>
+&gt;&gt;&gt; <i>right shift (zero-fill)</i>
+op= <i>operator with assignment</i>
+</pre>
+</td><td bgcolor="#ccffff">
+<pre><b>Binary on numbers</b>
++   <i>addition</i>
+-   <i>subtraction</i>
+*   <i>multiplication</i>
+/   <i>division</i><br>//  <i>remainder</i><br>%   <i>integer part of division</i><i></i>
+**  <i>power</i>
+.
+.
+.
+.
+.
+.
+</pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<ul>
+<li>No operators working on <b>bitfields</b>.
+</li><li>Modulus replaced by <b>integer divide</b> and <b>reminder</b>.
+</li><li>Added <b>power</b> operator.
+</li><li>No operators with <b>assignment implied</b>.
+</li></ul></td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre><b>Relationals</b>
+&lt;   <i>less than</i>
+&gt;   <i>greater than</i>
+&lt;=  <i>less or equal</i>
+&gt;=  <i>greater or equal</i>
+==  <i>equal</i>
+!=  <i>not equal</i>
+.
+.
+.
+.
+.
+.
+</pre>
+</td><td bgcolor="#ccffff">
+<pre><b>Relationals</b>
+&lt;        <i>less than</i>
+&gt;        <i>greater than</i>
+&lt;= \&gt;    <i>less or equal</i>
+&gt;= \&lt;    <i>greater or equal</i>
+=        <i>equal</i>
+\= &gt;&lt; &lt;&gt; <i>not equal</i>
+==       <i>strictly equal</i>
+\==      <i>strictly not equal</i>
+&lt;&lt;       <i>strictly less than</i>
+&gt;&gt;       <i>strictly greater than</i>
+&lt;&lt;= \&gt;&gt;  <i>strictly less than or equal to</i>
+&gt;&gt;= \&gt;&gt;  <i>strictly greater than or equal to</i>
+</pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<ul>
+<li><b>\</b> used instead of <b>!</b>
+</li><li><b>several combination</b> for the same operator
+</li><li>Added <b>strict comparisons</b>, useful to test if two objects are the same.<br>For example "1.2"="1.20" is true, while "1.2"=="1.20" is false<br>and "Leo"="leo" is true, while "Leo"=="leo" is false.
+</li></ul></td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre><b>Logical</b>
+&amp;&amp;     <i>and</i>
+||     <i>or</i>
+!      <i>not</i>
+.
+true   <i>true value</i>
+false  <i>false value</i>
+</pre>
+</td><td bgcolor="#ccffff">
+<pre><b>Logical</b>
+&amp;   <i>and</i>
+|   <i>or</i>
+\   <i>not</i>
+&amp;&amp;  <i>xor</i>
+1   <i>true value</i>
+0   <i>false value</i>
+</pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<ul>
+<li>These operators work on logical values: <b>0</b> stands for false and <b>1</b> for true.
+</li></ul></td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre><b>String operators</b>
++  <i>concatenation</i>
+.
+</pre>
+</td><td bgcolor="#ccffff">
+<pre><b>String operators</b>
+|| <i>or</i> abuttal  <i>concatenation</i>
+blanck           <i>   "   with blanck</i>
+</pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<ul>
+<li><b>All</b> the operators in the above sections work on <b>REXX Strings</b>:<br>even the mathematical operators, if the string represents a number.
+</li><li>Concatenation of Strings is often <b>implied</b>.<br>For example:<br>'Hi!' 'All.' and 'Hi!' ''All" both mean 'Hi! All.'<br>Finally a||b is 'Hi! All.' if a='Hi! ' and b='All.'
+</li></ul></td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre><b>Casting and testing</b>
+(<i>class</i>)<i>object</i>
+<i>object</i> instanceof <i>class</i>
+</pre>
+</td><td bgcolor="#ccffff">
+<pre><b>Casting and testing</b>
+<i>class</i> <i>object</i>
+<i>object</i>&lt;=<i>class</i> <i>or</i> <i>class</i>&gt;=<i>object</i>
+</pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<ul>
+<li><b>No parentheses</b> needed to cast an <i>object</i>.
+</li><li><b>&lt;=</b> or <b>=&gt;</b> used to test if an <i>object</i> is of type <i>class</i>.
+</li></ul></td></tr>
+</tbody></table>
+
+</p><p><font color="#ff0000">PRECEDENCE</font> The operators are now listed in order of precedence:
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>. [] ()<br>++ -- ! ~ instanceof<br>* / %<br>+ -<br>&lt;&lt; &gt;&gt; &gt;&gt;&gt;<br>&lt; &gt; &lt;= &gt;=<br>== !=<br>&amp;<br>^<br>|<br>&amp;&amp;<br>||<br>?:<br>= op=<br>,<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>. [] ()<br>+  -  \ (<i>prefixes</i>)<br><br>**<br>* / % //<br>+  -<br><br>blank || abuttal (<i>concatenation</i>)<br><br>=  ==  &gt;  &lt;  &lt;= &gt;=  &lt;&lt;  \&gt;&gt; ...<br><br>&amp;<br>|  &amp;&amp;<br><br>= (<i>assignment</i>)<br></pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<b>notes</b><br>
+<ul>
+<li><b>**</b> has less precedence than prefixed <b>-</b>, so -2**2 = 4.
+</li></ul>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="TYPE REXX PARSE"></a>
+</p><h4><font color="#ff0000">3.1.2 PARSE Instruction</font></h4>
+<p>Parsing is a powerful mechanism that extracts strings from another
+string using pattern matching or other rules according to a template.
+You can parse strings with the <b>PARSE</b> instruction.<br>For
+example, imagine that an application must print on the screen the five
+strings passed in the command line as an unique string with commas as
+separators. Compare the two chuncks of code:
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>/* This is Split.java */<br>public class split {<br>  public static void main(String[] arg) {<br>    String retStr = arg[0];<br>    String[] string = new String[5];<br>    int idx = -1;<br>    for(int ct = 0; ct &lt; 4; ct++) {<br>      idx++;<br>      string[ct] =<br>        retStr.substring(<br>          idx,<br>          idx = retStr.indexOf(",",idx)<br>        )<br>      ;<br>    }<br>    string[4] = retStr.substring(idx+1);<br>    for(int ct = 0; ct &lt; 5; ct++) {<br>      System.out.println(string[ct]);<br>    }<br>  }<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>/* This is split.nrx */<br>parse arg a','b','c','d','e<br>say a'\n'b'\n'c'\n'd'\n'e<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br></pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<b>notes</b><br>
+<ul>
+<li>The <b>PARSE</b> instruction accepts a string and a template to split it in parts.<br>This instruction avoids a lot of programming for string management.
+</li><li>There are several ways to define templates (e.g. you can use<br><b>literal</b> patterns, <b>positional</b> patterns and <b>variable</b> patterns).
+</li></ul>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="TYPE IDX"></a>
+</p><h3><font color="#ff0000">3.2 Indexed Strings and Arrays</font></h3>
+<p>In NetRexx you can define arrays as in Java. The difference is in the syntax:
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>// Declaring a String Array<br>String[] aString;<br>// Three String Array<br>aString = new String[3];<br>// Initializing<br>String[] aString = {"s1","s2","s3"};<br>// A two dimensinonal Array<br>String[][] bString;<br>// Initializing<br>String[][] bString =<br>  {{"s1","s2"},{"s3","s4"}}<br>;<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>-- Declaring a String Array<br>aString=String[]<br>-- Three String Array<br>aString=String[3]<br>-- Initializing<br>aString=['s1','s2','s3']<br>-- A two dimensinonal Array<br>bString=String[,]<br>-- Initializing<br>bString=[['s1','s2'],['s3','s4']]<br>--<br>--<br></pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<b>notes</b><br>
+<ul>
+<li>No <b>new</b> keyword required to create arrays.
+</li><li>The type of the array with initializers is derived from the <b>first</b> element.
+</li></ul>
+</td></tr>
+</tbody></table>
+
+</p><p>A very powerful feature of NetRexx are <b>Indexed Strings</b>.
+Every REXX string may have one or more sub-values that can be retrieved
+giving a string index. This sub-values are treated as REXX strings and
+they may have sub-values, too.<br>For example, consider a small dictionary from Italian to English. With Java you can use the <b>java.util.Hashtable</b> class:
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>/* This is Translate.java */<br>import java.io.*;<br>import java.util.Hashtable;<br>public class Translate {<br>  public static void main(String[] arg) {<br>    Hashtable dict = new Hashtable();<br>    dict.put("ciao","hi");<br>    dict.put("gatto","cat");<br>    dict.put("luna","moon");<br>// and more...<br>    BufferedReader r =<br>      new BufferedReader(<br>        new InputStreamReader(System.in)<br>      )<br>    ;<br>    String again;<br>    try {<br>    do {<br>      System.out.print("Translation of ");<br>      String trans = r.readLine();<br>      if(<br>        (trans = (String)dict.get(trans))<br>        == null<br>      )<br>        trans = "unknown"<br>      ;<br>      System.out.println("is '"+trans+"'");<br>      System.out.print("Again? [y/n] ");<br>      again = r.readLine();<br>    } while(again.equals("y"));<br>    } catch(IOException e) {<br>      e.printStackTrace();<br>    }<br>  }<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>/* This is Translate.nrx */<br>dict='unknown'<br>dict['ciao']='hi'<br>dict['gatto']='cat'<br>dict['luna']='moon'<br>-- and more...<br>again=String<br>loop until again\='y'<br>  say'Translation of '<br>  trans=ask<br>  say'is' dict[trans]<br>  say'Again? [y/n] '<br>  again=ask<br>end<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br></pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<b>notes</b><br>
+<ul>
+<li>A REXX variable <b>must have a value</b> assigned before it can be indexed.
+</li><li><b>Multiple indexing</b> is possible, i.e. every sub-value may have sub-values attached.</li><li>iv1.copyindexed(iv2) returns a merge (union) of two idexed variables iv1 and iv2</li></ul>
+</td></tr>
+</tbody></table>
+
+</p><p><a href="netrexxAtOnce.html">[Index]</a> <a href="netrexxAtOnce02.html">[Previous Chapter]</a> <a href="netrexxAtOnce04.html">[Next Chapter]</a>
+
+</p><hr><br>
+</body></html>
