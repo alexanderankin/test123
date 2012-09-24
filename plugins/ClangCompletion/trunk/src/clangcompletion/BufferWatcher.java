@@ -176,7 +176,7 @@ public class BufferWatcher implements ClangBuilderListener
 			{
 				public void run()
 				{
-					jEdit.getAction("error-list-clear").invoke(null);
+					jEdit.getAction("error-list-clear").invoke(errorSrc.getView());
 				}
 			});
 	}
