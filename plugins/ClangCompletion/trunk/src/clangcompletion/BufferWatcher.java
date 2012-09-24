@@ -4,42 +4,21 @@ import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.jEdit;
 
-import java.io.BufferedReader;
 import java.io.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import javax.swing.SwingUtilities;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.Mode;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.textarea.TextArea;
-import org.gjt.sp.util.Log;
-
-import completion.service.CompletionCandidate;
-import completion.service.CompletionProvider;
-import completion.util.CompletionUtil;
-import completion.util.BaseCompletionCandidate;
 
 import errorlist.ErrorSource;
 import errorlist.DefaultErrorSource;
 import errorlist.DefaultErrorSource.DefaultError;
-import clangcompletion.ClangCompletionPlugin;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
@@ -63,8 +42,8 @@ public class BufferWatcher implements ClangBuilderListener
 		EditBus.removeFromBus(this);
 		if(errorSrc != null)
 		{
-			errorSrc = null;
 			ErrorSource.unregisterErrorSource(errorSrc);
+			errorSrc = null;		
 		}
 	}
 	

@@ -9,5 +9,6 @@ int main (int argc, char* argv[]) {
         "This is some text that goes in the message box.",
         QMessageBox::Ok, QMessageBox::Ok);
     // app.   // try completion on app.
+    // QMessageBox::   // try completion after ::
     return 0;
 }
