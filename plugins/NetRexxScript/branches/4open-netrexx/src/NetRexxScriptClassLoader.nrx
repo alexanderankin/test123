@@ -25,6 +25,9 @@
     *  Create custom classloader to execute java classes
     
 */
+
+		package netrexxscript
+
     class NetRexxScriptClassLoader extends ClassLoader
     
     	properties private

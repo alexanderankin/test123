@@ -46,6 +46,8 @@ import org.gjt.sp.jedit.
 import javax.swing.
 import COM.ibm.netrexx.process.NetRexxA
 
+package netrexxscript
+
 class NetRexxScript adapter extends JPanel implements ActionListener	--, ComponentListener, EBComponent	
 	
 	properties constant
@@ -160,7 +162,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 	method createButton(lbl=String,IconFile=String "") returns JToggleButton private
 
 		if IconFIle = "" then aButton = JToggleButton(lbl)
-			else aButton = JToggleButton(ImageIcon(getClass().getResource("res/"IconFile)))
+			else aButton = JToggleButton(ImageIcon(getClass().getResource("/res/"IconFile)))
 		aButton.setActionCommand(lbl)
 --		aButton.setMargin(Insets(0,0,0,0))
 		aButton.addActionListener(this)
@@ -198,7 +200,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 		
 	method commandended public
 		runbutton.setSelected(0)
-		runbutton.setIcon(ImageIcon(getClass().getResource("res/"||"Play16.gif")))
+		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Play16.gif")))
 		runbutton.setToolTipText("Run current buffer")
 		runflag=FALSE
 		clf=FALSE		
@@ -207,7 +209,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 	method commandstarted public
 --		(CardLayout mp.getLayout).show(mp,"parseout")
 		runbutton.setSelected(1)
-		runbutton.setIcon(ImageIcon(getClass().getResource("res/"||"Stop16.gif")))
+		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Stop16.gif")))
 		runbutton.setToolTipText("Stop script now running")		
 		runflag=TRUE
 		cll.setText("                ")
@@ -257,7 +259,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 			if \clf then do
 				if runflag then return
 				commandstarted
-				pi=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+				pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 				pi.runbysearch(cl.getText)			
 				return
 				end
@@ -270,7 +272,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 		select
 			when ButtonClicked == "Run" then
 				do
-					pi=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+					pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 					if runflag then do
 						if df then say "killing script"
 						pi.kill
@@ -318,7 +320,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 
 			when ButtonClicked == "Flush" then
 				do
-					pi=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+					pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 					pi.flush					
 					flushbutton.setSelected(0)
 					return
