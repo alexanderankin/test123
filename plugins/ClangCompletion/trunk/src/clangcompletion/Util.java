@@ -5,7 +5,6 @@ import java.util.*;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
 import completion.util.CompletionUtil;
-import completion.util.BaseCompletionCandidate;
 import org.gjt.sp.jedit.textarea.TextArea;
 public class Util
 {
