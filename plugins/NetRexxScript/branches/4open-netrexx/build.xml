@@ -33,6 +33,8 @@
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
 	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
 	
+	<property name="ant.netrexxc.verbose" value="verbose3"/>
+	
 	<import file="${user.home}/test-build.xml" optional="true" />
 	
 	<!-- This should have been set elsewhere already! -->
@@ -40,40 +42,22 @@
 	<!-- <property name="jedit.install.dir" value="C:\Program Files\jEdit"/> -->
 	<!-- <property name="jedit.install.dir" value="C:/downloads/jEdit/4.2" description="jEdit installation to build against"/> -->
 	<!-- <property name="jedit.install.dir" value="../../../jedit/4.2" description="jEdit installation to build against"/> -->
-
-    <target name="TeeCheck" description="Checks if Java version of TeeStream class is uptodate">
-    	<uptodate property="TeeStream.isUpToDate"
-            srcfile="src/javasrc/nrx/TeeStream.nrx"
-            targetfile="src/javasrc/java/TeeStream.java"/>
-    </target>   
-
-    <target name="TeeBuild" depends="TeeCheck" unless="TeeStream.isUpToDate" description="Compiles NetRexx version of TeeStream class (Java output has an error)">
-        <netrexxc srcDir="src/javasrc/nrx" destDir="src/javasrc/java" classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar"
-            comments="true" savelog="false" time="true" compact="false" compile="false" java="true" format="true"
-            verbose='verbose0' crossref="false" replace="true" />
+    
+    <!-- define our own netrexx compiler task to bypass some Ant problems such as missing optional tasks -->
+	
+    <target name="prep"  description="Defines NetRexx compiler task">
+		<taskdef name="buildnrc" classname="org.apache.tools.ant.taskdefs.optional.NetRexx" classpath="${project.netrexx.libdir}/ant-netrexx.jar"/>
     </target>
     
-    <target name="keepJava" depends="TeeBuild" unless="TeeStream.isUpToDate" description="Copies Java output from TeeStream compile">
-        <copy file="src/javasrc/java/TeeStream.java.keep" tofile="src/javasrc/java/TeeStream.java" preservelastmodified="true" verbose="true"/>        
-    </target>
-    
-    <target name="fixJava" depends="keepJava" unless="TeeStream.isUpToDate" description="Patches Java file for TeeStream class">
-	<replace file="src/javasrc/java/TeeStream.java" token="Appendable append(" value="Appendable noappend(" />
-    </target>
-
-    <target name="compileJava" depends="fixJava" description="Compile Java temp file for TeeStream class">
-        <javac srcDir="src/javasrc/java" destDir="." verbose="true" classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar"/>        	
-    </target>
-    
-    <target name="buildnrx" depends="compileJava" description="Compiles NetRexx source files">
-        <netrexxc srcDir="src" destDir="." includes="*.nrx"
-        	classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar${path.separator}${jedit.install.dir}/jedit.jar${path.separator}${jedit.plugins.dir}/ErrorList.jar"
+    <target name="buildnrx"  depends="prep" description="Compiles NetRexx source files">
+        <buildnrc srcDir="src" destDir="netrexxscript" includes="*.nrx"
+        	classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar${path.separator}${jedit.install.dir}/jedit.jar${path.separator}${jedit.plugins.dir}/ErrorList.jar${path.separator}${project.netrexx.libdir}/ant-netrexx.jar"
         	comments="false" savelog="false" time="true" compact="false"
-        	verbose='verbose0' crossref="false" replace="false" keep="false"/>
+        	verbose='verbose1' crossref="false" replace="false" keep="false"/>
     </target>
     
-    <target name="compilemacros" description="Builds sample script classfiles">
-        <netrexxc srcDir="NetRexx" destDir="macros/NetRexx" includes="class*.nrx"
+    <target name="compilemacros" depends="prep" description="Builds sample script classfiles">
+        <buildnrc srcDir="NetRexx" destDir="macros/NetRexx" includes="class*.nrx"
         	classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar${path.separator}${jedit.install.dir}/jedit.jar"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose3' crossref="false" replace="false" keep="false"/>
@@ -88,8 +72,7 @@
     <target name="cleannrx" depends="buildnrx,compilemacros" description="Cleans up work files for normal build">
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
-        	<fileset dir="src/javasrc/java" includes="*.nrx" />
-        	<fileset dir="src/javasrc/java" includes="*.keep" />
+        	<fileset dir="netrexxscript" includes="*.nrx" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx" />        	
         	</delete>
     </target>
@@ -97,13 +80,15 @@
     <target name="clean" description="Cleans out all build work files for fresh start">
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
+        	<fileset dir="netrexxscript" includes="*.nrx" />
         	<fileset dir="." includes="*.class" />
+        	<fileset dir="netrexxscript" includes="*.class" />
         	<fileset dir="." includes="*.java" />
-        	<fileset dir="src/javasrc/java" includes="*.java" />
-        	<fileset dir="src/javasrc/java" includes="*.nrx" />
-        	<fileset dir="src/javasrc/java" includes="*.keep" />
+        	<fileset dir="netrexxscript" includes="*.java" />
+        	<fileset dir="netrexxscript" includes="*.keep" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx" />        	
         	<fileset dir="macros/NetRexx" includes="*.class" />        	
+        	<fileset dir="macros/NetRexx" includes="*.java" />        	
         	</delete>
     </target>
 	

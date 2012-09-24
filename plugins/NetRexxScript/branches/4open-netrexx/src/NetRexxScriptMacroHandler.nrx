@@ -36,6 +36,8 @@ Version 0.0.1 (Sept. 2009)
 
 import org.gjt.sp.jedit
 
+package netrexxscript
+
 class NetRexxScriptMacroHandler extends Macros.Handler
 	
 	method NetRexxScriptMacroHandler
@@ -49,14 +51,14 @@ class NetRexxScriptMacroHandler extends Macros.Handler
 	
 	method runMacro(view=View, macro=Macros.Macro)
 	
-		if jEdit.getPlugin("NetRexxScriptPlugin")=null then do
+		if jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")=null then do
 			Macros.error(view,"The NetRexx Script Plugin is not active.")
 			return
 			end
 
 		--	find the 'runmacro' method; it takes a String as its argument
 		
-		ns=EditPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+		ns=EditPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 		
 		classes=Class[1]
 		classes[0]=macro.getPath.getClass
@@ -86,6 +88,6 @@ class NetRexxScriptMacroHandler extends Macros.Handler
 			end	
 
 			
---		ns=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+--		ns=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 --		ns.runmacro(macro.getPath)
 

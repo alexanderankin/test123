@@ -42,6 +42,8 @@ Version 0.0.1 (Oct. 2009)
 
 import org.gjt.sp.jedit.
 
+package netrexxscript
+
 class NetRexxScriptOptionPane extends AbstractOptionPane implements ActionListener
 	
 	properties private
@@ -190,7 +192,7 @@ class NetRexxScriptOptionPane extends AbstractOptionPane implements ActionListen
 		jEdit.setProperty(OPTION_PREFIX"scriptpath",npath)
 		scriptpath.setText(npath)			
 			
-		pi=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+		pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 		pi.optionflush				--		ask plugin to flush memory and reset paths if needed
 		
 	method actionPerformed(e=ActionEvent)

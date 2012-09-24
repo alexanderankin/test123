@@ -4,7 +4,7 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="NetRexxScript">
-		new NetRexxScript(view, position);
+		new netrexxscript.NetRexxScript(view, position);
 	</DOCKABLE>
 </DOCKABLES>
 	

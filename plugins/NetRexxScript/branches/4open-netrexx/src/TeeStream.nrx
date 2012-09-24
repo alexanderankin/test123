@@ -1,11 +1,14 @@
     
---        All writes to this print stream are copied to two print streams
+--        All writes to this print stream are copied to two print streams and optionally to a JTextArea
 
 -- 2009/11/23 change outarea append to fix codepage problem
+-- 2012/09/22 remove adapter stuff for new open source NetRexx version (after3.01)
 
 	import javax.swing
 	
-	class TeeStream adapter extends PrintStream
+	package netrexxscript
+	
+	class TeeStream extends PrintStream
     
     	out=PrintStream
     	outarea=JTextArea
@@ -18,12 +21,6 @@
 			super.write(buf,off,len)
 			if out\=null then out.write(buf,off,len)
 			if outarea\=null then outarea.append(String(buf,off,len)) 			
-/* 			if outarea=null then return 
-				s=""
-				loop i=off to off+len-1
-					s=s||Rexx(buf[i]).d2c
-					end
-				outarea.append(s) */
     	    	
     	method flush
     		super.flush
@@ -31,6 +28,4 @@
     		
 		method setArea(o=JTextArea)
 			outarea=o    		
-    		
--- The three generated methods (append) have to be removed or fixed after NetRexx translation
---	and before Java compile due to a bug in NetRexx when extending PrintStream.
+ 
