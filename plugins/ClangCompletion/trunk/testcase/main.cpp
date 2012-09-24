@@ -7,7 +7,7 @@ int main (int argc, char* argv[]) {
 
     QMessageBox::information(0, "My Application", 
         "This is some text that goes in the message box.",
-        QMessageBox::Ok, QMessageBox::Ok);  
-
+        QMessageBox::Ok, QMessageBox::Ok);
+    // app.   // try completion on app.
     return 0;
 }
