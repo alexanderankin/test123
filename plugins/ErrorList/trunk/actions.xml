@@ -43,7 +43,7 @@
 				if(sources[i] instanceof errorlist.DefaultErrorSource)
 					sources[i].clear();
 			}
-			if (jEdit.getBooleanProperty("error-list.showOnError"))
+			if ((view != null) &amp;&amp; jEdit.getBooleanProperty("error-list.autoCloseOnNoErrors"))
 				view.getDockableWindowManager().hideDockableWindow("error-list");
 		</CODE>
 	</ACTION>
