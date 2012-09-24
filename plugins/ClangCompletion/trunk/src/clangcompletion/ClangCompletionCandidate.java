@@ -2,10 +2,6 @@ package clangcompletion;
 
 import static completion.util.CompletionUtil.createAbbrev;
 
-import java.awt.Component;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import org.gjt.sp.jedit.View;
@@ -14,7 +10,6 @@ import org.gjt.sp.jedit.textarea.TextArea;
 
 import superabbrevs.SuperAbbrevs;
 
-import completion.service.CompletionCandidate;
 import completion.util.*;
 
 // import ctagsinterface.main.KindIconProvider;

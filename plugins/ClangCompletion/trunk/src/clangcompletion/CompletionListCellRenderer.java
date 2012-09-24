@@ -1,6 +1,5 @@
 package clangcompletion;
 
-import completion.service.CompletionCandidate;
 import java.awt.Component;
 import javax.swing.*;
 import completion.util.*;

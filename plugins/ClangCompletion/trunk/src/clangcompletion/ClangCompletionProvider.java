@@ -1,37 +1,21 @@
 package clangcompletion;
 //{{{ Imports
 import java.io.*;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import javax.swing.SwingUtilities;
 import java.util.concurrent.atomic.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.TextArea;
-import org.gjt.sp.util.Log;
 
 import completion.service.CompletionCandidate;
 import completion.service.CompletionProvider;
 import completion.util.CompletionUtil;
-import completion.util.BaseCompletionCandidate;
-
-import errorlist.ErrorSource;
-import errorlist.DefaultErrorSource;
-import errorlist.DefaultErrorSource.DefaultError;
-import clangcompletion.ClangCompletionPlugin;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;

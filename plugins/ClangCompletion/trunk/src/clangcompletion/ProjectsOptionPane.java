@@ -9,7 +9,6 @@ import java.util.Vector;
 import java.io.*;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -20,19 +19,17 @@ import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 
 import projectviewer.ProjectManager;
 import projectviewer.config.OptionsService;
 import projectviewer.vpt.VPTProject;
-import projectviewer.ProjectViewer;
+
 public class ProjectsOptionPane extends AbstractOptionPane
 {
 	public static final String DEFINITIONS = "CLANG_DEFINITIONS";
