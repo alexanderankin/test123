@@ -5,11 +5,11 @@ import java.util.Vector;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditBus.EBHandler;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.jEdit;
 
 import java.io.*;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -47,6 +47,17 @@ public class BufferWatcher implements ClangBuilderListener
 		}
 	}
 	
+	private void updateErrorSourceView(View v)
+	{
+		
+		if (errorSrc.getView() != v) {
+			ErrorSource.unregisterErrorSource(errorSrc);
+			errorSrc = new DefaultErrorSource(this.getClass().getName(), v);
+			ErrorSource.registerErrorSource(errorSrc);
+		}
+	
+	}
+	
 	@EBHandler
 	public void handleBufferUpdate(BufferUpdate bu)
 	{
@@ -54,6 +65,7 @@ public class BufferWatcher implements ClangBuilderListener
 		{
 			Buffer buffer = bu.getBuffer();
 			String path = buffer.getPath();
+			updateErrorSourceView(bu.getView());
 			
 			ClangBuilder builder = new ClangBuilder();
 			builder.add("-cc1");    
@@ -151,13 +163,7 @@ public class BufferWatcher implements ClangBuilderListener
 	
 	private void clearErrors()
 	{
-		SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					jEdit.getAction("error-list-clear").invoke(errorSrc.getView());
-				}
-			});
+		errorSrc.clear();
 	}
 	
 }
