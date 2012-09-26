@@ -178,7 +178,6 @@ public class RevisionSelectionPanelModel {
      * @param defaultRevision The value to assign defaultRevision.
      */
     public void setDefaultRevision( SVNRevision defaultRevision ) {
-        new Exception().printStackTrace();
         this.defaultRevision = defaultRevision;
     }
 
@@ -194,7 +193,6 @@ public class RevisionSelectionPanelModel {
      * @param revision The value to assign revision.
      */
     public void setRevision( SVNRevision revision ) {
-        new Exception().printStackTrace();
         this.revision = revision;
     }
 
