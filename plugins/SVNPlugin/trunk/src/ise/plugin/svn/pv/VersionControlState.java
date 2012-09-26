@@ -180,7 +180,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
         FileStatus status = cache.get( path );
         File f = new File( path );
         if ( status == null ) {
-            status = new FileStatus( f.lastModified(), UNKNOWN );
+            status = new FileStatus( f.lastModified(), NORMAL );
             cache.put( path, status );
         } else {
             long lastModified = f.lastModified();
@@ -284,8 +284,7 @@ public class VersionControlState implements VersionControlService, EBComponent {
      * imports files into a project backed by this version control
      * service.
      *
-     * @return An ImporterFileFilter, or null if there's no specific
-     *         filter for the service.
+     * @return An ImporterFileFilter for SVN.
      */
     public ImporterFileFilter getFilter() {
         return new ImporterFileFilter() {
@@ -302,10 +301,13 @@ public class VersionControlState implements VersionControlService, EBComponent {
                 if ( !file.exists() ) {
                     return false;
                 }
-                return Info.isWorkingCopy( new File( path ) );
+                return Info.isWorkingCopy( file );
             }
 
             public boolean accept( VFSFile file ) {
+                if ( file == null) {
+                    return false;   
+                }
                 return accept( file.getPath() );
             }
 
@@ -392,7 +394,9 @@ public class VersionControlState implements VersionControlService, EBComponent {
         }
     }
 
-    // saves status cache to disk
+    // saves status cache to disk. Only save the non-normal and non-unknown statuses.
+    // Normal is the default, unknown just means the file hasn't been used in a while.
+    // Unknowns can assumed to be normal.
     void saveCache( String projectName ) {
         File storageDir = SVNPlugin.getPluginHomeDir();
         if ( storageDir != null ) {
@@ -406,10 +410,10 @@ public class VersionControlState implements VersionControlService, EBComponent {
                     cacheFile.delete();
                 }
                 FileOutputStream fileOut = new FileOutputStream( cacheFile, false );
-                ObjectOutputStream objectOut = new ObjectOutputStream( fileOut );
+                ObjectOutputStream objectOut = new ObjectOutputStream( new BufferedOutputStream(fileOut, 64 * 1024));
                 for ( String key : cache.keySet() ) {
                     FileStatus fs = cache.get( key );
-                    if ( fs != null ) {
+                    if ( fs != null && fs.status != NORMAL && fs.status != UNKNOWN ) {
                         objectOut.writeObject( key );
                         objectOut.writeLong( fs.timestamp );
                         objectOut.writeInt( fs.status );

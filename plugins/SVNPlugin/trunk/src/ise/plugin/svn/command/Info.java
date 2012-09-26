@@ -50,21 +50,23 @@ import ise.plugin.svn.SVNPlugin;
 
 public class Info {
 
+    private static SVNClientManager _clientManager = null;
+    private static SVNWCClient _client = null;
     public static boolean isWorkingCopy( File path ) {
-        ///
-        SVNKit.setupLibrary();
-        SVNClientManager clientManager = SVNClientManager.newInstance();
-        SVNWCClient client = clientManager.getWCClient();
-        ///
+        if (_client == null) {
+            SVNKit.setupLibrary();
+            _clientManager = SVNClientManager.newInstance();
+            _client = _clientManager.getWCClient();
+        }
         try {
-            SVNInfo info = client.doInfo(path, SVNRevision.WORKING);
+            SVNInfo info = _client.doInfo(path, SVNRevision.WORKING);
             return info != null;
         }
         catch(SVNException e) {        // NOPMD
             return false;
         }
         finally {
-            clientManager.dispose();   
+            _clientManager.dispose();   
         }
     }
 
