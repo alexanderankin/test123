@@ -1,0 +1,5 @@
+TODO for ShortcutSaver
+----------------------
+
+- add a mouse listener to the popup for action choosing
+
