@@ -15,9 +15,9 @@ plugin.shortcutSaver.ShortcutSaverPlugin.docs=index.html
 plugin.shortcutSaver.ShortcutSaverPlugin.description=Allows the user to define mode specific key mappings.
 
 
-plugin.shortcutSaver.ShortcutSaverPlugin.depend.0=jdk 1.5
-plugin.shortcutSaver.ShortcutSaverPlugin.depend.1=jedit 04.03.99.00
-plugin.shortcutSaver.ShortcutSaverPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.shortcutSaver.ShortcutSaverPlugin.depend.0=jdk 1.6
+plugin.shortcutSaver.ShortcutSaverPlugin.depend.1=jedit 04.05.99.00
+plugin.shortcutSaver.ShortcutSaverPlugin.depend.2=plugin CommonControlsPlugin 1.5
 
 #
 # Menu properties
