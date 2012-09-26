@@ -65,7 +65,6 @@ public class BufferWatcher implements ClangBuilderListener
 		{
 			Buffer buffer = bu.getBuffer();
 			String path = buffer.getPath();
-			updateErrorSourceView(bu.getView());
 			
 			ClangBuilder builder = new ClangBuilder();
 			builder.add("-cc1");    
@@ -87,28 +86,31 @@ public class BufferWatcher implements ClangBuilderListener
 			}
 			
 			clearErrors();
+			updateErrorSourceView(bu.getView());
 			
 			VPTProject project = ProjectViewer.getActiveProject(bu.getView());
-			HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
-			
-			Vector<String> sysroots = properties.get(ProjectsOptionPane.SYSROOT);
-			if(sysroots != null && sysroots.size() > 0 && sysroots.get(0).trim().length() > 0)
+			if (project != null) 
 			{
-				builder.add("-isysroot");
-				builder.add(sysroots.get(0));
+				HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
+				
+				Vector<String> sysroots = properties.get(ProjectsOptionPane.SYSROOT);
+				if(sysroots != null && sysroots.size() > 0 && sysroots.get(0).trim().length() > 0)
+				{
+					builder.add("-isysroot");
+					builder.add(sysroots.get(0));
+				}
+				
+				builder.addIncludes(properties.get(ProjectsOptionPane.INCLUDES));
+				builder.addDefinitions(properties.get(ProjectsOptionPane.DEFINITIONS));
+				builder.addArguments(properties.get(ProjectsOptionPane.ARGUMENTS));
+				
+				File filePth = Util.getPTHFileOfActiveProject();
+				if(filePth.exists())
+				{
+					builder.add("-include-pth");
+					builder.add(filePth.getPath() );
+				}				
 			}
-			
-			builder.addIncludes(properties.get(ProjectsOptionPane.INCLUDES));
-			builder.addDefinitions(properties.get(ProjectsOptionPane.DEFINITIONS));
-			builder.addArguments(properties.get(ProjectsOptionPane.ARGUMENTS));
-			
-			File filePth = Util.getPTHFileOfActiveProject();
-			if(filePth.exists())
-			{
-				builder.add("-include-pth");
-				builder.add(filePth.getPath() );
-			}
-			
 			builder.setListener(this);
 			System.out.println(builder);
 			if(!isClangBuilderAlive.get())
