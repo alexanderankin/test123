@@ -159,7 +159,13 @@ public class NavigatorPlugin extends EBPlugin {
                         clearToolBars(true);
                         View[] views = jEdit.getViews();
                         for (View view : views) {
-                            view.getToolBar().add(new NavToolBar(getNavigator(view)));
+                            if (view.getToolBar() != null) {
+                                Navigator nav = getNavigator(view);
+                                if (nav != null) {
+                                    NavToolBar toolBar = new NavToolBar(nav);
+                                    view.getToolBar().add(toolBar);
+                                }
+                            }
                         }
                     }
                 }
