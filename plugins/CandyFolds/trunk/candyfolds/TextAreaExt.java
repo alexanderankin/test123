@@ -21,6 +21,7 @@
 package candyfolds;
 
 import candyfolds.config.ModeConfig;
+import candyfolds.config.StripConfig;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -88,7 +89,7 @@ final class TextAreaExt
 	private final Line2D.Float line2D=new Line2D.Float();
 	final Segment segment=new Segment();
 	private final Rectangle rect=new Rectangle();
-
+	
 	TextAreaExt(CandyFoldsPlugin foldsPlugin, EditPane editPane) {
 		this.foldsPlugin=foldsPlugin;
 		this.editPane=editPane;
@@ -161,29 +162,44 @@ final class TextAreaExt
 	}
 
 	private void drawLineIndents(Buffer buffer, LineInfo lineInfo, Graphics2D g, int y) {
+		
 		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
-		Stroke gStroke=g.getStroke();
-		g.setStroke(fontMetricsInfo.barStroke);
+		/*
+		FontMetrics fontMetrics=painter.getFontMetrics();
+		fontMetricsInfo.setFontMetrics(fontMetrics);
+		*/
+
 		int x;
 		int indent;
 		int horizontalOffset=editPane.getTextArea().getHorizontalOffset();
 
+		Stroke gStroke=g.getStroke();
+		g.setStroke(fontMetricsInfo.barStroke);
 		for (int i =lineInfo.getIndentsSize();--i>=1;) {// ATTENTION: omit the first
 			indent =lineInfo.getIndent(i);
 			if(indent==0 && !modeConfig.getShowStripOn0Indent())
 				continue;
 			//Log.log(Log.NOTICE, this, "painting indent="+indent);
+			/*
+			StripConfig stripConfig=lineInfo.getStripConfig(i);
+			Stroke stroke=stripConfig.fontMetricsInfo.getStroke(fontMetrics);
+			if(stroke==null)
+				continue;
+			g.setStroke(stroke);
+			Color color=stripConfig.getColor();
+			*/
 			Color color=lineInfo.getStripConfig(i).getColor();
 			if(color.getAlpha()==0)
 				continue;
 			g.setColor(color);
+
 			x= (int)((indent+0.4f )* fontMetricsInfo.spaceWidth+horizontalOffset);
 			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight);
 		}
 		g.setStroke(gStroke);
 	}
 
-	// DISABLED: does not worth the effort?
+	// DISABLED: not really useful?
 	/*
 	@Override
 	public synchronized String getToolTipText(int x, int y) {
@@ -196,7 +212,7 @@ final class TextAreaExt
 		}
 
 		int physicalLine = ta.getLineOfOffset(offset);
-			toolTipLineInfo.eval(buffer, physicalLine);
+		toolTipLineInfo.eval(buffer, physicalLine);
 
 		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
 		rect.y=ta.offsetToXY(physicalLine, 0).y;
@@ -204,18 +220,20 @@ final class TextAreaExt
 		rect.height=fontMetricsInfo.lineHeight;
 		int indent;
 		int horizontalOffset=ta.getHorizontalOffset();
-		for (int i =toolTipLineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first (i=0) is right over the first char of the line.
-			indent =toolTipLineInfo.indents.get(i);
-			if(indent==0)
+		for (int i =toolTipLineInfo.getIndentsSize();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first (i=0) is right over the first char of the line.
+			indent =toolTipLineInfo.getIndent(i);
+			if(indent==0 && !getModeConfig().getShowStripOn0Indent())
 				continue;
 			rect.x= (int)(indent* fontMetricsInfo.spaceWidth+horizontalOffset);
 			if(rect.contains(x, y)){
 				//int foldLevel=toolTipLineInfo.foldLevels.get(i);
-				String stripConfigName=toolTipLineInfo.stripConfigs.get(i).getName();
-				buffer.getLineText(toolTipLineInfo.lines.get(i), segment);
-				return segment.toString().trim()+"... : "+stripConfigName;
+				String stripConfigName=toolTipLineInfo.getStripConfig(i).getName();
+				int line=toolTipLineInfo.getLine(i);
+				buffer.getLineText(line, segment);
+				return "<html><b>"+(line+1)+"</b>  <u>"+stripConfigName+"</u>: "+segment.toString().trim()+"</html>";
 			}
 		}
 		return null;
-		}*/
+	}
+	*/
 }

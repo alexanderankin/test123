@@ -21,6 +21,7 @@
 package candyfolds;
 
 import candyfolds.config.StripConfig;
+import candyfolds.config.ModeConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.gjt.sp.util.Log;
 
 final class LineInfo {
 	static final Logger L=Logger.getLogger(LineInfo.class.getName());
-	static { L.setLevel(Level.ALL); }
+	//static { L.setLevel(Level.ALL); }
 
 	private final TextAreaExt textAreaExt;
 	private int line;
@@ -45,8 +46,14 @@ final class LineInfo {
 		this.textAreaExt=textAreaExt;
 	}
 
+	/*
 	int getLine(){
 		return line;
+	}
+	*/
+	
+	int getLine(int i){
+		return lines.get(i);
 	}
 
 	int getIndentsSize(){
@@ -111,8 +118,8 @@ final class LineInfo {
 			lastCaughtIndent=indent;
 			//L.fine("adding indent="+indent+" on line="+calcLine);
 			indents.add(indent);
+			calcLine=addStripConfig(buffer, calcLine, indent);
 			lines.add(calcLine);
-			addStripConfig(buffer, calcLine, indent);
 			if(lastCaughtIndent==0) // optimization
 				break;
 		}
@@ -146,39 +153,36 @@ final class LineInfo {
 		return true;
 	}
 
-	private void addStripConfig(Buffer buffer, int line, int lineIndent) {
-		prepareSegmentForStripConfig(buffer, line, lineIndent);
+	private int addStripConfig(Buffer buffer, int line, int lineIndent){
+		line=prepareSegmentForStripConfig(buffer, line, lineIndent);
 		StripConfig stripConfig=textAreaExt.getModeConfig().evalStripConfig(textAreaExt.segment);
 		stripConfigs.add(stripConfig);
+		return line;
 	}
 
-	private void prepareSegmentForStripConfig(final Buffer buffer, final int line, final int lineIndent){
+	private int prepareSegmentForStripConfig(final Buffer buffer, final int line, final int lineIndent){
 		final Segment segment=textAreaExt.segment;
-		boolean usePrevLine=false;
-		if(textAreaExt.getModeConfig().getUseBigLinesForStripConfigs()){
-			for( int prevLine=line ; prevLine>=0; prevLine-- ){ // TODO: use a limit instead of 0?
+		ModeConfig modeConfig=textAreaExt.getModeConfig();
+		if(modeConfig.getUseIgnoreLineRegex()){
+			for( int prevLine=line; prevLine>=0; prevLine-- ){ // TODO: use a limit instead of 0?
 				buffer.getLineText(prevLine, segment);
 				int segmentContentLength=evalSegmentContentLength(segment);
 				if(segmentContentLength==0)
 					break;
 				int prevLineIndent=buffer.getCurrentIndentForLine(prevLine, null);
-				if(prevLineIndent>lineIndent)
-					continue;
 				if(prevLineIndent<lineIndent)
 					break;
-				if(segmentContentLength==1){
-					if(line!=prevLine &&
-						 lineIndent==prevLineIndent)
-						break;
+				if(prevLineIndent>lineIndent)
 					continue;
-				}
-				usePrevLine=true;
-				// -> the segment is ready on prevLine
-				break;
+				// -> here: lineIndent==prevLineIndent
+				if(modeConfig.ignoreLineRegex.matches(segment))
+					continue;
+				// -> the segment is ready on the desired prevLine:
+				return prevLine;
 			}
 		}
-		if(!usePrevLine)
-			buffer.getLineText(line, segment);
+		buffer.getLineText(line, segment);
+		return line;
 	}
 
 	private static int evalSegmentContentLength(Segment segment){

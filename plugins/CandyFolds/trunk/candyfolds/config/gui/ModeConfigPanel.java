@@ -25,18 +25,27 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 class ModeConfigPanel {
+	private static final Logger L=Logger.getLogger(ModeConfigPanel.class.getName());
+	//static { L.setLevel(Level.ALL); }
+
 	final JPanel panel=new JPanel(new BorderLayout());
 	private ModeConfig modeConfig;
 	final JCheckBox enabledCB=new JCheckBox("Enable CandyFolds for this mode");
-	final JCheckBox useBigLinesForStripConfigsCB=new JCheckBox("Prefer matching against lines with more than 1 non-space characters");
+	final JCheckBox useIgnoreLineRegexCB=new JCheckBox("Ignore lines matching regex:");
+	final JTextField ignoreLineRegexTF=new JTextField(12);
 	final JCheckBox showStripOn0IndentCB=new JCheckBox("Show indentation-guide on left edge");
 	private final StripConfigsTable stripConfigsTable=new StripConfigsTable();
 	private final JPanel tablePanel=new JPanel(new BorderLayout());
@@ -50,38 +59,57 @@ class ModeConfigPanel {
 		tablePanel.add(stripConfigsOpPanel.panel, BorderLayout.SOUTH);
 		//tablePanel.setBorder(BorderFactory.createTitledBorder("Candies"));
 		panel.add(tablePanel);
-		
+
 		Box box=new Box(BoxLayout.Y_AXIS);
 		enabledCB.addActionListener(new ActionListener() {
-			    @Override
-			    public void actionPerformed(ActionEvent ev) {
-				    if(modeConfig!=null)
-					    modeConfig.setEnabled(enabledCB.isSelected());
-				    updateView();
-			    }
-		    }
-		                           );
+					@Override
+					public void actionPerformed(ActionEvent ev) {
+						if(modeConfig!=null)
+							modeConfig.setEnabled(enabledCB.isSelected());
+						updateView();
+					}
+				}
+															 );
 		box.add(enabledCB);
-		useBigLinesForStripConfigsCB.addActionListener(new ActionListener(){
-			    @Override
-			    public void actionPerformed(ActionEvent ev){
-			    	if(modeConfig!=null)
-			    		modeConfig.setUseBigLinesForStripConfigs(useBigLinesForStripConfigsCB.isSelected());
-			    	updateView();
-			    }
-		    });
-		box.add(useBigLinesForStripConfigsCB);
+		Box p=new Box(BoxLayout.X_AXIS);
+		p.setAlignmentX(0);
+		useIgnoreLineRegexCB.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent ev){
+						boolean useIgnoreLineRegex=useIgnoreLineRegexCB.isSelected();
+						if(modeConfig!=null)
+							modeConfig.setUseIgnoreLineRegex(useIgnoreLineRegex);
+						updateView();
+						if(useIgnoreLineRegex){
+							if(ignoreLineRegexTF.getText().trim().length()==0){
+								ignoreLineRegexTF.setText("\\s*\\S\\s*$");
+								ignoreLineRegexTF.selectAll();
+							}
+							ignoreLineRegexTF.requestFocus();
+						}
+					}
+				});
+		p.add(useIgnoreLineRegexCB);
+		ignoreLineRegexTF.addFocusListener(new FocusAdapter(){
+					@Override
+					public void focusLost(FocusEvent ev){
+						updateModeConfigIgnoreLineRegex();
+						updateView();
+					}
+				});
+		p.add(ignoreLineRegexTF);
+		box.add(p);
 		showStripOn0IndentCB.addActionListener(new ActionListener(){
-			    @Override
-			    public void actionPerformed(ActionEvent ev){
-			    	if(modeConfig!=null)
-			    		modeConfig.setShowStripOn0Indent(showStripOn0IndentCB.isSelected());
-			    	updateView();
-			    }
-		    });
+					@Override
+					public void actionPerformed(ActionEvent ev){
+						if(modeConfig!=null)
+							modeConfig.setShowStripOn0Indent(showStripOn0IndentCB.isSelected());
+						updateView();
+					}
+				});
 		box.add(showStripOn0IndentCB);
 		panel.add(box, BorderLayout.NORTH);
-		
+
 		updateView();
 	}
 
@@ -91,17 +119,24 @@ class ModeConfigPanel {
 		updateView();
 	}
 
+	private void updateModeConfigIgnoreLineRegex(){
+		if(modeConfig!=null)
+			modeConfig.ignoreLineRegex.setValue(ignoreLineRegexTF.getText());
+	}
+
 	private void updateView() {
 		if(modeConfig!=null) {
 			enabledCB.setSelected(modeConfig.getEnabled());
 			boolean isDefault=modeConfig!=modeConfig.config.defaultModeConfig;
 			enabledCB.setVisible(isDefault);
-			useBigLinesForStripConfigsCB.setSelected(modeConfig.getUseBigLinesForStripConfigs());
+			useIgnoreLineRegexCB.setSelected(modeConfig.getUseIgnoreLineRegex());
+			ignoreLineRegexTF.setText(modeConfig.ignoreLineRegex.getValue());
 			showStripOn0IndentCB.setSelected(modeConfig.getShowStripOn0Indent());
 			stripConfigsOpPanel.panel.setVisible(
-			  modeConfig!=modeConfig.config.defaultModeConfig);
+				modeConfig!=modeConfig.config.defaultModeConfig);
 		}
-		useBigLinesForStripConfigsCB.setEnabled(enabledCB.isSelected());
+		useIgnoreLineRegexCB.setEnabled(enabledCB.isSelected());
+		ignoreLineRegexTF.setEnabled(useIgnoreLineRegexCB.isSelected());
 		showStripOn0IndentCB.setEnabled(enabledCB.isSelected());
 		setEnabledStripConfigs(enabledCB.isSelected());
 	}
@@ -112,6 +147,7 @@ class ModeConfigPanel {
 	}
 
 	void save(){
+		updateModeConfigIgnoreLineRegex();
 		stripConfigsTable.save();
 	}
 }
