@@ -1519,13 +1519,15 @@ TigerNode EnumBody():
     Token start_t = null;
     Token end_t = null;
     List<TigerNode> constants = new ArrayList<TigerNode>();
+    List<TigerNode> children = new ArrayList<TigerNode>();
     TigerNode constant;
+    TigerNode child;
 }
 {
     try {
         start_t="{"
         constant = EnumConstant(){constants.add(constant);} ( "," constant=EnumConstant(){if (constant != null) constants.add(constant);} )*
-        [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
+        [ ";" ( child=ClassOrInterfaceBodyDeclaration(false) { if (child != null) children.add(child); } )* ]
         end_t="}"
     }
     catch(ParseException pe) {
@@ -1537,6 +1539,7 @@ TigerNode EnumBody():
         node.setStartLocation(getLocation(start_t));
         node.setEndLocation(getEndLocation(end_t));
         node.addChildren(constants);
+        node.addChildren(children);
         return node;
     }
 }
