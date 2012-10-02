@@ -34,7 +34,8 @@ public final class ModeConfig {
 	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
 	public final List<StripConfig> stripConfigsA=Collections.unmodifiableList(stripConfigs);
 	private boolean enabled=true;
-	private boolean useBigLinesForStripConfigs=true;
+	private boolean useIgnoreLineRegex=false;
+	public final Regex ignoreLineRegex=new Regex();
 	private boolean showStripOn0Indent=false;
 
 	ModeConfig(Config config, String name) {
@@ -52,25 +53,25 @@ public final class ModeConfig {
 		this.enabled=enabled;
 	}
 
-	public boolean getUseBigLinesForStripConfigs(){
-		return useBigLinesForStripConfigs;
+	public boolean getUseIgnoreLineRegex() {
+		return useIgnoreLineRegex;
 	}
 
-	public void setUseBigLinesForStripConfigs(boolean useBigLinesForStripConfigs){
-		this.useBigLinesForStripConfigs=useBigLinesForStripConfigs;
+	public void setUseIgnoreLineRegex(boolean useIgnoreLineRegex){
+		this.useIgnoreLineRegex=useIgnoreLineRegex;
 	}
-	
+
 	public boolean getShowStripOn0Indent(){
 		return showStripOn0Indent;
 	}
-	
+
 	public void setShowStripOn0Indent(boolean showStripOn0Indent){
 		this.showStripOn0Indent=showStripOn0Indent;
 	}
 
 	public StripConfig addStripConfig() {
 		if((config.defaultModeConfig==this && !stripConfigs.isEmpty())
-			|| stripConfigs.size()==MAX_STRIP_CONFIGS)
+			 || stripConfigs.size()==MAX_STRIP_CONFIGS)
 			return null;
 		StripConfig stripConfig=new StripConfig();
 		stripConfigs.add(stripConfig);
@@ -103,7 +104,7 @@ public final class ModeConfig {
 
 	public StripConfig evalStripConfig(Segment segment) {
 		for(StripConfig stripConfig: stripConfigs) {
-			if(stripConfig.matches(segment))
+			if(stripConfig.regex.matches(segment))
 				return stripConfig;
 		}
 		return config.defaultModeConfig.stripConfigs.get(0);
@@ -113,7 +114,12 @@ public final class ModeConfig {
 		StringBuilder sb=new StringBuilder();
 		ps.clear();
 		ps.setProperty(getPropertyName(sb, "enabled"), String.valueOf(enabled));
-		ps.setProperty(getPropertyName(sb, "bigLines"), String.valueOf(useBigLinesForStripConfigs));
+		if(useIgnoreLineRegex){
+			String ignoreLineRegexValue=ignoreLineRegex.getValue();
+			if(ignoreLineRegexValue!=null && ignoreLineRegexValue.length()>0)
+				ps.setProperty(getPropertyName(sb, "ignoreLineRegex"), ignoreLineRegexValue);
+		}else
+			ps.remove(getPropertyName(sb, "ignoreLineRegex"));
 		ps.setProperty(getPropertyName(sb, "showStripOn0Indent"), String.valueOf(showStripOn0Indent));
 		for(int i=0, size=stripConfigs.size(); i<size && i<MAX_STRIP_CONFIGS; i++) {
 			stripConfigs.get(i).store(ps, this, sb, i);
@@ -140,11 +146,21 @@ public final class ModeConfig {
 			StringBuilder sb=new StringBuilder();
 			if(this!=config.defaultModeConfig)
 				setEnabled(Boolean.valueOf(
-				             ps.getProperty(getPropertyName(sb, "enabled"))));
-			setUseBigLinesForStripConfigs(Boolean.valueOf(
-			      ps.getProperty(getPropertyName(sb, "bigLines"))));
+										 ps.getProperty(getPropertyName(sb, "enabled"))));
 			setShowStripOn0Indent(Boolean.valueOf(
-			      ps.getProperty(getPropertyName(sb, "showStripOn0Indent"))));
+						ps.getProperty(getPropertyName(sb, "showStripOn0Indent"))));
+			//v support deprecated feature 'bigLines' with its ignoreLineRegexValue equivalent:
+			String ignoreLineRegexValue=null;
+			if(Boolean.valueOf(
+					ps.getProperty(getPropertyName(sb, "bigLines"))))
+				ignoreLineRegexValue="\\s*\\S\\s*$";
+			//^
+			if(ignoreLineRegexValue==null)
+				ignoreLineRegexValue=ps.getProperty(getPropertyName(sb, "ignoreLineRegex"));
+			if(ignoreLineRegexValue!=null){
+				useIgnoreLineRegex=true;
+				ignoreLineRegex.setValue(ignoreLineRegexValue);
+			}
 			stripConfigs.clear();
 			for(int i=0; i<MAX_STRIP_CONFIGS; i++) {
 				StripConfig stripConfig=new StripConfig();

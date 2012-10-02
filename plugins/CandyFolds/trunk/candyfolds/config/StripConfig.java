@@ -20,31 +20,63 @@
 % }] */
 package candyfolds.config;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Stroke;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+
 import javax.swing.text.Segment;
+
 import org.gjt.sp.util.Log;
 
 public final class StripConfig {
 	static final Logger L=Logger.getLogger(StripConfig.class.getName());
 	static { L.setLevel(Level.ALL); }
-	
+
 	public static final Color DEFAULT_COLOR=new Color(181, 181, 181, 255); // WARNING: using transparency slows drawing (noticeable on my computer 2ghz pentium + radeon 9700...)
 	private String name="";
 	private Color color=DEFAULT_COLOR;
-	private String regex;
-	private Pattern pattern;
-	private Matcher matcher;
+	public final Regex regex=new Regex();
+	/*
+	private float strokeWidthFactor=1;
+
+	public final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
+
+	public final class FontMetricsInfo{
+		private FontMetrics fontMetrics;
+		private Stroke stroke;
+
+		public void reset(){
+			fontMetrics=null;
+		}
+
+		public Stroke getStroke(FontMetrics fontMetrics){
+			if(this.fontMetrics == fontMetrics)
+				return stroke;
+			this.fontMetrics = fontMetrics;
+			setupStroke();
+			return stroke;
+		}
+
+		private void setupStroke(){
+			if(strokeWidthFactor==0){
+				stroke=null;
+				return;
+			}
+			int spaceWidth = fontMetrics.charWidth(' ');
+			float strokeWidth=spaceWidth/2.3f * strokeWidthFactor;
+			stroke=new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+		}
+	}
+	*/
 
 	StripConfig() {
 	}
 
-	public String getName() {
+	public String getName(){
 		return name;
 	}
 
@@ -52,37 +84,6 @@ public final class StripConfig {
 		if(name==null)
 			name="";
 		this.name=name.trim();
-	}
-
-	synchronized boolean matches(Segment segment) {
-		if(matcher==null) {
-			if(pattern==null)
-				return true;
-			else {
-				matcher=pattern.matcher(segment);
-				//Log.log(Log.NOTICE, this, "matcher setted");
-			}
-		}	else
-			matcher.reset(segment);
-		//long nanos=System.nanoTime();
-		boolean r=matcher.lookingAt();
-		//L.fine("regex time="+(System.nanoTime()-nanos)); // find() is slooow!
-		return r;
-	}
-
-	public void setRegex(String regex)
-	throws PatternSyntaxException {
-		if(regex!=null) {
-			regex=regex.trim();
-			this.pattern=Pattern.compile(regex);
-		}	else
-			this.pattern=null;
-		this.regex=regex;
-		matcher=null;
-	}
-
-	public String getRegex() {
-		return regex;
 	}
 
 	public void setColor(Color color) {
@@ -95,20 +96,37 @@ public final class StripConfig {
 		return color;
 	}
 
+	/*
+	public void setStrokeWidthFactor(float strokeWidthFactor){
+		if(strokeWidthFactor<0)
+			strokeWidthFactor=0;
+		this.strokeWidthFactor=strokeWidthFactor;
+		fontMetricsInfo.reset();
+	}
+
+	public float getStrokeWidthFactor() {
+		return strokeWidthFactor;
+	}
+	*/
+
 	boolean load(Properties ps, ModeConfig mc, StringBuilder sb, int i) {
-		String colorPropName= mc.getPropertyNameB(sb, String.valueOf(i)).
-		    append(".color").toString();
-		String regexPropName=mc.getPropertyNameB(sb, String.valueOf(i)).
-		    append(".regex").toString();
-		String namePropName=mc.getPropertyNameB(sb, String.valueOf(i)).
-		    append(".name").toString();
-		return load(ps, colorPropName, regexPropName, namePropName);
+		String iS=String.valueOf(i);
+		return load(ps, mc.getPropertyNameB(sb, iS).
+						append(".color").toString(),
+						mc.getPropertyNameB(sb, iS).
+						append(".regex").toString(),
+						mc.getPropertyNameB(sb, iS).
+						append(".name").toString()/*,
+						mc.getPropertyNameB(sb, iS).
+						append(".strokeWidthFactor").toString()*/
+					  );
 	}
 
 	boolean load(Properties ps,
-	             String colorPropName,
-	             String regexPropName,
-	             String namePropName) {
+					 String colorPropName,
+					 String regexPropName,
+					 String namePropName/*,
+					 String strokeWidthFactorPropName*/) {
 		String colorS=ps.getProperty(colorPropName);
 		if(colorS==null)
 			return false;
@@ -116,29 +134,37 @@ public final class StripConfig {
 		if(color==null)
 			return false;
 		setColor(color);
-		setRegex(ps.getProperty(regexPropName));
 		setName(ps.getProperty(namePropName));
+		regex.setValue(ps.getProperty(regexPropName));
+		//setStrokeWidthFactor(decodeStrokeWidthFactor(ps.getProperty(strokeWidthFactorPropName)));
 		return true;
 	}
 
 	void store(Properties ps, ModeConfig mc, StringBuilder sb, int i) {
-		store(ps, mc.getPropertyNameB(sb, String.valueOf(i)).
-		      append(".color").toString(),
-		      mc.getPropertyNameB(sb, String.valueOf(i)).
-		      append(".regex").toString(),
-		      mc.getPropertyNameB(sb, String.valueOf(i)).
-		      append(".name").toString()
-		     );
+		String iS=String.valueOf(i);
+		store(ps,
+				mc.getPropertyNameB(sb, iS).
+				append(".color").toString(),
+				mc.getPropertyNameB(sb, iS).
+				append(".regex").toString(),
+				mc.getPropertyNameB(sb, iS).
+				append(".name").toString()/*,
+				mc.getPropertyNameB(sb, iS).
+				append(".strokeWidthFactor").toString()*/
+			  );
 	}
 
 	void store(Properties ps,
-	           String colorPropName,
-	           String regexPropName,
-	           String namePropName) {
+				  String colorPropName,
+				  String regexPropName,
+				  String namePropName/*,
+				  String strokeWidthFactorPropName*/) {
 		ps.setProperty(colorPropName, encodeColor(new StringBuilder(), color));
-		if(regex!=null)
-			ps.setProperty(regexPropName, regex);
+		String regexValue=regex.getValue();
+		if(regexValue!=null)
+			ps.setProperty(regexPropName, regexValue);
 		ps.setProperty(namePropName, name);
+		//ps.setProperty(strokeWidthFactorPropName, Float.valueOf(strokeWidthFactor).toString());
 	}
 
 	static String encodeColor(StringBuilder sb, Color color) {
@@ -170,5 +196,24 @@ public final class StripConfig {
 		else
 			return new Color(colorCompVals[0], colorCompVals[1], colorCompVals[2], colorCompVals[3]);
 	}
+
+	/*
+	static String encodeStrokeWidthFactor(float strokeWidthFactor){
+		if(strokeWidthFactor<0)
+			return "0";
+		else
+			return Float.toString(strokeWidthFactor);
+	}
+
+	static float decodeStrokeWidthFactor(String strokeWidthFactorS){
+		if(strokeWidthFactorS==null)
+			return 1;
+		try{
+			return Float.valueOf(strokeWidthFactorS);
+		}catch(NumberFormatException ex){
+			return 1;
+		}
+	}
+	*/
 
 }

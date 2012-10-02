@@ -57,7 +57,7 @@ class StripConfigsTable
 		table.setDefaultRenderer(Color.class, new ColorCellRenderer());
 		table.setDefaultEditor(Color.class, new ColorCellEditor());
 	}
-	
+
 	void save(){
 		CellEditor cellEditor=table.getCellEditor();
 		if(cellEditor!=null)
@@ -71,11 +71,11 @@ class StripConfigsTable
 		{setOpaque(true);}
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
-		    Object value,
-		    boolean isSelected,
-		    boolean hasFocus,
-		    int row,
-		    int column) {
+				Object value,
+				boolean isSelected,
+				boolean hasFocus,
+				int row,
+				int column) {
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			setValue(null);
 			StripConfig stripConfig=getStripConfig(row);
@@ -102,34 +102,34 @@ class StripConfigsTable
 		private Color color;
 
 		private final JButton button=new JButton() {
-			    {
-				    addActionListener(new ActionListener() {
-					        @Override
-					        public void actionPerformed(ActionEvent ev) {
-						        Color newColor=FullColorChooser.showDialog(button, "Select Candy Color", color);
-						        if(newColor!=null)
-							        color=newColor;
-						        fireEditingStopped();
-					        }
-				        }
-				                     );
-			    }
-			    @Override
-			    public void paintComponent(Graphics g) {
-				    Dimension d=getSize();
-				    g.setColor(Color.white);
-				    g.fillRect(2, 2, d.width-4, d.height-4);
-				    g.setColor(color);
-				    g.fillRect(2, 2, d.width-4, d.height-4);
-			    }
-		    };
+					{
+						addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent ev) {
+										Color newColor=FullColorChooser.showDialog(button, "Select Candy Color", color);
+										if(newColor!=null)
+											color=newColor;
+										fireEditingStopped();
+									}
+								}
+											  );
+					}
+					@Override
+					public void paintComponent(Graphics g) {
+						Dimension d=getSize();
+						g.setColor(Color.white);
+						g.fillRect(2, 2, d.width-4, d.height-4);
+						g.setColor(color);
+						g.fillRect(2, 2, d.width-4, d.height-4);
+					}
+				};
 
 		@Override
 		public Component getTableCellEditorComponent(JTable table,
-		    Object value,
-		    boolean isSelected,
-		    int row,
-		    int column) {
+				Object value,
+				boolean isSelected,
+				int row,
+				int column) {
 			StripConfig stripConfig=getStripConfig(row);
 			//Log.log(Log.NOTICE, this, "stripConfig of cellEditor: "+stripConfig.getName());
 			if(stripConfig==null)
@@ -159,6 +159,7 @@ class StripConfigsTable
 	}
 	@Override
 	public int getColumnCount() {
+		//return 4;
 		return 3;
 	}
 	@Override
@@ -170,6 +171,10 @@ class StripConfigsTable
 			return "Name";
 		case 2:
 			return "Regular Expression";
+		/*
+		case 3:
+			return "Stroke Width Factor";
+		*/
 		default:
 			return null;
 		}
@@ -207,7 +212,11 @@ class StripConfigsTable
 		case 1 :
 			return stripConfig.getName();
 		case 2:
-			return stripConfig.getRegex();
+			return stripConfig.regex.getValue();
+		/*
+		case 3:
+			return stripConfig.getStrokeWidthFactor();
+		*/
 		default:
 			return null;
 		}
@@ -218,6 +227,8 @@ class StripConfigsTable
 		switch(col) {
 		case 0:
 			return Color.class;
+		case 3:
+			return Float.class;
 		default:
 			return String.class;
 		}
@@ -226,7 +237,7 @@ class StripConfigsTable
 	@Override
 	public boolean isCellEditable(int row, int col) {
 		if(modeConfig!=null && modeConfig==modeConfig.config.defaultModeConfig &&
-		        col!=0)
+			col!=0)
 			return false;
 		return true;
 	}
@@ -248,9 +259,14 @@ class StripConfigsTable
 		case 2:
 			try {
 				String regex=(String)o;
-				stripConfig.setRegex(regex);
+				stripConfig.regex.setValue(regex);
 			} catch(PatternSyntaxException ex) {}
 			break;
+		/*
+		case 3:
+			Float strokeWidthFactor=(Float)o;
+			stripConfig.setStrokeWidthFactor(strokeWidthFactor);
+		*/
 		}
 	}
 
