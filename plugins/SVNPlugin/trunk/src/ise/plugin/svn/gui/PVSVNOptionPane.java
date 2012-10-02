@@ -81,6 +81,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private JPasswordField password;
     private JLabel fileformat_label;
     private JComboBox fileformat;
+    private JCheckBox autoImport;
 
     private int wcVersion = -1;
 
@@ -150,6 +151,10 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         }
         fileformat.setEditable( false );
         fileformat.setSelectedItem( wc_item );
+        
+        // auto-import checkbox
+        autoImport = new JCheckBox(jEdit.getProperty("ips.Automatically_import_added_files_and_remove_deleted_files_from_ProjectViewer", "Automatically import added files and remove deleted files from ProjectViewer"));
+        autoImport.setSelected(jEdit.getBooleanProperty( PVHelper.PREFIX + projectName + ".autoimport", false));
 
         // initially, some parts are not visible, they are made visible in the
         // swing worker thread.
@@ -160,6 +165,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         password.setVisible( false );
         fileformat_label.setVisible( false );
         fileformat.setVisible( false );
+        autoImport.setVisible(false);
 
         // add the components to the option panel
         add( "0, 0, 3, 1, W,, 3", new JLabel( "<html><b>" + jEdit.getProperty( "ips.Subversion_Settings", "Subversion Settings" ) + "</b>" ) );
@@ -175,6 +181,8 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         add( "0, 4, 1, 1, E,, 3", fileformat_label );
         add( "1, 4, 2, 1, 0, w, 3", fileformat );
+        
+        add( "0, 5, 3, 1, E, w, 3", autoImport);
 
         ( new Runner() ).execute();
     }
@@ -195,6 +203,8 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         }
         pwd = PasswordHandler.encryptPassword( pwd );
         jEdit.setProperty( PVHelper.PREFIX + projectName + ".password", pwd );
+
+        jEdit.setBooleanProperty( PVHelper.PREFIX + projectName + ".autoimport", autoImport.isSelected() );
 
         // possibly change working copy format
         int current_wc_format = getWCVersion();
@@ -373,6 +383,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 password.setVisible( true );
                 fileformat_label.setVisible( true );
                 fileformat.setVisible( true );
+                autoImport.setVisible(true);
             } catch ( Exception e ) {                // NOPMD
                 // ignored
             }

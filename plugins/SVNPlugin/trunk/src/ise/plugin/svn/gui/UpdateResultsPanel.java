@@ -43,7 +43,6 @@ import ise.plugin.svn.data.UpdateData;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-
 /**
  * Shows the results of an update.  Conflicted files, updated files,
  * added files, and deleted files are shown in separate tables.
@@ -147,6 +146,25 @@ public class UpdateResultsPanel extends JPanel {
         panel.add( label, BorderLayout.NORTH );
         panel.add( GUIUtils.createTablePanel( table ), BorderLayout.CENTER );
         table.addMouseListener( new TableMouseListener( table, type ) );
+
+        // do auto-import here
+        if ( ( ADDED == type || DELETED == type ) && jEdit.getBooleanProperty( PVHelper.PREFIX + PVHelper.getProjectName( view ) + ".autoimport", false ) ) {
+            TableModel model = table.getModel();
+            for ( int row = 0; row < model.getRowCount(); row++ ) {
+                String path = ( String ) model.getValueAt( row, 0 );
+                if ( path == null || path.length() == 0 ) {
+                    continue;
+                }
+                switch ( type ) {
+                    case ADDED:
+                        PVHelper.addToCurrentProject( view, path );
+                        break;
+                    case DELETED:
+                        PVHelper.removeFromCurrentProject( view, path );
+                        break;
+                }
+            }
+        }
         return panel;
     }
 
@@ -272,7 +290,7 @@ public class UpdateResultsPanel extends JPanel {
                         if ( path == null || path.length() == 0 ) {
                             continue;
                         }
-                        PVHelper.addToCurrentProject(view, path);
+                        PVHelper.addToCurrentProject( view, path );
                     }
                 }
             }
@@ -291,7 +309,7 @@ public class UpdateResultsPanel extends JPanel {
                         if ( path == null || path.length() == 0 ) {
                             continue;
                         }
-                        PVHelper.removeFromCurrentProject(view, path);
+                        PVHelper.removeFromCurrentProject( view, path );
                     }
                 }
             }
