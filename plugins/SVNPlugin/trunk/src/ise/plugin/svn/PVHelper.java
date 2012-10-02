@@ -32,9 +32,11 @@ import java.util.*;
 
 import org.gjt.sp.jedit.*;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTNode;
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.importer.RootImporter;
+import projectviewer.importer.NewFileImporter;
 import javax.swing.SwingUtilities;
 
 /**
@@ -43,12 +45,11 @@ import javax.swing.SwingUtilities;
 public class PVHelper {
     // prefix for properties stored for Subversion per ProjectViewer project,
     // property names are PREFIX + project name + username/password
-    public final static String PREFIX = "ise.plugin.svn.pv.";
+    public static final String PREFIX = "ise.plugin.svn.pv.";
 
     // filename to project name lookup, caching these to improve performance, but
     // I have no idea if the performance hit of going to PV every time is significant...
     private static HashMap<String, VPTProject> projectForFile = new HashMap<String, VPTProject>();
-
 
     /**
      * @return true if the ProjectViewer plugin is loaded
@@ -73,7 +74,7 @@ public class PVHelper {
     public static void reimportProjectFiles( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         if ( project == null ) {
-            return ;
+            return;
         }
         RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( view ), true );
         SwingUtilities.invokeLater( importer );
@@ -134,7 +135,7 @@ public class PVHelper {
         ProjectManager pm = ProjectManager.getInstance();
         for ( VPTProject proj : pm.getProjects() ) {
             if ( proj.equals( project ) ) {
-                continue;   // already checked in active project, no need to check again.
+                continue;                // already checked in active project, no need to check again.
             }
             if ( proj.isInProject( filename ) || ( proj.getRootPath() != null && filename.startsWith( proj.getRootPath() ) ) ) {
                 projectForFile.put( filename, proj );
@@ -157,5 +158,37 @@ public class PVHelper {
         String username = jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" );
         String password = jEdit.getProperty( PVHelper.PREFIX + project_name + ".password" );
         return new String[] {username, password};
+    }
+
+    public static void addToCurrentProject( View view, String filename ) {
+        if (view == null || filename == null || "".equals(filename)) {
+            return;   
+        }
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        if ( project == null ) {
+            return;
+        }
+        NewFileImporter importer = new NewFileImporter( project, ProjectViewer.getViewer( view ), filename );
+        importer.doImport();
+    }
+
+    public static void removeFromCurrentProject( View view, String filename ) {
+        if (filename == null || "".equals(filename)) {
+            return;   
+        }
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        if ( project == null ) {
+            return;
+        }
+        Collection<VPTNode> openFiles = project.getOpenableNodes();
+        for ( VPTNode file : openFiles ) {
+            if (file == null) {
+                continue;   
+            }
+            if ( filename.equals( file.getNodePath() ) ) {
+                ProjectViewer.removeNodeFromParent( file );
+                return;
+            }
+        }
     }
 }

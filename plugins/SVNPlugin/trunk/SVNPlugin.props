@@ -500,6 +500,8 @@ ips.Undelete_these_files>=Undelete these files:
 ips.Update=Update
 ips.Update_To>=Update To:
 ips.Recursive=Recursive
+ips.Add_to_ProjectViewer=Add to ProjectViewer
+ips.Remove_from_ProjectViewer=Remove from ProjectViewer
 
 # for Update Results panel
 ips.Exported_at_revision>=Exported at revision:
