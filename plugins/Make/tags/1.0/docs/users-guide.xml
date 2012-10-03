@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<book>
+    <bookinfo>
+		<title>Make</title>
+		<author>
+			<firstname>Damien</firstname>
+			<surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+	    <para>
+	        The Make plugin is, simply put, used to build projects, but unlike Console,
+	        Make is very buildfile-centric. It recognizes several different build systems
+	        out of the box and provides a graphical interface for building a project
+	        by selecting one of its targets. Simply open up ProjectViewer,
+	        right-click on the buildfile (or directory/project root containing
+	        one), mouse over the build system's menu item, and select which task
+	        you want to run.
+	    </para>
+	    <para>
+	        In addition, an Output panel is provided for displaying the results of
+	        a build, and can be opened by going to Plugins->Make->Show Output Panel.
+	        If a build failed, then the errors will be displayed in the Error List,
+	        which can be found at Plugins->ErrorList->Error List.
+	    </para>
+	    <para>
+	        The first time you right-click on a buildfile or directory containing one, Make
+	        will need to parse its available targets. Afterwards, Make caches the results
+	        so that subsequent right-clicks are faster. If you modify the buildfile and
+	        need it to display the changes, either restart jEdit or simply click on
+	        the 'Reload Targets' option at the bottom of the context menu.
+	    </para>
+	</chapter>
+	<chapter id="systems"><title>Supported Build Systems</title>
+	    <para>
+	        Make supports the following build systems out of the box:
+	    </para>
+	    <itemizedlist>
+	        <listitem><para>Make</para></listitem>
+	        <listitem><para>Ant</para></listitem>
+	        <listitem><para>MSBuild</para></listitem>
+	        <listitem><para>Rake</para></listitem>
+	    </itemizedlist>
+	    <para>
+	        If you don't see your favorite build system listed here, then you can request
+	        a new one be added by going to jEdit's Sourceforge development page and opening
+	        a Plugin Request tracker item. If you're too impatient, however, Make is fully
+	        extensible, and it's easy to write a new plugin to provide additional build systems.
+	        In the plugin source, the key files to look at are services.xml, make.Buildfile, and 
+	        make.BuildfileProvider.
+	    </para>
+	</chapter>
+</book>
