@@ -793,9 +793,8 @@ most often at the top of the list.
 
    <para>
  The commando tool bar, which can be enabled in the
- <guilabel>Console</guilabel>&gt;<guilabel>General</guilabel> pane of the
- <guimenuitem>Plugin Options</guimenuitem>
- dialog box, has one button for each commando file. Clicking a button opens
+ <guilabel>Console</guilabel>&gt;<guilabel>General</guilabel> pane of
+ <guimenuitem>Plugin Options</guimenuitem> has one button for each commando file. Clicking a button opens
  the commando window for that file.
 </para>
 
@@ -1181,7 +1180,7 @@ of the new buffer. The default value is <quote>text</quote>.</para>
   <para>
  Commandos can be associated with edit modes in the
  <guilabel>Console</guilabel>&gt;<guilabel>Compile &amp; Run</guilabel> pane of
- the <guimenuitem>Plugin Options</guimenuitem> dialog box.
+ <guimenuitem>Plugin Options</guimenuitem>.
 </para>
 
  </chapter>

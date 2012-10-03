@@ -172,6 +172,10 @@ implements EBComponent, DefaultFocusComponent
 			ShellState state = iter.next();
 			state.shell.closeConsole(this);
 		}
+		shellStateMap.clear();
+		view = null;
+		text = null;
+		shellState = null;
 		animation.stop();
 	} //}}}
 
