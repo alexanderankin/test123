@@ -1,6 +1,6 @@
 plugin.make.MakePlugin.activate=defer
 plugin.make.MakePlugin.author=Damien Radtke
-plugin.make.MakePlugin.description=Make adds support to ProjectViewer and the built-in file browser \
+plugin.make.MakePlugin.description=Make adds support to ProjectViewer \
 	for running project builds based on local buildfiles.
 plugin.make.MakePlugin.longdescription=description.html
 plugin.make.MakePlugin.docs=index.html
