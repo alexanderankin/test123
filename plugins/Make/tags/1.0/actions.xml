@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="make-project">
+		<CODE>
+		    make.MakePlugin.makeProject(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>

@@ -1,0 +1,47 @@
+plugin.make.MakePlugin.activate=defer
+plugin.make.MakePlugin.author=Damien Radtke
+plugin.make.MakePlugin.description=Make adds support to ProjectViewer \
+	for running project builds based on local buildfiles.
+plugin.make.MakePlugin.longdescription=description.html
+plugin.make.MakePlugin.docs=index.html
+plugin.make.MakePlugin.name=Make
+plugin.make.MakePlugin.usePluginHome=false
+plugin.make.MakePlugin.version=1.0
+
+plugin.make.MakePlugin.depend.0=jedit 04.03.99.00
+plugin.make.MakePlugin.depend.1=jdk 1.5
+plugin.make.MakePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.make.MakePlugin.depend.3=plugin projectviewer.ProjectPlugin 3.4.4
+
+make.msg.reload=Reload Targets
+make.msg.reload.starting=Reloading targets...
+make.msg.reload.done=Reloading targets... done.
+make.msg.run-with-params=Specify parameters...
+make.msg.run-without-params=Run with defaults
+make.msg.parameter-dialog.title=Specify Build Parameters
+make.msg.no-buildfile=No buildfile found
+make.msg.build-starting.output=--- Starting Build ---
+make.msg.build-starting.status=Running build...
+make.msg.build-succeeded=Build succeeded
+make.msg.build-failed=Build failed
+
+make.msg.parse-error.title=Couldn't Find Targets
+make.msg.parse-error.message=There was an error parsing buildfile targets. \
+	Please make sure the build tool is on your system PATH, then restart jEdit \
+	and try again.
+make.msg.make-project.title=Build Project
+make.msg.make-project.message=Target to run:
+make.msg.no-project-found.title=No Project Found
+make.msg.no-project-found.message=Please open up a project in the ProjectViewer plugin and try again.
+make.msg.no-buildfile-found.title=No Buildfile Found
+make.msg.no-buildfile-found.message=No valid buildfile was found in this project's root.
+
+plugin.make.MakePlugin.menu=make.outputPanel make-project
+make.outputPanel.label=Show Output Panel
+make.outputPanel.title=Output
+make-project.label=Build current project...
+
+make.buildfile.ant=build.xml
+make.buildfile.make=Makefile|.*\\.mk
+make.buildfile.msbuild=.*\\.sln|.*\\.csproj
+make.buildfile.rake=[R|r]akefile(\\.rb)?

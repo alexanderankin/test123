@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+    <SERVICE CLASS="projectviewer.action.Action" NAME="Make">
+        new make.PVMakeAction();
+    </SERVICE>
+    <SERVICE CLASS="make.BuildfileProvider" NAME="Make">
+        new make.provider.MakeProvider();
+    </SERVICE>
+    <SERVICE CLASS="make.BuildfileProvider" NAME="Ant">
+        new make.provider.AntProvider();
+    </SERVICE>
+    <SERVICE CLASS="make.BuildfileProvider" NAME="MSBuild">
+        new make.provider.MSBuildProvider();
+    </SERVICE>
+    <SERVICE CLASS="make.BuildfileProvider" NAME="Rake">
+        new make.provider.RakeProvider();
+    </SERVICE>
+</SERVICES>
