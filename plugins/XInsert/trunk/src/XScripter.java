@@ -109,9 +109,9 @@ public class XScripter
   * @param  name    The name of the node item
   * @param  macro   The node content to be evaluated as a macro
   */
-  public static void runMacro(View view, String name, String macro) {
+  public static Object runMacro(View view, String name, String macro) {
     Log.log(Log.DEBUG, XScripter.class, "Running runMacro for item named = " + name);
-    BeanShell.eval(view, BeanShell.getNameSpace(), macro);
+    return BeanShell.eval(view, BeanShell.getNameSpace(), macro);
     } //}}}
 
 //{{{ runNamedMacro method
