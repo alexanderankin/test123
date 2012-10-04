@@ -34,9 +34,17 @@ public class NamedMacroCommand extends Object implements Command
 
   public void run(ScriptContext sc)
   {
-    XScripter.runNamedMacro(sc.getView(), (String)sc.getNode().getUserObject(), macroName);
+    XInsertPlugin.curContext = sc;
+    try {
+      XScripter.runNamedMacro(
+        sc.getView(), (String)sc.getNode().getUserObject(), macroName);
+    }
+    finally {
+      XInsertPlugin.curContext = null;
+    }
   }
   
   private final String macroName;
 }
 
+// :tabSize=2:indentSize=2:noTabs=true:folding=explicit:collapseFolds=1:
