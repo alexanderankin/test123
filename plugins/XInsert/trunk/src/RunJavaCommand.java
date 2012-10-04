@@ -63,9 +63,11 @@ public class RunJavaCommand extends Object implements Command {
 			}
 		}
 		try {
+			XInsertPlugin.curContext = sc;
 			Class clazz = Class.forName(clazzName);
 			Method method = null;
-			System.out.println("ClassName=" + clazzName + "/" + clazz.getName() + " methodName=" + methodName);
+			Log.log(Log.DEBUG, XScripter.class, "ClassName=" + clazzName
+				+ "/" + clazz.getName() + " methodName=" + methodName);
 			
 			Object[] args = null; //Arguments for method
 			if(stringArg) {
@@ -146,7 +148,11 @@ public class RunJavaCommand extends Object implements Command {
 		catch(Exception e) {
 			XScripter.doError(command, e);
 		}
+		finally
+		{
+			    XInsertPlugin.curContext = null;
+		}
 	}
 }
 
-
+// :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:

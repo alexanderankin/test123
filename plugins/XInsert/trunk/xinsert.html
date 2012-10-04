@@ -457,6 +457,9 @@ by semicolons, or chained, e.g.:
 <p>Note that as the commands are run in order you can use a macro
 command that will modify text inserted before it but not after
 it.</p>
+<p><code>XInsertPlugin.getCurVariable</code> api may be used to obtain
+variable values from inside BeanShell macros.
+</p>
 </blockquote>
 
 <h3>Run Java Method Command
@@ -478,8 +481,19 @@ method <i>MyMethod()</i> in class
  <code>{!com.mypackage.MyClass.MyMethod([some text})}</code> will
 invoke the method <i>MyMethod(String arg)</i> in class
 <i>com.mypackage.MyClass</i> where the argument is [some
-text].</p>
+text].
+<br> <code>{!com.mypackage.MyClass.MyMethod($var)}</code> will
+use the value of <code>var</code> variable as the argument.
+</p>
 </blockquote>
+
+<h2>Changelog</h2>
+
+<h3>Version 2.7</h3>
+<ul>
+<li>Added <code>XInsertPlugin.getCurVariable</code> api to allow for
+    getting variable values inside xinsert scripts.</li>
+</ul>
 
 <h2>Feedback</h2>
 
