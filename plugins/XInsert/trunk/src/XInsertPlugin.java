@@ -119,6 +119,27 @@ public class XInsertPlugin extends EditPlugin {
     return (String)variables.get(name);
     }
 
+  // getCurVariable(name) method {{{
+  /**
+   * Return the value of the variable <code>name</code>, respecting
+   * current context. Current context is set when the method is run
+   * from inside xinsert_script, using Beanshell Macro Command or
+   * Java Method Command.
+   * @return <code>null</code> when no value is found.
+   */
+  public static String getCurVariable(String name) {
+    if (curContext == null)
+      return getVariable(name);
+    else
+    {
+      String value = XScripter.getSubstituteFor(
+        curContext.getView(),
+        name,
+        curContext.getNode());
+      return value;
+    }
+  } //}}}
+
   public static Enumeration getVariables() {
     return variables.propertyNames();
     }
@@ -184,6 +205,14 @@ public class XInsertPlugin extends EditPlugin {
     variables.clear();
     }
 
+  /**
+   * Current context is set when the method is run
+   * from inside xinsert_script, using Beanshell Macro Command or
+   * Java Method Command. This variable should be accessed only from
+   * EDT thread, so one instance per jvm should be enough.
+   */
+  static ScriptContext curContext;
 
   }
 
+// :tabSize=2:indentSize=2:noTabs=true:folding=explicit:collapseFolds=1:

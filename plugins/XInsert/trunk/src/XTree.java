@@ -284,7 +284,8 @@ public class XTree extends JPanel {
         fileName = dir + inserts[i];
         if (XInsertReader.read(this, new FileInputStream(fileName), fileName)) {
           String[] args = { inserts[i] };
-          System.out.println(jEdit.getProperty("xtree.loaded", args));
+          Log.log(Log.DEBUG, XScripter.class,
+            jEdit.getProperty("xtree.loaded", args));
           }
         }
       }
