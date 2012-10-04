@@ -33,8 +33,10 @@ public class MacroCommand extends Object implements Command {
   public void run(ScriptContext sc) {
     XInsertPlugin.curContext = sc;
     try {
-      XScripter.runMacro(
+      Object rv = XScripter.runMacro(
         sc.getView(), (String)sc.getNode().getUserObject(), macro);
+      if (rv != null)
+        InsertTextCommand.insertText(rv.toString(), sc);
     }
     finally {
       XInsertPlugin.curContext = null;

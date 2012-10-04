@@ -448,7 +448,8 @@ allowed to enter thier own value as well.<br>
 <code>{@.....}</code></h1>
 
 <blockquote>
-<p>This runs the content of the braces as a BeanShell macro command.
+<p>This runs the content of the braces as a BeanShell macro command
+and inserts the returned value into the buffer.
 <code>{@ jEdit.getAction("plugin-manager").invoke(view) }</code>
 Multiple commands can be put into a single pair of braces, separated
 by semicolons, or chained, e.g.: 
@@ -493,6 +494,8 @@ use the value of <code>var</code> variable as the argument.
 <ul>
 <li>Added <code>XInsertPlugin.getCurVariable</code> api to allow for
     getting variable values inside xinsert scripts.</li>
+<li>BeanShell macro command (<code>{@</code>) now inserts the returned
+    value into the buffer</li>
 </ul>
 
 <h2>Feedback</h2>
