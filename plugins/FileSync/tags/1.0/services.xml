@@ -3,13 +3,13 @@
 
 <SERVICES>
     <!-- adds an option pane to the project viewer properties dialog -->
-    <SERVICE CLASS="projectviewer.config.OptionsService" NAME="Classpath">
+    <SERVICE CLASS="projectviewer.config.OptionsService" NAME="FileSync">
         new filesync.PVOptionsService();
     </SERVICE>
-    
+
     <!-- adds the FileSync context menu to Project Viewer context menu -->
     <SERVICE CLASS="projectviewer.action.Action" NAME="File Sync - Sync All Files">
         new filesync.FileSyncPVAction();
     </SERVICE>
-    
+
 </SERVICES>
