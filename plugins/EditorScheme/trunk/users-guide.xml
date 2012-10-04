@@ -158,6 +158,24 @@ the Sourceforge Bug Tracker at
         <title>Change log</title>
         <itemizedlist>
             <listitem>
+                <para>Version 1.5, danson. Requires jEdit 4.5, Java 1.5</para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Alan Ezust updated the docbook xsd to bring this document up to date.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Matthieu Casanova added the Solarized color scheme. See http://ethanschoonover.com/solarized for more details.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Fixed an issue with handling of the initial scheme so it works better now.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Made the dialog for choosing the scheme modal so it can be used by the Look and Feel plugin, 
+                        which makes it a little easier to pick the colors to go with the selected look and feel.</para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem>
                 <para>Version 1.4, danson. Requires jEdit 4.3.2, Java 1.5</para>
                 <itemizedlist>
                     <listitem>
