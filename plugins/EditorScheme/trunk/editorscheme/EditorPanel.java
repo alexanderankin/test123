@@ -6,9 +6,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import org.gjt.sp.jedit.jEdit;
-// TODO: change this back when jEdit 4.5 is released
-//import org.gjt.sp.jedit.gui.ColorWellButton;
-import editorscheme.temporary.ColorWellButton;
+import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.SyntaxUtilities;
 import ise.java.awt.KappaLayout;
