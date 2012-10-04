@@ -45,3 +45,4 @@ public class MacroCommand extends Object implements Command {
 
 }
 
+// :tabSize=2:indentSize=2:noTabs=true:folding=explicit:collapseFolds=1:
