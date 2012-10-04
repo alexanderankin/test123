@@ -61,9 +61,9 @@
 <p>
 The Java SideKick plug-in provides a highly customizable tool for navigating through Java source code. Using SideKick, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.
 </p>
-<p>JavaSideKick, as of version 2.3.0, requires Java 1.5.  JavaSideKick parses and displays these files:
+<p> JavaSideKick parses and displays these files: </p>
 <ul>
-<li>Java source files (.java). All Java 1.5 and earlier syntax is supported, including generics, varargs, autobox and the enhanced "for" loop syntax.</li>
+<li>Java source files (.java). All Java 1.6 and earlier syntax is supported, including generics, varargs, autobox and the enhanced "for" loop syntax.</li>
 <li>JavaCC source files (.jj, .jjt).  JavaCC files for JavaCC version 4.0 and 3.x are supported.  Earlier versions have not been tested.</li>
 <!-- <li>Property files conforming to java.util.Properties.</li> -->
 </ul>
@@ -84,14 +84,6 @@ on a node will select that node in the buffer, so, for example, shift-clicking
 on a method will select the entire method.  By virtue of SideKick, the tree will also follow the cursor in the buffer, so the selected node in the tree will change as you move from method to method in your source code.
 </p>
 
-<p>
-This version requires:
-</p>
-
-<ul>
-    <li>JDK 1.5</li>
-    <li>jEdit 4.3</li>
-</ul>
 <hr size="1">
 
 <table
@@ -496,10 +488,12 @@ they can be individually set if the current Display Style is set to
         <a name="actions">Actions</a></font></strong></td>
     </tr>
 </table>
-There are no longer any actions.  There was some thought at one time to provide
-certain code checking actions, however, the PMD plugin does code checking much better
-than this plugin.  If you write Java code, you really should install the PMD
-plugin too.
+
+<p> There are actions to insert an import statement for the
+symbol under the cursor, as well as for refreshing the global
+classloader. Other functionality of this plugin (such as completion) comes from the SideKick plugin, so there are more
+actions there.
+</p>
 
 <hr size="2" >
 
