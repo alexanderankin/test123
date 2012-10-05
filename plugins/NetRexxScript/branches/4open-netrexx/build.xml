@@ -2,20 +2,6 @@
 
 <project name="NetRexxScript" default="build" basedir=".">
 
-	<echo>
-	*** Note: This build.xml file uses the netrexxc task which is not inluded in AntPlugin
-	and is not included in Synaptic Ant installs. The ant-netrexx.jar file which contains this
-	task is included in the complete Ant download found at http://ant.apache.org/bindownload.cgi
-	This task depends on the NetRexxC.jar language file which can currently be found at
-	http://www.ibm.com/software/awdtools/netrexx/download.html
-	The language file is also included in the NetRexxScript Plugin lib directory. It must be copied to the
-	ANT_HOME/lib directory or added to the classpath Ant runs with or you will get error messages like:
-	NetRexxScript/build.xml:nn: java.lang.NoClassDefFoundError: netrexx/lang/Rexx
-	If you use the Antelope plugin to build, the language jar file should be copied to the jEdit plugin jars
-	directory rather than ANT_HOME\lib to prevent classloader conflicts when running the NetRexxScript plugin.
-	</echo>
-
-
 	<!-- Allow properties to be overridden: -->
     <property file="build.properties" />
     <property file="../build.properties" />
@@ -28,7 +14,7 @@
 	<property name="jedit.plugins.dir" value="${install.dir}" description="Location of required plugin jars"/>
 	
 	<!-- Project properties -->
-	<property name="project.version" value="0.1.3" description="Project's build version"/>
+	<property name="project.version" value="0.2.0" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
 	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
@@ -57,7 +43,7 @@
     </target>
     
     <target name="compilemacros" depends="prep" description="Builds sample script classfiles">
-        <buildnrc srcDir="NetRexx" destDir="macros/NetRexx" includes="class*.nrx"
+        <buildnrc srcDir="NetRexx" destDir="macros/NetRexxScript/samples" includes="class*.nrx"
         	classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar${path.separator}${jedit.install.dir}/jedit.jar"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose3' crossref="false" replace="false" keep="false"/>
@@ -73,22 +59,16 @@
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
         	<fileset dir="netrexxscript" includes="*.nrx" />
-        	<fileset dir="macros/NetRexx" includes="class*.nrx" />        	
+        	<fileset dir="macros/NetRexxScript/samples" includes="class*.nrx" />        	
         	</delete>
     </target>
     
     <target name="clean" description="Cleans out all build work files for fresh start">
-       <delete verbose="true" >
-        	<fileset dir="." includes="*.nrx" />
-        	<fileset dir="netrexxscript" includes="*.nrx" />
-        	<fileset dir="." includes="*.class" />
-        	<fileset dir="netrexxscript" includes="*.class" />
-        	<fileset dir="." includes="*.java" />
-        	<fileset dir="netrexxscript" includes="*.java" />
-        	<fileset dir="netrexxscript" includes="*.keep" />
-        	<fileset dir="macros/NetRexx" includes="class*.nrx" />        	
-        	<fileset dir="macros/NetRexx" includes="*.class" />        	
-        	<fileset dir="macros/NetRexx" includes="*.java" />        	
+       <delete verbose="true" includeEmptyDirs="true" >
+        	<fileset dir="." includes="*.nrx *.class *.java *.keep" />
+        	<fileset dir="netrexxscript"/>
+        	<fileset dir="macros/NetRexx" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="macros/NetRexxScript/samples" includes="class*.nrx *.class *.java" />        	
         	</delete>
     </target>
 	

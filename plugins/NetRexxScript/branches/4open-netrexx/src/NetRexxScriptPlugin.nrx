@@ -21,8 +21,9 @@
     * change all classes to package netrexxscript - allows access to public interfaces from NetRexx scripts
     * change NetRexxC.jar to experimental after3.01 version with method resolution fixes - allows direct compile of TeeStream class
     * Add NetRexxScriptErrorList class - allows ErrorList plugin use to be optional
-    * add check of new NetRexxA.exiting api (after3.01 version) -  allows us to force a new NetRexxA instance if script executed "Exit" instruction and killed the old one
-    * add a copy of the new ant-netrexx.jar version - allows build even if the optional NetRexxC task was not installed with Ant
+    * add check of new NetRexxA.exiting api (after3.01 version) -  allows us to force a new NetRexxA instance if a script executed "Exit" instruction and killed the old one
+    * add a copy of the new ant-netrexx.jar version - allows our plugin to build even if the optional NetRexxC task was not installed with Ant
+    * auto add all plugin jars to classpath - allows scripts to access plugins without modifying the classpath 
  
  Version 0.1.3 (Nov 30, 2009) 
 
@@ -157,6 +158,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		nrcpath=String	""					--	save path to NetRexxC.jar
 		errpath=String						--	save path to ErrorList.jar
 		lastcpath=String ""					--	save classpath in use by the interpreter
+		jarpath=String ""				--	save the jar paths for all plugins
 	properties private unused
 		lastspath=String ""					--	save scriptpath in use by the plugin
 		mypath=String	""					--	save path to NetRexxScript.jar
@@ -200,7 +202,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 --		Perform plugin initialization			---------------------------------------------------------------------------------------------------------------------
 
 	method start()
-		version=jEdit.getProperty("plugin.NetRexxScriptPlugin.version","notfound")
+		version=jEdit.getProperty("plugin.netrexxscript.NetRexxScriptPlugin.version","notfound")
 		System.out.println("NetRexxScript plugin version" version "starting")
  		do
 		jf=JarFile(getPluginJAR.getFile)
@@ -240,6 +242,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 				if ja[jp].getPath.indexOf(NRCS)>=0 then nrcpath=ja[jp].getPath
 				if Rexx(ja[jp].getPath).pos("NetRexxScript.jar")\=0 then mypath=ja[jp].getPath
 				if Rexx(ja[jp].getPath).pos("ErrorList.jar")\=0 then errpath=ja[jp].getPath
+				jarpath=Rexx(jarpath||ps||ja[jp].getPath).strip("b",ps).toString			--		remove excess path seps and save plugin jar paths
 				end
 			end		
 			
@@ -307,40 +310,100 @@ method setup		--	initial setup stuff: creates directories and loads files from o
   						
 --	create some directorys for NetRexx scripts
 
-		scriptdir=String setdir||fs'macros'fs'NetRexx'
 		tempdir=String setdir||fs'NetRexx'
-		sdf=File(scriptdir)
 		tdf=File(tempdir)
-		if \sdf.exists then do
-			sdf.mkdir
-			if \sdf.exists then do
-				say 'unable to create NetRexx script directory:' scriptdir
-				return
-				end
-			end
 		if \tdf.exists then do
 			tdf.mkdir
 			if \tdf.exists then do
 				say 'unable to create NetRexx temp script directory:' tempdir
 				jEdit.setBooleanProperty(OPTION_PREFIX"addjeditvars",f)
-				return
+--				return
 				end
+				else say 'created NetRexx temp script directory:' tempdir
+			end		
+/*			
+		scriptdir = String setdir||fs'macros'fs'NetRexx'
+		scriptdir2=String setdir||fs'macros'fs'NetRexxScript'
+		scriptdir3=String setdir||fs'macros'fs'NetRexxScript'fs'samples'
+		sdf=File(scriptdir)
+		sdf2=File(scriptdir2)
+		sdf3=File(scriptdir3)
+		if \tdf.exists then do
+			tdf.mkdir
+			if \tdf.exists then do
+				say 'unable to create NetRexx temp script directory:' tempdir
+				jEdit.setBooleanProperty(OPTION_PREFIX"addjeditvars",f)
+--				return
+				end
+				else say 'created NetRexx temp script directory:' tempdir
+			end		
+		if \sdf.exists then do
+			sdf.mkdir
+			if \sdf.exists then do
+				say 'unable to create NetRexx script directory:' scriptdir
+--				return
+				end
+				else say 'created NetRexx script directory:' scriptdir
 			end
-
+		if \sdf2.exists then do
+			sdf2.mkdir
+			if \sdf2.exists then do
+				say 'unable to create NetRexx script sample directory:' scriptdir2
+--				return
+				end
+				else say 'created NetRexx script sample directory:' scriptdir2
+			end			
+		if \sdf3.exists then do
+			sdf3.mkdir
+			if \sdf3.exists then do
+				say 'unable to create NetRexx script sample directory:' scriptdir3
+--				return
+				end
+				else say 'created NetRexx script sample directory:' scriptdir3
+			end						
+*/
 --	install the setup and sample scripts
 
 		do
 			jf=JarFile(getPluginJAR.getFile)
+			
 			entries = jf.entries()
 			loop while entries.hasMoreElements()				
 				je=JarEntry entries.nextElement()
-				if Rexx(je.getName).translate(fs,'/').pos('NetRexx'fs)>0 then copyjarentry(jf,je,setdir)
+				jer=Rexx(je.getName)
+				if je.isDirectory then 
+					if jer.pos('NetRexx')>0 then makeadir(jer)
+--				if Rexx(je.getName).translate(fs,'/').pos('NetRexx')>0 then copyjarentry(jf,je,setdir)
+--				if Rexx(je.getName).translate(fs,'/').pos('NetRexx'fs)>0 then copyjarentry(jf,je,setdir)
+--	another Java "gotcha" - jar entries have unix file separators thus requireing the translate above					
+				end
+				
+			entries = jf.entries()
+			loop while entries.hasMoreElements()				
+				je=JarEntry entries.nextElement()
+				if \je.isDirectory then do
+					jer=Rexx(je.getName)
+					split=jer.lastpos('/')
+					if split>0 then 
+						if jer.delstr(split).pos('NetRexx')>0 then copyjarentry(jf,je,setdir)
+					end
+--				if Rexx(je.getName).translate(fs,'/').pos('NetRexx')>0 then copyjarentry(jf,je,setdir)
+--				if Rexx(je.getName).translate(fs,'/').pos('NetRexx'fs)>0 then copyjarentry(jf,je,setdir)
 --	another Java "gotcha" - jar entries have unix file separators thus requireing the translate above					
 				end
 			catch err=Exception
 				say "NetRexxScript.jar ==>" err
 		end
-	
+				
+method makeadir(jer=Rexx)		
+			tempdir=String setdir||fs||jer
+			tdf=File(tempdir)
+			if \tdf.exists then do
+				tdf.mkdirs
+				if \tdf.exists then say 'unable to create NetRexx directory:' tempdir
+													 else say 'created NetRexx directory:' tempdir
+				end		
+				
 -- shutdown the plugin:										-------------------------------------------------------------------------------------------------------
 		
 	method stop()
@@ -520,7 +583,9 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 		sthread=null					--  erase thread pointer
 		
 		if interpreter.exiting then do					--		reinit interpreter environment if someone used an "Exit" statement  2012-09-21
+			setclasspath('on')
 				newinterpreter
+			setclasspath('off')
 				flush
 				end
 			
@@ -634,7 +699,7 @@ method runcurrent(v=View,buf=Buffer,parms="")
 method getClassPath
 	if df then trace results
 	ucp=jEdit.getProperty(OPTION_PREFIX"classpath","")			--	get the user specified classpath
-	return Rexx(jcp||ps||nrcpath||ps||ucp).strip('b',ps)
+	return Rexx(jcp||ps||nrcpath||ps||ucp||ps||jarpath).strip('b',ps)
 
 method getScriptPath
 	if df then trace results
@@ -665,6 +730,9 @@ method flush		--	clears the cache by user menu request
 	backcache="empty"
 	revcache="empty"
 	newloader				--		rebuild loader to clear any classes from memory
+	setclasspath('on')
+	newinterpreter	--		might as well reinit NetRexxA to clear memory there also
+	setclasspath('off')
 	if jEdit.getBooleanProperty(OPTION_PREFIX"preparse") then -
 	  if \parseall then jEdit.setBooleanProperty(OPTION_PREFIX"preparse",f)	--	try to parse all current nrx script files
 	
