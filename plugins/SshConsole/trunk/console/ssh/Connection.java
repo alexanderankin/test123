@@ -1,8 +1,8 @@
 /*          DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE (WTFPL)
-                    Version 3, March 2012
+                    Version 4, October 2012
 	    Based on the wtfpl: http://sam.zoy.org/wtfpl/
 
- Copyright (C) 2012 Alan Ezust 
+ Copyright (C) 2012 Alan Ezust
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
@@ -11,7 +11,8 @@
             DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-  0. You just DO WHAT THE FRAK YOU WANT TO. 
+  0. You just DO WHAT THE FRAK YOU WANT TO.
+  1. It is provided "as is" without any warranty whatsoever.
 */
 
 
@@ -44,7 +45,7 @@ import ftp.PasswordDialog;
 // }}}
 
 // {{{ Connection class
-/** An ssh remote shell connection 
+/** An ssh remote shell connection
  *  @author ezust
  *  @version $Id$
  */
@@ -62,7 +63,7 @@ public class Connection implements UserInfo {
 	Console console;
 	private int keyAttempts = 0;
 	// }}}
-	
+
 	// {{{ Connection ctor
 	public Connection(Console console, ConnectionInfo info) {
 		try {
@@ -95,17 +96,17 @@ public class Connection implements UserInfo {
 
 			channel.setInputStream(pis);
 			ostr = pos;
-			
+
 			channel.connect(10000);
-			
+
 		}
 		catch (Exception e) {
 			Log.log(Log.ERROR, this, "Can't create Connection - did you browse sftp:// first?", e);
 		}
-		
-		
+
+
 	}// }}}
-	
+
 	// {{{ setConsole() method
     /**
       Not tested yet, but this should make it possible to reuse connections in different Consoles, if the
@@ -118,7 +119,7 @@ public class Connection implements UserInfo {
 				console, channel.getInputStream(), console.getOutput(), console.getPlainColor());
 		}
 	}// }}}
-	
+
 	public boolean inUse()
 	{
 		return inUse;
@@ -128,7 +129,7 @@ public class Connection implements UserInfo {
 	{
 		return channel.isConnected();
 	}
-	
+
 	void logout() throws IOException
 	{
 		channel.disconnect();
@@ -138,12 +139,12 @@ public class Connection implements UserInfo {
 	{
 		return passphrase;
 	}
-	
+
 	public String getPassword()
 	{
 		return info.password;
 	}
-		
+
 	public boolean promptPassword(String message){ return true;}
 	public boolean promptPassphrase(String message)
 	{
@@ -163,10 +164,10 @@ public class Connection implements UserInfo {
 	public boolean promptYesNo(String message)
 	{
 		Object[] options={ "yes", "no" };
-		int foo=JOptionPane.showOptionDialog(null, 
+		int foo=JOptionPane.showOptionDialog(null,
 			message,
 			"Warning",
-			JOptionPane.DEFAULT_OPTION, 
+			JOptionPane.DEFAULT_OPTION,
 			JOptionPane.WARNING_MESSAGE,
 			null, options, options[0]);
 		return foo==0;
