@@ -11,7 +11,7 @@
 <p> This plugin is designed to allow you to easily compile files you are editing
 remotely via <tt>sftp://</tt> and parse the errors for ErrorList. It has no user
 interface of its own, because it is an extension of three other plugins:
-Console, FTP, and ErrorList, and uses a docked jEdit File System Browser for
+Console, FTP, and ErrorList, and uses a dockable jEdit File System Browser for
 navigation. </p>
 
 <p> Console provides jEdit with a dockable command line interface to the System
@@ -38,9 +38,9 @@ if it is open to a file on a remote host via sftp). </p>
 
 <h2> Instructions for use: </h2>
 
-<p> Initially, the SshConsole does not know where to connect. If you active the Console
-and select the "Ssh" shell from the combobox, you will initially see a
-prompt like this: </p>
+<p> Initially, the SshConsole does not know where to connect. If you activate
+the Console and select the "Ssh" shell from the combobox, you will initially see
+a prompt like this: </p>
 
 <pre>
 [no sftp:// connections?] >
@@ -50,7 +50,7 @@ prompt like this: </p>
 connect somewhere, you need to do one of these things: </p>
 
 <ol>
-<li> Plugins - SshConsole - Open From Secure FTP server - you can choose a file after
+<li> <b>Plugins - SshConsole - Open From Secure FTP server</b> - you can choose a file after
 connecting. </li>
 <li> Navigate to a remote file via a docked File System Browser </li>
 <li> Edit a remote file in the current View's EditPane. </li>
@@ -64,7 +64,7 @@ your response from the server's shell. </p>
 <ol>
 
 
-<li> Dock an FSB: <tt>Utilities - File System Browser </tt>. I suggest docking
+<li> Show the dockable FSB: <tt>Utilities - File System Browser </tt>. I suggest docking
 it on your left. </li>
 
 <li> With FSB: navigate to a remote host by entering a path that begins with
@@ -172,8 +172,7 @@ or suggestions.
 
 <ul>
 
-<li> <b>Version 1.0.3</b> -
-Requires JDK 1.6, jEdit 5.0, ErrorList 2.0, Console 5.0.
+<li> <b>Version 1.0.3</b> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.0, Ftp 1.0, Console 5.0.
   <ul>
     <li> No longer sends errors to all views. </li>
   </ul>
