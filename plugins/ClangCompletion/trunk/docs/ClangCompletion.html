@@ -1,25 +1,31 @@
-
-<html>
-	<title>ClangCompletion Plugin</title>
-	<body>
+<html> <head> <title>jEdit ClangCompletion Plugin</title> </head>
+    <body> <h2> jEdit ClangCompletion Plugin </h2>
 		<p>
 			<b>Summary</b>
 		</p>
-		<p>
-			ClangCompletion provides code completion and syntax checking for c, c++ and objective-c using the clang and llvm. 
+		<p> ClangCompletion provides jEdit with code completion and syntax checking for c, c++ and objective-c using the clang and llvm.
 		</p>
 		<p>
 			<b>Usage</b>
 		</p>
+		<p>	ClangCompletion needs clang inside the system path.
+		    You can download and install llvm from
+			<a href="http://llvm.org/">http://llvm.org</a>. </p>
 		<p>
-			ClangCompletion needs clang inside the system path. Please download and install llvm from
-			<a href="http://llvm.org/">http://llvm.org</a>. It also provides an option pane inside project viewer to configure
-			include paths and precompiled definitions. You need to fill in the same options as in your makefile or your IDE.
-		</p>
-		<p>
-			ClangCompletion will check the syntax every time you save your c, c++ and objc file. It will show errors in the ErrorList.
-			It provides completion function via Completion Plugin. The completion will automatically show or need a key to 
+			ClangCompletion will check the syntax every time you save your c, c++ or objc buffer.
+			It will show errors in the <a href="jeditresource:/ErrorList.jar!/index.html">ErrorList</a>.
+			It provides its completion service via the <a href="jeditresource:/Completion.jar!/index.html">Completion Plugin</a>.
+			The completion will automatically show or need a key to
 			popup depending on the Completion Plugin options.
 		</p>
+        <p> ClangCompletion plugin provides a
+            <a href="jeditresource:/ProjectViewer.jar!/index.html">Project Viewer</a>
+            option pane to configure include paths and precompiled definitions
+            for a given project.
+			Right-click the project root node from the ProjectViewer tree
+			and select <b>Properties</b> to see the <b>ClangCompletion</b> option pane.
+			You need to fill in the same options there as you would for a Makefile or an IDE.
+		</p>
+
 	</body>
 </html>
