@@ -53,23 +53,23 @@ import static xml.Debug.*;
 public class XercesParserImpl extends XmlParser
 {
 	public static String COMPLETION_INFO_CACHE_ENTRY = "CompletionInfo";
-	
+
     private View view = null;
-    
+
     // cache the toolbar panels per view
     private Map<View, JPanel> panels = new HashMap<View, JPanel>();
-    
+
 	//{{{ XercesParserImpl constructor
 	public XercesParserImpl()
 	{
 		super("xml");
 	} //}}}
-	
+
 	@Override
 	public void activate(View view) {
-	    this.view = view;   
+	    this.view = view;
 	}
-	
+
 	//{{{ parse() method
 	/**
 	 * a buffer read lock is hold arround parse()
@@ -82,17 +82,17 @@ public class XercesParserImpl extends XmlParser
 		CharSequence text;
 
 		text = buffer.getSegment(0,buffer.getLength());
-		
+
 		XmlParsedData data = createXmlParsedData(buffer.getName(), buffer.getMode().toString(), false);
-		
+
 		if(text.length() == 0)return data;
-		
+
 
 		ErrorListErrorHandler errorHandler = new ErrorListErrorHandler(
 				 errorSource
 				,buffer.getPath()
 			);
-		
+
 		SchemaMapping mapping;
 		if(SchemaMappingManager.isSchemaMappingEnabled(buffer))
 		{
@@ -102,7 +102,7 @@ public class XercesParserImpl extends XmlParser
 		{
 			mapping = null;
 		}
-		
+
 		MyEntityResolver resolver = new MyEntityResolver(buffer, errorHandler);
 
 		// {{{ parse one time to get CompletionInfo, Ids, and any error found by Xerces
@@ -118,7 +118,7 @@ public class XercesParserImpl extends XmlParser
 			// miserably (see Plugin Bug #2950392)
 			// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
 			reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
-			
+
 			// customize validation
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
@@ -139,21 +139,21 @@ public class XercesParserImpl extends XmlParser
 			// For some legacy documents, namespaces must be disabled
 			reader.setFeature("http://xml.org/sax/features/namespaces",
 				!buffer.getBooleanProperty("xml.namespaces.disable"));
-			
+
 			// always use EntityResolver2 so that built-in DTDs can be found
 			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
 				true);
-			
+
 			// XInclude support
 			reader.setFeature("http://apache.org/xml/features/xinclude",
 				buffer.getBooleanProperty("xml.xinclude"));
 			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
 				buffer.getBooleanProperty("xml.xinclude.fixup-base-uris"));
-			
+
 			//get access to the DTD
 			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 			reader.setProperty("http://xml.org/sax/properties/lexical-handler",handler);
-			
+
 			schemaLoader = new SchemaAutoLoader(reader,mapping,buffer);
 
 			schemaLoader.setErrorHandler(errorHandler);
@@ -163,7 +163,7 @@ public class XercesParserImpl extends XmlParser
 			//get access to the RNG schema
 			handler.setSchemaAutoLoader(schemaLoader);
 			reader = schemaLoader;
-			
+
 			//schemas.xml are disabled
 			if(!SchemaMappingManager.isSchemaMappingEnabled(buffer)){
 				String schemaFromProp = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
@@ -198,9 +198,9 @@ public class XercesParserImpl extends XmlParser
 		if(info != null)
 			data.setCompletionInfo("",info);
 
-		// don't log the same error twice when reparsing to construct the sidekick tree 
+		// don't log the same error twice when reparsing to construct the sidekick tree
 		Exception errorParsing = null;
-		
+
 		InputSource source = new InputSource();
 
 		String rootDocument = buffer.getStringProperty("xml.root");
@@ -236,14 +236,14 @@ public class XercesParserImpl extends XmlParser
 		{
 			// same as IOException, but with correct line number
 			String msg = "I/O error while parsing: "+ioe.getMessage()+", caused by "+ioe.getCause().getClass().getName()+": "+ioe.getCause().getMessage();
-			Log.log(Log.WARNING,this,msg);
+			//Log.log(Log.WARNING,this,msg);
 			errorSource.addError(ErrorSource.ERROR, ioe.path, ioe.line, 0, 0,
 				msg);
 			errorParsing = ioe;
 		}
 		catch(IOException ioe)
 		{
-			Log.log(Log.WARNING,this,"I/O error while parsing: "+ioe.getClass().getName()+": "+ioe.getMessage());
+			// Log.log(Log.WARNING,this,"I/O error while parsing: "+ioe.getClass().getName()+": "+ioe.getMessage());
 			errorSource.addError(ErrorSource.ERROR, buffer.getPath(), 0, 0, 0,
 				ioe.getClass()+": "+ioe.getMessage());
 			errorParsing = ioe;
@@ -263,7 +263,7 @@ public class XercesParserImpl extends XmlParser
 			if(t!=null){
 				msg+=" caused by "+t;
 			}
-			Log.log(Log.WARNING, this, msg);
+//			Log.log(Log.WARNING, this, msg);
 			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
 				0,0,0,msg);
 			errorParsing = se;
@@ -278,19 +278,19 @@ public class XercesParserImpl extends XmlParser
 			}
 		}
 		//}}}
-		
+
 		// {{{ and parse again to get the SideKick tree (required to get the xi:include elements in the tree)
 		if(!(errorParsing instanceof StoppedException)){
-			
-			// don't print a warning if rootDocument == null, 
-			// because it may be that we didn't see because there was an error before first element, parsing an empty XML document, etc.. 
+
+			// don't print a warning if rootDocument == null,
+			// because it may be that we didn't see because there was an error before first element, parsing an empty XML document, etc..
 			if(!handler.seenBuffer && rootDocument!=null){
-				String msg = "Current buffer has not been parsed. It may not be reacheable from root document. Check that you didn't forget to xi:include it...";
-				Log.log(Log.WARNING, this, msg);
+				String msg = "Buffer is not reachable from root document. Check that you didn't forget to xi:include it.";
+//				Log.log(Log.WARNING, this, msg);
 				errorSource.addError(ErrorSource.WARNING,buffer.getPath(),
 					0,0,0,msg);
 			}
-			
+
 			ConstructTreeHandler treeHandler = new ConstructTreeHandler(this, buffer, text, errorHandler, data, resolver);
 			reader = null;
 			try
@@ -300,7 +300,7 @@ public class XercesParserImpl extends XmlParser
 				// miserably (see Plugin Bug #2950392)
 				// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
 				reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
-				
+
 				// no validation: it has already been done once
 				reader.setFeature("http://xml.org/sax/features/validation",false);
 				// turn on/off namespace support.
@@ -310,29 +310,29 @@ public class XercesParserImpl extends XmlParser
 				// always use EntityResolver2 so that built-in DTDs can be found
 				reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
 					true);
-				
+
 				// XInclude support disabled: we want the xi:include elements to show up in the tree
 				reader.setFeature("http://apache.org/xml/features/xinclude",false);
-				
+
 				reader.setContentHandler(treeHandler);
 				reader.setEntityResolver(resolver);
-				
+
 				// report errors and warnings correctly if not referenced from root document
 				// (this may be temporary, whatever...)
 				if(!handler.seenBuffer && rootDocument != null){
 					reader.setErrorHandler(errorHandler);
 				}
 
-				
+
 			}
 			catch(SAXException se)
 			{
 				// not likely : messed jars or sthing
 				Log.log(Log.ERROR,this,"error preparing to parse 2nd pass), please report !",se);
 			}
-	
+
 			source = new InputSource();
-	
+
 			source.setCharacterStream(new CharSequenceReader(text));
 			// must set the systemId to an URL and not a path
 			// otherwise, get errors when opening a DTD specified as a relative path
@@ -340,7 +340,7 @@ public class XercesParserImpl extends XmlParser
 			// is incorrect : file://server/share instead of file://///server/share
 			// and the DTD can't be found
 			source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
-	
+
 			try
 			{
 				reader.parse(source);
@@ -376,18 +376,18 @@ public class XercesParserImpl extends XmlParser
 					if(t!=null){
 						msg+=" caused by "+t;
 					}
-					Log.log(Log.WARNING, this, msg);
+					// Log.log(Log.WARNING, this, msg);
 					errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
 						0,0,0,msg);
 				}
 			}
 			// }}}
 		}
-			
+
 		// danson, a hack(?) to switch the buffer mode to 'ant'.  The first line glob
 		// in the catalog file doesn't necessarily work for Ant files.  If the root
 		// node is "project" and the mode is "xml", switch to "ant" mode.  I checked
-		// through the current catalog file, and at the moment, Ant files are the 
+		// through the current catalog file, and at the moment, Ant files are the
 		// only xml files that need this sort of extra check, so I think this hack
 		// is pretty safe.
 		DefaultMutableTreeNode root = data.root;
@@ -409,7 +409,7 @@ public class XercesParserImpl extends XmlParser
 	} //}}}
 
 	//{{{ Private members
-	
+
 	private XmlParsedData createXmlParsedData(String filename, String modeName, boolean html) {
         String dataClassName = jEdit.getProperty("xml.xmlparseddata." + modeName);
         if (dataClassName != null) {
@@ -419,16 +419,16 @@ public class XercesParserImpl extends XmlParser
                 return (XmlParsedData)con.newInstance(filename, html);
             }
             catch (Exception e) {
-                 // ignored, just return an XmlParsedData if this fails   
-                 e.printStackTrace();
+                 // ignored, just return an XmlParsedData if this fails
+                 Log.log(Log.ERROR, this, "createXmlParsedData()", e);
             }
         }
-        return new XmlParsedData(filename, html);   
+        return new XmlParsedData(filename, html);
 	}
 
 	//}}}
 
-    //{{{ getPanel() method	
+    //{{{ getPanel() method
 	public JPanel getPanel() {
 	    if (view != null) {
 	        String mode = view.getBuffer().getMode().toString();
@@ -436,7 +436,7 @@ public class XercesParserImpl extends XmlParser
 	        if (supported.indexOf(mode) > -1) {
                 JPanel panel = panels.get(view);
                 if (panel != null) {
-                     return panel;   
+                     return panel;
                 }
                 XmlModeToolBar toolbar = new XmlModeToolBar(view);
                 panels.put(view, toolbar);
@@ -444,7 +444,7 @@ public class XercesParserImpl extends XmlParser
             }
         }
         return null;
-		
+
 	}
 	//}}}
 
