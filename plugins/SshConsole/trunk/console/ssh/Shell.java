@@ -1,8 +1,8 @@
 /*          DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE (WTFPL)
-                    Version 3, March 2012
+                    Version 4, October 2012
 	    Based on the wtfpl: http://sam.zoy.org/wtfpl/
 
- Copyright (C) 2012 Alan Ezust 
+ Copyright (C) 2012 Alan Ezust
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
@@ -11,7 +11,8 @@
             DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-  0. You just DO WHAT THE FRAK YOU WANT TO. 
+  0. You just DO WHAT THE FRAK YOU WANT TO.
+  1. It is provided "as is" without any warranty whatsoever.
 */
 package console.ssh;
 
@@ -42,7 +43,7 @@ public class Shell extends console.Shell {
 	static final byte[] EOF = new byte[] {4};
 	static final byte[] SUSPEND = new byte[] {26};
 	static final byte[] STOP = new byte[] {3};
-	
+
 	@Override
 	public void endOfFile(Console console)
 	{
@@ -64,18 +65,18 @@ public class Shell extends console.Shell {
 	}
 
 	public void openConsole(Console console)
-	{		
+	{
 	}
 
 	public Shell() {
 		super("ssh");
 	}
 
-    // {{{ execute() method	
+    // {{{ execute() method
 	/**
 	 * @param console the instance that is running this command
 	 * @param input is always null
-	 * @param output a ShellState instance 
+	 * @param output a ShellState instance
 	 * @param error another writable thing for errors (not used)
 	 * @param command the command to execute
 	 */
@@ -89,7 +90,7 @@ public class Shell extends console.Shell {
 			int lastslash = p.lastIndexOf("/");
 			if (p.startsWith("sftp:")) cs.setPath(p.substring(0, lastslash), true);
 		}
-		
+
 		if (cs.conn == null)  try {
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
 			if (info == null) {
@@ -122,7 +123,7 @@ public class Shell extends console.Shell {
 
 	} // }}}
 
-    
+
 	public void printPrompt(Console console, Output output)
 	{
 		ConsoleState s = ConnectionManager.getConsoleState(console);
@@ -130,8 +131,8 @@ public class Shell extends console.Shell {
 		if (s.info != null) {
 			promptString = "[ssh:" + s.info.user + "@" + s.info.host + "]> ";
 		}
-		if (s.conn == null || s.conn.inUse != true) { 
-		        output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), 
+		if (s.conn == null || s.conn.inUse != true) {
+		        output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()),
 			"\n" + promptString);
 		}
 		else try {
@@ -158,7 +159,7 @@ public class Shell extends console.Shell {
 			con = console;
 			cmd = str;
 		}
-		
+
 		public void actionPerformed(ActionEvent e)
 		{
 			if (!con.getShell().getName().equals("ssh")) return;
@@ -173,7 +174,7 @@ public class Shell extends console.Shell {
 			}
 		}
 	}
-	
+
 }; // }}}
 
 // :folding=explicit:

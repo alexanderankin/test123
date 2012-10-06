@@ -1,8 +1,8 @@
 /*          DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE (WTFPL)
-                    Version 3, March 2012
+                    Version 4, October 2012
 	    Based on the wtfpl: http://sam.zoy.org/wtfpl/
 
- Copyright (C) 2012 Alan Ezust 
+ Copyright (C) 2012 Alan Ezust
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
@@ -11,7 +11,8 @@
             DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-  0. You just DO WHAT THE FRAK YOU WANT TO. 
+  0. You just DO WHAT THE FRAK YOU WANT TO.
+  1. It is provided "as is" without any warranty whatsoever.
 */
 
 package console.ssh;
@@ -29,7 +30,7 @@ import console.Output;
 import ftp.ConnectionInfo;
 
 // {{{ ConsoleState class
-/** 
+/**
  * This is the state information for each instance of the Console ssh shell.
  * @author ezust
  *
@@ -37,19 +38,19 @@ import ftp.ConnectionInfo;
 public class ConsoleState
 {
     // {{{ members
-    
+
 	public ConsoleState(Console c) {
 		console = c;
 	}
-	
+
         // full sftp:// path
 	private String path = "";
-	
+
 	Console console;
 	// last directory changed to via FSB
 	String dir = "";
 	OutputStream os = null;
-	// reference to ssh connection (may be reused by other consoles later) 
+	// reference to ssh connection (may be reused by other consoles later)
 	Connection conn = null;
 	// login information extracted from the ftp plugin
 	ConnectionInfo info = null;
@@ -62,15 +63,15 @@ public class ConsoleState
 		setPath(newPath, true);
 	}
 	/**
-	 * Has the side-effect of closing the connection if it is currently open to a path that is not 
+	 * Has the side-effect of closing the connection if it is currently open to a path that is not
 	 * on the same remote server as newPath, as well as changing directories on the remote
 	 * host, and in the command output parser.
 	 * TODO: perhaps return the connection to a pool instead of logout and kill connection?
 	 * @param newPath a sftp:// VFS path assumed used as the base of all relative paths
 	 * encountered during error parsing.
-	 *  
+	 *
 	 */
-	public void setPath(String newPath, boolean chDirAfter) 
+	public void setPath(String newPath, boolean chDirAfter)
 	{
 		/* Workaround because sometimes windows spits out paths
 		 *  with the wrong separator char */
@@ -83,17 +84,17 @@ public class ConsoleState
 		// update current directory in the CommandOutputParser
 
 
-		if (info == null || !newInfo.equals(info)) { 
+		if (info == null || !newInfo.equals(info)) {
 			info = newInfo;
-			if (conn != null) try 
+			if (conn != null) try
 			{
 				os.close();
 				conn.logout();
 				conn.inUse = false;
-				
+
 			}
 			catch (IOException e) {}
-			finally 
+			finally
 			{
 				os = null;
 				conn = null;
@@ -109,7 +110,7 @@ public class ConsoleState
 		console.Shell s = console.getShell();
 		if (!s.getName().equals("ssh")) return;
 		if (chDirAfter) {
-			String command = "cd " + dir; 
+			String command = "cd " + dir;
 			Output output = console.getShellState(s);
 			s.execute(console, null, output, output, command);
 		}
@@ -119,7 +120,7 @@ public class ConsoleState
 	public String getPath() {
 		return path;
 	} // }}}
-	
+
 	// {{{ preprocess method
 	/**
 	 * Extracts information from user-enter commands such as where they are "chdiring".
@@ -165,11 +166,11 @@ public class ConsoleState
 			jEdit.openFile(console.getView(), path, arg, false, null);
 			return true;
 		}
-		
-		
+
+
 		return false;
 	} // }}}
-	
+
 	// {{{ close() method
 	public void close() {
 		if (conn != null) try {
@@ -180,10 +181,10 @@ public class ConsoleState
 		}
 		catch (IOException ioe) {}
 	} // }}}
-	
+
 	// {{{ setDirectoryChangeListener method
 	public void setDirectoryChangeListener(CommandOutputParser cop) {
 		dirChangeListener = cop;
 	} // }}}
-	
+
 } // }}}
