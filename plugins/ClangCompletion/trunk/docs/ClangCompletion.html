@@ -13,8 +13,11 @@
 			<a href="http://llvm.org/">http://llvm.org</a>. </p>
 		<p>
 			ClangCompletion will check the syntax every time you save your c, c++ or objc buffer.
+			You can disable this from <b>Plugin Options - ClangCompletion</b>.
 			It will show errors in the <a href="jeditresource:/ErrorList.jar!/index.html">ErrorList</a>.
-			It provides its completion service via the <a href="jeditresource:/Completion.jar!/index.html">Completion Plugin</a>.
+        </p>
+        <p> This plugin provides a completion service via the
+			<a href="jeditresource:/Completion.jar!/index.html">Completion Plugin</a>.
 			The completion will automatically show or need a key to
 			popup depending on the Completion Plugin options.
 		</p>
@@ -27,5 +30,9 @@
 			You need to fill in the same options there as you would for a Makefile or an IDE.
 		</p>
 
+		<p> If the expansion is a something with parameters, such as a function, then
+		    <a href="jeditresource:/SuperAbbrevs.jar!/index.html">SuperAbbrevs</a> is used
+		    to display and expand the completion, and permit you to use
+		    the tab key to navigate the parameters. </p>
 	</body>
 </html>
