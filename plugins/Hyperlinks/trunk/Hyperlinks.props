@@ -31,3 +31,7 @@ hyperlink.defaultSource=None
 mode.c.hyperlink.source=C:include
 mode.c++.hyperlink.source=C:include
 mode.objective-c.hyperlink.source=C:include
+
+plugin.gatchan.jedit.hyperlinks.HyperlinksPlugin.menu=reload-hyperlinks-xml open-hyperlinks-xml
+reload-hyperlinks-xml.label=Reload hyperlinks.xml
+open-hyperlinks-xml.label=Open hyperlinks.xml
