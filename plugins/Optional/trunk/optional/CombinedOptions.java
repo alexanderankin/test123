@@ -1,7 +1,7 @@
 /*
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:
-*/ 
+*/
 package optional;
 
 import java.awt.Frame;
@@ -12,17 +12,17 @@ import org.jedit.options.*;
 
 // {{{ class CombinedOptions
 /**
- * 
+ *
  * An OptionDialog which combines all of jEdit's options into 3 tabs on a single
  * dialog.
- * 
+ *
  * @author Alan Ezust
- * 
+ *
  */
 
 public class CombinedOptions extends TabbedOptionDialog
 {
-    
+
 	// {{{ Members
 
 	GlobalOptionGroup globalOptions;
@@ -40,7 +40,7 @@ public class CombinedOptions extends TabbedOptionDialog
 		int startingIndex = jEdit.getIntegerProperty("optional.last.tab", 0);
 		return new CombinedOptions(parent, startingIndex);
 	}
-	
+
 	// {{{ CombinedOptions Constructors
 	public CombinedOptions(Frame parent, int tabIndex)
 	{
