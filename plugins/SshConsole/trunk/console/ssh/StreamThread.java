@@ -1,3 +1,19 @@
+/*          DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE (WTFPL)
+                    Version 4, October 2012
+	    Based on the wtfpl: http://sam.zoy.org/wtfpl/
+
+ Copyright © 2012 Alan Ezust
+
+ Everyone is permitted to copy and distribute verbatim or modified
+ copies of this license document, and changing it is allowed as long
+ as the name is changed.
+
+            DO WHAT THE FRAK YOU WANT TO PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. You just DO WHAT THE FRAK YOU WANT TO.
+  1. It is provided "as is" without any warranty whatsoever.
+*/
 package console.ssh;
 
 
@@ -23,8 +39,8 @@ import errorlist.DefaultErrorSource;
 
 // {{{ class StreamThread
 /**
- * Thread for handing output of running remote ssh commands 
- * Based on the StreamThread.java from Console plugin: 
+ * Thread for handing output of running remote ssh commands
+ * Based on the StreamThread.java from Console plugin:
  * StreamThread.java * 10982 2007-11-06 05:02:42Z.
  *
  * @version $Id$
@@ -77,7 +93,7 @@ class StreamThread extends Thread
 			throw new RuntimeException(uee);
 		}
 
-		
+
 		try
 		{
 			char[] input = new char[1024];
@@ -122,7 +138,7 @@ class StreamThread extends Thread
 						{
 							flushLine(output, "\r");
 						}
-		
+
 						if (c == '\r')
 						{
 							pendingCr = true;

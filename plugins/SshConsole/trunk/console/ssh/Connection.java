@@ -2,7 +2,7 @@
                     Version 4, October 2012
 	    Based on the wtfpl: http://sam.zoy.org/wtfpl/
 
- Copyright (C) 2012 Alan Ezust
+ Copyright © 2012 Alan Ezust
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
