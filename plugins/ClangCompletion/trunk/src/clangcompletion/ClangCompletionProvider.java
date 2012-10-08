@@ -52,7 +52,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		
 		Buffer buffer = view.getBuffer();
-		buffer.autosave();
+		
 		
 		TextArea textArea = view.getTextArea();
 		int line = textArea.getCaretLine();
@@ -63,9 +63,24 @@ public class ClangCompletionProvider implements CompletionProvider
 		line += 1;
 		
 		String path = buffer.getPath();
-		if(buffer.getAutosaveFile().exists())
+		if(buffer.isDirty())
 		{
-			path = buffer.getAutosaveFile().getPath();
+			buffer.autosave();
+			for(int i = 0; i < 10; i++)
+			{
+				try
+				{
+					Thread.sleep(50);
+				}catch(Exception ex)
+				{
+				}
+				
+				if(buffer.getAutosaveFile().exists())
+				{
+					path = buffer.getAutosaveFile().getPath();
+					break;
+				}
+			}
 		}
 		
 		ClangBuilder builder = new ClangBuilder();
