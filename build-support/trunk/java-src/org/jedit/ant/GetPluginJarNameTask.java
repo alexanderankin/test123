@@ -47,6 +47,7 @@ public class GetPluginJarNameTask extends Task
   {
     if (sClassName == null) { return null; }
     String sJarName = sClassName;
+    // remove dotted components and leave only the last part
     sJarName = sJarName.replaceFirst("^.*\\.([^\\.]+)$", "$1");
     if (sJarName.length()>9) {
       sJarName = sJarName.replaceFirst("^(.*)Plugin", "$1");
@@ -82,6 +83,7 @@ public class GetPluginJarNameTask extends Task
         sJarName.equals("ScriptEngine") || // }}}
         sJarName.equals("Xerces")) sJarName += "Plugin";
     if (sJarName.equals("Project")) sJarName = "ProjectViewer";
+    if (sJarName.equals("FtpPlugin")) sJarName = "FTP";
     return sJarName;
   }
   
