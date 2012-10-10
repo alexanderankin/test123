@@ -1,5 +1,5 @@
 /*
- * NetRexxScriptErrorList.nrx - NetRexx jEdit Scripting Plugin ErrorList interface allows optional use of ErrorList plugin
+ * NetRexxErrorList.nrx - NetRexx jEdit Scripting Plugin ErrorList interface allows optional use of ErrorList plugin
  * Copyright (C) 2012 Kermit Kiser
  *
  * This program is free software; you can redistribute it and/or
@@ -28,16 +28,18 @@ options strictcase
 
 package netrexxplugin
 
-Class NetRexxScriptErrorList
+Class NetRexxErrorList
 	
 	properties shared static
 		
 		WARNING=int
 		ERROR=int
+		
+	properties shared
 	
 		errorsource=Object
 			
-	method NetRexxScriptErrorList 	
+	method NetRexxErrorList 	
 			
 		WARNING=ErrorSource.WARNING
 		ERROR=ErrorSource.ERROR

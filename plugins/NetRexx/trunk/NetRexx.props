@@ -14,8 +14,8 @@ plugin.netrexxplugin.NetRexxPlugin.docs=NetRexxPlugin.html
 plugin.netrexxplugin.NetRexxPlugin.depend.0=jdk 1.5
 plugin.netrexxplugin.NetRexxPlugin.depend.1=jedit 04.02.99.00
 plugin.netrexxplugin.NetRexxPlugin.depend.2=optional plugin errorlist.ErrorListPlugin 1.5
-plugin.netrexxplugin.NetRexxPlugin.depend.3=plugin CommonControlsPlugin 0.2
-plugin.netrexxplugin.NetRexxPlugin.depend.4=plugin sidekick.SideKickPlugin 0.1
+plugin.netrexxplugin.NetRexxPlugin.depend.3=optional plugin CommonControlsPlugin 0.2
+plugin.netrexxplugin.NetRexxPlugin.depend.4=optional plugin sidekick.SideKickPlugin 0.1
 
 # external packages required
 plugin.netrexxplugin.NetRexxPlugin.jars=NetRexxC.jar

@@ -41,7 +41,7 @@
 
 options strictsignal
 
-import errorlist
+--import errorlist
 import org.gjt.sp.jedit.
 import javax.swing.
 import COM.ibm.netrexx.process.NetRexxA
