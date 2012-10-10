@@ -1,0 +1,643 @@
+<HTML>
+<HEAD>
+   <TITLE>NetRexxDE Plugin</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE
+    SUMMARY="Header"
+    BGCOLOR="#CCCCFF"
+    CELLSPACING="0"
+    BORDER="0"
+    WIDTH="100%"
+    COLS="2"
+>
+    <TR WIDTH="100%">
+        <TD VALIGN="TOP"><B><FONT SIZE="+2">NetRexxDE</FONT></B></TD>
+        <TD VALIGN="TOP" ALIGN="RIGHT"><FONT SIZE="-1"><B>
+        Version 1.0.2c (February 2010)</B>
+        <BR>By David Requena (drequena@gmail.com)
+		<BR>based on NetRexxJe by Satguru P. Srivastava
+        </FONT></TD>
+    </TR>
+</TABLE>
+
+<UL>
+    <LI><A HREF="#intro">Introduction</A>
+    <LI><A HREF="#req">Requirements</A>
+    <LI><A HREF="#install">Installation</A>
+    <LI><A HREF="#start">Getting Started</A>
+    <LI>Using the Plugin
+    <UL>
+    <LI><A HREF="#navigator">Using the Structure Browser</A>
+    <LI><A HREF="#options">Changing Compiler Options</A>
+    <LI><A HREF="#compile">Compiling your Program</A>
+    <LI><A HREF="#java">Creating the Java Program</A>
+    <LI><A HREF="#run">Running your Program</A>
+    <LI><A HREF="#classpath">Changing ClassPath</A>
+    <LI><A HREF="#keyboard">Using Keyboard Shortcuts</A>
+    </UL>
+    <LI><A HREF="#notes">Notes</A>
+    <LI><A HREF="#todo">ToDo</A>
+    <LI><A HREF="#log">Change Log</A>
+    <LI><A HREF="#feedback">FeedBack</A>
+</UL>
+
+<TABLE
+    SUMMARY="Introduction"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <tr align="center" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><b><font color="#FFFFFF" size="+1">
+        <a name="intro">Introduction</a></font></b></td>
+    </tr>
+</TABLE>
+
+<P>
+The "NetRexxDE" plugin provides a quick and easy way to compile and run your NetRexx or Java
+program from within the jEdit environment.
+</P>
+
+<TABLE
+    SUMMARY="Requirements"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="req">Requirements</A></FONT></B></TD>
+    </TR>
+</TABLE>
+
+<P>
+The minimum requirements are
+</P>
+<UL>
+    <LI>JDK 1.5
+    <LI>jEdit 4.2
+    <LI>NetRexx 2.05 (included with the plugin)
+    <LI>ErrorList Plugin 1.2.3
+    <LI>CommonControls 0.2
+    <LI>SideKick 0.1
+</UL>
+
+
+<TABLE
+    SUMMARY="Installation"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="install">Installation</A></FONT></B></TD>
+    </TR>
+</TABLE>
+
+<P>
+
+jEdit can install the plugin for you or you can install it manually.
+<P>
+To let jEdit install the plugin
+<UL>
+	<LI> Go to the jEdit menu and select Plugins.
+	<LI> From the drop down menu select Plugin manager and follow the instructions.
+	<LI> Unfortunatelly this is not a jEdit team sanctioned release so this method won't work for the time being
+</UL>
+To install it manually
+<UL>
+	<LI> Download the NetRexxDE-x.xx.jar / .tgz / .zip file
+	<LI> Extract NetRexxDE.jar and NetRexxC.jar file from it.
+	<LI> Copy both the files to  jEdit/jars directory
+	<BR> or
+	<BR> to the &ltusers home directory&gt;/.jedit/jars directory.
+	<BR> On windows the home directory could be c:\windows\profiles\&ltuserid&gt;\
+	<BR> On linux  it could be /home/&lt;userid&gt;/
+	<BR> (See jEdit documentation for more help on this)
+</UL>
+
+<TABLE
+    SUMMARY="Getting Started"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="start">Getting Started</A></FONT></B></TD>
+    </TR>
+</TABLE>
+
+<P>
+ To start the plugin
+<UL>
+    <LI>Go to the jEdit menubar and select "Plugins".
+    <LI>On the Plugins drop down Menu select "NetRexxDE" to start NetRexxDE.
+    (Select it again to stop the Plugin.)
+</ul>
+Hopefully this is all you would need to do to get going.
+<P>
+But if a message box pops up asking you to set some paths
+or you are having problem later on while using NetrexxJe then read on.
+<P>
+Every time NetRexxDE is started it checks to see if certain paths are set and that they are valid.
+<BR>If a path is not set it will try to set it itself.
+<BR>If a path is set then it will check to see if the it is valid i.e. if it exits.
+<BR>If it is unable to set a path or if it finds that a path is invalid it will pop up a message box warning you of that and
+will ask you to set it manually.
+<P>
+To set/check/change the paths set by NetRexxDE -
+<UL>
+    <LI>Go to the jEdit menubar and select "Utilities" -> "Global Options..".
+    <BR>This will bring up the Global options dialog box.
+    <LI>In the Global options dialog box select "Plugin Options" -> "NetRexxDE" on the left pane
+    <BR>This should bring up the NetRexxDE option panel on the right.
+	<LI>You should see three fields which will have to be set. These are
+	<UL>
+		<LI><B>Path to JVM.</B>
+		<BR>This should be set to where your java program is.
+		<BR>On windows this might be c:\jdk1.5\bin\javaw.exe.
+		<BR>On linux this might be /usr/local/java/jdk1.5/bin/java.
+		<LI><B>Path to NetRexxC.jar.</B>
+		<BR>This should be set to where the NetRexx compiler & runtime library file viz NetRexxC.jar file is.
+		    Because the NetRexxC.jar file is included in the plugin this path will be set to point to the plugin directory.
+		<BR>You can change this to point to another version of NetRexxC.jar file.
+		<br>NB: In version 0.03 this pointed to NetRexxDE.jar file. If you are upgrading from version 0.03 then change NetRexxDE.jar to NetRexxC.jar or delete the path completely and the plugin will try to set this correctly for you.
+		<LI><B>Path to tools.jar.</B>
+		<BR>This should be set to where the java compiler file viz tools.jar file is.
+		<BR>On Windows this might be c:\jdk1.5\lib\tools.jar.
+		<BR>On Linux this might be /usr/local/java/jdk1.5/lib/tools.jar
+		<UL>
+		    On Linux for some reason NetRexx ignores this path during compilation.
+		    <BR>If you get the error message "java.lang.NoClassDefFoundError:sun/tools/javac/Main" every time  you try to compile your program
+		    then either copy the tools.jar to your java's jre/lib/ext directory or create a link to tools.jar in your java's jre/lib/ext directory.
+		</UL>
+		On Mac OS X this might be /System/Library/Frameworks/JavaVM.framework/Versions/1.5.1/Classes/classes.jar
+		<UL>
+		    Looks like Mac OS doesnot provide a tools.jar file instead the same functionality is provided by classes.jar
+		</UL>
+	</ul>
+	<P>
+    <LI>After changing the paths click OK to save the paths and come out.(The values are saved across jEdit Sessions.)
+    If you had  cleared a field or had left it blank NetRexxDE will try to set it again.
+	If it fails then it would leave the field blank and warn you of that.
+</UL>
+<BR>
+</P>
+<TABLE
+    SUMMARY="Using the Structure Browser"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="navigator">Using the Navigator</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/Nav16.gif"> Structure Browser.
+<p>This displays the structure of your program and helps you move around your code.
+<p>This has been implemented using the SideKick Plugin.
+<br>The NetRexxDE Plugin scans your source code for NetRexx tokens (classes, properties and methods), creates a tree model and passes that over to the SideKick plugin.
+The SideKick Plugin displays the tree in a  separate docked\undocked Structure Browser window. 
+<p>When you click a node on the tree the Structure Browser moves the cursor\caret over to the line containing the class, property or method referred to by that node.
+<br>When you click a node while pressing the Shift key the Structure browser selects the whole class, property or method referred to by that node
+<br>When you click a node while pressing the Ctrl key the Structure browser displays the the whole class, property or method referred to by that node and hides the rest of the code. Clicking another node redisplays the rest of the code
+<br>As you move around your code the corresponding node on the tree is automatically selected. 
+<p>Clicking the refresh button will force the Structure Browser to parse and refresh the tree. 
+<br>You can also set options to automatically parse at certain time intervals or when certain events occur.
+<br>To do so go to Global Options and set the properties of the SideKick Plugin
+<p>The Structure browser can also be docked using global options, docking.
+<p>Since 0.0.1 you can select different options for node sorting and node grouping on the structure tree. Be sure to play a bit with the different available combinations
+sou you get what suits better your own tastes. There're 28 different setups in total. 
+<p><a href="res/SideKickCapture.gif">See a sample here</a>
+<p>NB:The NetRexxDE plugin uses simple regular expression for parsing your code. It is not a true Parser. It will not validate your code. If your code does not compile properly you might get unexpected results.
+<p>
+<TABLE
+    SUMMARY="Compiling your Program"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="compile">Compiling your Program</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/Application16.gif">NetRexx / Java Compiler.
+<p>The compile button is a toggle button and will remain pressed during the compile process.
+To abort the compile process anytime press the Compile button again.
+<p> If the compile process was error free then a class file would be created in the same directory as
+that of the source file.
+<p>Any warning or error messages reported by the compiler will be passed on to the EditBus.
+<BR>If you have installed the ErrorList Plugin then these messages will be displayed in the
+ErrorList plugin panel. Clicking a message on the ErrorList panel will highlight the erring phrase
+in your source code.
+<p> If the file type of the program is 'java' then the plugin would invoke the java compiler otherwise it would invoke the NetRexx compiler.
+<p>If you are compiling a java program you can add/change compile options by typing them in the 'Args/Stdin' text box.
+For example to compile the java program with the 'verbose' option just type -verbose in the 'Args/Stdin' text box and press the Compile button.
+<p>NB:
+While compiling netrexx program the plugin uses the NetRexx compiler's "compact" option to make it display the messages
+in particular format. If this option is overridden, using the option keyword in your source program,
+then the plugin will not be able to capture the messages.
+</P>
+
+
+<TABLE
+    SUMMARY="Creating the Java Program"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="java">Creating the Java Program</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/JavaCup16.gif"> Netrexx to Java
+<p>Like the compile button the Java button is also a toggle button and will remain pressed during
+the whole process. To abort the Java process anytime press the Java button again.
+<p> Pressing the Java button also invokes the NetRexx compiler. But this time the compiler merely
+parses the source file and creates the equivalent java file. It does not create the class file.
+<p>At the end of the process if there were no errors  a java file is created in the same directory
+as your source file and is also displayed in another edit pane.
+<p> By default the file is given the name of your program and an extension of "JAVA.KEEP".
+This can be overridden to give an extension of "JAVA". To do this go the Global Option dialog box
+and select the NetRexxDE option "Change file type from JAVA.KEEP to JAVA after the java Processing".
+Changing file ext to "JAVA" can be helpful because then you can use other Java Plugins like
+JBrowse etc to analyze your code.
+<p> If the "JAVA.KEEP" to "JAVA" option was chosen in the Global Options dialog box then remember to also override the noreplace compiler options. Normally the compiler complains if it finds a JAVA file already there.
+
+<p>Error messages are handled in the same manner as the Compile process described above.
+</P>
+
+<TABLE
+    SUMMARY="Changing Compiler Options"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="options">Changing Compiler Options</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/Preferences16.gif">
+NetRexx compiler options
+<p>Pressing the Options button will replace the NetRexx console panel by
+the compiler option panel. Pressing the Options button again will restore the console panel.
+<p> The compiler option panel contains a list of the <B>DEFAULT</B> options used by the compiler. To override an
+option just go and select it. The selections made are saved across jEdit sessions.
+</P>
+
+<TABLE
+    SUMMARY="Changing Classpath"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="classpath">Changing Classpath</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P>
+You can change the classpath used by the NetRexx & Java compiler by typing in a new classpath in the ClassPath field.
+You can also set the path interactively by clicking the ClassPath button.
+<P>The ClassPaths set by you are stored in the jEdit's History file. They are available when you start jedit again.The number
+of ClassPaths stored is determined by the 'History entries' setting in the General Global Option.
+<p>To select a previous classpath click the drop down box and pick one from the drop down list.
+<p> The plugin adds the following paths to what you selected
+<ul>
+    <li> the path to the source file viz '.'
+    <li> the system classpath which is basically the classpath found when jEdit was started
+	<li> path to NetRexxC.jar
+	<li> path to tools.jar
+</ul>
+NB:In windows if you started jEdit using the jar option (eg java -jar jedit.jar) then your system classpath would be
+just jedit.jar
+</P>
+
+<TABLE
+    SUMMARY="Running Your Program"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="run">Running Your Program</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/Play16.gif"> Run NetRexx / Java program.
+<p>This is a toggle button and will remain pressed and its icon will change to <img src="res/Stop16.gif"> during the run.
+To abort the run anytime press the Run button again.
+<p>To pass any arguments to your program type in those arguments in the Args/Stdin field or pick one more the drop down box before running the pgm.
+To store your arguments in the history press ENTER after entering the arguments.
+<p>Your program will run with the classpath set as described above and with the arguments typed in the
+ Args/Stdin field
+<p>If your program reads from the STDIN during it's run ie. if it uses ask or readln etc then you
+can pass data to it by typing the data into the Args/Stdin field or picking one from the drop down box and pressing the ENTER key on the keyboard.
+The data is stored in the history.
+</P>
+                                                                      
+<TABLE
+    SUMMARY="Using then TRACE console"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="run">Using then TRACE console</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/TraceConsoleOFF16.gif"> The TRACE console.
+<p>This is a toggle button tha will switch panels to the new separate TRACE console. Clicking the button again will switch back to the regular
+stdin/stdout console. At any time you may use this console get at any trace output generated by previous programm runs.
+<p>While the TRACE console is active its button icon will change to <img src="res/TraceConsoleON16.gif">. Additionally TRACE console's 
+background color is a shade of gray to help identifiying current active console.
+<p>If at any time a running process generates some TRACE output while this console is not the active one, NetRexxDE will notify you of the
+event animating its button like this <img src="res/TraceConsoleALERT16.gif">
+<p>NetRexxDE's output parsing engine will do its best to identify lines corresponding to source lines and make them 'active'. That is,
+lines styled as underlined and blue can be clicked and jEdit will jump to the buffer containing that file. The line in question will be selected.
+A new buffer will be created in the event of the source file not being previously openend.
+<p><a href="res/TraceCapture.gif">See a sample here</a>
+</P>
+
+<TABLE
+    SUMMARY="Using then ERROR console"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="run">Using then ERROR console</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P><img src="res/ErrorConsoleOFF16.gif"> The ERROR console.
+<p>This is a toggle button tha will switch panels to the new separate ERROR console. Clicking the button again will switch back to the regular
+stdin/stdout console. At any time you may use this console get at any error output generated by previous programm runs.
+<p>While the ERROR console is active its button icon will change to <img src="res/ErrorConsoleON16.gif">. Additionally ERROR console's 
+background color is a shade of red to help identifiying current active console.
+<p>If at any time a running process generates some ERROR output (as per System.err.println() or Exception.printStackTrace()) while this
+console is not the active one, NetRexxDE will notify you of the event animating its button like this <img src="res/ErrorConsoleALERT16.gif">
+<p>NetRexxDE's output parsing engine will do its best to identify lines corresponding to source lines in stack traces and make them 'active'.
+That is, lines styled as underlined and blue can be clicked and jEdit will jump to the buffer containing that file. The line in question will 
+be become selected. A new buffer will be created in the event of the source file not being previously openend.
+<p><a href="res/ErrorCapture.gif">See a sample here</a>
+</P>
+
+<TABLE
+    SUMMARY="Keyboard"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="keyboard">Using Keyboard Shortcuts</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<P>All of the tasks that you can perform by clicking buttons on the plugin toolbar can also be performed by pressing certain keyboard keys.
+Before you can do this you need to assign certain keyboard combinations to a task.
+<BR>To do this
+<UL>
+     <LI>go to the jedit menu and select Utilities > Global Options. This would bring up the Global OptionS window.
+     <LI>Select jEdit Options > ShortCuts.
+     <LI>On the right pane click the Edit ShortCuts drop down menu and select Plugin:NetRexxDE.This would list out all the task/commands available.
+     <LI>Enter the Key Combination that you want  to use for a task/command.
+</UL>
+For more help on setting and using keyboard shortcuts see the jEdit Help.
+</P>
+
+<TABLE
+    SUMMARY="Notes"
+    BORDER="0"
+    CELLPADDING="3"
+    CELLSPACING="0"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="notes">Notes</A></FONT></B></TD>
+    </TR>
+</TABLE>
+<UL>
+    <LI> The compile and create java process uses the NetRexx compiler -prompt option.
+    <BR> The compiler runs in a separate thread and does not stop after a compilation or parsing is completed. It just keeps waiting
+         in the background. As a result of this subsequent compilations are quite fast.
+    <BR> The compiler restarts only if the file to be compiled or parsed is in a directory which is
+         different from the directory of the file last compiled or if the classpath was changed.
+    <LI> During Compile, Java or Run process the source code directory is made the current working directory.
+         The reason for this is the way netrexx compiler handles default packages. This might change in the
+         future.
+         (This was the main reason for using JDK1.3. JDK1.3 provides a simple way to change working
+         directory)
+</UL>
+
+
+<TABLE SUMMARY="To Do" BORDER="0" CELLSPACING="0" CELLPADDING="3" WIDTH="100%">
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="todo">To Do</A></FONT></B></TD>
+    </TR>
+</TABLE>
+
+<P>These are the additional features that are being considered:</P>
+
+<ul>
+    <li>Add a compiler option panel for changing Java Compiler options.
+    <li>Add online help for NetRexx keywords.
+    <li>Utility to quicky create JavaDoc files for netrexx programs
+    <li>Provide the means to interface to the NetRexx interpreter. Maybe allowing for 'live' NetRexx expression evaluation.
+    <li>Mass Compiles.<BR>
+        This one came a little nearer into being as the new build system
+        has demonstrated that integration with ant's optional netrexxc task is indeed posible. Now
+	considering integration with Project Viewer and/or AntFarm plugins.
+    </ul>
+
+<TABLE SUMMARY="Change log" BORDER="0" CELLSPACING="0" CELLPADDING="3" WIDTH="100%">
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="log">Change log</A></FONT></B></TD>
+    </TR>
+</TABLE>                                       
+<P>Version 1.0.2c (February 2010) by David Requena</P>
+<ul>
+	<li> A change in Sun's Hotspot VM default heap values prevented NetRexxDE to compile NetRexx code in JRE/SDK v. 1.8u18 and up.<br>
+	     Hot fix released with minimum heap size increased to 16 MB. This will be better fixed on next version.
+</ul>
+
+<P>Version 1.0.2b (February 2010) by David Requena</P>
+<ul>
+	<li> A minor change in jEdit v. 4.3 final API was preventing NetRexxJe from building against most recent jEdit versions.<br>
+	     Fixed by explicitly casting classes to EBComponent before insertion in jEdit's Edit Bus.
+</ul>
+
+<P>Version 1.0.2a (August 2009) by David Requena</P>
+<ul>
+	<li> A minor aesthetic bug preventing the run button to go back to inactive icon on process abortion was fixed
+	<li> Several misspellings on written docs were fixed.
+	<li> Some debug logging code had inadvertedly left on final release.
+</ul>
+
+<P>Version 1.0.2 (August 2009) by David Requena</P>
+<ul>
+	<li> New build system.<BR>
+	     Now you can take the full distribution, put containes folders anywhere on your 
+	     disk and buld using ant and the provided build.xml file.<BR>
+	     In addition build system now uses ant's netrexxc task for compilation instead 
+	     of the previous, clever, hack. Ant is able to determine if the compilation went 
+	     well as well as which source files need recompilation. Previously it recompiled 
+	     everithing on each run and packaged even when errors arose.<BR>
+	     <B>IMPORTANT NOTE:</B> If you're using Jedit plus ant and AntFarm plugins to 
+	     build NetRexxDE you'll need to get ant-netrexxc.jar elsewhere and configure 
+	     it at AntFarm's settings. This is so because ant plugin does not include ant's 
+	     optional taskdefs.<BR>
+	<li> Distribution packages generated are now apt for installation vía Plugin Manager. 
+	     For the time being manual installation is still needed as PM requires plugin download 
+	     from Plugin Central to which I've no access...
+	<li> NetRexxC.jar v. 2.05 is now included in the distribution.
+	<li> New TRACE console for uncluttered tracing of programs. Source lines get identified and hyperlinked.
+	<li> New Error console gets standard error output. Source lines get identified and hyperlinked.
+	<li> Ability to sort nodes in the structure browser. Case sensitive/unsentive sorting option.
+	<li> Grouping of method nodes in the structure browser in several ways with optional identification of constructor methods
+	<li> Several graphics tweaks across the UI: insets adjusting, layouts, some icons, etc.
+	<li> Now classpaths directly typed in the classpath field are also added to classpath history. Previously only the ones entered through path builder were.
+	<li> Preliminary work for Project Viewer plugin integration done. Some (disabled) options present in the option pane.
+</ul>
+
+<P>Version 1.0.1 (Feburary 2008) by David Requena</P>
+<ul>
+	<li> Adapted to use java's standard regex support instead of the former jEdit built-in one. Got some trouble with the new GNU regex plug-in.
+	<li> Minimum JDK versión is now 1.5 as a requirement of previous item.<BR>
+	     Requirement is 1.4 in fact but doesn't matter much as jEdit's java baseline is now 1.5.<br>
+	     Anyway this allowed eliminating some deprecation warnings when building on 1.5+
+	<li> Changed version number format.<BR>
+	     NetRexxDE has been for a long time 'frozen' with no bug reports and the like so once properly
+	     loading on jEdit 4.3x I'll consider it as a 1.0 release. Any further modifications will be new
+	     features/fixes on my own and will follow the more standard x.x.x plugin version number scheme.
+</ul>
+<P>Version 0.10 (June 2008) by David Requena</P>
+<ul>
+	<li> Adapted to JEdit's new plug-in loading mechanism for 4.2.
+	
+</ul>
+<P>Version 0.09 (March 2003)</P>
+<ul>
+	<li> Replaced NetRexx Source Code Navigator by SideKick plugin's Structure Browser
+	<br> The Sidekick plugin includes a structure tree dockable window, commands for moving the caret and folding based on language tokens,
+	
+</ul>
+<P>Version 0.08 (October 2002)</P>
+<ul>
+	<li> Added capability to define keyboard shortcuts.
+	<li> Args/Stdin data is now stored in jEdit history file for later recall.
+	<li> Fixed bug in source code navigator.
+	<br> This source code navigator displayed properties erroneously when no classes or methods were explicitly defined in the source code.
+</ul>
+
+<P>Version 0.07 (June 2002)</P>
+<ul>
+	<li> A source code navigator added.
+	<br> This presents the netrexx pgm as a Tree with nodes of classes, properties and methods
+	<br> User can move around his code by clicking nodes on the Tree.
+	<li> GUI changed.
+	<br> Floating tool bar removed.
+	<br> Switched to smaller standard Java L&F icons.
+	<br> GUI elements rearranged.
+	<li> ClassPaths now stored in jEdit history file instead of property file
+	<br> jEedit's History Textfield  is now used to get ClassPath. Much better than JComboBox used initially.
+	<br> Number of classpaths stored changed from 5 to a value determined by 'History Entries' setting in Global General Options
+</ul>
+
+<P>Version 0.06 (May 2002)</P>
+<ul>
+	<li> Made jEdit 4.0 compatible
+	<br> Changes were made to DockableWindow, EditBus and Errorlist code
+	<br> DockableWindow now created through dockables.xml file
+	<li> Added code to interactively set Classpath
+	<br> This is done using the CommonControls Plugin
+	<li> Added ANT script file (build.xml) for building the Plugin
+</ul>
+
+<P>Version 0.05 (October 2001)</P>
+<ul>
+	<li> Removed code which used the old Action API.
+	<br> The Action API has been deprecated since jEdit 3.0 and will be gone in jEdit 4.0.
+	<br> Actions are now defined using 'actions.xml' and 'NetRexxDE.props' files.
+	<br> EndUser should not see any difference.
+</ul>
+
+<P>Version 0.04 (March 2001)</P>
+<ul>
+	<li> Added code to compile Java Programs too.
+	<br> Now both NetRexx & Java programs can be compiled from within the plugin.
+    <li> The NetRexx compiler & run time library file 'NetRexxC.jar' is included separately in the plugin package.
+    <br> In the previous version it was included as a part of the plugin file 'NetRexxDE.jar'.
+    <br> The new way is the standard way of including external packages in a plugin package.
+</ul>
+
+<P>Version 0.03 (March 2001)</P>
+<ul>
+    <li> Added NetRexxC.jar file to the plugin.
+	<BR> This avoids installing NetRexx separately.
+    <li> Added code to automatically set various paths.
+</ul>
+
+<P>Version 0.02 (Nov. 2000)</P>
+<ul>
+    <li> bugs fixed
+    <li> gui revamped
+    <li> minor optimizations for speed
+</ul>
+
+<P>Version 0.01 (Oct. 2000) </P>
+<ul>
+    <li> First version released
+</ul>
+
+
+<TABLE
+    SUMMARY="Feedback"
+    BORDER="0"
+    CELLSPACING="0"
+    CELLPADDING="3"
+    WIDTH="100%"
+>
+    <TR ALIGN="CENTER" WIDTH="100%">
+        <TD BGCOLOR="#7FB2FF" WIDTH="100%"><B><FONT COLOR="#FFFFFF" SIZE="+1">
+        <A NAME="feedback">Feedback</a></FONT></B></TD>
+    </TR>
+</TABLE>
+
+<P>
+Please send any bug reports or feedback to me at the following address
+<br>
+<EM>drequena@gmail.com</EM>
+</P>
+
+<P>Thanks
+<BR>David Requena
+</P>
+</body>
+</html>
