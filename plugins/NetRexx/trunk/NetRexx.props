@@ -8,10 +8,7 @@ plugin.netrexxplugin.NetRexxPlugin.author=Kermit Kiser
 plugin.netrexxplugin.NetRexxPlugin.version=0.1.0
 plugin.netrexxplugin.NetRexxPlugin.description=NetRexx Tools
 plugin.netrexxplugin.NetRexxPlugin.usePluginHome=false
-plugin.netrexxscript.NetRexxScriptPlugin.docs=NetRexxScript.html
-plugin.netrexxscript.NetRexxScriptPlugin.description=NetRexx Scripting plugin
-plugin.NetRexxDEPlugin.docs=NetRexxDE.html
-plugin.NetRexxDEPlugin.description=A NetRexx development environment for jEdit
+plugin.netrexxplugin.NetRexxPlugin.docs=NetRexxPlugin.html
 
 # plugin dependencies
 plugin.netrexxplugin.NetRexxPlugin.depend.0=jdk 1.5
