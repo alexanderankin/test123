@@ -1,0 +1,19 @@
+
+	OPTION_PREFIX = String "options.android."
+	fs=File.separator
+ --													verify default locations:
+	set_adk_location.main([String "check"])
+	sdk=jEdit.getProperty(OPTION_PREFIX"sdk","")
+	if sdk="" then android="android"
+		else android=sdk||fs"tools"fs"android"
+	if sdk="" then adb="adb"
+		else adb=sdk||fs"platform-tools"fs"adb"
+								
+    shell.cmd(adb "start-server","detach")
+ 
+    adbstarted=jEdit.getProperty(OPTION_PREFIX"adbstarted","no")
+    if adbstarted ="no" then Thread.sleep(7000)
+    jEdit.setTemporaryProperty(OPTION_PREFIX"adbstarted","yes")
+			
+shell.tobuffer(android 'list avd &' adb 'devices' )
+

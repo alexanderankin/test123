@@ -1,0 +1,11 @@
+
+	OPTION_PREFIX = String "options.android."
+	fs=File.separator
+ --													verify default locations:
+	set_adk_location.main([String "check"])
+	sdk=jEdit.getProperty(OPTION_PREFIX"sdk","")
+	if sdk="" then android="android"
+		else android=sdk||fs"tools"fs"android"
+	
+shell.cmd(android,"detach")
+--shell.cmd("android","detach")
