@@ -25,7 +25,7 @@ import javax.swing.text
 import COM.ibm.netrexx.process
 
 import common.gui.pathbuilder
-import errorlist
+--import errorlist
 import org.gjt.sp.jedit
 import org.gjt.sp.jedit.gui
 import org.gjt.sp.jedit.msg
@@ -56,7 +56,9 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 
 		PlugInStop = boolean 0
 
-		errorsource = errorlist.DefaultErrorSource
+--		errorsource = errorlist.DefaultErrorSource
+		errorsource=NetRexxErrorList
+		errorlist=Object
 
 		CompilerCmd  = String ""
 		CompileErrors = boolean 1
@@ -118,16 +120,16 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 		activeConsoleTextStyle = SimpleAttributeSet
 		projectsEnabled = boolean
 		projectMode = boolean
-		singleFileModeIcon = ImageIcon(getClass().getResource("res/File16.gif"))
-		projectModeIcon = ImageIcon(getClass().getResource("res/Project16.gif"))
-		TraceIcon = ImageIcon(getClass().getResource("res/TraceConsoleON16.gif"))
-		NoTraceIcon = ImageIcon(getClass().getResource("res/TraceConsoleOFF16.gif"))
-		AlertTraceIcon = ImageIcon(getClass().getResource("res/TraceConsoleALERT16.gif"))
-		ErrOutputIcon = ImageIcon(getClass().getResource("res/ErrorConsoleON16.gif"))
-		NoErrOutputIcon = ImageIcon(getClass().getResource("res/ErrorConsoleOFF16.gif"))
-		AlertErrOutputIcon = ImageIcon(getClass().getResource("res/ErrorConsoleALERT16.gif"))
-		PlayIcon = ImageIcon(getClass().getResource("res/Play16.gif"))
-		StopIcon = ImageIcon(getClass().getResource("res/Stop16.gif"))
+		singleFileModeIcon = ImageIcon(getClass().getResource("/res/File16.gif"))
+		projectModeIcon = ImageIcon(getClass().getResource("/res/Project16.gif"))
+		TraceIcon = ImageIcon(getClass().getResource("/res/TraceConsoleON16.gif"))
+		NoTraceIcon = ImageIcon(getClass().getResource("/res/TraceConsoleOFF16.gif"))
+		AlertTraceIcon = ImageIcon(getClass().getResource("/res/TraceConsoleALERT16.gif"))
+		ErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleON16.gif"))
+		NoErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleOFF16.gif"))
+		AlertErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleALERT16.gif"))
+		PlayIcon = ImageIcon(getClass().getResource("/res/Play16.gif"))
+		StopIcon = ImageIcon(getClass().getResource("/res/Stop16.gif"))
 		projectGroup = VPTGroup
 
 	method NetRexxDE(v=org.gjt.sp.jedit.View, pos=String)
@@ -144,37 +146,37 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 			operationModeButton.setMargin(Insets(0,0,0,0))
 			operationModeButton.addActionListener(this)
 			
-			NavButton = JButton(ImageIcon(getClass().getResource("res/Nav16.gif")))
+			NavButton = JButton(ImageIcon(getClass().getResource("/res/Nav16.gif")))
 			NavButton.setToolTipText("Structure Browser")
 			NavButton.setActionCommand("Nav")
 			NavButton.setMargin(Insets(0,0,0,0))
 			NavButton.addActionListener(this)
 
-			CompileButton=createButton("Compile","res/Application16.gif")
+			CompileButton=createButton("Compile","/res/Application16.gif")
 			CompileButton.setToolTipText("Compile")
 
-			JavaButton = createButton("Java","res/JavaCup16.gif")
+			JavaButton = createButton("Java","/res/JavaCup16.gif")
 			JavaButton.setToolTipText("Create the Java File")
 
-			OptionButton = createButton("Options","res/Preferences16.gif")
+			OptionButton = createButton("Options","/res/Preferences16.gif")
 			OptionButton.setToolTipText("Set Compiler Options")
 
-			ClearButton = createButton("Clear","res/Delete16.gif")
+			ClearButton = createButton("Clear","/res/Delete16.gif")
 			ClearButton.setToolTipText("Clear the NetRexx Console")
 
-			RunButton = CreateButton("Run","res/Play16.gif")
+			RunButton = CreateButton("Run","/res/Play16.gif")
 			RunButton.setToolTipText("Run this program")
 			RunButton.setIcon(PlayIcon)
 			
-			TracerButton = CreateButton("ShowTrace","res/TraceConsoleOFF16.gif")
+			TracerButton = CreateButton("ShowTrace","/res/TraceConsoleOFF16.gif")
 			TracerButton.setToolTipText("Show TRACE output")
 
-			ErrOutButton = CreateButton("ShowErrorOutput","res/ErrorConsoleOFF16.gif")
+			ErrOutButton = CreateButton("ShowErrorOutput","/res/ErrorConsoleOFF16.gif")
 			ErrOutButton.setToolTipText("Show System.err output")
 
-			ProcessLabel1=JLabel(ImageIcon(getClass().getResource("res/ProcessStill.gif")))
+			ProcessLabel1=JLabel(ImageIcon(getClass().getResource("/res/ProcessStill.gif")))
 			ProcessLabel1.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
-			ProcessLabel =JLabel(ImageIcon(getClass().getResource("res/ProcessDyn.gif")))
+			ProcessLabel =JLabel(ImageIcon(getClass().getResource("/res/ProcessDyn.gif")))
 			ProcessLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
 			ProcessLabel.setVisible(0)
 			ProcessLabel.addComponentListener(this)
@@ -200,7 +202,8 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 			
 
 		--CmdToolBar.add(operationModeButton)
-		CmdToolBar.add(NavButton)
+		if jEdit.getPlugin("sidekick.SideKickPlugin") \= null then
+					CmdToolBar.add(NavButton)
 		CmdToolBar.add(OptionButton)
 		CmdToolBar.add(CompileButton)
 		CmdToolBar.add(JavaButton)
@@ -208,7 +211,11 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 		CmdToolBar.add(TracerButton)
 		CmdToolBar.add(ErrOutButton)
 		CmdToolBar.add(ClearButton)
-		CmdToolBar.add(CPButton)
+			jars=jEdit.getPluginJARs
+			loop pj over jars
+				if Rexx(pj.getPath).pos("CommonControls.jar")\=0 then 
+					CmdToolBar.add(CPButton)
+				end		
 		CmdToolBar.add(CPField)
 		CmdToolBar.add(RunArgsLabel)
 		CmdToolBar.add(RunArgsField)
@@ -516,6 +523,8 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 
 			when (ButtonClicked=="SetCP") then
 			do
+				dialog=PathBuilderControl(CPField,OurView,this)
+/*				
 				parent = Frame getTopLevelAncestor();
 				dialog=PathBuilderDialog( parent, "Build Classpath" )
 				pathBuilder = dialog.getPathBuilder()
@@ -526,9 +535,11 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 				dialog.pack()
 				dialog.setLocationRelativeTo( parent )
 				dialog.setVisible(true);
+*/				
 				if ( dialog.getResult() ) then
 				do
-					newPath = pathBuilder.getPath()
+					newPath = dialog.getPath()
+--					newPath = pathBuilder.getPath()
 					if (newPath.length()>0 )then
 					do	
 						CPField.setText(newPath)
@@ -541,7 +552,8 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 			-- depending on which button is pressed
 			when ProcessStatus == "" then 
 			do
-				errorsource.clear()
+--				errorsource.clear()
+				if errorsource\= null then errorsource.clear
 				getFileInfo()
 				ButtonPushed = (JToggleButton ae.getSource())
 				-- get the filetype
@@ -721,8 +733,10 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 		-- this object will be used to pass error messages on the Bus
 		-- plugins like errorlist can then recieve and  handle those messages
 		
-		errorSource = errorlist.DefaultErrorSource(NetRexxDEPlugin.NAME)
-		ErrorSource.registerErrorSource(errorSource)
+--		errorSource = errorlist.DefaultErrorSource(NetRexxDEPlugin.NAME)
+			errorlist=jEdit.getPlugin("errorlist.ErrorListPlugin")
+			if errorlist \=null then errorsource=NetRexxErrorList()
+--		ErrorSource.registerErrorSource(errorSource)
 --		EditBus.addToBus(EBComponent errorSource)
 	
 	/**
@@ -733,7 +747,8 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 		super.removeNotify()
 
 		-- clear any error messages before quitting
-		errorsource.clear()
+--		errorsource.clear()
+		if errorsource\= null then errorsource.clear
 
 		-- exit from the compiler if it is still running
 		if CompilerStarted then	
@@ -759,7 +774,8 @@ class NetRexxDE adapter extends JPanel implements ActionListener, ComponentListe
 		if ProcessStatus=="CompileJava" then RunProcess.destroy()
 
 --		EditBus.removeFromBus(EBComponent errorsource) 
-		ErrorSource.unregisterErrorSource(errorsource)
+--		ErrorSource.unregisterErrorSource(errorsource)
+		if errorsource\= null then errorsource.quit
 		EditBus.removeFromBus(EBComponent this)
 
 		-- save properties for next session
@@ -1097,7 +1113,8 @@ class NetRexxDE.ErrorCatcher dependent extends Thread
 				parse ln p1 ":" p2 ":" p3
 				if p1 == parent.FileName then
 				do
-					parent.errorsource.addError(DefaultErrorSource.ERROR,parent.FullFileName,(int p2)-1,0,0,p3)
+					if parent.errorsource \= null then
+						parent.errorsource.addError(NetRexxErrorList.ERROR,parent.FullFileName,(int p2)-1,0,0,p3)
 				end
 			end
 
@@ -1168,12 +1185,14 @@ class NetRexxDE.CompileOutputCatcher dependent extends Thread
 				do
 					errors='y'
 					parse ln "[" ErrMsgDetails "] Error:"  ErrMsg 
-					AddErrMsg(DefaultErrorSource.ERROR, ErrMsgDetails, ErrMsg)
+					if parent.errorsource \= null then
+						AddErrMsg(NetRexxErrorList.ERROR, ErrMsgDetails, ErrMsg)
 				end   
 				if ln.pos("] Warning:") > 0  then
 				do
-					parse ln "[" ErrMsgDetails "] Warning:"  ErrMsg 
-					AddErrMsg(DefaultErrorSource.WARNING, ErrMsgDetails, ErrMsg)
+					parse ln "[" ErrMsgDetails "] Warning:"  ErrMsg
+					if parent.errorsource \= null then					
+						AddErrMsg(NetRexxErrorList.WARNING, ErrMsgDetails, ErrMsg)
 				end   
 			end
 		end
@@ -1185,6 +1204,31 @@ class NetRexxDE.CompileOutputCatcher dependent extends Thread
 		lineIndex 	= int ErrMsgDetails.word(wc-2)-1
 		colStart 	= int ErrMsgDetails.word(wc-1)-1
 		colEnd  	= int colStart + ErrMsgDetails.word(wc) 
-		if lineIndex >=0 then parent.errorsource.addError(ErrType,parent.FullFileName,lineIndex,colStart,colEnd,ErrMsg)
+		if lineIndex >=0 then 
+			if parent.errorsource \= null then
+				parent.errorsource.addError(ErrType,parent.FullFileName,lineIndex,colStart,colEnd,ErrMsg)
 
-
+class NetRexxDE.PathBuilderControl
+	
+	dialog=PathBuilderDialog
+	pathBuilder = common.gui.pathbuilder.PathBuilder
+	TRUE=boolean 1
+	
+	method PathBuilderControl(CPField = HistoryTextField, OurView = org.gjt.sp.jedit.View, dad=NetRexxDE)
+	
+				parent = Frame dad.getTopLevelAncestor();
+				dialog=PathBuilderDialog( parent, "Build Classpath" )
+				pathBuilder = dialog.getPathBuilder()
+				pathBuilder.setPath(String CPField.getText() )
+				pathBuilder.setStartDirectory(OurView.getBuffer().getDirectory())
+				pathBuilder.setFileFilter( ClasspathFilter() )
+				pathBuilder.setMultiSelectionEnabled( 1 )
+				dialog.pack()
+				dialog.setLocationRelativeTo( parent )
+				dialog.setVisible(true)
+				
+	method getResult returns boolean
+		return dialog.getResult
+		
+	method getPath returns String
+		return pathBuilder.getPath

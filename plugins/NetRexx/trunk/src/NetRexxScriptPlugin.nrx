@@ -17,6 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.2.3 (Oct 09, 2012)
+ 
+ 		*	Made all plugin dependencies optional - errorlist, sidekick, and commoncontrols are helpful but not required for NetRexx support. 
+ 		*	Added a base doc page to link to the compiler and interpreter help docs - they are not updated yet however!
+
  Version 0.2.2 (Oct 07, 2012)
 
 		*	if in prefix mode, scan programs for "class" instruction and add imports+class+prefix+main after prolog statements if not found
@@ -38,7 +43,7 @@
 
     * change all classes to package netrexxplugin - allows access to public interfaces from NetRexx scripts
     * change NetRexxC.jar to experimental after3.01 version with method resolution fixes - allows direct compile of TeeStream class
-    * Add NetRexxScriptErrorList class - allows ErrorList plugin use to be optional
+    * Add NetRexxErrorList class - allows ErrorList plugin use to be optional
     * add check of new NetRexxA.exiting api (after3.01 version) -  allows us to force a new NetRexxA instance if a script executed "Exit" instruction and killed the old one
     * add a copy of the new ant-netrexx.jar version - allows our plugin to build even if the optional NetRexxC task was not installed with Ant
     * auto add all plugin jars to classpath - allows scripts to access plugins without modifying the classpath
@@ -192,7 +197,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		testflag= 1						--	debug flag to trace only "n" hits
 		
 --		errorsource=errorlist.DefaultErrorSource
-		errorsource=NetRexxScriptErrorList
+		errorsource=NetRexxErrorList
 
 		sysin = InputStream
 		sysout= PrintStream
@@ -302,7 +307,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		
 		if errpath\=null then do
 --		if errpath\="" then do
-			errorsource=NetRexxScriptErrorList()
+			errorsource=NetRexxErrorList()
 --			errorsource=errorlist.DefaultErrorSource("NetRexxScript")
 --			ErrorSource.registerErrorSource(errorsource)
 			end
@@ -957,8 +962,8 @@ method parse(fn=Rexx)
 					end
 --			if errpath \= null then do
 			 if rep then 
-				if etype="Warning:" then errorsource.addError(NetRexxScriptErrorList.WARNING,tfn,eln-1,eloc-1,eloc+elen-1,emsg)
-					else errorsource.addError(NetRexxScriptErrorList.ERROR,tfn,eln-1,eloc-1,eloc+elen-1,emsg)
+				if etype="Warning:" then errorsource.addError(NetRexxErrorList.WARNING,tfn,eln-1,eloc-1,eloc+elen-1,emsg)
+					else errorsource.addError(NetRexxErrorList.ERROR,tfn,eln-1,eloc-1,eloc+elen-1,emsg)
 /* 				if etype="Warning:" then errorsource.addError(ErrorSource.WARNING,tfn,eln-1,eloc-1,eloc+elen-1,emsg)
 					else errorsource.addError(ErrorSource.ERROR,tfn,eln-1,eloc-1,eloc+elen-1,emsg) */
 				end

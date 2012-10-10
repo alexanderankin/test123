@@ -91,6 +91,7 @@ class NrxParser extends SideKickParser implements EBComponent
 		EditBus.addToBus(EBComponent this)
 		
 	method parse(CurrentBuffer=Buffer, errorSource=DefaultErrorSource) returns SideKickParsedData
+--	method parse(CurrentBuffer=Buffer, errorSource=Object) returns SideKickParsedData
 		if reinitOnParse then do
 			initParsingParameters()
 			reinitOnParse = FALSE
