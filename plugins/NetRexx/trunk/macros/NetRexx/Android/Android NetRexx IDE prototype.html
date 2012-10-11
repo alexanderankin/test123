@@ -9,6 +9,8 @@
 
 
 
+
+
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Android NetRexx IDE prototype</title><meta content="Kermit Kiser" name="author"></head><body><h2 style="text-align: center;">Android NetRexx IDE prototype</h2><big><br>This
 document covers the purpose, features, requirements, installation and
 use of the Android NetRexx development environment currently under
@@ -19,7 +21,7 @@ Google.<br></big><h3>Features</h3><big>This IDE provides functions to
 create Android projects in NetRexx format and to compile and test them
 on an Android emulator or device.<br></big><h3>Requirements</h3><big>(This
 IDE runs in the jEdit open source editor environment instead of the
-Eclipse plugin environment provided with the Android SDK.</big>)<ol><li><big>The jEdit editor version 4.3+.</big></li><li><big>jEdit plugins Errorlist, Console, and NetRexxScript (new version now included with the IDE).</big></li><li><big>The full NetRexx distribution including NetRexxC.jar (</big><big>NetRexx </big><big>compiler)
+Eclipse plugin environment provided with the Android SDK.</big>)<ol><li><big>The jEdit editor version 4.3+.</big></li><li><big>A new jEdit plugin for NetRexx replaces the old NetRexxScript and NetRexxDE plugins (new version now included with the IDE).</big></li><li><big>The full NetRexx distribution including NetRexxC.jar (</big><big>NetRexx </big><big>compiler)
 and NetRexxR.jar (NetRexx runtime library) - now requires experimental
 after3.01 build at rev 264+ which is included with the IDE.<br></big></li><li><big>The Ant distribution. (The Ant NetRexx task is now included with the IDE) Android SDK beyond V7 requires Ant 1.8+.<br>
 </big></li><li><big>A current Java developer kit (JDK).<br></big></li><li><big>The Android NetRexx IDE archive.<br>
@@ -35,7 +37,9 @@ the Install button. <br>
 and unzip the "Android" IDE directory in the jEdit user home macros
 directory: &nbsp;--&nbsp; http://kenai.com/projects/netrexx-plus/downloads/directory/Android%30IDE</a><br>
 </big><big>(copy new NetRexxC.jar and NetRexxScript.jar to a jedit jars directory and restart jedit)</big><br>
-</li><li><big>Update environment variables - add the Ant "bin" directory to your path or create/update the ANT_HOME variable to point to the Ant distribution<br>
+</li><li><big>Update environment variables - add the Ant "bin"
+directory to your path or create/update the ANT_HOME variable to point
+to the Ant distribution<br>
 </big></li><li><big><a href="http://developer.android.com/sdk/win-usb.html">You
 may need to download and install the Windows USB driver for Android
 phones: &nbsp;http://developer.android.com/sdk/win-usb.html</a><br></big></li></ol><h3>Use</h3><big>This
@@ -79,7 +83,9 @@ on each release build.</big></li><li><big>set_adk_location.nrx &nbsp;-- prompts 
 <li><big>start_debug_monitor.</big><big>nrx</big><big>&nbsp; -- &nbsp;starts the DDMS debugging monitor - use to monitor device logs, snap screen, etc.<br></big></li><li><big>template.nrx.txt &nbsp;-- a starter application in NetRexx which is automatically copied to new projects. Customize as needed.</big></li><li><big>uninstall_from_emulator.nrx
 &nbsp;-- This can be faster than a manual uninstall on the emulator.
 Requires you to select the main class file for the application.</big></li>
-  <li><big>update_project.nrx - A new macro to update older projects to the newest build format. ***Convert any old project before using this IDE version on it.***<br>
+  <li><big>update_project.nrx
+- A new macro to update older projects to the newest build format.
+***Convert any old project before using this IDE version on it.***<br>
 </big></li>
 <li><big>widget_provider.xml &nbsp;-- &nbsp;A sample widget provider definition file</big></li>
   <li><big>NetRexxC.jar&nbsp; --&nbsp; A recent build of the NetRexx translator</big></li>
@@ -98,9 +104,13 @@ custom_rules(should be more stable now that there is an official hook
 available), new shell.nrx interfaces directly to Console plugin so
 beanshell stuff is not needed,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-- include new NetRexxScript version (0.2.0) and updated after3.01
+- include new NetRexx plugin version (0.2.0) to replace
+NetRexxScript/NetRexxDE and updated after3.01
 NetRexxC.jar (rev 264+), remove req for android sdk tools in system
 path, tested with SDK tools R20.0.3 and platform tools R14 <br>
+***** Warning! ***** You must use the update_project macro to update
+any old projects before using them with this version of the IDE because
+the build files have changedgreatly! <br>
 (note: if your debug cert expires you must manually delete <code>debug.keystore from the .android directory)<br>
     </code></li>
   <li>2011-12-12 == V2.1 - fix update_project

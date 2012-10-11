@@ -72,7 +72,7 @@
 
    		say "cmd="cpc
    		
-   		shell.cmd(cpc,"detach")
+   		shell.cmd(cpc,"detach noconsole")
 	
 ----------------------------------- start of subroutine methods ----------------------------------
    	

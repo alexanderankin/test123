@@ -1,4 +1,4 @@
-
+ 
 	OPTION_PREFIX = String "options.android."
 	fs=File.separator
  --													verify default locations:
@@ -7,5 +7,5 @@
 	if sdk="" then ddms="ddms"
 		else ddms=sdk||fs"tools"fs"ddms"
 			
-shell.cmd(ddms,"detach")
+shell.cmd(ddms,"detach noconsole")
 --shell.cmd('ddms',"detach")

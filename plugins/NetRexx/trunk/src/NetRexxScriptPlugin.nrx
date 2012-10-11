@@ -17,6 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.2.4 (Oct 10, 2012)
+ 
+ 		*	Fix leading null line miscount in NetRexxScriptPlugin module for errorlist report corrections
+ 		* update Android IDE shell script to allow hiding the console if not needed
+ 		
  Version 0.2.3 (Oct 09, 2012)
  
  		*	Made all plugin dependencies optional - errorlist, sidekick, and commoncontrols are helpful but not required for NetRexx support. 
@@ -1245,7 +1250,7 @@ method prefixfile(pfq=java.io.BufferedReader,ifq=java.io.BufferedReader,ofq=java
 		rline=ifq.readline
 		if rline = null then leave
 		line=Rexx(rline)
-		if line='' then do; ofq.newline();fileinfo['linecount']=fileinfo['linecount']+1;iterate;end	
+		if line='' then do; if fileinfo['linecount']>0 then ofq.newline();fileinfo['linecount']=fileinfo['linecount']+1;iterate;end	
 		scanstart=1
 	 loop label scanline forever
 	 	if line.verify(' \t','n',scanstart)=0 then do
