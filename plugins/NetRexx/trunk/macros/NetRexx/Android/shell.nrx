@@ -30,56 +30,48 @@ Class shell
 			syshell = Shell.getShell(sshell)
 			end
 	
-   method cmd(cpc=String,wait=String "yes") static		--	run command in system shell with output to Console plugin window
+   method cmd(cpc=String,wait=Rexx "wait") static		--	run command in system shell with output to Console plugin window
 
-   	 init
+					init
+   		if wait.wordpos("detach")>0 then do
+					cpc=cpc "&"
+					end
    		say "shell cmd="cpc
    		say "shell wait="wait
-   		
-   		if wait = "detach" then cpc=cpc "&" 
    			
 			sconsole.run(syshell, cpc)
+
+			if wait.wordpos("noconsole")>0 then
+						view.getDockableWindowManager().hideDockableWindow("console")
 							
-   		if wait="yes" then waitFor()
+   		if wait.wordpos("wait")>0 then waitFor()
    		
-   method tobuffer(cpc=String,wait=String "yes") static	returns Buffer  --	run command in system shell with output to a new edit buffer for further processing
+   method tobuffer(cpc=String,wait=Rexx "wait noconsole") static	returns Buffer  --	run command in system shell with output to a new edit buffer for further processing
 
    	 init
    		say "tobuffer cmd="cpc
    		say "tobuffer wait="wait
    		
-   		if wait = "detach" then cpc=cpc "&"  
+   		if wait.wordpos("detach")>0 then cpc=cpc "&"  
    			
 			sconsole.run(syshell, BufferOutput(sconsole),cpc)
 
-   		if wait="yes" then waitFor()
+   		if wait.wordpos("wait")>0 then waitFor()
    			
    		do
 				Thread.currentThread().sleep(1000)				--		buffer writes are async?
 				catch e=InterruptedException
 					say e
    		end
-/*
-   		cb=view.getBuffer()																		--		test current buffer
-   		if cb.isNewFile() then return cb
-   		sb=Buffer
-*/
 
    		loop for 50																											--	 next 5 seconds try to find the new output buffer
-   			
-   			if view.getBuffer().isNewFile() then return view.getBuffer()	
+   			if view.getBuffer().isNewFile() then do
+   								if wait.wordpos("noconsole")>0 then
+										view.getDockableWindowManager().hideDockableWindow("console")
+									return view.getBuffer()
+									end
    			Thread.currentThread().sleep(100)				--		buffer writes are async?
-/*   		
-   			bufarray=view.getEditPane().getBufferSet().getAllBuffers()
-   			loop b over bufarray
-   				if b.isNewFile() then do
-						if sb=null then sb=b
-							else if view.getBuffer().isNewFile() then return view.getBuffer()	
-													else return null
-						end
-   					if sb \= null then return b
-   				end
-*/   				
+	
 				catch e=InterruptedException
 					say e  			
    			end

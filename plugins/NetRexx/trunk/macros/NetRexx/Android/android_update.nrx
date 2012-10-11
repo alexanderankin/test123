@@ -1,3 +1,4 @@
+-- this macro starts the android sdk utility console
 
 	OPTION_PREFIX = String "options.android."
 	fs=File.separator
@@ -7,5 +8,5 @@
 	if sdk="" then android="android"
 		else android=sdk||fs"tools"fs"android"
 	
-shell.cmd(android,"detach")
+shell.cmd(android,"detach noconsole")
 --shell.cmd("android","detach")

@@ -277,7 +277,7 @@
 			if sdkloc="" then android="android"
 				else android=sdkloc||fs"tools"fs"android"			
 		   		
-			buffer=shell.tobuffer(android "list targets")
+			buffer=shell.tobuffer(android "list targets",'wait noconsole')
 --			buffer=shell.tobuffer("android list targets")
    		if buffer=null then do ;Macros.error(view,"could not obtain target list"); exit; end  		
 --   		shell.tobuffer("android list targets")
