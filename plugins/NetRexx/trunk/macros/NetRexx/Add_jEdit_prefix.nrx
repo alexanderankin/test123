@@ -6,7 +6,10 @@ prefix=setdir||fs"NetRexx"fs"prefix.txt"
 bfr=BufferedReader(FileReader(File(prefix)))
 sw=StringWriter(1024)
 bsw=BufferedWriter(sw)
-bsw.write("class" buffer.getName)
+bsw.write("import org.gjt.sp.jedit.")
+bsw.newLine
+bname=Rexx(buffer.getName)
+bsw.write("class" bname.substr(1,bname.lastpos('.')-1))
 bsw.newLine
 copyfile(bfr,bsw)
 bsw.newLine

@@ -17,13 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- Version 0.2.5 (Oct 11, 2012)
+ Version 0.2.5 (Oct 12, 2012)
  
 	* Fix buf.getText call for jEdit 4.2 api in NetRexxScriptPlugin
 	* Fix jEdit.getIntegerProperty call in NrxParser for jEdit 4.2 api
 	* make ref to class PropertiesChanging in NrxParser soft to allow compile with jEdit 4.2 api
 	* rename empty mode catalog file before copy new mode files
 	* verify script name is a legal NetRexx symbol (no '-', etc in file name like some file systems allow!)
+	* fix Add_jEdit_prefix macro pgm name prob and add missing imports
  
  Version 0.2.4 (Oct 10, 2012)
  
