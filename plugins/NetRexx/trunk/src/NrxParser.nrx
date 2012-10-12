@@ -330,7 +330,7 @@ class NrxParser extends SideKickParser implements EBComponent
 	method initParsingParameters()
 
 		sbGroupOption = jEdit.getIntegerProperty( -
-			"plugin.netrexxde.parsing.sbgrouping")
+			"plugin.netrexxde.parsing.sbgrouping",0)
 		if sbGroupOption = 1 then
 			doIdentifyConstructors = FALSE
 		else

@@ -17,32 +17,38 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.2.5 (Oct 11, 2012)
+ 
+	* Fix buf.getText call for jEdit 4.2 api in NetRexxScriptPlugin, ditto jEdit.getIntegerProperty call in NrxParser (ref to class PropertiesChanging still bad)
+	* rename empty mode catalog file before copy new mode files
+	* verify script name is a legal NetRexx symbol (no '-', etc in file name like some file systems allow!)
+ 
  Version 0.2.4 (Oct 10, 2012)
  
- 		*	Fix leading null line miscount in NetRexxScriptPlugin module for errorlist report corrections
- 		* update Android IDE shell script to allow hiding the console if not needed
+	* Fix leading null line miscount in NetRexxScriptPlugin module for errorlist report corrections
+	* update Android IDE shell script to allow hiding the console if not needed
  		
  Version 0.2.3 (Oct 09, 2012)
  
- 		*	Made all plugin dependencies optional - errorlist, sidekick, and commoncontrols are helpful but not required for NetRexx support. 
- 		*	Added a base doc page to link to the compiler and interpreter help docs - they are not updated yet however!
+	* Made all plugin dependencies optional - errorlist, sidekick, and commoncontrols are helpful but not required for NetRexx support. 
+	* Added a base doc page to link to the compiler and interpreter help docs - they are not updated yet however!
 
  Version 0.2.2 (Oct 07, 2012)
 
-		*	if in prefix mode, scan programs for "class" instruction and add imports+class+prefix+main after prolog statements if not found
-		*	above change allows use of imports in scripts and static properties in the jEdit prefix
-		* auto correct errorlist reports for prefix newlines count so prefix can be multiple lines long
-		*	add "GlobalObjects" public static placeholder for shared script objects
-		* add new macros for inserting a main method or a complete jEdit type prefix with class+prefix-file+main-method
-		*	include Android IDE macros in distribution
-		*	in prefix mode, scripts are now interpreted from memory buffers without being written to disk with the prefix first
-		* include new netrexx.xml syntax highlight mode file and auto-install it - this one handles nested comments better, (could use more Java class labels)
-		*	auto import org.gjt.sp.jedit., javax.swing., and netrexxplugin for scripts in prefix mode
-		* version 0.2.x requires NetRexx tag after3.01-rev264 or later version of NetRexxC.jar
+	* if in prefix mode, scan programs for "class" instruction and add imports+class+prefix+main after prolog statements if not found
+	* above change allows use of imports in scripts and static properties in the jEdit prefix
+	* auto correct errorlist reports for prefix newlines count so prefix can be multiple lines long
+	* add "GlobalObjects" public static placeholder for shared script objects
+	* add new macros for inserting a main method or a complete jEdit type prefix with class+prefix-file+main-method
+	* include Android IDE macros in distribution
+	* in prefix mode, scripts are now interpreted from memory buffers without being written to disk with the prefix first
+	* include new netrexx.xml syntax highlight mode file and auto-install it - this one handles nested comments better, (could use more Java class labels)
+	* auto import org.gjt.sp.jedit., javax.swing., and netrexxplugin for scripts in prefix mode
+	* version 0.2.x requires NetRexx tag after3.01-rev264 or later version of NetRexxC.jar
  
  Version 0.2.1 (Oct 04, 2012) 
  
- 		* initial merge NetRexxScript and NetRexxDE to create new NetRexxPlugin - still separate consoles and option panels
+ 	* initial merge NetRexxScript and NetRexxDE to create new NetRexxPlugin - still separate consoles and option panels
  
  Version 0.2.0 (Sep 23, 2012) 
 
@@ -445,6 +451,11 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 		end
 
 		do
+			cf1=File(setdir||fs'modes'fs'catalog')
+			if cf1.length()=217 then do
+				cfr=File(setdir||fs'modes'fs'empty-catalog')
+				cf1.renameTo(cfr)
+				end
 				cf=File(setdir||fs'modes'fs'catalog')
 				if \cf.exists then do
 					bcf=BufferedWriter(FileWriter(cf))
@@ -452,7 +463,7 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 					copyfile(ncf,bcf)
 					bcf.close
 					end
-		catch badguy=Exception
+				catch badguy=Exception
 				say cf.getPath "copy mode error =" badguy
 		end
 		
@@ -529,6 +540,15 @@ method makeadir(jer=Rexx)
 			if outwin\=null then do;outwin.commandended;end
 			return
 			end
+		sscript=Rexx(script)
+		sscript=sscript.substr(sscript.lastpos(fs)+1)
+		sscript=sscript.substr(1,sscript.lastpos('.')-1)
+		if sscript.verify('_$€'||'a'.sequence('z')||'A'.sequence('Z')||'0'.sequence('9'))>0 then do
+			Macros.error(jEdit.getActiveView,"Invalid NetRexx program name:\n" rscript)
+			if outwin\=null then do;outwin.commandended;end
+			return
+			end
+		
 		parse rscript sname '.nrx ' sparms		-- 	capture any passed parms
 		sname=sname'.nrx'						--	reattach file type
 		spath=sname.left(sname.lastpos(fs))
@@ -762,7 +782,7 @@ method runcurrent(v=View,buf=Buffer,parms="")
 		onr=Rexx(on)
 		if buf.isUntitled then dir='unsaved'fs		--		give it a temp name
 			else dir=onr.substr(1,onr.lastpos(fs))	--		give it a temp name
-		scriptreader2=BufferedReader(StringReader(buf.getText))
+		scriptreader2=BufferedReader(StringReader(buf.getText(0,buf.getLength())))
 		tn=dir||sn
 
 --		buf.save(v,tn,f)									--		save a temp copy of the file
