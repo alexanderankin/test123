@@ -450,7 +450,8 @@ class NrxParser extends SideKickParser implements EBComponent
 		if (message <= PropertiesChanged) then do
 			initParsingParameters()
 			end
-		else if (message <= PropertiesChanging) then do
+		else if Rexx(message.getClass().getName()).pos('PropertiesChanging')>0 then do 			--  cannot refer directly to PropertiesChanging in jEdit 4.2		
+--		else if (message <= PropertiesChanging) then do
 			reinitOnParse = TRUE
 			end
 
