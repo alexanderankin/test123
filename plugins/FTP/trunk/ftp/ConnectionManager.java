@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -48,7 +49,7 @@ import com.jcraft.jsch.jcraft.Compression;
 
 public class ConnectionManager
 {
-	// {{{ members 
+	// {{{ members
 	protected static Object lock;
 	protected static ArrayList<Connection> connections;
 	/**
@@ -61,7 +62,7 @@ public class ConnectionManager
 	private static File passwordFile = null;
 	public static JSch client = null;
 	// }}}
-	
+
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
@@ -83,28 +84,28 @@ public class ConnectionManager
 	{
 		return passwords.get(hostInfo);
 	} //}}}
-	
+
 	//{{{ setPassword() method
 	protected static void setPassword(String hostInfo, String password)
 	{
 		passwords.put(hostInfo, password);
 	} //}}}
-	
+
 	//{{{ getPassphrase() method
 	public static String getPassphrase(String keyFile)
 	{
 		return passphrases.get(keyFile);
 	} //}}}
-	
+
 	//{{{ setPassphrase() method
 	public static void setPassphrase(String keyFile, String passphrase)
 	{
 		passphrases.put(keyFile,passphrase);
 	} //}}}
-	
-	
+
+
 	/**
-	 * @return null if no 
+	 * @return null if no
 	 */
 	public static String getStoredFtpKey(String host, String user) {
 		String s = jEdit.getProperty("ftp.keys."+host+"."+user);
@@ -112,7 +113,7 @@ public class ConnectionManager
 			return null;
 		return new File(s).exists() ? s : null;
 	}
-	
+
 	//{{{ loadPasswords() method
 	@SuppressWarnings("unchecked")
 	protected static void loadPasswords()
@@ -154,14 +155,14 @@ public class ConnectionManager
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(fis);
-			IOUtilities.closeQuietly(ois);
+			IOUtilities.closeQuietly((Closeable)fis);
+			IOUtilities.closeQuietly((Closeable)ois);
 		}
-		
+
 	} //}}}
 
 	//{{{ savePasswords() method
-	//TODO: Can be done in background 
+	//TODO: Can be done in background
 	protected static void savePasswords() {
 		if (passwordFile == null) {
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
@@ -191,13 +192,13 @@ public class ConnectionManager
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(oos);
-			IOUtilities.closeQuietly(baos);
-			IOUtilities.closeQuietly(fos);
+			IOUtilities.closeQuietly((Closeable)oos);
+			IOUtilities.closeQuietly((Closeable)baos);
+			IOUtilities.closeQuietly((Closeable)fos);
 		}
-		
+
 	} //}}}
-	
+
 	//{{{ closeUnusedConnections() method
 	public static void closeUnusedConnections()
 	{
@@ -228,20 +229,20 @@ public class ConnectionManager
 			user     = address.getUser();
 			password = address.getPassword();
 			secure	 = address.isSecure();
-			
+
 			// Check for cached connection info
 			ConnectionInfo info = logins.get(host);
-			if( (info != null) ) 
+			if( (info != null) )
 				return info;
-			
+
 			// Try to create connection from pre-defined params
 			String key = ConnectionManager.getStoredFtpKey(host, user);
-			
+
 			if ( host!=null && user!=null && (password!=null || key!=null) ) {
 				Log.log(Log.DEBUG, ConnectionManager.class, "key="+key);
 				return new ConnectionInfo(address.isSecure(), address.getHost(), address.getPort(), user, password, key);
 			}
-			
+
 		}
 		else
 		{
@@ -262,7 +263,7 @@ public class ConnectionManager
 		if(!dialog.isOK())
 			return null;
 		host = dialog.getHost();
-				
+
 		int port = FtpVFS.getDefaultPort(secure);
 		int index = host.indexOf(':');
 		if(index != -1) {
@@ -278,27 +279,27 @@ public class ConnectionManager
 
 		if (secure && dialog.getPrivateKeyFilename() != null)
 			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
-		
+
 		// Save password here
 		if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
 			setPassword(host+":"+port+"."+dialog.getUser(), dialog.getPassword() );
-		
+
 		// hash by host name
 		logins.put(host + ":" + port, info);
 
 		return info;
 	} //}}}
 
-	
-	
+
+
 	//{{{ getConnection() method
 	public static Connection getConnection(ConnectionInfo info) throws IOException {
 		Connection connect = null;
 		synchronized(lock) {
-			for (Connection conn : connections) 
+			for (Connection conn : connections)
 			{
 				if(!conn.info.equals(info) || conn.inUse()) continue;
-				
+
 				connect = conn;
 				if(!connect.checkIfOpen()) {
 					Log.log(Log.DEBUG, ConnectionManager.class, "Connection " + connect + " expired");
@@ -328,7 +329,7 @@ public class ConnectionManager
 			connect.lock();
 		}
 		return connect;
-		
+
 	} //}}}
 
 	//{{{ releaseConnection() method
