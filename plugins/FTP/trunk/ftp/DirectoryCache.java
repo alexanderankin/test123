@@ -24,6 +24,7 @@ package ftp;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -64,7 +65,7 @@ public class DirectoryCache
 				Log.log(Log.ERROR, DirectoryCache.class, e);
 				return null;
 			} finally {
-				IOUtilities.closeQuietly(in);
+				IOUtilities.closeQuietly((Closeable)in);
 			}
 		}
 	} //}}}
@@ -106,7 +107,7 @@ public class DirectoryCache
 			}
 			finally
 			{
-				IOUtilities.closeQuietly(out);
+				IOUtilities.closeQuietly((Closeable)out);
 			}
 		}
 	} //}}}
