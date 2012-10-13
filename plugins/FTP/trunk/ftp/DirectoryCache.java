@@ -27,10 +27,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -66,7 +64,7 @@ public class DirectoryCache
 				Log.log(Log.ERROR, DirectoryCache.class, e);
 				return null;
 			} finally {
-				IOUtilities.closeQuietly((InputStream)in);
+				IOUtilities.closeQuietly(in);
 			}
 		}
 	} //}}}
@@ -108,7 +106,7 @@ public class DirectoryCache
 			}
 			finally
 			{
-				IOUtilities.closeQuietly((OutputStream)out);
+				IOUtilities.closeQuietly(out);
 			}
 		}
 	} //}}}

@@ -31,10 +31,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -157,7 +155,7 @@ public class ConnectionManager
 		finally
 		{
 			IOUtilities.closeQuietly(fis);
-			IOUtilities.closeQuietly((InputStream)ois);
+			IOUtilities.closeQuietly(ois);
 		}
 		
 	} //}}}
@@ -193,7 +191,7 @@ public class ConnectionManager
 		}
 		finally
 		{
-			IOUtilities.closeQuietly((OutputStream)oos);
+			IOUtilities.closeQuietly(oos);
 			IOUtilities.closeQuietly(baos);
 			IOUtilities.closeQuietly(fos);
 		}
