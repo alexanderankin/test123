@@ -17,6 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.2.6 (Oct 17, 2012)
+ 
+	* Fix some Android IDE issues (binary copy jars and share common target info code)
+	
  Version 0.2.5 (Oct 12, 2012)
  
 	* Fix buf.getText call for jEdit 4.2 api in NetRexxScriptPlugin
@@ -1242,7 +1246,7 @@ method copyjarentrytofile(jf=JarFile,je=JarEntry,nrs=File)
 	if df then trace results
 	do
 		scriptstream=jf.getInputStream(je)
-		if Rexx(je.getName).pos(".class")=0 then do
+		if Rexx(je.getName).pos(".class")=0 & Rexx(je.getName).pos(".jar")=0 then do
 				scriptreader=BufferedReader(InputStreamReader(scriptstream))
 --				scriptwriter=BufferedWriter(OutputStreamWriter(outstream))
 				scriptwriter=BufferedWriter(FileWriter(nrs))

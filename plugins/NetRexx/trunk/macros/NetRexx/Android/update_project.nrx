@@ -39,7 +39,7 @@
    	nrc=JTextField(jEdit.getProperty(OPTION_PREFIX"netrexxc","Please enter NetRexxC path here                           "))
    	base=JTextField(jEdit.getProperty(OPTION_PREFIX"basedir","Please enter base project directory path here                           "))
    					
-	targetlist=getTargets(sdk.getText) 
+	targetlist=android_info.getTargets(sdk.getText) 
 	targetarray=String[targetlist["tlc"]]
 	selindex=int -1
 	loop i=1 to targetlist["tlc"]
@@ -78,7 +78,7 @@
 
 		say "rt="rt
 		if rt\=JOptionPane.OK_OPTION then return		-- 	done here
-
+			
 		say "sdk="sdk.getText
 		say "rtl="rtl.getText
 		say "nrc="nrc.getText
@@ -109,7 +109,6 @@
 			fail="yes"
 			iterate
 			end			
-   		
    		end
    		
 -------------------------------  start update project now  ---------------------------   		
@@ -129,10 +128,9 @@
 	projpath=Rexx(base.getText||File.separator||projectpath.getText).changestr("\\","\\\\")
 		
 	sdkloc=jEdit.getProperty(OPTION_PREFIX"sdk","")
-	if sdkloc="" then android="android"
-	else android=sdkloc||fs"tools"fs"android"			
-			
---   	cpc="android update project" -
+			if sdkloc="" then android="android"
+				else android=sdkloc||fs"tools"fs"android"			
+
    	cpc=android "update project" -
    		"--target" tid	-
    		"--name"  projectname.getText	-
@@ -149,20 +147,18 @@
  	say "pp1="pp1
    	say "pp2="pp2
    	say "pack="pack
-   	--	psp=pp1"\\src\\"pp2
    	psp=pp1||fs"src"fs||pp2
    	say "psp="psp
    	basedir=pp1
  
 		--										copy NetRexxR.jar run time lib to project		
-   	--	rtld=pp1"\\libs"
    	rtld=pp1||fs"libs"
    	if File.pathSeparator=";" then rtlcc="copy" rtl.getText rtld
    											else  rtlcc="cp" rtl.getText rtld
    	rtlcc=rtlcc.changestr("\\","\\\\")
    	say "rtlcc="rtlcc
    	shell.cmd(rtlcc)
-   trace results	
+   	
 --										copy custom_rules.xml to project dir:	
    	orf=pp1||fs"netrexx-build.xml"					--	an old build file?
    	porf=File(orf)
@@ -179,14 +175,7 @@
    	props=String
    	pd=pp1
    	say "pd="pd
-/*   	pof=pd||fs"build.properties"					--	an old prop file?
-   	poff=File(pof)
-   	if poff.exists then poff.delete
-   	pof=pd||fs"nrxbuild.properties"			--	a newer old prop file?
-   	poff=File(pof)
-   	if poff.exists then poff.delete
-*/   	
-   	pof=pd||fs"nrxbuild.properties"			--	a new prop file
+   	pof=pd||fs"nrxbuild.properties"
 --	parse tbi .	"Name: Android" pn .
 --  for some reason Google has changed the platform directory names - check both
 	parse tbi .	"Name: Android" pn . "API level:" apilevel .
@@ -202,11 +191,11 @@
 		     end
    	props="ant.project.name="projectname.getText"\n" -
    	||"src.version=0.2.0\n" -
+   	||"android.sdk.dir="Rexx(sdkloc).changestr("\\","/")"\n" -
    	||"src.dir=src/"pp2"\n" -
    	||"pack.dir="pp2"\n" -
    	||"nrc.dir="Rexx(nrc.getText).changestr("\\","/")"\n" -
    	||"platform=android-"platform"\n" -
-   	||"android.sdk.dir="Rexx(sdkloc).changestr("\\","/")"\n" -   	
    	||"build.path="Rexx(File(scriptPath).getParent).changestr("\\","/")"\n"
    	say "props=\n"props
    	
@@ -243,14 +232,14 @@
 
 	method copyfile(ifq=java.io.BufferedReader,ofq=java.io.BufferedWriter) static signals IOException
 		trace off
-		line=ifq.readline
+		line=ifq.readLine
 		if line = null then return
-		ofq.write(string line,0,line.length)
+		ofq.write(String line,0,line.length)
 	  loop forever
-		line=ifq.readline
+		line=ifq.readLine
 		if line = null then leave
-		ofq.newline()
-		ofq.write(string line,0,line.length)
+		ofq.newLine()
+		ofq.write(String line,0,line.length)
 		end		   	
 
 	method getProps(propname=String) static returns Rexx signals IOException, FileNotFoundException
@@ -272,14 +261,14 @@
    		view=jEdit.getActiveView
    		
 	OPTION_PREFIX = String "options.android."
-	fs=File.separator	
+	fs=File.separator
 	sdkloc=jEdit.getProperty(OPTION_PREFIX"sdk","")
 			if sdkloc="" then android="android"
-				else android=sdkloc||fs"tools"fs"android"			
+				else android=sdkloc||fs"tools"fs"android"
 		   		
 			buffer=shell.tobuffer(android "list targets",'wait noconsole')
 --			buffer=shell.tobuffer("android list targets")
-   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); exit; end  		
+   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); exit; end
 --   		shell.tobuffer("android list targets")
 --   		buffer=view.getBuffer
    		lc=buffer.getLineCount;say "lc="lc

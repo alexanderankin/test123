@@ -15,5 +15,5 @@
     if adbstarted ="no" then Thread.sleep(7000)
     jEdit.setTemporaryProperty(OPTION_PREFIX"adbstarted","yes")
 			
-shell.tobuffer(android 'list avd &' adb 'devices','wait noconsole' )
+shell.tobuffer(android 'list targets &' android 'list avd &' adb 'devices','wait noconsole' )
 

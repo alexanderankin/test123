@@ -8,6 +8,10 @@ sw=StringWriter(1024)
 bsw=BufferedWriter(sw)
 bsw.write("import org.gjt.sp.jedit.")
 bsw.newLine
+bsw.write("import netrexxplugin.")
+bsw.newLine
+bsw.write("import javax.swing.")
+bsw.newLine
 bname=Rexx(buffer.getName)
 bsw.write("class" bname.substr(1,bname.lastpos('.')-1))
 bsw.newLine

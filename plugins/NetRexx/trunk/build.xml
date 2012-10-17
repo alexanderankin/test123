@@ -7,6 +7,7 @@
     <property file="../build.properties" />
     <property file="${user.home}/.build.properties" />
     <property file="${user.home}/build.properties" />
+	<property name="build.sysclasspath" value="ignore"/>    
     
 	<!-- JEdit's local installation properties -->
 
@@ -14,7 +15,7 @@
 	<property name="jedit.plugins.dir" value="${install.dir}" description="Location of required plugin jars"/>
 	
 	<!-- Project properties -->
-	<property name="project.version" value="0.2.5" description="Project's build version"/>
+	<property name="project.version" value="0.2.6" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
 	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
@@ -38,7 +39,7 @@
     <!-- define our own netrexx compiler task to bypass some Ant problems such as missing optional tasks -->
 	
     <target name="prep"  description="Defines NetRexx compiler task">
-		<taskdef name="buildnrc" classname="org.apache.tools.ant.taskdefs.optional.NetRexx" classpath="${project.netrexx.libdir}/ant-netrexx.jar"/>
+		<taskdef name="buildnrc" classname="org.apache.tools.ant.taskdefs.optional.NetRexx" classpath="${project.netrexx.libdir}${file.separator}ant-netrexx.jar${path.separator}${project.netrexx.libdir}${file.separator}NetRexxC.jar"/>
 		
 		 <path id="netrexxc.classpath">
 		 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -75,7 +76,7 @@
     
     <target name="build" depends="init,cleannrx" description="Builds NetRexx plugin jar">
         <jar destfile="${install.dir}/${project.build.binjar.name}" basedir="." 
-        	excludes="*.java *.nrx **\*.log **\*.jar build.xml src\ lib\ build\ dist\"/>
+        	excludes="*.java *.nrx **\*.log build.xml src\ lib\ build\ dist\"/>
          <copy file="${project.netrexx.libdir}/NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" />
     </target>  
     
@@ -90,7 +91,7 @@
     <target name="clean" description="Cleans out all build work files for fresh start">
        <delete verbose="true" includeEmptyDirs="true" >
         	<fileset dir="." includes="*.nrx *.class *.java *.keep" />
-        	<fileset dir="${project.package.plugin}"/>
+        	<fileset dir="${project.package.plugin}" erroronmissingdir="no" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx *.class *.java" />        	
         	<fileset dir="macros/NetRexxScript/samples" includes="class*.nrx *.class *.java" />        	
         	</delete>

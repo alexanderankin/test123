@@ -10,6 +10,7 @@
 	<!-- Allow properties to be overridden: -->
     <property file="${user.home}/.build.properties" />
     <property file="${user.home}/build.properties" />
+	<property name="build.sysclasspath" value="ignore"/>       
     
 	<!-- Project properties -->
 	<property name="project.version" value="${src.version}" description="Project's build version"/>
@@ -30,6 +31,9 @@
       <pathelement path="${project.android.libdir}/android.jar"/>
       <pathelement path="./bin/classes"/>
       <fileset dir="libs">
+        <include name="**/*.jar"/>
+      </fileset>
+	  <fileset dir="${build.path}">
         <include name="**/*.jar"/>
       </fileset>
     </path>
