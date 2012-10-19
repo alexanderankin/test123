@@ -765,6 +765,7 @@ implements EBComponent, DefaultFocusComponent
 		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
 		String path = msg.getPath();
 		File f = new File(path);
+		if (!f.exists()) return;
 		if (!f.isDirectory())
 		{
 			path = f.getParent();
