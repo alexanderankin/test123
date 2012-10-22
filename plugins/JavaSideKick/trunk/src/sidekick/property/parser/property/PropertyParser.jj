@@ -192,7 +192,7 @@ SKIP:
     ends in \\, then it's an escaped \, not a continuation character, and should
     be part of the value.  I think this is a rare use case, so I'm not going
     to worry about it until someone complains. */
-    <VALUE: ((~["\r", "\n"])*(<CONTINUATION>)*)("\n"|"\r"|"\r\n")? > : DEFAULT
+    <VALUE: ((~["\r", "\n"])*(<CONTINUATION>)*)+("\n"|"\r"|"\r\n")? > : DEFAULT
 }
 
 
