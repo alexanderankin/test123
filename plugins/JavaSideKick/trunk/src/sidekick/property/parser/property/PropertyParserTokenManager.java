@@ -313,7 +313,7 @@ private int jjMoveNfa_2(int startState, int curPos)
                      break;
                   if (kind > 9)
                      kind = 9;
-                  jjCheckNAddStates(34, 36);
+                  jjCheckNAddStates(34, 37);
                   break;
                case 3:
                   if (curChar == 10 && kind > 9)
@@ -421,7 +421,7 @@ private int jjMoveNfa_1(int startState, int curPos)
                   {
                      if (kind > 8)
                         kind = 8;
-                     jjCheckNAddStates(37, 41);
+                     jjCheckNAddStates(38, 42);
                   }
                   else if (curChar == 58)
                   {
@@ -503,7 +503,7 @@ private int jjMoveNfa_1(int startState, int curPos)
 static final int[] jjnextStates = {
    11, 13, 14, 16, 18, 7, 8, 9, 1, 10, 11, 13, 15, 16, 18, 2, 
    3, 5, 10, 11, 13, 11, 13, 14, 15, 16, 18, 20, 12, 17, 0, 1, 
-   5, 4, 1, 4, 2, 3, 0, 4, 1, 5, 
+   5, 4, 0, 1, 4, 2, 3, 0, 4, 1, 5, 
 };
 private static final boolean jjCanMove_0(int hiByte, int i1, int i2, long l1, long l2)
 {
