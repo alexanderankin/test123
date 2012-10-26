@@ -47,6 +47,7 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 		sortSKEntriesCKB = JCheckBox
 		sortSKEntriesCaseSensitiveCKB = JCheckBox
 		renameFilesCKB = JCheckBox
+		runINjEdit = JCheckBox
 		groupOptLabel = JLabel
 		sbGroupingOptionBttnGrp = ButtonGroup
 		classicIdentGroupRBttn = JRadioButton
@@ -331,6 +332,16 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 					setCustomGroupOptsVisibility(TRUE)
 					end
 				end
+				
+			runINjEdit = JCheckBox( -
+				"Run compiled classes in jEdit rather than a separate Java environment", -
+				jEdit.getBooleanProperty("plugin.netrexxde.runINjEdit"))
+			gridBagConstraints = java.awt.GridBagConstraints();
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 16
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(runINjEdit, gridBagConstraints)
 
 		addComponent(optionsPanel, GridBagConstraints.HORIZONTAL)
 		
@@ -522,6 +533,7 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 		jEdit.setBooleanProperty("plugin.netrexxde.ClearTrace",clearTraceCKB.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.SaveFile",saveFilesCKB.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.KeepName",renameFilesCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.runINjEdit",runINjEdit.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.parsing.sortentries",sortSKEntriesCKB.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.parsing.sortentries.casesensitive",sortSKEntriesCaseSensitiveCKB.isSelected())
 		jEdit.setIntegerProperty("plugin.netrexxde.parsing.sbgrouping",sbGroupingOption)

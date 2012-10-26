@@ -74,6 +74,21 @@
       		view.getDockableWindowManager().addDockableWindow(netrexxplugin.NetRexxScriptPlugin.NAME);
         </CODE>
     </ACTION>
+    
+    <ACTION NAME="NetRexx.toggle">
+        <CODE>
+            view.getDockableWindowManager().toggleDockableWindow(netrexxplugin.NetRexxPlugin.NAME);
+        </CODE>
+        <IS_SELECTED>
+            return view.getDockableWindowManager().isDockableWindowVisible(netrexxplugin.NetRexxPlugin.NAME);
+        </IS_SELECTED>
+    </ACTION>
+
+    <ACTION NAME="NetRexx-to-front">
+    	<CODE>
+      		view.getDockableWindowManager().addDockableWindow(netrexxplugin.NetRexxPlugin.NAME);
+        </CODE>
+    </ACTION>
 
     <ACTION NAME="NetRexxDE.toggle-vis">
         <CODE>

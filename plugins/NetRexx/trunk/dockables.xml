@@ -11,7 +11,11 @@
 	<DOCKABLE NAME="NetRexxDE">
 		new netrexxplugin.NetRexxDE(view, position);
 	</DOCKABLE>
-	
+
+	<DOCKABLE NAME="NetRexx">
+		new netrexxplugin.NetRexx(view, position);
+	</DOCKABLE>
+		
 </DOCKABLES>
 	
 
