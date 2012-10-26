@@ -17,6 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.2.7 (Oct 25, 2012)
+ 
+	* create combination compile/interpret dockable window
+	
  Version 0.2.6 (Oct 17, 2012)
  
 	* Fix some Android IDE issues (binary copy jars and share common target info code)
@@ -173,11 +177,13 @@ package netrexxplugin
 
 class NetRexxScriptPlugin public extends EBPlugin implements runnable
 	
-		outwin=NetRexxScript				--	save pointer to dockable window	
-		av=View								--	save pointer to jEdit active view	
+	properties public static
+		outwin=NetRexxInterface	 null			--	save pointer to dockable window	
+--		outwin=NetRexxScript				--	save pointer to dockable window	
 	
 	properties private
 		
+		av=View								--	save pointer to jEdit active view	
 		interpreter = NetRexxA				--	holds NetRexx interpreter
 		myloader=NetRexxScriptClassLoader	--	holds our custom class loader
 --		flushinprogress="no"				--	flag to prevent flush loops
@@ -204,7 +210,6 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		jcp=String 							--	save original java classpath
 		nrcpath=String	""					--	save path to NetRexxC.jar
 		errpath=String						--	save path to ErrorList.jar
-		lastcpath=String ""					--	save classpath in use by the interpreter
 		jarpath=String ""				--	save the jar paths for all plugins
 	properties private unused
 		lastspath=String ""					--	save scriptpath in use by the plugin
@@ -240,6 +245,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		
 	properties public static 
 		
+		lastcpath=String ""					--	save classpath in use by the interpreter
 		scriptPath=String "bozo"
 		nrsplugin=NetRexxScriptPlugin
 
@@ -517,13 +523,19 @@ method makeadir(jer=Rexx)
 		
 		setdir=jEdit.getSettingsDirectory()	--	string with settings directory path	
 		
-		outwin=null
-		av=jEdit.getActiveView
-		if av\=null then do
-			winout=jEdit.getActiveView.getDockableWindowManager.getDockableWindow(NAME)
-			if winout=null then outwin=null
-				else outwin=NetRexxScript winout
-			end	
+--		outwin=null
+		if outwin=null then do
+				av=jEdit.getActiveView
+				if av\=null then do
+					winout=NetRexxInterface NetRexx.interpret
+					if winout=null then 
+					winout=NetRexxInterface jEdit.getActiveView.getDockableWindowManager.getDockableWindow(NAME)
+					if winout=null then outwin=null
+						else outwin=NetRexxInterface winout
+		--				else outwin=NetRexxScript winout
+					end
+				end
+			
 		myloader.setDebug(df)
 		
 -- main method called by macro selection or internally to execute a script:		-----------------------------------------------------------------------------------
@@ -675,7 +687,7 @@ method makeadir(jer=Rexx)
 			mainMethod.invoke(null, values)
 			catch error=Exception
 				say "invokeit error="error
-				say "note ***: If NetRexxC is in the Java lib\\ext directory it will cause invocation exceptions."
+--				say "note ***: If NetRexxC is in the Java lib\\ext directory it will cause invocation exceptions."
 				say error.getCause
 				error.getCause.printStackTrace
 			end

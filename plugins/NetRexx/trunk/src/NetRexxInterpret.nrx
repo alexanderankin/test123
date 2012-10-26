@@ -1,6 +1,6 @@
 /*
- * NetRexxScript.nrx - NetRexx jEdit Scripting Plugin dockable window
- * Copyright (C) 2009 Kermit Kiser
+ * NetRexxInterpret.nrx - NetRexx jEdit Plugin dockable window Interpreter component, based on NetRexxJE plugin by Satguru Srivastava
+ * Copyright (C) 2012 David Requena, Kermit Kiser
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.2.0 (Oct 24, 2012)
+
+    *  first step in merge of NetRexxDE and NetRexxScript dockable windows - modify to share a window
+ 
  Version 0.1.0 (Nov. 23, 2009)
 
     *  Change command line to History TextField
@@ -48,12 +52,14 @@ import COM.ibm.netrexx.process.NetRexxA
 
 package netrexxplugin
 
-class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInterface 	--, ComponentListener, EBComponent	
+class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, ComponentListener, EBComponent	
 	
 	properties constant
 		TRUE=boolean 1
 		FALSE=boolean 0
 		OPTION_PREFIX = String "options.netrexxscript."		
+		ps=File.pathSeparator
+		fs=File.separator
 			
 	properties private
 		    
@@ -70,10 +76,11 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 		downbutton=JToggleButton
 		cmdtoolbar=JToolBar
 		
+		CPField = HistoryTextField
+		
 		ba=JToggleButton[5]
 		bs=Rexx				--	index the buttonarray (ba)
 		
---		cl=JTextField
 		cl=HistoryTextField
 		cll=JLabel
 		clf=boolean
@@ -81,49 +88,68 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 		
     	mp=JPanel		
     	
-	method NetRexxScript(v=org.gjt.sp.jedit.View, pos=String)
+	method NetRexxInterpret(v=org.gjt.sp.jedit.View, pos=String, passtoolbar=JToolBar, passmp=JPanel, -
+								passcl=HistoryTextField, passtracebutton=JToggleButton, passcll=JLabel, -
+								passoutbutton=JToggleButton, passRunButton=JToggleButton, -
+								passparsebutton=JToggleButton, passflushbutton=JToggleButton, passCPField = HistoryTextField)
 		
-		cmdtoolbar=JToolBar()
-		cmdtoolbar.setFloatable(FALSE)
+--		cmdtoolbar=JToolBar()
+--		cmdtoolbar.setFloatable(FALSE)
+		cmdtoolbar=passtoolbar
+		mp=passmp
+		cl=passcl
+		cl.addActionListener(this)	
+		cll=passcll
+		tracebutton=passtracebutton
+		outbutton=passoutbutton
+		runbutton=passRunButton
+		parsebutton=passparsebutton
+		parsebutton.addActionListener(this)
+		flushbutton=passflushbutton
+		flushbutton.addActionListener(this)
+		CPField=passCPField
 		
-		runbutton = CreateButton("Run","Play16.gif")
+/* 		runbutton = CreateButton("Run","Play16.gif")
 		runbutton.setToolTipText("Run current buffer")
-		outbutton = CreateButton("Out","AlignJustify16.gif")
+ *//* 		outbutton = CreateButton("Out","AlignJustify16.gif")
 		outbutton.setToolTipText("Show script output")
-		parsebutton = CreateButton("PO","Information16.gif")
-		parsebutton.setToolTipText("Show parse output")
-		tracebutton = CreateButton("Trace","TraceConsoleOFF16.gif")
-		tracebutton.setToolTipText("Show trace output")
-		clearoutbutton = CreateButton("Clear","Delete16.gif")
+ */
+/*  		parsebutton = CreateButton("PO","Information16.gif")
+		parsebutton.setToolTipText("Show parse output") */
+--		tracebutton = CreateButton("Trace","TraceConsoleOFF16.gif")
+--		tracebutton.setToolTipText("Show trace output")
+/* 		clearoutbutton = CreateButton("Clear","Delete16.gif")
 		clearoutbutton.setToolTipText("Clear output windows")
-		upbutton = CreateButton("up","go-up.png")
+ */		
+/* 	  upbutton = CreateButton("up","go-up.png")
 		upbutton.setToolTipText("Move command bar to top")
 		downbutton = CreateButton("down","go-down.png")
 		downbutton.setToolTipText("Move command bar to bottom")
-		flushbutton = CreateButton("Flush","Flush24.png")
-		flushbutton.setToolTipText("Flush scripts from memory")
+ *//* 		flushbutton = CreateButton("Flush","refresh.png")
+--		flushbutton = CreateButton("Flush","Flush24.png")
+		flushbutton.setToolTipText("Flush scripts from memory") */
 			
-		cmdtoolbar.add(runbutton)
-		cmdtoolbar.add(outbutton)
-		cmdtoolbar.add(tracebutton)
-		cmdtoolbar.add(parsebutton)
-		cmdtoolbar.add(clearoutbutton)
+--		cmdtoolbar.add(runbutton)
+--		cmdtoolbar.add(outbutton)
+--		cmdtoolbar.add(tracebutton)
+--		cmdtoolbar.add(parsebutton)
+--		cmdtoolbar.add(clearoutbutton)
 		
-		cll=JLabel("   Cmd or parms:")
-		cmdtoolbar.add(cll)
+--		cll=JLabel("   Cmd or parms:")
+--		cmdtoolbar.add(cll)
 		clf=FALSE
 --		cl=JTextField(55)
-		cl=HistoryTextField("NetRexxScript.commandline",0,1)
-		cl.setColumns(55)		
-		cl.addActionListener(this)		
-		cmdtoolbar.add(cl)
+--		cl=HistoryTextField("NetRexxScript.commandline",0,1)
+--		cl.setColumns(30)		
+--		cl.addActionListener(this)		
+--		cmdtoolbar.add(cl)
 		
-		cmdtoolbar.add(flushbutton)
-		
+--		cmdtoolbar.add(flushbutton)
+/*		
 		bar=jEdit.getProperty(OPTION_PREFIX"cmdbarloc","up")	--	get the user preferred cmd bar loc
 		if bar="up" then cmdtoolbar.add(downbutton)
 			else cmdtoolbar.add(upbutton)
-
+*/
 		parseout=JTextArea(10,100)
 		parseout.setEditable(0)
 		caret = DefaultCaret parseout.getCaret
@@ -138,12 +164,12 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 		traceout.setEditable(0)
 		caret = DefaultCaret parseout.getCaret
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE)		
-		
+/*		
     	mp=JPanel()
     	title = BorderFactory.createTitledBorder("NetRexxScript output area")
     	mp.setBorder(title)
 		mp.setLayout(CardLayout())
-		
+*/		
 		mp.add(JScrollPane(parseout),"parseout")
 		mp.add(JScrollPane(scriptout),"scriptout")
 		mp.add(JScrollPane(traceout),"traceout")
@@ -153,12 +179,12 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 		ba[3]=tracebutton
 		ba[4]=parsebutton		
 		bs='runout scriptout traceout parseout'
-		
+/*		
 		setLayout(BorderLayout())
 		add(mp,BorderLayout.CENTER)
 		if bar="up" then add(cmdtoolbar,BorderLayout.NORTH)
 			else add(cmdtoolbar,BorderLayout.SOUTH)
-		
+*/		
 	method createButton(lbl=String,IconFile=String "") returns JToggleButton private
 
 		if IconFIle = "" then aButton = JToggleButton(lbl)
@@ -199,17 +225,17 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 		return cl		
 		
 	method commandended public
-		runbutton.setSelected(0)
 		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Play16.gif")))
+		runbutton.setSelected(0)
 		runbutton.setToolTipText("Run current buffer")
 		runflag=FALSE
 		clf=FALSE		
-		cll.setText("   Cmd or parms:")
+		cll.setText("Cmd/Args/StdIn")
 		
 	method commandstarted public
 --		(CardLayout mp.getLayout).show(mp,"parseout")
-		runbutton.setSelected(1)
 		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Stop16.gif")))
+		runbutton.setSelected(1)
 		runbutton.setToolTipText("Stop script now running")		
 		runflag=TRUE
 		cll.setText("                ")
@@ -248,21 +274,40 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 				clf=FALSE
 			end
 		return Rexx("")
-				
+
+	method shadowcp
+		
+				pathfile=File(jEdit.getActiveView.getBuffer.getPath)
+				tempclasspath=pathfile.getParent
+				optioncp=jEdit.getProperty(OPTION_PREFIX"classpath","")
+				if optioncp\="" then tempclasspath=tempclasspath||ps||optioncp
+				if CPField.getText() \= "" then  tempclasspath=tempclasspath||ps||CPField.getText()
+				pi=NetRexxScriptPlugin.nrsplugin	
+			  if Rexx(pi.lastcpath).pos(tempclasspath)=0 then do
+			  			jEdit.setProperty(OPTION_PREFIX"classpath",tempclasspath)
+			  			pi.optionflush
+			  			jEdit.setProperty(OPTION_PREFIX"classpath",optioncp)
+			  			end
+		
 	method actionPerformed(ae=ActionEvent) 
 
 		ButtonClicked = String ae.getActionCommand()
 		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",FALSE) 		--	are we debugging?
 		
+		if outbutton.isSelected then (CardLayout mp.getLayout).show(mp,"scriptout")	
+		if parsebutton.isSelected then (CardLayout mp.getLayout).show(mp,"parseout")	
+		if tracebutton.isSelected then (CardLayout mp.getLayout).show(mp,"traceout")	
+		
 		if ae.getSource=cl then do
 			if df then say "you entered" cl.getText
+			if NetRexx.compile.ProcessStatus\="" then return  -- ignore if compiler code is running something
 			if \clf then do
 				if runflag then return
 				commandstarted
 				NetRexxScriptPlugin.outwin=NetRexxInterface this
-					pi=NetRexxScriptPlugin.nrsplugin				
---				pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
-				pi.runbysearch(cl.getText)		
+				shadowcp		--	need temp classpath update?
+				pi=NetRexxScriptPlugin.nrsplugin		
+				pi.runbysearch(cl.getText)
 				return
 				end
 			else do
@@ -274,9 +319,9 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 		select
 			when ButtonClicked == "Run" then
 				do
+					NetRexx.compileroperation=0			--		warn window that interpreter is working
 					NetRexxScriptPlugin.outwin=NetRexxInterface this
 					pi=NetRexxScriptPlugin.nrsplugin			
---					pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxscript.NetRexxScriptPlugin")
 					if runflag then do
 						if df then say "killing script"
 						pi.kill
@@ -286,7 +331,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 						end
 					  else do
 						System.out.println("execute NetRexxScript runcurrent action")
---					  	commandstarted
+						shadowcp		--	need temp classpath update?
 						pi.runcurrent(jEdit.getActiveView,jEdit.getActiveView.getBuffer,cl.getText)
 						return
 						end
@@ -299,8 +344,9 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 					return
 				end
 
-			when ButtonClicked == "Trace" then
+			when ButtonClicked == "Trace" | ButtonClicked = "ShowTrace" | ButtonClicked = "HideTrace" then
 				do
+					(JToggleButton ae.getSource()).setIcon(ImageIcon(getClass().getResource("/res/TraceConsoleOFF16.gif")))
 					(CardLayout mp.getLayout).show(mp,"traceout")				
 					selectme((JToggleButton ae.getSource))
 					return
@@ -318,7 +364,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 					clearparseout
 					cleartraceout
 					clearscriptout
-					clearoutbutton.setSelected(0)
+--					clearoutbutton.setSelected(0)
 					return
 				end
 
@@ -328,30 +374,6 @@ class NetRexxScript adapter extends JPanel implements ActionListener, NetRexxInt
 					pi=NetRexxScriptPlugin.nrsplugin			
 					pi.flush					
 					flushbutton.setSelected(0)
-					return
-				end
-
-			when ButtonClicked == "up" then
-				do
-					remove(cmdtoolbar)
-					cmdtoolbar.remove(upbutton)
-					upbutton.setSelected(0)
-					cmdtoolbar.add(downbutton)
-					add(cmdtoolbar,BorderLayout.NORTH)
-					jEdit.setProperty(OPTION_PREFIX"cmdbarloc","up")	--	set the user preferred cmd bar loc
-					validate()
-					return
-				end
-	
-			when ButtonClicked == "down" then
-				do
-					remove(cmdtoolbar)
-					cmdtoolbar.remove(downbutton)
-					downbutton.setSelected(0)
-					cmdtoolbar.add(upbutton)
-					add(cmdtoolbar,BorderLayout.SOUTH)
-					jEdit.setProperty(OPTION_PREFIX"cmdbarloc","down")	--	set the user preferred cmd bar loc
-					validate()
 					return
 				end
 				

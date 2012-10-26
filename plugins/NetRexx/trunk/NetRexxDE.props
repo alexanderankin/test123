@@ -12,7 +12,7 @@ sidekick.parser.netrexx.label=nrxParser
 
 # register options pane
 #plugin.NetRexxDEPlugin.option-pane=NetRexxDE
-options.NetRexxDE.label=NetRexxDE
+options.NetRexxDE.label=Compiler
 options.NetRexxDE.code=new netrexxplugin.NetRexxDEOptionPane(view);
 
 # action labels for actions supplied by actions.xml

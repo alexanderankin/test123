@@ -3,7 +3,7 @@
 # application menu items			-	the actions for these menu items are defined in the actions.xml file
 netrexxplugin.NetRexxPlugin.menu.label=NetRexx
 #plugin.netrexxscript.NetRexxScriptPlugin.menu=NetRexxScript.flush NetRexxScript.cache NetRexxScript.preparse NetRexxScript.execute
-plugin.netrexxplugin.NetRexxPlugin.menu=NetRexxScript.runcurrent NetRexxScript.toggle NetRexxDE.toggle-vis NetRexxScript.flush NetRexxScript.trace NetRexxScript.cache NetRexxScript.preparse
+plugin.netrexxplugin.NetRexxPlugin.menu=NetRexxScript.runcurrent NetRexx.toggle NetRexxScript.toggle NetRexxDE.toggle-vis NetRexxScript.flush NetRexxScript.trace NetRexxScript.cache NetRexxScript.preparse
 NetRexxScript.runcurrent.label=Run Current
 NetRexxScript.flush.label=Flush
 NetRexxScript.cache.label=Cache
@@ -22,18 +22,21 @@ plugin.netrexxplugin.NetRexxPlugin.option-group=netrexxscript NetRexxDE
 # Option pane activation BeanShell snippet
 options.netrexxscript.code=new netrexxplugin.NetRexxScriptOptionPane();
 # Option pane labels
-options.netrexxscript.label=NetRexxScript
+options.netrexxscript.label=Interpreter
 options.netrexxplugin.NetRexxPlugin.label=NetRexx
 
 # 					-	following stuff is for the dockable window
 
 #dockable windows titles
 NetRexxScript.title = NetRexxScript
+NetRexx.title = NetRexx
 
 # action labels
 NetRexxScript.toggle.label=NetRexxScript
+NetRexx.toggle.label=NetRexx
 
 # missing a label somewhere - this one does not seem to be documented but need for shortcuts panel?
 NetRexxScript.label = NetRexxScript
+NetRexx.label = NetRexx
 
 
