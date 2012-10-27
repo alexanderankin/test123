@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-<meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type"><title>NetRexxScript Plugin Help</title></head>
-<body style="background-color: rgb(255, 255, 255);">
+
+<meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type"><title>NetRexxScript Plugin Help</title></head><body style="background-color: rgb(255, 255, 255);">
 <table summary="Header" bgcolor="#ccccff" border="0" cellspacing="0" cols="2" width="100%">
 <tbody>
 <tr width="100%">
-<td valign="top"><b><font size="+2">NetRexxScript</font></b></td>
-<td align="right" valign="top"><font size="-1"><b> Version 0.1.3&nbsp; (November 30
-2009)</b>
+<td valign="top"><b><font size="+2">NetRexx Interpreter</font></b></td>
+<td align="right" valign="top"><font size="-1"><b> Version 0.2.7&nbsp; (October 26
+2012)</b>
 <br>
 By Kermit Kiser (nrs@kermitkiser.com) <br>
 </font></td>
@@ -17,9 +17,8 @@ By Kermit Kiser (nrs@kermitkiser.com) <br>
 <ul>
 <li><a href="NetRexxScript.html#intro">Introduction</a></li>
 <li><a href="doc/NetRexx-Script-features.html">Features</a></li>
-<li><a href="NetRexxScript.html#req">Requirements</a>
-</li>
-<li><a href="NetRexxScript.html#install">Installation</a></li>
+
+
 <li><a href="NetRexxScript.html#start">Getting
 Started and using
 NetRexx Scripts</a></li>
@@ -46,72 +45,9 @@ here: http://speleotrove.com/misc/NetRexx2.pdf</li>
 </tbody>
 </table>
 <p>
-The "NetRexxScript" plugin adds support to jEdit for running scripts, macros, and programs written in
+The "NetRexx" plugin adds support to jEdit for running scripts, macros, and programs written in
 NetRexx.
 </p>
-<table summary="Requirements" border="0" cellpadding="3" cellspacing="0" width="100%">
-<tbody>
-<tr width="100%" align="center">
-<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"> <a name="req">Requirements</a></font></b></td>
-</tr>
-</tbody>
-</table>
-<p>
-The minimum (known) requirements are:
-</p>
-<ul>
-<li>JRE 1.5 (tested with JRE 1.6.0_16/17) </li>
-<li>jEdit 4.2 final or jEdit 4.3 pre17 (tested with these only) </li>
-<li>Windows or Linux (tested with XP pro and Ubuntu 9.10)<br>
-</li>
-<li>NetRexxC.jar ( tested with NetRexx 2.05)</li>
-<li>ErrorList plugin 1.5 (tested with 1.7)<br>
-</li>
-</ul>
-Note
-that this is a "beta"&nbsp;release: it is still being tested and it
-may work with other
-Java and jEdit versions or other operating systems but these are the
-only tested environments at
-this time. I will adjust these requirements if anyone&nbsp;tests
-the
-plugin under different environments and reports success or failure
-there. <br>
-<br>
-<table summary="Installation" border="0" cellpadding="3" cellspacing="0" width="100%">
-<tbody>
-<tr width="100%" align="center">
-<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"> <a name="install">Installation</a></font></b></td>
-</tr>
-</tbody>
-</table>
-
-<p>The 0.1.3 version can be installed from the jEdit Plugin Central
-site via the jEdit plugin manager. Select "Plugins" =&gt; "Plugin
-Manager" =&gt; "Install", mark the NetRexxScript plugin and click the
-"Install" button.
-</p>
-If NetRexxScript&nbsp;is not available from&nbsp;Plugin Central for some reason, you can install it manually:
-<ul>
-<li> Download the <a href="NetRexxScript.jar">NetRexxScript.jar</a>&nbsp;file
-and the <a href="ftp://ftp.software.ibm.com/software/awdtools/netrexx/NetRexx.zip">NetRexxC.jar</a>
-file or unzip them from one of the distribution files. </li>
-<li> Copy both&nbsp;files to&nbsp;the&nbsp;user
-account's jEdit jars directory or the main <a href="http://www.jedit.org/index.php?page=download">jEdit</a>
-jars directory.<br>
-<br>
-On Windows XP the user's jEdit jars directory could be C:\Documents and
-Settings\useracct\.jedit\jars (Where "useracct" is the actual userid,
-of course.)<br>
-The jEdit main jar directory may be C:\Program Files\jEdit\jars<br>
-On Linux the user's jEdit jars directory could be
-/home/useracct/.jedit/jars<br>
-<br>
-If you have the <a href="http://personales.ya.com/drequena/NetRexxJe-1.0.2.zip">NetRexxJe
-plugin</a> installed, NetRexxC.jar is installed with it, so just
-copy NetRexxScript.jar to the same directory.<br>
-</li>
-</ul>
 <table summary="Getting Started" border="0" cellpadding="3" cellspacing="0" width="100%">
 <tbody>
 <tr width="100%" align="center">
@@ -121,8 +57,7 @@ Started and using NetRexx Scripts</a></font></b></td>
 </tbody>
 </table>
 <p>The&nbsp;plugin will start automatically when jEdit
-starts. The plugin will create a
-"NetRexx" subdirectory under the user account's jEdit macros directory
+starts. The plugin will create "NetRexx" and NetRexxScript subdirectories under the user account's jEdit macros directory
 and copy any sample scripts bundled with the plugin there. You can save
 your
 NetRexx scripts in either directory depending on where you want them to
@@ -135,8 +70,7 @@ the
 plugin will add the default jEdit macro variables to the start of the
 script (see below). If the option is turned off, the plugin does not
 alter the NetRexx scripts - they are passed
-unchanged to the interpreter. If the first line of your script is an
-import, options, package, or class instruction, the plugin will not add
+unchanged to the interpreter. If your script contains a class instruction, the plugin will not add
 the jEdit variables even if the add option is turned on. In that case
 if you need the variables described in the jEdit
 beanshell guide to writing macros, you must create them yourself by
@@ -155,13 +89,12 @@ option:<br>
 <br>
 You can change the automatic prefix lines by altering the
 "prefix.txt" file in the NetRexx directory in the jEdit profile
-directory (not the one under the macros directory). *** Do not add any
-"new
-line" characters or the error reporting back to the original files will
-be broken! ***<br>
+directory (not the one under the macros directory). A macro "Add Jedit
+Prefix" is provided to insert the prefix lines into the current buffer
+at the cursor location.<br>
 <br>
 You can add NetRexx scripts to the jEdit startup
-directory but they must start with an import, options, package, or
+directory but they must contain a
 class instruction if the prefix option is on in order to prevent access
 to jEdit variables that don't yet exist such as a "view". There is
 currently no provision to save or pass objects from startup scripts.<br>
@@ -174,7 +107,7 @@ activity log
 messages
 if things don't work.). Parse errors will be reflected to the script as
 colored underlines and to the error list window. When debugging
-scripts, it is strongly recommended that you open the NetRexxScript
+scripts, it is strongly recommended that you open the NetRexx
 plugin's dockable window and dock it top or bottom. This will give you
 windows to see output from the script, trace output, and interpreter
 parse output as well as to interact with scripts from a command line
@@ -189,12 +122,15 @@ console.<br>
 </tbody>
 </table>
 <ul>
-<li>Cache&nbsp;&nbsp;&nbsp;&nbsp; - If scripts
+</ul>Here are the NetRexx plugin functions available from the plugin menu and/or the dockable window:<br>
+<ul>
+  <li>Cache&nbsp;&nbsp;&nbsp;&nbsp; - If scripts
 are cached, then they
 can be reexecuted without the overhead of parseing them again. This can
 improve performance but may have unexpected effects (see Notes).
 If a new script is executed which is not in the cache, all cached
 scripts will be reparsed.</li>
+
 <li>Preparse
 - This option will cause all available NetRexx scripts
 to be parsed and cached at plugin startup or when it is switched from
@@ -218,19 +154,14 @@ during testing. If this option is off, trace instructions are ignored.
 Not really needed if using dockable console window as traced output can
 be viewed separate from output without trace but it may be a
 performance improvement.</li>
-<li>Clear
-&nbsp; &nbsp; &nbsp;- This option controls whether or not
-script output
-windows are cleared before running a script. If you turn it off, then
-you will have to clear the windows yourself by clicking the little
-"trashcan" button.</li>
+
 <li>Run
 Current &nbsp; - &nbsp;This option will execute the current
 edit buffer
 as a NetRexx script . Changes are included but the buffer is not saved
 - this allows testing changes without modifying the original file or
 running quick scripts without creating a permanent file.</li>
-<li>NetRexxScript - opens a dockable window to run scripts and
+<li>NetRexx - opens a dockable window to run scripts and
 view
 output. There is a "start" button which is equivalent to the "Run
 Current" menu option but starts the current edit buffer if it is a
@@ -247,17 +178,28 @@ button if a script is currently running. The command line can be moved
 to the top or bottom of the console window. Command line input is
 remembered and can be selected using the drop arrow to the right or by
 using the keyboard up arrow. There is also a shortcut button for the
-flush option.<br><br>
-</li>
+flush option.<br></li>
+</ul>
+The plugin provides two options panels - one for compiler options and
+one for interpreter options. Here are the interpreter options available:
+<ul>
+
 <li>------------------------------
-The following options are only available from the plugin options screen
-for NetRexxScript: &nbsp;
+The following options are only available from the plugin interpreter options screen
+for NetRexx: &nbsp;
 ------------------------------------------------------</li>
+  <li>Clear
+output before running scripts - This option controls whether or not
+script output
+windows are cleared before running a script. If you turn it off, then
+you will have to clear the windows yourself by clicking the little
+"trashcan" button in the dockable window.</li>
+
 <li>Prefix - (Add jEdit variables)&nbsp;-&nbsp;If
 this option is turned on, the plugin will
 add the default jEdit macro variables to the start of&nbsp;scripts
 (see
-above example) unless the first line is an options, import, package, or
+above example) unless the script contains a
 class instruction.</li>
 <li>Verbosity&nbsp;- Controls the level of error messages
 generated by the NetRexx Interpreter. See the NetRexx Language
@@ -270,6 +212,7 @@ that contain functions used by your scripts in Preparse mode or command line onl
 directories as they are included automatically. Note that this path
 includes subdirectories automatically.</li>
 </ul>
+
 <table summary="Advanced Usage" border="0" cellpadding="3" cellspacing="0" width="100%">
 <tbody>
 <tr width="100%" align="center">
@@ -278,10 +221,10 @@ Usage</a></font></b></td>
 </tr>
 </tbody>
 </table><br>If you have scripts which are very stable, you can compile
-them into Java class files via nrc, NetRexxJe, Ant, etc and
-NetRexxScript can then&nbsp;execute them directly from the class files
+them into Java class files and the
+NetRexx plugin can then&nbsp;execute them directly from the class files
 without needing to parse them. This can greatly improve script
-performance. The class files can be executed from the console command
+performance. The class files can be executed from the console Run button or command
 line by entering the class name or from the Macros menu&nbsp;if you
 place them in a jEdit macro directory. Note these items if using this
 feature:<br><ul><li>If a script uses jEdit functions, you must add the
