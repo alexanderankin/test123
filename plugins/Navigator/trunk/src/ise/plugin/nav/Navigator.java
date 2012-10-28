@@ -597,7 +597,7 @@ public class Navigator implements ActionListener {
             // haven't been anywhere yet
             return;
         }
-
+        NavPosition start = new NavPosition(current);
         // Possibly record current position.  Due to receiving mostly
         // PositionChanging events, Navigator's "current" position could be one
         // behind the actual current position.  If so, add it to the history
@@ -617,6 +617,7 @@ public class Navigator implements ActionListener {
         setPosition( current );
         setButtonState();
         notifyChangeListeners();
+        setFileJump(start);
     }
 
     /**
@@ -624,51 +625,18 @@ public class Navigator implements ActionListener {
      * Leaves marker so subsequent file jumps return to the same position
      */
     public void goBackFile() {
-        if ( backHistory == null || backHistory.size() == 0 ) {
-            // nowhere to go
-            return;
-        }
-        if ( current == null ) {
-            // haven't been anywhere yet
-            return;
-        }
-        // go to previous file
-        NavPosition start = current;
-        while ( current.path == start.path && backHistory.size() != 0 ) {
-            goBack();
-        }
-        // reset if didn't get there
-        if ( current.path == start.path ) {
-            while ( !current.equals( start ) && forwardHistory.size() != 0 ) {
-                goForward();
-            }
-            return;
-        }
-        // have jumped files so set marker
-        removeFileJumps( start.path );
-        start.fileJump = true;
-        // check for jump marker in new file
-        NavPosition prevEnd = current;
-        while ( current.path.equals( prevEnd.path ) && current.fileJump == false && backHistory.size() != 0 ) {
-            goBack();
-        }
-        // roll forward to last NavPosition in new file if no marker found
-        if ( current.path != prevEnd.path ) {
-            while ( !current.equals( prevEnd ) && forwardHistory.size() != 0 ) {
-                goForward();
-            }
-            current.fileJump = true;
-        }
+		singleFileJump(backHistory);    
     }
 
     /**
      * Moves to the next item in the "forward" history.
      */
     public void goForward() {
-        if ( forwardHistory.size() == 0 ) {
+	if ( forwardHistory.size() == 0 ) {
             // nowhere to go
             return;
         }
+        NavPosition start = new NavPosition(current);
         if ( current != null ) {
             backHistory.push( current );
         }
@@ -677,7 +645,8 @@ public class Navigator implements ActionListener {
             current = forwardHistory.pop();
             setButtonState();
             notifyChangeListeners();
-        }
+        }		
+        setFileJump(start);
     }
 
     /**
@@ -685,60 +654,76 @@ public class Navigator implements ActionListener {
      * Leaves marker so subsequent file jumps return to the same position
      */
     public void goForwardFile() {
-        if ( forwardHistory == null || forwardHistory.size() == 0 ) {
-            // nowhere to go
-            return;
-        }
-        if ( current == null ) {
-            // haven't been anywhere yet
-            return;
-        }
-        // go to next file
-        NavPosition first = current;
-        while ( current.path == first.path && forwardHistory.size() != 0 ) {
-            goForward();
-        }
-        // reset if didn't get there
-        if ( current.path == first.path ) {
-            while ( !current.equals( first ) && backHistory.size() != 0 ) {
-                goBack();
-            }
-            return;
-        }
-        // have jumped files so set marker
-        removeFileJumps( first.path );
-        first.fileJump = true;
-        // check for jump marker in new file
-        NavPosition nextStart = current;
-        while ( current.path.equals( nextStart.path ) && current.fileJump == false && forwardHistory.size() != 0 ) {
-            goForward();
-        }
-        // roll back to first NavPosition in new file if no marker found
-        if ( current.path != nextStart.path ) {
-            while ( !current.equals( nextStart ) && backHistory.size() != 0 ) {
-                goBack();
-            }
-        }
+        singleFileJump(forwardHistory);
     }
 
     /**
-     * Removes file jump markers for the given path.
-     * @param bufferPath The file to remove the jump markers from.
+     * Moves position by a single file in the direction specified by the history
+     * given, respecting file jump markers. Leaves file jump marker via jump(),
+     * uses current to keep track
+     *
+     * @param history of direction required
      */
-    public void removeFileJumps( String bufferPath ) {
-        if ( bufferPath == null ) {
+    public void singleFileJump(NavStack<NavPosition> history) {
+
+        if (history == null || history.size() == 0) {
+            // nowhere to go
             return;
         }
-        for ( NavPosition pos : backHistory ) {
-            if ( bufferPath.equals( pos.path ) ) {
-                pos.fileJump = false;
-            }
+        if (current == null) {
+            // haven't been anywhere yet
+            return;
         }
-        for ( NavPosition pos : forwardHistory ) {
-            if ( bufferPath.equals( pos.path ) ) {
-                pos.fileJump = false;
-            }
+
+        NavStack<NavPosition> oppositeHistory = null;
+        if (history.equals(forwardHistory)) {
+            oppositeHistory = backHistory;
+        } else if (history.equals(backHistory)) {
+            oppositeHistory = forwardHistory;
+        } else {
+            return;
         }
+
+        NavPosition start = new NavPosition(current);
+        // go to next file
+        while (current != null && 
+                current.path == start.path && 
+                history.size() != 0) {
+            oppositeHistory.push(current);
+            current = history.pop();
+        }
+        // reset if didn't get there
+        if (current.path == start.path) {
+            while (current != null && 
+                    !current.equals(start)) {
+                history.push(current);
+                current = oppositeHistory.pop();
+            }
+            return;
+        }
+        // check for jump marker in next file
+        NavPosition nextStart = new NavPosition(current);
+        while (current != null && 
+                current.path.equals(nextStart.path) && 
+                current.fileJump == false && 
+                history.size() != 0) {
+            oppositeHistory.push(current);
+            current = history.pop();
+        }
+        // reset history so markers left if neccesary on jumps below
+        NavPosition end = new NavPosition(current);
+        while (current != null &&
+                !current.equals(start)) {
+            history.push(current);
+            current = oppositeHistory.pop();
+        }
+        start = current;       
+        if (end != null && 
+            end.fileJump == true) {
+            jump(end);
+        } else {            
+            jump(nextStart);
+        }        
     }
 
     /**
@@ -750,6 +735,7 @@ public class Navigator implements ActionListener {
             return;
         }
         ignoreUpdates = true;
+        NavPosition start = new NavPosition(current);
         // find the position.  If it is in the back history, copy all positions
         // after it to the forward history, vice versa if it is in the forward
         // history.
@@ -784,8 +770,37 @@ public class Navigator implements ActionListener {
             notifyChangeListeners();
         }
         ignoreUpdates = false;
+        setFileJump(start);        
     }
-
+    
+    /**
+     * Sets file jump marker on a given position clearing any others in the same file
+     *
+     * @param NavPosition to add the file jump marker to.
+     */
+    private void setFileJump(NavPosition pos) {
+        if (current != null && 
+            pos != null &&
+            !pos.path.equals(current.path)) {
+            for (NavPosition np : backHistory) {
+                if (pos.path.equals(np.path)) {
+                    np.fileJump = false;
+                }                
+                if (pos.equals(np)) {
+                    np.fileJump = true;
+                }
+            }
+            for (NavPosition np : forwardHistory) {
+                if (pos.path.equals(np.path)) {
+                    np.fileJump = false;
+                }                            
+                if (pos.equals(np)) {
+                    np.fileJump = true;
+                }
+            }                                              
+        }
+    }
+        
     // -------------    USER STACK OPERATIONS ------------------------
 
     /** Push position onto user stack */
