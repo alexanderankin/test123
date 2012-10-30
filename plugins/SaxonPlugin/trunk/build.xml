@@ -6,21 +6,22 @@
 	<property file="build.properties"/>
 
 	<property name="jar.file" value="SaxonPlugin.jar"/>
-	<property name="version" value="9-2-0-6"/>
+	<property name="version" value="9-4-0-6"/>
 
 	<target name="init">
 		<mkdir dir="build"/>
 	</target>
 
 	<target name="unzip" depends="init">
-		<unzip src="saxonhe${version}j.zip" dest="${UNZIPDIR}" />
+		<unzip src="SaxonHE${version}J.zip" dest="${UNZIPDIR}" />
 	</target>
 
 	<property name="UNZIPDIR" value="build/saxonhe" />
 
 	<target name="compile" depends="init">
 		<mkdir dir="build/classes"/>
-		<javac srcdir="." destdir="build/classes" classpath="${jedit.install.dir}/jedit.jar"/>
+		<javac includeantruntime="false" 
+				srcdir="." destdir="build/classes" classpath="${jedit.install.dir}/jedit.jar"/>
 	</target>
   
 
@@ -35,10 +36,6 @@
 				<include name="SaxonPlugin.props"/>
 				<include name="doc/help.html"/>
 			</fileset>
-			<fileset dir="${UNZIPDIR}">
-				<include name="doc/**/**"/>
-				<include name="notices/**/**"/>
-			</fileset>
 			<fileset dir="build/classes">
 				<include name="**/*.class"/>
 			</fileset>
@@ -49,6 +46,7 @@
 		<copy todir="${install.dir}">
 			<fileset dir="${UNZIPDIR}">
 				<include name="saxon9he.jar" />
+				<include name="saxon9-unpack.jar" />
 			</fileset>
 		</copy>
 	</target>
