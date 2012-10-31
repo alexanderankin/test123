@@ -19,11 +19,15 @@
 
 package jakartacommons;
 
+import java.io.File;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
+import org.w3c.dom.ranges.Range;
 
 /**
 * Contains implementations for actions that use jakarta commons libs.
@@ -32,10 +36,30 @@ public class JakartaCommonsPlugin extends EditPlugin {
 
 	static Selection[] selections;
 	public static String selectedText(TextArea textArea, Buffer buffer) {
-		if (textArea.getSelectionCount() != 1) return null;
-		selections = textArea.getSelection();
-		int len = selections[0].getEnd() - selections[0].getStart();
-		return buffer.getText(selections[0].getStart(), len);
+		if (textArea.getSelectionCount() == 0) {		
+			int line = textArea.getCaretLine();
+			int lineLength = textArea.getLineLength(line);
+			if (lineLength == 0)
+				return null;
+			String lineText = textArea.getLineText(line);
+			int lineStart = textArea.getLineStartOffset(line);
+			int offset = textArea.getCaretPosition() - lineStart;
+			if (offset == lineLength)
+				return null;
+			String noWordSep = buffer.getProperty("noWordSep") + File.separator;
+			int wordStart = TextUtilities.findWordStart(lineText, offset-1, noWordSep);
+			int wordEnd = TextUtilities.findWordEnd(lineText, offset, noWordSep);
+			String retval = textArea.getText(lineStart + wordStart, wordEnd - wordStart);
+			Selection.Range range = new Selection.Range(lineStart+wordStart, wordEnd); 
+			textArea.setSelection(range);
+			selections = textArea.getSelection();
+			return retval;
+		}
+		else {
+			selections = textArea.getSelection();
+			int len = selections[0].getEnd() - selections[0].getStart();
+			return buffer.getText(selections[0].getStart(), len);
+		}
 	}
 	/** Unescape unicode characters that are selected in current TextArea
 	    using Java conventions. 
