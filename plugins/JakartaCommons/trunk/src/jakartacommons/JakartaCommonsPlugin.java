@@ -46,7 +46,7 @@ public class JakartaCommonsPlugin extends EditPlugin {
 			int offset = textArea.getCaretPosition() - lineStart;
 			if (offset == lineLength)
 				return null;
-			String noWordSep = buffer.getProperty("noWordSep") + File.separator;
+			String noWordSep = buffer.getProperty("noWordSep");
 			int wordStart = TextUtilities.findWordStart(lineText, offset-1, noWordSep);
 			int wordEnd = TextUtilities.findWordEnd(lineText, offset, noWordSep);
 			String retval = textArea.getText(lineStart + wordStart, wordEnd - wordStart);
