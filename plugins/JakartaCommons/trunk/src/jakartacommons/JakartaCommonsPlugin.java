@@ -35,8 +35,10 @@ import org.w3c.dom.ranges.Range;
 public class JakartaCommonsPlugin extends EditPlugin {
 
 	static Selection[] selections;
+	/** Selects word before caret if no selection exists.
+	    @return the selected text */
 	public static String selectedText(TextArea textArea, Buffer buffer) {
-		if (textArea.getSelectionCount() == 0) {		
+		if (textArea.getSelectionCount() == 0) {
 			int line = textArea.getCaretLine();
 			int lineLength = textArea.getLineLength(line);
 			if (lineLength == 0)
@@ -44,13 +46,13 @@ public class JakartaCommonsPlugin extends EditPlugin {
 			String lineText = textArea.getLineText(line);
 			int lineStart = textArea.getLineStartOffset(line);
 			int offset = textArea.getCaretPosition() - lineStart;
-			if (offset == lineLength)
-				return null;
-			String noWordSep = buffer.getProperty("noWordSep");
+/*			if (offset == lineLength)
+				return null; */
+			String noWordSep =  buffer.getProperty("noWordSep") + "\\";
 			int wordStart = TextUtilities.findWordStart(lineText, offset-1, noWordSep);
 			int wordEnd = TextUtilities.findWordEnd(lineText, offset, noWordSep);
 			String retval = textArea.getText(lineStart + wordStart, wordEnd - wordStart);
-			Selection.Range range = new Selection.Range(lineStart+wordStart, wordEnd); 
+			Selection.Range range = new Selection.Range(lineStart+wordStart, wordEnd);
 			textArea.setSelection(range);
 			selections = textArea.getSelection();
 			return retval;
@@ -62,20 +64,20 @@ public class JakartaCommonsPlugin extends EditPlugin {
 		}
 	}
 	/** Unescape unicode characters that are selected in current TextArea
-	    using Java conventions. 
-	    @author Alan Ezust 
+	    using Java conventions.
+	    @author Alan Ezust
 	*/
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		String text = selectedText(textArea, buffer);
 		if (text == null) return;
 		String esctext = StringEscapeUtils.unescapeJava(text);
 		buffer.remove(selections[0].getStart(), text.length());
-		buffer.insert(selections[0].getStart(), esctext);	
+		buffer.insert(selections[0].getStart(), esctext);
 	}
 
 	/** Escape unicode characters that are selected in current TextArea
-	    using Java conventions. 
-	    @author Alan Ezust 
+	    using Java conventions.
+	    @author Alan Ezust
 	*/
 	public static void escapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		String text = selectedText(textArea, buffer);
