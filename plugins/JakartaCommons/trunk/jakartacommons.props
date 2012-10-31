@@ -15,8 +15,8 @@ plugin.jakartacommons.JakartaCommonsPlugin.description=Jakarta Commons, a bundle
 
 plugin.jakartacommons.JakartaCommonsPlugin.menu=unescape-unicode-selection escape-unicode-selection
 
-unescape-unicode-selection.label=Unescape Unicode in Selection
-escape-unicode-selection.label=Escape Unicode in Selection
+unescape-unicode-selection.label=Unescape Unicode
+escape-unicode-selection.label=Escape Unicode
 
 # included jar files
 plugin.jakartacommons.JakartaCommonsPlugin.jars=\
