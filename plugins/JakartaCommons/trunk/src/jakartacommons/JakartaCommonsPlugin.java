@@ -21,6 +21,9 @@ package jakartacommons;
 
 import java.io.File;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
@@ -46,37 +49,37 @@ public class JakartaCommonsPlugin extends EditPlugin {
 			String lineText = textArea.getLineText(line);
 			int lineStart = textArea.getLineStartOffset(line);
 			int offset = textArea.getCaretPosition() - lineStart;
-/*			if (offset == lineLength)
-				return null; */
 			String noWordSep =  buffer.getProperty("noWordSep") + "\\";
 			int wordStart = TextUtilities.findWordStart(lineText, offset-1, noWordSep);
 			int wordEnd = TextUtilities.findWordEnd(lineText, offset, noWordSep);
-			String retval = textArea.getText(lineStart + wordStart, wordEnd - wordStart);
 			Selection.Range range = new Selection.Range(lineStart+wordStart, wordEnd);
 			textArea.setSelection(range);
-			selections = textArea.getSelection();
-			return retval;
 		}
-		else {
-			selections = textArea.getSelection();
-			int len = selections[0].getEnd() - selections[0].getStart();
-			return buffer.getText(selections[0].getStart(), len);
-		}
+		selections = textArea.getSelection();
+		int len = selections[0].getEnd() - selections[0].getStart();
+		return buffer.getText(selections[0].getStart(), len);
 	}
 	/** Unescape unicode characters that are selected in current TextArea
-	    using Java conventions.
+	    (or word before caret) using Java conventions.
+	    If the word is just a bunch of digits, it implicitly places a
+	    \u before the word before doing the unescaping.
 	    @author Alan Ezust
 	*/
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		String text = selectedText(textArea, buffer);
 		if (text == null) return;
+		final Pattern p = Pattern.compile("\\d+");
+		Matcher m = p.matcher(text);
 		String esctext = StringEscapeUtils.unescapeJava(text);
+		if (m.matches()) {
+			esctext = StringEscapeUtils.unescapeJava("\\u" + text);
+		}
 		buffer.remove(selections[0].getStart(), text.length());
 		buffer.insert(selections[0].getStart(), esctext);
 	}
 
 	/** Escape unicode characters that are selected in current TextArea
-	    using Java conventions.
+		(or word before caret) using Java conventions.
 	    @author Alan Ezust
 	*/
 	public static void escapeUnicodeSelection(TextArea textArea, Buffer buffer) {
