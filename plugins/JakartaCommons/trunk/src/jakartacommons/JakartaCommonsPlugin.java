@@ -41,39 +41,28 @@ public class JakartaCommonsPlugin extends EditPlugin {
 	/** Selects word before caret if no selection exists.
 	    @return the selected text */
 	public static String selectedText(TextArea textArea, Buffer buffer) {
-		if (textArea.getSelectionCount() == 0) {
-			int line = textArea.getCaretLine();
-			int lineLength = textArea.getLineLength(line);
-			if (lineLength == 0)
-				return null;
-			String lineText = textArea.getLineText(line);
-			int lineStart = textArea.getLineStartOffset(line);
-			int offset = textArea.getCaretPosition() - lineStart;
-			String noWordSep =  buffer.getProperty("noWordSep") + "\\";
-			int wordStart = TextUtilities.findWordStart(lineText, offset-1, noWordSep);
-			int wordEnd = TextUtilities.findWordEnd(lineText, offset, noWordSep);
-			Selection.Range range = new Selection.Range(lineStart+wordStart, wordEnd);
-			textArea.setSelection(range);
-		}
+		if (textArea.getSelectionCount() == 0)
+			textArea.selectWord();
 		selections = textArea.getSelection();
 		int len = selections[0].getEnd() - selections[0].getStart();
 		return buffer.getText(selections[0].getStart(), len);
 	}
 	/** Unescape unicode characters that are selected in current TextArea
 	    (or word before caret) using Java conventions.
-	    If the word is just a bunch of digits, it implicitly places a
+	    If the word is just a 2-5 digit hexadecimal number, it implicitly places a
 	    \\u before the word before doing the unescaping.
 	    @author Alan Ezust
 	*/
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		String text = selectedText(textArea, buffer);
 		if (text == null) return;
-		final Pattern p = Pattern.compile("[0-9a-fA-F]{1,4}");
+		// Pattern for a 5-digit hexadecimal number
+		final Pattern p = Pattern.compile("[0-9a-fA-F]{2,5}");
 		Matcher m = p.matcher(text);
-		String esctext = StringEscapeUtils.unescapeJava(text);
-		if (m.matches()) {
+		String esctext;
+		if (m.matches())
 			esctext = StringEscapeUtils.unescapeJava("\\u" + text);
-		}
+		else esctext = StringEscapeUtils.unescapeJava(text);
 		buffer.remove(selections[0].getStart(), text.length());
 		buffer.insert(selections[0].getStart(), esctext);
 	}
