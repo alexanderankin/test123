@@ -62,13 +62,13 @@ public class JakartaCommonsPlugin extends EditPlugin {
 	/** Unescape unicode characters that are selected in current TextArea
 	    (or word before caret) using Java conventions.
 	    If the word is just a bunch of digits, it implicitly places a
-	    \u before the word before doing the unescaping.
+	    \\u before the word before doing the unescaping.
 	    @author Alan Ezust
 	*/
 	public static void unescapeUnicodeSelection(TextArea textArea, Buffer buffer) {
 		String text = selectedText(textArea, buffer);
 		if (text == null) return;
-		final Pattern p = Pattern.compile("\\d+");
+		final Pattern p = Pattern.compile("[0-9a-fA-F]{1,4}");
 		Matcher m = p.matcher(text);
 		String esctext = StringEscapeUtils.unescapeJava(text);
 		if (m.matches()) {
