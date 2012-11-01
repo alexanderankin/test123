@@ -77,8 +77,6 @@
                 <delete>
                         <fileset dir="." defaultexcludes="no">
                                 <include name="**/*~"/>
-                                <include name="docbook-wrapper.xsl"/>
-                                <include name="default-users-guide.xsl"/>
                         </fileset>
                 </delete>
         </target>
