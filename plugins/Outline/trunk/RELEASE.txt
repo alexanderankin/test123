@@ -1,12 +1,12 @@
-Outline 1.2.1
+Outline 1.2.4
 
 Requirements:
-	* JDK 1.5
-	* jEdit 4.3pre8
-	* SideKick 0.7
-	* ErrorList 1.4
+	* JDK 1.6
+	* jEdit 4.5
+	* SideKick 1.3
+	* ErrorList 1.9
 Announcement:
-	Added asset descriptions
+	Bugfix release.
 Source:
 	plugins/Outline
 
