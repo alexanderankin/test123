@@ -15,7 +15,7 @@
 	<property name="jedit.plugins.dir" value="${install.dir}" description="Location of required plugin jars"/>
 	
 	<!-- Project properties -->
-	<property name="project.version" value="0.2.6" description="Project's build version"/>
+	<property name="project.version" value="0.2.8" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
 	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
@@ -68,7 +68,7 @@
      </target>
     
     <target name="compilemacros" depends="prep" description="Builds sample script classfiles">
-        <buildnrc srcDir="NetRexx" destDir="macros/NetRexxScript/samples" includes="class*.nrx"
+        <buildnrc srcDir="NetRexx" destDir="macros/samples" includes="class*.nrx"
 			classpath="${toString:netrexxc.classpath}"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose3' crossref="false" replace="false" keep="false"/>
@@ -84,7 +84,7 @@
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
         	<fileset dir="${project.package.plugin}" includes="*.nrx" />
-        	<fileset dir="macros/NetRexxScript/samples" includes="class*.nrx" />        	
+        	<fileset dir="macros/samples" includes="class*.nrx" />        	
         	</delete>
     </target>
     
@@ -93,7 +93,7 @@
         	<fileset dir="." includes="*.nrx *.class *.java *.keep" />
         	<fileset dir="${project.package.plugin}" erroronmissingdir="no" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx *.class *.java" />        	
-        	<fileset dir="macros/NetRexxScript/samples" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="macros/samples" includes="class*.nrx *.class *.java" />        	
         	</delete>
     </target>
 	
