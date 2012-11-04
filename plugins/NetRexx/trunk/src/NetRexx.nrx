@@ -62,19 +62,29 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		fs=File.separator		
 			
 	properties private
+		NavButton=JButton
+		OptionButton=JToggleButton
+		CompileButton=JToggleButton
+		JavaButton=JToggleButton
+
 		ClearButton=JToggleButton
 		TracerButton=JToggleButton
+		ErrOutButton=JToggleButton
+		outbutton=JToggleButton
+		parsebutton=JToggleButton
 		upbutton=JToggleButton
 		downbutton=JToggleButton
-		outbutton=JToggleButton
 		CPButton=JButton
 		CPField = HistoryTextField
 		RunButton=JToggleButton
-		parsebutton=JToggleButton
 		flushbutton=JToggleButton
 		cmdtoolbar=JToolBar
 		mp=JPanel		
 		cl=HistoryTextField
+		
+		ProcessLabel = JLabel
+		ProcessLabel1 = JLabel
+		
 	properties static public
 		compile=NetRexxCompile
 		interpret=NetRexxInterpret
@@ -97,6 +107,9 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 				
 		TracerButton = CreateButton("ShowTrace","/res/TraceConsoleOFF16.gif")
 		TracerButton.setToolTipText("Show TRACE output")
+		
+		ErrOutButton = CreateButton("ShowErrorOutput","/res/ErrorConsoleOFF16.gif")
+		ErrOutButton.setToolTipText("Show System.err output")
 		
 		RunArgsLabel = JLabel("Cmd/Args/StdIn",SwingConstants.LEFT)
 		RunArgsLabel.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 2))
@@ -122,22 +135,52 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		
 		cl=HistoryTextField("NetRexxScript.commandline",0,1)
 		cl.setColumns(30)		
-			
-		ClearButton = createButton("Clear","/res/Delete16.gif")
-		ClearButton.setToolTipText("Clear Output")
+					
+			NavButton = JButton(ImageIcon(getClass().getResource("/res/Nav16.gif")))
+			NavButton.setToolTipText("Structure Browser")
+			NavButton.setActionCommand("Nav")
+			NavButton.addActionListener(this)
+
+			CompileButton=createButton("Compile","/res/Application16.gif")
+			CompileButton.setToolTipText("Compile")
+
+			JavaButton = createButton("Java","/res/JavaCup16.gif")
+			JavaButton.setToolTipText("Create the Java File")
+
+			OptionButton = createButton("Options","/res/Preferences16.gif")
+			OptionButton.setToolTipText("Set Compiler Options")
+
+			ClearButton = createButton("Clear","/res/Delete16.gif")
+			ClearButton.setToolTipText("Clear the NetRexx Console")
 		
 		upbutton = CreateButton("up","/res/go-up.png")
 		upbutton.setToolTipText("Move command bar to top")
 		downbutton = CreateButton("down","/res/go-down.png")
 		downbutton.setToolTipText("Move command bar to bottom")
+			
+		ProcessLabel1=JLabel(ImageIcon(getClass().getResource("/res/ProcessStill.gif")))
+		ProcessLabel1.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
+		ProcessLabel =JLabel(ImageIcon(getClass().getResource("/res/ProcessDyn.gif")))
+		ProcessLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
+		ProcessLabel.setVisible(0)
 		
-		compile=NetRexxCompile(v,pos,cmdtoolbar,mp, cl, TracerButton, CPButton, CPField, RunButton)
+		compile=NetRexxCompile(v,pos,cmdtoolbar,mp, cl, TracerButton, CPButton, CPField, RunButton, -
+										ErrOutButton, NavButton, OptionButton, CompileButton, JavaButton, ProcessLabel1, ProcessLabel)
 		interpret=NetRexxInterpret(v,pos,cmdtoolbar,mp, cl, TracerButton, RunArgsLabel, outbutton, -
 									 RunButton, parsebutton, flushbutton, CPField)
+									 
+		if jEdit.getPlugin("sidekick.SideKickPlugin") \= null then
+					CmdToolBar.add(NavButton)
+		CmdToolBar.add(OptionButton)
+		CmdToolBar.add(CompileButton)
+		CmdToolBar.add(JavaButton)
+		CmdToolBar.add(ProcessLabel1)
+		CmdToolBar.add(ProcessLabel)
 		
 		cmdtoolbar.add(RunButton)
 		cmdtoolbar.add(outbutton)
 		cmdtoolbar.add(TracerButton)
+		CmdToolBar.add(ErrOutButton)		
 		cmdtoolbar.add(parsebutton)
 		cmdtoolbar.add(ClearButton)
 		cmdtoolbar.add(flushbutton)
@@ -183,12 +226,25 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 			  			pi.optionflush
 			  			jEdit.setProperty(OPTION_PREFIX"classpath",optioncp)
 			  			end
-		
+
+  method unsetoutbuttons
+					outbutton.setSelected(0)
+					parsebutton.setSelected(0)
+					TracerButton.setSelected(0)
+					ErrOutButton.setSelected(0)
+			  			
 	method actionPerformed(ae=ActionEvent) 
 
 		ButtonClicked = String ae.getActionCommand()
-		
+		s=ae.getSource
+
 		select
+
+			when s=ErrOutButton, s=parsebutton then
+				do
+					unsetoutbuttons
+					(JToggleButton s).setSelected(1)
+				end
 
 			when ButtonClicked == "up" then
 				do
@@ -243,7 +299,6 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 											compile.performAction("HideTrace")
 					else 		compile.performAction("HideErrorOutput")
 				else interpret.actionPerformed(ae)
-					return
 				end
 
 			when ButtonClicked == "Run" then

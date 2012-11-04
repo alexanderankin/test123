@@ -136,15 +136,31 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		StopIcon = ImageIcon(getClass().getResource("/res/Stop16.gif"))
 		projectGroup = VPTGroup
 
-	method NetRexxCompile(v=org.gjt.sp.jedit.View, pos=String, cmdtoolbar=JToolBar, passMiddlePanel=JPanel, passcl=HistoryTextField, passtracebutton=JToggleButton, passCPButton=JButton, passCPField=HistoryTextField, passRunButton=JToggleButton)
+	method NetRexxCompile(v=org.gjt.sp.jedit.View, pos=String, cmdtoolbar=JToolBar, passMiddlePanel=JPanel, -
+		passcl=HistoryTextField, passtracebutton=JToggleButton, passCPButton=JButton, -
+		passCPField=HistoryTextField, passRunButton=JToggleButton, passErrOutButton=JToggleButton, -
+		passNavButton=JButton, passOptionButton=JToggleButton, passCompileButton=JToggleButton, -
+		passJavaButton=JToggleButton, passProcessLabel1=JLabel, passProcessLabel=JLabel)
 
 		OurView = v    
 
 		getProperties()
 
+		CompileButton=passCompileButton
+		CompileButton.addActionListener(this)
+		OptionButton=passOptionButton
+		OptionButton.addActionListener(this)
+		NavButton=passNavButton
+		NavButton.addActionListener(this)
+		JavaButton=passJavaButton
+		JavaButton.addActionListener(this)
+		ProcessLabel1=passProcessLabel1
+		ProcessLabel=passProcessLabel
 		MiddlePanel=passMiddlePanel
 		RunArgsField=passcl
 		TracerButton=passtracebutton
+		ErrOutButton=passErrOutButton
+		ErrOutButton.addActionListener(this)
 		CPButton=passCPButton 
 		CPField=passCPField
 		sharedRunButton=passRunButton
@@ -156,7 +172,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			operationModeButton.setActionCommand("SwitchOperationMode")
 			operationModeButton.setMargin(Insets(0,0,0,0))
 			operationModeButton.addActionListener(this)
-			
+/* 			
 			NavButton = JButton(ImageIcon(getClass().getResource("/res/Nav16.gif")))
 			NavButton.setToolTipText("Structure Browser")
 			NavButton.setActionCommand("Nav")
@@ -174,23 +190,23 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 
 			ClearButton = createButton("Clear","/res/Delete16.gif")
 			ClearButton.setToolTipText("Clear the NetRexx Console")
+ */			
 
 			RunButton = CreateButton("Run","/res/Play16.gif")
 			RunButton.setToolTipText("Run this program")
 			RunButton.setIcon(PlayIcon)
-			
 --			TracerButton = CreateButton("ShowTrace","/res/TraceConsoleOFF16.gif")
 --			TracerButton.setToolTipText("Show TRACE output")
-
+/*
 			ErrOutButton = CreateButton("ShowErrorOutput","/res/ErrorConsoleOFF16.gif")
 			ErrOutButton.setToolTipText("Show System.err output")
-
-			ProcessLabel1=JLabel(ImageIcon(getClass().getResource("/res/ProcessStill.gif")))
+*/
+/* 			ProcessLabel1=JLabel(ImageIcon(getClass().getResource("/res/ProcessStill.gif")))
 			ProcessLabel1.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
 			ProcessLabel =JLabel(ImageIcon(getClass().getResource("/res/ProcessDyn.gif")))
 			ProcessLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
 			ProcessLabel.setVisible(0)
-			ProcessLabel.addComponentListener(this)
+ */			ProcessLabel.addComponentListener(this)
 /* 
 			CPButton  = JButton("ClassPath")
 			CPButton.setActionCommand("SetCP")
@@ -211,7 +227,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			RunArgsField.setActionCommand("RunStdIn")
 			RunArgsField.addActionListener(this)
 			
-
+/*
 		--CmdToolBar.add(operationModeButton)
 		if jEdit.getPlugin("sidekick.SideKickPlugin") \= null then
 					CmdToolBar.add(NavButton)
@@ -220,7 +236,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		CmdToolBar.add(JavaButton)
 --		CmdToolBar.add(RunButton)
 --		CmdToolBar.add(TracerButton)
-		CmdToolBar.add(ErrOutButton)
+--		CmdToolBar.add(ErrOutButton)
 --		CmdToolBar.add(ClearButton)
 /* 			jars=jEdit.getPluginJARs
 			loop pj over jars
@@ -232,7 +248,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 --		CmdToolBar.add(RunArgsField)
 		CmdToolBar.add(ProcessLabel1)
 		CmdToolBar.add(ProcessLabel)
-
+*/
 --		MiddlePanel = JPanel()
 --		MiddlePanel.setLayout(CardLayout())
 

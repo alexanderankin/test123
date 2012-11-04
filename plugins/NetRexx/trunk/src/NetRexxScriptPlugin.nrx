@@ -17,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ ******** remember to update the version number in NetRexx.props and build.xml
+ Version 0.2.8 (Nov 02, 2012)
+ 
+	* create any macros subdirectories and copy contents (not just "NetRexx" dirs)
+	* fix missing EBComponent hook (handleMessage) problem
+	* add our .jedit/NetRexx settings dir to automatic classpath for utility classes
+	
  Version 0.2.7 (Oct 25, 2012)
  
 	* create combination compile/interpret dockable window
@@ -175,7 +182,7 @@ import COM.ibm.netrexx.process.NetRexxA
 
 package netrexxplugin
 
-class NetRexxScriptPlugin public extends EBPlugin implements runnable
+class NetRexxScriptPlugin public extends EBPlugin implements runnable, EBComponent
 	
 	properties public static
 		outwin=NetRexxInterface	 null			--	save pointer to dockable window	
@@ -211,6 +218,8 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		nrcpath=String	""					--	save path to NetRexxC.jar
 		errpath=String						--	save path to ErrorList.jar
 		jarpath=String ""				--	save the jar paths for all plugins
+		utilityclasspath=String ""				--	save the plugin settings utility directory path
+		
 	properties private unused
 		lastspath=String ""					--	save scriptpath in use by the plugin
 		mypath=String	""					--	save path to NetRexxScript.jar
@@ -288,7 +297,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
     	jEdit.setProperty(OPTION_PREFIX"classpath",jEdit.getProperty(OPTION_PREFIX"classpath",""))   
     	jEdit.setProperty(OPTION_PREFIX"scriptpath",jEdit.getProperty(OPTION_PREFIX"scriptpath",""))       						
   		
---------------------   locate the NetRexxC.jar file so we can add it to the classpath for the interpreter  ----		
+--------------------   locate the NetRexxC.jar file and other things so we can add them to the classpath for the interpreter  ----		
 		jcp=System.getProperty(String "java.class.path")
 		NRCS=String("NetRexxC.jar")
 		
@@ -301,6 +310,8 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 				jarpath=Rexx(jarpath||ps||ja[jp].getPath).strip("b",ps).toString			--		remove excess path seps and save plugin jar paths
 				end
 			end		
+
+		utilityclasspath=setdir||fs'NetRexx'
 			
 --	create some external processors and hooks
 
@@ -323,6 +334,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		newinterpreter										-- make a NetRexx interpreter with current classpath
 		setclasspath('off')									 
 			
+		EditBus.addToBus(this)		--	make sure we are on the bus
 		
 		if Macros.getHandler("netrexx")=null then do	--	first start - load a macro handler
 			mh=NetRexxScriptMacroHandler()						--	make a macro handler
@@ -440,6 +452,7 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 				jer=Rexx(je.getName)
 				if je.isDirectory then 
 					if jer.pos('NetRexx')>0 then makeadir(jer)
+						else if jer.pos('macros')>0 then makeadir(jer)
 --				if Rexx(je.getName).translate(fs,'/').pos('NetRexx')>0 then copyjarentry(jf,je,setdir)
 --				if Rexx(je.getName).translate(fs,'/').pos('NetRexx'fs)>0 then copyjarentry(jf,je,setdir)
 --	another Java "gotcha" - jar entries have unix file separators thus requireing the translate above					
@@ -454,6 +467,7 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 					split=jer.lastpos('/')
 					if split>0 then 
 						if jer.delstr(split).pos('NetRexx')>0 then copyjarentry(jf,je,setdir)
+							else if jer.delstr(split).pos('macros')>0 then copyjarentry(jf,je,setdir)
 					end
 --				if Rexx(je.getName).translate(fs,'/').pos('NetRexx')>0 then copyjarentry(jf,je,setdir)
 --				if Rexx(je.getName).translate(fs,'/').pos('NetRexx'fs)>0 then copyjarentry(jf,je,setdir)
@@ -512,6 +526,8 @@ method makeadir(jer=Rexx)
 /* 			errorsource.clear()
 			ErrorSource.unregisterErrorSource(errorsource) */
 			end
+			
+			EditBus.removeFromBus(this)		--	make sure we get off the bus
 			
 --	unload NetRexxC.jar in case of restarting plugin
 	  nrc=jEdit.getPluginJAR(nrcpath)
@@ -830,7 +846,7 @@ method runcurrent(v=View,buf=Buffer,parms="")
 method getClassPath
 	if df then trace results
 	ucp=jEdit.getProperty(OPTION_PREFIX"classpath","")			--	get the user specified classpath
-	return Rexx(jcp||ps||nrcpath||ps||ucp||ps||jarpath).strip('b',ps)
+	return Rexx(jcp||ps||nrcpath||ps||ucp||ps||utilityclasspath||ps||jarpath).strip('b',ps)
 
 method getScriptPath
 	if df then trace results
