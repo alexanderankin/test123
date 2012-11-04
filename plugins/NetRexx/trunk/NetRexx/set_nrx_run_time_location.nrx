@@ -1,5 +1,20 @@
 --  This macro will set the NetRexx run time library path.
 
+import org.gjt.sp.jedit.
+import netrexxplugin.
+import javax.swing.
+class set_nrx_run_time_location
+properties private static
+	view=jEdit.getActiveView()
+	buffer=view.getBuffer
+	wm=view.getDockableWindowManager()
+	editPane=view.getEditPane()
+	textArea=editPane.getTextArea()
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+properties private static unused
+	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm	
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1)
+
 	parse arg flag .
 	if flag="check" then check(flag)
 		else check("setup")
@@ -54,4 +69,3 @@
    		if \rtlf.exists then return f
 
    		return t
-
