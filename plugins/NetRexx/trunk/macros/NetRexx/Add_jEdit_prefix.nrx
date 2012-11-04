@@ -17,7 +17,7 @@ bsw.write("class" bname.substr(1,bname.lastpos('.')-1))
 bsw.newLine
 copyfile(bfr,bsw)
 bsw.newLine
-bsw.write("method main($cmdin1=String[]) static;arg=Rexx($cmdin1)")
+bsw.write("method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg")
 bsw.close
 say sw.getBuffer.toString
 SwingUtilities.invokeAndWait(BuffUp(carot,sw.getBuffer.toString))

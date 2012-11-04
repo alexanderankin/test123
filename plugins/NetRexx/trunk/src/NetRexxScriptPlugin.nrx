@@ -334,7 +334,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable, EBCompone
 		newinterpreter										-- make a NetRexx interpreter with current classpath
 		setclasspath('off')									 
 			
-		EditBus.addToBus(this)		--	make sure we are on the bus
+		EditBus.addToBus(EBComponent this)		--	make sure we are on the bus
 		
 		if Macros.getHandler("netrexx")=null then do	--	first start - load a macro handler
 			mh=NetRexxScriptMacroHandler()						--	make a macro handler
@@ -527,7 +527,7 @@ method makeadir(jer=Rexx)
 			ErrorSource.unregisterErrorSource(errorsource) */
 			end
 			
-			EditBus.removeFromBus(this)		--	make sure we get off the bus
+			EditBus.removeFromBus(EBComponent this)		--	make sure we get off the bus
 			
 --	unload NetRexxC.jar in case of restarting plugin
 	  nrc=jEdit.getPluginJAR(nrcpath)
