@@ -19,12 +19,9 @@
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
 	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
-	<property name="project.build.dir" value="${project.root.dir}/build" description="Output directory for distribution packages"/>
-	<property name="project.dist.dir" value="${project.root.dir}/dist" description="Work dir for ant-netrexxc task"/>
+	<property name="project.utilities.dir" value="${project.root.dir}/NetRexx" description="Project's utilities"/>
 	<property name="project.build.binjar.name" value="${ant.project.name}.jar" description="Binary jar file name"/>
 	<property name="project.package.plugin" value="netrexxplugin" description="plugin package name/dir"/>
-	<property name="project.package.script" value="netrexxscript" description="script package name/dir"/>
-	<property name="project.package.DE" value="." description="DE package name/dir"/>
 	
 	<property name="ant.netrexxc.verbose" value="verbose3"/>
 	
@@ -44,6 +41,7 @@
 		 <path id="netrexxc.classpath">
 		 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		 	<pathelement location="${project.src.dir}"/>
+		 	<pathelement location="${project.utilities.dir}"/>
 		 	<fileset dir="${project.netrexx.libdir}">
 				<include name="NetRexxC.jar"/>
 				<include name="ant-netrexx.jar"/>
@@ -52,6 +50,7 @@
 				<include name="ErrorList.jar"/>
 				<include name="CommonControls.jar"/>
 				<include name="SideKick.jar"/>
+				<include name="Console.jar"/>
 				<include name="ProjectViewer.jar"/>
 			</fileset>
 		 </path>
@@ -68,10 +67,18 @@
      </target>
     
     <target name="compilemacros" depends="prep" description="Builds sample script classfiles">
-        <buildnrc srcDir="NetRexx" destDir="macros/samples" includes="class*.nrx"
+    
+        <buildnrc srcDir="NetRexx" includes="*.nrx" excludes="error.nrx"
 			classpath="${toString:netrexxc.classpath}"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose3' crossref="false" replace="false" keep="false"/>
+        
+		<move todir="macros/NetRexx_samples">
+			<fileset dir="NetRexx">
+			  <include name="class*.class"/>
+			</fileset>
+		</move>
+        
     </target>
     
     <target name="build" depends="init,cleannrx" description="Builds NetRexx plugin jar">
@@ -84,7 +91,8 @@
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
         	<fileset dir="${project.package.plugin}" includes="*.nrx" />
-        	<fileset dir="macros/samples" includes="class*.nrx" />        	
+        	<fileset dir="macros/NetRexx_samples" includes="class*.nrx" />        	
+        	<fileset dir="NetRexx" includes="*.java *.keep" />        	
         	</delete>
     </target>
     
@@ -93,7 +101,8 @@
         	<fileset dir="." includes="*.nrx *.class *.java *.keep" />
         	<fileset dir="${project.package.plugin}" erroronmissingdir="no" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx *.class *.java" />        	
-        	<fileset dir="macros/samples" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="macros/NetRexx_samples" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="NetRexx" includes="*.class *.java *.keep" />        	
         	</delete>
     </target>
 	
