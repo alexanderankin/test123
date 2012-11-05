@@ -252,14 +252,16 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		
 		select
 
-			when s=ErrOutButton then
-				do
+			when s=ErrOutButton then do
+				ErrOutButton.setSelected(0)
+				if compileroperation then do
 					unsetoutbuttons
-					(JToggleButton s).setSelected(1)
+					ErrOutButton.setSelected(1)
 					compile.actionPerformed(ae)
+					end
 				end
 
-			when ButtonClicked == "Compile",  ButtonClicked == "Java", ButtonClicked = "Nav", ButtonClicked == "Options", ButtonClicked=="SetCP" then do
+			when ButtonClicked == "Compile",  ButtonClicked == "Java", ButtonClicked = "Nav", ButtonClicked == "Options", ButtonClicked == "Output", ButtonClicked=="SetCP" then do
 					compile.actionPerformed(ae)
 					end
 				
@@ -294,28 +296,24 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 					clearbutton.setSelected(0)
 					return
 				end
-		
-			when ButtonClicked = "ShowTrace" then
-			do
-				if compileroperation then
-					compile.actionPerformed(ae)
-				else interpret.actionPerformed(ae)
-			end
-
-			when ButtonClicked = "HideTrace" then
-			do
-				if compileroperation then
-					compile.actionPerformed(ae)
-				else interpret.actionPerformed(ae)
-			end
+	
+			when s=TracerButton then do
+					unsetoutbuttons
+					TracerButton.setSelected(1)
+					if compileroperation then compile.actionPerformed(ae)
+																					 else interpret.actionPerformed(ae)
+				end
 
 			when ButtonClicked == "Out" then
 				do
-				if compileroperation then
 					if TracerButton.getActionCommand="HideTrace" then 
 											compile.performAction("HideTrace")
-					else 		compile.performAction("HideErrorOutput")
-				else interpret.actionPerformed(ae)
+					if ErrOutButton.getActionCommand="HideErrorOutput" then 
+					 			  		compile.performAction("HideErrorOutput")
+					unsetoutbuttons
+					outbutton.setSelected(1)
+					if \compileroperation then
+											interpret.actionPerformed(ae)
 				end
 
 			when ButtonClicked == "Run" then
@@ -353,12 +351,15 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 				interpret.actionPerformed(ae)
 				end
 
-			when ButtonClicked == "PO" then
-				do
-					unsetoutbuttons
-					interpret.actionPerformed(ae)
-					return
-				end
+			when ButtonClicked == "PO" then do
+					parsebutton.setSelected(0)
+					if \compileroperation then do
+						unsetoutbuttons
+						parsebutton.setSelected(1)
+						interpret.actionPerformed(ae)
+						return
+						end
+				 end
 
 			when ButtonClicked == "Flush" then
 				do

@@ -524,6 +524,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 					end
 				end
 				MiddlePanel.requestFocus()
+				RunArgsField.requestFocusInWindow
 			end
 
 			when ButtonClicked == "Clear" then
@@ -867,6 +868,8 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		end
 		performOutput("\n")
 
+		RunArgsField.requestFocusInWindow
+		
 		rt=Runtime.getRuntime()
 		do
 			RunProcess=rt.exec(args,null,File(OurView.getBuffer().getPath()).getParentFile())

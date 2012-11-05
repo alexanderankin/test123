@@ -235,7 +235,7 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		runbutton.setIcon(NetRexx.compile.PlayIcon)
 --		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Play16.gif")))
 		runbutton.setSelected(0)
-		runbutton.setToolTipText("Run current buffer")
+		runbutton.setToolTipText("Run current program")
 		runflag=FALSE
 		clf=FALSE		
 		cll.setText("Cmd/Args/StdIn")
@@ -250,14 +250,16 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		cll.setText("                ")
 
 	method selectme(but=JToggleButton)		
---		clearbut
+		clearbut
 		but.setSelected(1)	
 
 	method clearbut
+		NetRexx.nr.unsetoutbuttons
+/* 		
 		parsebutton.setSelected(0)
 		outbutton.setSelected(0)
 		tracebutton.setSelected(0)	
-		
+ */		
 	method show(p=String) public
 		(CardLayout mp.getLayout).show(mp,p)
 		clearbut
