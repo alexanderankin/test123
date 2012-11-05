@@ -86,7 +86,11 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		clf=boolean
 		runflag=boolean 0
 		
-    	mp=JPanel		
+		mp=JPanel		
+		
+		properties private static
+		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
     	
 	method NetRexxInterpret(v=org.gjt.sp.jedit.View, pos=String, passtoolbar=JToolBar, passmp=JPanel, -
 								passcl=HistoryTextField, passtracebutton=JToggleButton, passcll=JLabel, -
@@ -293,6 +297,7 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 
 		ButtonClicked = String ae.getActionCommand()
 		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",FALSE) 		--	are we debugging?
+		if df then trace results
 		
 		if outbutton.isSelected then (CardLayout mp.getLayout).show(mp,"scriptout")	
 		if parsebutton.isSelected then (CardLayout mp.getLayout).show(mp,"parseout")	

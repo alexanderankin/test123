@@ -85,6 +85,8 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		ProcessLabel = JLabel
 		ProcessLabel1 = JLabel
 		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
+		
 	properties static public
 		compile=NetRexxCompile
 		interpret=NetRexxInterpret
@@ -235,6 +237,8 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 			  			
 	method actionPerformed(ae=ActionEvent) 
 
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
+
 		ButtonClicked = String ae.getActionCommand()
 		s=ae.getSource
 
@@ -303,7 +307,8 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 
 			when ButtonClicked == "Run" then
 				do
-					trace results
+				if df then trace results
+	
 				view=jEdit.getActiveView
 				buffer=view.getBuffer
 				if \buffer.isDirty then do
