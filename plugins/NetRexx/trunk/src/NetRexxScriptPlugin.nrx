@@ -19,12 +19,14 @@
 
  ******** remember to update the version number in NetRexx.props and build.xml  **********
  
- Version 0.2.8 (Nov 02, 2012)
+ Version 0.2.8 (Nov 05, 2012)
  
 	* create any macros subdirectories and copy contents (not just "NetRexx" dirs)
 	* fix missing EBComponent hook (handleMessage) problem
 	* add our .jedit/NetRexx settings dir to automatic classpath for access to utility classes
 	* run class macro was not setting NetRexxScriptPath property
+	* buttons were not responding correctly
+	* drop 4.2 support due to conflicts
 	
  Version 0.2.7 (Oct 25, 2012)
  
@@ -461,7 +463,7 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 --	another Java "gotcha" - jar entries have unix file separators thus requireing the translate above					
 				end
 
---																						now copy any jar files in a NetRexx directory				
+--																						now copy any jar files entries in a NetRexx or macros directory				
 			entries = jf.entries()
 			loop while entries.hasMoreElements()				
 				je=JarEntry entries.nextElement()
