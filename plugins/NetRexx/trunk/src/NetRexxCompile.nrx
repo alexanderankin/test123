@@ -40,6 +40,11 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		TRUE=boolean 1
 		FALSE=boolean 0
 		TRACE_MARKERS = [String "*=*","*-*",">a>",">p>",">v>",">>>","+++","---"]
+		OPTION_PREFIX = String "options.netrexxscript."
+		
+	properties static
+		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	debug option
 		
 	properties public
 		
@@ -436,6 +441,9 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 				
 
 	method actionPerformed(ae=ActionEvent) 
+		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
+		if df then trace results
 
 		ButtonClicked = String ae.getActionCommand()
 		
@@ -971,6 +979,9 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			ClassPath=ClassPath||PathSep||CPFieldText
 		end
 
+		ucp=jEdit.getProperty("options.netrexxscript.classpath","")			--	get the scripting user specified classpath
+		if ucp\="" then ClassPath=ClassPath||PathSep||ucp
+		
 		return ClassPath
 
 	/*

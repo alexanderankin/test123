@@ -17,12 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- ******** remember to update the version number in NetRexx.props and build.xml
+ ******** remember to update the version number in NetRexx.props and build.xml  **********
+ 
  Version 0.2.8 (Nov 02, 2012)
  
 	* create any macros subdirectories and copy contents (not just "NetRexx" dirs)
 	* fix missing EBComponent hook (handleMessage) problem
-	* add our .jedit/NetRexx settings dir to automatic classpath for utility classes
+	* add our .jedit/NetRexx settings dir to automatic classpath for access to utility classes
+	* run class macro was not setting NetRexxScriptPath property
 	
  Version 0.2.7 (Oct 25, 2012)
  
@@ -312,6 +314,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable, EBCompone
 			end		
 
 		utilityclasspath=setdir||fs'NetRexx'
+--		say "utilityclasspath="utilityclasspath"<=="
 			
 --	create some external processors and hooks
 
@@ -650,8 +653,8 @@ method makeadir(jer=Rexx)
 		if df then trace results
 
 --	find the 'main' method; it takes an array of Strings as its argument
-		classes=[interpreter.getClassObject('java.lang', 'String', 1)]
 		do
+			classes=[interpreter.getClassObject('java.lang', 'String', 1)]
 			mainMethod=scriptClass.getMethod('main', classes)
 			if mainMethod=null then do
 				say "could not find main method in" sname
@@ -769,6 +772,7 @@ method runmacro(script=String) -- called by macro menu selection
 			outwin.commandstarted
 			end
 	if Rexx(script).pos(".class")>0 then do
+		jEdit.setTemporaryProperty("NetRexxScriptPath",script)		--		save Path for script use
 		classmacro=myloader.loadThisClass(script)
 		justgo(classmacro,script,parms)
 		catch loadfail=Exception
@@ -846,6 +850,7 @@ method runcurrent(v=View,buf=Buffer,parms="")
 method getClassPath
 	if df then trace results
 	ucp=jEdit.getProperty(OPTION_PREFIX"classpath","")			--	get the user specified classpath
+--	say Rexx(jcp||ps||nrcpath||ps||ucp||ps||utilityclasspath||ps||jarpath).strip('b',ps)
 	return Rexx(jcp||ps||nrcpath||ps||ucp||ps||utilityclasspath||ps||jarpath).strip('b',ps)
 
 method getScriptPath
@@ -888,7 +893,7 @@ method newloader	--	create a new classloader (and flush any loaded classes from 
 	
 	thisloader=this.getClass.getClassLoader
 	md=setdir||fs||"macros"
-	myloader=NetRexxScriptClassLoader(thisloader,jEdit.getProperty(OPTION_PREFIX"classpath","")||ps||md)
+	myloader=NetRexxScriptClassLoader(thisloader,jEdit.getProperty(OPTION_PREFIX"classpath","")||ps||md||ps||utilityclasspath)
 	myloader.setDebug(df)
 			
 method cache		--		change the cache flag
@@ -1384,7 +1389,7 @@ method addprefix(ifq=BufferedReader,ofq=BufferedWriter,sn=Rexx,pt='withmain') re
 	
 	if pt='nomain' then return linesadded
 		
-	line='    method main($007=String[]) static;arg=Rexx($007)'
+	line='    method main($007=String[]) static;arg=Rexx($007);arg=arg'
 	ofq.newline()
 	ofq.write(string line,0,line.length)			--		write a method statement
 	linesadded=linesadded+1

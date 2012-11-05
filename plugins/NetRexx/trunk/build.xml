@@ -79,6 +79,17 @@
 			</fileset>
 		</move>
         
+        <buildnrc srcDir="NetRexx/Android_NetRexx_IDE" includes="*.nrx"
+			classpath="${toString:netrexxc.classpath}"
+        	comments="false" savelog="false" time="true" compact="false"
+        	verbose='verbose3' crossref="false" replace="false" keep="false"/>
+          
+		<move todir="macros/Android_NetRexx_IDE">
+			<fileset dir="NetRexx/Android_NetRexx_IDE">
+			  <include name="*.class"/>
+			</fileset>
+		</move>      
+		
     </target>
     
     <target name="build" depends="init,cleannrx" description="Builds NetRexx plugin jar">
@@ -102,6 +113,7 @@
         	<fileset dir="${project.package.plugin}" erroronmissingdir="no" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx *.class *.java" />        	
         	<fileset dir="macros/NetRexx_samples" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="macros/Android_NetRexx_IDE" includes="*.class *.java" />        	
         	<fileset dir="NetRexx" includes="*.class *.java *.keep" />        	
         	</delete>
     </target>
