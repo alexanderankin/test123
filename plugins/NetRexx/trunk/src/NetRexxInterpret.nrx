@@ -84,11 +84,14 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		cl=HistoryTextField
 		cll=JLabel
 		clf=boolean
-		runflag=boolean 0
 		
 		mp=JPanel		
 		
-		properties private static
+	properties public
+			
+		runflag=boolean 0
+		
+	properties private static
 		
 		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
     	
@@ -102,15 +105,14 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		cmdtoolbar=passtoolbar
 		mp=passmp
 		cl=passcl
-		cl.addActionListener(this)	
 		cll=passcll
 		tracebutton=passtracebutton
 		outbutton=passoutbutton
 		runbutton=passRunButton
 		parsebutton=passparsebutton
-		parsebutton.addActionListener(this)
+--		parsebutton.addActionListener(this)
 		flushbutton=passflushbutton
-		flushbutton.addActionListener(this)
+--		flushbutton.addActionListener(this)
 		CPField=passCPField
 		
 /* 		runbutton = CreateButton("Run","Play16.gif")
@@ -188,7 +190,8 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		add(mp,BorderLayout.CENTER)
 		if bar="up" then add(cmdtoolbar,BorderLayout.NORTH)
 			else add(cmdtoolbar,BorderLayout.SOUTH)
-*/		
+*/	
+/*
 	method createButton(lbl=String,IconFile=String "") returns JToggleButton private
 
 		if IconFIle = "" then aButton = JToggleButton(lbl)
@@ -197,7 +200,7 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 --		aButton.setMargin(Insets(0,0,0,0))
 		aButton.addActionListener(this)
 		return aButton
-		
+*/		
 	method addparseout(o=String) public
 		parseout.append(o)
 		
@@ -229,7 +232,8 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		return cl		
 		
 	method commandended public
-		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Play16.gif")))
+		runbutton.setIcon(NetRexx.compile.PlayIcon)
+--		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Play16.gif")))
 		runbutton.setSelected(0)
 		runbutton.setToolTipText("Run current buffer")
 		runflag=FALSE
@@ -238,14 +242,15 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		
 	method commandstarted public
 --		(CardLayout mp.getLayout).show(mp,"parseout")
-		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Stop16.gif")))
+		runbutton.setIcon(NetRexx.compile.StopIcon)
+--		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Stop16.gif")))
 		runbutton.setSelected(1)
 		runbutton.setToolTipText("Stop script now running")		
 		runflag=TRUE
 		cll.setText("                ")
 
 	method selectme(but=JToggleButton)		
-		clearbut
+--		clearbut
 		but.setSelected(1)	
 
 	method clearbut
