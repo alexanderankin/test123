@@ -49,7 +49,9 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 	properties public
 		
 		ProcessStatus = String ""    -- could be CompileJava, Compile, Java, Run
-		
+		PlayIcon = ImageIcon(getClass().getResource("/res/Play16.gif"))
+		StopIcon = ImageIcon(getClass().getResource("/res/Stop16.gif"))
+
 	properties inheritable
 		
 		ButtonPushed = JToggleButton
@@ -82,7 +84,6 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		CompileButton=JToggleButton
 		JavaButton=JToggleButton
 		RunButton=JToggleButton
-		sharedRunButton=JToggleButton
 		ClearButton=JToggleButton
 		CPButton=JButton
 		operationModeButton = JButton
@@ -137,8 +138,6 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		ErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleON16.gif"))
 		NoErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleOFF16.gif"))
 		AlertErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleALERT16.gif"))
-		PlayIcon = ImageIcon(getClass().getResource("/res/Play16.gif"))
-		StopIcon = ImageIcon(getClass().getResource("/res/Stop16.gif"))
 		projectGroup = VPTGroup
 
 	method NetRexxCompile(v=org.gjt.sp.jedit.View, pos=String, cmdtoolbar=JToolBar, passMiddlePanel=JPanel, -
@@ -152,23 +151,23 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		getProperties()
 
 		CompileButton=passCompileButton
-		CompileButton.addActionListener(this)
+--		CompileButton.addActionListener(this)
 		OptionButton=passOptionButton
-		OptionButton.addActionListener(this)
+--		OptionButton.addActionListener(this)
 		NavButton=passNavButton
-		NavButton.addActionListener(this)
+--		NavButton.addActionListener(this)
 		JavaButton=passJavaButton
-		JavaButton.addActionListener(this)
+--		JavaButton.addActionListener(this)
 		ProcessLabel1=passProcessLabel1
 		ProcessLabel=passProcessLabel
 		MiddlePanel=passMiddlePanel
 		RunArgsField=passcl
 		TracerButton=passtracebutton
 		ErrOutButton=passErrOutButton
-		ErrOutButton.addActionListener(this)
+--		ErrOutButton.addActionListener(this)
 		CPButton=passCPButton 
 		CPField=passCPField
-		sharedRunButton=passRunButton
+		RunButton=passRunButton
 		
 --		CmdToolBar=JToolBar()
 --		CmdToolBar.setFloatable(FALSE)
@@ -196,10 +195,11 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			ClearButton = createButton("Clear","/res/Delete16.gif")
 			ClearButton.setToolTipText("Clear the NetRexx Console")
  */			
-
+/* 
 			RunButton = CreateButton("Run","/res/Play16.gif")
-			RunButton.setToolTipText("Run this program")
+			RunButton.setToolTipText("Run this program") */
 			RunButton.setIcon(PlayIcon)
+			
 --			TracerButton = CreateButton("ShowTrace","/res/TraceConsoleOFF16.gif")
 --			TracerButton.setToolTipText("Show TRACE output")
 /*
@@ -216,7 +216,8 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			CPButton  = JButton("ClassPath")
 			CPButton.setActionCommand("SetCP")
 			CPButton.setMargin(Insets(0,0,0,0))
- */			CPButton.addActionListener(this)
+    	CPButton.addActionListener(this)
+    	 */		
 /* 
 			CPField =  HistoryTextField("netrexxde.ClassPaths")
 			dim = Dimension CPField.getPreferredSize()
@@ -230,7 +231,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			*/
 --			RunArgsField = HistoryTextField("netrexxde.Args");
 			RunArgsField.setActionCommand("RunStdIn")
-			RunArgsField.addActionListener(this)
+--			RunArgsField.addActionListener(this)
 			
 /*
 		--CmdToolBar.add(operationModeButton)
@@ -1099,11 +1100,9 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		currentIcon = runButton.getIcon()
 		if currentIcon = PlayIcon then do
 			runButton.setIcon(StopIcon)
-			sharedRunButton.setIcon(StopIcon)
 			end
 		else do
 			runButton.setIcon(PlayIcon)
-			sharedRunButton.setIcon(PlayIcon)
 			end
 
 class NetRexxCompile.RunOutputCatcher dependent extends Thread

@@ -136,6 +136,7 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		CPField.setPreferredSize(dim)		
 		
 		cl=HistoryTextField("NetRexxScript.commandline",0,1)
+		cl.addActionListener(this)
 		cl.setColumns(30)		
 					
 			NavButton = JButton(ImageIcon(getClass().getResource("/res/Nav16.gif")))
@@ -178,7 +179,7 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		CmdToolBar.add(JavaButton)
 		CmdToolBar.add(ProcessLabel1)
 		CmdToolBar.add(ProcessLabel)
-		
+		RunButton.setIcon(compile.PlayIcon)
 		cmdtoolbar.add(RunButton)
 		cmdtoolbar.add(outbutton)
 		cmdtoolbar.add(TracerButton)
@@ -242,14 +243,26 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		ButtonClicked = String ae.getActionCommand()
 		s=ae.getSource
 
+		if ae.getSource=cl then do
+			if df then say "you entered" cl.getText
+			if compile.ProcessStatus\="" then compile.actionPerformed(ae)  -- pass if compiler code is running something
+			if interpret.runflag then interpret.actionPerformed(ae)		--	pass if interpreter running something
+			return
+			end		
+		
 		select
 
-			when s=ErrOutButton, s=parsebutton then
+			when s=ErrOutButton then
 				do
 					unsetoutbuttons
 					(JToggleButton s).setSelected(1)
+					compile.actionPerformed(ae)
 				end
 
+			when ButtonClicked == "Compile",  ButtonClicked == "Java", ButtonClicked = "Nav", ButtonClicked == "Options", ButtonClicked=="SetCP" then do
+					compile.actionPerformed(ae)
+					end
+				
 			when ButtonClicked == "up" then
 				do
 					remove(cmdtoolbar)
@@ -308,7 +321,10 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 			when ButtonClicked == "Run" then
 				do
 				if df then trace results
-	
+				if compile.ProcessStatus\="" then do
+							compile.actionPerformed(ae)  -- pass if compiler code is running something
+							return
+							end
 				view=jEdit.getActiveView
 				buffer=view.getBuffer
 				if \buffer.isDirty then do
@@ -336,7 +352,20 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 					end
 				interpret.actionPerformed(ae)
 				end
-							
+
+			when ButtonClicked == "PO" then
+				do
+					unsetoutbuttons
+					interpret.actionPerformed(ae)
+					return
+				end
+
+			when ButtonClicked == "Flush" then
+				do
+					interpret.actionPerformed(ae)
+					return
+				end
+				
 			otherwise 
 				NOP
 		end
@@ -350,12 +379,7 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 
 	method removeNotify()
 		super.removeNotify()
-
 		compile.removeNotify()
 
 	method handleMessage(message=EBMessage)
-
-
 		compile.handleMessage(message)
-
-
