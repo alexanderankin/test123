@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
+
 <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type"><title>NetRexxScript Plugin Help</title></head><body style="background-color: rgb(255, 255, 255);">
 <table summary="Header" bgcolor="#ccccff" border="0" cellspacing="0" cols="2" width="100%">
 <tbody>
@@ -227,15 +228,18 @@ without needing to parse them. This can greatly improve script
 performance. The class files can be executed from the console Run button or command
 line by entering the class name or from the Macros menu&nbsp;if you
 place them in a jEdit macro directory. Note these items if using this
-feature:<br><ul><li>If a script uses jEdit functions, you must add the
+feature:<br><ul><li>If
+a script uses jEdit functions, you must add the
 jEdit variable prefix code to the script before compiling as the
-"Prefix" feature does not modify class files before execution. You will also need the jedit.jar file in your compile classpath. </li><li>If
+"Prefix" feature does not modify class files before execution. A
+utility script is provided to add the jEdit prefix to a script at the
+cursor location: Add_jEdit_prefix. </li><li>If
 you change and recompile a script after executing it from a class file,
 you will need to use the "Flush" option to clear the old class file
 from memory before you can use the recompiled version. </li><li>If
 compiling a multi script application that uses cross script access via
 "Preparse", you will need to compile all the scripts together in one
-compile run. </li><li>You can optionally bundle your application
+compile run or separately in reference order. </li><li>You can optionally bundle your application
 classes into a jar file and add the jar file to the NetRexxScript
 Classpath option which may improve performance by reducing file system
 IO and make application distribution easier.</li></ul><br>

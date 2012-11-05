@@ -44,6 +44,9 @@
     			
     	method setPath(path=String)
     		mypath=path
+   			
+    	method getPath returns String
+    		return mypath.toString
 
     	method setDebug(dbf=boolean)
     		df=dbf
