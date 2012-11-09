@@ -481,6 +481,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			do
 				(JToggleButton ae.getSource()).setIcon(NoTraceIcon)
 				(JToggleButton ae.getSource()).setActionCommand("ShowTrace")
+				(JToggleButton ae.getSource()).setSelected(FALSE)
 				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
 				ActiveOutPane = ProcessOut
 				MiddlePanel.requestFocus()
@@ -504,6 +505,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			do
 				(JToggleButton ae.getSource()).setIcon(NoErrOutputIcon)
 				(JToggleButton ae.getSource()).setActionCommand("ShowErrorOutput")
+				(JToggleButton ae.getSource()).setSelected(FALSE)
 				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
 				ActiveOutPane = ProcessOut
 				MiddlePanel.requestFocus()
@@ -598,7 +600,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			-- depending on which button is pressed
 			when ProcessStatus == "" then 
 			do
-				NetRexx.compileroperation=1			--		warn window that compiler is working
+				NetRexx.nr.compileroperation(1)			--		warn window that compiler is working
 --				errorsource.clear()
 				if errorsource\= null then errorsource.clear
 				getFileInfo()

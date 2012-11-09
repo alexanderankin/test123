@@ -242,6 +242,7 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		
 	method commandstarted public
 --		(CardLayout mp.getLayout).show(mp,"parseout")
+		NetRexx.nr.compileroperation(0)			--		warn window that interpreter is working
 		runbutton.setIcon(NetRexx.compile.StopIcon)
 --		runbutton.setIcon(ImageIcon(getClass().getResource("/res/"||"Stop16.gif")))
 		runbutton.setSelected(1)
@@ -331,7 +332,7 @@ class NetRexxInterpret implements ActionListener, NetRexxInterface  	--, Compone
 		select
 			when ButtonClicked == "Run" then
 				do
-					NetRexx.compileroperation=0			--		warn window that interpreter is working
+					NetRexx.nr.compileroperation(0)			--		warn window that interpreter is working
 					NetRexxScriptPlugin.outwin=NetRexxInterface this
 					pi=NetRexxScriptPlugin.nrsplugin			
 					if runflag then do
