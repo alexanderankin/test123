@@ -18,7 +18,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  ******** remember to update the version number in NetRexx.props and build.xml  **********
+  
+ Version 0.2.9 (Nov 07, 2012)
  
+	* auto switch between interpreter parse output button and compiler error output button
+	* force init of interpreter so classloading with it always works (cmdline classes failed if no prior interpret was run)
+	* 
+	
  Version 0.2.8 (Nov 05, 2012)
  
 	* create any macros subdirectories and copy contents (not just "NetRexx" dirs)
@@ -561,7 +567,7 @@ method makeadir(jer=Rexx)
 		
 -- main method called by macro selection or internally to execute a script:		-----------------------------------------------------------------------------------
 		
-	method execute(script=String,on=String "") -- analyze script request and execute it
+	method execute(script=String,on=String "",incache=boolean 0) -- analyze script request and execute it
 		
 		say "NetRexxScript execute" script
 		if df then trace all
@@ -601,15 +607,21 @@ method makeadir(jer=Rexx)
 			if outwin\=null then outwin.clearparseout
 		
 --	 parse the file(s)
-		if \cache.exists(fname) then do		--	if the file is not already parsed, do it
+		if \cache.exists(fname), incache then do		--	if the file is not already parsed, do it  (precached dirty buffer is ok too)
+			if scriptcache.exists(fname) then flen=scriptcache[fname].length
+				else do
 			fchk=File(fname)
 			if df then say "file len="fchk.length
-			if fchk.length<3 then do
+				flen=fchk.length
+				end
+			if flen<3 then do
+--			if fchk.length<3 then do
 				Macros.error(jEdit.getActiveView,"Cannot execute empty file:\n" fname)
 				if outwin\=null then outwin.commandended
 				return
 				end
-			addtocache(spath,sname||stype)
+			if \incache then 
+				addtocache(spath,sname||stype)
 			if \parse(fname) then return 	-- parse the file(s), using the flags
 			end
 				
@@ -631,7 +643,7 @@ method makeadir(jer=Rexx)
 -- 	find the script's class
 		sscript = String sname
 		setclasspath('on')
-		scriptClass=interpreter.getClassObject(null, sscript) 	-- find the script's class
+			scriptClass=interpreter.getClassObject(null, sscript) 	-- find the script's class
 		if scriptClass=null then do
 			do				 
 			scriptClass=myloader.loadClass(sscript)
@@ -818,7 +830,7 @@ method runcurrent(v=View,buf=Buffer,parms="")
 		tf=File(tn)
 		if tf.exists then tf.delete							--		delete any old temp copy
 	*/		
-		if buf.isUntitled then sn='current.nrx'		--		give it a temp name
+		if buf.isUntitled then sn='current_buffer.nrx'		--		give it a temp name
 			else sn=buf.getName					--		give it a temp name
 		onr=Rexx(on)
 		if buf.isUntitled then dir='unsaved'fs		--		give it a temp name
@@ -828,6 +840,9 @@ method runcurrent(v=View,buf=Buffer,parms="")
 
 --		buf.save(v,tn,f)									--		save a temp copy of the file
 --		VFSManager.waitForRequests()						--		wait til save is done
+		clearfromcache(tn)
+		if tn\=buf.getPath then clearfromcache(buf.getPath)
+/*
 		if cache.exists(tn) then backcache[cache[tn]]=null	--		invalidate any cache entry for the file
 		if cache.exists(tn) then cache[tn]=null				--		invalidate any cache entry for the file
 		if cache.exists(tn) then if scriptcache.exists(tn) then scriptcache[tn]=null				--		invalidate any cache entry for the file
@@ -836,18 +851,34 @@ method runcurrent(v=View,buf=Buffer,parms="")
 		if revcache.exists(sn) then revcache[sn]=null	--	invalidate any cache entry for the file			
 --		if revcache.exists(tf.getName) then revcache[tf.getName]=null	--	invalidate any cache entry for the file
 --		if tf.canRead then execute(tn' 'parms,on)						--		run it if we got it
+*/
+		origname=on		--		setup for backcache error reporting link
 		addtocachep2(dir,sn,scriptreader2)
-		if parse(on) then execute(tn' 'parms,on)
+		execute(tn' 'parms,on,1)					--		execute in pre-cached mode
+--		if parse(on) then execute(tn' 'parms,on)
 		
+		clearfromcache(tn)		--		make sure dirty bufs are not cached!
+/*
 		if cache.exists(tn) then backcache[cache[tn]]=null	--		invalidate any cache entry for the file
 		if cache.exists(tn) then if scriptcache.exists(tn) then scriptcache[tn]=null				--		invalidate any cache entry for the file
 		if cache.exists(tn) then cache[tn]=null				--		invalidate any cache entry for the file
 --		if revcache.exists(tf.getName) then revcache[tf.getName]=null	--	invalidate any cache entry for the file
 		if revcache.exists(sn) then revcache[sn]=null	--	invalidate any cache entry for the file
+*/		
 		return
 		end
 		
 	execute(buf.getPath' 'parms)										--	run an unmodified script
+	
+method clearfromcache(tn)
+	dn=tn.substr(1,tn.lastpos(fs)).strip('t',fs)
+	sn=tn.substr(tn.lastpos(fs)+1)
+	if cache.exists(tn) then do
+					backcache[cache[tn]]=null	--		invalidate any cache entry for the file
+					cache[tn]=null				--		invalidate any cache entry for the file
+					if scriptcache.exists(tn) then scriptcache[tn]=null				--		invalidate any cache entry for the file
+					if revcache.exists(sn) then revcache[sn]=null	--	invalidate any cache entry for the file
+					end
 
 method getClassPath
 	if df then trace results
@@ -976,6 +1007,7 @@ method newinterpreter
 
 		interpreter = NetRexxA()   -- make a NetRexx interpreter with current classpath
 --		say "NetRexx interpreter loaded"  --  see if this sets printstream for "say" instructions
+		interpreter.parse([String 'initapi'],[String 'return'],String[0])		--		force init of interpreter
 	
 method parseall							--		if preparse flag is set then we parse all found scripts here:
 	if df then say "NetRexxScript parseall called"
@@ -1019,7 +1051,7 @@ method parse(fn=Rexx)
 							lc=fileinfo['linecount'];pl=fileinfo['prefixlength']
 						if df then
 							if etype="Error:" then say "eln="eln "tfn="tfn
-							if eln>lc & eln<lc+pl+1 then rep=0
+							if eln>lc & eln<lc+pl+1 then rep=0			--		if error in prefix code, don't report it back to source file
 							if eln>lc+pl then eln=eln-pl
 						if df then
 							if etype="Error:" then say "lc="lc "pl="pl "eln="eln "eloc="eloc "elen="elen "emsg="emsg
@@ -1062,11 +1094,14 @@ method parse(fn=Rexx)
 			else Macros.error(jc,"One or more NetRexx scripts failed to parse correctly - cache flushed - please check the parse log for messages:\n")
 			end
 		  else do			--		not a parse all mode
+			scriptcache="empty".copyindexed(backupscriptcache)		--	reload scriptcache
+		  clearfromcache(fn)
+/*		  
 			backcache[cache[fn]]=null		--	remove it from the cache
 			cache[fn]=null		--	remove it from the cache
-			scriptcache="empty".copyindexed(backupscriptcache)		--	reload scriptcache
 			scriptcache[fn]=null		--	remove it from the cache
 			revcache[File(fn).getName]=null
+*/			
 			if outwin=null then -			
 				 Macros.error(jc,"The script failed to parse correctly - please check the activity log for messages:\n" fn )
 			else Macros.error(jc,"The script failed to parse correctly - please check the parse log for messages:\n" fn )
@@ -1080,7 +1115,7 @@ method parse(fn=Rexx)
 		
 	setclasspath('off')
 	bas1.reset			 	
-	bas2.reset			 	
+	bas2.reset
 	return success
 	
 method getoptions				--		read parse options and use to build a parse flags array
@@ -1222,7 +1257,9 @@ method addtocachep2(dir=Rexx,sn=Rexx,scriptreader2=BufferedReader)			--		create 
 	prefixreader2=BufferedReader(FileReader(nrsdir||fs'prefix.txt'))
 --	copyfile(prefixreader,tofw)					--		copy the prefix to the temp script file
 --	copyfile(prefixreader2,tofs)					--		copy the prefix to the temp script file
-	fileinfo=prefixfile(prefixreader2,scriptreader2,tofs,sn)					--		copy the prefix to the temp script file
+ if jEdit.getBooleanProperty(OPTION_PREFIX"addjeditvars") then
+	fileinfo=prefixfile(prefixreader2,scriptreader2,tofs,sn)					--		copy the prefixed file to the temp script file
+ else fileinfo=copyfile(scriptreader2,tofs)					--		copy the script to temp output file stringbuf without a prefix
 --	copyfile(scriptreader,tofw)					--		copy the script to temp output file
 --	copyfile(scriptreader2,tofs)					--		copy the script to temp output file
 	tofs.close

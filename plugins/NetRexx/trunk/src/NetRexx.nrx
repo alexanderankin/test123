@@ -173,27 +173,27 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 									 RunButton, parsebutton, flushbutton, CPField)
 									 
 		if jEdit.getPlugin("sidekick.SideKickPlugin") \= null then
-					CmdToolBar.add(NavButton)
-		CmdToolBar.add(OptionButton)
-		CmdToolBar.add(CompileButton)
-		CmdToolBar.add(JavaButton)
-		CmdToolBar.add(ProcessLabel1)
-		CmdToolBar.add(ProcessLabel)
+		cmdtoolbar.add(NavButton)
+		cmdtoolbar.add(OptionButton)
+		cmdtoolbar.add(CompileButton)
+		cmdtoolbar.add(JavaButton)
+		cmdtoolbar.add(ProcessLabel1)
+		cmdtoolbar.add(ProcessLabel)
 		RunButton.setIcon(compile.PlayIcon)
 		cmdtoolbar.add(RunButton)
 		cmdtoolbar.add(outbutton)
 		cmdtoolbar.add(TracerButton)
-		CmdToolBar.add(ErrOutButton)		
-		cmdtoolbar.add(parsebutton)
+		cmdtoolbar.add(ErrOutButton)		
+--		cmdtoolbar.add(parsebutton)
 		cmdtoolbar.add(ClearButton)
 		cmdtoolbar.add(flushbutton)
 
 			jars=jEdit.getPluginJARs
 			loop pj over jars
 				if Rexx(pj.getPath).pos("CommonControls.jar")\=0 then 
-					CmdToolBar.add(CPButton)
+					cmdtoolbar.add(CPButton)
 				end		
-		CmdToolBar.add(CPField)		
+		cmdtoolbar.add(CPField)		
 		
 		cmdtoolbar.add(RunArgsLabel)
 		cmdtoolbar.add(cl)
@@ -230,6 +230,27 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 			  			jEdit.setProperty(OPTION_PREFIX"classpath",optioncp)
 			  			end
 
+	method compileroperation(who=boolean)
+		compileroperation=who
+		if compileroperation then swapbutton(parsebutton,ErrOutButton)
+																		 else swapbutton(ErrOutButton,parsebutton)
+		
+	method swapbutton(oldbut=JToggleButton,newbut=JToggleButton)
+			bdex=getComponentIndex(oldbut)
+			if bdex>=0 then do
+				cmdtoolbar.remove(bdex)
+				cmdtoolbar.add(newbut,bdex)
+				validate()
+				end
+		
+	method getComponentIndex(comp=Component) returns int
+		c=comp.getParent()
+		if c\=null then 
+		 loop i=0 by 1 while i < c.getComponentCount()
+			if c.getComponent(i) == comp then return i
+			end
+		return -1
+			  			
   method unsetoutbuttons
 					outbutton.setSelected(0)
 					parsebutton.setSelected(0)
@@ -246,7 +267,8 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		if ae.getSource=cl then do
 			if df then say "you entered" cl.getText
 			if compile.ProcessStatus\="" then compile.actionPerformed(ae)  -- pass if compiler code is running something
-			if interpret.runflag then interpret.actionPerformed(ae)		--	pass if interpreter running something
+																										else  interpret.actionPerformed(ae)		--	pass if interpreter request
+--			if interpret.runflag then interpret.actionPerformed(ae)		--	pass if interpreter running something
 			return
 			end		
 		
