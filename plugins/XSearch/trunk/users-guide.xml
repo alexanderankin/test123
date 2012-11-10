@@ -605,6 +605,14 @@ xsearch.SearchSettings.pop();
 <appendix id="changelog">
 <title>Change log</title>
 
+
+<formalpara><title> Version 1.8 </title>
+<para> Requires JDK 1.6, <emphasis>jEdit 5.1pre1, GnuRegexpPlugin 1.0.1</emphasis>, and ProjectViewer 3.4.4</para>
+</formalpara>
+<itemizedlist>
+<listitem><para> Updated for newer APIs in jEdit 5.1 </para></listitem>
+</itemizedlist>
+
 <formalpara><title> Version 1.6 </title>
 <para> Requires JDK 1.5, <emphasis>jEdit 4.3pre17, GnuRegexpPlugin 1.0</emphasis>, and ProjectViewer 2.9.x</para>
 </formalpara>
