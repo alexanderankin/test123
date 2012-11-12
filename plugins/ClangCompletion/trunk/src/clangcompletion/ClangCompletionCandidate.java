@@ -56,6 +56,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     
     public static ClangCompletionCandidate parse(String clangOutput)
     {
+    	clangOutput = clangOutput.replace("::", "##");
     	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
     	String[] splits = clangOutput.split(":", 3);
     	if(splits.length < 3)
@@ -63,24 +64,11 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     		return null;
     	}
     	
-    	/*
-    	//delete regexp to speed up
-    	if(!splits[0].matches("\\s*COMPLETION\\s*"))
-    	{
-    		return null;
-    	}
-    	*/
     	
     	candidate.description = splits[1].trim();
-    	candidate.labelText =   splits[2].trim();
-    	//System.out.println(splits[1].trim());
-    	/*  ignore labeltext for now 
-    	if(splits.length>2)
-    	{
-    		//System.out.println(splits[2]);
-    		candidate.labelText = splits[2];
-    	}
-    	*/
+    	candidate.labelText =   splits[2].trim().replace("##", "::");;
+    	//System.out.println(candidate.getDescription() + "  " + candidate.getLabelText());
+    	
     	return candidate;
     }
     
@@ -89,13 +77,23 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     {
     	String result = labelText;
     	int i;
-    	i = labelText.lastIndexOf("]");
+    	i = labelText.indexOf(description);
+    	if(i >= 0)
+    	{
+    		//delete return value;
+    		result = result.substring(i);
+    	}
+    	
+    	i = result.indexOf("[");
     	if(i > 0)
     	{
-    		//delete retturn value;
-    		result = result.substring(i+1);
+    		//delete const in the end of func
+    		result = result.substring(0, i);
     	}
+    	
+    	// TODO: text inside [#...#] should be displayed but not isnert into text area
     	//COMPLETION: setText : [#void#][#CommonDialogLayer::#]setText(<#const char *text#>{#, <#int text_id#>#})
+    	//COMPLETION: getString : [#const std::string &#]getString()[# const#]
     	result = result.replace("<#","");
     	result = result.replace("#>","");
     	result = result.replace("{#","");
