@@ -126,7 +126,14 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public String getLabelText()
     {
-        return labelText;
+        String result = labelText;
+    	result = result.replace("<#","");
+    	result = result.replace("#>","");
+    	result = result.replace("{#","");
+    	result = result.replace("#}","");
+    	result = result.replace("[#"," ");
+    	result = result.replace("#]"," ");
+        return result;
     }
     /*
     @Override

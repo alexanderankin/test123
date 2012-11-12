@@ -98,33 +98,37 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		
 		VPTProject project = ProjectViewer.getActiveProject(view);
-		HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
-		
-		Vector<String> sysroots = properties.get(ProjectsOptionPane.SYSROOT);
-		if(sysroots != null && sysroots.size() > 0 && sysroots.get(0).trim().length() > 0)
+		if(project != null)
 		{
-			builder.add("-isysroot");
-			builder.add(sysroots.get(0));
+			HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
+			
+			Vector<String> sysroots = properties.get(ProjectsOptionPane.SYSROOT);
+			if(sysroots != null && sysroots.size() > 0 && sysroots.get(0).trim().length() > 0)
+			{
+				builder.add("-isysroot");
+				builder.add(sysroots.get(0));
+			}
+			
+			Vector<String> includes = properties.get(ProjectsOptionPane.INCLUDES);
+			if(includes != null)
+			{
+				builder.addIncludes(includes);
+			}else
+			{
+				Util.generatePTHFileForActiveProject();
+			}
+			builder.addDefinitions(properties.get(ProjectsOptionPane.DEFINITIONS));
+			builder.addArguments(properties.get(ProjectsOptionPane.ARGUMENTS));
+			
+			File filePth = Util.getPTHFileOfActiveProject();
+			if(filePth.exists())
+			{
+				builder.add("-include-pth");
+				builder.add(filePth.getPath() );
+			}
 		}
-		
-		Vector<String> includes = properties.get(ProjectsOptionPane.INCLUDES);
-		if(includes != null)
-		{
-			builder.addIncludes(includes);
-		}else
-		{
-			Util.generatePTHFileForActiveProject();
-		}
-		builder.addDefinitions(properties.get(ProjectsOptionPane.DEFINITIONS));
-		builder.addArguments(properties.get(ProjectsOptionPane.ARGUMENTS));
-		
 		//tryGeneratePth(project);
-		File filePth = Util.getPTHFileOfActiveProject();
-		if(filePth.exists())
-		{
-			builder.add("-include-pth");
-			builder.add(filePth.getPath() );
-		}
+		
 		
 		System.out.println(builder);
 		final AtomicBoolean isClangBuilderAlive = new AtomicBoolean();

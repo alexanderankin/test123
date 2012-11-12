@@ -16,7 +16,7 @@ public class CompletionListCellRenderer extends DefaultListCellRenderer
     {
         JLabel renderer = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         ClangCompletionCandidate cc = (ClangCompletionCandidate)value;
-        renderer.setText(CompletionUtil.prefixByIndex(cc.getDescription(), index));
+        renderer.setText(CompletionUtil.prefixByIndex(cc.getLabelText(), index));
         return renderer;
     }
 }

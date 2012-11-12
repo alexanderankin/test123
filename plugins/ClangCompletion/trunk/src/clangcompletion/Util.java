@@ -22,7 +22,13 @@ public class Util
 	{
 		View view =  jEdit.getActiveView();
 		VPTProject project = ProjectViewer.getActiveProject(view);
-		return  new File(EditPlugin.getPluginHome(ClangCompletionPlugin.class), project.getName()+".pth");
+		if(project != null)
+		{
+			return  new File(EditPlugin.getPluginHome(ClangCompletionPlugin.class), project.getName()+".pth");
+		}else
+		{
+			return null;
+		}
 	}
 	
 	public static String getCompletionPrefix(View view)
@@ -59,6 +65,11 @@ public class Util
 	{
 		View view =  jEdit.getActiveView();
 		VPTProject project = ProjectViewer.getActiveProject(view);
+		if(project == null)
+		{
+			return false;
+		}
+		
 		File filePth =  new File(EditPlugin.getPluginHome(ClangCompletionPlugin.class), project.getName()+".pth");
 		
 		if(filePth.exists())
