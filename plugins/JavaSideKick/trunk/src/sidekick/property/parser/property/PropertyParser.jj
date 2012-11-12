@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 options {
   JAVA_UNICODE_ESCAPE = true;
   STATIC = false;
+  //DEBUG_PARSER = true;
 }
 
 
@@ -53,27 +54,10 @@ public class PropertyParser {
     // for testing...
     public static void main(String args[]) throws ParseException {
         PropertyParser parser = new PropertyParser(System.in);
-        parser.Properties();
-    }
-
-    /**
-     * Utility to trim horizontal whitespace from the front of a string.
-     * @param the string to trim
-     * @return the trimmed string
-     */
-    public String trimFront(String s) {
-        if (s == null || s.length() == 0) {
-            return s;
+        List<Property> properties = parser.Properties();
+        for (Property property : properties) {
+            System.out.println(property.getName() + " = " + property.getValue());   
         }
-
-        int index = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == ' ' || s.charAt(i) == '\t')
-                ++index;
-            else
-                break;
-        }
-        return s.substring(index);
     }
 
     /**
@@ -151,12 +135,12 @@ SKIP:
     whitespace character and extend to the end of the line.  Comments cannot
     go at the end of a key/value line -- they will be treated as part of the
     value, NOT as a comment! */
-    <COMMENT: ([" ", "\t"])*("#" | "!")(~["\r", "\n"])*("\n"|"\r"|"\r\n")? > : DEFAULT
+    <COMMENT: ([" ", "\t"])*("#" | "!")(~["\r", "\n"])*(<NEWLINE>)+ > : DEFAULT
 
     |
 
     /* a key with no value is assumed to have an empty value */
-    <BARE_KEY: (([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t" | "#")) | (~[" ", "\t", "=", ":"]))+ (<NEWLINE>)) > : DEFAULT
+    <BARE_KEY: (([" ", "\t"])*( ((("\\") ( ":" | "=" | " " | "\t")) | (~[" ", "\t", "=", ":", "\r", "\n"])) )+ (<NEWLINE>)+) > : DEFAULT
 
     |
 
@@ -165,7 +149,7 @@ SKIP:
     character or : or =.  This means that a key cannot contain any whitespace
     characters.  Note that a key can have escaped space and tab and : and = as
     part of the key name.  */
-    <KEY: ([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t" | "#")) | (~[" ", "\t", "=", ":"]))+ > : ParseEquals
+    <KEY: ([" ", "\t"])*((("\\") ( ":" | "=" | " " | "\t")) | (~[" ", "\t", "=", ":", "\r", "\n"]))+ > : ParseEquals
 
     |
 
@@ -192,7 +176,7 @@ SKIP:
     ends in \\, then it's an escaped \, not a continuation character, and should
     be part of the value.  I think this is a rare use case, so I'm not going
     to worry about it until someone complains. */
-    <VALUE: ((~["\r", "\n"])*(<CONTINUATION>)*)+("\n"|"\r"|"\r\n")? > : DEFAULT
+    <VALUE: ((~["\r", "\n"])*(<CONTINUATION>)*)+(<NEWLINE>)+ > : DEFAULT
 }
 
 
@@ -287,7 +271,7 @@ Property Property() :
             whitespace on continuation lines is discarded, as is leading whitespace
             at the start of the value. */
             out = value == null ? "" : value.image.replaceAll("\\\\(\\s)+", "");
-            out = trimFront(out);
+            out = out.trim();
             prop.setValue(out);
             return prop;
         }

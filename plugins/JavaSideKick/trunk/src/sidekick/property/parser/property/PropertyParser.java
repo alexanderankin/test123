@@ -12,27 +12,10 @@ public class PropertyParser implements PropertyParserConstants {
     // for testing...
     public static void main(String args[]) throws ParseException {
         PropertyParser parser = new PropertyParser(System.in);
-        parser.Properties();
-    }
-
-    /**
-     * Utility to trim horizontal whitespace from the front of a string.
-     * @param the string to trim
-     * @return the trimmed string
-     */
-    public String trimFront(String s) {
-        if (s == null || s.length() == 0) {
-            return s;
+        List<Property> properties = parser.Properties();
+        for (Property property : properties) {
+            System.out.println(property.getName() + " = " + property.getValue());
         }
-
-        int index = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == ' ' || s.charAt(i) == '\u005ct')
-                ++index;
-            else
-                break;
-        }
-        return s.substring(index);
     }
 
     /**
@@ -178,7 +161,7 @@ public class PropertyParser implements PropertyParserConstants {
             whitespace on continuation lines is discarded, as is leading whitespace
             at the start of the value. */
             out = value == null ? "" : value.image.replaceAll("\u005c\u005c\u005c\u005c(\u005c\u005cs)+", "");
-            out = trimFront(out);
+            out = out.trim();
             prop.setValue(out);
             {if (true) return prop;}
     } catch (ParseException e) {
@@ -223,14 +206,14 @@ public class PropertyParser implements PropertyParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3_2() {
-    if (jj_scan_token(KEY)) return true;
-    if (jj_scan_token(EQUALS)) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(4)) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(4)) return true;
+  private boolean jj_3_2() {
+    if (jj_scan_token(KEY)) return true;
+    if (jj_scan_token(EQUALS)) return true;
     return false;
   }
 
