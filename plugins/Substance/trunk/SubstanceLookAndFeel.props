@@ -1,6 +1,6 @@
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.name=SubstanceLookAndFeel
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.author=Dale Anson
-plugin.lookandfeel.SubstanceLookAndFeelPlugin.version=6.1.1
+plugin.lookandfeel.SubstanceLookAndFeelPlugin.version=7.2
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.docs=index.html
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.activate=startup
 plugin.lookandfeel.SubstanceLookAndFeelPlugin.depend.0=jdk 1.6
