@@ -61,6 +61,10 @@ public class LookAndFeelPlugin extends EBPlugin {
             Log.log(Log.ERROR, this, e);
         }
     }
+    
+    public void stop() {
+    	jEdit.setProperty("lookAndFeel", UIManager.getLookAndFeel().getClass().getName());	
+    }
 
     public void handleMessage(EBMessage msg) {
         if (loadedInitialLnF) {
