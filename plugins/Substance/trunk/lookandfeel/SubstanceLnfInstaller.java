@@ -13,6 +13,7 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
                 "Business",
                 "BusinessBlackSteel",
                 "BusinessBlueSteel",
+                "Cerulean",                 // added in 7.2
                 "ChallengerDeep",
                 "Creme",
                 "CremeCoffee",
@@ -57,6 +58,7 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
             UIManager.put( "ClassLoader", c.getClassLoader() );
         }
         catch(Exception e) {
+            e.printStackTrace();
             throw new UnsupportedLookAndFeelException(e.getMessage());
         }
     }
