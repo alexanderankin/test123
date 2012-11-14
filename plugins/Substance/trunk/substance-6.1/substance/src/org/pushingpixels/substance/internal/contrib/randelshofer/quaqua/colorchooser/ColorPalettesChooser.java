@@ -168,6 +168,9 @@ public class ColorPalettesChooser extends AbstractColorChooserPanel implements U
         } catch (NullPointerException e) {
             return;
         }
+        if (color == null) {
+            return;   
+        }
         
         int rgb = color.getRGB() & 0xffffff;
         
