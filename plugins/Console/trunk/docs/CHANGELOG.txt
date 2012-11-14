@@ -2,7 +2,12 @@
 
 jEdit Console Plugin Changelog
 
-    Version 5.1  Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
+    Version 5.1 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
+      [Artem Bryantsev]
+        FR #3472822 - Console + Task Monitor
+        Long-term processes (commands of current OS shell) are implemented as Tasks.
+        Process marked with '&' is background processes, process marked with '#' has
+        closed input channel.
       [Alan Ezust]
         Observe jEdit's general option "Check for changed files" and check after command
         executions too. 

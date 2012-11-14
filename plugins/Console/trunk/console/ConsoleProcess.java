@@ -39,6 +39,10 @@ import org.gjt.sp.util.StringList;
 
 // }}}
 
+/**
+ * @deprecated
+ */
+
 // {{{ ConsoleProcess class
 class ConsoleProcess
 {

@@ -66,7 +66,7 @@ public class ErrorOutput implements Output
 		}
 		else
 		{
-			Log.log(Log.ERROR, this, msg);
+			Log.log(Log.ERROR, null, msg);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class ErrorOutput implements Output
 		}
 		else
 		{
-			Log.log(Log.ERROR, this, msg);
+			Log.log(Log.ERROR, null, msg);
 		}
 	}
 

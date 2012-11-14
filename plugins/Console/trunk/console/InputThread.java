@@ -34,6 +34,7 @@ import org.gjt.sp.util.Log;
 //}}}
 
 /**
+ * @deprecated
  * Thread for feeding input to a running subprocess.
  */
 class InputThread extends Thread

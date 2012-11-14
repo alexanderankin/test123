@@ -33,9 +33,15 @@ import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.options.GeneralOptionPane;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
-
+import org.gjt.sp.util.StandardUtilities;
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.TaskListener;
+import org.gjt.sp.util.TaskManager;
+import org.gjt.sp.util.ThreadUtilities;
 // }}}
 
 /**
@@ -54,7 +60,7 @@ import org.gjt.sp.util.StringList;
  * @author 2006, 2009 Alan Ezust
  */
 // {{{ class SystemShell
-public class SystemShell extends Shell
+public class SystemShell extends Shell implements TaskListener
 {
 	// {{{ private members
 	private String userHome;
@@ -75,14 +81,14 @@ public class SystemShell extends Shell
 
 	private boolean initialized;
 
-	private byte[] lineSep;
+	private String lineSep;
 	// }}}
 
 	// {{{ SystemShell constructor
 	public SystemShell()
 	{
 		super("System");
-		lineSep = toBytes(System.getProperty("line.separator"));
+		lineSep = System.getProperty("line.separator");
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
 		userHome = System.getProperty("user.home");
 		if (File.separator.equals("\\"))
@@ -90,9 +96,17 @@ public class SystemShell extends Shell
 			userHome = userHome.replace("\\", "\\\\");
 		}
 
+		TaskManager.INSTANCE.addTaskListener(this);
 	} // }}}
-
+	
 	// {{{ public methods
+	
+	// {{{ beforeStopping() method
+	public void beforeStopping()
+	{
+		TaskManager.INSTANCE.removeTaskListener(this);
+	} // }}}
+	
 	// {{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.
@@ -118,7 +132,7 @@ public class SystemShell extends Shell
 	 */
 	public void closeConsole(Console console)
 	{
-		ConsoleProcess process = getConsoleState(console).process;
+		ConsoleProcessTask process = getConsoleState(console).process;
 		if (process != null)
 			process.stop();
 
@@ -206,21 +220,8 @@ public class SystemShell extends Shell
 		// general shells.
 		if (state.process != null)
 		{
-			PipedOutputStream out = state.process.getPipeOutput();
-			if (out != null)
-			{
-				try
-				{
-					out.write(toBytes(command));
-					out.write(lineSep);
-					out.flush();
-				}
-				catch (IOException e)
-				{
-					Log.log (Log.ERROR, this, "execute()", e);
-				}
+			if ( state.process.sendCommand(command+lineSep) )
 				return;
-			}
 		}
 
 		// comments, for possible future scripting support
@@ -289,14 +290,15 @@ public class SystemShell extends Shell
 		else
 		{
 			boolean foreground;
-
+			
 			if (args.elementAt(args.size() - 1).equals("&"))
 			{
 				// run in background
 				args.removeElementAt(args.size() - 1);
 				foreground = false;
 				output.commandDone();
-				// error.commandDone();
+				
+				error = new ErrorOutput(null);
 			}
 			else
 			{
@@ -307,37 +309,15 @@ public class SystemShell extends Shell
 			String[] _args = new String[args.size()];
 			args.copyInto(_args);
 			state.currentDirectory = cwd;
-			final ConsoleProcess proc = new ConsoleProcess(console, output, _args,
-				variables, state, foreground);
-
-			/* If startup failed its no longer running */
-			if (foreground && proc.isRunning())
-			{
-				console.getErrorSource().clear();
-				state.process = proc;
-			}
-
-			/*
-			 * Check if we were doing a "run command with selection
-			 * as input"
-			 */
-			if (input != null)
-			{
-				Log.log(Log.DEBUG, this, "sending input to system shell: "+input);
-				OutputStream out = proc.getPipeOutput();
-				if (out != null)
-				{
-					try
-					{
-						out.write(toBytes(input));
-						out.close();
-					}
-					catch (IOException e)
-					{
-						Log.log (Log.ERROR, this, "execute.pipeout", e);
-					}
-				}
-			}
+			
+			// create new Task
+			ConsoleProcessTask cpTask =
+						new ConsoleProcessTask(console, output, error,
+											   _args, variables, state,
+											   foreground, input);
+			
+			// run new Task
+			ThreadUtilities.runInBackground(cpTask);
 		}
 	} // }}}
 
@@ -347,13 +327,17 @@ public class SystemShell extends Shell
 		ConsoleState consoleState = getConsoleState(console);
 		if (consoleState == null)
 			return;
-		ConsoleProcess process = consoleState.process;
+		ConsoleProcessTask process = consoleState.process;
 		if (process != null)
+		{
 			process.stop();
+		}
 		else
 		{
-			console.getOutput().print(console.getErrorColor(),
-				jEdit.getProperty("console.shell.noproc"));
+			Output output = console.getOutput();
+			output.print(console.getErrorColor(),
+						 jEdit.getProperty("console.shell.noproc"));
+			printPrompt(console, output);
 		}
 	} // }}}
 
@@ -368,7 +352,7 @@ public class SystemShell extends Shell
 		ConsoleState consoleState = getConsoleState(console);
 		if (consoleState == null)
 			return true;
-		ConsoleProcess process = consoleState.process;
+		ConsoleProcessTask process = consoleState.process;
 		if (process != null)
 		{
 			try
@@ -398,19 +382,8 @@ public class SystemShell extends Shell
 
 		if (state.process != null)
 		{
-			console.getOutput().writeAttrs(
-				ConsolePane.colorAttributes(console.getInfoColor()), "^D\n");
-			PipedOutputStream out = state.process.getPipeOutput();
-			if (out != null)
-			{
-				try
-				{
-					out.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			console.getOutput().print(console.getInfoColor(), "^D");
+			state.process.endOfFile();
 		}
 	} // }}}
 
@@ -425,7 +398,7 @@ public class SystemShell extends Shell
 	{
 		SystemShell.ConsoleState state = getConsoleState(console);
 
-		ConsoleProcess process = state.process;
+		ConsoleProcessTask process = state.process;
 		if (process == null)
 		{
 			console.getOutput().print(console.getErrorColor(),
@@ -433,7 +406,9 @@ public class SystemShell extends Shell
 			return;
 		}
 
-		process.detach();
+		// at now all error messages are printed to Log
+		process.detach( new ErrorOutput(null) );
+		
 	} // }}}
 
 	// {{{ getCompletions() method
@@ -683,6 +658,64 @@ public class SystemShell extends Shell
 		init();
 		return aliases;
 	} // }}}
+	
+	// {{{ TaskListener's methods
+	public void waiting(Task task) {}
+	
+	public void running(Task task)
+	{
+		if ( !(task instanceof ConsoleProcessTask) ) return;
+		
+		ConsoleProcessTask cpTask = (ConsoleProcessTask) task;
+		Console console           = cpTask.getConsole();
+		
+		if ( cpTask.isForeground() )
+		{
+			getConsoleState(console).setProcess(cpTask);
+			console.getErrorSource().clear();
+			console.startAnimation();
+		}
+	}
+	
+	public void done(Task task)
+	{
+		if ( !(task instanceof ConsoleProcessTask) ) return;
+		
+		ConsoleProcessTask cpTask = (ConsoleProcessTask) task;
+		final Console console     = cpTask.getConsole();
+		
+		if ( cpTask.isForeground() )
+		{
+			getConsoleState(console).setProcess(null);
+		
+			// update current buffer
+			boolean doCheck = false;
+			final int check = jEdit.getIntegerProperty("checkFileStatus");
+			
+			if (StandardUtilities.compareStrings(jEdit.getBuild(), "05.01.00.01", false) >= 0) {
+				if (check > 0) doCheck = true;
+			}
+			else doCheck = true;
+			
+			if (doCheck) {
+				ThreadUtilities.runInDispatchThread(
+					new Runnable() {
+						public void run() {
+							jEdit.checkBufferStatus(console.getView(),
+													check != GeneralOptionPane.checkFileStatus_focus);				
+						}
+					}
+				);
+			}
+			
+		}
+	}
+	
+	public void maximumUpdated(Task task) {}
+	public void valueUpdated(Task task) {}
+	public void statusUpdated(Task task) {}
+	// }}}
+	
 	// }}}
 
 	// {{{ methods
@@ -710,20 +743,6 @@ public class SystemShell extends Shell
 		// variables = null;
 
 		// next time execute() is called, init() will reload everything
-	} // }}}
-
-	// {{{ toBytes() method
-	private static byte[] toBytes(String str)
-	{
-		try
-		{
-			return str.getBytes(jEdit.getProperty("console.encoding"));
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			Log.log (Log.ERROR, SystemShell.class, "toBytes()", e);
-			return null;
-		}
 	} // }}}
 
 	// {{{ init() method
@@ -936,7 +955,6 @@ public class SystemShell extends Shell
 		args.addElement(expandVariables(view, arg));
 	} // }}}
 
-
 	// {{{ getFileCompletions() method
 	private List<String> getFileCompletions(View view, String currentDirName, String typedFilename,
 		boolean directoriesOnly)
@@ -1126,9 +1144,8 @@ public class SystemShell extends Shell
 	static class ConsoleState
 	{
 		// {{{ ConsoleState members
-		private ConsoleProcess process;
-
-		private ConsoleProcess lastProcess;
+		private ConsoleProcessTask process;
+		private ConsoleProcessTask lastProcess;
 
 		/* used only for windows, to keep track of current directories
 		 * for each drive letter
@@ -1143,7 +1160,7 @@ public class SystemShell extends Shell
 		// }}}
 				
 		// {{{ setProcess method
-		void setProcess(ConsoleProcess cp)
+		void setProcess(ConsoleProcessTask cp)
 		{
 			if (process != null)
 				lastProcess = process;
@@ -1151,13 +1168,13 @@ public class SystemShell extends Shell
 		} // }}}
 
 		// {{{ getProcess
-		ConsoleProcess getProcess()
+		ConsoleProcessTask getProcess()
 		{
 			return process;
 		} // }}}
 
 		// {{{ getLastProcess method
-		ConsoleProcess getLastProcess()
+		ConsoleProcessTask getLastProcess()
 		{
 			if (process != null)
 				return process;

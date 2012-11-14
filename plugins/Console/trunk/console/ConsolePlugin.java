@@ -161,6 +161,7 @@ public class ConsolePlugin extends EditPlugin
 	public void stop()
 	{
 		EditBus.removeFromBus(this);
+		getSystemShell().beforeStopping();
 		// clean up edit bus
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++) {
