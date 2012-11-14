@@ -1,9 +1,11 @@
 /*
- * OutputThread.java - abstract class for StreamThread and ErrorThread
+ * StreamTask.java - Base class for OutputStreamTask, InputStreamTask and
+ *                   ErrorStreamTask.
+ *
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Parts Copyright (C) 2012 contributers 
+ * Copyright (C) 2012 Artem Bryantsev 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,17 +21,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
+ 
 package console;
 
-/**
- * @deprecated
- * Abstract class for StreamThread and ErrorThread.
- */
-
-abstract class OutputThread extends Thread
+abstract class StreamTask extends Thread
 {
-	OutputThread() {}
+	protected boolean abortFlag;
+	protected boolean finishFlag;
 	
-	abstract void abort();
+	public StreamTask()
+	{
+	}
+	
+	/** Interrupt the stream immediately. */
+	public void abort()
+	{
+		abortFlag = true;
+		interrupt();
+	}
+	
+	/** Ask the stream to be completed and wait until one finishes. */
+	public void finish()
+	{
+		finishFlag = true;
+	}
+	
 }

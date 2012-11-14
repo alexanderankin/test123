@@ -34,6 +34,7 @@ import org.gjt.sp.util.Log;
 // }}}
 
 /**
+ * @deprecated
  * Thread for handing error output of running subprocesses.
  * Write data to a Console's ErrorOutput. 
  */

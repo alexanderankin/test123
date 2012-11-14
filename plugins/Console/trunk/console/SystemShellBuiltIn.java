@@ -546,7 +546,7 @@ public abstract class SystemShellBuiltIn
 		{
 			SystemShell.ConsoleState state = getConsoleState(console);
 
-			ConsoleProcess process = state.getProcess();
+			ConsoleProcessTask process = state.getProcess();
 			if(process == null)
 			{
 				error.print(console.getErrorColor(),

@@ -172,15 +172,8 @@ public abstract class ProcessRunner
 		// Merge stdout and stderr
 		processBuilder.redirectErrorStream( merge );
 		processBuilder.command(arglist.toArray());
-		try
-		{
-			return processBuilder.start();
-		}
-		catch (Exception e)
-		{
-			Log.log(Log.ERROR, e, "Process Runner");
-		}
-		return null;
+
+		return processBuilder.start();
 	}
 	// }}}
 

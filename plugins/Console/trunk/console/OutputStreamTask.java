@@ -1,9 +1,10 @@
 /*
- * StreamThread.java - A running process
+ * OutputStreamTask.java - Thread for the process output handling.
+ *
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Parts Copyright (C) 1999-2012 Slava Pestov, Alan Ezust, Marcelo Vanzin, Artem Bryantsev 
+ * Copyright (C) 1999-2012 Slava Pestov, Alan Ezust, Marcelo Vanzin, Artem Bryantsev 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +25,6 @@ package console;
 
 // {{{ Imports
 import java.awt.Color;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -44,20 +44,11 @@ import jcfunc.*;
 import jcfunc.parameters.*;
 // }}}
 
-/**
- * @deprecated
- * Thread for handing output of running sub-processes.
- *
- * @version $Id$
- */
-
-// {{{ class StreamThread
-class StreamThread extends OutputThread
+// {{{ class OutputStreamTask
+class OutputStreamTask extends StreamTask
 {
 	// {{{ Private members
-	private ConsoleProcess process;
-
-	private boolean aborted;
+	private ConsoleProcessTask process;
 
 	private InputStream in;
 	CommandOutputParser copt = null;
@@ -77,11 +68,8 @@ class StreamThread extends OutputThread
 	private SimpleAttributeSet defaultAttrs, warningAttrs, errorAttrs;
 	// }}}
 
-	// {{{ StreamThread constructor
-	/**
-	 * @param showStatus - prints the error status when the thread is finished.
-	 */
-	StreamThread(ConsoleProcess process, InputStream in, Color defaultColor)
+	// {{{ constructor
+	OutputStreamTask(ConsoleProcessTask process, InputStream in, Color defaultColor)
 	{
 		this.process = process;
 		this.in = in;
@@ -173,106 +161,120 @@ class StreamThread extends OutputThread
 		try
 		{
 			char[] input = new char[1024];
-			while (!aborted)
+			int read = 0;
+			
+			process.streamStart(this);
+			
+			try
 			{
-				int read = isr.read(input, 0, input.length);
-				if (aborted)
+				while ( !abortFlag ) // working loop
 				{
-					break;
-				}
-				else if (read == -1)
-				{
-					if (lineBuffer.length() > 0)
+					try
 					{
-						printString(output, lineBuffer.toString(), false);
+						/* wait until:                                           *
+						 * - either the end of the input stream has been reached *
+						 * - or user interrupts this thread.                     */
+						while (true) // waiting loop
+						{
+							if (abortFlag)
+							{
+								throw new InterruptedException("Break the main loop: aborting");
+							}
+							else if ( isr.ready() )
+							{
+								if ((read = isr.read(input, 0, input.length)) == -1)
+								{
+									throw new InterruptedException("Break the main loop: input stream is empty"); 
+								}
+								else
+								{
+									break; // break waiting loop only
+								}
+							}
+							else if (finishFlag)
+							{
+								throw new InterruptedException("End the main loop.");
+							}
+							
+							Thread.sleep(100);
+						}
 					}
-					break;
-				}
-				
-				String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
-				
-				// convert all line breaks to internal "standard": "\n"
-				if (eolReplacingPattern != null)
-				{
-					lineBuffer.setLength(0);
-					line = lineBuffer.append( eolReplacingPattern.matcher(line).replaceAll("\n") ).toString();
-				}
-			
-				// remove all ANSI escape sequences
-				if ( ANSI_BEHAVIOUR == 0 && ansi_Matcher.matches(line) )
-				{
-					lineBuffer.setLength(0);
-					line = lineBuffer.append( ansi_Matcher.removeAll(line) ).toString();
-				}
-				
-				Matcher matcher = eolPattern.matcher(line);
-				
-				int bPosition = 0;
-				while ( matcher.find() )
-				{									// -> "111\n" -> "222\n" -> "333\n"
-					printString(output, line.substring( bPosition, matcher.end() ), false);
-					bPosition = matcher.end();
-				}
-				// remove already printed substrings
-				if (bPosition > 0)
-				{
-					lineBuffer.delete(0, bPosition);
-				}
-			
-				// there is some unterminated "tail":  -> "444"
-				if ( lineBuffer.length() > 0 )
-				{
-					if ( !isr.ready() )
+					catch (InterruptedException ie)
 					{
-						sleep(50);
-						
+						break; // break working loop
+					}
+					
+					String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
+					
+					// convert all line breaks to internal "standard": "\n"
+					if (eolReplacingPattern != null)
+					{
+						lineBuffer.setLength(0);
+						line = lineBuffer.append( eolReplacingPattern.matcher(line).replaceAll("\n") ).toString();
+					}
+				
+					// remove all ANSI escape sequences
+					if ( ANSI_BEHAVIOUR == 0 && ansi_Matcher.matches(line) )
+					{
+						lineBuffer.setLength(0);
+						line = lineBuffer.append( ansi_Matcher.removeAll(line) ).toString();
+					}
+					
+					Matcher matcher = eolPattern.matcher(line);
+					
+					int bPosition = 0;
+					while ( !abortFlag && matcher.find() )
+					{									// -> "111\n" -> "222\n" -> "333\n"
+						printString(output, line.substring( bPosition, matcher.end() ), false);
+						bPosition = matcher.end();
+					}
+					// remove already printed substrings
+					if (bPosition > 0)
+					{
+						lineBuffer.delete(0, bPosition);
+					}
+					
+					// there is some unterminated "tail":  -> "444"
+					if (abortFlag)
+					{
+						break; // break working loop
+					}
+					else if ( lineBuffer.length() > 0 )
+					{
 						if ( !isr.ready() )
 						{
-							printString(output, lineBuffer.toString(), true);
-							lineBuffer.setLength(0);
+							Thread.sleep(50);
+							
+							if ( !isr.ready() )
+							{
+								printString(output, lineBuffer.toString(), true);
+								lineBuffer.setLength(0);
+							}
 						}
 					}
 				}
 			}
+			finally
+			{
+				if (lineBuffer.length() > 0)
+				{
+					printString(output, lineBuffer.toString(), false);
+				}
+				
+				copt.finishErrorParsing();
+				
+				process.streamFinish(this);
+			}
+			
 		}
 		catch (Exception e)
 		{
-			if (!aborted)
-			{
-				Log.log(Log.ERROR, e, e);
-				Console console = process.getConsole();
-				Output error = process.getErrorOutput();
-				if (console != null)
-				{
-					String[] args = { e.toString() };
-					error.print(console.getErrorColor(), jEdit.getProperty(
-						"console.shell.error", args));
-				}
-			}
+			Log.log(Log.ERROR, e, e);
+			
+			process.errorNotification(e);
 		}
-		finally
-		{
-			copt.finishErrorParsing();
-			try
-			{
-				in.close();
-			}
-			catch (IOException e2)
-			{
-			}
-
-			process.threadDone();
-
-
-		}
+		
 	} // }}}
-
-	//{{{ abort() method
-	void abort()
-	{
-		aborted = true;
-		interrupt();
-	} //}}}
 	
 	//{{{ printString() method
 	/*
