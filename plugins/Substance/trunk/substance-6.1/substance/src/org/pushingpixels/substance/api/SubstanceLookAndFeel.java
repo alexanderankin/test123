@@ -1715,8 +1715,10 @@ public abstract class SubstanceLookAndFeel extends BasicLookAndFeel {
 		// clear caches
 		LazyResettableHashMap.reset();
 
-		this.currentKeyboardFocusManager
-				.removePropertyChangeListener(this.focusOwnerChangeListener);
+		if (this.currentKeyboardFocusManager != null) {
+            this.currentKeyboardFocusManager
+                    .removePropertyChangeListener(this.focusOwnerChangeListener);
+		}
 		this.focusOwnerChangeListener = null;
 		this.currentKeyboardFocusManager = null;
 	}
