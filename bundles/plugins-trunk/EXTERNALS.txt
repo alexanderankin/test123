@@ -21,7 +21,6 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ConfigurableFoldHandler/
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Console/trunk Console
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ContextMenu/trunk ContextMenu
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CscopeFinder/trunk CscopeFinder
-https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsInterface/trunk CtagsInterface
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CtagsSideKick/trunk CtagsSideKick
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/EditorScheme/trunk EditorScheme
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk ErrorList
