@@ -17,7 +17,12 @@ import completion.util.*;
 
 public class ClangCompletionCandidate  extends BaseCompletionCandidate
 {
-	private String labelText;
+	private String labelText;  
+	
+	private String description;
+	
+	private static int lengthOfClangOuputHeader = new String("COMPLETION: ").length();
+	
 	protected ListCellRenderer renderer;
 	
     private ClangCompletionCandidate()
@@ -56,18 +61,67 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     
     public static ClangCompletionCandidate parse(String clangOutput)
     {
-    	clangOutput = clangOutput.replace("::", "##");
-    	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
-    	String[] splits = clangOutput.split(":", 3);
-    	if(splits.length < 3)
+    	StringBuilder label = new StringBuilder(clangOutput);
+    	int indexOfDesc = label.indexOf(":", lengthOfClangOuputHeader) + 1;
+    	if(indexOfDesc > 0)
     	{
-    		return null;
+    		label.delete(0, indexOfDesc);
     	}
     	
+    	int indexOfSep = 0;
+    	while((indexOfSep = label.indexOf("<#")) >= 0)
+    	{
+    		label.delete(indexOfSep, indexOfSep + 2);
+    	}
     	
-    	candidate.description = splits[1].trim();
-    	candidate.labelText =   splits[2].trim().replace("##", "::");;
-    	//System.out.println(candidate.getDescription() + "  " + candidate.getLabelText());
+    	indexOfSep = 0;
+    	while((indexOfSep = label.indexOf("#>")) >= 0)
+    	{
+    		label.delete(indexOfSep, indexOfSep + 2);
+    	}
+    	
+    	while((indexOfSep = label.indexOf("{#")) >= 0)
+    	{
+    		label.delete(indexOfSep, indexOfSep + 2);
+    	}
+    	
+    	indexOfSep = 0;
+    	while((indexOfSep = label.indexOf("#}")) >= 0)
+    	{
+    		label.delete(indexOfSep, indexOfSep + 2);
+    	}
+    	
+    	StringBuilder desc = new StringBuilder(label);
+    	indexOfSep = 0;
+    	while((indexOfSep = desc.indexOf("[#")) >= 0)
+    	{
+    		int indexOfSepend = desc.indexOf("#]", indexOfSep);
+    		if(indexOfSepend > indexOfSep)
+    		{
+    			desc.delete(indexOfSep, indexOfSepend + 2);
+    		}
+    	}
+    	
+    	indexOfSep = 0;
+    	while((indexOfSep = label.indexOf("#]")) >= 0)
+    	{
+    		label.replace(indexOfSep, indexOfSep + 2, " ");
+    	}
+    	
+    	indexOfSep = 0;
+    	while((indexOfSep = label.indexOf("[#")) >= 0)
+    	{
+    		label.delete(indexOfSep, indexOfSep + 2);
+    	}
+    	
+    	while(desc.charAt(0) == ' ')
+    	{
+    		desc.delete(0, 1);
+    	}
+    	
+    	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
+    	candidate.labelText = label.toString().trim();
+    	candidate.description = desc.toString().trim();
     	
     	return candidate;
     }
@@ -75,7 +129,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public String getDescription()
     {
-    	String result = labelText;
+    	/* String result = labelText;
     	int i;
     	i = labelText.indexOf(description);
     	if(i >= 0)
@@ -91,14 +145,15 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     		result = result.substring(0, i);
     	}
     	
-    	// TODO: text inside [#...#] should be displayed but not isnert into text area
+    	// : text inside [#...#] should be displayed but not isnert into text area
     	//COMPLETION: setText : [#void#][#CommonDialogLayer::#]setText(<#const char *text#>{#, <#int text_id#>#})
     	//COMPLETION: getString : [#const std::string &#]getString()[# const#]
     	result = result.replace("<#","");
     	result = result.replace("#>","");
     	result = result.replace("{#","");
     	result = result.replace("#}","");
-        return result;
+        return result; */
+        return description;
     }
     
     @Override
@@ -126,14 +181,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public String getLabelText()
     {
-        String result = labelText;
-    	result = result.replace("<#","");
-    	result = result.replace("#>","");
-    	result = result.replace("{#","");
-    	result = result.replace("#}","");
-    	result = result.replace("[#"," ");
-    	result = result.replace("#]"," ");
-        return result;
+        return labelText;
     }
     /*
     @Override
