@@ -620,9 +620,7 @@ public class ConsolePlugin extends EditPlugin
 	public static String getClassName(Buffer buffer)
 	{
 		String pkg = getPackageName(buffer);
-		// TODO: update to use jEdit 5.0 API after 5.0 is released.
-//		String clazz = MiscUtilities.getBaseName(buffer.getPath());
-		String clazz = MiscUtilities.getFileNameNoExtension(buffer.getPath());
+		String clazz = MiscUtilities.getBaseName(buffer.getPath());
 		if (pkg == null)
 			return clazz;
 		else
