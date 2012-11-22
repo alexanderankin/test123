@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="completion.service.CompletionProvider" NAME="ClangCompletion">
+		new clangcompletion.ClangCompletionProvider();
+	</SERVICE>
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ClangCompletion OptionsService">
+		new clangcompletion.ProjectsOptionPane.ClangCompletionOptionService();
+	</SERVICE>
+</SERVICES>

@@ -1,0 +1,9 @@
+TODO:
+add more configuration.
+test if there is no current project
+
+DONE:
+add pch support.
+lock clang syntax check to avoid mutiple clang process being invoke at same time.
+provide better completation ui.
+add sysroot option
