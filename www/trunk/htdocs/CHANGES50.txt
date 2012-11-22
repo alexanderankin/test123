@@ -2,13 +2,91 @@ jEdit 5.0 version history
        (changes since jEdit 4.5.2)
 :encoding=UTF-8:
 
+{{{ Version 5.0.0
+
+Thanks to Jarek Czekalski, Eric Le Lay, Matthieu Casanova, Tom Power, Malathi,
+Thomas Meyer, Vladimir Avondin, Björn "Vampire" Kautler and Alan Ezust for
+contributing to this release. 
+
+{{{ Bug fixes
+
+- Does not create backups on exit (#3579788 Jarek Czekalski)
+
+- I/O Error on First Save Attempt (#3574500 Jarek Czekalski) 
+
+- Fixed whole word search (#3551515 Matthieu Casanova)
+
+- Fixed a number of scrollbar bugs related to undo, multiline cut,
+  soft-wrap, and folding.
+  (Patch#3567959, Bugs #2832769, #2998294, and #3193168 - Thomas Meyer)
+
+- Fix keymap duplication handling (Björn "Vampire" Kautler)
+
+- Fix broken macro Files/Glob_close.bsh (Eric Le Lay)
+
+- File status checking before save (#3562315, Alan Ezust)
+
+- Fix "Customize This Menu..." item in context menu options (#3554895 Tom Power)
+
+- Fixed the StandaloneTextArea that cannot load keymaps
+  (#3562023 Matthieu Casanova)
+
+- Fix a case where a NPE occurs when removing a plugin
+  (#3557441 Matthieu Casanova)
+
+- Recognizing "Extra word characters" in "Whole word" option in
+  searches (bug #3522497, patch #3543524 Malathi)
+
+- The macro Display_Abbreviations was broken (#3539691 Matthieu Casanova)
+
+- Fix pressing return in parent files of the VFS browser that do not
+  browse the selected folder as it should (patch #3543499 by Eric Le Lay)
+
+}}}
+{{{ API
+
+- New method MiscUtilities.openInDesktop() (Alan Ezust)
+
+}}}
+{{{ UI
+
+- Disable menu bar mnemonics if they are mapped as otherwise defined shortcuts
+  so that they are not shown visually to the user when they actually do not
+  work and make sure that no conflict can arise with the default keymap and
+  any localization (#3528208 Björn "Vampire" Kautler)
+
+- Added a new German keymap. Replaced shortcuts that were unreachable
+  on a german keyboard. Moved shortcuts from German localization into
+  keymap. (#3572796 Björn "Vampire" Kautler)
+
+- Translate underscores to spaces when displaying keymap names in the UI to
+  eliminate files with spaces in the name. (Björn "Vampire" Kautler)
+
+- Fix broken keymap properties (Björn "Vampire" Kautler)
+
+- Added russian localization (patch #3544154 Vladimir Avdonin)
+
+}}}
+{{{ Miscellaneous
+
+- Correctly determine whether Look and Feel did change to not touch it if it
+  stays the same as this might cause delays and Exceptions.
+  (Björn "Vampire" Kautler)
+
+- The .jedit/modes/catalog is now written using UTF-8 instead of default
+  OS encoding (#3560800 Matthieu Casanova)
+
+}}}
+
+}}}
+
 {{{ Version 5.0pre1
 
 Thanks to Björn "Vampire" Kautler, Nathan Gray, Evan Wright, Alan Ezust, Dale
 Anson, Matthieu Casanova, Olivier Pisano, Jimmy Chaw, peibl, Robert Schwenn,
 Martin Raspe, Max Funk, SPennington, Ingo Tomahogh, Jarek Czekalski, Jojaba,
 Stephen Blackheath, Milan Černil, Makarius, Chris Sullins, Peter C. Chapin,
-Thomas Meyer, Tom Power and Donovaly for contributing to this release.
+Tom Power and Donovaly for contributing to this release.
 
 {{{ Bug fixes
 
@@ -109,18 +187,18 @@ Thomas Meyer, Tom Power and Donovaly for contributing to this release.
 - New constructors for CopyFileWorker:
   CopyFileWorker(Component comp, VFSFile[] vfsFiles, String target)
   CopyFileWorker(Component comp, VFSFile[] vfsFiles, String target,
-  			Behavior behavior)
+                 Behavior behavior)
   CopyFileWorker(Component comp, File[] files, String target)
   CopyFileWorker(Component comp, File[] files, String target, Behavior behavior)
   to allow copy of multiple files at the same time (Matthieu Casanova)
 
 - New VFS.copy() methods:
   copy(ProgressObserver progress, VFS sourceVFS, Object sourceSession,
-  	String sourcePath, VFS targetVFS, Object targetSession,
-  	String targetPath, Component comp, boolean canStop,
-  	boolean sendVFSUpdate)
+       String sourcePath, VFS targetVFS, Object targetSession,
+       String targetPath, Component comp, boolean canStop,
+       boolean sendVFSUpdate)
   copy(ProgressObserver progress, String sourcePath,String targetPath,
-  	Component comp, boolean canStop, boolean sendVFSUpdate)
+       Component comp, boolean canStop, boolean sendVFSUpdate)
   (Matthieu Casanova)
 
 - New methods MiscUtilities.getCompleteBaseName() to return
@@ -245,7 +323,7 @@ Thomas Meyer, Tom Power and Donovaly for contributing to this release.
 - Suppressed output to standard error of encoding problems on opening
   files, which affects also hypersearch encoding errors. These errors are
   now displayed in a dialog, but not sent to error output.
-  (request #3517116 Jarek Czekalski)  
+  (request #3517116 Jarek Czekalski)
 
 - Reserve space for 4 digit in memory's status bar widget.
   (patch #3518422 Makarius)
@@ -278,8 +356,8 @@ Thomas Meyer, Tom Power and Donovaly for contributing to this release.
 - Added Icons to the VFS Browser context menu (Matthieu Casanova)
 
 - Combined Global and Plugin options into a single pane, making Optional plugin
-	obsolete, fixing auto resize dialog issue.
-	(#3449498, request #3455602 Alan Ezust)
+  obsolete, fixing auto resize dialog issue.
+  (#3449498, request #3455602 Alan Ezust)
 
 - jEdit is now always using continuous layout in JSplitPane (Matthieu Casanova)
 
@@ -307,7 +385,7 @@ Thomas Meyer, Tom Power and Donovaly for contributing to this release.
 
 - RegisterViewer: close the floating window after inserting a clip, to make
   behaviour consistent with Paste Previous window (#3478916 Jarek Czekalski)
-  
+
 - Show a preview of the window rather than a low-resolution icon when minimizing
   on Mac OS X (#3529980 Evan Wright)
 
@@ -316,6 +394,9 @@ Thomas Meyer, Tom Power and Donovaly for contributing to this release.
 
 - New FileOpenerService, Offered by FastOpen 2.5, SmartOpen 1.1.
   Used by ErrorList 2.0 (#3481157 Alan Ezust)
+
+- jeditresource:/ URL handler now also checks jEditHome for files so
+  it can be used to link to core documentation. (#3565139 Alan Ezust)
 
 - Macros folder can now be localized with properties
   macros.folder.[foldername].label (Matthieu Casanova)
