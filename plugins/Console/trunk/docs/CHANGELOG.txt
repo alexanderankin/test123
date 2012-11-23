@@ -5,12 +5,12 @@ jEdit Console Plugin Changelog
     Version 5.1 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
         FR #3472822 - Console + Task Monitor
-        Long-term processes (commands of current OS shell) are implemented as Tasks.
-        Process marked with '&' is background processes, process marked with '#' has
+        Long-term processes (commands run from System shell) are implemented as Tasks.
+        Those marked with '&' are background processes, those marked with '#' have a
         closed input channel.
       [Alan Ezust]
         Observe jEdit's general option "Check for changed files" and check after command
-        executions too. 
+        executions too.
         #3558537 - restore values from properties destroys user custom error patterns.
 
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
@@ -23,7 +23,7 @@ jEdit Console Plugin Changelog
         #3530817 - Console wrong LF after running a command to buffer (Windows).
         Patch #3530149 - ANSI escape code parser for Console plugin (FR #2510255).
       [Damien Radtke]
-        #2194479 - Fixed NPE when running detached processes that print to stderr. 
+        #2194479 - Fixed NPE when running detached processes that print to stderr.
       [Alan Ezust]
         #3536039: Console no longer displays same errors in all views
 
@@ -87,7 +87,6 @@ jEdit Console Plugin Changelog
         2783642)
 
     Version 4.3.8 Requires jEdit 4.3pre13, Java 1.5, ErrorList 1.4, ProjectViewer 2.1.3 (optional).
-        Scrolls to bottom whenever dockable is activated. (Alan Ezust)
         1928738 Fix NPEs caused by patch #1859034 - k_satoda
         Updated console.bsh macros for reloacted beanshell in pre12.
         Option to append (instead of prepend) subshell extra path. (Alan Ezust)
@@ -304,5 +303,6 @@ jEdit Console Plugin Changelog
         subsequently-created views would fail because of a rogue variable that
         was set in the global namespace.
 
-:maxLineLen=90:wrap=hard:folding=indent:collapseFolds=2:
+
+:maxLineLen=90:wrap=hard:folding=indent:collapseFolds=3:
 :noTabs=true:tabSize=4:indent=4:
