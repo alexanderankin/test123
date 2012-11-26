@@ -61,3 +61,7 @@ CATALOG "docbook-catalog.xml"
 SYSTEM "http://www.w3.org/2001/XMLSchema.xsd" "schema4schemas.xsd"
 SYSTEM "http://www.w3.org/2001/datatypes.xsd" "datatypes.xsd"
 SYSTEM "http://www.w3.org/2001/xml.xsd" "xml.xsd"
+
+-- Apache Maven 4.0.0 schema --
+-- retrieved from the maven.apache.org website --
+SYSTEM "http://maven.apache.org/xsd/maven-4.0.0.xsd" "maven-4.0.0.xsd"

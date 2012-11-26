@@ -9,15 +9,12 @@ import org.xml.sax.Attributes;
 
 import eclipseicons.EclipseIconsPlugin;
 
-public class AntXmlTag extends XmlTag {
+public class AntXmlTag extends RenamedXmlTag {
 
     // TODO: figure out which is the default target and use the target_default.png icon.
 
-    String originalName = null;
-
     public AntXmlTag(String name, String namespace, Position start, Attributes attributes) {
         super(name, namespace, start, attributes);
-        originalName = name;
         String idName = null;
         String idValue = null;
 
@@ -62,27 +59,23 @@ public class AntXmlTag extends XmlTag {
         }
     }
     
-    public String getOriginalName() {
-        return originalName;   
-    }
-    
     public Icon getIcon() {
-        if ("project".equals(originalName)) {
+        if ("project".equals(name)) {
             return EclipseIconsPlugin.getIcon("ant.gif"); 
         }
-        if ("target".equals(originalName)) {
+        if ("target".equals(name)) {
             return EclipseIconsPlugin.getIcon("targetpublic_obj.gif");
         }
-        if ("property".equals(originalName)) {
+        if ("property".equals(name)) {
             return EclipseIconsPlugin.getIcon("ant_property.png");   
         }
-        if ("import".equals(originalName)) {
+        if ("import".equals(name)) {
             return EclipseIconsPlugin.getIcon("ant_import.png");
         }
-        if ("macrodef".equals(originalName)) {
+        if ("macrodef".equals(name)) {
             return EclipseIconsPlugin.getIcon("ant_macrodef.png");
         }
-        if ("taskdef".equals(originalName)) {
+        if ("taskdef".equals(name)) {
             return EclipseIconsPlugin.getIcon("ant_taskdef.png");
         }
         return EclipseIconsPlugin.getIcon("ant_task.png");

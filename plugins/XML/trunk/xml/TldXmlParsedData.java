@@ -8,6 +8,7 @@ import javax.swing.tree.TreeNode;
 import sidekick.Asset;
 import sidekick.IAsset;
 import sidekick.ExpansionModel;
+import xml.parser.RenamedXmlTag;
 import xml.parser.TldXmlTag;
 
 import org.gjt.sp.jedit.View;
@@ -57,13 +58,13 @@ public class TldXmlParsedData extends XmlParsedData {
      * was true.
      */
     private void renameAsset(final TreeNode node, IAsset asset) {
-        if (asset instanceof Asset && node instanceof DefaultMutableTreeNode) {
+        if (asset instanceof RenamedXmlTag && node instanceof DefaultMutableTreeNode) {
             Enumeration children = node.children();
             while (children.hasMoreElements()) {
                 DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
                 TldXmlTag uo = (TldXmlTag) child.getUserObject();
                 if ("name".equals(uo.getName())) {
-                    ((Asset) asset).setName(uo.getCharacters());
+                    ((RenamedXmlTag) asset).setNewName(uo.getCharacters());
                     ((DefaultMutableTreeNode) node).setUserObject(asset);
                 }
             }
@@ -71,9 +72,9 @@ public class TldXmlParsedData extends XmlParsedData {
     }
 
     // Overridden so name and type sorting work correctly for these files.
-    // "original name" is the original name of the xml tag, like "tag-file" or "function".
+    // "name" is the original name of the xml tag, like "tag-file" or "function".
     // "short string" is the name provided by the child element named "name". So sort
-    // by name uses "short string" and sort by type uses "original name".
+    // by name uses "short string" and sort by type uses "name".
     @Override
     protected Comparator<DefaultMutableTreeNode> getSorter() {
         return new Comparator<DefaultMutableTreeNode>() {
@@ -85,8 +86,8 @@ public class TldXmlParsedData extends XmlParsedData {
                         Integer other_line = new Integer(((TldXmlTag)tnb.getUserObject()).getStart().getOffset());
                         return my_line.compareTo(other_line) * (sortDown ? 1 : -1);
                     case SORT_BY_TYPE:
-                        String my_on = ((TldXmlTag)tna.getUserObject()).getOriginalName().toLowerCase();
-                        String other_on = ((TldXmlTag)tnb.getUserObject()).getOriginalName().toLowerCase();
+                        String my_on = ((TldXmlTag)tna.getUserObject()).getName().toLowerCase();
+                        String other_on = ((TldXmlTag)tnb.getUserObject()).getName().toLowerCase();
                         return my_on.compareTo(other_on) * (sortDown ? 1 : -1);
                     case SORT_BY_NAME:
                     default:
