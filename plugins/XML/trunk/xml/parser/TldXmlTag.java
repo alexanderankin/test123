@@ -7,40 +7,29 @@ import org.xml.sax.Attributes;
 import eclipseicons.EclipseIconsPlugin;
 
 // A marker class for nodes in a TLD file.
-public class TldXmlTag extends XmlTag {
-
-    private String originalName;
+public class TldXmlTag extends RenamedXmlTag {
 
     public TldXmlTag(String name, String namespace, Position start, Attributes attributes) {
         super(name, namespace, start, attributes);
-        originalName = name;
-    }
-
-    public String getShortString() {
-        return name;
-    }
-    
-    public String getOriginalName() {
-        return originalName;   
     }
 
     public Icon getIcon() {
-        if ("tag".equals(originalName)) {
+        if ("tag".equals(name)) {
             return EclipseIconsPlugin.getIcon("tag-html.gif"); 
         }
-        if ("function".equals(originalName)) {
+        if ("function".equals(name)) {
             return EclipseIconsPlugin.getIcon("methpub_obj.gif");
         }
-        if ("tag-file".equals(originalName)) {
+        if ("tag-file".equals(name)) {
             return EclipseIconsPlugin.getIcon("file_obj.gif");   
         }
-        if ("listener".equals(originalName)) {
+        if ("listener".equals(name)) {
             return EclipseIconsPlugin.getIcon("activity.gif");
         }
-        if ("validator".equals(originalName)) {
+        if ("validator".equals(name)) {
             return EclipseIconsPlugin.getIcon("complete_task.gif");
         }
-        if ("tag-extension".equals(originalName)) {
+        if ("tag-extension".equals(name)) {
             return EclipseIconsPlugin.getIcon("tag_generic_emphasized_obj.gif");
         }
         return EclipseIconsPlugin.getIcon("tag.gif");

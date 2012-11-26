@@ -9,6 +9,7 @@ import sidekick.Asset;
 import sidekick.IAsset;
 import sidekick.ExpansionModel;
 import xml.parser.MvnXmlTag;
+import xml.parser.RenamedXmlTag;
 
 import org.gjt.sp.jedit.View;
 
@@ -57,7 +58,7 @@ public class MvnXmlParsedData extends XmlParsedData {
      * was true.
      */
     private void renameAsset(final TreeNode node, IAsset asset) {
-        if (asset instanceof Asset && node instanceof DefaultMutableTreeNode) {
+        if (asset instanceof RenamedXmlTag && node instanceof DefaultMutableTreeNode) {
             Enumeration children = node.children();
             String newName = null;
             String idName = null;
@@ -76,7 +77,7 @@ public class MvnXmlParsedData extends XmlParsedData {
                 newName = idName;   
             }
             if (newName != null) {
-                ((Asset) asset).setName(newName);
+                ((RenamedXmlTag) asset).setNewName(newName);
                 ((DefaultMutableTreeNode) node).setUserObject(asset);
             }
             
@@ -84,9 +85,9 @@ public class MvnXmlParsedData extends XmlParsedData {
     }
 
     // Overridden so name and type sorting work correctly for these files.
-    // "original name" is the original name of the xml tag, like "tag-file" or "function".
+    // "name" is the original name of the xml tag, like "artifactId".
     // "short string" is the name provided by the child element named "name". So sort
-    // by name uses "short string" and sort by type uses "original name".
+    // by name uses "short string" and sort by type uses "name".
     @Override
     protected Comparator<DefaultMutableTreeNode> getSorter() {
         return new Comparator<DefaultMutableTreeNode>() {
@@ -98,8 +99,8 @@ public class MvnXmlParsedData extends XmlParsedData {
                         Integer other_line = new Integer(((MvnXmlTag)tnb.getUserObject()).getStart().getOffset());
                         return my_line.compareTo(other_line) * (sortDown ? 1 : -1);
                     case SORT_BY_TYPE:
-                        String my_on = ((MvnXmlTag)tna.getUserObject()).getOriginalName().toLowerCase();
-                        String other_on = ((MvnXmlTag)tnb.getUserObject()).getOriginalName().toLowerCase();
+                        String my_on = ((MvnXmlTag)tna.getUserObject()).getName().toLowerCase();
+                        String other_on = ((MvnXmlTag)tnb.getUserObject()).getName().toLowerCase();
                         return my_on.compareTo(other_on) * (sortDown ? 1 : -1);
                     case SORT_BY_NAME:
                     default:

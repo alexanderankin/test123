@@ -7,64 +7,54 @@ import org.xml.sax.Attributes;
 import eclipseicons.EclipseIconsPlugin;
 
 // This class provides special icons for Maven pom.xml files.
-public class MvnXmlTag extends XmlTag {
+public class MvnXmlTag extends RenamedXmlTag {
 
-    private String originalName;
 
     public MvnXmlTag(String name, String namespace, Position start, Attributes attributes) {
         super(name, namespace, start, attributes);
-        originalName = name;
-    }
-
-    public String getShortString() {
-        return name;
-    }
-    
-    public String getOriginalName() {
-        return originalName;   
     }
 
     public Icon getIcon() {
-        if ("properties".equals(originalName)) {
+        if ("properties".equals(name)) {
             return EclipseIconsPlugin.getIcon("properties_obj.gif"); 
         }
-        if ("resources".equals(originalName)) {
+        if ("resources".equals(name)) {
             return EclipseIconsPlugin.getIcon("resources_obj.gif");
         }
-        if ("resource".equals(originalName)) {
+        if ("resource".equals(name)) {
             return EclipseIconsPlugin.getIcon("resource_obj.gif");   
         }
-        if ("plugins".equals(originalName)) {
+        if ("plugins".equals(name)) {
             return EclipseIconsPlugin.getIcon("plugins_obj.gif");
         }
-        if ("plugin".equals(originalName)) {
+        if ("plugin".equals(name)) {
             return EclipseIconsPlugin.getIcon("plugin_obj.gif");
         }
-        if ("dependencies".equals(originalName)) {
+        if ("dependencies".equals(name)) {
             return EclipseIconsPlugin.getIcon("jars_obj.gif");
         }
-        if ("dependency".equals(originalName)) {
+        if ("dependency".equals(name)) {
             return EclipseIconsPlugin.getIcon("jar_obj.gif");
         }
-        if ("reporting".equals(originalName)) {
+        if ("reporting".equals(name)) {
             return EclipseIconsPlugin.getIcon("report_obj.gif");
         }
-        if ("pluginRepository".equals(originalName)) {
+        if ("pluginRepository".equals(name)) {
             return EclipseIconsPlugin.getIcon("repositories.gif");
         }
-        if ("pluginRepository".equals(originalName)) {
+        if ("pluginRepository".equals(name)) {
             return EclipseIconsPlugin.getIcon("repository_obj.gif");
         }
-        if ("repositories".equals(originalName)) {
+        if ("repositories".equals(name)) {
             return EclipseIconsPlugin.getIcon("repositories.gif");
         }
-        if ("repository".equals(originalName)) {
+        if ("repository".equals(name)) {
             return EclipseIconsPlugin.getIcon("repository_obj.gif");
         }
-        if ("build".equals(originalName)) {
+        if ("build".equals(name)) {
             return EclipseIconsPlugin.getIcon("build_obj.gif");
         }
-        if ("developer".equals(originalName)) {
+        if ("developer".equals(name)) {
             return EclipseIconsPlugin.getIcon("person_obj.gif");
         }
         return EclipseIconsPlugin.getIcon("tag.gif");
