@@ -1,0 +1,323 @@
+
+
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(HTMLZenParser)
+/*
+ * ZenCoding JavaCC parser
+ *
+ * Copyright © 2011-2012 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+package superabbrevs.zencoding.html;
+
+import superabbrevs.zencoding.ZenParser;
+
+public class HTMLZenParser implements ZenParser
+{
+
+	private String pad(int i, int num)
+	{
+		String t = Integer.toString(i);
+		while (t.length() < num)
+		{
+			t = '0' + t;
+		}
+		return t;
+	}
+}
+
+PARSER_END(HTMLZenParser)
+
+//{{{ Tokens
+SKIP:
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+}
+
+TOKEN:
+{
+	<SHARP: "#">
+|
+	<DOT: ".">
+|
+	<GT: ">">
+|
+	<PLUS: "+">
+|
+	<EQUALS: "=">
+|
+	<LBRACKET: "[">
+|
+	<RBRACKET: "]">
+|
+	<LBRACE: "{">:INNER_TEXT
+}
+
+<INNER_TEXT> TOKEN:
+{
+	<RBRACE: "}">:DEFAULT
+}
+
+<INNER_TEXT> TOKEN:
+{
+	<TEXT: ~["}"]>
+}
+
+TOKEN:
+{
+	<INTEGER_LITERAL: (<DIGIT>)+ >
+|
+	<IDENTIFIER: <LETTER>(<LETTER> | <DIGIT> )*>
+|
+	<ID_MULTIPLIER: ("$")+ "*" <INTEGER_LITERAL>>
+|
+	<MULTIPLIER: "*" <INTEGER_LITERAL>>
+|
+	<LITERAL:
+	      "\""
+	      (   (~["\"","\\","\n","\r"]) | ("\\" ~[] ) )*
+	      "\""
+	  >
+|
+	<#LETTER: ["A"-"Z","_","-","a"-"z"]>
+|
+	<#DIGIT: ["0"-"9"]>
+} //}}}
+
+//{{{ parse() method
+String parse(ZenSerializer serializer):
+{
+	Tag tag = new Tag();
+}
+{
+	tag(tag)
+	<EOF>
+	{
+		return serializer.serialize(tag);
+	}
+} //}}}
+
+//{{{ tag() method
+void tag(Tag parent):
+{
+	Tag tag;
+	String tagName = "div";
+	boolean implicitTag = true;
+}
+{
+	[
+		<IDENTIFIER>
+		{
+			tagName = token.image;
+			implicitTag = false;
+		}
+	]
+	{
+		tag = new Tag(tagName);
+		parent.addSubtag(tag);
+	}
+	(
+		id(tag)
+	|
+		cssClass(tag)
+	|
+		attributes(tag)
+	)*
+	(
+		//{{{ innerTag()
+		{
+			String innerText;
+		}
+		(
+			innerText = innerText()
+			{
+				if (implicitTag)
+				{
+					if (!tag.hasAttributes())
+					{
+						// implicit without attributes, we don't introduce a div
+						parent.removeSubtag(tag);
+						parent.addSubtag(innerText);
+					}
+					else
+						tag.addSubtag(innerText);
+				}
+				else
+					tag.addSubtag(innerText);
+			}
+			//{{{ +tag
+			[
+				LOOKAHEAD(2)
+				<PLUS>
+				tag(parent)
+			] //}}}
+
+		)
+		//}}}
+	|
+		[
+			multiplier(parent, tag)
+		|
+			<GT> tag(tag)
+		]
+		//{{{ +tag
+		[
+			LOOKAHEAD(2)
+			<PLUS>
+			tag(parent)
+		] //}}}
+	)
+	{
+		if (implicitTag && tag.attributes.isEmpty() && tag.subTags.isEmpty())
+			parent.subTags.remove(tag);
+	}
+
+} //}}}
+
+//{{{ multiplier() method
+void multiplier(Tag parent, Tag current):
+{
+	Token multiplier;
+}
+{
+	(
+		multiplier = <ID_MULTIPLIER>
+	|
+		multiplier = <MULTIPLIER>
+	)
+
+	[ <GT> tag(current) ]
+	{
+		String[] split = multiplier.image.split("\\*");
+		int count = Integer.parseInt(split[1]);
+		int pad = split[0].length();
+		if (pad != 0)
+		{
+			String id = pad(1, pad);
+			Tag original = current.clone();
+			current.appendAttribute(current.getLastAttribute(), id);
+			for (int i = 1;i<count;i++)
+			{
+				Tag tag = original.clone();
+				id = pad(i+1, pad);
+				tag.appendAttribute(tag.getLastAttribute(), id);
+				parent.addSubtag(tag);
+			}
+		}
+		else
+		{
+			for (int i = 1;i<count;i++)
+			{
+				Tag tag = current.clone();
+				parent.addSubtag(tag);
+			}
+		}
+	}
+} //}}}
+
+//{{{ id() method
+void id(Tag tag):
+{
+}
+{
+	<SHARP>
+	<IDENTIFIER>
+	{
+		tag.addAttribute("id", token.image);
+	}
+} //}}}
+
+//{{{ cssClass() method
+void cssClass(Tag tag):
+{
+	String ret = "";
+}
+{
+	<DOT>
+	<IDENTIFIER>
+	{
+		tag.appendAttribute("class", token.image, true);
+	}
+	(
+		LOOKAHEAD(<DOT> <IDENTIFIER>)
+		<DOT>
+		<IDENTIFIER>
+		{
+			tag.appendAttribute("class", token.image, true);
+		}
+	)*
+} //}}}
+
+//{{{ attributes() method
+void attributes(Tag tag):
+{
+	String name;
+	String value;
+}
+{
+	<LBRACKET>
+	(
+		{
+			value = null;
+		}
+		<IDENTIFIER> { name = token.image; }
+		[
+			<EQUALS>
+			(
+					<IDENTIFIER> { value = token.image; }
+				|
+					<INTEGER_LITERAL> { value = token.image; }
+				|
+					<LITERAL> { value = token.image.substring(1, token.image.length() -1); }
+			)
+		]
+		{
+			tag.appendAttribute(name, value, true);
+		}
+	)*
+	<RBRACKET>
+} //}}}
+
+//{{{ innerText() method
+String innerText():
+{
+	Token innerText;
+	StringBuilder builder = new StringBuilder();
+}
+{
+	<LBRACE>
+	(
+		innerText = <TEXT>
+		{
+			builder.append(innerText.image);
+		}
+	)*
+	<RBRACE>
+	{
+		return builder.toString();
+	}
+} //}}}
+
+/*
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+*/
