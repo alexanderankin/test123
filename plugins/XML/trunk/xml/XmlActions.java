@@ -1051,7 +1051,6 @@ loop:			for(;;)
 	//{{{ openSchema() method
 	public static void openSchema(View view)
 	{
-		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
 		
 		String schemaURL = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
@@ -1060,7 +1059,7 @@ loop:			for(;;)
 			schemaURL = buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP);
 		}
 		if(schemaURL != null){
-			Buffer newbuffer = jEdit.openFile(view,schemaURL);
+			jEdit.openFile(view,schemaURL);
 		}
 	}
 	//}}}
