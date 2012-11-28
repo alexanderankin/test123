@@ -72,10 +72,10 @@ public class ErrorListModel extends DefaultListModel
 		m_matchers = new ArrayList<ErrorMatcher>();
 		m_default = StringList.split(jEdit.getProperty("console.errors.default", ""), "\\s+");
 		StringList visible = StringList.split(jEdit.getProperty("console.errors.list", ""), "\\s+");
-		if (visible.size() == 0) {
+		/*if (visible.size() == 0) {
 			jEdit.setProperty("console.errors.list", m_default.join(" "));
 			visible = m_default;
-		}
+		}*/
 
 		for (String key: visible)
 		{
