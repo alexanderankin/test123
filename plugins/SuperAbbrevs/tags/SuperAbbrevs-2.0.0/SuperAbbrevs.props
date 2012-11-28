@@ -1,0 +1,117 @@
+plugin.SuperAbbrevsPlugin.name=SuperAbbrevs
+plugin.SuperAbbrevsPlugin.author=Sune Simonsen, Matthieu Casanova
+plugin.SuperAbbrevsPlugin.version=2.0
+plugin.SuperAbbrevsPlugin.depend.0=jedit 04.05.99.00
+plugin.SuperAbbrevsPlugin.depend.1=jdk 1.6
+plugin.SuperAbbrevsPlugin.activate=defer
+#plugin.SuperAbbrevsPlugin.activate=startup
+plugin.SuperAbbrevsPlugin.description= \
+    This plugin enables you to tab-expand an abbreviation with variables in it. \
+    After the abbreviation is expanded, you can use the tab-key to jump between \
+    the variables. If you change the content of a variable in the abbreviation, \
+    all the variables with the same name will change accordingly. This concept \
+    is previously know from Eclipse and TextMate.
+plugin.QuickNotepadPlugin.longdescription=docs/description.html
+plugin.SuperAbbrevsPlugin.docs=index.html
+
+superabbrevs.label=SuperAbbrevs
+
+# Option pane
+#plugin.SuperAbbrevsPlugin.option-pane=superabbrevs
+plugin.SuperAbbrevsPlugin.option-group=superabbrevs \
+                                        superabbrevs.abbreviations \
+					superabbrevs.variables
+
+options.superabbrevs.label=Options
+options.superabbrevs.code=new superabbrevs.gui.SuperAbbrevsOptionPane();
+options.superabbrevs.abbreviations.label=Abbreviations
+options.superabbrevs.abbreviations.code=new superabbrevs.gui.AbbrevsOptionPane(view);
+
+options.superabbrevs.variables.label=Variables
+options.superabbrevs.variables.code=new superabbrevs.gui.VariablesOptionPane(view);
+
+options.superabbrevs.mode=Select mode:
+options.superabbrevs.abbreviations.abbrev=Abbreviation
+options.superabbrevs.abbreviations.expand=Expansion
+options.superabbrevs.zencoding.label=Activate Zen Coding (if ZenCoding parser do not match the standard abbrevs are used)
+options.superabbrevs.zencoding=true
+options.superabbrevs.zencoding.modes=html xml jsp php asp
+
+
+options.superabbrevs.variables.variable=Variable
+options.superabbrevs.variables.value=Value
+
+plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
+							   SuperAbbrevs.shiftTab \
+							   SuperAbbrevs.showDialog
+#							   SuperAbbrevs.displayModeAbbrevs \
+#							   SuperAbbrevs.displayAllAbbrevs
+
+# Menu labels
+SuperAbbrevs.tab.label=Tab
+SuperAbbrevs.shiftTab.label=Shift Tab
+SuperAbbrevs.showDialog.label=Show expansion dialog
+SuperAbbrevs.displayModeAbbrevs.label=Display mode abbreviations
+SuperAbbrevs.displayAllAbbrevs.label=Display all abbreviations
+
+SuperAbbrevs.abbrev-editor.template=Template text
+SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exist
+SuperAbbrevs.tab.shortcut=TAB
+SuperAbbrevs.shiftTab.shortcut=S+TAB
+
+
+#{{{ html default attributes
+defaultattributes.html.a.0=href
+defaultattributes.html.abbr.0=title
+defaultattributes.html.acronym.0=title
+defaultattributes.html.area.0=shape
+defaultattributes.html.area.1=coord
+defaultattributes.html.area.2=href
+defaultattributes.html.area.3=alt
+defaultattributes.html.audio.0=src
+
+defaultattributes.html.base.0=href
+defaultattributes.html.bdo.0=dir
+
+defaultattributes.html.embed.0=src
+defaultattributes.html.embed.1=type
+
+defaultattributes.html.form.0=action
+
+defaultattributes.html.iframe.0=src
+defaultattributes.html.iframe.1=frameborder
+defaultattributes.html.iframe.1.value=0
+defaultattributes.html.img.0=src
+defaultattributes.html.img.1=alt
+defaultattributes.html.input.0=type
+
+defaultattributes.html.label.0=for
+defaultattributes.html.link.0=rel
+defaultattributes.html.link.0.value=stylesheet
+defaultattributes.html.link.1=href
+
+defaultattributes.html.map.0=name
+
+defaultattributes.html.object.0=data
+defaultattributes.html.object.1=type
+defaultattributes.html.option.0=value
+
+defaultattributes.html.param.0=data
+defaultattributes.html.param.1=value
+
+defaultattributes.html.select.0=name
+defaultattributes.html.select.1=id
+defaultattributes.html.style.0=type
+defaultattributes.html.style.0.value=text/css
+defaultattributes.html.script.0=type
+defaultattributes.html.script.0.value=text/javascript
+
+defaultattributes.html.textarea.0=name
+defaultattributes.html.textarea.1=id
+defaultattributes.html.textarea.2=cols
+defaultattributes.html.textarea.2.value=30
+defaultattributes.html.textarea.3=rows
+defaultattributes.html.textarea.3.value=10
+
+defaultattributes.html.video.0=src
+#}}}

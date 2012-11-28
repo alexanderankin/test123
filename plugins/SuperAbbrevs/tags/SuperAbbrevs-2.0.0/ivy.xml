@@ -1,0 +1,8 @@
+<ivy-module version="2.0">
+    <info organisation="jedit-plugins" module="SuperAbbrevs"/>
+    <dependencies>
+	<dependency org="junit" name="junit" rev="4.8.2"/>
+	<dependency org="net.java.dev.javacc" name="javacc" rev="5.0"/>
+	<dependency org="com.google.code.findbugs" name="jsr305" rev="2.0.0"/>
+    </dependencies>
+</ivy-module>
