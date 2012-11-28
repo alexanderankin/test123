@@ -20,7 +20,10 @@ import static xml.Debug.DEBUG_RNG_SCHEMA;
 import static xml.Debug.DEBUG_XSD_SCHEMA;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -35,6 +38,7 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.ext.LexicalHandler;
 
+import xml.PathUtilities;
 import xml.Resolver;
 import xml.XmlParsedData;
 import xml.cache.Cache;
@@ -86,6 +90,8 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	/** used to install the locator in the resolver */
 	private MyEntityResolver resolver;
 	
+	/** store the xsd schema urls, if any */
+	List<String> xsdSchemaURLs;
 	// }}}
 	// {{{ Handler constructor
 	GrabIdsAndCompletionInfoHandler(XercesParserImpl xercesParserImpl, Buffer buffer, ErrorListErrorHandler errorHandler,
@@ -99,6 +105,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		this.schemaAutoLoader = null;
 		this.dtdCompletionInfo = null;
 		this.resolver = resolver;
+		this.xsdSchemaURLs = new ArrayList<String>();
 	} // }}}
 
 	void setSchemaAutoLoader(SchemaAutoLoader sal){
@@ -147,6 +154,21 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		throws IOException, SAXException
 	{
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,GrabIdsAndCompletionInfoHandler.class,"setCompletionInfoFromSchema("+ns+","+location+","+schemaLocation+","+nonsSchemaLocation+")");
+
+		URI baseURI;
+		try {
+			baseURI = new URI(PathUtilities.pathToURL(buffer.getPath()));
+		} catch (URISyntaxException e) {
+			throw new IOException("error getting buffer uri??",e);
+		}
+
+		String[] sids = Resolver.instance().resolveEntityToPathInternal(null, null, baseURI.toString(), location);
+		if(sids==null){
+			xsdSchemaURLs.add(baseURI.resolve(location).toString());
+		}else{
+			xsdSchemaURLs.add(sids[0]);
+		}
+
 		Map<String,CompletionInfo> infos = XSDSchemaToCompletion.getCompletionInfoFromSchema(location,schemaLocation, nonsSchemaLocation, errorHandler, buffer);
 		for(Map.Entry<String,CompletionInfo> en: infos.entrySet()){
 			String nsC = en.getKey();
@@ -427,5 +449,6 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 			publicId,systemId);
 	} //}}}
 	//}}}
-	
+
 }// }}}
+

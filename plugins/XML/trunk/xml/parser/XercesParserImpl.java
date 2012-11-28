@@ -271,10 +271,20 @@ public class XercesParserImpl extends XmlParser
 		finally
 		{
 			//set this property for the xml-open-schema action to work
+			String url = null;
+
 			if(schemaLoader != null && schemaLoader.getSchemaURL()!=null)
 			{
+				url = schemaLoader.getSchemaURL();
+			}
+			else if(handler.xsdSchemaURLs != null && !handler.xsdSchemaURLs.isEmpty())
+			{
+				url = handler.xsdSchemaURLs.get(0);
+			}
+
+			if(url !=null){
 				buffer.setStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP,
-					schemaLoader.getSchemaURL());
+					url);
 			}
 		}
 		//}}}
