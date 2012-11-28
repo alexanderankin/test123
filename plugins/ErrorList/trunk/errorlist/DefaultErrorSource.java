@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999-2012 Slava Pestov, Alan Ezust
- 
+
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.*;
 //}}}
 
 /** A concrete implementation of ErrorSource that is suitable for Plugins to use/extend.
- * 
+ *
  * @author Slava Pestov
  */
 public class DefaultErrorSource extends ErrorSource
@@ -42,7 +42,7 @@ public class DefaultErrorSource extends ErrorSource
 	/**
 	 * Creates a new default error source.
 	 * @param v  which View we want errors to be sent to.
-	 *  if null, errors may be sent to all Views. 	 
+	 *  if null, errors may be sent to all Views.
 	*/
 	public DefaultErrorSource(String name, View v)
 	{
@@ -50,7 +50,7 @@ public class DefaultErrorSource extends ErrorSource
 		this.name = name;
 		this.view = v;
 	}
-	
+
 	/** @deprecated please supply a View using the other ctor. */
 	@Deprecated
 	public DefaultErrorSource(String name) {
@@ -67,12 +67,12 @@ public class DefaultErrorSource extends ErrorSource
 	} //}}}
 
 	//{{{ getView() method
-	/** Returns the View that messages should be displayed in */	
+	/** Returns the View that messages should be displayed in */
 	public View getView() {
-		return view;	
-		
+		return view;
+
 	}//}}}
-	
+
 	//{{{ getErrorCount() method
 	/**
 	 * Returns the number of errors in this source.
@@ -410,7 +410,7 @@ public class DefaultErrorSource extends ErrorSource
 		 */
 		public void setFilePath(String newPath)
 		{
-			path = newPath;
+			path = MiscUtilities.resolveSymlinks(newPath);
 			name = MiscUtilities.getFileName(path);
 		}// }}}
 
