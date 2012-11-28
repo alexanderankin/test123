@@ -251,6 +251,10 @@ public void set${1=firstUp(s)}($2 $1){
   
   <chapter id="ZenCoding"><title>Zen Coding</title>
     <para>
+      The Zen Coding feature is inspired from Zen Coding
+      <ulink url="http://code.google.com/p/zen-coding/">http://code.google.com/p/zen-coding/</ulink>
+      It is not an official implementation so it is possible to have some little
+      differences.
     	Below, the features of Zen Coding engine:
     </para>
     <itemizedlist>
