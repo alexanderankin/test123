@@ -110,7 +110,7 @@ public class CommandOutputParser
 		int retval = DEFAULT;
 		if (text == null)
 			return DEFAULT;
-
+		if (errorMatchers.m_matchers.size() == 0) return -1;
 		if (directoryStack.processLine(text))
 		{
 			if (disp) display(color, text);
