@@ -464,9 +464,11 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
- <listitem><formalpara><title>Version 2.?</title> <para> Requires Java 1.6, and jEdit
+ <listitem><formalpara><title>Version 2.1</title> <para> Requires Java 1.6, and jEdit
  5.0pre1. </para></formalpara>
  <itemizedlist>
+   <listitem><para> Fixed #3573458: ErrorList does not work with SymLinks (Patrick Eibl) 
+   </para> </listitem>
    <listitem><para> Fixed errors not appearing without manual dockable activation,
    a bug introduced in version 2.0
    (#3556671 Jarek Czekalski) </para></listitem>
