@@ -64,7 +64,7 @@ public class BrowseRepositoryPanel extends JPanel {
     private RepositoryComboBox chooser = null;
     private String repositoryUrl = null;
     private JTree tree = null;
-    //private JPopupMenu popupMenu = null;
+    // private JPopupMenu popupMenu = null;
     private String username = null;
     private String password = null;
 
@@ -112,57 +112,56 @@ public class BrowseRepositoryPanel extends JPanel {
 
         // on expansion, call the repository and fetch the children
         tree.addTreeExpansionListener( new TreeExpansionListener() {
-                    public void treeCollapsed( TreeExpansionEvent event ) {}
+            public void treeCollapsed( TreeExpansionEvent event ) { }
 
-                    public void treeExpanded( TreeExpansionEvent event ) {
-                        TreePath path = event.getPath();
-                        DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
-                        if ( node.getChildCount() == 0 ) {
-                            RepositoryData data = chooser.getSelectedRepository();
-                            data = new RepositoryData( data );
-                            String url;
-                            if ( node.isExternal() ) {
-                                url = node.getRepositoryLocation();
-                            }
-                            else {
-                                Object[] parts = path.getPath();
-                                StringBuilder sb = new StringBuilder();
-                                String part = parts[ 0 ].toString();
-                                while ( part.endsWith( "/" ) ) {
-                                    part = part.substring( 0, part.length() - 1 );
-                                }
-                                sb.append( part );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                url = sb.toString();
-                            }
-                            data.setURL( url );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
-                            action.actionPerformed( null );
+            public void treeExpanded( TreeExpansionEvent event ) {
+                TreePath path = event.getPath();
+                DirTreeNode node = ( DirTreeNode ) path.getLastPathComponent();
+                if ( node.getChildCount() == 0 ) {
+                    RepositoryData data = chooser.getSelectedRepository();
+                    data = new RepositoryData( data );
+                    String url;
+                    if ( node.isExternal() ) {
+                        url = node.getRepositoryLocation();
+                    } else {
+                        Object[] parts = path.getPath();
+                        StringBuilder sb = new StringBuilder();
+                        String part = parts[0].toString();
+                        while ( part.endsWith( "/" ) ) {
+                            part = part.substring(0, part.length() - 1 );
                         }
+                        sb.append( part );
+                        for ( int i = 1; i < parts.length; i++ ) {
+                            sb.append( "/" ).append( parts[ i].toString() );
+                        }
+                        url = sb.toString();
                     }
+                    data.setURL( url );
+                    BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
+                    action.actionPerformed( null );
                 }
-                                     );
+            }
+        }
+        );
 
         // on double click on a text file, fetch the file contents and show the file in jEdit
         if ( full ) {
             tree.addMouseListener( new MouseAdapter() {
-                        public void mouseClicked( MouseEvent me ) {
-                            if ( me.getClickCount() == 2 ) {
-                                TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                                openFile( path, null );
-                            }
-
-                        }
+                public void mouseClicked( MouseEvent me ) {
+                    if ( me.getClickCount() == 2 ) {
+                        TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
+                        openFile( path, null );
                     }
-                                 );
+
+                }
+            }
+            );
 
             // add listener to trigger context menu popup
             tree.addMouseListener( new TreeMouseListener() );
 
             // create the context menu
-            //popupMenu = createPopupMenu();
+            // popupMenu = createPopupMenu();
 
             // create the control buttons -- add repository
             Icon new_icon = GUIUtilities.loadIcon( "New.png" );
@@ -174,23 +173,23 @@ public class BrowseRepositoryPanel extends JPanel {
             new_btn.setMaximumSize( dim );
             new_btn.setToolTipText( jEdit.getProperty( "ips.Add_new_repository", "Add new repository" ) );
             new_btn.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
-                            GUIUtils.center( getView(), dialog );
-                            dialog.setVisible( true );
-                            RepositoryData data = dialog.getValues();
-                            if ( data == null ) {
-                                return ;     // user canceled
-                            }
-                            //String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
-                            chooser.addRepository( data );
-                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
-                            tree.setModel( new DefaultTreeModel( root ) );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
-                            action.actionPerformed( ae );
-                        }
+                public void actionPerformed( ActionEvent ae ) {
+                    AddRepositoryDialog dialog = new AddRepositoryDialog( getView() );
+                    GUIUtils.center( getView(), dialog );
+                    dialog.setVisible( true );
+                    RepositoryData data = dialog.getValues();
+                    if ( data == null ) {
+                        return;                        // user canceled
                     }
-                                     );
+                    // String name = data.getName() == null || data.getName().equals( "" ) ? data.getURL() : data.getName();
+                    chooser.addRepository( data );
+                    DirTreeNode root = new DirTreeNode( data.getURL(), false );
+                    tree.setModel( new DefaultTreeModel( root ) );
+                    BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                    action.actionPerformed( ae );
+                }
+            }
+            );
 
             // edit repository properties
             Icon edit_icon = GUIUtilities.loadIcon( "Preferences.png" );
@@ -203,23 +202,23 @@ public class BrowseRepositoryPanel extends JPanel {
             edit_btn.setToolTipText( jEdit.getProperty( "ips.Edit_repository_properties", "Edit repository properties" ) );
             edit_btn.setEnabled( false );
             edit_btn.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            RepositoryData old_data = chooser.getSelectedRepository();
-                            AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData( old_data ) );
-                            GUIUtils.center( getView(), dialog );
-                            dialog.setVisible( true );
-                            RepositoryData new_data = dialog.getValues();  // null indicates user canceled
-                            if ( new_data != null ) {
-                                chooser.removeRepository( old_data );
-                                chooser.save( new_data );
-                                DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
-                                tree.setModel( new DefaultTreeModel( root ) );
-                                BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
-                                action.actionPerformed( ae );
-                            }
-                        }
+                public void actionPerformed( ActionEvent ae ) {
+                    RepositoryData old_data = chooser.getSelectedRepository();
+                    AddRepositoryDialog dialog = new AddRepositoryDialog( getView(), new RepositoryData( old_data ) );
+                    GUIUtils.center( getView(), dialog );
+                    dialog.setVisible( true );
+                    RepositoryData new_data = dialog.getValues();                    // null indicates user canceled
+                    if ( new_data != null ) {
+                        chooser.removeRepository( old_data );
+                        chooser.save( new_data );
+                        DirTreeNode root = new DirTreeNode( new_data.getURL(), false );
+                        tree.setModel( new DefaultTreeModel( root ) );
+                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, new_data );
+                        action.actionPerformed( ae );
                     }
-                                      );
+                }
+            }
+            );
 
             // remove repository from chooser
             Icon remove_icon = GUIUtilities.loadIcon( "Minus.png" );
@@ -232,17 +231,17 @@ public class BrowseRepositoryPanel extends JPanel {
             remove_btn.setToolTipText( jEdit.getProperty( "ips.Remove_repository_from_browser", "Remove repository from browser" ) );
             remove_btn.setEnabled( false );
             remove_btn.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            RepositoryData data = chooser.getSelectedRepository();
-                            if ( data != null ) {
-                                int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty( "ips.Remove_repository_location", "Remove repository location" ) + " " + data.getURL() + " ?\n" + jEdit.getProperty( "ips.This_only_removes_this_repository_from_the_browser,_it_does_not_delete_any_files.", "This only removes this repository from the browser, it does not delete any files." ), jEdit.getProperty( "ips.Confirm_Remove", "Confirm Remove" ), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                                if ( delete == JOptionPane.YES_OPTION ) {
-                                    chooser.removeRepository( data );
-                                }
-                            }
+                public void actionPerformed( ActionEvent ae ) {
+                    RepositoryData data = chooser.getSelectedRepository();
+                    if ( data != null ) {
+                        int delete = JOptionPane.showConfirmDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty( "ips.Remove_repository_location", "Remove repository location" ) + " " + data.getURL() + " ?\n" + jEdit.getProperty( "ips.This_only_removes_this_repository_from_the_browser,_it_does_not_delete_any_files.", "This only removes this repository from the browser, it does not delete any files." ), jEdit.getProperty( "ips.Confirm_Remove", "Confirm Remove" ), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                        if ( delete == JOptionPane.YES_OPTION ) {
+                            chooser.removeRepository( data );
                         }
                     }
-                                        );
+                }
+            }
+            );
 
             // reload tree with current selection
             Icon refresh_icon = GUIUtilities.loadIcon( "Reload.png" );
@@ -265,76 +264,73 @@ public class BrowseRepositoryPanel extends JPanel {
 
         // action listener for repository chooser
         ActionListener al = new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        RepositoryData data = chooser.getSelectedRepository();
-                        if ( data != null ) {
-                            username = data.getUsername();
-                            password = data.getPassword();
-                            repositoryUrl = data.getURL();
-                            DirTreeNode root = new DirTreeNode( data.getURL(), false );
-                            tree.setModel( new DefaultTreeModel( root ) );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
-                            action.actionPerformed( ae );
-                        }
-                        else {
-                            tree.setModel( new DefaultTreeModel( new DirTreeNode( jEdit.getProperty( "ips.SVN_Browser", "SVN Browser" ), false ) ) );
-                        }
-                        if ( edit_btn != null ) {
-                            edit_btn.setEnabled( data != null );
-                        }
-                        if ( remove_btn != null ) {
-                            remove_btn.setEnabled( data != null );
-                        }
-                        if ( refresh_btn != null ) {
-                            refresh_btn.setEnabled( data != null );
-                        }
-                    }
-                };
+            public void actionPerformed( ActionEvent ae ) {
+                RepositoryData data = chooser.getSelectedRepository();
+                if ( data != null ) {
+                    username = data.getUsername();
+                    password = data.getPassword();
+                    repositoryUrl = data.getURL();
+                    DirTreeNode root = new DirTreeNode( data.getURL(), false );
+                    tree.setModel( new DefaultTreeModel( root ) );
+                    BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, root, data );
+                    action.actionPerformed( ae );
+                } else {
+                    tree.setModel( new DefaultTreeModel( new DirTreeNode( jEdit.getProperty( "ips.SVN_Browser", "SVN Browser" ), false ) ) );
+                }
+                if ( edit_btn != null ) {
+                    edit_btn.setEnabled( data != null );
+                }
+                if ( remove_btn != null ) {
+                    remove_btn.setEnabled( data != null );
+                }
+                if ( refresh_btn != null ) {
+                    refresh_btn.setEnabled( data != null );
+                }
+            }
+        };
         chooser.addActionListener( al );
 
         if ( full ) {
             ActionListener refresh_al = new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            // if there is a selected node, refresh just that node,
-                            // otherwise, refresh the entire tree
-                            RepositoryData data = chooser.getSelectedRepository();
-                            TreePath path = tree.getSelectionPath();
-                            DirTreeNode node = null;
-                            if ( path != null ) {
-                                node = ( DirTreeNode ) path.getLastPathComponent();
-                                node.removeAllChildren();
-                            }
-                            else {
-                                // refresh the entire tree
-                                node = new DirTreeNode( data.getURL(), false );
-                                tree.setModel( new DefaultTreeModel( node ) );
-                                BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
-                                action.actionPerformed( null );
-                                return ;
-                            }
-                            data = new RepositoryData( data );
-                            String url;
-                            if ( node.isExternal() ) {
-                                url = node.getRepositoryLocation();
-                            }
-                            else {
-                                Object[] parts = path.getPath();
-                                String part = parts[ 0 ].toString();
-                                while ( part.endsWith( "/" ) ) {
-                                    part = part.substring( 0, part.length() - 1 );
-                                }
-                                StringBuilder sb = new StringBuilder();
-                                sb.append( part );
-                                for ( int i = 1; i < parts.length; i++ ) {
-                                    sb.append( "/" ).append( parts[ i ].toString() );
-                                }
-                                url = sb.toString();
-                            }
-                            data.setURL( url );
-                            BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
-                            action.actionPerformed( null );
+                public void actionPerformed( ActionEvent ae ) {
+                    // if there is a selected node, refresh just that node,
+                    // otherwise, refresh the entire tree
+                    RepositoryData data = chooser.getSelectedRepository();
+                    TreePath path = tree.getSelectionPath();
+                    DirTreeNode node = null;
+                    if ( path != null ) {
+                        node = ( DirTreeNode ) path.getLastPathComponent();
+                        node.removeAllChildren();
+                    } else {
+                        // refresh the entire tree
+                        node = new DirTreeNode( data.getURL(), false );
+                        tree.setModel( new DefaultTreeModel( node ) );
+                        BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
+                        action.actionPerformed( null );
+                        return;
+                    }
+                    data = new RepositoryData( data );
+                    String url;
+                    if ( node.isExternal() ) {
+                        url = node.getRepositoryLocation();
+                    } else {
+                        Object[] parts = path.getPath();
+                        String part = parts[0].toString();
+                        while ( part.endsWith( "/" ) ) {
+                            part = part.substring(0, part.length() - 1 );
                         }
-                    };
+                        StringBuilder sb = new StringBuilder();
+                        sb.append( part );
+                        for ( int i = 1; i < parts.length; i++ ) {
+                            sb.append( "/" ).append( parts[ i].toString() );
+                        }
+                        url = sb.toString();
+                    }
+                    data.setURL( url );
+                    BrowseRepositoryAction action = new BrowseRepositoryAction( getView(), tree, node, data );
+                    action.actionPerformed( null );
+                }
+            };
             refresh_btn.addActionListener( refresh_al );
         }
         if ( repositoryName != null ) {
@@ -351,7 +347,6 @@ public class BrowseRepositoryPanel extends JPanel {
         // fill in the main panel
         add( top_panel, BorderLayout.NORTH );
 
-
         add( new JScrollPane( tree ), BorderLayout.CENTER );
     }
 
@@ -362,25 +357,24 @@ public class BrowseRepositoryPanel extends JPanel {
         String filepath;
         if ( node.isExternal() ) {
             String rep = node.getRepositoryLocation();
-            url = new StringBuilder(rep.substring( 0, rep.lastIndexOf( '/' ) ));
+            url = new StringBuilder( rep.substring(0, rep.lastIndexOf( '/' ) ) );
             filepath = rep.substring( rep.lastIndexOf( '/' ) + 1 );
-            return url.append(filepath).toString();
-        }
-        else {
-            url = new StringBuilder(data.getURL());
-            if (url.lastIndexOf("/") != url.length() - 1) {
-                url.append('/');   
+            return url.append( filepath ).toString();
+        } else {
+            url = new StringBuilder( data.getURL() );
+            if ( url.lastIndexOf( "/" ) != url.length() - 1 ) {
+                url.append( '/' );
             }
             Object[] parts = path.getPath();
             StringBuilder sb = new StringBuilder();
             for ( int i = 1; i < parts.length; i++ ) {
-                sb.append( "/" ).append( parts[ i ].toString() );
+                sb.append( "/" ).append( parts[ i].toString() );
             }
             filepath = sb.toString();
             while ( filepath.startsWith( "/" ) ) {
-                filepath = filepath.substring( 1 );
+                filepath = filepath.substring(1 );
             }
-            return url.append(filepath).toString();
+            return url.append( filepath ).toString();
         }
     }
 
@@ -392,46 +386,48 @@ public class BrowseRepositoryPanel extends JPanel {
             tree.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
             tree.setEditable( false );
 
-            // leaf nodes should be files, not directories.
-            // get url and path for the selected file
-            RepositoryData data = chooser.getSelectedRepository();
-            String url;
-            String filepath;
-            Object[] parts = path.getPath();
-            StringBuilder sb = new StringBuilder();
-            for ( int i = 1; i < parts.length; i++ ) {
-                sb.append( "/" ).append( parts[ i ].toString() );
-            }
-            filepath = sb.toString().substring( 1 );
-            if ( node.isExternal() ) {
-                String rep = node.getRepositoryLocation();
-                url = rep.substring( 0, rep.lastIndexOf( '/' ) );
-                filepath = rep.substring( rep.lastIndexOf( '/' ) + 1 );
-            }
-            else {
-                url = data.getURL();
-            }
-
-            // maybe ask the user for the revision they want
-            SVNRevision revision = rev;
-            if ( revision == null ) {
-                RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty( "ips.Select_Revision_to_View", "Select Revision to View" ) );
-                GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
-                rd.setVisible( true );
-                revision = rd.getData();
-                if ( revision == null ) {
-                    return ;
+            try {
+                // leaf nodes should be files, not directories.
+                // get url and path for the selected file
+                RepositoryData data = chooser.getSelectedRepository();
+                String url;
+                String filepath;
+                Object[] parts = path.getPath();
+                StringBuilder sb = new StringBuilder();
+                for ( int i = 1; i < parts.length; i++ ) {
+                    sb.append( "/" ).append( parts[ i].toString() );
                 }
-            }
+                filepath = sb.toString().substring(1 );
+                if ( node.isExternal() ) {
+                    String rep = node.getRepositoryLocation();
+                    url = rep.substring(0, rep.lastIndexOf( '/' ) );
+                    filepath = rep.substring( rep.lastIndexOf( '/' ) + 1 );
+                } else {
+                    url = data.getURL();
+                }
 
-            // fetch the file contents
-            BrowseRepository br = new BrowseRepository();
-            File outfile = br.getFile( url, filepath, revision, data.getUsername(), data.getPassword() );
-            if ( outfile != null ) {
-                jEdit.openFile( getView(), outfile.getAbsolutePath() );
+                // maybe ask the user for the revision they want
+                SVNRevision revision = rev;
+                if ( revision == null ) {
+                    RevisionDialog rd = new RevisionDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty( "ips.Select_Revision_to_View", "Select Revision to View" ) );
+                    GUIUtils.center( BrowseRepositoryPanel.this.getView(), rd );
+                    rd.setVisible( true );
+                    revision = rd.getData();
+                    if ( revision == null ) {
+                        return;
+                    }
+                }
+
+                // fetch the file contents
+                BrowseRepository br = new BrowseRepository();
+                File outfile = br.getFile( url, filepath, revision, data.getUsername(), data.getPassword() );
+                if ( outfile != null ) {
+                    jEdit.openFile( getView(), outfile.getAbsolutePath() );
+                }
+            } finally {
+                tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+                tree.setEditable( true );
             }
-            tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
-            tree.setEditable( true );
         }
     }
 
@@ -451,7 +447,7 @@ public class BrowseRepositoryPanel extends JPanel {
         for ( Object part : tp.getPath() ) {
             String p = part.toString();
             if ( p.endsWith( "/" ) ) {
-                p = p.substring( 0, p.length() - 1 );
+                p = p.substring(0, p.length() - 1 );
             }
             sb.append( p ).append( "/" );
         }
@@ -483,12 +479,12 @@ public class BrowseRepositoryPanel extends JPanel {
 
     private ActionListener createPopupMenuActionListener( final BRAction internal ) {
         return new ActionListener() {
-                   public void actionPerformed( ActionEvent ae ) {
-                       internal.parent = BrowseRepositoryPanel.this;
-                       internal.init( view, repositoryUrl, tree, username, password );
-                       internal.actionPerformed( ae );
-                   }
-               };
+            public void actionPerformed( ActionEvent ae ) {
+                internal.parent = BrowseRepositoryPanel.this;
+                internal.init( view, repositoryUrl, tree, username, password );
+                internal.actionPerformed( ae );
+            }
+        };
     }
 
     /**
@@ -524,11 +520,10 @@ public class BrowseRepositoryPanel extends JPanel {
                 item = new JMenuItem( label );
                 item.addActionListener( createPopupMenuActionListener( action ) );
                 pm.add( item );
-            }
-            catch ( Exception e ) {
+            } catch ( Exception e ) {
                 // class not found or instantiation exception, don't worry
                 // about it, assume it's a typo
-                //e.printStackTrace();
+                // e.printStackTrace();
                 continue;
             }
         }
@@ -536,18 +531,17 @@ public class BrowseRepositoryPanel extends JPanel {
         // add copy to clipboard command
         pm.addSeparator();
         JMenuItem item = new JMenuItem( jEdit.getProperty( "ips.Copy_URL_to_clipboard", "Copy URL to clipboard" ) );
-        item.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    TreePath path = tree.getSelectionPath();
-                    if ( path == null ) {
-                        JOptionPane.showMessageDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty( "ips.Nothing_selected", "Nothing selected" ), jEdit.getProperty( "ips.Nothing_selected,_please_select_an_item_from_the_tree.", "Nothing selected, please select an item from the tree." ), JOptionPane.ERROR_MESSAGE );
-                        return ;
-                    }
-                    String url = getUrl( path );
-                    Registers.getRegister( '$' ).setTransferable( new StringSelection( url ) );
+        item.addActionListener ( new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                TreePath path = tree.getSelectionPath();
+                if ( path == null ) {
+                    JOptionPane.showMessageDialog( BrowseRepositoryPanel.this.view, jEdit.getProperty( "ips.Nothing_selected", "Nothing selected" ), jEdit.getProperty( "ips.Nothing_selected,_please_select_an_item_from_the_tree.", "Nothing selected, please select an item from the tree." ), JOptionPane.ERROR_MESSAGE );
+                    return;
                 }
+                String url = getUrl( path );
+                Registers.getRegister( '$' ).setTransferable( new StringSelection( url ) );
             }
+        }
         );
         pm.add( item );
 
@@ -555,19 +549,9 @@ public class BrowseRepositoryPanel extends JPanel {
     }
 
     class CellRenderer extends DefaultTreeCellRenderer {
-        public Component getTreeCellRendererComponent(
-            JTree tree,
-            Object value,
-            boolean sel,
-            boolean expanded,
-            boolean leaf,
-            int row,
-            boolean hasFocus ) {
+        public Component getTreeCellRendererComponent( JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus ) {
 
-            Component r = super.getTreeCellRendererComponent(
-                        tree, value, sel,
-                        expanded, leaf, row,
-                        hasFocus );
+            Component r = super.getTreeCellRendererComponent ( tree, value, sel, expanded, leaf, row, hasFocus );
 
             if ( r instanceof JLabel ) {
                 JLabel label = ( JLabel ) r;
@@ -579,8 +563,7 @@ public class BrowseRepositoryPanel extends JPanel {
                     text = new StringBuilder();
                     text.append( "<html><font color=\"" ).append( jEdit.getProperty( "view.style.digit" ) ).append( "\">" ).append( node.toString() );
                     label.setToolTipText( "<html><b>External: </b> " + node.getRepositoryLocation() );
-                }
-                else {
+                } else {
                     text = new StringBuilder( node.toString() );
                 }
                 if ( node.hasProperties() ) {
