@@ -40,8 +40,7 @@ import org.gjt.sp.util.StringList;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
-import jcfunc.*;
-import jcfunc.parameters.*;
+import jcfunc.Description;
 // }}}
 
 // {{{ class OutputStreamTask
@@ -52,6 +51,7 @@ class OutputStreamTask extends StreamTask
 
 	private InputStream in;
 	CommandOutputParser copt = null;
+	AnsiEscapeParser ansiescp = null;
 	
 	private final int DEFAULT = CommandOutputParser.DEFAULT;
 	private final int WARNING = ErrorSource.WARNING;
@@ -59,12 +59,8 @@ class OutputStreamTask extends StreamTask
 	
 	private StringBuilder lineBuffer;
 	private int shiftUCW;
-	private int ANSI_BEHAVIOUR;
 	private Pattern eolPattern;
-	private Pattern eolReplacingPattern;
-	private escMatcher ansi_Matcher;
 	private SimpleAttributeSet commonAttrs;
-	private Color defaultColor;
 	private SimpleAttributeSet defaultAttrs, warningAttrs, errorAttrs;
 	// }}}
 
@@ -81,67 +77,18 @@ class OutputStreamTask extends StreamTask
 		copt = new CommandOutputParser(console.getView(), es, defaultColor);
 		copt.setDirectory(currentDirectory);
 		
+		ansiescp = new AnsiEscapeParser(defaultColor);
+		
 		lineBuffer = new StringBuilder(100);
 		shiftUCW = 0;
 		
 		eolPattern = Pattern.compile("\n");
-		if (!System.getProperty("line.separator").equals("\n"))
-		{
-			eolReplacingPattern = Pattern.compile( System.getProperty("line.separator") );
-		}
-		
-		this.defaultColor = defaultColor; 
 		
 		commonAttrs = new SimpleAttributeSet();
 		StyleConstants.setBackground(commonAttrs, console.getConsolePane().getBackground());
 		StyleConstants.setForeground(commonAttrs, defaultColor);
 		
 		defaultAttrs = setDefaultAttrs(null);
-		
-		// choose matcher's mode
-		int ansi_mode = Sequences.MODE_7BIT;
-		if ( jEdit.getProperty("options.ansi-escape.mode").contentEquals("8bit") )
-		{
-			ansi_mode = Sequences.MODE_8BIT;
-		}
-		
-		ansi_Matcher = new escMatcher(ansi_mode, Pattern.DOTALL);
-		
-		// define matcher's behaviour
-		ANSI_BEHAVIOUR = -1;		// ignor all 
-		String str = jEdit.getProperty("options.ansi-escape.behaviour");
-		if ( str.contentEquals("remove") )
-		{
-			ANSI_BEHAVIOUR = 0;	// remove all
-		}
-		else if ( str.contentEquals("parse") )
-		{
-			ANSI_BEHAVIOUR = 1;	// parse
-		}
-			
-		// fill parsing control function's list
-		StringList funcs     = StringList.split( jEdit.getProperty("options.ansi-escape.func-list").toLowerCase(), "\\s+");
-		String avaible_funcs = jEdit.getProperty("options.ansi-escape.func-list-values");
-		
-		int i = 0;
-		while ( i < funcs.size() )
-		{
-			if ( !avaible_funcs.contains( funcs.get(i) ) )
-			{
-				str = funcs.remove(i);
-				str = null;
-				i--;
-			}
-			i++;
-		}
-		
-		CF[] func_arr = new CF[funcs.size()];
-		for (i = 0; i < funcs.size(); i++)
-		{
-			func_arr[i] = CF.valueOf(CF.class, funcs.get(i).toUpperCase() );
-		}
-		
-		ansi_Matcher.setPatterns(func_arr);
 	} // }}}
 
 	// {{{ run() method
@@ -207,17 +154,17 @@ class OutputStreamTask extends StreamTask
 					String line = lineBuffer.append(input, 0, read).toString();		// "111\n222\n333\n444"
 					
 					// convert all line breaks to internal "standard": "\n"
-					if (eolReplacingPattern != null)
+					if ( ConsolePane.eolExchangeRequired() )
 					{
 						lineBuffer.setLength(0);
-						line = lineBuffer.append( eolReplacingPattern.matcher(line).replaceAll("\n") ).toString();
+						line = lineBuffer.append( ConsolePane.eolExchanging(line) ).toString();
 					}
 				
 					// remove all ANSI escape sequences
-					if ( ANSI_BEHAVIOUR == 0 && ansi_Matcher.matches(line) )
+					if ( ansiescp.touch(AnsiEscapeParser.Behaviour.REMOVE_ALL, line) )
 					{
 						lineBuffer.setLength(0);
-						line = lineBuffer.append( ansi_Matcher.removeAll(line) ).toString();
+						line = lineBuffer.append( ansiescp.removeAll(line) ).toString();
 					}
 					
 					Matcher matcher = eolPattern.matcher(line);
@@ -302,10 +249,10 @@ class OutputStreamTask extends StreamTask
     	//}}}
 		
 		// look for ANSI escape sequences 
-		if ( ANSI_BEHAVIOUR == 1 && ansi_Matcher.matches(str) )
-		{                         
-			seqs = ansi_Matcher.parse(str, true);
-			str  = ansi_Matcher.removeAll(str); // => str's length is changed
+		if ( ansiescp.touch(AnsiEscapeParser.Behaviour.PARSE, str) )
+		{
+			seqs = ansiescp.parse(str, true);
+			str  = ansiescp.removeAll(str); // => str's length is changed
 		}
 		
 		// error/warning parser
@@ -357,7 +304,7 @@ class OutputStreamTask extends StreamTask
 							// new default style's creation:
 							//   1. always cancel previous escape-style
 							//   2. if no any escape-styles (resetting) - setup commonAttrs
-							defaultAttrs = setDefaultAttrs( processSGRparameters(descr.parameters, defaultAttrs) );
+							defaultAttrs = setDefaultAttrs( ansiescp.processSGRparameters(descr.parameters, defaultAttrs) );
 							currentAttrs = updateCurrentAttrs( errorStatus, copt.getColor() );
 							
 							flushSubstring(output, str, currentAttrs, descr.bPosition, descr.ePosition);
@@ -375,105 +322,6 @@ class OutputStreamTask extends StreamTask
 			Log.log (Log.ERROR, this, "Can't Flush:", err);
 		}		
 	} //}}}
-	
-	//{{{ processSGRparameters() method
-	private SimpleAttributeSet processSGRparameters(int[] parameters, SimpleAttributeSet baseAttrs)
-	{
-		SimpleAttributeSet funcAttrs = new SimpleAttributeSet(baseAttrs);
-		int intensity = 0; 
-		Color clr = null;
-		
-		// go over SGR's parameters
-		for (int value: parameters)
-		{
-			paramSGR valSGR = paramSGR.getEnumValue(value);
-			
-			switch (valSGR)
-			{
-			case Reset:
-				return null;
-			case Bright:
-				intensity = 1;
-				break;
-			case Faint :
-				intensity = -1;
-				break;
-			case Italic:
-				StyleConstants.setItalic(funcAttrs, true);
-				break;
-			case Underline_Single:
-			case Underline_Doubly:
-				StyleConstants.setUnderline(funcAttrs, true);
-				break;
-			case CrossedOut:
-				StyleConstants.setStrikeThrough(funcAttrs, true);
-				break;
-			case Normal_Int:
-				intensity = 0;
-				break;
-			case Normal_Style:
-				StyleConstants.setItalic(funcAttrs, false);
-				break;
-			case Underline_NGT:
-				StyleConstants.setUnderline(funcAttrs, false);
-				break;
-			case CrossedOut_NGT:
-				StyleConstants.setStrikeThrough(funcAttrs, false);
-				break;
-			case Color_Text_Black   :
-			case Color_Text_Red     :
-			case Color_Text_Green   :
-			case Color_Text_Yellow  :
-			case Color_Text_Blue    :
-			case Color_Text_Magenta :
-			case Color_Text_Cyan    :
-			case Color_Text_White   :
-			case Color_Text_Reserved:
-				clr = paramSGR.getColor(valSGR);
-				
-				switch (intensity)
-				{
-				case  1:
-					clr = clr.darker();
-					break;
-				case -1:
-					clr = clr.brighter();
-					break;
-				}
-				
-				StyleConstants.setForeground(funcAttrs, clr == null ? defaultColor : clr);
-				break;
-			case Color_Bkgr_Black   :
-			case Color_Bkgr_Red     :
-			case Color_Bkgr_Green   :
-			case Color_Bkgr_Yellow  :
-			case Color_Bkgr_Blue    :
-			case Color_Bkgr_Magenta :
-			case Color_Bkgr_Cyan    :
-			case Color_Bkgr_White   :
-			case Color_Bkgr_Reserved:
-				clr = paramSGR.getColor(valSGR);
-
-				switch (intensity)
-				{
-				case  1:
-					clr = clr.darker();
-					break;
-				case -1:
-					clr = clr.brighter();
-					break;
-				}
-				
-				StyleConstants.setBackground(funcAttrs, clr == null ? defaultColor : clr);
-				break;
-			default:
-				break;
-			}
-		}
-		
-		return funcAttrs;
-	}
-	//}}}
 	
 	//{{{ flushSubstring() method
 	private void flushSubstring(Output output, String str, SimpleAttributeSet localAttrs, int bpos, int epos)

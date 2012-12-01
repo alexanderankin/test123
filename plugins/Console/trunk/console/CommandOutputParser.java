@@ -102,15 +102,16 @@ public class CommandOutputParser
 	 *
 	 * @param text a line of text
 	 * @param disp if true, will also send to the Output.
-	 * @return -1 if there is no error, or ErrorSource.WARNING,
+	 * @return DEFAULT if there is no error, or ErrorSource.WARNING,
 	 *       or ErrorSource.ERROR if there is a warning or an error found in text.
 	 */
 	public int processLine(String text, boolean disp)
 	{
 		int retval = DEFAULT;
-		if (text == null)
-			return DEFAULT;
-		if (errorMatchers.m_matchers.size() == 0) return -1;
+		
+		if (text == null) return DEFAULT;
+		if (errorMatchers.m_matchers.size() == 0) return DEFAULT;
+		
 		if (directoryStack.processLine(text))
 		{
 			if (disp) display(color, text);
