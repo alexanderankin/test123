@@ -24,6 +24,7 @@ package console;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.regex.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -49,6 +50,18 @@ public class ConsolePane extends JTextPane
 	private ConsoleHistoryText history;
 
 	transient private DocumentHandler documentHandler;
+	
+	private static Pattern eolReplacingPattern = null;
+	// }}}
+	
+	// {{{ static initialization
+	static
+	{
+		if ( !System.getProperty("line.separator").equals("\n") )
+		{
+			eolReplacingPattern = Pattern.compile( System.getProperty("line.separator") );
+		}
+	}
 	// }}}
 	
 	// {{{ ConsolePane constructor
@@ -288,7 +301,24 @@ public class ConsolePane extends JTextPane
 		 
 		return style;
 	} // }}}
-
+	
+	// {{{ eolExchangeRequired() method
+	public static boolean eolExchangeRequired()
+	{
+		return eolReplacingPattern != null;
+	} // }}}
+	
+	// {{{ eolExchanging() method
+	public static String eolExchanging(String prevString)
+	{
+		if (eolReplacingPattern != null)
+		{
+			return eolReplacingPattern.matcher(prevString).replaceAll("\n");
+		}
+		
+		return prevString;
+	} // }}}
+	
 	// {{{ processKeyEvent method
 	@Override
 	protected void processKeyEvent(KeyEvent e)
