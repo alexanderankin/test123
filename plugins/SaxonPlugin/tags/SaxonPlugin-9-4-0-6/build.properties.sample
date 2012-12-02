@@ -1,9 +1,0 @@
-###
-### Build property file for Saxon plugin
-###
-
-### Directory where the jEdit jar is located
-jedit.install.dir=/Applications/jEdit.app/Contents/Resources/Java
-
-### jars directory in jEdit settings
-install.dir=${user.home}/Library/jEdit/jars
