@@ -63,7 +63,7 @@ public class CandyFoldsOptionPane
 
 	private Config config;
 	final JPanel panel=new JPanel(new BorderLayout());
-	final JComboBox modesCB=new JComboBox();
+	final JComboBox<Object> modesCB=new JComboBox<Object>();
 	final ModeConfigPanel modeConfigP=new ModeConfigPanel();
 	final JCheckBox usesDefaultModeConfigCB=new JCheckBox("Use Only "+Config.DEFAULT_MODE_CONFIG_NAME+" Configuration");
 
@@ -73,11 +73,11 @@ public class CandyFoldsOptionPane
 
 		Box box=new Box(BoxLayout.X_AXIS);
 		box.add(new JLabel("Mode: "));
-		box.add(box.createHorizontalStrut(3));
+		box.add(Box.createHorizontalStrut(3));
 		box.add(modesCB);
-		box.add(box.createHorizontalStrut(5));
+		box.add(Box.createHorizontalStrut(5));
 		box.add(usesDefaultModeConfigCB);
-		box.add(box.createHorizontalGlue());
+		box.add(Box.createHorizontalGlue());
 		panel.add(box, BorderLayout.NORTH);
 
 		panel.add(modeConfigP.panel);

@@ -20,14 +20,16 @@
 % }] */
 package candyfolds;
 
-import candyfolds.config.StripConfig;
-import candyfolds.config.ModeConfig;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.text.Segment;
+
+import candyfolds.config.ModeConfig;
+import candyfolds.config.StripConfig;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 
@@ -37,54 +39,102 @@ final class LineInfo {
 
 	private final TextAreaExt textAreaExt;
 	private int line;
-	private int lineIndent;
-	private final List<Integer> indents=new ArrayList<Integer>();
-	private final List<Integer> lines=new ArrayList<Integer>(); // lines where the indents belong (1:1).
-	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
+	private final IndentationInfo lineIndentationInfo=new IndentationInfo();
+	private final List<IndentationInfo> indentationInfos=new LinkedList<IndentationInfo>();
+	private final List<Integer> lines=new LinkedList<Integer>(); // lines where the indentationInfos belong (1:1).
+	private final List<StripConfig> stripConfigs=new LinkedList<StripConfig>();
+
+	static class IndentationInfo{
+		private int indent;
+		private int spaceCount;
+		private int tabCount;
+
+		private IndentationInfo(){}
+
+		private IndentationInfo(int indent, TextAreaExt textAreaExt, int line){
+			setIndent(indent);
+			countSpacesAndTabs(textAreaExt, line);
+		}
+
+		private void clear(){
+			indent=spaceCount=tabCount=0;
+		}
+
+		private void setIndent(int indent){
+			this.indent=indent;
+		}
+
+		int getIndent() {
+			return indent;
+		}
+
+		void countSpacesAndTabs(TextAreaExt textAreaExt, int line){
+			Segment seg = textAreaExt.segment;
+			Buffer buffer=textAreaExt.getBuffer();
+			buffer.getLineText(line,seg);
+		loop:
+			for(int i = 0; i < seg.count; i++)
+			{
+				char c = seg.array[seg.offset + i];
+				switch(c)
+				{
+				case ' ':
+					spaceCount++;
+					break;
+				case '\t':
+					tabCount++;
+					break;
+				default:
+					break loop;
+				}
+			}
+		}
+
+		int getXOffset(int spaceWidth, int tabSpaceWidth, int tabSize){
+			return (int)(0.4f*spaceWidth+spaceCount*spaceWidth+tabCount*tabSize*tabSpaceWidth);
+		}
+	}
 
 	LineInfo(TextAreaExt textAreaExt) {
 		this.textAreaExt=textAreaExt;
 	}
 
-	/*
-	int getLine(){
-		return line;
-	}
-	*/
-	
 	int getLine(int i){
 		return lines.get(i);
 	}
 
-	int getIndentsSize(){
-		return indents.size();
+	int getIndentationInfosSize(){
+		return indentationInfos.size();
 	}
 
-	int getIndent(int indentIndex){
-		return indents.get(indentIndex);
+	IndentationInfo getIndentationInfo(int index){
+		return indentationInfos.get(index);
 	}
 
-	StripConfig getStripConfig(int indentIndex){
-		return stripConfigs.get(indentIndex);
+	StripConfig getStripConfig(int index){
+		return stripConfigs.get(index);
 	}
 
 	private void clear() {
-		line=lineIndent=0;
-		indents.clear();
+		line=0;
+		lineIndentationInfo.clear();
+		indentationInfos.clear();
 		lines.clear();
 		stripConfigs.clear();
 	}
 
-	void eval(Buffer buffer, final int line){
-		eval(buffer, line, null);
+	void eval(TextAreaExt textAreaExt, final int line){
+		eval(textAreaExt, line, null);
 	}
 
-	void eval(Buffer buffer, final int line, LineInfo upLineInfo){
+	void eval(TextAreaExt textAreaExt, final int line, LineInfo upLineInfo){
 		clear();
+		Buffer buffer=textAreaExt.getBuffer();
 		this.line=line;
 		int upLine= upLineInfo==null? 0: upLineInfo.line+1;
-		
+
 		int calcLine;
+		int lineIndent;
 		if(isEmptySegment(buffer, line)){
 			int firstIndentDown=-1, firstIndentDownLine=line;
 			for(int i=line+1, lineCount=buffer.getLineCount(); i<lineCount; i++){ // TODO: optimize for performance on large files with a lot of empty lines...
@@ -106,6 +156,8 @@ final class LineInfo {
 			calcLine=line;
 			lineIndent=buffer.getCurrentIndentForLine(line, null);
 		}
+		lineIndentationInfo.setIndent(lineIndent);
+		lineIndentationInfo.countSpacesAndTabs(textAreaExt, line);
 
 		int indent, lastCaughtIndent=Integer.MAX_VALUE;
 		for(; calcLine>=upLine; calcLine--) {
@@ -117,7 +169,7 @@ final class LineInfo {
 				continue;
 			lastCaughtIndent=indent;
 			//L.fine("adding indent="+indent+" on line="+calcLine);
-			indents.add(indent);
+			indentationInfos.add(new IndentationInfo(indent, textAreaExt, calcLine));
 			calcLine=addStripConfig(buffer, calcLine, indent);
 			lines.add(calcLine);
 			if(lastCaughtIndent==0) // optimization
@@ -127,14 +179,15 @@ final class LineInfo {
 		if(upLineInfo!=null
 			 && lastCaughtIndent>0 // optimization
 			){
-			for(int i=0; i<upLineInfo.indents.size(); i++){
-				indent=upLineInfo.indents.get(i);
+			for(int i=0; i<upLineInfo.indentationInfos.size(); i++){
+				IndentationInfo indentationInfo=upLineInfo.getIndentationInfo(i);
+				indent=indentationInfo.indent;
 				if(indent>=lastCaughtIndent ||
 					 indent>lineIndent)
 					continue;
 				lastCaughtIndent=indent;
 				//L.fine("line="+line+", adding upLineInfo indent="+indent);
-				indents.add(indent);
+				indentationInfos.add(indentationInfo);
 				lines.add(upLineInfo.lines.get(i));
 				stripConfigs.add(upLineInfo.stripConfigs.get(i));
 			}

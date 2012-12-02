@@ -52,6 +52,7 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 
 final class TextAreaExt
 	extends TextAreaExtension {
@@ -69,18 +70,35 @@ final class TextAreaExt
 	private final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
 	private static final class FontMetricsInfo {
 
+		private static final char[] tabSpaceCharWidthSample = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+		private static final int jEditMajorVersion=Integer.parseInt(jEdit.getBuild().substring(0,2));
+
 		private FontMetrics fontMetrics;
 		int spaceWidth;
+		int tabSpaceWidth;
 		int lineHeight;
-		Stroke barStroke;
+		BasicStroke barStroke;
+		Stroke thinBarStroke;
 
 		void setFontMetrics(FontMetrics fontMetrics) {
 			if(this.fontMetrics==fontMetrics)
 				return;
 			this.fontMetrics=fontMetrics;
 			spaceWidth = fontMetrics.charWidth(' ');
+			if(jEditMajorVersion<5)
+				tabSpaceWidth=spaceWidth;
+			else{
+				//v taken from org.gjt.sp.jedit.textarea.TextArea. ToDo: request a public method getCharWidth on this class to avoid code duplication?
+				tabSpaceWidth = (int)Math.round(fontMetrics.charsWidth(tabSpaceCharWidthSample, 0, tabSpaceCharWidthSample.length)
+												/tabSpaceCharWidthSample.length);
+				//^
+			}
 			lineHeight=fontMetrics.getHeight();
 			barStroke=new BasicStroke(spaceWidth/2.3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+			float thinBarStrokeWidth=barStroke.getLineWidth()/2;
+			if(thinBarStrokeWidth<1)
+				thinBarStrokeWidth=1;
+			thinBarStroke=new BasicStroke( thinBarStrokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 		}
 	}
 
@@ -89,7 +107,7 @@ final class TextAreaExt
 	private final Line2D.Float line2D=new Line2D.Float();
 	final Segment segment=new Segment();
 	private final Rectangle rect=new Rectangle();
-	
+
 	TextAreaExt(CandyFoldsPlugin foldsPlugin, EditPane editPane) {
 		this.foldsPlugin=foldsPlugin;
 		this.editPane=editPane;
@@ -138,7 +156,7 @@ final class TextAreaExt
 			int lineHeight){
 		//Log.log(Log.NOTICE, this, "painting range: firstLine="+firstLine+", lastLine=" + lastLine + ", y=" + y+"lineHeight="+lineHeight);
 		//long nanoTime=System.nanoTime();
-		Buffer buffer = editPane.getBuffer();
+		Buffer buffer = getBuffer();
 		setModeConfig(buffer);
 		if(!getModeConfig().getEnabled())
 			return;
@@ -148,9 +166,9 @@ final class TextAreaExt
 			if(line==-1)
 				continue;
 			if(i==0)
-				currentLineInfo.eval(buffer, line);
+				currentLineInfo.eval(this, line);
 			else
-				currentLineInfo.eval(buffer, line, previousLineInfo);
+				currentLineInfo.eval(this, line, previousLineInfo);
 			drawLineIndents(buffer, currentLineInfo, g, y);
 			LineInfo swap=previousLineInfo;
 			previousLineInfo=currentLineInfo;
@@ -161,8 +179,12 @@ final class TextAreaExt
 		//L.fine("new painting time="+(System.nanoTime()-nanoTime));
 	}
 
+	Buffer getBuffer(){
+		return editPane.getBuffer();
+	}
+
 	private void drawLineIndents(Buffer buffer, LineInfo lineInfo, Graphics2D g, int y) {
-		
+
 		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
 		/*
 		FontMetrics fontMetrics=painter.getFontMetrics();
@@ -173,10 +195,13 @@ final class TextAreaExt
 		int indent;
 		int horizontalOffset=editPane.getTextArea().getHorizontalOffset();
 
+		int tabSize=buffer.getTabSize();
+
 		Stroke gStroke=g.getStroke();
-		g.setStroke(fontMetricsInfo.barStroke);
-		for (int i =lineInfo.getIndentsSize();--i>=1;) {// ATTENTION: omit the first
-			indent =lineInfo.getIndent(i);
+		g.setStroke(getModeConfig().getDrawThinStripes()? fontMetricsInfo.thinBarStroke: fontMetricsInfo.barStroke);
+		for (int i =lineInfo.getIndentationInfosSize();--i>=1;) {// ATTENTION: the first is omitted
+			LineInfo.IndentationInfo indentationInfo=lineInfo.getIndentationInfo(i);
+			indent =indentationInfo.getIndent();
 			if(indent==0 && !modeConfig.getShowStripOn0Indent())
 				continue;
 			//Log.log(Log.NOTICE, this, "painting indent="+indent);
@@ -184,7 +209,7 @@ final class TextAreaExt
 			StripConfig stripConfig=lineInfo.getStripConfig(i);
 			Stroke stroke=stripConfig.fontMetricsInfo.getStroke(fontMetrics);
 			if(stroke==null)
-				continue;
+			 continue;
 			g.setStroke(stroke);
 			Color color=stripConfig.getColor();
 			*/
@@ -193,8 +218,8 @@ final class TextAreaExt
 				continue;
 			g.setColor(color);
 
-			x= (int)((indent+0.4f )* fontMetricsInfo.spaceWidth+horizontalOffset);
-			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight);
+			x=horizontalOffset+indentationInfo.evalXOffset(fontMetricsInfo.spaceWidth, fontMetricsInfo.tabSpaceWidth, tabSize);
+			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight+painter.getLineExtraSpacing());
 		}
 		g.setStroke(gStroke);
 	}
@@ -203,37 +228,37 @@ final class TextAreaExt
 	/*
 	@Override
 	public synchronized String getToolTipText(int x, int y) {
-		JEditTextArea ta=editPane.getTextArea();
-		Buffer buffer = editPane.getBuffer();
+	 JEditTextArea ta=editPane.getTextArea();
+	 Buffer buffer = editPane.getBuffer();
 
-		int offset = ta.xyToOffset(x, y, false);
-		if ((offset == -1) || (offset >= buffer.getLength())) {
-			return null;
-		}
+	 int offset = ta.xyToOffset(x, y, false);
+	 if ((offset == -1) || (offset >= buffer.getLength())) {
+	  return null;
+	 }
 
-		int physicalLine = ta.getLineOfOffset(offset);
-		toolTipLineInfo.eval(buffer, physicalLine);
+	 int physicalLine = ta.getLineOfOffset(offset);
+	 toolTipLineInfo.eval(buffer, physicalLine);
 
-		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
-		rect.y=ta.offsetToXY(physicalLine, 0).y;
-		rect.width=2*fontMetricsInfo.spaceWidth;
-		rect.height=fontMetricsInfo.lineHeight;
-		int indent;
-		int horizontalOffset=ta.getHorizontalOffset();
-		for (int i =toolTipLineInfo.getIndentsSize();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first (i=0) is right over the first char of the line.
-			indent =toolTipLineInfo.getIndent(i);
-			if(indent==0 && !getModeConfig().getShowStripOn0Indent())
-				continue;
-			rect.x= (int)(indent* fontMetricsInfo.spaceWidth+horizontalOffset);
-			if(rect.contains(x, y)){
-				//int foldLevel=toolTipLineInfo.foldLevels.get(i);
-				String stripConfigName=toolTipLineInfo.getStripConfig(i).getName();
-				int line=toolTipLineInfo.getLine(i);
-				buffer.getLineText(line, segment);
-				return "<html><b>"+(line+1)+"</b>  <u>"+stripConfigName+"</u>: "+segment.toString().trim()+"</html>";
-			}
-		}
-		return null;
-	}
+	 fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
+	 rect.y=ta.offsetToXY(physicalLine, 0).y;
+	 rect.width=2*fontMetricsInfo.spaceWidth;
+	 rect.height=fontMetricsInfo.lineHeight;
+	 int indent;
+	 int horizontalOffset=ta.getHorizontalOffset();
+	 for (int i =toolTipLineInfo.getIndentsSize();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first (i=0) is right over the first char of the line.
+	  indent =toolTipLineInfo.getIndent(i);
+	  if(indent==0 && !getModeConfig().getShowStripOn0Indent())
+	   continue;
+	  rect.x= (int)(indent* fontMetricsInfo.spaceWidth+horizontalOffset);
+	  if(rect.contains(x, y)){
+	   //int foldLevel=toolTipLineInfo.foldLevels.get(i);
+	   String stripConfigName=toolTipLineInfo.getStripConfig(i).getName();
+	   int line=toolTipLineInfo.getLine(i);
+	   buffer.getLineText(line, segment);
+	   return "<html><b>"+(line+1)+"</b>  <u>"+stripConfigName+"</u>: "+segment.toString().trim()+"</html>";
+	  }
+	 }
+	 return null;
+}
 	*/
 }
