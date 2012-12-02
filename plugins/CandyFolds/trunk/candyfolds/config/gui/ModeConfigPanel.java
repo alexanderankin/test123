@@ -47,6 +47,7 @@ class ModeConfigPanel {
 	final JCheckBox useIgnoreLineRegexCB=new JCheckBox("Ignore lines matching regex:");
 	final JTextField ignoreLineRegexTF=new JTextField(12);
 	final JCheckBox showStripOn0IndentCB=new JCheckBox("Show indentation-guide on left edge");
+	final JCheckBox drawThinStripesCB=new JCheckBox("Draw thin stripes");
 	private final StripConfigsTable stripConfigsTable=new StripConfigsTable();
 	private final JPanel tablePanel=new JPanel(new BorderLayout());
 	private final StripConfigsOpPanel stripConfigsOpPanel=new StripConfigsOpPanel(stripConfigsTable);
@@ -108,6 +109,15 @@ class ModeConfigPanel {
 					}
 				});
 		box.add(showStripOn0IndentCB);
+		drawThinStripesCB.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent ev){
+						if(modeConfig!=null)
+							modeConfig.setDrawThinStripes(drawThinStripesCB.isSelected());
+						updateView();
+					}
+				});
+		box.add(drawThinStripesCB);
 		panel.add(box, BorderLayout.NORTH);
 
 		updateView();
@@ -132,12 +142,14 @@ class ModeConfigPanel {
 			useIgnoreLineRegexCB.setSelected(modeConfig.getUseIgnoreLineRegex());
 			ignoreLineRegexTF.setText(modeConfig.ignoreLineRegex.getValue());
 			showStripOn0IndentCB.setSelected(modeConfig.getShowStripOn0Indent());
+			drawThinStripesCB.setSelected(modeConfig.getDrawThinStripes());
 			stripConfigsOpPanel.panel.setVisible(
 				modeConfig!=modeConfig.config.defaultModeConfig);
 		}
 		useIgnoreLineRegexCB.setEnabled(enabledCB.isSelected());
 		ignoreLineRegexTF.setEnabled(useIgnoreLineRegexCB.isSelected());
 		showStripOn0IndentCB.setEnabled(enabledCB.isSelected());
+		drawThinStripesCB.setEnabled(enabledCB.isSelected());
 		setEnabledStripConfigs(enabledCB.isSelected());
 	}
 

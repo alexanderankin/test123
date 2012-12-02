@@ -34,9 +34,10 @@ public final class ModeConfig {
 	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
 	public final List<StripConfig> stripConfigsA=Collections.unmodifiableList(stripConfigs);
 	private boolean enabled=true;
-	private boolean useIgnoreLineRegex=false;
+	private boolean useIgnoreLineRegex;
 	public final Regex ignoreLineRegex=new Regex();
-	private boolean showStripOn0Indent=false;
+	private boolean showStripOn0Indent;
+	private boolean drawThinStripes;
 
 	ModeConfig(Config config, String name) {
 		this.config=config;
@@ -68,7 +69,15 @@ public final class ModeConfig {
 	public void setShowStripOn0Indent(boolean showStripOn0Indent){
 		this.showStripOn0Indent=showStripOn0Indent;
 	}
-
+	
+	public void setDrawThinStripes(boolean drawThinStripes){
+		this.drawThinStripes=drawThinStripes;
+	}
+	
+	public boolean getDrawThinStripes() {
+		return drawThinStripes;
+	}
+	
 	public StripConfig addStripConfig() {
 		if((config.defaultModeConfig==this && !stripConfigs.isEmpty())
 			 || stripConfigs.size()==MAX_STRIP_CONFIGS)
@@ -121,6 +130,7 @@ public final class ModeConfig {
 		}else
 			ps.remove(getPropertyName(sb, "ignoreLineRegex"));
 		ps.setProperty(getPropertyName(sb, "showStripOn0Indent"), String.valueOf(showStripOn0Indent));
+		ps.setProperty(getPropertyName(sb, "drawThinStripes"), String.valueOf(drawThinStripes));
 		for(int i=0, size=stripConfigs.size(); i<size && i<MAX_STRIP_CONFIGS; i++) {
 			stripConfigs.get(i).store(ps, this, sb, i);
 		}
@@ -149,6 +159,8 @@ public final class ModeConfig {
 										 ps.getProperty(getPropertyName(sb, "enabled"))));
 			setShowStripOn0Indent(Boolean.valueOf(
 						ps.getProperty(getPropertyName(sb, "showStripOn0Indent"))));
+			setDrawThinStripes(Boolean.valueOf(
+						ps.getProperty(getPropertyName(sb, "drawThinStripes"))));
 			//v support deprecated feature 'bigLines' with its ignoreLineRegexValue equivalent:
 			String ignoreLineRegexValue=null;
 			if(Boolean.valueOf(
