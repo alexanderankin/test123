@@ -1,5 +1,5 @@
 /*
- * AnsiEscapeParser.java - 
+ * AnsiEscapeParser.java - parser ANSI escaped sequencies.
  *
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
@@ -39,25 +39,58 @@ import jcfunc.*;
 import jcfunc.parameters.*;
 // }}}
 
+/**<p>
+ * AnsiEscapeParser class wraps calls of JCFunc-library's functions in itself.
+ *
+ * Workflow:
+ * 1) create new parser with some parameters (choose parsing MODE)
+ * 2) use:
+ *    - "touch()" or "matches()" for escaped sequencies' searching in input line
+ *    - "parse()" for parsing escaped sequencies in input line
+ *    - "processSGRparameters()" if found escaped sequence is SGR (color) function
+ * 3) user may change "on-the-fly":
+ *    - parser's behaviour (ignore, remove, parse)
+ *    - set of parsing sequencies
+ * 4) user cann't change "on-the-fly" parsing MODE.</p>
+ */
 public class AnsiEscapeParser
 {
 	// {{{ private members
 	private Behaviour ansi_Behaviour;
 	private escMatcher ansi_Matcher;
-	private Color defaultColor;
+	private Color defaultFColor, defaultBColor;
 	// }}}
 	
 	// {{{ constructors
-	public AnsiEscapeParser(int ansi_mode, Behaviour behaviour, CF[] func_arr, Color defColor)
+	/**<p>
+	 * Parser's state is decribed by following properties:
+	 * @param ansi_mode - type of escaped sequencies (what kind of escaped sequencies parser processes?)
+	 *                    @see jcfunc.Sequences.MODE_7BIT
+	 *                    @see jcfunc.Sequences.MODE_8BIT
+	 *                    Usually use 7-bit mode.
+	 * @param behaviour - parser's behaviour proper (what parser does with found sequencies?)
+	 *                    @see Behaviour
+	 * @param func_arr  - array of processing functions (escaped sequence == ESC + function)
+	 *                    @see jcfunc.CF
+	 * @param defFColor - default foreground color (for SGR-function) 
+	 * @param defBColor - default background color (for SGR-function)</p> 
+	 */
+	public AnsiEscapeParser(int ansi_mode, Behaviour behaviour, CF[] func_arr, Color defFColor, Color defBColor)
 	{
 		ansi_Matcher = new escMatcher(ansi_mode, Pattern.DOTALL);
 		
 		setBehaviour(behaviour);
 		setFunctions(func_arr);
-		setDefaultColor(defColor); 
+		setDefaultFColor(defFColor);
+		setDefaultBColor(defBColor);
 	}
 	
-	public AnsiEscapeParser(Color defColor)
+	/**<p>
+	 * This constructor gets parser's properties from Console's file of properties.  
+	 * @param defFColor - default foreground color (for SGR-function) 
+	 * @param defBColor - default background color (for SGR-function)</p> 
+	 */
+	public AnsiEscapeParser(Color defFColor, Color defBColor)
 	{
 		// choose matcher's mode
 		int ansi_mode = Sequences.MODE_7BIT;
@@ -104,7 +137,8 @@ public class AnsiEscapeParser
 		
 		setBehaviour(behaviour);
 		setFunctions(func_arr);
-		setDefaultColor(defColor); 
+		setDefaultFColor(defFColor);
+		setDefaultBColor(defBColor);
 	} // }}}
 	
 	// {{{ isBehaviour() method
@@ -119,10 +153,16 @@ public class AnsiEscapeParser
 		return ansi_Behaviour;
 	} // }}}
 	
-	// {{{ getDefaultColor() method
-	public Color getDefaultColor()
+	// {{{ getDefaultFColor() method
+	public Color getDefaultFColor()
 	{
-		return defaultColor;
+		return defaultFColor;
+	} // }}}
+	
+	// {{{ getDefaultBColor() method
+	public Color getDefaultBColor()
+	{
+		return defaultBColor;
 	} // }}}
 	
 	// {{{ matches() method
@@ -155,6 +195,11 @@ public class AnsiEscapeParser
 	} // }}}
 	
 	// {{{ touch() method
+	/**<p>
+	 * Check two things:
+	 * @param behaviour - is it the current parser's behaviour?
+	 * @param line      - are there any matches?</p> 
+	 */
 	public boolean touch(Behaviour behaviour, String line)
 	{
 		return ansi_Behaviour == behaviour && matches(line);
@@ -166,10 +211,16 @@ public class AnsiEscapeParser
 		ansi_Behaviour = newBehaviour;
 	} // }}}
 	
-	// {{{ setDefaultColor() method
-	public void setDefaultColor(Color newColor)
+	// {{{ setDefaultFColor() method
+	public void setDefaultFColor(Color newColor)
 	{
-		defaultColor = newColor;
+		defaultFColor = newColor;
+	} // }}}
+	
+	// {{{ setDefaultBColor() method
+	public void setDefaultBColor(Color newColor)
+	{
+		defaultBColor = newColor;
 	} // }}}
 	
 	// {{{ setFunctions() method
@@ -179,6 +230,21 @@ public class AnsiEscapeParser
 	} // }}}
 	
 	// {{{ processSGRparameters() method
+	/**<p>
+	 * This method is handler of only one (but most popular) function: SGR function.
+	 * SGR function controls substring's color and style.
+	 * 
+	 * Usually text with SGR function looks like that:
+	 * <em>This is #SGR#only example#/SGR#: you'll never see tag "#SGR#" in your texts.</em>
+	 * There is used some "base" text style for whole line but under tag "#SGR#" base style is changed.
+	 *
+	 * Parameters:
+	 * @param parameters - array of parameters; usually it is parser's working result.
+	 *                     @see jcfunc.Description
+	 * @param baseAttrs  - base text's style
+	 *
+	 * @return SimpleAttributeSet - combination base text's style with SGR-parameters</p>
+	 */
 	public SimpleAttributeSet processSGRparameters(int[] parameters, SimpleAttributeSet baseAttrs)
 	{
 		SimpleAttributeSet funcAttrs = new SimpleAttributeSet(baseAttrs);
@@ -233,7 +299,7 @@ public class AnsiEscapeParser
 			case Color_Text_Reserved:
 				clr = paramSGR.getColor(valSGR);
 				if (clr == null)
-					clr = defaultColor;
+					clr = defaultFColor;
 				
 				switch (intensity)
 				{
@@ -258,7 +324,7 @@ public class AnsiEscapeParser
 			case Color_Bkgr_Reserved:
 				clr = paramSGR.getColor(valSGR);
 				if (clr == null)
-					clr = defaultColor;
+					clr = defaultBColor;
 
 				switch (intensity)
 				{
@@ -282,10 +348,14 @@ public class AnsiEscapeParser
 	//}}}
 	
 	// {{{ internal enum Behaviour
+	/** Behaviour class describes parser's behaviour */
 	public enum Behaviour
 	{
+		/** parser ignores any sequencies */
 		IGNORE_ALL,
+		/** parser removes any sequencies from input string */
 		REMOVE_ALL,
+		/** parser processes sequencies */
 		PARSE
 	} // }}}
 	
