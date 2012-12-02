@@ -90,7 +90,7 @@ final class LineInfo {
 			}
 		}
 
-		int getXOffset(int spaceWidth, int tabSpaceWidth, int tabSize){
+		int evalXOffset(int spaceWidth, int tabSpaceWidth, int tabSize){
 			return (int)(0.4f*spaceWidth+spaceCount*spaceWidth+tabCount*tabSize*tabSpaceWidth);
 		}
 	}
