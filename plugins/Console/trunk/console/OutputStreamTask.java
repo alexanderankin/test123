@@ -77,7 +77,7 @@ class OutputStreamTask extends StreamTask
 		copt = new CommandOutputParser(console.getView(), es, defaultColor);
 		copt.setDirectory(currentDirectory);
 		
-		ansiescp = new AnsiEscapeParser(defaultColor);
+		ansiescp = new AnsiEscapeParser(defaultColor, console.getConsolePane().getBackground());
 		
 		lineBuffer = new StringBuilder(100);
 		shiftUCW = 0;
