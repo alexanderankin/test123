@@ -48,6 +48,7 @@ class ModeConfigPanel {
 	final JTextField ignoreLineRegexTF=new JTextField(12);
 	final JCheckBox showStripOn0IndentCB=new JCheckBox("Show indentation-guide on left edge");
 	final JCheckBox drawThinStripesCB=new JCheckBox("Draw thin stripes");
+	final JCheckBox useThinStripesPixelSizeCB=new JCheckBox("Use always 1 pixel");
 	private final StripConfigsTable stripConfigsTable=new StripConfigsTable();
 	private final JPanel tablePanel=new JPanel(new BorderLayout());
 	private final StripConfigsOpPanel stripConfigsOpPanel=new StripConfigsOpPanel(stripConfigsTable);
@@ -109,6 +110,8 @@ class ModeConfigPanel {
 					}
 				});
 		box.add(showStripOn0IndentCB);
+		p=new Box(BoxLayout.X_AXIS);
+		p.setAlignmentX(0);
 		drawThinStripesCB.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent ev){
@@ -117,7 +120,17 @@ class ModeConfigPanel {
 						updateView();
 					}
 				});
-		box.add(drawThinStripesCB);
+		p.add(drawThinStripesCB);
+		useThinStripesPixelSizeCB.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent ev){
+						if(modeConfig!=null)
+							modeConfig.setUseThinStripesPixelSize(useThinStripesPixelSizeCB.isSelected());
+						updateView();
+					}
+				});
+		p.add(useThinStripesPixelSizeCB);
+		box.add(p);
 		panel.add(box, BorderLayout.NORTH);
 
 		updateView();
@@ -143,13 +156,16 @@ class ModeConfigPanel {
 			ignoreLineRegexTF.setText(modeConfig.ignoreLineRegex.getValue());
 			showStripOn0IndentCB.setSelected(modeConfig.getShowStripOn0Indent());
 			drawThinStripesCB.setSelected(modeConfig.getDrawThinStripes());
+			useThinStripesPixelSizeCB.setSelected(modeConfig.getUseThinStripesPixelSize());
+			useThinStripesPixelSizeCB.setVisible(drawThinStripesCB.isSelected());
 			stripConfigsOpPanel.panel.setVisible(
 				modeConfig!=modeConfig.config.defaultModeConfig);
 		}
 		useIgnoreLineRegexCB.setEnabled(enabledCB.isSelected());
-		ignoreLineRegexTF.setEnabled(useIgnoreLineRegexCB.isSelected());
+		ignoreLineRegexTF.setEnabled(enabledCB.isSelected() && useIgnoreLineRegexCB.isSelected());
 		showStripOn0IndentCB.setEnabled(enabledCB.isSelected());
 		drawThinStripesCB.setEnabled(enabledCB.isSelected());
+		useThinStripesPixelSizeCB.setEnabled(enabledCB.isSelected());
 		setEnabledStripConfigs(enabledCB.isSelected());
 	}
 

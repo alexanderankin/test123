@@ -67,11 +67,9 @@ final class TextAreaExt
 	private LineInfo currentLineInfo=new LineInfo(this);
 	//private final LineInfo toolTipLineInfo=new LineInfo(this);
 
-	private final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
-	private static final class FontMetricsInfo {
-
-		private static final char[] tabSpaceCharWidthSample = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-		private static final int jEditMajorVersion=Integer.parseInt(jEdit.getBuild().substring(0,2));
+	private static final int jEditMajorVersion=Integer.parseInt(jEdit.getBuild().substring(0,2));
+	private final IndentMetrics indentMetrics=new IndentMetrics();
+	private final class IndentMetrics {
 
 		private FontMetrics fontMetrics;
 		int spaceWidth;
@@ -80,7 +78,12 @@ final class TextAreaExt
 		BasicStroke barStroke;
 		Stroke thinBarStroke;
 
-		void setFontMetrics(FontMetrics fontMetrics) {
+		void forceNextUpdate(){
+			fontMetrics=null;
+		}
+
+		void update() {
+			FontMetrics fontMetrics=painter.getFontMetrics();
 			if(this.fontMetrics==fontMetrics)
 				return;
 			this.fontMetrics=fontMetrics;
@@ -89,16 +92,27 @@ final class TextAreaExt
 				tabSpaceWidth=spaceWidth;
 			else{
 				//v taken from org.gjt.sp.jedit.textarea.TextArea. ToDo: request a public method getCharWidth on this class to avoid code duplication?
-				tabSpaceWidth = (int)Math.round(fontMetrics.charsWidth(tabSpaceCharWidthSample, 0, tabSpaceCharWidthSample.length)
-												/tabSpaceCharWidthSample.length);
+				String tabSpaceCharWidthSample = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				tabSpaceWidth = (int)Math.round(
+													painter.getFont().getStringBounds(tabSpaceCharWidthSample, painter.getFontRenderContext())
+													.getWidth()
+													/ tabSpaceCharWidthSample.length());
+				//^
+				// v weird, this other method does not get always the same result as the one above:
+				//tabSpaceWidth = (int)Math.round(fontMetrics.charsWidth(tabSpaceCharWidthSample, 0, tabSpaceCharWidthSample.length)
+				//							/tabSpaceCharWidthSample.length);
 				//^
 			}
 			lineHeight=fontMetrics.getHeight();
 			barStroke=new BasicStroke(spaceWidth/2.3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
-			float thinBarStrokeWidth=barStroke.getLineWidth()/2;
-			if(thinBarStrokeWidth<1)
-				thinBarStrokeWidth=1;
-			thinBarStroke=new BasicStroke( thinBarStrokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+			if(modeConfig.getUseThinStripesPixelSize())
+				thinBarStroke=new BasicStroke( 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+			else{
+				float thinBarStrokeWidth=barStroke.getLineWidth()/2.3f;
+				if(thinBarStrokeWidth<1)
+					thinBarStrokeWidth=1;
+				thinBarStroke=new BasicStroke( thinBarStrokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+			}
 		}
 	}
 
@@ -118,6 +132,7 @@ final class TextAreaExt
 	void clearModeConfig() {
 		modeConfigName=null;
 		modeConfig=null;
+		indentMetrics.forceNextUpdate();
 	}
 
 	private void setModeConfig(Buffer buffer) {
@@ -185,7 +200,7 @@ final class TextAreaExt
 
 	private void drawLineIndents(Buffer buffer, LineInfo lineInfo, Graphics2D g, int y) {
 
-		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
+		indentMetrics.update();
 		/*
 		FontMetrics fontMetrics=painter.getFontMetrics();
 		fontMetricsInfo.setFontMetrics(fontMetrics);
@@ -198,7 +213,7 @@ final class TextAreaExt
 		int tabSize=buffer.getTabSize();
 
 		Stroke gStroke=g.getStroke();
-		g.setStroke(getModeConfig().getDrawThinStripes()? fontMetricsInfo.thinBarStroke: fontMetricsInfo.barStroke);
+		g.setStroke(getModeConfig().getDrawThinStripes()? indentMetrics.thinBarStroke: indentMetrics.barStroke);
 		for (int i =lineInfo.getIndentationInfosSize();--i>=1;) {// ATTENTION: the first is omitted
 			LineInfo.IndentationInfo indentationInfo=lineInfo.getIndentationInfo(i);
 			indent =indentationInfo.getIndent();
@@ -218,8 +233,8 @@ final class TextAreaExt
 				continue;
 			g.setColor(color);
 
-			x=horizontalOffset+indentationInfo.evalXOffset(fontMetricsInfo.spaceWidth, fontMetricsInfo.tabSpaceWidth, tabSize);
-			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight+painter.getLineExtraSpacing());
+			x=horizontalOffset+indentationInfo.evalXOffset(indentMetrics.spaceWidth, indentMetrics.tabSpaceWidth, tabSize);
+			g.drawLine(x, y,x, y+indentMetrics.lineHeight+painter.getLineExtraSpacing());
 		}
 		g.setStroke(gStroke);
 	}
