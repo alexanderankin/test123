@@ -334,21 +334,11 @@ public class MacOSXPlugin extends EBPlugin
 
 	//{{{ osok() method
 	private boolean osok()
-	{
-		final String mrjversion = jEdit.getProperty("MacOSXPlugin.depend.mrj.version");
-		
+	{	
 		if (!OperatingSystem.isMacOS())
 		{
 			// According to Slava this is better
 			Log.log(Log.ERROR,this,jEdit.getProperty("MacOSXPlugin.dialog.osname.message"));
-			return false;
-		}
-		
-		if (StandardUtilities.compareStrings(System.getProperty("mrj.version"),mrjversion,false) < 0)
-		{
-			SwingUtilities.invokeLater( new Runnable() { public void run() {
-				GUIUtilities.error(null,"MacOSXPlugin.dialog.mrjversion",new Object[] {mrjversion});
-			}});
 			return false;
 		}
 
