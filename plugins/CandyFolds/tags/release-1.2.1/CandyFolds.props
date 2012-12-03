@@ -8,7 +8,7 @@ plugin.candyfolds.CandyFoldsPlugin.docs=index.html
 
 #v Dependencies
 plugin.candyfolds.CandyFoldsPlugin.depend.0=jdk 1.6
-plugin.candyfolds.CandyFoldsPlugin.depend.1=jedit 04.03.12.00
+plugin.candyfolds.CandyFoldsPlugin.depend.1=jedit 04.05.99.00
 
 #v Plugin Option Pane:
 plugin.candyfolds.CandyFoldsPlugin.option-pane=CandyFolds
