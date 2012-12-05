@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2012 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -124,7 +124,7 @@ public class LucenePlugin extends EditPlugin
 				 * meta-index file, separated by comma. Now, only the analyzer is
 				 * specified.
 				 */
-				int analyzerIndex = (parts.length == 2) ? 1 : 0;
+				int analyzerIndex = parts.length == 2 ? 1 : 0;
 				String analyzer = parts[analyzerIndex];
 				createIndex(name, analyzer);
 			}
@@ -135,13 +135,13 @@ public class LucenePlugin extends EditPlugin
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(reader);
+			IOUtilities.closeQuietly((Closeable)reader);
 		}
 	}
 	private void saveIndexes()
 	{
 		File home = getPluginHome();
-		if (home == null || ((!home.exists()) && (!home.mkdirs())))
+		if (home == null || (!home.exists() && !home.mkdirs()))
 			return;
 		
 		File f = new File(home, INDEXES_FILE_NAME);
@@ -163,7 +163,7 @@ public class LucenePlugin extends EditPlugin
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(writer);
+			IOUtilities.closeQuietly((Closeable)writer);
 		}
 	}
 
@@ -445,7 +445,7 @@ public class LucenePlugin extends EditPlugin
 	{
 		JEditTextArea ta = view.getTextArea();
 		String selected = ta.getSelectedText();
-		if ((selected != null) && (! "".equals(selected)))
+		if (selected != null && !selected.isEmpty())
 			return selected;
 		int line = ta.getCaretLine();
 		String text = ta.getLineText(line);
@@ -462,7 +462,7 @@ public class LucenePlugin extends EditPlugin
 			start = m.start();
 			selected = m.group();
 		}
-		if ((start > offset) || (selected.length() == 0))
+		if (start > offset || selected == null || selected.isEmpty())
 			return null;
 		return selected;
 	}
