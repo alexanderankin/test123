@@ -2,6 +2,7 @@ options strictcase
 --  This macro will build an Android project.
 
 import org.gjt.sp.jedit
+import javax.swing.
 
 Class new_project
 	
@@ -47,6 +48,7 @@ Class new_project
    	projectpath.selectAll
    	projectpackage=JTextField(jEdit.getProperty(OPTION_PREFIX"projectpackage","Enter project package here"))
    	projectpackage.selectAll
+   	libraryproject=JCheckBox()
    	
    	display=[Object String("Android SDK location:"),sdk, -
    					String("NetRexx runtime location:"),rtl, -
@@ -57,7 +59,8 @@ Class new_project
    					String("App Widget Name:"), appwidget, -
    					String("Project Name:"), projectname, -
    					String("Project Path:"), projectpath, -
-   					String("Project Package:"), projectpackage -
+   					String("Project Package:"), projectpackage, -
+   					String("Is this a library project?:"), libraryproject -
    					]
  --								display new project panel and verify responses:
 	fail="yes"   					
@@ -91,16 +94,26 @@ Class new_project
 			else actname=activity.getText
 		if appwidget.getText="enter app widget provider name here" | appwidget.getText="" then widgname="none"
 			else widgname=appwidget.getText
-		if actname="none" & widgname="none" then do
+		if \libraryproject.isSelected then				
+		  if actname="none" & widgname="none" then do
 			Macros.error(view,"Activity name or App Widget name is required")
 			fail="yes"
 			iterate
 			end
 		
-		pname=actname
-		if pname="none" then pname=widgname
-		if projectname.getText="Optional project name here" | projectname.getText="" then projectname.setText(pname)
-		if activity.getText="Please enter activity name here, and/or" | activity.getText="" then projectname.setText(appwidget.getText)
+		if libraryproject.isSelected then				--		if a library project is requested, force developer to enter a project name
+		  if projectname.getText="Optional project name here" | projectname.getText="" then do
+			Macros.error(view,"Project name is required for library projects")
+			fail="yes"
+			iterate
+			end			
+		if \libraryproject.isSelected then do		--		if not a library project, we can inherit this from activity or widget
+			pname=actname
+			if pname="none" then pname=widgname
+			if projectname.getText="Optional project name here" | projectname.getText="" then projectname.setText(pname)
+			if activity.getText="Please enter activity name here, and/or" | activity.getText="" then projectname.setText(appwidget.getText)
+			end
+		pname=projectname.getText
 		
 		if projectpath.getText="Enter optional project path here" | projectpath.getText="" then do
 			projectpath.setText(pname)
@@ -132,12 +145,21 @@ Class new_project
 			if sdkloc="" then android="android"
 				else android=sdkloc||fs"tools"fs"android"			
 
+if libraryproject.isSelected then do		--	library projects don't need an activity
+   	cpc=android "create lib-project" -
+   		"--target" tid	-
+   		"--name"  projectname.getText	-
+   		"--path"  projpath -
+   		"--package"  projectpackage.getText
+   		end
+else do					
    	cpc=android "create project" -
    		"--target" tid	-
    		"--name"  projectname.getText	-
    		"--path"  projpath -
    		"--activity"  aname	-
    		"--package"  projectpackage.getText
+   		end
 
    		say "cmd="cpc
    		

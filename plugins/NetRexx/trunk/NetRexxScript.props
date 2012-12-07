@@ -3,7 +3,7 @@
 # application menu items			-	the actions for these menu items are defined in the actions.xml file
 netrexxplugin.NetRexxPlugin.menu.label=NetRexx
 #plugin.netrexxscript.NetRexxScriptPlugin.menu=NetRexxScript.flush NetRexxScript.cache NetRexxScript.preparse NetRexxScript.execute
-plugin.netrexxplugin.NetRexxPlugin.menu=NetRexxScript.runcurrent NetRexx.toggle NetRexxScript.toggle NetRexxDE.toggle-vis NetRexxScript.flush NetRexxScript.trace NetRexxScript.cache NetRexxScript.preparse
+plugin.netrexxplugin.NetRexxPlugin.menu=NetRexxScript.runcurrent NetRexx.toggle NetRexxScript.flush NetRexxScript.trace NetRexxScript.cache NetRexxScript.preparse
 NetRexxScript.runcurrent.label=Run Current
 NetRexxScript.flush.label=Flush
 NetRexxScript.cache.label=Cache

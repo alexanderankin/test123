@@ -1,18 +1,31 @@
 --  This macro will update an Android project.
 
-import org.gjt.sp.jedit.
-import netrexxplugin.
-import javax.swing.
-class update_project
-properties private static
-	view=jEdit.getActiveView()
-	buffer=view.getBuffer
-	wm=view.getDockableWindowManager()
-	editPane=view.getEditPane()
-	textArea=editPane.getTextArea()
-	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
-properties private static unused
-	nowarn$scriptPath=scriptPath;nowarn$textArea=textArea;nowarn$buffer=buffer;nowarn$wm=wm		
+import org.gjt.sp.jedit.
+
+import netrexxplugin.
+
+import javax.swing.
+
+class update_project
+
+properties private static
+
+	view=jEdit.getActiveView()
+
+	buffer=view.getBuffer
+
+	wm=view.getDockableWindowManager()
+
+	editPane=view.getEditPane()
+
+	textArea=editPane.getTextArea()
+
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+
+properties private static unused
+
+	nowarn$scriptPath=scriptPath;nowarn$textArea=textArea;nowarn$buffer=buffer;nowarn$wm=wm		
+
 method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
 
 	OPTION_PREFIX = String "options.android."
@@ -66,15 +79,18 @@ method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
 	tbox.setSelectedIndex(selindex)
    	
    	projectname=JTextField(jEdit.getProperty(OPTION_PREFIX"projectname","Optional project name here"))
-   	if buildprops.exists("ant.project.name") then projectname.setText(buildprops["ant.project.name"].toString)
-   	projectname.selectAll
+			if buildprops.exists("ant.project.name") then projectname.setText(buildprops["ant.project.name"].toString)
+			projectname.selectAll
    	projectpath=JTextField(jEdit.getProperty(OPTION_PREFIX"projectpath","Enter project path here"))
-   	projectpath.setText(File(adir).getName)
-   	projectpath.selectAll
-	projectpackage=JTextField(jEdit.getProperty(OPTION_PREFIX"projectpackage","Enter project package here"))
-	sd=buildprops["src.dir"]
-	projectpackage.setText(sd.substr(sd.pos('/')+1).changestr('/','.'))
-   	projectpackage.selectAll
+			projectpath.setText(File(adir).getName)
+			projectpath.selectAll
+		projectpackage=JTextField(jEdit.getProperty(OPTION_PREFIX"projectpackage","Enter project package here"))
+			sd=buildprops["src.dir"]
+			projectpackage.setText(sd.substr(sd.pos('/')+1).changestr('/','.'))
+			projectpackage.selectAll
+   	projectlibrary=JTextField("(relative path)")
+			projectlibrary.selectAll
+   	
    	
    	display=[Object String("Android SDK location:"),sdk, -
    					String("NetRexx runtime location:"),rtl, -
@@ -83,7 +99,8 @@ method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
    					String("Target Platform:"), tbox, -
    					String("Project Name:"), projectname, -
    					String("Project Path:"), projectpath, -
-   					String("Project Package:"), projectpackage -
+   					String("Project Package:"), projectpackage, -
+   					String("Add library:"), projectlibrary -
    					]
  --								display new project panel and verify responses:
 	fail="yes"   					
@@ -101,6 +118,7 @@ method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
 		say "tbox item="tbox.getSelectedItem
 		say "projectname="projectname.getText
 		say "projectpath="projectpath.getText
+		say "projectlibrary="projectlibrary.getText
 		
 	sdk.setText(set_adk_location.check(sdk.getText))
 	rtl.setText(set_nrx_run_time_location.check(rtl.getText))
@@ -141,19 +159,42 @@ method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
 		if nrpfo.exists then 	say "delete file" adir||fs||"build.properties   rc="nrpfo.delete			--		keep your bloody hands off android update!
 	
 	projpath=Rexx(base.getText||File.separator||projectpath.getText).changestr("\\","\\\\")
+	
+	if projectlibrary.getText=" ",projectlibrary.getText="(relative path)" then projlib=""
+		else projlib="--library" projectlibrary.getText
 		
 	sdkloc=jEdit.getProperty(OPTION_PREFIX"sdk","")
 			if sdkloc="" then android="android"
 				else android=sdkloc||fs"tools"fs"android"			
 
-   	cpc=android "update project" -
-   		"--target" tid	-
-   		"--name"  projectname.getText	-
-   		"--path"  projpath
+	projectprops=getProps(adir||fs||"project.properties")
+
+	if projectprops["android.library"]="true" then do		--		is this a library project? ==> needs a different command than a standard project
+									cpc=android "update lib-project" -
+										"--target" tid	-
+										"--path"  projpath
+										end
+   	else do	
+			cpc=android "update project" -
+				"--target" tid	-
+				"--name"  projectname.getText	-
+				"--path"  projpath -
+				projlib
+				end
 
    		say "cmd="cpc
    		
-   		shell.cmd(cpc)
+   		shell.cmd(cpc)		--	perform the android update of the main project
+   		
+   		loop pp over projectprops		--		do an android update for any connected library project
+   			if pp.left(26)="android.library.reference." then do
+									cpc=android "update lib-project" -
+										"--target" tid	-
+										"--path"  Rexx(base.getText||File.separator||projectpath.getText||File.separator).changestr("\\","\\\\")||projectprops[pp]
+										say "cmd="cpc
+										shell.cmd(cpc)
+										end
+				end
 
 --										init some directory names:
    	pp1=Rexx(projpath)

@@ -24,7 +24,33 @@
 
   <target name="prepare">
     <mkdir dir="NetRexx"/>
+        
+	<propertyset id="android-lib-projects">
+	  <propertyref prefix="android.library.reference."/>
+	</propertyset>
     
+    <script language="NetRexx"  >
+     <classpath>
+     <pathelement path="${project.netrexx.libdir}"/>
+      <fileset dir="${build.path}">
+        <include name="**/*.jar"/>
+      </fileset>
+      </classpath>
+     import org.apache.tools.ant.
+      propset=PropertySet project.getReference('android-lib-projects')
+      it=propset.iterator
+      if it.hasNext then includes=""
+      else includes="no_libraries_found"
+      loop while it.hasNext
+      	f=File(basedir||File.separator||it.next)
+        cp=f.getCanonicalPath
+        if Rexx(cp).substr(2,2)=":\\" then cp=Rexx(cp).substr(4)
+        else if Rexx(cp).substr(1,1)="/" then cp=Rexx(cp).substr(2)
+        includes=includes cp||File.separator'libs'File.separator'**/*.jar' cp||File.separator'bin/classes.jar'
+        end
+        project.setProperty('android.library.includes',includes)
+     </script>
+ 
      <!-- Build Classpath has build.classes prepended, all libs included -->
     <path id="build.class.path">
       <pathelement path="${project.netrexx.libdir}"/>
@@ -33,11 +59,25 @@
       <fileset dir="libs">
         <include name="**/*.jar"/>
       </fileset>
-	  <fileset dir="${build.path}">
+      <fileset dir="\" includes="${android.library.includes}"  />
+<!--       <pathelement path="${android.library.reference.1}/bin/classes.jar"/>
+      <fileset dir="${android.library.reference.1}/libs" erroronmissingdir="false">
+        <include name="**/*.jar"/>
+      </fileset>
+      <pathelement path="${android.library.reference.2}/bin/classes.jar"/>
+      <fileset dir="${android.library.reference.2}/libs" erroronmissingdir="false">
+        <include name="**/*.jar"/>
+      </fileset>
+      <pathelement path="${android.library.reference.3}/bin/classes.jar"/>
+      <fileset dir="${android.library.reference.3}/libs" erroronmissingdir="false">
+        <include name="**/*.jar"/>
+      </fileset> -->
+      <fileset dir="${build.path}">
         <include name="**/*.jar"/>
       </fileset>
     </path>
     <pathconvert property="build.classpath" refid="build.class.path"/>
+    <echo message="build.classpath:${build.classpath}"/>
  
     <!-- define special Ant NetRexx task -->
     <taskdef name="buildnrc" classname="org.apache.tools.ant.taskdefs.optional.NetRexx" classpath="${build.classpath}"/>
@@ -46,11 +86,9 @@
   
     <target name="buildnrx" depends="prepare" description="Compiles NetRexx source files">
 
-    	<echo message="prj.libs:${prj.libs}"/>
-    	<echo message="build.classpath:${build.classpath}"/>
         <buildnrc srcDir="${project.src.dir}"  javaDir="${project.src.dir}" destDir="bin/classes/${pack.dir}" includes="*.nrx"
         	classpath=".${path.separator}${build.classpath}${path.separator}${prj.libs}"
-        	comments="true" savelog="false" time="true" compact="false" compile="true" format="true" removeSourceCopies="true"
+        	comments="true" savelog="false" time="true" compact="false" compile="true" format="false" removeSourceCopies="true"
         	verbose='verbose3' crossref="false" />
     </target>
     
@@ -75,6 +113,24 @@
     	<delete>
 			<fileset dir="${project.src.dir}" includes="*.nrx"/>
 		 </delete>
+		 
+            <!-- if the project is a library then we generate a jar file - Android build.xml does this step prematurely so we redo it here after the NetRexx compile step -->
+            <if condition="${project.is.library}">
+                <then>
+                    <echo level="info">re-Creating library output jar file...</echo>
+                    <property name="out.library.jar.file" location="${out.absolute.dir}/classes.jar" />
+  
+                    <propertybyreplace name="project.app.package.path" input="${project.app.package}" replace="." with="/" />
+
+                    <jar destfile="${out.library.jar.file}">
+                        <fileset dir="${out.classes.absolute.dir}"
+                                includes="**/*.class"
+                                excludes="${project.app.package.path}/R.class ${project.app.package.path}/R$*.class ${project.app.package.path}/BuildConfig.class"/>
+                        <fileset dir="${source.absolute.dir}" excludes="**/*.java ${android.package.excludes}  **/*.nrx"  />
+                    </jar>
+                </then>
+            </if>		 
+		 
     </target>
     
     <target name="build-debug" depends="debug,-post-package" description="Compiles NetRexx source files, then Android debug build">
