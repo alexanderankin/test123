@@ -59,22 +59,7 @@
             jEdit.getBooleanProperty(netrexxplugin.NetRexxScriptPlugin.OPTION_PREFIX+"trace");
         </IS_SELECTED>        
     </ACTION>  
-    
-    <ACTION NAME="NetRexxScript.toggle">
-        <CODE>
-            view.getDockableWindowManager().toggleDockableWindow(netrexxplugin.NetRexxScriptPlugin.NAME);
-        </CODE>
-        <IS_SELECTED>
-            return view.getDockableWindowManager().isDockableWindowVisible(netrexxplugin.NetRexxScriptPlugin.NAME);
-        </IS_SELECTED>
-    </ACTION>
-
-    <ACTION NAME="NetRexxScript-to-front">
-    	<CODE>
-      		view.getDockableWindowManager().addDockableWindow(netrexxplugin.NetRexxScriptPlugin.NAME);
-        </CODE>
-    </ACTION>
-    
+      
     <ACTION NAME="NetRexx.toggle">
         <CODE>
             view.getDockableWindowManager().toggleDockableWindow(netrexxplugin.NetRexxPlugin.NAME);
@@ -90,62 +75,4 @@
         </CODE>
     </ACTION>
 
-    <ACTION NAME="NetRexxDE.toggle-vis">
-        <CODE>
-            view.getDockableWindowManager().toggleDockableWindow(netrexxplugin.NetRexxDEPlugin.NAME);
-        </CODE>
-        <IS_SELECTED>
-            return view.getDockableWindowManager().isDockableWindowVisible(netrexxplugin.NetRexxDEPlugin.NAME);
-        </IS_SELECTED>
-    </ACTION>
-
-    <ACTION NAME="NetRexxDE-to-front">
-    	<CODE>
-      		view.getDockableWindowManager().addDockableWindow(netrexxplugin.NetRexxDEPlugin.NAME);
-        </CODE>
-    </ACTION>
-
-
-    <ACTION NAME="NetRexxDE.Navigate">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("Navigate");
-	 </CODE>
-    </ACTION>
-    <ACTION NAME="NetRexxDE.Option">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("Option");
-	 </CODE>
-    </ACTION>
-        <ACTION NAME="NetRexxDE.Compile">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("Compile");
-	 </CODE>
-    </ACTION>
-    <ACTION NAME="NetRexxDE.Java">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("Java");
-	 </CODE>
-    </ACTION>    
-    <ACTION NAME="NetRexxDE.Run">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("Run");
-	 </CODE>
-    </ACTION>
-        <ACTION NAME="NetRexxDE.Clear">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("Clear");
-	 </CODE>
-    </ACTION>
-    <ACTION NAME="NetRexxDE.ClassPath">
-    	<CODE>
-		view.getDockableWindowManager()
-					.getDockable(netrexxplugin.NetRexxDEPlugin.NAME).performAction("ClassPath");
-	 </CODE>
-    </ACTION>
 </ACTIONS>

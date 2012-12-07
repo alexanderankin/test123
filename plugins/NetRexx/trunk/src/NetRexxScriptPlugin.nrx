@@ -18,12 +18,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  ******** remember to update the version number in NetRexx.props and build.xml  **********
-  
+ 
+ Version 0.2.10 (Dec 03, 2012)
+ 
+	* use reflection to call NetRexxA.exiting() so plugin will work with NetRexx 3.01 (eliminated .size calls also for that)
+	* updated Android IDE to handle library projects
+	* modified first parse call after NetRexxA instantiated to pass my custom classloader to advanced NetRexx version so RxProxyLoader will chain to it (via thread context classloader) 
+	
  Version 0.2.9 (Nov 07, 2012)
  
 	* auto switch between interpreter parse output button and compiler error output button
 	* force init of interpreter so classloading with it always works (cmdline classes failed if no prior interpret was run)
-	* 
 	
  Version 0.2.8 (Nov 05, 2012)
  
@@ -389,7 +394,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable, EBCompone
 method setup		--	initial setup stuff: creates directories and loads files from our jar
   						
 --	create some directorys for NetRexx scripts
-
+/*
 		tempdir=String setdir||fs'NetRexx'
 		tdf=File(tempdir)
 		if \tdf.exists then do
@@ -401,6 +406,7 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 				end
 				else say 'created NetRexx temp script directory:' tempdir
 			end		
+*/			
 /*			
 		scriptdir = String setdir||fs'macros'fs'NetRexx'
 		scriptdir2=String setdir||fs'macros'fs'NetRexxScript'
@@ -643,7 +649,14 @@ method makeadir(jer=Rexx)
 -- 	find the script's class
 		sscript = String sname
 		setclasspath('on')
+
+		savecontextloader=Thread.currentThread().getContextClassLoader()		--		the getClassObject call links the interpreter RxProxyLoader class loader chain!
+		Thread.currentThread().setContextClassLoader(myloader)		--		one classloader to rule them all!
+	
 			scriptClass=interpreter.getClassObject(null, sscript) 	-- find the script's class
+		
+		Thread.currentThread().setContextClassLoader(savecontextloader)		--		reset classloader 
+			
 		if scriptClass=null then do
 			do				 
 			scriptClass=myloader.loadClass(sscript)
@@ -668,7 +681,15 @@ method makeadir(jer=Rexx)
 
 --	find the 'main' method; it takes an array of Strings as its argument
 		do
+
+			--		this should link interpreter to my classloader in advanced after3.01 NetRexx version with RxProxyLoader mod
+		savecontextloader=Thread.currentThread().getContextClassLoader()		--		the getClassObject call links the interpreter RxProxyLoader class loader chain!
+		Thread.currentThread().setContextClassLoader(myloader)		--		one classloader to rule them all! 
+	
 			classes=[interpreter.getClassObject('java.lang', 'String', 1)]
+		
+		Thread.currentThread().setContextClassLoader(savecontextloader)		--		reset classloader 
+				
 			mainMethod=scriptClass.getMethod('main', classes)
 			if mainMethod=null then do
 				say "could not find main method in" sname
@@ -690,6 +711,7 @@ method makeadir(jer=Rexx)
 		tparms=sparms
 		sthread=Thread(this,sname)
 		sthread.setDaemon(t)			--	insure thread ends if jEdit closes
+		sthread.setContextClassLoader(myloader)		--		one classloader to rule them all!
 		sthread.start
 
 	method run
@@ -727,14 +749,28 @@ method makeadir(jer=Rexx)
 
 		cleancup						--	clean command environment up after done
 		sthread=null					--  erase thread pointer
-		
+   	
+    	do				--		reinit interpreter environment if someone used an "Exit" statement  2012-12-01
+    	exitingmethod=interpreter.getClass().getMethod('exiting',null)
+    	exiting=Boolean exitingmethod.invoke(interpreter,null)
+    	if exiting.booleanValue() then rebuildinterpreter
+    	catch e=Exception
+			rebuildinterpreter
+    	end
+/*    	
 		if interpreter.exiting then do					--		reinit interpreter environment if someone used an "Exit" statement  2012-09-21
 			setclasspath('on')
 				newinterpreter
 			setclasspath('off')
 				flush
 				end
-			
+*/			
+	method rebuildinterpreter						--	interpreter may have been shutdown by EXIT statement - need to reinitialize
+					setclasspath('on')
+					newinterpreter
+					setclasspath('off')
+					flush
+					
 	method cleancup						--	also called by kill thread entry point
 		
 		if outwin\=null then do
@@ -959,13 +995,18 @@ method preparse		--	sets the preparse flag and parses all scripts as requested
 
 -------------------------------------------------	start of internal utility methods: ------------------------			
 
+method size(r=Rexx)	--	this method does not exist in NetRexx 3.01 Rexx class
+	s=0;loop x over r;s=s+1;end;return s
+	
 method buildparseset	--	build an array of strings with file names to parse from the script name cache	
 	if df then trace results	
-	cc=cache.size	--	count cached files
+	cc=int size(cache)	--	count cached files
+--	cc=cache.size	--	count cached files
 --	cc=0;loop cn over cache;cc=cc+1;end	--	count cached files
 	if cc>0 then do						--	rebuild the cache of parsed scripts if any left
 		parseset=String[cc]					--	reserve name array space
-		prefixset=String[scriptcache.size]		--	reserve script array space
+		prefixset=String[int size(scriptcache)]		--	reserve script array space
+--		prefixset=String[scriptcache.size]		--	reserve script array space
 		cc=0;
 		loop psn over scriptcache
 			parseset[cc]=psn
@@ -1004,11 +1045,11 @@ method setclasspath(o=Rexx)				--	temporarily alter the classpath for the NetRex
 --	if df then say "java.class.path is="System.getProperty( "java.class.path" )			
 
 method newinterpreter
-
+	
 		interpreter = NetRexxA()   -- make a NetRexx interpreter with current classpath
 --		say "NetRexx interpreter loaded"  --  see if this sets printstream for "say" instructions
 		interpreter.parse([String 'initapi'],[String 'return'],String[0])		--		force init of interpreter
-	
+		
 method parseall							--		if preparse flag is set then we parse all found scripts here:
 	if df then say "NetRexxScript parseall called"
 	buildcache													--	get all script file names
@@ -1023,10 +1064,11 @@ method parse(fn=Rexx)
 --	if outwin\=null then outwin.clearparseout	
 	backupscriptcache="empty".copyindexed(scriptcache) 		--		backup prefixed script cache in case interpreter is messing it up 
 --	if parseset.length >0 then success=interpreter.parse(parseset, flags) --  parse the file(s), using the flags
+
 	if parseset.length >0 then success=interpreter.parse(parseset,prefixset, flags) --  parse the file(s), using the flags
 		else success=1
 	if df then say "script parse completed with code=" success
-
+		
 --	report any errors to ErrorList plugin and dock window:		
 --				[C:\Documents and Settings\dad\.jedit\NetRexx\prefixed\error.nrx 1 424 4] Error: Keyword symbol expected
 	ereader=BufferedReader(InputStreamReader(ByteArrayInputStream(bas1.toByteArray)),1000)

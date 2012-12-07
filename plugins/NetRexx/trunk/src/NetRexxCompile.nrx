@@ -434,6 +434,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			when Action="Compile" then CompileButton.doClick()
 			when Action="Java" then JavaButton.doClick()
 			when Action="Option" then OptionButton.doClick()
+			when Action="Output" then OptionButton.doClick()
 			when Action="Run" then RunButton.doClick()
 			when Action="Clear" then ClearButton.doClick()
 			when Action="ClassPath" then CPButton.doClick()
