@@ -42,6 +42,7 @@ import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.SideKickAsset;
 import sidekick.util.SideKickElement;
+import xml.parser.XmlTag;
 
 import gatchan.jedit.hyperlinks.*;
 
@@ -87,7 +88,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		if(asset == null){
 			Log.log(Log.DEBUG, HTMLHyperlinkSource.class,"no Sidekick asset here");
 			return null;
-		} else {
+		} else if(asset instanceof SideKickAsset){
 			int wantedLine = buffer.getLineOfOffset(offset);
 			int wantedLineOffset = buffer.getVirtualWidth(wantedLine, offset - buffer.getLineStartOffset(wantedLine));
 
@@ -136,6 +137,17 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			}else{
 				return null;
 			}
+		} else if(asset instanceof XmlTag){
+			// it can be the case that an .html buffer is parsed
+			// as XML (e.g. when the HTML should be transformed using
+			// XSLT, it must be valid XML, so parsed with the xml parser
+			// to acertain that).
+			// Since the source is based on the mode, it will be still
+			// the HTMLHyperlikSource even if the Sidekick tree is for XML.
+			return sourceForXML.getHyperlink(buffer, offset);
+		} else {
+			Log.log(Log.WARNING,HTMLHyperlinkSource.class,"unexpected asset type: "+asset.getClass()+", please report");
+			return null;
 		}
 	}
 	
@@ -555,6 +567,8 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		return null;
 	}
 
+	private HyperlinkSource sourceForXML = XMLHyperlinkSource.create();
+	
 	public static HyperlinkSource create(){
 		return new FallbackHyperlinkSource(
 			Arrays.asList(new HTMLHyperlinkSource(),
