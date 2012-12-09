@@ -549,6 +549,9 @@ buffer.xml.xinclude=true
 buffer.xml.xinclude.fixup-base-uris=true
 
 # hyperlinks supports
+mode.ant.hyperlink.source=xml:XMLPlugin
+mode.maven.hyperlink.source=xml:XMLPlugin
+mode.tld.hyperlink.source=xml:XMLPlugin
 mode.xml.hyperlink.source=xml:XMLPlugin
 mode.xsl.hyperlink.source=xml:XMLPlugin
 mode.html.hyperlink.source=html:XMLPlugin
