@@ -37,6 +37,7 @@
     	    ps=File.pathSeparator
     	    fs=File.Separator
     	    b=byte[]
+    	    filter=classFilter()
     	    
     	method NetRexxScriptClassLoader(parent=ClassLoader,path=String null)
     		super(parent)
@@ -93,7 +94,7 @@
 				
 		method searchdir(dir,scriptname) -- searches a directory and it's subdirectories for a class file
 			if df then trace all
-			filter=classFilter()
+--			filter=classFilter()
 			if df then say "searching dir:"dir
 			dirf=File(dir)
 			if checklist(dir,dirf.list(filter),scriptname) then return 1	--	first check any scripts in the dir

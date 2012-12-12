@@ -372,7 +372,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable, EBCompone
 
 --	run the provided setup script
 			do
-			execute(setdir||fs'NetRexx'fs'netrexxscript.nrx scan')		--	check for netrexx scripts and provide hooks
+			execute(setdir||fs'NetRexx'fs'netrexxstartscript.nrx scan')		--	check for netrexx scripts and provide hooks
 			scriptcache='empty'								-- force cache empty before preparse check adds stuff
 			cache='empty'								-- force cache empty before preparse check adds stuff
 			backcache='empty'								-- force cache empty before preparse check adds stuff
@@ -967,7 +967,7 @@ method newloader	--	create a new classloader (and flush any loaded classes from 
 	if df then trace results
 	thisloader=this.getClass.getClassLoader
 	md=setdir||fs||"macros"
-	myloader=NetRexxScriptClassLoader(thisloader,jEdit.getProperty(OPTION_PREFIX"classpath","")||ps||md||ps||utilityclasspath)
+	myloader=NetRexxScriptClassLoader(thisloader,jEdit.getProperty(OPTION_PREFIX"classpath","")||ps||md||ps||utilityclasspath||ps||mypath)
 	myloader.setDebug(df)
 			
 method cache		--		change the cache flag

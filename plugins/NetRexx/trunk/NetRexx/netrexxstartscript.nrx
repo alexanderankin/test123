@@ -1,10 +1,10 @@
 	import org.gjt.sp.jedit
-	class netrexxscript
+	class netrexxstartscript
 		method main($cmdin1=String[]) static;arg=Rexx($cmdin1)
 --
 -- This is the original setup script for the plugin startup - not currently used for anything but testing and debugging
 	
-   	System.out.println("running netrexxscript.nrx script now");
+   	System.out.println("running netrexxstartscript.nrx script now");
    	System.out.println(System.getProperty("java.class.path"));
    	say "arg is" arg
    	if arg='' then arg='scan'
@@ -31,13 +31,13 @@
 	loop i=0 to fa.length-1
 		say fa[i]
 		rn=Rexx(fa[i].getName)
-		if rn='netrexxscript.nrx' then iterate
+		if rn='netrexxstartscript.nrx' then iterate
 		nn=fa[i].getParent||fs||rn.changestr('.nrx','.bsh')
 		nf=File(nn)
 		-- say nn "exists="nf.exists
 		if \nf.exists then do
 			oq=BufferedWriter(FileWriter(nf))
-			oo='jEdit.getPlugin("NetRexxScriptPlugin").execute("'Rexx(fa[i].getPath).changestr('\\','\\\\').translate('*',' ')'");'
+			oo='jEdit.getPlugin("NetRexxPlugin").execute("'Rexx(fa[i].getPath).changestr('\\','\\\\').translate('*',' ')'");'
 			oq.write(string oo,0,oo.length)
 			oq.newline()
 			oq.close
@@ -45,7 +45,7 @@
 			end
 		end
 
-   	Class nrxFilter implements FilenameFilter
+   	Class netrexxstartscript.nrxFilter implements FilenameFilter
    		method accept(f=File,n=String) returns boolean
    			fn=Rexx(n)
    			if fn.right(4)='.nrx' then return 1
