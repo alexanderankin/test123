@@ -666,7 +666,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 			end
 			when Name == "CompileJava" then CompileJava()
 			when Name == "Run" then do
-				switchPlayerButon()
+				switchPlayerButon("Stop")
 				runProgram()
 				end
 			otherwise
@@ -678,7 +678,7 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 		Select
 			when Name=="Compile" | Name=="Java" then CompileProcess.destroy()
 			when Name=="Run" then do
-				--switchPlayerButon()
+				switchPlayerButon()
 				RunProcess.destroy()
 				end
 			when Name=="CompileJava" then RunProcess.destroy()
@@ -1102,13 +1102,16 @@ class NetRexxCompile adapter implements ActionListener, ComponentListener, EBCom
 				end
 			end
 
-	method switchPlayerButon()
+	method switchPlayerButon(to=Rexx "Run")
 		currentIcon = runButton.getIcon()
-		if currentIcon = PlayIcon then do
+--		if currentIcon = PlayIcon then do
+		if to="Stop" then do
 			runButton.setIcon(StopIcon)
+			RunButton.setToolTipText("Stop this program")
 			end
 		else do
 			runButton.setIcon(PlayIcon)
+			RunButton.setToolTipText("Run this program")
 			end
 
 class NetRexxCompile.RunOutputCatcher dependent extends Thread
