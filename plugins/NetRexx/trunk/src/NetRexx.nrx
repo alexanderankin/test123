@@ -220,15 +220,15 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		
 				pathfile=File(jEdit.getActiveView.getBuffer.getPath)
 				tempclasspath=pathfile.getParent
-				optioncp=jEdit.getProperty(OPTION_PREFIX"classpath","")
-				if optioncp\="" then tempclasspath=tempclasspath||ps||optioncp
-				if CPField.getText() \= "" then  tempclasspath=tempclasspath||ps||CPField.getText()
 				pi=NetRexxScriptPlugin.nrsplugin	
-			  if Rexx(pi.lastcpath).pos(tempclasspath)=0 then do
+--			    if Rexx(pi.lastcpath).pos(tempclasspath)=0 then do
+						optioncp=jEdit.getProperty(OPTION_PREFIX"classpath","")
+						if optioncp\="" then tempclasspath=tempclasspath||ps||optioncp
+						if CPField.getText() \= "" then  tempclasspath=tempclasspath||ps||CPField.getText()
 			  			jEdit.setProperty(OPTION_PREFIX"classpath",tempclasspath)
 			  			pi.optionflush
 			  			jEdit.setProperty(OPTION_PREFIX"classpath",optioncp)
-			  			end
+--			  			end
 
 	method compileroperation(who=boolean)
 		compileroperation=who
@@ -273,11 +273,12 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 		ButtonClicked = String ae.getActionCommand()
 		s=ae.getSource
 
+		cl.addCurrentToHistory()		--	save any command line text
+		
 		if ae.getSource=cl then do
 			if df then say "you entered" cl.getText
 			if compile.ProcessStatus\="" then compile.actionPerformed(ae)  -- pass if compiler code is running something
-																										else  interpret.actionPerformed(ae)		--	pass if interpreter request
---			if interpret.runflag then interpret.actionPerformed(ae)		--	pass if interpreter running something
+														  else  interpret.actionPerformed(ae)		--	pass if interpreter request
 			return
 			end		
 		
@@ -358,6 +359,10 @@ class NetRexx adapter extends JPanel implements ActionListener, EBComponent, Net
 							compile.actionPerformed(ae)  -- pass if compiler code is running something
 							return
 							end
+				if interpret.runflag then do
+							interpret.actionPerformed(ae)  -- pass if interpreter code is running something
+							return
+							end							
 				view=jEdit.getActiveView
 				buffer=view.getBuffer
 				if \buffer.isDirty then do
