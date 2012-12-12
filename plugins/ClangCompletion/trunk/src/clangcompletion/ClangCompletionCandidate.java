@@ -62,7 +62,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     public static ClangCompletionCandidate parse(String clangOutput)
     {
     	StringBuilder label = new StringBuilder(clangOutput);
-    	int indexOfDesc = label.indexOf(":", lengthOfClangOuputHeader) + 1;
+    	int indexOfDesc = label.indexOf(" : ", lengthOfClangOuputHeader) + 3;
     	if(indexOfDesc > 0)
     	{
     		label.delete(0, indexOfDesc);
