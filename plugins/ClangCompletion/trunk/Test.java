@@ -92,7 +92,9 @@ public class Test
 		"COMPLETION: Value : Value::",
 		"COMPLETION: writeToFile : [#void#]writeToFile(<#const std::string &filePath#>{#, <#bool indent#>{#, <#bool escapeAll#>#}#})[# const#]",
 		"COMPLETION: writeToStream : [#void#]writeToStream(<#std::ostream &output#>{#, <#bool indent#>{#, <#bool escapeAll#>#}#})[# const#]",
-	"COMPLETION: ~Value : [#void#]~Value()"};
+		"COMPLETION: ~Value : [#void#]~Value()",
+		"COMPLETION: valueForKey: : [#id#]valueForKey:<#(NSString *)#>"
+	};
 	
 	public static void main(String args[])
 	{
@@ -102,14 +104,13 @@ public class Test
 		parseError(test3);
 		parseError(test4);
 		parseError(test5); */
-		int headLength = "COMPLETION: ".length();
+		int lengthOfClangOuputHeader = "COMPLETION: ".length();
 		for(int l = 0; l < testErrs.length; l++)
 		{
 			String err = testErrs[l];
-			System.out.println(err);
-			
+			System.out.println("\n\n" + err);
 			StringBuilder label = new StringBuilder(err);
-			int indexOfDesc = label.indexOf(":", headLength) + 1;
+			int indexOfDesc = label.indexOf(" : ", lengthOfClangOuputHeader) + 3;
 			if(indexOfDesc > 0)
 			{
 				label.delete(0, indexOfDesc);
@@ -149,6 +150,26 @@ public class Test
 				}
 			}
 			
+			indexOfSep = 0;
+			while((indexOfSep = label.indexOf("#]")) >= 0)
+			{
+				label.replace(indexOfSep, indexOfSep + 2, " ");
+			}
+			
+			indexOfSep = 0;
+			while((indexOfSep = label.indexOf("[#")) >= 0)
+			{
+				label.delete(indexOfSep, indexOfSep + 2);
+			}
+			
+			while(desc.charAt(0) == ' ')
+			{
+				desc.delete(0, 1);
+			}
+			
+			//ClangCompletionCandidate candidate = new ClangCompletionCandidate();
+			//candidate.labelText = label.toString().trim();
+			//candidate.description = desc.toString().trim();
 			System.out.println(label);
 			System.out.println(desc);
 		}
