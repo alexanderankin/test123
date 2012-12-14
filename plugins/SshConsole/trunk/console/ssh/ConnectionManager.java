@@ -29,7 +29,16 @@ import org.gjt.sp.util.Log;
 import console.Console;
 import ftp.ConnectionInfo;
 
-
+/**
+ * 
+ * Does a whole lot of regex-based parsing of paths to remove/insert
+ * an sftp:// prefix to them.   
+ * 
+ * TODO: get rid of all the regexes and reuse common URL/URI parsing methods. 
+ * 
+ * @author ezust
+ *
+ */
 public class ConnectionManager extends ftp.ConnectionManager
 {
 	// {{{ members
