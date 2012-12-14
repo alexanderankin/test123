@@ -59,7 +59,13 @@ public class SecureErrorSource extends DefaultErrorSource
 		if (!path.startsWith("sftp:")) {
 			String base = ConnectionManager.extractBase(consoleState.getPath());
 			path = base + path;
-			error.setFilePath(path);
+			try {
+				error.setFilePath(path);
+			}
+			catch (Exception e) {
+				// invalid path - don't create an error
+				return;
+			}
 		}
 		ErrorListForPath list = errors.get(path);
 		if(list == null)
