@@ -5,14 +5,18 @@
 </head>
 <body>
 <h1> jEdit SSH Console Plugin </h1>
-<h2> Alan Ezust, alan dot ezust at gmail dot com </h2>
+<h2> Alan Ezust </h2>
 <h3> $Date$ </h3>
 
 <p> This plugin is designed to allow you to easily compile files you are editing
 remotely via <tt>sftp://</tt> and parse the errors for ErrorList. It has no user
 interface of its own, because it is an extension of three other plugins:
-Console, FTP, and ErrorList, and uses a dockable jEdit File System Browser for
-navigation. </p>
+<a href="jeditresource:/Console.jar!/index.html">Console</a>, 
+<a href="jeditresource:/FTP.jar!/index.html">FTP</a>, and 
+<a href="jeditresource:/ErrorList.jar!/index.html">ErrorList</a>.
+It also uses a dockable jEdit 
+<a href="jeditresource:/doc/users-guide/vfs-browser.html">File System Browser</a>
+for navigation. </p>
 
 <p> Console provides jEdit with a dockable command line interface to the System
 Shell and the BeanShell, and an open interface for adding new shells. SshConsole
@@ -33,7 +37,6 @@ remembering username/passwords, the SshConsole plugin assumes you want to
 <tt>ssh</tt> into the same host using the same port and creds as the most recent
 <tt>sftp://</tt> connection in that View's FSB (or its currently editing buffer,
 if it is open to a file on a remote host via sftp). </p>
-
 
 
 <h2> Instructions for use: </h2>
@@ -63,6 +66,9 @@ your response from the server's shell. </p>
 
 <ol>
 
+<li> Go to <tt>Plugin Options - Console - Error Matchers</tt> and disable all
+error matchers that you do not need. Having too many or too general matchers
+enabled here may result in false positives in ErrorList. </li>
 
 <li> Show the dockable FSB: <tt>Utilities - File System Browser </tt>. I suggest docking
 it on your left. </li>
@@ -118,10 +124,15 @@ the ssh shell: </p>
 
 <h2> Troubleshooting </h2>
 
-<p> If you are using "cd" directly to change directories from the shell,
-it is possible the SshConsole will not realize this and think the errors are
-from files in the incorrect path. Change directories using the FSB to ensure
-the SshConsole knows where you are.
+<p> If you are getting lots of false errors in ErrorList which do not correspond
+to filenames and line numbers, this could mean you have too many or too general
+Console error matchers. Disable the ones you are not using from
+<tt>Plugin Options - Console - Error Matchers</tt>. </p> 
+
+<p> If you are typing "cd" directly to change directories from SshConsole, 
+it is possible the console shell state will not realize this and think 
+errors are from files in an incorrect path. Change directories using the FSB to
+ensure the SshConsole knows where you are.
 </p>
 
 <p> Sometimes an ssh connection will timeout while you are using the SshConsole.
@@ -157,6 +168,8 @@ completions. </li>
 System shell depending on the VFS used in the path. Perhaps add a VFS to Shell
 Mapping feature of Console so that Commandos can work in other shell/VFS combos
 too? </li>
+
+<li> Use the new VT100 escape code parsing in Console </li>
 
 </ul>
 

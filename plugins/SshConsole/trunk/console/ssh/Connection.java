@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
 import javax.swing.Timer;

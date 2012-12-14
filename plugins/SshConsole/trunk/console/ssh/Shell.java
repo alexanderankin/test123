@@ -151,6 +151,7 @@ public class Shell extends console.Shell {
 
 
 	/* Actions performed via keyboard when the ConsolePane has focus */
+	@SuppressWarnings("serial")
 	public static class ShellAction extends AbstractAction {
 
 		final Console con;
