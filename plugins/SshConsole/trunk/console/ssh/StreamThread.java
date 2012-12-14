@@ -40,14 +40,15 @@ import errorlist.DefaultErrorSource;
 // {{{ class StreamThread
 /**
  * Thread for handing output of running remote ssh commands
- * Based on the StreamThread.java from Console plugin:
+ * Based on the now-deprecated StreamThread.java from Console plugin:
  * StreamThread.java * 10982 2007-11-06 05:02:42Z.
  *
+ * TODO: deprecate this class and rewrite SshConsole to use console.OutputStreamTask
+ * 
  * @version $Id$
  */
 class StreamThread extends Thread
 {
-
     // {{{ data members
 	private boolean aborted;
 	private Console console;
