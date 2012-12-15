@@ -8,7 +8,7 @@ plugin.console.ssh.SshConsolePlugin.description=Allows you to issue compile comm
 plugin.console.ssh.SshConsolePlugin.depend.0=jdk 1.6
 plugin.console.ssh.SshConsolePlugin.depend.1=jedit 05.00.01.00
 plugin.console.ssh.SshConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.0
-plugin.console.ssh.SshConsolePlugin.depend.3=plugin ftp.FtpPlugin 1.0.0
+plugin.console.ssh.SshConsolePlugin.depend.3=plugin ftp.FtpPlugin 1.0.2
 plugin.console.ssh.SshConsolePlugin.depend.4=plugin console.ConsolePlugin 5.0
 
 plugin.console.ssh.SshConsolePlugin.menu=open-sftp console.shell.ssh-show console.ssh.close-connections
