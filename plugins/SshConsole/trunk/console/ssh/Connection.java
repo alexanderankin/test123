@@ -30,6 +30,7 @@ import javax.swing.Timer;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelShell;
@@ -89,7 +90,7 @@ public class Connection implements UserInfo {
 			channel.setOutputStream(pos);
 			stout = new StreamThread(
 				console, pis, console.getOutput(), console.getPlainColor());
-			stout.start();
+			ThreadUtilities.runInBackground(stout);
 			pos = new PipedOutputStream();
 			pis = new PipedInputStream(pos);
 
@@ -107,15 +108,14 @@ public class Connection implements UserInfo {
 	}// }}}
 
 	// {{{ setConsole() method
-    /**
-      Not tested yet, but this should make it possible to reuse connections in different Consoles, if the
-      need is there */
+    
 	void setConsole(Console c) throws IOException {
 		if (c != console) {
 			stout.abort();
 			console = c;
 			stout = new StreamThread (
 				console, channel.getInputStream(), console.getOutput(), console.getPlainColor());
+			ThreadUtilities.runInBackground(stout);
 		}
 	}// }}}
 
