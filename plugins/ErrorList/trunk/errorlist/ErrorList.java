@@ -52,10 +52,10 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.RolloverButton;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.EnhancedTreeCellRenderer;
+import org.gjt.sp.util.ThreadUtilities;
 import org.jedit.core.FileOpenerService;
 
 import errorlist.ErrorSource.Error;
@@ -884,7 +884,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				return;
 		}
 
-		VFSManager.runInAWTThread(new Runnable()
+		ThreadUtilities.runInDispatchThread(new Runnable()
 		{
 			public void run()
 			{
