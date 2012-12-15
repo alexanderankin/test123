@@ -177,9 +177,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 					connect = c;
 					if(!connect.checkIfOpen())
 					{
-						Log.log(Log.DEBUG,ConnectionManager.class,
-							"Connection "
-							+ connect + " expired");
+						Log.log(Log.DEBUG,ConnectionManager.class, "Connection " + connect + " expired");
 						try
 						{
 							connect.logout();
