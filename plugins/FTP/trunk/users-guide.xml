@@ -178,10 +178,21 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
  <itemizedlist>
 
+  	<listitem>
+ 		<para>
+ 			<emphasis role="bold">Version 1.0.2</emphasis>
+ 			Requires Java 1.6+ and jEdit 4.5
+ 		</para>
+ 		<itemizedlist>
+ 			<listitem><para>Properly cache login info for SshConsole (#3575850 Alan Ezust)</para></listitem>
+ 			<listitem><para>Updates for jEdit 5.0 API </para></listitem>
+ 	  </itemizedlist>
+ 	  </listitem>
+ 
  	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.0</emphasis>
- 			Requires Java 1.5+ and jEdit 4.5.0
+ 			Requires Java 1.6+ and jEdit 4.5.0
  		</para>
  		<itemizedlist>
  			<listitem><para>Re-ask for connection details if no key-file exists</para></listitem>
