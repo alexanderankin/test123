@@ -240,7 +240,9 @@ public class ConnectionManager
 
 			if ( host!=null && user!=null && (password!=null || key!=null) ) {
 				Log.log(Log.DEBUG, ConnectionManager.class, "key="+key);
-				return new ConnectionInfo(address.isSecure(), address.getHost(), address.getPort(), user, password, key);
+				info = new ConnectionInfo(address.isSecure(), address.getHost(), address.getPort(), user, password, key);
+				logins.put(host, info);
+				return info;
 			}
 
 		}
