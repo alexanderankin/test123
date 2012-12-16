@@ -40,6 +40,8 @@
 			sources = errorlist.ErrorSource.getErrorSources();
 			for(i = 0; i &lt; sources.length; i++)
 			{
+			    if((sources[i].getView() != null) &amp;&amp; 
+			       (sources[i].getView() != view)) continue;
 				if(sources[i] instanceof errorlist.DefaultErrorSource)
 					sources[i].clear();
 			}
