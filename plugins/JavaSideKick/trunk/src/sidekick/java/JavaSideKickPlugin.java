@@ -28,13 +28,10 @@
 package sidekick.java;
 
 import java.util.*;
-import java.awt.event.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.*;
 import classpath.*;
-import errorlist.*;
 import sidekick.*;
 import sidekick.java.util.*;
 import sidekick.java.node.*;
@@ -44,17 +41,14 @@ public class JavaSideKickPlugin extends EBPlugin {
     public static final String NAME = "sidekick.java";
     public static final String OPTION_PREFIX = "options.sidekick.java.";
     public static final String PROPERTY_PREFIX = "plugin.sidekick.java.";
-    public static final DefaultErrorSource ERROR_SOURCE = new DefaultErrorSource("JavaSideKick");
 
     private static HashMap<View, JavaParser> javaParsers = new HashMap<View, JavaParser>();
     private static HashMap<View, JavaParser> javaccParsers = new HashMap<View, JavaParser>();
 
     public void start() {
-        ErrorSource.registerErrorSource(ERROR_SOURCE);
     }
 
     public void stop() {
-        ErrorSource.unregisterErrorSource(ERROR_SOURCE);
         for (JavaParser parser : javaParsers.values()) {
             EditBus.removeFromBus(parser);
         }
