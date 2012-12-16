@@ -31,7 +31,6 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 //}}}
-import org.gjt.sp.util.Log;
 
 /** A concrete implementation of ErrorSource that is suitable for Plugins to use/extend.
  *
@@ -47,9 +46,6 @@ public class DefaultErrorSource extends ErrorSource
 	*/
 	public DefaultErrorSource(String name, View v)
 	{
-		if (v == null) {
-			Log.log(Log.WARNING, this, new RuntimeException("Null View for DefaultErrorSource."));
-		}
 		errors = new LinkedHashMap<String, ErrorListForPath>();
 		this.name = name;
 		this.view = v;
