@@ -15,19 +15,17 @@ public class OutlinePlugin extends EditPlugin {
 	public static final String OPTION_PREFIX = "options.outline.";
 	public static final String PROPERTY_PREFIX = "plugin.outline.";
 	
-	protected static DefaultErrorSource errorSource;
 
 	public void start() {
 		jEdit.getPlugin("errorlist.ErrorListPlugin", true);
 		jEdit.getPlugin("sidekick.SideKickPlugin", true);
 		
-		errorSource = new DefaultErrorSource("OutlinePlugin");
 	}
 
 
 	public void stop()
 	{
-		errorSource = null;
+
 	}
 }
 
