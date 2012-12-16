@@ -473,7 +473,10 @@ errorSource.addError(new ErrorSource.DefaultError(
    a bug introduced in version 2.0
    (#3556671 Jarek Czekalski) </para></listitem>
    <listitem><para> Added squiggle underline style (Matthieu Casanova) </para></listitem>
-   <listitem><para> "Clear Errors" no longer clears errors in all views. </para></listitem>
+   <listitem><para> "Clear Errors" no longer clears errors in all views (Alan Ezust).
+   </para></listitem> 
+   <listitem><para> Fixed #3596333: bad initial contents when creating a new view 
+   (Alan Ezust).  </para></listitem>
  </itemizedlist>
  </listitem>
 
