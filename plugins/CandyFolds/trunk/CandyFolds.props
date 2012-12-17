@@ -2,7 +2,7 @@ plugin.candyfolds.CandyFoldsPlugin.activate=startup
 plugin.candyfolds.CandyFoldsPlugin.name=CandyFolds
 plugin.candyfolds.CandyFoldsPlugin.author=Nicolás Carranza 
 # inspired and based on work by André Kaplan & Nathan Jones (WhiteSpace plugin)
-plugin.candyfolds.CandyFoldsPlugin.version=1.2.2
+plugin.candyfolds.CandyFoldsPlugin.version=1.2.3
 plugin.candyfolds.CandyFoldsPlugin.description=CandyFolds draws colored indentation-guides on the text area to improve code readability.
 plugin.candyfolds.CandyFoldsPlugin.docs=index.html
 
