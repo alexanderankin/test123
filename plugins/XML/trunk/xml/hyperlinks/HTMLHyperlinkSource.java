@@ -20,39 +20,45 @@
  */
 package xml.hyperlinks;
 
+import static xml.Debug.DEBUG_HYPERLINKS;
+import gatchan.jedit.hyperlinks.FallbackHyperlinkSource;
+import gatchan.jedit.hyperlinks.Hyperlink;
+import gatchan.jedit.hyperlinks.HyperlinkSource;
+import gatchan.jedit.hyperlinks.jEditOpenFileHyperlink;
+
 import java.net.URI;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 
-import sidekick.SideKickParsedData;
 import sidekick.IAsset;
+import sidekick.html.parser.html.HtmlDocument.Attribute;
+import sidekick.html.parser.html.HtmlDocument.AttributeList;
+import sidekick.html.parser.html.HtmlDocument.HtmlElement;
+import sidekick.html.parser.html.HtmlDocument.Tag;
+import sidekick.html.parser.html.HtmlDocument.TagBlock;
+import sidekick.html.parser.html.HtmlVisitor;
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.SideKickAsset;
 import sidekick.util.SideKickElement;
-import xml.parser.XmlTag;
-
-import gatchan.jedit.hyperlinks.*;
-
-import static xml.Debug.*;
 import xml.Resolver;
 import xml.XmlParsedData;
-import sidekick.html.parser.html.*;
-import static sidekick.html.parser.html.HtmlDocument.*;
 import xml.completion.ElementDecl;
 import xml.completion.IDDecl;
+import xml.parser.XmlTag;
 
 /**
  * Provides hyperlinks from HTML attributes.
@@ -105,7 +111,6 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 				return null;
 			}
 
-			int start = ElementUtil.createStartPosition(buffer,startTag).getOffset();
 			int end= ElementUtil.createEndPosition(buffer,startTag).getOffset();
 			/* if the offset is inside start tag */
 			if(offset <= end)
@@ -144,7 +149,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			// to acertain that).
 			// Since the source is based on the mode, it will be still
 			// the HTMLHyperlikSource even if the Sidekick tree is for XML.
-			return sourceForXML.getHyperlink(buffer, offset);
+			return sourceForXML.getHyperlink(buffer, offset, data, (XmlTag) asset, true);
 		} else {
 			Log.log(Log.WARNING,HTMLHyperlinkSource.class,"unexpected asset type: "+asset.getClass()+", please report");
 			return null;
@@ -304,7 +309,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 	
 	/**
 	 * recognize hyperlink attributes by their parent element's
-	 * namespace:localname and/or their namespace:localname
+	 * name and/or their name.
 	 */
 	public Hyperlink getHyperlinkForAttribute(Buffer buffer, int offset,
 		String tagLocalName,
@@ -312,14 +317,18 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		XmlParsedData data, Tag tag, Attribute att,
 		boolean quoted)
 	{
-		boolean isHREF = false;
+		// +1 for the quote around the attribute value
+		int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation()) +1;
+
+		IsHyperLink h = isHyperlinkAttribute(buffer, offset, 
+				tagLocalName, attLocalName, attStart, attValue);
 		
-		if(uriAttributes.containsKey(tagLocalName)
-			&& uriAttributes.get(tagLocalName).contains(attLocalName))
+		if(h != null)
 		{
-			if(attValue.startsWith("#")){
-				Location found = getNamedAnchorLocation(data, attValue.substring(1));
+			if(h.href.startsWith("#")){
+				Location found = getNamedAnchorLocation(data, h.href.substring(1));
 				if(found != null){
+					int attLine = buffer.getLineOfOffset(h.start);
 					// OpenFileAndGoto expects real line&column,
 					// not virtual column
 					int toffset = xml.ElementUtil.createOffset(buffer, found);
@@ -327,71 +336,78 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 					int column = toffset - buffer.getLineStartOffset(line);
 					// it's OK to have a path
 					String href = buffer.getPath();
-					return newJEditOpenFileAndGotoHyperlink(
-						buffer, att, href, line, column, quoted);
+					return new jEditOpenFileAndGotoHyperlink(h.start,
+							h.end, attLine, href, line, column);
 				}
 			}else{
-				String href = resolve(attValue, buffer, offset, data);
+				String href = h.href;
+				
+				if(h.resolveAgainst != null){
+					href = resolveRelativeTo(href,
+							tag.getAttributeValue(h.resolveAgainst));
+				}
+				
+				href = resolve(href, buffer, offset, data);
 				if(href==null){
 					return null;
 				}else{
-					return newJEditOpenFileHyperlink(
-						buffer, att, href, quoted);
-				}
-			}
-		} else if("object".equals(tagLocalName)
-			&& ("classid".equals(attLocalName)
-				|| "data".equals(attLocalName)))
-		{
-			/* must resolve against codebase if present */
-			String href = resolveRelativeTo(attValue,
-				tag.getAttributeValue("codebase"));
-
-			href = resolve(href, buffer, offset, data);
-			if(href==null){
-				return null;
-			}else{
-				return newJEditOpenFileHyperlink(
-					buffer, att, href, quoted);
-			}
-		} else if("object".equals(tagLocalName)
-			&& "archive".equals(attLocalName))
-		{
-			// +1 for the quote around the attribute value
-			int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation()) +1;
-			
-			Matcher m = noWSPattern.matcher(attValue);
-			while(m.find()){
-				int st = m.start(0);
-				int nd = m.end(0);
-				if(attStart + st <= offset && attStart + nd >= offset){
-					/* must resolve against codebase if present */
-					String href = resolveRelativeTo(m.group(0),
-						tag.getAttributeValue("codebase"));
-
-					href = resolve(href, buffer, offset, data);
-					if(href==null)href=m.group(0);
-					int start = attStart + st;
-					int end= attStart + nd;
-					int line = buffer.getLineOfOffset(start);
-					return new jEditOpenFileHyperlink(start, end, line, href);
+					int attLine = buffer.getLineOfOffset(h.start);
+					return new jEditOpenFileHyperlink(h.start, h.end, attLine, href);
 				}
 			}
 		}
 		return null;
 	}//}}}
 	
+	/**
+	 * recognize hyperlink attributes by their parent element's
+	 * namespace:localname and/or their namespace:localname
+	 */
+	public static IsHyperLink isHyperlinkAttribute(Buffer buffer, int offset,
+		String tagLocalName, String attLocalName, 
+		int attStart, String attValue)
+	{
+		if(uriAttributes.containsKey(tagLocalName)
+			&& uriAttributes.get(tagLocalName).contains(attLocalName))
+		{
+			return new IsHyperLink(attStart, attStart + attValue.length(),
+					attValue, null, false);
+		} else if("object".equals(tagLocalName)
+			&& ("classid".equals(attLocalName)
+				|| "data".equals(attLocalName)))
+		{
+			return new IsHyperLink(attStart, attStart + attValue.length(),
+					attValue, "codebase", false);
+		} else if("object".equals(tagLocalName)
+			&& "archive".equals(attLocalName))
+		{
+			Matcher m = noWSPattern.matcher(attValue);
+			while(m.find()){
+				int st = m.start(0);
+				int nd = m.end(0);
+				if(attStart + st <= offset && attStart + nd >= offset){
+					String href = m.group(0);
+					int start = attStart + st;
+					int end= attStart + nd;
+					return new IsHyperLink(start, end, href, 
+							"codebase", false);
+				}
+			}
+		}
+		return null;
+	}//}}}
+
 	//{{{ resolveRelativeTo(href,base) methode
 	/**
 	 * resolves using URI.resolve() href against base
 	*/	
-	String resolveRelativeTo(String href, String base){
+	static String resolveRelativeTo(String href, String base){
 		if(base == null || "".equals(base))return href;
 		
 		try{
 			return URI.create(base).resolve(href).toString();
 		}catch(IllegalArgumentException iae){
-			Log.log(Log.WARNING,HTMLHyperlinkSource.class,"error resolving against codebase",iae);
+			Log.log(Log.WARNING,HTMLHyperlinkSource.class,"error resolving against base",iae);
 			return href;
 		}
 	}//}}}
@@ -567,7 +583,25 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 		return null;
 	}
 
-	private HyperlinkSource sourceForXML = XMLHyperlinkSource.create();
+	public static class IsHyperLink{
+		public final int start;
+		public final int end;
+		public final String href;
+		public final String resolveAgainst;
+		public final boolean resolveAgainstXMLBase;
+		
+		public IsHyperLink(int start, int end, String href,
+				String resolveAgainst,
+				boolean resolveAgainstXMLBase) {
+			this.start = start;
+			this.end = end;
+			this.href = href;
+			this.resolveAgainst = resolveAgainst;
+			this.resolveAgainstXMLBase = resolveAgainstXMLBase;
+		}
+	}
+	
+	private XMLHyperlinkSource sourceForXML = new XMLHyperlinkSource();
 	
 	public static HyperlinkSource create(){
 		return new FallbackHyperlinkSource(

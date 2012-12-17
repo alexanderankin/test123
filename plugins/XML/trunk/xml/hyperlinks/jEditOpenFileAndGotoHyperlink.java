@@ -33,9 +33,9 @@ import gatchan.jedit.hyperlinks.AbstractHyperlink;
  */
 public class jEditOpenFileAndGotoHyperlink extends AbstractHyperlink
 {
-	private final String path;
-	private final int gotoLine;
-	private final int gotoCol;
+	final String path;
+	final int gotoLine;
+	final int gotoCol;
 	
 	public jEditOpenFileAndGotoHyperlink(int start, int end, int line, String url, int gotoLine, int gotoColumn)
 	{
