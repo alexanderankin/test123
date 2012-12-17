@@ -20,31 +20,38 @@
  */
 package xml.hyperlinks;
 
+import static xml.Debug.DEBUG_HYPERLINKS;
+import gatchan.jedit.hyperlinks.FallbackHyperlinkSource;
+import gatchan.jedit.hyperlinks.Hyperlink;
+import gatchan.jedit.hyperlinks.HyperlinkSource;
+import gatchan.jedit.hyperlinks.jEditOpenFileHyperlink;
+
 import java.io.Reader;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.swing.text.Position;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 
-import sidekick.SideKickParsedData;
 import sidekick.IAsset;
 import sidekick.util.ElementUtil;
-
-import gatchan.jedit.hyperlinks.*;
-
-import static xml.Debug.*;
-import xml.Resolver;
 import xml.CharSequenceReader;
+import xml.Resolver;
 import xml.XmlParsedData;
-import xml.parser.javacc.*;
-import xml.parser.XmlTag;
 import xml.completion.ElementDecl;
 import xml.completion.IDDecl;
+import xml.hyperlinks.HTMLHyperlinkSource.IsHyperLink;
+import xml.parser.XmlTag;
+import xml.parser.javacc.ParseException;
+import xml.parser.javacc.XmlDocument;
+import xml.parser.javacc.XmlParser;
 
 /**
  * Provides hyperlinks from XML attributes.
@@ -93,67 +100,85 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		if(asset == null){
 			Log.log(Log.DEBUG, XMLHyperlinkSource.class,"no Sidekick asset here");
 			return null;
+		} else if(asset instanceof XmlTag) {
+			return getHyperlink(buffer, offset, data, (XmlTag) asset, false);
 		} else {
-			int wantedLine = buffer.getLineOfOffset(offset);
-			int wantedLineOffset = buffer.getVirtualWidth(wantedLine, offset - buffer.getLineStartOffset(wantedLine));
+			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "not in an XmlTag");
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the hyperlink for the given offset.
+	 * returns an hyperlink as soon as pointer enters the attribute's value
+	 *
+	 * @param buffer the buffer
+	 * @param offset the offset
+	 * @param data the parsed data for this buffer
+	 * @param asset the tag at offset
+	 * @param isHTML is buffer mode html parsed as xml (to fallback to HTML attributes recognised as hrefs)
+	 * @return the hyperlink (or null if there is no hyperlink)
+	 */
+	public Hyperlink getHyperlink(Buffer buffer, int offset,
+			XmlParsedData data, XmlTag asset, boolean isHTML)
+	{
+	
+		int wantedLine = buffer.getLineOfOffset(offset);
+		int wantedLineOffset = buffer.getVirtualWidth(wantedLine, offset - buffer.getLineStartOffset(wantedLine));
 
 
-			/* use the XML javacc parser to parse the start tag.*/
-			int max = buffer.getLength();
-			int sA = asset.getStart().getOffset();
-			int lA = asset.getEnd().getOffset()-sA;
-			if(sA < 0 || sA > max){
-				return null;
-			}
-			if(lA < 0 || sA+lA > max){
-				return null;
-			}
-			CharSequence toParse = buffer.getSegment(sA,lA);
-			int line = buffer.getLineOfOffset(sA);
-			int col = buffer.getVirtualWidth(line, sA-buffer.getLineStartOffset(line)+1);
-			Reader r = new CharSequenceReader(toParse);
-			XmlParser parser = new XmlParser(r, line+1, col);
-			parser.setTabSize( buffer.getTabSize() );
-			try{
-				XmlDocument.XmlElement startTag = parser.Tag();
-				int start = ElementUtil.createStartPosition(buffer,startTag).getOffset();
-				int end= ElementUtil.createEndPosition(buffer,startTag).getOffset();
-				/* if the offset is inside start tag */
-				if(offset <= end)
-				{
-					XmlDocument.AttributeList al = ((XmlDocument.Tag)startTag).attributeList;
-					if(al == null){
-						if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"no attribute in this element");
-						return null;
-					}else{
-						for(XmlDocument.Attribute att: al.attributes){
-							// offset is inside attribute's value
-							if(  (    att.getValueStartLocation().line < wantedLine+1
-							       || (att.getValueStartLocation().line == wantedLine+1
-						                   && att.getValueStartLocation().column <= wantedLineOffset)
-						              )
-						              &&
-						              (    att.getEndLocation().line > wantedLine+1
-							       || (att.getEndLocation().line == wantedLine+1
-						                   && att.getEndLocation().column > wantedLineOffset)
-						              )
-						          )
-						        {
-						        	if(asset instanceof XmlTag) {
-						        		return getHyperlinkForAttribute(buffer, offset, data, asset, att);
-						        	}
-						        }
-						}
-						if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"not inside attributes");
-						return null;
-					}
+		/* use the XML javacc parser to parse the start tag.*/
+		int max = buffer.getLength();
+		int sA = asset.getStart().getOffset();
+		int lA = asset.getEnd().getOffset()-sA;
+		if(sA < 0 || sA > max){
+			return null;
+		}
+		if(lA < 0 || sA+lA > max){
+			return null;
+		}
+		CharSequence toParse = buffer.getSegment(sA,lA);
+		int line = buffer.getLineOfOffset(sA);
+		int col = buffer.getVirtualWidth(line, sA-buffer.getLineStartOffset(line)+1);
+		Reader r = new CharSequenceReader(toParse);
+		XmlParser parser = new XmlParser(r, line+1, col);
+		parser.setTabSize( buffer.getTabSize() );
+		try{
+			XmlDocument.XmlElement startTag = parser.Tag();
+			int end= ElementUtil.createEndPosition(buffer,startTag).getOffset();
+			/* if the offset is inside start tag */
+			if(offset <= end)
+			{
+				XmlDocument.AttributeList al = ((XmlDocument.Tag)startTag).attributeList;
+				if(al == null){
+					if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"no attribute in this element");
+					return null;
 				}else{
+					for(XmlDocument.Attribute att: al.attributes){
+						// offset is inside attribute's value
+						if(  (    att.getValueStartLocation().line < wantedLine+1
+						       || (att.getValueStartLocation().line == wantedLine+1
+					                   && att.getValueStartLocation().column <= wantedLineOffset)
+					              )
+					              &&
+					              (    att.getEndLocation().line > wantedLine+1
+						       || (att.getEndLocation().line == wantedLine+1
+					                   && att.getEndLocation().column > wantedLineOffset)
+					              )
+					          )
+					        {
+				        		return getHyperlinkForAttribute(buffer, offset, data, asset, att, isHTML);
+					        }
+					}
+					if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"not inside attributes");
 					return null;
 				}
-			}catch(ParseException pe){
-				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "error parsing element", pe);
+			}else{
 				return null;
 			}
+		}catch(ParseException pe){
+			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "error parsing element", pe);
+			return null;
 		}
 	}
 	
@@ -164,13 +189,12 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	 * @param	data		sidekick tree for current buffer
 	 * @param	asset		element containing offset
 	 * @param	att		parsed attribute
+	 * @param	isHTML	we are dealing with an HTML buffer
 	 */
 	public Hyperlink getHyperlinkForAttribute(
 		Buffer buffer, int offset, XmlParsedData data, 
-		IAsset asset, XmlDocument.Attribute att)
+		XmlTag sideKickTag, XmlDocument.Attribute att, boolean isHTML)
 	{
-		XmlTag sideKickTag = (XmlTag)asset;
-		
 		if(sideKickTag.attributes == null){
 			if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG,XMLHyperlinkSource.class,"Sidekick version of this element doesn't have attributes");
 			return null;
@@ -191,7 +215,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		
 		Hyperlink h = getHyperlinkForAttribute(buffer, offset,
 			tagNS,tagLocalName, ns, localName, value,
-			data, sideKickTag, att);
+			data, sideKickTag, att, isHTML);
 		
 		if(h == null) {
 		
@@ -279,39 +303,34 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	
 	//{{{ getHyperlinkForAttribute(tagNS,tagName,attNS,attName) method
 	private static final Pattern nsURIPairsPattern = Pattern.compile("[^\\s]+\\s+([^\\s]+)");
+
+	
+	
 	/**
 	 * recognize hyperlink attributes by their parent element's
 	 * namespace:localname and/or their namespace:localname
 	 */
-	public Hyperlink getHyperlinkForAttribute(Buffer buffer, int offset,
+	public IsHyperLink isHyperlink(Buffer buffer, int offset,
 		String tagNS, String tagLocalName,
 		String attNS, String attLocalName, String attValue,
-		XmlParsedData data, XmlTag tag, XmlDocument.Attribute att)
+		int attStart)
 	{
-		String href = null; 
-		if("http://www.w3.org/2001/XInclude".equals(tagNS)
-			&& "include".equals(tagLocalName)
-			&& "href".equals(attLocalName))
+		if(    ("http://www.w3.org/2001/XInclude".equals(tagNS)
+			    && "include".equals(tagLocalName)
+			    && "href".equals(attLocalName)) 
+			|| ("http://www.w3.org/1999/xlink".equals(attNS)
+			    && "href".equals(attLocalName)))
 		{
-			href = resolve(attValue, buffer, offset, data, tag, true);
-		} else if("http://www.w3.org/1999/xlink".equals(attNS)
-			&& "href".equals(attLocalName))
+			return new IsHyperLink(attStart, attStart + attValue.length(), attValue, null, true);
+		} else if(   ("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
+					  && "noNamespaceSchemaLocation".equals(attLocalName))
+				  || ("".equals(tagNS) && "ulink".equals(tagLocalName)
+				      && "url".equals(attLocalName)))
 		{
-			href = resolve(attValue, buffer, offset, data, tag, true);
-		} else if("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
-			&& "noNamespaceSchemaLocation".equals(attLocalName))
-		{
-			href = resolve(attValue, buffer, offset, data, tag, false);
-		} else if("".equals(tagNS) && "ulink".equals(tagLocalName)
-				&& "url".equals(attLocalName))
-		{
-			href = resolve(attValue, buffer, offset, data, tag, false);
+			return new IsHyperLink(attStart, attStart + attValue.length(), attValue, null, false);
 		} else if("http://www.w3.org/2001/XMLSchema-instance".equals(attNS)
 			&& "schemaLocation".equals(attLocalName))
 		{
-			
-			// +1 for the quote around the attribute value
-			int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation()) +1;
 			
 			Matcher m = nsURIPairsPattern.matcher(attValue);
 			// find will accept unbalanced pairs of ns->uri
@@ -319,23 +338,106 @@ public class XMLHyperlinkSource implements HyperlinkSource
 				int st = m.start(1);
 				int nd = m.end(1);
 				if(attStart + st <= offset && attStart + nd >= offset){
-					href = resolve(m.group(1), buffer, offset, data, tag, false);
+					String href = m.group(1);
 					if(href==null)href=m.group(1);
 					int start = attStart + st;
 					int end= attStart + nd;
-					int line = buffer.getLineOfOffset(start);
-					return new jEditOpenFileHyperlink(start, end, line, href);
+					return new IsHyperLink(start, end, href, null, false);
 				}
 			}
 		}
-		if(href==null){
+		return null;
+	}//}}}
+
+	
+	/**
+	 * recognize hyperlink attributes by their parent element's
+	 * namespace:localname and/or their namespace:localname
+	 */
+	public Hyperlink getHyperlinkForAttribute(Buffer buffer, int offset,
+		String tagNS, String tagLocalName,
+		String attNS, String attLocalName, String attValue,
+		XmlParsedData data, XmlTag tag, XmlDocument.Attribute att,
+		boolean isHTML)
+	{
+		// +1 for the quote around the attribute value
+		int attStart = xml.ElementUtil.createOffset(buffer, att.getValueStartLocation()) +1;
+		
+		IsHyperLink h = isHyperlink(buffer, offset, 
+				tagNS, tagLocalName, attNS, attLocalName, attValue, attStart);
+		
+		if(h == null && isHTML){
+			h = HTMLHyperlinkSource.isHyperlinkAttribute(
+						buffer, offset, tagLocalName, attLocalName, attStart, attValue);
+		}
+		if(h != null){
+			if(h.href.startsWith("#")){
+				Position found = getNamedAnchorLocation(buffer, data, h.href.substring(1));
+				if(found != null){
+					int attLine = buffer.getLineOfOffset(h.start);
+					int line = buffer.getLineOfOffset(found.getOffset());
+					int column = found.getOffset() - buffer.getLineStartOffset(line) + 1;
+					// it's OK to have a path
+					String href = buffer.getPath();
+					return new jEditOpenFileAndGotoHyperlink(h.start,
+							h.end, attLine, href, line, column);
+				}
+			}else{
+				String href = h.href;
+				
+				if(h.resolveAgainst != null){
+					href = HTMLHyperlinkSource.resolveRelativeTo(href,
+							tag.attributes.getValue(h.resolveAgainst));
+				}
+				
+				href = resolve(href, buffer, offset, data, tag, h.resolveAgainstXMLBase);
+				if(href==null){
+					return null;
+				}else{
+					int attLine = buffer.getLineOfOffset(h.start);
+					return new jEditOpenFileHyperlink(h.start, h.end, attLine, href);
+				}
+			}
+		}
+		return null;
+	}//}}}
+
+	private Position getNamedAnchorPosition(Buffer buffer, XmlParsedData data, DefaultMutableTreeNode node, String name) {
+		IAsset elt = ((IAsset)data.getAsset(node));
+		if(elt instanceof XmlTag){
+			XmlTag tag = (XmlTag) elt;
+			String idOrName = tag.attributes.getValue("xml:id");
+			if(idOrName == null){
+				idOrName = tag.attributes.getValue("id");
+				if(idOrName == null && tag.getName().equals("a"))idOrName = tag.attributes.getValue("name");
+			}
+			if(idOrName != null && name.equals(idOrName)){
+				return tag.getStart();
+			}else {
+				for(int i=0; i< node.getChildCount(); i++){
+					Position p = getNamedAnchorPosition(buffer, data, (DefaultMutableTreeNode)node.getChildAt(i), name);
+					if(p != null){
+						return p;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private Position getNamedAnchorLocation(Buffer buffer, XmlParsedData data, String name) {
+		DefaultMutableTreeNode tn = (DefaultMutableTreeNode)data.root;
+		
+		DefaultMutableTreeNode docRoot = (DefaultMutableTreeNode)tn.getFirstChild();
+		
+		if(docRoot == null){
+			if(DEBUG_HYPERLINKS)Log.log(Log.WARNING,XMLHyperlinkSource.class,"not parsed ??");
 			return null;
 		}else{
-			return newJEditOpenFileHyperlink(
-				buffer, att, href);
+			return getNamedAnchorPosition(buffer, data, docRoot, name);
 		}
-	}//}}}
-	
+	}
+
 	/**
 	 * resolve a potentially relative uri using xml:base attributes,
 	 * the buffer's URL, xml.Resolver.
