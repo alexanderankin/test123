@@ -298,6 +298,15 @@ public class ImageViewer extends JPanel {
             imageLabel.setSize((int) originalWidth, (int) originalHeight);
             filenameLabel.setText(compressFilename(filename));
             imagesizeLabel.setText((int) originalWidth + "x" + (int) originalHeight);
+            Rectangle viewportRect = viewport.getViewRect();
+            float viewportHeight = (float)viewportRect.getHeight();
+            if (originalHeight > viewportHeight) {
+                zoomHeight = viewportHeight;
+                zoomWidth = originalWidth *= viewportHeight / originalHeight;
+                originalWidth = zoomWidth;
+                originalHeight = zoomHeight;
+                zoom(zoomWidth, zoomHeight);
+            }
             refresh();
         }
     }
@@ -389,7 +398,7 @@ public class ImageViewer extends JPanel {
             refresh();
         }
     }
-
+    
     /**
      * Resizes an image to the given width and height.
      * @param image source image to scale
@@ -424,6 +433,7 @@ public class ImageViewer extends JPanel {
         imageLabel.setIcon(icon);
         imageLabel.setSize(rotatedImage.getWidth(null), rotatedImage.getHeight(null));
         image = rotatedImage;
+        zoom(zoomHeight, zoomWidth);
         refresh();
     }
 
