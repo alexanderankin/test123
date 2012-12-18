@@ -28,6 +28,8 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 public class InsertTextCommand extends java.lang.Object implements Command {
+  
+  private final String ESCAPED_WITH_BACKSLASH = "\\$|{";
 
   public static void insertText(String text, ScriptContext context) {
     InsertTextCommand cmd = new InsertTextCommand(text);
@@ -86,20 +88,10 @@ public class InsertTextCommand extends java.lang.Object implements Command {
              result.append("\t");
              }
         // escaped dollar sign
-        else if(nextCharIs('$')) {
-           i++;
-           result.append('$');
-           }
-        // escaped pipe
-        else if(nextCharIs('|')) {
-           i++;
-           result.append('|');
-           }
-        // escaped backslash
-        else if(nextCharIs('\\')) {
-           i++;
-           result.append(c);
-           }
+        else if(ESCAPED_WITH_BACKSLASH.indexOf(nextChar()) >= 0) {
+            result.append(nextChar());
+            i++;
+            }
 	    else
            result.append(c);
         break;
@@ -142,6 +134,11 @@ public class InsertTextCommand extends java.lang.Object implements Command {
   // enhances source readability
   private boolean nextCharIs(char ch) {
       return (i < src.length() - 1) && (src.charAt(i + 1) == ch);
+      }
+      
+  // also enhances source readability, returns 0 if no char available
+  private char nextChar() {
+      return (i < src.length() - 1) ? src.charAt(i + 1) : 0;
       }
 
   private int i;

@@ -212,6 +212,8 @@ public class XScripter
       for(int i = start; i < chars.length; i++) {
         switch (chars[i]) {
           case '{':
+            // allow for { escaping
+            if(i>0 && chars[i - 1] == '\\') break;
             if( chars[i + 1] == '$' || chars[i + 1] == '@' || chars[i + 1] == '!' ||
             chars[i + 1] == '%' || chars[i + 1] == '#' || chars[i + 1] == '*' ||
             chars[i + 1] == '&') {
