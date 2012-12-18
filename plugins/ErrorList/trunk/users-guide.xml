@@ -294,17 +294,19 @@ plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3</programlisting>
 
   <para>
    The constructor for the <classname>DefaultErrorSource</classname> class
-   accepts one parameter; a string that will identify the error source.
+   accepts two parameters; the first is a string that will identify the error source.
    Currently, this identifier is not used, but in the future the ErrorList plugin
    might show which error comes from which plugin, for example.
+   The second argument is the View that errors should be shown in. Plugins that 
+   send errors should take care to send them to the correct View's ErrorList, so that
+   they do not appear in all Views.
   </para>
 
   <para>
    Error sources should be registered when the user first invokes your
    plugins. A plugin can create any number of error sources.
    The Console plugin, for example, maintains a separate error source for each
-   console window, and registers an unregisters them as consoles are opened
-   and closed.
+   console window, and registers an unregisters them as each command is executed.
   </para>
 
   <para>
@@ -465,7 +467,7 @@ errorSource.addError(new ErrorSource.DefaultError(
  <itemizedlist>
 
  <listitem><formalpara><title>Version 2.1</title> <para> Requires Java 1.6, and jEdit
- 5.0pre1. </para></formalpara>
+ 5.0 </para></formalpara>
  <itemizedlist>
    <listitem><para> Fixed #3573458: ErrorList does not work with SymLinks (Patrick Eibl) 
    </para> </listitem>
