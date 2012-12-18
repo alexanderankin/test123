@@ -27,4 +27,14 @@
             imageviewer.ImageViewerPlugin.zoomOut(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="imageviewer.rotateCCW-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.rotateCCW(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.rotateCW-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.rotateCW(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>
