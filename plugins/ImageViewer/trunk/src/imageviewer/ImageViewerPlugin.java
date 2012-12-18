@@ -417,4 +417,31 @@ public class ImageViewerPlugin extends EBPlugin {
             }
         );
     }
+
+    public static void rotateCCW( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.rotateCCW();
+                    }
+                }
+            }
+        );
+    }
+
+    public static void rotateCW( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.rotateCW();
+                    }
+                }
+            }
+        );
+    }
+
 }
