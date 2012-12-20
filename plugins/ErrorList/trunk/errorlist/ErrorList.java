@@ -196,8 +196,9 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		for(int i = 0; i < sources.length; i++)
 		{
 			ErrorSource source = sources[i];
-			if ((sources[i].getView() != null) && (view != sources[i].getView())) continue;
-			addErrorSource(source, source.getAllErrors());
+			if ((sources[i].getView() == null) 
+				|| (view == sources[i].getView()))
+				addErrorSource(source, source.getAllErrors());
 		}
 
 		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
