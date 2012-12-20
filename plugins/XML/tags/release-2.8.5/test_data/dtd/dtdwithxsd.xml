@@ -1,0 +1,29 @@
+<!-- :xml.validate.ignore-dtd=true: -->
+<!DOCTYPE article [
+  <!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
+  <!ENTITY % isogrk1 PUBLIC "ISO 8879:1986//ENTITIES Greek Letters//EN//XML"  "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-grk1.ent" >
+  <!ENTITY % isoamso PUBLIC
+         "ISO 8879:1986//ENTITIES Added Math Symbols: Ordinary//EN//XML"
+         "http://www.w3.org/2003/entities/iso8879/isoamso.ent"
+  >
+  %isolat1;
+  %isogrk1;
+]>
+<article
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:noNamespaceSchemaLocation="http://www.docbook.org/xsd/4.4/docbook.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    id="root-article">
+<title>Slacker's Docbook </title>
+<toto/>
+<articleinfo>
+ <date>2010-05-30</date>
+  <releaseinfo>2.8 </releaseinfo>
+</articleinfo>
+
+<abstract> <para>  Slacker's Docbook is yet another Docbook preprocessor. It is a document format, plus scripts, stylesheets and libraries for converting documents into  standard Docbook/XML. Bulleted lists, conditional processing, subdocument and sourecode example inclusions, easy incorporation of images, and a host of other commonly faced problems are solved by Slacker's Docbook. In particular, it can be used to develop multiple versions (such as a textbook and overhead slides) of a document from a single source. This system was designed for writing computer science courseware (tutorials, assignments, exams), so it well suited for writing books that contain many sourcecode examples. </para>
+</abstract>
+
+<index id="keywordindex"/>
+
+</article>

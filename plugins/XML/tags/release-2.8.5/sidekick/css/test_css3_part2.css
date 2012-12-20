@@ -1,0 +1,4 @@
+.t1:not(.t2) { 
+    background: red;
+    color: yellow;
+}

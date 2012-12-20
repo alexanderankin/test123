@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- this is a truncated version of the nant xsd
+	it demonstrates a bug of XMLPlugin where
+	schema parsing never ends when a complextype
+	references itself (see IfTask below)
+   -->
+<xs:schema xmlns:nant="http://nant.sf.net/release/0.85/nant.xsd" elementFormDefault="qualified" targetNamespace="http://nant.sf.net/release/0.85/nant.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:documentation>NAnt schema generated at 10/14/2006 16:12:51</xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="NAnt.Core.Tasks.IfTask">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="if" type="nant:NAnt.Core.Tasks.IfTask" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="project">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="if" type="nant:NAnt.Core.Tasks.IfTask" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

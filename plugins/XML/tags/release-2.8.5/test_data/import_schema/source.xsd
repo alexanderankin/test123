@@ -1,0 +1,15 @@
+<schema targetNamespace="http://www.example.com/IPO"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ipo="http://www.example.com/IPO">
+
+  <annotation>
+    <documentation xml:lang="en">
+      Defines only one &lt;comment/&gt; element of type string
+    </documentation>
+  </annotation>
+
+  <element name="comment" type="string"/>
+
+
+</schema>
+
