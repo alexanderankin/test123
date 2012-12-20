@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<p:p xmlns:p="urn:p:">
+<p:eqn>a>b</p:eqn>
+<!-- some commented <open>tag --> 
+<attr c="d"/>
+<attr c="a>d"/>
+</p:p>

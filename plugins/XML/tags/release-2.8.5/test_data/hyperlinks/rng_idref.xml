@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<!-- in this document,
+	an hyperlink must appear in the "manages" attribute
+	under Jim but not under Jules.
+	an hyperlink must appear in the "managedBy" attribute
+	Indeed, an error should appear for Jules since it's an
+	IDREF to an inexistant ID
+	an hyperlink must appear for homepages (absolute & relative url)
+-->
+<employees>
+<employee id="Joe" manages="Jim Jules" homepage="http://rng.org/joe">Joe</employee>
+	<employee id="Jim" managedBy="Joe" homepage="master.xsd">Jim</employee>
+</employees>
