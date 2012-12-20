@@ -191,6 +191,22 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		errorTree.setRootVisible(false);
 		errorTree.setShowsRootHandles(true);
 
+		ErrorSource[] sources = ErrorSource.getErrorSources();
+
+		for(int i = 0; i < sources.length; i++)
+		{
+			ErrorSource source = sources[i];
+			if ((sources[i].getView() != null) && (view != sources[i].getView())) continue;
+			addErrorSource(source, source.getAllErrors());
+		}
+
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
+
 		JScrollPane scroller = new JScrollPane(errorTree);
 		scroller.setPreferredSize(new Dimension(640,200));
 		add(BorderLayout.CENTER,scroller);
