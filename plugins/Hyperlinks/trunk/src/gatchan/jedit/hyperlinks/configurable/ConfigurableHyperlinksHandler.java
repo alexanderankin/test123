@@ -61,7 +61,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 		if (tag.equals("CODE"))
 			code.append(c, off, len);
 		else if (tag.equals("REGEX"))
-			regex = new String(c, off, len);
+			regex.append(c, off, len);
 		else if (tag.equals("TOOLTIP"))
 			tooltip.append(c,off,len);
 	} //}}}
@@ -92,17 +92,17 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 				{
 					Log.log(Log.ERROR, this, "A HYPERLINK is missing code or regex tag");
 					code.setLength(0);
-					regex = null;
+					regex.setLength(0);
 					tooltip.setLength(0);
 					return;
 				}
-				ConfigurableHyperlinkData hyperlink =
-					new ConfigurableHyperlinkData(code.toString(), regex, tooltip.toString());
-				source.add(hyperlink);
 				Log.log(Log.MESSAGE, this, "New hyperlink for "+sourceName+"; regex:"+regex+", code:"+code+", tooltip:"+tooltip);
+				ConfigurableHyperlinkData hyperlink =
+					new ConfigurableHyperlinkData(code.toString(), regex.toString(), tooltip.toString());
+				source.add(hyperlink);
 				code.setLength(0);
 				tooltip.setLength(0);
-				regex = null;
+				regex.setLength(0);
 			} else if (tag.equals("HYPERLINKSOURCE")) {
 				source.trimToSize();
 				sources.put(sourceName,source);
@@ -122,7 +122,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 	public void startDocument()
 	{
 		code = new StringBuilder();
-		regex = null;
+		regex = new StringBuilder();
 		tooltip = new StringBuilder();
 		stateStack = new Stack<String>();
 		sources = new HashMap<String,ArrayList<ConfigurableHyperlinkData>>();
@@ -150,7 +150,7 @@ public class ConfigurableHyperlinksHandler extends DefaultHandler
 
 	private String sourceName;
 	private StringBuilder code;
-	private String regex;
+	private StringBuilder regex;
 	private StringBuilder tooltip;
 
 	private Stack<String> stateStack;
