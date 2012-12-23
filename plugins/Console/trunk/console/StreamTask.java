@@ -1,6 +1,5 @@
 /*
- * StreamTask.java - Base class for OutputStreamTask, InputStreamTask and
- *                   ErrorStreamTask.
+ * StreamTask.java - Base class for SimpleOutputStreamTask and SimpleInputStreamTask.
  *
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
@@ -24,26 +23,41 @@
  
 package console;
 
-abstract class StreamTask extends Thread
+/**
+<p>Hierarchy of classes:
+   
+   	StreamTask
+   	    | |
+   	    | +-- SimpleInputStreamTask --> InputStreamTask
+   	    |
+    SimpleOutputStreamTask  --> ErrorStreamTask
+   	    |
+   	ParsingOutputStreamTask --> OutputStreamTask</p>
+ */
+public abstract class StreamTask extends Thread
 {
-	protected boolean abortFlag;
-	protected boolean finishFlag;
+	protected boolean abortFlag  = false;
+	protected boolean finishFlag = false;
 	
 	public StreamTask()
 	{
 	}
 	
-	/** Interrupt the stream immediately. */
+	public StreamTask(String name)
+	{
+		super(name);
+	}
+	
+	/** Interrupt this thread immediately. */
 	public void abort()
 	{
 		abortFlag = true;
 		interrupt();
 	}
 	
-	/** Ask the stream to be completed and wait until one finishes. */
+	/** Ask this thread to be completed and wait until one finishes. */
 	public void finish()
 	{
 		finishFlag = true;
 	}
-	
 }

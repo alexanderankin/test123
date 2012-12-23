@@ -8,6 +8,16 @@ jEdit Console Plugin Changelog
         Long-term processes (commands run from System shell) are implemented as Tasks.
         Those marked with '&' are background processes, those marked with '#' have a
         closed input channel.
+        
+        Remade data handling subsystem:
+            + added three new data handlers:
+                * SimpleOutputStreamTask  - public basic class class to handle the data
+                                            from running process
+                * ParsingOutputStreamTask - descendant of SimpleOutputStreamTask, which
+                                            outputs using error and ANSI escape parser
+                * SimpleInputStreamTask   - public basic class to handle the data from user
+            + modified OutputStreamTask, InputStreamTask, ErrorStreamTask and
+              ConsoleProcessTask with the new data handlers 
       [Alan Ezust]
         Observe jEdit's general option "Check for changed files" and check after command
         executions too.

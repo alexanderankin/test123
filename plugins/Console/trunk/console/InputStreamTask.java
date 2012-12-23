@@ -24,103 +24,58 @@
 package console;
 
 //{{{ Imports
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 //}}}
 
 /**
  * Thread for feeding input to a running subprocess.
  */
-class InputStreamTask extends StreamTask
+class InputStreamTask extends SimpleInputStreamTask
 {
-	private PipedOutputStream userInput;
-	OutputStream processOutput;
-	ConsoleProcessTask process;
+	private ConsoleProcessTask process;
 
-	//{{{ constructor
+	// {{{ constructor
 	InputStreamTask(ConsoleProcessTask process, OutputStream processOutput, PipedOutputStream userInput)
 	{
-		this.process = process;
-		this.processOutput = processOutput;
-		this.userInput = userInput;
-	} //}}}
-
-	//{{{ run() method
-	public void run()
-	{
-		String _line = "";
+		super(processOutput, userInput);
 		
-		try
-		{
-			process.streamStart(this);
-			
-			PipedInputStream pipeIn = new PipedInputStream(userInput);
-			try
-			{
-				BufferedReader inr = new BufferedReader(new InputStreamReader(pipeIn));
-				
-				while ( !abortFlag )
-				{
-					try
-					{
-						/* wait until:                                           *
-						 * - either the end of the input stream has been reached *
-						 * - or user interrupts this thread.                     */
-						while (true) // waiting loop
-						{
-							if (abortFlag)
-							{
-								throw new InterruptedException("Break the main loop: aborting");
-							}
-							else if ( inr.ready() )
-							{
-								if ((_line = inr.readLine()) == null)
-								{
-									throw new InterruptedException("Break the main loop: input stream is empty"); 
-								}
-								else
-								{
-									break; // break waiting loop only
-								}
-							}
-							else if (finishFlag)
-							{
-								throw new InterruptedException("End the main loop.");
-							}
-							
-							Thread.sleep(100);
-						}
-					}
-					catch (InterruptedException ie)
-					{
-						break;
-					}
-					
-					_line += '\n'; // fixes "Press any key to continue . . ." (cjp)
-					_line = new String(_line.getBytes(), jEdit.getProperty("console.encoding"));
-					processOutput.write(_line.getBytes());
-					processOutput.flush();
-				}
-			}
-			finally
-			{
-				process.streamFinish(this);
-				
-				pipeIn.close(); // <-- throws IOExeption - is called last in this section 
-			}
-				
-		}
-		catch (Exception e)
-		{
-			Log.log(Log.ERROR, this, e);
+		this.process = process;
+	} // }}}
 
-			process.errorNotification(e);
-		}
-	} //}}}
+	// {{{ beforeWorking() method
+	/**
+	 * Run BEFORE main working loop starts
+	 * (under "try" section) 
+	 */
+	@Override
+	protected void beforeWorking() throws Exception
+	{
+		process.streamStart(this);
+	} // }}}
+	
+	// {{{ afterWorking() method
+	/**
+	 * Run AFTER:
+	 * - main working loop ends
+	 * - "finalOutputing()" method
+	 *
+	 * (under "finally" section) 
+	 */
+	@Override
+	protected void afterWorking()
+	{
+		process.streamFinish(this);
+	} // }}}
+	
+	// {{{ exception_dumpToOwner() method
+	/**
+	 * By default do nothing AFTER "exception_dumpToLog" method
+	 * (under "catch" section)
+	 */
+	@Override
+	protected void exception_dumpToOwner(Exception e)
+	{
+		process.errorNotification(e);
+	} // }}}
 }
