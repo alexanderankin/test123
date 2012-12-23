@@ -42,7 +42,7 @@ class ConsoleProcessTask extends Task
 {
 	// {{{ private data members
 	/** The running subprocess */
-	Process process;
+	private Process process;
 	
 	private Console console;
 	private SystemShell.ConsoleState consoleState;
@@ -271,10 +271,10 @@ class ConsoleProcessTask extends Task
 	} // }}}
 	
 	// {{{ ConsoleProcess constructor
-	ConsoleProcessTask(final Console console,
-					   final Output output,
+	ConsoleProcessTask(Console console,
+					   Output output,
 					   Output error,
-					   final String[] args,
+					   String[] args,
 					   Map<String, String> env,
 					   SystemShell.ConsoleState consoleState,
 					   boolean foreground,
@@ -349,10 +349,25 @@ class ConsoleProcessTask extends Task
 					}
 					else
 					{
-						stderr = new ErrorStreamTask(this, process.getErrorStream(), errorColor);
+						stderr = new ErrorStreamTask(this,
+													 process.getErrorStream(),
+													 error,
+													 errorColor
+						);
 					}
-					stdout = new OutputStreamTask(this, process.getInputStream(), plainColor);
-					stdin = new InputStreamTask(this, process.getOutputStream(), userInput);
+					
+					stdout = new OutputStreamTask(this,
+												  process.getInputStream(),
+												  output,
+												  plainColor,
+												  console,
+												  currentDirectory
+					);
+					
+					stdin = new InputStreamTask(this,
+											    process.getOutputStream(),
+											    userInput
+					);
 					
 					// run child threads
 					if (!merge) stderr.start();
@@ -361,7 +376,11 @@ class ConsoleProcessTask extends Task
 				}
 				else // we need stderr only
 				{
-					stderr = new ErrorStreamTask(this, process.getErrorStream(), errorColor);
+					stderr = new ErrorStreamTask(this,
+												 process.getErrorStream(),
+												 error,
+												 errorColor
+					);
 					// run child thread
 					stderr.start();
 				}
@@ -400,19 +419,8 @@ class ConsoleProcessTask extends Task
 				// main waiting loop
 				boolean working = true;
 				
-				while (working)
+				do
 				{
-					// pause 100 ms
-					try
-					{
-						Thread.sleep(100);
-					}
-					catch(InterruptedException ie)
-					{
-						waitForStreams = false;
-						throw new Exception( ie.toString(), ie ); 
-					}
-					
 					// check an exit code of the working process
 					try
 					{
@@ -430,12 +438,27 @@ class ConsoleProcessTask extends Task
 					// check state's flags of the current thread 
 					working &= !currentThread.isInterrupted() && !stopFlag;
 					
-					if (working && detachFlag && foreground)
+					if (working)
 					{
-						doDetach();
-						setTaskState(STATE_UPDATE);
+						if (detachFlag && foreground)
+						{
+							doDetach();
+							setTaskState(STATE_UPDATE);
+						}
+						
+						// pause 100 ms
+						try
+						{
+							Thread.sleep(100);
+						}
+						catch(InterruptedException ie)
+						{
+							waitForStreams = false;
+							throw new Exception( ie.toString(), ie ); 
+						}
 					}
-				}
+					
+				} while (working);
 				
 				/* waitForStreams == false -> some error has appeared        *
 				 * isInterrupted  == true  -> current thread is interrupted, *

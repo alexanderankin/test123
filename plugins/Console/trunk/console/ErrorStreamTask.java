@@ -23,117 +23,54 @@
  
 package console;
 
-// {{{ imports
+// {{{ Imports
 import java.awt.Color;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 // }}}
 
-
-class ErrorStreamTask extends StreamTask
+class ErrorStreamTask extends SimpleOutputStreamTask
 {
-	//{{{ Private members
 	private ConsoleProcessTask process;
-	private InputStream in;
-	private Color errorColor;
-	//}}}
 	
-	//{{{ ErrorThread constructor
-	ErrorStreamTask(ConsoleProcessTask process, InputStream in, Color errorColor)
+	// {{{ constructor
+	ErrorStreamTask(ConsoleProcessTask process, InputStream in, Output output, Color defaultColor)
 	{
+		super(in, output, defaultColor);
+		
 		this.process = process;
-		this.in = in;
-		this.errorColor = errorColor;
-	} //}}}
+		
+		setName("Error thread");
+	} // }}}
 	
-	//{{{ run() method
-	public void run()
+	// {{{ beforeWorking() method
+	@Override
+	protected void beforeWorking() throws Exception
 	{
-		InputStreamReader isr = null;
-		try
+		process.streamStart(this);
+	} // }}}
+	
+	// {{{ afterWorking() method
+	@Override
+	protected void afterWorking()
+	{
+		process.streamFinish(this);
+	} // }}}
+	
+	// {{{ exception_dumpToLog() method
+	@Override
+	protected void exception_dumpToLog(Exception e)
+	{
+		if ( process.isForeground() )
 		{
-			isr = new InputStreamReader(in, jEdit.getProperty("console.encoding") );
+			Log.log(Log.ERROR, e, e);
 		}
-		catch (UnsupportedEncodingException uee)
-		{
-			throw new RuntimeException(uee);
-		}
-
-		Output output = process.getErrorOutput();
-		try
-		{
-			StringBuilder lineBuffer = new StringBuilder(100); 
-			char[] input = new char[1024];
-			int read = 0;
-			
-			process.streamStart(this);
-			
-			try
-			{
-				while ( !abortFlag )
-				{
-					try
-					{
-						/* wait until:                                           *
-						 * - either the end of the input stream has been reached *
-						 * - or user interrupts this thread.                     */
-						while (true) // waiting loop
-						{
-							if (abortFlag)
-							{
-								throw new InterruptedException("Break the main loop: aborting");
-							}
-							else if ( isr.ready() )
-							{
-								if ((read = isr.read(input, 0, input.length)) == -1)
-								{
-									throw new InterruptedException("Break the main loop: input stream is empty"); 
-								}
-								else
-								{
-									break; // break waiting loop only
-								}
-							}
-							else if (finishFlag)
-							{
-								throw new InterruptedException("End the main loop.");
-							}
-							
-							Thread.sleep(100);
-						}
-					}
-					catch (InterruptedException ie)
-					{
-						break;
-					}
-					
-					output.print( errorColor, lineBuffer.append(input, 0, read).toString() );
-					lineBuffer.setLength(0);
-				}
-			}
-			finally
-			{
-				if (lineBuffer.length() > 0)
-				{
-					output.print( errorColor, lineBuffer.toString() );
-				}
-				
-				process.streamFinish(this);
-			}
-			
-		}
-		catch (Exception e)
-		{
-			if ( process.isForeground() )
-			{
-				Log.log(Log.ERROR, e, e);
-			}
-			
-			process.errorNotification(e);
-		}
-	} //}}}
+	} // }}}
+	
+	// {{{ exception_dumpToOwner() method
+	@Override
+	protected void exception_dumpToOwner(Exception e)
+	{
+		process.errorNotification(e);
+	} // }}}
 }
