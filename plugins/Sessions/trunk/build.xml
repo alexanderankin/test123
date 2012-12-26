@@ -50,6 +50,7 @@
 				<include name="actions.xml"/>
 				<include name="sessions/session.dtd"/>
 				<include name="**/*.props"/>
+				<include name="**/*.properties"/>
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
 				<include name="**/*.txt"/>
