@@ -171,39 +171,41 @@ public interface CSS3ParserConstants {
   /** RegularExpression Id. */
   int PHONETIC_ALPHABET_SYM = 80;
   /** RegularExpression Id. */
-  int ATKEYWORD = 81;
+  int ATKEYFRAMES = 81;
   /** RegularExpression Id. */
-  int RANGE0 = 82;
+  int ATKEYWORD = 82;
   /** RegularExpression Id. */
-  int RANGE1 = 83;
+  int RANGE0 = 83;
   /** RegularExpression Id. */
-  int RANGE2 = 84;
+  int RANGE1 = 84;
   /** RegularExpression Id. */
-  int RANGE3 = 85;
+  int RANGE2 = 85;
   /** RegularExpression Id. */
-  int RANGE4 = 86;
+  int RANGE3 = 86;
   /** RegularExpression Id. */
-  int RANGE5 = 87;
+  int RANGE4 = 87;
   /** RegularExpression Id. */
-  int RANGE6 = 88;
+  int RANGE5 = 88;
   /** RegularExpression Id. */
-  int RANGE = 89;
+  int RANGE6 = 89;
   /** RegularExpression Id. */
-  int UNI = 90;
+  int RANGE = 90;
   /** RegularExpression Id. */
-  int UNICODERANGE = 91;
+  int UNI = 91;
   /** RegularExpression Id. */
-  int CLASS = 92;
+  int UNICODERANGE = 92;
   /** RegularExpression Id. */
-  int FUNCTIONLANG = 93;
+  int CLASS = 93;
   /** RegularExpression Id. */
-  int FUNCTIONNOT = 94;
+  int FUNCTIONLANG = 94;
   /** RegularExpression Id. */
-  int FUNCTION = 95;
+  int FUNCTIONNOT = 95;
   /** RegularExpression Id. */
-  int HTMLSTARTTAG = 96;
+  int FUNCTION = 96;
   /** RegularExpression Id. */
-  int HTMLENDTAG = 97;
+  int HTMLSTARTTAG = 97;
+  /** RegularExpression Id. */
+  int HTMLENDTAG = 98;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -291,6 +293,7 @@ public interface CSS3ParserConstants {
     "\"@left\"",
     "\"@counter\"",
     "\"@phonetic-alphabet\"",
+    "<ATKEYFRAMES>",
     "<ATKEYWORD>",
     "<RANGE0>",
     "<RANGE1>",
