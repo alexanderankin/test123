@@ -49,20 +49,20 @@ import jcfunc.Description;
    User can set parsers either at the moment of class's creating or after class'
    creation. If some parser is not defined - the class does not use that parser.
    
-   A getted from InputStream char's sequence (size == SimpleOutputStreamTask.BUFFER_SIZE)
+   A char's sequence from an InputStream (size == SimpleOutputStreamTask.BUFFER_SIZE)
    is divided by line's breaks (if any), because the error parser might work
-   with individual lines only, not the whole getted sequence - in common case
-   InputStream can produce really many individual lines. On the other hand each
-   individual line is outputted in EDT (AWT-EventQueue). So, if InputStream produces
+   with individual lines only, not the whole sequence - in common case
+   InputStream can produce really many individual lines. On the other hand, each
+   individual line is output in EDT (AWT-EventQueue). So, if InputStream produces
    a lot of lines - most of the time EDT processes them, and not other events
    of the jEdit's interface: it will hang until all the generated lines will
    be processed. However, this can be avoided if the output are not the individual
    lines, but an array of them. In this case, the number of events that must
    be processed EDT, sharply reduced.
    For this reason after processing of each individual line ParsingOutputStreamTask
-   tries flush one to the cash. If the cash is full (CASH_SIZE_LIMIT) or current
-   style attributes are changed or the last cash's update was a long ago (CASH_TIME_DELAY)
-   then the whole cash is flushed to output.
+   tries flush one to the cache. If the cache is full (CACHE_SIZE_LIMIT) or current
+   style attributes are changed or the last cache's update was a long ago (CACHE_TIME_DELAY)
+   then the whole cache is flushed to output.
  */
 public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 {
@@ -79,13 +79,13 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	private SimpleAttributeSet commonAttrs;
 	private SimpleAttributeSet defaultAttrs, warningAttrs, errorAttrs;
 	
-	// {{{ cash's members
-	private final int CASH_SIZE_LIMIT = 100;  // line's count
-	private final long CASH_TIME_DELAY = 100; // in msek
-	private SimpleAttributeSet cash_lastAttrs;
-	private int cash_strCount = 0;
-	private long cash_lastTime = 0;
-	private StringBuilder cash = new StringBuilder();
+	// {{{ cache's members
+	private final int CACHE_SIZE_LIMIT = 100;  // line's count
+	private final long CACHE_TIME_DELAY = 100; // in msek
+	private SimpleAttributeSet cache_lastAttrs;
+	private int cache_strCount = 0;
+	private long cache_lastTime = 0;
+	private StringBuilder cache = new StringBuilder();
 	// }}}
 	
 	// {{{ init() method
@@ -102,15 +102,15 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		defaultAttrs = setDefaultAttrs(null);
 	} // }}}
 	
-	// {{{ resetCash() method
-	private boolean resetCash(boolean flag)
+	// {{{ resetCache() method
+	private boolean resetCache(boolean flag)
 	{
-		if (flag || cash_strCount >= CASH_SIZE_LIMIT)
+		if (flag || cache_strCount >= CACHE_SIZE_LIMIT)
 		{
-			output.writeAttrs(cash_lastAttrs, cash.toString());
+			output.writeAttrs(cache_lastAttrs, cache.toString());
 			
-			cash_strCount  = 0;
-			cash.setLength(0);
+			cache_strCount  = 0;
+			cache.setLength(0);
 			
 			return true;
 		}
@@ -121,14 +121,14 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	// {{{ outputting() method
 	private void outputting(SimpleAttributeSet currentAttrs, String str)
 	{
-		if ( resetCash(currentAttrs != cash_lastAttrs) )
+		if ( resetCache(currentAttrs != cache_lastAttrs) )
 		{
-			cash_lastAttrs = currentAttrs;
+			cache_lastAttrs = currentAttrs;
 		}
 		
-		cash.append(str);
-		cash_strCount++;
-		cash_lastTime = System.currentTimeMillis();
+		cache.append(str);
+		cache_strCount++;
+		cache_lastTime = System.currentTimeMillis();
 	} // }}}
 	
 	// {{{ printString() method
@@ -366,7 +366,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 			lineBuffer.setLength(0);
 		}
 		
-		resetCash( System.currentTimeMillis() - cash_lastTime > CASH_TIME_DELAY );
+		resetCache( System.currentTimeMillis() - cache_lastTime > CACHE_TIME_DELAY );
 	} // }}}
 	
 	// {{{ afterWorking() method
@@ -385,7 +385,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 			printString(lineBuffer.toString(), false);
 		}
 		
-		resetCash( cash.length() > 0 );
+		resetCache( cache.length() > 0 );
 	} // }}}
 	
 	// {{{ outputData() method
