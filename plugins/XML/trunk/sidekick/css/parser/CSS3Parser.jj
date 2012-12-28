@@ -525,6 +525,7 @@ TOKEN [IGNORE_CASE] :
   | <ATLEFT: "@left" >
   | <ATCOUNTER: "@counter" >
   | <PHONETIC_ALPHABET_SYM: "@phonetic-alphabet" >
+  | <ATKEYFRAMES: "@" <IDENT> "keyframes" >
   | <ATKEYWORD: "@" <IDENT> >
 }
 
@@ -734,6 +735,7 @@ List<CSSNode> afterImportDeclaration() :
             (
                 node=ruleSet() {if (node != null) list.add(node);}
               | node=media() {if (node != null) list.add(node);}
+              | node=keyframes() {if (node != null) list.add(node);}
               | node=page() {if (node != null) list.add(node);}
               | node=fontFace() {if (node != null) list.add(node);}
               | node=preference() {if (node != null) list.add(node);}
@@ -908,62 +910,70 @@ CSSNode importDeclaration() :
     }
 }
 
-
 CSSNode media() :
 {
     Token start = null;
     Token mr = null;
     CSSNode medium = null;
-    List<CSSNode> mlist = new ArrayList<CSSNode>();
     CSSNode mdecl = null;
-    List<CSSNode> mdeclList = new ArrayList<CSSNode>();
     CSSNode ruleset = null;
+    List<CSSNode> ruleList = new ArrayList<CSSNode>();
     Token end = null;
+    StringBuilder label = new StringBuilder("media");
 }
 {
     try {
         start=<MEDIA_SYM> 
         (
             <S>
-        ) *
-    
-        // <CSS3>
-        (
-            mr=<MEDIARESTRICTOR>
-            (
-                <S>
-            ) +
-        ) ?
-        // </CSS3>
+        ) +
         
-        medium=medium() {if (medium != null) mlist.add(medium);}
         (
-            <COMMA> 
-            (
-                <S>
-            ) *
-            medium=medium() {if (medium != null) mlist.add(medium);}
-        ) *
-     
-        // <CSS3>
-        (
-            <AND> 
-            (
-                <S>
-            ) *
-    
-            <LPARAN> 
-            (
-                <S>
-            ) *
-    
-            mdecl=mediadeclaration() {if(mdecl != null) mdeclList.add(mdecl);}
-            <RPARAN> 
-            (
-                <S>
-            ) *
-    
-        ) *
+			// <CSS3>
+			(
+				mr = <MEDIARESTRICTOR>
+				(
+					<S>
+				) +
+				{ label.append(" ").append(mr.image); }
+			) ?
+			// </CSS3>
+			
+			medium=medium() {if (medium != null) label.append(" ").append(medium.toString());}
+			(
+				LOOKAHEAD(2)
+				<COMMA> 
+				(
+					<S>
+				) *
+				medium=medium() {if (medium != null) label.append(" ").append(medium.toString());}
+			) *
+		 
+			// <CSS3>
+			(
+				<AND> 
+				(
+					<S>
+				) *
+		
+				<LPARAN> 
+				(
+					<S>
+				) *
+		
+				mdecl=mediadeclaration() {if (mdecl != null) label.append("(").append(mdecl.toString()).append(")");}
+				<RPARAN> 
+				(
+					<S>
+				) *
+		
+			) *
+			
+			(
+				<COMMA> 
+				<S>
+			) *
+        )+
         
         <LBRACE> 
         (
@@ -971,13 +981,14 @@ CSSNode media() :
         ) *
      
         (
-            ruleset=ruleSet()
+            ruleset=ruleSet() {if(ruleset != null) ruleList.add(ruleset);}
         ) *
     
         end=<RBRACE> 
         (
             <S>
         ) *
+        
     } 
     catch ( ParseException e ) {
         addException(e);
@@ -986,12 +997,10 @@ CSSNode media() :
     } 
     {
         if (notNull(start, end)) {
-            CSSNode node = new CSSNode(start.image);
-            if (mr != null) {
-                node.addChild(createNode(mr));   
-            }
-            node.addChildren(mlist);
-            node.addChildren(mdeclList);
+        	if (label.length()>64)
+        		label.replace(64,label.length(),"...");
+            CSSNode node = new CSSNode(label.toString());
+			node.addChildren(ruleList);
             node.setStartLocation(getStartLocation(start));
             node.setEndLocation(getEndLocation(end));
             return node;
@@ -1386,6 +1395,123 @@ CSSNode phoneticAlphabet() :
         return null;
     }
 }
+
+CSSNode keyframeRuleSet() :
+{
+    Token t = null;
+    List<CSSNode> selectors = new ArrayList<CSSNode>();
+    List<CSSNode> decls = null;
+    Token end = null;
+}
+{
+    try {
+		( t = <IDENT> | t = <PERCENTAGE> )
+		{if (t != null) selectors.add(new CSSNode(t.image)); }
+		(
+			<S>
+		) *
+        (
+            <COMMA> 
+            (
+                <S>
+            ) *
+            ( t = <IDENT> | t = <PERCENTAGE> )
+			{if (t != null) selectors.add(new CSSNode(t.image)); }
+            (
+                <S>
+            ) *
+        ) *
+        <LBRACE>
+        (
+            <S>
+        ) *
+        decls=declarations()
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (selectors.size() > 0 && notNull(decls, end)) {
+            StringBuilder sb = new StringBuilder();
+            for (CSSNode s : selectors) {
+                sb.append(s.getName()).append(',');   
+            }
+            String name = sb.substring(0, Math.max(0, sb.length() - 1));
+            CSSNode node = new CSSNode(name);
+            node.addChildren(decls);
+            node.setStartLocation(selectors.get(0).getStartLocation());
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode keyframes() :
+{
+    Token start = null;
+    Token animationname = null;
+    Token kfsel = null;
+    CSSNode ruleset = null;
+    List<CSSNode> ruleList = new ArrayList<CSSNode>();
+    Token end = null;
+}
+{
+    try {
+        start=<ATKEYFRAMES> 
+        (
+            <S>
+        ) +
+        
+        
+        animationname = <IDENT>
+        (
+            <S>
+        ) *
+        
+
+        <LBRACE> 
+        (
+            <S>
+        ) *
+     
+        (
+            ruleset=keyframeRuleSet() {if(ruleset != null) ruleList.add(ruleset);}
+        ) +
+    
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+        
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    } 
+    {
+        if (notNull(start, end)) {
+        	StringBuilder label = new StringBuilder(start.image);
+            if (animationname != null) {
+                label.append(" ").append(animationname.image);
+            }
+            CSSNode node = new CSSNode(label.toString());
+			node.addChildren(ruleList);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
 
 CSSNode atRuleDeclaration() :
 {
@@ -2462,6 +2588,5 @@ JAVACODE String skip_to_matching_brace() {
     }
     return s.toString();
 }
-
 
 
