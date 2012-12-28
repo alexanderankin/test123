@@ -151,7 +151,8 @@ public class Connection implements UserInfo {
 		passphrase = ConnectionManager.getPassphrase(info.privateKey);
 		if (passphrase==null || keyAttempts != 0)
 		{
-			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),"Enter Passphrase for key",message);
+			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
+				jEdit.getProperty("login.privatekeypassword"), message);
 			if (!pd.isOK())
 				return false;
 			passphrase = new String(pd.getPassword());
