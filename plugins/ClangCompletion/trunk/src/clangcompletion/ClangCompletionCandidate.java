@@ -21,6 +21,8 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
 	
 	private String description;
 	
+	private String clangOutput;
+	
 	private static int lengthOfClangOuputHeader = new String("COMPLETION: ").length();
 	
 	protected ListCellRenderer renderer;
@@ -61,6 +63,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     
     public static ClangCompletionCandidate parse(String clangOutput)
     {
+    	/* 
     	StringBuilder label = new StringBuilder(clangOutput);
     	int indexOfDesc = label.indexOf(" : ", lengthOfClangOuputHeader) + 3;
     	if(indexOfDesc > 0)
@@ -117,42 +120,73 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     	while(desc.charAt(0) == ' ')
     	{
     		desc.delete(0, 1);
+    	} 
+    	*/
+    	
+    	
+    	if(clangOutput.startsWith("COMPLETION: "))
+    	{
+    		ClangCompletionCandidate candidate = new ClangCompletionCandidate();
+    		candidate.clangOutput = clangOutput;
+    		return candidate;
     	}
     	
-    	ClangCompletionCandidate candidate = new ClangCompletionCandidate();
-    	candidate.labelText = label.toString().trim();
-    	candidate.description = desc.toString().trim();
-    	
-    	return candidate;
+    	return null;
     }
     
     @Override
     public String getDescription()
     {
-    	/* String result = labelText;
-    	int i;
-    	i = labelText.indexOf(description);
-    	if(i >= 0)
+    	if(description == null)
     	{
-    		//delete return value;
-    		result = result.substring(i);
+    		StringBuilder desc = new StringBuilder(clangOutput);
+    		int indexOfDesc = desc.indexOf(" : ", lengthOfClangOuputHeader) + 3;
+    		if(indexOfDesc > 0)
+    		{
+    			desc.delete(0, indexOfDesc);
+    		}
+    		
+    		int indexOfSep = 0;
+    		while((indexOfSep = desc.indexOf("<#")) >= 0)
+    		{
+    			desc.delete(indexOfSep, indexOfSep + 2);
+    		}
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = desc.indexOf("#>")) >= 0)
+    		{
+    			desc.delete(indexOfSep, indexOfSep + 2);
+    		}
+    		
+    		while((indexOfSep = desc.indexOf("{#")) >= 0)
+    		{
+    			desc.delete(indexOfSep, indexOfSep + 2);
+    		}
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = desc.indexOf("#}")) >= 0)
+    		{
+    			desc.delete(indexOfSep, indexOfSep + 2);
+    		}
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = desc.indexOf("[#")) >= 0)
+    		{
+    			int indexOfSepend = desc.indexOf("#]", indexOfSep);
+    			if(indexOfSepend > indexOfSep)
+    			{
+    				desc.delete(indexOfSep, indexOfSepend + 2);
+    			}
+    		}
+    		
+    		while(desc.charAt(0) == ' ')
+    		{
+    			desc.delete(0, 1);
+    		} 
+    		
+    		description = desc.toString();
     	}
     	
-    	i = result.indexOf("[");
-    	if(i > 0)
-    	{
-    		//delete const in the end of func
-    		result = result.substring(0, i);
-    	}
-    	
-    	// : text inside [#...#] should be displayed but not isnert into text area
-    	//COMPLETION: setText : [#void#][#CommonDialogLayer::#]setText(<#const char *text#>{#, <#int text_id#>#})
-    	//COMPLETION: getString : [#const std::string &#]getString()[# const#]
-    	result = result.replace("<#","");
-    	result = result.replace("#>","");
-    	result = result.replace("{#","");
-    	result = result.replace("#}","");
-        return result; */
         return description;
     }
     
@@ -169,7 +203,7 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
         
         // System.out.println(description.startsWith("mai"));
         
-        if( description.toLowerCase().startsWith(prefix.toLowerCase()))
+        if( clangOutput.substring(lengthOfClangOuputHeader).toLowerCase().startsWith(prefix.toLowerCase()))
         {
         	return true;
         }else
@@ -181,6 +215,55 @@ public class ClangCompletionCandidate  extends BaseCompletionCandidate
     @Override
     public String getLabelText()
     {
+    	if(labelText == null)
+    	{
+    		StringBuilder label = new StringBuilder(clangOutput);
+    		int indexOfDesc = label.indexOf(" : ", lengthOfClangOuputHeader) + 3;
+    		if(indexOfDesc > 0)
+    		{
+    			label.delete(0, indexOfDesc);
+    		}
+    		
+    		int indexOfSep = 0;
+    		while((indexOfSep = label.indexOf("<#")) >= 0)
+    		{
+    			label.replace(indexOfSep, indexOfSep + 2, "<font color=#663366>");
+    		}
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = label.indexOf("#>")) >= 0)
+    		{
+    			label.replace(indexOfSep, indexOfSep + 2, "</font>");
+    		}
+    		
+    		while((indexOfSep = label.indexOf("{#")) >= 0)
+    		{
+    			label.replace(indexOfSep, indexOfSep + 2,  "");
+    		}
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = label.indexOf("#}")) >= 0)
+    		{
+    			label.replace(indexOfSep, indexOfSep + 2, "");
+    		}
+    		
+    		
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = label.indexOf("#]")) >= 0)
+    		{
+    			label.replace(indexOfSep, indexOfSep + 2,  " </font>");
+    		}
+    		
+    		indexOfSep = 0;
+    		while((indexOfSep = label.indexOf("[#")) >= 0)
+    		{
+    			label.replace(indexOfSep, indexOfSep + 2, "<font color=#003399>");
+    		}
+    		
+    		labelText = label.toString();
+    	}
+    	
         return labelText;
     }
     /*
