@@ -54,7 +54,7 @@ class OutputStreamTask extends ParsingOutputStreamTask
 	
 	// {{{ afterWorking() method
 	@Override
-	protected void afterWorking()
+	protected void afterWorking() throws Exception
 	{
 		super.afterWorking();
 		
