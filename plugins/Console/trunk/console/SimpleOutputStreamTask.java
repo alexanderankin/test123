@@ -28,7 +28,10 @@ package console;
 import java.awt.Color;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -79,15 +82,15 @@ import org.gjt.sp.util.Log;
  // }}}
 public class SimpleOutputStreamTask extends StreamTask
 {
-	private InputStream in;
-	private Color defaultColor;
+	private WaitingLoop waitingLoop;
 	
+	protected int BufferSize     = 1024;
+	protected int SleepDelayMSec = 20;
+	
+	protected InputStream in;
+	protected Color defaultColor;
 	protected Output output;
 	protected StringBuilder lineBuffer;
-	
-	protected int BUILDER_CAPACITY = 100;
-	protected int BUFFER_SIZE = 1024;
-	protected int SLEEP_DELAY = 100;
 	
 	// {{{ constructor
 	public SimpleOutputStreamTask(InputStream in, Output output, Color defaultColor)
@@ -97,8 +100,6 @@ public class SimpleOutputStreamTask extends StreamTask
 		this.in = in;
 		this.output = output;
 		this.defaultColor = defaultColor;
-		
-		lineBuffer = new StringBuilder(BUILDER_CAPACITY); 
 	} // }}}
 	
 	// {{{ actionInsideWaitingLoop() method
@@ -117,7 +118,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	 *
 	 * (under "finally" section) 
 	 */
-	protected void afterWorking()
+	protected void afterWorking() throws Exception
 	{
 	} // }}}
 	
@@ -167,7 +168,6 @@ public class SimpleOutputStreamTask extends StreamTask
 	} // }}}
 	
 	// {{{ run() method
-	/** Task class method */
 	@Override
 	public final void run()
 	{
@@ -180,11 +180,35 @@ public class SimpleOutputStreamTask extends StreamTask
 		{
 			throw new RuntimeException(uee);
 		}
-
+		
+		if (waitingLoop == null)
+		{
+			boolean _synchronized = false;
+			
+			Method[] methods = in.getClass().getMethods();
+			for (Method method : methods)
+			{
+				String name = method.getName(); 
+				if ( name.contentEquals("available") ||
+					 name.contentEquals("read")         )
+				{
+					if ( Modifier.isSynchronized( method.getModifiers() ) )
+					{
+						_synchronized = true;
+						break;
+					}
+				}
+			}
+			
+			setWaitingLoop( _synchronized ?	WLTypes.syncWL : WLTypes.nonsyncWL );
+		}
+		
 		try
 		{
-			char[] input = new char[BUFFER_SIZE];
+			char[] input = new char[BufferSize];
 			int read = 0;
+			
+			lineBuffer = new StringBuilder(BufferSize); 
 			
 			beforeWorking();
 			
@@ -194,35 +218,11 @@ public class SimpleOutputStreamTask extends StreamTask
 				{
 					try
 					{
-						/* wait until:                                           *
-						 * - either the end of the input stream has been reached *
-						 * - or user interrupts this thread.                     */
-						while (true) // waiting loop
-						{
-							if (abortFlag)
-							{
-								throw new InterruptedException("Break the main loop: aborting");
-							}
-							else if ( isr.ready() )
-							{
-								if ((read = isr.read(input, 0, input.length)) == -1)
-								{
-									throw new InterruptedException("Break the main loop: input stream is empty"); 
-								}
-								else
-								{
-									break; // break waiting loop only
-								}
-							}
-							else if (finishFlag)
-							{
-								throw new InterruptedException("End the main loop.");
-							}
-							
-							Thread.sleep(SLEEP_DELAY);
-							
-							actionInsideWaitingLoop(isr);
-						}
+						read = waitingLoop.readIfReady(isr, input, 0, input.length);
+					}
+					catch (InterruptedIOException iioe)
+					{
+						break;
 					}
 					catch (InterruptedException ie)
 					{
@@ -232,6 +232,8 @@ public class SimpleOutputStreamTask extends StreamTask
 					lineBuffer.append(input, 0, read);
 					
 					outputData();
+					
+					waitingLoop.decoratedActionInsideWaitingLoop(isr);
 				}
 			}
 			finally
@@ -263,4 +265,170 @@ public class SimpleOutputStreamTask extends StreamTask
 		output.print( defaultColor, lineBuffer.toString() );
 		lineBuffer.setLength(0);
 	} // }}}
+	
+	// {{{ setWaitingLoop() method 
+	public void setWaitingLoop(WLTypes wl)
+	{
+		switch (wl)
+		{
+			case syncWL :
+				waitingLoop = new SynchronizedWL();
+				break;
+				
+			case nonsyncWL :
+				waitingLoop = new NonsynchronizedWL();
+				break;
+				
+			case blockWL :
+				waitingLoop = new BlockingWL();
+				break;
+				
+			default:
+				waitingLoop = new NonsynchronizedWL();
+		}
+	} // }}}
+	
+	// {{{ inner classes
+	
+	// {{{ enum WLTypes
+	public enum WLTypes
+	{
+		/** nonblocking synchronized waiting loop */
+		syncWL,
+		
+		/** nonblocking asynchronized waiting loop (default) */
+		nonsyncWL,
+		
+		/** blocking asynchronized waiting loop */
+		blockWL
+	} // }}}
+	
+	// {{{ class WaitingLoop
+	private class WaitingLoop
+	{
+		public int readIfReady(InputStreamReader isr, char[] input, int offset, int length)
+			throws Exception
+		{
+			throw new InterruptedException("End the main loop.");
+		}
+		
+		public void decoratedActionInsideWaitingLoop(InputStreamReader isr)
+			throws Exception
+		{
+		}
+	} // }}}
+	
+	// {{{ class NonsynchronizedWL
+	private class NonsynchronizedWL extends WaitingLoop
+	{
+		@Override
+		public int readIfReady(InputStreamReader isr, char[] input, int offset, int length)
+			throws Exception
+		{
+			int result = 0;
+			
+			while (true) // waiting loop
+			{
+				if (SimpleOutputStreamTask.this.abortFlag)
+				{
+					throw new InterruptedException("Break the main loop: aborting");
+				}
+				else if ( isr.ready() )
+				{
+					if ( (result = isr.read(input, offset, length)) == -1 )
+					{
+						throw new InterruptedException("Break the main loop: input stream is empty"); 
+					}
+					else
+					{
+						break; // break waiting loop only
+					}
+				}
+				else if (SimpleOutputStreamTask.this.finishFlag)
+				{
+					throw new InterruptedException("End the main loop.");
+				}
+				
+				// sleep()
+				Thread.sleep(SimpleOutputStreamTask.this.SleepDelayMSec);
+				
+				SimpleOutputStreamTask.this.actionInsideWaitingLoop(isr);
+			}
+			
+			return result;
+		}
+	} // }}}
+	
+	// {{{ class SynchronizedWL
+	private class SynchronizedWL extends WaitingLoop
+	{
+		@Override
+		public int readIfReady(InputStreamReader isr, char[] input, int offset, int length)
+			throws Exception
+		{
+			int result = 0;
+			
+			synchronized (SimpleOutputStreamTask.this.in)
+			{
+				while (true) // waiting loop
+				{
+					if (SimpleOutputStreamTask.this.abortFlag)
+					{
+						throw new InterruptedException("Break the main loop: aborting");
+					}
+					else if ( isr.ready() )
+					{
+						if ( (result = isr.read(input, offset, length)) == -1 )
+						{
+							throw new InterruptedException("Break the main loop: input stream is empty"); 
+						}
+						else
+						{
+							break; // break waiting loop only
+						}
+					}
+					else if (SimpleOutputStreamTask.this.finishFlag)
+					{
+						throw new InterruptedException("End the main loop.");
+					}
+					
+					// wait()
+					SimpleOutputStreamTask.this.in.wait(SimpleOutputStreamTask.this.SleepDelayMSec);
+					
+					SimpleOutputStreamTask.this.actionInsideWaitingLoop(isr);
+				}
+			}
+			
+			return result;
+		}
+	} // }}}
+	
+	// {{{ class BlockingWL
+	private class BlockingWL extends WaitingLoop
+	{
+		@Override
+		public int readIfReady(InputStreamReader isr, char[] input, int offset, int length)
+			throws Exception
+		{
+			int result = isr.read(input, offset, length);
+			
+			if (result == -1)
+			{
+				throw new InterruptedException("Break the main loop: input stream is empty");
+			}
+			
+			return result;
+		}
+		
+		@Override
+		public void decoratedActionInsideWaitingLoop(InputStreamReader isr)
+			throws Exception
+		{
+			SimpleOutputStreamTask.this.actionInsideWaitingLoop(isr);
+		}
+	} // }}}
+	
+	// }}}
+	
+	// }}}
 }

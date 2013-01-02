@@ -49,7 +49,7 @@ import jcfunc.Description;
    User can set parsers either at the moment of class's creating or after class'
    creation. If some parser is not defined - the class does not use that parser.
    
-   A char's sequence from an InputStream (size == SimpleOutputStreamTask.BUFFER_SIZE)
+   A char's sequence from an InputStream (size == SimpleOutputStreamTask.BufferSize)
    is divided by line's breaks (if any), because the error parser might work
    with individual lines only, not the whole sequence - in common case
    InputStream can produce really many individual lines. On the other hand, each
@@ -61,8 +61,7 @@ import jcfunc.Description;
    be processed EDT, sharply reduced.
    For this reason after processing of each individual line ParsingOutputStreamTask
    tries flush one to the cache. If the cache is full (CACHE_SIZE_LIMIT) or current
-   style attributes are changed or the last cache's update was a long ago (CACHE_TIME_DELAY)
-   then the whole cache is flushed to output.
+   style attributes are changed then the whole cache is flushed to output.
  */
 public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 {
@@ -81,10 +80,8 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	
 	// {{{ cache's members
 	private final int CACHE_SIZE_LIMIT = 100;  // line's count
-	private final long CACHE_TIME_DELAY = 100; // in msek
 	private SimpleAttributeSet cache_lastAttrs;
 	private int cache_strCount = 0;
-	private long cache_lastTime = 0;
 	private StringBuilder cache = new StringBuilder();
 	// }}}
 	
@@ -128,7 +125,6 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		
 		cache.append(str);
 		cache_strCount++;
-		cache_lastTime = System.currentTimeMillis();
 	} // }}}
 	
 	// {{{ printString() method
@@ -366,12 +362,12 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 			lineBuffer.setLength(0);
 		}
 		
-		resetCache( System.currentTimeMillis() - cache_lastTime > CACHE_TIME_DELAY );
+		resetCache( cache.length() > 0 );
 	} // }}}
 	
 	// {{{ afterWorking() method
 	@Override
-	protected void afterWorking()
+	protected void afterWorking() throws Exception
 	{
 		errorParser.finishErrorParsing();
 	} // }}}
