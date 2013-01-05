@@ -2,7 +2,7 @@
                     Version 4, October 2012
 	    Based on the wtfpl: http://sam.zoy.org/wtfpl/
 
- Copyright © 2012 Alan Ezust
+ Copyright © 2012 Alan Ezust, Artem Bryantsev
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
@@ -32,7 +32,6 @@ import errorlist.DefaultErrorSource;
 
 /**
  * Thread for handing output of running remote ssh commands
- * Based on the deprecated StreamThread.java from Console plugin:
  * StreamThread.java * 10982 2007-11-06 05:02:42Z.
  *
  * @version $Id$
@@ -64,14 +63,14 @@ class StreamThread extends ParsingOutputStreamTask
 	public void setStatus(String newStatus) {
 		status = newStatus;
 	}
+	
 	public String getStatus() {
 		return status;
-		
-	}
-	public String toString() {
-		return status;		
 	}
 	
+	public String toString() {
+		return status;
+	}
 }
 
 // :folding=explicit:
