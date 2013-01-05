@@ -128,7 +128,7 @@ public class Connection implements UserInfo {
 									 console.getPlainColor()
 			);
 			stout.setStatus("ssh " + info.toString());
-			stout.start();
+			ThreadUtilities.runInBackground(stout);
 		}
 	}// }}}
 	
