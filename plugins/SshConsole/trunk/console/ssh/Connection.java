@@ -62,6 +62,9 @@ public class Connection implements UserInfo {
 	StreamThread stout;
 	Console console;
 	private int keyAttempts = 0;
+	
+	private int SESSION_TIMEOUT = 60000;
+	private int CHANNEL_TIMEOUT = 10000;
 	// }}}
 
 	// {{{ Connection ctor
@@ -78,7 +81,7 @@ public class Connection implements UserInfo {
 			keyAttempts = 0;
 			session.setUserInfo(this);
 			// Timeout hardcoded to 60seconds
-			session.connect(60000);
+			session.connect(SESSION_TIMEOUT);
 			channel=session.openChannel("shell");
 			ChannelShell channelShell = (ChannelShell) channel;
 			channelShell.setAgentForwarding(true);
@@ -88,16 +91,21 @@ public class Connection implements UserInfo {
 			PipedOutputStream pos = new PipedOutputStream();
 			PipedInputStream pis = new PipedInputStream(pos);
 			channel.setOutputStream(pos);
-			stout = new StreamThread(
-				console, pis, console.getOutput(), console.getPlainColor());
-			ThreadUtilities.runInBackground(stout);
+			
+			stout = new StreamThread(console,
+									 pis,
+									 console.getOutput(),
+									 console.getPlainColor()
+			);
+			stout.start();
+			
 			pos = new PipedOutputStream();
 			pis = new PipedInputStream(pos);
 
 			channel.setInputStream(pis);
 			ostr = pos;
 
-			channel.connect(10000);
+			channel.connect(CHANNEL_TIMEOUT);
 
 		}
 		catch (Exception e) {
@@ -108,43 +116,57 @@ public class Connection implements UserInfo {
 	}// }}}
 
 	// {{{ setConsole() method
-    
 	void setConsole(Console c) throws IOException {
 		if (c != console) {
 			stout.abort();
 			console = c;
-			stout = new StreamThread (
-				console, channel.getInputStream(), console.getOutput(), console.getPlainColor());
-			ThreadUtilities.runInBackground(stout);
+			stout = new StreamThread(console,
+									 channel.getInputStream(),
+									 console.getOutput(),
+									 console.getPlainColor()
+			);
+			stout.start();
 		}
 	}// }}}
-
+	
+	// {{{ inUse() method
 	public boolean inUse()
 	{
 		return inUse;
-	}
-
+	} // }}}
+	
+	// {{{ checkIfOpen() method
 	boolean checkIfOpen() throws IOException
 	{
 		return channel.isConnected();
-	}
-
+	} // }}}
+	
+	// {{{ logout() method
 	void logout() throws IOException
 	{
+		stout.abort();
 		channel.disconnect();
-	}
-
+	} // }}}
+	
+	// {{{ getPassphrase() method
 	public String getPassphrase()
 	{
 		return passphrase;
-	}
-
+	} // }}}
+	
+	// {{{ getPassword() method
 	public String getPassword()
 	{
 		return info.password;
-	}
-
-	public boolean promptPassword(String message){ return true;}
+	} // }}}
+	
+	// {{{ promptPassword() method
+	public boolean promptPassword(String message)
+	{
+		return true;
+	} // }}}
+	
+	// {{{ promptPassphrase() method
 	public boolean promptPassphrase(String message)
 	{
 		Log.log(Log.DEBUG,this,message);
@@ -160,7 +182,9 @@ public class Connection implements UserInfo {
 		}
 		keyAttempts++;
 		return true;
-	}
+	} // }}}
+	
+	// {{{ promptYesNo()
 	public boolean promptYesNo(String message)
 	{
 		Object[] options={ "yes", "no" };
@@ -171,9 +195,12 @@ public class Connection implements UserInfo {
 			JOptionPane.WARNING_MESSAGE,
 			null, options, options[0]);
 		return foo==0;
-	}
+	} // }}}
+	
+	// {{{ showMessage() method
 	public void showMessage(String message)
 	{
 		JOptionPane.showMessageDialog(null, message);
-	}
+	} // }}}
+	
 } // }}}
