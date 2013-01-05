@@ -366,8 +366,11 @@ public class ErrorMatcher implements Cloneable
 			return null;
 		// Sometimes directory is not valid
 		String _filename = MiscUtilities.constructPath(directory, file);
-		File f = new File(_filename);
-		if (!f.exists()) _filename = file;
+		if (!MiscUtilities.isURL(_filename))
+		{
+			File f = new File(_filename);
+			if (!f.exists()) _filename = file;
+		}
 		try
 		{
 			return new DefaultError(errorSource, type, _filename,
