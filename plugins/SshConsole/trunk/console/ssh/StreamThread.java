@@ -37,8 +37,9 @@ import errorlist.DefaultErrorSource;
  *
  * @version $Id$
  */
-class StreamThread extends ParsingOutputStreamTask
+class StreamThread extends ParsingOutputStreamTask 
 {
+	private String status;
 	/**
 	 * @param in - a stream to read things from, that we want to display.
 	 */
@@ -57,6 +58,18 @@ class StreamThread extends ParsingOutputStreamTask
 		
 		setErrorParser(copt);
 		setAnsiParser(defaultColor, console.getConsolePane().getBackground());
+		status = "sshconsole";
+	}
+	
+	public void setStatus(String newStatus) {
+		status = newStatus;
+	}
+	public String getStatus() {
+		return status;
+		
+	}
+	public String toString() {
+		return status;		
 	}
 	
 }
