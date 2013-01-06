@@ -2,7 +2,7 @@
 
 jEdit Console Plugin Changelog
 
-    Version 5.1 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
+    Version 5.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
         FR #3472822 - Console + Task Monitor
         Long-term processes (commands run from System shell) are implemented as Tasks.
@@ -22,7 +22,8 @@ jEdit Console Plugin Changelog
         Observe jEdit's general option "Check for changed files" and check after command
         executions too.
         #3558537 - restore values from properties destroys user custom error patterns.
-        Fixed incompatibility with SshConsole regression introduced in Console 4.5
+        Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5
+            (incorrect error paths - failed to open the correct remote files from ErrorList)
 
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
