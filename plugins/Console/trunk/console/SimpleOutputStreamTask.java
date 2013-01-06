@@ -266,7 +266,11 @@ public class SimpleOutputStreamTask extends StreamTask
 		lineBuffer.setLength(0);
 	} // }}}
 	
-	// {{{ setWaitingLoop() method 
+	// {{{ setWaitingLoop() method
+	/**
+	 * Setup waiting loop.
+	 * Output handler reads data from external stream inside this loop.
+	 */
 	public void setWaitingLoop(WLTypes wl)
 	{
 		switch (wl)
@@ -291,6 +295,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	// {{{ inner classes
 	
 	// {{{ enum WLTypes
+	/** Types of waiting loop. */
 	public enum WLTypes
 	{
 		/** nonblocking synchronized waiting loop */
