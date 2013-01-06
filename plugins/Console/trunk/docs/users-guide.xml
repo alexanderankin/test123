@@ -333,7 +333,7 @@ most often at the top of the list.
 	programs, such as shells that use getline() or curses(), might not behave properly inside
 	a console window. </para>
 
-  <sect1 id="error-parsing">
+  <section id="error-parsing">
    <title>Error parsing</title>
 
    <para>
@@ -443,9 +443,9 @@ most often at the top of the list.
   is documented in the jEdit user's guide.
  </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="changing-dirs">
+  <section id="changing-dirs">
    <title>Changing directories</title>
 
    <para>
@@ -499,16 +499,16 @@ most often at the top of the list.
     </listitem>
    </itemizedlist>
 
-  </sect1>
+  </section>
 
-  <sect1 id="process-manage">
+  <section id="process-manage">
    <title>Process management</title>
 
    <para>
   Each console window has an associated <quote>foreground process</quote>;
   output produced by the foreground process is shown in that console
-  window. Starting a new process while one is already running in the
-  foreground will terminate the existing process.
+  window. Commands that are not built-in, typed into the Console window while a
+  foreground process is running are sent to the subprocess. 
  </para>
    <para>
   The <command>%kill</command> built-in can also be used to
@@ -524,7 +524,13 @@ most often at the top of the list.
   already-running background processes.
  </para>
 
-   <para>
+  <para> Each process started from the System Shell shows up as a task
+  in the the <ulink url="jeditresource:/doc/users-guide/threaded-io.html">Task
+  Monitor</ulink> (<guimenuitem>Utilities - TroubleShooting - Task
+  Monitor</guimenuitem>). Therefore, this is another way to do job control.
+  </para>
+
+  <para>
  Pressing <keycombo><keycap>Control</keycap>
      <keycap>Z</keycap>
     </keycombo>
@@ -533,9 +539,9 @@ most often at the top of the list.
  is not very *nix-like, but oh well.
 </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="env-vars">
+  <section id="env-vars">
    <title>Environment variables</title>
 
    <para>
@@ -689,9 +695,9 @@ most often at the top of the list.
  string, you can write <quote>$$</quote> and <quote>%%</quote>.
 </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="jedit-builtins">
+  <section id="jedit-builtins">
    <title>jEdit integration built-ins</title>
    <para>
   A few system shell built-ins invoke jEdit features:
@@ -728,7 +734,7 @@ most often at the top of the list.
     </listitem>
 
    </itemizedlist>
-  </sect1>
+  </section>
 
  </chapter>
  <chapter id="bean-shell">
@@ -788,7 +794,7 @@ most often at the top of the list.
   <para> <guimenu>Plugins</guimenu> &gt; <guisubmenu>Console</guisubmenu> &gt; <guimenuitem>Commando</guimenuitem> displays the commando window. A menu item for each known commando file is also shown in the <guimenu>Plugins</guimenu> &gt; <guisubmenu>Console</guisubmenu> &gt; <guisubmenu>Commands</guisubmenu> menu; invoking one of these menu items opens the Commando window with that commando file pre-selected.
 </para>
 
-  <sect1 id="commando-toolbar">
+  <section id="commando-toolbar">
    <title>The Commando tool bar</title>
 
    <para>
@@ -807,9 +813,9 @@ or <guimenuitem>Customize</guimenuitem> it. </para>
 
    <para> If you wish to un-hide buttons that are hidden, you can bring them back from <guimenuitem>Plugin Options</guimenuitem> &gt; <guimenuitem>Console</guimenuitem> &gt; <guimenuitem>Toolbar Options</guimenuitem> pane. </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="commando-window">
+  <section id="commando-window">
    <title>The Commando window</title>
 
    <para>
@@ -841,9 +847,9 @@ or <guimenuitem>Customize</guimenuitem> it. </para>
  rather than the console window.
 </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="writing-commando">
+  <section id="writing-commando">
    <title>Writing Commando files</title>
 
    <para>
@@ -859,7 +865,7 @@ or <guimenuitem>Customize</guimenuitem> it. </para>
     ...
 </COMMANDO>]]></programlisting>
 
-   <sect2>
+   <section>
     <title>The UI element</title>
 
     <para>
@@ -905,7 +911,7 @@ specified.</para>
 
     </itemizedlist>
 
-    <sect3>
+    <section>
      <title>The CAPTION element</title>
 
      <para>
@@ -938,9 +944,9 @@ specified.</para>
 
 </CAPTION>]]></programlisting>
 
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The CHOICE element</title>
 
      <para>
@@ -965,9 +971,9 @@ specified.</para>
    <OPTION LABEL="Unified" VALUE="unified" />
 </CHOICE>]]></programlisting>
 
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The DIR_ENTRY element</title>
 
      <para>
@@ -982,9 +988,9 @@ specified.</para>
 </para>
 
      <programlisting><![CDATA[<DIR_ENTRY LABEL="Output directory" VARNAME="output" />]]></programlisting>
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The ENTRY element</title>
 
      <para>
@@ -999,9 +1005,9 @@ specified.</para>
 
      <programlisting><![CDATA[<ENTRY LABEL="File name" VARNAME="file"
    EVAL="buffer.getPath()" />]]></programlisting>
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The FILE_ENTRY element</title>
 
      <para>
@@ -1015,9 +1021,9 @@ specified.</para>
 </para>
 
      <programlisting><![CDATA[<FILE_ENTRY LABEL="Source file" VARNAME="source" />]]></programlisting>
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The LONG_ENTRY element</title>
 
      <para>
@@ -1032,9 +1038,9 @@ specified.</para>
 </para>
 
      <programlisting><![CDATA[<LONG_ENTRY LABEL="Comments" VARNAME="comments" />]]></programlisting>
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The TOGGLE element</title>
 
      <para>
@@ -1048,9 +1054,9 @@ specified.</para>
 </para>
 
      <programlisting><![CDATA[<TOGGLE LABEL="Ignore case" VARNAME="ignoreCase" />]]></programlisting>
-    </sect3>
+    </section>
 
-    <sect3>
+    <section>
      <title>The TOGGLE_ENTRY element</title>
 
      <para>
@@ -1072,11 +1078,11 @@ specified.</para>
 
      <programlisting><![CDATA[<TOGGLE_ENTRY LABEL="Additional file" VARNAME="ignoreCase"
     EVAL="buffer.getPath()"/>]]></programlisting>
-    </sect3>
+    </section>
 
-   </sect2>
+   </section>
 
-   <sect2>
+   <section>
     <title>The COMMANDS element</title>
 
     <para>
@@ -1156,9 +1162,9 @@ of the new buffer. The default value is <quote>text</quote>.</para>
     // return value
     buf;
 </COMMAND>]]></programlisting>
-   </sect2>
+   </section>
 
-  </sect1>
+  </section>
 
  </chapter>
 
@@ -1342,7 +1348,7 @@ from my regular jEdit startup script, so it is used only from jEdit. </para>
  	<ulink url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's <filename>services.xml</filename> file.
 </para>
 
-  <sect1 id="specifying-dependencies">
+  <section id="specifying-dependencies">
    <title>Specifying dependencies</title>
 
    <para>
@@ -1364,9 +1370,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   so in most cases you shouldn't worry about it.
  </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="registering-shells">
+  <section id="registering-shells">
    <title>Registering the plugin shells</title>
 
    <para>
@@ -1396,9 +1402,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
  &lt;/SERVICES&gt;
 </programlisting>
 
-  </sect1>
+  </section>
 
-  <sect1 id="shell-interface">
+  <section id="shell-interface">
    <title>The Shell interface</title>
 
    <para>
@@ -1503,9 +1509,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     </listitem>
    </itemizedlist>
 
-  </sect1>
+  </section>
 
-  <sect1 id="output-interface">
+  <section id="output-interface">
    <title>The Output interface</title>
 
    <para>
@@ -1571,9 +1577,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    When you call <function>console.setShell(String name)</function>, the <varname>shellState</varname> for that shell is automatically created and set. If you need an Output instance for a specific shell, from another part of your plugin, you can call <function>console.getOutput()</function> immediately after <function>console.setShell()</function>.
    </para>
 
-  </sect1>
+  </section>
 
-  <sect1 id="console-methods">
+  <section id="console-methods">
    <title>Useful methods in the Console class</title>
 
    <para>
@@ -1610,9 +1616,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     </listitem>
    </itemizedlist>
 
-  </sect1>
+  </section>
 
-  <sect1 id="custom-error-parsing">
+  <section id="custom-error-parsing">
    <title>Custom shells and error parsing</title>
 
    <para>
@@ -1628,7 +1634,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     <para> What is #2? </para></listitem>
    </itemizedlist>
 
-  </sect1>
+  </section>
 
  </chapter>
 
