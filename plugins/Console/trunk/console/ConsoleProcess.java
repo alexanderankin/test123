@@ -40,7 +40,7 @@ import org.gjt.sp.util.StringList;
 // }}}
 
 /**
- * @deprecated
+ * @deprecated use ConsoleProcessTask
  */
 
 // {{{ ConsoleProcess class
