@@ -142,14 +142,15 @@ class ConsoleProcessTask extends Task
 			{
 				if (stdout != null) stdout.finish();
 				if (stderr != null) stderr.finish();
-				if (stdout != null)	stdout.join();
-				if (stderr != null)	stderr.join();
 			}
 			else
 			{
 				if (stdout != null)	stdout.abort();
 				if (stderr != null)	stderr.abort();
 			}
+			
+			if (stdout != null)	stdout.join();
+			if (stderr != null)	stderr.join();
 		}
 		catch(Exception e)
 		{
