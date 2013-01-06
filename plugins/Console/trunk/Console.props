@@ -3,8 +3,7 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-# TODO: Bump to 5.1 before releasing.
-plugin.console.ConsolePlugin.version=5.0.1
+plugin.console.ConsolePlugin.version=5.1
 
 # jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
@@ -12,9 +11,9 @@ plugin.console.ConsolePlugin.docs=index.html
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
 # see jEdit.getBuild() to understand the numbering scheme. 
-plugin.console.ConsolePlugin.depend.0=jedit 05.00.01.00
+plugin.console.ConsolePlugin.depend.0=jedit 05.00.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
-plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.0
+plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
 plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.4.4
 
 # Menu
