@@ -8,7 +8,7 @@
 	the JAR file.
 
 	Do not use this as a template for building your own plugin. Instead use
-	a plugin that takes advantage of build-support.
+	a plugin build.xml that takes advantage of build-support.
 
 -->
 
