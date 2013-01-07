@@ -57,6 +57,7 @@ public class ClasspathOptionPane extends AbstractOptionPane {
 	protected void _init() {
 		path = new PathBuilder(jEdit.getProperty("options.classpath.path"));
 		path.setPath(jEdit.getProperty("java.customClasspath"));
+		path.setMultiSelectionEnabled(true);
 		path.setFileFilter(new ClasspathFilter());
 
 		includeWorking = new JCheckBox(jEdit.getProperty("options.classpath.includeWorking"),
