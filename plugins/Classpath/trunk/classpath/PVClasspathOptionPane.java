@@ -53,6 +53,8 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 	@Override
 	protected void _init() {
 		path = new PathBuilder(jEdit.getProperty("options.classpath.path"));
+		path.setMultiSelectionEnabled(true);
+		path.setStartDirectory(project.getRootPath());
 		path.setFileFilter(new ClasspathFilter());
 		String cp = project.getProperty("java.classpath");
 		if (cp != null)
