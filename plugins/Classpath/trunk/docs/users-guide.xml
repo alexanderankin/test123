@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
-<article>
+<!-- jEdit buffer-local properties: -->
+<!-- :maxLineLen=80:wrap=hard:indentSize=2:noTabs=true: -->
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 	<articleinfo>
 		<title>Classpath</title>
 		<author>
@@ -10,7 +13,7 @@
 	<para>
 		This plugin is used to maintain a global classpath for Java and
 		JVM-based languages.
-	</para>
+	</para>	
 	<para> Click <ulink url="docs/CHANGELOG.txt">here</ulink> to see a changelog. </para>
 	<para>
 		The global classpath can be configured in <guimenu>Plugins</guimenu>
