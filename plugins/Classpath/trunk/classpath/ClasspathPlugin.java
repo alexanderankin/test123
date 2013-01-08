@@ -72,17 +72,20 @@ public class ClasspathPlugin extends EBPlugin {
 
 	//{{{ updateEnv(boolean) : void
 	/**
-	 * Sets the console's CLASSPATH environment variable.
+	 * Sets the CLASSPATH environment variable.
 	 *
 	 * @param includeWorking Include the current working directory
 	 *                       (".") as part of the classpath.
 	 */
 	public static void updateEnv(boolean includeWorking) {
-		if (jEdit.getPlugin("console.ConsolePlugin") != null) {
-			String cp = jEdit.getProperty("java.classpath");
-			if (includeWorking)
-				cp = "." + (cp.length() > 0 ? File.pathSeparator : "") + cp;
+		String cp = jEdit.getProperty("java.classpath");
+		if (includeWorking)
+			cp = "." + (cp.length() > 0 ? File.pathSeparator : "") + cp;
 
+		System.getenv().put("CLASSPATH", cp);
+
+		// update the system shell, if it's installed
+		if (jEdit.getPlugin("console.ConsolePlugin") != null) {
 			console.ConsolePlugin.setSystemShellVariableValue("CLASSPATH", cp);
 		}
 	} //}}}
