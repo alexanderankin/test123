@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.TreeSet;
 import java.util.Iterator;
 
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.EBPlugin;
