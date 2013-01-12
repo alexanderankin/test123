@@ -6,18 +6,18 @@ prefix=setdir||fs"NetRexx"fs"prefix.txt"
 bfr=BufferedReader(FileReader(File(prefix)))
 sw=StringWriter(1024)
 bsw=BufferedWriter(sw)
-bsw.write("import org.gjt.sp.jedit.")
+(Writer bsw).write("import org.gjt.sp.jedit.")
 bsw.newLine
-bsw.write("import netrexxplugin.")
+(Writer bsw).write("import netrexxplugin.")
 bsw.newLine
-bsw.write("import javax.swing.")
+(Writer bsw).write("import javax.swing.")
 bsw.newLine
 bname=Rexx(buffer.getName)
-bsw.write("class" bname.substr(1,bname.lastpos('.')-1))
+(Writer bsw).write("class" bname.substr(1,bname.lastpos('.')-1))
 bsw.newLine
 copyfile(bfr,bsw)
 bsw.newLine
-bsw.write("method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg")
+(Writer bsw).write("method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg")
 bsw.close
 say sw.getBuffer.toString
 SwingUtilities.invokeAndWait(BuffUp(carot,sw.getBuffer.toString))

@@ -1,16 +1,29 @@
-import org.gjt.sp.jedit.
-import netrexxplugin.
-import javax.swing.
-class android_info
-properties private static
-	view=jEdit.getActiveView()
-	buffer=view.getBuffer
-	wm=view.getDockableWindowManager()
-	editPane=view.getEditPane()
-	textArea=editPane.getTextArea()
-	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
-properties private static unused
-	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm	
+import org.gjt.sp.jedit.
+
+import netrexxplugin.
+
+import javax.swing.
+
+class android_info
+
+properties private static
+
+	view=jEdit.getActiveView()
+
+	buffer=view.getBuffer
+
+	wm=view.getDockableWindowManager()
+
+	editPane=view.getEditPane()
+
+	textArea=editPane.getTextArea()
+
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+
+properties private static unused
+
+	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm	
+
 method main($cmdin1=String[]) static;arg=Rexx($cmdin1)
 
 method getTargets(sdk=String) static returns Rexx		--	This method runs a shell command that puts output in a jEdit buffer
@@ -25,7 +38,8 @@ method getTargets(sdk=String) static returns Rexx		--	This method runs a shell c
 		   		
 			buffer=shell.tobuffer(android "list targets",'wait noconsole')
 --			buffer=shell.tobuffer("android list targets")
-   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); exit; end
+   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); return Rexx null; end
+--   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); exit; end
 --   		shell.tobuffer("android list targets")
 --   		buffer=view.getBuffer
    		lc=buffer.getLineCount;say "lc="lc
