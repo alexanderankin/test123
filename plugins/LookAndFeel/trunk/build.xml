@@ -79,6 +79,8 @@
 								<filename name="description.html"/>
 								<filename name="LICENSE.txt"/>
 								<filename name="CHANGELOG.txt"/>
+								<filename name="lang_de.properties"/>
+								<filename name="lang_fr.properties"/>
 						</or>
 				</and>
 		</selector>
