@@ -5,7 +5,9 @@
 
 <!--
 
-		 This is the standard build.xml file for building a jEdit plugin.
+		 This is NOT the standard build.xml file for building a jEdit plugin.
+		 Please use a build file that reuses the build-support/plugin-build.xml
+		 project if you want a standard build file.
 
 		 The 'dist' target compiles the plugin, generates documentation, and creates
 		 the JAR file.  Before running the 'dist' target, you will need to choose
@@ -23,15 +25,7 @@
 		 documentation, set the 'build-docs.not-required' property to any value and
 		 the 'docs' target will be skipped.
 
-		 To use this template for building your own plugin, make these changes:
-
-		 - Change 'name' property for the <project> to the name of your plugin
-		 - Change definition of 'jedit.install.dir' to point to the directory
-			 containing jedit.jar
-		 - If necessary, add any dependencies to the 'project.class.path' definition
-		 - If necessary, change the list of files in the 'dist' target
-
-		 All properties specified in this build.xml can be overridden by properties
+=		 All properties specified in this build.xml can be overridden by properties
 		 file in the following locations:
 
 		 - ${base.dir}/build.properties : Specify properties that are to affect this
@@ -79,8 +73,7 @@
 								<filename name="description.html"/>
 								<filename name="LICENSE.txt"/>
 								<filename name="CHANGELOG.txt"/>
-								<filename name="lang_de.properties"/>
-								<filename name="lang_fr.properties"/>
+								<filename name="lang_*.properties"/>
 						</or>
 				</and>
 		</selector>
