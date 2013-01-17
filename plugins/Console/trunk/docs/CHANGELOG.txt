@@ -17,7 +17,9 @@ jEdit Console Plugin Changelog
                                             outputs using error and ANSI escape parser
                 * SimpleInputStreamTask   - public basic class to handle the data from user
             + modified OutputStreamTask, InputStreamTask, ErrorStreamTask and
-              ConsoleProcessTask with the new data handlers 
+              ConsoleProcessTask with the new data handlers
+        
+        #3566268 - Console: completion fails after long console output.
       [Alan Ezust]
         Observe jEdit's general option "Check for changed files" and check after command
         executions too.
