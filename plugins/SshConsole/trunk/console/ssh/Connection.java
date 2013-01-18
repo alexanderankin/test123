@@ -99,7 +99,6 @@ public class Connection implements UserInfo {
 			);
 			stout.setStatus("ssh " + info.toString());
 			ThreadUtilities.runInBackground(stout);
-			//stout.start();
 			
 			pos = new PipedOutputStream();
 			pis = new PipedInputStream(pos);
