@@ -213,10 +213,12 @@
     <!-- This selector defines other files that should be packaged
          in the plugin's jar file; by default it contains actions.xml,
          dockables.xml, services.xml, any files ending in ".props",
-         "LICENSE" and "README". The context is "${basedir}". Override
-         it if your plugin needs special treatment for these files. -->
+         "LICENSE" and "README". The context is "${basedir}". 
+         Normally, plugins do not override this but instead define a "packageFiles" 
+         selector. -->
     <selector id="extraFiles">
         <and>
+            <not> <filename name="${build.dir}/**"/></not>
             <or>
                 <filename name="**/actions.xml" />
                 <filename name="**/browser.actions.xml" />
