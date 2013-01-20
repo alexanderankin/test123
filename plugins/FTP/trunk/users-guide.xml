@@ -177,8 +177,17 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-
-  	<listitem>
+ 
+   	<listitem>
+ 		<para>
+ 			<emphasis role="bold">Version 1.0.3</emphasis>
+ 			Requires Java 1.6+ and jEdit 4.5
+ 		</para>
+ 		<itemizedlist>
+ 			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
+    </itemizedlist> 
+    </listitem>
+   	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.2</emphasis>
  			Requires Java 1.6+ and jEdit 4.5
