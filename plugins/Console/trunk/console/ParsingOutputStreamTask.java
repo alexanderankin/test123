@@ -78,12 +78,10 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	private SimpleAttributeSet commonAttrs;
 	private SimpleAttributeSet defaultAttrs, warningAttrs, errorAttrs;
 	
-	// {{{ cache's members
 	private final int CACHE_SIZE_LIMIT = 100;  // line's count
 	private SimpleAttributeSet cache_lastAttrs;
-	private int cache_strCount = 0;
-	private StringBuilder cache = new StringBuilder();
-	// }}}
+	private int cache_strCount;
+	private int buffer_start;
 	
 	// {{{ init() method
 	private void init(Color defaultColor, Color backgroundColor)
@@ -97,38 +95,13 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		StyleConstants.setForeground(commonAttrs, defaultColor);
 		
 		defaultAttrs = setDefaultAttrs(null);
-	} // }}}
-	
-	// {{{ resetCache() method
-	private boolean resetCache(boolean flag)
-	{
-		if (flag || cache_strCount >= CACHE_SIZE_LIMIT)
-		{
-			output.writeAttrs(cache_lastAttrs, cache.toString());
-			
-			cache_strCount  = 0;
-			cache.setLength(0);
-			
-			return true;
-		}
 		
-		return false;
+		buffer_start   = 0;
+		cache_strCount = 0;
 	} // }}}
 	
-	// {{{ outputting() method
-	private void outputting(SimpleAttributeSet currentAttrs, String str)
-	{
-		if ( resetCache(currentAttrs != cache_lastAttrs) )
-		{
-			cache_lastAttrs = currentAttrs;
-		}
-		
-		cache.append(str);
-		cache_strCount++;
-	} // }}}
-	
-	// {{{ printString() method
-	private void printString(String str, boolean isUnterminated)
+	// {{{ handleString() method
+	private void handleString(String str, boolean isUnterminated)
 	{
 		ArrayList<Description> seqs = null;
 		SimpleAttributeSet currentAttrs = null;
@@ -180,7 +153,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		{
 			if (seqs == null) // no any ANSI escape sequences
 			{
-				outputting(currentAttrs, str);
+				push(currentAttrs, str);
 			}
 			else 
 			{
@@ -229,7 +202,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	{
 		if (epos - bpos > 0)
 		{
-			outputting( localAttrs, str.substring(bpos, epos) );
+			push( localAttrs, str.substring(bpos, epos) );
 		}
 	} // }}}
 	
@@ -267,6 +240,42 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		}
 		
 		return defaultAttrs;
+	} // }}}
+	
+	// {{{ push() method
+	public void push(SimpleAttributeSet currentAttrs, String str)
+	{
+		if ( pop(currentAttrs != cache_lastAttrs) )
+		{
+			cache_lastAttrs = currentAttrs;
+		}
+		
+		buffer_start = lineBuffer.append(str).length();
+	} // }}}
+	
+	// {{{ pop() method
+	public boolean pop(boolean flag)
+	{
+		if (flag || cache_strCount >= CACHE_SIZE_LIMIT)
+		{
+			output.writeAttrs(cache_lastAttrs, lineBuffer.substring(0, buffer_start));
+			
+			if ( buffer_start < lineBuffer.length() )  // data over cache
+			{
+				lineBuffer.delete(0, buffer_start);
+			}
+			else  // only cache
+			{
+				lineBuffer.setLength(0);
+			}
+			
+			buffer_start   = 0;
+			cache_strCount = 0;
+			
+			return true;
+		}
+		
+		return false;
 	} // }}}
 	// }}}
 	
@@ -355,14 +364,12 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	@Override
 	protected void actionInsideWaitingLoop(InputStreamReader isr) throws Exception
 	{
-		// there is some unterminated "tail":  -> "444" (see outputData() method)
 		if ( !isr.ready() )
 		{
-			printString(lineBuffer.toString(), true);
-			lineBuffer.setLength(0);
+			handleString(lineBuffer.substring(buffer_start), true);
 		}
 		
-		resetCache( cache.length() > 0 );
+		pop( lineBuffer.length() > 0 );
 	} // }}}
 	
 	// {{{ afterWorking() method
@@ -378,10 +385,10 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	{
 		if (lineBuffer.length() > 0)
 		{
-			printString(lineBuffer.toString(), false);
+			handleString(lineBuffer.substring(buffer_start), false);
+			
+			pop(true);
 		}
-		
-		resetCache( cache.length() > 0 );
 	} // }}}
 	
 	// {{{ outputData() method
@@ -393,39 +400,49 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	@Override
 	protected void outputData() throws Exception
 	{
-		String line = lineBuffer.toString();		// "111\n222\n333\n444"
+		/* the idea:
+		 *	1. save "external" buffer (lineBuffer) to "internal" (line)
+		 *	2. use "external" buffer as an outputting cache
+		 *	3. if we have an unbreaked input string - append it to "external"
+		 *	   buffer AFTER the cached data; use "buffer_start" for navigation
+		 *	   purposes
+		 */
+		
+		String line = lineBuffer.substring(buffer_start);
 		
 		// convert all line breaks to internal "standard": "\n"
 		if ( ConsolePane.eolExchangeRequired() )
 		{
-			lineBuffer.setLength(0);
+			lineBuffer.setLength(buffer_start);
 			line = lineBuffer.append( ConsolePane.eolExchanging(line) ).toString();
 		}
 	
 		// remove all ANSI escape sequences
 		if ( ansiParser != null && ansiParser.touch(AnsiEscapeParser.Behaviour.REMOVE_ALL, line) )
 		{
-			lineBuffer.setLength(0);
+			lineBuffer.setLength(buffer_start);
 			line = lineBuffer.append( ansiParser.removeAll(line) ).toString();
 		}
+		
+		// now there is no necessity to use external buffer -> clean
+		lineBuffer.ensureCapacity(buffer_start + line.length());
+		lineBuffer.setLength(buffer_start);
 		
 		Matcher matcher = eolPattern.matcher(line);
 		
 		int bPosition = 0;
 		while ( !abortFlag && matcher.find() )
-		{									// -> "111\n" -> "222\n" -> "333\n"
-			printString(line.substring( bPosition, matcher.end() ), false);
-			bPosition = matcher.end();
-		}
-		// remove already printed substrings
-		if (bPosition > 0)
 		{
-			lineBuffer.delete(0, bPosition);
+			handleString(line.substring( bPosition, matcher.end() ), false);
+			bPosition = matcher.end();
+			cache_strCount++;
 		}
-		/*
-		 * If lineBuffer is not empty then either it's content will be flushed
-		 * in actionInsideWaitingLoop() method or new data will be added to one.
-		 */
+		// unterminated string -> save it to external buffer over the cache
+		if ( bPosition < line.length() - 1 )
+		{
+			lineBuffer.append(line.substring(bPosition));
+		}
+		
 	} // }}}
 	
 	// {{{ setAnsiParser() method
