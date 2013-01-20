@@ -22,19 +22,34 @@
 
 package ftp;
 
-import com.jcraft.jsch.*;
-
-import ftp.FtpVFS.FtpDirectoryEntry;
-
-import java.awt.*;
-import java.io.*;
+import java.awt.EventQueue;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Vector;
+
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Proxy;
+import com.jcraft.jsch.ProxyHTTP;
+import com.jcraft.jsch.ProxySOCKS5;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.UIKeyboardInteractive;
+import com.jcraft.jsch.UserInfo;
+
+import ftp.FtpVFS.FtpDirectoryEntry;
 
 /**
  * Secure FTP connection class
@@ -83,7 +98,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			}
 			// }}}
 			
-			Session session = ConnectionManager.client.getSession(info.user, info.host, info.port);
+			session = ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (proxy != null)
 				session.setProxy(proxy);
 			
@@ -243,9 +258,12 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	
 	void logout() throws IOException {
 		sftp.disconnect();
+		session.disconnect();
 	}
 	
 	private ChannelSftp sftp;
+	private Session session;
+	
 	private int keyAttempts = 0;
 	
 	// private int symLinkDepth = 0; // not used now
@@ -297,7 +315,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		if (passphrase==null || keyAttempts != 0)
 		{
 			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
-				jEdit.getProperty("login.privatekeypassword"),message);
+				jEdit.getProperty("login.privatekeypassword"), message);
 			if (!pd.isOK())
 				return false;
 			passphrase = new String(pd.getPassword());
