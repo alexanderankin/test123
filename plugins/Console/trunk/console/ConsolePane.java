@@ -35,6 +35,10 @@ import org.gjt.sp.jedit.jEdit;
 public class ConsolePane extends JTextPane
 {
 	// {{{ Members
+	/**
+	 *  Name of document's property which keeps InputStart position
+	 *  inside of the document.
+	 */
 	public static final String InputStart = "InputStart";
 
 	public static final Object Input = new Object();
@@ -230,6 +234,10 @@ public class ConsolePane extends JTextPane
 	} // }}}
 
 	// {{{ getInputStart() method
+	/**
+	 *  Return InputStart position inside of current (associated with
+	 *  ConsolePane) document.
+	 */
 	public int getInputStart()
 	{
 		Document d = getDocument();
@@ -244,6 +252,12 @@ public class ConsolePane extends JTextPane
 	} // }}}
 
 	// {{{ setInputStart() method
+	/**
+	 *  Setup InputStart position inside of current (associated with
+	 *  ConsolePane) document.
+	 *  ShellState class changes its InputStart position by oneself.
+	 *  (see "Console.ShellState.writeSafely()" ).
+	 */
 	public void setInputStart(int cmdStart)
 	{
 		getDocument().putProperty(InputStart, Integer.valueOf(cmdStart));
@@ -579,6 +593,10 @@ public class ConsolePane extends JTextPane
 	} // }}}
 
 	// {{{ DocumentHandler class
+	/**
+	 *  This class adjusts InputStart position only when
+	 *  document's content is changed BEFORE InputStart position.
+	 */
 	class DocumentHandler implements DocumentListener
 	{
 		public void insertUpdate(DocumentEvent e)

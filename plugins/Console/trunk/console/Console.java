@@ -921,7 +921,8 @@ implements EBComponent, DefaultFocusComponent
 		{
 			return scrollback;
 		} //}}}
-
+		
+		//{{{ constructor
 		public ShellState(Shell shell)
 		{
 			this.shell = shell;
@@ -931,9 +932,12 @@ implements EBComponent, DefaultFocusComponent
 
 			// ick! talk about tightly coupling two classes.
 			shell.openConsole(Console.this);
-		}
+		} //}}}
 
 		//{{{ getInputStart() method
+		/**
+		 *  Return InputStart position inside of document.
+		 */
 		public int getInputStart()
 		{
 			return ((Integer)scrollback.getProperty(
@@ -941,6 +945,9 @@ implements EBComponent, DefaultFocusComponent
 		} //}}}
 
 		//{{{ setInputStart() method
+		/**
+		 *  Setup InputStart position inside of document.
+		 */
 		public void setInputStart(int cmdStart)
 		{
 			scrollback.putProperty(ConsolePane.InputStart,
@@ -1018,6 +1025,10 @@ implements EBComponent, DefaultFocusComponent
 		} //}}}
 
 		//{{{ writeSafely() method
+		/**
+		 *  Output data to document and change InputStart position
+		 *  using own methods.
+		 */
 		private void writeSafely(AttributeSet attrs, String msg)
 		{
 			try
