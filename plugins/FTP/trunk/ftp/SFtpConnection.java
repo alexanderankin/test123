@@ -116,6 +116,8 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			Channel channel = session.openChannel("sftp");
 			channel.connect();
 			sftp=(ChannelSftp)channel;
+			sftp.setAgentForwarding(true);
+			sftp.setXForwarding(true);
 			home=sftp.getHome();
 			keyAttempts = 0;
 		} catch(Exception e) {
