@@ -25,8 +25,7 @@
     <property name="user-doc.xml" location = "users-guide.xml"/>
 	
     <property name="javadoc.packagenames"	value="com.fooware.net.*" />
-    <property name="jar.name"  value="FTP.jar"/>
-    <property name="jsch.jar" location="${basedir}/lib/jsch-0.1.49.jar" />
+    <property name="jsch.jar" location="${basedir}/lib/jsch-0.1.42.jar" />
     <property name="src.dir" value="."/>
     <property name="build.dir" value="build"/>
     <property name="install.dir"  value=".."/>

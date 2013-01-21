@@ -179,14 +179,12 @@ public class ConnectionManager
 			Compression comp = new Compression();
 			comp.init(Compression.DEFLATER,6);
 			byte[] objectBuffer = baos.toByteArray();
-			int[] oldLength = new int[1];
-			oldLength[0] = objectBuffer.length;
-			byte[] compressedBytes = comp.compress(
+			int newLength = comp.compress(
 				objectBuffer,
 				0,
-				oldLength);
+				objectBuffer.length);
 			fos = new FileOutputStream(passwordFile);
-			fos.write(compressedBytes,0,compressedBytes.length);
+			fos.write(objectBuffer,0,newLength);
 		}
 		catch(Exception e)
 		{
