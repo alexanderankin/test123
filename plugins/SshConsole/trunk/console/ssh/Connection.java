@@ -53,6 +53,7 @@ public class Connection implements UserInfo {
 	// {{{ members
 	int id;
 	ConnectionInfo info;
+	Session session;
 	String home;
 	boolean inUse = false;
 	Timer closeTimer;
@@ -72,7 +73,7 @@ public class Connection implements UserInfo {
 		try {
 			this.console = console;
 			this.info = info;
-			Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
+			session=ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (info.privateKey != null) {
 				Log.log(Log.DEBUG,this,"Attempting public key authentication");
 				Log.log(Log.DEBUG,this,"Using key: "+info.privateKey);
@@ -148,6 +149,7 @@ public class Connection implements UserInfo {
 	{
 		stout.abort();
 		channel.disconnect();
+		session.disconnect();
 	} // }}}
 	
 	// {{{ getPassphrase() method
