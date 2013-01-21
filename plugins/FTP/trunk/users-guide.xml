@@ -185,6 +185,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		</para>
  		<itemizedlist>
  			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
+ 			<listitem><para> Enable x11 and agent forwarding for SFTP. 
+ 			</para> </listitem>
     </itemizedlist> 
     </listitem>
    	<listitem>
