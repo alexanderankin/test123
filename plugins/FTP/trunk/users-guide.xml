@@ -184,6 +184,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			Requires Java 1.6+ and jEdit 4.5
  		</para>
  		<itemizedlist>
+ 		  <listitem><para> Updated to use jsch-0.1.49 </para></listitem>
  			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
  			<listitem><para> Enable x11 and agent forwarding for SFTP. 
  			</para> </listitem>
