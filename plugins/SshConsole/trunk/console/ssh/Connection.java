@@ -45,7 +45,9 @@ import ftp.PasswordDialog;
 // }}}
 
 // {{{ Connection class
-/** An ssh remote shell connection
+/** An ssh remote shell connection.
+ *
+ *  This class is based on the Connection.java class in the FTP plugin. 
  *  @author ezust
  *  @version $Id$
  */
@@ -86,6 +88,7 @@ public class Connection implements UserInfo {
 			channel=session.openChannel("shell");
 			ChannelShell channelShell = (ChannelShell) channel;
 			channelShell.setAgentForwarding(true);
+			channelShell.setXForwarding(true);
 			channelShell.setPtyType("dumb");
 //			channel.setInputStream(System.in);
 //			channel.setOutputStream(System.out);
