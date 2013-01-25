@@ -38,6 +38,7 @@ public class AntXmlTag extends RenamedXmlTag {
             buf.append("name=\"");
             buf.append(realName);
             buf.append("\" ");
+            setNewName(realName);
         }
         for (String key : attrs.keySet()) {
             if ("name".equals(key)) {
