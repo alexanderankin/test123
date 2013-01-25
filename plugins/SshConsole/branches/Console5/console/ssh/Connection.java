@@ -101,7 +101,6 @@ public class Connection implements UserInfo {
 									 console.getOutput(),
 									 console.getPlainColor()
 			);
-			stout.setStatus("ssh " + info.toString());
 			ThreadUtilities.runInBackground(stout);
 			
 			pos = new PipedOutputStream();
@@ -130,7 +129,6 @@ public class Connection implements UserInfo {
 									 console.getOutput(),
 									 console.getPlainColor()
 			);
-			stout.setStatus("ssh " + info.toString());
 			ThreadUtilities.runInBackground(stout);
 		}
 	}// }}}
