@@ -48,6 +48,7 @@ public class Shell extends console.Shell {
 	public void endOfFile(Console console)
 	{
 		new ShellAction(console, EOF).actionPerformed(null);;
+		console.stopAnimation();
 	}
 
 
