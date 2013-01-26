@@ -536,10 +536,9 @@ public class ConsolePlugin extends EditPlugin
 			if (res != JOptionPane.YES_OPTION)
 				return;
 
-			projectviewer.PVActions.editProject(project,
-			                                    "pv.commands");
+			projectviewer.PVActions.editProject(project, "pv.commands");
 
-			cmd = project.getProperty("console."+prop);
+			cmd = project.getProperty("console." + prop);
 			if (cmd == null || cmd.trim() == "")
 				return;
 		}
@@ -674,10 +673,8 @@ public class ConsolePlugin extends EditPlugin
 	/**
 	 * Returns the value of the specified system shell environment variable.
 	 *
-	 * @param view
-	 *                The view
-	 * @param var
-	 *                The variable name
+	 * @param view The view
+	 * @param var  The variable name
 	 */
 	public static String getSystemShellVariableValue(View view, String var)
 	{
@@ -688,10 +685,8 @@ public class ConsolePlugin extends EditPlugin
 	/**
 	 * Sets the value of the specified system shell environment variable.
 	 *
-	 * @param var
-	 *                The variable name
-	 * @param value
-	 *                The value
+	 * @param var The variable name
+	 * @param value The value
 	 */
 	public static void setSystemShellVariableValue(String var, String value)
 	{

@@ -757,30 +757,44 @@ implements EBComponent, DefaultFocusComponent
 		
 	} //}}}
 
+	//{{{ chDir() methods
+	/** Changes the directory of the current Console.
+	 * @param path to change to. 
+	 * @param selectShell if true, will choose the most appropriate shell first. 
+	 * @return true if it did something. 
+	 */
+	public boolean chDir(String path, boolean selectShell) {
+		if (!isVisible()) return false;
+		boolean retval = false;
+		if (!selectShell)
+			return getShell().chDir(this, path);
+		
+		for (String name: Shell.getShellNames()) {
+			Shell s = Shell.getShell(name);
+			if (s.handlesVFS(path)) {
+				setShell(s);
+				return s.chDir(this, path);
+			}
+		}
+		return false;
+	}
+	public boolean chDir(String path) {
+		return chDir(path, false);
+	}//}}}
+
 	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
 //		Log.log(Log.WARNING, this, "VFSPathSelected: " + msg.getPath());
 		if (view != msg.getView()) return;
 		if (!isVisible()) return;
-		if (!jEdit.getBooleanProperty("console.changedir.nodeselect")) return;
 		String path = msg.getPath();
-		File f = new File(path);
-		if (!f.exists()) return;
-		if (!f.isDirectory())
-		{
-			path = f.getParent();
-			f = new File(path);
-			if (!f.isDirectory()) return;
+		// don't chdir to a filename
+		if (!msg.isDirectory()) {
+			path = path.substring(0, path.lastIndexOf('/'));
 		}
-		Shell sysShell = Shell.getShell("System");
-		SystemShell ss = (SystemShell) sysShell;
-		ConsoleState cs = ss.getConsoleState(this);
-		if (cs.currentDirectory.equals(path)) return;
-		Output output = getShellState(sysShell);
-		String cmd = "cd \"" + path + "\"";
-		sysShell.execute(this, cmd, output);
-		output.print(getPlainColor(), "\n");
-		sysShell.printPrompt(this, output);
+		// sshConsole always responds to node selected.
+		if (path.startsWith("sftp://") || jEdit.getBooleanProperty("console.changedir.nodeselect") )
+			chDir(path);
 	} //}}}
 
 	//{{{ handlePluginUpdate() method

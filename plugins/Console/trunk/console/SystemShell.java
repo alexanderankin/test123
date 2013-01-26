@@ -187,23 +187,53 @@ public class SystemShell extends Shell implements TaskListener
 		}
 	} // }}}
 
+	public boolean handlesVFS(String vfsPath) {
+		if (MiscUtilities.isURL(vfsPath)) {
+			if (vfsPath.startsWith("file://")) return true;
+			else return false;
+		}
+		else return true;
+	}
+	
+	public boolean chDir(Console console, String path) {
+		if (path.startsWith("file://")) {
+			path = path.substring(7);	
+		}
+		ConsoleState state = getConsoleState(console);
+		String cwd = state.currentDirectory;
+		File f = new File(path);
+		if (!f.exists()) return false;
+		if (!f.isDirectory()) {
+			path = f.getParent();
+			f = new File(path);
+			if (!f.isDirectory()) return false;
+		}
+		if (MiscUtilities.pathsEqual(cwd, path)) return false;			
+		state.setCurrentDirectory(console, path);
+		Output output = console.getShellState(this);
+		String cmd = "cd \"" + path + "\"";
+		execute(console, cmd, output);
+		output.print(console.getPlainColor(), "\n");
+		printPrompt(console, output); 	
+		return true;
+	}
+	
 	// {{{ executeInDir()
-	public void executeInDir(final Console console, String input, final Output output, Output error,
-			String command, String dir)
+	public void executeInDir(final Console console, String input, 
+		final Output output, Output error, String command, String dir)
 	{
 		try {
 			output.print(console.getInfoColor(), jEdit.getProperty(
 						"console.shell.runInDir", new String[] { dir, command }));
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		ConsoleState state = getConsoleState(console);
-		String cwd = state.currentDirectory;
-
-		state.setCurrentDirectory(console, dir);
+		String cwd = state.currentDirectory;		
+		chDir(console, dir);
 		this.execute(console, input, output, error, command);
-		state.setCurrentDirectory(console, cwd);
+		chDir(console, cwd);
 	} // }}}
 	
 	// {{{ execute()
