@@ -16,12 +16,8 @@
 */
 package console.ssh;
 
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.msg.VFSPathSelected;
+import org.gjt.sp.jedit.EditPlugin;
 
-import console.Console;
-import console.ConsolePlugin;
 
 /**
   SshConsole - a jEdit plugin that offers a ssh shell to the Console that responds
@@ -29,7 +25,7 @@ import console.ConsolePlugin;
   @author Alan Ezust
   @version $Id$
 */
-public class SshConsolePlugin extends EBPlugin {
+public class SshConsolePlugin extends EditPlugin {
 
     public void start()
 	{
@@ -39,20 +35,5 @@ public class SshConsolePlugin extends EBPlugin {
 	public void stop()
 	{
 		ConnectionManager.cleanup();
-	}
-
-	public void handleMessage(EBMessage msg)
-	{
-		if (msg instanceof VFSPathSelected) {
-			VFSPathSelected vps = (VFSPathSelected) msg;
-			String path = vps.getPath();
-			if (!path.startsWith("sftp://")) return;
-			if (!vps.isDirectory())
-				path = path.substring(0, path.lastIndexOf('/'));
-			Console c = ConsolePlugin.getConsole(vps.getView());
-			if (!c.isVisible()) return;
-			ConsoleState cs = ConnectionManager.getConsoleState(c);
-			cs.setPath(path, true);
-		}
 	}
 }

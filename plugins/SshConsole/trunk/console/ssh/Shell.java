@@ -51,6 +51,17 @@ public class Shell extends console.Shell {
 		console.stopAnimation();
 	}
 
+	public boolean handlesVFS(String vfsPath) {
+		return (vfsPath.startsWith("sftp://"));
+	}
+	
+	public boolean chDir(Console console, String path) {
+		if (!handlesVFS(path)) return false;
+		
+		ConsoleState cs = ConnectionManager.getConsoleState(console);
+		cs.setPath(path, true);
+		return true;
+	}
 
 	static final byte[] newline = new byte[] { '\n' };
 	/** Send a ctrl-c down the pipe, to end the process, rather than the session. */
@@ -84,13 +95,6 @@ public class Shell extends console.Shell {
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
 		ConsoleState cs = ConnectionManager.getConsoleState(console);
-		if (cs.getPath().equals(""))  // no path from FSB - what about current buffer?
-		{
-			Buffer b = console.getView().getEditPane().getBuffer( );
-			String p = b.getPath();
-			int lastslash = p.lastIndexOf("/");
-			if (p.startsWith("sftp:")) cs.setPath(p.substring(0, lastslash), true);
-		}
 
 		if (cs.conn == null)  try {
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
@@ -109,6 +113,14 @@ public class Shell extends console.Shell {
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
 		}
+		if (cs.getPath().equals(""))  // no path from FSB - what about current buffer?
+		{
+			Buffer b = console.getView().getEditPane().getBuffer( );
+			String p = b.getPath();
+			int lastslash = p.lastIndexOf("/");
+			if (p.startsWith("sftp:")) cs.setPath(p.substring(0, lastslash), true);
+		}
+		
 		boolean consumed = cs.preprocess(command);
 		if (consumed) {
 			printPrompt(console, output);
@@ -118,7 +130,7 @@ public class Shell extends console.Shell {
 			cs.os.flush();
 		}
 		catch (IOException ioe ) {
-			Log.log(Log.WARNING, this, "IOException writing to ssh pipe - closing connection");
+			Log.log(Log.WARNING, this, "IOException writing to ssh pipe - closing connection", ioe);
 			cs.close();
 		}
 
@@ -140,7 +152,9 @@ public class Shell extends console.Shell {
 			s.os.write(newline);
 			s.os.flush();
 		}
-		catch (IOException ioe) {}
+		catch (IOException ioe) {
+			endOfFile(console);
+		}
 	}
 
 	/** sends a ctrl-Z down the pipe, to suspend the current job */

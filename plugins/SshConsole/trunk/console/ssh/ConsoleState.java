@@ -78,6 +78,7 @@ public class ConsoleState
 		if (File.separatorChar == '\\') {
 			newPath = newPath.replace('\\', '/');
 		}
+		
 		if (path.equals(newPath)) return;
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
 		path = newPath;
@@ -90,8 +91,6 @@ public class ConsoleState
 			{
 				os.close();
 				conn.logout();
-				conn.inUse = false;
-
 			}
 			catch (IOException e) {}
 			finally
@@ -176,7 +175,6 @@ public class ConsoleState
 		if (conn != null) try {
 			conn.logout();
 			ConnectionManager.closeConnection(conn);
-			conn.inUse = false;
 			conn = null;
 		}
 		catch (IOException ioe) {}
