@@ -98,6 +98,20 @@ public abstract class Shell
 		return retVal.toArray();
 	} //}}}
 
+	/** @param vfsPath the path to test if this shell handles 
+	    @return true if this shell handles a path that looks like vfsPath 
+    */
+	public boolean handlesVFS(String vfsPath) {
+		return false;
+	}
+	
+	/** @param pathStr   vfs path to change directory
+	    @return true if the function did something, false if not.
+	*/	
+	public boolean chDir(Console console, String pathStr) {
+		return false;
+	}
+	
 	//{{{ getShell() method
 	/**
 	 * Returns the shell with the specified name
@@ -147,7 +161,7 @@ public abstract class Shell
 	public void printPrompt(Console console, Output output)
 	{
 		String promptString =jEdit.getProperty("console.prompt", new String[] { getName() });
-		Log.log(Log.ERROR, Shell.class, promptString);
+//		Log.log(Log.ERROR, Shell.class, promptString);
 		output.print(console.getPlainColor(), "\n" + promptString);
 	} //}}}
 

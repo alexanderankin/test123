@@ -29,6 +29,7 @@ package console;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -39,7 +40,7 @@ import org.gjt.sp.jedit.bsh.NameSpace;
 // {{{ ProjectTreeListener class
 /**
  *
- * Listener of ProjectViewer 2.9 node selection events.
+ * Listener of ProjectViewer project opened events
  * Triggers console beanshell scripts as actions in response.
  * 
  * @author ezust
@@ -48,14 +49,11 @@ import org.gjt.sp.jedit.bsh.NameSpace;
 
 public class ProjectTreeListener implements EBComponent
 {
-
-	static boolean onProjectChange;
 	
 	private Console console;
 	// {{{ constructor
 	public ProjectTreeListener(Console c)
 	{
-		update();
 		console = c;
 	}
 	// }}}
@@ -69,14 +67,16 @@ public class ProjectTreeListener implements EBComponent
 	 */
 	public void handleMessage(EBMessage msg)
 	{
-		update();
-		if (!onProjectChange)
+		if (console == null) {
+			EditBus.removeFromBus(this);
 			return;
+		}
+		if (!jEdit.getBooleanProperty("console.changedir.pvchange")) return;
 		if (!(msg.getClass().getName().endsWith("ViewerUpdate"))) return;
 		final ViewerUpdate vu = (ViewerUpdate) msg;
 		if (vu.getType() != ViewerUpdate.Type.PROJECT_LOADED) return;
-		if (console == null) return;
-		if (vu.getView() != console.getView()) return;
+		final View view = vu.getView();
+		if ((view == null) || (view != console.getView())) return;
 		new Thread()
 		{
 			public void run()
@@ -89,23 +89,11 @@ public class ProjectTreeListener implements EBComponent
 				{
 					interrupt();
 				}
-				//VPTNode n = vu.getNode();
-				View view = vu.getView();
-				if (view == null || view != jEdit.getActiveView()) return;
 				String code = "changeToPvRoot(view);";
 				NameSpace namespace =  BeanShell.getNameSpace();
 				BeanShell.eval(view, namespace, code);
-			
 			}
 		}.start();
-	} // }}}
-
-
-	// {{{ update()
-	/** Reloads properties and updates flags */
-	private void update()
-	{
-		onProjectChange = jEdit.getBooleanProperty("console.changedir.pvchange");
 	} // }}}
 
 

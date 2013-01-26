@@ -154,13 +154,14 @@ options.console.compile-run.compiler=Compiler
 options.console.compile-run.interpreter=Interpreter
 
 # Because this uses a JLabel, the HTML formatting is necessary
-options.console.compile-run.help=<HTML>Useful environment variables:<BLOCKQUOTE> \
+options.console.compile-run.help=<HTML>\
+<p>Useful environment variables:<BLOCKQUOTE> \
 	$f - full path of the current buffer<BR /> \
 	$d - parent directory of the current buffer<BR /> \
 	$n - name of the current buffer <br />\
 	$p - root of current project <br /></BLOCKQUOTE> \
 	Read the Console plugin documentation for a full list of available \
-	environment variables.</HTML>
+	environment variables.</p></HTML>
 
 options.pv.commands.label=Console
 

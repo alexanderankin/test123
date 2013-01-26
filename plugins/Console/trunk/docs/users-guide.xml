@@ -100,10 +100,13 @@
  <bridgehead> Console - General Options </bridgehead>
 
   <para> Here, you can set general options that apply to all shells, such as
-  showing the welcome message, character encoding to use, scrollback buffer
-  size, colors, etc. </para>
+  default shell, showing the welcome message, character encoding to use,
+  scrollback buffer size, colors to use, etc. </para>
+  
+  <para> In addition, you can choose to parse, ignore, or strip out the ANSI
+  escape sequences that cause color changes in the console. </para> 
 
- <itemizedlist>
+  <itemizedlist>
   <listitem><para><emphasis>Show Welcome Message</emphasis> - suppress welcome
   message on shells. </para>
   </listitem>
@@ -740,7 +743,11 @@ most often at the top of the list.
  <chapter id="bean-shell">
   <title> The Console BeanShell </title>
 
-  <para> One of jEdit's best kept secrets is the interactive Console BeanShell, which provides a command line interface into the current running JVM, allowing you to inspect or invoke methods on objects in memory, or create instances of any class loaded in the JVM. This makes the Console BeanShell a powerful debugging tool for jEdit or plugin development.
+  <para> One of jEdit's best kept secrets is the interactive Console BeanShell,
+  which provides a command line interface into the current running JVM, allowing
+  you to inspect or invoke methods on objects in memory, or create instances of
+  any class loaded in the JVM. This makes the Console BeanShell a powerful
+  debugging tool for jEdit or plugin development.
   </para>
 
   <para> There are many predefined variables you can use from this shell. 
