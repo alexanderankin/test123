@@ -103,6 +103,21 @@ the next time you use the SshConsole, it should logout of the old ssh session,
 create a new shell connection to the same host you just logged into via sftp,
 and send your shell commands there. </p>
 
+<h2 id="projectviewer-integration"> ProjectViewer Integration </h2>
+
+<p> As it happens, ProjectViewer permits you to have projects rooted at a
+<tt>sftp://</tt> directory. What this means is that Console can respond to
+"change to project root" messages, if the option is selected, and these
+messages are passed on to SshConsole. Therefore, when you switch to a project
+that is rooted at an <tt>sftp://</tt> address and <b>Plugin Options - Console -
+System Shell - <i>On project change, cd to PV root dir</i></b> is checked, then
+Ssh Shell should be selected and the project root directory should be 
+the current working directory. 
+</p>
+
+<p> In addition, the same node selection events that Console responds to from 
+the File System Browser also are sent from the ProjectViewer tree. </p>
+
 <h2 id="jobcontrol"> Job Control </h2>
 
 <p> Sending Ctrl-D (EOF), or Ctrl-Z (DETACH), work the way you would expect them
