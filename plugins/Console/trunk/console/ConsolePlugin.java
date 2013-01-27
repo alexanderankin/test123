@@ -551,12 +551,11 @@ public class ConsolePlugin extends EditPlugin
 		console.setShell("System");
 		if (jEdit.getBooleanProperty("console.clearBeforeExecute"))
 			console.clear();
-		final Console.ShellState state = console.getShellState(systemShell);
-
-		console.getOutput().writeAttrs(
+/*		console.getOutput().writeAttrs(
 				ConsolePane.colorAttributes(console.getInfoColor()),
-				"\n"+cmd+"\n");
-		systemShell.executeInDir(console, null, state, null, cmd, project.getRootPath());
+				"\n"+cmd+"\n"); */
+		console.chDir(project.getRootPath(), true);
+		console.run(console.getShell(), console.getOutput(), cmd);
 	} // }}}
 
 	// {{{ getPackageName() method

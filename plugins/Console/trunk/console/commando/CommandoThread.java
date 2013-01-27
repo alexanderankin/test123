@@ -107,14 +107,8 @@ class CommandoThread extends Thread
 
 						boolean needChangeDir = (shell instanceof SystemShell) && (command.dir != null);
 						if (needChangeDir)
-						{
-							SystemShell system = (SystemShell)shell;
-							system.executeInDir(console, null, out, null, command.command, command.dir);
-						}
-						else
-						{
-							console.run(shell, null,  out, null, command.command);
-						}
+							console.chDir(command.dir, false);
+						console.run(shell, null,  out, null, command.command);
 					}
 				});
 			}

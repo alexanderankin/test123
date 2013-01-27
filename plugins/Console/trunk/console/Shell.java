@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2005 Slava Pestov
+ * Copyright (C) 1999-2013 Slava Pestov, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -98,19 +98,21 @@ public abstract class Shell
 		return retVal.toArray();
 	} //}}}
 
+	//{{{ handlesVFS()
 	/** @param vfsPath the path to test if this shell handles 
-	    @return true if this shell handles a path that looks like vfsPath 
+	    @return true if this shell is preferred for handling a path that looks like vfsPath 
     */
 	public boolean handlesVFS(String vfsPath) {
 		return false;
-	}
+	}//}}}
 	
+	//{{{ chDir()
 	/** @param pathStr   vfs path to change directory
 	    @return true if the function did something, false if not.
 	*/	
 	public boolean chDir(Console console, String pathStr) {
 		return false;
-	}
+	}// }}}
 	
 	//{{{ getShell() method
 	/**
