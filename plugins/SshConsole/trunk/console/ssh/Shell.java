@@ -130,7 +130,7 @@ public class Shell extends console.Shell {
 			cs.os.flush();
 		}
 		catch (IOException ioe ) {
-			Log.log(Log.WARNING, this, "IOException writing to ssh pipe - closing connection", ioe);
+			Log.log(Log.WARNING, this, "IOException writing to ssh pipe: " + ioe.toString());
 			cs.close();
 		}
 

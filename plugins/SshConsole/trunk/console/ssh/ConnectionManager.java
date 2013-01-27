@@ -117,13 +117,13 @@ public class ConnectionManager extends ftp.ConnectionManager
 	static void closeConnection(Connection connect)
 	{
 		synchronized(lock)
-		{
-			if(connect.inUse)
+		{  
+			if(connect.inUse) {
+				Log.log(Log.DEBUG, ConnectionManager.class, "Can't close connection that still in use");
 				return;
+			}
 
-			Log.log(Log.DEBUG,ConnectionManager.class,
-				"Closing connection to "
-				+ connect.info);
+			Log.log(Log.DEBUG,ConnectionManager.class, "Closing connection to " + connect.info);
 			try
 			{
 				connect.logout();
@@ -132,7 +132,6 @@ public class ConnectionManager extends ftp.ConnectionManager
 			{
 				Log.log(Log.ERROR,ConnectionManager.class,io);
 			}
-
 			connections.remove(connect);
 		}
 	} //}}}
