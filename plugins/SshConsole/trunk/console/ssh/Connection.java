@@ -20,10 +20,12 @@
 package console.ssh;
 
 // {{{ imports
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -47,7 +49,7 @@ import ftp.PasswordDialog;
 // {{{ Connection class
 /** An ssh remote shell connection.
  *
- *  This class is based on the Connection.java class in the FTP plugin. 
+ *  This class is based on the SFtpConnection.java class in the FTP plugin. 
  *  @author ezust
  *  @version $Id$
  */
@@ -186,7 +188,7 @@ public class Connection implements UserInfo {
 		passphrase = ConnectionManager.getPassphrase(info.privateKey);
 		if (passphrase==null || keyAttempts != 0)
 		{
-			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
+			PasswordDialog pd = new PasswordDialog(console.getView(),
 				jEdit.getProperty("login.privatekeypassword"), message);
 			if (!pd.isOK())
 				return false;
@@ -198,22 +200,47 @@ public class Connection implements UserInfo {
 	} // }}}
 	
 	// {{{ promptYesNo()
-	public boolean promptYesNo(String message)
+	public boolean promptYesNo(final String message)
 	{
-		Object[] options={ "yes", "no" };
-		int foo=JOptionPane.showOptionDialog(null,
-			message,
-			"Warning",
-			JOptionPane.DEFAULT_OPTION,
-			JOptionPane.WARNING_MESSAGE,
-			null, options, options[0]);
-		return foo==0;
+		final int ret[] = new int[1];
+		try
+		{
+			Runnable runnable = new Runnable()
+			{
+				public void run()
+				{
+
+					Object[] options={ "yes", "no" };
+					ret[0]=JOptionPane.showOptionDialog(console.getView(),
+						message, "Warning", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+				}
+			};
+			if (EventQueue.isDispatchThread())
+			{
+				runnable.run();
+			}
+			else
+			{
+				EventQueue.invokeAndWait(runnable);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		catch (InvocationTargetException e)
+		{
+			Log.log(Log.ERROR, this, e); 
+		}
+		return ret[0]==0;
+	
 	} // }}}
 	
 	// {{{ showMessage() method
 	public void showMessage(String message)
 	{
-		JOptionPane.showMessageDialog(null, message);
+		JOptionPane.showMessageDialog(console.getView(), message);
 	} // }}}
 	
 } // }}}
