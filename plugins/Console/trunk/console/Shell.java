@@ -99,15 +99,18 @@ public abstract class Shell
 	} //}}}
 
 	//{{{ handlesVFS()
-	/** @param vfsPath the path to test if this shell handles 
-	    @return true if this shell is preferred for handling a path that looks like vfsPath 
-    */
+	/** A Shell can override this method and use any criteria at all to decide
+	    whether this is a path that is preferred by this shell. 
+	    @param vfsPath the path to test if this shell handles 
+	    @return true if this shell is preferred for handling a path that looks like vfsPath
+	*/
 	public boolean handlesVFS(String vfsPath) {
 		return false;
 	}//}}}
 	
 	//{{{ chDir()
-	/** @param pathStr   vfs path to change directory
+	/** A shell can override this method if it can respond to chDir messages
+		@param pathStr   vfs path to change directory
 	    @return true if the function did something, false if not.
 	*/	
 	public boolean chDir(Console console, String pathStr) {
