@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2010 Matthieu Casanova
+ * Copyright (C) 2010, 2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,10 +37,10 @@ import java.util.List;
  */
 public class RFCListPanel extends JPanel
 {
-	private JList list;
-	private HistoryTextField searchField;
-	private RFCListModel model;
-	private RFCReaderPlugin plugin;
+	private final JList list;
+	private final HistoryTextField searchField;
+	private final RFCListModel model;
+	private final RFCReaderPlugin plugin;
 
 	public RFCListPanel()
 	{
@@ -48,16 +48,19 @@ public class RFCListPanel extends JPanel
 		searchField = new HistoryTextField("rfc.searchfield");
 		searchField.getDocument().addDocumentListener(new DocumentListener()
 		{
+			@Override
 			public void insertUpdate(DocumentEvent e)
 			{
 				updateSearch();
 			}
 
+			@Override
 			public void removeUpdate(DocumentEvent e)
 			{
 				updateSearch();
 			}
 
+			@Override
 			public void changedUpdate(DocumentEvent e)
 			{
 				updateSearch();
@@ -93,11 +96,12 @@ public class RFCListPanel extends JPanel
 		{
 			s = s + "* " + s + "~";
 		}
-		if (s.length() == 0)
+		if (s.isEmpty())
 			model.reset();
 		else
 		{
-			List<RFC> rfcs = plugin.getIndex().search(s);
+			RFCIndex index = plugin.getIndex();
+			List<RFC> rfcs = index.search(s);
 			model.setData(rfcs);
 		}
 	}

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2010 Matthieu Casanova
+ * Copyright © 2010, 2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,8 +23,8 @@ package gatchan.jedit.rfcreader;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -43,7 +43,7 @@ import java.io.IOException;
 public class RFCIndexTitle extends AbstractRFCIndex
 {
 	/** increment this */
-	int INDEX_VERSION = 5;
+	int INDEX_VERSION = 6;
 
 	public RFCIndexTitle() throws IOException
 	{
@@ -68,12 +68,15 @@ public class RFCIndexTitle extends AbstractRFCIndex
 		{
 			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_41, analyzer);
 			IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
+			Document document = new Document();
+			StringField numField = new StringField("number", "", Field.Store.YES);
+			TextField title = new TextField("title", "", Field.Store.NO);
+			document.add(numField);
+			document.add(title);
 			for (RFC rfc : rfcs.values())
 			{
-				Document document = new Document();
-				document.add(new IntField("number",rfc.getNumber(), Field.Store.YES));
-				document.add(new StringField("title", rfc.getTitle(), Field.Store.NO));
-
+				numField.setStringValue(Integer.toString(rfc.getNumber()));
+				title.setStringValue(rfc.getTitle());
 				writer.addDocument(document);
 			}
 			writer.close();
