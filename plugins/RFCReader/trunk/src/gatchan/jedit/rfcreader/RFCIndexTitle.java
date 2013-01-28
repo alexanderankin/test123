@@ -23,8 +23,11 @@ package gatchan.jedit.rfcreader;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -40,16 +43,17 @@ import java.io.IOException;
 public class RFCIndexTitle extends AbstractRFCIndex
 {
 	/** increment this */
-	int INDEX_VERSION = 4;
+	int INDEX_VERSION = 5;
 
 	public RFCIndexTitle() throws IOException
 	{
 		RFCReaderPlugin plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
 		File home = plugin.getPluginHome();
-		analyzer = new StandardAnalyzer(Version.LUCENE_30);
+		analyzer = new StandardAnalyzer(Version.LUCENE_41);
 		directory = FSDirectory.open(new File(home, "lucene"));
 	}
 
+	@Override
 	protected String[] getFields()
 	{
 		return new String[]{"number", "title"};
@@ -60,28 +64,22 @@ public class RFCIndexTitle extends AbstractRFCIndex
 	{
 		Log.log(Log.DEBUG, this, "load()");
 		if (jEdit.getIntegerProperty("rfcreader.index.version",-1) != INDEX_VERSION ||
-			!IndexReader.indexExists(directory))
+			!DirectoryReader.indexExists(directory))
 		{
-			IndexWriter writer = new IndexWriter(directory, analyzer, true,
-				IndexWriter.MaxFieldLength.UNLIMITED);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_41, analyzer);
+			IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
 			for (RFC rfc : rfcs.values())
 			{
 				Document document = new Document();
-				document.add(new Field("number",
-					Integer.toString(rfc.getNumber()), Field.Store.YES,
-					Field.Index.ANALYZED, Field.TermVector.NO));
-				document.add(new Field("title", rfc.getTitle(),
-					Field.Store.NO, Field.Index.ANALYZED,
-					Field.TermVector.NO));
+				document.add(new IntField("number",rfc.getNumber(), Field.Store.YES));
+				document.add(new StringField("title", rfc.getTitle(), Field.Store.NO));
 
 				writer.addDocument(document);
 			}
-			writer.optimize();
 			writer.close();
 			jEdit.setIntegerProperty("rfcreader.index.version",INDEX_VERSION);
 		}
-		searcher = new IndexSearcher(directory, true);
+		directoryReader = DirectoryReader.open(directory);
+		searcher = new IndexSearcher(directoryReader);
 	}
-
-
 }

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2010 Matthieu Casanova
+ * Copyright © 2010-2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,9 +24,10 @@ package gatchan.jedit.rfcreader;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -48,12 +49,13 @@ public abstract class AbstractRFCIndex implements RFCIndex
 {
 	protected IndexSearcher searcher;
 	protected Directory directory;
+	protected DirectoryReader directoryReader;
 	protected StandardAnalyzer analyzer;
 	private QueryParser parser;
 	private QueryParser numberQueryParser;
 	protected Map<Integer, RFC> rfcs;
 
-	public AbstractRFCIndex()
+	protected AbstractRFCIndex()
 	{
 		RFCReaderPlugin plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
 		rfcs = plugin.getRfcList();
@@ -63,7 +65,7 @@ public abstract class AbstractRFCIndex implements RFCIndex
 	public List<RFC> search(String query)
 	{
 		if (parser == null)
-			parser = new MultiFieldQueryParser(Version.LUCENE_30,
+			parser = new MultiFieldQueryParser(Version.LUCENE_41,
 				getFields(),
 				analyzer);
 
@@ -76,7 +78,7 @@ public abstract class AbstractRFCIndex implements RFCIndex
 	public List<RFC> searchByNumber(String query)
 	{
 		if (numberQueryParser == null)
-			numberQueryParser = new MultiFieldQueryParser(Version.LUCENE_30,
+			numberQueryParser = new MultiFieldQueryParser(Version.LUCENE_41,
 				new String[]{"number"},
 				analyzer);
 
@@ -120,13 +122,14 @@ public abstract class AbstractRFCIndex implements RFCIndex
 	{
 		try
 		{
-			searcher.close();
+			directoryReader.close();
 		}
 		catch (IOException e)
 		{
 			Log.log(Log.ERROR, this, e);
 		}
 		searcher = null;
+		directoryReader = null;
 		directory = null;
 		analyzer = null;
 		parser = null;
