@@ -241,8 +241,17 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		
 		return defaultAttrs;
 	} // }}}
+	// }}}
 	
 	// {{{ push() method
+	/**
+	   Push a string to the outputting cache with a some AttributeSet.
+	   If the current value of AttributeSet is not a same as one previously
+	   saved then at first this method flushes the cached data and saves
+	   the current value of AttributeSet.
+	   @param currentAttrs current value of the AttributeSet
+	   @param str outputed string
+	 */
 	public void push(SimpleAttributeSet currentAttrs, String str)
 	{
 		if ( pop(currentAttrs != cache_lastAttrs) )
@@ -254,9 +263,15 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	} // }}}
 	
 	// {{{ pop() method
-	public boolean pop(boolean flag)
+	/**
+	   Pop the cached data from the outputting cache to Output. When "forced" is
+	   "true" the outputting cache is flushed by force.
+	   @param forced if "true" the cache is flushed by force
+	   @return if the cache is flushed successfully then return "true"
+	 */
+	public boolean pop(boolean forced)
 	{
-		if (flag || cache_strCount >= CACHE_SIZE_LIMIT)
+		if (forced || cache_strCount >= CACHE_SIZE_LIMIT)
 		{
 			output.writeAttrs(cache_lastAttrs, lineBuffer.substring(0, buffer_start));
 			
@@ -277,7 +292,20 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		
 		return false;
 	} // }}}
-	// }}}
+	
+	// {{{ trim_cache()
+	/**
+	   Remove a noncached data (placed AFTER the cache) from the cache.
+	   @return return a noncached data 
+	 */
+	public String trim_cache()
+	{
+		String result = lineBuffer.substring(buffer_start);
+		
+		lineBuffer.setLength(buffer_start);
+		
+		return result;
+	} // }}}
 	
 	// {{{ constructor
 	/**
@@ -359,17 +387,20 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	// {{{ actionInsideWaitingLoop() method
 	/**
 	 * Extended outputting: working process outputs nothing a long time.
-	 * In that case flush unterminated string.
+	 * In that case flush and a cached data and a noncached (unterminated string).
 	 */
 	@Override
 	protected void actionInsideWaitingLoop(InputStreamReader isr) throws Exception
 	{
-		if ( !isr.ready() )
+		if (lineBuffer.length() > 0)
 		{
-			handleString(lineBuffer.substring(buffer_start), true);
+			if ( !isr.ready() )
+			{
+				handleString(trim_cache(), true);
+			}
+			
+			pop(true);
 		}
-		
-		pop( lineBuffer.length() > 0 );
 	} // }}}
 	
 	// {{{ afterWorking() method
@@ -385,7 +416,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	{
 		if (lineBuffer.length() > 0)
 		{
-			handleString(lineBuffer.substring(buffer_start), false);
+			handleString(trim_cache(), false);
 			
 			pop(true);
 		}
@@ -426,7 +457,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		
 		// now there is no necessity to use external buffer -> clean
 		lineBuffer.ensureCapacity(buffer_start + line.length());
-		lineBuffer.setLength(buffer_start);
+		trim_cache();
 		
 		Matcher matcher = eolPattern.matcher(line);
 		
@@ -438,7 +469,7 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 			cache_strCount++;
 		}
 		// unterminated string -> save it to external buffer over the cache
-		if ( bPosition < line.length() - 1 )
+		if ( bPosition < line.length() )
 		{
 			lineBuffer.append(line.substring(bPosition));
 		}
@@ -494,5 +525,6 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 		errorParser = new CommandOutputParser(view, des, defaultColor);
 		errorParser.setDirectory(currentDirectory);
 	} // }}}
+	
 }
 

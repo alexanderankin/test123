@@ -116,7 +116,7 @@ public class SimpleOutputStreamTask extends StreamTask
 	 * - main working loop ends
 	 * - "finalOutputing()" method
 	 *
-	 * (under "finally" section) 
+	 * (under "try" section) 
 	 */
 	protected void afterWorking() throws Exception
 	{
@@ -183,24 +183,7 @@ public class SimpleOutputStreamTask extends StreamTask
 		
 		if (waitingLoop == null)
 		{
-			boolean _synchronized = false;
-			
-			Method[] methods = in.getClass().getMethods();
-			for (Method method : methods)
-			{
-				String name = method.getName(); 
-				if ( name.contentEquals("available") ||
-					 name.contentEquals("read")         )
-				{
-					if ( Modifier.isSynchronized( method.getModifiers() ) )
-					{
-						_synchronized = true;
-						break;
-					}
-				}
-			}
-			
-			setWaitingLoop( _synchronized ?	WLTypes.syncWL : WLTypes.nonsyncWL );
+			setWaitingLoop(WLTypes.nonsyncWL);
 		}
 		
 		try
@@ -232,16 +215,14 @@ public class SimpleOutputStreamTask extends StreamTask
 					lineBuffer.append(input, 0, read);
 					
 					outputData();
-					
-					waitingLoop.decoratedActionInsideWaitingLoop(isr);
 				}
 			}
 			finally
 			{
 				finalOutputting();
-				
-				afterWorking();
 			}
+			
+			afterWorking();
 			
 		}
 		catch (Exception e)
@@ -315,11 +296,6 @@ public class SimpleOutputStreamTask extends StreamTask
 			throws Exception
 		{
 			throw new InterruptedException("End the main loop.");
-		}
-		
-		public void decoratedActionInsideWaitingLoop(InputStreamReader isr)
-			throws Exception
-		{
 		}
 	} // }}}
 	
@@ -415,6 +391,8 @@ public class SimpleOutputStreamTask extends StreamTask
 		public int readIfReady(InputStreamReader isr, char[] input, int offset, int length)
 			throws Exception
 		{
+			SimpleOutputStreamTask.this.actionInsideWaitingLoop(isr);
+			
 			int result = isr.read(input, offset, length);
 			
 			if (result == -1)
@@ -423,13 +401,6 @@ public class SimpleOutputStreamTask extends StreamTask
 			}
 			
 			return result;
-		}
-		
-		@Override
-		public void decoratedActionInsideWaitingLoop(InputStreamReader isr)
-			throws Exception
-		{
-			SimpleOutputStreamTask.this.actionInsideWaitingLoop(isr);
 		}
 	} // }}}
 	
