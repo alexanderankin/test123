@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2010 Matthieu Casanova
+ * Copyright (C) 2010, 2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ import java.util.Map;
 public class RFCListModel extends AbstractListModel
 {
 	private List<RFC> data;
-	private List<RFC> defaultList;
+	private final List<RFC> defaultList;
 
 	public RFCListModel(Map<Integer, RFC> data)
 	{
@@ -54,11 +54,13 @@ public class RFCListModel extends AbstractListModel
 		setData(defaultList);
 	}
 
+	@Override
 	public int getSize()
 	{
 		return data.size();
 	}
 
+	@Override
 	public Object getElementAt(int index)
 	{
 		return data.get(index);

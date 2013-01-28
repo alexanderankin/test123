@@ -33,7 +33,5 @@ public interface RFCIndex
 
 	List<RFC> search(String query);
 
-	List<RFC> searchByNumber(String query);
-
 	void close();
 }

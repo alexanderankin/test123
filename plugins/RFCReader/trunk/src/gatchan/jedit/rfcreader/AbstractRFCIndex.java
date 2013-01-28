@@ -21,14 +21,21 @@
 
 package gatchan.jedit.rfcreader;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
@@ -36,11 +43,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Matthieu Casanova
@@ -52,7 +54,6 @@ public abstract class AbstractRFCIndex implements RFCIndex
 	protected DirectoryReader directoryReader;
 	protected StandardAnalyzer analyzer;
 	private QueryParser parser;
-	private QueryParser numberQueryParser;
 	protected Map<Integer, RFC> rfcs;
 
 	protected AbstractRFCIndex()
@@ -74,24 +75,24 @@ public abstract class AbstractRFCIndex implements RFCIndex
 
 	protected abstract String[] getFields();
 
-	@Override
-	public List<RFC> searchByNumber(String query)
-	{
-		if (numberQueryParser == null)
-			numberQueryParser = new MultiFieldQueryParser(Version.LUCENE_41,
-				new String[]{"number"},
-				analyzer);
-
-		return _search(query, numberQueryParser);
-	}
-
 	private List<RFC> _search(String query, QueryParser parser)
 	{
 		try
 		{
 			Query q = parser.parse(query);
+			return _search(q);
+		}
+		catch (ParseException e)
+		{
+			return null;
+		}
+	}
 
-			TopDocs docs = searcher.search(q, 5000);
+	private List<RFC> _search(Query query)
+	{
+		try
+		{
+			TopDocs docs = searcher.search(query, 5000);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
 			List<RFC> rfcList = new ArrayList<RFC>(scoreDocs.length);
 			for (ScoreDoc doc : scoreDocs)
@@ -102,10 +103,6 @@ public abstract class AbstractRFCIndex implements RFCIndex
 				rfcList.add(rfcs.get(number));
 			}
 			return rfcList;
-		}
-		catch (ParseException e)
-		{
-			return null;
 		}
 		catch (CorruptIndexException e)
 		{
