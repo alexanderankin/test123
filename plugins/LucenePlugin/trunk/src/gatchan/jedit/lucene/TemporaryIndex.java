@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2012 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -24,12 +24,15 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
@@ -59,11 +62,11 @@ public class TemporaryIndex implements Index
 	public TemporaryIndex(String name)
 	{
 		this.name = name;
-		analyzer = new StandardAnalyzer(Version.LUCENE_34);
+		analyzer = new StandardAnalyzer(Version.LUCENE_41);
 		directory = new RAMDirectory();
 		try
 		{
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_41, analyzer);
 			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
@@ -159,9 +162,11 @@ public class TemporaryIndex implements Index
 		if (max < 1)
 			max = 1;
 		IndexSearcher searcher = null;
+		DirectoryReader directoryReader = null;
 		try
 		{
-			searcher = new IndexSearcher(directory);
+			directoryReader = DirectoryReader.open(directory);
+			searcher = new IndexSearcher(directoryReader);
 		}
 		catch (IOException e)
 		{
@@ -170,7 +175,7 @@ public class TemporaryIndex implements Index
 		if (searcher == null)
 			return;
 		QueryParser parser =
-			new MultiFieldQueryParser(Version.LUCENE_34, new String[] { "path", "content" }, getAnalyzer());
+			new MultiFieldQueryParser(Version.LUCENE_41, new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			Query parsedQuery = parser.parse(query);
@@ -209,7 +214,7 @@ public class TemporaryIndex implements Index
 		{
 			try
 			{
-				searcher.close();
+				directoryReader.close();
 			}
 			catch (IOException e)
 			{
@@ -234,21 +239,20 @@ public class TemporaryIndex implements Index
 		return false;
 	}
 
-	protected Document getEmptyDocument(Buffer buffer)
+	protected static Document getEmptyDocument(Buffer buffer)
 	{
 		Document doc = new Document();
-		doc.add(new Field("path", buffer.getPath(), Field.Store.NO, Field.Index.ANALYZED));
-		doc.add(new Field("_path", buffer.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new TextField("path", buffer.getPath(), Field.Store.NO));
+		doc.add(new StringField("_path", buffer.getPath(), Field.Store.YES));
 		String extension = MiscUtilities.getFileExtension(buffer.getPath());
-		if (extension.length() != 0)
+		if (!extension.isEmpty())
 		{
-			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO,
-					  Field.Index.NOT_ANALYZED));
+			doc.add(new StringField("filetype", extension.substring(1), Field.Store.NO));
 		}
 		Segment segment = new Segment();
 		buffer.getText(0, buffer.getLength(), segment);
 		Reader reader = new CharArrayReader(segment.array, segment.offset, segment.count);
-		doc.add(new Field("content", reader));
+		doc.add(new TextField("content", reader));
 		return doc;
 	}
 }

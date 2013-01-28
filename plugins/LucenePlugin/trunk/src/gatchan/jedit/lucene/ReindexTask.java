@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ class ReindexTask extends Task
 	{
 		try
 		{
-			setMaximum(4L);
+			setMaximum(3L);
 			Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
 			final Index index = LucenePlugin.instance.getIndex(indexName);
 			setStatus("Reindex " + indexName);
@@ -82,12 +82,9 @@ class ReindexTask extends Task
 			setValue(2L);
 			Log.log(Log.NOTICE, this, "Optimize index:" + indexName + "DONE");
 			Log.log(Log.NOTICE, this, "Optimize Central Index");
-			setStatus("Optimize Central Index");
-			LucenePlugin.CENTRAL.optimize();
-			setValue(3L);
 			setStatus("Commit Central Index");
 			LucenePlugin.CENTRAL.commit();
-			setValue(4L);
+			setValue(3L);
 			Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
 		}
 		finally

@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2012 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 package gatchan.jedit.lucene;
 
 //{{{ Imports
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -52,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AbstractIndex
 {
 	protected IndexWriter writer;
-	private IndexReader reader;
+	private DirectoryReader reader;
 	protected File path;
 	protected Analyzer analyzer;
 	protected List<ActivityListener> listeners = new ArrayList<ActivityListener> ();
@@ -123,7 +124,7 @@ public class AbstractIndex
 					IndexWriter.unlock(directory);
 				}
 			}
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_34, getAnalyzer());
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_41, getAnalyzer());
 			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
@@ -136,7 +137,7 @@ public class AbstractIndex
 	protected IndexSearcher getSearcher()
 	{
 		initReader();
-		return new MyIndexSearcher(reader);
+		return new IndexSearcher(reader);
 	} //}}}
 
 	//{{{ initReader() method
@@ -146,7 +147,7 @@ public class AbstractIndex
 		{
 			try
 			{
-				reader = IndexReader.open(FSDirectory.open(path));
+				reader = DirectoryReader.open(FSDirectory.open(path));
 				readerMap.put(reader, 0);
 			}
 			catch (IOException e)
@@ -158,7 +159,7 @@ public class AbstractIndex
 		{
 			try
 			{
-				IndexReader reader = IndexReader.openIfChanged(this.reader);
+				DirectoryReader reader = DirectoryReader.openIfChanged(this.reader);
 				if (reader != null)
 				{
 					IndexReader oldReader = this.reader;
@@ -203,27 +204,6 @@ public class AbstractIndex
 		}
 	} //}}}
 
-	//{{{ optimize() method
-	/**
-	 * Optimize the index.
-	 * It is necessary to commit after that
-	 */
-	public void optimize()
-	{
-		openWriter();
-		if (writer != null)
-		{
-			try
-			{
-				writer.optimize();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, "Error while optimizing index", e);
-			}
-		}
-	} //}}}
-
 	//{{{ commit() method
 	public void commit()
 	{
@@ -259,23 +239,6 @@ public class AbstractIndex
 		}
 	} //}}}
 
-	//{{{ MyIndexSearcher class
-	private class MyIndexSearcher extends IndexSearcher
-	{
-		private MyIndexSearcher(IndexReader r)
-		{
-			super(r);
-			readPlus(r);
-		}
-
-		@Override
-		public void close() throws IOException
-		{
-			super.close();
-			readMinus(reader);
-		}
-	} //}}}
-
 	//{{{ setAnalyzer() method
 	public void setAnalyzer(Analyzer analyzer)
 	{
@@ -286,21 +249,10 @@ public class AbstractIndex
 	public Analyzer getAnalyzer()
 	{
 		if (analyzer == null)
+		{
 			analyzer = new SourceCodeAnalyzer();
+		}
 		return analyzer;
-	} //}}}
-
-	//{{{ closeSearcher() method
-	protected static void closeSearcher(IndexSearcher searcher)
-	{
-		try
-		{
-			searcher.close();
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, AbstractIndex.class, e, e);
-		}
 	} //}}}
 
 	//{{{ addActivityListener() method

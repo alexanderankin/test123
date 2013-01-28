@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -22,8 +22,10 @@ package gatchan.jedit.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 import org.gjt.sp.jedit.Buffer;
@@ -62,7 +64,7 @@ public class CentralIndex extends AbstractIndex
 		   and/or no index has been created yet */
 		try
 		{
-			if (IndexReader.indexExists(FSDirectory.open(path)))
+			if (DirectoryReader.indexExists(FSDirectory.open(path)))
 			{
 				final BufferUpdate bufferUpdate = message;
 				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
@@ -131,19 +133,14 @@ public class CentralIndex extends AbstractIndex
 			if (docs.scoreDocs.length == 0)
 			{
 				Document document = new Document();
-				document.add(new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));
-				document.add(
-					new Field("indexName", indexName, Field.Store.YES, Field.Index.NOT_ANALYZED));
+				document.add(new StringField("path", path, Field.Store.YES));
+				document.add(new StringField("indexName", indexName, Field.Store.YES));
 				writer.addDocument(document);
 			}
 		}
 		catch (IOException e)
 		{
 			Log.log(Log.ERROR, this, e);
-		}
-		finally
-		{
-			closeSearcher(searcher);
 		}
 	}
 
@@ -166,7 +163,7 @@ public class CentralIndex extends AbstractIndex
 					try
 					{
 						Document document = searcher.doc(doc);
-						documents.add(document.getFieldable("path").stringValue());
+						documents.add(document.getField("path").stringValue());
 					}
 					catch (IOException e)
 					{
@@ -175,7 +172,7 @@ public class CentralIndex extends AbstractIndex
 				}
 
 				@Override
-				public void setNextReader(IndexReader reader, int docBase)
+				public void setNextReader(AtomicReaderContext context)
 				{
 				}
 
@@ -189,10 +186,6 @@ public class CentralIndex extends AbstractIndex
 		catch (IOException e)
 		{
 			Log.log(Log.ERROR, this, e);
-		}
-		finally
-		{
-			closeSearcher(searcher);
 		}
 		return documents;
 	}
@@ -230,11 +223,11 @@ public class CentralIndex extends AbstractIndex
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
-				String indexName = document.getFieldable("indexName").stringValue();
+				String indexName = document.getField("indexName").stringValue();
 				Index index = LucenePlugin.instance.getIndex(indexName);
 				if (index != null)
 				{
-					index.addFile(document.getFieldable("path").stringValue());
+					index.addFile(document.getField("path").stringValue());
 					index.commit();
 				}
 			}
@@ -242,10 +235,6 @@ public class CentralIndex extends AbstractIndex
 		catch (IOException e)
 		{
 			Log.log(Log.ERROR, this, e);
-		}
-		finally
-		{
-			closeSearcher(searcher);
 		}
 	}
 }

@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -20,42 +20,25 @@
  */
 package gatchan.jedit.lucene;
 
-import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharTokenizer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.util.Version;
 
 public class SourceCodeAnalyzer extends Analyzer
 {
 	@Override
-	public final TokenStream tokenStream(String fieldName, Reader reader)
+	protected TokenStreamComponents createComponents(String fieldName, Reader reader)
 	{
-		return new SourceCodeTokenizer(reader);
-	}
-
-	@Override
-	public final TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException
-	{
-		Tokenizer tokenizer = (Tokenizer) getPreviousTokenStream();
-		if (tokenizer == null)
-		{
-			tokenizer = new SourceCodeTokenizer(reader);
-			setPreviousTokenStream(tokenizer);
-		}
-		else
-			tokenizer.reset(reader);
-		return tokenizer;
+		return new TokenStreamComponents(new SourceCodeTokenizer(reader));
 	}
 
 	private static class SourceCodeTokenizer extends CharTokenizer
 	{
 		SourceCodeTokenizer(Reader input)
 		{
-			super(Version.LUCENE_34, input);
+			super(Version.LUCENE_41, input);
 		}
 
 		@Override

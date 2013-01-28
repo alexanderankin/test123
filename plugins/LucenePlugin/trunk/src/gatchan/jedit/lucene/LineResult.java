@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2012 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -24,12 +24,12 @@ public class LineResult extends Result
 {
 	public int getLine()
 	{
-		return Integer.valueOf(getDocument().getFieldable("line").stringValue());
+		return Integer.valueOf(getDocument().getField("line").stringValue());
 	}
 
 	public String getText()
 	{
-		return getDocument().getFieldable("content").stringValue();
+		return getDocument().getField("content").stringValue();
 	}
 
 	public String toString()

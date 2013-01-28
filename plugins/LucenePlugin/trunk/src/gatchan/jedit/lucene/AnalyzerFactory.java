@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -25,10 +25,10 @@ import java.util.Map;
 
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.analysis.StopAnalyzer;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
@@ -38,12 +38,12 @@ public class AnalyzerFactory
 
 	static
 	{
-		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_34));
-		analyzers.put("Simple", new SimpleAnalyzer(Version.LUCENE_34));
+		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_41));
+		analyzers.put("Simple", new SimpleAnalyzer(Version.LUCENE_41));
 		analyzers.put("Java identifier", new SourceCodeAnalyzer());
-		analyzers.put("Whitespace", new WhitespaceAnalyzer(Version.LUCENE_34));
+		analyzers.put("Whitespace", new WhitespaceAnalyzer(Version.LUCENE_41));
 		analyzers.put("Keyword", new KeywordAnalyzer());
-		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_34));
+		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_41));
 	}
 
 	static void dispose()

@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -23,10 +23,12 @@ package gatchan.jedit.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -305,7 +307,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		if (searcher == null)
 			return;
 		QueryParser parser =
-			new MultiFieldQueryParser(Version.LUCENE_34, new String[] { "path", "content" }, getAnalyzer());
+			new MultiFieldQueryParser(Version.LUCENE_41, new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			Query parsedQuery = parser.parse(query);
@@ -340,17 +342,6 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			Log.log(Log.ERROR, this, e, e);
 		}
-		finally
-		{
-			try
-			{
-				searcher.close();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, "Error while closing searcher", e);
-			}
-		}
 	}
 
 	protected Result getResultInstance()
@@ -373,7 +364,7 @@ public class IndexImpl extends AbstractIndex implements Index
 													   file.getPath(),
 													   false,
 													   jEdit.getActiveView())));
-			doc.add(new Field("content", reader));
+			doc.add(new TextField("content", reader));
 			LucenePlugin.CENTRAL.addFile(file.getPath(), name);
 			writer.updateDocument(new Term("_path", file.getPath()), doc);
 		}
@@ -383,7 +374,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(reader);
+			IOUtilities.closeQuietly((Closeable) reader);
 		}
 	}
 
@@ -392,13 +383,12 @@ public class IndexImpl extends AbstractIndex implements Index
 		Document doc = new Document();
 		if (file.getPath() == null)
 			return null;
-		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
-		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new TextField("path", file.getPath(), Field.Store.NO));
+		doc.add(new StringField("_path", file.getPath(), Field.Store.YES));
 		String extension = MiscUtilities.getFileExtension(file.getPath());
-		if (extension.length() != 0)
+		if (!extension.isEmpty())
 		{
-			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO,
-					  Field.Index.NOT_ANALYZED));
+			doc.add(new StringField("filetype", extension.substring(1), Field.Store.NO));
 		}
 
 		return doc;
