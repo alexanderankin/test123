@@ -22,7 +22,6 @@
 package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,10 +33,13 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -47,12 +49,9 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ProgressObserver;
@@ -66,21 +65,11 @@ public class FileIndex
 	private static final Pattern CAMELCASE = Pattern.compile("(?<!^)(?=[A-Z])");
 	private Directory directory;
 	private final Object LOCK = new Object();
-	private final String[] indexes = { "index1", "index2" };
-	private int indexPos;
 
 	//{{{ FileIndex constructor
 	public FileIndex()
 	{
-		directory = getDirectory();
-	} //}}}
-
-	//{{{ getIndexName() method
-	private String getIndexName()
-	{
-		indexPos = (indexPos + 1) % 2;
-		String indexName = indexes[indexPos];
-		return indexName;
+		directory = new RAMDirectory();
 	} //}}}
 
 	//{{{ getFiles() method
@@ -88,17 +77,8 @@ public class FileIndex
 	{
 		if (s == null || s.isEmpty())
 			return Collections.emptyList();
-		try
-		{
-			if (!IndexReader.indexExists(directory))
-				return Collections.emptyList();
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, this, e);
-			return Collections.emptyList();
-		}
-		IndexSearcher searcher = null;
+
+		IndexReader indexReader = null;
 		List<String> l = new ArrayList<String>();
 		try
 		{
@@ -118,14 +98,14 @@ public class FileIndex
 			query.add(queryCaps, BooleanClause.Occur.SHOULD);
 			query.add(queryNoCaps, BooleanClause.Occur.SHOULD);
 
-			searcher = new IndexSearcher(directory);
-
+			indexReader = DirectoryReader.open(directory);
+			IndexSearcher searcher = new IndexSearcher(indexReader);
 			TopDocs search = searcher.search(query, 100);
 			ScoreDoc[] scoreDocs = search.scoreDocs;
 			for (ScoreDoc scoreDoc : scoreDocs)
 			{
 				Document doc = searcher.doc(scoreDoc.doc);
-				Fieldable path = doc.getFieldable("path");
+				IndexableField path = doc.getField("path");
 				l.add(path.stringValue());
 			}
 		}
@@ -135,7 +115,7 @@ public class FileIndex
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(searcher);
+			IOUtilities.closeQuietly(indexReader);
 		}
 		return l;
 	} //}}}
@@ -159,7 +139,8 @@ public class FileIndex
 				IndexWriterConfig.OpenMode openMode;
 				if (reset)
 				{
-					tempDirectory = getDirectory();
+
+					tempDirectory = new RAMDirectory();
 					openMode = IndexWriterConfig.OpenMode.CREATE;
 				}
 				else
@@ -168,8 +149,8 @@ public class FileIndex
 					openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND;
 				}
 				observer.setMaximum(fileProvider.size());
-				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
-				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 				conf.setOpenMode(openMode);
 				writer = new IndexWriter(tempDirectory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
@@ -178,15 +159,23 @@ public class FileIndex
 					observer.setValue(i);
 					observer.setStatus(path);
 					Document document = new Document();
-					document.add(
-						new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));
+					document.add(new StringField("path", path, Field.Store.YES));
 
 					String fileName = MiscUtilities.getFileName(path);
-					document.add(new Field("name", fileName, Field.Store.NO,
-							       Field.Index.ANALYZED));
-					document.add(new Field("name_caps", fileName, Field.Store.NO,
-							       Field.Index.NOT_ANALYZED));
+					document.add(new TextField("name", fileName, Field.Store.NO));
+					document.add(new StringField("name_caps", fileName, Field.Store.NO));
 					writer.addDocument(document);
+				}
+				if (reset)
+				{
+					try
+					{
+						directory.close();
+					}
+					catch (IOException e)
+					{
+						Log.log(Log.ERROR, this, e);
+					}
 				}
 				directory = tempDirectory;
 			}
@@ -213,8 +202,8 @@ public class FileIndex
 			try
 			{
 				observer.setMaximum(fileProvider.size());
-				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
-				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 				writer = new IndexWriter(directory, conf);
 				for (int i = 0; i < fileProvider.size(); i++)
@@ -237,57 +226,5 @@ public class FileIndex
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Removed " + fileProvider.size()+" files in "+(end - start) + "ms");
-	} //}}}
-
-	//{{{ getDirectory() method
-	private Directory getDirectory()
-	{
-		Directory tempDirectory;
-		if (jEdit.getBooleanProperty("options.smartopen.memoryindex"))
-		{
-			tempDirectory = new RAMDirectory();
-		}
-		else
-		{
-			try
-			{
-				EditPlugin plugin = jEdit.getPlugin(SmartOpenPlugin.class.getName());
-				File pluginHome = plugin.getPluginHome();
-				File index = new File(pluginHome, getIndexName());
-				index.mkdirs();
-				tempDirectory = FSDirectory.open(index);
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, e);
-				tempDirectory = new RAMDirectory();
-			}
-		}
-		return tempDirectory;
-	} //}}}
-
-	//{{{ optimize() method
-	public void optimize()
-	{
-		synchronized (LOCK)
-		{
-			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
-			IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, analyzer);
-			conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-			IndexWriter writer = null;
-			try
-			{
-				writer = new IndexWriter(directory, conf);
-				writer.optimize();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, e);
-			}
-			finally
-			{
-				IOUtilities.closeQuietly(writer);
-			}
-		}
 	} //}}}
 }

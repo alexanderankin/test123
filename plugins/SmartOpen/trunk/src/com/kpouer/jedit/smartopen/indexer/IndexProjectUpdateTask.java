@@ -60,7 +60,5 @@ public class IndexProjectUpdateTask extends Task
 				new VPTFileProvider(addedFiles.toArray(new VPTFile[addedFiles.size()]));
 			SmartOpenPlugin.itemFinder.addFiles(addedFileProvider, this, false);
 		}
-		if (addedFiles != null || removedFiles != null)
-			SmartOpenPlugin.itemFinder.optimize();
 	} //}}}
 }
