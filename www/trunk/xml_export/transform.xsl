@@ -23,7 +23,7 @@
     xmlns:local="urn:local:functions"
     version="2.0">
 
-    <xsl:output method="html" indent="yes"/>
+    <xsl:output method="html" indent="yes" encoding="utf-8"/>
     
     <!-- utility: be able to put double quotes in computed values: -->
     <xsl:variable name="quote" select='""""' />
@@ -62,8 +62,41 @@
         <xsl:value-of select="($tracker_item/submitter/text(),'Anonymous')[1]"/>
     </xsl:function><!-- }}} -->
     
+    <!-- {{{ local:filter-select(name, values)
+         create a select with these values
+      -->
+    <xsl:function name="local:filter-select" as="node()*">
+    	<xsl:param name="name" as="xs:string"/>
+        <xsl:param name="values" as="xs:string*"/>
+        <select name="name">
+        	<!-- empty option to reset filter -->
+			<option value=""></option>
+        	<xsl:for-each select="$values">
+        		<option value="{.}"><xsl:value-of select="."/></option>
+        	</xsl:for-each>
+        </select>
+    </xsl:function><!-- }}} -->
+    <!-- {{{ local:filter-input(name)
+         create an input with this name and title value
+      -->
+    <xsl:function name="local:filter-input" as="node()*">
+    	<xsl:param name="name" as="xs:string"/>
+		<input type="text" name="{$name}" class="search_init" />
+    </xsl:function><!-- }}} -->
+    
     <!-- }}} -->
     
+
+	<xsl:variable name="fields" as="node()*">
+		<field name="id" title="Id"/>
+		<field name="summary" title="Title"/>
+		<field name="status_id" title="Status"/>
+		<field name="submit_date" title="Submitted"/>
+		<field name="submitter" title="By"/>
+		<field name="assignee" title="Assigned to"/>
+	</xsl:variable>
+
+
     <!-- {{{ root template -->
     <xsl:template match="/">
 		<xsl:apply-templates select="/document/trackers"/>
@@ -86,22 +119,70 @@
                 an archived version of all these pages <a href="Export.tgz">here</a>.</p>
 
                 <a name="top"/>
-                <h2>Contents</h2>
+                <h2>Individual trackers</h2>
                 <ul>
                     <xsl:for-each select="tracker">
-                        <li>
-                            <a href="#tracker_{tracker_id}">
-                                <xsl:value-of select="name"/>
-                            </a>
-                        </li>                           
+                        <dl>
+                            <dt>
+                            <a href="{name}/index.html"><xsl:value-of select="name"/></a>
+                            </dt>
+                            <dd><xsl:value-of select="description"/></dd>
+                        </dl>                           
                     </xsl:for-each>
                 </ul>
-                <xsl:apply-templates select="tracker"/>
                 
-                <a id="goto-top" href="#top">(top)</a>
+				<h2>All trackers contents</h2>
+						
+				<p>A table listing all items for all trackers is <a href="table.html">available
+				here</a>.</p>
+
+			
+				<xsl:variable name="statustableid" select="'statuses'"/>
+				<script>
+				$(document).ready(function(){
+				$("#<xsl:value-of select="$statustableid"/>").dataTable({
+						"bPaginate": false,
+						"bLengthChange": false,
+						"bFilter": false,
+						"bSort": true,
+						"bInfo": false,
+						"bAutoWidth": true
+        			});
+				});
+				</script>
+				<table id="{$statustableid}" style="margin-top:2em; margin-bottom:2em">
+					<thead>
+						<th>Status</th>
+						<xsl:for-each select="tracker">
+						<th><xsl:value-of select="name"/></th>
+						</xsl:for-each>
+					</thead>
+					<tbody>
+						<xsl:variable name="self" select="." as="node()"/>
+						<xsl:for-each-group select="tracker/statuses/status" group-by="id">
+							<tr>
+								<td>
+									<xsl:value-of select="(current-group()/name)[1]"/>
+								</td>
+								<xsl:for-each select="$self/tracker">
+								<td>
+									<xsl:value-of select="count(tracker_items/tracker_item[status_id = current-grouping-key()])"/>
+								</td>
+								</xsl:for-each>
+							</tr>
+						</xsl:for-each-group>
+					</tbody>
+				</table>
+				
+				<hr style="color:gray; margin-top:2em"/>
+				 <p style="color:#666666;">This content is generated statically
+				 and uses the jQuery <a href="http://datatables.net/">datatables</a>
+				 plugin for interactive display.</p>
             </body>
         </html>
     	
+        <xsl:apply-templates select="." mode="datatable"/>
+        
         <xsl:for-each select="tracker">
 
             <!-- index for this tracker only (in its directory) -->
@@ -132,26 +213,39 @@
         </xsl:for-each>
     </xsl:template><!-- }}} -->
     
-    <!-- {{{ template for tracker in global index -->
-    <xsl:template match="tracker">
-    	
-        <a name="tracker_{tracker_id}"></a>
-        <h2>
-            <xsl:value-of select="name"/>
-        </h2>
-        <a href="{name}/index.html">Details...</a>
-        <p>
-            <xsl:value-of select="description"/>
-        </p>
-	
-        <xsl:apply-templates select="statuses" />
-        
-        <xsl:apply-templates select="tracker_items">
-        <xsl:with-param name="item-directory" select="concat(name,'/')"/>
-        </xsl:apply-templates>
-
-    </xsl:template><!-- }}} -->
     
+    <!-- {{{ template for full datatable -->
+    <xsl:template match="trackers" mode="datatable">
+		<xsl:message>Constructing main data table</xsl:message>
+		<xsl:result-document href="table.html" method="html" indent="yes" encoding="utf-8">
+        <html>
+            <head>
+            	<title>Export from SF @ <xsl:value-of select="local:format_date(../export_details/time)"/> GLOBAL INDEX</title>
+                <xsl:call-template name="css-js"/>
+            </head>
+            <body>
+
+            <!-- {{{ navigation -->
+                <a style="margin:0 30% 0 30%; text-align:center; display:block" href="index.html" title="index of all trackers">Global index</a>
+            <!-- }}} -->
+
+                <h1>All of trackers data <span class="subtitle"> - in one big table</span></h1>
+            
+                <xsl:call-template name="foreword"/>
+
+
+				<xsl:call-template name="datatable">
+				<xsl:with-param name="item-directory" select="true()"/>
+				<xsl:with-param name="display-tracker" select="true()"/>
+				</xsl:call-template>
+                
+                <a id="goto-top" href="#top">(top)</a>
+            </body>
+        </html>
+        </xsl:result-document>
+    </xsl:template>
+    <!-- }}} -->
+
     <!-- {{{ template for standalone tracker index (mode=single) -->
     <xsl:template match="tracker" mode="single">
             <!-- one index for this tracker -->
@@ -176,11 +270,16 @@
             
                 <xsl:call-template name="foreword"/>
 
+                <a name="top"/>
                 <xsl:apply-templates select="statuses" />
                 
-                <xsl:apply-templates select="tracker_items">
-                <xsl:with-param name="item-directory" select="''"/>
-                </xsl:apply-templates>
+
+				<xsl:call-template name="datatable">
+				<xsl:with-param name="item-directory" select="false()"/>
+				<xsl:with-param name="display-tracker" select="false()"/>
+				</xsl:call-template>
+
+                <a id="goto-top" href="#top">(top)</a>
 
                 </body>
             </html>
@@ -193,7 +292,11 @@
     	<xsl:variable name="tableid" select="generate-id()"/>
 	<script>
 	$(document).ready(function(){
-	$("#<xsl:value-of select="$tableid"/>").tablesorter({ sortList: [[0,0]] });
+	$("#<xsl:value-of select="$tableid"/>").dataTable({
+			"bPaginate": false,
+			"bFilter": false,
+			"bAutoWidth" : false
+	});
 	});
 	</script>
         <table id="{$tableid}">
@@ -217,76 +320,129 @@
 	</xsl:template><!-- }}} -->
 
 	<!-- {{{ template for table of tickets -->
-    <xsl:template match="tracker_items">
-        <xsl:param name="item-directory" as="xs:string"/>
+    <xsl:template name="datatable">
+        <xsl:param name="item-directory" as="xs:boolean"/>
+        <xsl:param name="display-tracker" as="xs:boolean"/>
         
-        <xsl:variable name="fields" as="node()*">
-            <field name="id" title="Id" sort="integer"/>
-            <field name="summary" title="Title"/>
-            <field name="status_id" title="Status"/>
-            <field name="submit_date" title="Submitted"/>
-            <field name="submitter" title="By"/>
-            <field name="assignee" title="Assigned to"/>
-        </xsl:variable>
-
-    	<xsl:variable name="tableid" select="generate-id()"/>
-	<script>
-	$(document).ready(function(){
-	$("#<xsl:value-of select="$tableid"/>").tablesorter({ sortList: [[2,0],[0,0]], headers:{ 
-	<xsl:for-each select="$fields">
-		<xsl:value-of select="concat((position() - 1),': {sorter:',$quote, (@sort,'text')[1], $quote,'}')"/>
-		<xsl:if test="position() &lt; last()">, </xsl:if>
-	</xsl:for-each>
-	<xsl:text>} });</xsl:text>
-	});
-	</script>
-        <table id="{$tableid}">
-            <thead>
-                <title>List of Tracker items</title>
-                <tr>
-                    <xsl:for-each select="$fields">
-                        <th>
-                            <xsl:value-of select="@title"/>
-                        </th>
-                    </xsl:for-each>
-                </tr>
-            </thead>
-            <tbody>
-                <xsl:for-each select="tracker_item[status_id = local:include_status(current())]">
-                    <xsl:sort select="status_id"/>
-                    <xsl:sort select="id"/>
-                    <tr>
-                        <th>
-                            <a href="{$item-directory}{id}.html" title="details..."><xsl:value-of select="id"/></a>
-                        </th>
-                        <td>
-                            <xsl:value-of select="summary"/>
-                        </td>
-                        <td>
-                            <xsl:value-of select="local:status_name(.,status_id)"/>
-                        </td>
-                        <td>
-                            <xsl:value-of select="local:format_date(submit_date)"/>
-                        </td>
-                        <td>
-                            <xsl:value-of select="local:submitter(.)"/>
-                        </td>
-                        <td>
-                            <xsl:value-of select="assignee"/>
-                        </td>
-                    </tr>
-                </xsl:for-each>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <xsl:for-each select="$fields">
-                        <th>
-                            <xsl:value-of select="@title"/>
-                        </th>
-                    </xsl:for-each>
-                </tr>
-            </tfoot>
-        </table>
+        <xsl:variable name="dir" select="if($item-directory) then concat(ancestor-or-self::tracker/name,'/') else ''"/>
+		<xsl:variable name="tableid" select="'items'"/>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			var oTable = $('#<xsl:value-of select="$tableid"/>').dataTable( {
+				"bPaginate": false,
+				"bSortCellsTop": true,
+				"oLanguage": {
+					"sSearch": "Search all columns:"
+				}
+			} );
+		
+			$("thead tr.filter th").each( function(i) {
+				$("input", this).bind('keyup', function (e) {
+					var c;
+					if ( e &amp;&amp; e.which )
+					{
+						c = e.which;
+					}
+					else
+					{
+						c = e.keyCode;
+					}
+					if( c == 27 ){
+						$(this).val("");
+					}
+					oTable.fnFilter( this.value, i );
+				} );
+				$('select', this).change( function () {
+					oTable.fnFilter( $(this).val(), i );
+				} );
+			});
+		
+		} );
+		</script>
+		<table id="{$tableid}">
+			<thead>
+				<title>List of Tracker items</title>
+				<!-- 1st header row for sorters -->
+				<tr>
+					<xsl:if test="$display-tracker">
+					<th>Tracker</th>
+					</xsl:if>
+					<xsl:for-each select="$fields">
+					<th><xsl:value-of select="@title"/></th>
+					</xsl:for-each>
+				</tr>
+				<!-- 2nd header row for filters -->
+				<tr class="filter">
+					<xsl:if test="$display-tracker">
+					<th>
+					<xsl:sequence select="local:filter-select('tracker',(tracker/name))"/>
+					</th>
+					</xsl:if>
+					<th>
+					<xsl:sequence select="local:filter-input('id')"/>
+					</th>
+					<th>
+					<xsl:sequence select="local:filter-input('summary')"/>
+					</th>
+					<th>
+					<xsl:sequence select="local:filter-select('status', $status_to_include)"/>
+					</th>
+					<th>
+					<xsl:sequence select="local:filter-input('submit_date')"/>
+					</th>
+					<th>
+					<xsl:sequence select="local:filter-select('submitter', (distinct-values(for $i in tracker/tracker_items/tracker_item[status_id = local:include_status(.)] return local:submitter($i))))"/>
+					</th>
+					<th>
+					<xsl:sequence select="local:filter-select('status', (distinct-values(tracker/tracker_items/tracker_item[status_id = local:include_status(.)]/assignee)))"/>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+    	<xsl:for-each select="descendant-or-self::tracker/tracker_items/tracker_item[status_id = local:include_status(.)]">
+			<xsl:sort select="ancestor::tracker/name"/>
+			<xsl:sort select="status_id"/>
+			<xsl:sort select="id"/>
+			<xsl:message><xsl:value-of select="id"/></xsl:message>
+			<tr>
+				<xsl:if test="$display-tracker">
+				<td>
+					<xsl:value-of select="ancestor::tracker/name"/>
+				</td>
+				</xsl:if>
+				<td>
+					<a href="{$dir}{id}.html" title="details..."><xsl:value-of select="id"/></a>
+				</td>
+				<td>
+					<xsl:value-of select="replace(summary,'[&#x007f;-&#x009f;]','?')"/>
+				</td>
+				<td>
+					<xsl:value-of select="local:status_name(.,status_id)"/>
+				</td>
+				<td>
+					<xsl:value-of select="local:format_date(submit_date)"/>
+				</td>
+				<td>
+					<xsl:value-of select="local:submitter(.)"/>
+				</td>
+				<td>
+					<xsl:value-of select="assignee"/>
+				</td>
+			</tr>
+		</xsl:for-each>
+		</tbody>
+		<!-- repeat column headers (not sortable) !-->
+		<tfoot>
+			<tr>
+			<xsl:if test="$display-tracker">
+			<th>Tracker</th>
+			</xsl:if>
+			<xsl:for-each select="$fields">
+			<th><xsl:value-of select="@title"/></th>
+			</xsl:for-each>
+			</tr>
+		</tfoot>
+	</table>
 
     </xsl:template><!-- }}} -->
 
@@ -305,17 +461,17 @@
                 <body>
                     <!-- {{{ navigation -->
                     <xsl:for-each select="$prev">
-                    <a style="float:left" href="{id}.html" title="{summary}">Previous</a>
+                    <a style="float:left" href="{id}.html" title="{replace(summary,'[&#x007f;-&#x009f;]','?')}">Previous</a>
                     </xsl:for-each>
                     <xsl:for-each select="$next">
-                    <a style="float:right" href="{id}.html" title="{summary}">Next</a>
+                    <a style="float:right" href="{id}.html" title="{replace(summary,'[&#x007f;-&#x009f;]','?')}">Next</a>
                     </xsl:for-each>
                     <a style="margin:0 30% 0 30%; text-align:center; display:block" href="index.html" title="index of tracker">Tracker index</a><!-- fixme: how to get the base output url ? -->
                     <a id="online" href="{url}">See it online !</a>
                     <!-- }}} -->
                     
                     <h1>
-                        (<xsl:value-of select="$pos"/>/<xsl:value-of select="$cnt"/>) <xsl:value-of select="id"/> - <xsl:value-of select="summary"/>
+                        (<xsl:value-of select="$pos"/>/<xsl:value-of select="$cnt"/>) <xsl:value-of select="id"/> - <xsl:value-of select="replace(summary,'[&#x007f;-&#x009f;]','?')"/>
                     </h1>
     	
                     <p id="details"><xsl:for-each select="details"><xsl:call-template name="format-text"/></xsl:for-each></p>
@@ -382,7 +538,7 @@
                     <xsl:sort select="date"/>
                     <tr><th><xsl:value-of select="local:format_date(date)"/><br/><xsl:value-of select="submitter"/></th>
                         <td><a href="{url}"><xsl:value-of select="filename"/></a><br/>
-                            <p style="font-size:80%"><xsl:value-of select="description"/></p></td>
+                            <p style="font-size:80%"><xsl:value-of select="replace(description,'[&#x007f;-&#x009f;]','?')"/></p></td>
                     </tr>
                     </xsl:for-each>
                     </table>
@@ -396,7 +552,7 @@
     <!-- {{{ named templates -->
     <!-- {{{ format-text template -->
     <xsl:template name="format-text">
-        <xsl:analyze-string select="." regex="\n">
+        <xsl:analyze-string select="replace(.,'[&#x007f;-&#x009f;]','?')" regex="\n">
       <xsl:matching-substring>
         <br/>
       </xsl:matching-substring>
@@ -412,10 +568,10 @@
     <xsl:template name="css-js">
     	<xsl:param name="path-to-root" select="''"/>
 
+	<link rel="stylesheet" type="text/css" href="{$path-to-root}jquery.dataTables.css"/>
 	<link rel="stylesheet" type="text/css" href="{$path-to-root}style.css"/>
 	<script src="{$path-to-root}jquery-latest.js"/>
-	<script src="{$path-to-root}jquery.metadata.js"/>
-	<script  src="{$path-to-root}jquery.tablesorter.js"/>
+	<script  src="{$path-to-root}jquery.dataTables.js"/>
 
     </xsl:template><!-- }}} -->
     

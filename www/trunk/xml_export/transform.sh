@@ -47,8 +47,8 @@ echo Preparing...
 mkdir -p "$destdir"
 for i in "$mydir/style.css" \
 	 "$mydir/jquery-latest.js" \
-	 "$mydir/jquery.metadata.js" \
-	 "$mydir/jquery.tablesorter.js" ; do
+	 "$mydir/jquery.dataTables.js" \
+	 "$mydir/jquery.dataTables.css" ; do
 	
 	cp -v $i "$destdir"
 done
