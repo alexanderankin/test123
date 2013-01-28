@@ -758,15 +758,12 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ chDir() methods
 	/** Changes the directory of the current Console.
 	 * @param path to change to. 
-	 * @param selectShell if true, will choose the most appropriate shell first. 
+	 * @param selectShell if true, will first select a Shell that returns true from handlesVFS(path)
 	 * @return true if it did something. 
 	 */
 	public boolean chDir(String path, boolean selectShell) {
 		if (!isVisible()) return false;
-		boolean retval = false;
-		if (!selectShell)
-			return getShell().chDir(this, path);
-		
+		if (selectShell)
 		for (String name: Shell.getShellNames()) {
 			Shell s = Shell.getShell(name);
 			if (s.handlesVFS(path)) {
@@ -774,7 +771,7 @@ implements EBComponent, DefaultFocusComponent
 				return s.chDir(this, path);
 			}
 		}
-		return false;
+		return getShell().chDir(this, path);
 	}
 	public boolean chDir(String path) {
 		return chDir(path, false);
@@ -1024,7 +1021,6 @@ implements EBComponent, DefaultFocusComponent
 			{
 				public void run()
 				{
-					// WTF?
 					if(commandRunning)
 						shell.printPrompt(Console.this, ShellState.this);
 					commandRunning = false;

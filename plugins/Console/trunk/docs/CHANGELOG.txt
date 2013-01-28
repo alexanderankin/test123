@@ -24,9 +24,10 @@ jEdit Console Plugin Changelog
         Observe jEdit's general option "Check for changed files" and check after command
         executions too.
         #3558537 - restore values from properties destroys user custom error patterns.
-        Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5
-            (incorrect error paths - failed to open the correct remote files from ErrorList)
-
+        Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5 (incorrect error paths - failed to open the correct remote files from ErrorList)
+        New APIs: Console.chDir() and Shell.chDir(), Shell.handlesVFS(). Refactored chdir code. 
+        Made changeToPVRoot() work with SshConsole and other shells too. 
+        
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
         #3539123 - Fixed NPE when running in background command/application tries
