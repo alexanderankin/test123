@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2012 Matthieu Casanova
+ * Copyright © 2011-2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -153,17 +153,22 @@ public class FileIndex
 				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 				conf.setOpenMode(openMode);
 				writer = new IndexWriter(tempDirectory, conf);
+				Document document = new Document();
+				StringField pathField = new StringField("path", "", Field.Store.YES);
+				document.add(pathField);
+				TextField nameField = new TextField("name", "", Field.Store.NO);
+				document.add(nameField);
+				StringField name_caps = new StringField("name_caps", "", Field.Store.NO);
+				document.add(name_caps);
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					String path = fileProvider.next();
 					observer.setValue(i);
 					observer.setStatus(path);
-					Document document = new Document();
-					document.add(new StringField("path", path, Field.Store.YES));
-
+					pathField.setStringValue(path);
 					String fileName = MiscUtilities.getFileName(path);
-					document.add(new TextField("name", fileName, Field.Store.NO));
-					document.add(new StringField("name_caps", fileName, Field.Store.NO));
+					nameField.setStringValue(fileName);
+					name_caps.setStringValue(fileName);
 					writer.addDocument(document);
 				}
 				if (reset)
