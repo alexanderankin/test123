@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,8 @@ package gatchan.jedit.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
@@ -29,6 +31,7 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -64,8 +67,8 @@ public class LineIndexImpl extends IndexImpl
 			{
 				Document doc = getEmptyDocument(file);
 				i++;
-				doc.add(new Field("line", String.valueOf(i), Field.Store.YES, Field.Index.NOT_ANALYZED));
-				doc.add(new Field("content", line, Field.Store.YES, Field.Index.ANALYZED));
+				doc.add(new StringField("line", String.valueOf(i), Field.Store.YES));
+				doc.add(new TextField("content", line, Field.Store.YES));
 				writer.addDocument(doc);
 			}
 			LucenePlugin.CENTRAL.addFile(file.getPath(), getName());
@@ -76,7 +79,7 @@ public class LineIndexImpl extends IndexImpl
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(reader);
+			IOUtilities.closeQuietly((Closeable) reader);
 		}
 	}
 
