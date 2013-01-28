@@ -39,7 +39,6 @@ import org.gjt.sp.util.StandardUtilities;
  */
 public class SmartOpenOptionPane extends AbstractOptionPane
 {
-	private JCheckBox inMemoryIndex;
 	private JCheckBox indexProject;
 	private JCheckBox toolbar;
 	private JTextField includeFilesTF;
@@ -74,10 +73,6 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 		indexProject = new JCheckBox(jEdit.getProperty("options.smartopen.projectindex.label"));
 		indexProject.setSelected(jEdit.getBooleanProperty("options.smartopen.projectindex"));
 		addComponent(indexProject);
-
-		inMemoryIndex = new JCheckBox(jEdit.getProperty("options.smartopen.memoryindex.label"));
-		inMemoryIndex.setSelected(jEdit.getBooleanProperty("options.smartopen.memoryindex"));
-		addComponent(inMemoryIndex);
 	} //}}}
 
 	//{{{ _save() method
@@ -88,7 +83,6 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 		jEdit.setProperty("options.smartopen.ExcludeGlobs", excludeFilesTF.getText());
 		jEdit.setBooleanProperty("options.smartopen.projectindex", indexProject.isSelected());
 		jEdit.setBooleanProperty("options.smartopen.toolbar", toolbar.isSelected());
-		jEdit.setBooleanProperty("options.smartopen.memoryindex", inMemoryIndex.isSelected());
 		paths.save();
 		updateFilter();
 	} //}}}
