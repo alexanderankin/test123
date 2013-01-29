@@ -105,18 +105,21 @@ and send your shell commands there. </p>
 
 <h2 id="projectviewer-integration"> ProjectViewer Integration </h2>
 
-<p> As it happens, ProjectViewer permits you to have projects rooted at a
-<tt>sftp://</tt> directory. What this means is that Console can respond to
-"change to project root" messages, if the option is selected, and these
-messages are passed on to SshConsole. Therefore, when you switch to a project
-that is rooted at an <tt>sftp://</tt> address and <b>Plugin Options - Console -
-System Shell - <i>On project change, cd to PV root dir</i></b> is checked, then
-Ssh Shell should be selected and the project root directory should be 
-the current working directory. 
+<p> ProjectViewer permits you to have projects rooted at a
+<tt>sftp://</tt> directory. If you switch to such a project
+and <b>Plugin Options - Console - System Shell - <i>On project change, cd to PV
+root dir</i></b> is checked, then the <tt>ssh</tt> shell should be selected in
+Console and the project root directory should be the current working directory. 
 </p>
 
-<p> In addition, the same node selection events that Console responds to from 
-the File System Browser also are sent from the ProjectViewer tree. </p>
+<p> The Console actions, <tt>Compile Project</tt> and <tt>Run Project</tt> also
+automatically switch to use the most appropriate shell (ssh) before changing to
+the project root directory, when building/running an sftp project. </p>
+
+<p> Furthermore, the node selection events that Console responds to from 
+the File System Browser are also sent from the ProjectViewer tree and passed
+onto the ssh shell when appropriate.  
+</p>
 
 <h2 id="jobcontrol"> Job Control </h2>
 
