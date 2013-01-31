@@ -113,6 +113,7 @@
 
             <!-- include certain files from the config directory -->
             <fileset dir="${config.dir}">
+                <include name="lang_*.properties" />
                 <include name="actions.xml" />
                 <include name="browser.actions.xml" />
                 <include name="description.html" />
