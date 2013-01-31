@@ -2,6 +2,9 @@ ChangeLog for InfoViewer plugin
 :encoding=UTF-8:
 ===========================================================================
 
+Version 1.6.2 depends on jEdit 4.4 and Java 1.6
+  French and German Localization. 
+
 Version 1.6.1 depends on jEdit 4.4 and Java 1.6
   New option to restore previous page instead of showing home page
   on startup. (Ezust)
