@@ -324,7 +324,6 @@
         <xsl:param name="item-directory" as="xs:boolean"/>
         <xsl:param name="display-tracker" as="xs:boolean"/>
         
-        <xsl:variable name="dir" select="if($item-directory) then concat(ancestor-or-self::tracker/name,'/') else ''"/>
 		<xsl:variable name="tableid" select="'items'"/>
 		<script type="text/javascript">
 		$(document).ready(function(){
@@ -399,37 +398,41 @@
 				</tr>
 			</thead>
 			<tbody>
-    	<xsl:for-each select="descendant-or-self::tracker/tracker_items/tracker_item[status_id = local:include_status(.)]">
-			<xsl:sort select="ancestor::tracker/name"/>
-			<xsl:sort select="status_id"/>
-			<xsl:sort select="id"/>
-			<xsl:message><xsl:value-of select="id"/></xsl:message>
-			<tr>
-				<xsl:if test="$display-tracker">
-				<td>
-					<xsl:value-of select="ancestor::tracker/name"/>
-				</td>
-				</xsl:if>
-				<td>
-					<a href="{$dir}{id}.html" title="details..."><xsl:value-of select="id"/></a>
-				</td>
-				<td>
-					<xsl:value-of select="replace(summary,'[&#x007f;-&#x009f;]','?')"/>
-				</td>
-				<td>
-					<xsl:value-of select="local:status_name(.,status_id)"/>
-				</td>
-				<td>
-					<xsl:value-of select="local:format_date(submit_date)"/>
-				</td>
-				<td>
-					<xsl:value-of select="local:submitter(.)"/>
-				</td>
-				<td>
-					<xsl:value-of select="assignee"/>
-				</td>
-			</tr>
-		</xsl:for-each>
+			<!-- always called on trackers or tracker -->
+    		<xsl:for-each select="(self::tracker,tracker)">
+			<xsl:sort select="name"/>
+				<xsl:variable name="dir" select="if($item-directory) then concat(name,'/') else ''"/>
+				
+				<xsl:for-each select="tracker_items/tracker_item[status_id = local:include_status(.)]">
+				<xsl:sort select="status_id"/>
+				<xsl:sort select="id"/>
+					<tr>
+						<xsl:if test="$display-tracker">
+						<td>
+							<xsl:value-of select="ancestor::tracker/name"/>
+						</td>
+						</xsl:if>
+						<td>
+							<a href="{$dir}{id}.html" title="details..."><xsl:value-of select="id"/></a>
+						</td>
+						<td>
+							<xsl:value-of select="replace(summary,'[&#x007f;-&#x009f;]','?')"/>
+						</td>
+						<td>
+							<xsl:value-of select="local:status_name(.,status_id)"/>
+						</td>
+						<td>
+							<xsl:value-of select="local:format_date(submit_date)"/>
+						</td>
+						<td>
+							<xsl:value-of select="local:submitter(.)"/>
+						</td>
+						<td>
+							<xsl:value-of select="assignee"/>
+						</td>
+					</tr>
+				</xsl:for-each>
+			</xsl:for-each>
 		</tbody>
 		<!-- repeat column headers (not sortable) !-->
 		<tfoot>
