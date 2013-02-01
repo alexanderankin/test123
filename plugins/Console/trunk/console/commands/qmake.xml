@@ -32,12 +32,12 @@
 			buf.append("qmake");
 
 			if (makeIn.equals("projectroot")) {
-				DIR = projectroot;
+				dir = projectroot;
 			}
 			else if (makeIn.equals("customloc")) {
-				DIR = customDIR;
+				dir = customlocation;
 			}
-			else DIR = sourcedir;
+			else dir = sourcedir;
 
 			if (makeProject)
 				buf.append(" -project");
