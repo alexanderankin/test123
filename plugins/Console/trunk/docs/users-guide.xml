@@ -1106,7 +1106,7 @@ specified.</para>
     <itemizedlist>
      <listitem>
       <para>
-       <literal>CONFIRM</literal> - Of <quote>TRUE</quote>, a
+       <literal>CONFIRM</literal> - If <quote>TRUE</quote>, a
 confirmation dialog will be shown before running this command.</para>
      </listitem>
      <listitem>
@@ -1124,6 +1124,13 @@ run this command in.</para>
        <literal>BUFFER_MODE</literal> - If <literal>TO_BUFFER</literal>
 is <quote>TRUE</quote>, this parameter can be used to specify the edit mode
 of the new buffer. The default value is <quote>text</quote>.</para>
+     </listitem>
+	 <listitem>
+	  <para>
+	   <literal>DIR</literal> - An optional BeanShell snippet that will be
+evaluated to get the directory the command will be run in. For example,
+to make sure it runs in the same directory as the buffer, this can
+be set to <quote>buffer.getDirectory();</quote>.</para>
      </listitem>
     </itemizedlist>
 

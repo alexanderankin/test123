@@ -65,12 +65,12 @@
 			buf = new StringBuffer();
 
 			if (makeIn.equals("projectroot")) {
-				DIR = projectroot;
+				dir = projectroot;
 			}
 			else if (makeIn.equals("customloc")) {
-				DIR = customlocation;
+				dir = customlocation;
 			}
-			else DIR = sourcedir;
+			else dir = sourcedir;
 
 			if(format.equals("dvi"))
 				buf.append("latex");
