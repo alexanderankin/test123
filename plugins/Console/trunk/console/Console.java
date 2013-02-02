@@ -149,11 +149,12 @@ implements EBComponent, DefaultFocusComponent
 		errorSource = new DefaultErrorSource("error parsing", view);
 	} //}}}
 
+	//{{{ addProjectListener()
 	void addProjectListener()
 	{
 		if (listener != null) return;
 		listener = new ProjectTreeListener(this);
-	}
+	}//}}}
 
 	//{{{ unload() method
 	public void unload()
@@ -242,6 +243,7 @@ implements EBComponent, DefaultFocusComponent
 		return shell;
 	} //}}}
 
+	//{{{ scrollToBottom method
 	public void scrollToBottom() {
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -252,7 +254,7 @@ implements EBComponent, DefaultFocusComponent
 				updateAnimation();
 			}
 		});
-	}
+	}//}}}
 
 	//{{{ getConsolePane() method
 	public ConsolePane getConsolePane()
@@ -754,8 +756,6 @@ implements EBComponent, DefaultFocusComponent
 		errorColor = jEdit.getColorProperty("console.errorColor");
 		
 	} //}}}
-
-	
 	
 	//{{{ chDir() methods
 	/** Changes the directory of the current Console.
