@@ -1,0 +1,110 @@
+<html>
+<head> <title> ImageViewer Plugin </title></head>
+
+<body>
+<h1>ImageViewer Plugin</h1>
+<b>
+Author: Dale Anson
+</b>
+<br/>
+<br/>
+<h2>Introduction</h2>
+A simple image viewer.  This image viewer lets you view images from ProjectViewer
+or from the File System Browser in a dockable window.  Zoom in and zoom out, and
+rotate clockwise and counter-clockwise are the only features.  There are no 
+editing capabilities.
+<p>
+At this time, only .gif, .jpg, and .png files are supported as these are
+the file types supported internally by Java. </p>
+
+<h2>Usage</h2>
+<p>To use, first make sure the ImageViewer dockable is visible. It can be 
+selected from the Plugin - ImageViewer menu item. </p>
+<p> Next, right click on an image file in ProjectViewer and select the 
+"View Image" item. </p>
+<p>
+Or, in the File System Browser, click on Plugins, Image Viewer, View Image. 
+</p>
+
+<p>
+In the ImageViewer itself, there is a toolbar with these buttons: </p>
+
+<ul>
+<li>Clear - clear the ImageViewer display.</li>
+<li>Copy - copy the image to the clipboard for pasting into another application.</li>
+<li>Zoom in - zoom in on the image for a closer look.</li>
+<li>Zoom out - zoom out on the image.</li>
+<li>Rotate clockwise - rotate 90 degrees.</li>
+<li>Rotate counter-clockwise - rotate -90 degrees</li>
+<li>Reload - reload the image and restore it to its original size.</li>
+</ul>
+
+<p>
+<b><i>A word of caution:</i></b> Zooming in is unrestricted by the plugin, but
+is likely restricted by your physical RAM.  It is quite easy to open a large
+size image and zoom in until you are out of memory. </p>
+<p>
+There are mouse actions: </p>
+<ul>
+<li>Double click on a spot in an image to center that spot in the viewer.</li>
+<li>Click and drag moves the image.</li>
+<li>Rolling the mouse wheel zooms in and out.</li>
+</ul>
+
+<h2>Options</h2>
+There are these options available on the plugin options.  Turning on some of
+these makes it easier to scan images quickly.  Otherwise, you'll have to use
+the menus from the File System Browser or ProjectViewer to display the
+images, which can be slow and cumbersome.
+
+<ul>
+<li>Show images on mouse over/click in File System Browser </li>
+<li>Show images on mouse over/click in ProjectViewer (This option is only 
+available if ProjectViewer is available.) </li>
+<li>Display on mouse over or mouse click</li>
+</ul>
+<p>
+If the first two options are checked, then clicking on a node in either tree 
+(ProjectViewer or File System Browser) will display the image in ImageViewer.
+</p>
+<p>
+You can also select whether to show the image on a mouse over or a mouse
+click.  The mouse over is handy when you want to quickly locate a particular
+image from a long list of images, but you may find that too distracting and
+might prefer to click on individual image files to display them.</p>
+
+<h2> Changes </h2>
+<p>
+<b>Version 1.3</b>
+<ul>
+<li>Added rotate clockwise and counter-clockwise to make it easier to see
+images that need rotated to be in an upright position.</li>
+<li>Initial image size is now automatically adjusted for height if it is too 
+tall to fit in the viewer. This makes it easier to see a complete image.</li>
+</ul>
+<p>
+<b>Version 1.2</b>
+<ul>
+<li>Added "copy" action so the image can be copied to the system clipboard.</li>
+<li>Added actions to Plugin menu.</li>
+<li>Added ".jpeg" as an allowable file name extension.</li>
+<li>Fix for tracker 2924797, the JVM caches images loaded with ImageIcon, so
+if the image is changed with an external program, ImageViewer was not aware 
+of the change.  I changed the way images are loaded so using the "Refresh" 
+button will now reload the image from disk rather than the JVM cache.  This
+should also improve memory usage, since the JVM would generally cache images
+for the life of the JVM session.
+<li>Removed support for old version of ProjectViewer since 2.9 is now available.</li>
+<li>No longer pops up dockable automatically in response to tree node 
+hovers/clicks. Added MenuItem to select dockable manually. (Alan Ezust) </li>
+</ul>
+</p>
+<p>
+<b>Version 1.1</b>
+<ul>
+<li> Initial Release </li>
+</ul>
+</p>
+
+</body>
+</html>
