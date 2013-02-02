@@ -75,7 +75,7 @@ public class DirectoryStack
 			makeLeaving = Pattern.compile(jEdit.getProperty("console.error.make.leaving"));
 		} catch (PatternSyntaxException re)
 		{
-			Log.log(Log.ERROR, ConsoleProcess.class, re);
+			Log.log(Log.ERROR, DirectoryStack.class, re);
 		}
 	}
 	// }}}

@@ -26,7 +26,7 @@ jEdit Console Plugin Changelog
         #3558537 - restore values from properties destroys user custom error patterns.
         Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5 (incorrect error paths - failed to open the correct remote files from ErrorList)
         New APIs: Console.chDir() and Shell.chDir(), Shell.handlesVFS(). Refactored chdir code. 
-        Made changeToPVRoot() work with SshConsole and other shells too. 
+        Made changeToPVRoot() work with SshConsole and possibly other shells too. 
         
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
