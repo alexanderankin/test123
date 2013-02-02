@@ -17,7 +17,14 @@ changeToPvRoot(view) {
     if (!con.isVisible()) return;
     // view.getDockableWindowManager().showDockableWindow("console");
     path = project.getRootPath();
-    con.chDir(path, true);
+    _shell = project.getProperty("console.shell");
+    if (_shell == null) {
+        con.chDir(path, true);
+    }
+    else {
+        con.setShell(_shell);
+        con.chDir(path);
+    }
 }
 
 // changeToPvRoot(view);

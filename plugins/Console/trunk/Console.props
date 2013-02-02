@@ -168,6 +168,8 @@ options.pv.commands.help=You can run these commands from Plugins->Console->Proje
 options.pv.commands.compile=Compile Project:
 options.pv.commands.run=Run Project:
 
+options.pv.shell=Shell:
+
 ### SystemShell
 console.shell.info.toggle=true
 console.shell.info=This shell runs operating system processes.\n\

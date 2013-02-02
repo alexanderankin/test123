@@ -755,6 +755,8 @@ implements EBComponent, DefaultFocusComponent
 		
 	} //}}}
 
+	
+	
 	//{{{ chDir() methods
 	/** Changes the directory of the current Console.
 	 * @param path to change to. 
@@ -763,13 +765,10 @@ implements EBComponent, DefaultFocusComponent
 	 */
 	public boolean chDir(String path, boolean selectShell) {
 		if (!isVisible()) return false;
-		if (selectShell)
-		for (String name: Shell.getShellNames()) {
+		if (selectShell) {
+			String name = shellForVFS(path);
 			Shell s = Shell.getShell(name);
-			if (s.handlesVFS(path)) {
-				setShell(s);
-				return s.chDir(this, path);
-			}
+			setShell(s);
 		}
 		return getShell().chDir(this, path);
 	}
@@ -777,6 +776,19 @@ implements EBComponent, DefaultFocusComponent
 		return chDir(path, false);
 	}//}}}
 
+	//{{{ shellForVFS method
+	/** @return a shell that is suited for this path, based on passing this
+		path onto the handlesVFS() method of each Shell. */
+	static public String shellForVFS(String path) {
+		for (String name: Shell.getShellNames()) {
+			Shell s = Shell.getShell(name);
+			if (s.handlesVFS(path)) 
+				return name;
+		}
+		return "System";
+	}
+	//}}}
+	
 	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
 //		Log.log(Log.WARNING, this, "VFSPathSelected: " + msg.getPath());
