@@ -22,7 +22,12 @@
  
 package console;
 
+import java.util.Vector;
+
 import javax.swing.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
+
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
 import projectviewer.vpt.VPTProject;
@@ -36,6 +41,8 @@ import projectviewer.gui.OptionPaneBase;
 public class ProjectCommandOptionPane extends OptionPaneBase {
 	
 	private VPTProject proj;
+	private JComboBox shell;
+	private String _shell;
 	private HistoryTextField compile;
 	private HistoryTextField run;
 	
@@ -48,8 +55,18 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 	}
 	
 	protected void _init() {
+		
 		compile = new HistoryTextField("console.compile.project");
 		run = new HistoryTextField("console.run.project");
+		
+		
+		shell = new JComboBox(Shell.getShellNames());	
+		
+		_shell = proj.getProperty("console.shell");
+		if (_shell == null) {
+			_shell = Console.shellForVFS(proj.getRootPath());	
+		}
+		shell.setSelectedItem(_shell);
 		
 		String _compile = proj.getProperty("console.compile");
 		if (_compile != null)
@@ -62,6 +79,8 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 		addComponent(new JLabel(jEdit.getProperty("options.pv.commands.help")));
 		addComponent(jEdit.getProperty("options.pv.commands.compile"), compile);
 		addComponent(jEdit.getProperty("options.pv.commands.run"), run);
+		addComponent(jEdit.getProperty("options.pv.shell"), shell);
+
 	}
 	
 	protected void _save() {
@@ -75,6 +94,9 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 			run.getModel().addItem(rcmd);
 			proj.setProperty("console.run", rcmd);
 		}
+		String favoriteShell = shell.getSelectedItem().toString();
+		if (!favoriteShell.equals(_shell))
+			proj.setProperty("console.shell", favoriteShell);
 	}
 	
 }
