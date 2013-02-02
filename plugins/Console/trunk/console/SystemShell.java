@@ -187,14 +187,16 @@ public class SystemShell extends Shell implements TaskListener
 		}
 	} // }}}
 
+	//{{{ handlesVFS()
 	public boolean handlesVFS(String vfsPath) {
 		if (MiscUtilities.isURL(vfsPath)) {
 			if (vfsPath.startsWith("file://")) return true;
 			else return false;
 		}
 		else return true;
-	}
+	}//}}}
 	
+	//{{{ chDir()
 	public boolean chDir(Console console, String path) {
 		if (path.startsWith("file://")) {
 			path = path.substring(7);	
@@ -216,7 +218,7 @@ public class SystemShell extends Shell implements TaskListener
 		output.print(console.getPlainColor(), "\n");
 		printPrompt(console, output); 	
 		return true;
-	}
+	}//}}}
 	
 	// {{{ execute()
 	public void execute(final Console console, String input, final Output output, Output error,
