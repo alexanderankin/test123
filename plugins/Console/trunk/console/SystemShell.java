@@ -96,7 +96,7 @@ public class SystemShell extends Shell implements TaskListener
 			userHome = userHome.replace("\\", "\\\\");
 		}
 
-		TaskManager.INSTANCE.addTaskListener(this);
+		TaskManager.instance.addTaskListener(this);
 	} // }}}
 	
 	// {{{ public methods
@@ -104,7 +104,7 @@ public class SystemShell extends Shell implements TaskListener
 	// {{{ beforeStopping() method
 	public void beforeStopping()
 	{
-		TaskManager.INSTANCE.removeTaskListener(this);
+		TaskManager.instance.removeTaskListener(this);
 	} // }}}
 	
 	// {{{ openConsole() method
