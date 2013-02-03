@@ -1,0 +1,47 @@
+<project name="Console" default="build" basedir=".">
+<!-- ================================================== -->
+<!-- Build file for the Console plugin           -->
+<!-- :tabSize=4:indentSize=4:noTabs=false:              -->
+<!--  To use this template for building your own plugin, make these changes:
+     - Change 'name' property for the <project> to the name of your plugin
+     - If necessary, add any dependencies to the 'project.class.path' definition
+     - If necessary, change the list of files in the 'packageFiles' selector -->
+<!-- ================================================== -->
+
+  	<property file="build.properties" />
+   	<property file="../build.properties" />
+	<property name="javadoc.packagenames"	value="console.*,jcfunc.*" />
+	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
+    <property name="docs-proc.target"       value="xsltproc" />
+	<property name="dist.target" 			value="dist.complete" />
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+
+
+	
+    <!-- Extra files that get put into the jar file, above and beyond
+         the default set (which always includes actions,dockables,services.xml,
+         *.props, etc -->
+    <selector id="packageFiles">
+	  <or>
+		<filename name="**/LICENSE" />
+		<filename name="docs/CHANGELOG.txt" />
+		<filename name="**/README" />
+		<filename name="console/bsh/*.*" />
+		<filename name="console/**/*.xml" />
+		<filename name="console/**/*.png" />
+		<filename name="console/**/*.gif" />
+		<filename name="console/**/*.dtd" />
+	  </or>
+    </selector>
+
+	<!-- Add needed jars to the classpath. -->
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar" />
+		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
+	</path>
+</project>
+
