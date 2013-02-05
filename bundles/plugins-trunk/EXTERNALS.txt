@@ -13,6 +13,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Calculator/trunk Calcula
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Checkstyle/trunk Checkstyle
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CharacterMap/trunk CharacterMap
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Cipher/trunk Cipher
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ClangCompletion/trunk ClangCompletion
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ClassBrowser/trunk ClassBrowser
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/Code2HTML/trunk Code2HTML
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/CodeBrowser/trunk CodeBrowser
@@ -65,6 +66,7 @@ https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ProjectOptions/trunk Pro
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RFCReader/trunk RFCReader
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RhinoPlugin/trunk RhinoPlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/RubyPlugin/trunk RubyPlugin
+https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/ScriptEnginePlugin/trunk ScriptEnginePlugin
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SpellCheck/trunk SpellCheck
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SQL/trunk SQL
 https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/SVNPlugin/trunk SVNPlugin
