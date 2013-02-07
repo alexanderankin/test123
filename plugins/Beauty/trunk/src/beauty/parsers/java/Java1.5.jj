@@ -2111,8 +2111,9 @@ void ForStatement():
   "for" "(" { add("for ( "); }
 
   (
-      LOOKAHEAD(Type() <IDENTIFIER> ":")
-      Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
+      // DONE: allow optional "final" here, as in for(final myType : myList)
+      LOOKAHEAD([ "final" ] Type() <IDENTIFIER> ":")
+      [ "final" { add("final "); }] Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
     |
     [ ForInit() ] ";" { add("; "); } [ Expression() ] ";" { add("; "); } [ ForUpdate() ]
   )
