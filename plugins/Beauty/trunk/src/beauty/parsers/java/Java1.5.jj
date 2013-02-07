@@ -1151,7 +1151,7 @@ int Modifiers():
   |
    "strictfp" { modifiers |= ModifierSet.STRICTFP; }
   |
-   Annotation()
+   Annotation(true)
   )
  )*
     }
@@ -1365,7 +1365,7 @@ void FormalParameters():
     boolean added = false;
 }
 {
-    "(" { trimWhitespace(); trim(); add("( "); } [ FormalParameter() { added = true; } ( "," { add(", "); } FormalParameter() )* ] ")" { if (!added) trim(); add(" )"); }
+    "(" { trimWhitespace(); trim(); add("( "); } [ [Annotation(false)] FormalParameter() { added = true; } ( "," { add(", "); } [Annotation(false)] FormalParameter() )* ] ")" { if (!added) trim(); add(" )"); }
 }
 
 void FormalParameter():
@@ -2333,16 +2333,16 @@ void RSIGNEDSHIFT():
 
 /* Annotation syntax follows. */
 
-void Annotation():
+void Annotation(boolean addLineBreak):
 {}
 {
    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-   NormalAnnotation()
+   NormalAnnotation() { if (addLineBreak) writeln();}
  |
    LOOKAHEAD( "@" Name() "(" )
-   SingleMemberAnnotation()
+   SingleMemberAnnotation() { if (addLineBreak) writeln();}
  |
-   MarkerAnnotation() 
+   MarkerAnnotation() { if (addLineBreak) writeln();}
 }
 
 void NormalAnnotation():
@@ -2354,7 +2354,7 @@ void NormalAnnotation():
 void MarkerAnnotation():
 {}
 {
-    "@" { token_source.trimNL(); add("@"); } Name() {  writeln(); }
+    "@" { token_source.trimNL(); add("@"); } Name() {write();}
 }
 
 void SingleMemberAnnotation():
@@ -2378,7 +2378,7 @@ void MemberValuePair():
 void MemberValue():
 {}
 {
-   Annotation()
+   Annotation(true)
  |
    MemberValueArrayInitializer()
  |
