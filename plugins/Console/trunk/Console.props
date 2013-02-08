@@ -380,7 +380,8 @@ console.error.python.warning=
 console.error.generic.name=Generic
 console.error.generic.warning=^([^\:]+)\:(\\d+)\:(?\:\\d*\:)?\\s*(warning\:.*)$
 console.error.generic.match=^([^\:]+)\:(\\d+)\:(?\:\\d*\:)?\\s*((fatal )?error\:.*)$
-console.error.generic.extra=^([^\:]+\:\\d+\:\\d+\: note\:.*)$
+console.error.generic.extra=^([^\:]+\:\\d+\:(?\:\\d*\:)?\\s*note\:.*)$
+
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3
