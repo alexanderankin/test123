@@ -1,0 +1,9 @@
+getBufferOutputName(buffer)
+{
+	name = MiscUtilities.getFileNameNoExtension(buffer.getName());
+
+	if (OperatingSystem.isDOSDerived())
+		name += ".exe";
+
+	return name;
+}
