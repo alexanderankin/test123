@@ -27,6 +27,7 @@ jEdit Console Plugin Changelog
         Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5 (incorrect error paths - failed to open the correct remote files from ErrorList)
         New APIs: Console.shellForVFS(), Console.chDir(), Shell.chDir(), Shell.handlesVFS(). Refactored chdir code.
         New project option: Shell to use for executing build/run project commands.
+        #3589470: Better regexes for gcc 4.7.2 - enhanced "generic" error pattern. 
 
     Version 5.0 Requires jEdit 5.0pre1, Java 1.6, ErrorList 2.0, and ProjectViewer 3.4.2 (optional).
       [Artem Bryantsev]
