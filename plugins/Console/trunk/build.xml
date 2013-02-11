@@ -11,7 +11,7 @@
   	<property file="build.properties" />
    	<property file="../build.properties" />
 	<property name="javadoc.packagenames"	value="console.*,jcfunc.*" />
-	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
+	<property name="plugin.dependencies" 	value="ErrorList,ProjectViewer" />
     <property name="docs-proc.target"       value="xsltproc" />
 	<property name="dist.target" 			value="dist.complete" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
