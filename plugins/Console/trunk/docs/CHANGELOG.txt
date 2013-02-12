@@ -2,7 +2,10 @@
 
 jEdit Console Plugin Changelog
 
-    Version 5.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
+Version 5.1.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
+    #3589470 Revisited: Brought back old "generic" error pattern, and added gcc pattern. 
+
+Version 5.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Artem Bryantsev]
         FR #3472822 - Console + Task Monitor
         Long-term processes (commands run from System shell) are implemented as Tasks.
