@@ -56,7 +56,7 @@
   which is used for parsing ANSI vt100 color codes. 
   </para>
 
- <section>
+ <section id="pv-integration">
  <title> ProjectViewer Integration </title>
 
  <para> Console has an optional dependency on ProjectViewer.
