@@ -384,6 +384,7 @@ console.error.gcc.extra=^([^\:]+\:\\d+\:(?\:\\d*\:)?\\s*note\:.*)$
 console.error.gcc.filename=$1
 console.error.gcc.line=$2
 console.error.gcc.message=$3
+console.error.gcc.testtext=FtlAtlasII/MetaRecord.h\:70\:3\: error\: redefinition of typedef 'PageStripeDef'\nFtlAtlasII/BlockStripeContainer.h\:36\:31\: note\: previous declaration of 'PageStripeDef' was here\n\n\n
 
 console.error.generic.name=Generic
 console.error.generic.match=^((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*(.+)
@@ -392,6 +393,7 @@ console.error.generic.extra=^(\\s+(.*)|\\S+\\s*\:.*)
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3
+console.error.generic.testtext=filterwidget.cpp\:98\: error\: expected `;' before \u2018m_listView\u2019\nProcess make exited with code 2\n
 
 ### Commando
 
