@@ -81,10 +81,10 @@ public class ConsoleState
 		
 		if (path.equals(newPath)) return;
 		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
+		if (newInfo == null) return;
 		path = newPath;
 		// update current directory in the CommandOutputParser
-
-
+		
 		if (info == null || !newInfo.equals(info)) {
 			info = newInfo;
 			if (conn != null) try
