@@ -1,4 +1,5 @@
 ChangeLog for InfoViewer plugin
+$Date$
 :encoding=UTF-8:
 ===========================================================================
 
