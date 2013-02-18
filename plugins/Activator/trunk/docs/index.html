@@ -3,9 +3,11 @@
 <title>Activator plugin</title>
 </head>
 <body>
-<h2>Activator plugin</h2>
+<h2>Activator plugin for jEdit</h2>
+<h3>$Date$</h3>
 <p> Author: Brad Mace </p>
 <p> Maintainers: Alan Ezust, Dale Anson </p> 
+
 
 <p>The Activator plugin gives the user the ability to specify which plugins should activated on jEdit start up, and which should be deferred to start on first use.  This makes it possible for the user to control which plugins are available right away, which can improve the start up speed and immediate usefulness of jEdit.  For example, the PMD plugin is set by default to start on jEdit start up, so for a user that has the PMD plugin, but doesn't use it all that often, the Activator plugin can set the PMD plugin to not start on jEdit start up and only be loaded into memory when the user requests the PMD plugin to do something.  
 </p>
@@ -31,7 +33,7 @@ The Activator panel allows you to load/unload, and activate/deactivate each plug
 
 <h3>Reloader panel</h3>
 
-<p> The Reloader panel offers functionality that does not exist in jEdit: If you click a plugin to reload it, all of its dependent plugins will be reloaded also (note: before version 1.1, the dependent plugins would just be left deactivated).
+<p> The Reloader panel offers functionality that does not exist in jEdit: If you click a plugin to reload it, all of its dependent plugins will be reloaded also.
 </p>
 
 <ul>
