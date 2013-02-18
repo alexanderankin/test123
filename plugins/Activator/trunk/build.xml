@@ -1,5 +1,9 @@
 <project name="Activator" default="dist" basedir=".">
 
+<!--   New plugins should not use this as a template, but instead customize 
+       a build.xml that reuses the standard ${build-support}/plugin-build.xml targets -->
+
+
   <property file="../build.properties" />
   <property name="jedit.install.dir"  value="../.." />
   <property name="jar.name"  value="Activator"/>
@@ -37,8 +41,8 @@
 	  deprecation="on"
 	  debug="${compiler.debug}"
 	  includejavaruntime="yes"
-		source="1.5"
-		target="1.5"
+		source="1.6"
+		target="1.6"
 	>
 		
 	  <classpath refid="project.class.path"/>
@@ -49,12 +53,10 @@
 	<mkdir dir="${install.dir}"/>
 	<jar jarfile="${install.dir}/${jar.name}.jar">
 	  <fileset dir=".">
-		<include name="**/*.props"/>
-		<include name="**/*.html"/>
-		<include name="**/*.gif"/>
-		<include name="db/**" />
+	    <include name="lang_*.props" />
+		<include name="*.props"/>
+		<include name="*.html"/>
 		<include name="docs/**" />
-		<include name="icons/**" />
 		<include name="actions.xml"/>
 		<include name="dockables.xml"/>
 	  </fileset>

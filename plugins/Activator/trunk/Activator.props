@@ -1,9 +1,9 @@
 plugin.activator.ActivatorPlugin.name=Activator
 plugin.activator.ActivatorPlugin.author=Brad Mace, Alan Ezust, Dale Anson
-plugin.activator.ActivatorPlugin.version=1.3.0
-plugin.activator.ActivatorPlugin.depend.0=jdk 1.5.0
-plugin.activator.ActivatorPlugin.depend.1=jedit 04.03.15.00
-plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
+plugin.activator.ActivatorPlugin.version=1.3.1
+plugin.activator.ActivatorPlugin.depend.0=jdk 1.6.0
+plugin.activator.ActivatorPlugin.depend.1=jedit 04.05.99.00
+plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 1.5
 plugin.activator.ActivatorPlugin.activate=defer
 plugin.activator.ActivatorPlugin.docs=docs/index.html
 plugin.activator.ActivatorPlugin.description=A convenient interface for (un|re)?loading plugins from a dockable.
