@@ -22,6 +22,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import com.jcraft.jsch.Session;
@@ -57,7 +58,7 @@ public class Shell extends console.Shell {
 	
 	public boolean chDir(Console console, String path) {
 		if (!handlesVFS(path)) return false;
-		
+		if (!jEdit.isStartupDone()) return false;
 		ConsoleState cs = ConnectionManager.getConsoleState(console);
 		cs.setPath(path, true);
 		return true;
@@ -94,6 +95,7 @@ public class Shell extends console.Shell {
 	 */
 	public void execute(Console console, String input, Output output, Output error, String command)
 	{
+		
 		ConsoleState cs = ConnectionManager.getConsoleState(console);
 
 		if (cs.conn == null)  try {
