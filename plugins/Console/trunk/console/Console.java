@@ -796,9 +796,8 @@ implements EBComponent, DefaultFocusComponent
 		if (!isVisible()) return;
 		String path = msg.getPath();
 		// don't chdir to a filename
-		if (!msg.isDirectory()) {
-			path = path.substring(0, path.lastIndexOf('/'));
-		}
+		if (!msg.isDirectory()) 
+			path = MiscUtilities.getParentOfPath(path);
 		// sshConsole always responds to node selected.
 		if (path.startsWith("sftp://") || jEdit.getBooleanProperty("console.changedir.nodeselect") )
 			chDir(path);

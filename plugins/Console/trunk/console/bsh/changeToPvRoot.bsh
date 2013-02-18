@@ -1,8 +1,7 @@
 /**
    Beanshell Script to change the current console's directory
    to the root of the current ProjectViewer's project.
-   Will switch shells if there is another shell that is more appropriate
-   for the root path. 
+   Will switch shells if another is more appropriate for this project.
 
    by ezust
 
