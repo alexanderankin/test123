@@ -1,6 +1,7 @@
 :encoding=UTF-8:
 
 jEdit Console Plugin Changelog
+$Date$
 
 Version 5.1.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
     #3589470 Revisited: Brought back old "generic" error pattern, and added gcc pattern. 
