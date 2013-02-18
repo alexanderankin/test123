@@ -53,7 +53,7 @@
 	<mkdir dir="${install.dir}"/>
 	<jar jarfile="${install.dir}/${jar.name}.jar">
 	  <fileset dir=".">
-	    <include name="lang_*.props" />
+	    <include name="lang_*.properties" />
 		<include name="*.props"/>
 		<include name="*.html"/>
 		<include name="docs/**" />
