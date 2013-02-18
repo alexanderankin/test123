@@ -1,8 +1,8 @@
 <project name="JakartaCommons" default="dist" basedir=".">
-<!--
-                 This is a modified version of the standard build.xml file for building
-                 a jEdit plugin.  It doesn't do much.
--->
+        <!-- Build file for JakartaCommons jEdit plugin.
+            It is not based on build-support/plugin-build.xml so
+            please don't use it as a starting point for your build.xml
+        -->
         <!-- {{{ Properties -->
         <property file="build.properties"/>
         <property file="../build.properties"/>
@@ -61,11 +61,10 @@
                  <jar jarfile="${install.dir}/${jar.name}">
                         <fileset dir="${build.dir}"/>
                         <fileset dir="${basedir}">
-                                  <include name="*.html" />
-                                  <include name="actions.xml" />
-
-                                <include name="**/*.props"/>
-                                <exclude name="build.properties"/>
+                              <include name="*.html" />
+                              <include name="actions.xml" />
+                              <include name="lang_*.properties"/>
+                              <include name="*.props"/>
                         </fileset>
                 </jar>
         </target>
