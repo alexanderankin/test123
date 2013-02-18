@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	
+	<ACTION NAME="help">
+	<CODE>
+		infoviewer.InfoViewerPlugin.showHelp();
+	</CODE>
+	</ACTION>
+	<ACTION NAME="infoviewer.open-buffer">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openCurrentBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="infoviewer.open-sel">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openSelectedText(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
