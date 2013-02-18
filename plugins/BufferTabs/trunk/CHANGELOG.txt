@@ -3,6 +3,9 @@
 jEdit BufferTabs Plugin Changelog
 $Date$
 
+Version 1.2.4.  Requires JDK 1.6, jEdit 4.5.x
+    French and German Localization
+
 Version 1.2.3.  Requires JDK 1.6, jEdit 4.5.x
     Automatically disables the built-in buffer Selector when plugin is loaded.
     BufferTabs default location changed to top. Enabled by default. 
