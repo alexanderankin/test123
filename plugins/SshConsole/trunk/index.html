@@ -161,8 +161,8 @@ you attempt to execute the next command. At this point, the console should
 automatically close its existing connection and open a new one when you enter
 the next command. </p>
 
-<p> It may be necessary to click again on a remote file in the FSB, to remind
-the SshConsole where to connect. </p>
+<p> It may be necessary to click again on a folder node or two in the FSB or 
+projectviewer, to remind the SshConsole where to connect. </p>
 
 <p> If for some reason, after a timeout, your SshConsole is non-responsive, you
 can explicitly close all open connections from the <tt>Plugins - SshConsole -
@@ -195,8 +195,12 @@ or suggestions.
 
 <hr />
 <h2 id="history"> History </h2>
-
-<ul>
+<li id="v.1.0.6"> <b>Version 1.0.6</b> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.2, Console 5.1.
+ <ul>
+   <li> Fix #3604790: SshConsole read dead end when restoring files on startup. </li>
+ </ul> 
+ </li>
+ 
   <li id="v.1.0.5"> <b>Version 1.0.5</b> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.2, Console 5.1.
   <ul>
     <li> Parses Vt100 colors (Artem Bryantsev) </li>
