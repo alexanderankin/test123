@@ -393,7 +393,8 @@ console.error.generic.extra=^(\\s+(.*)|\\S+\\s*\:.*)
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3
-console.error.generic.testtext=filterwidget.cpp\:98\: error\: expected `;' before \u2018m_listView\u2019\nProcess make exited with code 2\n
+console.error.generic.testtext=/workspace/jedit/trunk/org/gjt/sp/jedit/gui/DockingLayoutManager.java\:48\: cannot find symbol\nsymbol  \: variable GUIUtilities\nlocation\: class org.gjt.sp.jedit.gui.DockingLayoutManager\n\t\t\tGUIUtilities.error(view,"no-settings",null);\n\t\t\t^
+
 
 ### Commando
 
@@ -501,7 +502,7 @@ console.pv.no-command.message=No {0} command has been defined.\n\
 # Sensible Defaults Department
 console.dock-position=bottom
 options.console.errors.reset-confirm.title=Factory Reset Error Matchers
-options.console.errors.reset-confirm.message=Resets all custom error matchers to factory defaults. Are you sure?
+options.console.errors.reset-confirm.message=Resets error matchers list to factory default. Are you sure?
 
 ### ANSI escape sequencies
 options.ansi-escape.behaviour-caption=Parser behaviour:
