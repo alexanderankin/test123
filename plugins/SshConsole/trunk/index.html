@@ -54,9 +54,10 @@ a prompt like this: </p>
 connect somewhere, you need to do one of these things: </p>
 
 <ol>
-<li> <b>Plugins - SshConsole - Open From Secure FTP server</b> - you can choose a file after
-connecting. </li>
-<li> Navigate to a remote file via a docked File System Browser </li>
+<li> <b>Plugins - SshConsole - Open From Secure FTP server</b> - 
+you can choose a file after connecting. </li>
+<li> Navigate to a remote file by clicking on the node in the File System Browser
+or Project Viewer</li> 
 <li> Edit a remote file in the current View's EditPane. </li>
 </ol>
 
@@ -181,7 +182,7 @@ feel like doing them myself. Any volunteers? </p>
 call <tt>ConsoleState.setPath()</tt> to update the sshconsole's path unless it
 is valid.</li>
 
-<li> Use FSB and existing sftp:// VFS connection to calculate possible
+<li> Use VFS and existing sftp:// VFS connection to calculate possible
 completions. </li>
 
 </ul>
@@ -197,8 +198,7 @@ or suggestions.
 <h2 id="history"> History </h2>
 <li id="v.1.0.6"> <b>Version 1.0.6</b> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.2, Console 5.1.
  <ul>
-   <li> Fix #3604790: SshConsole read dead end when restoring files on startup. </li>
-   <li> Fix #3604654: NPE when changing to invalid folder in SshConsole. </li>
+   <li> Fix #3604654: NPE when changing to invalid folder. </li>
  </ul> 
  </li>
  

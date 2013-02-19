@@ -43,7 +43,7 @@ public class ConsoleState
 		console = c;
 	}
 
-        // full sftp:// path
+    // full sftp:// path
 	private String path = "";
 
 	Console console;
@@ -80,9 +80,9 @@ public class ConsoleState
 		}
 		
 		if (path.equals(newPath)) return;
-		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
-		if (newInfo == null) return;
 		path = newPath;
+		ConnectionInfo newInfo = ConnectionManager.getConnectionInfo(newPath);
+		if (newInfo == null) return;		
 		// update current directory in the CommandOutputParser
 		
 		if (info == null || !newInfo.equals(info)) {
@@ -95,6 +95,7 @@ public class ConsoleState
 			catch (IOException e) {}
 			finally
 			{
+				dir = "";
 				os = null;
 				conn = null;
 			}
@@ -172,6 +173,7 @@ public class ConsoleState
 
 	// {{{ close() method
 	public void close() {
+		dir = "";
 		if (conn != null) try {
 			conn.logout();
 			ConnectionManager.closeConnection(conn);

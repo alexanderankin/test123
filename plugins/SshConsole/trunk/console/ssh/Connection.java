@@ -156,10 +156,11 @@ public class Connection implements UserInfo {
 	// {{{ logout() method
 	void logout() throws IOException
 	{
+		if(console.getView() != null)
+			console.stopAnimation();
 		stout.abort();
 		channel.disconnect();
 		session.disconnect();
-		console.stopAnimation();
 		inUse = false;
 	} // }}}
 	

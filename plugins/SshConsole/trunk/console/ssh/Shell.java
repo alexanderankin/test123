@@ -22,6 +22,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -105,12 +106,14 @@ public class Shell extends console.Shell {
 				printPrompt(console, output);
 				return;
 			}
+			
 			cs.info = info;
 			Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
 			Connection c = ConnectionManager.getShellConnection(console, info);
 			session.setUserInfo(c);
 			cs.os = c.ostr;
 			cs.conn = c;
+			cs.setPath("");
 		}
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
@@ -118,9 +121,9 @@ public class Shell extends console.Shell {
 		if (cs.getPath().equals(""))  // no path from FSB - what about current buffer?
 		{
 			Buffer b = console.getView().getEditPane().getBuffer( );
-			String p = b.getPath();
-			int lastslash = p.lastIndexOf("/");
-			if (p.startsWith("sftp:")) cs.setPath(p.substring(0, lastslash), true);
+			String p = b.getPath();			
+			if (p.startsWith("sftp:"))
+				cs.setPath(MiscUtilities.getParentOfPath(p), true);
 		}
 		
 		boolean consumed = cs.preprocess(command);
