@@ -662,7 +662,7 @@ final class UnicodeCharNames
 	 */
 
 // BEGIN GENERATED CODE: UnicodeData.txt, cutoff=0x10FFFF
-private static final int actualSize = 24428;
+private static final int actualSize = 24429;
 private static final String[] characterNames = new String[1114110];
 
 private static void loadCharacterNames0()
@@ -7871,6 +7871,7 @@ private static void loadCharacterNames3()
 	characterNames[0x20B7] = "SPESMILO SIGN";
 	characterNames[0x20B8] = "TENGE SIGN";
 	characterNames[0x20B9] = "INDIAN RUPEE SIGN";
+	characterNames[0x20BA] = "TURKISH LIRA SIGN";
 	characterNames[0x20D0] = "COMBINING LEFT HARPOON ABOVE";
 	characterNames[0x20D1] = "COMBINING RIGHT HARPOON ABOVE";
 	characterNames[0x20D2] = "COMBINING LONG VERTICAL LINE OVERLAY";
@@ -8870,11 +8871,11 @@ private static void loadCharacterNames3()
 	characterNames[0x2503] = "BOX DRAWINGS HEAVY VERTICAL";
 	characterNames[0x2504] = "BOX DRAWINGS LIGHT TRIPLE DASH HORIZONTAL";
 	characterNames[0x2505] = "BOX DRAWINGS HEAVY TRIPLE DASH HORIZONTAL";
-	characterNames[0x2506] = "BOX DRAWINGS LIGHT TRIPLE DASH VERTICAL";
 }
 
 private static void loadCharacterNames4()
 {
+	characterNames[0x2506] = "BOX DRAWINGS LIGHT TRIPLE DASH VERTICAL";
 	characterNames[0x2507] = "BOX DRAWINGS HEAVY TRIPLE DASH VERTICAL";
 	characterNames[0x2508] = "BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL";
 	characterNames[0x2509] = "BOX DRAWINGS HEAVY QUADRUPLE DASH HORIZONTAL";
@@ -10922,11 +10923,11 @@ private static void loadCharacterNames4()
 	characterNames[0x2DE2] = "COMBINING CYRILLIC LETTER GHE";
 	characterNames[0x2DE3] = "COMBINING CYRILLIC LETTER DE";
 	characterNames[0x2DE4] = "COMBINING CYRILLIC LETTER ZHE";
-	characterNames[0x2DE5] = "COMBINING CYRILLIC LETTER ZE";
 }
 
 private static void loadCharacterNames5()
 {
+	characterNames[0x2DE5] = "COMBINING CYRILLIC LETTER ZE";
 	characterNames[0x2DE6] = "COMBINING CYRILLIC LETTER KA";
 	characterNames[0x2DE7] = "COMBINING CYRILLIC LETTER EL";
 	characterNames[0x2DE8] = "COMBINING CYRILLIC LETTER EM";
@@ -12974,11 +12975,11 @@ private static void loadCharacterNames5()
 	characterNames[0xA22C] = "YI SYLLABLE GGU";
 	characterNames[0xA22D] = "YI SYLLABLE GGUP";
 	characterNames[0xA22E] = "YI SYLLABLE GGURX";
-	characterNames[0xA22F] = "YI SYLLABLE GGUR";
 }
 
 private static void loadCharacterNames6()
 {
+	characterNames[0xA22F] = "YI SYLLABLE GGUR";
 	characterNames[0xA230] = "YI SYLLABLE MGIEX";
 	characterNames[0xA231] = "YI SYLLABLE MGIE";
 	characterNames[0xA232] = "YI SYLLABLE MGAT";
@@ -15026,11 +15027,11 @@ private static void loadCharacterNames6()
 	characterNames[0xABDF] = "MEETEI MAYEK LETTER NA LONSUM";
 	characterNames[0xABE0] = "MEETEI MAYEK LETTER TIL LONSUM";
 	characterNames[0xABE1] = "MEETEI MAYEK LETTER NGOU LONSUM";
-	characterNames[0xABE2] = "MEETEI MAYEK LETTER I LONSUM";
 }
 
 private static void loadCharacterNames7()
 {
+	characterNames[0xABE2] = "MEETEI MAYEK LETTER I LONSUM";
 	characterNames[0xABE3] = "MEETEI MAYEK VOWEL SIGN ONAP";
 	characterNames[0xABE4] = "MEETEI MAYEK VOWEL SIGN INAP";
 	characterNames[0xABE5] = "MEETEI MAYEK VOWEL SIGN ANAP";
@@ -17078,11 +17079,11 @@ private static void loadCharacterNames7()
 	characterNames[0x10186] = "GREEK ARTABE SIGN";
 	characterNames[0x10187] = "GREEK AROURA SIGN";
 	characterNames[0x10188] = "GREEK GRAMMA SIGN";
-	characterNames[0x10189] = "GREEK TRYBLION BASE SIGN";
 }
 
 private static void loadCharacterNames8()
 {
+	characterNames[0x10189] = "GREEK TRYBLION BASE SIGN";
 	characterNames[0x1018A] = "GREEK ZERO SIGN";
 	characterNames[0x10190] = "ROMAN SEXTANS SIGN";
 	characterNames[0x10191] = "ROMAN UNCIA SIGN";
@@ -19130,11 +19131,11 @@ private static void loadCharacterNames8()
 	characterNames[0x1228C] = "CUNEIFORM SIGN PIRIG TIMES UD";
 	characterNames[0x1228D] = "CUNEIFORM SIGN PIRIG TIMES ZA";
 	characterNames[0x1228E] = "CUNEIFORM SIGN PIRIG OPPOSING PIRIG";
-	characterNames[0x1228F] = "CUNEIFORM SIGN RA";
 }
 
 private static void loadCharacterNames9()
 {
+	characterNames[0x1228F] = "CUNEIFORM SIGN RA";
 	characterNames[0x12290] = "CUNEIFORM SIGN RAB";
 	characterNames[0x12291] = "CUNEIFORM SIGN RI";
 	characterNames[0x12292] = "CUNEIFORM SIGN RU";
@@ -21182,11 +21183,11 @@ private static void loadCharacterNames9()
 	characterNames[0x16F59] = "MIAO VOWEL SIGN O";
 	characterNames[0x16F5A] = "MIAO VOWEL SIGN OO";
 	characterNames[0x16F5B] = "MIAO VOWEL SIGN WO";
-	characterNames[0x16F5C] = "MIAO VOWEL SIGN W";
 }
 
 private static void loadCharacterNames10()
 {
+	characterNames[0x16F5C] = "MIAO VOWEL SIGN W";
 	characterNames[0x16F5D] = "MIAO VOWEL SIGN E";
 	characterNames[0x16F5E] = "MIAO VOWEL SIGN EN";
 	characterNames[0x16F5F] = "MIAO VOWEL SIGN ENG";
@@ -23234,11 +23235,11 @@ private static void loadCharacterNames10()
 	characterNames[0x1F108] = "DIGIT SEVEN COMMA";
 	characterNames[0x1F109] = "DIGIT EIGHT COMMA";
 	characterNames[0x1F10A] = "DIGIT NINE COMMA";
-	characterNames[0x1F110] = "PARENTHESIZED LATIN CAPITAL LETTER A";
 }
 
 private static void loadCharacterNames11()
 {
+	characterNames[0x1F110] = "PARENTHESIZED LATIN CAPITAL LETTER A";
 	characterNames[0x1F111] = "PARENTHESIZED LATIN CAPITAL LETTER B";
 	characterNames[0x1F112] = "PARENTHESIZED LATIN CAPITAL LETTER C";
 	characterNames[0x1F113] = "PARENTHESIZED LATIN CAPITAL LETTER D";
