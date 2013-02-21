@@ -29,63 +29,45 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-
-import gatchan.jedit.lucene.Index.ActivityListener;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
 //}}}
 
 /**
  * @author Matthieu Casanova
  */
-public class AbstractIndex
+public abstract class AbstractIndex
 {
 	protected IndexWriter writer;
 	private DirectoryReader reader;
 	protected File path;
 	protected Analyzer analyzer;
-	protected List<ActivityListener> listeners = new ArrayList<ActivityListener> ();
-	private final Map<IndexReader, Integer> readerMap = new ConcurrentHashMap<IndexReader, Integer>();
+	protected List<Index.ActivityListener> listeners = new ArrayList<Index.ActivityListener> ();
 
 	//{{{ AbstractIndex constructor
-	public AbstractIndex(File path)
+	protected AbstractIndex(File path)
 	{
 		this.path = path;
 	} //}}}
 
+	public void clear()
+	{
+		close();
+	}
 
 	//{{{ close() method
 	public void close()
 	{
 		Log.log(Log.DEBUG, this, "close()");
 		closeWriter();
-		Set<IndexReader> readerSet = readerMap.keySet();
-		Iterator<IndexReader> it = readerSet.iterator();
-		while (it.hasNext())
-		{
-			IndexReader indexReader = it.next();
-			try
-			{
-				indexReader.close();
-				it.remove();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, "Unable to close reader", e);
-			}
-		}
+
 		if (reader != null)
 		{
 			try
@@ -97,10 +79,6 @@ public class AbstractIndex
 			{
 				Log.log(Log.ERROR, this, "Unable to close reader", e);
 			}
-		}
-		if (!readerMap.isEmpty() || reader != null)
-		{
-			Log.log(Log.DEBUG, this, "The index was not closed");
 		}
 	} //}}}
 
@@ -148,7 +126,6 @@ public class AbstractIndex
 			try
 			{
 				reader = DirectoryReader.open(FSDirectory.open(path));
-				readerMap.put(reader, 0);
 			}
 			catch (IOException e)
 			{
@@ -162,22 +139,7 @@ public class AbstractIndex
 				DirectoryReader reader = DirectoryReader.openIfChanged(this.reader);
 				if (reader != null)
 				{
-					IndexReader oldReader = this.reader;
-					readerMap.put(reader, 0);
 					this.reader = reader;
-					int count = readerMap.get(oldReader);
-					if (count == 0)
-					{
-						try
-						{
-							readerMap.remove(oldReader);
-							oldReader.close();
-						}
-						catch (IOException e)
-						{
-							Log.log(Log.ERROR, "Error while closing the previous reader", e);
-						}
-					}
 				}
 			}
 			catch (IOException e)
@@ -220,25 +182,6 @@ public class AbstractIndex
 		}
 	} //}}}
 
-	//{{{ readPlus() method
-	private void readPlus(IndexReader reader)
-	{
-		int count = readerMap.get(reader);
-		readerMap.put(reader, count + 1);
-	} //}}}
-
-	//{{{ readMinus() method
-	private void readMinus(IndexReader reader)
-	{
-		int count = readerMap.get(reader) - 1;
-		readerMap.put(reader, count);
-		if (count == 0 && reader != this.reader)
-		{
-			IOUtilities.closeQuietly(reader);
-			readerMap.remove(reader);
-		}
-	} //}}}
-
 	//{{{ setAnalyzer() method
 	public void setAnalyzer(Analyzer analyzer)
 	{
@@ -256,13 +199,13 @@ public class AbstractIndex
 	} //}}}
 
 	//{{{ addActivityListener() method
-	public void addActivityListener(ActivityListener al)
+	public void addActivityListener(Index.ActivityListener al)
 	{
 		listeners.add(al);
 	} //}}}
 
 	//{{{ removeActivityListener() method
-	public void removeActivityListener(ActivityListener al)
+	public void removeActivityListener(Index.ActivityListener al)
 	{
 		listeners.remove(al);
 	} //}}}
