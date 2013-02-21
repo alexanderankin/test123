@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2011 Matthieu Casanova
+ * Copyright (C) 2009, 2013 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -83,6 +83,7 @@ public class IndexProjectAction extends Action
 		@Override
 		public void _run()
 		{
+			index.clear();
 			LucenePlugin.instance.addToIndex(index.getName(),
 							 new ProjectFileList(project),
 							 true, this);

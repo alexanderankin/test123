@@ -46,6 +46,8 @@ public interface Index
 	 */
 	void addFile(String path);
 
+	void clear();
+
 	interface FileProvider
 	{
 		VFSFile next();

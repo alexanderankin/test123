@@ -56,13 +56,40 @@ public class TemporaryIndex implements Index
 	protected IndexWriter writer;
 	protected Analyzer analyzer;
 
-	private final Directory directory;
+	private Directory directory;
 	private final String name;
 
 	public TemporaryIndex(String name)
 	{
 		this.name = name;
 		analyzer = new StandardAnalyzer(Version.LUCENE_41);
+		directory = new RAMDirectory();
+		try
+		{
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_41, analyzer);
+			writer = new IndexWriter(directory, indexWriterConfig);
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+	}
+
+	@Override
+	public void clear()
+	{
+		if (writer != null)
+		{
+			try
+			{
+				writer.close();
+				directory.close();
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+		}
 		directory = new RAMDirectory();
 		try
 		{
