@@ -1,0 +1,7 @@
+1.9.11 (unreleased)
+-Fixed word at caret and selection highlight not highlighted immediately when activating the option (#3574730)
+
+1.9.10
+-Fixed NPE during initialization if highlight overview is disabled (#3509281)
+-The plugin will no longer switch to defer mode (#3522011)
+-Fix color highlight when using softwrap (patch #3521997)
