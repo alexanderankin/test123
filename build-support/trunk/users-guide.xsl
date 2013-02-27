@@ -280,10 +280,18 @@
 						<p>
 							<strong>
 							<!-- release -->
+								<xsl:choose>
+								<xsl:when test="articleinfo/releaseinfo | bookinfo/releaseinfo
+										| artheader/releaseinfo | info/releaseinfo">
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/releaseinfo"/>
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="bookinfo/releaseinfo"/>
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/releaseinfo"/>
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/releaseinfo"/>
+								</xsl:when>
+								<xsl:otherwise>
+								<xsl:text>Version @plugin.version@</xsl:text>
+								</xsl:otherwise>
+								</xsl:choose>
 
 								<!-- compute release date automatically -->
 								<xsl:text> (</xsl:text>
@@ -303,7 +311,7 @@
 			</tr>
 		</table>
 
-		<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/legalnotice"/>
+		<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/legalnotice | bookinfo/legalnotice"/>
 		<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/legalnotice"/>
 		<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/legalnotice"/>
 		
