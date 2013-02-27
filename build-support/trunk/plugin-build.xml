@@ -70,7 +70,7 @@
             return pathname.getName().endsWith(".props");
         }});
         
-        basedir = project.getProperty().get("basedir");
+        basedir = project.getProperties().get("basedir");
         var props = new java.io.File(basedir).listFiles(filter);
         if(props.length == 0)echo("no *.props file found in "+basedir);
         
