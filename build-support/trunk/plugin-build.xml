@@ -51,6 +51,69 @@
     <property file="${basedir}/../build.properties" />
     <property file="${user.home}/.build.properties" />
     <property file="${user.home}/build.properties" />
+    
+    <!-- {{{ load properties from *.props, to find out which version the plugin 
+             is at. Defines 2 properties: 
+              - plugin.class: to resolve other plugin class dependent properties
+              - plugin.version: for users-guide.xsl to add version automatically
+    -->
+    <!-- ================================================== -->
+        <script language="javascript"> <![CDATA[
+        function echo(msg)
+        {
+            echot = project.createTask("echo");
+            echot.setMessage(msg);
+            echot.perform();
+        }
+        
+        var filter = new java.io.FileFilter({accept: function(pathname) {
+            return pathname.getName().endsWith(".props");
+        }});
+        
+        basedir = project.getProperty().get("basedir");
+        var props = new java.io.File(basedir).listFiles(filter);
+        if(props.length == 0)echo("no *.props file found in "+basedir);
+        
+        /* load every *.props file found in basedir (hopefully only one) */
+        for(i=0;i<props.length;i++){
+            readprops = project.createTask("property");
+            readprops.setFile(props[i]);
+            readprops.perform();
+            
+        }
+        
+        /* look in all properties for plugin.xxx.name */
+        for(it=project.getProperties().entrySet().iterator();it.hasNext();)
+        {
+            var v = it.next();
+            if(v.getKey().startsWith("plugin.") && v.getKey().endsWith(".name"))
+            {
+
+                /* define plugin.class: it may prove useful for other tasks */
+                pluginclass = v.getKey().substring(7,v.getKey().lastIndexOf(".name"));
+                
+                setpluginclass = project.createTask("property");
+                setpluginclass.setName("plugin.class");
+                setpluginclass.setValue(pluginclass);
+                setpluginclass.perform();
+
+                /* define plugin.version: it's what we wanted, after all */
+                pluginversion = project.getProperties().get("plugin."+pluginclass+".version")
+                
+                setpluginversion = project.createTask("property");
+                setpluginversion.setName("plugin.version");
+                setpluginversion.setValue(pluginversion);
+                setpluginversion.perform();
+                
+                break;
+           }
+        }
+
+        echo("plugin.class is "+project.getProperties().get("plugin.class"));
+        echo("plugin.version is "+project.getProperties().get("plugin.version"));
+    ]]> </script>
+    <!-- }}} -->
+    
     <!-- <echo>plugin-build java.home=${java.home}</echo> -->
     <!-- where to find jEdit and plugins    -->
     <property name="sourceforge.user.name"
@@ -441,6 +504,9 @@
             <filterset>
                 <filter token="docs.style.sheet"
                         value="${docs.style.sheet}" />
+                <!-- property deduced via javascript from MyPlugin.props -->
+                <filter token="plugin.version"
+                        value="${plugin.version}" />
             </filterset>
         </copy>
         <antcall target="docs-${docs-proc.target}" />
