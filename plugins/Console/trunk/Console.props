@@ -507,7 +507,7 @@ options.console.errors.reset-confirm.message=Resets error matchers list to facto
 ### ANSI escape sequencies
 options.ansi-escape.behaviour-caption=Parser behaviour:
 options.ansi-escape.behaviour-values=ignore remove parse
-options.ansi-escape.behaviour=ignore
+options.ansi-escape.behaviour=parse
 options.ansi-escape.mode-caption=Representation's mode:
 options.ansi-escape.mode-values=7bit 8bit
 options.ansi-escape.mode=7bit

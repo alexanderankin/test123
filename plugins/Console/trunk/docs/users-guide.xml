@@ -6,10 +6,14 @@
  <bookinfo>
   <title>jEdit Console plugin user's guide</title>
 
+ <authorgroup>
+  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+ </authorgroup>
+
   <copyright>
    <year>1999</year>
-   <year>2012</year>
-   <holder>Slava Pestov, Alan Ezust</holder>
+   <year>2013</year>
   </copyright>
 
   <legalnotice>
