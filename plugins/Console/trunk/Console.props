@@ -506,10 +506,13 @@ options.console.errors.reset-confirm.message=Resets error matchers list to facto
 
 ### ANSI escape sequencies
 options.ansi-escape.behaviour-caption=Parser behaviour:
-options.ansi-escape.behaviour-values=ignore remove parse
-options.ansi-escape.behaviour=parse
 options.ansi-escape.mode-caption=Representation's mode:
+
+# The below strings should NOT be internationlized (yet) since they are also hardcoded:
 options.ansi-escape.mode-values=7bit 8bit
+options.ansi-escape.behaviour-values=ignore remove parse
+# default value
+options.ansi-escape.behaviour=parse
 options.ansi-escape.mode=7bit
 # parsed control functions, see standart ECMA-48, section "Control functions"
 options.ansi-escape.func-list-values=sgr
