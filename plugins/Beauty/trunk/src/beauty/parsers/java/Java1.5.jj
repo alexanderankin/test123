@@ -1447,15 +1447,15 @@ void TypeArgument():
 {
    ReferenceType()
  |
-   "?" { add("?"); } [ WildcardBounds() ]
+   "?" { add("? "); } [ WildcardBounds() ]
 }
 
 void WildcardBounds():
 {}
 {
-   "extends" { add("extends"); } ReferenceType()
+   "extends" { add("extends "); } ReferenceType()
  |
-   "super" { add("super"); } ReferenceType()
+   "super" { add("super "); } ReferenceType()
 }
 
 
