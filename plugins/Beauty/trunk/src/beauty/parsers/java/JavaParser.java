@@ -1425,7 +1425,7 @@ public class JavaParser implements JavaParserConstants {
       break;
     case HOOK:
       jj_consume_token(HOOK);
-         add("?");
+         add("? ");
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EXTENDS:
       case SUPER:
@@ -1447,12 +1447,12 @@ public class JavaParser implements JavaParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EXTENDS:
       jj_consume_token(EXTENDS);
-               add("extends");
+               add("extends ");
       ReferenceType();
       break;
     case SUPER:
       jj_consume_token(SUPER);
-             add("super");
+             add("super ");
       ReferenceType();
       break;
     default:
