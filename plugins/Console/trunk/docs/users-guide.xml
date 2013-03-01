@@ -78,11 +78,8 @@
  </para></listitem>
 
  <listitem><para> The ability to query the ProjectViewer for the "current project 
- root" to run build commands from. This is used by the Console commandos,
- for "ant", "make", and "qmake", and possibly others<footnote><para> If you
- wish to use these commando buttons without the ProjectViewer, right click on
- the commando buttons, "customize" and edit the XML file, removing the lines
- that refer to ProjectViewer. </para></footnote>. </para></listitem>
+ root" to run commands from. This is used by the Console commandos,
+ as well as the build/run project commands. </para> </listitem>
 
 </orderedlist>
 
