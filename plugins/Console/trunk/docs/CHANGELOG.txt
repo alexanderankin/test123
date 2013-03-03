@@ -7,7 +7,9 @@ $Date$
       [Alan Ezust]
         #3589470 Revisited: Brought back old "generic" error pattern, and added gcc pattern. 
         Fix #3605191: Exception after node selected on windows. 
-
+      [Artem Bryantsev]
+        Remade ANSI escape code parser's options: migration from values based on String to ones based on int.
+      
     Version 5.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Artem Bryantsev]
         FR #3472822 - Console + Task Monitor
