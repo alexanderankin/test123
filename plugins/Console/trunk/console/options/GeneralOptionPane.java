@@ -148,25 +148,44 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent( Box.createVerticalStrut(15) );
 		
 		JPanel ansiEscape = new JPanel();
-		ansiEscape.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "ANSI escape sequencies parser"));
+		ansiEscape.setBorder(
+			BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(),
+				jEdit.getProperty("ansi-escape.title")
+			)
+		);
 		ansiEscape.setLayout(new BoxLayout(ansiEscape, BoxLayout.Y_AXIS) );
 			
-			ArrayList<String> al = new ArrayList<String>( StringList.split( jEdit.getProperty("options.ansi-escape.behaviour-values"), "\\s+") );
+			ArrayList<String> al = new ArrayList<String>(
+				StringList.split( jEdit.getProperty("ansi-escape.behaviour-names"), ";")
+			);
 			
 			ansiBehaviour = new JComboBox( al.toArray() );
-			ansiBehaviour.setSelectedItem( jEdit.getProperty("options.ansi-escape.behaviour") );
+			int index = jEdit.getIntegerProperty("ansi-escape.behaviour", 2);
+			index = Math.min(
+						Math.max( 0, index),
+						al.size()-1
+			);
+			ansiBehaviour.setSelectedIndex(index);
 			
 			al.clear();
-			al.addAll( StringList.split( jEdit.getProperty("options.ansi-escape.mode-values"), "\\s+") );
+			al.addAll(
+				StringList.split( jEdit.getProperty("ansi-escape.mode-names"), ";")
+			);
+			
 			ansiMode = new JComboBox( al.toArray() );
-			ansiMode.setSelectedItem( jEdit.getProperty("options.ansi-escape.mode") );
+			index = Math.min(
+						Math.max( 0, jEdit.getIntegerProperty("ansi-escape.mode", 0) ),
+						al.size()-1
+			);
+			ansiMode.setSelectedIndex(index);
 			
 			JPanel UpperPanel = new JPanel();
 			UpperPanel.setLayout(new GridLayout(2, 2, 2, 2) );
 			
-				UpperPanel.add(new JLabel( jEdit.getProperty("options.ansi-escape.behaviour-caption") ));
+				UpperPanel.add(new JLabel( jEdit.getProperty("ansi-escape.behaviour-caption") ));
 				UpperPanel.add( ansiBehaviour );
-				UpperPanel.add(new JLabel( jEdit.getProperty("options.ansi-escape.mode-caption") ));
+				UpperPanel.add(new JLabel( jEdit.getProperty("ansi-escape.mode-caption") ));
 				UpperPanel.add( ansiMode );
 				
 			ansiEscape.add( UpperPanel );
@@ -216,8 +235,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setColorProperty("console.errorColor",
 			errorColor.getBackground());
 
- 		jEdit.setProperty("options.ansi-escape.behaviour", (String)ansiBehaviour.getSelectedItem() );
- 		jEdit.setProperty("options.ansi-escape.mode"     , (String)ansiMode.getSelectedItem() );
+ 		jEdit.setProperty("ansi-escape.behaviour", String.valueOf( ansiBehaviour.getSelectedIndex() ) );
+ 		jEdit.setProperty("ansi-escape.mode"     , String.valueOf( ansiMode.getSelectedIndex() ) );
 	}
 	//}}}
 

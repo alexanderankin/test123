@@ -93,27 +93,44 @@ public class AnsiEscapeParser
 	public AnsiEscapeParser(Color defFColor, Color defBColor)
 	{
 		// choose matcher's mode
-		int ansi_mode = Sequences.MODE_7BIT;
-		if ( jEdit.getProperty("options.ansi-escape.mode").contentEquals("8bit") )
+		int ansi_mode = jEdit.getIntegerProperty("ansi-escape.mode", Sequences.MODE_7BIT);
+		switch (ansi_mode)
 		{
-			ansi_mode = Sequences.MODE_8BIT;
+			case Sequences.MODE_7BIT:
+				break;
+				
+			case Sequences.MODE_8BIT:
+				break;
+				
+			default:
+				ansi_mode = Sequences.MODE_7BIT;
 		}
 		
 		// define matcher's behaviour
-		Behaviour behaviour = Behaviour.IGNORE_ALL; 
-		String str = jEdit.getProperty("options.ansi-escape.behaviour");
-		if ( str.contentEquals("remove") )
+		Behaviour behaviour = Behaviour.PARSE; 
+		int bhvr = jEdit.getIntegerProperty("ansi-escape.behaviour", 2);
+		switch (bhvr)
 		{
-			behaviour = Behaviour.REMOVE_ALL;
-		}
-		else if ( str.contentEquals("parse") )
-		{
-			behaviour = Behaviour.PARSE;
+			case 0:
+				behaviour = Behaviour.IGNORE_ALL;
+				break;
+				
+			case 1:
+				behaviour = Behaviour.REMOVE_ALL;
+				break;
+				
+			case 2:
+				behaviour = Behaviour.PARSE;
+				break;
+				
+			default:
+				behaviour = Behaviour.PARSE;
 		}
 			
 		// fill parsing control function's list
-		StringList funcs     = StringList.split( jEdit.getProperty("options.ansi-escape.func-list").toLowerCase(), "\\s+");
-		String avaible_funcs = jEdit.getProperty("options.ansi-escape.func-list-values");
+		StringList funcs     = StringList.split( jEdit.getProperty("ansi-escape.func-list").toLowerCase(), "\\s+");
+		String avaible_funcs = jEdit.getProperty("ansi-escape.func-list-values");
+		String str = "";
 		
 		int i = 0;
 		while ( i < funcs.size() )
