@@ -151,13 +151,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 		ansiEscape.setBorder(
 			BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(),
-				jEdit.getProperty("ansi-escape.title")
+				jEdit.getProperty("options.ansi-escape.title")
 			)
 		);
 		ansiEscape.setLayout(new BoxLayout(ansiEscape, BoxLayout.Y_AXIS) );
 			
 			ArrayList<String> al = new ArrayList<String>(
-				StringList.split( jEdit.getProperty("ansi-escape.behaviour-names"), ";")
+				StringList.split( jEdit.getProperty("options.ansi-escape.behaviour-names"), ";")
 			);
 			
 			ansiBehaviour = new JComboBox( al.toArray() );
@@ -170,7 +170,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 			
 			al.clear();
 			al.addAll(
-				StringList.split( jEdit.getProperty("ansi-escape.mode-names"), ";")
+				StringList.split( jEdit.getProperty("options.ansi-escape.mode-names"), ";")
 			);
 			
 			ansiMode = new JComboBox( al.toArray() );
@@ -183,9 +183,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 			JPanel UpperPanel = new JPanel();
 			UpperPanel.setLayout(new GridLayout(2, 2, 2, 2) );
 			
-				UpperPanel.add(new JLabel( jEdit.getProperty("ansi-escape.behaviour-caption") ));
+				UpperPanel.add(new JLabel( jEdit.getProperty("options.ansi-escape.behaviour-caption") ));
 				UpperPanel.add( ansiBehaviour );
-				UpperPanel.add(new JLabel( jEdit.getProperty("ansi-escape.mode-caption") ));
+				UpperPanel.add(new JLabel( jEdit.getProperty("options.ansi-escape.mode-caption") ));
 				UpperPanel.add( ansiMode );
 				
 			ansiEscape.add( UpperPanel );
