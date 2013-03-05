@@ -505,13 +505,14 @@ options.console.errors.reset-confirm.title=Factory Reset Error Matchers
 options.console.errors.reset-confirm.message=Resets error matchers list to factory default. Are you sure?
 
 ### ANSI escape sequencies
-ansi-escape.title=ANSI escape sequencies parser
-ansi-escape.behaviour-caption=Parser behaviour:
-ansi-escape.behaviour-names=ignore;remove;parse
-ansi-escape.behaviour=2
-ansi-escape.mode-caption=Representation's mode:
-ansi-escape.mode-names=7bit;8bit
+options.ansi-escape.title=ANSI escape sequencies parser
+options.ansi-escape.behaviour-caption=Parser behaviour:
+options.ansi-escape.behaviour-names=ignore;remove;parse
+options.ansi-escape.mode-caption=Representation's mode:
+options.ansi-escape.mode-names=7bit;8bit
+# default values
 ansi-escape.mode=0
+ansi-escape.behaviour=2
 # parsed control functions, see standart ECMA-48, section "Control functions"
 ansi-escape.func-list-values=sgr
 ansi-escape.func-list=sgr
