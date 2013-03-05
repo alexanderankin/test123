@@ -42,7 +42,7 @@ class MacroListHandler extends DefaultHandler
 		throws IOException, SAXException
 	    {
 		
-		if("macros.dtd".equals(systemId))
+		if(systemId.endsWith("/macros.dtd"))
 		{
 			// this will result in a slight speed up, since we
 			// don't need to read the DTD anyway, as AElfred is
