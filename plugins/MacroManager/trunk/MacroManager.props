@@ -15,7 +15,7 @@ plugin.macroManager.MacroManagerPlugin.jars=tar.jar activation.jar
 plugin.macroManager.MacroManagerPlugin.depend.0=jdk 1.6
 plugin.macroManager.MacroManagerPlugin.depend.1=jedit 04.04.99.00
 plugin.macroManager.MacroManagerPlugin.depend.2=plugin CommonControlsPlugin 1.5
-
+plugin.macroManager.MacroManagerPlugin.description=Allows to you browse, download and add macros from the jEdit community site. Also provides a popup for filtering and selecting macros by name.
 #
 # Menu properties
 #
