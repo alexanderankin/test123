@@ -49,12 +49,12 @@ import javax.swing.text.Document;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
@@ -690,9 +690,9 @@ public class FastOpen extends JPanel implements ActionListener, IndexListener, D
 
 
 				if (jEdit.getBooleanProperty("fastopen.ignorecase"))
-					re = Pattern.compile(StandardUtilities.globToRE("^" + globToFind),Pattern.CASE_INSENSITIVE);
+					re = Pattern.compile(StandardUtilities.globToRE(globToFind),Pattern.CASE_INSENSITIVE);
 				else
-					re = Pattern.compile(StandardUtilities.globToRE("^" + globToFind));
+					re = Pattern.compile(StandardUtilities.globToRE(globToFind));
 			}
 			catch(java.util.regex.PatternSyntaxException e)
 			{
@@ -718,7 +718,7 @@ public class FastOpen extends JPanel implements ActionListener, IndexListener, D
 				FastOpenFile file = (FastOpenFile) iterPrjFiles.next();
 				if (hideOpenFiles && file.isOpened())
 					continue;
-				if (re.matcher(file.getName()).find())
+				if (re.matcher(file.getPath()).find())
 					foundfileslist.add(file);
 			}// End of while
 

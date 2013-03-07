@@ -3,6 +3,7 @@ package com.patelsoft.fastopen;
 	//Imports
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.BufferHistory;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
@@ -20,7 +21,8 @@ import org.gjt.sp.util.SyntaxUtilities;
 
 public class FastOpenFile
 {
-	private final String name,path;
+	
+	private final String name, path;
 	private final boolean projectFile;
 	private final int hashcode; //Store hashcode of the file since the filename and path are final and cannot be changed so why calculate everytime in hashCode().
 	private final String decoratedPath;
@@ -97,10 +99,8 @@ public class FastOpenFile
 	{
 		if(fofile != null && fofile instanceof FastOpenFile)
 		{
-			FastOpenFile f = (FastOpenFile)fofile;
-			if(OperatingSystem.isWindows())
-				return (getPath().equalsIgnoreCase(f.getPath()) && getName().equalsIgnoreCase(f.getName()));
-			return (getPath().equals(f.getPath()) && getName().equals(f.getName()));
+			FastOpenFile f = (FastOpenFile)fofile;		
+			return (MiscUtilities.pathsEqual(getPath(), f.getPath()) && MiscUtilities.pathsEqual(getName(), f.getName()));
 		}
 		return super.equals(fofile);
 	}

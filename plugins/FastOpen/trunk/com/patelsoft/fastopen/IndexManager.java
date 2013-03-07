@@ -17,6 +17,3 @@ public interface IndexManager
 	public void removeIndexListener(IndexListener listener);
 }
 
-
-
-
