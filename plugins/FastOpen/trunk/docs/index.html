@@ -1,7 +1,6 @@
 <HTML>
 <HEAD>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
-<META NAME="Generator" CONTENT="Microsoft Word 97">
 <TITLE>FastOpen plugin user's guide</TITLE>
 </HEAD>
 <BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff" alink="#0000FF">
@@ -18,7 +17,7 @@
 <hr>
 
 <H2>Introduction</H2>
-<P>FastOpen is a plugin designed to quickly open any file in the current project by just typing in the first few characters of the filename you want to open. Besides quickly opening any file, it has a lot of features like switching between projects, indicating invalid filenames etc. FastOpen can open files in the projects and/or non project files too.</P>
+<P>FastOpen is a plugin designed to quickly open any file in the current project by just typing in some characters of the filename or path you want to open. Besides quickly opening any file, it has features like switching between projects, indicating invalid filenames etc. FastOpen can open files in the projects and/or non project files too.</P>
 
 
 <h3 id="whatsnew">What's New :</h3>
@@ -27,30 +26,31 @@ Take a look at the <a href="#introToNewFeatures">Introduction to New Features</a
 <h3 id="Introduction">Introduction</h3>
 <p>
         FastOpen is a plugin for simple to advanced users. You can quickly open files from your project irrespective of their position in the directory structure. A file might be in
-        10 (or n number of) directory below your project root but for a FastOpen user it is as simple as typing in the first few characters of that file. For advanced users, FastOpen (0.6+) also supports
-        Full Perl5 compatible regexp. for searching files matching some pattern (like find me all - *.html or *.txt) files or as complicated as all XML files who has a word TEST in them.
+        10 (or n number of) directory below your project root but for a FastOpen user it is as simple as typing some characters of that filename. FastOpen also supports
+        filename globbing, for searching files matching some pattern (for example, <tt>test*.xml</tt> matches all xml files with the word <tt>test</tt> in them).
         </p>
 <br>
 <h3 id="usage">Usage</h3>
 <p>
-        FastOpen can be used with or without ProjectViewer being docked, but you must have atleast one project currently loaded and selected in ProjectViewer (if you are using ProjectViewer). You can also switch between projects using just FastOpen. To search for a file in your project, simply type in the first few characters of the filename(including regexp patterns if so desired). FastOpen will list down matching files in the list below. You can open the file by double clicking or selecting it from keyboard.
+        FastOpen can be used with or without ProjectViewer being docked, but you must have atleast one project currently loaded and selected in ProjectViewer (if you are using ProjectViewer). You can also switch between projects using just FastOpen. To search for a file in your project, simply type in some characters of the filename. Fastopen will match against the full path of each file, if a file separator character is present. Glob patterns can be used here. If the option is enabled in Plugin Options, acronyms can match CamelCase words (Typing FOTF would match FastOpenTextField, for example). FastOpen will show the matching files in a list below. You can open your chosen file by double clicking or selecting it from keyboard.
         </p>
         <p>
 		You can map FastOpen to a favourite shortcut key for really fast, mouse-free access to your project files.
 </p>
 
 <p>FastOpen is fully customisable from the Utilities-Global Options. You can configure things like Sort Files, Keep Open files in the end or at the begining of the list of matching files, or even "Don't show me already open files"... etc.
-You can also color annotate Open files to identify or differentiate between open &amp; not open files. FastOpen can also indicate errors in your search pattern by changing the color of file search pattern to red. to indicate that no files match the criteria or errorneous regexp syntax (0.6+). </p>
+You can also color annotate Open files to identify or differentiate between open &amp; not open files. FastOpen can also indicate errors in your search pattern by changing the color of file search pattern to red. to indicate that no files match the criteria. </p>
 <p>
   Another feature is "Jump to file". You can select any text or keep your cursor on any text in the JEdit textarea(say a Classname) &amp; invoke FastOpen on it. If FastOpen finds a file matching that name it will automatically open that file for you resembling "Jump to" feature. If it does not match any file or matches more than one file then it will show you matching files dialog box. You can enable/disable this feature from Utilities-Global Options-FastOpen and select/deselect "Pattern from selected text" checkbox.
 </p>
 
-<p>FastOpen adds a lot of new features to make even simpler file manipulation. First among them, is the previous patterns drop down for easy re-run of previous search patterns. This is particularly helpful to remember complex or repetative search patterns, instead of typing patterns everytime/everyday. You can cycle between previous search patterns by pressing Ctrl+UP Arrow or Ctrl+DOWN Arrow keys on your keyboard.</p>
+<p>FastOpen has features to make file manipulation even simpler. First among them, is the previous patterns drop down for easy re-run of previous search patterns. This is particularly helpful to remember complex or repetative search patterns, instead of typing patterns everytime/everyday. You can cycle between previous search patterns by pressing Ctrl+UP Arrow or Ctrl+DOWN Arrow keys on your keyboard.</p>
+
 <p> FastOpen allows you to switch between open files even if they don't belong to the Project, say Log files when working on Web-Applications, which are generally not part of the Project. You can even color code such files from FastOpen preferences in Global Options, to identify such files. Also The 0.7 feature of "Jump to file" feature has now been expanded to "Jump to file" under cursor or you can select a word &amp; Jump to it as usual.</p>
 
 <p>FastOpen has a convenient feature to Open any file + jump to a particular line number. This is globally supported, meaning, this filename:lineno pattern can be typed in or can also be used in conjunction with the "Jump to file" feature.</p>
 
-<p>This feature is very useful especially when looking at a stacktrace you can simply place your cursor on the file in the stack trace &amp; invoke FastOpen, and FastOpen will open the file on the cursor AND automatically take you to the lineno specified in the exception stack trace. Note that the filename need not be full filename and can also be a regexp patten:lineno for e.g the following are some of the valid ways to use this feature</p>
+<p>This feature is very useful especially when looking at a stacktrace you can simply place your cursor on the file in the stack trace &amp; invoke FastOpen, and FastOpen will open the file on the cursor AND automatically take you to the lineno specified in the exception stack trace. Note that the filename need not be full filename and can also be a glob patten:lineno for e.g the following are some of the valid ways to use this feature</p>
 <ol>
 <li> ListOrderServlet.java:10</li>
 <li> ListOrde*:10 </li>
@@ -67,8 +67,11 @@ You can also color annotate Open files to identify or differentiate between open
 <a name="releasenotes"></a>
 
 <h3 id="version2.5.1">Version 2.5.1 </h3>
+<p> <b> Requirements: </b>
+Jdk 1.6+, jEdit 5.0pre1, ProjectViewer 3.5(Optional) </p>
 <ol>
-<li> FR #3580223 Glob on full path instead of just filename (Alan Ezust) </li>
+<li> FR #3580223: If the thing to search for has a file separator character, search
+     full path instead of just filename (Alan Ezust) </li>
 </ol>
 
 <h3 id="version2.5">Release Notes &amp; Change Log for Version : 2.5 (5th July 2012) </h3>
@@ -183,7 +186,7 @@ Jdk 1.3+, JEdit 4.2final+, ProjectViewer 2.1+ (Optional) </p>
 <ol>
         <li>Fixed a small bug when FastOpen would get a NPE on clicking OK/Cancel in Global Options box when FastOpen options were not changed.</li>
         <li>New Regular Expressions support for finding files. Thus replacing the simple substring functionality. Now you can not just find files matching some
-        substring but apply powerful regexp for searching files. This is very helpfull in huge projects. It supports full Perl5 regexp.</li>
+        substring but also use globs for searching files. This is very helpfull in huge projects.</li>
         <li>Added a new option in the Global Options to toggle Ignorecase when doing Search.</li>
         <li>This document!! Which was there only in form of Release Notes &amp; TODO list.</li>
 </ol>
