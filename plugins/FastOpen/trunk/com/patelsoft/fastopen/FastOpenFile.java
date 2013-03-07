@@ -5,7 +5,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.BufferHistory;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.SyntaxUtilities;
