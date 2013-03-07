@@ -717,7 +717,9 @@ public class FastOpen extends JPanel implements ActionListener, IndexListener, D
 				FastOpenFile file = (FastOpenFile) iterPrjFiles.next();
 				if (hideOpenFiles && file.isOpened())
 					continue;
-				if (re.matcher(file.getPath()).find())
+				
+				if (re.matcher(globToFind.contains(File.separator)?
+ 				    file.getPath() : file.getName()).find())
 					foundfileslist.add(file);
 			}// End of while
 
