@@ -99,7 +99,8 @@ public class FastOpenFile
 		if(fofile != null && fofile instanceof FastOpenFile)
 		{
 			FastOpenFile f = (FastOpenFile)fofile;		
-			return (MiscUtilities.pathsEqual(getPath(), f.getPath()) && MiscUtilities.pathsEqual(getName(), f.getName()));
+			return (MiscUtilities.pathsEqual(getPath(), f.getPath()) 
+				&& MiscUtilities.pathsEqual(getName(), f.getName()));
 		}
 		return super.equals(fofile);
 	}
