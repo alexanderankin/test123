@@ -662,8 +662,10 @@ public class FastOpen extends JPanel implements ActionListener, IndexListener, D
 		/* We try to collect files just once and hold on to them until the user closes FO.
 		 * This reduces Object creation and hopefully increases performance.
 		 */
+		boolean searchFullPath = false;
 		if (globToFind != null)
 		{
+			searchFullPath = (globToFind.contains(File.separator) || globToFind.contains("/"));
 			Set<FastOpenFile> allfiles = indexManager.getCollectedFiles();
 			if (allfiles == null || allfiles.size() == 0) /* IndexManager still loading. */
 				return null;
@@ -716,10 +718,8 @@ public class FastOpen extends JPanel implements ActionListener, IndexListener, D
 			{
 				FastOpenFile file = (FastOpenFile) iterPrjFiles.next();
 				if (hideOpenFiles && file.isOpened())
-					continue;
-				
-				if (re.matcher(globToFind.contains(File.separator)?
- 				    file.getPath() : file.getName()).find())
+					continue;				
+				if (re.matcher(searchFullPath ? file.getPath() : file.getName()).find())
 					foundfileslist.add(file);
 			}// End of while
 
