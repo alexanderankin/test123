@@ -86,11 +86,14 @@
         for(it=project.getProperties().entrySet().iterator();it.hasNext();)
         {
             var v = it.next();
-            if(v.getKey().startsWith("plugin.") && v.getKey().endsWith(".name"))
+            var vKey = v.getKey();
+            if(vKey != null && !vKey.equals("plugin.name") && vKey.startsWith("plugin.") && vKey.endsWith(".name"))
             {
 
                 /* define plugin.class: it may prove useful for other tasks */
-                pluginclass = v.getKey().substring(7,v.getKey().lastIndexOf(".name"));
+                pluginclass = vKey.substring(7,vKey.lastIndexOf(".name"));
+                
+                java.lang.System.out.println("plugin class: " + pluginclass);
                 
                 setpluginclass = project.createTask("property");
                 setpluginclass.setName("plugin.class");
