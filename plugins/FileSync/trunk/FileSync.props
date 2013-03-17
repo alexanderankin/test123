@@ -14,7 +14,7 @@ plugin.filesync.FileSyncPlugin.depend.0=jdk 1.6.0
 plugin.filesync.FileSyncPlugin.depend.1=jedit 04.05.99.00
 plugin.filesync.FileSyncPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.4.4
 plugin.filesync.FileSyncPlugin.depend.3=plugin CommonControlsPlugin 1.5
-plugin.filesync.FileSyncPlugin.jars=commons-io-2.4.jar
+plugin.filesync.FileSyncPlugin.depend.4=plugin jakartacommons.JakartaCommonsPlugin 0.8
 
 # docs
 plugin.filesync.FileSyncPlugin.docs=index.html
