@@ -92,7 +92,11 @@ public class ProcessExecutor
 		return this;
 	}
 
-
+	/** Returns the command and arguments it is supposed to execute */
+	public String[] getCmd() {
+		return cmd;
+	}
+	
 	/**
 	 * Adds the current process's environment to the child.
 	 * <p>
