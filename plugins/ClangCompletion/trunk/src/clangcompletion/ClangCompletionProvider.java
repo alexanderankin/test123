@@ -1,11 +1,7 @@
 package clangcompletion;
 //{{{ Imports
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.Mode;
@@ -162,6 +158,22 @@ public class ClangCompletionProvider implements CompletionProvider
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
+		}
+		
+		
+		if(jEdit.getBooleanProperty("clangcompletion.show_macro", true))
+		{
+			try 
+			{  
+				Vector<ctagsinterface.main.Tag> macros = ctagsinterface.main.CtagsInterfacePlugin.runScopedQuery(view, "_nameLC:" + prefix.toLowerCase() + "* AND kind:macro");
+				for(Iterator<ctagsinterface.main.Tag> iter = macros.iterator(); iter.hasNext();)
+				{
+					codeCompletions.add(new ctagsinterface.jedit.CtagsCompletionCandidate(iter.next()));
+				}
+			} catch (Exception e) 
+			{  
+				e.printStackTrace();
+			}  
 		}
 		
 		return codeCompletions;
