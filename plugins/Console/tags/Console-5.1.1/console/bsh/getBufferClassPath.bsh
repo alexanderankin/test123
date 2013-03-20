@@ -1,0 +1,22 @@
+
+/* Returns $CLASSPATH, plus the current buffer's package root. */
+getBufferClassPath(buffer)
+{
+	import console.ConsolePlugin;
+
+	cp = buffer.getProperty("java.classpath");
+	if (cp == null || cp.equals(""))
+		cp = getenv("CLASSPATH");
+
+	if (cp == null)
+		cp = "";
+
+	if (cp != "")
+		cp += File.pathSeparator;
+
+	cp += ConsolePlugin.getPackageRoot(buffer);
+	
+	return cp;
+}
+
+help.getBufferClassPath = "usage: getBufferClassPath ( buffer )";
