@@ -4,14 +4,14 @@
 
 plugin.filesync.FileSyncPlugin.name=FileSync
 plugin.filesync.FileSyncPlugin.author=Dale Anson
-plugin.filesync.FileSyncPlugin.version=1.0
+plugin.filesync.FileSyncPlugin.version=1.1
 plugin.filesync.FileSyncPlugin.activate=defer
 plugin.filesync.FileSyncPlugin.description=Synchronizes project files to another directory.
 plugin.filesync.FileSyncPlugin.usePluginHome=true
 
 # dependencies
 plugin.filesync.FileSyncPlugin.depend.0=jdk 1.6.0
-plugin.filesync.FileSyncPlugin.depend.1=jedit 04.05.99.00
+plugin.filesync.FileSyncPlugin.depend.1=jedit 05.00.99.00
 plugin.filesync.FileSyncPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.4.4
 plugin.filesync.FileSyncPlugin.depend.3=plugin CommonControlsPlugin 1.5
 plugin.filesync.FileSyncPlugin.depend.4=plugin jakartacommons.JakartaCommonsPlugin 0.8
