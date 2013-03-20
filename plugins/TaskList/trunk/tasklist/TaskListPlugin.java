@@ -496,10 +496,16 @@ public class TaskListPlugin extends EditPlugin {
             return;
         }
 
-        if ( parseType == COMMENT ) {
-            parseBufferByTokens( buffer );
-        } else {
-            parseBufferByLines( buffer );
+        buffer.readLock();
+        try {
+            if ( parseType == COMMENT ) {
+                parseBufferByTokens( buffer );
+            } else {
+                parseBufferByLines( buffer );
+            }
+        }
+        finally {
+            buffer.readUnlock();
         }
     }
 
