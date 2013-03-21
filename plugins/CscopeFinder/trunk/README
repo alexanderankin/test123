@@ -250,6 +250,9 @@ Release Notes
 -------------
 Below is a list of the issues resolved for each release.
 
+* Release 0.6
+    - applied patch 3025115: Fix escape behavior in pop-up chooser (yohannmartineau)
+
 * Release 0.5
     - Changed CaretChanging to BufferChanging (ezust)
 
