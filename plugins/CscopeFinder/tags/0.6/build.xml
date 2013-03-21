@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<!--
+
+ This is the build.xml file for building the CscopeFinder plugin.
+
+ It is based on the standard build.xml file for jEdit plugins.
+
+-->
+
+<project name="CscopeFinder" default="build" basedir=".">
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<import file="${build.support}/plugin-build.xml" />
+
+    <selector id="packageFiles">
+	  <or>
+		<filename name="index.html" />
+	  </or>
+    </selector>
+
+    
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${src.dir}"/>
+	</path>
+
+
+	<property name="docs-proc.target" value="none" />
+
+	<!-- Generate docs with Docutils tool from http://docutils.sf.net -->
+	<!--
+	<target name="userdocs">
+		<exec executable="rst2html">
+            <arg value="--link-stylesheet" />
+			<arg value="README"/>
+			<arg value="index.html"/>
+		</exec>
+	</target>
+	-->
+
+</project>
