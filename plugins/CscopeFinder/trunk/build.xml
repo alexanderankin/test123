@@ -27,7 +27,10 @@
 	</path>
 
 
+	<property name="docs-proc.target" value="none" />
+
 	<!-- Generate docs with Docutils tool from http://docutils.sf.net -->
+	<!--
 	<target name="userdocs">
 		<exec executable="rst2html">
             <arg value="--link-stylesheet" />
@@ -35,5 +38,6 @@
 			<arg value="index.html"/>
 		</exec>
 	</target>
+	-->
 
 </project>
