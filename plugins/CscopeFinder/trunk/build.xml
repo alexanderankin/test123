@@ -33,7 +33,7 @@
 	<!--
 	<target name="userdocs">
 		<exec executable="rst2html">
-            <arg value="--link-stylesheet" />
+            <arg value="- -link-stylesheet" />
 			<arg value="README"/>
 			<arg value="index.html"/>
 		</exec>
