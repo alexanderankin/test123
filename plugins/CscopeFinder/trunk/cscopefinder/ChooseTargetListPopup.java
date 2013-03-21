@@ -173,6 +173,10 @@ class ChooseTargetListPopup extends JWindow
 			int newSelect = -1;
 			switch (ch)
 			{
+ 			case KeyEvent.VK_ESCAPE:
+ 				dispose();
+ 				evt.consume();
+ 				break;	
 			case KeyEvent.VK_PAGE_UP:
 				newSelect = selected - numRows;
 				if (newSelect < 0) newSelect = 0;
