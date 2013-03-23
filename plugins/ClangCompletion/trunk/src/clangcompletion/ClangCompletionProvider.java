@@ -3,6 +3,7 @@ package clangcompletion;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import java.util.regex.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
@@ -11,16 +12,26 @@ import org.gjt.sp.jedit.textarea.TextArea;
 
 import completion.service.CompletionCandidate;
 import completion.service.CompletionProvider;
-import completion.util.CompletionUtil;
+import completion.util.*;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
+
+import javax.swing.ListCellRenderer;
+
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.textarea.TextArea;
+
+import superabbrevs.SuperAbbrevs;
+
+import completion.service.CompletionCandidate;
 //}}}
 public class ClangCompletionProvider implements CompletionProvider
 {
 	private Set<Mode> completionModes;
 	
-	
+	private static Pattern incPattern = Pattern.compile("^\\s*#(include|import)\\s*(\\\"|<)");
 	
 	public ClangCompletionProvider()
 	{
@@ -38,9 +49,14 @@ public class ClangCompletionProvider implements CompletionProvider
 	@Override
 	public List<CompletionCandidate> getCompletionCandidates(View view)
 	{
-		
-		
 		final Vector<CompletionCandidate> codeCompletions = new Vector<CompletionCandidate>();
+		
+		if(getCompletionCandidatesInclude( view,  codeCompletions))
+		{
+			return codeCompletions;
+		}
+		
+		
 		String prefix = Util.getCompletionPrefix(view);
 		if(prefix == null || prefix.trim().length() == 0)
 		{
@@ -188,4 +204,57 @@ public class ClangCompletionProvider implements CompletionProvider
 		return completionModes;
 	}
 	
+	private boolean getCompletionCandidatesInclude(View view, Vector<CompletionCandidate> codeCompletions)
+	{
+		VPTProject project = ProjectViewer.getActiveProject(view);
+		if(project == null)
+		{
+			return false;
+		}
+		
+		TextArea textArea = view.getTextArea();
+		String lineText = textArea.getLineText(textArea.getCaretLine());
+		Matcher matcher = incPattern.matcher(lineText); 
+		if(!matcher.find())
+		{
+			return false;
+		}
+		
+		HashMap<String, Vector<String>> properties = ProjectsOptionPane.getProperties(project.getName());
+		Vector<String> includes = properties.get(ProjectsOptionPane.INCLUDES);
+		if(includes == null)
+		{
+			return false;
+		}
+		
+		lineText = lineText.substring(matcher.end());
+		File f = new File(lineText);
+		String name = f.getName();
+		String parent= f.getParent();
+		
+		for(Iterator<String> iter = includes.iterator(); iter.hasNext();)
+		{
+			String includeRoot = iter.next();
+			File dir;
+			if(parent == null)
+			{
+				dir = new File(includeRoot);
+			}else
+			{
+				dir = new File(includeRoot, parent);
+			}
+			if(dir.exists() && dir.isDirectory())
+			{
+				String[] list = dir.list();
+				
+				for(int j = 0; j < list.length; j++)
+				{
+					codeCompletions.add(new IncludeCompletionCandidate(name, list[j]));
+				}
+			}
+		}
+		
+		return true;
+	}
 }
+
