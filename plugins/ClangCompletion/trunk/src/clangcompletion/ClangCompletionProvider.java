@@ -96,6 +96,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		
 		ClangBuilder builder = new ClangBuilder();
+		
 		builder.add("-cc1");  
 		builder.add("-fblocks");
 		builder.add("-w");
@@ -104,6 +105,8 @@ public class ClangCompletionProvider implements CompletionProvider
 		builder.add("-fdiagnostics-print-source-range-info");
 		builder.add("-code-completion-at="+path+":"+line+":"+column);
 		builder.add(path);
+		
+		// setTarget should be here after adding code-completion-at for code completion
 		if(!builder.setTarget(buffer))
 		{
 			return codeCompletions;
