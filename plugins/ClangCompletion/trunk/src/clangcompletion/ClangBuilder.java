@@ -99,10 +99,15 @@ public class ClangBuilder
 	
 	public boolean setTarget(Buffer buffer)
 	{
+		
+		
 		String xparam = null;
 		if(buffer.getMode().equals(jEdit.getMode("c")))
 		{
 			xparam = "c";
+		}else if(jEdit.getBooleanProperty("clangcompletion.support_objcpp", true) && buffer.getPath().endsWith(".mm"))
+		{
+			xparam = "objective-c++";
 		}else if(buffer.getMode().equals(jEdit.getMode("objective-c")))
 		{
 			xparam = "objective-c";
