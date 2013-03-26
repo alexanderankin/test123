@@ -193,9 +193,8 @@ public class ConnectionManager extends ftp.ConnectionManager
 
 			if(connect == null )
 			{
-				Log.log(Log.DEBUG,ConnectionManager.class,
-					Thread.currentThread() +
-					": Connecting to " + info);
+				Log.log(Log.DEBUG, ConnectionManager.class, 
+					Thread.currentThread() + ": Connecting to " + info);
 				connect = new Connection(console, info);
 				connections.add(connect);
 			}

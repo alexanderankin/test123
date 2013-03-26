@@ -101,6 +101,14 @@ public class Shell extends console.Shell {
 
 		if (cs.conn == null)  try {
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(cs.getPath());
+			if (info == null || cs.getPath().equals("")) {
+				Buffer b = console.getView().getEditPane().getBuffer( );				
+				String p = b.getPath();			
+				// check current buffer
+				if (p.startsWith("sftp:"))
+					cs.setPath(MiscUtilities.getParentOfPath(p), true);
+			}
+			info = ConnectionManager.getConnectionInfo(cs.getPath());
 			if (info == null) {
 				Log.log(Log.WARNING, this, "Unable to get connectioninfo for: " + cs.getPath());
 				printPrompt(console, output);
@@ -118,14 +126,6 @@ public class Shell extends console.Shell {
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
 		}
-		if (cs.getPath().equals(""))  // no path from FSB - what about current buffer?
-		{
-			Buffer b = console.getView().getEditPane().getBuffer( );
-			String p = b.getPath();			
-			if (p.startsWith("sftp:"))
-				cs.setPath(MiscUtilities.getParentOfPath(p), true);
-		}
-		
 		boolean consumed = cs.preprocess(command);
 		if (consumed) {
 			printPrompt(console, output);

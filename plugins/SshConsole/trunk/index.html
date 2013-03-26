@@ -178,7 +178,7 @@ feel like doing them myself. Any volunteers? </p>
 
 <ul>
 
-<li> Check the FSB to determine if a "cd" is given a valid directory, and don't
+<li> Check the VFS to determine if a "cd" is given a valid directory, and don't
 call <tt>ConsoleState.setPath()</tt> to update the sshconsole's path unless it
 is valid.</li>
 
@@ -196,9 +196,11 @@ or suggestions.
 
 <hr />
 <h2 id="history"> History </h2>
+<ul>
 <li id="v.1.0.6"> <b>Version 1.0.6</b> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.2, Console 5.1.
  <ul>
    <li> Fix #3604654: NPE when changing to invalid folder. </li>
+   <li> Fix #3604790: Initial connect when opening a project </li>
  </ul> 
  </li>
  
@@ -212,7 +214,7 @@ or suggestions.
     <li> Fix #2873889: Stop leaking connections and properly close them. </li>
     <li> Enable x11 forwarding </li>
   </ul> 
-</li>
+  </li>
 
 <li id="v.1.0.3"> <b>Version 1.0.3</b> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.0, Ftp 1.0, Console 5.0.
   <ul>
