@@ -27,17 +27,17 @@
 	</path>
 
 
-	<property name="docs-proc.target" value="none" />
+	<property name="docs-proc.target" value="userdocs" />
 
 	<!-- Generate docs with Docutils tool from http://docutils.sf.net -->
-	<!--
+	
 	<target name="userdocs">
 		<exec executable="rst2html">
-            <arg value="- -link-stylesheet" />
+            <arg value="--link-stylesheet" />
 			<arg value="README"/>
 			<arg value="index.html"/>
 		</exec>
 	</target>
-	-->
+	
 
 </project>
