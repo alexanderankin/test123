@@ -12,6 +12,7 @@
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property name="rst2html.exec" value="rst2html"/>
 	<import file="${build.support}/plugin-build.xml" />
 
     <selector id="packageFiles">
@@ -32,7 +33,7 @@
 	<!-- Generate docs with Docutils tool from http://docutils.sf.net -->
 	
 	<target name="userdocs">
-		<exec executable="rst2html">
+		<exec executable="${rst2html.exec}">
             <arg value="--link-stylesheet" />
 			<arg value="README"/>
 			<arg value="index.html"/>
