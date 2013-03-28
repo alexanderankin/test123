@@ -216,7 +216,10 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		
 		TextArea textArea = view.getTextArea();
-		String lineText = textArea.getLineText(textArea.getCaretLine());
+		Buffer buffer = view.getBuffer();    
+		int start = view.getBuffer().getLineStartOffset(textArea.getCaretLine());
+		// get current line between the start of line and the current caret
+		String lineText = buffer.getText(start,textArea.getCaretPosition() - start );
 		Matcher matcher = incPattern.matcher(lineText); 
 		if(!matcher.find())
 		{
@@ -227,32 +230,29 @@ public class ClangCompletionProvider implements CompletionProvider
 		Vector<String> includes = properties.get(ProjectsOptionPane.INCLUDES);
 		if(includes == null)
 		{
-			return false;
+			return true;
 		}
 		
+		// remove include " from the start of line
 		lineText = lineText.substring(matcher.end());
-		File f = new File(lineText);
-		String name = f.getName();
-		String parent= f.getParent();
 		
+		// check every include dir 
 		for(Iterator<String> iter = includes.iterator(); iter.hasNext();)
 		{
 			String includeRoot = iter.next();
-			File dir;
-			if(parent == null)
+			File dir = new File(includeRoot, lineText);
+			if(!dir.exists() || !dir.isDirectory() || !lineText.endsWith(File.separator))
 			{
-				dir = new File(includeRoot);
-			}else
-			{
-				dir = new File(includeRoot, parent);
+				dir = dir.getParentFile();
 			}
+			
 			if(dir.exists() && dir.isDirectory())
 			{
 				String[] list = dir.list();
 				
 				for(int j = 0; j < list.length; j++)
 				{
-					codeCompletions.add(new IncludeCompletionCandidate(name, list[j]));
+					codeCompletions.add(new IncludeCompletionCandidate( list[j]));
 				}
 			}
 		}
