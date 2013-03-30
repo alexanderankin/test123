@@ -31,6 +31,7 @@ import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
@@ -73,6 +74,21 @@ public class CompletionPopup extends org.gjt.sp.jedit.gui.CompletionPopup implem
 	{
 		super( view, location );
 		this.view = view;
+
+		/* Dirty hack to enable using TAB to accept completion.
+		 * Normally, TAB isn't passed to the JList's key handler for it is used for component traversal.
+		 * See the "Version note" at http://docs.oracle.com/javase/tutorial/uiswing/events/keylistener.html
+		 * TODO Remove when https://sourceforge.net/tracker/?func=detail&aid=3609550&group_id=588&atid=100588 fixed
+		 */
+		try {
+			final Field listField = org.gjt.sp.jedit.gui.CompletionPopup.class.getDeclaredField("list");
+			listField.setAccessible(true);
+			final JList list = (JList) listField.get(this);
+			list.setFocusTraversalKeysEnabled(false); // enable use of TAB as a normal key
+		} catch (Exception e) {
+			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.constructor: failed to " +
+					"disable focus traversal on the list: " + e);
+		}
 	} //}}}
 
 	//####################### METHODS USED BY THE PLUGIN ###########################################
