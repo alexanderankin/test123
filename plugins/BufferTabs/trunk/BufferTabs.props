@@ -35,6 +35,7 @@ buffertabs.popup=\
     buffertabs.insert-name \
     buffertabs.insert-path \
     - \
+    Files/Browse_Buffer_Directory \
     buffertabs.copy-name \
     buffertabs.copy-path \
     - \
