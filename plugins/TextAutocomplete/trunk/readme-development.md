@@ -30,9 +30,9 @@ Create a directory for the plugin with build properties pointing to `build-suppo
 
 The content of `plugins/build.properties` should be (adjust as needed):
 
+    # Properties needed for builds:
     build.support=../../build-support
     junit.jar=${user.home}/.m2/repository/junit/junit/4.11/junit-4.11.jar
-
 
 Check out the plugin itself:
 
