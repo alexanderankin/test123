@@ -36,6 +36,7 @@
       <li><a href="#Change">Change Log</a></li>
       <li><a href="#Overview">Overview of the Classes</a></li>
       <li><a href="#Working">How does it work?</a></li>
+      <li><a href="#SourceCode">Source code</a></li>
     </ul>
   </li>
   <li><a href="#License">License</a></li>
@@ -412,6 +413,10 @@ Troubleshooting &gt; Activity Log. To disable the logging again, execute:</p>
 
 <h3><a name="Change">Change Log</a></h3>
 
+<h4>Version 1.0.0, April 2013</h4>
+
+Build fixes for jEdit 5.0.0, improved docs.
+
 <h4>Version 0.9.9, August 2009</h4>
 
 <p>This is a minor enhancement release.</p>
@@ -530,6 +535,16 @@ Observer/Observable mechanism. It may then display (or dispose) a list of
 completions. When the list of completions is displayed, it intercepts special
 keys being pressed (such as Enter, Escape...) and reacts according to its
 setting (hide itself, insert the selected completion...).</p>
+
+<h3><a name="SourceCode">Source code</a></h3>
+
+The source code may be retrieved (as of 3/2013) via
+
+<pre><code>
+    svn co https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/TextAutocomplete/trunk TextAutocomplete
+</code></pre>
+
+See <code>readme-development.md</code> in the plugin's directory for more information.
 
 <h2><a name="License">License</a></h2>
 
