@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2004 Slava Pestov
+ * Copyright (C) 2003-2012 Slava Pestov, Dale Anson, Martin Raspe
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

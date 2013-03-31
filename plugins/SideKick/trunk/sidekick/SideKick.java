@@ -3,8 +3,8 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2005 Slava Pestov 
- * Copyright (c) 2006, 2009 by the jEdit developer team
+ * Copyright (C) 2003-2012 Slava Pestov, Dale Anson, Alan Ezust,
+ *    Matthieu Casanova, Jarek Czekalski, Shlomy Reinstein 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

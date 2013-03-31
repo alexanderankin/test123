@@ -211,7 +211,7 @@
 
     <para>
   The SideKick plugin adds a new <quote>sidekick</quote> fold handler that
-  folds the buffer according to the structure tree. See the jEdit user's guide
+  folds the buffer according to the sidekick tree. See the jEdit user's guide
   for general details about folding.
 </para>
 
@@ -254,7 +254,7 @@
   property file:
  </para>
 
-      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 0.1</programlisting>
+      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 1.4</programlisting>
 
       <para>
   Note that you must replace <replaceable>n</replaceable> with the
@@ -314,8 +314,8 @@
       </itemizedlist>
 
       <para>
-  For example, the XML plugin, which used to provide two <classname>SideKickParser</classname>
-  implementations, had these properties:
+  For example, the XML plugin, which provides many <classname>SideKickParser</classname>
+  implementations, has these properties:
  </para>
 
       <programlisting>sidekick.parser.xml.label=XML
@@ -334,8 +334,8 @@ mode.velocity.sidekick.parser=html</programlisting>
 
     </sect1>
 
-    <sect1 id="implement-structure-tree">
-      <title>Implementing a structure tree</title>
+    <sect1 id="implement-sidekick-parser">
+      <title>Implementing a Sidekick parser</title>
 
       <para>
  The <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
