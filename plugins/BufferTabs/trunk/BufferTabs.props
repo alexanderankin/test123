@@ -36,8 +36,8 @@ buffertabs.popup=\
     buffertabs.insert-path \
     - \
     Files/Browse_Buffer_Directory \
-    buffertabs.copy-name \
-    buffertabs.copy-path \
+    Files/Copy_Name_to_Clipboard \
+    Files/Copy_Path_to_Clipboard \
     - \
     global-bufferset \
     view-bufferset \
@@ -47,8 +47,6 @@ buffertabs.popup=\
 # Actions
 buffertabs.insert-name.label=Insert File Name
 buffertabs.insert-path.label=Insert File Path
-buffertabs.copy-name.label=Copy File Name
-buffertabs.copy-path.label=Copy File Path
 buffertabs.closeall-except-active.label=Close all Others
 buffertabs.toggle-docks.label=Toggle Docks
 # Default values
