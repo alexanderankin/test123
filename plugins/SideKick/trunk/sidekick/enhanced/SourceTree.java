@@ -2,7 +2,7 @@
 * SourceTree.java
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2005 by Martin Raspe
+* Copyright (C) 2005-2011 by Martin Raspe, Dale Anson, Shlomy Reinstein
 * (hertzhaft@biblhertz.it)
 *
 * This program is free software; you can redistribute it and/or
@@ -60,7 +60,7 @@ import sidekick.SideKickTree;
 //}}}
 
 /**
- * @author     Martin Raspe
+ * @author     Martin Raspe, Dale Anson, Shlomy Reinstein
  * @created    Oct 15, 2005
  * @modified   $Id$
  * @version    $Revision$
