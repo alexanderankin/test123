@@ -258,8 +258,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 				);
 
 		locationChoice.setSelectedItem(
-				getLocationProperty("buffertabs.location", "bottom")
-				);
+			getLocationProperty("buffertabs.location"));
 
 		doubleClickCB.setSelected(
 				jEdit.getBooleanProperty("buffertabs.close-tab-on.double-left-click", true)
@@ -349,20 +348,12 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 		return jEdit.getBooleanProperty(BUFFERTABS_WRAP, true);
 	}
 
-	public static String getLocationProperty(String prop, String defaultVal) {
+	public static String getLocationProperty(String prop) {
 		String location = jEdit.getProperty(prop);
 		if (location == null) {
-			location = defaultVal;
+			location = "top";
 		}
 		location = location.toLowerCase();
-		if (!(     location.equals("top")
-				|| location.equals("bottom")
-				|| location.equals("left")
-				|| location.equals("right")
-				)
-				) {
-			location = defaultVal;
-		}
 		return location;
 	}
 
