@@ -38,6 +38,8 @@ import java.util.regex.Pattern;
 
 //{{{  jEdit
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.testframework.EBFixture.MessageListener;
 
 //}}}
 
@@ -127,7 +129,7 @@ public class TestUtils {
 					}
 				};
 		runJeditThread.start();
-		jEditFrame = WindowFinder.findFrame( View.class ).withTimeout( 40000 ).using( robot );
+		jEditFrame = WindowFinder.findFrame( View.class ).withTimeout( 120000 ).using( robot );
     }
 
     public static void tearDownNewjEdit() {
@@ -261,6 +263,8 @@ public class TestUtils {
      */
     public static Buffer openFile( final String filename ) {
         final View view = jEditFrame().targetCastedTo( View.class );
+		MessageListener listen = new MessageListener();
+		listen.registerForMessage(EBFixture.bufferLoadedMessage(filename));
         try {
             SwingUtilities.invokeAndWait(
                 new Runnable() {
@@ -274,10 +278,7 @@ public class TestUtils {
             System.err.println( e );
         }
 
-        try {
-            Thread.sleep( 1000 );
-        }
-        catch ( InterruptedException ie ) {}
+        listen.waitForMessage(3000);
         return view.getBuffer();
     }
 
@@ -299,11 +300,7 @@ public class TestUtils {
         catch ( Exception e ) {
             System.err.println( e );
         }
-
-        try {
-            Thread.sleep( 1000 );
-        }
-        catch ( InterruptedException ie ) {}
+        
         return view.getBuffer();
     }
 
@@ -575,14 +572,43 @@ public class TestUtils {
 	}
 	
 
+	/**
+	 * insert text in buffer at pos in Event Dispatch Thread.
+	 * Makes tests a bit less cluttered.
+	 * 
+	 * @param buffer	buffer to insert to
+	 * @param pos		position to insert at
+	 * @param text		text to insert
+	 */
+	public static void insertInEDT(final Buffer buffer, final int pos, final String text){
+		GuiActionRunner.execute(new GuiTask(){
+		protected void executeInEDT(){
+			buffer.insert(pos,text);
+		}});
+		
+	}
+		
     /**
      * @return the plugin options dialog
      */
     public static PluginOptionsFixture pluginOptions(){
     	jEditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
 		
-		DialogFixture optionsDialog = WindowFinder.findDialog(org.gjt.sp.jedit.options.PluginOptions.class).withTimeout(5000).using(robot());
+		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptionsMatcher.INSTANCE).withTimeout(5000).using(robot());
 		Dialog target = optionsDialog.targetCastedTo(Dialog.class);
 		return new PluginOptionsFixture(robot(),target);
+    }
+    
+    public static class PluginOptionsMatcher extends GenericTypeMatcher<org.gjt.sp.jedit.gui.EnhancedDialog>{
+    	public static final PluginOptionsMatcher INSTANCE = new PluginOptionsMatcher();
+    	
+    	private PluginOptionsMatcher(){
+    		super(org.gjt.sp.jedit.gui.EnhancedDialog.class,true);
+    	}
+    	
+    	protected boolean isMatching(org.gjt.sp.jedit.gui.EnhancedDialog maybe){
+    		return "org.gjt.sp.jedit.options.PluginOptions".equals(maybe.getClass().getName())
+    				|| "org.jedit.options.CombinedOptions".equals(maybe.getClass().getName());
+    	}
     }
 }

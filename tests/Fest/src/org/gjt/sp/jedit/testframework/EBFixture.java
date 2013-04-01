@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 
 /**
@@ -79,6 +80,24 @@ public class EBFixture{
 		MessageListener listen = new MessageListener();
 		listen.registerForMessage(messageOfClassCondition(clazz));
 		listen.waitForMessage(timeout);
+	}
+	
+	/**
+	 * condition waiting for buffer fully loaded message
+	 * @param	path	path of buffer to wait for
+	 * @return	an EBCondition returning true when the message is BUFFER_LOADED for path
+	 */
+	public static EBCondition bufferLoadedMessage(final String path){
+		return new EBCondition() {
+			
+			@Override
+			public boolean matches(EBMessage message) {
+				if(!(message instanceof BufferUpdate)) return false;
+				BufferUpdate bu = (BufferUpdate) message;
+				return bu.getWhat() == BufferUpdate.LOADED 
+						&& bu.getBuffer().getPath().equals(path);
+			}
+		};
 	}
 	
 	/**

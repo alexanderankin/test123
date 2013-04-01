@@ -1,15 +1,22 @@
 /*
- * OptionsFixture.java
+ * PluginOptionsFixture.java
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009-2010 Eric Le Lay
+ * Copyright (C) 2009-2012 Eric Le Lay
  *
- * The XML plugin is licensed under the GNU General Public License, with
- * the following exception:
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
  *
- * "Permission is granted to link this code with software released under
- * the Apache license version 1.1, for example used by the Xerces XML
- * parser package."
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.gjt.sp.jedit.testframework;
 
@@ -51,7 +58,7 @@ import static org.gjt.sp.jedit.testframework.TestUtils.*;
 import static org.gjt.sp.jedit.testframework.EBFixture.*;
 
 /**
- * simple wrapper arround Plugin Options.
+ * simple wrapper around Plugin Options.
  * OK() and Apply() wait until the properties have propagated.
  * $Id$
  */
@@ -67,7 +74,7 @@ public class PluginOptionsFixture extends DialogFixture{
      * @return an option pane, ensuring that it's visible
      */
     public JPanelFixture optionPane(String path, String name){
-		TestUtils.selectPath(this.tree(),"Plugins/"+path);
+		TestUtils.selectPath(this.tree(),"/"+path);
 
 		JPanelFixture pane = this.panel(name);
 		pane.requireVisible();
