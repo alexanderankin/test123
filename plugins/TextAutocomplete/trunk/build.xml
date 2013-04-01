@@ -22,6 +22,7 @@
      - leverage jEdit's build-support project and its build file as much as possible
      - the path to it is expected to be defined in the build properties
      -->
+    <property name="docs-proc.target"  value="none"/>
     <property file="../build.properties"/>
     <property name="jedit.jars.dir" value="${jedit.user.home}/jars" />
     <import file="${build.support}/plugin-build.xml"/>
