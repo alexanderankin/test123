@@ -112,7 +112,7 @@ public class BufferTabsPlugin extends EditPlugin
 	private static void propertiesChanged()
 	{
 		final String location = BufferTabsOptionPane
-			.getLocationProperty("buffertabs.location", "bottom");
+			.getLocationProperty("buffertabs.location");
 
 		jEdit.visit(new JEditVisitorAdapter()
 		{
@@ -154,7 +154,7 @@ public class BufferTabsPlugin extends EditPlugin
 
 		BufferTabs tabs = new BufferTabs(editPane);
 		tabs.setTabPlacement(BufferTabsOptionPane.getLocationProperty(
-			"buffertabs.location", "bottom"));
+			"buffertabs.location"));
 		tabs.start();
 		container.add(tabs);
 		tabsMap.put(editPane, tabs);
