@@ -21,6 +21,7 @@ options.buffertabs.code=new buffertabs.BufferTabsOptionPane();
 buffertabs.enable=true
 # Hide the regular buffer switcher
 view.showBufferSwitcher=false
+# default location for tabs (in relation to editpane)
 buffertabs.location=top
 
 # Menu
@@ -37,12 +38,7 @@ buffertabs.popup=\
     - \
     Files/Browse_Buffer_Directory \
     Files/Copy_Name_to_Clipboard \
-    Files/Copy_Path_to_Clipboard \
-    - \
-    global-bufferset \
-    view-bufferset \
-    editpane-bufferset
-
+    Files/Copy_Path_to_Clipboard
 
 # Actions
 buffertabs.insert-name.label=Insert File Name
