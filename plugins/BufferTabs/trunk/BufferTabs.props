@@ -33,10 +33,11 @@ buffertabs.popup=\
 	close-all \
     closeall-except-active \
 	- \
+    Files/Browse_Buffer_Directory \
+    toggle-dock-areas \
+    - \
     buffertabs.insert-name \
     buffertabs.insert-path \
-    - \
-    Files/Browse_Buffer_Directory \
     Files/Copy_Name_to_Clipboard \
     Files/Copy_Path_to_Clipboard
 

@@ -5,7 +5,8 @@ $Date$
 
 Version 1.2.4.  Requires JDK 1.6, jEdit 4.5.x
     French and German Localization
-
+    Popup menu updates and cleanup. 
+    
 Version 1.2.3.  Requires JDK 1.6, jEdit 4.5.x
     Automatically disables the built-in buffer Selector when plugin is loaded.
     BufferTabs default location changed to top. Enabled by default. 
@@ -35,7 +36,7 @@ Version 0.8.3. Requires JDK 1.5, jEdit 4.3pre12
 Version 0.8.3. Requires JDK 1.3, jEdit 4.2
     change the options panel. Add option for mouse actions Thanks to Dennis Benzinger
     Added menu for closing all buffers /all buffers except current
-    Added menu for toggle docks
+    Added action for toggle docks
     Fix: [1176564] BufferTabs 0.8.2: wrong tab highlighted with multiple views
 
 Version 0.8.2. Requires JDK 1.3, jEdit 4.2
