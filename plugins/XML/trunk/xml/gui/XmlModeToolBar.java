@@ -35,6 +35,7 @@ public class XmlModeToolBar extends JPanel {
 
     private void installComponents() {
         choices = new JComboBox();
+        choices.setName("sort");
         choices.setEditable(false);
 
         JLabel sortLabel = new JLabel(jEdit.getProperty("options.sidekick.xml.sortBy", "Sort by:"));
