@@ -79,7 +79,6 @@ public class BufferWatcher implements ClangBuilderListener
 			builder.add("-fno-caret-diagnostics");
 			builder.add("-fdiagnostics-print-source-range-info");
 			builder.add("-fno-caret-diagnostics");
-			builder.add("-mios-simulator-version-min=4.3");// TODO: HACK code here to compile uikit
 			builder.add(path);
 			
 			// Do not check header files because in most case clang cannot compile
