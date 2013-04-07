@@ -23,14 +23,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -59,6 +62,7 @@ import org.w3c.dom.ls.LSInput;
 
 import static xml.Debug.*;
 import xml.PathUtilities;
+import xml.gui.InvokeAndWait;
 // }}}
 
 /**
@@ -590,26 +594,45 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		if(newSystemId == null)
 			return null;
 
-		Buffer buf = jEdit.getBuffer(PathUtilities.urlToPath(newSystemId));
+		final Buffer buf = jEdit.getBuffer(PathUtilities.urlToPath(newSystemId));
 		if(buf != null)
 		{
-			if(buf.isPerformingIO())
-				VFSManager.waitForRequests();
 			if(DEBUG_RESOLVER)Log.log(Log.DEBUG, getClass(), "Found open buffer for " + newSystemId);
-			InputSource source = new InputSource(publicId);
+			final InputSource source = new InputSource(publicId);
 			//use the original systemId
 			source.setSystemId(systemId);
+
 			try
 			{
-				buf.readLock();
-				source.setCharacterStream(new StringReader(buf.getText(0,
-					buf.getLength())));
+				InvokeAndWait.withTimeouts(new Runnable()
+					{
+						public void run()
+						{
+							if(buf.isPerformingIO())
+							{
+								VFSManager.waitForRequests();
+							}
+							try
+							{
+								buf.readLock();
+								source.setCharacterStream(new StringReader(buf.getText(0,
+									buf.getLength())));
+							}
+							finally
+							{
+								buf.readUnlock();
+							}
+						}
+					}
+					, 5000, 30000);
+
+				return source;
 			}
-			finally
+			catch (InvocationTargetException e)
 			{
-				buf.readUnlock();
+				throw new IOException("Error getting buffer's contents for "+newSystemId,
+						e.getCause());
 			}
-			return source;
 		}
 		else if(newSystemId.startsWith("file:")
 			|| newSystemId.startsWith("jar:file:")
@@ -647,33 +670,49 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			// use a final array to pass a mutable value from the
 			// invokeAndWait() call
 			final Object[] sessionArray = new Object[1];
-			Runnable run = new Runnable()
-			{
-				public void run()
-				{
-					View view = jEdit.getActiveView();
-					if (ALWAYS.equals(getNetworkMode())
-                        || (ASK.equals(getNetworkMode())
-                            && showDownloadResourceDialog(view,_newSystemId))
-                        )
-					{
-						sessionArray[0] = vfs.createVFSSession(
-							_newSystemId,view);
-					}
-				}
-			};
 
-			if(SwingUtilities.isEventDispatchThread())
-				run.run();
-			else
+			final View view = jEdit.getActiveView();
+
+			if (ALWAYS.equals(getNetworkMode()))
 			{
-				try
+				// same code as in the runnable
+				// don't got to the EDT if there's no need to.
+				sessionArray[0] = vfs.createVFSSession(
+						_newSystemId,view);
+
+			}
+			else if(ASK.equals(getNetworkMode())
+						&& ! isIgnoreDownloadResource(_newSystemId))
+			{
+
+				Runnable run = new Runnable()
 				{
-					SwingUtilities.invokeAndWait(run);
-				}
-				catch(Exception e)
+					public void run()
+					{
+						if (showDownloadResourceDialog(view,_newSystemId))
+						{
+							sessionArray[0] = vfs.createVFSSession(
+								_newSystemId,view);
+						}
+					}
+				};
+
+				if(SwingUtilities.isEventDispatchThread())
+					run.run();
+				else
 				{
-					throw new RuntimeException(e);
+					try
+					{
+						if(!InvokeAndWait.withTimeouts(run, 5000, 0))
+						{
+							Log.log(Log.WARNING, Resolver.class, "Possible deadlock has been prevented (timeout); retry parsing later...");
+							throw new IOException(jEdit.getProperty("xml.network.error"));
+						}
+					}
+					catch(InvocationTargetException e)
+					{
+						Log.log(Log.ERROR, Resolver.class, "Error asking user to download ?",e.getCause());
+					}
 				}
 			}
 			Object session = sessionArray[0];
@@ -829,12 +868,13 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		return localFile;
 	} //}}}
 
+	private boolean isIgnoreDownloadResource(String systemId){
+		Entry e = new Entry(Entry.SYSTEM,systemId,null);
+		return resourceCache.get(e) == IGNORE;
+	}
+
 	private boolean showDownloadResourceDialog(Component comp, String systemId)
 	{
-		Entry e = new Entry(Entry.SYSTEM,systemId,null);
-		if(resourceCache.get(e) == IGNORE)
-			return false;
-
 		int result = GUIUtilities.confirm(comp,"xml.download-resource",
 			new String[] { systemId },JOptionPane.YES_NO_OPTION,
 			JOptionPane.QUESTION_MESSAGE);
@@ -842,6 +882,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			return true;
 		else
 		{
+			Entry e = new Entry(Entry.SYSTEM,systemId,null);
 			resourceCache.put(e,IGNORE);
 			return false;
 		}
@@ -963,5 +1004,5 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		// not used in jEdit
 		return null;
 	}
-
+	
 }
