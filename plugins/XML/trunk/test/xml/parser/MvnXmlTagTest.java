@@ -92,7 +92,7 @@ public class MvnXmlTagTest{
 			
 			FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
 			JTreeFixture sourceTree = sidekick.tree();
-			
+			Pause.pause(1000);
 			// inspect the tree: project has been renamed to 'MyArtifact',
 			// the name of the project.
 			TestUtils.selectPath(sourceTree,",MyArtifact,properties");
