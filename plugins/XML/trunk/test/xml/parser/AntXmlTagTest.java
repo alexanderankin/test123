@@ -1,5 +1,5 @@
 /*
-* MvnXmlTagTest.java
+* AntXmlTagTest.java
 * :folding=explicit:collapseFolds=1:
 *
 * Copyright (C) 2012 Eric Le Lay
@@ -45,6 +45,7 @@ import org.fest.swing.exception.ComponentLookupException;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JListFixture;
 import org.fest.swing.fixture.JTreeFixture;
+import org.fest.swing.junit.testcase.FestSwingJUnitTestCase;
 import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
@@ -63,9 +64,10 @@ import xml.XmlPlugin;
 
 
 /**
-* $Id$
-*/
-public class MvnXmlTagTest{
+ * Rename target and project to target.name and project.name
+ * $Id$
+ */
+public class AntXmlTagTest extends FestSwingJUnitTestCase {
 	private static File testData;
     
     @BeforeClass
@@ -82,7 +84,7 @@ public class MvnXmlTagTest{
     
     @Test
     public void testTree(){
-    	File xml = new File(testData,"maven/pom.xml");
+    	File xml = new File(testData,"../build.xml");
     	
     	final Buffer b = openParseAndWait(xml.getPath());
     	
@@ -93,9 +95,12 @@ public class MvnXmlTagTest{
 			FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
 			JTreeFixture sourceTree = sidekick.tree();
 			
-			// inspect the tree: project has been renamed to 'MyArtifact',
-			// the name of the project.
-			TestUtils.selectPath(sourceTree,",MyArtifact,properties");
+			// inspect the tree: 
+			//   - project has been renamed to 'XML',
+			//     the name of the project;
+			//   - first target has been renamed to 'build.prepare',
+			//     the name of the target.
+			TestUtils.selectPath(sourceTree,",XML,build.prepare");
     		sidekick.close();
     		
     	}finally{
@@ -105,32 +110,52 @@ public class MvnXmlTagTest{
     }
     
     @Test
-    public void testComplete(){
-    	File xml = new File(testData,"maven/pom.xml");
+    public void testSort(){
+    	File xml = new File(testData,"../build.xml");
     	
     	final Buffer b = openParseAndWait(xml.getPath());
     	
     	try{
     		
-	    	gotoPositionAndWait(501);
-			GuiActionRunner.execute(new GuiTask(){
-					protected void executeInEDT(){
-						view().getTextArea().setSelectedText("<");
-					}
-			});
+			action("sidekick-tree");
 			
-			action("sidekick-complete",1);
+			FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
+			JTreeFixture sourceTree = sidekick.tree();
+
+			// mixed target and selector
+			assertEquals("build.prepare", sourceTree.valueAt(12));
+			assertEquals("selector", sourceTree.valueAt(13));
+
+			sidekick.comboBox("sort").selectItem("Type");
+			sourceTree.toggleRow(1);
+			// last nodes are the targets
+			String[] targets = {
+				"build.prepare", "ant-complete", "jar","dist", "javacc", "tags",
+				"test", "test-all"
+			};
+			int count = sourceTree.target.getRowCount();
+			for(int i=count-1;i>count - targets.length;i--){
+				assertEquals(targets[targets.length - count + i], sourceTree.valueAt(i));
+			}
+
+			sidekick.comboBox("sort").selectItem("Name");
+			sourceTree.toggleRow(1);
 			
-			JWindowFixture completion;
+			Pause.pause(5000);
+			// a target target first
+			assertEquals("ant-complete", sourceTree.valueAt(2));
 			
-			completion = XMLTestUtils.completionPopup();
-			completion.requireVisible();
-			assertThat(XmlPluginTest.xmlListContents(completion.list()))
-			.contains("description");
+			sidekick.close();
 
     	}finally{
     		// discard changes
     		TestUtils.close(view(), b);
     	}
     }
+
+	@Override
+	protected void onSetUp() {
+		// TODO Auto-generated method stub
+		
+	}
 }
