@@ -193,6 +193,10 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				panelStack.raise(internalName);
 				validateTree();
 			}
+			// Fix up horizontal scrollbar
+			JScrollPane sp = (JScrollPane) GUIUtilities.getComponentParent(this, JScrollPane.class);
+			if ((sp != null) && (sp.getHorizontalScrollBar() != null))
+				sp.getHorizontalScrollBar().setValue(0);
 		}
 	} //}}}
 
