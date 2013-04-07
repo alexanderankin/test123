@@ -2,16 +2,16 @@ package xml;
 
 import java.util.Comparator;
 import java.util.Enumeration;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import sidekick.Asset;
-import sidekick.IAsset;
+import org.gjt.sp.jedit.View;
+
 import sidekick.ExpansionModel;
+import sidekick.IAsset;
 import xml.parser.MvnXmlTag;
 import xml.parser.RenamedXmlTag;
-
-import org.gjt.sp.jedit.View;
 
 /**
  * Special version of XmlParsedData for Maven pom.xml files.  Pom files have very
@@ -95,12 +95,12 @@ public class MvnXmlParsedData extends XmlParsedData {
                 int sortBy = getSortBy();
                 switch (sortBy) {                // NOPMD, no breaks are necessary here
                     case SORT_BY_LINE:
-                        Integer my_line = new Integer(((MvnXmlTag)tna.getUserObject()).getStart().getOffset());
-                        Integer other_line = new Integer(((MvnXmlTag)tnb.getUserObject()).getStart().getOffset());
+                        Integer my_line = new Integer(((RenamedXmlTag)tna.getUserObject()).getStart().getOffset());
+                        Integer other_line = new Integer(((RenamedXmlTag)tnb.getUserObject()).getStart().getOffset());
                         return my_line.compareTo(other_line) * (sortDown ? 1 : -1);
                     case SORT_BY_TYPE:
-                        String my_on = ((MvnXmlTag)tna.getUserObject()).getName().toLowerCase();
-                        String other_on = ((MvnXmlTag)tnb.getUserObject()).getName().toLowerCase();
+                        String my_on = ((RenamedXmlTag)tna.getUserObject()).getName().toLowerCase();
+                        String other_on = ((RenamedXmlTag)tnb.getUserObject()).getName().toLowerCase();
                         return my_on.compareTo(other_on) * (sortDown ? 1 : -1);
                     case SORT_BY_NAME:
                     default:
@@ -110,8 +110,8 @@ public class MvnXmlParsedData extends XmlParsedData {
     
             private int compareNames(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
                 // sort by name
-                String my_name = ((MvnXmlTag)tna.getUserObject()).getShortString().toLowerCase();
-                String other_name = ((MvnXmlTag)tnb.getUserObject()).getShortString().toLowerCase();
+                String my_name = ((RenamedXmlTag)tna.getUserObject()).getShortString().toLowerCase();
+                String other_name = ((RenamedXmlTag)tnb.getUserObject()).getShortString().toLowerCase();
                 return my_name.compareTo(other_name) * (sortDown ? 1 : -1);
             }
         } ;
