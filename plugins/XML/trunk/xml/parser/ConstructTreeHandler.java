@@ -109,42 +109,35 @@ class ConstructTreeHandler extends DefaultHandler2 implements ContentHandler
 		if(!buffer.getPath().equals(currentURI))
 			return;
 
-		buffer.readLock();
+		// getting a read lock is not necessary since it's locked in Sidekick.parse
 
-		try
+		int line = Math.min(buffer.getLineCount() - 1,
+			loc.getLineNumber() - 1);
+		int column = loc.getColumnNumber() - 1;
+		int offset = Math.min(text.length() - 1,
+			buffer.getLineStartOffset(line)
+			+ column - 1);
+
+		offset = findTagStart(offset);
+		Position pos = buffer.createPosition(offset);
+
+		XmlTag newTag = createTag(qName, namespaceURI==null ? "" : namespaceURI, pos, attrs);
+		newTag.namespaceBindings = declaredPrefixes;
+		declaredPrefixes = null;
+		
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newTag);
+
+		if(!currentNodeStack.isEmpty())
 		{
-			int line = Math.min(buffer.getLineCount() - 1,
-				loc.getLineNumber() - 1);
-			int column = loc.getColumnNumber() - 1;
-			int offset = Math.min(text.length() - 1,
-				buffer.getLineStartOffset(line)
-				+ column - 1);
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				currentNodeStack.peek();
 
-			offset = findTagStart(offset);
-			Position pos = buffer.createPosition(offset);
-
-			XmlTag newTag = createTag(qName, namespaceURI==null ? "" : namespaceURI, pos, attrs);
-			newTag.namespaceBindings = declaredPrefixes;
-			declaredPrefixes = null;
-			
-			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newTag);
-
-			if(!currentNodeStack.isEmpty())
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					currentNodeStack.peek();
-
-				node.insert(newNode,node.getChildCount());
-			}
-			else
-				data.root.insert(newNode,0);
-
-			currentNodeStack.push(newNode);
+			node.insert(newNode,node.getChildCount());
 		}
-		finally
-		{
-			buffer.readUnlock();
-		}
+		else
+			data.root.insert(newNode,0);
+
+		currentNodeStack.push(newNode);
 	} //}}}
 	
 	private XmlTag createTag(String qname, String namespaceURI, Position pos, Attributes attrs) {
@@ -179,30 +172,23 @@ class ConstructTreeHandler extends DefaultHandler2 implements ContentHandler
 		if(loc.getLineNumber() == -1)
 			return;
 
-		buffer.readLock();
+		// getting a read lock is not necessary since it's locked in Sidekick.parse
 
-		try
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+			currentNodeStack.peek();
+		XmlTag tag = (XmlTag)node.getUserObject();
+		if(tag.getName().equals(qName))
 		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-				currentNodeStack.peek();
-			XmlTag tag = (XmlTag)node.getUserObject();
-			if(tag.getName().equals(qName))
-			{
-				int line = Math.min(buffer.getLineCount() - 1,
-					loc.getLineNumber() - 1);
-				int column = loc.getColumnNumber() - 1;
-				int offset = Math.min(buffer.getLength(),
-					buffer.getLineStartOffset(line)
-					+ column);
+			int line = Math.min(buffer.getLineCount() - 1,
+				loc.getLineNumber() - 1);
+			int column = loc.getColumnNumber() - 1;
+			int offset = Math.min(buffer.getLength(),
+				buffer.getLineStartOffset(line)
+				+ column);
 
-				tag.setEnd(buffer.createPosition(offset));
-				tag.empty = empty;
-				currentNodeStack.pop();
-			}
-		}
-		finally
-		{
-			buffer.readUnlock();
+			tag.setEnd(buffer.createPosition(offset));
+			tag.empty = empty;
+			currentNodeStack.pop();
 		}
 
 		empty = false;
