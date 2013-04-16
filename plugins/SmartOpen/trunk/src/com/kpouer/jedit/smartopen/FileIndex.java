@@ -62,6 +62,7 @@ import org.gjt.sp.util.ProgressObserver;
  */
 public class FileIndex
 {
+	private static final Pattern DOTSPLIT = Pattern.compile("\\.");
 	private static final Pattern CAMELCASE = Pattern.compile("(?<!^)(?=[A-Z])");
 	private Directory directory;
 	private final Object LOCK = new Object();
@@ -82,13 +83,16 @@ public class FileIndex
 		List<String> l = new ArrayList<String>();
 		try
 		{
-			String[] split = CAMELCASE.split(s);
-			StringBuilder builder = new StringBuilder(s.length() + split.length + 2);
-			for (int i = 0; i < split.length; i++)
+			String[] dotSplit = DOTSPLIT.split(s);
+			StringBuilder builder = new StringBuilder(500);
+			for (String token : dotSplit)
 			{
-				builder.append(split[i]).append('*');
+				String[] split = CAMELCASE.split(token);
+				for (int i = 0; i < split.length; i++)
+				{
+					builder.append(split[i]).append('*');
+				}
 			}
-			builder.append('*');
 			Query queryCaps = new WildcardQuery(new Term("name_caps", builder.toString()));
 			s = s.toLowerCase();
 			Query queryNoCaps = new WildcardQuery(new Term("name", '*' + s + '*'));
@@ -119,6 +123,15 @@ public class FileIndex
 		}
 		return l;
 	} //}}}
+
+	private void appendCamelCaseSearch(String token, StringBuilder builder)
+	{
+		String[] split = CAMELCASE.split(token);
+		for (int i = 0; i < split.length; i++)
+		{
+			builder.append(split[i]).append('*');
+		}
+	}
 
 	//{{{ addFiles() method
 	/**
