@@ -124,15 +124,6 @@ public class FileIndex
 		return l;
 	} //}}}
 
-	private void appendCamelCaseSearch(String token, StringBuilder builder)
-	{
-		String[] split = CAMELCASE.split(token);
-		for (int i = 0; i < split.length; i++)
-		{
-			builder.append(split[i]).append('*');
-		}
-	}
-
 	//{{{ addFiles() method
 	/**
 	 * Index files.
