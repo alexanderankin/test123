@@ -40,12 +40,14 @@ public class FileItemFinder extends AbstractItemFinder<String>
 {
 	private final MyListModel model;
 	private final ListCellRenderer listCellRenderer;
+	private final FileIndex itemFinder;
 
 	//{{{ FileItemFinder constructor
-	public FileItemFinder()
+	public FileItemFinder(FileIndex itemFinder)
 	{
 		model = new MyListModel();
 		listCellRenderer = new PathCellRenderer();
+		this.itemFinder = itemFinder;
 	} //}}}
 
 	//{{{ getLabel() method
@@ -66,7 +68,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 	@Override
 	public void updateList(String s)
 	{
-		List<String> files = SmartOpenPlugin.itemFinder.getFiles(s);
+		List<String> files = itemFinder.getFiles(s);
 		model.setData(files);
 	} //}}}
 

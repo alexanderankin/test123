@@ -38,9 +38,9 @@ public class SmartOpenToolbar extends JToolBar
 	private final ItemFinderPanel<String> itemFinderPanel;
 
 	//{{{ SmartOpenToolbar constructor
-	public SmartOpenToolbar(View view)
+	public SmartOpenToolbar(View view, FileIndex itemIndex)
 	{
-		ItemFinder<String> itemFinder = new FileItemFinder();
+		ItemFinder<String> itemFinder = new FileItemFinder(itemIndex);
 		itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
 		Dimension maximumSize = itemFinderPanel.getMaximumSize();
 		itemFinderPanel.setMaximumSize(new Dimension(500, maximumSize.height));
