@@ -102,7 +102,7 @@ public abstract class AbstractIndex
 					IndexWriter.unlock(directory);
 				}
 			}
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_41, getAnalyzer());
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_42, getAnalyzer());
 			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)

@@ -38,12 +38,12 @@ public class AnalyzerFactory
 
 	static
 	{
-		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_41));
-		analyzers.put("Simple", new SimpleAnalyzer(Version.LUCENE_41));
+		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_42));
+		analyzers.put("Simple", new SimpleAnalyzer(Version.LUCENE_42));
 		analyzers.put("Java identifier", new SourceCodeAnalyzer());
-		analyzers.put("Whitespace", new WhitespaceAnalyzer(Version.LUCENE_41));
+		analyzers.put("Whitespace", new WhitespaceAnalyzer(Version.LUCENE_42));
 		analyzers.put("Keyword", new KeywordAnalyzer());
-		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_41));
+		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_42));
 	}
 
 	static void dispose()

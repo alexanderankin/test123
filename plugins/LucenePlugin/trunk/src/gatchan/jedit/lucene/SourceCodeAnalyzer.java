@@ -38,7 +38,7 @@ public class SourceCodeAnalyzer extends Analyzer
 	{
 		SourceCodeTokenizer(Reader input)
 		{
-			super(Version.LUCENE_41, input);
+			super(Version.LUCENE_42, input);
 		}
 
 		@Override
