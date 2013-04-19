@@ -22,6 +22,7 @@
 package com.kpouer.jedit.smartopen.indexer;
 
 //{{{ Imports
+import com.kpouer.jedit.smartopen.FileIndex;
 import com.kpouer.jedit.smartopen.SmartOpenPlugin;
 import org.gjt.sp.util.Task;
 import projectviewer.vpt.VPTProject;
@@ -32,19 +33,19 @@ import projectviewer.vpt.VPTProject;
  */
 public class IndexProjectTask extends Task
 {
-	private final VPTProject project;
+	private final FileIndex itemFinder;
 
 	//{{{ IndexProjectTask constructor
-	public IndexProjectTask(VPTProject project)
+	public IndexProjectTask(FileIndex itemFinder)
 	{
-		this.project = project;
+		this.itemFinder = itemFinder;
 	} //}}}
 
 	//{{{ _run() method
 	@Override
 	public void _run()
 	{
-		FileProvider projectFileList = new ProjectFileList(project);
-		SmartOpenPlugin.itemFinder.addFiles(projectFileList, this, true);
+		FileProvider projectFileList = new ProjectFileList(itemFinder.getProject());
+		itemFinder.addFiles(projectFileList, this, true);
 	} //}}}
 }

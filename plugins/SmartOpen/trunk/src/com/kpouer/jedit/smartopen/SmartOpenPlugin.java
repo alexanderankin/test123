@@ -47,6 +47,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -73,17 +74,16 @@ public class SmartOpenPlugin extends EditPlugin
 	public static FileIndex itemFinder;
 	private Timer timer;
 
-	private static VPTProject currenProject;
-
 	private boolean toolbar;
 
 	//{{{ start() method
 	@Override
 	public void start()
 	{
-		itemFinder = new FileIndex();
 		propertiesChanged(null);
-
+		itemFinder = new FileIndex(null);
+		Task task = new IndexFilesTask();
+		ThreadUtilities.runInBackground(task);
 		EditBus.addToBus(this);
 		timer = new Timer(60000, new ActionListener()
 		{
@@ -101,7 +101,7 @@ public class SmartOpenPlugin extends EditPlugin
 	{
 		if (viewToolbar.containsKey(view))
 			return;
-		SmartOpenToolbar smartToolbar = new SmartOpenToolbar(view);
+		SmartOpenToolbar smartToolbar = new SmartOpenToolbar(view,itemFinder);
 		JComponent toolBar = getViewToolbar(view);
 		toolBar.add(smartToolbar);
 		toolBar.revalidate();
@@ -189,7 +189,7 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 		else
 		{
-			currenProject = null;
+			itemFinder = new FileIndex(null);
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
 		}
@@ -198,15 +198,19 @@ public class SmartOpenPlugin extends EditPlugin
 	//{{{ indexProject() method
 	private static void indexProject(VPTProject activeProject)
 	{
-		if (StandardUtilities.objectsEqual(currenProject, activeProject))
+		if (StandardUtilities.objectsEqual(itemFinder.getProject(), activeProject))
 		{
 			return;
 		}
-		currenProject = activeProject;
-		if (currenProject != null)
+
+		if (activeProject != null)
 		{
-			IndexProjectTask task = new IndexProjectTask(currenProject);
-			ThreadUtilities.runInBackground(task);
+			itemFinder = new FileIndex(activeProject);
+			//reindex only for in-memory storage
+			//if(jEdit.getBooleanProperty("options.smartopen.memoryindex")){
+				IndexProjectTask task = new IndexProjectTask(itemFinder);
+				ThreadUtilities.runInBackground(task);
+			//}
 		}
 		else
 		{
@@ -220,7 +224,6 @@ public class SmartOpenPlugin extends EditPlugin
 	public void stop()
 	{
 		timer.stop();
-		currenProject = null;
 		EditBus.removeFromBus(this);
 		itemFinder = null;
 		removeToolbars();
@@ -233,7 +236,7 @@ public class SmartOpenPlugin extends EditPlugin
 		if (viewUpdate.getWhat() == ViewUpdate.ACTIVATED)
 		{
 			VPTProject project = ProjectViewer.getActiveProject(viewUpdate.getView());
-			if (!StandardUtilities.objectsEqual(project, currenProject))
+			if (!StandardUtilities.objectsEqual(project, itemFinder.getProject()))
 				indexProject(project);
 		}
 		if (toolbar)
@@ -265,6 +268,21 @@ public class SmartOpenPlugin extends EditPlugin
 		indexFiles();
 	} //}}}
 
+	//{{{ bufferChanging() method
+	@EditBus.EBHandler
+	public void bufferChanging(BufferChanging bc)
+	{
+		final String path = bc.getBuffer().getPath();
+		ThreadUtilities.runInBackground(new Task()
+		{
+			@Override
+			public void _run()
+			{
+				itemFinder.updateFrequency(path);
+			}
+		});
+	} //}}}
+
 	//{{{ viewerUpdate() method
 	@EditBus.EBHandler
 	public void viewerUpdate(ViewerUpdate vu)
@@ -275,7 +293,7 @@ public class SmartOpenPlugin extends EditPlugin
 			{
 				VPTNode node = vu.getNode();
 				VPTProject project = VPTNode.findProjectFor(node);
-				if (!StandardUtilities.objectsEqual(project, currenProject))
+				if (!StandardUtilities.objectsEqual(project, itemFinder.getProject()))
 					indexProject(project);
 			}
 		}
@@ -285,7 +303,7 @@ public class SmartOpenPlugin extends EditPlugin
 	@EditBus.EBHandler
 	public void projectModified(ProjectUpdate pu)
 	{
-		if (pu.getProject() == currenProject)
+		if (pu.getProject() == itemFinder.getProject())
 		{
 			if (pu.getType() == ProjectUpdate.Type.FILES_CHANGED)
 			{
@@ -318,15 +336,15 @@ public class SmartOpenPlugin extends EditPlugin
 	//{{{ smartOpenDialog() methods
 	public static void smartOpenDialog(View view, String fileName)
 	{
-		ItemFinder<String> itemFinder = new FileItemFinder();
-		ItemFinderWindow.showWindow(view, itemFinder, fileName);
+		ItemFinder<String> filetItemFinder = new FileItemFinder(itemFinder);
+		ItemFinderWindow.showWindow(view, filetItemFinder, fileName);
 	}
 
 	public static void smartOpenDialog(View view)
 	{
-		ItemFinder<String> itemFinder = new FileItemFinder();
+		ItemFinder<String> filetItemFinder = new FileItemFinder(itemFinder);
 		String wordAtCaret = getWordAtCaret(view);
-		ItemFinderWindow.showWindow(view, itemFinder, wordAtCaret);
+		ItemFinderWindow.showWindow(view, filetItemFinder, wordAtCaret);
 	} //}}}
 
 	//{{{ addToolbars() method
