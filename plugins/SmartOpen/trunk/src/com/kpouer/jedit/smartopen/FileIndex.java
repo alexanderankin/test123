@@ -37,7 +37,6 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -82,12 +81,36 @@ public class FileIndex
 	@Nullable
 	private final VPTProject project;
 
+	private IndexReader reader;
+
 	//{{{ FileIndex constructor
 	public FileIndex(@Nullable VPTProject project)
 	{
 		this.project = project;
 		directory = getDirectory();
 	} //}}}
+
+	private void setDirectory(Directory directory)
+	{
+		synchronized (LOCK)
+		{
+			if (reader != null)
+			{
+				IOUtilities.closeQuietly(reader);
+				reader = null;
+			}
+			this.directory = directory;
+		}
+	}
+
+	private void initReader() throws IOException
+	{
+		synchronized (LOCK)
+		{
+			if (reader == null)
+				reader = DirectoryReader.open(directory);
+		}
+	}
 
 	@Nullable
 	public VPTProject getProject()
@@ -108,7 +131,6 @@ public class FileIndex
 		if (s == null || s.isEmpty())
 			return Collections.emptyList();
 
-		IndexReader indexReader = null;
 		SortField sortField = new SortField("frequency", SortField.Type.LONG,true);
 		Sort sort = new Sort(sortField);
 		List<String> l = new ArrayList<String>();
@@ -133,8 +155,8 @@ public class FileIndex
 			query.add(queryCaps, BooleanClause.Occur.SHOULD);
 			query.add(queryNoCaps, BooleanClause.Occur.SHOULD);
 
-			indexReader = DirectoryReader.open(directory);
-			IndexSearcher searcher = new IndexSearcher(indexReader);
+			initReader();
+			IndexSearcher searcher = new IndexSearcher(reader);
 			TopDocs search = searcher.search(query, 100, sort);
 			ScoreDoc[] scoreDocs = search.scoreDocs;
 			for (ScoreDoc scoreDoc : scoreDocs)
@@ -148,22 +170,17 @@ public class FileIndex
 		{
 			Log.log(Log.ERROR, this, e);
 		}
-		finally
-		{
-			IOUtilities.closeQuietly(indexReader);
-		}
 		return l;
 	} //}}}
 
-	//{{{ getDocument() method
-	@Nullable
-	private Document getDocument(String path) throws IOException
+	//{{{ getFrequency() method
+	private long getFrequency(String path) throws IOException
 	{
-		IndexReader indexReader = null;
+		long frequency = 0L;
 		try
 		{
-			indexReader = DirectoryReader.open(directory);
-			IndexSearcher searcher = new IndexSearcher(indexReader);
+			initReader();
+			IndexSearcher searcher = new IndexSearcher(reader);
 			BooleanQuery query = new BooleanQuery();
 			Term term = new Term("path",path);
 			query.add(new TermQuery(term),BooleanClause.Occur.MUST);
@@ -171,18 +188,15 @@ public class FileIndex
 			if (search.scoreDocs.length == 1)
 			{
 				Document doc = searcher.doc(search.scoreDocs[0].doc);
-				return doc;
+				IndexableField frequencyField = doc.getField("frequency");
+				frequency = frequencyField.numericValue().longValue();
 			}
 		}
 		catch(IndexNotFoundException infe)
 		{
 		//ok
 		}
-		finally
-		{
-			IOUtilities.closeQuietly(indexReader);
-		}
-		return null;
+		return frequency;
 	} //}}}
 
 	//{{{ addFiles() method
@@ -221,24 +235,18 @@ public class FileIndex
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					String path = fileProvider.next();
-					Term pathTerm = new Term("path",path);
 					observer.setValue(i);
-					observer.setStatus(path);
-					Document document = getDocument(path);
-					long frequency = 1L;
-					if (document != null)
-					{
-						Field frequencyField = (Field) document.getField("frequency");
-						frequency = frequencyField.numericValue().longValue() + 1;
-						writer.deleteDocuments(pathTerm);
-					}
-					writer.addDocument(createDocument(path, frequency));
+					if (i % 10 == 0)
+						observer.setStatus(path);
+
+					long frequency = getFrequency(path);
+					writer.addDocument(createDocument(path, frequency + 1));
 				}
 				if (reset)
 				{
 					IOUtilities.closeQuietly(directory);
 				}
-				directory = tempDirectory;
+				setDirectory(tempDirectory);
 			}
 			catch (IOException e)
 			{
@@ -304,13 +312,11 @@ public class FileIndex
 				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_42, analyzer);
 				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 				writer = new IndexWriter(directory, conf);
-				Document document = getDocument(path);
-				if (document == null)
+				long frequency = getFrequency(path);
+				if (frequency == 0)
 					return;
-				IndexableField frequencyField = document.getField("frequency");
-				long frequency = frequencyField.numericValue().longValue();
 				writer.deleteDocuments(term);
-				writer.addDocument(createDocument(path, frequency+1));
+				writer.addDocument(createDocument(path, frequency + 1));
 			}
 			catch (Exception e)
 			{
