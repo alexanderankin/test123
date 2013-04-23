@@ -931,17 +931,17 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
 <appendix id="feedback">
     <title>Feedback</title>
 
-    <para>The preferred way to send bug reports is to use the
-      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse">Sourceforge Bug Tracker</ulink>.
-    </para>
+    <para>All jEdit users are encouraged to join the   <email>jedit-users@lists.sourceforge.net</email> mailing list to give feedback or ask questions of other users and developers. </para> 
+    
+    <para>The preferred way to send bug reports against the XML plugin is to use the <ulink url="https://sourceforge.net/tracker/?limit=100&amp;func=&amp;group_id=588&amp;atid=565475&amp;status=1">
+    jEdit Plugin Bugs Tracker</ulink>. </para>
+    
+    <para>Feature requests can be found on the <ulink
+    url="https://sourceforge.net/tracker/?limit=100&amp;func=&amp;group_id=588&amp;atid=997936&amp;status=1">
+    jEdit Plugin feature requests tracker</ulink>. </para> 
 
-    <para>Feature requests should be posted to the jEdit users mailing-list
-      <email>jedit-users@lists.sourceforge.net</email>.
-    </para>
-
-    <para>Development questions should be posted to the jEdit development mailing-list
-      <email>jedit-devel@lists.sourceforge.net</email>.
-    </para>
+    <para>Development questions should be posted to the jEdit development
+    mailing-list <email>jedit-devel@lists.sourceforge.net</email>. </para>
 </appendix>
 
 </article>
