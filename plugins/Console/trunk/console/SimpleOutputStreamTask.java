@@ -30,8 +30,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
