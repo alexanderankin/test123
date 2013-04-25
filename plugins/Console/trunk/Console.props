@@ -8,7 +8,7 @@ plugin.console.ConsolePlugin.version=5.1.1
 # jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
 plugin.console.ConsolePlugin.docs=index.html
-plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
+plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust, Artem Bryantsev
 
 # see jEdit.getBuild() to understand the numbering scheme. 
 plugin.console.ConsolePlugin.depend.0=jedit 05.00.99.00
@@ -465,6 +465,9 @@ commando.not-saved-run.message=Save changes to {0} before running?
 commando.no-command.title=Unknown Commando Panel
 commando.no-command.message=Unknown commando: {0}
 
+# Sensible Defaults Department
+console.dock-position=bottom
+
 ### Default compilers and interpreters
 
 mode.batch.commando.run=execute
@@ -499,20 +502,21 @@ console.pv.no-command.title=Command not found
 console.pv.no-command.message=No {0} command has been defined.\n\
 	Would you like to define it now?
 
-# Sensible Defaults Department
-console.dock-position=bottom
 options.console.errors.reset-confirm.title=Factory Reset Error Matchers
 options.console.errors.reset-confirm.message=Resets error matchers list to factory default. Are you sure?
 
-### ANSI escape sequencies
+### ANSI escape parsing
 options.ansi-escape.title=ANSI escape sequencies parser
 options.ansi-escape.behaviour-caption=Parser behaviour:
 options.ansi-escape.behaviour-names=ignore;remove;parse
 options.ansi-escape.mode-caption=Representation's mode:
 options.ansi-escape.mode-names=7bit;8bit
-# default values
+
+# default values: 7bit parse
 ansi-escape.mode=0
 ansi-escape.behaviour=2
+
 # parsed control functions, see standart ECMA-48, section "Control functions"
 ansi-escape.func-list-values=sgr
 ansi-escape.func-list=sgr
+

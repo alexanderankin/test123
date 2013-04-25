@@ -22,10 +22,8 @@
  
 package console;
 
-import java.util.Vector;
 
 import javax.swing.*;
-import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 import org.gjt.sp.jedit.gui.HistoryTextField;

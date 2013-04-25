@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
