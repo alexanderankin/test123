@@ -141,8 +141,8 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		testArea.addKeyListener(new KeyHandler());
 
 		JScrollPane scrollPane = new JScrollPane(testArea);
-		scrollPane.setMinimumSize(new Dimension(300, 150));
-		// scrollPane.setPreferredSize(new Dimension(300, 200));
+		scrollPane.setMinimumSize(new Dimension(200, 100));
+		scrollPane.setPreferredSize(new Dimension(250, 125));
 		// scrollPane.setSize(new Dimension(400, 200));
 
 		scrollPane.setBorder(new TitledBorder(label.getText()));
