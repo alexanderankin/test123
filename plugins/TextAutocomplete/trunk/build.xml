@@ -22,9 +22,13 @@
      - leverage jEdit's build-support project and its build file as much as possible
      - the path to it is expected to be defined in the build properties
      -->
-    <property name="docs-proc.target"  value="none"/>
     <property file="../build.properties"/>
     <property name="jedit.jars.dir" value="${jedit.user.home}/jars" />
+    <!-- Required to build JavaDoc; see packagenames of the javadoc ant task -->
+    <property name="javadoc.packagenames" value="net.jakubholy.jedit.autocomplete" />
+    <!-- Documentation is pre-generated: -->
+    <property name="docs-proc.target" value="none" />
+
     <import file="${build.support}/plugin-build.xml"/>
 
     <!-- Extra files that should be included in the jar -->
