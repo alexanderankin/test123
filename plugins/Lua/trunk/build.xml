@@ -1,0 +1,39 @@
+<project name="Lua" default="build" basedir=".">
+
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="dist.target" value="dist.complete"/>
+	<property name="compiler.source" value="1.6"/>
+	<property name="compiler.debug" value="true"/>
+	<property name="compiler.target" value="1.6"/>
+	<property name="docs-proc.target" value="none"/>
+	<property name="jedit.plugins.dir" value="${install.dir}"/>
+	<property name="docs-proc.target" value="none"/>
+	<property name="src.dir" location="src" />
+	<import file="${build.support}/plugin-build.xml"/>
+
+
+	<!--<path id="project.class.path">-->
+		<!--<pathelement location="lib/luaj-jse-3.0-alpha2.jar"/>-->
+	<!--</path>-->
+
+	<selector id="packageFiles">
+		<and>
+			<or>
+				<filename name="docs/*.html" />
+				<filename name="functionlist" />
+			</or>
+		</and>
+	</selector>
+
+	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${build.dir}/lib">
+				<include name="lua*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>

@@ -1,0 +1,10 @@
+<ivy-module version="2.0">
+    <info organisation="jedit-plugins" module="LuaSideKick"/>
+    <dependencies>
+        <dependency org="jedit-plugins" name="SideKick" rev="1.4"/>
+        <dependency org="jedit-plugins" name="ErrorList" rev="1.9"/>
+        <dependency org="jedit-plugins" name="Console" rev="5.0"/>
+         <dependency org="org.luaj" name="luaj-jse" rev="3.0-alpha2"/>
+	<dependency org="junit" name="junit" rev="4.8.2"/>
+    </dependencies>
+</ivy-module>
