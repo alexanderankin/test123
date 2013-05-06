@@ -1,0 +1,27 @@
+# Author: Matthieu Casanova
+
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.activate=defer
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.name=LuaSideKick
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.author=Matthieu Casanova
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.version=1.0.0
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.docs=docs/LuaSideKick.html
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.usePluginHome=true
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.description=LuaSideKick is a parser that will show you errors in your lua code
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.depend.0=jdk 1.6
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.depend.1=jedit 05.00.01.00
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.4
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.depend.4=plugin console.ConsolePlugin 5.0
+plugin.com.kpouer.jedit.lua.LuaSideKickPlugin.depend.jars=luaj-jse.jar
+
+
+sidekick.parser.Lua.label=lua
+mode.lua.sidekick.parser=Lua
+
+console.lua.info=This shell evaluates commands in Luan\
+	\n\
+	In addition to the variables set by jEdit (view, editPane, textArea, \
+	buffer), the current console instance is stored in the variable \
+	named "console".\n
+
+console.lua.prompt=Lua>
