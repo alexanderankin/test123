@@ -343,7 +343,7 @@ implements EBComponent, DefaultFocusComponent
 					chdir = true;
 			}
 			if (chdir) try {
-				chDir(view.getEditPane().getBuffer().getPath());
+				chDir(view.getEditPane().getBuffer().getDirectory());
 			}
 			catch (NullPointerException npe) {}
 		}
