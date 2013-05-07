@@ -330,11 +330,22 @@ implements EBComponent, DefaultFocusComponent
 					scrollToBottom();
 		}
 		else if (jEdit.getBooleanProperty("console.changedir.followTextArea")) {
-			if ( ((msg instanceof EditPaneUpdate) 
-				  && ((EditPaneUpdate)msg).getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-				|| ((msg instanceof BufferUpdate)
-				  && ((BufferUpdate)msg).getWhat() == BufferUpdate.LOADED))
-					chDir(view.getEditPane().getBuffer().getPath());
+			boolean chdir=false;
+			if (msg instanceof EditPaneUpdate) {
+				EditPaneUpdate epu = (EditPaneUpdate)msg;
+				if ( (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+					&& epu.getEditPane().getView() == view) 
+						chdir = true;
+			}
+			if (msg instanceof BufferUpdate) {
+				BufferUpdate bmsg = (BufferUpdate) msg;
+				if ( (bmsg.getWhat() ==  BufferUpdate.LOADED) && bmsg.getView() == view)
+					chdir = true;
+			}
+			if (chdir) try {
+				chDir(view.getEditPane().getBuffer().getPath());
+			}
+			catch (NullPointerException npe) {}
 		}
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
