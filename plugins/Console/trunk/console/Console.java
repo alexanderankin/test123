@@ -50,7 +50,9 @@ import javax.swing.text.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -316,7 +318,7 @@ implements EBComponent, DefaultFocusComponent
 		else
 			run(getShell(),null, getOutput(), null, history.getItem(0));
 	} //}}}
-
+	
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
@@ -327,6 +329,15 @@ implements EBComponent, DefaultFocusComponent
 				if (dwu.getDockable().equals("console"))
 					scrollToBottom();
 		}
+		else if (jEdit.getBooleanProperty("console.changedir.followTextArea")) {
+			if ( ((msg instanceof EditPaneUpdate) 
+				  && ((EditPaneUpdate)msg).getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+				|| ((msg instanceof BufferUpdate)
+				  && ((BufferUpdate)msg).getWhat() == BufferUpdate.LOADED))
+					chDir(view.getEditPane().getBuffer().getPath());
+		}
+		else if(msg instanceof EditPaneUpdate) 
+			handleEditPaneUpdate((EditPaneUpdate)msg);
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
