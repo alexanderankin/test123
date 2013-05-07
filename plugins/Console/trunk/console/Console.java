@@ -336,8 +336,6 @@ implements EBComponent, DefaultFocusComponent
 				  && ((BufferUpdate)msg).getWhat() == BufferUpdate.LOADED))
 					chDir(view.getEditPane().getBuffer().getPath());
 		}
-		else if(msg instanceof EditPaneUpdate) 
-			handleEditPaneUpdate((EditPaneUpdate)msg);
 		else if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
