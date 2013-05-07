@@ -20,7 +20,7 @@ public class SystemOptionPane extends AbstractOptionPane
 	private JCheckBox nodeselect;
 	private JCheckBox mergeError;
 	private JCheckBox showExitStatus;
-//	private JCheckBox pvselect;
+	private JCheckBox followTextArea;
 	private JCheckBox pvchange;
 	private JTextField pathDirs ;
 	private JCheckBox pathDirsAppend;
@@ -81,11 +81,14 @@ public class SystemOptionPane extends AbstractOptionPane
 		nodeselect.setSelected(jEdit.getBooleanProperty("console.changedir.nodeselect"));		
 		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
 		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
+		followTextArea = new JCheckBox(jEdit.getProperty("options.console.general.changedir.followTextArea"));
+		followTextArea.setSelected(jEdit.getBooleanProperty("console.changedir.followTextArea"));
 //		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
 //		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvpvselect"));		
 
 		addComponent(nodeselect);
 		addComponent(pvchange);
+		addComponent(followTextArea);
 //		addComponent(pvselect);
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 
@@ -94,6 +97,7 @@ public class SystemOptionPane extends AbstractOptionPane
 
 	public void _save() {
 		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
+		jEdit.setBooleanProperty("console.changedir.followTextArea", followTextArea.isSelected());
 //		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		jEdit.setBooleanProperty("console.changedir.nodeselect", nodeselect.isSelected());
 		jEdit.setBooleanProperty("console.clearBeforeExecute", clearBeforeExecute.isSelected());

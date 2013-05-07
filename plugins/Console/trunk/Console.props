@@ -3,7 +3,7 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=5.1.1
+plugin.console.ConsolePlugin.version=5.1.2
 
 # jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
@@ -90,10 +90,12 @@ options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
 options.console.system.clearBeforeExecute=Clear scrollback buffer before commando, build, or run project
 options.console.general.infoColor=Information messages:
-options.console.general.changedir=Tree selection options:
+options.console.general.changedir=Events to chdir
 options.last-selected=Last Selected
-options.console.general.changedir.nodeselect=On VFS node select, cd to node dir
+options.console.general.changedir.nodeselect=On tree node select (PV or FSB), cd to node dir
 options.console.general.changedir.pvchange=On Project change, cd to project root dir
+options.console.general.changedir.followTextArea=When TextArea buffer dir changes, follow it
+
 # options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
 options.console.general.mergeError=Merge stdout and stderr
 options.console.general.welcome=Show welcome message
