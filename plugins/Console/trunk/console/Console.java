@@ -352,7 +352,7 @@ implements EBComponent, DefaultFocusComponent
 			}
 			catch (NullPointerException npe) {}
 		}
-		else if(msg instanceof PluginUpdate)
+		if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
 			handleNodeSelected((VFSPathSelected)msg);
