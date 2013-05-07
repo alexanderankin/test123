@@ -342,6 +342,11 @@ implements EBComponent, DefaultFocusComponent
 				if ( (bmsg.getWhat() ==  BufferUpdate.LOADED) && bmsg.getView() == view)
 					chdir = true;
 			}
+			if (msg instanceof ViewUpdate) {
+				ViewUpdate vu = (ViewUpdate) msg;
+				if ( (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) && vu.getView() == view)
+					chdir = true;
+			}
 			if (chdir) try {
 				chDir(view.getEditPane().getBuffer().getDirectory());
 			}
