@@ -98,7 +98,7 @@
  a full idea of what Console (and your other plugins) can do.
  </para>
 
- <bridgehead> Console - General Options </bridgehead>
+ <section id="generaloptions"> <title> Console - General Options </title>
 
   <para> Here, you can set general options that apply to all shells, such as
   default shell, showing the welcome message, character encoding to use,
@@ -116,8 +116,8 @@
   display characters in a different language, change the encoding here.
   </para></listitem>
  </itemizedlist>
-
- <bridgehead> Console - System Shell Options </bridgehead>
+</section>
+ <section id="systemshelloptions"><title> Console - System Shell Options </title>
 
  <itemizedlist>
  <listitem>
@@ -158,16 +158,27 @@
   <listitem><para><emphasis>Append extra dirs to PATH</emphasis> - if
         checked, append instead of prepend the extra directories.
   </para></listitem>
-
- </itemizedlist>
- <bridgehead> Commando Options </bridgehead>
+  </itemizedlist>
+  
+  <section id="chdirevents">
+  <title> Chdir Events </title>
+  <para> Console can change its directory in response to a variety of events. 
+  From here you can decide which events it should listen to. </para>
+  <itemizedlist>
+    <listitem><para> Tree Node Selection </para></listitem>
+    <listitem><para> EditPane, View and BufferUpdate messages that indicate the
+    current editpane is now looking at a different buffer. </para> </listitem>
+    <listitem><para> ProjectViewer project change messages </para></listitem>
+    </itemizedlist>
+    </section>
+</section>
+ <section id="commandooptions"> <title>  Commando Options  </title>
 
  <para> Console has an optional toolbar that displays commando commands.
  You can check and un-check which commands show up in the menus and
  toolbars. </para>
-
- <bridgehead> Error Patterns Options </bridgehead>
-
+ </section>
+ <section id="errorparsingoptions"> <title> Error Parsing Options </title>
  <para> This option dialog allows you fine grained control over Console's error parsing capabilities.
  </para>
 
@@ -196,15 +207,16 @@ patterns you are not using, and place the error patterns for the tools you use
 most often at the top of the list.
 </para>
 </tip>
+</section>
 
-<bridgehead> Compile and Run Options </bridgehead>
+<section> <title> Compile and Run Options </title>
 
 <para> For each edit mode, you can choose a command that is
    used to compile or run a buffer.
    This can be either a commando command or a custom command.
    These commands are executed in the System shell.
 </para>
-
+</section>
 </chapter>
 
  <chapter id="window">
