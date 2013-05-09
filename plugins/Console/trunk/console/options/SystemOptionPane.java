@@ -86,10 +86,10 @@ public class SystemOptionPane extends AbstractOptionPane
 //		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
 //		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvpvselect"));		
 
-		addComponent(nodeselect);
-		addComponent(pvchange);
 		addComponent(followTextArea);
-//		addComponent(pvselect);
+		addComponent(pvchange);
+		addComponent(nodeselect);
+		
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 
 		
