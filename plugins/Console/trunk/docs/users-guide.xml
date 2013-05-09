@@ -165,9 +165,11 @@
   <para> Console can change its directory in response to a variety of events. 
   From here you can decide which events it should listen to. </para>
   <itemizedlist>
-    <listitem><para> Tree Node Selection </para></listitem>
-    <listitem><para> EditPane, View and BufferUpdate messages that indicate the
-    current editpane is now looking at a different buffer. </para> </listitem>
+    <listitem><para> Tree Node Selection (File System Browser, or ProjectViewer)
+    </para></listitem>
+    <listitem><para> A combination of EditPaneUpdate, ViewUpdate, and
+    BufferUpdate messages that indicate the current EditPane is looking at a
+    different buffer. </para> </listitem>
     <listitem><para> ProjectViewer project change messages </para></listitem>
     </itemizedlist>
     </section>
