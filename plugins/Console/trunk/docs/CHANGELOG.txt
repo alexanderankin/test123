@@ -5,7 +5,7 @@ $Date$
 
     Version 5.1.2 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
-        New Console System option: chdir event: Follow textarea
+        New Console System Shell option: chdir events: Follow textarea
         NPE fixed in ErrorsOptionPane
 
     Version 5.1.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
