@@ -32,7 +32,6 @@ import errorlist.DefaultErrorSource;
 
 /**
  * Thread for handing output of running remote ssh commands
- * StreamThread.java * 10982 2007-11-06 05:02:42Z.
  *
  * @version $Id$
  */

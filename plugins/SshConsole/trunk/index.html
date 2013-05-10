@@ -64,20 +64,29 @@ or Project Viewer</li>
 <p> After that, type something in the console, and you will see
 your response from the server's shell. </p>
 
-<p> Here are instructions for first-time users: </p>
+<h3> Instructions for first-time users: </h3>
 
 <ol>
+<li> <p> Go to <tt>Plugin Options - Console - System Shell </tt> and find the
+section <tt>Events to Chdir</tt>. </p>
+     <p> Ssh can also be considered a <tt>System Shell</tt> since it can be used
+     for executing system commands. </p>
+     <p> I recommend checking <tt>When TextArea buffer dir changes, cd to
+     it</tt>, which will help ensure that SshConsole is always executing
+     commands in the correct directory. </p>
+</li>
+
 
 <li> Go to <tt>Plugin Options - Console - Error Matchers</tt> and disable all
 error matchers that you do not need. Having too many or too general matchers
 enabled here may result in false positives in ErrorList. </li>
 
-<li> Show the dockable FSB: <tt>Utilities - File System Browser </tt>. I suggest
-docking it on your left. </li>
+<li> Show the dockable FSB: <tt>Utilities - File System Browser </tt>. </li>
+
+<li> <tt>Plugins - SshConsole - Show SshConsole</tt> </li>
 
 <li> With FSB: navigate to a remote host by entering a path that begins with
 <tt>sftp://</tt>. </li>
-
 
 <li> If this is your first time connecting, Enter your
 user/password/key/passphrase there. </li>
@@ -85,25 +94,27 @@ user/password/key/passphrase there. </li>
 <li> After you're connected, if you plan to connect often to this host,
      <b>Favorites - Add to Favorites</b> from the FSB. </li>
 
-<li> With FSB: click on (or open) the remote file that you want to compile. </li>
-
-<li> <tt>Plugins - SshConsole - Show SshConsole</tt> </li>
+<li> With FSB: click on (or open) the remote file that you want to compile.
+</li> 
 
 <li> Enter commands in the ssh console. Initially, it will connect and show you
 the message of the day. </li>
 
-<li> Click on folders or files in the FSB. Notice the "cd" commands that get sent
-over to the remote machine in response. </li>
+<li> Change buffers, or click on folders or files in the FSB.
+Notice "cd" commands get sent over to the remote machine in response to
+the events you chose under <tt>Plugin Options - Console - System Shell - Events
+to Chdir</tt>.
+</li> 
 
 <li> Compile something with errors in it. </li>
 
 <li> Look at the ErrorList dockable. Click on an error in the dockable. </li>
 </ol>
 
-<p> If later, you use the FSB to connect to a different remote sftp host, then
-the next time you use the SshConsole, it should logout of the old ssh session,
-create a new shell connection to the same host you just logged into via sftp,
-and send your shell commands there. </p>
+<p> If later, you connect to a different remote sftp host, then
+the next time SshConsole responds to a chdir event, it should logout of the old
+ssh session, create a new shell connection to the same host you just logged into
+via sftp, and send your shell commands there. </p>
 
 <h2 id="projectviewer-integration"> ProjectViewer Integration </h2>
 
@@ -120,7 +131,7 @@ the project root directory, when building/running an sftp project. </p>
 
 <p> Furthermore, the node selection events that Console responds to from 
 the File System Browser are also sent from the ProjectViewer tree and passed
-onto the ssh shell when appropriate.  
+onto the ssh shell when appropriate.
 </p>
 
 <h2 id="jobcontrol"> Job Control </h2>
