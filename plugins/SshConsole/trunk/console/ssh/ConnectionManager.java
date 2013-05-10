@@ -29,10 +29,10 @@ import org.gjt.sp.util.Log;
 import console.Console;
 import ftp.ConnectionInfo;
 
-/**
- * 
+/** Manages a mapping of paths to ssh connections.
+ *
  * Does a whole lot of regex-based parsing of paths to remove/insert
- * an sftp:// prefix to them.   
+ * an sftp:// prefix to them. 
  * 
  * TODO: get rid of all the regexes and reuse common URL/URI parsing methods. 
  * 

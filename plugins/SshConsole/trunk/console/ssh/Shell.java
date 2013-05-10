@@ -111,6 +111,7 @@ public class Shell extends console.Shell {
 			info = ConnectionManager.getConnectionInfo(cs.getPath());
 			if (info == null) {
 				Log.log(Log.WARNING, this, "Unable to get connectioninfo for: " + cs.getPath());
+				console.stopAnimation();
 				printPrompt(console, output);
 				return;
 			}
@@ -125,6 +126,7 @@ public class Shell extends console.Shell {
 		}
 		catch (Exception e) {
 			Log.log (Log.WARNING, this, "getShellConnection failed:", e);
+			console.stopAnimation();
 		}
 		boolean consumed = cs.preprocess(command);
 		if (consumed) {
@@ -137,6 +139,7 @@ public class Shell extends console.Shell {
 		catch (IOException ioe ) {
 			Log.log(Log.WARNING, this, "IOException writing to ssh pipe: " + ioe.toString());
 			cs.close();
+			console.stopAnimation();
 		}
 
 	} // }}}
@@ -148,7 +151,7 @@ public class Shell extends console.Shell {
 		String promptString = "[no sftp:// connections?] >";
 		if (s.info != null) {
 			promptString = "[ssh:" + s.info.user + "@" + s.info.host + "]> ";
-		}
+		}		
 		if (s.conn == null || s.conn.inUse != true) {
 		        output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()),
 			"\n" + promptString);
