@@ -122,6 +122,10 @@ public class SystemShell extends Shell implements TaskListener
 			String val = jEdit.getProperty(propName, "null");
 			if (!val.equals("null")) cs.currentDirectory = val;
 		}
+		else {
+			String dir = console.getView().getBuffer().getDirectory();
+			if (dir != null) cs.currentDirectory = dir;
+		}		
 	} // }}}
 
 	// {{{ closeConsole() method

@@ -99,7 +99,8 @@ public abstract class Shell
 	} //}}}
 
 	//{{{ handlesVFS()
-	/** A Shell can override this method and use any criteria at all to decide
+	/** A System Shell can override this method and use 
+		any criteria at all to decide
 	    whether this is a path that is preferred by this shell. 
 	    @param vfsPath the path to test if this shell handles 
 	    @return true if this shell is preferred for handling a path that looks like vfsPath
@@ -109,7 +110,7 @@ public abstract class Shell
 	}//}}}
 	
 	//{{{ chDir()
-	/** A shell can override this method if it can respond to chDir messages
+	/** A System Shell can override this method if it can respond to chDir messages
 		@param pathStr   vfs path to change directory
 	    @return true if the function did something, false if not.
 	*/	
@@ -119,7 +120,7 @@ public abstract class Shell
 	
 	//{{{ getShell() method
 	/**
-	 * Returns the shell with the specified name
+	 * Returns the Shell service singleton with the specified name
 	 * @param name The shell name. Common values are:
 	 *     "System", "BeanShell", "Factor", "Ant", "Python", etc....
 	 */
@@ -195,14 +196,6 @@ public abstract class Shell
 		execute(console, null, output, null, command);
 	} // }}}
 
-	// {{{ waitUntilDone() stub
-	/** What is this for? It doesn't seem to be used *anywhere*.
-	 * @deprecated - see waitFor(Console)
-	 * */
-	public void waitUntilDone() {
-
-	}
-	// }}}
 
 	//{{{ stop() method
 	/**
