@@ -28,7 +28,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -97,7 +96,7 @@ public class LuaSideKickParser extends SideKickParser
 	{
 		LuaValue.valueOf(true);
 		LuaParser parser = new MyLuaParser(new StringReader(buffer.getText()));
-		final Set<String> localFunctionList = new HashSet<String>();
+		final Collection<String> localFunctionList = new HashSet<String>();
 		try
 		{
 			Chunk chunk = parser.Chunk();
@@ -115,12 +114,20 @@ public class LuaSideKickParser extends SideKickParser
 						Position endPosition = createPosition(buffer, funcDef.endLine-1, funcDef.endColumn-1);
 						ParList parlist = funcDef.body.parlist;
 
-						StringBuilder buider = new StringBuilder(funcDef.name.name.name);
-						for (Object dot : funcDef.name.dots)
+						String functionName;
+						if (funcDef.name.dots == null)
 						{
-							buider.append('.').append(dot);
+							functionName = funcDef.name.name.name;
 						}
-						String functionName = buider.toString();
+						else
+						{
+							StringBuilder buider = new StringBuilder(funcDef.name.name.name);
+							for (Object dot : funcDef.name.dots)
+							{
+								buider.append('.').append(dot);
+							}
+							functionName = buider.toString();
+						}
 						FunctionAsset asset = new FunctionAsset(functionName, startPosition, endPosition, parlist);
 						root.add(new DefaultMutableTreeNode(asset));
 						localFunctionList.add(functionName);
