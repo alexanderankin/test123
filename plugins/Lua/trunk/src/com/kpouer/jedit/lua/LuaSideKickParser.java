@@ -28,6 +28,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -96,6 +97,7 @@ public class LuaSideKickParser extends SideKickParser
 	{
 		LuaValue.valueOf(true);
 		LuaParser parser = new MyLuaParser(new StringReader(buffer.getText()));
+		final Set<String> localFunctionList = new HashSet<String>();
 		try
 		{
 			Chunk chunk = parser.Chunk();
@@ -113,10 +115,17 @@ public class LuaSideKickParser extends SideKickParser
 						Position endPosition = createPosition(buffer, funcDef.endLine-1, funcDef.endColumn-1);
 						ParList parlist = funcDef.body.parlist;
 
-						FunctionAsset asset = new FunctionAsset(funcDef.name.name.name, startPosition, endPosition, parlist);
+						StringBuilder buider = new StringBuilder(funcDef.name.name.name);
+						for (Object dot : funcDef.name.dots)
+						{
+							buider.append('.').append(dot);
+						}
+						String functionName = buider.toString();
+						FunctionAsset asset = new FunctionAsset(functionName, startPosition, endPosition, parlist);
 						root.add(new DefaultMutableTreeNode(asset));
-						Log.log(Log.DEBUG, this, "funcDef = " + funcDef.name.name);
-					} catch (Exception e)
+						localFunctionList.add(functionName);
+					}
+					catch (Exception e)
 					{
 						Log.log(Log.ERROR,  this, e);
 					}
@@ -133,6 +142,7 @@ public class LuaSideKickParser extends SideKickParser
 						ParList parlist = localFuncDef.body.parlist;
 
 						FunctionAsset asset = new FunctionAsset(localFuncDef.name.name + " (local)", startPosition, endPosition, parlist);
+						localFunctionList.add(localFuncDef.name.name);
 						root.add(new DefaultMutableTreeNode(asset));
 					}
 					catch (Exception e)
@@ -160,7 +170,7 @@ public class LuaSideKickParser extends SideKickParser
 						String suffix = field.name.name;
 
 						String functionName = prefix + '.' + suffix;
-						if (!functionList.contains(functionName))
+						if (!functionList.contains(functionName) && !localFunctionList.contains(functionName))
 						{
 							errorSource.addError(ErrorSource.ERROR, buffer.getPath(),
 												 prefixExpr.beginLine-1,
