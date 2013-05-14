@@ -19,6 +19,9 @@ It also uses a dockable jEdit
 or <a href="jeditresource:/ProjectViewer.jar!/index.html">ProjectViewer</a>
 for navigation. </p>
 
+<p> SshConsole has no option pane of its own. The customizations possible
+for this plugin are in Console or ErrorList options. </p>
+
 <p> Console provides jEdit with a dockable command line interface to the System
 Shell and the BeanShell, and an open interface for adding new shells. SshConsole
 adds a jEdit Shell Service to Console called <tt>ssh</tt>. </p>
@@ -34,10 +37,9 @@ allows the user to make secure <tt>sftp://</tt> connections to remote hosts, and
 browse their file systems using jEdit's File System Browser, also known as FSB
 or VFSBrowser. At any time, the user can select, and then manipulate selected
 files from the FSB or jEdit. Since the FTP plugin handles prompting and
-remembering username/passwords, the SshConsole plugin assumes you want to
-<tt>ssh</tt> into the same host using the same port and creds as the most recent
-<tt>sftp://</tt> connection in that View's FSB (or its currently editing buffer,
-if it is open to a file on a remote host via sftp). </p>
+remembering username/passwords, the SshConsole initially tries to to
+<tt>ssh</tt> into the same host using the same port and creds as the current
+buffer's path. </p>
 
 
 <h2 id="Instructions"> Instructions for use: </h2>
@@ -58,7 +60,7 @@ connect somewhere, you need to do one of these things: </p>
 you can choose a file after connecting. </li>
 <li> Navigate to a remote file by clicking on the node in the File System Browser
 or Project Viewer</li> 
-<li> Edit a remote file in the current View's EditPane. </li>
+<li> Open a remote file in the current View's EditPane. </li>
 </ol>
 
 <p> After that, type something in the console, and you will see
@@ -74,6 +76,7 @@ section <tt>Events to Chdir</tt>. </p>
      <p> I recommend checking <tt>When TextArea buffer dir changes, cd to
      it</tt>, which will help ensure that SshConsole is always executing
      commands in the correct directory. </p>
+     <p> Check the other options also, if you so desire. </p>
 </li>
 
 
@@ -101,7 +104,7 @@ user/password/key/passphrase there. </li>
 the message of the day. </li>
 
 <li> Change buffers, or click on folders or files in the FSB.
-Notice "cd" commands get sent over to the remote machine in response to
+Notice that "cd" commands get sent over to the remote machine in response to
 the events you chose under <tt>Plugin Options - Console - System Shell - Events
 to Chdir</tt>.
 </li> 
@@ -111,10 +114,10 @@ to Chdir</tt>.
 <li> Look at the ErrorList dockable. Click on an error in the dockable. </li>
 </ol>
 
-<p> If later, you connect to a different remote sftp host, then
-the next time SshConsole responds to a chdir event, it should logout of the old
-ssh session, create a new shell connection to the same host you just logged into
-via sftp, and send your shell commands there. </p>
+<p> If later, you connect to a different remote sftp host and open a file from
+there, then the next time SshConsole executes a command, it should logout of the
+old ssh session, create a new shell connection to the same host you just logged
+into via sftp, and send your shell commands there. </p>
 
 <h2 id="projectviewer-integration"> ProjectViewer Integration </h2>
 
@@ -163,8 +166,9 @@ Console error matchers. Disable the ones you are not using from
 
 <p> If you are typing "cd" directly to change directories from SshConsole, 
 it is possible the console shell state will not realize this and think 
-errors are from files in an incorrect path. Change directories using the FSB to
-ensure the SshConsole knows where you are.
+errors are from files in an incorrect path. Change directories using the chdir
+events you selected in Console's plugin options. to ensure the SshConsole knows
+where you are. 
 </p>
 
 <p> Sometimes an ssh connection will timeout while you are using the SshConsole.
@@ -173,13 +177,13 @@ you attempt to execute the next command. At this point, the console should
 automatically close its existing connection and open a new one when you enter
 the next command. </p>
 
-<p> It may be necessary to click again on a folder node or two in the FSB or 
-projectviewer, to remind the SshConsole where to connect. </p>
+<p> It may be necessary to cause another Console chdir event before
+the SshConsole "wakes up" again. </p>
 
 <p> If for some reason, after a timeout, your SshConsole is non-responsive, you
 can explicitly close all open connections from the <tt>Plugins - SshConsole -
 Close Connections</tt> menu action. This has the effect of restarting the plugin
-from scratch, so again, you will need to navigate to a remote file via the FSB
+from scratch, so again, you may need to cause another Console Chdir event
 so that SshConsole knows where to send your commands. </p>
 
 <h2 id="futureideas"> Future Ideas </h2>
