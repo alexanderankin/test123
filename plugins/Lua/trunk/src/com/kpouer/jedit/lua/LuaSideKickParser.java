@@ -168,7 +168,6 @@ public class LuaSideKickParser extends SideKickParser
 				@Override
 				public void visit(Exp.FuncCall funcCall)
 				{
-					Log.log(Log.DEBUG, this, "funcCall = " + funcCall);
 					if (funcCall.lhs instanceof Exp.FieldExp)
 					{
 						Exp.FieldExp field = (Exp.FieldExp) funcCall.lhs;
