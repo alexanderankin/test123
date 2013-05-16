@@ -37,6 +37,8 @@
             <filename name="*.html"/>
         </or>
     </selector>
+    
+    <target name="build.prepare" depends="docs" />
 
     <!-- Deploy the plugin into the user's jEdit -->
     <target name="deploy" depends="build"
