@@ -329,7 +329,16 @@ implements EBComponent, DefaultFocusComponent
 				if (dwu.getDockable().equals("console"))
 					scrollToBottom();
 		}
-		else if (jEdit.getBooleanProperty("console.changedir.followTextArea")) {
+		
+		// Check for editpane directory-change events. 
+		String dir = "";
+		try {
+			dir = view.getEditPane().getBuffer().getDirectory();
+		}
+		catch (NullPointerException npe) {}
+		// SshConsole always follows textPane. 
+		if ( !dir.isEmpty() && (dir.startsWith("sftp://") ||
+			 jEdit.getBooleanProperty("console.changedir.followTextArea"))) {
 			boolean chdir=false;
 			if (msg instanceof EditPaneUpdate) {
 				EditPaneUpdate epu = (EditPaneUpdate)msg;
@@ -347,11 +356,9 @@ implements EBComponent, DefaultFocusComponent
 				if ( (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) && vu.getView() == view)
 					chdir = true;
 			}
-			if (chdir) try {
-				chDir(view.getEditPane().getBuffer().getDirectory());
-			}
-			catch (NullPointerException npe) {}
+			if (chdir) chDir(dir);
 		}
+		
 		if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
@@ -817,13 +824,11 @@ implements EBComponent, DefaultFocusComponent
 	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
 //		Log.log(Log.WARNING, this, "VFSPathSelected: " + msg.getPath());
-		if (view != msg.getView()) return;
-		if (!isVisible()) return;
+		if (view != msg.getView()) return;		
 		String path = msg.getPath();
 		// don't chdir to a filename
 		if (!msg.isDirectory()) 
 			path = MiscUtilities.getParentOfPath(path);
-		// sshConsole always responds to node selected.
 		if (jEdit.getBooleanProperty("console.changedir.nodeselect"))
 			chDir(path);
 	} //}}}
