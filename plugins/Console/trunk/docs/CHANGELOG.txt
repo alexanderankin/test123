@@ -7,6 +7,7 @@ $Date$
       [Alan Ezust]
         New Console System Shell option: chdir events: Follow textarea
         NPE fixed in ErrorsOptionPane
+        Instead of VFSNodeSelected messages, SshConsole always gets chdir messages to follow textArea buffer dir.
 
     Version 5.1.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
