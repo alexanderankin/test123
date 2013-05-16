@@ -73,10 +73,11 @@ your response from the server's shell. </p>
 section <tt>Events to Chdir</tt>. </p>
      <p> Ssh can also be considered a <tt>System Shell</tt> since it can be used
      for executing system commands. </p>
-     <p> I recommend checking <tt>When TextArea buffer dir changes, cd to
-     it</tt>, which will help ensure that SshConsole is always executing
-     commands in the correct directory. </p>
-     <p> Check the other options also, if you so desire. </p>
+     <p> SShConsole always responds to <tt>When TextArea buffer dir changes, cd to
+     it</tt>, regardless of the checkbox setting here. This will help ensure
+     that SshConsole is always executing commands in the buffer's directory.</p>
+
+     <p> SshConsole can also respond to the other checked events, if you so desire. </p>
 </li>
 
 
@@ -97,17 +98,16 @@ user/password/key/passphrase there. </li>
 <li> After you're connected, if you plan to connect often to this host,
      <b>Favorites - Add to Favorites</b> from the FSB. </li>
 
-<li> With FSB: click on (or open) the remote file that you want to compile.
+<li> With FSB: Open the remote file that you want to compile.
 </li> 
 
 <li> Enter commands in the ssh console. Initially, it will connect and show you
 the message of the day. </li>
 
-<li> Change buffers, or click on folders or files in the FSB.
+<li> Open a buffer in a different folder, or invoke a console chdir event.
 Notice that "cd" commands get sent over to the remote machine in response to
-the events you chose under <tt>Plugin Options - Console - System Shell - Events
-to Chdir</tt>.
-</li> 
+certain events. 
+</li>
 
 <li> Compile something with errors in it. </li>
 
@@ -183,8 +183,7 @@ the SshConsole "wakes up" again. </p>
 <p> If for some reason, after a timeout, your SshConsole is non-responsive, you
 can explicitly close all open connections from the <tt>Plugins - SshConsole -
 Close Connections</tt> menu action. This has the effect of restarting the plugin
-from scratch, so again, you may need to cause another Console Chdir event
-so that SshConsole knows where to send your commands. </p>
+from scratch. </p>
 
 <h2 id="futureideas"> Future Ideas </h2>
 
