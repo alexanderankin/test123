@@ -202,9 +202,12 @@ public class SystemShell extends Shell implements TaskListener
 	
 	//{{{ chDir()
 	public boolean chDir(Console console, String path) {
+		
 		if (path.startsWith("file://")) {
 			path = path.substring(7);	
 		}
+		// local VFS only. 
+		if (MiscUtilities.isURL(path)) return false;
 		ConsoleState state = getConsoleState(console);
 		String cwd = state.currentDirectory;
 		File f = new File(path);
