@@ -56,9 +56,11 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 		
 		compile = new HistoryTextField("console.compile.project");
 		run = new HistoryTextField("console.run.project");
+		compile.setToolTipText(jEdit.getProperty("options.pv.commands.tooltip"));
+		run.setToolTipText(jEdit.getProperty("options.pv.commands.tooltip"));
 		
-		
-		shell = new JComboBox(Shell.getShellNames());	
+		shell = new JComboBox(Shell.getShellNames());
+		shell.setToolTipText(jEdit.getProperty("options.pv.shell.tooltip"));
 		
 		_shell = proj.getProperty("console.shell");
 
