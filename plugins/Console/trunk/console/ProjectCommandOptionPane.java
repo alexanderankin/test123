@@ -61,14 +61,12 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 		shell = new JComboBox(Shell.getShellNames());	
 		
 		_shell = proj.getProperty("console.shell");
-		if (_shell == null) {
-			_shell = Console.shellForVFS(proj.getRootPath());	
-		}
-		else if (console.Shell.getShell(_shell) == null) {
-				proj.removeProperty("console.shell");
-				_shell = "System";
-		}
+
+		// check that the previously chosen shell was not uninstalled:
+		if ((_shell != null) &&	(console.Shell.getShell(_shell) == null))
+			_shell = null;
 		
+		if (_shell == null) _shell = Console.shellForVFS(proj.getRootPath());
 		shell.setSelectedItem(_shell);
 		
 		String _compile = proj.getProperty("console.compile");
