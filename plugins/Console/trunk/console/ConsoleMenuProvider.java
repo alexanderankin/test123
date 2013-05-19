@@ -44,6 +44,7 @@ public class ConsoleMenuProvider implements DynamicMenuProvider
 		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("project-run"), false));
 		menu.addSeparator();
 		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("chdir-pv-root"), false));
+		menu.add(GUIUtilities.loadMenuItem(jEdit.getAction("chdir-pv-selected"), false));
 		superMenu.add(menu);
 		superMenu.addSeparator();
 		
