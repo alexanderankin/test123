@@ -64,6 +64,11 @@ public class ProjectCommandOptionPane extends OptionPaneBase {
 		if (_shell == null) {
 			_shell = Console.shellForVFS(proj.getRootPath());	
 		}
+		else if (console.Shell.getShell(_shell) == null) {
+				proj.removeProperty("console.shell");
+				_shell = "System";
+		}
+		
 		shell.setSelectedItem(_shell);
 		
 		String _compile = proj.getProperty("console.compile");
