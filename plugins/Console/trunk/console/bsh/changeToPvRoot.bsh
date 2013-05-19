@@ -21,7 +21,8 @@ changeToPvRoot(view) {
         con.chDir(path, true);
     }
     else {
-        con.setShell(_shell);
+        if (console.Shell.getShell(_shell) != null)
+            con.setShell(_shell);
         con.chDir(path);
     }
 }
