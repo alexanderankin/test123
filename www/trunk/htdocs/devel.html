@@ -67,6 +67,7 @@ are reported/fixed.</p>
 <li> <b>jEdit 4.5.2</b>: June 16 2012</li>
 <li> <b>jEdit 5.0pre1</b>: June 10 2012</li>
 <li> <b>jEdit 5.0.0</b>: November 22 2012</li>
+<li> <b>jEdit 5.1pre1</b>: May 24 2013</li>
 </ul>
 
 <a name="help" >
@@ -100,12 +101,11 @@ SourceForge project is granted on an as-needed basis. If you join the jEdit mail
 <h2>Specific contributions</h2>
 </a>
 
-<h3>Reviewing other bug reports, patches</h3>
+<h3>Localization files</h3>
 
-<p> Some open patches need to be reviewed, some bugs can use extra information. 
-A review of the open tickets in trackers will quickly show you what is on 
-the mind of other users and developers. You can pick something to do based on
-that. </p>
+<p> Now that jEdit supports localization, it is easy to add a translation file
+for jEdit or any of the plugins for any other language. If you want to submit translation files to jEdit, or update existing ones, you can submit patches to the proper patches tracker or ask for commit permissions if you plan to do a lot of them.
+</p>
 
 <h3>Writing/updating edit modes</h3>
 
@@ -152,13 +152,10 @@ If you want to make changes to existing plugins, or jEdit itself, make sure that
 <p> We prefer patches which are generated against the latest "trunk" in subversion. By checking out a copy of the source and making changes to your local copy, you can create a patch by simply typing <tt>svn diff</tt>, (or <tt>cvs diff</tt>, if it's in CVS) from the root directory of your project. This command will give you context, as well as version numbers for all differences between your versions and the versions you checked out from the repository. Redirect this command to a file and attach it with proper documentation to a <a href="https://sourceforge.net/tracker/?group_id=588&amp;atid=300588">patches</a> tracker item.
 </p>
 
-<h3>Adding plugins to the Subversion repository</h3>
+<h3>Adding plugins to the Subversion or Git repository</h3>
 
-<p>To get an account on the sourceforge jedit Subversion repository, first you need a <a href="http://www.sourceforge.net">SourceForge</a>
+<p>To get an account on the sourceforge jedit project, first you need a <a href="http://www.sourceforge.net">SourceForge</a>
 user account.</p>
-
-<p> For your own plugin, add a file named "README.<i>name of plugin</i>" to the
-"guidelines" module detailing your policy regarding others making changes; if they should ask for permission first, if they should commit directly or send a patch, and so on.</p>
 
 <p>Once you feel your plugin is reasonably complete (this should be determined partly by feedback you get during the development process), you can post your submission on the submissions tracker.  At this point, it will become a candidate for release on <a href="http://plugins.jedit.org">plugin central</a>.
 See <a href="http://plugins.jedit.org/releasing.php">this page</a> to find out how.</p>
