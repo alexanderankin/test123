@@ -254,9 +254,15 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	 */
 	public void push(SimpleAttributeSet currentAttrs, String str)
 	{
-		if ( pop(currentAttrs != cache_lastAttrs) )
+		if (currentAttrs != cache_lastAttrs)
 		{
+			pop(true);
+			
 			cache_lastAttrs = currentAttrs;
+		}
+		else
+		{
+			pop(false);
 		}
 		
 		buffer_start = lineBuffer.append(str).length();
@@ -271,23 +277,26 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	 */
 	public boolean pop(boolean forced)
 	{
-		if (forced || cache_strCount >= CACHE_SIZE_LIMIT)
+		if (buffer_start > 0)
 		{
-			output.writeAttrs(cache_lastAttrs, lineBuffer.substring(0, buffer_start));
-			
-			if ( buffer_start < lineBuffer.length() )  // data over cache
+			if (forced || cache_strCount >= CACHE_SIZE_LIMIT)
 			{
-				lineBuffer.delete(0, buffer_start);
-			}
-			else  // only cache
-			{
-				lineBuffer.setLength(0);
-			}
+				output.writeAttrs(cache_lastAttrs, lineBuffer.substring(0, buffer_start));
+				
+				if ( buffer_start < lineBuffer.length() )  // data over cache
+				{
+					lineBuffer.delete(0, buffer_start);
+				}
+				else  // only cache
+				{
+					lineBuffer.setLength(0);
+				}
+				
+				buffer_start   = 0;
+				cache_strCount = 0;
 			
-			buffer_start   = 0;
-			cache_strCount = 0;
-			
-			return true;
+				return true;
+			}
 		}
 		
 		return false;
@@ -432,32 +441,31 @@ public class ParsingOutputStreamTask extends SimpleOutputStreamTask
 	protected void outputData() throws Exception
 	{
 		/* the idea:
-		 *	1. save "external" buffer (lineBuffer) to "internal" (line)
+		 *	1. save data from "external" buffer (lineBuffer) to "internal" (line)
 		 *	2. use "external" buffer as an outputting cache
 		 *	3. if we have an unbreaked input string - append it to "external"
 		 *	   buffer AFTER the cached data; use "buffer_start" for navigation
 		 *	   purposes
 		 */
 		
-		String line = lineBuffer.substring(buffer_start);
+		// extract noncached data
+		String line = trim_cache();
 		
 		// convert all line breaks to internal "standard": "\n"
 		if ( ConsolePane.eolExchangeRequired() )
 		{
-			lineBuffer.setLength(buffer_start);
-			line = lineBuffer.append( ConsolePane.eolExchanging(line) ).toString();
+			line = ConsolePane.eolExchanging(line);
 		}
 	
 		// remove all ANSI escape sequences
 		if ( ansiParser != null && ansiParser.touch(AnsiEscapeParser.Behaviour.REMOVE_ALL, line) )
 		{
-			lineBuffer.setLength(buffer_start);
-			line = lineBuffer.append( ansiParser.removeAll(line) ).toString();
+			line = ansiParser.removeAll(line);
 		}
 		
-		// now there is no necessity to use external buffer -> clean
-		lineBuffer.ensureCapacity(buffer_start + line.length());
-		trim_cache();
+		
+		//******************************************
+		// parse error messages and escape sequences
 		
 		Matcher matcher = eolPattern.matcher(line);
 		

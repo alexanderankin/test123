@@ -10,6 +10,8 @@ $Date$
         Instead of VFSNodeSelected messages, SshConsole always gets textArea buffer chdir messages.
         Re-added "change to PV selected node" action.
         Bugfix in "change to PV root dir" and corresponding option in ProjectCommandOptionPane
+      [Artem Bryantsev]
+        Fix #3613991: Merge Stdout + Stderr on Windows duplicates output
 
     Version 5.1.1 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
