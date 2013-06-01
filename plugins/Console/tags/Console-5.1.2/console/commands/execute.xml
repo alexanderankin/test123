@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Execute">
+
+		<FILE_ENTRY LABEL="Executable" VARNAME="source"
+			EVAL="getBufferExecutable(buffer);" />
+		<ENTRY LABEL="Parameters" VARNAME="params" />
+
+		</CAPTION>
+
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System">
+			buf = new StringBuffer();
+			buf.append("\""+source+"\"");
+			
+			if (params.length() > 0)
+				buf.append(" "+params);
+
+			// return value
+			return buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
