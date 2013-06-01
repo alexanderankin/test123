@@ -13,7 +13,6 @@ changeToPvRoot(view) {
     if (project == null) return;
     con = view.getDockableWindowManager().getDockable("console");
     if (con == null) return;
-    // view.getDockableWindowManager().showDockableWindow("console");
     path = project.getRootPath();
     _shell = project.getProperty("console.shell");
     if (_shell == null) {
