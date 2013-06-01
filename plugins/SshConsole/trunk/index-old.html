@@ -53,18 +53,10 @@ a prompt like this: </p>
 </pre>
 
 <p> At this point, any commands you type will be ignored. To tell the plugin to
-connect somewhere, you need to do one of these things: </p>
+connect somewhere, and open a remote file. </p>
 
-<ol>
-<li> <b>Plugins - SshConsole - Open From Secure FTP server</b> - 
-you can choose a file after connecting. </li>
-<li> Navigate to a remote file by clicking on the node in the File System Browser
-or Project Viewer</li> 
-<li> Open a remote file in the current View's EditPane. </li>
-</ol>
-
-<p> After that, type something in the console, and you will see
-your response from the server's shell. </p>
+<p> Once you are editing a remote file, type something into SshConsole and you
+will see your response from the server's shell. </p>
 
 <h3> Instructions for first-time users: </h3>
 
@@ -73,11 +65,12 @@ your response from the server's shell. </p>
 section <tt>Events to Chdir</tt>. </p>
      <p> Ssh can also be considered a <tt>System Shell</tt> since it can be used
      for executing system commands. </p>
-     <p> SShConsole always responds to <tt>When TextArea buffer dir changes, cd to
+     <p> SshConsole always responds to <tt>When TextArea buffer dir changes, cd to
      it</tt>, regardless of the checkbox setting here. This will help ensure
      that SshConsole is always executing commands in the buffer's directory.</p>
 
-     <p> SshConsole can also respond to the other checked events, if you so desire. </p>
+     <p> SshConsole can also respond to the other checked events, (project
+     change, or tree node selection) if you check those options here. </p> 
 </li>
 
 
@@ -134,7 +127,7 @@ the project root directory, when building/running an sftp project. </p>
 
 <p> Furthermore, the node selection events that Console responds to from 
 the File System Browser are also sent from the ProjectViewer tree and passed
-onto the ssh shell when appropriate.
+onto the ssh shell when the chdir event option is checked.
 </p>
 
 <h2 id="jobcontrol"> Job Control </h2>
