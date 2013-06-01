@@ -155,10 +155,13 @@ during the execution of your program are <emphasis>not</emphasis> sent to the re
 the ssh shell: </para>
 
 <itemizedlist>
-  <listitem><para> <literal>%browse [<emphasis>path</emphasis>]</literal> tells your FSB to browse a given relative
-      path, defaults to your current working directory. </para></listitem>
-  <listitem><para> <literal>%edit <emphasis>fileName</emphasis></literal> tells jEdit to open given remote file as a
-      buffer in the View's EditPane. Relative paths are possible here. </para></listitem>
+  <listitem><para> <programlisting>%browse [<emphasis>path</emphasis>]</programlisting>
+  tells your FSB to browse a given relative path, defaults to your current
+  working directory. </para></listitem> 
+  <listitem><para> 
+  <programlisting>%edit <emphasis>fileName</emphasis></programlisting>
+  tells jEdit to open given remote file as a buffer in the View's EditPane.
+  Relative paths are possible here. </para></listitem> 
 </itemizedlist>
 </section>
 <section id="troubleshooting">
