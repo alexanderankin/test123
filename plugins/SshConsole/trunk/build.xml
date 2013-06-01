@@ -4,7 +4,8 @@
   	It is based on the standard build.xml file for jEdit plugins.
   </description>  
 
-	<property name="docs-proc.target"  value="none" />
+	<!-- property name="docs-proc.target"  value="none" /-->
+	<property name="user-doc.xml" location = "users-guide.xml"/>
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 
