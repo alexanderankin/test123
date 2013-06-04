@@ -61,6 +61,8 @@ public class ContextMenuPlugin extends EBPlugin {
 
 	private static HashMap cacheMenuBar = new HashMap();
 	private static HashMap cachePopUp = new HashMap();
+	
+	private static HashMap<View, JMenu> viewMenuMap = new HashMap<View, JMenu>();
 
 	private static int CORE_MENUBAR_ITEMS_COUNT;
 
@@ -182,20 +184,18 @@ public class ContextMenuPlugin extends EBPlugin {
 
 	//{{{ addToMenubar()
 	public static void addToMenubar(View view, String mode) {
-
 		JMenuBar menuBar = view.getJMenuBar();
 		if (menuBar != null && jEdit.getBooleanProperty("contextmenu.in-menubar")) {
-			if (hasMenuBarCustomMenu(menuBar)) {
-				removeCustomMenuFromMenuBar(menuBar);
-			}
+			removeCustomMenuFromMenuBar(view);
 			JMenu contextMenu = getMenuForMode(mode, CACHE_MENUBAR);
 			if (contextMenu != null) {
-				JMenu help = menuBar.getMenu(menuBar.getMenuCount() - 1);
-				menuBar.remove(help);
-				menuBar.add(contextMenu);
-				menuBar.add(help);
-				menuBar.updateUI();
+				// getMenu can return null if there are things in the menu bar 
+				// that are not JMenus. Attempt to insert the context JMenu
+				// just to the left of the Help JMenu
+				menuBar.add(contextMenu, CORE_MENUBAR_ITEMS_COUNT - 1);
+				viewMenuMap.put(view, contextMenu);
 			}
+			menuBar.revalidate();
 		}
 
 
@@ -262,8 +262,14 @@ public class ContextMenuPlugin extends EBPlugin {
 	//{{{ Private methods
 
 	//{{{ removeCustomMenuFromMenuBar()
-	private static void removeCustomMenuFromMenuBar(JMenuBar menu) {
-		menu.remove(menu.getMenu(menu.getMenuCount() - 2));
+	private static void removeCustomMenuFromMenuBar(View view) {
+		JMenu menu = viewMenuMap.get(view);
+		JMenuBar menuBar = view.getJMenuBar();
+		if (menu != null && menuBar != null) {
+			menuBar.remove(menu);
+			menuBar.revalidate();
+			viewMenuMap.remove(view);
+		}
 	} //}}}
 
 	//{{{ resetAllMenus()
@@ -272,10 +278,7 @@ public class ContextMenuPlugin extends EBPlugin {
 		for (int i = 0; i < views.length; i++) {
 			View view = views[i];
 			// remove context menu from menubar
-			JMenuBar menuBar = view.getJMenuBar();
-			if (menuBar != null && hasMenuBarCustomMenu(menuBar)) {
-				removeCustomMenuFromMenuBar(menuBar);
-			}
+			removeCustomMenuFromMenuBar(view);
 		}
 	} //}}}
 
@@ -291,11 +294,6 @@ public class ContextMenuPlugin extends EBPlugin {
 	private static void clearCache() {
 		cacheMenuBar.clear();
 		cachePopUp.clear();
-	} //}}}
-
-	//{{{ hasMenuBarCustomMenu()
-	private static boolean hasMenuBarCustomMenu(JMenuBar menu) {
-		return menu.getMenuCount() > CORE_MENUBAR_ITEMS_COUNT;
 	} //}}}
 
 	//}}}
