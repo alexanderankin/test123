@@ -146,6 +146,7 @@ public class DualDiffManager {
             if ( splitConfig != null ) {
                 validateConfig( view, splitConfig );
                 view.setSplitConfig( null, splitConfig );
+                view.getSplitPane().setResizeWeight(0.5);
             }
             else {
                 view.unsplit();
