@@ -53,10 +53,9 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
             Class c = Class.forName( "org.pushingpixels.substance.api.skin.Substance" + theme + "LookAndFeel" );
             UIManager.setLookAndFeel( (javax.swing.LookAndFeel)c.newInstance() );
             UIManager.put( "ClassLoader", c.getClassLoader() );
-            SubstanceLookAndFeelPlugin.initMenuSearch();
         }
         catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new UnsupportedLookAndFeelException(e.getMessage());
         }
     }
@@ -96,10 +95,6 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
                 theme = "Business";
             }
             theme_choices.setSelectedItem( theme );
-            
-            showMenuSearch = new JCheckBox("Show menu search");
-            showMenuSearch.setSelected(jEdit.getBooleanProperty(SubstanceLookAndFeelPlugin.SUBSTANCE_MENU_SEARCH));
-            addComponent(showMenuSearch);
         }
 
         /**
@@ -113,7 +108,6 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
             else {
                 jEdit.setProperty( SubstanceLookAndFeelPlugin.SUBSTANCE_THEME_PROP, theme_setting );
             }
-            jEdit.setBooleanProperty(SubstanceLookAndFeelPlugin.SUBSTANCE_MENU_SEARCH, showMenuSearch.isSelected());
             try {
                 SubstanceLnfInstaller.this.install();
             }
