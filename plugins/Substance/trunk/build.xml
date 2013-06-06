@@ -61,6 +61,7 @@
 
     <property name="build.dir" value="build"/>
     <property name="lib.dir" value="lib"/>
+    <property name="screenshot.dir" value="screenshots"/>
 
 	<!-- Patterns -->
 	<!--
@@ -73,6 +74,7 @@
                 <filename name="**/services.xml" />
                 <filename name="**/*.props" />
                 <filename name="**/index.html"/>
+                <filename name="${screenshot.dir}/*.png"/>
             </or>
         </and>
     </selector>
