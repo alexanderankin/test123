@@ -10,6 +10,7 @@ $Date$
         Instead of VFSNodeSelected messages, SshConsole always gets textArea buffer chdir messages.
         Re-added "change to PV selected node" action.
         Bugfix in "change to PV root dir" and corresponding option in ProjectCommandOptionPane
+        Removed an old memory leak in Console that prevented it from reloading cleanly.
       [Artem Bryantsev]
         Fix #3613991: Merge Stdout + Stderr on Windows duplicates output
 
