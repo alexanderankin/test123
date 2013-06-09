@@ -302,15 +302,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		if(this.xercesParserImpl.stopped)
 			throw new XercesParserImpl.StoppedException();
 
-		if(!buffer.getPath().equals(xml.PathUtilities.urlToPath(loc.getSystemId())))
-			return;
-              
-		// what do we do in this case?
-		if(loc.getLineNumber() == -1)
-			return;
-
 		elementDeclStack.pop();
-		
 	} //}}}
 
 	//{{{ DTD related methods
