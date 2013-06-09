@@ -160,9 +160,15 @@ public class ConsolePlugin extends EditPlugin
 	// {{{ stop() method
 	public void stop()
 	{
-		EditBus.removeFromBus(this);
-		getSystemShell().beforeStopping();
 		// clean up edit bus
+		EditBus.removeFromBus(this);
+		jEdit.removeActionSet(allCommands);
+		jEdit.removeActionSet(shellSwitchActions);
+		allCommands.removeAllActions();
+		shellSwitchActions.removeAllActions();
+		getSystemShell().beforeStopping();
+		
+		// ??? Does this really get all the Console objects that are in memory?
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++) {
 			Console console = getConsole(views[i]);
@@ -171,8 +177,6 @@ public class ConsolePlugin extends EditPlugin
 		}
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
-		jEdit.removeActionSet(allCommands);
-		jEdit.removeActionSet(shellSwitchActions);
 	} // }}}
 
 	// {{{ handleViewUpdate() method
