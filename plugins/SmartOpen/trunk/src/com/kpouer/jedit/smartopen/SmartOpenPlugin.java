@@ -208,7 +208,7 @@ public class SmartOpenPlugin extends EditPlugin
 			itemFinder = new FileIndex(activeProject);
 			//reindex only for in-memory storage
 			//if(jEdit.getBooleanProperty("options.smartopen.memoryindex")){
-				IndexProjectTask task = new IndexProjectTask(itemFinder);
+			IndexProjectTask task = new IndexProjectTask(itemFinder);
 				ThreadUtilities.runInBackground(task);
 			//}
 		}
