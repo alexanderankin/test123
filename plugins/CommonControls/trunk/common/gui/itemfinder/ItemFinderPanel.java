@@ -126,8 +126,8 @@ public class ItemFinderPanel<E> extends JPanel
 		E value = (E) itemList.getSelectedValue();
 		if (value != null)
 		{
-			searchField.setText("");
 			itemFinder.selectionMade(value);
+			searchField.setText("");
 			dispose();
 		}
 	} //}}}
