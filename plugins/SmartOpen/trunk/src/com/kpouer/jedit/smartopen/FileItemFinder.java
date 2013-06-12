@@ -30,7 +30,12 @@ import javax.swing.ListModel;
 
 import common.gui.itemfinder.AbstractItemFinder;
 import common.gui.itemfinder.PathCellRenderer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 //}}}
 
 /**
@@ -41,6 +46,8 @@ public class FileItemFinder extends AbstractItemFinder<String>
 	private final MyListModel model;
 	private final ListCellRenderer listCellRenderer;
 	private final FileIndex itemFinder;
+
+	private String position;
 
 	//{{{ FileItemFinder constructor
 	public FileItemFinder(FileIndex itemFinder)
@@ -66,17 +73,68 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 	//{{{ updateList() method
 	@Override
-	public void updateList(String s)
+	public void updateList(String search)
 	{
-		List<String> files = itemFinder.getFiles(s);
+		int index = search.indexOf(':');
+		position = null;
+		if (index != -1)
+		{
+			if (index < search.length())
+			{
+				position = search.substring(index + 1);
+			}
+			search = search.substring(0, index);
+		}
+		List<String> files = itemFinder.getFiles(search);
 		model.setData(files);
 	} //}}}
 
 	//{{{ selectionMade() method
 	@Override
-	public void selectionMade(String item)
+	public void selectionMade(final String path)
 	{
-		jEdit.openFile(jEdit.getActiveView().getEditPane(), item);
+		if (position != null)
+		{
+			final String[] split = position.split(",");
+			try
+			{
+				final int _seletedLine = Integer.parseInt(split[0]) - 1;
+				EditBus.addToBus(new EBComponent()
+				{
+					@Override
+					public void handleMessage(EBMessage message)
+					{
+						if (message instanceof BufferUpdate)
+						{
+							BufferUpdate bufferUpdate = (BufferUpdate) message;
+							if (bufferUpdate.getWhat() == BufferUpdate.LOADED &&
+								bufferUpdate.getBuffer().getPath().equals(path))
+							{
+								EditBus.removeFromBus(this);
+								JEditTextArea textArea = jEdit.getActiveView().getEditPane().getTextArea();
+								int caret = textArea.getLineStartOffset(_seletedLine);
+								if (caret == -1)
+									return;
+
+								if (split.length > 0)
+								{
+									int offset = Integer.parseInt(split[1]);
+									if (offset < textArea.getLineLength(_seletedLine))
+									{
+										caret += offset;
+									}
+								}
+								textArea.setCaretPosition(caret);
+							}
+						}
+					}
+				});
+			}
+			catch (NumberFormatException e)
+			{
+			}
+		}
+		jEdit.openFile(jEdit.getActiveView().getEditPane(), path);
 	} //}}}
 
 	//{{{ getListCellRenderer() method
