@@ -61,7 +61,7 @@ a prompt like this: </para>
 </programlisting>
 
 <para> At this point, any commands you type will be ignored. To tell the plugin to
-connect somewhere, and open a remote file. </para>
+connect somewhere, open a remote file. </para>
 
 <para> Once you are editing a remote file, type something into SshConsole and you
 will see your response from the server's shell. </para>
