@@ -1,8 +1,8 @@
 plugin.activator.ActivatorPlugin.name=Activator
 plugin.activator.ActivatorPlugin.author=Brad Mace, Alan Ezust, Dale Anson
-plugin.activator.ActivatorPlugin.version=1.3.1
+plugin.activator.ActivatorPlugin.version=1.4.0
 plugin.activator.ActivatorPlugin.depend.0=jdk 1.6.0
-plugin.activator.ActivatorPlugin.depend.1=jedit 04.05.99.00
+plugin.activator.ActivatorPlugin.depend.1=jedit 05.02.00.00
 plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 1.5
 plugin.activator.ActivatorPlugin.activate=defer
 plugin.activator.ActivatorPlugin.docs=docs/index.html
@@ -40,4 +40,5 @@ activator.(library)=(library)
 activator.Error=Error
 activator.Activated=Activated
 activator.Click_to_reload=Click to reload
+activator.dependentpluginsdialog.title=Select Plugins to Load
 

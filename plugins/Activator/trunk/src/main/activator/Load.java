@@ -8,9 +8,9 @@ import common.gui.actions.CustomAction;
 
 public class Load extends CustomAction
 {
-	PluginList.Plugin plugin;
+	Plugin plugin;
 
-	public Load(PluginList.Plugin plug) {
+	public Load(Plugin plug) {
 		super(plug.toString());
 		plugin = plug;
 	}
@@ -19,7 +19,7 @@ public class Load extends CustomAction
 	{
 		StopWatch sw = new StopWatch();
 		sw.start();
-		PluginManager.loadPluginJAR(plugin.getFile().toString());
+		PluginManager.getInstance().load(plugin);
 		sw.stop();
 		jEdit.getActiveView().getStatus().setMessage( plugin + " " + jEdit.getProperty("activator.loaded_in", "loaded in") + " " + sw);
 	}

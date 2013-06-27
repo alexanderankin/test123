@@ -1,57 +1,26 @@
 package activator;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
 
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.PluginJAR;
-import org.gjt.sp.util.Log;
+import javax.swing.AbstractAction;
 
-import common.gui.actions.CustomAction;
-
-class Reload extends CustomAction
+class Reload extends AbstractAction
 {
-	private String name;
-	private PluginJAR jar;
+	private Plugin plugin;
+	private ReloadPanel parent;
 
-	public Reload(PluginJAR pluginJAR, String dispName)
+	public Reload(ReloadPanel parent, Plugin plugin, String dispName)
 	{
 		super(dispName);
-		name = dispName;
-		jar = pluginJAR;
-		setToolTipText(jEdit.getProperty("activator.Click_to_reload", "Click to reload:") + " " + name);
-	}
-
-	public Reload(PluginList.Plugin plugin)
-	{
-		super(plugin.getJAR().getPlugin().getClassName());
-		jar = plugin.getJAR();
-		name = jar.getPlugin().getClassName();
-		setToolTipText(jEdit.getProperty("activator.Click_to_reload", "Click to reload:") + " " + name);
+		this.parent = parent;
+		this.plugin = plugin;
 	}
 
 	public void actionPerformed(ActionEvent event)
 	{
-		Log.log(Log.DEBUG, this, "Reloading " + jar);
-		Stack<String> unloaded = PluginManager.unloadPluginJAR(jar);
-		if (unloaded.empty())
-		{
-			return;
-		}
-		Set<String> reloaded = new HashSet<String>();
-		jar = null;
-		String path = null;
-		do
-		{
-			path = unloaded.pop();
-			if (path != null && !reloaded.contains(path))
-			{
-				PluginManager.loadPluginJAR(path);
-				reloaded.add(path);
-			}
-		}
-		while (path != null && !unloaded.empty());
+	    parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		PluginManager.getInstance().reload(plugin);
+		parent.setCursor(Cursor.getDefaultCursor());
 	}
 }

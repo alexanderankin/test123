@@ -1,4 +1,6 @@
 <project name="Activator" default="dist" basedir=".">
+<!-- DO NOT change the name above. There is code that checks specifically for
+"Activator.jar". -->
 
 <!--   New plugins should not use this as a template, but instead customize 
        a build.xml that reuses the standard ${build-support}/plugin-build.xml targets -->
@@ -23,6 +25,7 @@
   <path id="project.class.path">
 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
 	<pathelement location="${install.dir}/CommonControls.jar" />
+	<pathelement location="${install.dir}/kappalayout.jar"/>
 	<pathelement location="icons/**/*.gif"/>
 	<pathelement location="."/>
   </path>
