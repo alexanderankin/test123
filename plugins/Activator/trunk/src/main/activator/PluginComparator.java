@@ -10,8 +10,8 @@ import java.util.*;
  */
 class PluginComparator implements Comparator {
 	public int compare(Object alpha, Object beta) {
-		PluginList.Plugin a = (PluginList.Plugin) alpha;
-		PluginList.Plugin b = (PluginList.Plugin) beta;
+		Plugin a = (Plugin) alpha;
+		Plugin b = (Plugin) beta;
 
 		// check if plugin is a library, if so, it sorts after a plugin
 		if (a.isLibrary() && !b.isLibrary()) {

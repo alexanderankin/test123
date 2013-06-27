@@ -33,13 +33,13 @@ The Activator panel allows you to load/unload, and activate/deactivate each plug
 
 <h3>Reloader panel</h3>
 
-<p> The Reloader panel offers functionality that does not exist in jEdit: If you click a plugin to reload it, all of its dependent plugins will be reloaded also.
+<p> The Reloader panel offers functionality that does not exist in jEdit: If you click a plugin to reload it, all of its dependent plugins will be reloaded also. Additionally, any plugins with an optional dependency on the plugin will also be reloaded. If any of the reloaded plugins were active prior to the reload, they will be reactivated after the reload. 
 </p>
 
 <ul>
 <li>Green plugins are loaded and active</li>
 <li>Yellow plugins are loaded, but not yet activated</li>
-<li>red plugins loaded with errors</li>
+<li>Red plugins had errors during loading and are not loaded</li>
 </ul>
 
 </body>
