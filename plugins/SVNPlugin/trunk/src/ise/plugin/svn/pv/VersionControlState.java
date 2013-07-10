@@ -2,32 +2,22 @@
 package ise.plugin.svn.pv;
 
 import projectviewer.config.VersionControlService;
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.importer.ImporterFileFilter;
-import projectviewer.event.ProjectUpdate;
-import projectviewer.event.ViewerUpdate;
-import projectviewer.ProjectViewer;
 
 import java.io.*;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.io.VFSFile;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.util.ThreadUtilities;
 
-import ise.plugin.svn.PVHelper;
-import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.command.Status;
 import ise.plugin.svn.io.*;
@@ -39,7 +29,7 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 /**
  * Provide version control icons for file status to ProjectViewer.
  */
-public class VersionControlState implements VersionControlService, EBComponent {
+public class VersionControlState implements VersionControlService {
 
     // version control states for Subversion
     public static final int NONE = 0;    // no state
@@ -73,10 +63,6 @@ public class VersionControlState implements VersionControlService, EBComponent {
     }
 
     private static Status command = new Status();
-
-    // hashtable rather than hashmap as synchronization is needed. This caches
-    // the last known status of a file.
-    private static Hashtable<String, FileStatus> cache = new Hashtable<String, FileStatus>();
 
     private static class SingletonHolder {
         public static final VersionControlState instance = new VersionControlState();
@@ -114,82 +100,32 @@ public class VersionControlState implements VersionControlService, EBComponent {
         if ( path == null ) {
             return UNKNOWN;
         }
-        FileStatus rtn = checkModified( path );
-        if ( rtn.status != NORMAL ) {
-            rtn = getStatus( path );
-        }
-        return rtn.status;
-    }
-
-    // gets the status of the file by calling svn, updates the cache with the
-    // current status.
-    FileStatus getStatus( String path ) {
         File file = new File( path );
         SVNStatus status = command.getStatus( file );
         if ( status == null ) {
-            return new FileStatus( new Date().getTime(), NONE );
+            return NONE;
         }
         SVNStatusType type = status.getContentsStatus();
-        FileStatus rtn = cache.get( path );
-        if ( rtn == null ) {
-            rtn = new FileStatus( file.lastModified(), UNKNOWN );
-            cache.put( path, rtn );
-        }
-        rtn.timestamp = file.lastModified();
         if ( SVNStatusType.STATUS_ADDED.equals( type ) ) {
-            rtn.status = LOCAL_ADD;
+            return LOCAL_ADD;
         } else if ( SVNStatusType.STATUS_CONFLICTED.equals( type ) ) {
-            rtn.status = CONFLICT;
+            return CONFLICT;
         } else if ( SVNStatusType.STATUS_DELETED.equals( type ) ) {
-            rtn.status = DELETED;
+            return DELETED;
         } else if ( SVNStatusType.STATUS_IGNORED.equals( type ) ) {
-            rtn.status = DELETED;
+            return DELETED;
         } else if ( status.isLocked() ) {
-            rtn.status = LOCKED;
+            return LOCKED;
         } else if ( SVNStatusType.STATUS_MISSING.equals( type ) ) {
-            rtn.status = LOCAL_RM;
+            return LOCAL_RM;
         } else if ( SVNStatusType.STATUS_MODIFIED.equals( type ) ) {
-            rtn.status = LOCAL_MOD;
+            return LOCAL_MOD;
         } else if ( SVNStatusType.STATUS_UNVERSIONED.equals( type ) ) {
-            rtn.status = UNVERSIONED;
+            return UNVERSIONED;
         } else if ( SVNStatusType.STATUS_NORMAL.equals( type ) ) {
-            rtn.status = NORMAL;
-        } else {
-            rtn.status = NONE;
-        }
-        return rtn;
-    }
-
-    // check if the file has been changed by checking the timestamp
-    FileStatus checkModified( String path ) {
-        // attempt to load the status cache. On start up, the project loaded message
-        // is sent before this plugin is loaded, so the initial cache loading doesn't
-        // happen from handleMessage. The only time the cache size should be 0 is on
-        // start up.
-        if ( cache.size() == 0 ) {
-            VPTProject project = PVHelper.getProjectForFile( path );
-            if ( project != null ) {
-                final String projectName = project.getName();
-                ThreadUtilities.runInBackground(new Runnable(){
-                        public void run() {
-                            loadCache( projectName );
-                        }
-                });
-            }
-        }
-        FileStatus status = cache.get( path );
-        File f = new File( path );
-        if ( status == null ) {
-            status = new FileStatus( f.lastModified(), NORMAL );
-            cache.put( path, status );
-        } else {
-            long lastModified = f.lastModified();
-            if ( lastModified != status.timestamp ) {
-                status.timestamp = lastModified;
-                status.status = UNKNOWN;
-            }
-        }
-        return status;
+            return NORMAL;
+        } 
+        return NONE;
     }
 
     /**
@@ -248,9 +184,6 @@ public class VersionControlState implements VersionControlService, EBComponent {
      * @param proj The project.
      */
     public void dissociate( VPTProject project ) {
-        if ( project != null ) {
-            deleteCache( project.getName() );
-        }
     }
 
     /**
@@ -315,173 +248,5 @@ public class VersionControlState implements VersionControlService, EBComponent {
                 return jEdit.getProperty( "ips.Import_files_in_under_SVN_version_control_only.", "Import files in under SVN version control only." );
             }
         };
-    }
-
-    class FileStatus {
-        // timestamp that the status of the file was last checked
-        public long timestamp;
-
-        // int representing the status of the file last time it was checked
-        public int status;
-
-        public FileStatus( Long lastModified, int status ) {
-            timestamp = lastModified;
-            this.status = status;
-        }
-    }
-
-    public void handleMessage( EBMessage msg ) {
-        if ( msg == null ) {
-            return;
-        }
-        if ( msg instanceof BufferUpdate ) {
-            // update status for single file
-            BufferUpdate bu = ( BufferUpdate ) msg;
-            Object what = bu.getWhat();
-            if ( BufferUpdate.DIRTY_CHANGED.equals( what ) || BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
-                getStatus( bu.getBuffer().getPath() );
-            }
-        } else if ( msg instanceof ProjectUpdate ) {
-            // update status for added files
-            ProjectUpdate pu = ( ProjectUpdate ) msg;
-            if ( ProjectUpdate.Type.FILES_CHANGED.equals( pu.getType() ) ) {
-                Collection<VPTFile> files = pu.getAddedFiles();
-                if (files != null) {
-                    for ( VPTFile file : files ) {
-                        if (file != null) {
-                            getStatus( file.getNodePath() );
-                        }
-                    }
-                }
-            }
-        } else if ( msg instanceof ViewerUpdate ) {
-            // reload cache with new project files
-            final ViewerUpdate vu = ( ViewerUpdate ) msg;
-            if ( ViewerUpdate.Type.PROJECT_LOADED.equals( vu.getType() ) ) {
-                String projectName = vu.getNode().getName();
-                boolean loaded = loadCache( projectName );
-                if ( ! loaded ) {
-                    ThreadUtilities.runInBackground( new Runnable() {
-                        public void run() {
-                            reloadCache( vu.getViewer() );
-                        }
-                    } );
-                }
-            } else if ( ViewerUpdate.Type.PROJECT_UNLOADING.equals( vu.getType() ) ) {
-                String projectName = vu.getNode().getName();
-                saveCache( projectName );
-            }
-        }
-    }
-
-    // loads the status cache by starting with a project and recursing through
-    // each child item in the project root.  
-    void reloadCache( ProjectViewer pv ) {
-        if ( pv == null ) {
-            return;
-        }
-        VPTNode root = pv.getRoot();
-        reloadCache( root );
-    }
-
-    void reloadCache( TreeNode node ) {
-        if ( node == null ) {
-            return;
-        }
-        getNodeState( ( VPTNode ) node );
-        for ( int i = 0; i < node.getChildCount(); i++ ) {
-            reloadCache( node.getChildAt( i ) );
-        }
-    }
-
-    // saves status cache to disk. Only save the non-normal and non-unknown statuses.
-    // Normal is the default, unknown just means the file hasn't been used in a while.
-    // Unknowns can assumed to be normal.
-    void saveCache( String projectName ) {
-        File storageDir = SVNPlugin.getPluginHomeDir();
-        if ( storageDir != null ) {
-            try {
-                File cacheDir = new File( storageDir, projectName );
-                if ( !cacheDir.exists() ) {
-                    cacheDir.mkdir();
-                }
-                File cacheFile = new File( cacheDir, "statusCache.obj" );
-                if ( cacheFile.exists() ) {
-                    cacheFile.delete();
-                }
-                FileOutputStream fileOut = new FileOutputStream( cacheFile, false );
-                ObjectOutputStream objectOut = new ObjectOutputStream( new BufferedOutputStream(fileOut, 64 * 1024));
-                for ( String key : cache.keySet() ) {
-                    FileStatus fs = cache.get( key );
-                    if ( fs != null && fs.status != NORMAL && fs.status != UNKNOWN ) {
-                        objectOut.writeObject( key );
-                        objectOut.writeLong( fs.timestamp );
-                        objectOut.writeInt( fs.status );
-                    }
-                }
-                objectOut.close();
-            } catch ( Exception ignored ) {                // NOPMD
-            }
-        }
-    }
-
-    // loads the status cache from disk if possible
-    boolean loadCache( String projectName ) {
-        File storageDir = SVNPlugin.getPluginHomeDir();
-        if ( storageDir != null ) {
-            ObjectInputStream objectIn = null;
-            try {
-                File cacheDir = new File( storageDir, projectName );
-                if ( !cacheDir.exists() ) {
-                    return false;
-                }
-                File cacheFile = new File( cacheDir, "statusCache.obj" );
-                if ( !cacheFile.exists() ) {
-                    return false;
-                }
-                InputStream fileIn = new BufferedInputStream(new FileInputStream( cacheFile ), Math.min(64 * 1024, (int)cacheFile.length()));
-                objectIn = new ObjectInputStream( fileIn );
-                cache = new Hashtable<String, FileStatus>();
-                while ( true ) {
-                    String key = ( String ) objectIn.readObject();
-                    long timestamp = objectIn.readLong();
-                    int status = objectIn.readInt();
-                    cache.put( key, new FileStatus( timestamp, status ) );
-                    // loop ends on EOFException. Seems a little lame...
-                }
-            } catch ( EOFException eof ) {
-                // this is expected and indicates the cache was fully read from disk
-                return true;
-            } catch ( Exception ignored ) {
-                return false;
-            } finally {
-                try {
-                    if (objectIn != null) {
-                        objectIn.close();
-                    }
-                } catch ( Exception ignored ) {                    // NOPMD
-                }
-            }
-
-        }
-        return false;
-    }
-
-    // removes any files associated with this project
-    void deleteCache( String projectName ) {
-        File storageDir = SVNPlugin.getPluginHomeDir();
-        if ( storageDir != null ) {
-            try {
-                File cacheDir = new File( storageDir, projectName );
-                if ( cacheDir.exists() ) {
-                    File[] files = cacheDir.listFiles();
-                    for ( File file : files ) {
-                        file.delete();
-                    }
-                    cacheDir.delete();
-                }
-            } catch ( Exception ignored ) {                // NOPMD
-            }
-        }
     }
 }
