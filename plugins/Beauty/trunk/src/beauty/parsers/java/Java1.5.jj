@@ -53,6 +53,9 @@ import java.util.*;
  *
  * TODO: look at whitespace handling in the jsp beautifier and port the ideas
  * here.  In particular, look at the special token handling and getSpecial(Token).
+ * TODO: look at javadoc stubs. This is a feature request from the mailing list.
+ * The line by line parsing may make this difficult, but perhaps a post parsing
+ * with a different parser (javasidekick maybe?) would be doable.
  */
 public class JavaParser
 {
@@ -142,6 +145,14 @@ public class JavaParser
 
     private void trim() {
         token_source.trim();
+    }
+    
+    private void trimNL() {
+        token_source.trimNL();   
+    }
+    
+    private void trimNLs() {
+        token_source.trimNLs();   
     }
 
     private void trimWhitespace() {
@@ -378,6 +389,10 @@ TOKEN_MGR_DECLS :
             trimmed = true;
         }
         return trimmed;
+    }
+    
+    static void trimNLs() {
+        while(trimNL());   
     }
 
     // trim all \n and/or \r from the end of the given string
@@ -1080,11 +1095,14 @@ TOKEN :
  */
 
 /** 
- * This is the main entry  point of the parser. In general, a full compilation
+ * This is the main entry  point of the parser. In general, a full compilation unit
  * is expected, however, a block statement is also acceptable.  This means that
  * this beautifier can be used to clean up random bits of java code, like
  * perhaps code in a scriptlet section in a jsp file.  A nice enhancement would
  * be to be able to support beanshell code.
+ * TODO: this needs a little work, a valid compilation unit might not have a
+ * package declaration or any import statements, in which case it's treated like
+ * a block statement and much of the compilation unit will be lost. Not good.  
  */
 void CompilationUnit():
 {}
@@ -1741,7 +1759,7 @@ void PrimarySuffix():
 void Literal():
 {}
 {
-  t=<INTEGER_LITERAL> { trim(); add(t); }
+  t=<INTEGER_LITERAL> { /*trim();*/ add(t); }
 |
   t=<FLOATING_POINT_LITERAL> { trim(); add(t); }
 |
@@ -1879,6 +1897,8 @@ void BlockStatement():
   LocalVariableDeclaration() ";" { add(";"); write(); }
 |
   Statement()
+|
+  Annotation(false)
 |
   ClassOrInterfaceDeclaration(0)
 }
@@ -2337,30 +2357,51 @@ void Annotation(boolean addLineBreak):
 {}
 {
    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-   NormalAnnotation() { if (addLineBreak) writeln();}
+   NormalAnnotation()
  |
    LOOKAHEAD( "@" Name() "(" )
-   SingleMemberAnnotation() { if (addLineBreak) writeln();}
+   SingleMemberAnnotation(addLineBreak) 
  |
-   MarkerAnnotation() { if (addLineBreak) writeln();}
+   MarkerAnnotation(addLineBreak) 
 }
 
 void NormalAnnotation():
 {}
 {
-   "@" { add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" { trimWhitespace(); trim(); add(" )"); write();}
+   "@" { add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" 
+   { 
+       trimWhitespace(); 
+       trim(); 
+       add(" )"); 
+       write();
+   }
 }
 
-void MarkerAnnotation():
+void MarkerAnnotation(boolean addLineBreak):
 {}
 {
-    "@" { token_source.trimNL(); add("@"); } Name() {write();}
+    "@" { token_source.trimNL(); add("@"); } Name() 
+    {
+        write();
+        if (addLineBreak)
+        {
+            writeln();   
+        }
+    }
 }
 
-void SingleMemberAnnotation():
+void SingleMemberAnnotation(boolean addLineBreak):
 {}
 {
-  "@" { add("@"); } Name() "(" { add("( "); } MemberValue() ")" { add(" )"); write(); }
+  "@" { add("@"); } Name() "(" { add("( "); } MemberValue() ")" 
+  { 
+      add(" )"); 
+      write();
+      if (addLineBreak)
+      {
+          writeln();
+      }
+  }
 }
 
 void MemberValuePairs():
