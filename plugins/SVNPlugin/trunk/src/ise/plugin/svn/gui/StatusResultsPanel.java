@@ -79,7 +79,7 @@ public class StatusResultsPanel extends JPanel {
             revision_msg = jEdit.getProperty("ips.Status_checked_locally>", "Status checked locally:");
         }
         else {
-            revision_msg = jEdit.getProperty("ips.Status_checked_against_revision>", "Status checked against revision:") + " " + results.getRevision();
+            revision_msg = jEdit.getProperty("ips.Status_checked_against_revision>", "Status checked against revision:") + ' ' + results.getRevision();
         }
         JLabel label = new JLabel( revision_msg );
         label.setBorder( new EmptyBorder( 6, 3, 6, 3 ) );
@@ -114,12 +114,6 @@ public class StatusResultsPanel extends JPanel {
             added = true;
         }
 
-        list = results.getUnversioned();
-        if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned files (need added?):" ), list, VersionControlState.UNVERSIONED ) );
-            added = true;
-        }
-
         list = results.getDeleted();
         if ( list != null ) {
             root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted files (need committed?):" ), list, VersionControlState.DELETED ) );
@@ -138,6 +132,12 @@ public class StatusResultsPanel extends JPanel {
             added = true;
         }
 
+        list = results.getUnversioned();
+        if ( list != null ) {
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned files (need added?):" ), list, VersionControlState.UNVERSIONED ) );
+            added = true;
+        }
+
         if ( added ) {
             tree = new JTree( root );
             tree.setRootVisible( false );
@@ -149,7 +149,7 @@ public class StatusResultsPanel extends JPanel {
             add( tree, BorderLayout.CENTER );
         }
         else {
-            label.setText( label.getText() + " " + jEdit.getProperty("ips.(All_files_up_to_date.)", "(All files up to date.)") );
+            label.setText( label.getText() + ' ' + jEdit.getProperty("ips.(All_files_up_to_date.)", "(All files up to date.)") );
         }
     }
 
@@ -171,18 +171,18 @@ public class StatusResultsPanel extends JPanel {
             this.iconIndex = iconIndex;
         }
         public String toString() {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(64);
             sb.append(status.getFile().toString());
             boolean contents_changed = SVNStatusType.STATUS_MODIFIED.equals(status.getContentsStatus());
             boolean properties_changed = SVNStatusType.STATUS_MODIFIED.equals(status.getPropertiesStatus());
             if (contents_changed) {
-                sb.append(" (").append(jEdit.getProperty("ips.Contents", "Contents")).append(" ");
+                sb.append(" (").append(jEdit.getProperty("ips.Contents", "Contents")).append(' ');
             }
             if (properties_changed) {
                 sb.append(contents_changed ? jEdit.getProperty("ips._and_Properties", " and Properties") : " (" + jEdit.getProperty("ips.Properties", "Properties"));
             }
             if (contents_changed || properties_changed) {
-                sb.append(" ").append(jEdit.getProperty("ips.modified", "modified")).append(")");
+                sb.append(' ').append(jEdit.getProperty("ips.modified", "modified")).append(')');
             }
             return sb.toString();
         }
@@ -288,10 +288,10 @@ public class StatusResultsPanel extends JPanel {
                                     String comp = type.getUserObject().toString();
                                     // really should get these strings replaced
                                     if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts" ) ) ) {
-                                        message.append( pathname ).append( " " ).append(jEdit.getProperty("ips.has_conflicts.", "has conflicts.")).append("\n" );
+                                        message.append( pathname ).append( ' ' ).append(jEdit.getProperty("ips.has_conflicts.", "has conflicts.")).append('\n' );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.outofdate", "Out of date" ) ) ) {
-                                        message.append( pathname ).append( " " ).append(jEdit.getProperty("ips.is_out_of_date.", "is out of date.")).append("\n" );
+                                        message.append( pathname ).append( ' ' ).append(jEdit.getProperty("ips.is_out_of_date.", "is out of date.")).append('\n' );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.modified", "Modified" ) ) ) {
                                         paths.put( pathname, jEdit.getProperty("ips.Modified", "Modified") );
@@ -300,13 +300,13 @@ public class StatusResultsPanel extends JPanel {
                                         paths.put( pathname, jEdit.getProperty("ips.Added", "Added") );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned" ) ) ) {
-                                        message.append( pathname ).append( " " ).append(jEdit.getProperty("ips.is_not_under_version_control.", "is not under version control.")).append("\n" );
+                                        message.append( pathname ).append( ' ' ).append(jEdit.getProperty("ips.is_not_under_version_control.", "is not under version control.")).append('\n' );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted" ) ) ) {
                                         paths.put( pathname, jEdit.getProperty("ips.Deleted", "Deleted") );
                                     }
                                     else if ( comp.startsWith( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.missing", "Missing" ) ) ) {
-                                        message.append( pathname ).append( " ").append(jEdit.getProperty("ips.is_missing.", "is missing.")).append("\n" );
+                                        message.append( pathname ).append( ' ').append(jEdit.getProperty("ips.is_missing.", "is missing.")).append('\n' );
                                     }
                                 }
                             }
