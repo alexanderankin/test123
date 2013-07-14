@@ -4,9 +4,17 @@
 
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
+	<property file="SaxonPlugin.props"/>
 
 	<property name="jar.file" value="SaxonPlugin.jar"/>
-	<property name="version" value="9-4-0-6"/>
+
+	<!-- saxon HE zip file version is - delimited
+	     compute it from plugin version
+          -->
+	<script language="javascript">
+		var dotted = project.getProperty("plugin.saxon.SaxonPlugin.version");
+		project.setProperty("version", dotted.replaceAll("\\.", "-"));
+	</script>
 
 	<target name="init">
 		<mkdir dir="build"/>
