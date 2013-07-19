@@ -41,6 +41,9 @@ public class InvokeAndWait {
 	 * withTimeouts will return early if interrupted, even if r is not done. 
 	 * In this case, it will cancel running r (if it's not already running) and will return false.
 	 * 
+	 * if withTimeouts is called from the EDT it will run r synchronously
+	 * (timeout on timeToRun will not be respected)
+	 * 
 	 * @param	r				task to run in the EDT
 	 * @param	timeToGetInEDT	presumably short time to wait for r to be scheduled in the EDT. 0 to wait forever, but it wouldn't make sense
 	 * @param	timeToRun		presumably longer time to wait for r to be run.
@@ -55,48 +58,56 @@ public class InvokeAndWait {
 		final AtomicBoolean done = new AtomicBoolean(false);
 		final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
 		final Object lock = new Object();
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				if(!cancelled.get()){
-					synchronized (lock) {
-						started.set(true);
-						lock.notify();
-					}
-					try{
-						r.run();
-					}catch(Throwable t){
-						exception.set(t);
-					}
-					synchronized (lock) {
-						done.set(exception.get()==null);
-						lock.notify();
+		if(SwingUtilities.isEventDispatchThread()){
+			try{
+				r.run();
+			}catch(Throwable t){
+				throw new InvocationTargetException(t);
+			}
+			return true;
+		}else{
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					if(!cancelled.get()){
+						synchronized (lock) {
+							started.set(true);
+							lock.notify();
+						}
+						try{
+							r.run();
+						}catch(Throwable t){
+							exception.set(t);
+						}
+						synchronized (lock) {
+							done.set(exception.get()==null);
+							lock.notify();
+						}
 					}
 				}
-			}
-		});
+			});
 		
-		synchronized (lock)
-		{
-			try
+			synchronized (lock)
 			{
-				if(!started.get()){
-					lock.wait(timeToGetInEDT);
+				try
+				{
+					if(!started.get()){
+						lock.wait(timeToGetInEDT);
+					}
+					if(started.get() && !done.get()){
+						lock.wait(timeToRun);
+					}
+				}catch(InterruptedException e){
+					// fine, I'll cancel
 				}
-				if(started.get() && !done.get()){
-					lock.wait(timeToRun);
-				}
-			}catch(InterruptedException e){
-				// fine, I'll cancel
+				cancelled.set(true);
 			}
-			cancelled.set(true);
-		}
 		
-		if(exception.get() != null){
-			throw new InvocationTargetException(exception.get());
-		}
-		
-		return done.get();
-		
+			if(exception.get() != null){
+				throw new InvocationTargetException(exception.get());
+			}
+			
+			return done.get();
+		}		
 	}
 
 }
