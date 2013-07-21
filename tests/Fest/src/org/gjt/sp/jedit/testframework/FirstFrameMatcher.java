@@ -52,6 +52,7 @@ public class FirstFrameMatcher implements ComponentMatcher{
 
 	public boolean matches(Component comp){
 		if(found)return false;
+		if(!comp.isVisible())return false;
 		if(comp instanceof Frame){
 			found = title.equals(((Frame)comp).getTitle());
 		}

@@ -26,15 +26,20 @@ package org.gjt.sp.jedit.testframework;
 //{{{ Imports
 
 import java.io.*;
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Window;
 
 import javax.swing.SwingUtilities;
-
 import javax.swing.tree.*;
 import javax.swing.JTree;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.regex.Pattern;
+
+
 
 //{{{  jEdit
 import org.gjt.sp.jedit.*;
@@ -45,12 +50,13 @@ import org.gjt.sp.jedit.testframework.EBFixture.MessageListener;
 
 //{{{ junit
 import org.junit.*;
+
 import static org.junit.Assert.*;
-//}}}
 
 //{{{ FEST...
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
+import org.fest.swing.finder.DialogFinder;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.driver.BasicJTreeCellReader;
 import org.fest.swing.lock.ScreenLock;
@@ -134,18 +140,20 @@ public class TestUtils {
 
     public static void tearDownNewjEdit() {
         listener.unregister();
-        // FIXME: how can jEditFrame not be null !
+        // jEditFrame and robot may be nulled by tearDownExistingjEdit
+        // if JEditRunner is used.
         if ( jEditFrame != null ) {
             robot.releaseMouseButtons();
             if (ScreenLock.instance().acquiredBy( robot ))
             	ScreenLock.instance().release( robot );
+            
+            jEditFrame = null;
             Log.log( "tearDown done in jEdit" );
         }
         else if ( robot != null ) {
             robot.cleanUp();
+            robot = null;
         }
-        robot = null;
-        jEditFrame = null;
 
     }
 
@@ -185,6 +193,25 @@ public class TestUtils {
 		if (ScreenLock.instance().acquiredBy( robot ))
 			ScreenLock.instance().release( robot );
 
+		final Collection<Component> roots = robot.finder().findAll(new ComponentMatcher() {
+			
+			@Override
+			public boolean matches(Component c) {
+				return c instanceof Window;
+			}
+		});
+
+		for(Component c: roots){
+			if(c != jEditFrame.target){
+				robot().close((Window)c);
+			}
+		}
+		
+		// close any open buffer
+		for(Buffer b: jEdit.getBuffers()){
+			TestUtils.close(jEdit.getActiveView(), b);
+		}
+		
 		robot.cleanUpWithoutDisposingWindows();
 		Log.log( "tearDown done in jEdit" );
         robot = null;
@@ -599,6 +626,17 @@ public class TestUtils {
 		return new PluginOptionsFixture(robot(),target);
     }
     
+    /**
+     * @return the plugin options dialog
+     */
+    public static PluginOptionsFixture globalOptions(){
+    	jEditFrame().menuItemWithPath("Utilities","Global Options...").click();
+		
+		DialogFixture optionsDialog = WindowFinder.findDialog(PluginOptionsMatcher.INSTANCE).withTimeout(5000).using(robot());
+		Dialog target = optionsDialog.targetCastedTo(Dialog.class);
+		return new PluginOptionsFixture(robot(),target);
+    }
+
     public static class PluginOptionsMatcher extends GenericTypeMatcher<org.gjt.sp.jedit.gui.EnhancedDialog>{
     	public static final PluginOptionsMatcher INSTANCE = new PluginOptionsMatcher();
     	

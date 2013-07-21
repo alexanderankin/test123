@@ -24,6 +24,7 @@
     <!-- TODO: what is this for?  Should it be 'file' instead of 'location'? -->
     <property name="build.properties" location="${test.framework.home}/build.properties"/>
 
+    <property name="junit-report.enabled" value="true"/>
 
     <property name="project.test.src.dir" location="${basedir}"/>
     <property name="project.test.classes.dir" location="${basedir}/jedit_tests_classes"/>
@@ -34,6 +35,9 @@
     <property name="project.toinstrument.dir" value="${test.jedit.src}/build"/>
     <property name="project.toinstrument.jar" value="jedit.jar"/>
    
+    <fileset id="project.resources" dir="." defaultexcludes="yes">
+        <include name="BAH"/>
+    </fileset> 
     
     <path id="project.class.path">
         <pathelement path="${project.test.classes.dir}"/>

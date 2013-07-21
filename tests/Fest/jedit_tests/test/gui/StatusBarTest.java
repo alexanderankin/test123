@@ -1,34 +1,24 @@
 package test.gui;
 
-import static java.awt.event.InputEvent.*;
 import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.edt.*;
 import org.fest.swing.timing.Pause;
 
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.options.GlobalOptions;
 
+@RunWith(JEditRunner.class)
 public class StatusBarTest {
-    @BeforeClass
-    public static void setUpjEdit() {
-        TestUtils.beforeClass();
-    }
-
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
-
 
     @Test
     public void testOptionPane() {
@@ -40,10 +30,8 @@ public class StatusBarTest {
         jEdit.setBooleanProperty( "view.status.show-caret-bufferlength", false );
 
         // open the options and select the options pane
-        TestUtils.jEditFrame().menuItemWithPath( "Utilities", "Global Options..." ).click();
-        DialogFixture optionsDialog = WindowFinder.findDialog( GlobalOptions.class ).withTimeout( 5000 ).using( TestUtils.robot() );
-        TestUtils.selectPath( optionsDialog.tree(), new String[] {"jEdit", "Status Bar"} );
-        JPanelFixture pane = optionsDialog.panel( "status" );
+        PluginOptionsFixture optionsDialog = TestUtils.globalOptions();
+        JPanelFixture pane = optionsDialog.optionPane("jEdit/Status Bar", "status" );
         assertTrue( "StatusBarOptionPane not found", pane != null );
 
         // test that all checkboxes are present and click them
@@ -73,13 +61,7 @@ public class StatusBarTest {
         checkbox.click();
 
         // click the OK button on the options dialog
-        optionsDialog.button(
-            new GenericTypeMatcher<JButton>( JButton.class ) {
-                public boolean isMatching( JButton button ) {
-                    return "OK".equals( button.getText() );
-                }
-            }
-        ).click();
+        optionsDialog.OK();
 
         // wait a second to make sure jEdit has time to save the properties
         Pause.pause( 1000 );
@@ -117,82 +99,50 @@ public class StatusBarTest {
         caretStatus.requireText( "1,1 (0/0)" );
 
         // no line number
-        TestUtils.jEditFrame().menuItemWithPath( "Utilities", "Global Options..." ).click();
-        DialogFixture optionsDialog = WindowFinder.findDialog( GlobalOptions.class ).withTimeout( 5000 ).using( TestUtils.robot() );
-        TestUtils.selectPath( optionsDialog.tree(), new String[] {"jEdit", "Status Bar"} );
-        JPanelFixture pane = optionsDialog.panel( "status" );
+        PluginOptionsFixture optionsDialog = TestUtils.globalOptions();
+        JPanelFixture pane = optionsDialog.optionPane("jEdit/Status Bar", "status" );
         assertTrue( "StatusBarOptionPane not found", pane != null );
         JCheckBoxFixture checkbox = pane.checkBox( "showCaretLineNumber" );
         assertTrue( "Cannot find showCaretLineNumber checkbox in StatusBarOptionPane", checkbox != null );
         checkbox.requireSelected();
         checkbox.click();
-        optionsDialog.button(
-            new GenericTypeMatcher<JButton>( JButton.class ) {
-                public boolean isMatching( JButton button ) {
-                    return "OK".equals( button.getText() );
-                }
-            }
-        ).click();
+        optionsDialog.OK();
         Pause.pause( 500 );
         caretStatus.requireText( "1 (0/0)" );
 
         // no dot
-        TestUtils.jEditFrame().menuItemWithPath( "Utilities", "Global Options..." ).click();
-        optionsDialog = WindowFinder.findDialog( GlobalOptions.class ).withTimeout( 5000 ).using( TestUtils.robot() );
-        TestUtils.selectPath( optionsDialog.tree(), new String[] {"jEdit", "Status Bar"} );
-        pane = optionsDialog.panel( "status" );
+        optionsDialog = TestUtils.globalOptions();
+        pane = optionsDialog.optionPane("jEdit/Status Bar", "status" );
         assertTrue( "StatusBarOptionPane not found", pane != null );
         checkbox = pane.checkBox( "showCaretDot" );
         assertTrue( "Cannot find showCaretDot checkbox in StatusBarOptionPane", checkbox != null );
         checkbox.requireSelected();
         checkbox.click();
-        optionsDialog.button(
-            new GenericTypeMatcher<JButton>( JButton.class ) {
-                public boolean isMatching( JButton button ) {
-                    return "OK".equals( button.getText() );
-                }
-            }
-        ).click();
+        optionsDialog.OK();
         Pause.pause( 500 );
         caretStatus.requireText( "(0/0)" );
 
         // no offset
-        TestUtils.jEditFrame().menuItemWithPath( "Utilities", "Global Options..." ).click();
-        optionsDialog = WindowFinder.findDialog( GlobalOptions.class ).withTimeout( 5000 ).using( TestUtils.robot() );
-        TestUtils.selectPath( optionsDialog.tree(), new String[] {"jEdit", "Status Bar"} );
-        pane = optionsDialog.panel( "status" );
+        optionsDialog = TestUtils.globalOptions();
+        pane = optionsDialog.optionPane("jEdit/Status Bar", "status" );
         assertTrue( "StatusBarOptionPane not found", pane != null );
         checkbox = pane.checkBox( "showCaretOffset" );
         assertTrue( "Cannot find showCaretOffset checkbox in StatusBarOptionPane", checkbox != null );
         checkbox.requireSelected();
         checkbox.click();
-        optionsDialog.button(
-            new GenericTypeMatcher<JButton>( JButton.class ) {
-                public boolean isMatching( JButton button ) {
-                    return "OK".equals( button.getText() );
-                }
-            }
-        ).click();
+        optionsDialog.OK();
         Pause.pause( 500 );
         caretStatus.requireText( "(0)" );
 
         // no buffer length
-        TestUtils.jEditFrame().menuItemWithPath( "Utilities", "Global Options..." ).click();
-        optionsDialog = WindowFinder.findDialog( GlobalOptions.class ).withTimeout( 5000 ).using( TestUtils.robot() );
-        TestUtils.selectPath( optionsDialog.tree(), new String[] {"jEdit", "Status Bar"} );
-        pane = optionsDialog.panel( "status" );
+        optionsDialog = TestUtils.globalOptions();
+        pane = optionsDialog.optionPane("jEdit/Status Bar", "status" );
         assertTrue( "StatusBarOptionPane not found", pane != null );
         checkbox = pane.checkBox( "showCaretBufferLength" );
         assertTrue( "Cannot find showCaretBufferLength checkbox in StatusBarOptionPane", checkbox != null );
         checkbox.requireSelected();
         checkbox.click();
-        optionsDialog.button(
-            new GenericTypeMatcher<JButton>( JButton.class ) {
-                public boolean isMatching( JButton button ) {
-                    return "OK".equals( button.getText() );
-                }
-            }
-        ).click();
+        optionsDialog.OK();
         Pause.pause( 500 );
         caretStatus.requireText( "" );
     }
@@ -206,25 +156,18 @@ public class StatusBarTest {
         jEdit.setBooleanProperty( "view.status.show-caret-bufferlength", false );
 
         // open the options and select the options pane
-        TestUtils.jEditFrame().menuItemWithPath( "Utilities", "Global Options..." ).click();
-        DialogFixture optionsDialog = WindowFinder.findDialog( GlobalOptions.class ).withTimeout( 5000 ).using( TestUtils.robot() );
-        TestUtils.selectPath( optionsDialog.tree(), new String[] {"jEdit", "Status Bar"} );
-        JPanelFixture pane = optionsDialog.panel( "status" );
+        PluginOptionsFixture optionsDialog = TestUtils.globalOptions();
+        JPanelFixture pane = optionsDialog.optionPane("jEdit/Status Bar", "status" );
         assertTrue( "StatusBarOptionPane not found", pane != null );
 
         // click the OK button on the options dialog
-        optionsDialog.button(
-            new GenericTypeMatcher<JButton>( JButton.class ) {
-                public boolean isMatching( JButton button ) {
-                    return "OK".equals( button.getText() );
-                }
-            }
-        ).click();
+        optionsDialog.OK();
 
         JPanelFixture statusBar = TestUtils.jEditFrame().panel( "StatusBar" );
         assertTrue( "Can't find StatusBar in view", statusBar != null );
         JLabelFixture caretStatus = statusBar.label( "caretStatus" );
         assertTrue( "Can't find caretStatus in StatusBar", caretStatus != null );
+        TestUtils.gotoPosition(0);
         caretStatus.requireText( "1,1 " );
     }
 

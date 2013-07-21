@@ -19,13 +19,17 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.options.GlobalOptions;
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
 import org.gjt.sp.jedit.testframework.TestUtils;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(JEditRunner.class)
 public class SelectionForegroundColorTest
 {
 	private static final String IMAGE1 = "selFgColorImage1.png";
@@ -48,16 +52,6 @@ public class SelectionForegroundColorTest
 		"}"
     };
 	
-    @BeforeClass
-    public static void setUpjEdit() {
-        TestUtils.beforeClass();
-    }
-
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
-
     private static void selectRanges(JEditTextArea ta)
     {
         // select some text segments
@@ -90,13 +84,8 @@ public class SelectionForegroundColorTest
         jEdit.setColorProperty("view.selectionFgColor", Color.white);
 
         // open the options and select the options pane
-        TestUtils.jEditFrame().menuItemWithPath("Utilities",
-        	"Global Options...").click();
-        DialogFixture optionsDialog = WindowFinder.findDialog(
-        	GlobalOptions.class).withTimeout(5000).using(TestUtils.robot());
-        TestUtils.selectPath(optionsDialog.tree(), new String[] {
-        	"jEdit", "Text Area"});
-        JPanelFixture pane = optionsDialog.panel("textarea");
+        PluginOptionsFixture optionsDialog = TestUtils.globalOptions();
+        JPanelFixture pane = optionsDialog.optionPane("jEdit/Text Area","textarea");
         assertTrue("TextAreaOptionPane not found", pane != null);
 
         // test that all checkboxes are present and click them

@@ -87,7 +87,7 @@ public class PluginOptionsFixture extends DialogFixture{
     public void OK(){
     	Runnable clickT = new Runnable(){
     		public void run(){
-    			button(JButtonMatcher.withText("OK")).click();
+    			button(JButtonMatcher.withText(jEdit.getProperty("common.ok"))).click();
     		}
     	};
     	
@@ -98,7 +98,7 @@ public class PluginOptionsFixture extends DialogFixture{
      * click Cancel 
      */
     public void Cancel(){
-		button(JButtonMatcher.withText("Cancel")).click();
+		button(JButtonMatcher.withText(jEdit.getProperty("common.cancel"))).click();
     }
 
 	/**
@@ -107,7 +107,7 @@ public class PluginOptionsFixture extends DialogFixture{
     public void Apply(){
     	Runnable clickT = new Runnable(){
     		public void run(){
-    			button(JButtonMatcher.withText("Apply")).click();
+    			button(JButtonMatcher.withText(jEdit.getProperty("common.apply"))).click();
     		}
     	};
     	
