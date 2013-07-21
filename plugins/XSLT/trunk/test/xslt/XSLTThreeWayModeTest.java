@@ -12,68 +12,45 @@
  */
 package xslt;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.close;
+import static org.gjt.sp.jedit.testframework.TestUtils.openFile;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.core.matcher.JTextComponentMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
+import java.io.File;
 import java.util.regex.Pattern;
-import javax.swing.text.*;
-import javax.swing.*;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiQuery;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
+import org.gjt.sp.jedit.testframework.TestData;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * integration tests of the XSLT 3-way mode.
  * $Id$
  */
+@RunWith(JEditRunner.class)
 public class XSLTThreeWayModeTest{
-	private static File testData;
-	
-    @BeforeClass
-    public static void setUpjEdit() throws IOException{
-        TestUtils.beforeClass();
-        testData = new File(System.getProperty("test_data")).getCanonicalFile();
-        assertTrue(testData.exists());
-    }
-    
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
+	@Rule
+	public TestData testData = new TestData();
     
     @Test
     public void testThreeWayModeAction(){
-    	File xml = new File(testData,"simple/source.xml");
+    	File xml = new File(testData.get(),"simple/source.xml");
     	Buffer xmlB = openFile(xml.getPath());
     	Pause.pause(500);
     	final String xmlContents = xmlB.getText(0,xmlB.getLength());
@@ -86,8 +63,12 @@ public class XSLTThreeWayModeTest{
     	optionsF.OK();
 
     	action("xslt.three-way-mode");
-    	
-    	assertEquals(3,view().getEditPanes().length);
+    	assertEquals(3,GuiActionRunner.execute(new GuiQuery<Integer>() {
+    		@Override
+    		protected Integer executeInEDT() throws Throwable {
+    			return view().getEditPanes().length;
+    		}
+		}).intValue());
     	
     	final Buffer xmlBuffer = (view().getEditPanes()[0]).getBuffer();
     	final Buffer xslBuffer = (view().getEditPanes()[1]).getBuffer();
@@ -126,20 +107,44 @@ public class XSLTThreeWayModeTest{
     
     @Test
     public void testToggleThreeWayMode(){
-    	File xml = new File(testData,"simple/source.xml");
-     	File xsl = new File(testData,"simple/transform.xsl");
+    	final File xml = new File(testData.get(),"simple/source.xml");
+     	final File xsl = new File(testData.get(),"simple/transform.xsl");
      	
-     	view().unsplit();
-     	view().splitVertically();
-     	view().splitVertically();
+     	GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+		     	view().unsplit();
+			}
+		});
      	
-    	assertEquals(3,view().getEditPanes().length);
+     	GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+		     	view().splitVertically();
+			}
+		});
+
+     	GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+		     	view().splitVertically();
+			}
+		});
+
+     	assertEquals(3,view().getEditPanes().length);
 
      	// out of order : XSL, source, result
-     	jEdit.openFile((view().getEditPanes()[0]),xsl.getPath());
-     	jEdit.openFile((view().getEditPanes()[1]),xml.getPath());
-     	jEdit.openFile((view().getEditPanes()[2]),xml.getPath());
-     	
+    	for(int i=0;i < 3; i++){
+    		final int j = i;
+	     	GuiActionRunner.execute(new GuiTask() {
+				
+				@Override
+				protected void executeInEDT() throws Throwable {
+			     	jEdit.openFile((view().getEditPanes()[j]),xsl.getPath());
+				}
+	     	});
+    	}
+
     	final Buffer xmlBuffer = (view().getEditPanes()[0]).getBuffer();
     	final Buffer xslBuffer = (view().getEditPanes()[1]).getBuffer();
     	final Buffer resBuffer = (view().getEditPanes()[2]).getBuffer();
@@ -171,6 +176,13 @@ public class XSLTThreeWayModeTest{
     	close(view(),xmlBuffer);
     	close(view(),xslBuffer);
     	close(view(),resBuffer);
+    	
+    	GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				jEdit.getActiveView().unsplit();
+			}
+		});
     	
     	xsltProcessor.close();
     }

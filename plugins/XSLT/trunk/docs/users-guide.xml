@@ -454,6 +454,15 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
+      <emphasis role="bold">Changes from 0.7.1 to 0.8.0</emphasis>
+      <itemizedlist>
+        <listitem><para>0.8 requires >=jEdit 5.0, >=XML plugin 2.8.5, >=ErrorList 2.1.1, >=Saxon 9.5.1.1</para></listitem>
+        <listitem><para>compiling a stylesheet and running a transform
+        are now asynchronous (you may even try to kill them from the task 
+        manager (<guimenu>Utilities</guimenu> > <guisubmenu>Debugging</guisubmenu> > <guimenuitem>Task Manager</guimenuitem>).</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
       <emphasis role="bold">Changes from 0.7.0 to 0.7.1</emphasis>
       <itemizedlist>
         <listitem><para>fix #2975301 - XSLT 0.7 is broken (missing icons)</para></listitem>

@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Buffer;
@@ -39,11 +40,15 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import errorlist.ErrorSource;
 import errorlist.DefaultErrorSource;
 
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.sax.SAXTransformerFactory;
 
 /**
  * EditPlugin implementation for the XSLT plugin.
@@ -53,8 +58,9 @@ import javax.xml.transform.TransformerException;
  */
 public class XSLTPlugin extends EBPlugin implements EBComponent{
 
-	private static DefaultErrorSource errorSource;
+	private static Map<View,DefaultErrorSource> errorSources = new HashMap<View, DefaultErrorSource>();
 	public static String COMPILE_ON_SAVE_PROP="xslt.compile-on-save";
+	public static final String XSLT_FACTORY_PROP = "xslt.factory";
 	
 	private boolean compileOnSave = false;
 	
@@ -65,8 +71,8 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 	 * Register xerces as the SAX Parser provider
 	 */
 	public void start() {
-		String saxParserFactory = jEdit.getProperty(XSLTUtilities.SAX_PARSER_FACTORY);
-		String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
+		//String saxParserFactory = jEdit.getProperty(XSLTUtilities.SAX_PARSER_FACTORY);
+		//String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
 		String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
 		// avoid setting system properties
@@ -74,27 +80,36 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 		XSLTUtilities.setIndentAmount(indentAmount);
 		
 		compileOnSave = jEdit.getBooleanProperty(COMPILE_ON_SAVE_PROP);
+		
+		// lazy loaded when first used
 	}
 
 	public void stop() {
-		if (jEdit.getFirstView() == null)
-			return;
-        XPathTool xpathTool = (XPathTool)jEdit.getFirstView().getDockableWindowManager().getDockable("xpath-tool");
-        if (xpathTool != null)
-        {
-        	xpathTool.stop();
-        }
-        if(errorSource != null)
-        {
-			ErrorSource.unregisterErrorSource(errorSource);
-			errorSource = null;
+
+		if (jEdit.getFirstView() != null) {
+	        XPathTool xpathTool = (XPathTool)jEdit.getFirstView().getDockableWindowManager().getDockable("xpath-tool");
+	        if (xpathTool != null)
+	        {
+	        	xpathTool.stop();
+	        }
+	        
 		}
+        
+        for(ErrorSource errorSource: errorSources.values()){
+			ErrorSource.unregisterErrorSource(errorSource);
+		}
+        errorSources.clear();
 	}
 	
-	static DefaultErrorSource getErrorSource() {
-		if(errorSource==null){
-			errorSource=new DefaultErrorSource("XSLTPlugin");
+	static DefaultErrorSource getErrorSource(View view) {
+		DefaultErrorSource errorSource;
+		
+		if(errorSources.containsKey(view)){
+			errorSource = errorSources.get(view);
+		}else{
+			errorSource=new DefaultErrorSource("XSLTPlugin", view);
 			ErrorSource.registerErrorSource(errorSource);
+			errorSources.put(view, errorSource);
 		}
 		return errorSource;	
 	}
@@ -119,7 +134,7 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 		String message = jEdit.getProperty(property);
 		JOptionPane.showMessageDialog(component, message);
 	}
-
+	
 	public void handleMessage(EBMessage message) {
 		if (jEdit.getFirstView() == null)
 			return;

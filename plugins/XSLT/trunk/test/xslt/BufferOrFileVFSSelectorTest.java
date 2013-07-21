@@ -12,65 +12,45 @@
  */
 package xslt;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
-import java.util.regex.Pattern;
-import javax.swing.text.*;
-import javax.swing.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.findDialogByTitle;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.text.JTextComponent;
+
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.Containers;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.TestData;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * unit tests for BufferOrFileVFSSelector
  * $Id$
  */
+@RunWith(JEditRunner.class)
 public class BufferOrFileVFSSelectorTest{
-	private static File testData;
 	
-    @BeforeClass
-    public static void setUpjEdit() throws IOException{
-        TestUtils.beforeClass();
-        testData = new File(System.getProperty("test_data")).getCanonicalFile();
-        assertTrue(testData.exists());
-    }
-    
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
-    
+	@Rule
+	public TestData testData = new TestData();
+	
     @Test
     public void testEnabledDisabled() throws IOException{
     	
@@ -113,7 +93,7 @@ public class BufferOrFileVFSSelectorTest{
     
     @Test
     public void testAPI() throws IOException{
-    	final File f = new File(testData, "simple/source.xml");
+    	final File f = new File(testData.get(), "simple/source.xml");
     	
     	final BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
     	
@@ -160,7 +140,7 @@ public class BufferOrFileVFSSelectorTest{
 
     @Test
     public void testOpenFile(){
-    	final File f = new File(testData, "simple/source.xml");
+    	final File f = new File(testData.get(), "simple/source.xml");
     	BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
     	
 		assumeTrue(!view().getBuffer().getPath().equals(f.getPath()));
@@ -186,8 +166,8 @@ public class BufferOrFileVFSSelectorTest{
     
     @Test
     public void testSelectSource(){
-    	final File xml = new File(testData, "simple/source.xml");
-    	File xsl = new File(testData, "simple/transform.xsl");
+    	final File xml = new File(testData.get(), "simple/source.xml");
+    	File xsl = new File(testData.get(), "simple/transform.xsl");
     	BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
     	selector.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
     	final FrameFixture frame = new FrameFixture(TestUtils.robot(),Containers.frameFor(selector));
@@ -203,7 +183,7 @@ public class BufferOrFileVFSSelectorTest{
 
 		frame.textBox("xslt.source.prompt").showPopupMenu().menuItemWithPath("Select source").click();
 		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);
@@ -219,7 +199,7 @@ public class BufferOrFileVFSSelectorTest{
 		
 		frame.button("xslt.source.select").click();
 		
-		browseDialog = findDialogByTitle("File Browser");
+		browseDialog = findDialogByTitle("File Browser - Open");
 		Pause.pause(1000);
 		browseDialog.button("up").click();
 		Pause.pause(1000);
@@ -238,8 +218,8 @@ public class BufferOrFileVFSSelectorTest{
 
     @Test
     public void testEnterNotEverywhere(){
-    	final File f = new File(testData, "simple/source.xml");
-    	File xsl = new File(testData, "simple/transform.xsl");
+    	final File f = new File(testData.get(), "simple/source.xml");
+    	File xsl = new File(testData.get(), "simple/transform.xsl");
 
     	BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
     	

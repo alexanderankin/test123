@@ -12,65 +12,34 @@
  */
 package xslt;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.core.matcher.JTextComponentMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
 import java.util.regex.Pattern;
-import javax.swing.text.*;
-import javax.swing.*;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import javax.swing.JComboBox;
+
+import org.fest.swing.core.matcher.JTextComponentMatcher;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
+import org.gjt.sp.jedit.testframework.TestData;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * GUI tests of the XSLT option pane.
  * $Id$
  */
+@RunWith(JEditRunner.class)
 public class XSLTOptionPaneTest{
-	private static File testData;
+	@Rule
+	public TestData testData = new TestData();
 	
-    @BeforeClass
-    public static void setUpjEdit() throws IOException{
-        TestUtils.beforeClass();
-        testData = new File(System.getProperty("test_data")).getCanonicalFile();
-        assertTrue(testData.exists());
-    }
-    
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
-    
     @Test
     public void testXSLTFactoryErrors(){
     	PluginOptionsFixture optionsF = TestUtils.pluginOptions();

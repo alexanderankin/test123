@@ -12,69 +12,47 @@
  */
 package xslt;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.findDialogByTitle;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
+import javax.swing.text.JTextComponent;
+
 import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.core.matcher.JTextComponentMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JTableFixture;
+import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
-import java.util.regex.Pattern;
-import javax.swing.text.*;
-import javax.swing.*;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.TestData;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * integration tests of the Load & Save settings feature.
  * $Id$
  */
+@RunWith(JEditRunner.class)
 public class XSLTSettingsTest{
-	private static File testData;
-	
-    @BeforeClass
-    public static void setUpjEdit() throws IOException{
-        TestUtils.beforeClass();
-        testData = new File(System.getProperty("test_data")).getCanonicalFile();
-        assertTrue(testData.exists());
-    }
-    
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
+	@Rule
+	public TestData testData = new TestData();
     
     @Test
     public void testSaveAndLoad(){
-    	final File xml = new File(testData,"simple/source.xml");
-    	final File xsl = new File(testData,"simple/transform.xsl");
+    	final File xml = new File(testData.get(),"simple/source.xml");
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	File settings = new File(EditPlugin.getPluginHome(XSLTPlugin.class)
     		,"source-transform-settings.xml");
     	
@@ -87,7 +65,7 @@ public class XSLTSettingsTest{
     	
     	xsltProcessor.radioButton("xslt.source.file").click();
     	xsltProcessor.button("xslt.source.select").click();
-		final DialogFixture browseDialogXML = findDialogByTitle("File Browser");
+		final DialogFixture browseDialogXML = findDialogByTitle("File Browser - Open");
 		//there is always a temporisation until all content gets loaded
 		Pause.pause(1000);
 		
@@ -149,11 +127,9 @@ public class XSLTSettingsTest{
     	xsltProcessor.radioButton("xslt.result.buffer").click();
 
     	xsltProcessor.button("xslt.settings.save").click();
-    	
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		//there is always a temporisation until all content gets loaded
-		Pause.pause(1000);
-		browseDialog.textBox("filename").requireText(settings.getName());
+
+		DialogFixture browseDialog = findDialogByTitle("File Browser - Save");
+		browseDialog.textBox("filename").setText(settings.getName());
 		browseDialog.button("ok").click();
 
 		assertThat(settings.exists());
@@ -179,7 +155,7 @@ public class XSLTSettingsTest{
     	// now, reload previous settings
     	xsltProcessor.button("xslt.settings.load").click();
     	
-    	browseDialog = findDialogByTitle("File Browser");
+    	browseDialog = findDialogByTitle("File Browser - Open");
 		//there is always a temporisation until all content gets loaded
 		Pause.pause(1000);
 		browseDialog.table("file").selectCell(
@@ -192,7 +168,12 @@ public class XSLTSettingsTest{
 		
 		assertThat(xsltProcessor.list("stylesheets").contents()).containsOnly(xsl.getPath());
 		
-		parms.requireContents(new String[][]{ { "p", "world"}, {"q", "value"}} );
+		// order of params I get back is not determinate, so have to use containsOnly
+		//instead of parms.requireContents(new String[][]{ {"q", "value"}, { "p", "world"}} );
+		String[][] contents = parms.contents();
+		assertEquals(2, contents.length);
+		List<List<String>> cc = Arrays.asList(Arrays.asList(contents[0]),Arrays.asList(contents[1]));
+		assertThat(cc).containsOnly(Arrays.asList("q", "value"), Arrays.asList("p", "world"));
 		
 		xsltProcessor.radioButton("xslt.result.buffer").requireSelected();
 		

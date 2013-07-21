@@ -12,63 +12,38 @@
  */
 package xslt;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.gjt.sp.jedit.testframework.TestUtils.openFile;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.core.matcher.JTextComponentMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import org.gjt.sp.jedit.jEdit;
+import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.Buffer;
-
-import java.io.*;
-import java.util.regex.Pattern;
-import java.util.*;
-
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.TestData;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.w3c.dom.Document;
 
 /**
  * unit tests of the Xalan XPath engine adapter
  * $Id$
  */
+@RunWith(JEditRunner.class)
 public class XalanXPathAdapterTest{
-	private static File testData;
-	
-    @BeforeClass
-    public static void setUpjEdit() throws IOException{
-        TestUtils.beforeClass();
-        testData = new File(System.getProperty("test_data")).getCanonicalFile();
-        assertTrue(testData.exists());
-    }
-    
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
+	@Rule
+	public TestData testData = new TestData();
     
     @Test
     public void testElement() throws Exception{
-    	final File xsl = new File(testData,"simple/transform.xsl");
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
     	Document source  = DocumentCache.getFromCache(b);
@@ -98,7 +73,7 @@ public class XalanXPathAdapterTest{
     
     @Test
     public void testComment() throws Exception{
-    	final File xsl = new File(testData,"base_uri_bug/base-uri-bug.xsl");
+    	final File xsl = new File(testData.get(),"base_uri_bug/base-uri-bug.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
     	Document source  = DocumentCache.getFromCache(b);
@@ -129,7 +104,7 @@ public class XalanXPathAdapterTest{
     
     @Test
     public void testNumber() throws Exception{
-    	final File xsl = new File(testData,"simple/transform.xsl");
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
     	Document source  = DocumentCache.getFromCache(b);
@@ -151,7 +126,7 @@ public class XalanXPathAdapterTest{
     
     @Test
     public void testEmptySequence() throws Exception{
-    	final File xsl = new File(testData,"simple/transform.xsl");
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
     	Document source  = DocumentCache.getFromCache(b);

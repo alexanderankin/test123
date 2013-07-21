@@ -9,8 +9,8 @@
 	     checked out from jEdit's SVN repository -->
 	<property name="build.support" value="../../build-support" />
 	<property name="docs-proc.target" value="xsltproc" />
-	<property name="compiler.source" value="1.5" />
-	<property name="compiler.target" value="1.5" />
+	<property name="compiler.source" value="1.6" />
+	<property name="compiler.target" value="1.6" />
 	<property name="javadoc.packagenames" value="xslt.*" />
 	<property name="install.dir" value="../"/>
 	<property name="jedit.plugins.dir" value="${install.dir}" />
@@ -104,6 +104,13 @@
 
         <antcall target="build.post" />
 
+    </target>
+
+    <target name="test" description="run current unit tests" depends="build">
+ 	    <ant dir="test" inheritAll="false" target="test" useNativeBasedir="true"/>
+ 	</target>
+    <target name="test-all" description="run all unit tests" depends="build">
+    	<ant dir="test" inheritAll="false" target="test-all" useNativeBasedir="true"/>
     </target>
 
 </project>

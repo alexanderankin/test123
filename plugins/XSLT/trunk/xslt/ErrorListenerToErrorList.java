@@ -21,6 +21,8 @@ package xslt;
 
 import java.net.URL;
 import java.io.File;
+
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
 import xml.PathUtilities;
@@ -44,10 +46,13 @@ public class ErrorListenerToErrorList implements ErrorListener{
 	/** defaults to the stylesheet if there is no location for the error */
 	private String stylesheetPath;
 	
-	private boolean hasSignaledError = false;;
+	private boolean hasSignaledError = false;
 	
-	public ErrorListenerToErrorList(String stylesheetPath){
+	DefaultErrorSource errorSource;
+	
+	public ErrorListenerToErrorList(View currentView, String stylesheetPath){
 		this.stylesheetPath = stylesheetPath;
+		errorSource = XSLTPlugin.getErrorSource(currentView);
 	}
 	
 	
@@ -96,7 +101,7 @@ public class ErrorListenerToErrorList implements ErrorListener{
 			path = PathUtilities.urlToPath(systemId);
 		}
 		path = PathUtilities.urlToPath(stylesheetPath);
-		XSLTPlugin.getErrorSource().addError(new DefaultErrorSource.DefaultError(XSLTPlugin.getErrorSource(),
+		errorSource.addError(new DefaultErrorSource.DefaultError(errorSource,
 		ErrorSource.ERROR,path,line,0,col,
 		"(SAX error) "+exception.getMessage()));
 	}
@@ -117,12 +122,12 @@ public class ErrorListenerToErrorList implements ErrorListener{
 			}else{
 				path = PathUtilities.urlToPath(systemId);
 			}
-			XSLTPlugin.getErrorSource().addError(new DefaultErrorSource.DefaultError(XSLTPlugin.getErrorSource(),
+			errorSource.addError(new DefaultErrorSource.DefaultError(errorSource,
 			level,path,line,0,col,
 			"(XSLT error) "+exception.getMessage()));
 		} else {
 			path = PathUtilities.urlToPath(stylesheetPath);
-			XSLTPlugin.getErrorSource().addError(new DefaultErrorSource.DefaultError(XSLTPlugin.getErrorSource(),
+			errorSource.addError(new DefaultErrorSource.DefaultError(errorSource,
 			level,path,1,0,0,
 			"(XSLT error) "+exception.getMessage()));
 		}
