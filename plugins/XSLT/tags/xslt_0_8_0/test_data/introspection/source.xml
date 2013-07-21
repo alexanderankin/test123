@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<describe>
+- there are <count name="template"/> templates
+- there are <count name="text"/> text fragments 
+</describe>
