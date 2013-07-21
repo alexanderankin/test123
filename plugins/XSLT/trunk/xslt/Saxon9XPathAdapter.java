@@ -48,7 +48,7 @@ import net.sf.saxon.om.GroundedValue;
 */
 import net.sf.saxon.om.Item;
 import net.sf.saxon.dom.DocumentWrapper;
-import net.sf.saxon.dom.NodeWrapper;
+import net.sf.saxon.dom.DOMNodeWrapper;
 import net.sf.saxon.dom.DOMNodeList; 
 import net.sf.saxon.value.SequenceExtent;
 import net.sf.saxon.value.Cardinality; 
@@ -118,7 +118,7 @@ public class Saxon9XPathAdapter implements XPathAdapter {
 		}
 		
 		public String getDomValue() throws XPathException{
-			return SequenceExtent.makeSequenceExtent(item.getTypedValue()).getStringValue(); 
+			return SequenceExtent.makeSequenceExtent(item.iterate()).getStringValue();
 		}
 		
 	}
@@ -166,8 +166,8 @@ public class Saxon9XPathAdapter implements XPathAdapter {
 			XMLFragmentsString res = new XMLFragmentsString(se.getLength());
 			for(int i=0;i<se.getLength();i++) {
 				Item it = se.itemAt(i);
-				if(it instanceof NodeWrapper) {
-					res.setNode(i,(Node)((NodeWrapper)it).getRealNode());
+				if(it instanceof DOMNodeWrapper) {
+					res.setNode(i,(Node)((DOMNodeWrapper)it).getRealNode());
 				} else {
 					res.setText(i,it.getStringValue());
 				}

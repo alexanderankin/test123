@@ -1,5 +1,5 @@
 /*
- * XSLTPluginTest.java
+ * XSLTPluginXPathTest.java
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2010 Eric Le Lay
@@ -12,51 +12,49 @@
  */
 package xslt;
 
-// {{{ jUnit imports 
-import java.util.concurrent.TimeUnit;
+import static org.gjt.sp.jedit.testframework.TestUtils.action;
+import static org.gjt.sp.jedit.testframework.TestUtils.view;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.fest.swing.fixture.*;
-import org.fest.swing.core.*;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.*;
-import org.fest.swing.edt.*;
-import org.fest.swing.timing.*;
-import org.fest.swing.core.matcher.JButtonMatcher;
-
-import static org.fest.assertions.Assertions.*;
-
-import org.gjt.sp.jedit.testframework.Log;
-
-import static org.gjt.sp.jedit.testframework.TestUtils.*;
-import static org.gjt.sp.jedit.testframework.EBFixture.*;
-import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
-import org.gjt.sp.jedit.testframework.TestUtils;
-
-// }}}
-
-import java.io.*;
-import javax.swing.text.*;
-import javax.swing.*;
-import org.gjt.sp.jedit.Buffer;
+import java.io.File;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
+import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
+
+import org.fest.swing.data.TableCell;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTableFixture;
+import org.fest.swing.timing.Pause;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.testframework.JEditRunner;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
+import org.gjt.sp.jedit.testframework.TestData;
+import org.gjt.sp.jedit.testframework.TestUtils;
+import org.gjt.sp.jedit.testframework.TestUtils.ClickT;
+import org.gjt.sp.jedit.testframework.TestUtils.Option;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * integration tests using test_data
  * $Id$
  */
+@RunWith(JEditRunner.class)
 public class XSLTPluginXPathTest{
-	private static File testData;
+	@Rule
+	public TestData testData = new TestData();
 	
     @BeforeClass
     public static void setUpjEdit() throws IOException{
-        TestUtils.beforeClass();
-        testData = new File(System.getProperty("test_data")).getCanonicalFile();
-        assertTrue(testData.exists());
     	/*
     	 * the plugin must be activated manually, because :
     	 * - it's not activated at startup because it is only activated if "compile on save"
@@ -69,14 +67,9 @@ public class XSLTPluginXPathTest{
     	jEdit.getPlugin("xslt.XSLTPlugin",true).getPluginJAR().activatePlugin();
     }
     
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
-    
     @Test
     public void testXPath() throws IOException{
-    	File xml = new File(testData,"simple/source.xml");
+    	File xml = new File(testData.get(),"simple/source.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	action("xpath-tool-float",1);
@@ -104,7 +97,7 @@ public class XSLTPluginXPathTest{
     
     @Test
     public void testNS() throws IOException{
-    	File xml = new File(testData,"simple/transform.xsl");
+    	File xml = new File(testData.get(),"simple/transform.xsl");
     	
     	TestUtils.openFile(xml.getPath());
 
@@ -145,7 +138,7 @@ public class XSLTPluginXPathTest{
 
     @Test
     public void testDocumentCache() throws IOException{
-    	File xml = new File(testData,"simple/source.xml");
+    	File xml = new File(testData.get(),"simple/source.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	action("xpath-tool-float",1);
@@ -186,7 +179,7 @@ public class XSLTPluginXPathTest{
     
     @Test
     public void testFile() throws IOException{
-    	final File xml = new File(testData,"simple/source.xml");
+    	final File xml = new File(testData.get(),"simple/source.xml");
     	
     	action("xpath-tool-float",1);
     	final FrameFixture xpathTool = TestUtils.findFrameByTitle("XPath Tool");
@@ -212,7 +205,7 @@ public class XSLTPluginXPathTest{
     @Test
     public void testHighlight()
     {
-    	final File xsl = new File(testData,"simple/transform.xsl");
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	
     	action("xpath-tool-float",1);
     	final FrameFixture xpathTool = TestUtils.findFrameByTitle("XPath Tool");
@@ -243,7 +236,7 @@ public class XSLTPluginXPathTest{
     
     @Test
     public void testSaxon9XPathAdapter(){
-    	final File xsl = new File(testData,"simple/transform.xsl");
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	
 		PluginOptionsFixture optionsF = TestUtils.pluginOptions();
     	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
@@ -273,7 +266,7 @@ public class XSLTPluginXPathTest{
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(0)).requireValue("xs:integer");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(1)).requireValue("");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(2)).requireValue("2");
-		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(0)).requireValue("attribute()");
+		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(0)).requireValue("attribute(Q{}select)");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(1)).requireValue("select");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(2)).requireValue(".");
 		
@@ -293,7 +286,7 @@ public class XSLTPluginXPathTest{
     
     @Test
     public void testIncorrectDocument() throws IOException{
-    	File xml = new File(testData,"broken/source.xml");
+    	File xml = new File(testData.get(),"broken/source.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	action("xpath-tool-float",1);
@@ -319,7 +312,7 @@ public class XSLTPluginXPathTest{
     
     @Test
     public void testIncorrectExpression() throws IOException{
-    	File xml = new File(testData,"simple/source.xml");
+    	File xml = new File(testData.get(),"simple/source.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	action("xpath-tool-float",1);
@@ -345,7 +338,7 @@ public class XSLTPluginXPathTest{
 
     @Test
     public void testDocumentDoesntExist() throws IOException{
-    	final File xml = new File(testData,"simple/not_there.xml");
+    	final File xml = new File(testData.get(),"simple/not_there.xml");
     	
     	action("xpath-tool-float",1);
     	

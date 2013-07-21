@@ -6,12 +6,19 @@
     partcular, need the install.dir set to know where to find the plugin
     jar files. -->
     <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property file="../../build.properties"/>
 
     <property name="build.properties" location="${test.framework.dir}/build.properties"/>
     
     <!-- location of the test framework, this should be set in the build.properties
     file loaded above. -->
     <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
+
+    <fileset id="project.resources" dir="../test_data" defaultexcludes="yes">
+  	<include name="BAH"/>
+    </fileset>
+
     
     <!-- test source and classes -->
     <property name="project.test.src.dir" location="${basedir}"/>
@@ -33,7 +40,7 @@
     directory. -->
     <filelist id="plugin.jars" dir="${install.dir}">
     	<!-- XSLT libraries -->
-    	<file name="XSLT.jar"/>
+    	<file name="xslt.jar"/>
     	<file name="xalan.jar"/>
     	<file name="serializer.jar"/>
     	<!-- XML libraries -->
@@ -55,6 +62,8 @@
 		<!-- Common Controls -->
 		<file name="CommonControls.jar"/>
 		<file name="kappalayout.jar"/>
+		<!-- EclipseIcons -->
+		<file name="EclipseIcons.jar"/>
 		<!-- SaxonPlugin -->
 		<file name="saxon9he.jar"/>
     </filelist>
@@ -96,13 +105,13 @@
     defined, no tests will run. -->
     <selector id="junit.testcases">
         <or>
-            <selector refid="testcases.all"/>
+            <selector refid="testcases.current"/>
         </or>
     </selector>
 
     <!-- set any system properties, this is a way to let tests know things
     without hardcoding values directly in the tests. -->    
-    <property name="test_data" value="../test_data"/>
+    <property name="test_data" location="../test_data"/>
     <propertyset id="project.test.sysproperties">
         <propertyref name="test_data"/>
     </propertyset>
@@ -115,6 +124,22 @@
             <reference refid="project.test.sysproperties"/>
         </ant>
     </target>
+
+
+   <!-- actually call the test framework to run the tests.  inheritRefs must
+    be true so that all of the things defined above are known to the test 
+    framework. -->
+    <target name="test-all">
+        <selector id="junit.testcases">
+          <or>
+            <selector refid="testcases.all"/>
+          </or>
+        </selector>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+
     
         <!-- shortcut to only compile the tests (don't waste time instrumenting) -->
     <target name="compile">

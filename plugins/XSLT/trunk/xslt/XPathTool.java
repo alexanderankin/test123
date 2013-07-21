@@ -68,7 +68,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -77,7 +76,6 @@ import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathAPI;
 import org.apache.xpath.objects.XObject;
 import org.apache.xml.utils.PrefixResolver;
-
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
@@ -92,14 +90,14 @@ import org.gjt.sp.jedit.search.CurrentBufferSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
-
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.ThreadUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -232,24 +230,31 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		return adapter;
 	}
 	
-	public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(final ActionEvent event) {
 		if(!inputSelectionPanel.isSourceFileDefined()) {
 			GUIUtilities.message(this,"xpath.error.no-source",new Object[]{});
 		} else {
-			try {
-				evaluateExpression();
+			((JComponent)event.getSource()).setEnabled(false);
+			ThreadUtilities.runInBackground(new Task(){
+				public void _run(){
+				try {
+					evaluateExpression();
 	
-			} catch (IllegalStateException e) {
-				XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
-			} catch (SAXException e) { // parse problem
-				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
-			} catch (IOException e) { // parse problem
-				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
-			} catch (TransformerException e) { // evaluation problem
-				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.expression-unevaluateable"), XPathTool.this);
-			} catch (Exception e) { // catch-all
-				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.unkown-problem"), XPathTool.this);
-			}
+				} catch (IllegalStateException e) {
+					XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
+				} catch (SAXException e) { // parse problem
+					XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+				} catch (IOException e) { // parse problem
+					XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+				} catch (TransformerException e) { // evaluation problem
+					XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.expression-unevaluateable"), XPathTool.this);
+				} catch (Exception e) { // catch-all
+					XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.unkown-problem"), XPathTool.this);
+				} finally {
+					javax.swing.SwingUtilities.invokeLater(new Runnable(){public void run(){ ((JComponent)event.getSource()).setEnabled(true); }});
+				}
+				}
+			});
 		}
 	}
 

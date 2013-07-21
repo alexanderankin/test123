@@ -1,14 +1,14 @@
 plugin.xslt.XSLTPlugin.activate=xslt.compile-on-save
 plugin.xslt.XSLTPlugin.name=XSLT
 plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Wim Le Page, Pieter Wellens, Eric Le Lay
-plugin.xslt.XSLTPlugin.version=0.7.1
+plugin.xslt.XSLTPlugin.version=0.8.0
 plugin.xslt.XSLTPlugin.docs=index.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar serializer.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.5
-plugin.xslt.XSLTPlugin.depend.1=jedit 04.03.99.01
-plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 2.6.1
-plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
-plugin.xslt.XSLTPlugin.depend.4=optional plugin saxon.SaxonPlugin 9.2.0.6
+plugin.xslt.XSLTPlugin.depend.1=jedit 05.00.99.00
+plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 2.8.5
+plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 2.1.1
+plugin.xslt.XSLTPlugin.depend.4=optional plugin saxon.SaxonPlugin 9.5.1.1
 plugin.xslt.XSLTPlugin.description=The XSLT plugin provides facilities to \
  transform (XSLT Processor) and query (XPath Tool) XML documents from within jEdit.
 
@@ -23,7 +23,7 @@ xslt.factory.label.0=XSLT 1.0 - Xalan 2.7.1 (org.apache.xalan.processor.Transfor
 xslt.factory.class.1=com.icl.saxon.TransformerFactoryImpl
 xslt.factory.label.1=XSLT 1.0 - Saxon 6.5.5 (com.icl.saxon.TransformerFactoryImpl)
 xslt.factory.class.2=net.sf.saxon.TransformerFactoryImpl
-xslt.factory.label.2=XSLT 2.0 - Saxon 9.2 (net.sf.saxon.TransformerFactoryImpl)
+xslt.factory.label.2=XSLT 2.0 and 3.0 - Saxon 9 (net.sf.saxon.TransformerFactoryImpl)
 
 # defaults to Xalan
 xslt.factory=org.apache.xalan.processor.TransformerFactoryImpl
@@ -32,7 +32,7 @@ xslt.factory=org.apache.xalan.processor.TransformerFactoryImpl
 xpath.adapter.class.0=xslt.XalanXPathAdapter
 xpath.adapter.label.0=Xalan (XPath 1.0)
 xpath.adapter.class.1=xslt.Saxon9XPathAdapter
-xpath.adapter.label.1=Saxon 9.2 (XPath 2.0) - requires SaxonPlugin
+xpath.adapter.label.1=Saxon 9 (XPath 2.0 and 3.0) - requires SaxonPlugin
 
 xpath.adapter=xslt.XalanXPathAdapter
 

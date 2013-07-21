@@ -25,13 +25,19 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.MiscUtilities;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import java.util.Hashtable;
 
 import org.xml.sax.SAXParseException;
+
+import xml.PathUtilities;
 
 import java.net.URL;
 import java.io.IOException;
@@ -106,23 +112,39 @@ public class XsltActions {
     }
   }
   
-  public static void compileStylesheet(View view, Buffer buffer){
-	  String path = buffer.getPath();
-  	  ErrorListenerToErrorList listener = new ErrorListenerToErrorList("");
-  	  try {
-  	  	  
-  	  	  // clear any existing error
-  	  	  XSLTPlugin.getErrorSource().removeFileErrors(path);
-  	  	  
-  	  	  XSLTUtilities.compileStylesheet(path, listener);
-  	  	  
-  	  } catch (Exception e) {
-  	  	  Log.log(Log.ERROR,XsltActions.class,e);
-  	  }
-  	  int nbErrors = XSLTPlugin.getErrorSource().getFileErrorCount(path);
-  	  //can be pretty annoying... if(nbErrors > 0)java.awt.Toolkit.getDefaultToolkit().beep();
-  	  String message = jEdit.getProperty("xslt.compile.finished",new Object[]{nbErrors});
-  	  view.getStatus().setMessage(message);
+  public static void compileStylesheet(final View view, final Buffer buffer){
+	  Task t = new Task() {
+		
+		@Override
+		public void _run() {
+			  String path = buffer.getPath();
+		  	  ErrorListenerToErrorList listener = new ErrorListenerToErrorList(view, PathUtilities.pathToURL(buffer.getPath()));
+		  	  try {
+		  	  	  
+		  	  	  // clear any existing error
+		  	  	  listener.errorSource.removeFileErrors(path);
+		  	  	  
+		  	  	  XSLTUtilities.compileStylesheet(path, listener);
+		  	  	  
+		  	  } catch (Exception e) {
+		  	  	  Log.log(Log.ERROR,XsltActions.class,e);
+		  	  }
+		  	  int nbErrors = listener.errorSource.getFileErrorCount(path);
+		  	  //can be pretty annoying... if(nbErrors > 0)java.awt.Toolkit.getDefaultToolkit().beep();
+		  	  
+		  	  // display error count
+		  	  final String message = jEdit.getProperty("xslt.compile.finished",new Object[]{nbErrors});
+		  	  SwingUtilities.invokeLater(new Runnable(){
+		  		  @Override
+		  		public void run() {
+				  	  view.getStatus().setMessage(message);
+		  		}
+		  	  });
+		}
+		
+		
+	};
+	ThreadUtilities.runInBackground(t);
   }
 
   public static void initThreeWayMode(View view){

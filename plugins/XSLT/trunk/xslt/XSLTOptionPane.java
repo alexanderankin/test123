@@ -67,7 +67,7 @@ public class XSLTOptionPane extends AbstractOptionPane
 			factoryLabels.put(factoryLabelList.get(i),factories.get(i));
 		}
 		
-		String currentFactory = jEdit.getProperty(XSLTUtilities.XSLT_FACTORY_PROP, factories.get(0));
+		String currentFactory = jEdit.getProperty(XSLTPlugin.XSLT_FACTORY_PROP, factories.get(0));
 		String currentFactoryLabel;
 		if(factories.contains(currentFactory)){
 			currentFactoryLabel = factoryLabelList.get(factories.indexOf(currentFactory)); 
@@ -131,7 +131,7 @@ public class XSLTOptionPane extends AbstractOptionPane
 				factory = factoryLabel;
 			}
 			Log.log(Log.DEBUG,this,"setting factory to : "+factory);
-			jEdit.setProperty(XSLTUtilities.XSLT_FACTORY_PROP,factory);
+			jEdit.setProperty(XSLTPlugin.XSLT_FACTORY_PROP,factory);
 		}
 
 		String adapterClass = jEdit.getProperty("xpath.adapter.class."+xpathAdapter.getSelectedIndex());

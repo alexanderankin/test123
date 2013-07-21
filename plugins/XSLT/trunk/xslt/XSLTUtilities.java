@@ -45,6 +45,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import xml.PathUtilities;
+
 /**
  * Utilities for performing XSL Transformations
  *
@@ -121,24 +123,33 @@ public class XSLTUtilities {
    
   }
 
+  private static SAXTransformerFactory getTransformerFactory(ErrorListenerToErrorList errorListener) throws TransformerConfigurationException{
+	    SAXTransformerFactory saxFactory = null;
+
+	    String factoryClass = jEdit.getProperty(XSLT_FACTORY_PROP);
+	    try {
+	      saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
+	    } catch(ClassCastException exception) {
+	    	throw new TransformerConfigurationException(exception);
+	    } catch(ClassNotFoundException cnfe){
+	    	throw new TransformerConfigurationException("class not found:"+factoryClass);
+	    } catch (InstantiationException ie) {
+	    	throw new TransformerConfigurationException(ie);
+		} catch (IllegalAccessException iae) {
+	    	throw new TransformerConfigurationException(iae);
+		}
+	    
+	    saxFactory.setErrorListener(errorListener);
+	    saxFactory.setURIResolver(new URIResolverImpl());
+	    
+		return saxFactory;
+  }
 
   private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets,
   	  Map stylesheetParameters, ErrorListenerToErrorList errorListener)
   		throws IOException, TransformerConfigurationException,SAXException, ClassNotFoundException, InstantiationException, IllegalAccessException
   {
-    SAXTransformerFactory saxFactory = null;
-
-    String factoryClass = jEdit.getProperty(XSLT_FACTORY_PROP);
-    try {
-      saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
-    } catch(ClassCastException exception) {
-    	throw new TransformerConfigurationException(exception);
-    } catch(ClassNotFoundException cnfe){
-    	throw new TransformerConfigurationException("class not found:"+factoryClass);
-    }
-    
-    saxFactory.setErrorListener(errorListener);
-    saxFactory.setURIResolver(new URIResolverImpl());
+	SAXTransformerFactory saxFactory = getTransformerFactory(errorListener);
     
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
@@ -180,19 +191,7 @@ public class XSLTUtilities {
   public static void compileStylesheet(String stylesheet, ErrorListenerToErrorList errorListener)
   		throws IOException, TransformerConfigurationException,SAXException, ClassNotFoundException, InstantiationException, IllegalAccessException
   {
-    SAXTransformerFactory saxFactory = null;
-
-    String factoryClass = jEdit.getProperty(XSLT_FACTORY_PROP);
-    try {
-      saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
-    } catch(ClassCastException exception) {
-    	throw new TransformerConfigurationException(exception);
-    } catch(ClassNotFoundException cnfe){
-    	throw new TransformerConfigurationException("class not found:"+factoryClass);
-    }
-    
-    saxFactory.setErrorListener(errorListener);
-    saxFactory.setURIResolver(new URIResolverImpl());
+    SAXTransformerFactory saxFactory = getTransformerFactory(errorListener);
     
     final Source stylesheetSource = getSource((String)stylesheet);
   
@@ -202,7 +201,7 @@ public class XSLTUtilities {
   }
 
   private static Source getSource(String fileName) throws org.xml.sax.SAXException,IOException {
-    Source source = new SAXSource(xml.Resolver.instance().resolveEntity(/*publicId=*/null, fileName));
+    Source source = new SAXSource(xml.Resolver.instance().resolveEntity(/*publicId=*/null, PathUtilities.pathToURL(fileName)));
     System.out.println("source="+source.getSystemId());
     return source;
   }
