@@ -7,29 +7,25 @@ import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import org.fest.swing.fixture.*;
 import org.fest.swing.core.*;
+import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.edt.*;
 
+import org.gjt.sp.jedit.testframework.JEditRunner;
 import org.gjt.sp.jedit.testframework.Log;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.search.SearchDialog;
 
+@RunWith(JEditRunner.class)
 public class SearchAndReplaceTest {
-    @BeforeClass
-    public static void setUpjEdit() {
-        TestUtils.beforeClass();
-    }
-
-    @AfterClass
-    public static void tearDownjEdit() {
-        TestUtils.afterClass();
-    }
 
 
     @Test
@@ -71,13 +67,7 @@ public class SearchAndReplaceTest {
         Log.log("next enter text in replace box");
         findDialog.textBox( "replace" ).enterText( "application" );
         Log.log("next click button");
-        findDialog.button(
-            new GenericTypeMatcher(JButton.class) {
-                public boolean isMatching( Component b ) {
-                    return "Replace All".equals( ((JButton)b).getText() );
-                }
-            }
-        ).click();
+        findDialog.button(JButtonMatcher.withText("Replace All")).click();
         
         Log.log("next check text has been replaced");
         try {
@@ -135,13 +125,7 @@ public class SearchAndReplaceTest {
         Log.log("next enter text in replace box");
         findDialog.textBox( "replace" ).enterText( "application" );
         Log.log("next click button");
-        findDialog.button(
-            new GenericTypeMatcher(JButton.class) {
-                public boolean isMatching( Component b ) {
-                    return "Replace All".equals( ((JButton)b).getText() );
-                }
-            }
-        ).click();
+        findDialog.button(JButtonMatcher.withText("Replace All")).click();
         
         
         Log.log("next check text has been replaced");
