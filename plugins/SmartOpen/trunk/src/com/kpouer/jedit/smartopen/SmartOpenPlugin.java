@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2012 Matthieu Casanova
+ * Copyright © 2011-2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -272,15 +272,8 @@ public class SmartOpenPlugin extends EditPlugin
 	@EditBus.EBHandler
 	public void bufferChanging(BufferChanging bc)
 	{
-		final String path = bc.getBuffer().getPath();
-		ThreadUtilities.runInBackground(new Task()
-		{
-			@Override
-			public void _run()
-			{
-				itemFinder.updateFrequency(path);
-			}
-		});
+		String path = bc.getBuffer().getPath();
+		ThreadUtilities.runInBackground(new UpdateFrequencyTask(path));
 	} //}}}
 
 	//{{{ viewerUpdate() method
@@ -393,9 +386,24 @@ public class SmartOpenPlugin extends EditPlugin
 			start = m.start();
 			selected = m.group();
 		}
-		if (start > offset || selected.isEmpty())
+		if (start > offset || selected == null || selected.isEmpty())
 			return null;
 		return selected;
 	} //}}}
 
+	private static class UpdateFrequencyTask extends Task
+	{
+		private final String path;
+
+		private UpdateFrequencyTask(String path)
+		{
+			this.path = path;
+		}
+
+		@Override
+		public void _run()
+		{
+			itemFinder.updateFrequency(path);
+		}
+	}
 }
