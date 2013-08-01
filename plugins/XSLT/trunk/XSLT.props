@@ -7,7 +7,7 @@ plugin.xslt.XSLTPlugin.jars=xalan.jar serializer.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.5
 plugin.xslt.XSLTPlugin.depend.1=jedit 05.00.99.00
 plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 2.8.5
-plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 2.1.1
+plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 2.1
 plugin.xslt.XSLTPlugin.depend.4=optional plugin saxon.SaxonPlugin 9.5.1.1
 plugin.xslt.XSLTPlugin.description=The XSLT plugin provides facilities to \
  transform (XSLT Processor) and query (XPath Tool) XML documents from within jEdit.
