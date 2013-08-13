@@ -45,7 +45,7 @@
     <selector id="packageFiles">
         <or>
             <filename name="**/*.props"/>
-            <filename name="*.html"/>
+            <filename name="**/*.html"/>
             <filename name="**/*.gif"/>
             <filename name="**/*.png"/>
         </or>

@@ -492,8 +492,8 @@
 
       <para>This component shows the "blame" panel on the right side of the text area. This
       is used by the SVN Plugin and the Git Plugin.</para>
-      <para><ulink url="javadoc/common/gui/blame/package-summary.html">See details in the javadoc.</ulink></para>
-
+      <para><ulink url="docs/blame.html">See details here.</ulink></para>
+      <para></para>
     </sect1>
 
     <sect1 id="AtomicOutputStream">
