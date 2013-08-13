@@ -70,6 +70,9 @@ import projectviewer.vpt.VPTFile;
 /**
  * Option pane for setting the url, username, and password for subversion via
  * ProjectViewer.
+ * TODO: Checked out ClangCompletion as 1.7, created PV project by hand, selected svn 1.7 as working
+ * copy format, got message about converting, got null message when attempting to convert. Shouldn't
+ * have attepmted conversion at all.
  */
 public class PVSVNOptionPane extends AbstractOptionPane {
 
@@ -281,6 +284,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                             }
                         }
                     } catch ( Exception e ) {
+                        // TODO: this must be done on the EVT
                         JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty( "ips.Unable_to_convert_working_copy_file_format>", "Unable to convert working copy file format:" ) + "\n" + e.getMessage(), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                     } finally {
                         clientManager.dispose();
