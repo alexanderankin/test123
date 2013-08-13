@@ -107,6 +107,18 @@
 
       <listitem>
         <para>
+          <ulink url="#ModalJFileChooser">EasyOptionPane</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#Blame">EasyOptionPane</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
           <ulink url="#AtomicOutputStream">AtomicOutputStream</ulink>
         </para>
       </listitem>
@@ -464,6 +476,26 @@
       filter.</para>
     </sect1>
 
+    <sect1 id="Blame">
+      <title>Blame component</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Dale</firstname>
+            <surname>Anson</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>This component shows the "blame" panel on the right side of the text area. This
+      is used by the SVN Plugin and the Git Plugin.</para>
+      <para><ulink url="javadoc/common/gui/blame/package-summary.html">See details in the javadoc.</ulink></para>
+
+    </sect1>
+
     <sect1 id="AtomicOutputStream">
       <title>AtomicOutputStream</title>
 
@@ -562,6 +594,15 @@ SwingWorker is designed for situations where you need to have a long running tas
 
     <itemizedlist>
 
+      <listitem>
+        <formalpara>
+            <title>Version 1.7</title>
+            <para />
+        </formalpara>
+
+        <para>Added the Blame component.</para>
+      </listitem>
+      
       <listitem>
         <formalpara>
             <title>Version 1.1</title>
