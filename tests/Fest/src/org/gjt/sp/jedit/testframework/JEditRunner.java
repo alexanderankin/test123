@@ -59,7 +59,7 @@ public class JEditRunner extends BlockJUnit4ClassRunner {
 			
 			@Override
 			public void evaluate() throws Throwable {
-				// tarts a new jEdit instance
+				// starts a new jEdit instance
 				TestUtils.setupNewjEdit();
 				TestUtils.tearDownExistingjEdit();
 				// before running the tests
