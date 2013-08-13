@@ -45,7 +45,8 @@ import org.tmatesoft.svn.core.wc.SVNStatus;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.data.LogData;
-import ise.plugin.svn.gui.component.BlameModel;
+//import ise.plugin.svn.gui.component.BlameModel;
+import common.gui.blame.BlameModel;
 
 public class Blame {
 
