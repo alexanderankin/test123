@@ -33,7 +33,6 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 /**
  *  An implementation of JFileChooser that fixes the modal dialog being

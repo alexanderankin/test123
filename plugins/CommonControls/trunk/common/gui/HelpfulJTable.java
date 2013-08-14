@@ -25,10 +25,8 @@ package common.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
 import java.net.URL;
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import org.gjt.sp.util.Log;
