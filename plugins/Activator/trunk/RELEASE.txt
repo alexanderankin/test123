@@ -1,3 +1,10 @@
+$Date$
+jEdit Activator plugin changelog. 
+
+Activator 1.4
+  Fixes tracker 3614471, handles loading and reloading of optionally dependent plugins better, and reactivates plugins on reloads. 
+  German localization.
+  
 Activator 1.2.2
    #1936358: Prettiness for Activator Plugin reloader panel (dale anson) 
    #1938179: Prevent EmptyStackException from Activator plugin on reloading a plugin (dale anson)
