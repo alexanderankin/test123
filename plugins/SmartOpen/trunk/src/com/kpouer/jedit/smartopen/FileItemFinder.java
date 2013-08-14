@@ -71,7 +71,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 	//{{{ getModel() method
 	@Override
-	public ListModel getModel()
+	public ListModel<String> getModel()
 	{
 		return model;
 	} //}}}
@@ -170,20 +170,20 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 	//{{{ getListCellRenderer() method
 	@Override
-	public ListCellRenderer getListCellRenderer()
+	public ListCellRenderer<String> getListCellRenderer()
 	{
 		return listCellRenderer;
 	} //}}}
 
 	//{{{ MyListModel class
-	private static class MyListModel extends AbstractListModel
+	private static class MyListModel extends AbstractListModel<String>
 	{
 		private List<String> data;
 
 		//{{{ MyListModel constructor
 		private MyListModel()
 		{
-			data = new ArrayList<String>();
+			data = new ArrayList<>();
 		} //}}}
 
 		//{{{ setData() method
@@ -202,7 +202,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 		//{{{ getElementAt() method
 		@Override
-		public Object getElementAt(int index)
+		public String getElementAt(int index)
 		{
 			return data.get(index);
 		} //}}}

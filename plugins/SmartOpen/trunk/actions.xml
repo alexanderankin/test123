@@ -16,5 +16,10 @@
 			com.kpouer.jedit.smartopen.SmartOpenPlugin.indexFiles();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="smart-open-reset-frequency" NO_REPEAT="TRUE">
+		<CODE>
+			com.kpouer.jedit.smartopen.SmartOpenPlugin.resetFrequency();
+		</CODE>
+	</ACTION>
 </ACTIONS>
 

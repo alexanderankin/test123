@@ -23,9 +23,7 @@ package com.kpouer.jedit.smartopen.indexer;
 
 //{{{ Imports
 import com.kpouer.jedit.smartopen.FileIndex;
-import com.kpouer.jedit.smartopen.SmartOpenPlugin;
 import org.gjt.sp.util.Task;
-import projectviewer.vpt.VPTProject;
 //}}}
 
 /**
@@ -46,6 +44,6 @@ public class IndexProjectTask extends Task
 	public void _run()
 	{
 		FileProvider projectFileList = new ProjectFileList(itemFinder.getProject());
-		itemFinder.addFiles(projectFileList, this, true);
+		itemFinder.addFiles(projectFileList, this);
 	} //}}}
 }

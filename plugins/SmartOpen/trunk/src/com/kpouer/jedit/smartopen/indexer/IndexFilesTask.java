@@ -65,11 +65,11 @@ public class IndexFilesTask extends Task
 			}
 			String[] f = new String[files.size()];
 			files.toArray(f);
-			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(f), this, true);
+			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(f), this);
 		}
 		else
 		{
-			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(new String[0]), this, true);
+			SmartOpenPlugin.itemFinder.addFiles(new FileArrayProvider(new String[0]), this);
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Indexation took ms:" + (end - start));

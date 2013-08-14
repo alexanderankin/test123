@@ -22,11 +22,15 @@
 package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -44,6 +48,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -58,7 +63,7 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -72,16 +77,17 @@ import projectviewer.vpt.VPTProject;
 /**
  * @author Matthieu Casanova
  */
-public class FileIndex
+public class FileIndex implements Closeable
 {
 	private static final Pattern DOTSPLIT = Pattern.compile("\\.");
 	private static final Pattern CAMELCASE = Pattern.compile("(?<!^)(?=[A-Z])");
-	private Directory directory;
+	private final Directory directory;
 	private final Object LOCK = new Object();
 	@Nullable
 	private final VPTProject project;
 
-	private IndexReader reader;
+	private DirectoryReader reader;
+
 	private final DocumentFactory documentFactory;
 	private final IndexWriterConfig indexWriterConfig;
 
@@ -91,21 +97,9 @@ public class FileIndex
 		this.project = project;
 		directory = getDirectory();
 		indexWriterConfig = new IndexWriterConfig(Version.LUCENE_42, new StandardAnalyzer(Version.LUCENE_42));
+		indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		documentFactory = new DocumentFactory();
 	} //}}}
-
-	private void setDirectory(Directory directory)
-	{
-		synchronized (LOCK)
-		{
-			if (reader != null)
-			{
-				IOUtilities.closeQuietly(reader);
-				reader = null;
-			}
-			this.directory = directory;
-		}
-	}
 
 	private void initReader() throws IOException
 	{
@@ -113,7 +107,22 @@ public class FileIndex
 		{
 			if (reader == null)
 				reader = DirectoryReader.open(directory);
+			else
+			{
+				DirectoryReader newReader = DirectoryReader.openIfChanged(reader);
+				if (newReader != null)
+				{
+					reader.close();
+					reader = newReader;
+				}
+			}
 		}
+	}
+
+	@Override
+	public void close()
+	{
+		IOUtilities.closeQuietly (reader);
 	}
 
 	@Nullable
@@ -170,15 +179,17 @@ public class FileIndex
 				query.add(nameQuery, BooleanClause.Occur.MUST);
 				query.add(new TermQuery(new Term("extension", extension.toLowerCase())), BooleanClause.Occur.MUST);
 			}
-			initReader();
+			if (reader == null)
+				initReader();
 			IndexSearcher searcher = new IndexSearcher(reader);
 			TopDocs search = searcher.search(query, 100, sort);
 			ScoreDoc[] scoreDocs = search.scoreDocs;
+			Set<String> fields = Collections.singleton("path");
 			for (ScoreDoc scoreDoc : scoreDocs)
 			{
-				Document doc = searcher.doc(scoreDoc.doc);
-				IndexableField path = doc.getField("path");
-				l.add(path.stringValue());
+				Document doc = searcher.doc(scoreDoc.doc, fields);
+				String path = doc.get("path");
+				l.add(path);
 			}
 		}
 		catch (IOException e)
@@ -189,46 +200,52 @@ public class FileIndex
 	} //}}}
 
 	//{{{ getFrequency() method
-	private long getFrequency(CharSequence path) throws IOException
+	private long getFrequency(String path) throws IOException
 	{
-		initReader();
+		if (reader == null)
+		{
+			try
+			{
+				initReader();
+			}
+			catch (IOException e)
+			{
+				return 0;
+			}
+		}
 		return new FrequencySearch(reader).getFrequency(path);
 	} //}}}
 
 	//{{{ addFiles() method
+	public void addFiles(FileProvider fileProvider, ProgressObserver observer)
+	{
+		addFiles(fileProvider, observer, false);
+	}
 	/**
 	 * Index files.
 	 * @param fileProvider the file provider to index
 	 * @param observer the progress observer
-	 * @param reset true if you want to reset the previous index
 	 */
-	public void addFiles(FileProvider fileProvider, ProgressObserver observer, boolean reset)
+	public void addFiles(FileProvider fileProvider, ProgressObserver observer, boolean append)
 	{
 		long start = System.currentTimeMillis();
-		IndexWriter writer = null;
-		Directory tempDirectory;
-		IndexWriterConfig.OpenMode openMode;
-		if (reset)
-		{
-			tempDirectory = getDirectory();
-			openMode = IndexWriterConfig.OpenMode.CREATE;
-		}
-		else
-		{
-			tempDirectory = directory;
-			openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND;
-		}
 		observer.setMaximum(fileProvider.size());
 		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
 		{
-			indexWriterConfig.setOpenMode(openMode);
+			IndexWriter writer = null;
 			try
 			{
-				writer = new IndexWriter(tempDirectory, indexWriterConfig);
+				writer = new IndexWriter(directory, indexWriterConfig);
 
-				initReader();
-				FrequencySearch frequencySearch = new FrequencySearch(reader);
+				Collection<String> knownFiles;
+				if (append)
+				{
+					knownFiles = Collections.emptyList();
+				}
+				else
+					knownFiles = getExistingFiles();
+
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					String path = fileProvider.next();
@@ -239,15 +256,22 @@ public class FileIndex
 
 					if (!exclude.matcher(path).matches())
 					{
-						long frequency = frequencySearch.getFrequency(path);
-						writer.addDocument(documentFactory.createDocument(path, frequency));
+						if (knownFiles.contains(path))
+						{
+							knownFiles.remove(path);
+						}
+						else
+						{
+							writer.addDocument(documentFactory.createDocument(path, 1));
+						}
 					}
+
+					// iterate over documents that are still here but are not part of the project anymore
 				}
-				if (reset)
+				for (String remainingFile : knownFiles)
 				{
-					IOUtilities.closeQuietly(directory);
+					writer.deleteDocuments(new Term("path", remainingFile));
 				}
-				setDirectory(tempDirectory);
 			}
 			catch (IOException e)
 			{
@@ -258,9 +282,45 @@ public class FileIndex
 				IOUtilities.closeQuietly(writer);
 			}
 		}
+		try
+		{
+			initReader();
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Added " + fileProvider.size()+" files in "+(end - start) + "ms");
 	} //}}}
+
+	private Collection<String> getExistingFiles() throws IOException
+	{
+		Collection<String> knownFiles = new HashSet<>(10000);
+		try
+		{
+			initReader();
+		}
+		catch (IOException e)
+		{
+			// ignore
+		}
+		if (reader != null)
+		{
+			Set<String> fields = Collections.singleton("path");
+			Bits liveDocs = MultiFields.getLiveDocs(reader);
+			for (int i = 0; i < reader.maxDoc(); i++)
+			{
+				if (liveDocs == null || liveDocs.get(i))
+				{
+					Document doc = reader.document(i, fields);
+					String path = doc.get("path");
+					knownFiles.add(path);
+				}
+			}
+		}
+		return knownFiles;
+	}
 
 	//{{{ removeFiles() method
 	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
@@ -271,7 +331,6 @@ public class FileIndex
 
 		synchronized (LOCK)
 		{
-			indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 			try
 			{
 				writer = new IndexWriter(directory, indexWriterConfig);
@@ -282,7 +341,6 @@ public class FileIndex
 					observer.setStatus(path);
 					writer.deleteDocuments(new Term("path", path));
 				}
-				writer.commit();
 			}
 			catch (IOException e)
 			{
@@ -293,6 +351,14 @@ public class FileIndex
 				IOUtilities.closeQuietly(writer);
 			}
 		}
+		try
+		{
+			initReader();
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Removed " + fileProvider.size()+" files in "+(end - start) + "ms");
 	} //}}}
@@ -300,13 +366,10 @@ public class FileIndex
 	//{{{ updateFrequency() method
 	public void updateFrequency(String path)
 	{
-		BooleanQuery query = new BooleanQuery();
 		Term term = new Term("path",path);
-		query.add(new TermQuery(term),BooleanClause.Occur.MUST);
-		IndexWriter writer = null;
 		synchronized (LOCK)
 		{
-			indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+			IndexWriter writer = null;
 			try
 			{
 				writer = new IndexWriter(directory, indexWriterConfig);
@@ -323,6 +386,14 @@ public class FileIndex
 			finally
 			{
 				IOUtilities.closeQuietly(writer);
+			}
+			try
+			{
+				initReader();
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
 			}
 		}
 	} //}}}
@@ -354,32 +425,72 @@ public class FileIndex
 		return tempDirectory;
 	} //}}}
 
+	public void resetFrequency()
+	{
+		long start = System.currentTimeMillis();
+		try
+		{
+			Collection<String> existingFiles = getExistingFiles();
+
+			synchronized (LOCK)
+			{
+				IndexWriter writer = null;
+				try
+				{
+					writer = new IndexWriter(directory, indexWriterConfig);
+					for (String path : existingFiles)
+					{
+						Term term = new Term("path", path);
+						writer.deleteDocuments(term);
+						writer.addDocument(documentFactory.createDocument(path, 1));
+					}
+				}
+				catch (Exception e)
+				{
+					Log.log(Log.ERROR, this, e);
+				}
+				finally
+				{
+					IOUtilities.closeQuietly(writer);
+				}
+				try
+				{
+					initReader();
+				}
+				catch (IOException e)
+				{
+					Log.log(Log.ERROR, this, e);
+				}
+			}
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		long end = System.currentTimeMillis();
+		Log.log(Log.MESSAGE, this, "Frequency cache resetted in "+(end - start) + "ms");
+	}
+
 	private static class FrequencySearch
 	{
-		private final BytesRef bytes;
 		private final IndexSearcher searcher;
-		private final BooleanQuery query;
-		private final Term term;
+		private final Set<String> frequencyField;
 
 		private FrequencySearch(IndexReader reader)
 		{
 			searcher = new IndexSearcher(reader);
-			bytes = new BytesRef(0);
-			term = new Term("path", bytes);
-			query = new BooleanQuery();
-			query.add(new TermQuery(term), BooleanClause.Occur.MUST);
+			frequencyField = Collections.singleton("frequency");
 		}
 
-		public long getFrequency(CharSequence path) throws IOException
+		public long getFrequency(String path) throws IOException
 		{
 			long frequency = 0L;
 			try
 			{
-				bytes.copyChars(path);
-				TopDocs search = searcher.search(query,1);
+				TopDocs search = searcher.search(new TermQuery(new Term("path", path)),1);
 				if (search.scoreDocs.length == 1)
 				{
-					Document doc = searcher.doc(search.scoreDocs[0].doc);
+					Document doc = searcher.doc(search.scoreDocs[0].doc, frequencyField);
 					IndexableField frequencyField = doc.getField("frequency");
 					frequency = frequencyField.numericValue().longValue();
 				}
@@ -412,7 +523,7 @@ public class FileIndex
 			document.add(name_caps);
 			fileExtension = new StringField("extension", "", Field.Store.NO);
 			document.add(fileExtension);
-			frequency = new LongField("frequency", 0L, Field.Store.YES);
+			frequency = new LongField("frequency", 1L, Field.Store.YES);
 			document.add(frequency);
 		}
 

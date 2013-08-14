@@ -23,6 +23,7 @@ package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
 import java.awt.Dimension;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import common.gui.itemfinder.ItemFinder;
@@ -36,11 +37,13 @@ import org.gjt.sp.jedit.View;
 public class SmartOpenToolbar extends JToolBar
 {
 	private final ItemFinderPanel<String> itemFinderPanel;
+	private final JTextField extensionTextField;
 
 	//{{{ SmartOpenToolbar constructor
 	public SmartOpenToolbar(View view, FileIndex itemIndex)
 	{
-		ItemFinder<String> itemFinder = new FileItemFinder(itemIndex);
+		extensionTextField = new JTextField(6);
+		ItemFinder<String> itemFinder = new FileItemFinder(itemIndex, extensionTextField);
 		itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
 		Dimension maximumSize = itemFinderPanel.getMaximumSize();
 		itemFinderPanel.setMaximumSize(new Dimension(500, maximumSize.height));
