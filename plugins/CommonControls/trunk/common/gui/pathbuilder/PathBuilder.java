@@ -30,7 +30,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.*;
 import javax.swing.table.*;
-import javax.swing.text.*;
 
 import org.gjt.sp.jedit.jEdit;
 
