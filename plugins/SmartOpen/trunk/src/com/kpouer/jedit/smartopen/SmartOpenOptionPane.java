@@ -88,7 +88,7 @@ public class SmartOpenOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ globToPattern() method
-	private static Pattern globToPattern(String filter)
+	public static Pattern globToPattern(String filter)
 	{
 		String[] parts = filter.split(" ");
 		StringBuilder sb = new StringBuilder();

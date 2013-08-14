@@ -25,6 +25,7 @@ package com.kpouer.jedit.smartopen;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractListModel;
+import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
@@ -49,12 +50,15 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 	private String position;
 
+	private JTextField extensionTextField;
+
 	//{{{ FileItemFinder constructor
-	public FileItemFinder(FileIndex itemFinder)
+	public FileItemFinder(FileIndex itemFinder, JTextField extensionTextField)
 	{
 		model = new MyListModel();
 		listCellRenderer = new PathCellRenderer();
 		this.itemFinder = itemFinder;
+		this.extensionTextField = extensionTextField;
 	} //}}}
 
 	//{{{ getLabel() method
@@ -85,7 +89,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 			}
 			search = search.substring(0, index);
 		}
-		List<String> files = itemFinder.getFiles(search);
+		List<String> files = itemFinder.getFiles(search, extensionTextField.getText().trim());
 		model.setData(files);
 	} //}}}
 
