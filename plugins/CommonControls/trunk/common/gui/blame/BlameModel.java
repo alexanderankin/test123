@@ -37,20 +37,46 @@ public class BlameModel {
      * entry in the list per line in the file.
      */
     private List<String> blame = null;
+    
+    private List<String> tooltips = null;
 
     /**
      * My "blame" command will check if the local working file has been modified,
      * if it has, this field will be set to true;
      */
     private boolean outOfDate = false;
-
+    
+    /**
+     * Default constructor. Text area and blame should be set later.    
+     */
     public BlameModel() {
 
     }
-
+    
+    /**
+     * @param textarea The JEditTextArea that this blame is for.
+     * @param blame A list of strings containing the blame per line in the text area.
+     * This doesn't have to be "blame", just something that is desired to be displayed
+     * for each line. There should be one item in this list for each line in the
+     * text area.
+     */
     public BlameModel(JEditTextArea textarea, List<String> blame) {
+        this( textarea, blame, null );
+    }
+    
+    /**
+     * @param textarea The JEditTextArea that this blame is for.
+     * @param blame A list of strings containing the blame per line in the text area.
+     * This doesn't have to be "blame", just something that is desired to be displayed
+     * for each line. There should be one item in this list for each line in the
+     * text area.
+     * @param tooltips A list of strings for tooltips, again, one per line in the 
+     * text area. 
+     */
+    public BlameModel( JEditTextArea textarea, List<String> blame, List<String> tooltips) {
         this.textArea = textarea;
         this.blame = blame;
+        this.tooltips = tooltips;
     }
 
     public void setTextArea(JEditTextArea textarea) {
@@ -68,12 +94,56 @@ public class BlameModel {
     public List<String> getBlame() {
         return blame;
     }
+    
+    public void setToolTips(List<String> tooltips) {
+        this.tooltips = tooltips;
+    }
 
+    public List<String> getToolTips() {
+        return tooltips;
+    }
+    
+    /**
+     * Use this to indicate that the blame model no longer accurately represents
+     * the lines in the text area, for example, it could be that lines were added
+     * to the text area after the model was produced.
+     * @param b <code>true</code> indicates the model is out of date.
+     */
     public void setOutOfDate(boolean b) {
         outOfDate = b;
     }
 
     public boolean outOfDate() {
         return outOfDate;
+    }
+    
+    /**
+     * @param index A line number or other index to fetch a specific blame string.
+     * @return The blame associated with the line or index or null if the index is
+     * out of range.
+     */
+    public String getItem(int index) {
+        if (blame == null) {
+            return null;   
+        }
+        if (index < 0 || index >= blame.size()) {
+            return null;
+        }
+        return blame.get(index);
+    }
+    
+    /**
+     * @param index A line number or index to fetch a specific tooltip string.
+     * @return The tooltip text associated with the line or index, or null if the 
+     * index is out of range.
+     */
+    public String getToolTipText(int index) {
+        if (tooltips == null) {
+            return null;   
+        }
+        if (index < 0 || index >= tooltips.size()) {
+            return null;
+        }
+        return tooltips.get(index);
     }
 }
