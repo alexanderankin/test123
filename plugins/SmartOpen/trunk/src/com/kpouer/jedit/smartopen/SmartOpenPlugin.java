@@ -22,6 +22,7 @@
 package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -34,7 +35,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 
 import com.kpouer.jedit.smartopen.indexer.IndexFilesTask;
@@ -68,6 +71,7 @@ import projectviewer.vpt.VPTProject;
  */
 public class SmartOpenPlugin extends EditPlugin
 {
+	private static JTextField extensionTextField;
 	private final Map<View, SmartOpenToolbar> viewToolbar = new HashMap<View, SmartOpenToolbar>();
 	private final Map<View, JComponent> topToolbars = new HashMap<View, JComponent>();
 
@@ -327,17 +331,45 @@ public class SmartOpenPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ smartOpenDialog() methods
-	public static void smartOpenDialog(View view, String fileName)
+	public static void smartOpenDialog(View view, final String fileName)
 	{
-		ItemFinder<String> filetItemFinder = new FileItemFinder(itemFinder);
-		ItemFinderWindow.showWindow(view, filetItemFinder, fileName);
+		if (extensionTextField == null)
+			extensionTextField = new JTextField(6);
+		ItemFinder<String> filetItemFinder = new FileItemFinder(itemFinder, extensionTextField);
+
+		final ItemFinderWindow<String> itemFinderWindow = new ItemFinderWindow<>(filetItemFinder);
+		ItemFinderPanel<?> itemFinderPanel = (ItemFinderPanel<?>) itemFinderWindow.getContentPane();
+		JPanel topPanel = new JPanel(new BorderLayout());
+		JPanel extensionPanel = new JPanel();
+		extensionPanel.add(new JLabel("extension:"));
+		extensionPanel.add(extensionTextField);
+
+		Component label = itemFinderPanel.getComponent(0);
+		final Component searchField = itemFinderPanel.getComponent(1);
+		topPanel.add(label);
+		topPanel.add(extensionPanel, BorderLayout.EAST);
+		itemFinderPanel.removeAll();
+		itemFinderPanel.add(topPanel, BorderLayout.NORTH);
+
+		itemFinderPanel.add(searchField, BorderLayout.CENTER);
+		itemFinderWindow.pack();
+		itemFinderWindow.setLocationRelativeTo(view);
+		itemFinderWindow.setVisible(true);
+		EventQueue.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				itemFinderWindow.getItemFinderPanel().setText(fileName);
+				searchField.requestFocus();
+			}
+		});
 	}
 
 	public static void smartOpenDialog(View view)
 	{
-		ItemFinder<String> filetItemFinder = new FileItemFinder(itemFinder);
 		String wordAtCaret = getWordAtCaret(view);
-		ItemFinderWindow.showWindow(view, filetItemFinder, wordAtCaret);
+		smartOpenDialog(view, wordAtCaret);
 	} //}}}
 
 	//{{{ addToolbars() method

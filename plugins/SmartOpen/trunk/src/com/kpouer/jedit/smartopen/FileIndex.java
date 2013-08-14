@@ -130,7 +130,7 @@ public class FileIndex
 	} //}}}
 
 	//{{{ getFiles() method
-	public List<String> getFiles(String s)
+	public List<String> getFiles(String s, String extension)
 	{
 		if (s == null || s.isEmpty())
 			return Collections.emptyList();
@@ -151,14 +151,25 @@ public class FileIndex
 				}
 			}
 			Query queryCaps = new WildcardQuery(new Term("name_caps", builder.toString()));
+			queryCaps.setBoost(10.0F);
 			s = s.toLowerCase();
 			Query queryNoCaps = new WildcardQuery(new Term("name", '*' + s + '*'));
 
-			BooleanQuery query = new BooleanQuery();
-			queryCaps.setBoost(10.0F);
-			query.add(queryCaps, BooleanClause.Occur.SHOULD);
-			query.add(queryNoCaps, BooleanClause.Occur.SHOULD);
+			BooleanQuery nameQuery = new BooleanQuery();
+			nameQuery.add(queryCaps, BooleanClause.Occur.SHOULD);
+			nameQuery.add(queryNoCaps, BooleanClause.Occur.SHOULD);
 
+			BooleanQuery query;
+			if (extension.isEmpty())
+			{
+				query = nameQuery;
+			}
+			else
+			{
+				query = new BooleanQuery();
+				query.add(nameQuery, BooleanClause.Occur.MUST);
+				query.add(new TermQuery(new Term("extension", extension.toLowerCase())), BooleanClause.Occur.MUST);
+			}
 			initReader();
 			IndexSearcher searcher = new IndexSearcher(reader);
 			TopDocs search = searcher.search(query, 100, sort);
@@ -208,7 +219,7 @@ public class FileIndex
 			openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND;
 		}
 		observer.setMaximum(fileProvider.size());
-
+		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
 		{
 			indexWriterConfig.setOpenMode(openMode);
@@ -221,12 +232,16 @@ public class FileIndex
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					String path = fileProvider.next();
+
 					observer.setValue(i);
 					if (i % 10 == 0)
 						observer.setStatus(path);
 
-					long frequency = frequencySearch.getFrequency(path);
-					writer.addDocument(documentFactory.createDocument(path, frequency + 1L));
+					if (!exclude.matcher(path).matches())
+					{
+						long frequency = frequencySearch.getFrequency(path);
+						writer.addDocument(documentFactory.createDocument(path, frequency));
+					}
 				}
 				if (reset)
 				{
@@ -360,8 +375,8 @@ public class FileIndex
 			long frequency = 0L;
 			try
 			{
-				TopDocs search = searcher.search(query,1);
 				bytes.copyChars(path);
+				TopDocs search = searcher.search(query,1);
 				if (search.scoreDocs.length == 1)
 				{
 					Document doc = searcher.doc(search.scoreDocs[0].doc);
@@ -384,6 +399,7 @@ public class FileIndex
 		private final TextField name;
 		private final StringField path;
 		private final Document document;
+		private final StringField fileExtension;
 
 		private DocumentFactory()
 		{
@@ -394,6 +410,8 @@ public class FileIndex
 			document.add(name);
 			name_caps = new StringField("name_caps", "", Field.Store.NO);
 			document.add(name_caps);
+			fileExtension = new StringField("extension", "", Field.Store.NO);
+			document.add(fileExtension);
 			frequency = new LongField("frequency", 0L, Field.Store.YES);
 			document.add(frequency);
 		}
@@ -405,6 +423,10 @@ public class FileIndex
 			this.path.setStringValue(path);
 			name.setStringValue(fileName);
 			name_caps.setStringValue(fileName);
+			String extension = MiscUtilities.getFileExtension(path).toLowerCase();
+			if (extension.startsWith("."))
+				extension = extension.substring(1);
+			fileExtension.setStringValue(extension);
 			this.frequency.setLongValue(frequency);
 			return document;
 		} //}}}
