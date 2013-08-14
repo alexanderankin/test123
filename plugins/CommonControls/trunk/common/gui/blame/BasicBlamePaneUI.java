@@ -31,7 +31,7 @@ import org.gjt.sp.jedit.jEdit;
  * UI for the BlamePane to be displayed left of the right scroll bar of the
  * main text area.
  */
-public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, MouseListener {
+public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, MouseListener, MouseMotionListener {
 
     private BlamePane blamePane;
     private BlameRendererPane blameRendererPane;
@@ -67,6 +67,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
     public void installListeners() {
         blamePane.addChangeListener( this );
         blamePane.addMouseListener( this );
+        blamePane.addMouseMotionListener( this );
     }
 
     public void uninstallDefaults() {}
@@ -105,6 +106,19 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
     public void mouseExited( MouseEvent e ) {}
     public void mousePressed( MouseEvent e ) {}
     public void mouseReleased( MouseEvent e ) {}
+    public void mouseDragged( MouseEvent e ) {}
+    
+    public void mouseMoved( MouseEvent e ) {
+        BlameModel model = blamePane.getModel();
+        if ( model == null ) {
+            return ;
+        }
+        int index = ( e.getY() / pixelsPerLine ) + model.getTextArea().getFirstPhysicalLine();
+        String tooltip = model.getToolTipText(index);
+        if (tooltip != null) {
+            blamePane.setToolTipText(tooltip);   
+        }
+    }
 
     public class BlameRendererPane extends JPanel {
         public BlameRendererPane( ) {
