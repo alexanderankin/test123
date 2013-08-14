@@ -1,8 +1,8 @@
 plugin.activator.ActivatorPlugin.name=Activator
 plugin.activator.ActivatorPlugin.author=Brad Mace, Alan Ezust, Dale Anson
 plugin.activator.ActivatorPlugin.version=1.4.0
-plugin.activator.ActivatorPlugin.depend.0=jdk 1.6.0
-plugin.activator.ActivatorPlugin.depend.1=jedit 05.02.00.00
+plugin.activator.ActivatorPlugin.depend.0=jdk 1.7.0
+plugin.activator.ActivatorPlugin.depend.1=jedit 05.02.01.00
 plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 1.5
 plugin.activator.ActivatorPlugin.activate=defer
 plugin.activator.ActivatorPlugin.docs=docs/index.html
