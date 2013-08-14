@@ -72,8 +72,8 @@ import projectviewer.vpt.VPTProject;
 public class SmartOpenPlugin extends EditPlugin
 {
 	private static JTextField extensionTextField;
-	private final Map<View, SmartOpenToolbar> viewToolbar = new HashMap<View, SmartOpenToolbar>();
-	private final Map<View, JComponent> topToolbars = new HashMap<View, JComponent>();
+	private final Map<View, SmartOpenToolbar> viewToolbar = new HashMap<>();
+	private final Map<View, JComponent> topToolbars = new HashMap<>();
 
 	public static FileIndex itemFinder;
 	private Timer timer;
@@ -86,8 +86,6 @@ public class SmartOpenPlugin extends EditPlugin
 	{
 		propertiesChanged(null);
 		itemFinder = new FileIndex(null);
-		Task task = new IndexFilesTask();
-		ThreadUtilities.runInBackground(task);
 		EditBus.addToBus(this);
 		timer = new Timer(60000, new ActionListener()
 		{
@@ -171,6 +169,13 @@ public class SmartOpenPlugin extends EditPlugin
 		viewToolbar.remove(view);
 	} //}}}
 
+	public static void resetFrequency()
+	{
+		if (itemFinder == null)
+			return;
+		itemFinder.resetFrequency();
+	}
+
 	//{{{ indexFiles() methods
 	public static void indexFiles()
 	{
@@ -193,6 +198,8 @@ public class SmartOpenPlugin extends EditPlugin
 		}
 		else
 		{
+			if (itemFinder != null)
+				itemFinder.close();
 			itemFinder = new FileIndex(null);
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
@@ -209,11 +216,13 @@ public class SmartOpenPlugin extends EditPlugin
 
 		if (activeProject != null)
 		{
+			if (itemFinder != null)
+				itemFinder.close();
 			itemFinder = new FileIndex(activeProject);
 			//reindex only for in-memory storage
 			//if(jEdit.getBooleanProperty("options.smartopen.memoryindex")){
 			IndexProjectTask task = new IndexProjectTask(itemFinder);
-				ThreadUtilities.runInBackground(task);
+			ThreadUtilities.runInBackground(task);
 			//}
 		}
 		else
@@ -227,6 +236,7 @@ public class SmartOpenPlugin extends EditPlugin
 	@Override
 	public void stop()
 	{
+		extensionTextField = null;
 		timer.stop();
 		EditBus.removeFromBus(this);
 		itemFinder = null;
