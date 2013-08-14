@@ -31,6 +31,7 @@ import javax.swing.ListModel;
 
 import common.gui.itemfinder.AbstractItemFinder;
 import common.gui.itemfinder.PathCellRenderer;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -97,49 +98,75 @@ public class FileItemFinder extends AbstractItemFinder<String>
 	@Override
 	public void selectionMade(final String path)
 	{
+		Buffer buffer = jEdit.getBuffer(path);
 		if (position != null)
 		{
 			final String[] split = position.split(",");
 			try
 			{
 				final int _seletedLine = Integer.parseInt(split[0]) - 1;
-				EditBus.addToBus(new EBComponent()
+				if (buffer == null)
 				{
-					@Override
-					public void handleMessage(EBMessage message)
+					// not loaded
+					EditBus.addToBus(new EBComponent()
 					{
-						if (message instanceof BufferUpdate)
+						@Override
+						public void handleMessage(EBMessage message)
 						{
-							BufferUpdate bufferUpdate = (BufferUpdate) message;
-							if (bufferUpdate.getWhat() == BufferUpdate.LOADED &&
-								bufferUpdate.getBuffer().getPath().equals(path))
+							if (message instanceof BufferUpdate)
 							{
-								EditBus.removeFromBus(this);
-								JEditTextArea textArea = jEdit.getActiveView().getEditPane().getTextArea();
-								int caret = textArea.getLineStartOffset(_seletedLine);
-								if (caret == -1)
-									return;
-
-								if (split.length > 0)
+								BufferUpdate bufferUpdate = (BufferUpdate) message;
+								if (bufferUpdate.getWhat() == BufferUpdate.LOADED &&
+									bufferUpdate.getBuffer().getPath().equals(path))
 								{
-									int offset = Integer.parseInt(split[1]);
-									if (offset < textArea.getLineLength(_seletedLine))
-									{
-										caret += offset;
-									}
+									EditBus.removeFromBus(this);
+									moveCaret(_seletedLine, split);
 								}
-								textArea.setCaretPosition(caret);
 							}
 						}
-					}
-				});
+					});
+				}
+				else
+				{
+					jEdit.getActiveView().getEditPane().setBuffer(buffer);
+					moveCaret(_seletedLine, split);
+				}
 			}
 			catch (NumberFormatException e)
 			{
+				// ignore
 			}
 		}
-		jEdit.openFile(jEdit.getActiveView().getEditPane(), path);
+		if (buffer == null)
+			jEdit.openFile(jEdit.getActiveView().getEditPane(), path);
 	} //}}}
+
+	private static void moveCaret(int _seletedLine, String[] split)
+	{
+		JEditTextArea textArea = jEdit.getActiveView().getEditPane().getTextArea();
+		if (_seletedLine < 0)
+			_seletedLine = 0;
+		else if (_seletedLine > textArea.getLineCount())
+			_seletedLine = textArea.getLineCount() - 1;
+		int caret = textArea.getLineStartOffset(_seletedLine);
+		if (caret == -1)
+			return;
+
+		if (split.length > 1)
+		{
+			try
+			{
+				int offset = Integer.parseInt(split[1]);
+				int lineLength = textArea.getLineLength(_seletedLine);
+				caret += offset < lineLength ? offset : lineLength;
+			}
+			catch (NumberFormatException e)
+			{
+				// ignore
+			}
+		}
+		textArea.setCaretPosition(caret);
+	}
 
 	//{{{ getListCellRenderer() method
 	@Override
