@@ -38,11 +38,12 @@ public class BlameModel {
      */
     private List<String> blame = null;
     
+    /** Additional information you might want to display for each line in a tooltip */
     private List<String> tooltips = null;
 
     /**
-     * My "blame" command will check if the local working file has been modified,
-     * if it has, this field will be set to true;
+     * The actual "blame" command should check if the local working file has been modified,
+     * if it has, this field should be set to true
      */
     private boolean outOfDate = false;
     
