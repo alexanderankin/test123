@@ -123,7 +123,8 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
      */
     public JPanel getCloser( final View view ) {
         final JPanel panel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 16, 0 ) );
-        JButton button = new JButton( jEdit.getProperty( "ips.Close_blame", "Close blame" ), GUIUtilities.loadIcon( "10x10/actions/close.png" ) );
+        JButton button = new JButton( jEdit.getProperty( "common.gui.Close_blame", "Close blame" ), 
+        	GUIUtilities.loadIcon( "10x10/actions/close.png" ) );
         button.setBorder( null );
         panel.add( button );
         button.addActionListener(

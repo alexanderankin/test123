@@ -26,3 +26,5 @@ common.gui.pathbuilder.fileDialogAction=Select
 common.gui.filetextfield.choose=Choose...
 common.gui.filetextfield.file_not_found=The selected file cannot be opened.
 
+common.gui.Close_blame=Close Blame
+
