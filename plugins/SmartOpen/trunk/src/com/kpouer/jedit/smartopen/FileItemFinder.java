@@ -47,7 +47,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 {
 	private final MyListModel model;
 	private final ListCellRenderer listCellRenderer;
-	private final FileIndex itemFinder;
+	private FileIndex itemFinder;
 
 	private String position;
 
@@ -61,6 +61,12 @@ public class FileItemFinder extends AbstractItemFinder<String>
 		this.itemFinder = itemFinder;
 		this.extensionTextField = extensionTextField;
 	} //}}}
+
+	public void setFileIndex(FileIndex itemFinder)
+	{
+		this.itemFinder.close();
+		this.itemFinder = itemFinder;
+	}
 
 	//{{{ getLabel() method
 	@Override

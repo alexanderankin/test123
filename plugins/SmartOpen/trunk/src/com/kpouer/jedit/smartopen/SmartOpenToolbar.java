@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2012 Matthieu Casanova
+ * Copyright © 2011-2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ package com.kpouer.jedit.smartopen;
 
 //{{{ Imports
 import java.awt.Dimension;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
@@ -38,18 +39,21 @@ public class SmartOpenToolbar extends JToolBar
 {
 	private final ItemFinderPanel<String> itemFinderPanel;
 	private final JTextField extensionTextField;
+	private final FileItemFinder itemFinder;
 
 	//{{{ SmartOpenToolbar constructor
 	public SmartOpenToolbar(View view, FileIndex itemIndex)
 	{
 		extensionTextField = new JTextField(6);
-		ItemFinder<String> itemFinder = new FileItemFinder(itemIndex, extensionTextField);
-		itemFinderPanel = new ItemFinderPanel<String>(view, itemFinder);
+		itemFinder = new FileItemFinder(itemIndex, extensionTextField);
+		itemFinderPanel = new ItemFinderPanel<>(view, itemFinder);
 		Dimension maximumSize = itemFinderPanel.getMaximumSize();
 		itemFinderPanel.setMaximumSize(new Dimension(500, maximumSize.height));
 		Dimension minimumSize = itemFinderPanel.getMinimumSize();
 		itemFinderPanel.setMinimumSize(new Dimension(500, minimumSize.height));
 		add(itemFinderPanel);
+		add(new JLabel("extension:"));
+		add(extensionTextField);
 	} //}}}
 
 	//{{{ getItemFinderPanel() method
@@ -57,4 +61,9 @@ public class SmartOpenToolbar extends JToolBar
 	{
 		return itemFinderPanel;
 	} //}}}
+
+	public void setFileIndex(FileIndex itemFinder)
+	{
+		this.itemFinder.setFileIndex(itemFinder);
+	}
 }

@@ -79,6 +79,7 @@ public class SmartOpenPlugin extends EditPlugin
 	private Timer timer;
 
 	private boolean toolbar;
+	private static SmartOpenToolbar smartToolbar;
 
 	//{{{ start() method
 	@Override
@@ -86,6 +87,9 @@ public class SmartOpenPlugin extends EditPlugin
 	{
 		propertiesChanged(null);
 		itemFinder = new FileIndex(null);
+		if (smartToolbar != null)
+			smartToolbar.setFileIndex(itemFinder);
+
 		EditBus.addToBus(this);
 		timer = new Timer(60000, new ActionListener()
 		{
@@ -103,7 +107,7 @@ public class SmartOpenPlugin extends EditPlugin
 	{
 		if (viewToolbar.containsKey(view))
 			return;
-		SmartOpenToolbar smartToolbar = new SmartOpenToolbar(view,itemFinder);
+		smartToolbar = new SmartOpenToolbar(view,itemFinder);
 		JComponent toolBar = getViewToolbar(view);
 		toolBar.add(smartToolbar);
 		toolBar.revalidate();
@@ -201,6 +205,8 @@ public class SmartOpenPlugin extends EditPlugin
 			if (itemFinder != null)
 				itemFinder.close();
 			itemFinder = new FileIndex(null);
+			if (smartToolbar != null)
+				smartToolbar.setFileIndex(itemFinder);
 			Task task = new IndexFilesTask();
 			ThreadUtilities.runInBackground(task);
 		}
@@ -219,6 +225,9 @@ public class SmartOpenPlugin extends EditPlugin
 			if (itemFinder != null)
 				itemFinder.close();
 			itemFinder = new FileIndex(activeProject);
+			if (smartToolbar != null)
+				smartToolbar.setFileIndex(itemFinder);
+
 			//reindex only for in-memory storage
 			//if(jEdit.getBooleanProperty("options.smartopen.memoryindex")){
 			IndexProjectTask task = new IndexProjectTask(itemFinder);
@@ -241,6 +250,7 @@ public class SmartOpenPlugin extends EditPlugin
 		EditBus.removeFromBus(this);
 		itemFinder = null;
 		removeToolbars();
+		smartToolbar = null;
 	} //}}}
 
 	//{{{ handleViewUpdate() method
