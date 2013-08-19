@@ -42,8 +42,10 @@ public class BlameModel {
     private List<String> tooltips = null;
 
     /**
-     * The actual "blame" command should check if the local working file has been modified,
-     * if it has, this field should be set to true
+     * The svn blame action checks if the local working file has been modified,
+     * if it has, sets this field to true, and later checks this flag to decide if it should
+     * issue a warning. Git blame doesn't use this member at all since individual blame lines
+     * indicate whether they were locally modified or not.   
      */
     private boolean outOfDate = false;
     
