@@ -123,6 +123,7 @@ public class FileIndex implements Closeable
 	public void close()
 	{
 		IOUtilities.closeQuietly (reader);
+		reader = null;
 	}
 
 	@Nullable
@@ -470,6 +471,8 @@ public class FileIndex implements Closeable
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Frequency cache resetted in "+(end - start) + "ms");
 	}
+
+
 
 	private static class FrequencySearch
 	{
