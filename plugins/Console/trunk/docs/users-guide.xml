@@ -269,7 +269,9 @@ most often at the top of the list.
    <listitem>
     <para>
      <guibutton>Run to buffer</guibutton> - runs the
- currently-entered command, but shows the output in a new buffer, instead of in the console window. This has the same effect as pressing <keycap>Ctrl-Enter</keycap> from the text field. </para>
+ currently-entered command, but shows the output in a new buffer, instead of in
+ the console window. This has the same effect as pressing
+ <keycap>Ctrl-Enter</keycap> from the text field. </para>  
    </listitem>
 
    <listitem>
@@ -866,7 +868,9 @@ or <guimenuitem>Customize</guimenuitem> it. </para>
  fails, you will always be asked for confirmation before running the next one,
  no matter what. Some commando files, such as the <filename>diff</filename>
  file included with the Console plugin, show their output in a new buffer,
- rather than the console window.
+ rather than the console window. If the command contains <literal>diff</literal>
+ or <literal>patch</literal>, the edit mode will be set automatically to
+ <literal>patch</literal>. 
 </para>
 
   </section>
@@ -1496,14 +1500,19 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      </funcsynopsis>
 
    <para>
-   The <function>execute()</function> method is called when the user enters a command. The complete command line is passed in as one string;
+   The <function>execute()</function> method is called when the user enters a
+   command. The complete command line is passed in as one string;
    how it is parsed is entirely up to you.
     </para>
      <para>
-   The <varname>output</varname> object provided is either an instance of <classname>ShellState</classname> or a special <classname>BufferOutput</classname> object if the user elected to have the command output go into a new buffer.
+   The <varname>output</varname> object provided is either an instance of
+   <classname>ShellState</classname> or a special
+   <classname>BufferOutput</classname> object if the user elected to have the
+   command output go into a new buffer.    
   </para>
   <para>
-   As a convention, fatal errors (for example, parse errors in shell commands) should be sent to the <parameter>error</parameter> stream.
+   As a convention, fatal errors (for example, parse errors in shell commands)
+   should be sent to the <parameter>error</parameter> stream. 
   </para>
     </listitem>
     <listitem>
