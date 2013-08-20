@@ -51,11 +51,12 @@ public class BufferOutput implements Output
 {
 	
 	/** Guess the edit mode of the output based on the command line executed. */
-	static public String guessMode(String command) {
-		String mode = "text";
+	static public String guessMode(String command) {		
 		if (command.contains("diff") || command.contains("patch"))
-			mode = "patch";	
-		return mode;		
+			return "patch";	
+		if (command.contains("html")) return "html";
+		if (command.contains("xml")) return "xml";
+		return "text";		
 	}
 	
 	//{{{ BufferOutput constructors
