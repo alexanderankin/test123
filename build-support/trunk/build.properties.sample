@@ -79,10 +79,10 @@
 #compiler.nowarn=off
 
 # Target JVM version
-#compiler.target=1.5
+#compiler.target=1.6
 
 # Java version of the source files
-#compiler.source=1.5
+#compiler.source=1.6
 
 # List files being compiled
 #compiler.listfiles=no
