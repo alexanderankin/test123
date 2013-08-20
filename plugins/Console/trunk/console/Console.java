@@ -574,8 +574,9 @@ implements EBComponent, DefaultFocusComponent
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
 		{
-			if(output instanceof BufferOutput)
+			if(output instanceof BufferOutput)				
 			{
+				error = state;
 				recorder.record("runCommandToBuffer(view,\""
 					+ shell.getName()
 					+ "\",\""
@@ -601,9 +602,8 @@ implements EBComponent, DefaultFocusComponent
 		ErrorSource.unregisterErrorSource(errorSource);
 		try
 		{
-			shell.execute(this, input, output, state, cmd);
+			shell.execute(this, input, output, error, cmd);
 			startAnimation();
-//			shell.execute(this,input,output,error,cmd);
 		}
 		catch(RuntimeException e)
 		{
