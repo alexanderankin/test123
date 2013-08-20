@@ -601,7 +601,7 @@ implements EBComponent, DefaultFocusComponent
 		ErrorSource.unregisterErrorSource(errorSource);
 		try
 		{
-			shell.execute(this, input, output, null, cmd);
+			shell.execute(this, input, output, state, cmd);
 			startAnimation();
 //			shell.execute(this,input,output,error,cmd);
 		}
