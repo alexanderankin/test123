@@ -17,9 +17,9 @@ runCommandToBuffer(View view, String shell, String command)
 
 	// get the shell to use
 	Shell _shell = Shell.getShell(shell);
-
+	
 	// Run the command
-	console.run(_shell,new BufferOutput(console),command);
+	console.run(_shell,new BufferOutput(console, BufferOutput.guessMode(command)), command);
 }
 
 help.runCommandToBuffer
