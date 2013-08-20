@@ -125,6 +125,7 @@
 ### For generating the docs, adjust the following to your local paths
 ### For xsltproc to work, the path to the DocBook stuff MUST NOT contain spaces!
 
+
 # cygwin "docbook-xml44" and "docbook-xsl" packages
 # can be used to install docbook-xml and docbook-dtd
 # (example windows locations):
@@ -139,11 +140,17 @@
 #docbook.catalog=/sw/share/xml/dtd/docbookx/4.4.0/docbook.cat
 #docbook.xsl=/sw/share/xml/xsl/docbook-xsl
 
+# docbook 4.4 dtd can be downloaded from  http://www.docbook.org/xml/4.4/docbook-xml-4.4.zip
+# docbook-xsl can be downloaded from http://sourceforge.net/projects/docbook/files/docbook-xsl/
+
 # The name of the xsl stylesheet (without the path info)
 #docbook.xsl.sheet=html/chunk.xsl
 
 # The path to the style sheet to use.
 #docs.style.sheet=${docbook.xsl}/${docbook.xsl.sheet}
+
+# Windows binaries can be gotten at http://www.zlatkovic.com/libxml.en.html
+# You need iconv, libxml2, libxslt, and zlib for the xsltproc package. 
 
 # The path to the xsltproc executable
 #xsltproc.executable=C:\\Programme\\xsltproc\\xsltproc.exe
