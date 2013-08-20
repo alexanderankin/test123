@@ -49,13 +49,21 @@ import org.gjt.sp.util.ThreadUtilities;
 
 public class BufferOutput implements Output
 {
-	//{{{ BufferOutput constructor
+	
+	/** Guess the edit mode of the output based on the command line executed. */
+	static public String guessMode(String command) {
+		String mode = "text";
+		if (command.contains("diff") || command.contains("patch"))
+			mode = "patch";	
+		return mode;		
+	}
+	
+	//{{{ BufferOutput constructors
 	public BufferOutput(Console console)
 	{
 		this(console,"text");
-	} //}}}
+	} 
 
-	//{{{ BufferOutput constructor
 	public BufferOutput(Console console, String mode)
 	{
 		this.console = console;

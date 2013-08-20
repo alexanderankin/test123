@@ -1182,12 +1182,12 @@ implements EBComponent, DefaultFocusComponent
 			String input = view.getTextArea().getSelectedText();
 			Output output = shellState;
 			boolean printInput = false;
-
+			
 			if(source == run)
 				printInput = true;
 			else if(source == toBuffer)
 			{
-				output = new BufferOutput(Console.this);
+				output = new BufferOutput(Console.this, BufferOutput.guessMode(cmd));
 			}
 
 			run(getShell(), input, output, shellState, cmd, printInput);
@@ -1199,7 +1199,8 @@ implements EBComponent, DefaultFocusComponent
 	{
 		public void actionPerformed(ActionEvent evt) {
 			String cmd = text.getInput();
-			Output output = new BufferOutput(Console.this);
+			
+			Output output = new BufferOutput(Console.this, BufferOutput.guessMode(cmd));
 			run(getShell(), null, output, shellState, cmd, false);
 		}
 
