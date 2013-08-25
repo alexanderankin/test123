@@ -51,7 +51,9 @@ import org.gjt.sp.jedit.GUIUtilities;
  *  @author		Marcelo Vanzin
  *	@version	$Id$
  *	@since		CC 0.9.4
+ *  @deprecated use GUIUtilities.showVFSFileDialog() instead
  */
+@Deprecated
 public class ModalJFileChooser extends JFileChooser
 								implements ActionListener {
 
