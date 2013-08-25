@@ -21,8 +21,9 @@ package common.gui.blame;
 import java.util.List;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-/**
- * Simple data model to transport necessary data for the SVN "blame" command.
+/** A data model that stores 2 lists of Strings, where indices
+	in these list correspond to physical lines in the textArea's buffer.  	
+	One list is for the BlamePane to display, and the other is for toolTips. 	
  */
 public class BlameModel {
 

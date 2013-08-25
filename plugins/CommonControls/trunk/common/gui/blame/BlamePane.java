@@ -41,6 +41,13 @@ import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.jEdit;
 
+
+/** A rectangular component that sits to the left or right of the TextArea. 
+    It permits you to display something next to each line in the TextArea.
+	The data to display comes from a BlameModel.
+	
+	@author Dale Anson
+*/
 public class BlamePane extends JComponent implements CaretListener, EBComponent {
 
     private static final String uiClassID = "BlamePaneUI";
@@ -104,7 +111,7 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
     /**
      * Model is a list of strings, one per line in the source file.  Each string
      * in the model provides the blame information about that line, probably just
-     * author and revision.  This list is provided by the i.p.s.command.Blame command.
+     * author and revision/date.
      */
     public void setModel( BlameModel model ) {
         this.model = model;
