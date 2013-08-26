@@ -158,6 +158,14 @@ the Sourceforge Bug Tracker at
         <title>Change log</title>
         <itemizedlist>
             <listitem>
+                <para>Version 1.6, danson. Requires jEdit 4.5, Java 1.5</para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Added Solarized-light color scheme from Bernat. See http://ethanschoonover.com/solarized for more details.</para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem>
                 <para>Version 1.5, danson. Requires jEdit 4.5, Java 1.5</para>
                 <itemizedlist>
                     <listitem>
