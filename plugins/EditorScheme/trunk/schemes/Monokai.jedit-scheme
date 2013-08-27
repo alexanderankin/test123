@@ -27,6 +27,7 @@ view.gutter.currentLineColor=\#dc322f
 view.gutter.noFocusBorderColor=\#75715e
 view.gutter.focusBorderColor=\#dc322f
 view.gutter.structureHighlightColor=\#ae81ff
+view.gutter.foldColor=\#ae81ff
 
 view.status.foreground=\#f8f8f2
 view.status.background=\#272822
