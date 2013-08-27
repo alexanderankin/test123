@@ -162,6 +162,7 @@ the Sourceforge Bug Tracker at
                 <itemizedlist>
                     <listitem>
                         <para>Added Solarized-light color scheme from Bernat. See http://ethanschoonover.com/solarized for more details.</para>
+                        <para>Added Monokai scheme</para>
                     </listitem>
                 </itemizedlist>
             </listitem>
