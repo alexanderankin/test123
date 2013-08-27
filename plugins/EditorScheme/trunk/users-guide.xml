@@ -123,7 +123,7 @@ settings directory.</para>
                 <para>JDK 1.5</para>
             </listitem>
             <listitem>
-                <para>jEdit 4.3.2</para>
+                <para>jEdit 4.5</para>
             </listitem>
         </itemizedlist>
     </section>
@@ -158,11 +158,18 @@ the Sourceforge Bug Tracker at
         <title>Change log</title>
         <itemizedlist>
             <listitem>
+                <para>Version 1.7, Matthieu Casanova. Requires jEdit 4.5, Java 1.5</para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Added Monokai scheme</para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem>
                 <para>Version 1.6, danson. Requires jEdit 4.5, Java 1.5</para>
                 <itemizedlist>
                     <listitem>
                         <para>Added Solarized-light color scheme from Bernat. See http://ethanschoonover.com/solarized for more details.</para>
-                        <para>Added Monokai scheme</para>
                     </listitem>
                 </itemizedlist>
             </listitem>
