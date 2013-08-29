@@ -134,8 +134,9 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             // calculate the proper width by finding the widest line of the blame
             int max_width = 0;
             FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
+            Graphics g = model.getTextArea().getPainter().getGraphics();
             for ( String line : model.getBlame() ) {
-                int width = fm.stringWidth( line );
+                int width = (int)fm.getStringBounds( line, g ).getWidth();
                 max_width = width > max_width ? width : max_width;
             }
             Dimension dim = getPreferredSize();
@@ -145,15 +146,17 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
 
         public void paintComponent( Graphics gfx ) {
             super.paintComponent( gfx );
+            BlameModel model = blamePane.getModel();
 
             // paint the background
             Rectangle size = getBounds();
             gfx.setColor( getBackground() );
             gfx.fillRect( 0, 0, size.width, size.height );
+            FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
+            gfx.setFont(fm.getFont());
 
             // get the visible lines, draw the corresponding blame lines
-            BlameModel model = blamePane.getModel();
-            pixelsPerLine = model.getTextArea().getPainter().getFontMetrics().getHeight();
+            pixelsPerLine = fm.getHeight();
             int firstLine = model.getTextArea().getFirstPhysicalLine();
             int lastLine = model.getTextArea().getLastPhysicalLine();
             int caretLine = model.getTextArea().getCaretLine();
