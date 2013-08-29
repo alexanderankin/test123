@@ -11,6 +11,10 @@ view.lineHighlightColor=\#3e3d32
 view.structureHighlightColor=\#ae81ff
 
 view.style.comment1=color\:\#75715e
+view.style.foldLine.0=color\:\#ff6600 bgColor\:\#69483e style\:b
+view.style.foldLine.1=color\:\#ff6600 bgColor\:\#69483e style\:b
+view.style.foldLine.2=color\:\#ff6600 bgColor\:\#69483e style\:b
+view.style.foldLine.3=color\:\#ff6600 bgColor\:\#69483e style\:b
 view.style.literal1=color\:\#e6db74
 view.style.digit=color\:\#ae81ff
 view.style.keyword1=color\:\#f92672
