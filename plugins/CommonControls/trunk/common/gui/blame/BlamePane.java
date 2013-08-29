@@ -30,6 +30,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -123,6 +124,49 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
      */
     public BlameModel getModel() {
         return model;
+    }
+    
+    /**
+     * Installs this BlamePane on the right side of the text area.    
+     */
+    public void install(Buffer buffer) {
+        BlameModel model = getModel();
+        if (model == null) {
+            return;   
+        }
+        
+        JEditTextArea textArea = model.getTextArea();
+        if (textArea == null) {
+            return;   
+        }
+        
+		// remove any previous blame display
+        Object old_blame = buffer.getProperty( "_old_blame_" );
+        if ( old_blame != null ) {
+            textArea.removeLeftOfScrollBar( ( JComponent ) old_blame );
+            Object old_closer = buffer.getProperty( "_old_closer_" );
+            textArea.removeTopComponent( ( JComponent ) old_closer );
+        }
+
+        // add column of revisions and author names to the right
+        // side of the text area
+        textArea.addLeftOfScrollBar( this );
+
+        // add a "close" button at the top of the text area to be
+        // able to remove the blame display
+        JComponent closer = getCloser( textArea.getView() );
+        textArea.addTopComponent( closer );
+
+        // caret listener moves the highlight in the text area to
+        // correspond with the highlight in the blame pane
+        textArea.addCaretListener( this );
+
+        // store a reference to the blame display for future use
+        buffer.setProperty( "_old_blame_", this );
+        buffer.setProperty( "_old_closer_", closer );
+
+        textArea.getView().invalidate();
+        textArea.getView().validate();
     }
 
     /**
