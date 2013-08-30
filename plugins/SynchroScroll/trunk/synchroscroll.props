@@ -4,7 +4,7 @@
 
 plugin.synchroscroll.SynchroScrollPlugin.name=SynchroScroll
 plugin.synchroscroll.SynchroScrollPlugin.author=Dale Anson, Jerzy Urban
-plugin.synchroscroll.SynchroScrollPlugin.version=1.1
+plugin.synchroscroll.SynchroScrollPlugin.version=1.2
 plugin.synchroscroll.SynchroScrollPlugin.activate=defer
 plugin.synchroscroll.SynchroScrollPlugin.description=Provides ability to synchronize scrolling when multiple text areas are open.
 
