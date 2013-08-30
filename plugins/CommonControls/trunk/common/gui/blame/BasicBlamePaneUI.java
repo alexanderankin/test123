@@ -152,10 +152,16 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             Rectangle size = getBounds();
             gfx.setColor( getBackground() );
             gfx.fillRect( 0, 0, size.width, size.height );
-            FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
             gfx.setFont(getFont());
+            if ( !"none".equals( jEdit.getProperty( "view.antiAlias" ) ) ) {
+                ( ( java.awt.Graphics2D ) gfx ).setRenderingHint(
+                    java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+                    java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                );
+            }
 
             // get the visible lines, draw the corresponding blame lines
+            FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
             pixelsPerLine = fm.getHeight();
             int firstLine = model.getTextArea().getFirstPhysicalLine();
             int lastLine = model.getTextArea().getLastPhysicalLine();
