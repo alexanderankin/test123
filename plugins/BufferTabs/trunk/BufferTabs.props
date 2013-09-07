@@ -30,7 +30,7 @@ buffertabs.popup=\
     close-buffer \
     save \
     - \
-	close-all \
+	closeall-bufferset \
     closeall-except-active \
 	- \
     Files/Browse_Buffer_Directory \
