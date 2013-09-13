@@ -63,10 +63,12 @@ public class ReloadPanel extends JPanel implements Observer {
             if ( jar.getPlugin() == null ) {
                 continue;
             }
+            if ( plugin.getFile() == null || !plugin.getFile().exists()) {
+                continue;   
+            }
             int status = PluginManager.getStatus( jar );
             StringBuilder displayName = new StringBuilder();
             String display_name = plugin.toString();
-            // TODO: use StringBuilder below. Actually a MessageFormat might be cleaner.
             switch ( status ) {
                 case LOADED:
                     displayName.append("<html><font color=yellow>&#9830;</font> ").append(display_name);

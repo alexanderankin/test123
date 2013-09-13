@@ -32,8 +32,7 @@ public class DependentSelectionDialog extends JDialog {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder(new EmptyBorder(6, 6, 6, 6));
 
-        // TODO: put this string in the properties file
-        JLabel title = new JLabel( "You may want to also load these plugins:" );
+        JLabel title = new JLabel( jEdit.getProperty("activator.dependentpluginsdialog.heading", "You may want to also load these plugins:") );
         panel.add( title, "0, 0, 1, 1, W, wh, 0" );
 
         plugins = new HashSet<JCheckBox>();

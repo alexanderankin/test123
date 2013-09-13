@@ -4,6 +4,7 @@ jEdit Activator plugin changelog.
 Activator 1.4
   #3614471, handles loading and reloading of optionally dependent plugins better, and reactivates plugins on reloads. 
   German localization.
+  #3614984, handle removed plugins, requires jEdit 5.2.1.
   
 Activator 1.3
   #2782338, provide the user the ability to set if a plugin should start or not start on jEdit start up.

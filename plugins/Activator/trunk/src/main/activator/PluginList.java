@@ -11,7 +11,6 @@ import org.gjt.sp.util.*;
  */
 public class PluginList extends Observable {
 
-    // TODO: figure out where these are used and make sure they still work.
     public static final String LOADED = jEdit.getProperty( "activator.Loaded", "Loaded" );
     public static final String ERROR = jEdit.getProperty( "activator.Error", "Error" );
     public static final String ACTIVATED = jEdit.getProperty( "activator.Activated", "Activated" );
@@ -45,6 +44,19 @@ public class PluginList extends Observable {
         pluginMap.put( plugin.getFile().getAbsolutePath(), plugin );
     }
 
+    public void removePlugin( File file ) {
+        if ( file == null ) {
+            return;
+        }
+        Plugin plugin = pluginMap.get(file.getAbsolutePath());
+        if (plugin != null) {
+            plugins.remove(plugin);
+            pluginMap.remove(file.getAbsolutePath());
+            setChanged();
+            notifyObservers();
+        }
+    }
+
     public void addPlugin( File file ) {
         // don't add the jar for Activator, it really doesn't work well to try
         // to make it reload itself
@@ -59,7 +71,7 @@ public class PluginList extends Observable {
         plugins.add( plugin );
         pluginMap.put( file.getAbsolutePath(), plugin );
     }
-
+    
     public void update() {
         clear();
         for ( PluginJAR pj : jEdit.getPluginJARs() ) {
