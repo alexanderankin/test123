@@ -105,7 +105,6 @@ public class ActivationPanel extends JPanel implements ActionListener, MouseList
 
         StopWatch sw = new StopWatch();
 
-        // TODO: move all logic for these actions to PluginManager class.
         if ( e.getSource() == load ) {
             sw.start();
             PluginManager.getInstance().load(plugin);

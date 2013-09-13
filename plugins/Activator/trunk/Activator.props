@@ -41,4 +41,5 @@ activator.Error=Error
 activator.Activated=Activated
 activator.Click_to_reload=Click to reload
 activator.dependentpluginsdialog.title=Select Plugins to Load
+activator.dependentpluginsdialog.heading=You may want to also load these plugins:
 

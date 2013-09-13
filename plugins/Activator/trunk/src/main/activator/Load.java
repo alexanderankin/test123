@@ -4,9 +4,9 @@ import java.awt.event.ActionEvent;
 
 import org.gjt.sp.jedit.jEdit;
 
-import common.gui.actions.CustomAction;
+import javax.swing.AbstractAction;
 
-public class Load extends CustomAction
+public class Load extends AbstractAction
 {
 	Plugin plugin;
 

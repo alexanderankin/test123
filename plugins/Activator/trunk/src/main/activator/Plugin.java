@@ -7,7 +7,9 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 
-// TODO: comments, please.
+/**
+ * A data object to represent a jEdit plugin.
+ */
 public class Plugin {
     
     private PluginJAR jar = null;
