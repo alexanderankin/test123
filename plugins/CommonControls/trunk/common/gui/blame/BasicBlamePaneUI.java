@@ -164,21 +164,21 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
             pixelsPerLine = fm.getHeight();
             int firstLine = model.getTextArea().getFirstPhysicalLine();
-            int lastLine = model.getTextArea().getLastPhysicalLine();
             int caretLine = model.getTextArea().getCaretLine();
             Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
             Color highlight = jEdit.getColorProperty( "view.lineHighlightColor", Color.WHITE );
             gfx.setColor( foreground );
             java.util.List<String> blame = model.getBlame();
             int descent = gfx.getFontMetrics().getDescent();
-            for ( int i = firstLine; i <= lastLine; i++ ) {
-                if ( i == caretLine ) {
+            for ( int screenLine = 0; screenLine <= model.getTextArea().getLastScreenLine(); screenLine++ ) {
+                int physicalLine = model.getTextArea().getPhysicalLineOfScreenLine(screenLine);
+                if ( screenLine == caretLine ) {
                     gfx.setColor( highlight );
-                    gfx.fillRect( 0, ( i - firstLine ) * pixelsPerLine, size.width, pixelsPerLine );
+                    gfx.fillRect( 0, ( screenLine ) * pixelsPerLine, size.width, pixelsPerLine );
                     gfx.setColor( foreground );
                 }
-                if ( i >= 0 && i < blame.size() ) {
-                    gfx.drawString( blame.get( i ), 3, ( ( i - firstLine + 1 ) * pixelsPerLine ) - descent );
+                if ( physicalLine >= 0 && physicalLine < blame.size() ) {
+                    gfx.drawString( blame.get( physicalLine ), 3, ( screenLine * pixelsPerLine ) - descent );
                 }
             }
         }
