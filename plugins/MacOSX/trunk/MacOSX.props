@@ -42,12 +42,8 @@ MacOSXPlugin.dialog.osname.message=Mac OS X plugin can only be used with Mac OS 
 MacOSXPlugin.dialog.mrjversion.title=error
 MacOSXPlugin.dialog.mrjversion.message=Mac OS X plugin requires a newer version of Java (MRJ {0}).
 
-compiler.source=1.5
-compiler.target=1.5
-
 #
 # Plugin options
 #
-plugin.MacOSXPlugin.altDispatcher=false
-plugin.MacOSXPlugin.disableOption=false
+plugin.MacOSXPlugin.disableOption=true
 
