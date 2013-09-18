@@ -297,19 +297,12 @@ public class MacOSXPlugin extends EBPlugin
 	public static void setDisableOption(boolean state)
 	{
 		jEdit.setBooleanProperty("plugin.MacOSXPlugin.disableOption", state);
-		Debug.ALT_KEY_PRESSED_DISABLED = state;
 	}
 	
 	public static boolean getDisableOption()
 	{
 		// This is a public variable, so it can be changed at any time
-		boolean state = Debug.ALT_KEY_PRESSED_DISABLED;
-		if (jEdit.getBooleanProperty("plugin.MacOSXPlugin.disableOption") != state)
-		{
-			jEdit.setBooleanProperty("plugin.MacOSXPlugin.disableOption", state);
-		}
-		
-		return state;
+		return jEdit.getBooleanProperty("plugin.MacOSXPlugin.disableOption");
 	}
 	
 	public void enableFullScreenMode(View view)
