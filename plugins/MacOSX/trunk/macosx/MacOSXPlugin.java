@@ -94,8 +94,7 @@ public class MacOSXPlugin extends EBPlugin
 			
 			ThreadUtilities.runInDispatchThread(setup);
 			
-			// Set global keyboard options from local properties
-			Debug.ALTERNATIVE_DISPATCHER = jEdit.getBooleanProperty("plugin.MacOSXPlugin.altDispatcher");
+			// Set global keyboard options from local properties			
 			Debug.ALT_KEY_PRESSED_DISABLED = jEdit.getBooleanProperty("plugin.MacOSXPlugin.disableOption");
 		}
 	} //}}}
@@ -276,23 +275,6 @@ public class MacOSXPlugin extends EBPlugin
 		}
 	}
 	
-	public static void setAlternativeDispatcher(boolean state)
-	{
-		jEdit.setBooleanProperty("plugin.MacOSXPlugin.altDispatcher", state);
-		Debug.ALTERNATIVE_DISPATCHER = state;	
-	}
-	
-	public static boolean getAlternativeDispatcher()
-	{
-		// This is a public variable, so it can be changed at any time
-		boolean state = Debug.ALTERNATIVE_DISPATCHER;
-		if (jEdit.getBooleanProperty("plugin.MacOSXPlugin.altDispatcher") != state)
-		{
-			jEdit.setBooleanProperty("plugin.MacOSXPlugin.altDispatcher", state);
-		}
-		
-		return state;
-	}
 	
 	public static void setDisableOption(boolean state)
 	{
