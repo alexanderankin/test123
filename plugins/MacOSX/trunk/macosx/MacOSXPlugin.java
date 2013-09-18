@@ -296,12 +296,13 @@ public class MacOSXPlugin extends EBPlugin
 	
 	public static void setDisableOption(boolean state)
 	{
+		Debug.ALT_KEY_PRESSED_DISABLED = state;
 		jEdit.setBooleanProperty("plugin.MacOSXPlugin.disableOption", state);
 	}
 	
 	public static boolean getDisableOption()
 	{
-		// This is a public variable, so it can be changed at any time
+		
 		return jEdit.getBooleanProperty("plugin.MacOSXPlugin.disableOption");
 	}
 	
