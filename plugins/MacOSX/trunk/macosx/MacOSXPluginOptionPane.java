@@ -34,7 +34,7 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 {
 	public MacOSXPluginOptionPane()
 	{
-		super("macosx");
+		super("MacOSXPlugin");
 	}
 
 	//{{{ _init() method
@@ -55,7 +55,7 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 		altDispatcher = new JCheckBox(jEdit.getProperty(
 			"options.MacOSXPlugin.altDispatcher"));
 		altDispatcher.setSelected(MacOSXPlugin.getAlternativeDispatcher());
-		addComponent(altDispatcher);
+		// addComponent(altDispatcher);
 		
 		disableOption = new JCheckBox(jEdit.getProperty(
 			"options.MacOSXPlugin.disableOption"));
