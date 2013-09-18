@@ -1,7 +1,5 @@
 plugin.macosx.MacOSXPlugin.activate=startup
 plugin.macosx.MacOSXPlugin.option-pane=MacOSXPlugin
-#plugin.macosx.MacOSXPlugin.menu.code=new MacOSXPlugin();
-
 
 #
 # Plugin info
