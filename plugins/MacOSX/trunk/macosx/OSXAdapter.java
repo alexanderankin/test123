@@ -34,7 +34,6 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.options.GlobalOptions;
 import org.gjt.sp.util.Log;
 //}}}
 
