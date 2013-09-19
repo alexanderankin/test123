@@ -32,6 +32,11 @@ import org.gjt.sp.util.Log;
 
 public class MacOSXPluginOptionPane extends AbstractOptionPane
 {
+	private JCheckBox useQuartz;
+	private JCheckBox ctrlAltSwapped;
+	private JCheckBox disableOption;
+	private JCheckBox multiShortcut;
+
 	public MacOSXPluginOptionPane()
 	{
 		super("MacOSXPlugin");
@@ -56,14 +61,22 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 			"options.MacOSXPlugin.disableOption"));
 		disableOption.setSelected(MacOSXPlugin.getDisableOption());
 		addComponent(disableOption);
+		
+		ctrlAltSwapped = new JCheckBox(jEdit.getProperty(
+			"options.MacOSXPlugin.ctrlAltSwapped"));
+		ctrlAltSwapped.setSelected(MacOSXPlugin.isCtrlAltSwapped());
+		addComponent(ctrlAltSwapped);
+		
 	} //}}}
 
 	//{{{ _save() method
 	protected void _save()
 	{
+		
 		setFileFlag("noquartz", !useQuartz.isSelected());
 		jEdit.setBooleanProperty("menu.multiShortcut", multiShortcut.isSelected());
 		MacOSXPlugin.setDisableOption(disableOption.isSelected());
+		MacOSXPlugin.setCtrlAltSwapped(ctrlAltSwapped.isSelected());
 	} //}}}
 	
 	//{{{ setFileFlag() method
@@ -98,9 +111,5 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 		}
 	} //}}}
 	
-	private JCheckBox useQuartz;
-	private JCheckBox altDispatcher;
-	private JCheckBox disableOption;
-	private JCheckBox multiShortcut;
 }
 
