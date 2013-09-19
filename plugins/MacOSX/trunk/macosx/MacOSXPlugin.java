@@ -89,8 +89,7 @@ public class MacOSXPlugin extends EBPlugin
 					}
 					catch (Exception e)
 					{
-						System.err.println("Error while loading the OSXAdapter:" + e);
-						e.printStackTrace();
+						Log.log(Log.ERROR, this, "Error while loading the OSXAdapter:", e);
 					}
 				}
 			};
@@ -103,7 +102,7 @@ public class MacOSXPlugin extends EBPlugin
 			
 			// swap ctrl-alt keys if desired:
 			boolean toSwap = isCtrlAltSwapped();
-			setCtrlAltSwapped(toSwap);
+			if (toSwap) setCtrlAltSwapped(true);
 		}
 	} //}}}
 	
@@ -291,12 +290,13 @@ public class MacOSXPlugin extends EBPlugin
 	
 	public static void setCtrlAltSwapped(boolean isSwapped) 
 	{
+		boolean wasSwapped = isCtrlAltSwapped();		
 		jEdit.setBooleanProperty("plugin.MacOSXPlugin.ctrlAltSwapped", isSwapped);
 		if (isSwapped) 
 			KeyEventTranslator.setModifierMapping(InputEvent.CTRL_MASK,
 				InputEvent.META_MASK, InputEvent.ALT_MASK,
 				InputEvent.SHIFT_MASK);
-		else 
+		else if (wasSwapped) // Set to MacOS defaults 
 			KeyEventTranslator.setModifierMapping(InputEvent.META_MASK,  /* == C+ */
 				InputEvent.CTRL_MASK,  /* == A+ */
 				InputEvent.ALT_MASK,   /* == M+ */
