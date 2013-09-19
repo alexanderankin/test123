@@ -33,12 +33,12 @@ import java.lang.reflect.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.KeyEventTranslator;
-import org.gjt.sp.jedit.options.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.ThreadUtilities;
+import org.jedit.options.CombinedOptions;
 //}}}
 
 public class MacOSXPlugin extends EBPlugin
@@ -122,7 +122,7 @@ public class MacOSXPlugin extends EBPlugin
 	
 	public void handlePreferences()
 	{
-		new GlobalOptions(jEdit.getActiveView());
+		new CombinedOptions(jEdit.getActiveView());
 	}
 	
 	// General info dialog; fed to the OSXAdapter as the method to call when 
