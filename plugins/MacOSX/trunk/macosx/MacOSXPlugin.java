@@ -23,6 +23,8 @@
 package macosx;
 
 //{{{ Imports
+import java.awt.event.InputEvent;
+
 import javax.swing.*;
 import java.util.regex.Pattern;
 import java.io.File;
@@ -30,6 +32,7 @@ import java.awt.Window;
 import java.lang.reflect.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.jedit.options.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
@@ -96,6 +99,11 @@ public class MacOSXPlugin extends EBPlugin
 			
 			// Set global keyboard options from local properties			
 			Debug.ALT_KEY_PRESSED_DISABLED = jEdit.getBooleanProperty("plugin.MacOSXPlugin.disableOption");
+			
+			
+			// swap ctrl-alt keys if desired:
+			boolean toSwap = isCtrlAltSwapped();
+			setCtrlAltSwapped(toSwap);
 		}
 	} //}}}
 	
@@ -275,6 +283,25 @@ public class MacOSXPlugin extends EBPlugin
 		}
 	}
 	
+	// {{{ swap Ctrl-Alt key 
+	public static boolean isCtrlAltSwapped()
+	{
+		return jEdit.getBooleanProperty("plugin.MacOSXPlugin.ctrlAltSwapped");	
+	}
+	
+	public static void setCtrlAltSwapped(boolean isSwapped) 
+	{
+		jEdit.setBooleanProperty("plugin.MacOSXPlugin.ctrlAltSwapped", isSwapped);
+		if (isSwapped) 
+			KeyEventTranslator.setModifierMapping(InputEvent.CTRL_MASK,
+				InputEvent.META_MASK, InputEvent.ALT_MASK,
+				InputEvent.SHIFT_MASK);
+		else 
+			KeyEventTranslator.setModifierMapping(InputEvent.META_MASK,  /* == C+ */
+				InputEvent.CTRL_MASK,  /* == A+ */
+				InputEvent.ALT_MASK,   /* == M+ */
+				InputEvent.SHIFT_MASK  /* == S+ */);
+	} // }}}
 	
 	public static void setDisableOption(boolean state)
 	{
