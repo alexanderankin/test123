@@ -28,7 +28,6 @@ import java.awt.event.InputEvent;
 import javax.swing.*;
 import java.util.regex.Pattern;
 import java.io.File;
-import java.awt.Window;
 import java.lang.reflect.*;
 
 import org.gjt.sp.jedit.*;
@@ -36,7 +35,6 @@ import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.ThreadUtilities;
 import org.jedit.options.CombinedOptions;
 //}}}
@@ -44,11 +42,10 @@ import org.jedit.options.CombinedOptions;
 public class MacOSXPlugin extends EBPlugin
 {
 	//{{{ Variables
-	private boolean osok = false;
 	private static final Pattern ctrlPat = Pattern.compile("\\bctrl\\b");
 	//}}}
 	
-	public void MacOSXPlugin()
+	public MacOSXPlugin()
 	{
 	}
 	

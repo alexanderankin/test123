@@ -23,13 +23,16 @@ package macosx;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+
 import javax.swing.JCheckBox;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 //}}}
 
+@SuppressWarnings("serial")
 public class MacOSXPluginOptionPane extends AbstractOptionPane
 {
 	private JCheckBox useQuartz;
