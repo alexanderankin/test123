@@ -98,8 +98,8 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
         if ( model == null ) {
             return ;
         }
-        int line_number = ( e.getY() / pixelsPerLine ) + model.getTextArea().getFirstPhysicalLine();
-        model.getTextArea().setCaretPosition( model.getTextArea().getLineStartOffset( line_number ), false );
+        int screenLine = e.getY() / pixelsPerLine;
+        model.getTextArea().setCaretPosition( model.getTextArea().getScreenLineStartOffset( screenLine ), false );
     }
 
     public void mouseEntered( MouseEvent e ) {}
@@ -113,7 +113,8 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
         if ( model == null ) {
             return ;
         }
-        int index = ( e.getY() / pixelsPerLine ) + model.getTextArea().getFirstPhysicalLine();
+        int screenLine = e.getY() / pixelsPerLine;
+        int index = model.getTextArea().getPhysicalLineOfScreenLine(screenLine);
         String tooltip = model.getToolTipText(index);
         if (tooltip != null) {
             blamePane.setToolTipText(tooltip);   
