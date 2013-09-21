@@ -178,6 +178,15 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
  <itemizedlist>
  
+   	<listitem><para> <emphasis role="bold">Version 1.0.4</emphasis>
+ 			Requires Java 1.6+ and jEdit 4.5
+ 		</para>
+ 		<itemizedlist>
+ 			<listitem><para> #3601720: Updated to use jsch 0.1.50 (Ezust). </para></listitem>
+    </itemizedlist> 
+    </listitem>
+ 
+ 
    	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.3</emphasis>
@@ -187,6 +196,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
     </itemizedlist> 
     </listitem>
+    
    	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.2</emphasis>

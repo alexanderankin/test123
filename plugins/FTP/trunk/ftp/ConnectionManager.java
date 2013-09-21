@@ -179,10 +179,8 @@ public class ConnectionManager
 			Compression comp = new Compression();
 			comp.init(Compression.DEFLATER,6);
 			byte[] objectBuffer = baos.toByteArray();
-			int newLength = comp.compress(
-				objectBuffer,
-				0,
-				objectBuffer.length);
+			objectBuffer = comp.compress(objectBuffer, 0, new int[] {objectBuffer.length});
+			int newLength = objectBuffer.length;
 			fos = new FileOutputStream(passwordFile);
 			fos.write(objectBuffer,0,newLength);
 		}
