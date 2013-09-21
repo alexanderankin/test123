@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="MacOSX"
+		 default="build">
+	<description>
+		This is an ant build.xml file for building the MacOSX plugin for jEdit.
+	</description>
+
+	 <!-- One of these two property files below should define build.support to point to 
+       a checkout of the build-support project:
+       svn co https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk
+  -->
+	
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+
+	<property name="docs-proc.target"
+			  value="none" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+	<selector id="packageFiles">
+		<filename name="docs/MacOSX.html" />
+	</selector>
+</project>

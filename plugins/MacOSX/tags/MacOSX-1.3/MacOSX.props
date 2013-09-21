@@ -1,0 +1,46 @@
+plugin.macosx.MacOSXPlugin.activate=startup
+plugin.macosx.MacOSXPlugin.option-pane=MacOSXPlugin
+
+#
+# Plugin info
+#
+plugin.macosx.MacOSXPlugin.name=Mac OS X Support
+plugin.macosx.MacOSXPlugin.author=Seph Soliman, Alan Ezust
+plugin.macosx.MacOSXPlugin.version=1.3
+plugin.macosx.MacOSXPlugin.docs=docs/MacOSX.html
+plugin.macosx.MacOSXPlugin.description=Provides better MacOS X integration through features such as better CMD-key mapping, drag-and-drop from Finder and more.
+plugin.macosx.MacOSXPlugin.longdescription=description.html
+
+#
+# Dependencies
+#
+plugin.macosx.MacOSXPlugin.depend.0=jedit 05.01.99.00
+plugin.macosx.MacOSXPlugin.depend.1=jdk 1.6
+
+MacOSXPlugin.depend.os.name=Mac OS X
+MacOSXPlugin.depend.mrj.version=99
+
+#
+# Options dialog
+#
+options.MacOSXPlugin.code=new macosx.MacOSXPluginOptionPane();
+options.MacOSXPlugin.label=Mac OS X Settings
+options.MacOSXPlugin.experimental=Experimental options
+option.MacOSXPlugin.multiShortcut=Draw multi-key shortcuts on screen menu bar
+options.MacOSXPlugin.useQuartz=Use OS X native Quartz renderer (restart required)
+options.MacOSXPlugin.disableOption=Disable international option-key shortcuts
+options.MacOSXPlugin.ctrlAltSwapped=Swap Ctrl and Alt keys (for Linux-like modifiers)
+#
+# Error dialogs
+#
+MacOSXPlugin.dialog.unload.title=Plugin warning
+MacOSXPlugin.dialog.unload.message=Unloading and reloading this plugin without restarting may cause errors.\nPlease restart jEdit.
+MacOSXPlugin.dialog.osname.message=Mac OS X plugin can only be used with Mac OS X.
+MacOSXPlugin.dialog.mrjversion.title=error
+MacOSXPlugin.dialog.mrjversion.message=Mac OS X plugin requires a newer version of Java (MRJ {0}).
+
+#
+# Plugin options
+#
+plugin.MacOSXPlugin.disableOption=true
+
