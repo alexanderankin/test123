@@ -121,8 +121,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			home=sftp.getHome();
 			keyAttempts = 0;
 		} catch(Exception e) {
-			throw new IOException(e.toString());
-			//throw new IOException(e); // This will work since java 1.6
+			Log.log(Log.ERROR, this, e);
 		}
 	}
 	
@@ -365,32 +364,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	}
 	public void showMessage(final String message)
 	{
-		try
-		{
-			Runnable runnable = new Runnable()
-			{
-				public void run()
-				{
-					JOptionPane.showMessageDialog(jEdit.getActiveView(), message);
-				}
-			};
-			if (EventQueue.isDispatchThread())
-			{
-				runnable.run();
-			}
-			else
-			{
-				EventQueue.invokeAndWait(runnable);
-			}
-		}
-		catch (InterruptedException e)
-		{
-			Log.log(Log.ERROR, this, e);
-		}
-		catch (InvocationTargetException e)
-		{
-			Log.log(Log.ERROR, this, e);
-		}
+		Log.log(Log.ERROR, this, message);		
 	}
 	
 	// See http://marc.info/?l=ant-dev&m=111959408515300&w=2
