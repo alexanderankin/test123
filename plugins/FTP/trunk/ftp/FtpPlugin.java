@@ -36,14 +36,15 @@ public class FtpPlugin extends EditPlugin
 	//{{{ start() method
 	public void start()
 	{
-		ConnectionManager.loadPasswords();
+		ConnectionManager.forgetPasswords();
+		// ConnectionManager.loadPasswords();
 	} //}}}
 	
 	//{{{ stop() method
 	public void stop()
 	{
 		DirectoryCache.clearAllCachedDirectories();
-		ConnectionManager.savePasswords();
+		// ConnectionManager.savePasswords();
 	} //}}}
 
 	//{{{ showOpenFTPDialog() method

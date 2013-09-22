@@ -183,7 +183,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		</para>
  		<itemizedlist>
  			<listitem><para> #3601720: Updated to use jsch 0.1.50 (Ezust). </para></listitem>
- 			<listitem><para> #3615037: Log errors, don't pop up dialogs. (Ezust) </para></listitem>
+ 			<listitem><para> #3615037, 3603120: Log errors, don't pop up dialogs. (Ezust) </para></listitem>
     </itemizedlist> 
     </listitem>
  
