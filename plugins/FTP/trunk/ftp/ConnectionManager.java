@@ -59,6 +59,8 @@ public class ConnectionManager
 	protected static HashMap<String, String> passwords;
 	protected static HashMap<String, String> passphrases;
 	static int connectionTimeout = 60000;
+	
+	// No longer used
 	private static File passwordFile = null;
 	public static JSch client = null;
 	// }}}
@@ -66,13 +68,9 @@ public class ConnectionManager
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
-		try {
-			if (passwordFile.exists())
-				passwordFile.delete();
-			passwordFile.createNewFile();
-		} catch(IOException e) {
-			Log.log(Log.WARNING,ConnectionManager.class, "Unable to create password file:"+passwordFile);
-		}
+		// Delete old insecure password file, even though we no longer use it. 
+		if (passwordFile.exists())
+			passwordFile.delete();
 		passwords.clear();
 		passphrases.clear();
 		logins.clear();
@@ -115,9 +113,11 @@ public class ConnectionManager
 	}
 
 	//{{{ loadPasswords() method
+
 	@SuppressWarnings("unchecked")
 	protected static void loadPasswords()
 	{
+		// TODO: rewrite to use keepass
 		if (passwordFile == null)
 		{
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to load passwords.");
@@ -162,8 +162,11 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ savePasswords() method
-	//TODO: Can be done in background
+	// TODO: rewrite this to use keepass
 	protected static void savePasswords() {
+		
+		
+		
 		if (passwordFile == null) {
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
 			return;
