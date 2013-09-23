@@ -35,7 +35,7 @@ import org.gjt.sp.util.Log;
 @SuppressWarnings("serial")
 public class MacOSXPluginOptionPane extends AbstractOptionPane
 {
-	private JCheckBox useQuartz;
+	
 	private JCheckBox ctrlAltSwapped;
 	private JCheckBox disableOption;
 	private JCheckBox multiShortcut;
@@ -50,9 +50,6 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 	protected void _init()
 	{
 		String settingsDirectory = jEdit.getSettingsDirectory();
-		useQuartz = new JCheckBox(jEdit.getProperty("options.MacOSXPlugin.useQuartz"));
-		useQuartz.setSelected(!new File(settingsDirectory, "noquartz").exists());
-		addComponent(useQuartz);
 		
 		multiShortcut = new JCheckBox(jEdit.getProperty("option.MacOSXPlugin.multiShortcut"));
 		multiShortcut.setSelected(jEdit.getBooleanProperty("menu.multiShortcut", false));
@@ -74,9 +71,7 @@ public class MacOSXPluginOptionPane extends AbstractOptionPane
 
 	//{{{ _save() method
 	protected void _save()
-	{
-		
-		setFileFlag("noquartz", !useQuartz.isSelected());
+	{		
 		jEdit.setBooleanProperty("menu.multiShortcut", multiShortcut.isSelected());
 		MacOSXPlugin.setDisableOption(disableOption.isSelected());
 		MacOSXPlugin.setCtrlAltSwapped(ctrlAltSwapped.isSelected());
