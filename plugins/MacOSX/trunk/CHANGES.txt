@@ -1,4 +1,3 @@
-
 Mac OS X Plugin 1.3 [Alan Ezust]
 - Updates for Java 7 and jEdit 5.2
 - Got rid of alternative dispatcher stuff which was workaround for Java 5 bugs.
