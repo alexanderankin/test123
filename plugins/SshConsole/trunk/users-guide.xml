@@ -18,12 +18,12 @@
 <para> This plugin is designed to allow you to easily compile files you are editing
 remotely via <literal>sftp://</literal> and parse the errors for ErrorList. It has no user
 interface of its own, because it is an extension of three other plugins:
-<ulink url="jeditresource:/Console.jar!/index.html">Console</ulink>, 
-<ulink url="jeditresource:/FTP.jar!/index.html">FTP</ulink>, and 
-<ulink url="jeditresource:/ErrorList.jar!/index.html">ErrorList</ulink>.
+<ulink url="../Console.jar!/index.html">Console</ulink>, 
+<ulink url="../FTP.jar!/index.html">FTP</ulink>, and 
+<ulink url="../ErrorList.jar!/index.html">ErrorList</ulink>.
 It also uses a dockable jEdit 
-<ulink url="jeditresource:/doc/users-guide/vfs-browser.html">File System Browser</ulink>
-or <ulink url="jeditresource:/ProjectViewer.jar!/index.html">ProjectViewer</ulink>
+<ulink url="../doc/users-guide/vfs-browser.html">File System Browser</ulink>
+or <ulink url="../ProjectViewer.jar!/index.html">ProjectViewer</ulink>
 for navigation. </para>
 
 <para> SshConsole has no option pane of its own. The customizations possible
@@ -163,6 +163,12 @@ the ssh shell: </para>
   tells jEdit to open given remote file as a buffer in the View's EditPane.
   Relative paths are possible here. </para></listitem> 
 </itemizedlist>
+</section>
+<section id="configuration">
+<title> Configuration </title>
+
+<para> Currently there is only one plugin option, to enable or disable X11
+forwarding. </para>
 </section>
 <section id="troubleshooting">
 <title> Troubleshooting </title>

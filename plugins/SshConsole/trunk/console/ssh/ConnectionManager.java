@@ -49,7 +49,6 @@ public class ConnectionManager extends ftp.ConnectionManager
 	 * group(4) - path
 	 */
 	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?/(.*)$");
-	static HashMap<ConnectionInfo, Connection> connectionInfos = null;
 	static HashMap<Console, ConsoleState> consoleStates = null;
 	/** Yes, I'm hiding the base class connections on purpose! */
 	static ArrayList<Connection> connections = new ArrayList<Connection>();
@@ -140,7 +139,6 @@ public class ConnectionManager extends ftp.ConnectionManager
 	static void setup()
 	{
 		lock = new Object();
-		connectionInfos = new HashMap<ConnectionInfo, Connection>();
 		consoleStates = new HashMap<Console, ConsoleState> ();
 	}
 	public static void cleanup() {
@@ -149,7 +147,6 @@ public class ConnectionManager extends ftp.ConnectionManager
 			cs.close();
 		}
 		connections.clear();
-		connectionInfos.clear();
 		consoleStates.clear();
 	}
 

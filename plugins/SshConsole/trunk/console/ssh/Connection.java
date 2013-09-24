@@ -90,7 +90,7 @@ public class Connection implements UserInfo {
 			channel=session.openChannel("shell");
 			ChannelShell channelShell = (ChannelShell) channel;
 			channelShell.setAgentForwarding(true);
-			channelShell.setXForwarding(true);
+			channelShell.setXForwarding(jEdit.getBooleanProperty("sshconsole.xforward"));
 			channelShell.setPtyType("dumb");
 //			channel.setInputStream(System.in);
 //			channel.setOutputStream(System.out);
