@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright (c) 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import javax.swing.text.DefaultCaret;
+
 import org.gjt.sp.jedit.GUIUtilities;
 //}}}
 
@@ -72,6 +74,8 @@ public class ItemFinderPanel<E> extends JPanel
 		this.itemFinder = itemFinder;
 		window = new JWindow(owner);
 		searchField = new JTextField(50);
+		// see bug# 3615050 related to MacOS L&F
+		searchField.setCaret(new DefaultCaret());
 
 		itemList = new JList(itemFinder.getModel());
 		itemList.setBorder(BorderFactory.createEtchedBorder());
