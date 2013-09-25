@@ -229,6 +229,7 @@
                 debug="${compiler.debug}"
                 debuglevel="${compiler.debuglevel}"
                 optimize="${compiler.optimize}"
+                encoding="utf-8"
                 deprecation="${compiler.deprecation}"
                 verbose="${compiler.verbose}"
                 nowarn="${compiler.nowarn}"
