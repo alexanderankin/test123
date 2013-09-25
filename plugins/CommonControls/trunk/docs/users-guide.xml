@@ -594,7 +594,7 @@ SwingWorker is designed for situations where you need to have a long running tas
             <title>Version 1.7</title>
             <para />
         </formalpara>
-
+        <para>Fix #3615050 SmartOpen only lets me type one letter on MacOS L&amp;F. </para>
         <para>Added the Blame component.</para>
       </listitem>
       
