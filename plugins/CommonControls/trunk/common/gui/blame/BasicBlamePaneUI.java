@@ -172,7 +172,7 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             java.util.List<String> blame = model.getBlame();
             int descent = gfx.getFontMetrics().getDescent();
             for ( int screenLine = 0; screenLine <= model.getTextArea().getLastScreenLine(); screenLine++ ) {
-                int physicalLine = model.getTextArea().getPhysicalLineOfScreenLine(screenLine);
+                int physicalLine = model.getTextArea().getPhysicalLineOfScreenLine(screenLine) - 1;
                 if ( screenLine == caretLine ) {
                     gfx.setColor( highlight );
                     gfx.fillRect( 0, ( screenLine ) * pixelsPerLine, size.width, pixelsPerLine );
