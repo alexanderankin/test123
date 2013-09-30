@@ -2,10 +2,8 @@ package common.gui;
 
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
 
 /** A Combo Box that remembers a given number of previous entries, even between jEdit runs.
  *
@@ -15,10 +13,9 @@ import org.gjt.sp.util.*;
  *
  * Should this be deprecated? I don't see the point of this class if we also have HistoryTextField.
  */
-public class HistoryComboBox extends JComboBox {
-	private Stack entries;
+public class HistoryComboBox extends JComboBox<String> {
 	private int entryCount;
-	private DefaultComboBoxModel model;
+	private DefaultComboBoxModel<String> model;
 	private String propertyName;
 
 	/**
@@ -31,10 +28,9 @@ public class HistoryComboBox extends JComboBox {
 	public HistoryComboBox(int entryCount, String propName) {
 		propertyName = propName;
 		setEditable(true);
-		model = new DefaultComboBoxModel();
+		model = new DefaultComboBoxModel<String>();
 		setModel(model);
 		this.entryCount = entryCount;
-		entries = new Stack();
 		if (propertyName != null)
 			loadFromProperty(propertyName);
 	}
