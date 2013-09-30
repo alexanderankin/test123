@@ -50,8 +50,8 @@ public class WorkerThreadPool
 		return instance;
 	}
 
-	private 		List		threads;
-	private 		List		requests	= new LinkedList();
+	private 		List<Thread>		threads;
+	private 		List<WorkRequest>		requests	= new LinkedList<WorkRequest>();
 
 	private final 	Object		lock		= new Object();
 	private final 	ThreadGroup	group		= new ThreadGroup("CommonControls Worker Pool");
@@ -114,7 +114,7 @@ public class WorkerThreadPool
 		ensureCapacity(wreqs.length);
 		synchronized (lock) {
 			int curr = 0;
-			for (Iterator i = threads.iterator();
+			for (Iterator<Thread> i = threads.iterator();
 				 curr < wreqs.length && i.hasNext(); )
 			{
 				WorkerThread wt = (WorkerThread) i.next();
@@ -142,7 +142,7 @@ public class WorkerThreadPool
 		{
 			if (threads == null)
 			{
-				threads = new LinkedList();
+				threads = new LinkedList<Thread>();
 			}
 
 			while (threads.size() < size)
@@ -161,7 +161,7 @@ public class WorkerThreadPool
 		{
 			if (threads != null)
 			{
-				for (Iterator i = threads.iterator(); i.hasNext(); ) {
+				for (Iterator<Thread> i = threads.iterator(); i.hasNext(); ) {
 					((WorkerThread)i.next()).requestShutdown();
 					i.remove();
 				}
@@ -211,7 +211,7 @@ public class WorkerThreadPool
 					{
 						if (requests.size() > 0)
 						{
-							work = (WorkRequest) requests.remove(0);
+							work = requests.remove(0);
 							break;
 						}
 

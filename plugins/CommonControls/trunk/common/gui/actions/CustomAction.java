@@ -1,7 +1,6 @@
 package common.gui.actions;
 
 import java.awt.event.*;
-import java.net.*;
 import javax.swing.*;
 
 

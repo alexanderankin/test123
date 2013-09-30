@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -55,9 +56,9 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class VFSPathFileList extends JPanel
 {
-	private JList searchList;
+	private JList<String> searchList;
 
-	private DefaultListModel model;
+	private DefaultListModel<String> model;
 
 	private JButton add;
 	private JButton remove;
@@ -68,8 +69,8 @@ public class VFSPathFileList extends JPanel
 	{
 		setBorder(BorderFactory.createEtchedBorder());
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		model = new DefaultListModel();
-		searchList = new JList(model);
+		model = new DefaultListModel<String>();
+		searchList = new JList<String>(model);
 		searchList.setPrototypeCellValue("a");
 		add = new JButton(jEdit.getProperty("common.add"));
 		remove = new JButton(jEdit.getProperty("common.remove"));
@@ -115,7 +116,7 @@ public class VFSPathFileList extends JPanel
 		Collection<String> paths = new ArrayList<String>();
 		for (int i = 0; i < size; i++)
 		{
-			String path = (String) model.getElementAt(i);
+			String path = model.getElementAt(i);
 			paths.add(path);
 		}
 		return TextUtilities.join(paths, File.pathSeparator);
