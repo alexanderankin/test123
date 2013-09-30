@@ -26,6 +26,7 @@ import javax.swing.event.*;
 import javax.swing.plaf.ComponentUI;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
  * UI for the BlamePane to be displayed left of the right scroll bar of the
@@ -99,7 +100,8 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             return ;
         }
         int screenLine = e.getY() / pixelsPerLine;
-        model.getTextArea().setCaretPosition( model.getTextArea().getScreenLineStartOffset( screenLine ), false );
+        JEditTextArea textArea = model.getTextArea();
+        textArea.setCaretPosition( textArea.getScreenLineStartOffset( screenLine ), false );
     }
 
     public void mouseEntered( MouseEvent e ) {}
@@ -162,24 +164,23 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             }
 
             // get the visible lines, draw the corresponding blame lines
-            FontMetrics fm = model.getTextArea().getPainter().getFontMetrics();
-            pixelsPerLine = fm.getHeight();
-            int firstLine = model.getTextArea().getFirstPhysicalLine();
-            int caretLine = model.getTextArea().getCaretLine();
+            JEditTextArea textArea = model.getTextArea();
+            pixelsPerLine = textArea.getPainter().getLineHeight();
+            int caretLine = textArea.getCaretLine();
             Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
             Color highlight = jEdit.getColorProperty( "view.lineHighlightColor", Color.WHITE );
             gfx.setColor( foreground );
             java.util.List<String> blame = model.getBlame();
             int descent = gfx.getFontMetrics().getDescent();
-            for ( int screenLine = 0; screenLine <= model.getTextArea().getLastScreenLine(); screenLine++ ) {
-                int physicalLine = model.getTextArea().getPhysicalLineOfScreenLine(screenLine) - 1;
+            for ( int screenLine = 0; screenLine <= textArea.getLastScreenLine(); screenLine++ ) {
+                int physicalLine = textArea.getPhysicalLineOfScreenLine(screenLine);
                 if ( screenLine == caretLine ) {
                     gfx.setColor( highlight );
                     gfx.fillRect( 0, ( screenLine ) * pixelsPerLine, size.width, pixelsPerLine );
                     gfx.setColor( foreground );
                 }
                 if ( physicalLine >= 0 && physicalLine < blame.size() ) {
-                    gfx.drawString( blame.get( physicalLine ), 3, ( screenLine * pixelsPerLine ) - descent );
+                    gfx.drawString( blame.get( physicalLine ), 3, ( (screenLine + 1) * pixelsPerLine ) - descent );
                 }
             }
         }
