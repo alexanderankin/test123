@@ -31,7 +31,9 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.DefaultInputHandler;
 import org.gjt.sp.util.Log;
 // }}}
 /** A popup control for displaying a arbitrary list of items.
