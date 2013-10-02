@@ -20,6 +20,6 @@
 package common.gui.blame;
 
 import javax.swing.plaf.ComponentUI;
-/** Base interface for BasicBlamePaneUI */
+
 public abstract class BlamePaneUI extends ComponentUI {
 }

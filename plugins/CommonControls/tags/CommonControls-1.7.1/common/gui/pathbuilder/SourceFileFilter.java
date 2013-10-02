@@ -21,6 +21,7 @@ package common.gui.pathbuilder;
  */
 
 import java.io.File;
+import java.io.IOException;
 import javax.swing.filechooser.*;
 
 public class SourceFileFilter extends FileFilter {
