@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Source file(s)">
+			<FILE_ENTRY LABEL="Source file(s)" VARNAME="source" EVAL="buffer.getPath()" />
+		</CAPTION>
+
+		<CAPTION LABEL="Paths">
+			<HIST_ENTRY LABEL="Assembly references" VARNAME="refs"/>
+			<HIST_ENTRY LABEL="Linked modules" VARNAME="mods"/>
+		</CAPTION>
+
+		<CAPTION LABEL="Compilation flags">
+			<TOGGLE LABEL="Use csc.exe (Windows only)" VARNAME="csc" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Generate debug info" VARNAME="debug"/>
+			<TOGGLE LABEL="Optimize" VARNAME="optimize"/>
+			<CHOICE LABEL="Warning level" VARNAME="warn" DEFAULT="4">
+				<OPTION LABEL="None" VALUE="0"/>
+				<OPTION LABEL="1" VALUE="1"/>
+				<OPTION LABEL="2" VALUE="2"/>
+				<OPTION LABEL="3" VALUE="3"/>
+				<OPTION LABEL="4" VALUE="4"/>
+			</CHOICE>
+			<CHOICE LABEL="Output type" VARNAME="target" DEFAULT="exe">
+				<OPTION LABEL="Executable" VALUE="exe"/>
+				<OPTION LABEL="Windows executable" VALUE="winexe"/>
+				<OPTION LABEL="Library" VALUE="library"/>
+				<OPTION LABEL="Module" VALUE="module"/>
+			</CHOICE>
+		</CAPTION>
+
+		<CAPTION LABEL="Advanced">
+			<ENTRY LABEL="Additional parameters" VARNAME="args"/>
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System">
+			buf = new StringBuffer();
+			if (csc &amp;&amp; OperatingSystem.isWindows()) {
+				buf.append("csc.exe");
+
+				buf.append(" /nologo");
+				buf.append(" /t:"+target);
+				buf.append(" /warn:"+warn);
+
+				if (!refs.equals(""))
+					buf.append(" /r:\""+refs+"\"");
+
+				if (!mods.equals(""))
+					buf.append(" /addmodule:\""+mods+"\"");
+
+				if (debug)
+					buf.append(" /debug");
+
+				if (optimize)
+					buf.append(" /o");
+
+				if (!args.equals(""))
+					buf.append(" "+args);
+
+				buf.append(" \""+source+"\"");
+			}
+			else {
+				buf.append("mcs");
+
+				buf.append(" -t:"+target);
+				buf.append(" -warn:"+warn);
+
+				if (!refs.equals(""))
+					buf.append(" -lib:\""+refs+"\"");
+
+				if (!mods.equals(""))
+					buf.append(" -addmodule:\""+mods+"\"");
+
+				if (debug)
+					buf.append(" -g");
+
+				if (optimize)
+					buf.append(" -o");
+
+				if (!args.equals(""))
+					buf.append(" "+args);
+
+				buf.append(" \""+source+"\"");
+			}
+
+			// return value
+			return buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
