@@ -33,7 +33,9 @@ import java.awt.Frame;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -63,40 +65,37 @@ import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.util.AwtRunnableQueue;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
-
-
-
+import org.gjt.sp.util.ThreadUtilities;
 //}}}
 
 /**
  * Class that implements regular expression and literal search within jEdit
  * buffers.
  * <p>
- * 
+ *
  * There are two main groups of methods in this class:
  * <ul>
  * <li>Property accessors - for changing search and replace settings.</li>
  * <li>Actions - for performing search and replace.</li>
  * </ul>
- * 
+ *
  * The "HyperSearch" and "Keep dialog" features, as reflected in checkbox
  * options in the search dialog, are not handled from within this class. If you
  * wish to have these options set before the search dialog appears, make a prior
  * call to either or both of the following:
- * 
+ *
  * <pre>
  * jEdit.setBooleanProperty(&quot;search.hypersearch.toggle&quot;, true);
  * jEdit.setBooleanProperty(&quot;search.keepDialog.toggle&quot;, true);
  * </pre>
- * 
+ *
  * If you are not using the dialog to undertake a search or replace, you may
  * call any of the search and replace methods (including
  * {@link #hyperSearch(View)}) without concern for the value of these
  * properties.
- * 
+ *
  * @author Slava Pestov
  * @author John Gellene (API documentation)
  * @author Rudi Widmann (XSearch extension)
@@ -232,6 +231,43 @@ public class SearchAndReplace
 	public static String getReplaceString()
 	{
 		return replace;
+	} // }}}
+
+	// {{{ get/setHyperSearchRequest() method
+	/**
+	 * get current background search tasks
+	 * @return
+	 */
+	public static List<HyperSearchRequest> getHyperSearchRequest()
+	{
+		synchronized (SearchAndReplace.class)
+		{
+			return new ArrayList<HyperSearchRequest>(hyperSearchRequest);
+		}
+	}
+
+	/**
+	 * add background search task
+	 * @param hyperSearchRequest
+	 */
+	public static void addHyperSearchRequest(HyperSearchRequest hyperSearchRequest)
+	{
+		synchronized (SearchAndReplace.class)
+		{
+			SearchAndReplace.hyperSearchRequest.add(hyperSearchRequest);
+		}
+	}
+
+	/**
+	 * add background search task
+	 * @param hyperSearchRequest
+	 */
+	public static void removeHyperSearchRequest(HyperSearchRequest hyperSearchRequest)
+	{
+		synchronized (SearchAndReplace.class)
+		{
+			SearchAndReplace.hyperSearchRequest.remove(hyperSearchRequest);
+		}
 	} // }}}
 
 	// {{{ setFindAll() method
@@ -891,18 +927,22 @@ public class SearchAndReplace
 			}
 			else
 				s = null;
+
+			HyperSearchRequest hsr;
 			if (hyperRangeUpper == -1 && hyperRangeLower == -1)
-				AwtRunnableQueue.INSTANCE.runAfterIoTasks(new HyperSearchRequest(view, matcher,
-					results, s));
+			{
+				hsr = new HyperSearchRequest(view, matcher, results, s);
+			}
 			else
 			{
 				int hyUp = hyperRangeUpper == -1 ? hyperRangeLower
 					: hyperRangeUpper;
 				int hyLo = hyperRangeLower == -1 ? hyperRangeUpper
 					: hyperRangeLower;
-				AwtRunnableQueue.INSTANCE.runAfterIoTasks(new HyperSearchRequest(view, matcher,
-					results, s, hyUp, hyLo));
+				hsr = new HyperSearchRequest(view, matcher, results, s, hyUp, hyLo);
 			}
+			addHyperSearchRequest(hsr);
+			ThreadUtilities.runInBackground(hsr);
 			return true;
 		}
 		catch (Exception e)
@@ -2074,6 +2114,8 @@ public class SearchAndReplace
 
 	private static int columnSearchRightCol;
 
+	private static List<HyperSearchRequest> hyperSearchRequest = new ArrayList<HyperSearchRequest>();
+
 	// row search
 	private static boolean rowSearchEnabled;
 
@@ -2193,6 +2235,7 @@ public class SearchAndReplace
 	 * 
 	 * @param searchString
 	 */
+	@Deprecated
 	private static String constructTentativSearchStringOld(String searchString)
 	{
 		StringBuffer dest = new StringBuffer();

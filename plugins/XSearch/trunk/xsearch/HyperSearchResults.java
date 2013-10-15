@@ -36,6 +36,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -113,6 +114,12 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			"hypersearch-results.multi.label"));
 		multi.addActionListener(ah);
 		toolBar.add(multi);
+
+		cancel = new RolloverButton();
+		cancel.setToolTipText(jEdit.getProperty(
+			"hypersearch-results.cancel.label"));
+		cancel.addActionListener(ah);
+		toolBar.add(cancel);
 
 		add(BorderLayout.NORTH, toolBar);
 
@@ -318,6 +325,18 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 		neighbourResult(1);
 	}
 
+	public void cancelSearch()
+	{
+		List<HyperSearchRequest> hsrList = SearchAndReplace.getHyperSearchRequest();
+		if(hsrList == null)
+			return;
+
+		for(HyperSearchRequest hsr : hsrList)
+		{
+			hsr.cancel();
+		}
+	}
+
 	public void neighbourResult(int increment)
 	{
 		TreePath path = resultTree.getSelectionPath();
@@ -343,6 +362,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 
 	private RolloverButton clear;
 	private RolloverButton multi;
+	private RolloverButton cancel;
 	private RolloverButton previousResultButton;
 	private RolloverButton nextResultButton;
 	private boolean multiStatus;
@@ -501,6 +521,10 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 							.getChildAt(i));
 					}
 				}
+			}
+			else if(source == cancel)
+			{
+				cancelSearch();
 			}
 			else if(source == previousResultButton)
 			{

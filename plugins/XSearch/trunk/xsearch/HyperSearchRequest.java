@@ -110,6 +110,11 @@ class HyperSearchRequest extends Task
 loop:
 				for(int i = 0; i < files.length; i++)
 				{
+					if(Thread.interrupted())
+					{
+						throw new InterruptedException();
+					}
+
 					String file = files[i];
 					current++;
 
@@ -129,9 +134,13 @@ loop:
 				};
 			}
 		}
-		catch(final Exception e)
+		catch(InterruptedException e)
 		{
-			Log.log(Log.ERROR,this, "HyperSearch Requset failed. ", e);
+			Log.log(Log.NOTICE, this, "HyperSearch canceled", e);
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR, this, "HyperSearch Requset failed.", e);
 		}
 		finally
 		{
@@ -186,6 +195,7 @@ loop:
 					restoreSettings();
 				}
 			});
+			SearchAndReplace.removeHyperSearchRequest(this);
 		}
 	} //}}}
 
@@ -206,8 +216,6 @@ loop:
 	//{{{ searchInSelection() method
 	private int searchInSelection(Buffer buffer) throws Exception
 	{
-		setCancellable(false);
-
 		int resultCount = 0;
 
 		try
@@ -239,8 +247,6 @@ loop:
 			buffer.readUnlock();
 		}
 
-		setCancellable(true);
-
 		return resultCount;
 	} //}}}
 
@@ -255,8 +261,6 @@ loop:
 	private int doHyperSearch(Buffer buffer, int start, int end)
 		throws Exception
 	{
-		setCancellable(false);
-
 		final DefaultMutableTreeNode bufferNode = new DefaultMutableTreeNode(
 			//buffer.getPath());
 			new HyperSearchPath(buffer, 0, 0, 0));
@@ -267,8 +271,6 @@ loop:
 		{
 			rootSearchNode.insert(bufferNode,rootSearchNode.getChildCount());
 		}
-
-		setCancellable(true);
 
 		return resultCount;
 	} //}}}
