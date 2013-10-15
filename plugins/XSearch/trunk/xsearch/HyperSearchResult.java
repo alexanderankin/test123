@@ -25,10 +25,10 @@ package xsearch;
 
 //{{{ Imports
 import javax.swing.text.Position;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 //}}}
-import org.gjt.sp.util.AwtRunnableQueue;
 
 /**
  * A set of occurrences of the search string on a given line in a buffer.
@@ -87,7 +87,7 @@ public class HyperSearchResult
 		if(buffer == null)
 			return;
 
-		AwtRunnableQueue.INSTANCE.runAfterIoTasks(new Runnable()
+		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
 			{

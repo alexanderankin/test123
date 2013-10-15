@@ -3,12 +3,12 @@ plugin.xsearch.XSearchPlugin.activate=startup
 
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann, Alan Ezust
-plugin.xsearch.XSearchPlugin.version=1.8
+plugin.xsearch.XSearchPlugin.version=1.9
 plugin.xsearch.XSearchPlugin.docs=index.html
 plugin.xsearch.XSearchPlugin.depend.0=jedit 05.01.01.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.6
 plugin.xsearch.XSearchPlugin.depend.2=plugin GnuRegexpPlugin 1.0.1
-plugin.xsearch.XSearchPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.4.4
+plugin.xsearch.XSearchPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.5.2
 plugin.xsearch.XSearchPlugin.description=A replacement for the built-in search/replace dialog with some enhancements, using gnu.regexp instead of java.util.regexp.
 
 # Menu
