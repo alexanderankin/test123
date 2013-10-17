@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2013 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@ public class ItemFinderPanel<E> extends JPanel
 	public final RequestFocusWorker requestFocusWorker;
 	private final ItemFinder<E> itemFinder;
 	private final JScrollPane scroll;
+	private JLabel label;
 
 	//{{{ ItemFinderPanel constructor
 	public ItemFinderPanel(Window owner, ItemFinder<E> itemFinder)
@@ -93,17 +94,39 @@ public class ItemFinderPanel<E> extends JPanel
 		String label = itemFinder.getLabel();
 		if (label != null)
 		{
-			JLabel comp = new JLabel(label);
+			this.label = new JLabel(label);
 			if (owner instanceof ItemFinderWindow)
-				add(comp, BorderLayout.NORTH);
+				add(this.label, BorderLayout.NORTH);
 			else
-				add(comp, BorderLayout.WEST);
+				add(this.label, BorderLayout.WEST);
 		}
 
 
 		add(searchField, BorderLayout.CENTER);
 		window.pack();
 		requestFocusWorker = new RequestFocusWorker(searchField);
+	} //}}}
+
+	//{{{ getSearchField() method
+	/**
+	 * Returns the search field
+	 * @return the search field
+	 * @since		CC 1.7.2
+	 */
+	public JTextField getSearchField()
+	{
+		return searchField;
+	} //}}}
+
+	//{{{ getLabel() method
+	/**
+	 * Returns the JLabel
+	 * @return the JLabel
+	 * @since		CC 1.7.2
+	 */
+	public JLabel getLabel()
+	{
+		return label;
 	} //}}}
 
 	//{{{ dispose() method
