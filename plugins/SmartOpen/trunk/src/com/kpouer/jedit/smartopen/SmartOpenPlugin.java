@@ -364,8 +364,8 @@ public class SmartOpenPlugin extends EditPlugin
 		extensionPanel.add(new JLabel("extension:"));
 		extensionPanel.add(extensionTextField);
 
-		Component label = itemFinderPanel.getComponent(0);
-		final Component searchField = itemFinderPanel.getComponent(1);
+		Component label = itemFinderPanel.getLabel();
+		final Component searchField = itemFinderPanel.getSearchField();
 		topPanel.add(label);
 		topPanel.add(extensionPanel, BorderLayout.EAST);
 		itemFinderPanel.removeAll();
