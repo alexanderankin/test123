@@ -1,5 +1,6 @@
 package common.gui.util;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
