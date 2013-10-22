@@ -36,7 +36,7 @@ public class FtpPlugin extends EditPlugin
 	//{{{ start() method
 	public void start()
 	{
-		ConnectionManager.forgetPasswords();
+		// ConnectionManager.forgetPasswords();
 
 	} //}}}
 	
