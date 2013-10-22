@@ -2,12 +2,14 @@
 plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
-plugin.ftp.FtpPlugin.author=Slava Pestov, Nicholas O'Leary, Vadim Voituk
-plugin.ftp.FtpPlugin.version=1.0.4
+plugin.ftp.FtpPlugin.author=Slava Pestov, Nicholas O'Leary, Vadim Voituk, Alan Ezust
+plugin.ftp.FtpPlugin.version=1.0.5
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.05.99.00
 plugin.ftp.FtpPlugin.depend.1=jdk 1.6
+plugin.ftp.FtpPlugin.depend.2=plugin CommonControlsPlugin 1.7.1
+
 plugin.ftp.FtpPlugin.jars=jsch.jar
 plugin.ftp.FtpPlugin.description=The FTP plugin adds the ability to browse directories and edit files on (S)FTP servers.
 plugin.ftp.FtpPlugin.menu=open-ftp \
@@ -20,6 +22,15 @@ plugin.ftp.FtpPlugin.menu=open-ftp \
 	forget-passwords \
 	close-connections
 plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
+plugin.ftp.FtpPlugin.option-pane=ftp
+
+options.ftp.label=FTP options
+options.ftp.code=new ftp.OptionPane()
+
+options.ftp.savePasswords=Save passwords to disk
+options.ftp.useKeyFile=Use Key File for encrypting passwords
+options.ftp.useKeyFile.tooltip=Saves a hash of the master password in a separate keyfile. 
+
 
 # Actions
 open-ftp.label=Open from FTP Server...
@@ -34,6 +45,8 @@ vfs.browser.ftp.label=Connect to FTP Server...
 vfs.browser.sftp.label=Connect to Secure FTP Server...
 
 # Login dialog box
+login.masterpassword.title=FTP Plugin Master Password
+login.masterpassword.message=Enter a master password to encrypt your (s)FTP passwords:
 login.title-ftp=Connect to FTP Server
 login.title-sftp=Connect to Secure FTP Server
 login.host=Remote host:
@@ -43,9 +56,12 @@ login.passive=Passive mode
 login.privateKey=Private key:
 login.selectprivatekey=Select private key file...
 login.privatekeypassword=Enter passphrase for private key file
-login.storePassword=Save Password - these are stored in a file that is difficult, but not impossible, to read.
+login.storePassword=Save Password
 login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
+
+
+
 
 # Settings
 vfs.ftp.passive=true

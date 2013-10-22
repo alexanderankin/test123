@@ -179,14 +179,16 @@ There are workarounds for that, see our bug tracker entry #3491410,
  <itemizedlist>
  
    	<listitem><para> <emphasis role="bold">Version 1.0.4</emphasis>
- 			Requires Java 1.6+ and jEdit 4.5
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5. By Alan Ezust. 
  		</para>
+ 		
  		<itemizedlist>
- 			<listitem><para> #3601720: Updated to use jsch 0.1.50 (Ezust). </para></listitem>
- 			<listitem><para> #3615037, 3603120: Log errors, don't pop up dialogs. (Ezust) </para></listitem>
+ 		  <listitem><para> #2211433: Using AES256 to encrypt saved passwords to a master password.</para> </listitem>
+ 		  <listitem><para> Option to use keyfile instead of a master password. </para></listitem>
+ 			<listitem><para> #3601720: Updated to use jsch 0.1.50. </para></listitem>
+ 			<listitem><para> #3536103, #3615037, 3603120: Log errors, don't pop up dialogs. </para></listitem>
     </itemizedlist> 
     </listitem>
- 
  
    	<listitem>
  		<para>

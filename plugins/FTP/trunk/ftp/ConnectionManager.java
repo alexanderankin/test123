@@ -34,8 +34,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -45,12 +49,13 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
 
 import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.jcraft.Compression;
+
 
 public class ConnectionManager
 {
 	// {{{ members
 	protected static Object lock;
+	protected static boolean restoredPasswords;
 	protected static ArrayList<Connection> connections;
 	/**
 	 * cached logins by host
@@ -58,6 +63,8 @@ public class ConnectionManager
 	protected static HashMap<String, ConnectionInfo> logins;
 	protected static HashMap<String, String> passwords;
 	protected static HashMap<String, String> passphrases;
+	/** a 256 byte SHA1 hash of the master password, actually */
+	static byte[] masterPassword = null;
 	static int connectionTimeout = 60000;
 	
 	// No longer used
@@ -68,9 +75,7 @@ public class ConnectionManager
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
-		// Delete old insecure password file, even though we no longer use it. 
-		if (passwordFile.exists())
-			passwordFile.delete();
+		restoredPasswords = false;
 		passwords.clear();
 		passphrases.clear();
 		logins.clear();
@@ -80,6 +85,8 @@ public class ConnectionManager
 	//{{{ getPassword() method
 	protected static String getPassword(String hostInfo)
 	{
+		if (!restoredPasswords) 
+			loadPasswords();
 		return passwords.get(hostInfo);
 	} //}}}
 
@@ -87,6 +94,7 @@ public class ConnectionManager
 	protected static void setPassword(String hostInfo, String password)
 	{
 		passwords.put(hostInfo, password);
+		savePasswords();
 	} //}}}
 
 	//{{{ getPassphrase() method
@@ -112,22 +120,94 @@ public class ConnectionManager
 		return new File(s).exists() ? s : null;
 	}
 
+	protected static void getKeyFile() {
+		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
+		try {
+			File f = new File(jEdit.getProperty("ftp.passKeyFile"));
+			
+			if (!f.exists()) return;
+			int length = (int) f.length();
+			masterPassword = new byte[length];
+			FileInputStream fis = new FileInputStream(f);
+			fis.read(masterPassword);
+			fis.close();
+		}
+		catch (Exception e) {
+			Log.log(Log.ERROR, ConnectionManager.class, e);
+		}
+		
+	}
+	
+	protected static void saveKeyFile() {
+		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
+		try {
+			File f = new File(jEdit.getProperty("ftp.passKeyFile"));
+			if (masterPassword == null) {
+				f.delete();
+				return;
+			}
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(masterPassword);
+			fos.close();
+		}		
+		catch (Exception e) {
+			Log.log(Log.ERROR, ConnectionManager.class, e);
+		}
+	
+	}
+	
+	//{{{ promptMasterPassword() method 
+	protected static boolean promptMasterPassword() {
+		getKeyFile();
+		if (masterPassword != null) return true;
+		
+		// Show a dialog from the active view asking user for master password
+		try {
+			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
+					jEdit.getProperty("login.masterpassword.title"),
+					jEdit.getProperty("login.masterpassword.message"));
+			if (!pd.isOK())
+				return false;
+			String masterPw = new String(pd.getPassword());
+			// make a SHA256 digest of it
+		
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] buffer = masterPw.getBytes("utf-8");
+			masterPassword = digest.digest(buffer);
+			saveKeyFile();
+			String masterPwStr = new String(masterPassword, "utf-8");
+			Log.log(Log.MESSAGE, ConnectionManager.class, "masterPasswordhash: " + masterPwStr);
+		}
+		catch (Exception e) {
+			Log.log (Log.ERROR, ConnectionManager.class, e);
+			return false;
+		}
+		return true;
+	}
+	
+	
 	//{{{ loadPasswords() method
 
+	
 	@SuppressWarnings("unchecked")
-	protected static void loadPasswords()
+	public static void loadPasswords()
 	{
-		// TODO: rewrite to use keepass
+		
+		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;
+		
+		
 		if (passwordFile == null)
 		{
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to load passwords.");
 			return;
 		}
+
+		if (masterPassword == null)
+			promptMasterPassword();
+
+				
 		int passwordFileLength = (int)passwordFile.length();
-		if (passwordFileLength == 0)
-		{
-			return;
-		}
+		if (passwordFileLength == 0) return;		
 		ObjectInputStream ois = null;
 		FileInputStream fis = null;
 		try
@@ -138,15 +218,24 @@ public class ConnectionManager
 			while(read<passwordFileLength) {
 				read+=fis.read(buffer,read,passwordFileLength-read);
 			}
-			Compression comp = new Compression();
+			// decrypt using AES256
+			Cipher c = Cipher.getInstance("AES");
+			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
+			c.init(Cipher.DECRYPT_MODE, k);
+			byte[] uncompressed = c.doFinal(buffer);
+			
+		/*	Compression comp = new Compression();
 			comp.init(Compression.INFLATER,6);
-			byte[] uncompressed = comp.uncompress(buffer,0,new int[]{buffer.length});
+			byte[] uncompressed = comp.uncompress(buffer,0,new int[]{buffer.length}); */
+			
 			ois = new ObjectInputStream(
 				new BufferedInputStream(
 					new ByteArrayInputStream( uncompressed,0,uncompressed.length )
 					)
 				);
 			passwords = (HashMap<String, String>)ois.readObject();
+			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords loaded: " + passwords.size());
+			restoredPasswords = true;
 		}
 		catch(Exception e)
 		{
@@ -162,15 +251,21 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ savePasswords() method
-	// TODO: rewrite this to use keepass
-	protected static void savePasswords() {
+
+	public static void savePasswords() {
 		
 		
-		
-		if (passwordFile == null) {
+		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;		
+
+		if (passwordFile == null) { 
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
 			return;
 		}
+		
+		
+		if (masterPassword == null)
+			promptMasterPassword();		
+		
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
 		ByteArrayOutputStream baos = null;
@@ -179,13 +274,23 @@ public class ConnectionManager
 			baos = new ByteArrayOutputStream();
 			oos = new ObjectOutputStream(baos);
 			oos.writeObject(passwords);
-			Compression comp = new Compression();
-			comp.init(Compression.DEFLATER,6);
 			byte[] objectBuffer = baos.toByteArray();
-			objectBuffer = comp.compress(objectBuffer, 0, new int[] {objectBuffer.length});
+			
+			
+			Cipher c = Cipher.getInstance("AES");
+			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
+			c.init(Cipher.ENCRYPT_MODE, k);
+			objectBuffer = c.doFinal(objectBuffer);
+			
+			/*
+			Compression comp = new Compression();
+			comp.init(Compression.DEFLATER,6);			 
+			objectBuffer = comp.compress(objectBuffer, 0, new int[] {objectBuffer.length}); */
+						
 			int newLength = objectBuffer.length;
 			fos = new FileOutputStream(passwordFile);
 			fos.write(objectBuffer,0,newLength);
+			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords saved: " + passwords.size());
 		}
 		catch(Exception e)
 		{
@@ -363,6 +468,7 @@ public class ConnectionManager
 	//{{{ Private members
 	static
 	{
+		restoredPasswords = false;
 		lock = new Object();
 		connections = new ArrayList<Connection>();
 		logins = new HashMap<String, ConnectionInfo>();
@@ -384,6 +490,7 @@ public class ConnectionManager
 				passwordFile.createNewFile();
 			} catch(IOException e) {
 				Log.log(Log.WARNING,ConnectionManager.class, "Unable to create password file: " + passwordFile);
+				passwordFile = null;
 			}
 		}
 	} //}}}
