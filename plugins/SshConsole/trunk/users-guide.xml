@@ -26,8 +26,8 @@ It also uses a dockable jEdit
 or <ulink url="../ProjectViewer.jar!/index.html">ProjectViewer</ulink>
 for navigation. </para>
 
-<para> SshConsole has no option pane of its own. The customizations possible
-for this plugin are in Console or ErrorList options. </para>
+<para> Most of the customizations possible for this plugin are in Console or
+ErrorList options. </para> 
 
 <para> Console provides jEdit with a dockable command line interface to the System
 Shell and the BeanShell, and an open interface for adding new shells. SshConsole
@@ -181,8 +181,8 @@ Console error matchers. Disable the ones you are not using from
 <para> If you are typing &quot;cd&quot; directly to change directories from SshConsole, 
 it is possible the console shell state will not realize this and think 
 errors are from files in an incorrect path. Change directories using the chdir
-events you selected in Console's plugin options. to ensure the SshConsole knows
-where you are. 
+events you selected in Console's plugin options to ensure the SshConsole knows
+where you are.
 </para>
 
 <para> Sometimes an ssh connection will timeout while you are using the SshConsole.
@@ -230,8 +230,7 @@ or suggestions.
 <listitem><para id="v.1.0.7">  <emphasis role="strong">Version 1.0.7</emphasis> -
 Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3 
   <itemizedlist>
-    <listitem><para> New plugin option to enable/disable X11 forwarding
-    </para></listitem>
+    <listitem><para> New plugin option to enable/disable X11 forwarding </para></listitem>
   </itemizedlist>
 </para></listitem>  
 
