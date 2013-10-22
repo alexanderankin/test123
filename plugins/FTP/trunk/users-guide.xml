@@ -1,10 +1,7 @@
 <?xml version="1.0"?>
-
 <!-- FTP plugin user's guide -->
-
 <!-- jEdit buffer-local properties: -->
-<!-- :indentSize=1:noTabs=true:folding=sidekick: -->
-
+<!-- :wrap=hard:maxLineLen=80:indentSize=2:noTabs=true:folding=sidekick: -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <bookinfo><title>FTP plugin user's guide</title>
@@ -12,6 +9,7 @@
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Nicholas</firstname><surname>O'Leary</surname></author>
   <author><firstname>Voituk</firstname><surname>Vadim</surname></author>
+  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -26,7 +24,6 @@
   </para>
  </legalnotice>
 </bookinfo>
-
 
 <chapter id="ftp"><title>Connecting to FTP servers</title>
 
@@ -51,25 +48,33 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 </para>
 
 
-<sect1 id="chmod"><title>File permissions</title>
+<section id="chmod"><title>File permissions</title>
 
 <para>
-Since an FTP server does not allow execution of arbitrary shell commands, the plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode. This command is reasonably standard, but not all FTP servers support it.
+Since an FTP server does not allow execution of arbitrary shell commands, the
+plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode.
+This command is reasonably standard, but not all FTP servers support it.  
 </para>
 
 <para>
-If you notice that file permissions are not preserved after saving a file to an FTP server, check <guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem> for messages like the following, which indicate your FTP server does not support this command:
+If you notice that file permissions are not preserved after saving a file to an
+FTP server, check
+<guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem>  
+for messages like the following, which indicate your FTP server does not support this command:
 </para>
 
 <programlisting>[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: sending command: SITE CHMOD 644 /home/swenv
 [debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: received response: 502 SITE command not implemented.</programlisting>
 
 <para>
-A workaround is to disable two-stage save in the <guilabel>General</guilabel> pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem> dialog box.
+A workaround is to disable two-stage save in the <guilabel>General</guilabel>
+pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global
+Options</guimenuitem> dialog box.  
 </para>
 
 <para>
-A workaround to have a deal with "Auth Fail" and "Authentification not completed"  errors on some OpenSSH versions:
+A workaround to have a deal with "Auth Fail" and "Authentification not
+completed"  errors on some OpenSSH versions: 
 
 Please open /etc/ssh/sshd_config file, find and comment this line: 
 <programlisting>PasswordAuthentication yes</programlisting>
@@ -78,7 +83,7 @@ Become:
 <programlisting>#PasswordAuthentication no</programlisting>
 </para>
 
-</sect1>
+</section>
 
 </chapter>
 
@@ -138,11 +143,13 @@ command in the
 </para></listitem>
 
 <listitem><para>
-Passwords are remembered while jEdit is running so you don't have to re-type
-them. Passwords are not saved to disk and therefore are forgotten when jEdit
-exits. To force jEdit to forget all passwords while it is running, use the
-<guimenuitem>Forget Remote Passwords</guimenuitem> command in the
-<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+Passwords and passphrases are remembered while jEdit is running so you don't
+have to re-type them. Optionally, passwords can also be securely stored to disk,
+encrypted with a master password or a keyfile. <guimenuitem>Plugin Options -
+FTP</guimenuitem> allows you enable or disable this feature, and to choose the
+location of the keyfile. To force jEdit to forget all passwords while it is
+running, use the <guimenuitem>Forget Remote Passwords</guimenuitem> command in
+the <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para></listitem>
 
 <listitem><para>
