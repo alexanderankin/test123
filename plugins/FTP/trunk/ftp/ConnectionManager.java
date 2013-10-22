@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2002, 2003, 2007 Slava Pestov, Nicholas O'Leary, Vadim Voituk
+ * Copyright (C) 2002-2013 Slava Pestov, Nicholas O'Leary, Vadim Voituk, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,9 +67,7 @@ public class ConnectionManager
 	protected static HashMap<String, String> passphrases;
 	/** a 256 byte SHA1 hash of the master password, actually */
 	static byte[] masterPassword = null;
-	static int connectionTimeout = 60000;
-	
-	// No longer used
+	static int connectionTimeout = 60000;	
 	private static File passwordFile = null;
 	public static JSch client = null;
 	// }}}
