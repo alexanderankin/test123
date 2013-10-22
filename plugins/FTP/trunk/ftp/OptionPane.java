@@ -25,8 +25,8 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 	protected void _init() {						
 		storePasswords = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"),
 			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
-		addComponent(storePasswords);
 		storePasswords.addActionListener(this);
+		addComponent(storePasswords);
 		
 		useKeyFile = new JCheckBox(jEdit.getProperty("options.ftp.useKeyFile"));
 		useKeyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
@@ -34,9 +34,11 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		useKeyFile.addActionListener(this);
 				
 		keyFile = new FileTextField(jEdit.getProperty("ftp.passKeyFile"), false);
+		keyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
 		addComponent(useKeyFile , keyFile);
 		
 		keyFile.getTextField().setEnabled(useKeyFile.isSelected());
+		useKeyFile.setEnabled(storePasswords.isSelected());
 		
 	}
 	public void actionPerformed(ActionEvent e) {
