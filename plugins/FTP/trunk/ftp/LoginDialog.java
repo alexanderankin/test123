@@ -50,6 +50,7 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.gui.VariableGridLayout;
 
+@SuppressWarnings("serial")
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
 	//{{{ LoginDialog constructor
@@ -86,11 +87,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		
 		
 		content.add(useProxy);
-			
-		storePassword = null;
-		// storePassword = new JCheckBox(jEdit.getProperty("login.storePassword"), jEdit.getBooleanProperty("vfs.ftp.storePassword"));
-		// content.add(storePassword);
-		
+		storePassword = new JCheckBox(jEdit.getProperty("login.storePassword"),
+			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
+		content.add(storePassword);
 		
 		Box buttons = new Box(BoxLayout.X_AXIS);
 		buttons.add(Box.createGlue());
