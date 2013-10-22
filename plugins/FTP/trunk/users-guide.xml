@@ -183,8 +183,9 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		</para>
  		
  		<itemizedlist>
- 		  <listitem><para> #2211433: Using AES256 to encrypt saved passwords and passphrases with a master password.</para> </listitem>
- 		  <listitem><para> Option to use keyfile instead of a master password. </para></listitem>
+ 		  <listitem><para> #2211433: Using AES256 to encrypt saved passwords and passphrases with a master password. 
+ 		     There is no way to read old saved passwords files. </para> </listitem>
+ 		  <listitem><para> #2761999: Option to use keyfile instead of a master password. </para></listitem>
  			<listitem><para> #3601720: Updated to use jsch 0.1.50. </para></listitem>
  			<listitem><para> #3536103, #3615037, 3603120: Log errors, don't pop up dialogs. </para></listitem>
     </itemizedlist> 
@@ -193,7 +194,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
    	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.3</emphasis>
- 			Requires Java 1.6+ and jEdit 4.5
+ 			Requires Java 1.6+ and jEdit 4.5 by Alan Ezust
  		</para>
  		<itemizedlist>
  			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
@@ -203,10 +204,10 @@ There are workarounds for that, see our bug tracker entry #3491410,
    	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.2</emphasis>
- 			Requires Java 1.6+ and jEdit 4.5
+ 			Requires Java 1.6+ and jEdit 4.5 by Alan Ezust
  		</para>
  		<itemizedlist>
- 			<listitem><para>Properly cache login info for SshConsole (#3575850 Alan Ezust)</para></listitem>
+ 			<listitem><para>#3575850 Properly cache login info for SshConsole </para></listitem>
  			<listitem><para>Updates for jEdit 5.0 API </para></listitem>
  	  </itemizedlist>
  	  </listitem>
@@ -223,7 +224,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			<listitem><para>Added troubleshooting section in user's guide, to
  			point to possible workaround for the Windows 7 firewall bug.
  			</para></listitem>
- 			<listitem><para>Added local file backup (pre-alpha version) for jEdit
+ 			<listitem><para>#1969573: Added local file backup (pre-alpha version) for jEdit
  			up to 4.5.x. Newer jEdit does it itself.
  			</para></listitem>
  		</itemizedlist>
