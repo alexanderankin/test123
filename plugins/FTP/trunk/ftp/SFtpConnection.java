@@ -2,7 +2,7 @@
 * SFtpConnection.java - A connection to an SSH FTP server
 * Copyright (C) 2002, 2007 Slava Pestov, Nicholas O'Leary
 *
-* :tabSize=8:indentSize=8:noTabs=false:
+* :tabSize=4:indentSize=4:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
 * This program is free software; you can redistribute it and/or

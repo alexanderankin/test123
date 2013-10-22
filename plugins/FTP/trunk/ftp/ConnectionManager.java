@@ -1,6 +1,6 @@
 /*
  * ConnectionManager.java - Manages persistent connections
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2002, 2003, 2007 Slava Pestov, Nicholas O'Leary, Vadim Voituk
@@ -49,7 +49,9 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
 
 import com.jcraft.jsch.JSch;
+//}}}
 
+//{{{ ConnectionManager Class
 
 public class ConnectionManager
 {
@@ -75,6 +77,12 @@ public class ConnectionManager
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
+		try {
+			if (passwordFile.exists())
+				passwordFile.delete();
+		}
+		catch (Exception e) {}
+
 		restoredPasswords = false;
 		passwords.clear();
 		passphrases.clear();
@@ -138,7 +146,8 @@ public class ConnectionManager
 		
 	}
 	
-	protected static void saveKeyFile() {
+	protected static void saveKeyFile() 
+	{
 		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
 		try {
 			File f = new File(jEdit.getProperty("ftp.passKeyFile"));
@@ -183,14 +192,14 @@ public class ConnectionManager
 			return false;
 		}
 		return true;
-	}
+	}//}}}
 	
 	
 	//{{{ loadPasswords() method
 
 	
 	@SuppressWarnings("unchecked")
-	public static void loadPasswords()
+	protected static void loadPasswords()
 	{
 		
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;
@@ -252,16 +261,13 @@ public class ConnectionManager
 
 	//{{{ savePasswords() method
 
-	public static void savePasswords() {
-		
-		
+	protected static void savePasswords() {
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;		
 
 		if (passwordFile == null) { 
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
 			return;
 		}
-		
 		
 		if (masterPassword == null)
 			promptMasterPassword();		
@@ -495,4 +501,4 @@ public class ConnectionManager
 		}
 	} //}}}
 
-}
+}//}}}
