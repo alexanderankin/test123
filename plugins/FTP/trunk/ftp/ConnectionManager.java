@@ -106,6 +106,8 @@ public class ConnectionManager
 	//{{{ getPassphrase() method
 	public static String getPassphrase(String keyFile)
 	{
+		if (!restoredPasswords) 
+			loadPasswords();
 		return passphrases.get(keyFile);
 	} //}}}
 
@@ -113,6 +115,8 @@ public class ConnectionManager
 	public static void setPassphrase(String keyFile, String passphrase)
 	{
 		passphrases.put(keyFile,passphrase);
+		savePasswords();
+		
 	} //}}}
 
 
@@ -230,24 +234,18 @@ public class ConnectionManager
 			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
 			c.init(Cipher.DECRYPT_MODE, k);
 			byte[] uncompressed = c.doFinal(buffer);
-			
-		/*	Compression comp = new Compression();
-			comp.init(Compression.INFLATER,6);
-			byte[] uncompressed = comp.uncompress(buffer,0,new int[]{buffer.length}); */
-			
-			ois = new ObjectInputStream(
-				new BufferedInputStream(
-					new ByteArrayInputStream( uncompressed,0,uncompressed.length )
-					)
-				);
+						
+			ois = new ObjectInputStream(new BufferedInputStream(
+					new ByteArrayInputStream( uncompressed,0,uncompressed.length )));
 			passwords = (HashMap<String, String>)ois.readObject();
+			passphrases = (HashMap<String, String>)ois.readObject();
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords loaded: " + passwords.size());
+			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases loaded: " + passphrases.size());
 			restoredPasswords = true;
 		}
 		catch(Exception e)
 		{
-			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords");
-			Log.log(Log.ERROR,ConnectionManager.class,e);
+			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords", e);
 		}
 		finally
 		{
@@ -278,6 +276,7 @@ public class ConnectionManager
 			baos = new ByteArrayOutputStream();
 			oos = new ObjectOutputStream(baos);
 			oos.writeObject(passwords);
+			oos.writeObject(passphrases);
 			byte[] objectBuffer = baos.toByteArray();
 			
 			
@@ -285,16 +284,12 @@ public class ConnectionManager
 			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
 			c.init(Cipher.ENCRYPT_MODE, k);
 			objectBuffer = c.doFinal(objectBuffer);
-			
-			/*
-			Compression comp = new Compression();
-			comp.init(Compression.DEFLATER,6);			 
-			objectBuffer = comp.compress(objectBuffer, 0, new int[] {objectBuffer.length}); */
-						
+									
 			int newLength = objectBuffer.length;
 			fos = new FileOutputStream(passwordFile);
 			fos.write(objectBuffer,0,newLength);
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords saved: " + passwords.size());
+			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases saved: " + passphrases.size());
 		}
 		catch(Exception e)
 		{
