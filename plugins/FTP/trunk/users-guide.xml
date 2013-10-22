@@ -183,7 +183,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		</para>
  		
  		<itemizedlist>
- 		  <listitem><para> #2211433: Using AES256 to encrypt saved passwords to a master password.</para> </listitem>
+ 		  <listitem><para> #2211433: Using AES256 to encrypt saved passwords and passphrases with a master password.</para> </listitem>
  		  <listitem><para> Option to use keyfile instead of a master password. </para></listitem>
  			<listitem><para> #3601720: Updated to use jsch 0.1.50. </para></listitem>
  			<listitem><para> #3536103, #3615037, 3603120: Log errors, don't pop up dialogs. </para></listitem>

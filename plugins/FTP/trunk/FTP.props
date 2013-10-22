@@ -29,7 +29,7 @@ options.ftp.code=new ftp.OptionPane()
 
 options.ftp.savePasswords=Save passwords to disk
 options.ftp.useKeyFile=Use Key File for encrypting passwords
-options.ftp.useKeyFile.tooltip=Saves a hash of the master password in a separate keyfile. 
+options.ftp.useKeyFile.tooltip=Saves an AES256 hash of the master password in a separate keyfile. 
 
 
 # Actions
