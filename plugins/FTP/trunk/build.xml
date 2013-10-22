@@ -2,24 +2,17 @@
 <project name="FTP" basedir="." default="build"> 
 <!--
      This is a build.xml file for building the FTP plugin.
-
-     The 'dist' target compiles the plugin and creates the JAR file.
-     Before running the 'dist' target, you will need to generate the
-     documentation using one of these two targets:
-
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
-     - 'docs-xsltproc': Creates documentation using the xsltproc tool
-
-     To use it for building your own plugin, make these changes:
-
-     - Change definition of 'jar.name' to the name of your plugin's JAR file
-     - If necessary, add any dependencies to the 'project.class.path'
-       definition
-     - If necessary, change the list of files in the 'dist' targtet
-     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
-       accordingly.
+     To use this template for building your own plugin, make these changes:
+     - Change 'name' property for the <project> to the name of your plugin
+     - If necessary, add any dependencies to the 'project.class.path' definition
+     - If necessary, change the list of files in the 'packageFiles' selector 
 -->
 
+
+<!-- One of these two property files below should define build.support to point to 
+       a checkout of the build-support project:
+       svn co https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk
+-->
     <property file="build.properties"/>
     <property file="../build.properties"/>
     <property name="user-doc.xml" location = "users-guide.xml"/>
@@ -29,19 +22,17 @@
     <property name="src.dir" value="."/>
     <property name="build.dir" value="build"/>
     <property name="install.dir"  value=".."/>
-    
+
     <import file="${build.support}/plugin-build.xml" />
 
     <target name="build.prepare" >
             <copy file="${jsch.jar}" tofile="${install.dir}/jsch.jar" />
     </target>
 
-    
     <path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/jsch.jar"/>
-		<pathelement location="lib/jce.jar" />
 		<pathelement location="${install.dir}/CommonControls.jar"/>
+		<pathelement location="lib/jce.jar" />
 		<pathelement location="."/>
     </path>
 
