@@ -25,7 +25,6 @@ import console.CommandOutputParser;
 import console.Console;
 import console.Output;
 import console.ParsingOutputStreamTask;
-import console.SimpleOutputStreamTask.WLTypes;
 
 import errorlist.DefaultErrorSource;
 // }}}
