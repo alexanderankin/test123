@@ -220,15 +220,17 @@ public class ConnectionManager
 			return;
 		}
 
-		if (masterPassword == null)
-			if (!promptMasterPassword()) return;
+		if (!passwordFile.exists()) return;
 				
 		int passwordFileLength = (int)passwordFile.length();
 		if (passwordFileLength == 0) return;		
 		ObjectInputStream ois = null;
 		FileInputStream fis = null;
-		try
+		while (!restoredPasswords) try
 		{
+			if (masterPassword == null)
+				if (!promptMasterPassword()) return; 
+			
 			byte[] buffer = new byte[passwordFileLength];
 			fis = new FileInputStream(passwordFile);
 			int read = 0;
