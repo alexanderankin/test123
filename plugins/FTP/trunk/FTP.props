@@ -30,7 +30,7 @@ options.ftp.code=new ftp.OptionPane()
 options.ftp.savePasswords=Save passwords and passphrases to disk
 options.ftp.useKeyFile=Use Key File for encrypting passwords
 options.ftp.useKeyFile.tooltip=Saves an AES256 hash of the master password here
-
+options.sftp.enableCompression=Enable compression over SFTP
 
 # Actions
 open-ftp.label=Open from FTP Server...
@@ -65,6 +65,7 @@ login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 # Settings
 vfs.ftp.passive=true
 vfs.ftp.binary=true
+vfs.sftp.compression=true
 
 # Error messages
 # XXX - FTP responses seem to end with a newline?
