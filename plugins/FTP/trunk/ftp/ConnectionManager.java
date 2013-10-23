@@ -246,6 +246,7 @@ public class ConnectionManager
 		catch(Exception e)
 		{
 			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords", e);
+			masterPassword = null;
 		}
 		finally
 		{
