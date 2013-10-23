@@ -38,6 +38,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -180,8 +181,9 @@ public class ConnectionManager
 			if (!pd.isOK())
 				return false;
 			String masterPw = new String(pd.getPassword());
+			if (masterPw.isEmpty()) return false;
+
 			// make a SHA256 digest of it
-		
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] buffer = masterPw.getBytes("utf-8");
 			masterPassword = digest.digest(buffer);
@@ -204,8 +206,7 @@ public class ConnectionManager
 	protected static void loadPasswords()
 	{
 		
-		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;
-		
+		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;	
 		
 		if (passwordFile == null)
 		{
@@ -215,7 +216,7 @@ public class ConnectionManager
 
 		if (masterPassword == null)
 			promptMasterPassword();
-
+		if (masterPassword == null) return;
 				
 		int passwordFileLength = (int)passwordFile.length();
 		if (passwordFileLength == 0) return;		
@@ -243,10 +244,17 @@ public class ConnectionManager
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases loaded: " + passphrases.size());
 			restoredPasswords = true;
 		}
+		catch (BadPaddingException bpe) {
+			Log.log(Log.ERROR, bpe, "Bad master password");
+			masterPassword = null;
+			restoredPasswords = false;
+			
+		}
 		catch(Exception e)
 		{
 			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords", e);
 			masterPassword = null;
+			restoredPasswords = false;
 		}
 		finally
 		{
@@ -268,6 +276,8 @@ public class ConnectionManager
 		
 		if (masterPassword == null)
 			promptMasterPassword();		
+		if (masterPassword == null)
+			return;
 		
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
