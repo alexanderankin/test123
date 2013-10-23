@@ -63,8 +63,8 @@ public class ConnectionManager
 	 * cached logins by host
 	 */
 	protected static HashMap<String, ConnectionInfo> logins;
-	protected static HashMap<String, String> passwords;
-	protected static HashMap<String, String> passphrases;
+	private static HashMap<String, String> passwords;
+	private static HashMap<String, String> passphrases;
 	/** a 256 byte SHA1 hash of the master password, actually */
 	static byte[] masterPassword = null;
 	static int connectionTimeout = 60000;	
