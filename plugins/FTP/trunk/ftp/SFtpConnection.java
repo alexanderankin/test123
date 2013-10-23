@@ -58,7 +58,7 @@ import ftp.FtpVFS.FtpDirectoryEntry;
  */
 public class SFtpConnection extends Connection implements UserInfo, UIKeyboardInteractive
 {
-	
+
 	public SFtpConnection(final ConnectionInfo info) throws IOException
 	{
 		super(info);
@@ -80,13 +80,13 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 						"Unable to create password file:"+known_hosts);
 				}
 			}
-			
+
 			// {{{ Detect proxy settings if need
 			Proxy proxy = null;
 			if (jEdit.getBooleanProperty("vfs.ftp.useProxy")) {
-				
+
 				if (jEdit.getBooleanProperty("firewall.socks.enabled", false) ) {
-					//Detect SOCKS Proxy 
+					//Detect SOCKS Proxy
 					proxy = new ProxySOCKS5(jEdit.getProperty("firewall.socks.host"), jEdit.getIntegerProperty("firewall.socks.port", 3128));
 				} else if (jEdit.getBooleanProperty("firewall.enabled", false)) {
 					// HTTP-Proxy detect
@@ -97,11 +97,11 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				}
 			}
 			// }}}
-			
+
 			session = ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (proxy != null)
 				session.setProxy(proxy);
-			
+
 			Log.log(Log.DEBUG, this, "info.privateKey=" + info.privateKey);
 			if (info.privateKey != null && info.privateKey.length()>0) {
 				Log.log(Log.DEBUG,this,"Attempting public key authentication");
@@ -110,9 +110,15 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			}
 			keyAttempts = 0;
 			session.setUserInfo(this);
-			
+
+			if (jEdit.getBooleanProperty("sftp.compression", true)) {
+				session.setConfig("compression.s2c", "zlib@openssh.com,zlib,none");
+				session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
+				session.setConfig("compression_level", "9");
+			}
+
 			session.connect(ConnectionManager.connectionTimeout);
-			
+
 			Channel channel = session.openChannel("sftp");
 			channel.connect();
 			sftp=(ChannelSftp)channel;
@@ -124,13 +130,13 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			Log.log(Log.ERROR, this, e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
 		ArrayList<FtpDirectoryEntry> listing = new ArrayList<FtpDirectoryEntry>();
 		int count=0;
-		
+
 		try
 		{
 			Vector<com.jcraft.jsch.ChannelSftp.LsEntry> vv = sftp.ls(path);
@@ -151,7 +157,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			new FtpVFS.FtpDirectoryEntry[listing.size()]);
 		return result;
 	}
-	
+
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException
 	{
 		FtpVFS.FtpDirectoryEntry returnValue = null;
@@ -165,7 +171,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		}
 		return returnValue;
 	}
-	
+
 	boolean removeFile(String path) throws IOException
 	{
 		try
@@ -178,7 +184,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			return false;
 		}
 	}
-	
+
 	boolean removeDirectory(String path) throws IOException
 	{
 		try
@@ -191,7 +197,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			return false;
 		}
 	}
-	
+
 	boolean rename(String from, String to) throws IOException
 	{
 		try
@@ -204,7 +210,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			return false;
 		}
 	}
-	
+
 	boolean makeDirectory(String path) throws IOException
 	{
 		try
@@ -217,7 +223,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			return false;
 		}
 	}
-	
+
 	InputStream retrieve(String path) throws IOException
 	{
 		try {
@@ -226,7 +232,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			throw new IOException(e.toString());
 		}
 	}
-	
+
 	OutputStream store(String path) throws IOException
 	{
 		OutputStream returnValue;
@@ -237,7 +243,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		}
 		return returnValue;
 	}
-	
+
 	void chmod(String path, int permissions) throws IOException
 	{
 		try {
@@ -246,33 +252,33 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			throw new IOException(e.toString());
 		}
 	}
-	
+
 	boolean checkIfOpen() throws IOException
 	{
 		return sftp.isConnected();
 	}
-	
+
 	public String resolveSymlink(String path, String[] name) throws IOException
 	{
 		return path;
 	}
-	
+
 	void logout() throws IOException {
 		sftp.disconnect();
 		session.disconnect();
 	}
-	
+
 	private ChannelSftp sftp;
 	private Session session;
-	
+
 	private int keyAttempts = 0;
-	
+
 	// private int symLinkDepth = 0; // not used now
 	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String name, SftpATTRS attrs)
 	{
 		long length = attrs.getSize();
 		int permissions = attrs.getPermissions();
-		
+
 		// remove file mode bits from the permissions
 		permissions &= 0x1ff; // == binary 111111111
 		int type;
@@ -282,7 +288,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			type = FtpVFS.FtpDirectoryEntry.LINK;
 		else
 			type = FtpVFS.FtpDirectoryEntry.FILE;
-		
+
 		// path field filled out by FtpVFS class
 		// (String name, String path, String deletePath,
 			//	int type, long length, boolean hidden, int permissions)
@@ -294,21 +300,21 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		entry.setReadable( (permissions&00400)!=0 );
 		return entry;
 	}
-	
+
 	private String passphrase = null;
-	
+
 	public String getPassphrase()
 	{
 		return passphrase;
 	}
-	
+
 	public String getPassword()
 	{
 		return info.password;
 	}
-	
+
 	public boolean promptPassword(String message){ return true;}
-	
+
 	public boolean promptPassphrase(String message)
 	{
 		Log.log(Log.DEBUG,this,message);
@@ -358,15 +364,15 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		}
 		catch (InvocationTargetException e)
 		{
-			Log.log(Log.ERROR, this, e); 
+			Log.log(Log.ERROR, this, e);
 		}
 		return ret[0]==0;
 	}
 	public void showMessage(final String message)
 	{
-		Log.log(Log.ERROR, this, message);		
+		Log.log(Log.ERROR, this, message);
 	}
-	
+
 	// See http://marc.info/?l=ant-dev&m=111959408515300&w=2
 	public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo){
 		if(prompt.length!=1 || echo[0]!=false )

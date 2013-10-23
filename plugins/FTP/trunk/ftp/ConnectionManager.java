@@ -219,8 +219,7 @@ public class ConnectionManager
 		}
 
 		if (masterPassword == null)
-			promptMasterPassword();
-		if (masterPassword == null) return;
+			if (!promptMasterPassword()) return;
 				
 		int passwordFileLength = (int)passwordFile.length();
 		if (passwordFileLength == 0) return;		
@@ -247,18 +246,12 @@ public class ConnectionManager
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords loaded: " + passwords.size());
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases loaded: " + passphrases.size());
 			restoredPasswords = true;
-		}
-		catch (BadPaddingException bpe) {
-			Log.log(Log.ERROR, bpe, "Bad master password");
-			masterPassword = null;
-			saveKeyFile();  // wipes out the key file since masterPassword is null		
-			restoredPasswords = false;
-		}
+		}		
 		catch(Exception e)
 		{
-			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords", e);
+			Log.log(Log.ERROR, e, "Failed to restore passwords (bad master password?)");
 			masterPassword = null;
-			
+			saveKeyFile();  // wipes out the key file since masterPassword is null
 			restoredPasswords = false;
 		}
 		finally
@@ -280,9 +273,7 @@ public class ConnectionManager
 		}
 		
 		if (masterPassword == null)
-			promptMasterPassword();		
-		if (masterPassword == null)
-			return;
+			if (!promptMasterPassword()) return;		
 		
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
@@ -295,7 +286,7 @@ public class ConnectionManager
 			oos.writeObject(passphrases);
 			byte[] objectBuffer = baos.toByteArray();
 			
-			
+			// Encrypt using AES256
 			Cipher c = Cipher.getInstance("AES");
 			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
 			c.init(Cipher.ENCRYPT_MODE, k);
