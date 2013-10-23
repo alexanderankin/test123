@@ -174,6 +174,8 @@ public class ConnectionManager
 	
 	//{{{ promptMasterPassword() method 
 	protected static boolean promptMasterPassword() {
+		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return false;
+		
 		getKeyFile();
 		if (masterPassword != null) return true;
 		
