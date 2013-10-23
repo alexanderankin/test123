@@ -81,7 +81,8 @@ public class ConnectionManager
 				passwordFile.delete();
 		}
 		catch (Exception e) {}
-
+		masterPassword = null;
+		saveKeyFile();		// clear out the key file, actually
 		restoredPasswords = false;
 		passwords.clear();
 		passphrases.clear();
@@ -131,6 +132,9 @@ public class ConnectionManager
 		return new File(s).exists() ? s : null;
 	}
 
+	
+	/** If we have a keyFile, load the hash of the master password from a file 
+	    instead of prompting the user for it. */
 	protected static void getKeyFile() {
 		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
 		try {
@@ -247,13 +251,14 @@ public class ConnectionManager
 		catch (BadPaddingException bpe) {
 			Log.log(Log.ERROR, bpe, "Bad master password");
 			masterPassword = null;
+			saveKeyFile();  // wipes out the key file since masterPassword is null		
 			restoredPasswords = false;
-			
 		}
 		catch(Exception e)
 		{
 			Log.log(Log.ERROR,ConnectionManager.class,"Failed to restore passwords", e);
 			masterPassword = null;
+			
 			restoredPasswords = false;
 		}
 		finally
