@@ -6,9 +6,9 @@ plugin.ftp.FtpPlugin.author=Slava Pestov, Nicholas O'Leary, Vadim Voituk, Alan E
 plugin.ftp.FtpPlugin.version=1.0.5
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
-plugin.ftp.FtpPlugin.depend.0=jedit 05.00.99.00
+plugin.ftp.FtpPlugin.depend.0=jedit 04.05.99.00
 plugin.ftp.FtpPlugin.depend.1=jdk 1.6
-plugin.ftp.FtpPlugin.depend.2=plugin CommonControlsPlugin 1.7.1
+plugin.ftp.FtpPlugin.depend.2=plugin CommonControlsPlugin 1.5
 
 plugin.ftp.FtpPlugin.jars=jsch.jar
 plugin.ftp.FtpPlugin.description=The FTP plugin adds the ability to browse directories and edit files on (S)FTP servers.
