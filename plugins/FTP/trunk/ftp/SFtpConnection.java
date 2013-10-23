@@ -111,7 +111,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			keyAttempts = 0;
 			session.setUserInfo(this);
 
-			if (jEdit.getBooleanProperty("sftp.compression", true)) {
+			if (jEdit.getBooleanProperty("vfs.sftp.compression")) {
 				session.setConfig("compression.s2c", "zlib@openssh.com,zlib,none");
 				session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
 				session.setConfig("compression_level", "9");

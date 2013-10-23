@@ -185,8 +185,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
  <itemizedlist>
  
-   	<listitem><para> <emphasis role="bold">Version 1.0.5</emphasis>
- 			Requires Java 1.6, CommonControls, and jEdit 4.5. By Alan Ezust. 
+   	<listitem><para> <emphasis role="bold">Version 1.0.5</emphasis> By Alan Ezust
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5. 
  		</para>
  		
  		<itemizedlist>
@@ -205,8 +205,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
  
    	<listitem>
  		<para>
- 			<emphasis role="bold">Version 1.0.3</emphasis>
- 			Requires Java 1.6+ and jEdit 4.5 by Alan Ezust
+ 			<emphasis role="bold">Version 1.0.3</emphasis> by Alan Ezust
+ 			Requires Java 1.6+ and jEdit 4.5 
  		</para>
  		<itemizedlist>
  			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
@@ -226,8 +226,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
  
  	<listitem>
  		<para>
- 			<emphasis role="bold">Version 1.0.0</emphasis>
- 			Requires Java 1.6+ and jEdit 4.5.0
+ 			<emphasis role="bold">Version 1.0.0</emphasis> by jarekczek and voituk
+ 			Requires Java 1.6+ and jEdit 4.5.0 
  		</para>
  		<itemizedlist>
  			<listitem><para>Re-ask for connection details if no key-file exists</para></listitem>
@@ -244,11 +244,11 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
  	<listitem>
  		<para>
- 			<emphasis role="bold">Version 0.9.7</emphasis>
+ 			<emphasis role="bold">Version 0.9.7</emphasis> by Vadim Voituk
  			Requires Java 1.5+ and jEdit 4.3pre17+.
  		</para>
  		<itemizedlist>
- 			<listitem><para>New improved FTP URL parser: Fixed bugs #2893214, #2768807, #2334496, #1953257, #899119 (by Vadim Voituk)</para></listitem>
+ 			<listitem><para>New improved FTP URL parser: Fixed bugs #2893214, #2768807, #2334496, #1953257, #899119 </para></listitem>
  			<listitem><para>jsch lib updated to version 0.1.42</para></listitem>
  		</itemizedlist>
  	</listitem>
