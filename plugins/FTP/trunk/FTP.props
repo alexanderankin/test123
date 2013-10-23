@@ -60,7 +60,7 @@ login.storePassword=Save Password
 login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
-
+ftp.bad-master-password=FTP Plugin: Bad Master Password (failed to restore saved passwords)
 
 # Settings
 vfs.ftp.passive=true

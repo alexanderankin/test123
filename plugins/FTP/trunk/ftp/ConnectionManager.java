@@ -238,7 +238,7 @@ public class ConnectionManager
 			// decrypt using AES256
 			Cipher c = Cipher.getInstance("AES");
 			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
-			c.init(Cipher.DECRYPT_MODE, k);
+			c.init(Cipher.DECRYPT_MODE, k);			
 			byte[] uncompressed = c.doFinal(buffer);
 						
 			ois = new ObjectInputStream(new BufferedInputStream(
@@ -251,6 +251,7 @@ public class ConnectionManager
 		}		
 		catch(Exception e)
 		{
+			jEdit.getActiveView().getStatus().setMessage(jEdit.getProperty("ftp.bad-master-password"));
 			Log.log(Log.ERROR, e, "Failed to restore passwords (bad master password?)");
 			masterPassword = null;
 			saveKeyFile();  // wipes out the key file since masterPassword is null
