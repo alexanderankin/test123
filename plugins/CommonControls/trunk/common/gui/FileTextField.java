@@ -96,6 +96,12 @@ public class FileTextField extends JPanel
 		return text;
 	}
 
+	/** Sets the tooltip text on the child components. */
+	public void setToolTipText(String ttt) {
+		super.setToolTipText(ttt);	
+		text.setToolTipText(ttt);
+		chooser.setToolTipText(ttt);
+	}
 	/**
 	 *	Sets the file selection mode.
 	 * @param mode can be 
