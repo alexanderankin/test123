@@ -252,24 +252,21 @@ public class ConnectionManager
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases loaded: " + passphrases.size());
 			restoredPasswords = true;
 		}
-		catch (BadPaddingException bpe) {			
+		catch (BadPaddingException bpe) {
+			masterPassword = null;
+			saveKeyFile();  // wipes out the key file in case invalid pw was saved
 			String message = jEdit.getProperty("ftp.bad-master-password");
 			jEdit.getActiveView().getStatus().setMessage(message);
-			// Log.log(Log.ERROR, bpe, message);
-			masterPassword = null;
-			saveKeyFile();  // wipes out the key file since masterPassword is null			
 		}
-		catch (InvalidKeyException ike) {
-			restoredPasswords = false;
+		catch (InvalidKeyException ike) {			
 			masterPassword = null;
 			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
 			jEdit.getActiveView().getStatus().setMessage(message);
 			return;			
 		}
-		catch(Exception e)
-		{
-			Log.log(Log.ERROR, ConnectionManager.class, e);
-			restoredPasswords = false;			
+		catch(Exception e)	{
+			Log.log(Log.ERROR, ConnectionManager.class, "loadPasswords()", e);
+			return;
 		}
 		finally
 		{
@@ -315,13 +312,12 @@ public class ConnectionManager
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords saved: " + passwords.size());
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases saved: " + passphrases.size());
 		}
-		catch (InvalidKeyException ike) {
-			restoredPasswords = false;
+		catch (InvalidKeyException ike) {			
 			masterPassword = null;
-			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
-			jEdit.getActiveView().getStatus().setMessage(message);
+			saveKeyFile();
+			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");			
 			Log.log(Log.ERROR, ike, message, ike);
-			return;			
+			jEdit.getActiveView().getStatus().setMessage(message);
 		}
 		catch(Exception e)
 		{
