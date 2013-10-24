@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class ConnectionManager
 {
 	// {{{ members
 	protected static Object lock;
-	protected static boolean restoredPasswords;
+	protected static boolean restoredPasswords = false;
 	protected static ArrayList<Connection> connections;
 	/**
 	 * cached logins by host
@@ -250,14 +251,25 @@ public class ConnectionManager
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords loaded: " + passwords.size());
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases loaded: " + passphrases.size());
 			restoredPasswords = true;
-		}		
+		}
+		catch (BadPaddingException bpe) {			
+			String message = jEdit.getProperty("ftp.bad-master-password");
+			jEdit.getActiveView().getStatus().setMessage(message);
+			// Log.log(Log.ERROR, bpe, message);
+			masterPassword = null;
+			saveKeyFile();  // wipes out the key file since masterPassword is null			
+		}
+		catch (InvalidKeyException ike) {
+			restoredPasswords = false;
+			masterPassword = null;
+			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
+			jEdit.getActiveView().getStatus().setMessage(message);
+			return;			
+		}
 		catch(Exception e)
 		{
-			jEdit.getActiveView().getStatus().setMessage(jEdit.getProperty("ftp.bad-master-password"));
-			Log.log(Log.ERROR, e, "Failed to restore passwords (bad master password?)");
-			masterPassword = null;
-			saveKeyFile();  // wipes out the key file since masterPassword is null
-			restoredPasswords = false;
+			Log.log(Log.ERROR, ConnectionManager.class, e);
+			restoredPasswords = false;			
 		}
 		finally
 		{
@@ -302,6 +314,14 @@ public class ConnectionManager
 			fos.write(objectBuffer,0,newLength);
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords saved: " + passwords.size());
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases saved: " + passphrases.size());
+		}
+		catch (InvalidKeyException ike) {
+			restoredPasswords = false;
+			masterPassword = null;
+			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
+			jEdit.getActiveView().getStatus().setMessage(message);
+			Log.log(Log.ERROR, ike, message, ike);
+			return;			
 		}
 		catch(Exception e)
 		{
