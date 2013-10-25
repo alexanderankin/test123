@@ -25,6 +25,8 @@
  </legalnotice>
 </bookinfo>
 
+
+
 <chapter id="SavingPasswords">
 <title> Saving Passwords </title>
 
@@ -61,6 +63,7 @@ article</ulink>.
 crypto when strong crypto is unavailable. </para> 
 
 </chapter>
+
 
 <chapter id="ftp"><title>Connecting to FTP servers</title>
 
@@ -156,6 +159,22 @@ use the SshConsole plugin. </para>
 
 </chapter>
 
+<chapter id="silentfailures">
+<title> "Silent" Failures </title>
+
+<para> If a connection fails for any reason (auth fail, or timeout), it is not
+nice to pop up dialogs to show each error, especially if the requests made by
+the VFS can come in rapid succession. With previous versions of FTP, this could
+lead to "dialog-death", where it is impossible to do anything because dialogs
+pop up as soon as others are closed. Now, FTP logs its errors to the activity
+log instead. If you are expecting something to happen and it is not, check the
+"Errors" status bar widget, or the Activity Log dockable to find out what
+happened. </para> 
+
+
+</chapter>
+
+
 <chapter id="misc"><title>Miscellaneous features</title>
 
 <para>
@@ -213,6 +232,16 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+   	<listitem><para> <emphasis role="bold">Version 1.0.6</emphasis> By Alan Ezust
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5. 
+ 		</para>
+ 		<itemizedlist>
+ 		   <listitem><para> Better exception handling, messages, and documentation.
+ 		   </para> </listitem>
+ 		</itemizedlist>
+ 		
+ 		</listitem>
  
    	<listitem><para> <emphasis role="bold">Version 1.0.5</emphasis> By Alan Ezust
  			Requires Java 1.6, CommonControls, and jEdit 4.5. 

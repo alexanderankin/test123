@@ -298,18 +298,12 @@ public class ConnectionManager
 
 	} //}}}
 
-	protected static SecretKeySpec getKeySpec(byte[] byteArray) {
+	protected static SecretKeySpec getKeySpec(byte[] byteArray) throws Exception {
 		SecretKeySpec k = null;
-		try {
-			Cipher c = Cipher.getInstance("AES");
-			k = new SecretKeySpec(masterPassword, "AES");
-			c.init(Cipher.DECRYPT_MODE, k);
-			return k;
-		}
-		catch (Exception e) {
-			Log.log(Log.ERROR, ConnectionManager.class, "JCE Strong Encryption Unavailable." );		
-		}
-		return null;
+		Cipher c = Cipher.getInstance("AES");
+		k = new SecretKeySpec(masterPassword, "AES");
+	//	c.init(Cipher.DECRYPT_MODE, k);
+		return k;
 	}
 	
 	//{{{ savePasswords() method
