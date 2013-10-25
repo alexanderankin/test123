@@ -46,7 +46,8 @@ vfs.browser.sftp.label=Connect to Secure FTP Server...
 
 # Login dialog box
 login.masterpassword.title=FTP Plugin Master Password
-login.masterpassword.message=Enter a master password to en/decrypt your (s)FTP passwords:
+login.masterpassword.message=Enter the master password to decrypt your (s)FTP passwords:
+login.masterpassword.message.create=Choose a master password to encrypt your new password file:
 login.title-ftp=Connect to FTP Server
 login.title-sftp=Connect to Secure FTP Server
 login.host=Remote host:

@@ -173,18 +173,32 @@ public class ConnectionManager
 	
 	}
 	
-	//{{{ promptMasterPassword() method 
+	//{{{ promptMasterPassword() method
+	
 	protected static boolean promptMasterPassword() {
+		return promptMasterPassword(
+				jEdit.getProperty("login.masterpassword.title"), 
+				jEdit.getProperty("login.masterpassword.message"));
+	}
+	
+	protected static boolean promptMasterPasswordCreate() {
+		return promptMasterPassword(
+				jEdit.getProperty("login.masterpassword.title"), 
+				jEdit.getProperty("login.masterpassword.message.create"));
+	}
+	
+	protected static boolean promptMasterPassword(String title, String message) {
+		
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return false;
 		
 		getKeyFile();
 		if (masterPassword != null) return true;
 		
 		// Show a dialog from the active view asking user for master password
-		try {
-			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
-					jEdit.getProperty("login.masterpassword.title"),
-					jEdit.getProperty("login.masterpassword.message"));
+		try {			
+			
+			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(), title, message);
+					
 			if (!pd.isOK())
 				return false;
 			String masterPw = new String(pd.getPassword());
@@ -227,11 +241,17 @@ public class ConnectionManager
 		if (passwordFileLength == 0) return;		
 		ObjectInputStream ois = null;
 		FileInputStream fis = null;
+		int i=0;
 		while (!restoredPasswords) try
 		{
-			if (masterPassword == null)
-				if (!promptMasterPassword()) return; 
+			if (masterPassword == null) {
+				if ( (i ==0 ) && !promptMasterPassword()) return;
+				if ((i > 0 ) && !promptMasterPassword(
+					jEdit.getProperty("vfs.sftp.failed-authentication.title"),
+					jEdit.getProperty("login.masterpassword.message")));
+			}
 			
+			i++;
 			byte[] buffer = new byte[passwordFileLength];
 			fis = new FileInputStream(passwordFile);
 			int read = 0;
@@ -240,12 +260,14 @@ public class ConnectionManager
 			}
 			// decrypt using AES256
 			Cipher c = Cipher.getInstance("AES");
-			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
+			
+			SecretKeySpec k = getKeySpec(masterPassword); 
+			
 			c.init(Cipher.DECRYPT_MODE, k);			
-			byte[] uncompressed = c.doFinal(buffer);
+			byte[] objectBuffer = c.doFinal(buffer);
 						
 			ois = new ObjectInputStream(new BufferedInputStream(
-					new ByteArrayInputStream( uncompressed,0,uncompressed.length )));
+					new ByteArrayInputStream( objectBuffer,0,objectBuffer.length )));
 			passwords = (HashMap<String, String>)ois.readObject();
 			passphrases = (HashMap<String, String>)ois.readObject();
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords loaded: " + passwords.size());
@@ -276,6 +298,20 @@ public class ConnectionManager
 
 	} //}}}
 
+	protected static SecretKeySpec getKeySpec(byte[] byteArray) {
+		SecretKeySpec k = null;
+		try {
+			Cipher c = Cipher.getInstance("AES");
+			k = new SecretKeySpec(masterPassword, "AES");
+			c.init(Cipher.DECRYPT_MODE, k);
+			return k;
+		}
+		catch (Exception e) {
+			Log.log(Log.ERROR, ConnectionManager.class, "JCE Strong Encryption Unavailable." );		
+		}
+		return null;
+	}
+	
 	//{{{ savePasswords() method
 
 	protected static void savePasswords() {
@@ -285,9 +321,15 @@ public class ConnectionManager
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
 			return;
 		}
+
 		
 		if (masterPassword == null)
-			if (!promptMasterPassword()) return;		
+			if (!promptMasterPasswordCreate()) return;		
+
+		if (!restoredPasswords) {
+			// TODO: load passwords, but *merge* (don't clobber) the one we are about to save either!
+			// If we don't do this, all previously saved passwords could be lost. 
+		}
 		
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
@@ -302,7 +344,7 @@ public class ConnectionManager
 			
 			// Encrypt using AES256
 			Cipher c = Cipher.getInstance("AES");
-			SecretKeySpec k = new SecretKeySpec(masterPassword, "AES");
+			SecretKeySpec k = getKeySpec(masterPassword);
 			c.init(Cipher.ENCRYPT_MODE, k);
 			objectBuffer = c.doFinal(objectBuffer);
 									
@@ -316,7 +358,7 @@ public class ConnectionManager
 			masterPassword = null;
 			saveKeyFile();
 			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");			
-			Log.log(Log.ERROR, ike, message, ike);
+			Log.log(Log.ERROR, ConnectionManager.class, message, ike);
 			jEdit.getActiveView().getStatus().setMessage(message);
 		}
 		catch(Exception e)
