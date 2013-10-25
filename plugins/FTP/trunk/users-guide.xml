@@ -36,14 +36,15 @@ have to re-type them. Optionally, passwords can also be securely stored to disk,
 encrypted with a master password or a keyfile. <guimenuitem>Plugin Options -
 FTP</guimenuitem> allows you enable or disable this feature. </para>
 
-<para> If you want to use a keyfile instead of a master password, you can select
-this option, and choose the location to store the key file. You will be asked
-for a master password only once, it is hashed and saved at this location,
-and after that, your passwords are automatically loaded and saved without
-interaction. </para>
+<para> If you want to <guimenuitem>Use a keyfile for encrypting
+passwords</guimenuitem> instead of a password, you can check this option, and
+choose the location to store the key file. With this option enabled, you will be
+asked for a master password only once, it is hashed and saved to this location,
+and even after exiting, from now on your passwords are automatically loaded and
+saved without asking you for a master password again. </para>
 
 <para> To force jEdit to forget all passwords while it is running, use the
-<guimenuitem>Forget Remote Passwords</guimenuitem> command in 
+<guimenuitem>Forget Remote Passwords</guimenuitem> command in
 the <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para>
 
@@ -59,8 +60,10 @@ url="http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-o
 article</ulink>.
 </para>
 
-<para> In a future version, we will add an option to let FTP plugin use weak
-crypto when strong crypto is unavailable. </para> 
+<para> In a future version, I might add an option to let FTP plugin step down to
+weak crypto when strong crypto is unavailable. I just need to find out
+what algorithm/key strength to use that is guaranteed to work on all platforms.
+</para>
 
 </chapter>
 
@@ -93,13 +96,13 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 <para>
 Since an FTP server does not allow execution of arbitrary shell commands, the
 plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode.
-This command is reasonably standard, but not all FTP servers support it.  
+This command is reasonably standard, but not all FTP servers support it.
 </para>
 
 <para>
 If you notice that file permissions are not preserved after saving a file to an
 FTP server, check
-<guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem>  
+<guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem>
 for messages like the following, which indicate your FTP server does not support this command:
 </para>
 
@@ -109,14 +112,14 @@ for messages like the following, which indicate your FTP server does not support
 <para>
 A workaround is to disable two-stage save in the <guilabel>General</guilabel>
 pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global
-Options</guimenuitem> dialog box.  
+Options</guimenuitem> dialog box.
 </para>
 
 <para>
 A workaround to have a deal with "Auth Fail" and "Authentification not
-completed"  errors on some OpenSSH versions: 
+completed"  errors on some OpenSSH versions:
 
-Please open /etc/ssh/sshd_config file, find and comment this line: 
+Please open /etc/ssh/sshd_config file, find and comment this line:
 <programlisting>PasswordAuthentication yes</programlisting>
 
 Become:
@@ -133,8 +136,6 @@ Become:
 
 The FTP plugin also supports the SSH File Transfer Protocol, or SFTP.
 SFTP is much more secure than FTP because it encrypts all network traffic.
-However not all FTP servers support SFTP. SFTP support requires Java 1.4.
-
 </para>
 
 <para>
@@ -154,26 +155,7 @@ SFTP support is provided using the
 library, licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
 </para>
 
-<para> To execute remote commands on the same host as your SFTP connection,
-use the SshConsole plugin. </para>
-
 </chapter>
-
-<chapter id="silentfailures">
-<title> "Silent" Failures </title>
-
-<para> If a connection fails for any reason (auth fail, or timeout), it is not
-nice to pop up dialogs to show each error, especially if the requests made by
-the VFS can come in rapid succession. With previous versions of FTP, this could
-lead to "dialog-death", where it is impossible to do anything because dialogs
-pop up as soon as others are closed. Now, FTP logs its errors to the activity
-log instead. If you are expecting something to happen and it is not, check the
-"Errors" status bar widget, or the Activity Log dockable to find out what
-happened. </para> 
-
-
-</chapter>
-
 
 <chapter id="misc"><title>Miscellaneous features</title>
 
@@ -183,10 +165,10 @@ features:
 </para>
 
 <itemizedlist>
-<listitem><para> URLs of the form <literal>(s)ftp://user@host/path</literal> 
-can be pasted directly in a (docked) File System Browser, allowing you to 
-browse remote file systems more easily. In addition, these 
-paths can be bookmarked just as easily as local paths.  
+<listitem><para> URLs of the form <literal>(s)ftp://user@host/path</literal>
+can be pasted directly in a (docked) File System Browser, allowing you to
+browse remote file systems more easily. In addition, these
+paths can be bookmarked just as easily as local paths.
 </para> </listitem>
 
 <listitem><para>
@@ -197,8 +179,6 @@ manually using the <guimenuitem>Clear Remote Directory Cache</guimenuitem>
 command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para></listitem>
-
-
 
 <listitem><para>
 FTP and SFTP connections are kept open for 2 minutes before being closed.
@@ -219,6 +199,16 @@ You can close unused connections at any other time using the
 <chapter id="troubleshooting"><title>Troubleshooting</title>
 
 <itemizedlist>
+
+<listitem><para> If a connection fails for any reason (auth fail, or timeout),
+it is not nice to pop up dialogs to show each error, especially since the
+requests made by the VFS can come in rapid succession and great quantities. With
+previous versions of FTP, this could lead to "dialog-death", where it is
+impossible to do anything because dialogs pop up as soon as others are closed.
+Now, FTP logs its errors to the activity log instead. If you are expecting
+something to happen and it is not, check the "Errors" status bar widget, or the
+Activity Log dockable to find out what happened. </para></listitem>
+
 <listitem><para>Problems were reported on connecting to ftp servers
 from Windows 7. Probably there is a bug in Windows firewall.
 There are workarounds for that, see our bug tracker entry #3491410,
@@ -234,23 +224,23 @@ There are workarounds for that, see our bug tracker entry #3491410,
  <itemizedlist>
 
    	<listitem><para> <emphasis role="bold">Version 1.0.6</emphasis> By Alan Ezust
- 			Requires Java 1.6, CommonControls, and jEdit 4.5. 
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>
  		<itemizedlist>
- 		   <listitem><para> Better exception handling, messages, and documentation.
- 		   </para> </listitem>
+ 		   <listitem><para> Better exception handling and error messages. </para>
+ 		   </listitem>
  		</itemizedlist>
- 		
+
  		</listitem>
- 
+
    	<listitem><para> <emphasis role="bold">Version 1.0.5</emphasis> By Alan Ezust
- 			Requires Java 1.6, CommonControls, and jEdit 4.5. 
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>
- 		
+
  		<itemizedlist>
  		  <listitem><para> #3601720: Updated to use jsch 0.1.50. </para></listitem>
  		  <listitem><para> #2211433: Using AES256 to encrypt saved passwords and
- 		  passphrases with a master password.  
+ 		  passphrases with a master password.
  		  There is no way to read old saved passwords files. </para> </listitem>
  		  <listitem><para> #2761999: New plugin option to use keyfile instead of a master
  		  password. </para></listitem>
@@ -258,19 +248,19 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			dialogs. </para></listitem>
  			<listitem><para> New plugin option to enable compression over sftp connections.
  		  </para></listitem>
-    </itemizedlist> 
+    </itemizedlist>
     </listitem>
- 
+
    	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.3</emphasis> by Alan Ezust
- 			Requires Java 1.6+ and jEdit 4.5 
+ 			Requires Java 1.6+ and jEdit 4.5
  		</para>
  		<itemizedlist>
  			<listitem><para> Fix #2873889: Hypersearch over SFTP leaks connections. </para></listitem>
-    </itemizedlist> 
+    </itemizedlist>
     </listitem>
-    
+
    	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.2</emphasis> by Alan Ezust
@@ -281,11 +271,11 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			<listitem><para>Updates for jEdit 5.0 API </para></listitem>
  	  </itemizedlist>
  	  </listitem>
- 
+
  	<listitem>
  		<para>
  			<emphasis role="bold">Version 1.0.0</emphasis> by jarekczek and voituk
- 			Requires Java 1.6+ and jEdit 4.5.0 
+ 			Requires Java 1.6+ and jEdit 4.5.0
  		</para>
  		<itemizedlist>
  			<listitem><para>Re-ask for connection details if no key-file exists</para></listitem>
@@ -321,7 +311,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			<listitem><para>jsch lib updated to version 0.1.41 </para></listitem>
  		</itemizedlist>
  	</listitem>
- 
+
     <listitem>
     	<para>
     		<emphasis role="bold">Version 0.9.5</emphasis>
@@ -351,7 +341,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
       <listitem><para> New option: to use proxy for secure logins. (# 1873628 - Voituk Vadim) </para></listitem>
       <listitem><para> Remove spaces from hostname (1744059 - kpouer) </para></listitem>
     </itemizedlist> </listitem>
-    
+
    <listitem><para> <emphasis role="bold">Version 0.9.2</emphasis>
    Requires java 1.5 and jEdit 4.3pre5 </para>
    <itemizedlist>
@@ -367,7 +357,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
    <listitem><para> Bugfix: asking for passphrase more than once per session. </para></listitem>
    <listitem><para> Remote symlinks work. </para></listitem>
    </itemizedlist></listitem>
- 
+
    <listitem><para> <emphasis role="bold">Version 0.9</emphasis>
    Requires jEdit 4.3pre4</para>
    <itemizedlist>
@@ -383,7 +373,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
       <listitem><para> Fixed 1489889 - read only warnings in FTP protocol </para></listitem>
       </itemizedlist>
    </listitem>
-     
+
   <listitem>
     <para><emphasis role="bold">Version 0.7.7</emphasis>
    requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
@@ -393,18 +383,18 @@ There are workarounds for that, see our bug tracker entry #3491410,
   </itemizedlist>
   </listitem>
 
- 
+
  <listitem><para><emphasis role="bold">Version 0.7.6</emphasis>
    requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
 
   <itemizedlist>
-   <listitem><para>patch 1445269 "readonly error"/chmod exceptionBugs. This requires 
+   <listitem><para>patch 1445269 "readonly error"/chmod exceptionBugs. This requires
    jedit 4.3pre4. </para></listitem>
    <listitem><para>Bug 1229449 + small UI fixes </para></listitem>
   </itemizedlist>
   </listitem>
 
- 
+
   <listitem><para><emphasis role="bold">Version 0.7.3</emphasis>
    requires jEdit 4.2pre6 and JakartaCommons 0.3.</para>
 
@@ -412,7 +402,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
    <listitem><para>Added support for public/private key authentication.</para></listitem>
   </itemizedlist>
   </listitem>
-  
+
   <listitem><para><emphasis role="bold">Version 0.7.2</emphasis>
    requires jEdit 4.2pre6 and JakartaCommons 0.3.</para>
 
@@ -437,7 +427,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
   <listitem><para><emphasis role="bold">Version 0.7</emphasis>
    requires jEdit 4.2pre3 and JakartaCommons 0.3.</para>
-  
+
   <itemizedlist>
    <listitem><para>Updated to SSHTools 0.2.5 beta.</para></listitem>
    <listitem><para>Fixed file listing on VMS FTP servers.</para></listitem>
@@ -448,7 +438,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
   <listitem><para><emphasis role="bold">Version 0.6</emphasis>
    requires jEdit 4.2pre2 and JakartaCommons 0.3.</para>
-  
+
   <itemizedlist>
    <listitem><para>Updated to SSHTools 0.1.7 beta.</para></listitem>
    <listitem><para>Permissions are now preserved on SFTP servers.
