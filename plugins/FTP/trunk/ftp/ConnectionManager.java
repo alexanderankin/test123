@@ -315,15 +315,14 @@ public class ConnectionManager
 			return;
 		}
 
-
-		if (masterPassword == null)
-			if (!promptMasterPasswordCreate()) return;
-
 		if (!restoredPasswords) {
 			// TODO: load passwords, but *merge* (don't clobber) the one we are about to save either!
 			// If we don't do this, all previously saved passwords could be lost.
 		}
 
+		if (masterPassword == null)
+			if (!promptMasterPasswordCreate()) return;
+		
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
 		ByteArrayOutputStream baos = null;

@@ -32,16 +32,17 @@
 
 <para>
 Passwords and passphrases are remembered while jEdit is running so you don't
-have to re-type them. Optionally, passwords can also be securely stored to disk,
-encrypted with a master password or a keyfile. <guimenuitem>Plugin Options -
-FTP</guimenuitem> allows you enable or disable this feature. </para>
+have to re-type them. Optionally, you can securely <guimenuitem>Save passwords
+and passphrases to disk</guimenuitem> by checking the option from
+<guimenuitem>Plugin Options - FTP</guimenuitem>. </para>
 
 <para> If you want to <guimenuitem>Use a keyfile for encrypting
-passwords</guimenuitem> instead of a password, you can check this option, and
-choose the location to store the key file. With this option enabled, you will be
-asked for a master password only once, it is hashed and saved to this location,
-and even after exiting, from now on your passwords are automatically loaded and
-saved without asking you for a master password again. </para>
+passwords</guimenuitem> instead of a master password, you can check this option,
+and choose the location to store the key file. With this option enabled, you
+will be asked for a master password only once, it is hashed and saved to this
+location, and even after exiting, from now on your passwords are
+automatically loaded and stored without asking you for a master password again.
+</para> 
 
 <para> To force jEdit to forget all passwords while it is running, use the
 <guimenuitem>Forget Remote Passwords</guimenuitem> command in
@@ -58,11 +59,6 @@ Strong Encryption</ulink> into your JRE for this to work.
 For more info, see <ulink
 url="http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">this
 article</ulink>.
-</para>
-
-<para> In a future version, I might add an option to let FTP plugin step down to
-weak crypto when strong crypto is unavailable. I just need to find out
-what algorithm/key strength to use that is guaranteed to work on all platforms.
 </para>
 
 </chapter>
@@ -192,6 +188,11 @@ You can close unused connections at any other time using the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para></listitem>
 
+<listitem><para> You can disable or <guimenuitem>Enable compression over SFTP
+</guimenuitem> connections by checking this option from <guimenuitem>Plugin
+Options - FTP</guimenuitem>.
+</para></listitem>
+
 </itemizedlist>
 
 </chapter>
@@ -227,6 +228,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>
  		<itemizedlist>
+ 		   <listitem><para> Fix #3378762 SFTP VFS does not provide lastmodified
+ 		   dates </para></listitem>
  		   <listitem><para> Better exception handling and error messages. </para>
  		   </listitem>
  		</itemizedlist>

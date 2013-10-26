@@ -28,7 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -164,7 +167,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		try {
 			SftpATTRS attrs = sftp.stat(path);
 			String name = MiscUtilities.getFileName(path);
+			
 			returnValue = createDirectoryEntry(name, attrs);
+
 			returnValue.setPath(path);
 			returnValue.setDeletePath(path);
 		} catch(SftpException e) {
@@ -270,7 +275,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 
 	private ChannelSftp sftp;
 	private Session session;
-
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 	private int keyAttempts = 0;
 
 	// private int symLinkDepth = 0; // not used now
@@ -294,6 +299,13 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			//	int type, long length, boolean hidden, int permissions)
 		FtpVFS.FtpDirectoryEntry entry = new FtpVFS.FtpDirectoryEntry(
 			name, null, null, type, length, name.startsWith("."), permissions,null);
+		int mtime = attrs.getMTime();								
+		if (mtime != 0) {
+			Date date= new Date(((long)mtime)*1000);						
+			String modTime = sdf.format(date);
+			entry.setModifiedDate(modTime);
+		}
+
 		//boolean w = (permissions&00200)!=0;
 		//boolean r = (permissions&00400)!=0;
 		entry.setWriteable( (permissions&00200)!=0 );
