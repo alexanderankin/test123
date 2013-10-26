@@ -1,5 +1,5 @@
-/*
-* FtpVFS.java - Ftp VFS
+/*  
+*  FtpVFS.java - Ftp VFS {{{
 * :tabSize=4:indentSize=4:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
@@ -17,7 +17,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.}}}
 */
 
 package ftp;
@@ -40,9 +40,10 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.ThreadUtilities;
+//}}}
 
 /**
-* FTP VFS.
+* {{{ FTP VFS.
 * @author Slava Pestov
 * @author Vadim Voituk
 * @version $Id$
@@ -79,7 +80,7 @@ public class FtpVFS extends VFS
 	public static String[] getExtendedAttributes(boolean secure)
 	{
 		return secure 
-			? new String[] { EA_TYPE, EA_SIZE }
+			? new String[] { EA_TYPE, EA_SIZE, EA_MODIFIED }
 			: new String[] { EA_TYPE, EA_SIZE, EA_STATUS };
 	} //}}}
 	
@@ -256,6 +257,7 @@ public class FtpVFS extends VFS
 		
 		private String ownerUser;
 		private String ownerGroup;
+		private String modifiedDateStr;
 		
 		public FtpDirectoryEntry(String name, String path,
 			String deletePath, int type, long length,
@@ -273,11 +275,17 @@ public class FtpVFS extends VFS
 				return ownerUser;
 			if (name.equals(FtpVFS.EA_OWNER_GROUP))
 				return ownerGroup;
+			if(name.equals(FtpVFS.EA_MODIFIED))
+				return modifiedDateStr;
 			if(name.equals(EA_TYPE) || name.equals(EA_SIZE))
 				return super.getExtendedAttribute(name);
 			if(name.equals(EA_STATUS))
 				return permissionString;
 			return null;
+		}
+		
+		public void setModifiedDate(String modified) {
+			modifiedDateStr = modified;
 		}
 		
 		public void setOwner(String name, String group) {
@@ -438,7 +446,7 @@ public class FtpVFS extends VFS
 			session.chmod(address.getPath(),permissions);
 	} //}}}
 	
-	
+	//{{{ _saveComplete()
 	/**{@inheritDoc}*/
 	public void _saveComplete(java.lang.Object session, Buffer buffer,
 		java.lang.String path, java.awt.Component comp)
@@ -448,9 +456,9 @@ public class FtpVFS extends VFS
 		//GUIUtilities.message(comp, s, null);
 		//buffer.setStringProperty(FtpVFS.MD5SUM_PROPERTY, StandardUtilities.md5(buffer.getText()) );
 		//Log.log(Log.DEBUG, "TEST", buffer.getStringProperty(FtpVFS.MD5SUM_PROPERTY));
-	}
+	} //}}}
 	
-	
+	//{{{ _backup()
 	/**{@inheritDoc}*/
 	@Override
 	public void _backup(Object session, String path, Component comp) throws IOException {
@@ -484,8 +492,9 @@ public class FtpVFS extends VFS
 		}
 		
 		ThreadUtilities.runInBackground( new LocalFileSaveTask(f, buffer.getText(), buffer.getStringProperty(JEditBuffer.ENCODING)) );
-	}
+	}//}}}
 
+	//{{{ getBackupFilePath()
 	/**
 	 * @param path
 	 * @param backupDir
@@ -498,7 +507,7 @@ public class FtpVFS extends VFS
 		FtpAddress uri = new FtpAddress(path);
 		String backFile = "_"+uri.getScheme()+"_"+uri.getUser() + "@" + uri.getHost() + uri.getPath();
 		return MiscUtilities.concatPath(backupDir, backFile);
-	}
+	} //}}}
 	
 	//{{{ Private members
 	private boolean secure;
@@ -564,4 +573,4 @@ public class FtpVFS extends VFS
 	} //}}}
 	
 	//}}}
-}
+} //}}}
