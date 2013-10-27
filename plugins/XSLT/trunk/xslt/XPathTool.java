@@ -31,15 +31,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,19 +63,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 
-import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathAPI;
 import org.apache.xpath.objects.XObject;
-import org.apache.xml.utils.PrefixResolver;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
@@ -100,6 +88,8 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import xml.PathUtilities;
 
 /**
  * GUI for evaluating XPath expressions.
@@ -132,6 +122,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		this.view = view;
 
 		expressionPanel = new XPathExpressionPanel(view);
+		expressionPanel.addActionListener(this);
 		nsPanel = new KeyValuePanel("xpath.ns");
 		
 		inputSelectionPanel = new BufferOrFileVFSSelector(view,"xpath.source");
@@ -259,14 +250,10 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	}
 
 
-	public Document getCurrentDocument() throws Exception {
-		String path = new String();
-		InputSource inputSource = null;
-		Document document = null;
-		DocumentCache docCache = null;
+	public Document getCurrentDocument()  throws SAXException, ParserConfigurationException, IOException {
 
 		if (inputSelectionPanel.isFileSelected()) { //take input from file
-			path = inputSelectionPanel.getSourceFile();
+			String path = inputSelectionPanel.getSourceFile();
 			return DocumentCache.getFromCache(path);
 		} else { // take input from active buffer
 			return DocumentCache.getFromCache(view.getBuffer());
@@ -392,6 +379,8 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 				document = getCurrentDocument();
 			} catch (SAXException e) { // parse problem
 				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+			} catch (ParserConfigurationException e) { // parse problem
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
 			} catch (IOException e) { // parse problem
 				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
 			} catch (Exception e) { // catch-all
@@ -413,8 +402,9 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 						for(int i=0;i<attrs.getLength();i++) {
 							Node a  = attrs.item(i);
 							
-							if("xmlns".equals(a.getPrefix())) {
-								String prefix = a.getLocalName();
+							if("xmlns".equals(a.getPrefix())
+								|| (a.getPrefix() == null && "xmlns".equals(a.getLocalName()))) {
+								String prefix = a.getPrefix() == null ? "" : a.getLocalName();
 								String ns = a.getNodeValue();
 								List l;
 								if(bindings.containsKey(prefix)){
@@ -738,33 +728,33 @@ public class XPathTool extends JPanel implements ListSelectionListener,
  */
 
 class DocumentCache {
-	private Document document;
-	private long fileUpdateTime;
-	private Object sourceObject;
+	Document document;
+	Object sourceObject;
 	private static Map globalDocumentCache;
 	
 	static {
 		createCacheMap();
 	}
 
-	public static Document getFromCache(JEditBuffer sourceBuffer) throws Exception {
-		DocumentCache cacheObj = getCacheObject(sourceBuffer);
-		if (cacheObj.getDocument() == null) {
-			InputSource inputSource = xml.Resolver.instance().resolveEntity("",((Buffer)sourceBuffer).getPath());				
-			cacheObj.doParse(inputSource);
+	public static Document getFromCache(JEditBuffer sourceBuffer) throws SAXException,ParserConfigurationException,IOException {
+		DocumentCache cacheObj = (DocumentCache) globalDocumentCache.get(sourceBuffer);
+		if(cacheObj == null){
+			cacheObj = new BufferDocumentCache(sourceBuffer);
+			synchronized(globalDocumentCache){
+				globalDocumentCache.put(sourceBuffer,cacheObj);
+			}
 		}
 		return cacheObj.getDocument();
 	}
 	
-	public static Document getFromCache(String sourceFileName) throws Exception {
+	public static Document getFromCache(String sourceFileName) throws SAXException,ParserConfigurationException,IOException {
 		File sourceFile = new File(sourceFileName);
-		DocumentCache cacheObj = getCacheObject(sourceFile);
-		if (cacheObj.getDocument() == null
-				|| cacheObj.fileUpdateTime != sourceFile.lastModified()) {
-			
-			InputSource inputSource = new InputSource(sourceFileName);
-			cacheObj.doParse(inputSource);
-			cacheObj.fileUpdateTime = sourceFile.lastModified();
+		DocumentCache cacheObj = (DocumentCache) globalDocumentCache.get(sourceFile);
+		if(cacheObj == null){
+			cacheObj = new FileDocumentCache(sourceFile);
+			synchronized(globalDocumentCache){
+				globalDocumentCache.put(sourceFile,cacheObj);
+			}
 		}
 		return cacheObj.getDocument();
 	}
@@ -780,27 +770,60 @@ class DocumentCache {
 		cacheObj.processBusMessage(bufUpd);
 	}
 
-	private static DocumentCache getCacheObject(Object key) throws Exception {
-		DocumentCache cacheObj = (DocumentCache) globalDocumentCache.get(key);
-		if (cacheObj != null)
-			return cacheObj;
-		
-		Constructor ctor = 
-			DocumentCache.class.getDeclaredConstructor(new Class[]{key.getClass()});
-		cacheObj = (DocumentCache) ctor.newInstance(new Object[]{key});
-		globalDocumentCache.put(key, cacheObj);
-		return cacheObj;
-	}
-	
 	private static void createCacheMap() {
 		globalDocumentCache = Collections.synchronizedMap(new HashMap());		
 	}
 	
-	private DocumentCache(Object srcObject) {
+	DocumentCache(Object srcObject) {
 		this.sourceObject = srcObject;
 	}
-	private DocumentCache(Buffer sourceBuffer) {
-		this((Object)sourceBuffer);
+
+	synchronized void processBusMessage(BufferUpdate bufUpd) {
+		Object action = bufUpd.getWhat();
+		if (action.equals(BufferUpdate.CLOSED))
+			globalDocumentCache.remove(this);
+		else if (action.equals(BufferUpdate.LOADED))
+			document = null;
+	}
+
+	synchronized void doParse(InputSource src) throws ParserConfigurationException, IOException, SAXException {
+		document = XPathTool.parse(src);
+	}
+
+	public Document getDocument() throws SAXException,ParserConfigurationException,IOException {
+		return document;
+	}
+
+
+}
+
+class FileDocumentCache extends DocumentCache {
+	private long fileUpdateTime;
+
+	FileDocumentCache(File sourcefile) {
+		super((Object)sourcefile);
+		fileUpdateTime = sourcefile.lastModified();
+	}
+
+	@Override
+	public Document getDocument() throws SAXException,ParserConfigurationException,IOException{
+		File sourceFile = (File)sourceObject;
+		if (super.getDocument() == null
+				|| fileUpdateTime != sourceFile.lastModified()) {
+
+			InputSource inputSource = new InputSource(sourceFile.getName());
+			doParse(inputSource);
+			fileUpdateTime = sourceFile.lastModified();
+		}
+		return super.getDocument();
+	}
+
+}
+
+class BufferDocumentCache extends DocumentCache {
+
+	BufferDocumentCache(JEditBuffer sourceBuffer){
+		super(sourceBuffer);
 		sourceBuffer.addBufferListener(
 				new BufferAdapter() {
 					public void contentInserted(JEditBuffer buffer, 
@@ -819,30 +842,17 @@ class DocumentCache {
 								document = null;
 						}
 					}
-				});		
-	}
-	
-	private DocumentCache(File sourcefile) {
-		this((Object)sourcefile);
-		fileUpdateTime = sourcefile.lastModified();
-	}
-	
-	private synchronized void processBusMessage(BufferUpdate bufUpd) {
-		Object action = bufUpd.getWhat();
-		if (action.equals(BufferUpdate.CLOSED))
-			globalDocumentCache.remove(this);
-		else if (action.equals(BufferUpdate.LOADED))
-			document = null;
+		});
 	}
 
-	private synchronized void doParse(InputSource src) throws ParserConfigurationException, IOException, SAXException {
-		document = XPathTool.parse(src);
+	public Document getDocument() throws SAXException,ParserConfigurationException,IOException {
+		if (super.getDocument() == null) {
+			JEditBuffer sourceBuffer = (JEditBuffer)sourceObject;
+			String sourceURL = PathUtilities.pathToURL(((Buffer)sourceBuffer).getPath());
+			InputSource inputSource = xml.Resolver.instance().resolveEntity("",sourceURL);
+			doParse(inputSource);
+		}
+		return super.getDocument();
 	}
-	
-	public Document getDocument() {
-		return document;
-	}
-	
-	
 }
 
