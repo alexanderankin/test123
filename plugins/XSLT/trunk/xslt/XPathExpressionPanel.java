@@ -25,10 +25,13 @@ import java.awt.Container;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -63,6 +66,9 @@ import org.w3c.dom.NodeList;
 public class XPathExpressionPanel extends JPanel implements KeyListener,
 		DocumentListener, DefaultFocusComponent {
 
+	public static final String ACTION_EVALUATE = "xpath.evaluate";
+
+
 	private static final String LAST_EXPRESSION = "xpath.last-expression";
 	private static final String EXPRESSIONS = "xpath.expression";
 
@@ -73,6 +79,8 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
     private Window popup;
     private JList popupList;
     private View view;
+
+    private List<ActionListener> actionListeners;
 
 	public XPathExpressionPanel(View viewParm) {
 		super(new BorderLayout());
@@ -134,6 +142,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
             }
         });
 
+        actionListeners = new ArrayList<ActionListener>();
 	}
 
 	private void textAreaCaretUpdate(CaretEvent evt) {
@@ -186,7 +195,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
         	wildCardExpr = txt.concat("*");
         	elementSearchType = Node.ATTRIBUTE_NODE;	
         } else if (txt.endsWith("[")) {
-        	int bracketPos = txt.lastIndexOf("[");
+			int bracketPos = txt.lastIndexOf('[');
         	wildCardExpr = txt.substring(0, bracketPos).concat("/*");
         	elementSearchType = Node.ELEMENT_NODE;
         }
@@ -220,21 +229,13 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
 			popupList.setListData(namelist);     
 			popupList.setSelectedIndex(0);
 	        
-	        //Container cc = xpathTool.getParent();
-			Container cc = (Container)xpathTool;
-			JFrame jf = (JFrame)view;
-			while ((cc = cc.getParent()) != null) {
-				try {
-					jf = (JFrame)cc;
-				} catch (Exception ex) {
-				}
-			}
-	        popup = new Window(jf);
-	        popup.add(new JScrollPane(popupList));
-	        popup.pack();
+			Container cc = getTopLevelAncestor();
+			popup = new Window((Window)cc);
+			popup.add(new JScrollPane(popupList));
+			popup.pack();
 
-	        popup.setLocation(caretPos.x + 5, caretPos.y);
-            popup.setVisible(true);
+			popup.setLocation(caretPos.x + 5, caretPos.y);
+			popup.setVisible(true);
         }
 	}
 
@@ -305,6 +306,10 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
 			case KeyEvent.VK_PAGE_DOWN:
 				displayNextExpression();
 				break;
+			case KeyEvent.VK_ENTER:
+				if(e.isControlDown()){
+					fireEvaluate();
+				}
 		}
 	}
 
@@ -342,6 +347,21 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
 	public void focusOnDefaultComponent() {
 		textArea.selectAll();
 		textArea.requestFocus();
+	}
+
+	private void fireEvaluate(){
+		ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, ACTION_EVALUATE);
+		for(ActionListener al: actionListeners){
+			al.actionPerformed(e);
+		}
+	}
+
+	public void addActionListener(ActionListener listener){
+		actionListeners.add(listener);
+	}
+
+	public void removeActionListener(ActionListener listener){
+		actionListeners.remove(listener);
 	}
 
 	/**

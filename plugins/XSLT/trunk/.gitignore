@@ -1,0 +1,6 @@
+.project
+.classpath
+build.properties
+build/
+test/test_reports
+*~

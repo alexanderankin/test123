@@ -325,6 +325,10 @@
           The XPath Tool will have to be docked in order for this binding
           to work.</para>
         </listitem>
+        <listitem>
+        	<para>Press Ctrl-Enter when in the XPath expression text area
+        	to invoke the "Evaluate XPath" action.</para>
+        </listitem>
       </itemizedlist>
     </para>
     <para>
@@ -453,6 +457,13 @@
 
   <appendix id="changelog">
     <title>Change log</title>
+    <para>
+      <emphasis role="bold">Changes from 0.8.0 to 0.8.1</emphasis>
+      <itemizedlist>
+        <listitem><para>XPath tool: press Ctrl+Enter from expression panel to trigger evaluating the XPath expression.</para></listitem>
+        <listitem><para>XPath tool: also grab default namespace from input document (xmlns=...).</para></listitem>
+      </itemizedlist>
+    </para>
     <para>
       <emphasis role="bold">Changes from 0.7.1 to 0.8.0</emphasis>
       <itemizedlist>
