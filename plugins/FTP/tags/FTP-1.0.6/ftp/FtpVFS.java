@@ -80,8 +80,8 @@ public class FtpVFS extends VFS
 	public static String[] getExtendedAttributes(boolean secure)
 	{
 		return secure 
-			? new String[] { EA_TYPE, EA_SIZE, EA_MODIFIED }
-			: new String[] { EA_TYPE, EA_SIZE, EA_STATUS };
+			? new String[] { EA_SIZE, EA_MODIFIED,  EA_TYPE }
+			: new String[] { EA_SIZE, EA_STATUS, EA_TYPE };
 	} //}}}
 	
 	//{{{ getDefaultPort() method
