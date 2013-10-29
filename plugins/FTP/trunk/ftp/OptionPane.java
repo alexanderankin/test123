@@ -38,7 +38,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		keyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
 		addComponent(useKeyFile , keyFile);
 		
-		keyFile.getTextField().setEnabled(useKeyFile.isSelected());
+		keyFile.setEnabled(useKeyFile.isSelected());
 		useKeyFile.setEnabled(storePasswords.isSelected());
 		
 		
@@ -48,14 +48,9 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		
 	}
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == storePasswords) {
-			boolean sel = storePasswords.isSelected();
-			useKeyFile.setEnabled(sel);
-			keyFile.getTextField().setEnabled(sel);			
-		}
-		if (e.getSource() == useKeyFile) {
-			keyFile.getTextField().setEnabled(useKeyFile.isSelected());
-		}
+		if (e.getSource() == storePasswords) 
+			useKeyFile.setEnabled(storePasswords.isSelected());
+		keyFile.setEnabled(useKeyFile.isSelected());		
 	}
 	
 	protected void _save() {		
