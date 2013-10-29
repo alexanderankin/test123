@@ -37,6 +37,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -275,7 +276,6 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 
 	private ChannelSftp sftp;
 	private Session session;
-	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 	private int keyAttempts = 0;
 
 	// private int symLinkDepth = 0; // not used now
@@ -302,7 +302,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		int mtime = attrs.getMTime();								
 		if (mtime != 0) {
 			Date date= new Date(((long)mtime)*1000);						
-			String modTime = sdf.format(date);
+			String modTime = FileVFS.LocalFile.DATE_FORMAT.format(date);
 			entry.setModifiedDate(modTime);
 		}
 

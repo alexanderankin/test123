@@ -111,16 +111,6 @@ pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global
 Options</guimenuitem> dialog box.
 </para>
 
-<para>
-A workaround to have a deal with "Auth Fail" and "Authentification not
-completed"  errors on some OpenSSH versions:
-
-Please open /etc/ssh/sshd_config file, find and comment this line:
-<programlisting>PasswordAuthentication yes</programlisting>
-
-Become:
-<programlisting>#PasswordAuthentication no</programlisting>
-</para>
 
 </section>
 
@@ -210,6 +200,11 @@ Now, FTP logs its errors to the activity log instead. If you are expecting
 something to happen and it is not, check the "Errors" status bar widget, or the
 Activity Log dockable to find out what happened. </para></listitem>
 
+<listitem><para> If for some reason the FTP plugin is in a non-working state and
+you are unable to browse files, you can reload the FTP Plugin via the plugin
+manager or the Activator plugin Reloader pane, and it should help you avoid
+restarting jEdit. </para></listitem> 
+
 <listitem><para>Problems were reported on connecting to ftp servers
 from Windows 7. Probably there is a bug in Windows firewall.
 There are workarounds for that, see our bug tracker entry #3491410,
@@ -230,7 +225,8 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		<itemizedlist>
  		   <listitem><para> Fix #3378762 SFTP VFS does not provide lastmodified
  		   dates </para></listitem>
- 		   <listitem><para> Better exception handling and error messages. </para>
+ 		   <listitem><para> Better master password dialog, exception handling and
+ 		   error messages. </para> 
  		   </listitem>
  		</itemizedlist>
 
