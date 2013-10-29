@@ -24,23 +24,19 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		super("ftp");
 	}
 	protected void _init() {						
-		storePasswords = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"),
-			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
+		storePasswords = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"), jEdit.getBooleanProperty("vfs.ftp.storePassword"));
 		storePasswords.addActionListener(this);
 		addComponent(storePasswords);
 		
-		useKeyFile = new JCheckBox(jEdit.getProperty("options.ftp.useKeyFile"));
+		useKeyFile = new JCheckBox(jEdit.getProperty("options.ftp.useKeyFile"), jEdit.getBooleanProperty("ftp.useKeyFile"));
 		useKeyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
-		useKeyFile.setSelected(jEdit.getBooleanProperty("ftp.useKeyFile"));
 		useKeyFile.addActionListener(this);
 				
 		keyFile = new FileTextField(jEdit.getProperty("ftp.passKeyFile"), false);
 		keyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
 		addComponent(useKeyFile , keyFile);
 		
-		keyFile.setEnabled(useKeyFile.isSelected());
-		useKeyFile.setEnabled(storePasswords.isSelected());
-		
+		actionPerformed(null);
 		
 		enableCompression = new JCheckBox(jEdit.getProperty("options.sftp.enableCompression"),
 				jEdit.getBooleanProperty("vfs.sftp.compression"));
@@ -48,9 +44,8 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		
 	}
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == storePasswords) 
-			useKeyFile.setEnabled(storePasswords.isSelected());
-		keyFile.setEnabled(useKeyFile.isSelected());		
+		useKeyFile.setEnabled(storePasswords.isSelected());
+		keyFile.setEnabled(useKeyFile.isSelected() && storePasswords.isSelected());		
 	}
 	
 	protected void _save() {		
