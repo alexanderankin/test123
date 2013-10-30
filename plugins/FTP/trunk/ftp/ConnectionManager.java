@@ -283,6 +283,7 @@ public class ConnectionManager
 			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
 			Log.log(Log.ERROR, ike, message);
 			jEdit.getActiveView().getStatus().setMessage(message);
+			jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
 			return;
 		}
 		catch(Exception e)	{
@@ -351,6 +352,7 @@ public class ConnectionManager
 			saveKeyFile();
 			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
 			Log.log(Log.ERROR, ConnectionManager.class, message, ike);
+			jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
 			jEdit.getActiveView().getStatus().setMessage(message);
 		}
 		catch(Exception e)
