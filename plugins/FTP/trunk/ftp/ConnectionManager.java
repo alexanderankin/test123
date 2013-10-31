@@ -244,11 +244,15 @@ public class ConnectionManager
 		while (!restoredPasswords) try
 		{
 			if (masterPassword == null) {
-				if ( (i ==0 ) && !promptMasterPassword()) return;
-				if ((i > 0 ) && !promptMasterPassword(
-					jEdit.getProperty("vfs.sftp.failed-authentication.title"),
-					jEdit.getProperty("login.masterpassword.message")))
+				if ( (i ==0 ) && !promptMasterPassword()) {
+					jEdit.setBooleanProperty("vfs.ftp.storePassword"), false);
 					return;
+				}
+				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"),
+					jEdit.getProperty("login.masterpassword.message"))) {
+						jEdit.setBooleanProperty("vfs.ftp.storePassword"), false);
+						return;
+					}
 			}
 
 			i++;
@@ -462,7 +466,6 @@ public class ConnectionManager
 	} //}}}
 
 
-
 	//{{{ getConnection() method
 	public static Connection getConnection(ConnectionInfo info) throws IOException {
 		Connection connect = null;
@@ -489,8 +492,8 @@ public class ConnectionManager
 				} catch (IOException e) {
 					Log.log(Log.DEBUG, ConnectionManager.class, "catch " + e.getClass().getName() + " on "+ info);
 					info.password   = null; // necessary to show login dialog again instead of using saved password again
-					//jEdit.setProperty("ftp.keys."+info.host+"."+info.user, null);
-					throw e;
+					jEdit.unsetProperty("ftp.keys."+info.host+"."+info.user);
+					// throw e;
 				}
 				connections.add(connect);
 			} else {

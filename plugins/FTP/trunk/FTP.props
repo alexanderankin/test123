@@ -3,7 +3,7 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov, Nicholas O'Leary, Vadim Voituk, Alan Ezust
-plugin.ftp.FtpPlugin.version=1.0.6
+plugin.ftp.FtpPlugin.version=1.0.7
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.05.99.00
@@ -61,7 +61,7 @@ login.storePassword=Save Password
 login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
-ftp.bad-master-password=FTP Plugin: Bad Master Password (failed to restore saved passwords)
+ftp.bad-master-password=Bad Master Password (failed to restore saved passwords)
 ftp.jce.strongkeys.missing=JCE unlimited key strength not available. Unable to encrypt passwords. 
 # Settings
 vfs.ftp.passive=true
