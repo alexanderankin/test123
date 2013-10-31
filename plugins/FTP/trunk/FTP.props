@@ -62,7 +62,8 @@ login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
 ftp.bad-master-password=Bad Master Password (failed to restore saved passwords)
-ftp.jce.strongkeys.missing=JCE unlimited key strength not available. Unable to encrypt passwords. 
+ftp.jce.strongkeys.missing=JCE unlimited key strength not available. Unable to encrypt passwords.
+ftp.cancel-master-password=Password Saving disabled. Perhaps you need to forget remote passwords? Saved password files from FTP 1.0.3 and earlier are not supported. 
 # Settings
 vfs.ftp.passive=true
 vfs.ftp.binary=true
