@@ -245,12 +245,12 @@ public class ConnectionManager
 		{
 			if (masterPassword == null) {
 				if ( (i ==0 ) && !promptMasterPassword()) {
-					jEdit.setBooleanProperty("vfs.ftp.storePassword"), false);
+					jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
 					return;
 				}
 				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"),
 					jEdit.getProperty("login.masterpassword.message"))) {
-						jEdit.setBooleanProperty("vfs.ftp.storePassword"), false);
+						jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
 						return;
 					}
 			}
