@@ -31,10 +31,11 @@
 <title> Saving Passwords </title>
 
 <para>
-Passwords and passphrases are remembered while jEdit is running so you don't
+Passwords and passphrases are always remembered while jEdit is running so you don't
 have to re-type them. Optionally, you can securely <guimenuitem>Save passwords
 and passphrases to disk</guimenuitem> by checking the option from
-<guimenuitem>Plugin Options - FTP</guimenuitem>. </para>
+<guimenuitem>Plugin Options - FTP</guimenuitem>. When this option is checked,
+the user is asked for a master password to encrypting the passwords file. </para>
 
 <para> If you want to <guimenuitem>Use a keyfile for encrypting
 passwords</guimenuitem> instead of a master password, you can check this option,
@@ -58,7 +59,8 @@ url="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-4321
 Strong Encryption</ulink> into your JRE for this to work.
 For more info, see <ulink
 url="http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">this
-article</ulink>.
+article</ulink>. Saving passwords will otherwise be automatically disabled on these
+platforms. 
 </para>
 
 </chapter>
