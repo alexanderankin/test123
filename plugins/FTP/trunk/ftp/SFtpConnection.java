@@ -133,8 +133,8 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 //			sftp.setXForwarding(true);
 			home=sftp.getHome();
 			keyAttempts = 0;
-		} catch(Exception e) {
-			Log.log(Log.ERROR, this, e);
+		} catch(Exception e) {			
+			throw new IOException(e.toString());
 		}
 	}
 
