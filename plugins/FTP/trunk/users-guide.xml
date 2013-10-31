@@ -220,7 +220,17 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-
+ 
+   	<listitem><para> <emphasis role="bold">Version 1.0.7</emphasis> By Alan Ezust
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5.
+ 		</para>
+ 		<itemizedlist>
+ 		   <listitem><para> Fix #3615163: No longer repeatedly asking for master
+ 		   password after the user hits "cancel". </para></listitem>
+ 		</itemizedlist>
+ 		</listitem>
+ 
+ 
    	<listitem><para> <emphasis role="bold">Version 1.0.6</emphasis> By Alan Ezust
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>

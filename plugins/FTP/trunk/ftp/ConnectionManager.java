@@ -199,8 +199,13 @@ public class ConnectionManager
 
 			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(), title, message);
 
-			if (!pd.isOK())
+			if (!pd.isOK()) {
+				jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
+				String msg2 = jEdit.getProperty("ftp.cancel-master-password");
+				Log.log(Log.MESSAGE, ConnectionManager.class, msg2);
+				jEdit.getActiveView().getStatus().setMessage(msg2);
 				return false;
+			}
 			String masterPw = new String(pd.getPassword());
 			if (masterPw.isEmpty()) return false;
 
@@ -244,15 +249,10 @@ public class ConnectionManager
 		while (!restoredPasswords) try
 		{
 			if (masterPassword == null) {
-				if ( (i ==0 ) && !promptMasterPassword()) {
-					jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
-					return;
-				}
+				if ( (i ==0 ) && !promptMasterPassword()) 
+					return;	
 				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"),
-					jEdit.getProperty("login.masterpassword.message"))) {
-						jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
-						return;
-					}
+					jEdit.getProperty("login.masterpassword.message"))) return;	
 			}
 
 			i++;
