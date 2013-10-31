@@ -120,6 +120,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
 				session.setConfig("compression_level", "9");
 			}
+			
+			// Don't lock user when exceeding bad password attempts on some servers
+			session.setConfig("MaxAuthTries", "1");
 
 			session.connect(ConnectionManager.connectionTimeout);
 

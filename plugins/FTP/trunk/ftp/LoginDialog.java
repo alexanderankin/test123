@@ -87,7 +87,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		
 		
 		content.add(useProxy);
-		storePassword = new JCheckBox(jEdit.getProperty("login.storePassword"),
+		storePassword = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"),
 			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
 		content.add(storePassword);
 		
