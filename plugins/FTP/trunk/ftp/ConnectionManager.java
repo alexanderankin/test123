@@ -36,11 +36,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+
+import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+
 import javax.crypto.spec.SecretKeySpec;
 
 import org.gjt.sp.jedit.GUIUtilities;
@@ -68,7 +76,8 @@ public class ConnectionManager
 	private static HashMap<String, String> passwords;
 	private static HashMap<String, String> passphrases;
 	/** a 256 byte SHA1 hash of the master password, actually */
-	static byte[] masterPassword = null;
+	static byte[] masterKey = null;
+	private static String masterPassword;
 	static int connectionTimeout = 60000;
 	private static File passwordFile = null;
 	public static JSch client = null;
@@ -82,7 +91,7 @@ public class ConnectionManager
 				passwordFile.delete();
 		}
 		catch (Exception e) {}
-		masterPassword = null;
+		masterKey = null;
 		saveKeyFile();		// clear out the key file, actually
 		restoredPasswords = false;
 		passwords.clear();
@@ -137,15 +146,15 @@ public class ConnectionManager
 	/** If we have a keyFile, load the hash of the master password from a file
 	    instead of prompting the user for it. */
 	protected static void getKeyFile() {
+		
 		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
 		try {
 			File f = new File(jEdit.getProperty("ftp.passKeyFile"));
-
 			if (!f.exists()) return;
 			int length = (int) f.length();
-			masterPassword = new byte[length];
+			masterKey = new byte[length];
 			FileInputStream fis = new FileInputStream(f);
-			fis.read(masterPassword);
+			fis.read(masterKey);
 			fis.close();
 		}
 		catch (Exception e) {
@@ -159,12 +168,12 @@ public class ConnectionManager
 		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
 		try {
 			File f = new File(jEdit.getProperty("ftp.passKeyFile"));
-			if (masterPassword == null) {
+			if (masterKey == null) {
 				f.delete();
 				return;
 			}
 			FileOutputStream fos = new FileOutputStream(f);
-			fos.write(masterPassword);
+			fos.write(masterKey);
 			fos.close();
 		}
 		catch (Exception e) {
@@ -192,7 +201,7 @@ public class ConnectionManager
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return false;
 
 		getKeyFile();
-		if (masterPassword != null) return true;
+		if (masterKey != null) return true;
 
 		// Show a dialog from the active view asking user for master password
 		try {
@@ -206,15 +215,13 @@ public class ConnectionManager
 				jEdit.getActiveView().getStatus().setMessage(msg2);
 				return false;
 			}
-			String masterPw = new String(pd.getPassword());
-			if (masterPw.isEmpty()) return false;
+			masterPassword = new String(pd.getPassword());
+			if (masterPassword.isEmpty()) return false;
 
-			// make a SHA256 digest of it
+			// make a SHA256 digest of it (32 bytes)
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] buffer = masterPw.getBytes("utf-8");
-			masterPassword = digest.digest(buffer);
+			masterKey = digest.digest(masterPassword.getBytes("utf-8"));
 			saveKeyFile();
-			String masterPwStr = new String(masterPassword, "utf-8");
 			// Log.log(Log.MESSAGE, ConnectionManager.class, "masterPasswordhash: " + masterPwStr);
 		}
 		catch (Exception e) {
@@ -248,7 +255,7 @@ public class ConnectionManager
 		int i=0;
 		while (!restoredPasswords) try
 		{
-			if (masterPassword == null) {
+			if (masterKey == null) {
 				if ( (i ==0 ) && !promptMasterPassword()) 
 					return;	
 				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"),
@@ -262,10 +269,8 @@ public class ConnectionManager
 			while(read<passwordFileLength) {
 				read+=fis.read(buffer,read,passwordFileLength-read);
 			}
-			// decrypt using AES256
-			Cipher c = Cipher.getInstance("AES");
-			SecretKeySpec k = getKeySpec(masterPassword);
-			c.init(Cipher.DECRYPT_MODE, k);
+			
+			Cipher c = getCipher(Cipher.DECRYPT_MODE);
 			byte[] objectBuffer = c.doFinal(buffer);
 
 			ois = new ObjectInputStream(new BufferedInputStream(
@@ -277,18 +282,10 @@ public class ConnectionManager
 			restoredPasswords = true;
 		}
 		catch (BadPaddingException bpe) {
-			masterPassword = null;
+			masterKey = null;
 			saveKeyFile();  // wipes out the key file in case invalid pw was saved
 //			String message = jEdit.getProperty("ftp.bad-master-password");
 //			jEdit.getActiveView().getStatus().setMessage(message);
-		}
-		catch (InvalidKeyException ike) {
-			masterPassword = null;
-			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
-			Log.log(Log.ERROR, ike, message);
-			jEdit.getActiveView().getStatus().setMessage(message);
-			jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
-			return;
 		}
 		catch(Exception e)	{
 			Log.log(Log.ERROR, ConnectionManager.class, "loadPasswords()", e);
@@ -302,14 +299,35 @@ public class ConnectionManager
 
 	} //}}}
 
-	protected static SecretKeySpec getKeySpec(byte[] byteArray) throws Exception {
-		SecretKeySpec k = null;
-		Cipher c = Cipher.getInstance("AES");
-		k = new SecretKeySpec(byteArray, "AES");
-	//	c.init(Cipher.DECRYPT_MODE, k);
-		return k;
+	protected static Cipher getCipher(int opmode) throws Exception {
+		// First try AES256
+		String TRANSFORMATION = "AES";
+		try {
+			Cipher c = Cipher.getInstance(TRANSFORMATION);
+			SecretKeySpec k = new SecretKeySpec(masterKey, TRANSFORMATION);
+			c.init(opmode, k);
+			return c;
+		}
+		catch (Exception ike) {
+			if (jEdit.getBooleanProperty("ftp.disableWeakCrypto")) {
+				String msg = jEdit.getProperty("ftp.jce.strongkeys.missing");
+				Log.log(Log.ERROR, ConnectionManager.class, msg, ike);
+				jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
+				jEdit.getActiveView().getStatus().setMessage(msg);
+				return null;
+			}
+		}
+		String msg = jEdit.getProperty("ftp.using.weak-crypto");	
+		Log.log(Log.WARNING, ConnectionManager.class, msg);		
+		// TODO: use something better than DES here? 
+		TRANSFORMATION = "DES";
+		DESKeySpec keySpec = new DESKeySpec(masterKey);
+		SecretKeyFactory keyFac = SecretKeyFactory.getInstance(TRANSFORMATION);
+		SecretKey k = keyFac.generateSecret(keySpec);
+		Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+		cipher.init(opmode, k);
+		return cipher;
 	}
-
 	//{{{ savePasswords() method
 
 	protected static void savePasswords() {
@@ -320,12 +338,7 @@ public class ConnectionManager
 			return;
 		}
 
-		if (!restoredPasswords) {
-			// TODO: load passwords, but *merge* (don't clobber) the one we are about to save either!
-			// If we don't do this, all previously saved passwords could be lost.
-		}
-
-		if (masterPassword == null)
+		if (masterKey == null)
 			if (!promptMasterPasswordCreate()) return;
 		
 		ObjectOutputStream oos = null;
@@ -338,11 +351,8 @@ public class ConnectionManager
 			oos.writeObject(passwords);
 			oos.writeObject(passphrases);
 			byte[] objectBuffer = baos.toByteArray();
-
-			// Encrypt using AES256
-			Cipher c = Cipher.getInstance("AES");
-			SecretKeySpec k = getKeySpec(masterPassword);
-			c.init(Cipher.ENCRYPT_MODE, k);
+			
+			Cipher c = getCipher(Cipher.ENCRYPT_MODE);
 			objectBuffer = c.doFinal(objectBuffer);
 
 			int newLength = objectBuffer.length;
@@ -350,14 +360,6 @@ public class ConnectionManager
 			fos.write(objectBuffer,0,newLength);
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passwords saved: " + passwords.size());
 			Log.log(Log.DEBUG, ConnectionManager.class, "Passphrases saved: " + passphrases.size());
-		}
-		catch (InvalidKeyException ike) {
-			masterPassword = null;
-			saveKeyFile();
-			String message = jEdit.getProperty("ftp.jce.strongkeys.missing");
-			Log.log(Log.ERROR, ConnectionManager.class, message, ike);
-			jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
-			jEdit.getActiveView().getStatus().setMessage(message);
 		}
 		catch(Exception e)
 		{

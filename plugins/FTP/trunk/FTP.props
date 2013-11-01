@@ -31,6 +31,7 @@ options.ftp.savePasswords=Save passwords and passphrases to disk
 options.ftp.useKeyFile=Use Key File for encrypting passwords
 options.ftp.useKeyFile.tooltip=Saves an AES256 hash of the master password here
 options.sftp.enableCompression=Enable compression over SFTP
+options.ftp.disableWeakCrypto=Disable weak encryption when saving passwords
 
 # Actions
 open-ftp.label=Open from FTP Server...
@@ -62,8 +63,10 @@ login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
 ftp.bad-master-password=Bad Master Password (failed to restore saved passwords)
-ftp.jce.strongkeys.missing=JCE unlimited key strength not available. Unable to encrypt passwords.
-ftp.cancel-master-password=Saving Passwords disabled. Perhaps you need to "Forget Remote Passwords"? Old password files from FTP 1.0.3 and earlier are not supported.
+ftp.jce.strongkeys.missing=JCE unlimited key strength not available. Password saving disabled. 
+ftp.cancel-master-password=Saving Passwords disabled. Perhaps you need to "Forget Remote Passwords"? Old passwords from FTP 1.0.3 and earlier are not readable.
+ftp.using.weak-crypto=Strong Crypto unavailable. Falling back to weak crypto for saving passwords. 
+
 # Settings
 vfs.ftp.passive=true
 vfs.ftp.binary=true
