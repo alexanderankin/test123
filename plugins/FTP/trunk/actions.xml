@@ -15,6 +15,12 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="ftp-cleanup">
+	   <CODE>
+	      ftp.connectionManager.cleanup();
+	   </CODE>
+	</ACTION>
+	
 	<ACTION NAME="close-connections">
 		<CODE>
 			ftp.ConnectionManager.closeUnusedConnections();

@@ -1,6 +1,6 @@
 /*
 * SFtpConnection.java - A connection to an SSH FTP server
-* Copyright (C) 2002, 2007 Slava Pestov, Nicholas O'Leary
+* Copyright (C) 2002-2013 Slava Pestov, Nicholas O'Leary, Alan Ezust
 *
 * :tabSize=4:indentSize=4:noTabs=false:
 * :folding=explicit:collapseFolds=1:
@@ -20,6 +20,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+//{{{ Imports
 package ftp;
 
 import java.awt.EventQueue;
@@ -54,7 +55,9 @@ import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
 
 import ftp.FtpVFS.FtpDirectoryEntry;
+//}}}
 
+//{{{ SFtpConnection class
 /**
  * Secure FTP connection class
  * @author Slava Pestov
@@ -62,7 +65,15 @@ import ftp.FtpVFS.FtpDirectoryEntry;
  */
 public class SFtpConnection extends Connection implements UserInfo, UIKeyboardInteractive
 {
-
+	//{{{ data members
+	private ChannelSftp sftp;
+	private Session session;
+	private int keyAttempts = 0;
+	private String passphrase = null;
+	
+	//}}}
+	
+	//{{{ ctor
 	public SFtpConnection(final ConnectionInfo info) throws IOException
 	{
 		super(info);
@@ -85,7 +96,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				}
 			}
 
-			// {{{ Detect proxy settings if need
+			// {{{ Detect proxy settings if needed
 			Proxy proxy = null;
 			if (jEdit.getBooleanProperty("vfs.ftp.useProxy")) {
 
@@ -136,8 +147,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		} catch(Exception e) {			
 			throw new IOException(e.toString());
 		}
-	}
+	}//}}}
 
+	//{{{ listDirectory()
 	@SuppressWarnings("unchecked")
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
@@ -163,8 +175,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		FtpVFS.FtpDirectoryEntry[] result = listing.toArray(
 			new FtpVFS.FtpDirectoryEntry[listing.size()]);
 		return result;
-	}
+	}//}}}
 
+	//{{{ getDirectoryEntry()
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException
 	{
 		FtpVFS.FtpDirectoryEntry returnValue = null;
@@ -179,8 +192,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		} catch(SftpException e) {
 		}
 		return returnValue;
-	}
-
+	}//}}}
+	
+	//{{{ removeFile()
 	boolean removeFile(String path) throws IOException
 	{
 		try
@@ -192,8 +206,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		{
 			return false;
 		}
-	}
-
+	}//}}}
+	
+	//{{{ removeDirectory()
 	boolean removeDirectory(String path) throws IOException
 	{
 		try
@@ -205,8 +220,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		{
 			return false;
 		}
-	}
+	}//}}}
 
+	//{{{ rename()
 	boolean rename(String from, String to) throws IOException
 	{
 		try
@@ -218,7 +234,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		{
 			return false;
 		}
-	}
+	}//}}}
 
 	boolean makeDirectory(String path) throws IOException
 	{
@@ -277,10 +293,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		session.disconnect();
 	}
 
-	private ChannelSftp sftp;
-	private Session session;
-	private int keyAttempts = 0;
-
+	
 	// private int symLinkDepth = 0; // not used now
 	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String name, SftpATTRS attrs)
 	{
@@ -316,7 +329,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		return entry;
 	}
 
-	private String passphrase = null;
+	
 
 	public String getPassphrase()
 	{
@@ -328,6 +341,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		return info.password;
 	}
 
+	//{{{ prompting functions
 	public boolean promptPassword(String message){ return true;}
 
 	public boolean promptPassphrase(String message)
@@ -395,6 +409,6 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		String[] response = new String[1];
 		response[0] = getPassword();
 		return response;
-	}
+	}//}}}
 
-}
+}//}}}

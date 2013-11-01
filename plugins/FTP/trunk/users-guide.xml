@@ -30,29 +30,29 @@
 <chapter id="SavingPasswords">
 <title> Saving Passwords </title>
 
-<para>First, if you have an old password file (from FTP 1.0.3 or earlier), they
-are not supported, and you need to delete it. To force jEdit to forget all
+<para>First, if you have an old password file (from FTP 1.0.3 or earlier), it is
+no longer supported, and you need to delete it. To force jEdit to forget all
 passwords while it is running, use the <guimenuitem>Forget Remote
 Passwords</guimenuitem> command in the
-<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu. </para> 
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu. </para>
 
 <para> Passwords and passphrases are always remembered while jEdit is running so
 you don't have to re-type them. Optionally, you can securely <guimenuitem>Save
 passwords and passphrases to disk</guimenuitem> by checking this option from
 <guimenuitem>Plugin Options - FTP</guimenuitem>. When this option is checked,
-the user is asked for a master password once, for reading an existing password
-file, or encrypting a new passwords file. </para>
+the user is asked once for a master password, for reading an existing password
+file, or encrypting a new password file. </para>
 
-<para> If you cancel entering a master passphrase for any reason, then the
-saving passwords feature is un-checked until you check it again. </para>
+<para> If you cancel entering a master password for any reason, then 
+saving passwords is disabled until you check it again. </para>
 
 <para> If you want to <guimenuitem>Use a keyfile for encrypting
 passwords</guimenuitem> instead of a master password, you can check this option,
 and choose the location to store the key file. With this option enabled, you
 will be asked for a master password only once, it is hashed and saved to this
-location, and from now on your passwords are automatically loaded and stored
-without asking you for a master password again. This is less secure than using a
-master password, but provides the convenience of previous versions of this
+location, and from then on your passwords are automatically loaded and stored
+without asking for a master password again. This is less secure than using a
+master password, but provides convenience similar to previous versions of this
 plugin. </para> 
 
 <para> When available, the FTP plugin uses AES-256 encryption to save passwords.
@@ -206,10 +206,10 @@ something to happen and it is not, check the "Errors" status bar widget, or the
 Activity Log dockable to find out what happened. </para></listitem>
 
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
-you are unable to do anything, you can reload the FTP Plugin with just one
-click, from the <guimenuitem>Reloader</guimenuitem> dockable of the <ulink
-url="jeditresource:/Activator.jar!/docs/index.html">Activator plugin</ulink> ,
-to avoid restarting jEdit. </para></listitem>
+you are unable to do anything, you can reset the plugin by invoking the
+<guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem> without forgetting
+saved passwords.
+</para></listitem>
 
 <listitem><para>Problems were reported on connecting to ftp servers
 from Windows 7. Probably there is a bug in Windows firewall.
@@ -229,6 +229,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>
  		<itemizedlist>
+ 		   <listitem><para> New action: Reset FTP Plugin </para></listitem>
  		   <listitem><para> Fix #3615141, InvalidKeyException, and fallback to DES
  		   when strong encryption is unavailable. Also, a new plugin option to
  		   disable this behavior. </para></listitem> 
