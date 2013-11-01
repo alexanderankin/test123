@@ -65,7 +65,7 @@ import com.jcraft.jsch.JSch;
 
 public class ConnectionManager
 {
-	// {{{ members
+	// {{{ static data
 	protected static Object lock;
 	protected static boolean restoredPasswords = false;
 	protected static ArrayList<Connection> connections;
@@ -77,9 +77,11 @@ public class ConnectionManager
 	private static HashMap<String, String> passphrases;
 	/** a 256 byte SHA1 hash of the master password, actually */
 	static byte[] masterKey = null;
-	private static String masterPassword;
+	
 	static int connectionTimeout = 60000;
 	private static File passwordFile = null;
+	
+	// this is used from SshConsole too:
 	public static JSch client = null;
 	// }}}
 
@@ -87,10 +89,13 @@ public class ConnectionManager
 	public static void forgetPasswords()
 	{
 		try {
+			if (client != null) 
+				client.removeAllIdentity();
 			if (passwordFile.exists())
 				passwordFile.delete();
 		}
 		catch (Exception e) {}
+		
 		masterKey = null;
 		saveKeyFile();		// clear out the key file, actually
 		restoredPasswords = false;
@@ -131,18 +136,19 @@ public class ConnectionManager
 
 	} //}}}
 
-
+	//{{{ getStoredFtpKey()
 	/**
+	 
 	 * @return null if no
 	 */
-	public static String getStoredFtpKey(String host, String user) {
-		String s = jEdit.getProperty("ftp.keys."+host+"."+user);
+	public static String getStoredFtpKey(String hostport, String user) {
+		String s = jEdit.getProperty("ftp.keys."+hostport+"."+user);
 		if (s==null || s.length()<=0)
 			return null;
 		return new File(s).exists() ? s : null;
-	}
+	}//}}}
 
-
+	//{{{ getKeyFile()
 	/** If we have a keyFile, load the hash of the master password from a file
 	    instead of prompting the user for it. */
 	protected static void getKeyFile() {
@@ -161,8 +167,9 @@ public class ConnectionManager
 			Log.log(Log.ERROR, ConnectionManager.class, e);
 		}
 
-	}
+	}//}}}
 
+	//{{{ saveKeyFile()
 	protected static void saveKeyFile()
 	{
 		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
@@ -180,9 +187,9 @@ public class ConnectionManager
 			Log.log(Log.ERROR, ConnectionManager.class, e);
 		}
 
-	}
+	}//}}}
 
-	//{{{ promptMasterPassword() method
+	//{{{ promptMasterPassword() methods
 
 	protected static boolean promptMasterPassword() {
 		return promptMasterPassword(
@@ -196,7 +203,7 @@ public class ConnectionManager
 				jEdit.getProperty("login.masterpassword.message.create"));
 	}
 
-	protected static boolean promptMasterPassword(String title, String message) {
+	protected static boolean promptMasterPassword(final String title, final String message) {
 
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return false;
 
@@ -205,24 +212,34 @@ public class ConnectionManager
 
 		// Show a dialog from the active view asking user for master password
 		try {
-
-			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(), title, message);
-
-			if (!pd.isOK()) {
-				jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
-				String msg2 = jEdit.getProperty("ftp.cancel-master-password");
-				Log.log(Log.MESSAGE, ConnectionManager.class, msg2);
-				jEdit.getActiveView().getStatus().setMessage(msg2);
-				return false;
-			}
-			masterPassword = new String(pd.getPassword());
-			if (masterPassword.isEmpty()) return false;
-
-			// make a SHA256 digest of it (32 bytes)
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			masterKey = digest.digest(masterPassword.getBytes("utf-8"));
-			saveKeyFile();
-			// Log.log(Log.MESSAGE, ConnectionManager.class, "masterPasswordhash: " + masterPwStr);
+			ThreadUtilities.runInDispatchThreadAndWait(new Runnable() {
+				@Override
+				public void run() {
+					PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(), title, message);
+					if (!pd.isOK()) {
+						jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
+						String msg2 = jEdit.getProperty("ftp.cancel-master-password");
+						Log.log(Log.MESSAGE, ConnectionManager.class, msg2);
+						jEdit.getActiveView().getStatus().setMessage(msg2);
+						return;
+					}
+					else {
+						String masterPassword = new String(pd.getPassword());
+						if (masterPassword.isEmpty()) return ;
+						// make a SHA256 digest of it (32 bytes)
+						try {
+							MessageDigest digest = MessageDigest.getInstance("SHA-256");
+							masterKey = digest.digest(masterPassword.getBytes("utf-8"));
+						}
+						catch (Exception e) {
+							Log.log(Log.ERROR, ConnectionManager.class, e, e);
+							return;
+						}
+						saveKeyFile();
+					}
+					// Log.log(Log.MESSAGE, ConnectionManager.class, "masterPasswordhash: " + masterPwStr);
+				}
+			});
 		}
 		catch (Exception e) {
 			Log.log (Log.ERROR, ConnectionManager.class, e);
@@ -231,10 +248,7 @@ public class ConnectionManager
 		return true;
 	}//}}}
 
-
 	//{{{ loadPasswords() method
-
-
 	@SuppressWarnings("unchecked")
 	protected static void loadPasswords()
 	{
@@ -242,7 +256,8 @@ public class ConnectionManager
 
 		if (passwordFile == null)
 		{
-			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to load passwords.");
+			Log.log(Log.WARNING,ConnectionManager.class, 
+				"Password File is null - unable to load passwords.");
 			return;
 		}
 
@@ -258,8 +273,8 @@ public class ConnectionManager
 			if (masterKey == null) {
 				if ( (i ==0 ) && !promptMasterPassword()) 
 					return;	
-				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"),
-					jEdit.getProperty("login.masterpassword.message"))) return;	
+				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"), jEdit.getProperty("login.masterpassword.message"))) 
+					return;	
 			}
 
 			i++;
@@ -299,6 +314,7 @@ public class ConnectionManager
 
 	} //}}}
 
+	//{{{ getCipher() method
 	protected static Cipher getCipher(int opmode) throws Exception {
 		// First try AES256
 		String TRANSFORMATION = "AES";
@@ -316,9 +332,8 @@ public class ConnectionManager
 				jEdit.getActiveView().getStatus().setMessage(msg);
 				return null;
 			}
-		}
-		String msg = jEdit.getProperty("ftp.using.weak-crypto");	
-		Log.log(Log.WARNING, ConnectionManager.class, msg);		
+		}		
+		Log.log(Log.WARNING, ConnectionManager.class, jEdit.getProperty("ftp.using.weak-crypto"));		
 		// TODO: use something better than DES here? 
 		TRANSFORMATION = "DES";
 		DESKeySpec keySpec = new DESKeySpec(masterKey);
@@ -327,9 +342,9 @@ public class ConnectionManager
 		Cipher cipher = Cipher.getInstance(TRANSFORMATION);
 		cipher.init(opmode, k);
 		return cipher;
-	}
+	}//}}}
+	
 	//{{{ savePasswords() method
-
 	protected static void savePasswords() {
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;
 
@@ -394,43 +409,43 @@ public class ConnectionManager
 	public static ConnectionInfo getConnectionInfo(Component comp, FtpAddress address, boolean _secure)
 	{
 		Log.log(Log.DEBUG, "ConnectionManager.getConnectionInfo", address);
-		String host, user;
+		String hostport, user;
 		String password;
 		boolean secure;
 
 		if(address != null)
 		{
-			host     = address.getHost()+":"+address.getPort();
+			hostport     = address.getHost()+":"+address.getPort();
 			user     = address.getUser();
 			password = address.getPassword();
 			secure	 = address.isSecure();
 
 			// Check for cached connection info
-			ConnectionInfo info = logins.get(host);
+			ConnectionInfo info = logins.get(hostport);
 			if( (info != null) )
 				return info;
 
 			// Try to create connection from pre-defined params
-			String key = ConnectionManager.getStoredFtpKey(host, user);
+			String key = ConnectionManager.getStoredFtpKey(hostport, user);
 
-			if ( host!=null && user!=null && (password!=null || key!=null) ) {
+			if ( hostport!=null && user!=null && (password!=null || key!=null) ) {
 				// Log.log(Log.DEBUG, ConnectionManager.class, "key="+key);
 				info = new ConnectionInfo(address.isSecure(), address.getHost(), address.getPort(), user, password, key);
-				logins.put(host, info);
+				logins.put(hostport, info);
 				return info;
 			}
 
 		}
 		else
 		{
-			host = user = password = null;
+			hostport = user = password = null;
 			secure = _secure;
 		}
 
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
-		final LoginDialog dialog = new LoginDialog(comp, secure, host, user, password);
+		final LoginDialog dialog = new LoginDialog(comp, secure, hostport, user, password);
 		ThreadUtilities.runInDispatchThreadAndWait(new Runnable() {
 			@Override
 			public void run() {
@@ -439,7 +454,7 @@ public class ConnectionManager
 		});
 		if(!dialog.isOK())
 			return null;
-		host = dialog.getHost();
+		String host = dialog.getHost();
 
 		int port = FtpVFS.getDefaultPort(secure);
 		int index = host.indexOf(':');
@@ -467,7 +482,6 @@ public class ConnectionManager
 		return info;
 	} //}}}
 
-
 	//{{{ getConnection() method
 	public static Connection getConnection(ConnectionInfo info) throws IOException {
 		Connection connect = null;
@@ -486,25 +500,32 @@ public class ConnectionManager
 				else
 					break;
 			}
-
-			if(connect == null) {
-				Log.log(Log.DEBUG,ConnectionManager.class, Thread.currentThread() + ": Connecting to " + info);
+			if (connect != null) {
+				Log.log(Log.DEBUG, ConnectionManager.class, "Connection found in cache ["+connect+"]");
+				return connect;
+			}
+			int retries = 0;
+			while (connect == null) {
+				Log.log(Log.DEBUG,ConnectionManager.class, Thread.currentThread() + ": Connecting to " + info);				
 				try {
 					connect = info.secure ? new SFtpConnection(info) : new FtpConnection(info);
+					connections.add(connect);
+					connect.lock();
+					return connect;
 				} catch (IOException e) {
-					Log.log(Log.DEBUG, ConnectionManager.class, "catch " + e.getClass().getName() + " on "+ info);
-					info.password   = null; // necessary to show login dialog again instead of using saved password again
-					jEdit.unsetProperty("ftp.keys."+info.host+"."+info.user);
-					// throw e;
+					retries++;
+					Log.log(Log.WARNING, ConnectionManager.class, "catch " + e.getClass().getName() + " on "+ info, e);
+					info.privateKey = null;
+					info.password = null; // necessary to show login dialog again instead of using saved password again
+					jEdit.unsetProperty("ftp.keys."+info.host + ":"+ info.port + "."+info.user);
+					if (retries > 3) throw e;
 				}
-				connections.add(connect);
-			} else {
-				Log.log(Log.DEBUG, ConnectionManager.class, "Connection found in cache ["+connect+"]");
 			}
+			return null;
 
-			connect.lock();
+			
 		}
-		return connect;
+		
 
 	} //}}}
 
@@ -533,7 +554,27 @@ public class ConnectionManager
 		}
 	} //}}}
 
-	//{{{ Private members
+	//{{{ cleanup()
+	/** Closes all connections, clears out every hash table and list. Recommended before unloading. */
+	static void cleanup() {
+		DirectoryCache.clearAllCachedDirectories();
+		for (Connection c: connections) {
+			c.logoutQuietly();
+		}
+		try {
+			client.removeAllIdentity();
+		}
+		catch (Exception e) {}
+		connections.clear();
+		logins.clear();
+		passwords.clear();
+		passphrases.clear();
+		masterKey = null;
+		restoredPasswords=false;
+		client = null;
+	}
+	
+	//{{{ static initializer
 	static
 	{
 		restoredPasswords = false;

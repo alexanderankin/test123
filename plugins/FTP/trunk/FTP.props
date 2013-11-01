@@ -20,7 +20,9 @@ plugin.ftp.FtpPlugin.menu=open-ftp \
 	- \
 	clear-directory-cache \
 	forget-passwords \
-	close-connections
+	close-connections \
+	ftp-cleanup
+	
 plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
 plugin.ftp.FtpPlugin.option-pane=ftp
 
@@ -31,7 +33,7 @@ options.ftp.savePasswords=Save passwords and passphrases to disk
 options.ftp.useKeyFile=Use Key File for encrypting passwords
 options.ftp.useKeyFile.tooltip=Saves an AES256 hash of the master password here
 options.sftp.enableCompression=Enable compression over SFTP
-options.ftp.disableWeakCrypto=Disable weak encryption when saving passwords
+options.ftp.disableWeakCrypto=Disable (don't fallback on) weak encryption when saving passwords
 
 # Actions
 open-ftp.label=Open from FTP Server...
@@ -41,7 +43,7 @@ save-sftp.label=Save to Secure FTP Server...
 clear-directory-cache.label=Clear Remote Directory Cache
 forget-passwords.label=Forget Remote Passwords
 close-connections.label=Close Unused Connections
-
+ftp-cleanup.label=Reset FTP Plugin
 vfs.browser.ftp.label=Connect to FTP Server...
 vfs.browser.sftp.label=Connect to Secure FTP Server...
 
