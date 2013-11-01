@@ -19,6 +19,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 	JCheckBox useKeyFile;
 	FileTextField keyFile;
 	JCheckBox enableCompression;
+	JCheckBox disableWeakCrypto;
 	
 	public OptionPane() {
 		super("ftp");
@@ -36,6 +37,9 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		keyFile.setToolTipText(jEdit.getProperty("options.ftp.useKeyFile.tooltip"));
 		addComponent(useKeyFile , keyFile);
 		
+		disableWeakCrypto = new JCheckBox(jEdit.getProperty("options.ftp.disableWeakCrypto"), jEdit.getBooleanProperty("ftp.disableWeakCrypto"));
+		addComponent(disableWeakCrypto);
+		
 		actionPerformed(null);
 		
 		enableCompression = new JCheckBox(jEdit.getProperty("options.sftp.enableCompression"),
@@ -51,6 +55,8 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 	protected void _save() {		
 
 		jEdit.setBooleanProperty("ftp.useKeyFile", useKeyFile.isSelected());
+		jEdit.setBooleanProperty("ftp.disableWeakCrypto", disableWeakCrypto.isSelected());
+		
 		if (useKeyFile.isSelected()) {
 			jEdit.setProperty("ftp.passKeyFile", keyFile.getTextField().getText());
 		}

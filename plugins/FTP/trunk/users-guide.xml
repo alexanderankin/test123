@@ -30,10 +30,11 @@
 <chapter id="SavingPasswords">
 <title> Saving Passwords </title>
 
-<para>First, if you have an old password file (from FTP 1.0.3 or earlier), you
-need to delete it. To force jEdit to forget all passwords while it is running,
-use the <guimenuitem>Forget Remote Passwords</guimenuitem> command in the
-<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu. </para>
+<para>First, if you have an old password file (from FTP 1.0.3 or earlier), they
+are not supported, and you need to delete it. To force jEdit to forget all
+passwords while it is running, use the <guimenuitem>Forget Remote
+Passwords</guimenuitem> command in the
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu. </para> 
 
 <para> Passwords and passphrases are always remembered while jEdit is running so
 you don't have to re-type them. Optionally, you can securely <guimenuitem>Save
@@ -42,23 +43,28 @@ passwords and passphrases to disk</guimenuitem> by checking this option from
 the user is asked for a master password once, for reading an existing password
 file, or encrypting a new passwords file. </para>
 
+<para> If you cancel entering a master passphrase for any reason, then the
+saving passwords feature is un-checked until you check it again. </para>
+
 <para> If you want to <guimenuitem>Use a keyfile for encrypting
 passwords</guimenuitem> instead of a master password, you can check this option,
 and choose the location to store the key file. With this option enabled, you
 will be asked for a master password only once, it is hashed and saved to this
-location, and after exiting, from now on your passwords are automatically
-loaded and stored without asking you for a master password again. </para>
+location, and from now on your passwords are automatically loaded and stored
+without asking you for a master password again. This is less secure than using a
+master password, but provides the convenience of previous versions of this
+plugin. </para> 
 
-<para>
-The FTP plugin uses strong encryption to save passwords, which means
-on some platforms, or in some regions, you will get InvalidKeyException
-with illegal key size, and therefore must install <ulink
+<para> When available, the FTP plugin uses AES-256 encryption to save passwords.
+If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
+to DES (weak) encryption. On some platforms, or in some regions, you will see
+a warning in the activity log indicating that FTP plugin is falling back to weak
+encryption. If you don't like this, you can <guimenuitem>Disable weak encryption when saving
+passwords</guimenuitem> from FTP plugin options, and/or install <ulink
 url="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">JCE
-Strong Encryption</ulink> into your JRE for this to work.
-For more info, see <ulink
+Strong Encryption</ulink> into your JRE. For more info, see <ulink
 url="http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">this
-article</ulink>. Saving passwords is automatically disabled on these
-platforms. </para>
+article</ulink>. </para>
 
 </chapter>
 
@@ -200,9 +206,10 @@ something to happen and it is not, check the "Errors" status bar widget, or the
 Activity Log dockable to find out what happened. </para></listitem>
 
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
-you are unable to browse files, you can reload the FTP Plugin via the plugin
-manager or the Activator plugin Reloader pane, and it should help you avoid
-restarting jEdit. </para></listitem> 
+you are unable to do anything, you can reload the FTP Plugin with just one
+click, from the <guimenuitem>Reloader</guimenuitem> dockable of the <ulink
+url="jeditresource:/Activator.jar!/docs/index.html">Activator plugin</ulink> ,
+to avoid restarting jEdit. </para></listitem>
 
 <listitem><para>Problems were reported on connecting to ftp servers
 from Windows 7. Probably there is a bug in Windows firewall.
@@ -222,6 +229,9 @@ There are workarounds for that, see our bug tracker entry #3491410,
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>
  		<itemizedlist>
+ 		   <listitem><para> Fix #3615141, InvalidKeyException, and fallback to DES
+ 		   when strong encryption is unavailable. Also, a new plugin option to
+ 		   disable this behavior. </para></listitem> 
  		   <listitem><para> Fix #3615163: No longer repeatedly asking for master
  		   password after the user hits "cancel". </para></listitem>
  		   <listitem><para> Patch #3615165: Fix accidental SSH account lockout on
