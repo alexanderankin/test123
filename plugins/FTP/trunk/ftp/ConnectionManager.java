@@ -502,6 +502,7 @@ public class ConnectionManager
 			}
 			if (connect != null) {
 				Log.log(Log.DEBUG, ConnectionManager.class, "Connection found in cache ["+connect+"]");
+				connect.lock();
 				return connect;
 			}
 			int retries = 0;
