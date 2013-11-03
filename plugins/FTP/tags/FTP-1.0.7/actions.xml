@@ -17,7 +17,7 @@
 
 	<ACTION NAME="ftp-cleanup">
 	   <CODE>
-	      ftp.connectionManager.cleanup();
+	      ftp.ConnectionManager.cleanup();
 	   </CODE>
 	</ACTION>
 	

@@ -557,7 +557,7 @@ public class ConnectionManager
 
 	//{{{ cleanup()
 	/** Closes all connections, clears out every hash table and list. Recommended before unloading. */
-	static void cleanup() {
+	public static void cleanup() {
 		DirectoryCache.clearAllCachedDirectories();
 		for (Connection c: connections) {
 			c.logoutQuietly();
