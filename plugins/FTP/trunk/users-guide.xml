@@ -32,7 +32,7 @@
 
 <para>First, if you have an old password file (from FTP 1.0.3 or earlier), it is
 no longer supported, and you need to delete it. To force jEdit to forget all
-passwords while it is running, use the <guimenuitem>Forget Remote
+all saved passwords while it is running, use the <guimenuitem>Forget Remote
 Passwords</guimenuitem> command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu. </para>
 
@@ -57,64 +57,52 @@ plugin. </para>
 
 <para> When available, the FTP plugin uses AES-256 encryption to save passwords.
 If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
-to DES (weak) encryption. On some platforms, or in some regions, you will see
-a warning in the activity log indicating that FTP plugin is falling back to weak
-encryption. If you don't like this, you can <guimenuitem>Disable weak encryption when saving
-passwords</guimenuitem> from FTP plugin options, and/or install <ulink
-url="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">JCE
-Strong Encryption</ulink> into your JRE. For more info, see <ulink
-url="http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">this
-article</ulink>. </para>
+to DES (weak) encryption. In this case, you will see a warning in the activity
+log indicating that FTP plugin is falling back on weak encryption. 
+If you don't like this, you can <guimenuitem>Disable weak encryption
+when saving passwords</guimenuitem> from FTP plugin options, and/or install <ulink url=
+"http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">
+JCE Strong Encryption</ulink> into your JRE. For more info, see <ulink url=
+"http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">
+this article</ulink>. </para>
 
 </chapter>
 
 
 <chapter id="ftp"><title>Connecting to FTP servers</title>
 
-<para>
+<para> The FTP plugin lets you browse directories and edit files on remote
+servers using FTP, the File Transfer Protocol. Note that FTP is insecure since
+it sends everything (including passwords) as clear-text over the network. If you
+can, consider using SFTP, documented in the next section. </para>
 
-The FTP plugin lets you browse directories and edit files on remote servers
-using FTP, the File Transfer Protocol. Note that FTP is insecure since it
-sends everything (including passwords) as clear-text over the network. If you
-can, consider using SFTP, documented in the next section.
-
-</para>
-
-<para>
-
-To connect to an FTP server, either select
-<guimenuitem>Connect to FTP Server</guimenuitem> from the file system
-browser's <guimenu>Plugins</guimenu> menu, or use the
-<guimenuitem>Open from FTP Server</guimenuitem> and
+<para> To connect to an FTP server, either select <guimenuitem>Connect to FTP
+Server</guimenuitem> from the file system browser's <guimenu>Plugins</guimenu>
+menu, or use the <guimenuitem>Open from FTP Server</guimenuitem> and
 <guimenuitem>Save to FTP Server</guimenuitem> commands in the
-<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
-
-</para>
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu. </para>
 
 
 <section id="chmod"><title>File permissions</title>
 
-<para>
-Since an FTP server does not allow execution of arbitrary shell commands, the
-plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode.
-This command is reasonably standard, but not all FTP servers support it.
-</para>
+<para> Since an FTP server does not allow execution of arbitrary shell commands,
+the plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode.
+This command is reasonably standard, but not all FTP servers support it. </para>
 
-<para>
-If you notice that file permissions are not preserved after saving a file to an
-FTP server, check
-<guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem>
-for messages like the following, which indicate your FTP server does not support this command:
-</para>
+<para> If you notice that file permissions are not preserved after saving a file
+to an FTP server, check
+<guimenu>Utilities</guimenu> &gt;
+<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity
+Log</guimenuitem> for messages like the following, which indicate your FTP 
+server does not support this command: </para>
 
 <programlisting>[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: sending command: SITE CHMOD 644 /home/swenv
 [debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: received response: 502 SITE command not implemented.</programlisting>
 
-<para>
-A workaround is to disable two-stage save in the <guilabel>General</guilabel>
-pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global
-Options</guimenuitem> dialog box.
-</para>
+<para> A workaround is to disable two-stage save in the
+<guilabel>General</guilabel> pane of the
+<guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem> dialog
+box. </para>
 
 
 </section>
@@ -130,7 +118,6 @@ SFTP is much more secure than FTP because it encrypts all network traffic.
 </para>
 
 <para>
-
 To connect to an SFTP server, either select
 <guimenuitem>Connect to Secure FTP Server</guimenuitem> from the file system
 browser's <guimenu>Plugins</guimenu> menu, or use the
@@ -207,9 +194,10 @@ Activity Log dockable to find out what happened. </para></listitem>
 
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
 you are unable to do anything, you can reset the plugin by invoking the
-<guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem> without forgetting
-saved passwords.
-</para></listitem>
+<guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem>, which is similar to
+restarting the plugin - all connections are closed, all cached directories are
+cleared, and all saved passwords in memory are forgotten. The saved passwords
+file is not touched by this action. </para></listitem>
 
 <listitem><para>Problems were reported on connecting to ftp servers
 from Windows 7. Probably there is a bug in Windows firewall.
