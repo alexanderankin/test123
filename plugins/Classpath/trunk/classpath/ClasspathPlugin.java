@@ -83,7 +83,13 @@ public class ClasspathPlugin extends EBPlugin {
 		if (includeWorking)
 			cp = "." + (cp.length() > 0 ? File.pathSeparator : "") + cp;
 
-		BeanShell.getNameSpace().setVariable("CLASSPATH", cp);
+		try
+		{
+			BeanShell.getNameSpace().setVariable("CLASSPATH", cp);
+		}
+		catch (Exception e)
+		{
+		}
 
 		// update the system shell, if it's installed
 		if (jEdit.getPlugin("console.ConsolePlugin") != null) {

@@ -112,7 +112,13 @@ public class ClasspathUpdateTask extends Task {
 		jEdit.setProperty("java.classpath", pathBuffer.toString());
 
 		// If necessary, update console's var
-		ClasspathPlugin.updateEnv(jEdit.getBooleanProperty("java.classpath.includeWorking"));
+		try
+		{
+			ClasspathPlugin.updateEnv(jEdit.getBooleanProperty("java.classpath.includeWorking"));
+		}
+		catch (Exception e)
+		{
+		}
 
 		// Tell anyone listening that the classpath was updated
 		EditBus.send(new ClasspathUpdate());
