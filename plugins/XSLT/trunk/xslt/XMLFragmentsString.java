@@ -26,6 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.text.MessageFormat;
+import javax.xml.XMLConstants;
 
 /**
  * Represents a sequence of XML fragments as a string.
@@ -153,7 +154,7 @@ public class XMLFragmentsString {
   private void appendProcessingInstructionNode(Node node) {
     buffer.append("<?");
     buffer.append(node.getNodeName());
-    buffer.append(" ");
+    buffer.append(' ');
     buffer.append(node.getNodeValue());
     buffer.append("?>");
     buffer.append(NL);
@@ -238,8 +239,11 @@ public class XMLFragmentsString {
 
   private void appendAttributes(NamedNodeMap attributes) {
     for(int i = 0; i < attributes.getLength(); i++) {
+      Node attr = attributes.item(i);
+      // skip ns declarations
+      if(XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.getNamespaceURI()))continue;
       buffer.append(' ');
-      appendAttribute(attributes.item(i));
+      appendAttribute(attr);
     }
   }
 

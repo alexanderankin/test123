@@ -329,18 +329,17 @@
         	<para>Press Ctrl-Enter when in the XPath expression text area
         	to invoke the "Evaluate XPath" action.</para>
         </listitem>
-      </itemizedlist>
-    </para>
-    <para>
-      The following improvements should eventually be made to XPath Tool.
-      <itemizedlist>
-        <listitem>
-          <para>
-          When the result of an evaluation is a Node set, it would be nice
-          to have a "Hyper Search" type of result.  In other words, each
-          node in the list could be clicked to highlight the relevant portion
-          of the XML doc in the current buffer.
-        </para>
+        <listitem><para>Select a node in the Node-set summary table to move current's
+        edit pane caret to the location of the node in the buffer. The file
+        will be opened if necessary.</para>
+        <para>This only works for nodes actually coming
+        from the source document: if you compute 1 + 1, it will not work.</para>
+        <para>This only work for the Saxon XPath engine. There may be a way to
+        implement it also for Xalan, but I've not found an obvious one.</para>
+        <para>The location information provided by the engine is not much: only
+        a line and column number, corresponding to the end of the parent element
+        start tag. So it's not easy to select the node, only to place the caret
+        at the relevant location.</para>
         </listitem>
       </itemizedlist>
     </para>
@@ -462,6 +461,9 @@
       <itemizedlist>
         <listitem><para>XPath tool: press Ctrl+Enter from expression panel to trigger evaluating the XPath expression.</para></listitem>
         <listitem><para>XPath tool: also grab default namespace from input document (xmlns=...).</para></listitem>
+        <listitem><para>XPath tool: selecting node results from the Node-set summary
+        opens the buffer if necessary and moves the caret to the location in the document.
+        This only works with Saxon XPath engine.</para></listitem>
       </itemizedlist>
     </para>
     <para>

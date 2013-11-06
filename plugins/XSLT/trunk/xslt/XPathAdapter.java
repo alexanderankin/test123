@@ -19,24 +19,51 @@
 */
 package xslt;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import java.util.List;
 import java.util.Map;
+
+import org.w3c.dom.Document;
+
+import org.gjt.sp.jedit.Buffer;
+import java.net.URI;
 
 /**
  * interface embodying all the services required for the XPath Tool
  */
 public interface XPathAdapter {
-	
+
+	/**
+	 * construct an adapter-specific document from given input.
+	 * The XPathAdapter doesn't have to monitor the source to invalidate
+	 * the cache or whatever.
+	 * @return	a document for faster later processing or null if not applicable
+	 */
+	public Document buildDocument(Buffer source) throws Exception;
+
+	/**
+	 * construct an adapter-specific document from given input.
+	 * The XPathAdapter doesn't have to monitor the source to invalidate
+	 * the cache or whatever.
+	 * @return	a document for faster later processing or null if not applicable
+	 */
+	public Document buildDocument(URI source) throws Exception;
+
+
 	/**
 	 * evaluate expression against doc, given prefixes
-	 * @param	doc	source document
+	 * @param	doc	source document from previous call to buildDocument (can be null)
 	 * @param	prefixes	prefix->namespace bindings
 	 * @param	expression	xpath expression to evaluate
 	 * @return	result of the evaluation
 	 */
 	public Result evaluateExpression(Document doc, Map<String,String> prefixes, String expression) throws Exception;
-	
+
+	/**
+	 * get all namespace bindings from source document
+	 *
+	 */
+	public Map<String,List<String>> grabNamespaces(Document document);
+
 	/**
 	 * result of an evaluation.
 	 * Provides methods to get type, size and contents of the result.
@@ -50,19 +77,19 @@ public interface XPathAdapter {
 		public String getStringValue() throws Exception;
 		/** @return number of items in the node-set/sequence */
 		public int size() throws Exception;
-		
+
 		/**
 		 * @param	i	index of the wanted item. Contrary to positions, i starts at 0
 		 * @return ith item of the result
 		 */
 		public XPathNode get(int i) throws Exception;
-		
+
 		/**
 		 * @return an XMLFragmentsString configured to represent this result
 		 */
 		public XMLFragmentsString toXMLFragmentsString() throws Exception;
 	}
-	
+
 	/** one component of the Result, used in the Node-set summary table of the XPath tool */
 	public static interface XPathNode{
 		/** @return has got a name (e.g. an element has a name) */
@@ -79,5 +106,23 @@ public interface XPathAdapter {
 		 * @return string value of this item
 		 */
 		public String getDomValue()throws Exception;
+
+		/**
+		 * @return the line number of the node, if any (1-based)
+		 * @throws UnsupportedOperationException if not supported
+		 */
+		public int getLineNumber() throws UnsupportedOperationException;
+
+		/**
+		 * @return the column number of the node, if any (1-based)
+		 * @throws UnsupportedOperationException if not supported
+		 */
+		public int getColumnNumber() throws UnsupportedOperationException;
+
+		/**
+		 * @return is location information available
+		 */
+		public boolean hasLocation();
+
 	}
 }

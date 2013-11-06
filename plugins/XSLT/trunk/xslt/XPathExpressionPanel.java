@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -203,7 +202,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
         if (wildCardExpr != null) {
 			Document xdoc = null;
 			try {
-				xdoc = xpathTool.getCurrentDocument();
+				xdoc = xpathTool.getCurrentDocument(xpathTool.getXPath());
 			} catch (Exception e) {
 				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), 
 						XPathExpressionPanel.this);

@@ -161,8 +161,10 @@ public class XalanXPathNode implements XPathAdapter.XPathNode {
 
 
 	public String getDomValue() {
-		String domValue = this.dtm.getNodeValue(this.nodeHandle);
 
+
+		String domValue = this.dtm.getNodeValue(this.nodeHandle);
+		domValue += (" -- Location: "+dtm.getSourceLocatorFor(this.nodeHandle).getLineNumber());
 		if (hasDomValue()) {
 			domValue = XSLTUtilities.removeIn(domValue, (char) 10); //remove '\r' to temporarily fix a bug in the display of results in Windows
 		}
@@ -170,4 +172,19 @@ public class XalanXPathNode implements XPathAdapter.XPathNode {
 		return domValue;
 	}
 
+	public int getLineNumber() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Location information not supported for Xalan");
+	}
+
+	public int getColumnNumber() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Location information not supported for Xalan");
+	}
+
+
+	/**
+	 * @return always false
+	 */
+	public boolean hasLocation() {
+		return false;
+	}
 }
