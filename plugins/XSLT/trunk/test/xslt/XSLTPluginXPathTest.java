@@ -31,6 +31,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.timing.Pause;
+import org.fest.swing.timing.Timeout;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.testframework.JEditRunner;
@@ -88,8 +89,8 @@ public class XSLTPluginXPathTest{
 		
 		xpathTool.button("xpath.evaluate").click();
 		
-		Pause.pause(1000);
-		xpathTool.textBox("xpath.result.data-type").requireText("text()");
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
+		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
 		xpathTool.textBox("xpath.result.value").requireText("world");
 		
 		xpathTool.close();
@@ -130,7 +131,7 @@ public class XSLTPluginXPathTest{
 		});
 		xpathTool.button("xpath.evaluate").click();
 		
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
 		xpathTool.textBox("xpath.result.xml-fragments").requireText("<xsl:value-of select=\".\"/>\n");
 		xpathTool.close();
@@ -157,6 +158,7 @@ public class XSLTPluginXPathTest{
 		
 		xpathTool.button("xpath.evaluate").click();
 		
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		final String contents = "<?xml version=\"1.0\" ?>\n"
 		+"<hello>you</hello>";
 		
@@ -170,7 +172,7 @@ public class XSLTPluginXPathTest{
 
 		xpathTool.button("xpath.evaluate").click();
 		
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.textBox("xpath.result.value").requireText("you");
 
 		xpathTool.close();
@@ -196,7 +198,7 @@ public class XSLTPluginXPathTest{
 		
 		xpathTool.button("xpath.evaluate").click();
 		
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.textBox("xpath.result.value").requireText("world");
 
 		xpathTool.close();
@@ -222,7 +224,7 @@ public class XSLTPluginXPathTest{
 		
 		xpathTool.button("xpath.evaluate").click();
 		
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(0)).click();
 		assertEquals(xpathTool.textBox("xpath.result.xml-fragments").targetCastedTo(JTextArea.class).getHighlighter().getHighlights().length,1);
 		assertEquals(xpathTool.textBox("xpath.result.xml-fragments").targetCastedTo(JTextArea.class).getHighlighter().getHighlights()[0].getStartOffset(),0);
@@ -261,7 +263,7 @@ public class XSLTPluginXPathTest{
 		Pause.pause(1000);
 		xpathTool.button("xpath.evaluate").click();
 		
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.table("xpath.result.node-set-summary").requireRowCount(2);
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(0)).requireValue("xs:integer");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(1)).requireValue("");
@@ -270,8 +272,8 @@ public class XSLTPluginXPathTest{
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(1)).requireValue("select");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(2)).requireValue(".");
 		
-		xpathTool.textBox("xpath.result.data-type").requireText("sequence of item()");
-		xpathTool.textBox("xpath.result.value").requireText("2 .");
+		xpathTool.textBox("xpath.result.data-type").requireText("sequence of xs:integer");
+		xpathTool.textBox("xpath.result.value").requireText("(2,.)");
 		xpathTool.textBox("xpath.result.xml-fragments").requireText("2\nselect=\".\"\n");
 
 		
@@ -306,7 +308,7 @@ public class XSLTPluginXPathTest{
 		new ClickT(Option.OK).start();
 		xpathTool.button("xpath.evaluate").click();
 	
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.close();
     }
     
@@ -332,7 +334,7 @@ public class XSLTPluginXPathTest{
 		new ClickT(Option.OK).start();
 		xpathTool.button("xpath.evaluate").click();
 	
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.close();
     }
 
@@ -358,7 +360,7 @@ public class XSLTPluginXPathTest{
 		new ClickT(Option.OK).start();
 		action("xpath.evaluate");
 	
-		Pause.pause(1000);
+		xpathTool.button("xpath.evaluate").requireEnabled(Timeout.timeout(1000));
 		xpathTool.close();
     }
 }

@@ -105,6 +105,7 @@ public abstract class DOMXPathAdapter implements XPathAdapter {
 					}
 				}
 			}
+			return bindings;
 		} else {
 			Log.log(Log.ERROR,this,"DomImplementation doesn't support DOM Traversal");
 		}
