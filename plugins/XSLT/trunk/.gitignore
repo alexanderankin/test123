@@ -2,5 +2,6 @@
 .classpath
 build.properties
 build/
+test/classes
 test/test_reports
 *~
