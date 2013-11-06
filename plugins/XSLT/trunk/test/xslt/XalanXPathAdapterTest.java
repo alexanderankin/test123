@@ -46,7 +46,7 @@ public class XalanXPathAdapterTest{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
     	
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
     	
@@ -76,7 +76,7 @@ public class XalanXPathAdapterTest{
     	final File xsl = new File(testData.get(),"base_uri_bug/base-uri-bug.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
     	
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
     	
@@ -107,7 +107,7 @@ public class XalanXPathAdapterTest{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
     	
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
     	
@@ -129,7 +129,7 @@ public class XalanXPathAdapterTest{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
     	
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
     	
