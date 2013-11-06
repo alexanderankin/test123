@@ -1,7 +1,7 @@
 /*
  * Saxon9XPathAdapter.java - use the XPath 2.0 Saxon engine
  *
- * Copyright (c) 2010 Eric Le Lay
+ * Copyright (c) 2010,2013 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,14 +21,17 @@ package xslt;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathExpressionException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.gjt.sp.jedit.Buffer;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -36,49 +39,130 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Collections;
 
-
+import net.sf.saxon.dom.NodeOverNodeInfo;
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.ItemTypeFactory;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.xpath.XPathFactoryImpl;
-import net.sf.saxon.xpath.XPathExpressionImpl;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.om.SequenceIterator; 
-import net.sf.saxon.om.NodeInfo; 
-/*import net.sf.saxon.om.GroundedIterator;
-import net.sf.saxon.om.GroundedValue;
-*/
-import net.sf.saxon.om.Item;
-import net.sf.saxon.dom.DocumentWrapper;
-import net.sf.saxon.dom.DOMNodeWrapper;
-import net.sf.saxon.dom.DOMNodeList; 
-import net.sf.saxon.value.SequenceExtent;
-import net.sf.saxon.value.Cardinality; 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.type.TypeHierarchy;
 import net.sf.saxon.type.ItemType;
+import net.sf.saxon.om.NodeInfo; 
+import net.sf.saxon.Configuration;
+
+import org.gjt.sp.util.Log;
+
+import xml.CharSequenceReader;
+import xml.PathUtilities;
 
 /**
  * Implementation of XPathAdapter using the Saxon 9 engine
  */
 public class Saxon9XPathAdapter implements XPathAdapter {
-	final XPathFactoryImpl factory = new XPathFactoryImpl();
-	
-	public Result evaluateExpression(Document doc, Map<String,String> prefixes, String expression) throws XPathException,XPathExpressionException {
-		XPath xpath = factory.newXPath();
-		xpath.setNamespaceContext(new NamespaceContextImpl(prefixes));
-		
-		XPathExpressionImpl expr = (XPathExpressionImpl)xpath.compile(expression);
-		
-		return new SaxonResult(expr.rawIterator(new DocumentWrapper(doc,doc.getBaseURI(),expr.getConfiguration())),expr.getConfiguration());
+	final XPathFactoryImpl factory;
+	final Configuration config;
+	final Processor processor;
+
+	public Saxon9XPathAdapter() {
+		config = new Configuration();
+		config.setLineNumbering(true);
+		factory = new XPathFactoryImpl(config);
+		processor = new Processor(config);
 	}
-	
-	
+
+	@Override
+	public Document buildDocument(Buffer source) throws IOException,SAXException,SaxonApiException {
+		CharSequence chars = source.getSegment(0,source.getLength());
+		CharSequenceReader reader = new CharSequenceReader(chars);
+		StreamSource ss = new StreamSource(reader, PathUtilities.pathToURL(source.getPath()));
+		return buildWrappedDocument(ss);
+	}
+
+	@Override
+	public Document buildDocument(URI source) throws IOException,SAXException,SaxonApiException {
+		//TODO: would it make sense to set the resolver to xml.Resolver ?
+		StreamSource ss = new StreamSource(source.toString());
+		return buildWrappedDocument(ss);
+	}
+
+	private Document buildWrappedDocument(Source source) throws SaxonApiException,IOException,SAXException {
+		try {
+			DocumentBuilder builder = processor.newDocumentBuilder();
+			XdmNode doc = builder.build(source);
+			return (Document)NodeOverNodeInfo.wrap(doc.getUnderlyingNode());
+		} catch(SaxonApiException e) {
+			if(e.getCause() instanceof IOException) {
+				throw (IOException)e.getCause();
+			} else if(e.getCause() instanceof SAXException) {
+				throw (SAXException)e.getCause();
+			} else {
+				throw e;
+			}
+		}
+	}
+
+
+	public Map<String,List<String>> grabNamespaces(Document doc) throws IllegalArgumentException {
+		if(!(doc instanceof NodeOverNodeInfo))throw new IllegalArgumentException("Document givent to Saxon9XPathAdapter.grabNamespaces not of the right class");
+		XdmNode node = new XdmNode(((NodeOverNodeInfo)doc).getUnderlyingNodeInfo());
+
+		XPathCompiler comp = processor.newXPathCompiler();
+
+		Map<String,List<String>> bindings = new HashMap<String,List<String>>();
+
+		try{
+			XdmValue res = comp.evaluate(
+				  "for $n in //*/namespace::* return ($n/name(), string($n))"
+				, node);
+
+			for(int i=0;i<res.size()-1;){
+				String prefix = res.itemAt(i++).getStringValue();
+				String ns = res.itemAt(i++).getStringValue();
+				if(XMLConstants.XML_NS_URI.equals(ns))continue;
+				List<String> bound = bindings.get(prefix);
+				if(bound == null){
+					bound = new ArrayList<String>();
+					bindings.put(prefix, bound);
+				}
+				if(!bound.contains(ns)){
+					bound.add(ns);
+				}
+			}
+		}catch(SaxonApiException e){
+			Log.log(Log.ERROR,this,"known node query failed",e);
+		}
+		return bindings;
+	}
+
+	@Override
+	public Result evaluateExpression(Document doc, Map<String,String> prefixes, String expression) 
+		throws SaxonApiException,XPathException
+	{
+		if(!(doc instanceof NodeOverNodeInfo))throw new IllegalArgumentException("Document givent to Saxon9XPathAdapter.evaluateExpression not of the right class");
+		XdmNode node = new XdmNode(((NodeOverNodeInfo)doc).getUnderlyingNodeInfo());
+		XPathCompiler comp = processor.newXPathCompiler();
+		for(Map.Entry<String,String> en: prefixes.entrySet()){
+			comp.declareNamespace(en.getKey(),en.getValue());
+		}
+
+		XdmValue res = comp.evaluate(expression, node);
+
+		return new SaxonResult(res, processor);
+	}
+
+
 	static class SaxonXPathNode implements XPathNode {
-		private Item item;
+		private XdmItem item;
 		private ItemType it;
 
-		SaxonXPathNode(Item i,TypeHierarchy hierarchy){
+		SaxonXPathNode(XdmItem i,ItemType it){
 			this.item = i;
-			this.it = Type.getItemType(item,hierarchy);
+			this.it = it;
 		}
 
 		public boolean hasExpandedName(){
@@ -94,7 +178,7 @@ public class Saxon9XPathAdapter implements XPathAdapter {
 				return false;
 			}
 		}
-		
+
 		public boolean hasDomValue(){
 			switch (it.getPrimitiveType()) {
 				case Type.DOCUMENT:
@@ -104,140 +188,128 @@ public class Saxon9XPathAdapter implements XPathAdapter {
 					return true;
 			}
 		}
-		
+
 		public String getType(){
-			return it.toString();
+			// too much details if not calling getPrimitiveItemType (like "element(Q{urn:joe}hello)")
+			return it.getPrimitiveItemType().toString();
 		}
-		
+
 		public String getName(){
-			if(item instanceof NodeInfo){
-				return ((NodeInfo)item).getDisplayName();
+			if(item.getUnderlyingValue() instanceof NodeInfo){
+				return ((NodeInfo)item.getUnderlyingValue()).getDisplayName();
 			}else {
 				return null;
 			}
 		}
-		
-		public String getDomValue() throws XPathException{
-			return SequenceExtent.makeSequenceExtent(item.iterate()).getStringValue();
-		}
-		
-	}
-	
-	static class SaxonResult implements Result{
-		private SequenceExtent se;
-		private Configuration config;
-		
-		SaxonResult(SequenceIterator si,Configuration c) throws XPathException{
-			SequenceExtent se = new SequenceExtent(si);
-			ItemType it = se.getItemType(c.getTypeHierarchy());
 
-			this.se = se;
-			this.config = c;
+		public String getDomValue() throws XPathException{
+			return item.getStringValue();
 		}
-		
-		public String getType(){
-			ItemType it = se.getItemType(config.getTypeHierarchy());
-			if(se.getLength()==0) {
-				return "empty sequence";
-			} else if(se.getLength() == 1) {
-				return it.toString();
-			} else {
-				return "sequence of "+it.toString();
+
+		/**
+		 * @return the line number of the node
+		 */
+		public int getLineNumber(){
+			if(item.getUnderlyingValue() instanceof NodeInfo){
+				return ((NodeInfo)item.getUnderlyingValue()).getLineNumber();
+			}else {
+				throw new UnsupportedOperationException("I told you I didn't have location information !");
 			}
 		}
-		
+
+		/**
+		 * @return the column number of the node
+		 */
+		public int getColumnNumber(){
+			if(item.getUnderlyingValue() instanceof NodeInfo){
+				return ((NodeInfo)item.getUnderlyingValue()).getColumnNumber();
+			}else {
+				throw new UnsupportedOperationException("I told you I didn't have location information !");
+			}
+		}
+
+		/**
+		 * @return true for nodes, false overwise
+		 */
+		public boolean hasLocation() {
+			return (item.getUnderlyingValue() instanceof NodeInfo);
+		}
+
+	}
+
+	static class SaxonResult implements Result{
+		private XdmValue value;
+		private ItemTypeFactory typeFactory;
+
+		SaxonResult(XdmValue value, Processor processor) throws XPathException{
+			this.value = value;
+			this.typeFactory = new ItemTypeFactory(processor);
+		}
+
+		public String getType(){
+			if(value.size()==0) {
+				return "empty sequence";
+			} else {
+				XdmItem itm = value.itemAt(0);
+				// too much details if not calling getPrimitiveItemType (like "element(Q{urn:joe}hello)")
+				ItemType type = typeFactory.getItemType(itm).getUnderlyingItemType().getPrimitiveItemType();
+				if(value.size() == 1){
+					return type.toString();
+				}else{
+					return "sequence of "+type.toString();
+				}
+			}
+		}
+
 		public boolean isNodeSet(){
 			return true;
 		}
-		
-		public String getStringValue() throws XPathException{
-			return se.getStringValue();
+
+		public String getStringValue() throws XPathException {
+			if(value.size()==0) {
+				return "()";
+			} else if(value.size() == 1) {
+					return value.itemAt(0).getStringValue();
+			} else {
+				StringBuilder sb = new StringBuilder();
+				sb.append('(');
+				for(int i=0; i< value.size(); i++){
+					XdmItem itm = value.itemAt(i);
+					if(i>0){
+						sb.append(',');
+					}
+					sb.append(itm.getStringValue());
+				}
+				sb.append(')');
+				return sb.toString();
+			}
 		}
-		
+
 		public int size(){
-			return se.getLength();
+			return value.size();
 		}
-		
+
 		public XPathNode get(int i){
-			return new SaxonXPathNode(se.itemAt(i),config.getTypeHierarchy());
+			XdmItem itm = value.itemAt(i);
+			return new SaxonXPathNode(itm, typeFactory.getItemType(itm).getUnderlyingItemType());
 		}
-		
+
 		public XMLFragmentsString toXMLFragmentsString() throws XPathException {
-			XMLFragmentsString res = new XMLFragmentsString(se.getLength());
-			for(int i=0;i<se.getLength();i++) {
-				Item it = se.itemAt(i);
-				if(it instanceof DOMNodeWrapper) {
-					res.setNode(i,(Node)((DOMNodeWrapper)it).getRealNode());
+			XMLFragmentsString res = new XMLFragmentsString(value.size());
+			for(int i=0;i<value.size();i++) {
+				XdmItem it = value.itemAt(i);
+				if(it instanceof XdmNode) {
+					res.setNode(i,NodeOverNodeInfo.wrap(((XdmNode)it).getUnderlyingNode()));
 				} else {
 					res.setText(i,it.getStringValue());
 				}
 			}
 			return res;
 		}
-		
+
 		public String toString(){
-			return "Saxon9Adapter.Result{"+se+"}";
+			return "Saxon9Adapter.Result{"+value+"}";
 		}
 	}
-	
-	public static class NamespaceContextImpl implements NamespaceContext{
-		private Map<String,String> mappings;
-		private Map<String,List<String>> reverseMappings;
-		
-		public NamespaceContextImpl(Map<String,String> mappings) {
-			this.mappings = mappings;
-		}
-		
-		public String getNamespaceURI(String prefix){
-			if(XMLConstants.XML_NS_PREFIX.equals(prefix)) {
-				return XMLConstants.XML_NS_URI;
-			} else if(XMLConstants.XMLNS_ATTRIBUTE.equals(prefix)) {
-					return XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
-			} else if(mappings.containsKey(prefix)) {
-				return mappings.get(prefix);
-			} else if(prefix == null){
-				throw new IllegalArgumentException("null prefix");
-			} else {
-				return XMLConstants.NULL_NS_URI;
-			}
-		}
-		
-		public String getPrefix(String namespaceURI){
-			Iterator it = getPrefixes(namespaceURI);
-			if(it.hasNext()) return (String)it.next();
-			else return null;
-		}
-		
-		public Iterator getPrefixes(String namespaceURI){
-			if(reverseMappings == null) {
-				initReverseMappings();
-			}
-			
-			if(XMLConstants.XML_NS_URI.equals(namespaceURI)) {
-				return Collections.singletonList(XMLConstants.XML_NS_PREFIX).iterator();
-			} else if(XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)) {
-				return Collections.singletonList(XMLConstants.XMLNS_ATTRIBUTE).iterator();
-			} else if(reverseMappings.containsKey(namespaceURI)) {
-				return Collections.unmodifiableList(reverseMappings.get(namespaceURI)).iterator();
-			} else if(namespaceURI == null){
-				throw new IllegalArgumentException("null namespaceURI");
-			} else {
-				return Collections.emptyList().iterator();
-			}
-		}
-		
-		private void initReverseMappings() {
-			reverseMappings = new HashMap<String,List<String>>();
-			for(Map.Entry<String,String> entry: mappings.entrySet()) {
-				List<String> l;
-				if(reverseMappings.containsKey(entry.getValue())) {
-					l = reverseMappings.get(entry.getValue());
-				} else {
-					l = new LinkedList<String>();
-					reverseMappings.put(entry.getValue(),l);
-				}
-				l.add(entry.getKey());
-			}
-		}
-	}
+
 }

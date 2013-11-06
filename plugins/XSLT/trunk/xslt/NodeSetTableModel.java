@@ -2,6 +2,7 @@
  * NodeSetTableModel.java - Table model for XPath node set results
  *
  * Copyright (c) 2002 Robert McKinnon
+ * Copyright (c) 2013 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,9 +22,10 @@
 package xslt;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 import javax.swing.table.AbstractTableModel;
-
+import static xslt.XPathAdapter.XPathNode;
 /**
  * Table model for XPath node set results.
  *
@@ -38,15 +40,15 @@ public class NodeSetTableModel extends AbstractTableModel {
   private static final int NAME_COL = 1;
   private static final int VALUE_COL = 2;
 
-  private static final String[] ALL_COLUMNS = {TYPE, NAME, VALUE};
-  private static final String[] NO_NAME_COLUMN = {TYPE, VALUE};
-  private static final String[] NO_VALUE_COLUMN = {TYPE, NAME};
-  private static final String[] NO_NAME_OR_VALUE_COLUMN = {TYPE};
+
+  private static final String[] ALL_COLUMNS_NAMES = {TYPE, NAME, VALUE};
+  private static final int[] ALL_COLUMNS = {TYPE_COL, NAME_COL, VALUE_COL};
 
   private static final String EMPTY_STRING = "";
 
-  private String[] columnNames = ALL_COLUMNS;
-  private Object[][] data;
+  private String[] columnNames = ALL_COLUMNS_NAMES;
+  private int[] columns = ALL_COLUMNS;
+  private XPathAdapter.Result data;
 
 
   /**
@@ -64,7 +66,12 @@ public class NodeSetTableModel extends AbstractTableModel {
     if(data == null) {
       return 0;
     } else {
-      return data.length;
+      try {
+        return data.size();
+      } catch(Exception e) {
+        Log.log(Log.WARNING, NodeSetTableModel.class, "Error getting result size", e);
+        return 0;
+      }
     }
   }
 
@@ -73,15 +80,43 @@ public class NodeSetTableModel extends AbstractTableModel {
    * Implements method from interface {@link javax.swing.table.TableModel}.
    */
   public Object getValueAt(int row, int col) {
-    Object cell = data[row][col];
-
-    if(cell == null) {
-      return EMPTY_STRING;
-    } else {
-      return cell;
+      try{
+    if(row >= 0 && row < getRowCount()) {
+      XPathNode node = data.get(row);
+      if(col >= 0 && col < columns.length){
+        switch(columns[col]){
+        case TYPE_COL:
+          return node.getType();
+        case NAME_COL:
+          return node.getName();
+        case VALUE_COL:
+          return node.getDomValue();
+        default:
+          throw new IllegalStateException("invalid column: "+columns[col]);
+        }
+      }
     }
+    }catch(Exception e){
+      if(e instanceof IllegalStateException) throw (IllegalStateException)e;
+      else{
+        Log.log(Log.WARNING, NodeSetTableModel.class, "Error getting result node info", e);
+      }
+    }
+
+	return EMPTY_STRING;
   }
 
+
+  public XPathNode getValueAt(int row){
+		if(row >= 0 && row < getRowCount()) {
+			try{
+				return data.get(row);
+			}catch(Exception e){
+				Log.log(Log.WARNING, NodeSetTableModel.class, "Error getting result node "+row, e);
+			}
+		}
+		return null;
+  }
 
   /**
    * Overrides method from class {@link javax.swing.table.AbstractTableModel}.
@@ -100,99 +135,53 @@ public class NodeSetTableModel extends AbstractTableModel {
 
 
   /**
-   * Overrides method from class {@link javax.swing.table.AbstractTableModel}.
-   */
-  public void setValueAt(Object value, int row, int col) {
-    data[row][col] = value;
-    fireTableCellUpdated(row, col);
-  }
-
-
-  /**
-   * Sets the node type in the given row.
-   */
-  public void setNodeType(String type, int row) {
-    setValueAt(type, row, TYPE_COL);
-  }
-
-
-  /**
-   * Sets the node name in the given row.
-   */
-  public void setNodeName(String name, int row) {
-    setValueAt(name, row, NAME_COL);
-  }
-
-
-  /**
-   * Sets the node value in the given row.
-   */
-  public void setNodeValue(String value, int row) {
-    setValueAt(value, row, VALUE_COL);
-  }
-
-
-  /**
    * Deletes current model rows, puts all columns back in model if necessary and
    * adds new rows equal to the given new row count.
    */
-  public void resetRows(int newRowCount) {
+  public void resetRows(XPathAdapter.Result result) throws Exception {
     if(getRowCount() > 0) {
       fireTableRowsDeleted(0, getRowCount() - 1);
     }
 
-    if(columnNames != ALL_COLUMNS) {
-      setAllColumns();
+    this.data = result;
+
+    if(result.isNodeSet()){
+      boolean isNodeWithName = false;
+      boolean isNodeWithValue = false;
+      XPathAdapter.XPathNode node;
+
+      for (int i = 0; i < result.size(); i++) {
+        node = result.get(i);
+
+        if (node != null) {
+          isNodeWithName = isNodeWithName || node.hasExpandedName();
+          isNodeWithValue = isNodeWithValue || node.hasDomValue();
+        }
+      }
+
+      int[] tmpcols = new int[ALL_COLUMNS.length];
+      tmpcols[0] = TYPE_COL;
+      int icol = 1;
+      if(isNodeWithName){
+        tmpcols[icol++] = NAME_COL;
+      }
+      if(isNodeWithValue){
+        tmpcols[icol++] = VALUE_COL;
+      }
+
+      columns = new int[icol];
+      columnNames = new String[icol];
+      for(int i=0;i<columns.length;i++){
+        columns[i] = tmpcols[i];
+        columnNames[i] = ALL_COLUMNS_NAMES[tmpcols[i]];
+      }
       fireTableStructureChanged();
+
+
+    if(result.size() > 0) {
+        fireTableRowsInserted(0, result.size() - 1);
+      }
     }
-
-    this.data = new Object[newRowCount][getColumnCount()];
-
-    for(int i = 0; i < newRowCount; i++) {
-      this.data[i] = new String[columnNames.length];
-    }
-
-    if(newRowCount > 0) {
-      fireTableRowsInserted(0, newRowCount - 1);
-    }
-  }
-
-
-  private void setAllColumns() {
-    this.columnNames = ALL_COLUMNS;
-    fireTableStructureChanged();
-  }
-
-
-  /**
-   * Removes the node name column from the table model.
-   */
-  public void removeNameColumn() {
-    // Need to put values from the last column into the middle column
-    for(int i = 0; i < getRowCount(); i++) {
-      data[i][NAME_COL] = data[i][VALUE_COL];
-    }
-
-    this.columnNames = NO_NAME_COLUMN;
-    fireTableStructureChanged();
-  }
-
-
-  /**
-   * Removes the node value column from the table model.
-   */
-  public void removeValueColumn() {
-    this.columnNames = NO_VALUE_COLUMN;
-    fireTableStructureChanged();
-  }
-
-
-  /**
-   * Removes the node name and node value columns from the table model.
-   */
-  public void removeNameOrValueColumn() {
-    this.columnNames = NO_NAME_OR_VALUE_COLUMN;
-    fireTableStructureChanged();
   }
 
 }

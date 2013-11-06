@@ -1,7 +1,7 @@
 /*
  * XalanXPathAdapter.java - implements XPathAdapter using Xalan
  *
- * Copyright (c) 2010 Eric Le Lay
+ * Copyright (c) 2010, 2013 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,22 +19,13 @@
 */
 package xslt;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 import javax.xml.transform.TransformerException;
 
+
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
 import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Collections;
 
 import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathAPI;
@@ -48,11 +39,10 @@ import org.gjt.sp.jedit.jEdit;
  * Historically, it was included in XPathTool and the XPathAdapter
  * has been abstracted from its usage. 
  */
-public class XalanXPathAdapter implements XPathAdapter {
-	
+public class XalanXPathAdapter extends DOMXPathAdapter {
+
 	public Result evaluateExpression(Document doc, Map<String,String> prefixes, String expression)
 	throws TransformerException {
-
 		PrefixResolverImpl res = new PrefixResolverImpl(prefixes);
 		XObject xObject = XPathAPI.eval(doc, expression, res);
 
