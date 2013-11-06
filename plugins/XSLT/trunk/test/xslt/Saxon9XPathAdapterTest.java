@@ -52,7 +52,7 @@ public class Saxon9XPathAdapterTest{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
     	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
     	
@@ -61,7 +61,7 @@ public class Saxon9XPathAdapterTest{
     	
     	XPathAdapter.Result res = xpath.evaluateExpression(source, prefixes, "/xsl:stylesheet");
     	
-    	assertEquals("element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)",res.getType());
+    	assertEquals("element()",res.getType());
     	assertThat(res.getStringValue()).contains("hello");
     	
     	assertTrue(res.isNodeSet());
@@ -70,7 +70,7 @@ public class Saxon9XPathAdapterTest{
     	XPathAdapter.XPathNode n = res.get(0);
     	assertTrue(n.hasExpandedName());
     	assertFalse(n.hasDomValue());
-    	assertEquals("element(Q{http://www.w3.org/1999/XSL/Transform}stylesheet)",n.getType());
+    	assertEquals("element()",n.getType());
     	assertEquals("xsl:stylesheet",n.getName());
     	
     	XMLFragmentsString frags = res.toXMLFragmentsString();
@@ -82,7 +82,7 @@ public class Saxon9XPathAdapterTest{
     	final File xsl = new File(testData.get(),"base_uri_bug/base-uri-bug.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
     	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
     	
@@ -112,7 +112,7 @@ public class Saxon9XPathAdapterTest{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
     	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
     	
@@ -143,7 +143,7 @@ public class Saxon9XPathAdapterTest{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
     	Buffer b = openFile(xsl.getPath());
     	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(b);
+    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
     	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
     	
@@ -164,40 +164,4 @@ public class Saxon9XPathAdapterTest{
     	res.toString();
     }
 
-    @Test
-    public void testNamespaceContext(){
-    	Map<String,String> prefixes = new HashMap<String,String>();
-    	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
-    	prefixes.put("","http://www.w3.org/1999/XSL/Transform");
-    	prefixes.put("a","urn:a");
-    	Saxon9XPathAdapter.NamespaceContextImpl ctx = new Saxon9XPathAdapter.NamespaceContextImpl(prefixes);
-    	
-    	assertEquals("http://www.w3.org/1999/XSL/Transform",ctx.getNamespaceURI("xsl"));
-    	assertEquals("http://www.w3.org/1999/XSL/Transform",ctx.getNamespaceURI(""));
-    	assertNotNull(ctx.getNamespaceURI("xmlns"));
-    	assertNotNull(ctx.getNamespaceURI("xml"));
-    	Iterator<String> it = ctx.getPrefixes("http://www.w3.org/1999/XSL/Transform");
-    	List<String> l = new ArrayList<String>();
-    	while(it.hasNext())l.add(it.next());
-    	assertThat(l).containsOnly("xsl","");
-    	assertEquals("a",ctx.getPrefix("urn:a"));
-    	
-    	assertEquals("",ctx.getNamespaceURI("toto"));
-    	assertEquals(null,ctx.getPrefix("urn:toto"));
-    	
-    	assertEquals("xml",ctx.getPrefix("http://www.w3.org/XML/1998/namespace"));
-    	assertEquals("xmlns",ctx.getPrefix("http://www.w3.org/2000/xmlns/"));
-    	try{
-    		ctx.getNamespaceURI(null);
-    		fail("should throw an exception");
-    	}catch(IllegalArgumentException iae){
-    		// that's expected
-    	}
-    	try{
-    		ctx.getPrefix(null);
-    		fail("should throw an exception");
-    	}catch(IllegalArgumentException iae){
-    		// that's expected
-    	}
-    }
 }

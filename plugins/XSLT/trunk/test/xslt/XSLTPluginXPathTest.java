@@ -89,7 +89,7 @@ public class XSLTPluginXPathTest{
 		xpathTool.button("xpath.evaluate").click();
 		
 		Pause.pause(1000);
-		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
+		xpathTool.textBox("xpath.result.data-type").requireText("text()");
 		xpathTool.textBox("xpath.result.value").requireText("world");
 		
 		xpathTool.close();
@@ -266,7 +266,7 @@ public class XSLTPluginXPathTest{
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(0)).requireValue("xs:integer");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(1)).requireValue("");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(0).column(2)).requireValue("2");
-		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(0)).requireValue("attribute(Q{}select)");
+		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(0)).requireValue("attribute()");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(1)).requireValue("select");
 		xpathTool.table("xpath.result.node-set-summary").cell(TableCell.row(1).column(2)).requireValue(".");
 		
