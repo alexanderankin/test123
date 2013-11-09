@@ -13,6 +13,7 @@
 package xslt;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.*;
 import static org.gjt.sp.jedit.testframework.TestUtils.openFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -38,23 +39,20 @@ import org.w3c.dom.Document;
 
 /**
  * unit tests of the Saxon 9 XPath engine adapter
- * $Id$
  */
-@RunWith(JEditRunner.class)
 public class Saxon9XPathAdapterTest{
-
+    
 	@Rule
 	public TestData testData = new TestData();
-
+	
     
     @Test
     public void testElement() throws Exception{
-    	final File xsl = new File(testData.get(),"simple/transform.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
-    	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+
+    	final File xsl = new File(testData.get(),"simple/transform.xsl");
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
     	
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
@@ -80,11 +78,10 @@ public class Saxon9XPathAdapterTest{
     @Test
     public void testComment() throws Exception{
     	final File xsl = new File(testData.get(),"base_uri_bug/base-uri-bug.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
-    	
+
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+    	
+    	Document source  = xpath.buildDocument(xsl.toURI());
     	
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
@@ -102,7 +99,7 @@ public class Saxon9XPathAdapterTest{
     	assertTrue(n.hasDomValue());
     	assertEquals("comment()",n.getType());
     	assertEquals("",n.getName());
-
+    	
     	XMLFragmentsString frags = res.toXMLFragmentsString();
     	assertEquals(1,frags.getFragmentCount());
     }
@@ -110,19 +107,18 @@ public class Saxon9XPathAdapterTest{
     @Test
     public void testNumberSequence() throws Exception{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
     	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+    	
+    	Document source  = xpath.buildDocument(xsl.toURI());
     	
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
     	
     	XPathAdapter.Result res = xpath.evaluateExpression(source, prefixes, "(1+1,1 div 2)");
     	
-    	assertEquals("sequence of xs:decimal",res.getType());
-    	assertEquals("2 0.5",res.getStringValue());
+    	assertEquals("sequence of xs:integer",res.getType());
+    	assertEquals("(2,0.5)",res.getStringValue());
     	
     	assertTrue(res.isNodeSet());
     	assertEquals(2,res.size());
@@ -133,7 +129,7 @@ public class Saxon9XPathAdapterTest{
     	assertEquals("xs:integer",n.getType());
     	assertEquals("2",n.getDomValue());
     	assertEquals(null,n.getName());
-
+    	
     	XMLFragmentsString frags = res.toXMLFragmentsString();
     	assertEquals(2,frags.getFragmentCount());
     }
@@ -141,11 +137,10 @@ public class Saxon9XPathAdapterTest{
     @Test
     public void testEmptySequence() throws Exception{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new Saxon9XPathAdapter(), b);
     	
     	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
     	
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
@@ -153,7 +148,7 @@ public class Saxon9XPathAdapterTest{
     	XPathAdapter.Result res = xpath.evaluateExpression(source, prefixes, "/xsl:transform");
     	
     	assertEquals("empty sequence",res.getType());
-    	assertEquals("",res.getStringValue());
+    	assertEquals("()",res.getStringValue());
     	
     	assertTrue(res.isNodeSet());
     	assertEquals(0,res.size());
@@ -162,6 +157,35 @@ public class Saxon9XPathAdapterTest{
     	assertEquals(0,frags.getFragmentCount());
     	
     	res.toString();
+    }
+    
+    @Test
+    public void testGrabNamespaces() throws Exception{
+    	final File xsl = new File(testData.get(),"namespaces/default_and_prefixed.xml");
+    	
+    	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
+    	
+    	Map<String, List<String>> namespaces = xpath.grabNamespaces(source);
+    	assertTrue(namespaces.containsKey(""));
+    	assertThat(namespaces.get("")).containsOnly("urn:joe");
+    	assertThat(namespaces.get("world")).containsOnly("urn:world");
+    }
+
+    @Test
+    public void testGrabNamespacesRebind() throws Exception{
+    	final File xsl = new File(testData.get(),"namespaces/rebind.xml");
+    	
+    	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
+    	
+    	Map<String, List<String>> namespaces = xpath.grabNamespaces(source);
+    	System.err.println("ns:"+namespaces);
+    	assertTrue(namespaces.containsKey(""));
+    	assertThat(namespaces.get("")).containsOnly("rround","omment");
+    	assertThat(namespaces.get("d")).containsOnly("ocument","ummy");
     }
 
 }
