@@ -464,6 +464,8 @@
         <listitem><para>XPath tool: selecting node results from the Node-set summary
         opens the buffer if necessary and moves the caret to the location in the document.
         This only works with Saxon XPath engine.</para></listitem>
+        <listitem><para>XSLT processor: when transforming to a file, the encoding specified
+        in the transform's &lt;xsl:output&gt; is taken into account.</para></listitem>
       </itemizedlist>
     </para>
     <para>

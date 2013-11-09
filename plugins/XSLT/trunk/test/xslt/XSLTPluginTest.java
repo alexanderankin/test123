@@ -18,9 +18,10 @@ import static org.gjt.sp.jedit.testframework.TestUtils.findDialogByTitle;
 import static org.gjt.sp.jedit.testframework.TestUtils.view;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import javax.swing.text.JTextComponent;
@@ -33,6 +34,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.timing.Pause;
+import org.fest.swing.timing.Timeout;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.testframework.JEditRunner;
 import org.gjt.sp.jedit.testframework.TestData;
@@ -65,7 +67,7 @@ public class XSLTPluginTest{
     	
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		assertThat(b.getName().matches("Untitled-\\d+"));
@@ -80,6 +82,10 @@ public class XSLTPluginTest{
     	File xml = new File(testData.get(),"simple/source.xml");
     	File xsl = new File(testData.get(),"broken/transform.xsl");
     	
+		action("error-list-show");
+		
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 		
 		// an error will be reported
@@ -88,14 +94,10 @@ public class XSLTPluginTest{
 
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		assertThat(b.getName().matches("Untitled-\\d+"));
-		
-		action("error-list-show");
-		
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
 		
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error) xsl:ourrtput"));
@@ -108,6 +110,9 @@ public class XSLTPluginTest{
     public void testXSLTBaseURIBug() throws IOException{
     	File xsl = new File(testData.get(),"base_uri_bug/base-uri-bug.xsl");
     	
+		action("error-list-show");
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
     	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,"",1);
 		
 		// an error will be reported
@@ -116,7 +121,7 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		
@@ -124,9 +129,6 @@ public class XSLTPluginTest{
 
 		xsltProcessor.close();
 
-		action("error-list-show");
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
-		
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("15: (XSLT error)"));
 		errorlist.close();
@@ -138,18 +140,18 @@ public class XSLTPluginTest{
     	File xml = new File(testData.get(),"simple/source.xml");
     	File xsl = new File(testData.get(),"broken/fails_at_runtime.xsl");
     	
+		action("error-list-show");
+		
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		assertThat(b.getName().matches("Untitled-\\d+"));
-		
-		action("error-list-show");
-		
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
 		
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("16: (XSLT error)"));
@@ -163,6 +165,9 @@ public class XSLTPluginTest{
     	final File xml = new File(testData.get(),"broken/source.xml");
     	File xsl = new File(testData.get(),"simple/transform.xsl");
     	
+		action("error-list-show");
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 
     	TestUtils.close(view(),view().getBuffer());
@@ -181,15 +186,12 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		
 		xsltProcessor.close();
 
-		action("error-list-show");
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
-		
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("2: (SAX error) Content is not allowed in prolog"));
 		errorlist.close();
@@ -269,7 +271,7 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		xsltProcessor.close();
 
@@ -297,7 +299,7 @@ public class XSLTPluginTest{
 		xsltProcessor.checkBox("open-result").requireSelected().uncheck();
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		xsltProcessor.checkBox("open-result").check();
 		xsltProcessor.close();
@@ -318,7 +320,7 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		xsltProcessor.close();
 
@@ -344,22 +346,26 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		xsltProcessor.close();
 
-		Buffer b = view().getBuffer();
-		
-		assertEquals(0,b.getLength());
-		
-		TestUtils.close(TestUtils.view(),b);
+		Pause.pause(1000);
+		Buffer b;
+		if(result.exists()){
+			b = TestUtils.openFile(result.getPath());
+			
+			assertEquals(0,b.getLength());
+			
+			TestUtils.close(TestUtils.view(),b);                 
+		}
 		
 		b = TestUtils.openFile(realOutput.getPath());
 		assertEquals("Hello world !",b.getText(0,b.getLength()));		
 		
 		TestUtils.close(TestUtils.view(),b);
 		
-		assertTrue(result.delete());
+		if(result.exists())assertTrue(result.delete());
 		assertTrue(realOutput.delete());
     }
 
@@ -373,7 +379,7 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		xsltProcessor.close();
 
@@ -393,7 +399,7 @@ public class XSLTPluginTest{
 		xsltProcessor.radioButton("xslt.stylesheets.buffer").check();
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		xsltProcessor.radioButton("xslt.stylesheets.file").check();
 		xsltProcessor.close();
@@ -450,7 +456,7 @@ public class XSLTPluginTest{
 		
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		
@@ -470,7 +476,7 @@ public class XSLTPluginTest{
     	
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		
@@ -489,13 +495,53 @@ public class XSLTPluginTest{
     	
 		xsltProcessor.button("xslt.transform").click();
 		
-		Pause.pause(1000);
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
 		
 		Buffer b = view().getBuffer();
 		
 		assertThat(b.getText(0,b.getLength())).contains("- there are 2 templates");
 		TestUtils.close(TestUtils.view(),b);
 		xsltProcessor.close();
+    }
+    
+    @Test
+    public void testOutputEncoding() throws IOException{
+    	File dest = new File(testData.get(),"encoding/result.xml");
+    	File xsl;
+    	String encoding;
+    	
+    	if(Charset.defaultCharset().name().equals("UTF-8")){
+    		xsl = new File(testData.get(),"encoding/accentedchar-iso-8859-1.xsl");
+    		encoding="ISO-8859-1";
+    	}else{
+    		xsl = new File(testData.get(),"encoding/accentedchar-utf8.xsl");
+    		encoding="UTF-8";
+    	}
+    	
+    	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,dest.getPath(),1);
+    	
+		xsltProcessor.button("xslt.transform").click();
+		
+		xsltProcessor.button("xslt.transform").requireEnabled(Timeout.timeout(1000));
+		
+		xsltProcessor.close();
+		
+		try{
+			BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(dest), encoding));
+			boolean found = false;
+			for(String line=rd.readLine(); line != null ; line=rd.readLine()){
+				if(line.contains("<test>")){
+					assertTrue("encoding error (should contain r\u00e9ussi)? "+line, line.contains("r\u00e9ussi"));
+					found = true;
+				}
+			}
+			rd.close();
+			assertTrue(found);
+			
+			assertTrue(dest.delete());
+		}catch(IOException e){
+			fail("Exception should not happen: "+e);
+		}
     }
 
     public FrameFixture setupProcessor(File xml, File xsl, final String dest,int version){
