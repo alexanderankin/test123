@@ -55,6 +55,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -254,7 +255,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		XPathAdapter xpath = getXPath();
 		if(xpath != null) {
 
-			String sourcePath;
+			final String sourcePath;
 			if (inputSelectionPanel.isFileSelected()) { //take input from file
 				sourcePath = inputSelectionPanel.getSourceFile();
 			} else { // take input from active buffer
@@ -263,18 +264,24 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 
 			Document document = getCurrentDocument(xpath);
 
-			String expression = expressionPanel.getExpression();
+			final String expression = expressionPanel.getExpression();
 
-			XPathAdapter.Result result = xpath.evaluateExpression(document,nsPanel.getMap(),expression);
+			final XPathAdapter.Result result = xpath.evaluateExpression(document,nsPanel.getMap(),expression);
 			Log.log(Log.DEBUG,this,"evaluateExpression returns : "+result);
 
-			lastSourcePath = sourcePath;
-			expressionPanel.addToHistory(expression);
-
-			dateTypeField.setText(result.getType());
-			setResultValue(result);
-			setNodeSetResults(result);
-			setXmlFragments(result);
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run() {
+					lastSourcePath = sourcePath;
+					expressionPanel.addToHistory(expression);
+					try{
+						dateTypeField.setText(result.getType());
+						setResultValue(result);
+						setNodeSetResults(result);
+						setXmlFragments(result);
+					}catch(Exception e){
+						Log.log(Log.WARNING,XPathTool.class,"Error getting results",e);
+					}
+			}});
 		}
 	}
 
