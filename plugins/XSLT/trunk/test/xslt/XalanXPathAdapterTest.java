@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.Buffer;
@@ -44,11 +45,10 @@ public class XalanXPathAdapterTest{
     @Test
     public void testElement() throws Exception{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
-    	
+
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
     	
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
@@ -74,12 +74,11 @@ public class XalanXPathAdapterTest{
     @Test
     public void testComment() throws Exception{
     	final File xsl = new File(testData.get(),"base_uri_bug/base-uri-bug.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
-    	
+
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
-    	
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
+
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
     	
@@ -105,11 +104,10 @@ public class XalanXPathAdapterTest{
     @Test
     public void testNumber() throws Exception{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
-    	
+
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
     	
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
@@ -127,12 +125,11 @@ public class XalanXPathAdapterTest{
     @Test
     public void testEmptySequence() throws Exception{
     	final File xsl = new File(testData.get(),"simple/transform.xsl");
-    	Buffer b = openFile(xsl.getPath());
-    	Pause.pause(1000);
-    	Document source  = DocumentCache.getFromCache(new XalanXPathAdapter(), b);
-    	
+
     	XalanXPathAdapter xpath = new XalanXPathAdapter();
-    	
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
+
     	Map<String,String> prefixes = new HashMap<String,String>();
     	prefixes.put("xsl","http://www.w3.org/1999/XSL/Transform");
     	
@@ -163,5 +160,34 @@ public class XalanXPathAdapterTest{
     	assertEquals("http://www.w3.org/1999/XSL/Transform",ctx.getNamespaceForPrefix("xsl",null));
     	assertNull(ctx.getBaseIdentifier());
     	assertFalse(ctx.handlesNullPrefixes());
+    }
+    
+    @Test
+    public void testGrabNamespaces() throws Exception{
+    	final File xsl = new File(testData.get(),"namespaces/default_and_prefixed.xml");
+    	
+    	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
+    	
+    	Map<String, List<String>> namespaces = xpath.grabNamespaces(source);
+    	assertTrue(namespaces.containsKey(""));
+    	assertThat(namespaces.get("")).containsOnly("urn:joe");
+    	assertThat(namespaces.get("world")).containsOnly("urn:world");
+    }
+
+    @Test
+    public void testGrabNamespacesRebind() throws Exception{
+    	final File xsl = new File(testData.get(),"namespaces/rebind.xml");
+    	
+    	Saxon9XPathAdapter xpath = new Saxon9XPathAdapter();
+
+    	Document source  = xpath.buildDocument(xsl.toURI());
+    	
+    	Map<String, List<String>> namespaces = xpath.grabNamespaces(source);
+    	System.err.println("ns:"+namespaces);
+    	assertTrue(namespaces.containsKey(""));
+    	assertThat(namespaces.get("")).containsOnly("rround","omment");
+    	assertThat(namespaces.get("d")).containsOnly("ocument","ummy");
     }
 }
