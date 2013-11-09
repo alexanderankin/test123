@@ -164,7 +164,8 @@ public class XalanXPathNode implements XPathAdapter.XPathNode {
 
 
 		String domValue = this.dtm.getNodeValue(this.nodeHandle);
-		domValue += (" -- Location: "+dtm.getSourceLocatorFor(this.nodeHandle).getLineNumber());
+		// not working as easy as that. Have to find sthing else
+		// domValue += (" -- Location: "+dtm.getSourceLocatorFor(this.nodeHandle).getLineNumber());
 		if (hasDomValue()) {
 			domValue = XSLTUtilities.removeIn(domValue, (char) 10); //remove '\r' to temporarily fix a bug in the display of results in Windows
 		}
