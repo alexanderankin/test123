@@ -302,9 +302,16 @@
 
 						<!-- hackish list of authors -->
 						<xsl:for-each select="//author">
+							<!-- output repeated authors only once
+							     see CommonControls where there is 1 author per section
+							  -->
+							<xsl:if test="not(preceding::author[
+								firstname = current()/firstname and
+								surname = current()/surname])">
 							<p>
 								<xsl:apply-templates select="."/>
 							</p>
+							</xsl:if>
 						</xsl:for-each>
 					</font>
 				</td>
