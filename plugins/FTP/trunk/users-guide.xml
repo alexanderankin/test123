@@ -195,11 +195,11 @@ Activity Log dockable to find out what happened. </para></listitem>
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
 you are unable to do anything, you can reset the plugin by invoking the
 <guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem>, which is similar to
-restarting the plugin - all connections are closed, all cached directories are
+reloading the plugin - all connections are closed, all cached directories are
 cleared, and all saved passwords in memory are forgotten. The saved passwords
 file is not touched by this action. </para></listitem>
 
-<listitem><para>Problems were reported on connecting to ftp servers
+<listitem><para>Problems were reported when connecting to ftp servers
 from Windows 7. Probably there is a bug in Windows firewall.
 There are workarounds for that, see our bug tracker entry #3491410,
 <ulink url="https://sourceforge.net/tracker/index.php?func=detail&amp;aid=3491410&amp;group_id=588&amp;atid=565475" />
@@ -213,6 +213,14 @@ There are workarounds for that, see our bug tracker entry #3491410,
 
  <itemizedlist>
  
+    <listitem><para> <emphasis role="bold">Version 1.0.8</emphasis>
+ 			Requires Java 1.6, CommonControls, and jEdit 4.5.
+ 		</para>
+ 		<itemizedlist>
+ 		<listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
+ 		   Yihua Zhang) </para></listitem>
+ 		
+     </itemizedlist> </listitem>
    	<listitem><para> <emphasis role="bold">Version 1.0.7</emphasis> By Alan Ezust
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>

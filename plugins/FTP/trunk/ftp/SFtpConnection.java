@@ -319,6 +319,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		if (mtime != 0) {
 			Date date= new Date(((long)mtime)*1000);						
 			String modTime = FileVFS.LocalFile.DATE_FORMAT.format(date);
+			entry.setModified(((long)mtime)*1000);
 			entry.setModifiedDate(modTime);
 		}
 

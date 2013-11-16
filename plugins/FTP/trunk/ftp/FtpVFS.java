@@ -259,6 +259,8 @@ public class FtpVFS extends VFS
 		private String ownerGroup;
 		private String modifiedDateStr;
 		
+		private long modified;
+		
 		public FtpDirectoryEntry(String name, String path,
 			String deletePath, int type, long length,
 			boolean hidden, int permissions,
@@ -286,6 +288,14 @@ public class FtpVFS extends VFS
 		
 		public void setModifiedDate(String modified) {
 			modifiedDateStr = modified;
+		}
+		
+		public void setModified(long modified){
+			this.modified = modified;
+		}
+		
+		public long getModified(){
+			return this.modified;
 		}
 		
 		public void setOwner(String name, String group) {
