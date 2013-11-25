@@ -53,17 +53,28 @@ public class ImageViewerPlugin extends EBPlugin {
     public static final String NAME = "imageviewer";
 
     // view to image viewer map
-    private static HashMap<View, ImageViewer> viewMap = new HashMap<View, ImageViewer>();
+    private static HashMap<View, ImageViewer> viewMap = null;
 
     // VFSDirectoryEntryTable to MouseAdapter map
-    private static HashMap<VFSDirectoryEntryTable, MMouseAdapter> vfsAdapterMap = new HashMap<VFSDirectoryEntryTable, MMouseAdapter>();
+    private static HashMap<VFSDirectoryEntryTable, MMouseAdapter> vfsAdapterMap = null;
 
     // PV tree to MouseAdapter map
-    private static HashMap<JTree, MMouseAdapter> pvAdapterMap = new HashMap<JTree, MMouseAdapter>();
-
+    private static HashMap<JTree, MMouseAdapter> pvAdapterMap = null;
+    
+    private static void initMaps() {
+        if (viewMap == null) {
+            viewMap = new HashMap<View, ImageViewer>();   
+        }
+        if (vfsAdapterMap == null) {
+            vfsAdapterMap = new HashMap<VFSDirectoryEntryTable, MMouseAdapter>();   
+        }
+        if (pvAdapterMap == null) {
+            pvAdapterMap = new HashMap<JTree, MMouseAdapter>();   
+        }
+    }
 
     /**
-     * @return the ImageViewer for the given View.    
+     * @return the ImageViewer for the given View.
      */
     public static ImageViewer getImageViewer( View view ) {
         if ( view == null ) {
@@ -79,17 +90,19 @@ public class ImageViewerPlugin extends EBPlugin {
 
     /**
      * Called from beanshell code in browser.actions.xml, shows
-     * an image from the first selected file in the given VFSBrowser.    
+     * an image from the first selected file in the given VFSBrowser.
      */
     public static void showImage( View view, VFSBrowser browser ) {
-        if ( view == null )
-            return ;
+        if ( view == null ) {
+            return;
+        }
         Component c = view.getDockableWindowManager().getDockable( NAME );
-        if ( c == null || !c.isVisible() )
-            return ;
+        if ( c == null || !c.isVisible() ) {
+            return;
+        }
 
         if ( browser.getSelectedFiles() != null && browser.getSelectedFiles().length > 0 ) {
-            String filename = browser.getSelectedFiles() [ 0 ].getPath();
+            String filename = browser.getSelectedFiles() [0].getPath();
             if ( ImageViewer.isValidFilename( filename ) ) {
                 ImageViewer imageViewer = getImageViewer( view );
                 imageViewer.showImage( filename );
@@ -104,8 +117,7 @@ public class ImageViewerPlugin extends EBPlugin {
             if ( ViewUpdate.CREATED.equals( message.getWhat() ) ) {
                 addVFSMouseAdapter( message.getView() );
                 addPVMouseAdapter( message.getView() );
-            }
-            else if ( ViewUpdate.CLOSED.equals( message.getWhat() ) ) {
+            } else if ( ViewUpdate.CLOSED.equals( message.getWhat() ) ) {
                 viewMap.remove( message.getView() );
 
                 // remove and add mouse adapters.  This prevents any memory leaks
@@ -114,29 +126,26 @@ public class ImageViewerPlugin extends EBPlugin {
                 removeMouseAdapters();
                 addMouseAdapters();
             }
-        }
-        else if ( msg instanceof PropertiesChanged ) {
+        } else if ( msg instanceof PropertiesChanged ) {
             boolean allowVFSMouseOver = jEdit.getBooleanProperty( "imageviewer.allowVFSMouseOver", true );
             boolean allowPVMouseOver = jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true );
 
             // maybe turn off mouse adapters
-            if ( !allowVFSMouseOver ) {
+            if ( ! allowVFSMouseOver ) {
                 removeVFSMouseAdapters();
             }
-            if ( !allowPVMouseOver ) {
+            if ( ! allowPVMouseOver ) {
                 removePVMouseAdapters();
             }
 
             // maybe start mouse adapters
             addMouseAdapters();
-        }
-        else if ( msg instanceof DockableWindowUpdate ) {
+        } else if ( msg instanceof DockableWindowUpdate ) {
             DockableWindowUpdate message = ( DockableWindowUpdate ) msg;
             DockableWindowManager dwm = ( DockableWindowManager ) message.getSource();
             if ( "vfs.browser".equals( message.getDockable() ) ) {
                 addVFSMouseAdapter( dwm.getView() );
-            }
-            else if ( "projectviewer".equals( message.getDockable() ) ) {
+            } else if ( "projectviewer".equals( message.getDockable() ) ) {
                 addPVMouseAdapter( dwm.getView() );
             }
         }
@@ -148,23 +157,34 @@ public class ImageViewerPlugin extends EBPlugin {
     }
 
     private void removeVFSMouseAdapters() {
+        if (vfsAdapterMap == null) {
+            return;   
+        }
         for ( VFSDirectoryEntryTable table : vfsAdapterMap.keySet() ) {
-            table.removeMouseMotionListener( vfsAdapterMap.get( table ) );
+            MMouseAdapter adapter = vfsAdapterMap.get( table );
+            table.removeMouseMotionListener( adapter );
+            table.removeMouseListener( adapter );
         }
         vfsAdapterMap.clear();
     }
 
     private void removePVMouseAdapters() {
+        if (pvAdapterMap == null) {
+            return;   
+        }
         for ( JTree tree : pvAdapterMap.keySet() ) {
-            tree.removeMouseMotionListener( pvAdapterMap.get( tree ) );
+            MMouseAdapter adapter = pvAdapterMap.get( tree );
+            tree.removeMouseMotionListener( adapter );
+            tree.removeMouseListener( adapter );
         }
         pvAdapterMap.clear();
     }
 
     /**
-     * Create mouse motion listeners for File System Browser and Project Viewer.    
+     * Create mouse motion listeners for File System Browser and Project Viewer.
      */
     private void addMouseAdapters() {
+        removeMouseAdapters();
         View[] views = jEdit.getViews();
         for ( View view : views ) {
             // add a mouse adapter to the VFSBrowser in each view
@@ -177,22 +197,22 @@ public class ImageViewerPlugin extends EBPlugin {
 
     private void addPVMouseAdapter( View view ) {
         if ( view == null ) {
-            return ;
+            return;
         }
 
         boolean allowPVMouseOver = jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true );
-        if ( !allowPVMouseOver ) {
-            return ;
+        if ( ! allowPVMouseOver ) {
+            return;
         }
 
         EditPlugin pvPlugin = jEdit.getPlugin( "projectviewer.ProjectPlugin" );
         if ( pvPlugin == null ) {
-            return ;
+            return;
         }
 
         ProjectViewer pv = ProjectViewer.getViewer( view );
         if ( pv == null ) {
-            return ;
+            return;
         }
 
         try {
@@ -211,62 +231,63 @@ public class ImageViewerPlugin extends EBPlugin {
                     pvAdapterMap.put( tree, adapter );
                 }
             }
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
     }
 
     private MMouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
         MMouseAdapter adapter = new MMouseAdapter() {
-                    public void mouseMoved( MouseEvent me ) {
-                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
-                            showImage( me );
-                        }
+            public void mouseMoved( MouseEvent me ) {
+                if ( jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
+                    showImage( me );
+                }
+            }
+
+            public void mouseClicked( MouseEvent me ) {
+                if ( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
+                    showImage( me );
+                }
+            }
+
+            private void showImage( MouseEvent me ) {
+                // Do nothing if dockable is not visible.
+                if ( view == null ) {
+                    return;
+                }
+                Component c = view.getDockableWindowManager().getDockable( NAME );
+                if ( c == null || !c.isVisible() ) {
+                    return;
+                }
+                TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
+                Object lastComponent = treepath.getLastPathComponent();
+                if ( lastComponent instanceof VPTNode ) {
+                    VPTNode node = ( VPTNode ) lastComponent;
+                    String path = node.getNodePath();
+                    if ( ImageViewer.isValidFilename( path ) ) {
+                        view.getDockableWindowManager().showDockableWindow( NAME );
+                        ImageViewer imageViewer = getImageViewer( view );
+                        imageViewer.showImage( path );
                     }
+                }
 
-                    public void mouseClicked( MouseEvent me ) {
-                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
-                            showImage( me );
-                        }
-                    }
+            }
 
-                    private void showImage( MouseEvent me ) {
-                        // Do nothing if dockable is not visible.
-                        if ( view == null )
-                            return ;
-                        Component c = view.getDockableWindowManager().getDockable( NAME );
-                        if ( c == null || !c.isVisible() )
-                            return ;
-                        TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                        Object lastComponent = treepath.getLastPathComponent();
-                        if ( lastComponent instanceof VPTNode ) {
-                            VPTNode node = ( VPTNode ) lastComponent;
-                            String path = node.getNodePath();
-                            if ( ImageViewer.isValidFilename( path ) ) {
-                                view.getDockableWindowManager().showDockableWindow( NAME );
-                                ImageViewer imageViewer = getImageViewer( view );
-                                imageViewer.showImage( path );
-                            }
-                        }
-
-                    }
-
-                };
+        };
         return adapter;
     }
 
     private void addVFSMouseAdapter( View view ) {
         boolean allowVFSMouseOver = jEdit.getBooleanProperty( "imageviewer.allowVFSMouseOver", true );
-        if ( !allowVFSMouseOver ) {
-            return ;
+        if ( ! allowVFSMouseOver ) {
+            return;
         }
         if ( view == null ) {
-            return ;
+            return;
         }
         VFSBrowser browser = ( VFSBrowser ) view.getDockableWindowManager().getDockable( "vfs.browser" );
         if ( browser == null ) {
-            return ;
+            return;
         }
 
         Component[] children = browser.getComponents();
@@ -280,8 +301,7 @@ public class ImageViewerPlugin extends EBPlugin {
                         table.addMouseMotionListener( adapter );
                         vfsAdapterMap.put( table, adapter );
                     }
-                }
-                catch ( Exception e ) {
+                } catch ( Exception e ) {
                     e.printStackTrace();
                 }
             }
@@ -290,157 +310,146 @@ public class ImageViewerPlugin extends EBPlugin {
 
     private MMouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
         MMouseAdapter adapter = new MMouseAdapter() {
-                    public void mouseMoved( MouseEvent me ) {
-                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
-                            showImage( me );
-                        }
-                    }
+            public void mouseMoved( MouseEvent me ) {
+                if ( jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
+                    showImage( me );
+                }
+            }
 
-                    public void mouseClicked( MouseEvent me ) {
-                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
-                            showImage( me );
-                        }
-                    }
+            public void mouseClicked( MouseEvent me ) {
+                if ( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
+                    showImage( me );
+                }
+            }
 
-                    private void showImage( MouseEvent me ) {
-                        if ( requireIVVisible( view ) ) {
-                            Point p = me.getPoint();
-                            int row = table.rowAtPoint( p );
-                            int column = table.columnAtPoint( p );
-                            if ( row == -1 ) {
-                                return ;
+            private void showImage( MouseEvent me ) {
+                if ( requireIVVisible( view ) ) {
+                    Point p = me.getPoint();
+                    int row = table.rowAtPoint( p );
+                    int column = table.columnAtPoint( p );
+                    if ( row == -1 ) {
+                        return;
+                    }
+                    if ( column == 0 ) {
+                        try {
+                            VFSFile file = ( VFSFile ) PrivilegedAccessor.getValue( table.getModel().getValueAt( row, 0 ), "dirEntry" );
+                            String path = file.getPath();
+                            if ( ImageViewer.isValidFilename( path ) ) {
+                                view.getDockableWindowManager().showDockableWindow( NAME );
+                                ImageViewer imageViewer = getImageViewer( view );
+                                imageViewer.showImage( path );
                             }
-                            if ( column == 0 ) {
-                                try {
-                                    VFSFile file = ( VFSFile ) PrivilegedAccessor.getValue( table.getModel().getValueAt( row, 0 ), "dirEntry" );
-                                    String path = file.getPath();
-                                    if ( ImageViewer.isValidFilename( path ) ) {
-                                        view.getDockableWindowManager().showDockableWindow( NAME );
-                                        ImageViewer imageViewer = getImageViewer( view );
-                                        imageViewer.showImage( path );
-                                    }
-                                }
-                                catch ( Exception e ) {
-                                    e.printStackTrace();
-                                }
-                            }
+                        } catch ( Exception e ) {
+                            e.printStackTrace();
                         }
                     }
+                }
+            }
 
-                    private boolean requireIVVisible( View view ) {
-                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
-                        if ( iv == null ) {
-                            return true;
-                        }
-                        return !jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) );
-                    }
+            private boolean requireIVVisible( View view ) {
+                Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
+                if ( iv == null ) {
+                    return true;
+                }
+                return !jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) );
+            }
 
-                };
+        };
         return adapter;
+    }
+    
+    public void start() {
+        initMaps();   
     }
 
     public void stop() {
-        for ( VFSDirectoryEntryTable table : vfsAdapterMap.keySet() ) {
-            MMouseAdapter adapter = vfsAdapterMap.get( table );
-            table.removeMouseMotionListener( adapter );
-        }
-        for ( JTree tree : pvAdapterMap.keySet() ) {
-            MMouseAdapter adapter = pvAdapterMap.get( tree );
-            tree.removeMouseMotionListener( adapter );
-        }
+        removeMouseAdapters();
         vfsAdapterMap = null;
         pvAdapterMap = null;
         viewMap = null;
     }
 
     public static void clear( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.clear();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.clear();
                 }
             }
+        }
         );
     }
 
     public static void copy( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.copy();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.copy();
                 }
             }
+        }
         );
     }
 
     public static void reload( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.reload();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.reload();
                 }
             }
+        }
         );
     }
 
     public static void zoomIn( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.zoomIn();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.zoomIn();
                 }
             }
+        }
         );
     }
 
     public static void zoomOut( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.zoomOut();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.zoomOut();
                 }
             }
+        }
         );
     }
 
     public static void rotateCCW( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.rotateCCW();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.rotateCCW();
                 }
             }
+        }
         );
     }
 
     public static void rotateCW( final View view ) {
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ImageViewer imageViewer = viewMap.get( view );
-                    if ( imageViewer != null ) {
-                        imageViewer.rotateCW();
-                    }
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.rotateCW();
                 }
             }
+        }
         );
     }
 
