@@ -1,0 +1,88 @@
+Editing notes:
+
+Want to add 2 editing features:
+1. resize original
+2. crop original
+
+updates to Zoom:
+Allow user to zoom to a particular size by pixel or percent.
+   - need a dialog for width, height, units
+Show the size.
+Add option to show at 100%
+Stay centered on zoom
+
+
+Scaling:
+
+Need dialog with:
+Image Size
+   Width
+   Height
+   lock
+   units are always pixels
+   resolution? gimp has this
+   quality dropdown? gimp has these: none, linear, cubic, sinc (lanczos 3)
+   buttons: scale, cancel, reset
+   undo abilitiy
+
+
+Crop:
+regardless of current zoom
+need cross hair cursor
+mark drag/selection area
+cancel selection
+crop command
+undo ability
+
+
+
+Both:
+Undo - redo current icons for rotate and reuse jEdit icon for undo
+Save As
+   - confirm on save as with same name
+   
+   
+Toolbar:
+replace with menu?
+Add option for which side to show the toolbar
+Add these:
+   - right click on + or - zoom brings up zoom dialog for zoom to a specific
+   pixel size or percent
+   - show zoom percent and current pixel size
+   - scale button
+   - select button, turns on crop mode, crosshair cursor, etc
+   - crop (to selection, not enabled if no selection)
+   - save as button
+   
+Mouse listener:
+right click shows popup menu
+   - image properties
+   - scale
+   - center
+   - zoom
+   - crop (enable if selection)
+   - select none (enable if selection)
+   - rotate L & R
+   - copy to clipboard
+   - copy selection to clipboard?
+   - save as
+control-drag selects 
+
+
+Possible menu:
+File
+   clear
+   reload
+   open
+   save as
+Edit
+   scale
+   crop
+   select none
+   rotate
+   copy to clipboard
+   copy selection to clipboard
+Image
+   zoom
+   properties
+   center
