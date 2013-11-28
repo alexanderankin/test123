@@ -52,7 +52,7 @@ public class LaTeXOptionPane
     //~ Constructors ..........................................................
 
     public LaTeXOptionPane() {
-        super("general");
+        super("latextools.general");
     }
 
     //~ Methods ...............................................................
