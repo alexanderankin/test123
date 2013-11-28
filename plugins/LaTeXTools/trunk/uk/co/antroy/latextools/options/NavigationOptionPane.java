@@ -62,7 +62,7 @@ public class NavigationOptionPane
      * Creates a new NavigationOptionPane object.
      */
     public NavigationOptionPane() {
-        super("navigation");
+        super("latextools.navigation");
     }
 
     //~ Methods ...............................................................
