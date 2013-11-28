@@ -191,7 +191,7 @@ public class LaTeXParser
             RE search = null;
 
             try {
-                search = new RE(srch.getTag());
+                search = new RE(srch.getTag(), RE.REG_MULTILINE);
             } catch (REException e) {
                 search = null;
             }
@@ -258,7 +258,7 @@ public class LaTeXParser
         sb.append(startRegExp).append(")|(").append(endRegExp).append(")");
         RE regex = null;
         try{
-            regex = new RE(sb.toString());
+            regex = new RE(sb.toString(), RE.REG_MULTILINE );
         } catch (REException e){
             e.printStackTrace();
             Log.log(Log.ERROR,this,e);
