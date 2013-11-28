@@ -6,6 +6,7 @@
 4:\\subsection[\[{](.+?)[\]}]:  $1 :0: :1
 5:\\subsubsection[\[{](.+?)[\]}]:  $1 :0: :1
 6:\\paragraph\{(.+?)\}: :0: :1
+6:\\begin\{slide\}.*\n?(\\frametitle\{(.*?)\})?:Slide $2:3:\\end\{slide\}:1
 7:\\begin\{theorem\}(\[.+?\])?:Thm\u003A $1:2: :3
 7:\\begin\{lemma\}(\[.+?\])?:Lem\u003A $1:2: :3
 7:\\begin\{proposition\}(\[.+?\])?:Prp\u003A $1:2: :3
