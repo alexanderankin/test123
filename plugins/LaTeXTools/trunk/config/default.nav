@@ -23,7 +23,7 @@
 8:\\caption\{(.*?)\}:Capt\u003A $1:1: :0
 7:\\begin\{itemize\}:Itemize:3:\\end\{itemize\}:5
 7:\\begin\{enumerate\}:Enumerate:3:\\end\{enumerate\}:5
-7:\\begin\{(cpp|verbatim)\}:$1:3:\\end\{$1\}:6
+7:\\begin\{(cpp|verbatim)\}:$1:3:\\end\{(cpp|verbatim)\}:6
 8:\\((input)|(include))\{(.+?)\}:$1\u003A $4:0: :7
 
 @Sections2
@@ -59,7 +59,7 @@
 7:\\begin\{enumerate\}:Enumerate:3:\\end\{enumerate\}:5
 
 @Verbatim7
-7:\\begin\{(cpp|verbatim)\}:$1:3:\\end\{$1\}:6
+7:\\begin\{(cpp|verbatim)\}:$1:3:\\end\{(cpp|verbatim)\}:6
 
 @Commands8
 1:\\(?!begin)(?!end)(\w+): :0: :0
