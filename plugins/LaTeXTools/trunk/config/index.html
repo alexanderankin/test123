@@ -42,7 +42,7 @@ imported by the main file.</p>
 
 <p>A main file can be specified either globally or locally. The global
 setting is done through the plugin menu, where <em>Set Main File</em> sets
-the global main file to the current file, and <em>Reset Main File</em>
+the path of the global main file to that of the current buffer, and <em>Reset Main File</em>
 removes the global property. The local setting is achieved by adding
 somewhere in the first 5 lines of the file the string
 <code>:latex.root=<em>Absolute or relative path to Main file</em>:</code>.
@@ -52,7 +52,7 @@ priority, followed by the globally defined property. If no local or global
 properties have been set, then the current buffer is deemed to be the Main
 file.</p>
 
-<p>The main file is used by several other commands, such as the
+<p>The main file is used by several commands, such as the
 <em>Compile</em> commands, the <em>BiBTex</em>  command and the <em>Erase
 Working Files...</em> command. It is also used by the Label Navigator and the
 BibTeX Navigator in order to correctly parse information. <em>The project

@@ -120,6 +120,7 @@ labels.label=Labels
 labels.title=Find Labels
 
 latextools-set-main.label = Set Main File
+latextools-set-main.tooltip = .. to the currently opened buffer
 latextools-reset-main.label = Reset Main File
 latextools-show-main.label = Show Main File Path
 latextools-increment-phrase.label = Increment Phrase
