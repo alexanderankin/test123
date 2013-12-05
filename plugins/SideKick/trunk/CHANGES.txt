@@ -1,5 +1,9 @@
- :encoding=UTF-8:maxLineLen=80:wrap=hard:folding=indent:collapseFolds=2:
+ :encoding=UTF-8:maxLineLen=95:wrap=hard:folding=indent:collapseFolds=2:
  jEdit SideKick Plugin Changelog
+
+    Version 1.5 requires Java 1.6, jEdit 5.0, ErrorList 2.0, Markets 0.8 (optional)
+        Fixed NPE in handlePluginUpdate for plugins that do not have a pluginJAR. (kpouer) 
+        German Localization (rschwenn)
 
     Version 1.4 requires Java 1.6, jEdit 5.0pre1, ErrorList 2.0 and MarkerSets 0.8(optional)
         Fixed #2311948, auto-displayed ErrorList kills CompletionPopup (Jarek Czekalski)
