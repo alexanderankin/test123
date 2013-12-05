@@ -1,0 +1,93 @@
+// This is a recorded macro. First, check over the
+// commands to make sure this is what you intended. Then,
+// save this buffer, and the macro should appear in the
+// Macros menu.
+
+import javax.swing.tree.*;
+import javax.swing.Timer;
+
+DefaultMutableTreeNode findNodeOfLine(DefaultMutableTreeNode node, int line)
+{
+	if (node.getUserObject() instanceof org.gjt.sp.jedit.search.HyperSearchFileNode)
+	{
+		DefaultMutableTreeNode match = node.getFirstChild();
+		while(match != null)
+		{
+			String text = match.getUserObject().str;
+			if (text.startsWith(String.valueOf(line + 1) + ":"))
+				return match;
+			match = match.getNextSibling();
+		}
+	}
+	else
+	{
+		for (Enumeration e = node.children(); e.hasMoreElements();)
+		{
+			DefaultMutableTreeNode n = findNodeOfLine(e.nextElement(), line);
+			if (n != null)
+				return n;
+		}
+	}
+	return null;
+}
+
+void selectNodeOfLine(View view, int line)
+{
+	HyperSearchResults hs = view.getDockableWindowManager().getDockableWindow(
+		"hypersearch-results");
+	if (hs == null)
+		return;
+	DefaultMutableTreeNode root = hs.getTreeModel().getRoot();
+	if (root == null || root.getDepth() == 0)
+		return;
+	// Check only the results of the last search
+	DefaultMutableTreeNode node = root.getLastChild();
+	if (node == null)
+		return;
+	Object object = node.getUserObject();
+	if (! (object instanceof org.gjt.sp.jedit.search.HyperSearchOperationNode))
+		continue;
+	DefaultMutableTreeNode n = findNodeOfLine(node, line);
+	if (n != null)
+	{
+		hs.getTree().setSelectionPath(new TreePath(n.getPath()));
+		return;
+	}
+}
+
+void SearchAsset(JEditTextArea textArea, boolean exact)
+{
+	int position = textArea.getCaretPosition();
+	int line = textArea.getCaretLine();
+	Selection[] selection = textArea.getSelection();
+	String s = null;
+	if (selection == null || selection.length == 0) {
+		s = Macros.input(view, "Enter text to search for:");
+		if (s == null)
+			return;
+	} else {
+		s = textArea.getSelectedText(selection[0]);
+	}
+	sidekick.SideKickActions.selectAsset(view);
+	if (exact)
+		SearchAndReplace.setSearchString("\\b" + s + "\\b");
+	else
+		SearchAndReplace.setSearchString(s);
+	SearchAndReplace.setAutoWrapAround(false);
+	SearchAndReplace.setReverseSearch(false);
+	SearchAndReplace.setIgnoreCase(false);
+	SearchAndReplace.setRegexp(exact);
+	SearchAndReplace.hyperSearch(view,true);
+	textArea.setCaretPosition(position);
+	textArea.setSelection(selection);
+	Timer timer = new Timer(1000, new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				setAccessibility(true);
+				selectNodeOfLine(view, line);
+				setAccessibility(false);
+			}
+	});
+	timer.setRepeats(false);
+	timer.start();
+}	
+

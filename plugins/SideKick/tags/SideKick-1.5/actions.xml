@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+
+<ACTIONS>
+	<ACTION NAME="sidekick-prev-asset">
+		<CODE>
+			sidekick.SideKickActions.goToPrevAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-next-asset">
+		<CODE>
+			sidekick.SideKickActions.goToNextAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-select-asset">
+		<CODE>
+			sidekick.SideKickActions.selectAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-narrow-asset">
+		<CODE>
+			sidekick.SideKickActions.narrowToAsset(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-complete">
+		<CODE>
+			sidekick.SideKickActions.complete(view,sidekick.SideKickActions.COMPLETE_COMMAND);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-keystroke-parse">
+		<CODE>
+			buffer.putBooleanProperty("sidekick.keystroke-parse",
+				!buffer.getBooleanProperty("sidekick.keystroke-parse"));
+			sidekick.SideKickPlugin.parse(view,true);
+		</CODE>
+		<IS_SELECTED>
+			return buffer.getBooleanProperty("sidekick.keystroke-parse");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="sidekick-parse">
+		<CODE>
+			sidekick.SideKickPlugin.parse(view,true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-toggle-markers-flag" NO_REPEAT="TRUE">
+		<CODE>
+			sidekick.enhanced.SourceTree.toggleMarkersFlag();
+		</CODE>
+		<IS_SELECTED>
+			return sidekick.enhanced.SourceTree.isMarkersFlagSet();
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="sidekick-remove-marker" NO_REPEAT="TRUE">
+		<CODE>
+			buffer.removeMarker(textArea.getCaretLine());
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-undirty-buffer" NO_REPEAT="TRUE">
+		<CODE>
+			buffer.setDirty(false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-jump-to-beginning-of-function" NO_REPEAT="TRUE">
+		<CODE>
+			JumpToBeginningOfFunction(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-jump-to-end-of-function" NO_REPEAT="TRUE">
+		<CODE>
+			JumpToEndOfFunction(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-search-asset" NO_REPEAT="TRUE">
+		<CODE>
+			SearchAsset(textArea, false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-search-asset-exact" NO_REPEAT="TRUE">
+		<CODE>
+			SearchAsset(textArea, true);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
