@@ -76,8 +76,8 @@ plugin.gatchan.phpparser.PHPParserPlugin.menu=gatchan-phpparser-findClass \
                                               - \
                                               phpproject-panel \
                                               - \
-                                              sidekick-tree
-
+                                              sidekick.parser.PHPParser-switch
+sidekick.parser.PHPParser-switch.label=PHPSideKick
 gatchan-phpparser-findClass.label=Find class
 gatchan-phpparser-findMethod.label=Find method
 gatchan-phpparser-findInFile.label=Find in file
