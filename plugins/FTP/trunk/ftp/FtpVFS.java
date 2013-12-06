@@ -1,7 +1,6 @@
 /*  
-*  FtpVFS.java - Ftp VFS {{{
-* :tabSize=4:indentSize=4:noTabs=false:
-* :folding=explicit:collapseFolds=1:
+*  FtpVFS.java - Ftp Virtual File System {{{
+* :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:
 *
 * Copyright (C) 2000-2013 Slava Pestov, voituk, olearyni, jarekczek, ezust 
 *
@@ -42,8 +41,8 @@ import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.ThreadUtilities;
 //}}}
 
-/**
-* {{{ FTP VFS.
+/** {{{ FTP Virtual File System
+* 
 * @author Slava Pestov
 * @author Vadim Voituk
 * @version $Id$

@@ -1,7 +1,6 @@
 /*
  * FtpPlugin.java - Main class of FTP plugin
- * :tabSize=4:indentSize=4:noTabs=false:
- * :folding=explicit:collapseFolds=1:
+ * :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000-2013 Slava Pestov, olearyni, ezust, voituk
  *

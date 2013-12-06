@@ -1,6 +1,8 @@
 /*
  * FtpConnection.java - A connection to an FTP server
- * Copyright (C) 2002, 2003 Slava Pestov
+ * :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1:
+ *
+ *  Copyright (C) 2002 - 2013 Slava Pestov, Nicholas O'Leary, Vadim Voituk, blueyed 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +20,7 @@
  */
 
 package ftp;
-
+//{{{ imports
 import com.fooware.net.*;
 import com.fooware.net.proxy.Proxy;
 import com.fooware.net.proxy.ProxyHTTP;
@@ -31,7 +33,9 @@ import java.util.regex.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
+//}}}
 
+//{{{ FtpConnection
 class FtpConnection extends Connection
 {
 	FtpConnection(final ConnectionInfo info) throws IOException
@@ -606,4 +610,4 @@ class FtpConnection extends Connection
 			return null;
 		}
 	}
-}
+} //}}}

@@ -18,9 +18,7 @@ plugin.ftp.FtpPlugin.menu=open-ftp \
 	open-sftp \
 	save-sftp \
 	- \
-	clear-directory-cache \
 	forget-passwords \
-	close-connections \
 	ftp-cleanup
 	
 plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
@@ -44,6 +42,7 @@ clear-directory-cache.label=Clear Remote Directory Cache
 forget-passwords.label=Forget Remote Passwords
 close-connections.label=Close Unused Connections
 ftp-cleanup.label=Reset FTP Plugin
+ftp-cleanup.tooltip=Close connections, clear directory cache, etc.
 vfs.browser.ftp.label=Connect to FTP Server...
 vfs.browser.sftp.label=Connect to Secure FTP Server...
 
