@@ -27,6 +27,8 @@ import projectviewer.vpt.VPTProject;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.OptionGroup;
 
+import console.options.ProjectCommandOptionPane;
+
 /**
  * @author Damien Radtke
  * class ProjectCommandOptionsService

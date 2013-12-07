@@ -27,7 +27,7 @@ import console.*;
 import javax.swing.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
+
 //}}}
 // {{{ commandothread class
 class CommandoThread extends Thread

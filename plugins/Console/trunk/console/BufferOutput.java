@@ -41,9 +41,7 @@ import org.gjt.sp.util.ThreadUtilities;
 
 /**
  *
- *  Output to buffer implementation.
- *
- *  TODO: add better docs here.
+ *  Implementation of Console "Shell Command, Output to New Buffer" 
  *
  */
 
@@ -51,7 +49,8 @@ public class BufferOutput implements Output
 {
 	
 	/** Guess the edit mode of the output based on the command line executed. */
-	static public String guessMode(String command) {		
+	static public String guessMode(String command) {
+		command = command.toLowerCase();
 		if (command.contains("diff") || command.contains("patch"))
 			return "patch";	
 		if (command.contains("html")) return "html";

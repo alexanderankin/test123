@@ -24,8 +24,6 @@ package console;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StringList;
 
 
 // {{{ Shell class
@@ -87,15 +85,7 @@ public abstract class Shell
 	 */
 	public static String[] getShellNames()
 	{
-		StringList retVal = new StringList();
-
-		String[] newAPI = ServiceManager.getServiceNames(SERVICE);
-		for(int i = 0; i < newAPI.length; i++)
-		{
-			retVal.add(newAPI[i]);
-		}
-
-		return retVal.toArray();
+		return ServiceManager.getServiceNames(SERVICE);
 	} //}}}
 
 	//{{{ handlesVFS()
