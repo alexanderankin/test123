@@ -3,18 +3,20 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=5.1.3
+plugin.console.ConsolePlugin.version=5.1.4
 
 # jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
 plugin.console.ConsolePlugin.docs=index.html
-plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust, Artem Bryantsev
+plugin.console.ConsolePlugin.author=Slava Pestov (former), Alan Ezust, Artem Bryantsev
 
 # see jEdit.getBuild() to understand the numbering scheme. 
 plugin.console.ConsolePlugin.depend.0=jedit 05.00.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
-plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.5.0
+plugin.console.ConsolePlugin.depend.3=optional plugin CommonControlsPlugin 1.5
+plugin.console.ConsolePlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.5.0
+
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
@@ -166,14 +168,14 @@ options.console.compile-run.help=<HTML>\
 	environment variables.</p></HTML>
 
 options.pv.commands.label=Console
+options.pv.useRunDir=Directory to run commands:
 
 options.pv.commands.help=You can run these commands from Plugins->Console->Project.
 options.pv.commands.compile=Compile Project:
 options.pv.commands.run=Run Project:
 
 options.pv.shell=Project Root Shell:
-options.pv.shell.tooltip=CD to project root will switch to this shell first
-options.pv.commands.tooltip=This command is run from the Project Root Shell/Dir
+options.pv.shell.tooltip=Use this shell for running commands
 ### SystemShell
 console.shell.info.toggle=true
 console.shell.info=This shell runs operating system processes.\n\

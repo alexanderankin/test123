@@ -43,10 +43,11 @@
 			<TOGGLE LABEL="Process a TCX table" VARNAME="tcx"/>
 		</CAPTION>
 
-		<CAPTION LABEL="Output options">
-			<CHOICE LABEL="Output format" VARNAME="format" DEFAULT="dvi">
-				<OPTION LABEL="DVI" VALUE="dvi"/>
-				<OPTION LABEL="PDF" VALUE="pdf"/>
+		<CAPTION LABEL="Options">
+			<CHOICE LABEL="Latex Executable" VARNAME="executable" DEFAULT="xelatex">
+				<OPTION LABEL="xelatex" VALUE="xelatex"/>
+				<OPTION LABEL="latex" VALUE="latex"/>
+				<OPTION LABEL="pdflatex" VALUE="pdflatex"/>				
 			</CHOICE>
 
             <CHOICE LABEL="Interaction mode" VARNAME="interaction" DEFAULT="nonstopmode">
@@ -63,19 +64,16 @@
 	<COMMANDS>
 		<COMMAND SHELL="System">
 			buf = new StringBuffer();
-
+			dir = sourcedir;
 			if (makeIn.equals("projectroot")) {
 				dir = projectroot;
 			}
 			else if (makeIn.equals("customloc")) {
 				dir = customlocation;
 			}
-			else dir = sourcedir;
 
-			if(format.equals("dvi"))
-				buf.append("latex");
-			else
-				buf.append("pdflatex");
+			console.ConsolePlugin.getConsole(view).chDir(dir);
+			buf.append(executable);
 
 			if(!font_max.equals(""))
 			{

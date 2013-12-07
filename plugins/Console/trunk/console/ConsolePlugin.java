@@ -546,19 +546,14 @@ public class ConsolePlugin extends EditPlugin
 			if (cmd == null || cmd.trim() == "")
 				return;
 		}
-
-		// Run the command in the project's root, but then return to
-		// the original working directory
-		final SystemShell systemShell = getSystemShell();
+	
 		view.getDockableWindowManager().showDockableWindow("console");
 		final Console console = (Console) getConsole(view);
-		console.setShell("System");
 		if (jEdit.getBooleanProperty("console.clearBeforeExecute"))
 			console.clear();
-/*		console.getOutput().writeAttrs(
-				ConsolePane.colorAttributes(console.getInfoColor()),
-				"\n"+cmd+"\n"); */
-		console.chDir(project.getRootPath(), true);
+		String runDir = project.getProperty("console.runDir");
+		if (runDir == null) runDir = project.getRootPath(); 
+		console.chDir(runDir, true);
 		console.run(console.getShell(), console.getOutput(), cmd);
 	} // }}}
 
