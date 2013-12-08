@@ -2,9 +2,9 @@
 
 jEdit Console Plugin Changelog
 $Date$
-    Version 5.1.4  Requires jEdit 5.0, Java 1.6, ErrorList 2.1, CommonControls 1.5, and ProjectViewer 3.5 (optional).
+    Version 5.1.4  Requires jEdit 5.0, Java 1.6, ErrorList 2.1, CommonControls 1.7, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
-        New Project option: run commands from different directroy (shadow build/run).
+        New Project option: run commands from different directory (shadow build/run).
 
     Version 5.1.3 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Alan Ezust]

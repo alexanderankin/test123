@@ -14,7 +14,7 @@ plugin.console.ConsolePlugin.author=Slava Pestov (former), Alan Ezust, Artem Bry
 plugin.console.ConsolePlugin.depend.0=jedit 05.00.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.6
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
-plugin.console.ConsolePlugin.depend.3=optional plugin CommonControlsPlugin 1.5
+plugin.console.ConsolePlugin.depend.3=optional plugin CommonControlsPlugin 1.7.1
 plugin.console.ConsolePlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.5.0
 
 
@@ -168,7 +168,7 @@ options.console.compile-run.help=<HTML>\
 	environment variables.</p></HTML>
 
 options.pv.commands.label=Console
-options.pv.useRunDir=Directory to run commands:
+options.pv.useRunDir=Run commands from here:
 
 options.pv.commands.help=You can run these commands from Plugins->Console->Project.
 options.pv.commands.compile=Compile Project:
