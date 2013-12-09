@@ -13,21 +13,21 @@
 			<DIR_ENTRY LABEL="Include directory" VARNAME="include_directory"
 				EVAL="MiscUtilities.getParentOfPath(buffer.getPath())"/>
                 -->
-       
+
         <CHOICE LABEL="Working Dir" VARNAME="makeIn" DEFAULT="projectroot">
             <OPTION LABEL="Project Root" VALUE="projectroot" />
             <OPTION LABEL="Source Dir" VALUE="sourcedir" />
             <OPTION LABEL="Custom Location" VALUE="customloc" />
         </CHOICE>
 
-        <DIR_ENTRY LABEL="Source Dir" 
+        <DIR_ENTRY LABEL="Source Dir"
          VARNAME = "sourcedir"
-         EVAL = 'new File(buffer.getPath()).getParent()' />    
+         EVAL = 'MiscUtilities.getParentOfPath(buffer.getPath())' />
 		<!-- <CAPTION LABEL="Config"> -->
-        <DIR_ENTRY LABEL="Project Root" 
+        <DIR_ENTRY LABEL="Project Root"
          VARNAME = "projectroot"
          EVAL = 'getProjectRoot(view, buffer)' />
-         <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />         
+         <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />
 
          </CAPTION>
 		<CAPTION LABEL="Font options">
@@ -47,7 +47,7 @@
 			<CHOICE LABEL="Latex Executable" VARNAME="executable" DEFAULT="xelatex">
 				<OPTION LABEL="xelatex" VALUE="xelatex"/>
 				<OPTION LABEL="latex" VALUE="latex"/>
-				<OPTION LABEL="pdflatex" VALUE="pdflatex"/>				
+				<OPTION LABEL="pdflatex" VALUE="pdflatex"/>
 			</CHOICE>
 
             <CHOICE LABEL="Interaction mode" VARNAME="interaction" DEFAULT="nonstopmode">
@@ -55,24 +55,26 @@
 				<OPTION LABEL="nonstopmode" VALUE="nonstopmode"/>
 				<OPTION LABEL="scrollmode" VALUE="scrollmode"/>
 				<OPTION LABEL="errorstopmode" VALUE="errorstopmode"/>
-			</CHOICE> 
+			</CHOICE>
             <TOGGLE LABEL="Halt on Error"   VARNAME="haltonerror" DEFAULT="TRUE" />
 
 		</CAPTION>
 	</UI>
 
 	<COMMANDS>
+    <COMMAND CONFIRM="FALSE" SHELL="System">
+		    location=sourcedir;
+        if (makeIn.equals("projectroot")) {
+            location = projectroot;
+        }
+        else if (makeIn.equals("customloc")) {
+            location = customlocation;
+        }
+        return "cd " + location;
+		</COMMAND>
+
 		<COMMAND SHELL="System">
 			buf = new StringBuffer();
-			dir = sourcedir;
-			if (makeIn.equals("projectroot")) {
-				dir = projectroot;
-			}
-			else if (makeIn.equals("customloc")) {
-				dir = customlocation;
-			}
-
-			console.ConsolePlugin.getConsole(view).chDir(dir);
 			buf.append(executable);
 
 			if(!font_max.equals(""))
@@ -81,7 +83,7 @@
 				buf.append(font_max);
 				buf.append('"');
 			}
-			
+
 			if(!font_mem_size.equals(""))
 			{
 				buf.append(" -font-mem-size \"");
@@ -101,11 +103,11 @@
 				buf.append(" -interaction ");
 				buf.append(interaction);
 			}
-            
-            
+
+
             if (haltonerror)
                 buf.append(" -halt-on-error");
-                
+
 			if(src_specials)
 				buf.append(" -src-specials");
 
