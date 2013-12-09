@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComponent;
@@ -55,7 +56,6 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.ProjectViewer;
@@ -215,7 +215,7 @@ public class SmartOpenPlugin extends EditPlugin
 	//{{{ indexProject() method
 	private static void indexProject(VPTProject activeProject)
 	{
-		if (StandardUtilities.objectsEqual(itemFinder.getProject(), activeProject))
+		if (Objects.equals(itemFinder.getProject(), activeProject))
 		{
 			return;
 		}
@@ -260,7 +260,7 @@ public class SmartOpenPlugin extends EditPlugin
 		if (viewUpdate.getWhat() == ViewUpdate.ACTIVATED)
 		{
 			VPTProject project = ProjectViewer.getActiveProject(viewUpdate.getView());
-			if (!StandardUtilities.objectsEqual(project, itemFinder.getProject()))
+			if (!Objects.equals(project, itemFinder.getProject()))
 				indexProject(project);
 		}
 		if (toolbar)
@@ -310,7 +310,7 @@ public class SmartOpenPlugin extends EditPlugin
 			{
 				VPTNode node = vu.getNode();
 				VPTProject project = VPTNode.findProjectFor(node);
-				if (!StandardUtilities.objectsEqual(project, itemFinder.getProject()))
+				if (!Objects.equals(project, itemFinder.getProject()))
 					indexProject(project);
 			}
 		}
