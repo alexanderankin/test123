@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.Collections;
 
@@ -717,7 +718,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				boolean selectedStillExists = false;
 				for (String index : this.indexes)
 				{
-					if (StandardUtilities.objectsEqual(selectedItem, index))
+					if (Objects.equals(selectedItem, index))
 					{
 						selectedStillExists = true;
 						break;
