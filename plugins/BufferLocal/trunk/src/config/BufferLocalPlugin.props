@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.bmp.BufferLocalPlugin.name=BufferLocal
 plugin.ise.plugin.bmp.BufferLocalPlugin.author=Dale Anson
-plugin.ise.plugin.bmp.BufferLocalPlugin.version=1.4.0
+plugin.ise.plugin.bmp.BufferLocalPlugin.version=1.5.0
 plugin.ise.plugin.bmp.BufferLocalPlugin.activate=startup
 plugin.ise.plugin.bmp.BufferLocalPlugin.description=BufferLocal provides a way to save buffer settings on a per-buffer basis without modifying the file.
 
