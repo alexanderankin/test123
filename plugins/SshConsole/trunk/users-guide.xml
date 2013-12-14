@@ -227,13 +227,6 @@ or suggestions.
 <section id="history">
 <title> History </title>
 <itemizedlist>
-<listitem><para id="v.1.0.8">  <emphasis role="strong">Version 1.0.8</emphasis> -
-Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3
-  <itemizedlist>
-    <listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
-    Yihua Zhang) </para></listitem>
-  </itemizedlist>
-</para></listitem>
 
 <listitem><para id="v.1.0.7">  <emphasis role="strong">Version 1.0.7</emphasis> -
 Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3
