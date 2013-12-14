@@ -18,16 +18,16 @@
 <para> This plugin is designed to allow you to easily compile files you are editing
 remotely via <literal>sftp://</literal> and parse the errors for ErrorList. It has no user
 interface of its own, because it is an extension of three other plugins:
-<ulink url="../Console.jar!/index.html">Console</ulink>, 
-<ulink url="../FTP.jar!/index.html">FTP</ulink>, and 
+<ulink url="../Console.jar!/index.html">Console</ulink>,
+<ulink url="../FTP.jar!/index.html">FTP</ulink>, and
 <ulink url="../ErrorList.jar!/index.html">ErrorList</ulink>.
-It also uses a dockable jEdit 
+It also uses a dockable jEdit
 <ulink url="../doc/users-guide/vfs-browser.html">File System Browser</ulink>
 or <ulink url="../ProjectViewer.jar!/index.html">ProjectViewer</ulink>
 for navigation. </para>
 
 <para> Most of the customizations possible for this plugin are in Console or
-ErrorList options. </para> 
+ErrorList options. </para>
 
 <para> Console provides jEdit with a dockable command line interface to the System
 Shell and the BeanShell, and an open interface for adding new shells. SshConsole
@@ -78,7 +78,7 @@ section <literal>Events to Chdir</literal>. </para>
      that SshConsole is always executing commands in the buffer's directory.</para>
 
      <para> SshConsole can also respond to the other checked events, (project
-     change, or tree node selection) if you check those options here. </para> 
+     change, or tree node selection) if you check those options here. </para>
 </listitem>
 
 
@@ -100,14 +100,14 @@ user/password/key/passphrase there. </para></listitem>
      <emphasis role="strong">Favorites - Add to Favorites</emphasis> from the FSB. </para></listitem>
 
 <listitem><para> With FSB: Open the remote file that you want to compile.
-</para></listitem> 
+</para></listitem>
 
 <listitem><para> Enter commands in the ssh console. Initially, it will connect and show you
 the message of the day. </para></listitem>
 
 <listitem><para> Open a buffer in a different folder, or invoke a console chdir event.
 Notice that &quot;cd&quot; commands get sent over to the remote machine in response to
-certain events. 
+certain events.
 </para></listitem>
 
 <listitem><para> Compile something with errors in it. </para></listitem>
@@ -127,19 +127,19 @@ into via sftp, and send your shell commands there. </para>
 <literal>sftp://</literal> directory. If you switch to such a project
 and <emphasis role="strong">Plugin Options - Console - System Shell - <emphasis>On project change, cd to PV
 root dir</emphasis></emphasis> is checked, then the <literal>ssh</literal> shell should be selected in
-Console and the project root directory should be the current working directory. 
+Console and the project root directory should be the current working directory.
 </para>
 
 <para> The Console actions, <literal>Compile Project</literal> and <literal>Run Project</literal> also
 automatically switch to use the most appropriate shell (ssh) before changing to
 the project root directory, when building/running an sftp project. </para>
 
-<para> Furthermore, the node selection events that Console responds to from 
+<para> Furthermore, the node selection events that Console responds to from
 the File System Browser are also sent from the ProjectViewer tree and passed
 onto the ssh shell when the chdir event option is checked.
 </para>
 </section>
-<section id="jobcontrol"> 
+<section id="jobcontrol">
 <title> Job Control  </title>
 
 <para> Sending Ctrl-D (EOF), or Ctrl-Z (DETACH), work the way you would expect them
@@ -157,11 +157,11 @@ the ssh shell: </para>
 <itemizedlist>
   <listitem><para> <programlisting>%browse [<emphasis>path</emphasis>]</programlisting>
   tells your FSB to browse a given relative path, defaults to your current
-  working directory. </para></listitem> 
-  <listitem><para> 
+  working directory. </para></listitem>
+  <listitem><para>
   <programlisting>%edit <emphasis>fileName</emphasis></programlisting>
   tells jEdit to open given remote file as a buffer in the View's EditPane.
-  Relative paths are possible here. </para></listitem> 
+  Relative paths are possible here. </para></listitem>
 </itemizedlist>
 </section>
 <section id="configuration">
@@ -176,10 +176,10 @@ forwarding. </para>
 <para> If you are getting lots of false errors in ErrorList which do not correspond
 to filenames and line numbers, this could mean you have too many or too general
 Console error matchers. Disable the ones you are not using from
-<literal>Plugin Options - Console - Error Matchers</literal>. </para> 
+<literal>Plugin Options - Console - Error Matchers</literal>. </para>
 
-<para> If you are typing &quot;cd&quot; directly to change directories from SshConsole, 
-it is possible the console shell state will not realize this and think 
+<para> If you are typing &quot;cd&quot; directly to change directories from SshConsole,
+it is possible the console shell state will not realize this and think
 errors are from files in an incorrect path. Change directories using the chdir
 events you selected in Console's plugin options to ensure the SshConsole knows
 where you are.
@@ -199,7 +199,7 @@ can explicitly close all open connections from the <literal>Plugins - SshConsole
 Close Connections</literal> menu action. This has the effect of restarting the plugin
 from scratch. </para>
 </section>
-<section id="futureideas"> 
+<section id="futureideas">
 <title> Future Ideas </title>
 
 <para> These are things I'd like to have in this plugin at some point, but I don't
@@ -224,23 +224,31 @@ or suggestions.
 </para>
 
 </section>
-<section id="history"> 
+<section id="history">
 <title> History </title>
 <itemizedlist>
+<listitem><para id="v.1.0.8">  <emphasis role="strong">Version 1.0.8</emphasis> -
+Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3
+  <itemizedlist>
+    <listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
+    Yihua Zhang) </para></listitem>
+  </itemizedlist>
+</para></listitem>
+
 <listitem><para id="v.1.0.7">  <emphasis role="strong">Version 1.0.7</emphasis> -
-Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3 
+Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3
   <itemizedlist>
     <listitem><para> New plugin option to enable/disable X11 forwarding </para></listitem>
   </itemizedlist>
-</para></listitem>  
+</para></listitem>
 
 <listitem><para id="v.1.0.6"> <emphasis role="strong">Version 1.0.6</emphasis> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.2, Console 5.1.
  <itemizedlist>
    <listitem><para> Fix #3604654: NPE when changing to invalid folder. </para></listitem>
    <listitem><para> Fix #3604790: Initial connect when opening a project </para></listitem>
- </itemizedlist> 
+ </itemizedlist>
  </para></listitem>
- 
+
   <listitem><para id="v.1.0.5"> <emphasis role="strong">Version 1.0.5</emphasis> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.2, Console 5.1.
   <itemizedlist>
     <listitem><para> Parses Vt100 colors (Artem Bryantsev) </para></listitem>
@@ -250,7 +258,7 @@ Requires JDK 1.6, jEdit 5.0, ErrorList 2.1, Ftp 1.0.3, Console 5.1.3
     <listitem><para> Displays open connections as long-running tasks in task monitor </para></listitem>
     <listitem><para> Fix #2873889: Stop leaking connections and properly close them. </para></listitem>
     <listitem><para> Enable x11 forwarding </para></listitem>
-  </itemizedlist> 
+  </itemizedlist>
   </para></listitem>
 
 <listitem><para id="v.1.0.3"> <emphasis role="strong">Version 1.0.3</emphasis> - Requires JDK 1.6, jEdit 5.0, ErrorList 2.0, Ftp 1.0, Console 5.0.
