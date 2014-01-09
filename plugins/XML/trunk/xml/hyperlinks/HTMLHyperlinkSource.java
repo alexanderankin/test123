@@ -44,6 +44,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import sidekick.IAsset;
+import sidekick.enhanced.SourceAsset;
 import sidekick.html.parser.html.HtmlDocument.Attribute;
 import sidekick.html.parser.html.HtmlDocument.AttributeList;
 import sidekick.html.parser.html.HtmlDocument.HtmlElement;
@@ -150,6 +151,9 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 			// Since the source is based on the mode, it will be still
 			// the HTMLHyperlikSource even if the Sidekick tree is for XML.
 			return sourceForXML.getHyperlink(buffer, offset, data, (XmlTag) asset, true);
+		} else if(asset instanceof SourceAsset){
+			// document root, no hyperlink there
+			return null;
 		} else {
 			Log.log(Log.WARNING,HTMLHyperlinkSource.class,"unexpected asset type: "+asset.getClass()+", please report");
 			return null;
