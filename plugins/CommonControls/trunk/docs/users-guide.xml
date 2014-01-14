@@ -589,6 +589,15 @@ SwingWorker is designed for situations where you need to have a long running tas
 
     <itemizedlist>
 
+    <listitem>
+        <formalpara>
+            <title>Version 1.7.3</title>
+            <para />
+        </formalpara>
+        <para> German Language Update </para>
+        <para> Enhanced FileTextField with setEnabled() and setToolTip() </para>
+      </listitem>
+
       <listitem>
         <formalpara>
             <title>Version 1.7</title>
