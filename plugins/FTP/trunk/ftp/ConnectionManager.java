@@ -429,7 +429,7 @@ public class ConnectionManager
 			String key = ConnectionManager.getStoredFtpKey(hostport, user);
 
 			if ( hostport!=null && user!=null && (password!=null || key!=null) ) {
-				// Log.log(Log.DEBUG, ConnectionManager.class, "key="+key);
+				Log.log(Log.DEBUG, ConnectionManager.class, "key="+key);
 				info = new ConnectionInfo(address.isSecure(), address.getHost(), address.getPort(), user, password, key);
 				logins.put(hostport, info);
 				return info;
@@ -455,7 +455,6 @@ public class ConnectionManager
 		if(!dialog.isOK())
 			return null;
 		String host = dialog.getHost();
-
 		int port = FtpVFS.getDefaultPort(secure);
 		int index = host.indexOf(':');
 		if(index != -1) {
@@ -466,7 +465,7 @@ public class ConnectionManager
 			catch(NumberFormatException e){}
 		}
 
-		ConnectionInfo info = new ConnectionInfo(secure,host,port,
+		ConnectionInfo info = new ConnectionInfo(secure, host, port,
 			dialog.getUser(), dialog.getPassword(), dialog.getPrivateKeyFilename() );
 
 		if (secure && dialog.getPrivateKeyFilename() != null)
@@ -518,7 +517,6 @@ public class ConnectionManager
 					Log.log(Log.WARNING, ConnectionManager.class, "catch " + e.getClass().getName() + " on "+ info, e);
 					info.privateKey = null;
 					info.password = null; // necessary to show login dialog again instead of using saved password again
-					jEdit.unsetProperty("ftp.keys."+info.host + ":"+ info.port + "."+info.user);
 					if (retries > 3) throw e;
 				}
 			}
