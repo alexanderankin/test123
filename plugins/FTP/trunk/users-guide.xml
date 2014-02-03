@@ -214,15 +214,20 @@ There are workarounds for that, see our bug tracker entry #3491410,
  <itemizedlist>
  
     <listitem><para> <emphasis role="bold">Version 1.0.8</emphasis>
- 			Requires Java 1.6, CommonControls, and jEdit 4.5.
+ 			Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
  		</para>
  		<itemizedlist>
  		<listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
  		   Yihua Zhang) </para></listitem>
- 		
-     </itemizedlist> </listitem>
+ 		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where 
+ 		<literal>ssh.keys</literal> properties were cleared out at the wrong time.
+ 		(Alan Ezust) </para></listitem>  
+ 		<listitem><para> jzlib updated to version 1.1.2 and separated in jzlib.jar.
+ 		</para></listitem>  
+    </itemizedlist> </listitem>
+    
    	<listitem><para> <emphasis role="bold">Version 1.0.7</emphasis> By Alan Ezust
- 			Requires Java 1.6, CommonControls, and jEdit 4.5.
+ 			Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
  		</para>
  		<itemizedlist>
  		   <listitem><para> New action: Reset FTP Plugin </para></listitem>
