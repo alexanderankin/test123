@@ -1,0 +1,107 @@
+<html>
+
+<body>
+<h2>Blame Component</h2>
+
+<h3>Introduction</h3>
+The intent of this component is to show the results of the svn or git "blame"
+commands. Here is what this component looks like when used by the SVN Plugin:
+<br>
+<img src="blame.png">
+<br>
+<br>
+This component provides both the list on the right side of the text area and the
+"close" button at the top. While the intent is for use by VCS providing "blame"-like
+commands, this component could be uses for showing any sort of line based annotations.
+
+<h3>Example Usage</h3>
+
+This abbreviated example is adapted from the SVN Plugin's blame action. This
+example assumes a few variables are in scope, view, textArea, and buffer.
+<br>
+<br>
+<pre><font color="#dcdccc"><font color="#cccc66"><strong>class</strong></font> Runner <font color="#dddd66"><strong>extends</strong></font> SwingWorker <font color="#f0efd0">&lt;</font> BlameModel , Object <font color="#f0efd0">&gt;</font> <font color="#f0efd0">{</font>
+
+    <font color="#9999ff"><strong>@</strong></font><font color="#9999ff"><strong>Override</strong></font>
+    <font color="#dddd66"><strong>public</strong></font> BlameModel <font color="#efef8f"><strong>doInBackground</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+        <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>produce</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>a</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>BlameModel</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>somehow...</em></font>
+        <font color="#f0dfaf"><strong>return</strong></font> someBlameProvider.<font color="#efef8f"><strong>getBlame</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+    <font color="#f0efd0">}</font>
+
+    <font color="#9999ff"><strong>@</strong></font><font color="#9999ff"><strong>Override</strong></font>
+    <font color="#dddd66"><strong>public</strong></font> <font color="#cccc66"><strong>boolean</strong></font> <font color="#efef8f"><strong>doCancel</strong></font><font color="#f0efd0">(</font> <font color="#cccc66"><strong>boolean</strong></font> mayInterruptIfRunning <font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+        <font color="#cccc66"><strong>boolean</strong></font> cancelled <font color="#f0efd0">=</font> <font color="#dca3a3"><strong>super</strong></font>.<font color="#efef8f"><strong>cancel</strong></font><font color="#f0efd0">(</font> mayInterruptIfRunning <font color="#f0efd0">)</font>;
+        <font color="#f0dfaf"><strong>if</strong></font> <font color="#f0efd0">(</font> cancelled <font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>do</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>clean</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>up</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>as</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>necessary</em></font>
+            someBlameProvider.<font color="#efef8f"><strong>cancel</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+        <font color="#f0efd0">}</font>
+        <font color="#f0dfaf"><strong>else</strong></font> <font color="#f0efd0">{</font>
+            System.err.<font color="#efef8f"><strong>println</strong></font><font color="#f0efd0">(</font><font color="#cc9393">&quot;</font><font color="#cc9393">Unable</font><font color="#cc9393"> </font><font color="#cc9393">to</font><font color="#cc9393"> </font><font color="#cc9393">cancel</font><font color="#cc9393">.</font><font color="#cc9393">&quot;</font><font color="#f0efd0">)</font>;
+        <font color="#f0efd0">}</font>
+        <font color="#f0dfaf"><strong>return</strong></font> cancelled;
+    <font color="#f0efd0">}</font>
+
+    <font color="#9999ff"><strong>@</strong></font><font color="#9999ff"><strong>Override</strong></font>
+    <font color="#dddd66"><strong>protected</strong></font> <font color="#cccc66"><strong>void</strong></font> <font color="#efef8f"><strong>done</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+        <font color="#f0dfaf"><strong>if</strong></font> <font color="#f0efd0">(</font> <font color="#efef8f"><strong>isCancelled</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font> <font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+            <font color="#f0dfaf"><strong>return</strong></font> ;
+        <font color="#f0efd0">}</font>
+
+        <font color="#f0dfaf"><strong>try</strong></font> <font color="#f0efd0">{</font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>here</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>is</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>where</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>Blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>component</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>is</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>added</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>text</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>area</em></font>
+            BlameModel model <font color="#f0efd0">=</font> <font color="#efef8f"><strong>get</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+            model.<font color="#efef8f"><strong>setTextArea</strong></font><font color="#f0efd0">(</font> textArea <font color="#f0efd0">)</font>;
+            BlamePane pane <font color="#f0efd0">=</font> <font color="#f0dfaf"><strong>new</strong></font> <font color="#efef8f"><strong>BlamePane</strong></font><font color="#f0efd0">(</font> model <font color="#f0efd0">)</font>;
+
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>remove</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>any</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>previous</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>display.</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>This</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>assumes</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>there</em></font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>is</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>a</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>reference</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>buffer</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>show</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>for.</em></font>
+            Object old_blame <font color="#f0efd0">=</font> buffer.<font color="#efef8f"><strong>getProperty</strong></font><font color="#f0efd0">(</font> <font color="#cc9393">&quot;</font><font color="#cc9393">_old_blame_</font><font color="#cc9393">&quot;</font> <font color="#f0efd0">)</font>;
+            <font color="#f0dfaf"><strong>if</strong></font> <font color="#f0efd0">(</font> old_blame <font color="#f0efd0">!</font><font color="#f0efd0">=</font> <font color="#dca3a3"><strong>null</strong></font> <font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+                textArea.<font color="#efef8f"><strong>removeLeftOfScrollBar</strong></font><font color="#f0efd0">(</font> <font color="#f0efd0">(</font> JComponent <font color="#f0efd0">)</font> old_blame <font color="#f0efd0">)</font>;
+                Object old_closer <font color="#f0efd0">=</font> buffer.<font color="#efef8f"><strong>getProperty</strong></font><font color="#f0efd0">(</font> <font color="#cc9393">&quot;</font><font color="#cc9393">_old_closer_</font><font color="#cc9393">&quot;</font> <font color="#f0efd0">)</font>;
+                textArea.<font color="#efef8f"><strong>removeTopComponent</strong></font><font color="#f0efd0">(</font> <font color="#f0efd0">(</font> JComponent <font color="#f0efd0">)</font> old_closer <font color="#f0efd0">)</font>;
+            <font color="#f0efd0">}</font>
+
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>add</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>component</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>right</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>side</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>of</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>text</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>area,</em></font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>just</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>left</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>of</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>scrollbar.</em></font>
+            textArea.<font color="#efef8f"><strong>addLeftOfScrollBar</strong></font><font color="#f0efd0">(</font> pane <font color="#f0efd0">)</font>;
+
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>add</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>a</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>&quot;close&quot;</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>button</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>at</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>top</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>of</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>text</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>area</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>be</em></font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>able</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>remove</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>display</em></font>
+            JComponent closer <font color="#f0efd0">=</font> pane.<font color="#efef8f"><strong>getCloser</strong></font><font color="#f0efd0">(</font> <font color="#efef8f"><strong>getView</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font> <font color="#f0efd0">)</font>;
+            textArea.<font color="#efef8f"><strong>addTopComponent</strong></font><font color="#f0efd0">(</font> closer <font color="#f0efd0">)</font>;
+
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>caret</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>listener</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>moves</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>highlight</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>in</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>text</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>area</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>correspond</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>with</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>hightlight</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>in</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>pane</em></font>
+            textArea.<font color="#efef8f"><strong>addCaretListener</strong></font><font color="#f0efd0">(</font> pane <font color="#f0efd0">)</font>;
+
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>store</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>a</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>reference</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>display</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>for</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>future</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>use</em></font>
+            buffer.<font color="#efef8f"><strong>setProperty</strong></font><font color="#f0efd0">(</font> <font color="#cc9393">&quot;</font><font color="#cc9393">_old_blame_</font><font color="#cc9393">&quot;</font>, pane <font color="#f0efd0">)</font>;
+            buffer.<font color="#efef8f"><strong>setProperty</strong></font><font color="#f0efd0">(</font> <font color="#cc9393">&quot;</font><font color="#cc9393">_old_closer_</font><font color="#cc9393">&quot;</font>, closer <font color="#f0efd0">)</font>;
+
+            view.<font color="#efef8f"><strong>revalidate</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+            
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>might</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>want</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>to</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>show</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>a</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>warning</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>if</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>buffer</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>has</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>changed</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>since</em></font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blame</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>model</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>was</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>produced</em></font>
+            <font color="#f0dfaf"><strong>if</strong></font> <font color="#f0efd0">(</font> model.<font color="#efef8f"><strong>outOfDate</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font> <font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+                JOptionPane.<font color="#efef8f"><strong>showMessageDialog</strong></font><font color="#f0efd0">(</font> <font color="#efef8f"><strong>getView</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>,
+                        <font color="#cc9393">&quot;</font><font color="#cc9393">File</font><font color="#cc9393"> </font><font color="#cc9393">has</font><font color="#cc9393"> </font><font color="#cc9393">local</font><font color="#cc9393"> </font><font color="#cc9393">modifications</font><font color="#cc9393">,</font><font color="#cc9393"> </font><font color="#cc9393">blame</font><font color="#cc9393"> </font><font color="#cc9393">may</font><font color="#cc9393"> </font><font color="#cc9393">not</font><font color="#cc9393"> </font><font color="#cc9393">be</font><font color="#cc9393"> </font><font color="#cc9393">correct</font><font color="#cc9393">.</font><font color="#cc9393">&quot;</font>,
+                        <font color="#cc9393">&quot;</font><font color="#cc9393">Warning</font><font color="#cc9393">:</font><font color="#cc9393"> </font><font color="#cc9393">Local</font><font color="#cc9393"> </font><font color="#cc9393">Modifications</font><font color="#cc9393">&quot;</font>,
+                        JOptionPane.WARNING_MESSAGE <font color="#f0efd0">)</font>;
+            <font color="#f0efd0">}</font>
+        <font color="#f0efd0">}</font>
+        <font color="#f0dfaf"><strong>catch</strong></font> <font color="#f0efd0">(</font> Exception e <font color="#f0efd0">)</font> <font color="#f0efd0">{</font>
+            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>do</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>the</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>right</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>thing</em></font>
+            e.<font color="#efef8f"><strong>printStackTrace</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+        <font color="#f0efd0">}</font>
+    <font color="#f0efd0">}</font>
+<font color="#f0efd0">}</font>
+Runner runner <font color="#f0efd0">=</font> <font color="#f0dfaf"><strong>new</strong></font> <font color="#efef8f"><strong>Runner</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+runner.<font color="#efef8f"><strong>execute</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font>;
+
+</font></pre>
+
+
+</body>
+
+</html>
