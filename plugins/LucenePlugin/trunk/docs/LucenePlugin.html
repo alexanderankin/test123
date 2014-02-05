@@ -87,26 +87,34 @@ Open the "Search with Lucene" dockable window using <tt>Plugins -&gt; LucenePlug
 Lucene Search </tt>.
 <li>
 Select the index to search in the combo-box on the right of the dockable.
+</li>
+<li>Finally, enter the words to search for in the "Search for:" box. For those
+familiar with Lucene, this can be any Lucene query, not just words.
+Click [Enter] to perform the search. </li>
+</ol>
+<p>
+One of the buttons on the right of the dockable toggles between multiple results  and a single-result, much like the "Hypersearch Results" dockable of jEdit. The
+button to its left clears all previous results that are currently shown.
+</p>
+
+<p> The right-most button toggles the display of additional options, documented below. </p>
+
+<ol>
 <li>
-Specify the maximal number of results that you want to get for your search in
-the "Max results:" box.
+If you'd like to constrain the search to a specific file extension, enter the
+extension in the 'file type:' box.
+</li>
 <li>
 If you'd like to see the line numbers where the search matches, select the
 'Line-based results' check-box. The files that match will be re-scanned to
 find the line numbers.
+</li>
 <li>
-If you'd like to constrain the search to a specific file extension, enter the
-extension in the 'file type:' box.
-<li>
-Finally, enter the words to search for in the "Search for:" box. For those
-familiar with Lucene, this can be any Lucene query, not just words.
-Click [Enter] to perform the search.
+Specify the maximal number of results that you want to get for your search in
+the "Max results:" box. </li>
+<li> There are additional checkbox options to ignore comments or literals. </li>
 </ol>
-<p>
-The rightmost button in the dockable toggles between multiple results and a
-single-result, much like the "Hypersearch Results" dockable of jEdit. The
-button to its left clears all previous results that are currently shown.
-</p>
+
 <p>
 While an index is being created or updated, the word "Indexing" will show on
 the right of the dockable when that index is selected for searching, so you
