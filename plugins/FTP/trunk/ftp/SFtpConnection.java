@@ -1,6 +1,6 @@
 /*
 * SFtpConnection.java - A connection to an SSH FTP server
-* Copyright (C) 2002-2013 Slava Pestov, Nicholas O'Leary, Alan Ezust
+* Copyright (C) 2002-2014 Slava Pestov, Nicholas O'Leary, Vadim Voituk, Alan Ezust
 *
 * :tabSize=4:indentSize=4:noTabs=false:
 * :folding=explicit:collapseFolds=1:
@@ -132,8 +132,8 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				session.setConfig("compression_level", "9");
 			}
 			
-			// Don't lock user when exceeding bad password attempts on some servers
-			session.setConfig("MaxAuthTries", "1");
+			// Don't lock out user when exceeding bad password attempts on some servers
+			session.setConfig("MaxAuthTries", jEdit.getProperty("vfs.sftp.MaxAuthTries", "2"));	// (default is 6)
 
 			session.connect(ConnectionManager.connectionTimeout);
 
@@ -236,6 +236,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		}
 	}//}}}
 
+	//{{{ makeDirectory()
 	boolean makeDirectory(String path) throws IOException
 	{
 		try
@@ -247,8 +248,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		{
 			return false;
 		}
-	}
+	}//}}}
 
+	//{{{ retrieve()
 	InputStream retrieve(String path) throws IOException
 	{
 		try {
@@ -256,8 +258,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		} catch (SftpException e) {
 			throw new IOException(e.toString());
 		}
-	}
+	}//}}}
 
+	//{{{ store()
 	OutputStream store(String path) throws IOException
 	{
 		OutputStream returnValue;
@@ -267,8 +270,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			throw new IOException(e.toString());
 		}
 		return returnValue;
-	}
+	}//}}}
 
+	//{{{ chmod()
 	void chmod(String path, int permissions) throws IOException
 	{
 		try {
@@ -276,7 +280,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		} catch (SftpException e) {
 			throw new IOException(e.toString());
 		}
-	}
+	} //}}}
 
 	boolean checkIfOpen() throws IOException
 	{
