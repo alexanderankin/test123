@@ -21,6 +21,7 @@
 */
 package ftp;
 
+//{{{ imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -37,10 +38,12 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.VariableGridLayout;
+//}}}
 
 @SuppressWarnings("serial")
 public class PasswordDialog extends EnhancedDialog implements ActionListener
 {
+	// {{{ PasswordDialog ctor
 	public PasswordDialog(JFrame comp, String title, String message)
 	{
 		super(comp,title,true);
@@ -72,7 +75,7 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 		setLocationRelativeTo(comp);
 		setModal(true);
 		setVisible(true);
-	}
+	} // }}}
 	
 	private JPasswordField password;
 	private boolean isOK = false;

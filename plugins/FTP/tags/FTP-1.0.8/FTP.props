@@ -73,6 +73,9 @@ vfs.ftp.passive=true
 vfs.ftp.binary=true
 vfs.sftp.compression=true
 
+# Max sftp Auth Retries per session:
+vfs.sftp.MaxAuthTries=2
+
 # Error messages
 # XXX - FTP responses seem to end with a newline?
 ftperror={0}\
