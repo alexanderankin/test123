@@ -1,7 +1,7 @@
 /*
  * OptionPane.java - Plugin Options Pane for FTP Plugin
  * :tabSize=4:indentSize=4:noTabs=false:
- * :folding=explicit:collapseFolds=1:
+ * :folding=sidekick:collapseFolds=1:
  *
  * Copyright © 2013 Alan Ezust
  *
@@ -41,9 +41,11 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 	JCheckBox enableCompression;
 	JCheckBox disableWeakCrypto;
 	
+	
 	public OptionPane() {
 		super("ftp");
 	}
+	
 	
 	protected void _init() {						
 		storePasswords = new JCheckBox(jEdit.getProperty("options.ftp.savePasswords"), jEdit.getBooleanProperty("vfs.ftp.storePassword"));
@@ -68,6 +70,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		addComponent(enableCompression);
 		
 	}
+	
 	public void actionPerformed(ActionEvent e) {
 		useKeyFile.setEnabled(storePasswords.isSelected());
 		keyFile.setEnabled(useKeyFile.isSelected() && storePasswords.isSelected());		
