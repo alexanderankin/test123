@@ -222,7 +222,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where 
  		<literal>ssh.keys</literal> properties were cleared out at the wrong time.
  		(Alan Ezust) </para></listitem>  
- 		<listitem><para> jzlib updated to version 1.1.2 and separated in jzlib.jar.
+ 		<listitem><para> jzlib updated to version 1.1.2 and separated into jzlib.jar.
  		</para></listitem>  
     </itemizedlist> </listitem>
     
