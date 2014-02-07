@@ -24,9 +24,14 @@ package ftp;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
+
 import common.gui.FileTextField;
+
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -40,7 +45,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 	FileTextField keyFile;
 	JCheckBox enableCompression;
 	JCheckBox disableWeakCrypto;
-	
+	JComboBox<String> sftpMaxAuthTries; 
 	
 	public OptionPane() {
 		super("ftp");
@@ -69,11 +74,19 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 				jEdit.getBooleanProperty("vfs.sftp.compression"));
 		addComponent(enableCompression);
 		
+		String[] retriesValues = new String[] {"1", "2", "3", "4", "5", "6" };
+		sftpMaxAuthTries = new JComboBox<String>(retriesValues);
+		sftpMaxAuthTries.setSelectedItem(jEdit.getProperty("vfs.sftp.MaxAuthTries"));
+		
+		addComponent(jEdit.getProperty("options.sftp.MaxAuthTries"), sftpMaxAuthTries);
+		
+		
 	}
 	
 	public void actionPerformed(ActionEvent e) {
 		useKeyFile.setEnabled(storePasswords.isSelected());
-		keyFile.setEnabled(useKeyFile.isSelected() && storePasswords.isSelected());		
+		keyFile.setEnabled(useKeyFile.isSelected() && storePasswords.isSelected());
+		disableWeakCrypto.setEnabled(storePasswords.isSelected());
 	}
 	
 	protected void _save() {		
@@ -86,6 +99,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		}
 		jEdit.setBooleanProperty("vfs.ftp.storePassword", storePasswords.isSelected());
 		jEdit.setBooleanProperty("vfs.sftp.compression", enableCompression.isSelected());
+		jEdit.setProperty("vfs.sftp.MaxAuthTries", sftpMaxAuthTries.getSelectedItem().toString());
 	}
 }
 
