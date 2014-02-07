@@ -1,7 +1,7 @@
 /*
  * jEdit - Programmer's Text Editor
  * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
+ * :folding=sidekick:collapseFolds=1:
  *
  * Copyright (c) 2011 Matthieu Casanova
  *
@@ -42,7 +42,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.jEdit;
 
 /** A component that contains a JList with a list of paths,
- *  and two buttons add and remove to add paths.
+ *  and two buttons add or remove paths.
  *
  * This can be used in option panes.
  * The property given in the constructor contains the list of paths

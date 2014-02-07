@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- SQL user's guide -->
-<!-- (C) 2001 Sergey V. Udaltsov -->
+<!-- CommonControls users' guide -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
   <bookinfo>
     <title>Common Controls user's guide</title>
+    <author>
+      <firstname> Sergey V. </firstname>
+      <surname> Udaltsov </surname>
+    </author>
 
     <copyright>
-      <year>2000-2013</year>
-
-      <holder>Sergey V. Udaltsov</holder>
-      
+      <year>2000-2014</year>
     </copyright>
 
     <legalnotice>
@@ -22,34 +22,30 @@
       modify this document under the terms of the GNU Free
       Documentation License, Version 1.1 or any later version
       published by the Free Software Foundation; with no
-      <quote>Invariant Sections</quote>
-
-      ,
-      <quote>Front-Cover Texts</quote>
-
-      or
-      <quote>Back-Cover Texts</quote>
-
-      , each as defined in the license. A copy of the license can
-      be found in the file
-      <filename>COPYING.DOC.txt</filename>
-
-      included with jEdit.</para>
+      <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote>
+      or <quote>Back-Cover Texts</quote>, each as defined in the license. 
+      A copy of the license can be found in the file
+      <filename>COPYING.DOC.txt</filename> included with jEdit.</para>
     </legalnotice>
   </bookinfo>
 
   <chapter id="purpose">
     <title>Purpose</title>
 
-    <para>The plugin provides some set of common controls which
-    can be useful for development of various jEdit plugins. These
-    are the controls
-    <emphasis>not</emphasis>
+    <para>The plugin provides a set of common controls which
+    can be useful for development of various jEdit plugins. 
+    Some of them are old and deprecated because they have been
+    replaced by classes which have since been introduced into
+    jEdit or the Java API.
+    </para>
 
-    included into the jEdit distribution</para>
+    <para>
+    To see the complete list of classes, refer to the
+    <ulink url="javadoc/index.html">javadoc documentation</ulink>.
+    </para>
 
-    <para>At the moment, the following controls are
-    included:</para>
+    <para>The following controls are documented here:
+    </para>
 
     <itemizedlist>
       <listitem>
@@ -72,7 +68,7 @@
 
       <listitem>
         <para>
-          <ulink url="#PathBuilder">PathBuilder</ulink>
+          <ulink url="#VFSPathFileList">VFSPathFileList</ulink>
         </para>
       </listitem>
 
@@ -90,25 +86,13 @@
 
       <listitem>
         <para>
-          <ulink url="#CloseableTabbedPane">CloseableTabbedPane</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
           <ulink url="#EasyOptionPane">EasyOptionPane</ulink>
         </para>
       </listitem>
 
       <listitem>
         <para>
-          <ulink url="#ModalJFileChooser">EasyOptionPane</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#Blame">EasyOptionPane</ulink>
+          <ulink url="#Blame">Blame</ulink>
         </para>
       </listitem>
 
@@ -124,17 +108,8 @@
         </para>
       </listitem>
 
-      <listitem>
-        <para>
-          <ulink url="#SwingWorker">SwingWorker (Java 5 version)</ulink>
-        </para>
-      </listitem>
     </itemizedlist>
 
-    <para>
-    You can also refer to the
-    <ulink url="javadoc/index.html">javadoc documentation</ulink>.
-    </para>
   </chapter>
 
   <chapter id="descriptions">
@@ -156,72 +131,44 @@
       </formalpara>
 
       <para>An extension of the default Swing JTable, that passes
-      action key events, displays tooltips and autoresizes
-      columns.</para>
+      action key events, displays tooltips and autoresizes columns.</para>
 
-      <para>In detail, the following features are
-      provided:</para>
+      <para>In detail, the following features are provided:</para>
 
       <itemizedlist>
         <listitem>
-          <para>Fires an
-          <keycode>ActionEvent</keycode>
+          <para>Fires an <keycode>ActionEvent</keycode>, if
+          <emphasis>Enter</emphasis>, <emphasis>Tab</emphasis>
+          or <emphasis>Shift-Tab</emphasis> is pressed.</para>
 
-          ,if
-          <emphasis>Enter</emphasis>
-
-          ,
-          <emphasis>Tab</emphasis>
-
-          or
-          <emphasis>Shift-Tab</emphasis>
-
-          is pressed.</para>
-
-          <para>Therefore,
-          <keycode>addActionListener(ActionListener)</keycode>
-
-          and
-          <keycode>removeActionListener(ActionListener)</keycode>
-
+          <para>Therefore, <keycode>addActionListener(ActionListener)</keycode>
+          and <keycode>removeActionListener(ActionListener)</keycode>
           methods are provided.</para>
         </listitem>
 
         <listitem>
-          <para>Displays tooltips for partially visible text
-          entries.</para>
+          <para>Displays tooltips for partially visible text entries.</para>
 
-          <para>To use this feature, you must use a
-          <keycode>TableCellRenderer</keycode>
-
-          that implements the methods
-          <keycode>getToolTipText()</keycode>
-
-          and/or
-          <keycode>getToolTipText(MouseEvent)</keycode>
-
-          , otherwise you won't see any tooltips.</para>
+          <para>To use this feature, you must use a 
+          <keycode>TableCellRenderer</keycode> that implements the methods
+          <keycode>getToolTipText()</keycode> and/or
+          <keycode>getToolTipText(MouseEvent)</keycode>,
+          otherwise you won't see any tooltips.</para>
         </listitem>
 
         <listitem>
           <para>utoresizes all columns to the length of its
           longest content string.</para>
-
-          <para>As a drawback, this
-          <keycode>HelpfulJTable</keycode>
-
+          
+          <para>As a drawback, this <keycode>HelpfulJTable</keycode>
           can only be used to with a String cell renderer,
           nothing complicated as a JList. (Complex components may
           be used a CellEditor, however).</para>
         </listitem>
       </itemizedlist>
 
-      <para>Only the default constructor of
-      <keycode>JTable</keycode>
-
-      is provided. Please use
-      <keycode>setModel(TableModel)</keycode>
-
+      <para>Only the default constructor of <keycode>JTable</keycode>
+      is provided. Please use <keycode>setModel(TableModel)</keycode>
       to set another model.</para>
     </sect1>
 
@@ -234,7 +181,6 @@
         <para>
           <author>
             <firstname>Dirk</firstname>
-
             <surname>Moebius</surname>
           </author>
         </para>
@@ -244,9 +190,7 @@
       informed of mouse entered and mouse exited events.</para>
 
       <para>Note that other mouse events besides MOUSE_ENTERED
-      and MOUSE_EXITED still do
-      <emphasis>not</emphasis>
-
+      and MOUSE_EXITED still do <emphasis>not</emphasis>
       get delivered. This is because sending a MOUSE_PRESSED,
       MOUSE_CLICKED or MOUSE_RELEASED event would cause the combo
       box popup to be hidden immediately after it has been shown,
@@ -265,40 +209,37 @@
         <para>
           <author>
             <firstname>Dale</firstname>
-
             <surname>Anson</surname>
           </author>
         </para>
       </formalpara>
-
       <formalpara>
         <title>URL:</title>
-
         <para>
           <ulink url="http://kappalayout.sourceforge.net/">http://kappalayout.sourceforge.net/</ulink>
         </para>
       </formalpara>
 
-
       <para>Advanced layout managers.</para>
     </sect1>
 
-    <sect1 id="PathBuilder">
-      <title>PathBuilder</title>
+    <sect1 id="VFSPathFileList">
+      <title>VFSPathFileList</title>
 
       <formalpara>
         <title>Author:</title>
 
         <para>
           <author>
-            <firstname>David</firstname>
-
-            <surname>Taylor</surname>
+            <firstname>Matthieu</firstname>
+            <surname>Casanova</surname>
           </author>
         </para>
       </formalpara>
 
-      <para>Nice panel for composing some path ($PATH or $CLASSPATH).</para>
+      <para>Nice panel for composing some path ($PATH or $CLASSPATH).
+      Improved version of PathBuilder. </para>
+      
     </sect1>
 
     <sect1 id="PopupList">
@@ -310,7 +251,6 @@
         <para>
           <author>
             <firstname>Calvin</firstname>
-
             <surname>Yu</surname>
           </author>
         </para>
@@ -359,58 +299,6 @@
       OK and Cancel).</para>
     </sect1>
 
-    <sect1 id="CloseableTabbedPane">
-      <title>CloseableTabbedPane</title>
-
-      <para>
-      A JTabbedPane that can have a "close" icon.  This is a Java 5 version of 
-      the feature added to JTabbedPane in Java 1.6. 
-      </para>
-      
-      <para>
-        Usage is simple, use it exactly like a JTabbedPane, but add icons to the
-        tabs:
-      </para>
-      <para>
-        <programlisting>
-        <![CDATA[
-                import common.gui.CloseableTabbedPane;
-                
-                ...
-                
-                tabs = new CloseableTabbedPane();
-                Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
-                Icon hover_icon = GUIUtilities.loadIcon( "closebox.gif" );
-                Icon pressed_icon = GUIUtilities.loadIcon( "closebox.gif" );
-                tabs.setCloseIcons(close_icon, hover_icon, pressed_icon);
-                JPanel panel = new JPanel();
-                tabs.add(panel);
-        ]]>
-        </programlisting>
-      </para>
-      <para>
-        The "setCloseIcons" method has the possibility of adding separate icons 
-        for 'normal', 'hover', and 'pressed' mouse events.
-      </para>
-      <para>
-        It is also possible to specify that a tab be not closeable:
-      </para>
-      <para>
-        <programlisting>
-        <![CDATA[
-                tabs = new CloseableTabbedPane();
-                Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
-                tabs.setCloseIcons(close_icon, close_icon, close_icon);
-                JPanel panel = new JPanel();
-                panel.putClientProperty("isCloseable", Boolean.FALSE);
-                tabs.add(panel);
-        ]]>
-        </programlisting>
-        The "isCloseable" client property must be set before the component is 
-        added to the tabbed pane.
-      </para>
-    </sect1>
-
     <sect1 id="EasyOptionPane">
       <title>EasyOptionPane</title>
 
@@ -447,28 +335,6 @@
 
       <para>A text field with an "attached" button that opens up a  File Chooser
       so the user can pick up a file or directory.</para>
-    </sect1>
-
-    <sect1 id="ModalJFileChooser">
-      <title>ModalJFileChooser</title>
-
-      <formalpara>
-        <title>Author:</title>
-
-        <para>
-          <author>
-            <firstname>Marcelo</firstname>
-            <surname>Vanzin</surname>
-          </author>
-        </para>
-      </formalpara>
-
-      <para>A JFileChooser implementation that fixes an annoying problem
-      with the standard Java chooser when opening it from a dialog window
-      (such as the options dialogs in jEdit). This wil ensure that the
-      parent of the file chooser is the dialog, so the "modal" behavior
-      will be correct. It also provides a "show all files even hidden ones"
-      filter.</para>
     </sect1>
 
     <sect1 id="Blame">
@@ -545,41 +411,6 @@
       (called "WorkRequest"). Callers can use the WorkRequest instances
       returned by the pool to control when the requests are finished.</para>
 
-    </sect1>
-
-    <sect1 id="SwingWorker">
-      <title>SwingWorker (Java 5 version)</title>
-      <para>
-        This is a Java 5 version of the SwingWorker included in Java 6.  This version is a backport of the 1.6 version.
-        The home page for this project is at https://swingworker.dev.java.net/.
-      </para>
-      <para>
- When writing a multi-threaded application using Swing, there are two constraints to keep in mind: (refer to  How to Use Threads  for more details):
-      </para>
-      <para>
-    <itemizedlist>
-      <listitem>
-        <para>
-    Time-consuming tasks should not be run on the Event Dispatch Thread. Otherwise the application becomes unresponsive.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-    Swing components should be accessed on the Event Dispatch Thread only.
-        </para>
-      </listitem>
-    </itemizedlist>
-      </para>
-      <para>
-These constraints mean that a GUI application with time intensive computing needs at least two threads: 1) a thread to perform the lengthy task and 2) the Event Dispatch Thread (EDT) for all GUI-related activities. This involves inter-thread communication which can be tricky to implement.
-      </para>
-      <para>
-SwingWorker is designed for situations where you need to have a long running task run in a background thread and provide updates to the UI either when done, or while processing. Subclasses of SwingWorker must implement the doInBackground() method to perform the background computation.
-      </para>
-      <para>
-      See the 
-    <ulink url="javadoc/common/swingworker/SwingWorker.html">SwingWorker javadoc</ulink> for details and examples.
-      </para>
     </sect1>
     
   </chapter>
@@ -751,5 +582,3 @@ SwingWorker is designed for situations where you need to have a long running tas
     </itemizedlist>
   </appendix>
 </book>
-
-
