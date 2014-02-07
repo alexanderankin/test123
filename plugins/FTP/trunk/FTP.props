@@ -19,6 +19,7 @@ plugin.ftp.FtpPlugin.menu=open-ftp \
 	save-sftp \
 	- \
 	forget-passwords \
+	clear-directory-cache \
 	ftp-cleanup
 	
 plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
