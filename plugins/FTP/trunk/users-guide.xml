@@ -192,6 +192,16 @@ Now, FTP logs its errors to the activity log instead. If you are expecting
 something to happen and it is not, check the "Errors" status bar widget, or the
 Activity Log dockable to find out what happened. </para></listitem>
 
+<listitem><para> The Plugin Option <guilabel>MaxAuthTries</guilabel> is
+a tweak which tells the SFTP protocol to retry that number of times before
+giving up with an "Auth Fail". In Versions prior to 1.0.3, the value was 6,
+which meant that with incorrect passwords, 6 bad password attempts would be
+made, often causing accidental lockout from the server. In FTP 1.0.7, the value
+was changed to 1, which caused Auth Fail problems on other systems, using keys
+and not even passwords. It is for this reason that the default value is now 2
+and configrable via this new plugin option. Hopefully people will not need to
+change this value but it is there if you need it. </para></listitem>  
+
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
 you are unable to do anything, you can reset the plugin by invoking the
 <guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem>, which is similar to
@@ -221,7 +231,9 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		   Yihua Zhang) </para></listitem>
  		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where 
  		<literal>ssh.keys</literal> properties were cleared out at the wrong time.
- 		(Alan Ezust) </para></listitem>  
+ 		(Alan Ezust) </para></listitem>
+ 		<listitem><para> SFTP MaxAuthTries is a new plugin option. (Alan Ezust)
+ 		</para></listitem> 
  		<listitem><para> jzlib updated to version 1.1.2 and separated into jzlib.jar.
  		</para></listitem>  
     </itemizedlist> </listitem>
@@ -237,10 +249,10 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		   <listitem><para> Fix #3615163: No longer repeatedly asking for master
  		   password after the user hits "cancel". </para></listitem>
  		   <listitem><para> Patch #3615165: Fix accidental SSH account lockout on
- 		   bad passwd (Camilo J. Diaz Repka) </para></listitem>
+ 		   bad passwd by changing SFTP MaxAuthTries from 6 (the previous default) to
+ 		   1. (Camilo J. Diaz Repka) </para></listitem> 
  		</itemizedlist>
  		</listitem>
- 
  
    	<listitem><para> <emphasis role="bold">Version 1.0.6</emphasis> By Alan Ezust
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
