@@ -35,86 +35,19 @@
     <para>The plugin provides a set of common controls which
     can be useful for development of various jEdit plugins. 
     Some of them are old and deprecated because they have been
-    replaced by classes which have since been introduced into
-    jEdit or the Java API.
+    replaced by newer/better classes in jEdit or the Java API.
     </para>
 
-    <para>
-    To see the complete list of classes, refer to the
-    <ulink url="javadoc/index.html">javadoc documentation</ulink>.
-    </para>
-
-    <para>The following controls are documented here:
-    </para>
-
-    <itemizedlist>
-      <listitem>
-        <para>
-          <ulink url="#HelpfulJTable">HelpfulJTable</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#JMouseComboBox">JMouseComboBox</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#VFSPathFileList">VFSPathFileList</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#PopupList">PopupList</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#OkCancelButtons">OkCancelButtons</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#EasyOptionPane">EasyOptionPane</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#Blame">Blame</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#AtomicOutputStream">AtomicOutputStream</ulink>
-        </para>
-      </listitem>
-
-      <listitem>
-        <para>
-          <ulink url="#WorkerThreadPool">WorkerThreadPool</ulink>
-        </para>
-      </listitem>
-
-    </itemizedlist>
 
   </chapter>
 
   <chapter id="descriptions">
     <title>Description of controls</title>
 
+    <para>
+    These are the classes are documented here. To see a complete list of all classes
+    in CommonControls, refer to the source or the <ulink url="javadoc/index.html">javadoc documentation</ulink>.
+    </para>
     <sect1 id="HelpfulJTable">
       <title>HelpfulJTable</title>
 
@@ -124,7 +57,6 @@
         <para>
           <author>
             <firstname>Dirk</firstname>
-
             <surname>Moebius</surname>
           </author>
         </para>
