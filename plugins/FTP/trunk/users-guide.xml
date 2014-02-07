@@ -149,6 +149,14 @@ browse remote file systems more easily. In addition, these
 paths can be bookmarked just as easily as local paths.
 </para> </listitem>
 
+
+<listitem><para>
+FTP and SFTP connections are kept open for 2 minutes before being closed.
+Performing another operation while a connection is still open resets the 2
+minute timer. This improves performance by reducing network traffic.
+</para> </listitem>
+
+
 <listitem><para>
 Remote directory listings are cached. Changing files
 from within jEdit will automatically update the cache as necessary. However, if
@@ -158,17 +166,11 @@ command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para></listitem>
 
-<listitem><para>
-FTP and SFTP connections are kept open for 2 minutes before being closed.
-Performing another operation while a connection is still open resets the 2
-minute timer. This improves performance by reducing network traffic.
-</para>
-
-<para>
+<!-- para>
 You can close unused connections at any other time using the
 <guimenuitem>Close Unused Connections</guimenuitem> command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
-</para></listitem>
+</para></listitem -->
 
 <listitem><para> You can disable or <guimenuitem>Enable compression over SFTP
 </guimenuitem> connections by checking this option from <guimenuitem>Plugin
@@ -189,8 +191,9 @@ requests made by the VFS can come in rapid succession and great quantities. With
 previous versions of FTP, this could lead to "dialog-death", where it is
 impossible to do anything because dialogs pop up as soon as others are closed.
 Now, FTP logs its errors to the activity log instead. If you are expecting
-something to happen and it is not, check the "Errors" status bar widget, or the
-Activity Log dockable to find out what happened. </para></listitem>
+something to happen and it is not, check the <guilabel>Errors</guilabel> status
+bar widget, or the Activity Log dockable to find out what happened.
+</para></listitem> 
 
 <listitem><para> The Plugin Option <guilabel>MaxAuthTries</guilabel> is
 a tweak which tells the SFTP protocol to retry that number of times before
@@ -206,7 +209,7 @@ change this value but it is there if you need it. </para></listitem>
 you are unable to do anything, you can reset the plugin by invoking the
 <guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem>, which is similar to
 reloading the plugin - all connections are closed, all cached directories are
-cleared, and all saved passwords in memory are forgotten. The saved passwords
+cleared, and all passwords in memory are forgotten. The saved passwords
 file is not touched by this action. </para></listitem>
 
 <listitem><para>Problems were reported when connecting to ftp servers
@@ -222,18 +225,16 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
- 
-    <listitem><para> <emphasis role="bold">Version 1.0.8</emphasis>
- 			Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
+    <listitem><para><emphasis role="bold">Version 1.0.8</emphasis> 
+      by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
  		</para>
  		<itemizedlist>
  		<listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
  		   Yihua Zhang) </para></listitem>
  		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where 
  		<literal>ssh.keys</literal> properties were cleared out at the wrong time.
- 		(Alan Ezust) </para></listitem>
- 		<listitem><para> SFTP MaxAuthTries is a new plugin option. (Alan Ezust)
- 		</para></listitem> 
+ 		</para></listitem>
+ 		<listitem><para> Made SFTP MaxAuthTries a new plugin option. </para></listitem> 
  		<listitem><para> jzlib updated to version 1.1.2 and separated into jzlib.jar.
  		</para></listitem>  
     </itemizedlist> </listitem>

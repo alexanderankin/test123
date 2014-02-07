@@ -41,7 +41,7 @@ import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.ThreadUtilities;
 //}}}
 
-/** {{{ FTP Virtual File System
+/** {{{ FTP (and SFTP) Virtual File System
 * 
 * @author Slava Pestov
 * @author Vadim Voituk
