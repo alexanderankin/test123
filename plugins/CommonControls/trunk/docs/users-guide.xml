@@ -2,9 +2,9 @@
 <!-- CommonControls users' guide -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
-<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-  <bookinfo>
+  <articleinfo>
     <title>Common Controls user's guide</title>
     <author>
       <firstname> Sergey V. </firstname>
@@ -27,28 +27,24 @@
       A copy of the license can be found in the file
       <filename>COPYING.DOC.txt</filename> included with jEdit.</para>
     </legalnotice>
-  </bookinfo>
-
-  <chapter id="purpose">
-    <title>Purpose</title>
-
+  </articleinfo>
+  <abstract>
+    <title> Introduction </title>
     <para>The plugin provides a set of common controls which
     can be useful for development of various jEdit plugins. 
     Some of them are old and deprecated because they have been
     replaced by newer/better classes in jEdit or the Java API.
     </para>
+  </abstract>
 
-
-  </chapter>
-
-  <chapter id="descriptions">
+  <section id="descriptions">
     <title>Description of controls</title>
 
     <para>
     These are the classes are documented here. To see a complete list of all classes
     in CommonControls, refer to the source or the <ulink url="javadoc/index.html">javadoc documentation</ulink>.
     </para>
-    <sect1 id="HelpfulJTable">
+    <section id="HelpfulJTable">
       <title>HelpfulJTable</title>
 
       <formalpara>
@@ -102,9 +98,9 @@
       <para>Only the default constructor of <keycode>JTable</keycode>
       is provided. Please use <keycode>setModel(TableModel)</keycode>
       to set another model.</para>
-    </sect1>
+    </section>
 
-    <sect1 id="JMouseComboBox">
+    <section id="JMouseComboBox">
       <title>JMouseComboBox</title>
 
       <formalpara>
@@ -130,9 +126,9 @@
 
       <para>This class was created as a fix/workaround for Swing
       bug #4144505.</para>
-    </sect1>
+    </section>
 
-    <sect1 id="Kappalayout">
+    <section id="Kappalayout">
       <title>Kappa and Lambda layout managers</title>
 
       <formalpara>
@@ -153,9 +149,9 @@
       </formalpara>
 
       <para>Advanced layout managers.</para>
-    </sect1>
+    </section>
 
-    <sect1 id="VFSPathFileList">
+    <section id="VFSPathFileList">
       <title>VFSPathFileList</title>
 
       <formalpara>
@@ -172,9 +168,9 @@
       <para>Nice panel for composing some path ($PATH or $CLASSPATH).
       Improved version of PathBuilder. </para>
       
-    </sect1>
+    </section>
 
-    <sect1 id="PopupList">
+    <section id="PopupList">
       <title>PopupList</title>
 
       <formalpara>
@@ -209,8 +205,8 @@
           <para>Pop up list of auto-completions.</para>
         </listitem>
       </itemizedlist>
-    </sect1>
-    <sect1 id="OkCancelButtons">
+    </section>
+    <section id="OkCancelButtons">
       <title>OkCancelButtons</title>
 
       <formalpara>
@@ -229,9 +225,9 @@
       cancel() methods (aside from the regular enter/esc key
       bindings). The button label are configurable (defaults to
       OK and Cancel).</para>
-    </sect1>
+    </section>
 
-    <sect1 id="EasyOptionPane">
+    <section id="EasyOptionPane">
       <title>EasyOptionPane</title>
 
       <formalpara>
@@ -249,9 +245,9 @@
       easily configurable by using strings to define the component.
       Loading and saving of configuration data is handled automatically
       for the user of the class.</para>
-    </sect1>
+    </section>
 
-    <sect1 id="FileTextField">
+    <section id="FileTextField">
       <title>FileTextField</title>
 
       <formalpara>
@@ -267,9 +263,9 @@
 
       <para>A text field with an "attached" button that opens up a  File Chooser
       so the user can pick up a file or directory.</para>
-    </sect1>
+    </section>
 
-    <sect1 id="Blame">
+    <section id="Blame">
       <title>Blame component</title>
 
       <formalpara>
@@ -287,9 +283,9 @@
       is used by the SVN Plugin and the Git Plugin.</para>
       <para><ulink url="docs/blame.html">See details here.</ulink></para>
       <para></para>
-    </sect1>
+    </section>
 
-    <sect1 id="AtomicOutputStream">
+    <section id="AtomicOutputStream">
       <title>AtomicOutputStream</title>
 
       <formalpara>
@@ -305,9 +301,9 @@
 
       <para>An output stream that uses a temporary file to write the
       data, and only overwrites the target file at close time.</para>
-    </sect1>
+    </section>
 
-    <sect1 id="WorkerThreadPool">
+    <section id="WorkerThreadPool">
       <title>WorkerThreadPool</title>
 
       <formalpara>
@@ -343,9 +339,9 @@
       (called "WorkRequest"). Callers can use the WorkRequest instances
       returned by the pool to control when the requests are finished.</para>
 
-    </sect1>
+    </section>
     
-  </chapter>
+  </section>
 
   <appendix id="changelog">
     <title>Change log</title>
@@ -513,4 +509,4 @@
       </listitem>
     </itemizedlist>
   </appendix>
-</book>
+</article>
