@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
-<!-- FTP plugin user's guide -->
 <!-- jEdit buffer-local properties: -->
 <!-- :wrap=hard:maxLineLen=80:indentSize=2:noTabs=true:folding=sidekick: -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-<bookinfo><title>FTP plugin user's guide</title>
+<bookinfo><title>jEdit FTP plugin user's guide</title>
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Nicholas</firstname><surname>O'Leary</surname></author>
@@ -24,7 +23,6 @@
   </para>
  </legalnotice>
 </bookinfo>
-
 
 
 <chapter id="SavingPasswords">
@@ -112,7 +110,6 @@ box. </para>
 <chapter id="sftp"><title>Connecting to SFTP servers</title>
 
 <para>
-
 The FTP plugin also supports the SSH File Transfer Protocol, or SFTP.
 SFTP is much more secure than FTP because it encrypts all network traffic.
 </para>
@@ -124,13 +121,18 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 <guimenuitem>Open from Secure FTP Server</guimenuitem> and
 <guimenuitem>Save to Secure FTP Server</guimenuitem> commands in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
-
 </para>
 
 <para>
 SFTP support is provided using the
 <ulink url="http://www.jcraft.com/jsch/index.html">JSch</ulink>
 library, licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
+</para>
+
+<para> It is possble to use the ssh protocol to execute arbitrary commands
+on the same remote host. Install SshConsole and read its <ulink
+url="jeditresource:/SshConsole.jar!/index.html">plugin documentation</ulink> for
+more details.
 </para>
 
 </chapter>
@@ -232,9 +234,11 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		<listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
  		   Yihua Zhang) </para></listitem>
  		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where 
- 		<literal>ssh.keys</literal> properties were cleared out at the wrong time.
- 		</para></listitem>
- 		<listitem><para> Made SFTP MaxAuthTries a new plugin option. </para></listitem> 
+ 		<literal>ftp.keys</literal> properties were cleared out at the wrong time.
+ 		Also, cleared out all <literal>ftp.keys.*</literal> properties when user
+ 		<guimenuitem>Forgets remote passwords</guimenuitem> or 
+ 		<guimenuitem>Resets ftp plugin</guimenuitem>. </para></listitem>
+ 		<listitem><para> Made SFTP MaxAuthTries a new plugin option. </para></listitem>
  		<listitem><para> jzlib updated to version 1.1.2 and separated into jzlib.jar.
  		</para></listitem>  
     </itemizedlist> </listitem>
