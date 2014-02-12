@@ -34,30 +34,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-
 import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
-
 import javax.crypto.spec.SecretKeySpec;
-
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
-
 import com.jcraft.jsch.JSch;
 //}}}
 
@@ -88,6 +81,8 @@ public class ConnectionManager
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
+		clearStoredFtpKeys();
+		
 		try {
 			if (client != null) 
 				client.removeAllIdentity();
@@ -97,7 +92,7 @@ public class ConnectionManager
 		catch (Exception e) {}
 		
 		masterKey = null;
-		saveKeyFile();		// clear out the key file, actually
+		saveKeyFile();		// clear out the master key file, actually
 		restoredPasswords = false;
 		passwords.clear();
 		passphrases.clear();
@@ -136,6 +131,21 @@ public class ConnectionManager
 
 	} //}}}
 
+	
+	//{{{ clearStoredFtpKeys()
+	/** These ftp keys are stored in properties and there is no GUI yet to change
+		them. 
+	*/ 
+	public static void clearStoredFtpKeys() 
+	{
+		Properties p = jEdit.getProperties();
+		for (Object keyobj: p.keySet()) {
+			String key = keyobj.toString();
+			if (key.startsWith("ftp.keys."))
+				jEdit.unsetProperty(key);
+		}
+	}//}}}
+	
 	//{{{ getStoredFtpKey()
 	/**
 	 
@@ -468,6 +478,7 @@ public class ConnectionManager
 		ConnectionInfo info = new ConnectionInfo(secure, host, port,
 			dialog.getUser(), dialog.getPassword(), dialog.getPrivateKeyFilename() );
 
+		// Should this be stored in properties?
 		if (secure && dialog.getPrivateKeyFilename() != null)
 			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
 

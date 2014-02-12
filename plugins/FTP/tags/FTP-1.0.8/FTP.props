@@ -2,7 +2,7 @@
 plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
-plugin.ftp.FtpPlugin.author=Slava Pestov (Former), Nicholas O'Leary (Former), Vadim Voituk, Alan Ezust
+plugin.ftp.FtpPlugin.author=Slava Pestov (Former), Nicholas O'Leary (Former), Vadim Voituk (former), Alan Ezust
 plugin.ftp.FtpPlugin.version=1.0.8
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
@@ -66,9 +66,9 @@ login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
 ftp.bad-master-password=Bad Master Password (failed to restore saved passwords)
-ftp.jce.strongkeys.missing=JCE unlimited key strength not available. Password saving disabled. 
-ftp.cancel-master-password=Saving Passwords disabled. Perhaps you need to "Forget Remote Passwords"? Old passwords from FTP 1.0.3 and earlier are not readable.
-ftp.using.weak-crypto=Strong Crypto unavailable. Falling back to weak crypto for saving passwords. 
+ftp.jce.strongkeys.missing=JCE Unlimited Key Strength unavailable. Password saving disabled. 
+ftp.cancel-master-password=Saving Passwords disabled. Perhaps you need to "Forget Remote Passwords"? Saved passwords from FTP 1.0.3 and earlier are not readable.
+ftp.using.weak-crypto=JCE Unlimited Key Strength unavailable. Falling back to weak crypto for saving passwords.
 
 # Settings
 vfs.ftp.passive=true
@@ -76,7 +76,7 @@ vfs.ftp.binary=true
 vfs.sftp.compression=true
 
 # Max sftp Auth Retries per session:
-vfs.sftp.MaxAuthTries=2
+vfs.sftp.MaxAuthTries=1
 
 # Error messages
 # XXX - FTP responses seem to end with a newline?
