@@ -17,6 +17,7 @@
 
 	<ACTION NAME="ftp-cleanup">
 	   <CODE>
+	   	  ftp.ConnectionManager.clearStoredFtpKeys();
 	      ftp.ConnectionManager.cleanup();
 	   </CODE>
 	</ACTION>
