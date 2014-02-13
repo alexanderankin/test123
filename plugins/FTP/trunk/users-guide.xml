@@ -24,6 +24,15 @@
  </legalnotice>
 </bookinfo>
 
+<preface>
+<title> Included Libraries </title>
+<para>
+sftp/ssh and compression support are provided using the included 
+<ulink url="http://www.jcraft.com/jsch/index.html">JSch</ulink> and
+<ulink url="http://www.jcraft.com/jzlib/">JZlib</ulink> libraries, 
+licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
+</para>
+</preface>
 
 <chapter id="SavingPasswords">
 <title> Saving Passwords </title>
@@ -123,14 +132,9 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para>
 
-<para>
-SFTP support is provided using the
-<ulink url="http://www.jcraft.com/jsch/index.html">JSch</ulink>
-library, licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
-</para>
 
-<para> It is possble to use the ssh protocol to execute arbitrary commands
-on the same remote host. Install SshConsole and read its <ulink
+<para> It is possble to use the ssh protocol to execute arbitrary
+commands on the remote host. Install SshConsole and read its <ulink
 url="jeditresource:/SshConsole.jar!/index.html">plugin documentation</ulink> for
 more details.
 </para>
