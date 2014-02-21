@@ -17,12 +17,11 @@
 #/
 
 usage="
-Usage: $0 SOURCE.XML DEST_DIR
+Usage: $0 JEDIT-BACKUP-XXXX DEST_DIR/
 
-    SOURCE.XML: either direct export from SourceForge XML export (uncompressed)
-                or filtered.xml produced from filter.sh
+    JEDIT-BACKUP-XXXX: direct export from SourceForge JSON export (uncompressed)
 
-    DEST_DIR  : directory to put index.html and subdirs per tracker in
+    DEST_DIR  : directory to put index.html and subdirs per tracker in it
 "
 
 if [ $# != 2 ]; then
@@ -32,6 +31,7 @@ fi
 
 jar=~/.jedit/jars/saxon9he.jar
 mydir=`dirname $0`
+jackson=$mydir/jackson-core-2.3.1.jar
 source=$1
 stylesheet=$mydir/transform.xsl
 destdir=$2
@@ -43,11 +43,32 @@ install SaxonPlugin in jEdit and/or modify the 'jar' variable in this script"
 	exit -1
 fi
 
+if [ ! -f "$jackson" ]; then
+	echo "jackson-core-xxx.jar is necessary
+Download it from maven (http://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/)"
+	exit -1
+fi
+
+if [ ! -d "$source" ]; then
+	echo "Source $source is not a directory"
+	exit -1
+fi
+
+if [ -f "$destdir" ]; then
+	echo "Destination $destdir exists and is not a directory"
+	exit -1
+fi
+
+if [ ! -f "$mydir/org/jedit/JSonXMLReader.class" ]; then
+	(cd $mydir && javac -cp "$jackson" org/jedit/JSonXMLReader.java)
+fi
+
 echo Preparing...
 mkdir -p "$destdir"
 for i in "$mydir/style.css" \
 	 "$mydir/jquery-latest.js" \
 	 "$mydir/jquery.dataTables.js" \
+	 "$mydir/jquery.dataTables.htmlnum.js" \
 	 "$mydir/jquery.dataTables.css" ; do
 	
 	cp -v $i "$destdir"
@@ -57,7 +78,35 @@ echo "Signature: 8a477f597d28d172789f06886806bc55
 # For information about cache directory tags, see:
 #http://www.brynosaurus.com/cachedir/" > "$destdir/CACHEDIR.TAG"
 
+# timestamp based on archive contents filename.
+# There is no export metadata in the zip
+exportts=`basename $source`
+exportts=`echo $exportts |  sed 's/jedit-backup-\(....\)-\(..\)-\(..\)-\(..\)\(..\)\(..\)/\1-\2-\3 - \4:\5:\6z/'`
+
+# using XInclude to keep the transform.xsl simple
+# I first used separate xml files but the transform was then full of document(@link)/
+# It could also be feasible to transform json to XML on the fly (using the -x saxon flag).
+# This is the reason why I implemented the conversion as an XMLReader in the first place,
+# but I've actually not tried it, because it was more convenient to see the XML source when
+# tweaking the transform.
+echo "<document xmlns:xi='http://www.w3.org/2001/XInclude'>
+		<export_details><time>$exportts</time></export_details>
+		<trackers>
+" > "$source/trackers.xml"
+for i in $source/*.json; do
+	j=`basename "$i"`
+	j=${j%.json}.xml
+	echo "			<xi:include href=\"$j\" />" >> "$source/trackers.xml"
+done
+echo "		</trackers>
+</document>" >> "$source/trackers.xml"
+
+for i in $source/*.json; do
+	j=${i%.json}.xml
+	echo "$i --> $j"
+	java -cp "$jackson:."  org.jedit.JSonXMLReader "$i" > "$j"
+done
 
 echo Running transformation...
-java -jar "$jar" "-s:$source" "-xsl:$stylesheet" "-o:$output"
+java -jar "$jar" "-s:$source/trackers.xml" "-xsl:$stylesheet" "-o:$output" "-xi:on"
 echo "Done !"

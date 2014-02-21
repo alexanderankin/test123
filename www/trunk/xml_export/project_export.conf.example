@@ -1,0 +1,9 @@
+# Sample configuration file for project_export.sh
+# save this under project_export.conf
+# generate an access token by going to your Account, registering an application,
+# generating a bearer token.
+ACCESS_TOKEN='20 or so hex string'
+USER_NAME='your-sf-user-name-without-@sf.net'
+PROJECT='jedit'
+# list tracker mount points, not names
+TOOLS='feature-requests,jeditlauncher-bugs,merge-requests,plugin-bugs,plugin-central-submission,plugin-feature-requests,plugin-patches'
