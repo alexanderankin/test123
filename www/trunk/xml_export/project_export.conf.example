@@ -7,3 +7,4 @@ USER_NAME='your-sf-user-name-without-@sf.net'
 PROJECT='jedit'
 # list tracker mount points, not names
 TOOLS='feature-requests,jeditlauncher-bugs,merge-requests,plugin-bugs,plugin-central-submission,plugin-feature-requests,plugin-patches'
+SSH_KEY=path_to_your_public_key_for_ssh-add
