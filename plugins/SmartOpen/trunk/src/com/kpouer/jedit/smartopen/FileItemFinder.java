@@ -1,9 +1,9 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2012 Matthieu Casanova
+ * Copyright © 2011-2014 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,11 +62,12 @@ public class FileItemFinder extends AbstractItemFinder<String>
 		this.extensionTextField = extensionTextField;
 	} //}}}
 
+	//{{{ setFileIndex() method
 	public void setFileIndex(FileIndex itemFinder)
 	{
 		this.itemFinder.close();
 		this.itemFinder = itemFinder;
-	}
+	} //}}}
 
 	//{{{ getLabel() method
 	@Override
@@ -145,8 +146,11 @@ public class FileItemFinder extends AbstractItemFinder<String>
 		}
 		if (buffer == null)
 			jEdit.openFile(jEdit.getActiveView().getEditPane(), path);
+		else
+			jEdit.getActiveView().getEditPane().setBuffer(buffer);
 	} //}}}
 
+	//{{{ moveCaret() method
 	private static void moveCaret(int _seletedLine, String[] split)
 	{
 		JEditTextArea textArea = jEdit.getActiveView().getEditPane().getTextArea();
@@ -172,7 +176,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 			}
 		}
 		textArea.setCaretPosition(caret);
-	}
+	} //}}}
 
 	//{{{ getListCellRenderer() method
 	@Override
