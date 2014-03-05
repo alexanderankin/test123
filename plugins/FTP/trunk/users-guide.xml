@@ -26,12 +26,18 @@
 
 <preface>
 <title> Included Libraries </title>
-<para>
-sftp/ssh and compression support are provided using the included 
+<para> Support for
+sftp/ssh and compression are provided by the included
 <ulink url="http://www.jcraft.com/jsch/index.html">JSch</ulink> and
-<ulink url="http://www.jcraft.com/jzlib/">JZlib</ulink> libraries, 
+<ulink url="http://www.jcraft.com/jzlib/">JZlib</ulink> libraries,
 licensed under a <ulink url="jsch-license.txt">BSD style license</ulink>.
 </para>
+<para>
+The FTP protocol is provided by a version of FtpClient
+(Chris Cheetham@fooware.net), modified with added support for proxies and Mac
+OS/X.
+</para>
+
 </preface>
 
 <chapter id="SavingPasswords">
@@ -50,7 +56,7 @@ passwords and passphrases to disk</guimenuitem> by checking this option from
 the user is asked once for a master password, for reading an existing password
 file, or encrypting a new password file. </para>
 
-<para> If you cancel entering a master password for any reason, then 
+<para> If you cancel entering a master password for any reason, then
 saving passwords is disabled until you check it again. </para>
 
 <para> If you want to <guimenuitem>Use a keyfile for encrypting
@@ -60,12 +66,12 @@ will be asked for a master password only once, it is hashed and saved to this
 location, and from then on your passwords are automatically loaded and stored
 without asking for a master password again. This is less secure than using a
 master password, but provides convenience similar to previous versions of this
-plugin. </para> 
+plugin. </para>
 
 <para> When available, the FTP plugin uses AES-256 encryption to save passwords.
 If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
 to DES (weak) encryption. In this case, you will see a warning in the activity
-log indicating that FTP plugin is falling back on weak encryption. 
+log indicating that FTP plugin is falling back on weak encryption.
 If you don't like this, you can <guimenuitem>Disable weak encryption
 when saving passwords</guimenuitem> from FTP plugin options, and/or install <ulink url=
 "http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">
@@ -100,7 +106,7 @@ This command is reasonably standard, but not all FTP servers support it. </para>
 to an FTP server, check
 <guimenu>Utilities</guimenu> &gt;
 <guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity
-Log</guimenuitem> for messages like the following, which indicate your FTP 
+Log</guimenuitem> for messages like the following, which indicate your FTP
 server does not support this command: </para>
 
 <programlisting>[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: sending command: SITE CHMOD 644 /home/swenv
@@ -199,7 +205,7 @@ impossible to do anything because dialogs pop up as soon as others are closed.
 Now, FTP logs its errors to the activity log instead. If you are expecting
 something to happen and it is not, check the <guilabel>Errors</guilabel> status
 bar widget, or the Activity Log dockable to find out what happened.
-</para></listitem> 
+</para></listitem>
 
 <listitem><para> The Plugin Option <guilabel>MaxAuthTries</guilabel> is
 a tweak which tells the SFTP protocol to retry that number of times before
@@ -209,7 +215,7 @@ made, often causing accidental lockout from the server. In FTP 1.0.7, the value
 was changed to 1, which caused Auth Fail problems on other systems, using keys
 and not even passwords. It is for this reason that the default value is now 2
 and configrable via this new plugin option. Hopefully people will not need to
-change this value but it is there if you need it. </para></listitem>  
+change this value but it is there if you need it. </para></listitem>
 
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
 you are unable to do anything, you can reset the plugin by invoking the
@@ -231,22 +237,22 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-    <listitem><para><emphasis role="bold">Version 1.0.8</emphasis> 
+    <listitem><para><emphasis role="bold">Version 1.0.8</emphasis>
       by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
  		</para>
  		<itemizedlist>
  		<listitem><para> Fix #3615207 SFTP Can't sort by date (Patch# 3615214, by
  		   Yihua Zhang) </para></listitem>
- 		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where 
+ 		<listitem><para> Fix #1773, Undo a regression introduced in 1.0.5, where
  		<literal>ftp.keys</literal> properties were cleared out at the wrong time.
  		Also, cleared out all <literal>ftp.keys.*</literal> properties when user
- 		<guimenuitem>Forgets remote passwords</guimenuitem> or 
+ 		<guimenuitem>Forgets remote passwords</guimenuitem> or
  		<guimenuitem>Resets ftp plugin</guimenuitem>. </para></listitem>
  		<listitem><para> Made SFTP MaxAuthTries a new plugin option. </para></listitem>
  		<listitem><para> jzlib updated to version 1.1.2 and separated into jzlib.jar.
- 		</para></listitem>  
+ 		</para></listitem>
     </itemizedlist> </listitem>
-    
+
    	<listitem><para> <emphasis role="bold">Version 1.0.7</emphasis> By Alan Ezust
  			Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
  		</para>
@@ -254,15 +260,15 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		   <listitem><para> New action: Reset FTP Plugin </para></listitem>
  		   <listitem><para> Fix #3615141, InvalidKeyException, and fallback to DES
  		   when strong encryption is unavailable. Also, a new plugin option to
- 		   disable this behavior. </para></listitem> 
+ 		   disable this behavior. </para></listitem>
  		   <listitem><para> Fix #3615163: No longer repeatedly asking for master
  		   password after the user hits "cancel". </para></listitem>
  		   <listitem><para> Patch #3615165: Fix accidental SSH account lockout on
  		   bad passwd by changing SFTP MaxAuthTries from 6 (the previous default) to
- 		   1. (Camilo J. Diaz Repka) </para></listitem> 
+ 		   1. (Camilo J. Diaz Repka) </para></listitem>
  		</itemizedlist>
  		</listitem>
- 
+
    	<listitem><para> <emphasis role="bold">Version 1.0.6</emphasis> By Alan Ezust
  			Requires Java 1.6, CommonControls, and jEdit 4.5.
  		</para>
@@ -270,7 +276,7 @@ There are workarounds for that, see our bug tracker entry #3491410,
  		   <listitem><para> Fix #3378762 SFTP VFS does not provide lastmodified
  		   dates </para></listitem>
  		   <listitem><para> Better master password dialog, exception handling and
- 		   error messages. </para> 
+ 		   error messages. </para>
  		   </listitem>
  		</itemizedlist>
 
