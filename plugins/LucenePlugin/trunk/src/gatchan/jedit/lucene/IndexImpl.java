@@ -1,8 +1,8 @@
 /*
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009, 2013 Matthieu Casanova
+ * Copyright (C) 2009, 2014 Matthieu Casanova
  * Copyright (C) 2009, 2011 Shlomy Reinstein
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 
 package gatchan.jedit.lucene;
 
+//{{{ Imports
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -54,6 +55,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+//}}}
 
 /**
  * @author Matthieu Casanova
@@ -66,18 +68,21 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	private boolean closeWriter;
 
+	//{{{ IndexImpl constructor
 	public IndexImpl(String name, File path)
 	{
 		super(path);
 		this.name = name;
-	}
+	} //}}}
 
+	//{{{ getName() method
 	@Override
 	public String getName()
 	{
 		return name;
-	}
+	} //}}}
 
+	//{{{ startActivity() method
 	private void startActivity()
 	{
 		synchronized (this)
@@ -86,8 +91,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		for (ActivityListener al : listeners)
 			al.indexingStarted(this);
-	}
+	} //}}}
 
+	//{{{ endActivity() method
 	private void endActivity(boolean close)
 	{
 		synchronized (this)
@@ -103,14 +109,16 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		for (ActivityListener al : listeners)
 			al.indexingEnded(this);
-	}
+	} //}}}
 
+	//{{{ isChanging() method
 	@Override
 	public synchronized boolean isChanging()
 	{
 		return writerCount > 0;
-	}
+	} //}}}
 
+	//{{{ addFiles() method
 	@Override
 	public void addFiles(FileProvider files, ProgressObserver progressObserver)
 	{
@@ -152,8 +160,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			endActivity(true);
 		}
-	}
+	} //}}}
 
+	//{{{ addFile() methods
 	@Override
 	public void addFile(String path)
 	{
@@ -250,8 +259,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			addDocument(file, session);
 		}
-	}
+	} //}}}
 
+	//{{{ removeFile() method
 	@Override
 	public void removeFile(String path)
 	{
@@ -267,8 +277,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			Log.log(Log.ERROR, this, "Unable to delete document " + path, e);
 		}
-	}
+	} //}}}
 
+	//{{{ reindex() method
 	@Override
 	public void reindex(ProgressObserver progressObserver)
 	{
@@ -296,8 +307,9 @@ public class IndexImpl extends AbstractIndex implements Index
 			removeFile(path);
 			addFile(path);
 		}
-	}
+	} //}}}
 
+	//{{{ search() method
 	@Override
 	public void search(String query, String fileType, int max, ResultProcessor processor)
 	{
@@ -342,13 +354,15 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			Log.log(Log.ERROR, this, e, e);
 		}
-	}
+	} //}}}
 
+	//{{{ getResultInstance() method
 	protected Result getResultInstance()
 	{
 		return new Result();
-	}
+	} //}}}
 
+	//{{{ addDocument() method
 	protected void addDocument(VFSFile file, Object session)
 	{
 		if (file.getPath() == null)
@@ -370,14 +384,15 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		catch (IOException e)
 		{
-			Log.log(Log.WARNING, this, "Unable to read file " + file.getPath(), e);
+			Log.log(Log.WARNING, this, "Unable to read file " + file.getPath());
 		}
 		finally
 		{
 			IOUtilities.closeQuietly((Closeable) reader);
 		}
-	}
+	} //}}}
 
+	//{{{ getEmptyDocument() method
 	protected static Document getEmptyDocument(VFSFile file)
 	{
 		Document doc = new Document();
@@ -392,8 +407,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 
 		return doc;
-	}
+	} //}}}
 
+	//{{{ MyVFSFilter class
 	private static class MyVFSFilter implements VFSFileFilter
 	{
 		private final String[] excludedDirectories;
@@ -430,5 +446,5 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			return null;
 		}
-	}
+	} //}}}
 }
