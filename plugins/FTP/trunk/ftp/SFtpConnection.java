@@ -349,7 +349,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	//{{{ prompting functions
 	public boolean promptPassword(String message){ return true;}
 
-	public synchronized boolean promptPassphrase(String message)
+	public boolean promptPassphrase(String message)
 	{
 		Log.log(Log.DEBUG,this,message);
 		passphrase = ConnectionManager.getPassphrase(info.privateKey);
