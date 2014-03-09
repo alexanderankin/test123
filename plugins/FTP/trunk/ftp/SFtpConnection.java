@@ -37,6 +37,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.jEdit;
@@ -70,7 +71,6 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	private Session session;
 	private int keyAttempts = 0;
 	private String passphrase = null;
-	
 	//}}}
 	
 	//{{{ ctor
@@ -349,12 +349,14 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	//{{{ prompting functions
 	public boolean promptPassword(String message){ return true;}
 
-	public boolean promptPassphrase(String message)
+	public synchronized boolean promptPassphrase(String message)
 	{
 		Log.log(Log.DEBUG,this,message);
 		passphrase = ConnectionManager.getPassphrase(info.privateKey);
 		if (passphrase==null || keyAttempts != 0)
 		{
+		
+			GUIUtilities.hideSplashScreen();
 			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
 				jEdit.getProperty("login.privatekeypassword"), message);
 			if (!pd.isOK())
@@ -362,6 +364,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			passphrase = new String(pd.getPassword());
 			ConnectionManager.setPassphrase(info.privateKey,passphrase);
 		}
+		
 		keyAttempts++;
 		return true;
 	}

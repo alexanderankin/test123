@@ -237,6 +237,13 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+     <listitem><para><emphasis role="bold">Version 1.1</emphasis>
+      by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. </para>
+    <itemizedlist>
+      <listitem><para> Fix #1776 FTP 1.0.8 multiple master password dialog
+      </para> </listitem>
+    </itemizedlist> </listitem>
+ 
     <listitem><para><emphasis role="bold">Version 1.0.8</emphasis>
       by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
  		</para>
