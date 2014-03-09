@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2002-2006 Slava Pestov, Nicholas O'Leary, 
+ * Copyright (C) 2002-2006 Slava Pestov, Nicholas O'Leary,
  * Copyright (C) 2007-2014 Vadim Voituk, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
@@ -48,6 +48,7 @@ import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
@@ -71,10 +72,10 @@ public class ConnectionManager
 	private static HashMap<String, String> passphrases;
 	/** a 256 byte SHA1 hash of the master password, actually */
 	static byte[] masterKey = null;
-	
+
 	static int connectionTimeout = 60000;
 	private static File passwordFile = null;
-	
+
 	// this is used from SshConsole too:
 	public static JSch client = null;
 	// }}}
@@ -83,15 +84,15 @@ public class ConnectionManager
 	public static void forgetPasswords()
 	{
 		clearStoredFtpKeys();
-		
+
 		try {
-			if (client != null) 
+			if (client != null)
 				client.removeAllIdentity();
 			if (passwordFile.exists())
 				passwordFile.delete();
 		}
 		catch (Exception e) {}
-		
+
 		masterKey = null;
 		saveKeyFile();		// clear out the master key file, actually
 		restoredPasswords = false;
@@ -132,12 +133,12 @@ public class ConnectionManager
 
 	} //}}}
 
-	
+
 	//{{{ clearStoredFtpKeys()
 	/** These ftp keys are stored in properties and there is no GUI yet to change
-		them. 
-	*/ 
-	public static void clearStoredFtpKeys() 
+		them.
+	*/
+	public static void clearStoredFtpKeys()
 	{
 		Properties p = jEdit.getProperties();
 		for (Object keyobj: p.keySet()) {
@@ -146,10 +147,10 @@ public class ConnectionManager
 				jEdit.unsetProperty(key);
 		}
 	}//}}}
-	
+
 	//{{{ getStoredFtpKey()
 	/**
-	 
+
 	 * @return null if no
 	 */
 	public static String getStoredFtpKey(String hostport, String user) {
@@ -163,7 +164,7 @@ public class ConnectionManager
 	/** If we have a keyFile, load the hash of the master password from a file
 	    instead of prompting the user for it. */
 	protected static void getKeyFile() {
-		
+
 		if (!jEdit.getBooleanProperty("ftp.useKeyFile")) return;
 		try {
 			File f = new File(jEdit.getProperty("ftp.passKeyFile"));
@@ -214,7 +215,7 @@ public class ConnectionManager
 				jEdit.getProperty("login.masterpassword.message.create"));
 	}
 
-	protected static boolean promptMasterPassword(final String title, final String message) {
+	protected static synchronized boolean promptMasterPassword(final String title, final String message) {
 
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return false;
 
@@ -226,30 +227,30 @@ public class ConnectionManager
 			ThreadUtilities.runInDispatchThreadAndWait(new Runnable() {
 				@Override
 				public void run() {
+					GUIUtilities.hideSplashScreen();
 					PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(), title, message);
-					if (!pd.isOK()) {
+					String masterPassword = "";
+					if (pd.isOK())
+						masterPassword = new String(pd.getPassword());
+					if (masterPassword.isEmpty() || !pd.isOK()) {
 						jEdit.setBooleanProperty("vfs.ftp.storePassword", false);
 						String msg2 = jEdit.getProperty("ftp.cancel-master-password");
 						Log.log(Log.MESSAGE, ConnectionManager.class, msg2);
 						jEdit.getActiveView().getStatus().setMessage(msg2);
 						return;
 					}
-					else {
-						String masterPassword = new String(pd.getPassword());
-						if (masterPassword.isEmpty()) return ;
-						// make a SHA256 digest of it (32 bytes)
-						try {
-							MessageDigest digest = MessageDigest.getInstance("SHA-256");
-							masterKey = digest.digest(masterPassword.getBytes("utf-8"));
-						}
-						catch (Exception e) {
-							Log.log(Log.ERROR, ConnectionManager.class, e, e);
-							return;
-						}
-						saveKeyFile();
+					// make a SHA256 digest of it (32 bytes)
+					try {
+						MessageDigest digest = MessageDigest.getInstance("SHA-256");
+						masterKey = digest.digest(masterPassword.getBytes("utf-8"));
+					}
+					catch (Exception e) {
+						Log.log(Log.ERROR, ConnectionManager.class, e, e);
+						return;
+					}
+					saveKeyFile();
 					}
 					// Log.log(Log.MESSAGE, ConnectionManager.class, "masterPasswordhash: " + masterPwStr);
-				}
 			});
 		}
 		catch (Exception e) {
@@ -267,7 +268,7 @@ public class ConnectionManager
 
 		if (passwordFile == null)
 		{
-			Log.log(Log.WARNING,ConnectionManager.class, 
+			Log.log(Log.WARNING,ConnectionManager.class,
 				"Password File is null - unable to load passwords.");
 			return;
 		}
@@ -282,10 +283,10 @@ public class ConnectionManager
 		while (!restoredPasswords) try
 		{
 			if (masterKey == null) {
-				if ( (i ==0 ) && !promptMasterPassword()) 
-					return;	
-				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"), jEdit.getProperty("login.masterpassword.message"))) 
-					return;	
+				if ( (i ==0 ) && !promptMasterPassword())
+					return;
+				if ((i > 0 ) && !promptMasterPassword(jEdit.getProperty("ftp.bad-master-password"), jEdit.getProperty("login.masterpassword.message")))
+					return;
 			}
 
 			i++;
@@ -295,7 +296,7 @@ public class ConnectionManager
 			while(read<passwordFileLength) {
 				read+=fis.read(buffer,read,passwordFileLength-read);
 			}
-			
+
 			Cipher c = getCipher(Cipher.DECRYPT_MODE);
 			byte[] objectBuffer = c.doFinal(buffer);
 
@@ -343,9 +344,9 @@ public class ConnectionManager
 				jEdit.getActiveView().getStatus().setMessage(msg);
 				return null;
 			}
-		}		
-		Log.log(Log.WARNING, ConnectionManager.class, jEdit.getProperty("ftp.using.weak-crypto"));		
-		// TODO: use something better than DES here? 
+		}
+		Log.log(Log.WARNING, ConnectionManager.class, jEdit.getProperty("ftp.using.weak-crypto"));
+		// TODO: use something better than DES here?
 		TRANSFORMATION = "DES";
 		DESKeySpec keySpec = new DESKeySpec(masterKey);
 		SecretKeyFactory keyFac = SecretKeyFactory.getInstance(TRANSFORMATION);
@@ -354,7 +355,7 @@ public class ConnectionManager
 		cipher.init(opmode, k);
 		return cipher;
 	}//}}}
-	
+
 	//{{{ savePasswords() method
 	protected static void savePasswords() {
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return;
@@ -366,7 +367,7 @@ public class ConnectionManager
 
 		if (masterKey == null)
 			if (!promptMasterPasswordCreate()) return;
-		
+
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
 		ByteArrayOutputStream baos = null;
@@ -377,7 +378,7 @@ public class ConnectionManager
 			oos.writeObject(passwords);
 			oos.writeObject(passphrases);
 			byte[] objectBuffer = baos.toByteArray();
-			
+
 			Cipher c = getCipher(Cipher.ENCRYPT_MODE);
 			objectBuffer = c.doFinal(objectBuffer);
 
@@ -518,7 +519,7 @@ public class ConnectionManager
 			}
 			int retries = 0;
 			while (connect == null) {
-				Log.log(Log.DEBUG,ConnectionManager.class, Thread.currentThread() + ": Connecting to " + info);				
+				Log.log(Log.DEBUG,ConnectionManager.class, Thread.currentThread() + ": Connecting to " + info);
 				try {
 					connect = info.secure ? new SFtpConnection(info) : new FtpConnection(info);
 					connections.add(connect);
@@ -534,9 +535,9 @@ public class ConnectionManager
 			}
 			return null;
 
-			
+
 		}
-		
+
 
 	} //}}}
 
@@ -584,7 +585,7 @@ public class ConnectionManager
 		restoredPasswords=false;
 		client = null;
 	}
-	
+
 	//{{{ static initializer
 	static
 	{
