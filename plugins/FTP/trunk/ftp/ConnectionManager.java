@@ -215,7 +215,7 @@ public class ConnectionManager
 				jEdit.getProperty("login.masterpassword.message.create"));
 	}
 
-	protected static synchronized boolean promptMasterPassword(final String title, final String message) {
+	protected static boolean promptMasterPassword(final String title, final String message) {
 
 		if (!jEdit.getBooleanProperty("vfs.ftp.storePassword")) return false;
 
@@ -418,7 +418,7 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ getConnectionInfo() method
-	public static ConnectionInfo getConnectionInfo(Component comp, FtpAddress address, boolean _secure)
+	public static synchronized ConnectionInfo getConnectionInfo(Component comp, FtpAddress address, boolean _secure)
 	{
 		Log.log(Log.DEBUG, "ConnectionManager.getConnectionInfo", address);
 		String hostport, user;
@@ -495,7 +495,7 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ getConnection() method
-	public static Connection getConnection(ConnectionInfo info) throws IOException {
+	public static synchronized Connection getConnection(ConnectionInfo info) throws IOException {
 		Connection connect = null;
 		synchronized(lock) {
 			for (Connection conn : connections)
