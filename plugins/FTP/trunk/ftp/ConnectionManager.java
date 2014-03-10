@@ -495,7 +495,7 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ getConnection() method
-	public static synchronized Connection getConnection(ConnectionInfo info) throws IOException {
+	public static Connection getConnection(ConnectionInfo info) throws IOException {
 		Connection connect = null;
 		synchronized(lock) {
 			for (Connection conn : connections)
