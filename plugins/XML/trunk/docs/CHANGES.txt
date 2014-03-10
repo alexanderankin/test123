@@ -6,7 +6,7 @@ XML Plugin Change log
         Eric Le Lay)
         Fix pb #1763: XML Plugin unexpected asset type (Matthieu Casanova, Eric Le Lay)
         Fix pb #1775 XML javacc parser prints out lots of crap to stdout (Alan
-        Ezeust, Eric Le Lay)
+        Ezust, Eric Le Lay)
 
     Version 2.8.5
         Fix #3533666: Attribute completion after self-closed tag (Alan Ezust,
