@@ -53,20 +53,20 @@ Passwords</guimenuitem> command in the
 you don't have to re-type them. Optionally, you can securely <guimenuitem>Save
 passwords and passphrases to disk</guimenuitem> by checking this option from
 <guimenuitem>Plugin Options - FTP</guimenuitem>. When this option is checked,
-the user is asked once for a master password, for reading an existing password
-file, or encrypting a new password file. </para>
+the user is asked once each time jEdit is started for a master password,
+for reading an existing password file, or encrypting a new password file. </para>
 
 <para> If you cancel entering a master password for any reason, then
 saving passwords is disabled until you check it again. </para>
 
 <para> If you want to <guimenuitem>Use a keyfile for encrypting
-passwords</guimenuitem> instead of a master password, you can check this option,
-and choose the location to store the key file. With this option enabled, you
-will be asked for a master password only once, it is hashed and saved to this
-location, and from then on your passwords are automatically loaded and stored
-without asking for a master password again. This is less secure than using a
-master password, but provides convenience similar to previous versions of this
-plugin. </para>
+passwords</guimenuitem>, you can check this option, and choose a location to
+store the key file. With this option enabled, you will be asked for a master
+password only once, it is hashed and saved to this location, and even after
+restarting jEdit, your passwords are automatically loaded and stored without
+asking the user for a master password again. This is less secure than entering a
+master password once per jEdit startup, but provides convenience similar to
+previous versions of this plugin. </para>
 
 <para> When available, the FTP plugin uses AES-256 encryption to save passwords.
 If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
@@ -213,8 +213,8 @@ giving up with an "Auth Fail". In Versions prior to 1.0.3, the value was 6,
 which meant that with incorrect passwords, 6 bad password attempts would be
 made, often causing accidental lockout from the server. In FTP 1.0.7, the value
 was changed to 1, which caused Auth Fail problems on other systems, using keys
-and not even passwords. It is for this reason that the default value is now 2
-and configrable via this new plugin option. Hopefully people will not need to
+and not even passwords. It is for this reason that the value is now configrable
+via this new plugin option. Hopefully most people will not need to 
 change this value but it is there if you need it. </para></listitem>
 
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
@@ -240,10 +240,10 @@ There are workarounds for that, see our bug tracker entry #3491410,
      <listitem><para><emphasis role="bold">Version 1.1</emphasis>
       by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. </para>
     <itemizedlist>
-      <listitem><para> Fix #1776 FTP 1.0.8 multiple master password dialog
-      </para> </listitem>
-      <listitem><para> Now properly hides splashscreen before popping up
-      dialogs </para></listitem>
+      <listitem><para> Fix plugin-bug #1776 FTP 1.0.8 multiple master password
+      dialog. </para> </listitem>
+      <listitem><para> Now properly hides SplashScreen before popping up
+      password dialogs. </para></listitem>
     </itemizedlist> </listitem>
 
     <listitem><para><emphasis role="bold">Version 1.0.8</emphasis>
