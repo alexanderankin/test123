@@ -1,22 +1,16 @@
 package xml.parser;
 
 // {{{ imports
+import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.xerces.impl.XMLErrorReporter;
-import org.apache.xerces.xni.XMLDTDHandler;
-import org.apache.xerces.xni.parser.XMLDTDFilter;
-import org.apache.xerces.xni.parser.XMLDTDSource;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -25,7 +19,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.helpers.DefaultHandler;
 
 import sidekick.IAsset;
@@ -33,14 +26,12 @@ import sidekick.SideKickParsedData;
 import xml.CharSequenceReader;
 import xml.AntXmlParsedData;
 import xml.XmlParsedData;
-import xml.XmlPlugin;
 import xml.SchemaMappingManager;
 import xml.completion.CompletionInfo;
 import xml.gui.XmlModeToolBar;
 import xml.parser.MyEntityResolver.IOExceptionWithLocation;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
-import static xml.Debug.*;
 // }}}
 // {{{ class XercesParserImpl
 /**
@@ -428,8 +419,8 @@ public class XercesParserImpl extends XmlParser
         String dataClassName = jEdit.getProperty("xml.xmlparseddata." + modeName);
         if (dataClassName != null) {
             try {
-                Class dataClass = Class.forName(dataClassName);
-                java.lang.reflect.Constructor con = dataClass.getConstructor(String.class, Boolean.TYPE);
+                Class<?> dataClass = Class.forName(dataClassName);
+                Constructor<?> con = dataClass.getConstructor(String.class, Boolean.TYPE);
                 return (XmlParsedData)con.newInstance(filename, html);
             }
             catch (Exception e) {
@@ -465,6 +456,8 @@ public class XercesParserImpl extends XmlParser
 	//{{{ StoppedException class
 	static class StoppedException extends SAXException
 	{
+		private static final long serialVersionUID = 1L;
+
 		StoppedException()
 		{
 			super("Parsing stopped");
