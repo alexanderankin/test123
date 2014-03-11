@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.helpers.DefaultHandler;
 
 import sidekick.IAsset;
 import sidekick.SideKickParsedData;
@@ -327,9 +328,12 @@ public class XercesParserImpl extends XmlParser
 				reader.setContentHandler(treeHandler);
 				reader.setEntityResolver(resolver);
 
-				// report errors and warnings correctly if not referenced from root document
-				// (this may be temporary, whatever...)
-				if(!handler.seenBuffer && rootDocument != null){
+				if(handler.seenBuffer || rootDocument == null){
+					// if already parsed, set a no-op ErrorHandler
+					reader.setErrorHandler(new DefaultHandler());
+				}else{
+					// report errors and warnings correctly if not referenced from root document
+					// (this may be temporary, whatever...)
 					reader.setErrorHandler(errorHandler);
 				}
 
