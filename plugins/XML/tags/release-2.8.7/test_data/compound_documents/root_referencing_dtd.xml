@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    - this is an XML file referencing dtd_with_xml_root.dtd
+      and referenced by it. No warning about not parsed buffer should appear
+      when parsing dtd_with_xml_root.dtd
+  -->
+<!DOCTYPE book SYSTEM "dtd_with_xml_root.dtd">
+<book xml:id="root">
+</book>

@@ -1,0 +1,23 @@
+<!-- :xml.root=root_referencing_dtd.xml: -->
+<!-- This dtd points to the document using it to be validated.
+     This is to test what happens when a buffer uses xml.root
+     and it is not parsed as a result of a missing xi:include in the root
+     document or whatever.
+     Contrary to dtd_with_xml_root_not_referenced.dtd, the root references
+     it and it is parsed. 
+     Ensure to set the Sidekick parser to XML manually.
+     We don't get any warning or error.
+  -->
+<!ELEMENT book (chapter*,para*)>
+<!ATTLIST book 
+    xml:id ID #IMPLIED
+>
+<!ELEMENT chapter (title,section*)>
+<!ATTLIST chapter 
+    xml:id ID #IMPLIED
+>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT section (title)>
+<!ATTLIST section 
+    xml:id ID #IMPLIED
+>
