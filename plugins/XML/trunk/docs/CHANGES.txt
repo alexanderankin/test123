@@ -1,7 +1,7 @@
 :encoding=UTF-8:maxLineLen=80:wrap=hard:folding=indent:noTabs=true:tabSize=4:
 XML Plugin Change log
 
-    Version 2.8.6 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
+    Version 2.8.7 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
         Fix #3614106: XML plugin: Missing Hyperlinks to xref linkend= elements (Alan Ezust,
         Eric Le Lay)
         Fix pb #1763: XML Plugin unexpected asset type (Matthieu Casanova, Eric Le Lay)
