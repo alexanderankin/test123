@@ -15,7 +15,7 @@
 	<property name="jedit.plugins.dir" value="${install.dir}" description="Location of required plugin jars"/>
 	
 	<!-- Project properties -->
-	<property name="project.version" value="0.2.14" description="Project's build version"/>
+	<property name="project.version" value="1.0.0" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
 	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
