@@ -25,6 +25,8 @@ import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 
 import projectviewer.event.StructureUpdate;
 import projectviewer.event.ViewerUpdate;
@@ -34,6 +36,16 @@ public class ProjectWatcher
 	public ProjectWatcher()
 	{
 		EditBus.addToBus(this);
+	}
+	
+	@EBHandler
+	public void handlePluginUpdate(PluginUpdate pu) 
+	{
+		if (PluginUpdate.LOADED.equals(pu.getWhat()) && LucenePlugin.instance.isProjectViewerAvailable())
+		{
+			View view = jEdit.getActiveView();
+			LucenePlugin.instance.setCurrentIndex(view, LucenePlugin.instance.getProjectName(view));
+		}
 	}
 
 	@EBHandler

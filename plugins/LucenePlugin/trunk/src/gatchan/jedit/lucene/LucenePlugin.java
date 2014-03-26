@@ -45,6 +45,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import projectviewer.ProjectViewer;
+
+
 /**
  * @author Matthieu Casanova
  */
@@ -494,4 +497,22 @@ public class LucenePlugin extends EditPlugin
 		if (dockable != null)
 			dockable.setCurrentIndex(name);
 	}
+	
+	/**
+	 * @return true if the ProjectViewer plugin is loaded
+	 */
+	public static boolean isProjectViewerAvailable() 
+	{
+		return jEdit.getPlugin( "projectviewer.ProjectPlugin", false ) != null;
+	}
+	
+	/**
+	 * @return the name of the active project, if any, in the given view.  Returns an
+	 * empty string if there is no active project in the view.
+	 */
+	public static String getProjectName(View view) 
+	{
+		return ProjectViewer.getActiveProject( view ) == null ? "" : ProjectViewer.getActiveProject( view ).getName();
+	}
+	
 }
