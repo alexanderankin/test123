@@ -1,5 +1,6 @@
 /*
  * NetRexxScriptPlugin.nrx - NetRexx jEdit Scripting Plugin
+ * Copyright (C) 2014 Kermit Kiser
  * Copyright (C) 2012 Kermit Kiser
  * Copyright (C) 2009 Kermit Kiser
  *
@@ -18,6 +19,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  ******** remember to update the version number in NetRexx.props and build.xml  **********
+ 
+ Version 1.0.0 (2014-03-15)
+ 
+ 	* add "shared" to keywords is netrexx.xml per Dave Woodman suggestion
+ 	* update help files to reflect version 1.0.0 in preparation for Plugin Central release
  
  Version 0.2.14 (2013-01-12)
  
@@ -409,7 +415,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable, EBCompone
 		if jEdit.getBooleanProperty(OPTION_PREFIX"preparse") then -
 			if \parseall then jEdit.setBooleanProperty(OPTION_PREFIX"preparse",f)	--	try to parse all current nrx script files				
 
-		say "NetRexxScript plugin started"
+		say "NetRexx plugin started"
 
 method setup		--	initial setup stuff: creates directories and loads files from our jar
   						
@@ -570,7 +576,7 @@ method makeadir(jer=Rexx)
 	  nrc=jEdit.getPluginJAR(nrcpath)
 	  jEdit.removePluginJAR(nrc,0)
 			
-		say "NetRexxScript plugin stopped"
+		say "NetRexx plugin stopped"
  
 	method commonentry -- make sure run time variables are current
 		
@@ -595,7 +601,7 @@ method makeadir(jer=Rexx)
 		
 	method execute(script=String,on=String "",incache=boolean 0) -- analyze script request and execute it
 		
-		say "NetRexxScript execute" script
+		say "NetRexx Plugin execute" script
 		if df then trace all
 		origname=on							--	save original script name in case using runcurrent temp copy
 	

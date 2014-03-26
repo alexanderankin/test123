@@ -5,7 +5,7 @@
 plugin.netrexxplugin.NetRexxPlugin.activate=startup
 plugin.netrexxplugin.NetRexxPlugin.name=NetRexx
 plugin.netrexxplugin.NetRexxPlugin.author=Kermit Kiser
-plugin.netrexxplugin.NetRexxPlugin.version=0.2.14
+plugin.netrexxplugin.NetRexxPlugin.version=1.0.0
 plugin.netrexxplugin.NetRexxPlugin.description=NetRexx Programmer Tools
 plugin.netrexxplugin.NetRexxPlugin.usePluginHome=false
 plugin.netrexxplugin.NetRexxPlugin.docs=NetRexxPlugin.html

@@ -189,6 +189,7 @@
       <KEYWORD1>unused</KEYWORD1>
       <KEYWORD1>transient</KEYWORD1>
       <KEYWORD1>indirect</KEYWORD1>
+      <KEYWORD1>shared</KEYWORD1>
 
       <KEYWORD2>do</KEYWORD2>
       <KEYWORD2>label</KEYWORD2>
