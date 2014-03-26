@@ -475,6 +475,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 	public void search(String text, String fileType)
 	{
+		if (text.isEmpty())
+			return;
 		Index index = getSelectedIndex();
 		if (index == null)
 			return;
@@ -482,11 +484,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		searchField.setText(text);
 		type.setText(fileType);
 		text = text.trim();
-		if (text.isEmpty())
-			return;
-		ThreadUtilities.runInBackground(new SearchQuery(index, text, fileType, max,
+		SearchQuery sq = new SearchQuery(index, text, fileType, max,
 			lineResults.isSelected(), new TokenFilter(filterComments.isSelected(),
-			filterLiterals.isSelected())));
+			filterLiterals.isSelected()));
+		sq.execute();
 	}
 
 	public void goToNextResult()
@@ -581,7 +582,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			revalidate();
 	}
 
-	private class SearchQuery extends Task
+	private class SearchQuery extends SwingWorker<List<Object>, Object>
 	{
 		private final Index index;
 		private final String text;
@@ -600,10 +601,9 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			this.lineResult = lineResult;
 			this.tokenFilter = tokenFilter;
 		}
-
+		
 		@Override
-		public void _run()
-		{
+		public List<Object> doInBackground() {
 			Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
 			ResultProcessor processor;
 			final List<Object> files = new ArrayList<Object>();
@@ -612,47 +612,51 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			else
 				processor = new FileListQueryProcessor(files, max);
 			index.search(text, fileType, max, processor);
-			ThreadUtilities.runInDispatchThread(new Runnable()
-			{
-				@Override
-				public void run()
+			return files;
+		}
+		
+		@Override
+		public void done() {
+			try {
+				List<Object> files = get();	
+				if (lineResult)
 				{
-					if (lineResult)
+					SearchRootNode rootNode = new SearchRootNode(text);
+					SourceLinkParentNode parent = tree.addSourceLinkParent(rootNode);
+					FileMarker prev = null;
+					int count = 0;
+					for (Object o: files)
 					{
-						SearchRootNode rootNode = new SearchRootNode(text);
-						SourceLinkParentNode parent = tree.addSourceLinkParent(rootNode);
-						FileMarker prev = null;
-						int count = 0;
-						for (Object o: files)
+						FileMarker marker = (FileMarker) o;
+						if (marker.equals(prev))
 						{
-							FileMarker marker = (FileMarker) o;
-							if (marker.equals(prev))
-							{
-								Vector<FileMarker.Selection> selections = marker.getSelections();
-								for (FileMarker.Selection selection: selections)
-									prev.addSelection(selection);
-							}
-							else
-							{
-								parent.addSourceLink(marker);
-								prev = marker;
-								count++;
-							}
+							Vector<FileMarker.Selection> selections = marker.getSelections();
+							for (FileMarker.Selection selection: selections)
+								prev.addSelection(selection);
 						}
-						rootNode.addChildCount(count);
-						TreeModel model = tree.getModel();
-						if (model instanceof DefaultTreeModel)
-							((DefaultTreeModel) model).nodeChanged(parent);
-						tree.setExpandedOnly(parent);
-						((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
+						else
+						{
+							parent.addSourceLink(marker);
+							prev = marker;
+							count++;
+						}
 					}
-					else
-					{
-						model.setFiles(files);
-						((CardLayout) mainPanel.getLayout()).show(mainPanel, "list");
-					}
+					rootNode.addChildCount(count);
+					TreeModel model = tree.getModel();
+					if (model instanceof DefaultTreeModel)
+						((DefaultTreeModel) model).nodeChanged(parent);
+					tree.setExpandedOnly(parent);
+					((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
 				}
-			});
+				else
+				{
+					model.setFiles(files);
+					((CardLayout) mainPanel.getLayout()).show(mainPanel, "list");
+				}
+			}
+			catch(Exception e) {
+				// ignore this
+			}
 		}
 	}
 
