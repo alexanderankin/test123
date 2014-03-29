@@ -42,6 +42,7 @@
 		 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		 	<pathelement location="${project.src.dir}"/>
 		 	<pathelement location="${project.utilities.dir}"/>
+		 	<pathelement location="${project.root.dir}"/>
 		 	<fileset dir="${project.netrexx.libdir}">
 				<include name="NetRexxC.jar"/>
 				<include name="ant-netrexx.jar"/>
