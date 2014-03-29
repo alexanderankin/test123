@@ -96,7 +96,7 @@
     <target name="build" depends="init,cleannrx" description="Builds NetRexx plugin jar">
         <jar destfile="${install.dir}/${project.build.binjar.name}" basedir="." 
         	excludes="*.java *.nrx **\*.log build.xml src\ lib\ build\ dist\"/>
-         <copy file="${project.netrexx.libdir}/NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" />
+         <copy file="${project.netrexx.libdir}/NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" verbose="true" />
     </target>  
     
     <target name="cleannrx" depends="buildnrx,compilemacros" description="Cleans up work files for normal build">
