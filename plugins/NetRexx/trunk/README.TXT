@@ -1,48 +1,44 @@
-NetRexx Script readme file
+NetRexx jEdit Plugin readme file
 
-NetRexxScript feature highlights:
+The NetRexx Plugin replaces earlier plugins NetRexxJe, NetRexxDE and NetRexxScript.
 
-    * Efficient execution of NetRexx scripts and macros in jEdit
-    * Optional caching of parsed scripts to improve performance
-    * Option to "preparse" all available scripts as a unit for performance (aka "greased lightning mode") and cross-script access support
-    * Option to suppress or allow trace output
-    * Options to execute a currently open NetRexx file including unsaved changes
-    * Optional dockable console window with command line to run scripts with parms and view say output or respond to ask input
-    * View say output with or without trace from the console window to aid debugging
-    * Option to "prefix" scripts automatically adds access to jEdit functions and variables
-    * Script parse errors are automatically highlighted in script source files and listed in the "Error List" as well as displayed in a console window
-    * User defined "classpath" option for making classes available to NetRexx scripts
-    * User defined "scriptpath" option for access to scripts outside of jEdit macro libraries
-    * Support for executing compiled NetRexx scripts or any "main" type Java class file as a macro or console command
-    * Includes an updated version of the "NetRexx at Once" cross reference guide to Java and NetRexx
+NetRexx Plugin feature highlights:
+
+    * Compile and run or interpret NetRexx programs, scripts and macros from jEdit
+    * Interpret a currently open NetRexx file including any unsaved changes
+    * Dockable console window with command line to view say output or respond to ask input
+    * View output with or without trace from the console window to aid in debugging programs
+    * Errors are automatically shown in source files, the "Error List", and in the console window
+    * A "classpath" option makes Java classes available to NetRexx programs
+    * Run compiled NetRexx scripts or Java class files as macros or console commands
+    * Includes the "NetRexx at Once" cross reference guide to Java and NetRexx
+    * Includes an Ant based IDE for developing Android programs in NetRexx
+    * Compile and run simple Java programs
     
-Installation:
+Installation: 
 
-You must install the plugin manually at this time. 
-
-When it reaches a stable 1.0 version and gets packaged for distribution from the jEdit site, you will be able to use the automatic installation process, but for now -
+The stable 1.0 version is being released to jEdit Plugin Central and should soon be available via the automatic plugin manager installation process.
 
 To install it manually:
 
-    * Download the NetRexxScript.jar file and the NetRexxC.jar file or download and unzip the zip file which contains both
-    * Copy both files to the user account's jEdit jars directory or the main jEdit jars directory.
+    * Download the NetRexxScript.jar file and the NetRexxC.jar file
+    * Copy both files to the user account's jEdit jars directory.
+    
+    https://kenai.com/projects/netrexx-plus/downloads/download/jEdit%20NetRexxPlugin/NetRexxPlugin.jar
+    http://netrexx.org/netrexx/netrexxc/trunk/lib/NetRexxC.jar
 
-  On Windows XP the user's jEdit home directory could be C:\Documents and Settings\useracct\.jedit\jars (Where "useracct" is the actual userid.)
-  The jEdit main jar directory may be C:\Program Files\jEdit\jars
-
-  If you have the NetRexxJe plugin installed, NetRexxC.jar is installed with it, so just copy NetRexxScript.jar to the same directory.
+  On Windows the user's jEdit jar directory could be C:\Documents and Settings\useracct\.jedit\jars or perhaps C:\Documents and Settings\useracct\AppData\Roaming\jEdit\jars
+  (Where "useracct" is the actual userid). 
  
-  
-  
-Sample Scripts provided with the NetRexxScript plugin:
+Sample macro scripts provided:
 
-    * asktest  --  This script demonstrates console IO to the user - it requires the NetRexxScript dockable window to work
-                    Say output displays in the OUT panel of the console and ask input is read from the command line
+    * asktest  --  This script demonstrates console IO  - it requires the NetRexx dockable window
+                    Say output displays in the panel of the console and Ask input is read from the cmd line
+    * guisample -- a simple NetRexx gui program with a progress bar
     * index  -- This script demonstrates the effect of caching on indexed variables
                  If cached, the second execution will show different results for the second display of s['x']
-    * iosample  -- This script demonstrates easy GUI IO to the end user
+    * iosample  -- This script demonstrates easy jEdit GUI IO tricks
     * multi  --  This script demonstrates one script calling another in preparse mode - demonstrates parse error if caching option is off
-    * test  --   This is the basic test script for the plugin -- It demonstrates say output that contains some trace sections
-                  which can be viewed in the trace panel of the plugin console window
+    * test  --   This is the basic test script for the plugin -- It demonstrates say output that contains some trace sections which can be viewed in the trace panel of the plugin console window
     * testbin  --  This is a "binary" NetRexx script - it does not use "Rexx class" variables and runs OK even without the "prefix" option  
     
