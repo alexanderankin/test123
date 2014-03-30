@@ -1,0 +1,53 @@
+
+class guisample implements ActionListener        --    ActionListener interface lets the GUI objects talk to the program code
+   
+    properties static
+       
+    frame=JFrame                                --    holder for a GUI window
+    
+    textfield=JTextField						--	  holder for some text to edit
+   
+    method main(sa=String[]) static		--		a startup method
+    	
+    	arg=Rexx(sa)		--	save start parms in case needed
+   
+        frame=JFrame("Sample GUI window")        --    create a GUI window frame
+       
+        frame.setSize(400,100)                    --    give the window some space on the screen
+       
+        panel=JPanel()                            --    create a panel to hold some GUI objects
+       
+        frame.add(panel)                        --    put the panel in the window frame
+
+		parse Date().toString a b c d e f		--		save some Java date fields 
+		
+        textfield=JTextField(b c f)    --    create a spot for some text using saved date
+       
+        panel.add(textfield)                    --    add the text field to the panel
+       
+        button=JButton("OK")                    --    create a button to click
+       
+        button.addActionListener(guisample())    --    attach some code (an instance of this class) to watch the button
+       
+        panel.add(button)                        --    put the button in the panel
+        
+        pb=JProgressBar(0,100)				--		create a progress bar
+        
+        panel.add(pb)								--		put the progress bar in the panel
+					
+        frame.show                                --    display the GUI window on the screen
+        
+        loop i=1 to 100 while frame \= null	--		advance the progress bar 1% every tenth second until full or clicked
+        	Thread.sleep(100)							--		wait 100 milisecs
+        	pb.setValue(i)									--		move the progress bar
+        	end
+       
+        loop while frame\=null;end                --    wait for the GUI window to do something (click button) so jEdit can show the text in the console. 
+       
+    method actionPerformed(e=ActionEvent)         --    this is the code that listens to the button
+    	
+    	say textfield.getText                    --    show the text field contents
+       
+        frame.dispose                            --    clear the GUI window frame from screen and memory
+       
+        frame=null                                --    erase the pointer to stop the main program
