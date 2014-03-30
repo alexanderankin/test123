@@ -1,0 +1,23 @@
+# Plugin properties
+plugin.console.ssh.SshConsolePlugin.activate=defer
+plugin.console.ssh.SshConsolePlugin.name=SshConsole
+plugin.console.ssh.SshConsolePlugin.author=Alan Ezust
+plugin.console.ssh.SshConsolePlugin.version=1.0.7
+plugin.console.ssh.SshConsolePlugin.docs=index.html
+plugin.console.ssh.SshConsolePlugin.description=Allows you to issue compile commands remotely via ssh in the same location as the sftp:// file you are editing, and parses their output for errors in ErrorList.
+plugin.console.ssh.SshConsolePlugin.depend.0=jdk 1.6
+plugin.console.ssh.SshConsolePlugin.depend.1=jedit 05.00.99.00
+plugin.console.ssh.SshConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
+plugin.console.ssh.SshConsolePlugin.depend.3=plugin ftp.FtpPlugin 1.0.3
+plugin.console.ssh.SshConsolePlugin.depend.4=plugin console.ConsolePlugin 5.1.3
+
+plugin.console.ssh.SshConsolePlugin.menu=open-sftp console.shell.ssh-show console.ssh.close-connections
+plugin.console.ssh.SshConsolePlugin.usePluginHome=true
+console.ssh.close-connections.label=Close all connections
+console.shell.ssh-show.label=Show SshConsole
+
+plugin.console.ssh.SshConsolePlugin.option-pane=sshconsole
+
+options.sshconsole.label=SshConsole
+options.sshconsole.code=new console.ssh.OptionPane()
+options.sshconsole.xforward=Enable X11 forwarding
