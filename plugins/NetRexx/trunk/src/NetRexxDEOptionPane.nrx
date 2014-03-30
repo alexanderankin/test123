@@ -408,7 +408,7 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 			pathsPanel.add(toolsPath, gridBagConstraints)
 			
 		addComponent(pathsPanel, GridBagConstraints.HORIZONTAL)
-
+/*
 		-- proectmode options panel
 		PVG = String (Rexx jEdit.getProperty("plugin.netrexxde.ProjectsPVGroup","NotSet")).changestr("\\", " \\ ")
 		if PVG=="NotSet" then PVG=""
@@ -512,7 +512,7 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 			
 		setProjectOptionsState(ProjectsEnabled)
 		addComponent(projectPanel, GridBagConstraints.HORIZONTAL)
-	
+*/	
 	method _save() inheritable
 		NrxFont = Font fontButton.getFont()
 		jEdit.setProperty("plugin.netrexxde.FontFamily",NrxFont.getFamily())
@@ -537,6 +537,7 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 		jEdit.setBooleanProperty("plugin.netrexxde.parsing.sortentries",sortSKEntriesCKB.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.parsing.sortentries.casesensitive",sortSKEntriesCaseSensitiveCKB.isSelected())
 		jEdit.setIntegerProperty("plugin.netrexxde.parsing.sbgrouping",sbGroupingOption)
+/*		
 		jEdit.setBooleanProperty("plugin.netrexxde.UseProjects",useProjectsCKB.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.AutoOpenPV",autoOpenPVCKB.isSelected())
 		jEdit.setBooleanProperty("plugin.netrexxde.AutoClosePV",autoClosePVCKB.isSelected())
@@ -545,7 +546,7 @@ class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionLis
 		PVG =pvGroupName.getText()
 		if PVG == "" then PVG = "NotSet"
 		jEdit.setProperty("plugin.netrexxde.ProjectsPVGroup",String (Rexx PVG).changestr(" \\ ", "\\"))
-
+*/
 	method itemStateChanged(ie=ItemEvent) 
 
 		src = ie.getItemSelectable();

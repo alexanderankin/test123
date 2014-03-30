@@ -12,6 +12,10 @@
 
 
 
+
+
+
+
 <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type"><title>NetRexx jEdit Plugin Help</title></head><body style="background-color: rgb(255, 255, 255);">
 <table summary="Header" bgcolor="#ccccff" border="0" cellspacing="0" cols="2" width="100%">
 <tbody>
@@ -26,10 +30,12 @@ By David Requena and Kermit Kiser (nrs@kermitkiser.com) <br>
 </table>
 <ul>
 <li><a href="#intro">Introduction</a></li>
-<li><a href="doc/NetRexx-Script-features.html">Scripting Features</a></li>
+
 <li><a href="#req">Requirements</a>
 </li>
 <li><a href="#install">Installation</a></li>
+  <li><a href="doc/NetRexx-Script-features.html">Scripting Features</a></li>
+
 <li><a href="NetRexxScript.html#start">Getting
 Started with using
 NetRexx Scripts</a></li>
@@ -66,30 +72,30 @@ interpreting scripts and macros. <br>
 </tbody>
 </table>
 <p>
-The minimum (known) requirements are:
+The minimum requirements are:
 </p>
 <ul>
 <li>JRE 1.5 (tested with JRE 1.6.0_35) </li>
-<li>jEdit 4.3 final<br>
+<li>jEdit 4.3<br>
  </li>
-<li>Windows or Linux <br>
+<li>Windows or Linux (Mac status unknown)<br>
 </li>
   <li>NetRexxC.jar (Rexx Language Association Open NetRexx version 3.02 or later)</li>
 
-  <li>The Console plugin for jEdit is required to use the Android IDE macros.<br>
-  </li>
-</ul>Additional plugins needed to activate all features:<br>
+  
+</ul>Additional plugins needed to activate all features (install before activating NetRexx plugin):<br>
 <ul>
 
 <li>ErrorList plugin (for error highlighting)<br>
 </li>
   <li>CommonControls (for classpath builder function)<br>
 </li>
-  <li>SideKick (for code structure browser)<br>
-  </li>
+  <li>SideKick (for code structure browser)</li>
+  <li>The Console plugin for jEdit is required to use the Android IDE macros.</li>
+
 
 </ul>The ProjectViewer plugin is recommended for managing NetRexx
-projects and the SVNplugin is recommended for managing NetRexx source
+projects and the SVNplugin is recommended for accessing NetRexx source
 repositories.<br>
 <br>
 Note
@@ -111,35 +117,65 @@ there. <br>
 </table>
 
 <p>The 1.0.0 version is available from the jEdit Plugin Central
-site via the jEdit plugin manager.&nbsp;<br>
-
-</p>You can also install it manually:
-<ul>
-<li> Download the <a href="https://kenai.com/projects/netrexx-plus/downloads/download/jEdit%20NetRexxPlugin/NetRexxPlugin.jar">NetRexxPlugin.jar</a>&nbsp;file and the <a href="http://netrexx.org/netrexx/netrexxc/trunk/build/lib/NetRexxC.jar">NetRexxC.jar</a>
-file or unzip them from one of the distribution files. </li>
-<li> Copy both&nbsp;files to&nbsp;the&nbsp;user
-account's jEdit jars directory or the main <a href="http://www.jedit.org/index.php?page=download">jEdit</a>
-jars directory.</li>
-  <li>Delete any old plugin directories from previous versions:&nbsp;  C:\Documents and
-Settings\useracct\.jedit\NetRexx and C:\Documents and
-Settings\useracct\.jedit\macros\NetRexx* before running the new plugin. <br>
+site via the jEdit plugin manager. <br>
+Start jEdit, from menu select
+"Plugins"=&gt;"Plugin Manager", select "Install" tab, check box for
+NetRexx Plugin, click "Install button".<br>
 <br>
+Skip to step 3 below if installing via Plugin Manager.<br>
+
+</p>You can also install it manually if needed:
+<ol>
+
+  <li> Download the <a href="https://kenai.com/projects/netrexx-plus/downloads/download/jEdit%20NetRexxPlugin/NetRexxPlugin.jar">NetRexxPlugin.jar</a>&nbsp;file and the <a href="http://netrexx.org/netrexx/netrexxc/trunk/build/lib/NetRexxC.jar">NetRexxC.jar</a>
+file:<br>
+https://kenai.com/projects/netrexx-plus/downloads/download/jEdit%20NetRexxPlugin/NetRexxPlugin.jar<br>
+http://netrexx.org/netrexx/netrexxc/trunk/lib/NetRexxC.jar<br>
+    <br>
+ </li>
+
+  <li> Copy both&nbsp;files to&nbsp;the&nbsp;user
+account's jEdit jars directory.<br>
+    <br>
+
 On Windows the user's jEdit jars directory could be C:\Documents and
 Settings\useracct\.jedit\jars or C:\Documents and
 Settings\useracct\Appdata\Roaming\jedit\jars (Where "useracct" is the actual userid,
 of course.)<br>
-The jEdit main jar directory may be C:\Program Files\jEdit\jars<br>
+
 On Linux the user's jEdit jars directory could be
 /home/useracct/.jedit/jars<br>
-<br>
+    <br>
   </li>
 
-</ul>
-<table summary="Getting Started" border="0" cellpadding="3" cellspacing="0" width="100%">
-<tbody>
-<tr width="100%" align="center">
-<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"><br>
-</font></b></td></tr></tbody></table><br>
+  
+  <li>Delete any old plugin directories from previous versions before running the new plugin:&nbsp;  C:\Documents and
+Settings\useracct\.jedit\NetRexx and C:\Documents and
+Settings\useracct\.jedit\macros\NetRexx*  <br>
+or in newer jEdit versions: C:\Documents and
+Settings\useracct\Appdata\Roaming\jedit\NetRexx and C:\Documents and
+Settings\useracct\Appdata\Roaming\jedit\macros\NetRexx*<br>
+
+On Linux the user's jEdit profile directory should be
+/home/useracct/.jedit<br>
+Mac?<br><br>
+  </li>
+
+  
+  <li>Start jEdit, then open the plugin window from the jEdit menu:
+"Plugins"=&gt;"NetRexx"=&gt;"NetRexx", then click the down arrow at
+upper left of window and select to dock (Top or Bottom work best).<br>
+    <br>
+  </li>
+  <li>Verify installation: In a new file enter the following line:<br>
+ say "Hello World"<br>
+Click the Run button in the NetRexx window (right arrowhead). This output should appear in the output window: Hello World <br>
+  </li>
+
+
+
+</ol>
+
 
 <table summary="Feedback" border="0" cellpadding="3" cellspacing="0" width="100%">
 <tbody>
