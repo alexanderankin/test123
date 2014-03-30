@@ -37,7 +37,12 @@ Class NetRexxDEPathFinder
 			if \(File(NrxClassPath).exists()) then
 			do
 				NrxClassPath=System.getProperty("user.home")||fs||".jedit"||fs||"jars"||fs||"NetRexxC.jar"
-				if \(File(NrxClassPath).exists()) then NrxClassPath="NotSet"
+--				if \(File(NrxClassPath).exists()) then NrxClassPath="NotSet"
+				if \(File(NrxClassPath).exists()) then
+				do
+					NrxClassPath=System.getProperty("user.home")||fs||"AppData"||fs||"Roaming"||fs||"jEdit"||fs||"jars"||fs||"NetRexxC.jar"  -- jEdit 5 moved windows profile, perhaps for portable apps?
+					if \(File(NrxClassPath).exists()) then NrxClassPath="NotSet"
+				end
 			end
 			if \(NrxClassPath="") then jEdit.setProperty("plugin.netrexxde.NrxClassPath", NrxClassPath)
 		end
