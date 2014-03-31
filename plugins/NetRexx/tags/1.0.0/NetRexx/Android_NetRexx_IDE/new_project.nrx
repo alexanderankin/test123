@@ -1,0 +1,406 @@
+options strictcase
+--  This macro will build an Android project.
+
+import org.gjt.sp.jedit
+import javax.swing.
+
+Class new_project
+	
+ 		properties static
+ 
+			view=jEdit.getActiveView()
+			scriptPath=jEdit.getProperty(String "NetRexxScriptPath")
+			
+			OPTION_PREFIX = String "options.android."
+			fs=File.separator
+	
+	 	method main($cmd=String[]) static
+ 		arg=Rexx($cmd)
+-- 		trace results
+ 	
+ --													verify default locations:
+	set_adk_location.main([String "check"])
+	set_nrx_run_time_location.main([String "check"])
+	set_NetRexxC_location.main([String "check"])
+	set_project_base_location.main([String "check"])
+	
+	--												build new project panel:
+   	sdk=JTextField(jEdit.getProperty(OPTION_PREFIX"sdk","Please enter Android SDK path here                           "))
+   	rtl=JTextField(jEdit.getProperty(OPTION_PREFIX"nrxrtl","Please enter NetRexx runtime path here                           "))
+   	nrc=JTextField(jEdit.getProperty(OPTION_PREFIX"netrexxc","Please enter NetRexxC path here                           "))
+   	base=JTextField(jEdit.getProperty(OPTION_PREFIX"basedir","Please enter base project directory path here                           "))
+   					
+	targetlist=android_info.getTargets(sdk.getText) 
+	targetarray=String[targetlist["tlc"]]
+	loop i=1 to targetlist["tlc"]
+		targetarray[i-1]=targetlist[i]
+		end  	
+		
+	tbox=JComboBox(targetarray)
+   	
+   	activity=JTextField(jEdit.getProperty(OPTION_PREFIX"activity","Please enter activity name here, and/or"))
+   	activity.selectAll
+   	appwidget=JTextField(jEdit.getProperty(OPTION_PREFIX"appwidget","enter app widget provider name here"))
+   	activity.selectAll   	
+   	projectname=JTextField(jEdit.getProperty(OPTION_PREFIX"projectname","Optional project name here"))
+   	projectname.selectAll
+   	projectpath=JTextField(jEdit.getProperty(OPTION_PREFIX"projectpath","Enter optional project path here"))
+   	projectpath.selectAll
+   	projectpackage=JTextField(jEdit.getProperty(OPTION_PREFIX"projectpackage","Enter project package here"))
+   	projectpackage.selectAll
+   	libraryproject=JCheckBox()
+   	
+   	display=[Object String("Android SDK location:"),sdk, -
+   					String("NetRexx runtime location:"),rtl, -
+   					String("NetRexxC compiler location:"),nrc, -
+   					String("Base directory for projects:"),base, -
+   					String("Target Platform:"), tbox, -
+   					String("Activity Name:"), activity, -
+   					String("App Widget Name:"), appwidget, -
+   					String("Project Name:"), projectname, -
+   					String("Project Path:"), projectpath, -
+   					String("Project Package:"), projectpackage, -
+   					String("Is this a library project?:"), libraryproject -
+   					]
+ --								display new project panel and verify responses:
+	fail="yes"   					
+	loop while fail="yes"   					
+						
+		rt=JOptionPane.showConfirmDialog(view, display, "Create New Android Project", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE)
+
+		say "rt="rt
+		if rt\=JOptionPane.OK_OPTION then return		-- 	done here
+			
+		say "sdk="sdk.getText
+		say "rtl="rtl.getText
+		say "nrc="nrc.getText
+		say "basedir="base.getText
+		say "tbox item="tbox.getSelectedItem
+		say "activity="activity.getText
+		say "appwidget="appwidget.getText
+		say "projectname="projectname.getText
+		say "projectpath="projectpath.getText
+		say "projectpackage="projectpackage.getText
+
+		
+	sdk.setText(set_adk_location.check(sdk.getText))
+	rtl.setText(set_nrx_run_time_location.check(rtl.getText))
+	nrc.setText(set_NetRexxC_location.check(nrc.getText))
+	base.setText(set_project_base_location.check(base.getText))
+	
+		fail="no"	
+		
+		if activity.getText="Please enter activity name here, and/or" | activity.getText="" then actname="none"
+			else actname=activity.getText
+		if appwidget.getText="enter app widget provider name here" | appwidget.getText="" then widgname="none"
+			else widgname=appwidget.getText
+		if \libraryproject.isSelected then				
+		  if actname="none" & widgname="none" then do
+			Macros.error(view,"Activity name or App Widget name is required")
+			fail="yes"
+			iterate
+			end
+		
+		if libraryproject.isSelected then				--		if a library project is requested, force developer to enter a project name
+		  if projectname.getText="Optional project name here" | projectname.getText="" then do
+			Macros.error(view,"Project name is required for library projects")
+			fail="yes"
+			iterate
+			end			
+		if \libraryproject.isSelected then do		--		if not a library project, we can inherit this from activity or widget
+			pname=actname
+			if pname="none" then pname=widgname
+			if projectname.getText="Optional project name here" | projectname.getText="" then projectname.setText(pname)
+			if activity.getText="Please enter activity name here, and/or" | activity.getText="" then projectname.setText(appwidget.getText)
+			end
+		pname=projectname.getText
+		
+		if projectpath.getText="Enter optional project path here" | projectpath.getText="" then do
+			projectpath.setText(pname)
+			end
+		
+		if projectpackage.getText="Enter project package here" | projectpackage.getText="" then do
+			Macros.error(view,"project package name is required")
+			fail="yes"
+			iterate
+			end			
+   		end
+   		
+-------------------------------  start building new project now  ---------------------------   		
+
+	tbi=Rexx(String tbox.getSelectedItem)	--		extract target platform id:
+	parse tbi . tid .
+	
+	--										set current dir to Android SDK:	
+	sdkesc=Rexx(sdk.getText).changestr("\\","\\\\")
+	shell.cmd("cd" sdkesc)
+
+	--									create base Android project files and directories:
+	aname=actname
+	if aname="none" then aname=widgname
+	
+	projpath=Rexx(base.getText||File.separator||projectpath.getText).changestr("\\","\\\\")
+		
+	sdkloc=jEdit.getProperty(OPTION_PREFIX"sdk","")
+			if sdkloc="" then android="android"
+				else android=sdkloc||fs"tools"fs"android"			
+
+if libraryproject.isSelected then do		--	library projects don't need an activity
+   	cpc=android "create lib-project" -
+   		"--target" tid	-
+   		"--name"  projectname.getText	-
+   		"--path"  projpath -
+   		"--package"  projectpackage.getText
+   		end
+else do					
+   	cpc=android "create project" -
+   		"--target" tid	-
+   		"--name"  projectname.getText	-
+   		"--path"  projpath -
+   		"--activity"  aname	-
+   		"--package"  projectpackage.getText
+   		end
+
+   		say "cmd="cpc
+   		
+   		shell.cmd(cpc)
+
+--										init some directory names:
+   	pp1=Rexx(projpath)
+   	pack=Rexx(projectpackage.getText)
+   	pp2=pack.changestr(".",'/')
+ 	say "pp1="pp1
+   	say "pp2="pp2
+   	say "pack="pack
+   	psp=pp1||fs"src"fs||pp2
+   	say "psp="psp
+   	basedir=pp1
+ 
+--										remove some unneeded java and manifest files   	
+   	javafn=psp||fs||aname".java"
+   	javaf=File(javafn)
+   	javaf.delete
+   	
+   	if widgname\="none" then do
+   		manfn=basedir||fs||"AndroidManifest.xml"
+   		manif=File(manfn)
+   		manif.delete
+   		end
+   	
+--										create project.nrx template file:
+   	if actname\="none" then do
+		--	tf=psp"\\"activity.getText".nrx"
+		tf=psp||fs||activity.getText".nrx"
+		script=getTemplate(pack,activity.getText)
+		buildfile(script,tf)
+		end
+		
+--										create widgetprovider.nrx template file and widgetprovider.xml file:
+   	if widgname\="none" then do
+				--	tf=psp"\\"widgname".nrx"
+				tf=psp||fs||widgname".nrx"
+				script=getWidget(pack,widgname)
+				buildfile(script,tf)
+		
+				prod=basedir||fs||"res"||fs||"xml"||fs||"widget_provider.xml"
+				say "prod="prod
+				build=File(scriptPath).getParent||fs||"widget_provider.xml"
+				say "build="build
+				copy(build,prod)		
+				
+				script=getManifest(pack,actname,widgname)
+				manifestname=basedir||fs||"AndroidManifest.xml"
+				buildfile(script,manifestname)
+				end
+
+		--										copy NetRexxR.jar run time lib to project		
+   	rtld=pp1||fs"libs"
+   	if File.pathSeparator=";" then rtlcc="copy" rtl.getText rtld
+   											else  rtlcc="cp" rtl.getText rtld
+   	rtlcc=rtlcc.changestr("\\","\\\\")
+   	say "rtlcc="rtlcc
+   	shell.cmd(rtlcc)
+   	
+--										copy custom_rules.xml to project dir:	
+   	prod=pp1||fs||"custom_rules.xml"
+   	say "prod="prod
+   	build=File(scriptPath).getParent||fs"custom_rules.xml"
+   	say "build="build
+   	copy(build,prod)
+
+		--									add parms to nrxbuild.properties:
+   	props=String
+   	pd=pp1
+   	say "pd="pd
+   	pof=pd||fs"nrxbuild.properties"
+--	parse tbi .	"Name: Android" pn .
+--  for some reason Google has changed the platform directory names - check both
+	parse tbi .	"Name: Android" pn . "API level:" apilevel .
+	trydir="android-"pn
+	checkfile=File(sdk.getText||fs'platforms'fs||trydir)
+	say checkfile
+	if checkfile.exists then platform=pn
+		else do
+			trydir="android-"apilevel
+			checkfile=File(sdk.getText||fs'platforms'fs||trydir)
+			say checkfile
+			if checkfile.exists then platform=apilevel
+		     end
+   	props="ant.project.name="projectname.getText"\n" -
+   	||"src.version=0.2.0\n" -
+   	||"android.sdk.dir="Rexx(sdkloc).changestr("\\","/")"\n" -
+   	||"src.dir=src/"pp2"\n" -
+   	||"pack.dir="pp2"\n" -
+   	||"nrc.dir="Rexx(nrc.getText).changestr("\\","/")"\n" -
+   	||"platform=android-"platform"\n" -
+   	||"build.path="Rexx(File(scriptPath).getParent).changestr("\\","/")"\n"
+   	say "props=\n"props
+   	
+   	buildfile(props,pof)
+   	jEdit.setProperty(OPTION_PREFIX"lastproject",pd)	--	save location of last project
+	
+----------------------------------- start of subroutine methods ----------------------------------
+
+	method copy(input=String,output=String) static
+		do
+			scriptreader=BufferedReader(FileReader(input))
+			filecopy(scriptreader,output)
+			catch err=Exception
+				say "error ==>" err
+			end			
+			
+	method filecopy(scriptreader=BufferedReader,output=String) static
+		do
+			of=File(output)
+			say "mkdir rc="of.getParentFile.mkdirs		--		make any needed directories
+			tofw=BufferedWriter(FileWriter(output,1))	--		open new file with append
+			copyfile(scriptreader,tofw)					--		copy the input file to output file
+			tofw.close
+			scriptreader.close
+			catch err=Exception
+				say "error ==>" err
+			end
+			
+	method buildfile(script=String,tf=String) static
+		do
+			scriptreader=BufferedReader(StringReader(script))
+			filecopy(scriptreader,tf)
+			end
+
+	method copyfile(ifq=java.io.BufferedReader,ofq=java.io.BufferedWriter) static signals IOException
+		trace off
+		line=ifq.readLine
+		if line = null then return
+		ofq.write(String line,0,line.length)
+	  loop forever
+		line=ifq.readLine
+		if line = null then leave
+		ofq.newLine()
+		ofq.write(String line,0,line.length)
+		end		   	
+   		
+   	method getTemplate(pack=Rexx,act=String) static returns String
+   		
+   		source=String
+   		source= -
+"	package" pack "\n" -
+"\n" -
+"	import android.app.Activity	\n" -
+"	import android.os.Bundle	\n" -
+"	import android.widget.TextView	\n" -
+"\n" -
+"	class" act "extends Activity \n" -
+"\n" -
+"    /** Called when the activity is first created. */ \n" -
+"\n" -
+"		method onCreate(savedInstanceState=Bundle )	\n" -
+"\n" -    
+"	        super.onCreate(savedInstanceState)	\n" -
+"	        tv = TextView(this)	\n" -
+"			tv.setText(\"Android program written in NetRexx\")	\n" -
+"	        setContentView(tv)	\n"
+
+		return source
+		
+   	method getWidget(pack=Rexx,act=String) static returns String
+   		
+   		source=String
+   		source= -
+"	package" pack "\n" -
+"\n" -
+"	import android.appwidget.AppWidgetProvider	\n" -
+"	import android.appwidget.AppWidgetManager	\n" -
+"	import android.content.Context	\n" -
+"\n" -
+"	class" act "extends AppWidgetProvider \n" -
+"\n" -
+"		method onUpdate(context=Context , appWidgetManager=AppWidgetManager ,appWidgetIds=int[] )	\n"
+
+		return source
+		
+   	method getProvider(pack=Rexx,act=String) static returns String
+   		
+   		source=String
+   		source= -
+'<?xml version="1.0" encoding="utf-8"?>' -
+"\n" -
+'	android:minWidth="146dip"	\n' -
+'	android:minHeight="72dip"	\n' -
+'	android:updatePeriodMillis="10000"	\n' -
+'	android:initialLayout="@layout/main"	\n' -
+"\n" -
+'	/>	\n'
+
+		return source
+		
+   	method getManifest(pack=Rexx,act=String,widgie=String) static returns String
+   		
+   		source=String
+   		source= -
+'<?xml version="1.0" encoding="utf-8"?>   \n' -
+'<manifest xmlns:android="http://schemas.android.com/apk/res/android"   \n' -
+'      package="'pack'"  \n' -
+'      android:versionCode="1"  \n' -
+'      android:versionName="1.0">  \n' -
+'\n' - 
+'    <application   \n' -
+'    	android:label="@string/app_name">  \n' -
+'  \n' 
+
+		if act\="none" then do
+				source=source||-
+'        <activity android:name="'act'"  \n' -
+'                  android:label="@string/app_name">  \n' -
+'            <intent-filter>  \n' -
+'                <action android:name="android.intent.action.MAIN" />  \n' -
+'                <category android:name="android.intent.category.LAUNCHER" />  \n' -
+'            </intent-filter>  \n' -
+'        </activity>  \n' -    	
+'  \n' 
+				end
+				
+		if widgie\="none" then do
+				source=source||-
+'    	<!-- Broadcast Receiver that will process AppWidget updates -->  \n' -
+'		<receiver android:name=".'widgie'"  \n' - 
+'				android:label="@string/app_name">  \n' -
+'  \n' -
+'			<intent-filter>  \n' -
+'				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />  \n' -
+'			</intent-filter>  \n' -
+'  \n' -			
+'			<meta-data android:name="android.appwidget.provider"  \n' -
+'					   android:resource="@xml/widget_provider" />  \n' -
+'  \n' -					   
+'			</receiver>  \n' -
+'  \n' 
+				end
+				
+		source=source||-
+'		</application>  \n' -
+'  \n' -    
+'    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4" />  \n' -
+'  \n' -    
+'</manifest>  \n' 
+
+		return source

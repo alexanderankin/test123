@@ -1,0 +1,78 @@
+import org.gjt.sp.jedit.
+
+import netrexxplugin.
+
+import javax.swing.
+
+class android_info
+
+properties private static
+
+	view=jEdit.getActiveView()
+
+	buffer=view.getBuffer
+
+	wm=view.getDockableWindowManager()
+
+	editPane=view.getEditPane()
+
+	textArea=editPane.getTextArea()
+
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+
+properties private static unused
+
+	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm	
+
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1)
+
+method getTargets(sdk=String) static returns Rexx		--	This method runs a shell command that puts output in a jEdit buffer
+   									--	Then it reads and analyzes the data from the jEdit buffer
+   		view=jEdit.getActiveView
+   		
+	OPTION_PREFIX = String "options.android."
+	fs=File.separator
+	sdkloc=jEdit.getProperty(OPTION_PREFIX"sdk","")
+			if sdkloc="" then android="android"
+				else android=sdkloc||fs"tools"fs"android"
+		   		
+			buffer=shell.tobuffer(android "list targets",'wait noconsole')
+--			buffer=shell.tobuffer("android list targets")
+   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); return Rexx null; end
+--   		if buffer=null then do ;Macros.error(view,"could not obtain target list"); exit; end
+--   		shell.tobuffer("android list targets")
+--   		buffer=view.getBuffer
+   		lc=buffer.getLineCount;say "lc="lc
+   		
+   		loop while lc<8
+   			loop i=1 to 999;end	--	wait a while for buffer to finish setup
+   			lc=buffer.getLineCount;say "lc="lc
+   			end
+   				
+   		targetlist=""
+   		tlc=0
+   		
+   		loop i=0 to buffer.getLineCount-1
+   			s=Rexx(buffer.getLineText(i))
+   			parse s p1 .
+   			if p1="Available" then iterate
+   			if p1="Type:" then iterate
+   			if p1="ABIs" then iterate
+   			if p1="Vendor:" then iterate
+--   			if p1="API" then iterate
+   			if p1="----------" then iterate
+   			if p1="Description:" then iterate
+   			if p1="Libraries:" then iterate
+   			if p1="*" then iterate
+   			if p1="Skins:" then iterate
+   			if p1="id:" then do
+				tlc=tlc+1
+				targetlist[tlc]="" 
+				end
+   			targetlist[tlc]=targetlist[tlc] s.strip
+   			say s.toString
+   			end
+  			
+   		jEdit._closeBuffer(view,buffer)
+   		targetlist["tlc"]=tlc	
+   		return targetlist

@@ -1,0 +1,15 @@
+
+--	This script demonstrates console IO to the user - it requires the NetRexxScript dockable window to work
+-- Say output displays in the OUT panel of the console and ask input is read from the command line
+
+say "gimme input"
+r=ask
+trace results
+if r=null then say "it is null"
+	else say "reply="r
+say "that was fun - lets do it again"
+say "gimme input"
+r=ask
+if r=null then say "it is null"
+	else say "reply="r
+

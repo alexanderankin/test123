@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>NetRexx at Once</title></head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);" alink="#ff0000" link="#0000ff" vlink="#800080">
+
+<a name="BASIC IO"></a>
+<center>
+<h1><font color="#ff0000">NetRexx at Once</font></h1>
+<h2><font color="#ff0000">Quick Guide for Java Developers</font></h2>
+</center>
+
+<hr><a href="netrexxAtOnce.html">[Index]</a> <a href="netrexxAtOnce.html">[Previous Chapter]</a> <a href="netrexxAtOnce02.html">[Next Chapter]</a>
+<h2><font color="#ff0000">1. Basic Input-Output</font></h2>
+<p><a name="SAY"></a>
+</p><h3><font color="#ff0000">1.1 SAY vs System.out.println</font></h3>
+<p>With <b>NetRexx</b> you can develop Java applications quickly and
+easily. For example, consider the simplest application that says
+"Hello!" to the world. Compare the two chunks of code:
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>/* This is Hello.java */<br>class Hello {<br>  public static void main(String[] arg) {<br>    System.out.println("Hello! World.");<br>  }<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>/* This is Hello.nrx */<br>say 'Hello! World.'<br>--<br>--<br>--<br>--<br></pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<b>notes</b><br>
+<ul>
+<li>No <b>class</b> declaration needed.
+</li><li>No <b>main</b> method declaration needed.
+</li><li>No <b>semicolon</b> needed at the end of instructions.
+</li><li><b>SAY</b> instruction instead of <b>println</b> method.
+</li><li>Both souce codes create a fully compatible <b>Hello.class</b>:<br>
+Java with the command <b>javac Hello.java</b><br>
+NetRexx with the command <b>java COM.ibm.netrexx.process.NetRexxC Hello</b>
+</li></ul>
+</td></tr></tbody></table>
+
+</p><p><a name="ASK"></a>
+</p><h3><font color="#ff0000">1.2 ASK vs System.in.read</font></h3>
+<p>If you need to get data from the standard input stream, code remains simple. This program asks your name and answers politely:
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>/* This is HelloYou.java */<br>import java.io.IOException;<br>class HelloYou { // This is a comment<br>  public static void main(String[] arg) {<br>    String name = "";<br>    System.out.println("Who are you?");<br>    try {<br>      byte[] answer = new byte[30];<br>      int len = System.in.read(answer);<br>      name = new String(answer,0,len);<br>    } catch(IOException e) {<br>      name = "exception";<br>    }<br>    System.out.println("Hello! "+name);<br>  }<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>/* This is HelloYou.nrx */<br>say"Who are you?" -- This is a comment<br>name=ask<br>SAY'Hello!' Name<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br>--<br></pre>
+</td></tr><tr><td colspan="2" bgcolor="#ffccff">
+<b>notes</b><br>
+<ul>
+<li>Import of the most used Java <b>packages</b> is automatic.
+</li><li>No input overhead with the <b>ask</b> keyword.
+</li><li>Simple <b>String</b> management: concatenation is implied and spaces between strings are significant.
+</li><li>No <b>type</b> of variable declaration needed.
+</li><li>Notice the different use of <b>//</b> and <b>--</b> for <b>comments</b> at the end of a line.
+</li><li>Finally: you can use either <b>"</b> or <b>'</b> for <b>string literals</b> and all the source code is <b>case insensitive</b><br>(exported names such as identifiers of public classes and methods are treated differently).
+</li></ul>
+</td></tr></tbody></table>
+</p><p><a href="netrexxAtOnce.html">[Index]</a> <a href="netrexxAtOnce.html">[Previous Chapter]</a> <a href="netrexxAtOnce02.html">[Next Chapter]</a>
+
+</p><hr><br>
+<center><br>
+</center>
+
+</body></html>

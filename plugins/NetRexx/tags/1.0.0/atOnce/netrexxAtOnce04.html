@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>NetRexx at Once</title></head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);" alink="#ff0000" link="#0000ff" vlink="#800080">
+
+<a name="FLOW"></a>
+<center>
+<h1><font color="#ff0000">NetRexx at Once</font></h1>
+<h2><font color="#ff0000">Quick Guide for Java Developers</font></h2>
+</center>
+
+<hr><a href="netrexxAtOnce.html">[Index]</a> <a href="netrexxAtOnce03.html">[Previous Chapter]</a> <a href="netrexxAtOnce05.html">[Next Chapter]</a>
+
+<h2><font color="#ff0000">4. Control Flow</font></h2>
+<p>Here is a strict comparison between <i>control flow constructs</i> in Java and NetRexx.
+
+</p><p><a name="DO INST"></a>
+</p><h3><font color="#ff0000">4.1 DO Instruction</font></h3>
+<p>The <b>DO</b> instruction is used to group togheter chuncks of code. You can exit from a DO group with the <b>LEAVE</b> instruction. You can also protect objects, when the enclosed code executes, with the <b>protect</b> keyword (<i>synchronization</i>), <b>catch</b> <i>exceptions</i> and <b>label</b> the end of the group with a name for easy reading. An empty block or a null instruction must be rendered with <b>NOP</b>.
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>{<br>  //... list of instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>do<br>  --... list of instructions<br>end<br></pre>
+</td></tr><tr><td bgcolor="#ffffcc">
+<pre>{}<br>;<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>nop<br>nop<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>{<br>  //... list of instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>do label <i>do_name</i>
+  --... list of instructions
+end <i>do_name</i>
+</pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>synchronized(<i>object</i>) {<br>  //... list of instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>do protect <i>object</i>
+  --... list of instructions
+end
+</pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>try {<br>  //... list of instructions<br>} catch(Exception e) {<br>  //... catch instructions<br>} finally {<br>  //... finally instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>do<br>  --... list of instructions<br>catch e=Exception<br>  --... catch instructions<br>finally<br>  --... finally instructions<br>end<br></pre>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="IF INST"></a>
+</p><h3><font color="#ff0000">4.2 IF Instruction</font></h3>
+<p>The <b>IF</b> instruction is used (as usual) to conditionally execute group of instructions.
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>if (<i>expression</i>)<br>  <i>instruction</i>;<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>if <i>expression</i> then<br>  <i>instruction</i>
+</pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>if (<i>expression</i>)<br>  <i>instruction_then</i>;<br>else<br>  <i>instruction_else</i>;<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>if <i>expression</i> then<br>  <i>instruction_then</i>
+else 
+  <i>instruction_else</i>
+</pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>if (<i>expression</i>) {<br>  <i>instructions_then</i>;<br>} else {<br>  <i>instructions_else</i>;<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>if <i>expression</i> then do<br>  <i>instructions_then</i>
+  end
+else do
+  <i>instructions_else</i>
+  end
+</pre>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="LOOP INST"></a>
+</p><h3><font color="#ff0000">4.3 LOOP Instruction</font></h3>
+<p> The <b>LOOP</b> instruction is used to execute repeatedly a block of instructions. You can exit a loop with the <b>LEAVE</b> instruction and repeat it before end with <b>ITERATE</b>. A LOOP block may use all the keywords of DO, such as <b>label</b>, <b>protect</b>, <b>catch</b> and <b>finally</b>. You can build very complex loops with repetitors (<b>to-by-for</b>, <b>over</b>, <b>for</b> and <b>forever</b>) and conditions (<b>while</b> and <b>until</b>).
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>while(true) {<br>  if(<i>something</i>) break;<br>  if(<i>something_else</i>) continue;<br>  // other instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>loop forever<br>  if <i>something</i> then leave<br>  if <i>something_else</i> then iterate<br>  -- other instructions<br>end<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>for(int ct = 0; ct &lt; 10; ct++) {<br>  // instructions with ct not used<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop for 10<br>  -- instructions<br>end<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>for(int ct = 0; ct &lt; 10; ct++) {<br>  // instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop ct=0 for 10<br>  -- instructions<br>end<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>for(float x=5.1; x&lt;17.2; x+=2.5) {<br>  // instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop x=5.1 to 17.2 by 2.5<br>  -- instructions<br>end<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>int ct = 0;<br>for(float x=20.5; x&gt;2.5; x-=2.0) {<br>  if(ct++ == 4) break;<br>  // instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop x=20.5 to 2.5 by -2.0 for 4<br>  -- instructions<br>end<br>--<br>--<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>Hashtable hash = new Hashtable();<br>hash.put("0","zero");<br>hash.put("1","one");<br>hash.put("2","two");<br>for (<br>  Enumeration e = hash.elements();<br>  e.hasMoreElements();<br>) {<br>  System.out.println(e.nextElement());<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>hash=Hashtable       -- hash =''<br>hash.put('0','zero') -- hash['0']='zero'<br>hash.put('1','one')  -- hash['1']='one'<br>hash.put('2','two')  -- hash['2']='two'<br>for word over hash<br>  say word<br>end<br>--<br>-- You can use the class Hastable<br>-- or alternatively indexed strings<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>while(<i>expression</i>) {<br>  // instructions<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop while <i>expression</i>
+  -- instructions
+end
+</pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>do {<br>  // instructions<br>} while(!<i>expression</i>);<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop until <i>expression</i>
+  -- instructions
+end
+</pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>for(float x=0.0; x&lt;9.0; ct+=0.1) {<br>  if(x &lt; minX) break;<br>  // instructions<br>  if(x &gt; maxX) break;<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>loop x=0.0 to 9.0 by 0.1<br>while x&gt;minX until x&gt;maxX<br>  -- instructions<br>end x<br>--<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>synchronized(<i>anObject</i>) {<br>  try {<br>    while(<i>expression</i>) {<br>      // instructions<br>    }<br>  } catch(Exception e) {<br>      // instructions<br>  }<br>}<br></pre>
+
+</td><td bgcolor="#ccffff">
+<pre>loop protect <i>anObject</i> while <i>expression</i>
+  -- instructions
+catch e=Exception
+  -- instructions
+end
+--
+--
+--
+--
+</pre>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="SELECT INST"></a>
+</p><h3><font color="#ff0000">4.4 SELECT Instruction</font></h3>
+<p> The <b>SELECT</b> instruction is used to select one of several execution alternatives. The options are listed with the <b>when</b> keyword. If none of the conditions is fulfilled, the code marked with <b>otherwise</b> is executed. You can exit a selection with the <b>LEAVE</b> instruction. A SELECT block may use all the keywords of DO, such as <b>label</b>, <b>protect</b>, <b>catch</b> and <b>finally</b>.
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>switch(<i>expression</i>) {<br>  case 0: break;<br>  case 1: System.out.println("one"); break;<br>  case 2: System.out.println("two"); break;<br>  case 3:<br>  case 4: System.out.println("three or four"); break;<br>  default: System.out.println("other"); break;<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b><br>NetRexx</b><br>
+<pre>select case <i>expression</i><br> &nbsp;when 0 then nop<br>  when 1 then say 'one'<br>  when 2 then say 'two'<br>--<br>  when 3,4 then say "three or four"<br>  otherwise say 'other'<br>end<br>--<br></pre>
+</td></tr>
+<tr><td bgcolor="#ffffcc">
+<pre>if(<i>condition_1</i>) {<br>  // instructions_1<br>} else if(<i>condition_2</i>)<br>  // instruction_2<br>else {<br>  // instructions_else<br>}<br>//<br>//<br>//<br></pre>
+</td><td bgcolor="#ccffff">
+<pre>select<br>  when <i>condition_1</i> then do<br>    -- instructions_1<br>    end<br>  when <i>condition_2</i> then<br>    -- instruction_2<br>  otherwise do<br>    -- instructions_else<br>    end<br>end<br></pre>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="SIGNAL INST"></a>
+</p><h3><font color="#ff0000">4.5 SIGNAL Instruction</font></h3>
+<p>Exceptions are thrown with the <b>SIGNAL</b> instruction.
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>try {<br>  // instructions<br>  if(<i>something</i>)<br>    throw new Exception(<br>      "something happened"<br>    )<br>  ;<br>  // instructions<br>} catch(Exception e) {<br>  System.out.println(e.toString());<br>}<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>do<br>  -- instructions<br>  if <i>something</i> then<br>    signal Exception(<br>      "something happened"<br>    )<br>  -- instructions<br>catch e=Exception<br>  say e.toString<br>end<br>--<br></pre>
+</td></tr>
+</tbody></table>
+
+</p><p><a name="EXIT INST"></a>
+</p><h3><font color="#ff0000">4.6 EXIT Instruction</font></h3>
+<p>To stop a program you need to use the <b>EXIT</b> instruction.
+
+</p><p><table border="1" cellpadding="10"><tbody><tr><td bgcolor="#ffffcc">
+<b>Java</b><br>
+<pre>if(<i>exit_condition</i>)<br>  System.exit(0)<br>;<br></pre>
+</td><td bgcolor="#ccffff">
+<b>NetRexx</b><br>
+<pre>if <i>exit_condition</i> then<br>  exit<br>--<br></pre>
+</td></tr>
+</tbody></table>
+
+</p><p><a href="netrexxAtOnce.html">[Index]</a> <a href="netrexxAtOnce03.html">[Previous Chapter]</a> <a href="netrexxAtOnce05.html">[Next Chapter]</a>
+
+</p><hr><br>
+<center><br>
+</center>
+
+</body></html>

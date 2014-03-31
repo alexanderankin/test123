@@ -1,0 +1,65 @@
+/*
+ * NetRexxErrorList.nrx - NetRexx jEdit Scripting Plugin ErrorList interface allows optional use of ErrorList plugin
+ * Copyright (C) 2012 Kermit Kiser
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ Version 0.1.0 (Sep 23, 2012)
+
+    *  Initial version to make errorlist plugin optional - includes some changes in class NetRexxScriptPlugin
+ 
+*/
+
+import errorlist
+
+options strictcase
+
+package netrexxplugin
+
+Class NetRexxErrorList
+	
+	properties shared static
+		
+		WARNING=int
+		ERROR=int
+		
+	properties shared
+	
+		errorsource=Object
+			
+	method NetRexxErrorList 	
+			
+		WARNING=ErrorSource.WARNING
+		ERROR=ErrorSource.ERROR
+			
+		errorsource=DefaultErrorSource("NetRexx Plugin")
+		ErrorSource.registerErrorSource(DefaultErrorSource errorsource)
+		
+		method addError(etype=int,tfn=String,eln=int,eloc=int,elocelen=int,emsg=String)
+			
+			(DefaultErrorSource errorsource).addError(etype,tfn,eln,eloc,elocelen,emsg)
+			
+		method quit
+			
+			(DefaultErrorSource errorsource).clear()
+			ErrorSource.unregisterErrorSource(DefaultErrorSource errorsource)
+
+			
+		method clear
+			
+			(DefaultErrorSource errorsource).clear()
+
+
+
