@@ -1,0 +1,1294 @@
+/*
+ * NetRexxCompile.nrx - NetRexx jEdit Plugin dockable window Compiler component, based on NetRexxJE plugin by Satguru Srivastava
+ * Copyright (C) 2012 David Requena, Kermit Kiser
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+options binary strictsignal 
+
+import javax.swing
+import javax.swing.text
+
+import COM.ibm.netrexx.process
+
+import common.gui.pathbuilder
+--import errorlist
+import org.gjt.sp.jedit
+import org.gjt.sp.jedit.gui
+import org.gjt.sp.jedit.msg
+import org.gjt.sp.jedit.io
+import projectviewer.vpt
+
+package netrexxplugin
+
+class NetRexxCompile adapter implements ActionListener, ComponentListener, EBComponent
+
+	properties constant
+		TRUE=boolean 1
+		FALSE=boolean 0
+		TRACE_MARKERS = [String "*=*","*-*",">a>",">p>",">v>",">>>","+++","---"]
+		OPTION_PREFIX = String "options.netrexxscript."
+		
+	properties static
+		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	debug option
+		
+	properties public
+		
+		ProcessStatus = String ""    -- could be CompileJava, Compile, Java, Run
+		PlayIcon = ImageIcon(getClass().getResource("/res/Play16.gif"))
+		StopIcon = ImageIcon(getClass().getResource("/res/Stop16.gif"))
+
+	properties inheritable
+		
+		ButtonPushed = JToggleButton
+
+		ProcessOut = JTextArea
+		errorConsole = NetRexxConsole
+		traceConsole = NetRexxConsole
+		ActiveOutPane = JTextComponent
+
+		ProcessLabel = JLabel
+		ProcessLabel1 = JLabel
+
+		PlugInStop = boolean 0
+
+--		errorsource = errorlist.DefaultErrorSource
+		errorsource=NetRexxErrorList
+		errorlist=Object
+
+		CompilerCmd  = String ""
+		CompileErrors = boolean 1
+		CompilerStarted = boolean 0
+
+		FullFileName = String
+		FileName = String
+		OurView = org.gjt.sp.jedit.View
+
+	properties private
+		NavButton=JButton
+		OptionButton=JToggleButton
+		CompileButton=JToggleButton
+		JavaButton=JToggleButton
+		RunButton=JToggleButton
+		ClearButton=JToggleButton
+		CPButton=JButton
+		operationModeButton = JButton
+		TracerButton=JToggleButton
+		ErrOutButton=JToggleButton
+		CPField = HistoryTextField
+
+		MiddlePanel = JPanel
+
+		PathSep = String
+		ClassPathArgs = String
+
+		OptionBoxes = JCheckBox[]
+		CompilerOptions = String 
+		CompileProcess = Process
+		CompileBW      = BufferedWriter
+
+		RunProcess = Process
+		RunBW = BufferedWriter
+		RunArgsField = HistoryTextField
+
+
+		OurFile = File
+		FilePath  = String
+
+		Previousfp = String ""
+		Previousfn = String ""
+		PreviousCP = String ""
+
+		-- global  options
+		JavaExecPath = String
+		NrxClassPath = String
+		ToolsPath = String
+		NrxFontFamily = String
+		NrxFontStyle = int
+		NrxFontSize = int
+		ClearConsole = boolean
+		ClearTrace = boolean
+		SaveFile = boolean
+		KeepName = boolean
+		
+		-- ide options
+		regularConsoleTextStyle= SimpleAttributeSet
+		activeConsoleTextStyle = SimpleAttributeSet
+		projectsEnabled = boolean
+		projectMode = boolean
+		singleFileModeIcon = ImageIcon(getClass().getResource("/res/File16.gif"))
+		projectModeIcon = ImageIcon(getClass().getResource("/res/Project16.gif"))
+		TraceIcon = ImageIcon(getClass().getResource("/res/TraceConsoleON16.gif"))
+		NoTraceIcon = ImageIcon(getClass().getResource("/res/TraceConsoleOFF16.gif"))
+		AlertTraceIcon = ImageIcon(getClass().getResource("/res/TraceConsoleALERT16.gif"))
+		ErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleON16.gif"))
+		NoErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleOFF16.gif"))
+		AlertErrOutputIcon = ImageIcon(getClass().getResource("/res/ErrorConsoleALERT16.gif"))
+		projectGroup = VPTGroup
+
+	method NetRexxCompile(v=org.gjt.sp.jedit.View, pos=String, cmdtoolbar=JToolBar, passMiddlePanel=JPanel, -
+		passcl=HistoryTextField, passtracebutton=JToggleButton, passCPButton=JButton, -
+		passCPField=HistoryTextField, passRunButton=JToggleButton, passErrOutButton=JToggleButton, -
+		passNavButton=JButton, passOptionButton=JToggleButton, passCompileButton=JToggleButton, -
+		passJavaButton=JToggleButton, passProcessLabel1=JLabel, passProcessLabel=JLabel)
+
+		OurView = v    
+
+		getProperties()
+
+		CompileButton=passCompileButton
+--		CompileButton.addActionListener(this)
+		OptionButton=passOptionButton
+--		OptionButton.addActionListener(this)
+		NavButton=passNavButton
+--		NavButton.addActionListener(this)
+		JavaButton=passJavaButton
+--		JavaButton.addActionListener(this)
+		ProcessLabel1=passProcessLabel1
+		ProcessLabel=passProcessLabel
+		MiddlePanel=passMiddlePanel
+		RunArgsField=passcl
+		TracerButton=passtracebutton
+		ErrOutButton=passErrOutButton
+--		ErrOutButton.addActionListener(this)
+		CPButton=passCPButton 
+		CPField=passCPField
+		RunButton=passRunButton
+		
+--		CmdToolBar=JToolBar()
+--		CmdToolBar.setFloatable(FALSE)
+
+			operationModeButton = JButton()
+			operationModeButton.setActionCommand("SwitchOperationMode")
+			operationModeButton.setMargin(Insets(0,0,0,0))
+			operationModeButton.addActionListener(this)
+/* 			
+			NavButton = JButton(ImageIcon(getClass().getResource("/res/Nav16.gif")))
+			NavButton.setToolTipText("Structure Browser")
+			NavButton.setActionCommand("Nav")
+--			NavButton.setMargin(Insets(0,0,0,0))
+			NavButton.addActionListener(this)
+
+			CompileButton=createButton("Compile","/res/Application16.gif")
+			CompileButton.setToolTipText("Compile")
+
+			JavaButton = createButton("Java","/res/JavaCup16.gif")
+			JavaButton.setToolTipText("Create the Java File")
+
+			OptionButton = createButton("Options","/res/Preferences16.gif")
+			OptionButton.setToolTipText("Set Compiler Options")
+
+			ClearButton = createButton("Clear","/res/Delete16.gif")
+			ClearButton.setToolTipText("Clear the NetRexx Console")
+ */			
+/* 
+			RunButton = CreateButton("Run","/res/Play16.gif")
+			RunButton.setToolTipText("Run this program") */
+			RunButton.setIcon(PlayIcon)
+			
+--			TracerButton = CreateButton("ShowTrace","/res/TraceConsoleOFF16.gif")
+--			TracerButton.setToolTipText("Show TRACE output")
+/*
+			ErrOutButton = CreateButton("ShowErrorOutput","/res/ErrorConsoleOFF16.gif")
+			ErrOutButton.setToolTipText("Show System.err output")
+*/
+/* 			ProcessLabel1=JLabel(ImageIcon(getClass().getResource("/res/ProcessStill.gif")))
+			ProcessLabel1.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
+			ProcessLabel =JLabel(ImageIcon(getClass().getResource("/res/ProcessDyn.gif")))
+			ProcessLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
+			ProcessLabel.setVisible(0)
+ */			ProcessLabel.addComponentListener(this)
+/* 
+			CPButton  = JButton("ClassPath")
+			CPButton.setActionCommand("SetCP")
+			CPButton.setMargin(Insets(0,0,0,0))
+    	CPButton.addActionListener(this)
+    	 */		
+/* 
+			CPField =  HistoryTextField("netrexxde.ClassPaths")
+			dim = Dimension CPField.getPreferredSize()
+			dim.width = 300
+			CPField.setPreferredSize(dim) */
+/*
+			RunArgsLabel = JLabel("Args/StdIn",SwingConstants.LEFT)
+			RunArgsLabel.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 2))
+
+			RunArgsField = JTextField(15)
+			*/
+--			RunArgsField = HistoryTextField("netrexxde.Args");
+			RunArgsField.setActionCommand("RunStdIn")
+--			RunArgsField.addActionListener(this)
+			
+/*
+		--CmdToolBar.add(operationModeButton)
+		if jEdit.getPlugin("sidekick.SideKickPlugin") \= null then
+					CmdToolBar.add(NavButton)
+		CmdToolBar.add(OptionButton)
+		CmdToolBar.add(CompileButton)
+		CmdToolBar.add(JavaButton)
+--		CmdToolBar.add(RunButton)
+--		CmdToolBar.add(TracerButton)
+--		CmdToolBar.add(ErrOutButton)
+--		CmdToolBar.add(ClearButton)
+/* 			jars=jEdit.getPluginJARs
+			loop pj over jars
+				if Rexx(pj.getPath).pos("CommonControls.jar")\=0 then 
+					CmdToolBar.add(CPButton)
+				end		
+		CmdToolBar.add(CPField) */
+--		CmdToolBar.add(RunArgsLabel)
+--		CmdToolBar.add(RunArgsField)
+		CmdToolBar.add(ProcessLabel1)
+		CmdToolBar.add(ProcessLabel)
+*/
+--		MiddlePanel = JPanel()
+--		MiddlePanel.setLayout(CardLayout())
+
+			/* create a text area to show output of diff processes */
+			ProcessOut=JTextArea()
+			ProcessOut.setEditable(0)
+			ProcessOut.setFont(Font(NrxFontFamily,NrxFontStyle,NrxFontSize))
+			ActiveOutPane = ProcessOut
+
+			traceConsole = NetRexxConsole(NetRexxConsole.CONSOLE_MODE_TRACE, -
+				Color(239, 239, 239), ourView)
+			
+			errorConsole = NetRexxConsole(NetRexxConsole.CONSOLE_MODE_ERROR, -
+				Color(239, 224, 224), ourView)
+
+			OptionPanel = JPanel(GridLayout(5,4))
+			OptionPanel.setBorder(BorderFactory.createTitledBorder("Select default Compiler Options to be Overridden"))
+				DefaultOptions = String[] [ "nobinary", "nocomments","crossref", -
+						"decimal", "nodiag", "noexplicit", "noformat", "logo",  -
+						"noreplace","nosavelog","nostrictargs","nostrictassign", -
+						"nostrictcase", "nostrictimport", "nostrictprops", "nostrictsignal", -
+						"nosymbols", "notime","noutf8"]
+
+				OptionBoxes = JCheckBox[DefaultOptions.length]
+				OptString=String jEdit.getProperty("plugin.netrexxde.compile.options")
+				if OptString = null then OptString = "00000000000000000000000000000"
+				Selection = boolean 0
+				loop j=0 to DefaultOptions.length-1
+					if OptString.charAt(j)=='1' then Selection = 1
+					else Selection = 0
+					OptionBoxes[j]=JCheckBox(DefaultOptions[j], Selection)
+					OptionPanel.add(OptionBoxes[j])
+				end
+				
+			-- panel for project mode
+			ProjectPanel = JPanel(GridLayout(1,2))
+				ProjectList = JPanel()
+				ProjectList.setBorder(BorderFactory.createTitledBorder("NetRexxDE registered projects"))
+				 	data = String[] ["Project one", "Project two", "Project three", "Project four"]
+				 	RegisteredProjects = JList(data)
+					RegisteredProjects.setBorder(BorderFactory.createEtchedBorder())
+				ProjectList.add(RegisteredProjects)
+				ActiveProject = JPanel()
+				ActiveProject.setBorder(BorderFactory.createTitledBorder("Active NetRexxDE project"))
+			ProjectPanel.add(ProjectList)
+			ProjectPanel.add(ActiveProject)
+
+		MiddlePanel.add(JScrollPane(ProcessOut), "OutputPanel")
+		MiddlePanel.add(JScrollPane(traceConsole), "TracePanel")
+		MiddlePanel.add(JScrollPane(errorConsole), "ErrorPanel")
+		MiddlePanel.add(JScrollPane(OptionPanel), "PreferencePanel")
+		MiddlePanel.add(JScrollPane(ProjectPanel), "ProjectPanel")
+/*
+		setLayout(BorderLayout())
+
+		add(CmdToolBar,BorderLayout.NORTH)
+
+		add(MiddlePanel,BorderLayout.CENTER)
+*/
+		switchProjecMode(projectMode)
+
+		PathSep = System.getProperty("path.separator")
+
+
+	method createButton(lbl=String,IconFile=String) returns JToggleButton private
+
+		aButton = JToggleButton(ImageIcon(getClass().getResource(IconFile)))
+		aButton.setActionCommand(lbl)
+--		aButton.setMargin(Insets(0,0,0,0))
+		aButton.addActionListener(this)
+		return aButton
+	/**
+	 * Gets all the global properties
+	 * Called from constructor NetRexxDE() when the plugin is invoked and 
+	 * from handleMessage(EBMessage) whenever the global properties are changed
+	 */
+	method getProperties() private
+
+		projectsEnabled = jEdit.getBooleanProperty( -
+			"plugin.netrexxde.UseProjects")
+		projectMode = jEdit.getBooleanProperty( -
+			"plugin.netrexxde.projectModeActivated")
+			
+		JavaExecPath=NetRexxDEPathFinder.getJavaExecPath()
+		NrxClassPath=NetRexxDEPathFinder.getNrxClassPath()
+		ToolsPath=NetRexxDEPathFinder.getToolsPath()
+
+		msg2="Use global options,plugin options:netrexxde to set this manually.\n"
+
+		if JavaExecPath == "NotSet" then
+		do
+			JavaExecPath=""
+			msg="Path to JVM not set \n" msg2
+			JOptionPane.showMessageDialog(OurView,msg,"Warning",JOptionPane.WARNING_MESSAGE) 
+		end
+		else
+		do
+			if \(File(JavaExecPath).exists()) then
+			do
+				msg="Path to JVM not valid \n" msg2
+				JOptionPane.showMessageDialog(OurView,msg,"Warning",JOptionPane.WARNING_MESSAGE)
+			end
+		end
+
+		if NrxClassPath=="NotSet" then
+		do
+			NrxClassPath=""
+			msg="Path to NetRexxC.jar not set \n" msg2
+			JOptionPane.showMessageDialog(OurView,msg,"Warning",JOptionPane.WARNING_MESSAGE) 
+		end
+		else 
+		do
+			if \(File(NrxClassPath).exists()) then
+			do
+				msg="Path to NetRexxC.jar not valid \n" msg2
+				JOptionPane.showMessageDialog(OurView,msg,"Warning",JOptionPane.WARNING_MESSAGE)
+			end
+		end
+
+		if ToolsPath == "NotSet" then
+		do
+			ToolsPath=""
+			msg="Path to tools.jar not set \n" msg2
+			JOptionPane.showMessageDialog(OurView,msg,"Warning",JOptionPane.WARNING_MESSAGE) 
+		end
+		else
+		do
+			if \(File(ToolsPath).exists()) then
+			do
+				msg="Path to tools.jar not valid \n" msg2
+				JOptionPane.showMessageDialog(OurView,msg,"Warning",JOptionPane.WARNING_MESSAGE)
+			end
+		end
+
+		NrxFontFamily = jEdit.getProperty("plugin.netrexxde.FontFamily")
+		If NrxFontFamily == null then NrxFontFamily="Monospaced"
+
+		do
+			NrxFontStyle = Integer.parseInt(jEdit.getProperty("plugin.netrexxde.FontStyle"))
+		catch NumberFormatException
+			NrxFontStyle = Font.PLAIN
+		end
+		do
+			NrxFontSize = Integer.parseInt(jEdit.getProperty("plugin.netrexxde.FontSize"))
+		catch NumberFormatException
+			NrxFontSize = 14
+		end
+		
+		tmpFont = Font(NrxFontFamily,NrxFontStyle,NrxFontSize)
+		regularConsoleTextStyle = SimpleAttributeSet()
+		StyleConstants.setFontFamily(regularConsoleTextStyle, NrxFontFamily)
+		StyleConstants.setFontSize(regularConsoleTextStyle, NrxFontSize)
+		StyleConstants.setBold(regularConsoleTextStyle, tmpFont.isBold)
+		StyleConstants.setItalic(regularConsoleTextStyle, tmpFont.isItalic)
+		activeConsoleTextStyle = SimpleAttributeSet(regularConsoleTextStyle)
+		StyleConstants.setUnderline(activeConsoleTextStyle, TRUE)
+		StyleConstants.setForeground(activeConsoleTextStyle, Color.BLUE)
+
+		ClearConsole =jEdit.getBooleanProperty("plugin.netrexxde.ClearConsole")
+		ClearTrace = jEdit.getBooleanProperty("plugin.netrexxde.ClearTrace")
+		SaveFile = jEdit.getBooleanProperty("plugin.netrexxde.SaveFile")
+		KeepName = jEdit.getBooleanProperty("plugin.netrexxde.KeepName")
+	
+	/**
+	 * Method that can be used to invoke actions programatically. 
+	 * @param Action The action to be performed. This can be Navigate, Compile, Java, Option,Run, Clear
+	 * @since NetRexxDE 0.08
+	 */
+	method performAction(Action=String)
+		select
+			when Action="SwitchOperationMode" then operationModeButton.doClick()
+			when Action="ShowTrace" then TracerButton.doClick()
+			when Action="HideTrace" then TracerButton.doClick()
+			when Action="ShowErrorOutput" then ErrOutButton.doClick()
+			when Action="HideErrorOutput" then ErrOutButton.doClick()
+			when Action="Navigate" then NavButton.doClick()
+			when Action="Compile" then CompileButton.doClick()
+			when Action="Java" then JavaButton.doClick()
+			when Action="Option" then OptionButton.doClick()
+			when Action="Output" then OptionButton.doClick()
+			when Action="Run" then RunButton.doClick()
+			when Action="Clear" then ClearButton.doClick()
+			when Action="ClassPath" then CPButton.doClick()
+			otherwise NOP
+		end				
+				
+
+	method actionPerformed(ae=ActionEvent) 
+		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
+		if df then trace results
+
+		ButtonClicked = String ae.getActionCommand()
+		
+		select case ActiveOutPane
+			when errorConsole then (CardLayout MiddlePanel.getLayout).show(MiddlePanel,"ErrorPanel")
+			when traceConsole then (CardLayout MiddlePanel.getLayout).show(MiddlePanel,"TracePanel")
+			when ProcessOut then (CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
+			otherwise 
+				nop
+			end
+		
+		select
+			when ButtonClicked = "SwitchOperationMode" then
+			do
+				switchProjecMode( \projectMode)
+				MiddlePanel.requestFocus() -- do not remain focused
+			end
+			
+			when ButtonClicked = "ShowTrace" then
+			do
+				(JToggleButton ae.getSource()).setIcon(TraceIcon)
+				(JToggleButton ae.getSource()).setActionCommand("HideTrace")
+				if ActiveOutPane = errorConsole then do
+					ErrOutButton.setActionCommand("ShowErrorOutput")
+					ErrOutButton.setIcon(NoErrOutputIcon)
+					ErrOutButton.setSelected(FALSE)
+					end
+				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"TracePanel")
+				ActiveOutPane = traceConsole
+				MiddlePanel.requestFocus()
+			end
+
+			when ButtonClicked = "HideTrace" then
+			do
+				(JToggleButton ae.getSource()).setIcon(NoTraceIcon)
+				(JToggleButton ae.getSource()).setActionCommand("ShowTrace")
+				(JToggleButton ae.getSource()).setSelected(FALSE)
+				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
+				ActiveOutPane = ProcessOut
+				MiddlePanel.requestFocus()
+			end
+
+			when ButtonClicked = "ShowErrorOutput" then
+			do
+				(JToggleButton ae.getSource()).setIcon(ErrOutputIcon)
+				(JToggleButton ae.getSource()).setActionCommand("HideErrorOutput")
+				if ActiveOutPane == traceConsole then do
+					TracerButton.setActionCommand("ShowTrace")
+					TracerButton.setIcon(NoTraceIcon)
+					TracerButton.setSelected(FALSE)
+					end
+				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"ErrorPanel")
+				ActiveOutPane = errorConsole
+				MiddlePanel.requestFocus()
+			end
+
+			when ButtonClicked = "HideErrorOutput" then
+			do
+				(JToggleButton ae.getSource()).setIcon(NoErrOutputIcon)
+				(JToggleButton ae.getSource()).setActionCommand("ShowErrorOutput")
+				(JToggleButton ae.getSource()).setSelected(FALSE)
+				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
+				ActiveOutPane = ProcessOut
+				MiddlePanel.requestFocus()
+			end
+
+			when ButtonClicked == "RunStdIn" then
+			do
+				if ProcessStatus == "Run" then
+				do
+					do
+						RunBW.write(RunArgsField.getText(),0,RunArgsField.getText().length())
+						RunBW.newLine()
+						RunBW.flush()
+						performOutput(RunArgsField.getText()||"\n")
+						RunArgsField.setText(null)
+					catch io=IOException
+						performOutput("Run Input " io.toString() "\n")
+					end
+				end
+				MiddlePanel.requestFocus()
+				RunArgsField.requestFocusInWindow
+			end
+
+			when ButtonClicked == "Clear" then
+			do
+				ActiveOutPane.setText("")
+				(JToggleButton ae.getSource).setSelected(0)
+				return
+			end
+
+			when ButtonClicked == "Options" then
+			do
+				(JToggleButton ae.getSource()).setActionCommand("Output")
+				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"PreferencePanel")
+				/*
+				PropFrame=JFrame("Set NetRexxDE Options")
+				pcp=PropFrame.getContentPane()
+				pcp.setLayout(BorderLayout())
+				NrxOP=NetRexxDEOptionPane()
+				NrxOP.init()
+				pcp.add(NrxOP)
+				PropFrame.show()
+				*/
+			end
+			
+			/* if "Output" button clicked in Option Panel then go back to Output Panel */
+			when ButtonClicked == "Output" then
+			do
+				(JToggleButton ae.getSource()).setSelected(0)
+				(JToggleButton ae.getSource()).setActionCommand("Options")
+				(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
+			end
+			
+			when ButtonClicked = "Nav" then	
+			do
+				--NetRexxDESrcNavigator(OurView)
+				--OurView.getDockableWindowManager().toggleDockableWindow("NetRexxDESrcNavigator");
+				OurView.getDockableWindowManager().toggleDockableWindow("sidekick-tree");
+			end
+			when (ButtonClicked == ProcessStatus) then abortProcess(ButtonClicked)
+
+			when ((ButtonClicked =="Compile") & (ProcessStatus == "CompileJava")) then abortProcess("CompileJava")
+
+			when (ButtonClicked=="SetCP") then
+			do
+				dialog=PathBuilderControl(CPField,OurView,NetRexx.nr)
+/*				
+				parent = Frame getTopLevelAncestor();
+				dialog=PathBuilderDialog( parent, "Build Classpath" )
+				pathBuilder = dialog.getPathBuilder()
+				pathBuilder.setPath(String CPField.getText() )
+				pathBuilder.setStartDirectory(OurView.getBuffer().getDirectory())
+				pathBuilder.setFileFilter( ClasspathFilter() )
+				pathBuilder.setMultiSelectionEnabled( 1 )
+				dialog.pack()
+				dialog.setLocationRelativeTo( parent )
+				dialog.setVisible(true);
+*/				
+				if ( dialog.getResult() ) then
+				do
+					newPath = dialog.getPath()
+--					newPath = pathBuilder.getPath()
+					if (newPath.length()>0 )then
+					do	
+						CPField.setText(newPath)
+						CPField.addCurrentToHistory()
+					end
+				end				
+			end
+
+			-- if no process running then do "CompileJava", "Compile", "make java program" or "Run program" 
+			-- depending on which button is pressed
+			when ProcessStatus == "" then 
+			do
+				NetRexx.nr.compileroperation(1)			--		warn window that compiler is working
+--				errorsource.clear()
+				if errorsource\= null then errorsource.clear
+				getFileInfo()
+				ButtonPushed = (JToggleButton ae.getSource())
+				-- get the filetype
+				if ButtonClicked == "Compile" then
+				do
+					DotPos = int FileName.lastIndexOf('.')
+					if DotPos > 0 then  Filetype = FileName.substring(DotPos)
+					if FileType==".java" then ButtonClicked = "CompileJava"
+				end					
+				startProcess(ButtonClicked)
+			end
+
+			-- reset the button
+			-- ssbug - should check for object type - don't want to coerce everthing into JToggleButton
+			otherwise 
+				(JToggleButton ae.getSource).setSelected(0)
+		end
+	/**
+	 * Get all information about the file being edited
+	 */
+	method getFileInfo() private
+		OurFile = File(OurView.getBuffer().getPath())
+		FileName = OurFile.getName()
+		FullFileName = OurFile.getAbsolutePath()
+		FilePath = OurFile.getParent()
+
+	-- start the compile, java or run process
+	method startProcess(Name=String) inheritable
+		ProcessLabel1.setVisible(FALSE)
+		ProcessLabel.setVisible(TRUE)
+
+		ProcessStatus=Name
+		if ClearConsole then ProcessOut.setText("")
+		if ClearTrace then do
+			traceConsole.setText("")
+			errorConsole.SetText("")
+			end
+		select
+			when Name == "Compile" | Name == "Java" then 
+			do
+				OptionsBuf = StringBuffer()
+				CompilerOptions=""
+				loop j = 0 to OptionBoxes.length-1
+					if OptionBoxes[j].isSelected then
+					do
+						if OptionBoxes[j].getText().startsWith("no") then
+							OptionsBuf.append(" -").append(OptionBoxes[j].getText().substring(2))
+						else
+							OptionsBuf.append(" -no").append(OptionBoxes[j].getText())
+					end
+					else OptionsBuf.append(" -").append(OptionBoxes[j].getText())
+				end										
+				if Name=="Compile" then 
+					OptionsBuf.append(" -nokeep -compile -java")
+				else
+					OptionsBuf.append(" -keep  -nocompile -java")
+
+				CompilerOptions = OptionsBuf.toString() 
+				compilePgm()
+			end
+			when Name == "CompileJava" then CompileJava()
+			when Name == "Run" then do
+				switchPlayerButon("Stop")
+				runProgram()
+				end
+			otherwise
+				NOP
+		end
+	
+	method abortProcess(Name=String) inheritable
+		performOutput("Aborting" Name "\n")
+		Select
+			when Name=="Compile" | Name=="Java" then CompileProcess.destroy()
+			when Name=="Run" then do
+				switchPlayerButon()
+				RunProcess.destroy()
+				end
+			when Name=="CompileJava" then RunProcess.destroy()
+			otherwise
+				NOP
+		end
+
+	-- this method is called eventually when a process ends normally or abnormally
+	method componentHidden(ce=ComponentEvent) 
+		if (ProcessStatus=="Java") & (CompileErrors==0) then
+		do
+			-- get the full filename without the extension
+			DotPos = int FullFileName.lastIndexOf('.')
+			if DotPos > 0 then  PathFileName = FullFileName.substring(0,DotPos)
+			
+			If KeepName then 
+			do
+				if File(PathFileName||".java.keep").renameTo(File(PathFileName||".java")) then 
+					jEdit.openFile(OurView, PathFileName||".java")
+				else
+				do 
+					performOutput("Unable to rename JAVA.KEEP file to JAVA")
+					jEdit.openFile(OurView, PathFileName||".java.keep")
+				end
+			end
+			else jEdit.openFile(OurView, PathFileName||".java.keep")
+		end
+
+		ProcessStatus = ""
+		ButtonPushed.setSelected(0)
+
+	method compilePgm() private
+		saveFileIfChanged()
+
+		if CPField.getText() \= "" then
+			CPField.addCurrentToHistory()
+		ClassPathArgs = getClassPath()
+		NetRexxConsole.setupClasspathFolderElements(ClassPathArgs)
+
+		if \(CompilerStarted) then
+		do
+			startCompiler()
+		end
+		else
+		do
+		    	select
+				when ClassPathArgs \== PreviousCP then
+				do
+					CompilerCmd = "exit"
+				end
+				when FullFileName == Previousfn then   	-- if same file as before then just pass options
+				do
+					CompilerCmd = CompilerOptions
+				end
+				when FilePath == Previousfp then   	-- if diff file but same path then just pass filename & options
+				do
+					CompilerCmd = OurFile.getName() CompilerOptions
+				end
+				otherwise			-- if diff path then start compiler again
+					CompilerCmd = "exit"
+			end
+
+			do
+				CompileBW.write(CompilerCmd,0,CompilerCmd.length())
+				CompileBW.newLine()
+				CompileBW.flush()
+			catch io=IOException
+				performOutput(io.toString)
+			end
+
+			if CompilerCmd == "exit" then startCompiler()
+
+		end
+	
+		Previousfn = FullFileName
+		Previousfp = FilePath
+		PreviousCP = ClassPathArgs    
+
+	method handleMessage(message=EBMessage) 
+	    if (message <= PropertiesChanged) then 
+		do
+			getProperties()
+			ProcessOut.setFont(Font(NrxFontFamily,NrxFontStyle,NrxFontSize))
+			traceConsole.resetProperties()
+			errorConsole.resetProperties()
+		end
+	
+	method getName() returns String
+		return NetRexxDEPlugin.NAME
+/*
+	method getComponent() returns Component
+		return this
+*/
+	method addNotify()
+--		super.addNotify()
+
+		-- add ourself to EditBus so that we can receieve PropertiesChanged message when
+		-- the user changes option using global options dialog box
+		EditBus.addToBus(EBComponent NetRexx.nr)
+--		EditBus.addToBus(EBComponent this)
+
+		-- create DefaultErrorSource object and add it to the EditBus
+		-- this object will be used to pass error messages on the Bus
+		-- plugins like errorlist can then recieve and  handle those messages
+		
+--		errorSource = errorlist.DefaultErrorSource(NetRexxDEPlugin.NAME)
+			errorlist=jEdit.getPlugin("errorlist.ErrorListPlugin")
+			if errorlist \=null then errorsource=NetRexxErrorList()
+--		ErrorSource.registerErrorSource(errorSource)
+--		EditBus.addToBus(EBComponent errorSource)
+	
+	/**
+	 * Used to cleanly close the plugin.
+	 * This is eventually invoked whenever user decides to close the plugin
+	 */
+	method removeNotify()
+--		super.removeNotify()
+
+		-- clear any error messages before quitting
+--		errorsource.clear()
+		if errorsource\= null then errorsource.clear
+
+		-- exit from the compiler if it is still running
+		if CompilerStarted then	
+		do
+		    PlugInStop = 1
+		    do    
+			CompilerCmd = "exit"
+			CompileBW.write(CompilerCmd,0,4)
+			CompileBW.newLine()
+			CompileBW.flush()
+		    catch io=IOException
+			performOutput(io.toString)
+		    end
+		end
+
+		-- exit from the run process if it is still running
+		if ProcessStatus=="Run" then do
+			switchPlayerButon()
+			RunProcess.destroy()
+			end
+
+		-- exit from the CompileJava process if it is still running
+		if ProcessStatus=="CompileJava" then RunProcess.destroy()
+
+--		EditBus.removeFromBus(EBComponent errorsource) 
+--		ErrorSource.unregisterErrorSource(errorsource)
+		if errorsource\= null then errorsource.quit
+		EditBus.removeFromBus(EBComponent NetRexx.nr)
+--		EditBus.removeFromBus(EBComponent this)
+
+		-- save properties for next session
+		-- save the compile options
+		OptString=StringBuffer()
+		loop j = 0 to OptionBoxes.length-1
+			if OptionBoxes[j].isSelected() then OptString.append("1")
+			else OptString.append("0")
+		end			
+		jEdit.setProperty("plugin.netrexxde.compile.options",OptString.toString())		
+
+	method runProgram() private
+
+		if CPField.getText() \= "" then
+			CPField.addCurrentToHistory()
+		ClassPathArgs = getClassPath()
+		NetRexxConsole.setupClasspathFolderElements(ClassPathArgs)
+
+		-- get the filename without the extension
+		onlyName = String OurView.getBuffer().getName() 
+		DotPos = int onlyName.lastIndexOf('.')
+		if DotPos > 0 then  onlyName = onlyName.substring(0,DotPos)
+
+		RunArgsTokenizer=StringTokenizer(RunArgsField.getText())
+		RunArgsCount=RunArgsTokenizer.countTokens()
+
+		args = String[4+RunArgsCount]
+
+		args[0] = JavaExecPath
+		args[1] = "-cp"
+		args[2] = getClassPath()
+		args[3] = onlyName
+		i=int
+		loop i = 1 to RunArgsCount
+			args[3+i]=RunArgsTokenizer.nextToken()
+		end
+
+		-- print out the run cmd
+		loop i = 0 to RunArgsCount+3
+			performOutput(args[i] " ")
+		end
+		performOutput("\n")
+
+		RunArgsField.requestFocusInWindow
+		
+		rt=Runtime.getRuntime()
+		do
+			RunProcess=rt.exec(args,null,File(OurView.getBuffer().getPath()).getParentFile())
+		catch IOException
+			performOutput("Cannot Run Program. \n" -
+					"Check if Java Exec & Path has been properly set \n"-
+					"for NetRexxDE using the Global Option DialogBox \n")
+			ProcessLabel.setVisible(0)
+			ProcessLabel1.setVisible(1)
+			switchPlayerButon()
+		end
+
+		RunBW=BufferedWriter(OutputStreamWriter((RunProcess.getOutputStream())))
+		Runbr=BufferedReader(InputStreamReader((RunProcess.getInputStream())))
+		RunErrBR=BufferedReader(InputStreamReader((RunProcess.getErrorStream())))
+		RunOutputCatcher(Runbr).start()
+		ErrorCatcher(RunErrBR).start()
+
+	method CompileJava() private
+
+		saveFileIfChanged()
+
+		RunArgsTokenizer=StringTokenizer(RunArgsField.getText())
+		RunArgsCount=RunArgsTokenizer.countTokens()
+
+		args = String[7+RunArgsCount]
+
+		args[0] = JavaExecPath
+		args[1] = "-cp"
+		args[2] = ToolsPath
+		args[3] = "com.sun.tools.javac.Main"
+		args[4] = "-classpath"
+		args[5] = getClassPath()
+		args[6] = FileName
+		i=int
+		loop i = 1 to RunArgsCount
+			args[6+i]=RunArgsTokenizer.nextToken()
+		end
+
+		-- print out the run cmd
+		loop i = 0 to RunArgsCount+6
+			performOutput(args[i] " ")
+		end
+		performOutput("\n")
+
+		rt=Runtime.getRuntime()
+		do
+			RunProcess=rt.exec(args,null,File(OurView.getBuffer().getPath()).getParentFile())
+		catch IOException
+			performOutput("Cannot Run Program. \n" -
+					"Check if Java Exec & Path has been properly set \n"-
+					"for NetRexxDE using the Global Option DialogBox \n")
+			ProcessLabel.setVisible(0)
+			ProcessLabel1.setVisible(1)			
+			return
+		end
+
+		RunBW=BufferedWriter(OutputStreamWriter((RunProcess.getOutputStream())))
+		Runbr=BufferedReader(InputStreamReader((RunProcess.getInputStream())))
+		RunErrBR=BufferedReader(InputStreamReader((RunProcess.getErrorStream())))
+		RunOutputCatcher(Runbr).start()
+		ErrorCatcher(RunErrBR).start()
+
+	method startCompiler() private
+		OptionTokenizer=StringTokenizer(CompilerOptions)
+		OptionCount = OptionTokenizer.countTokens()
+
+		args = String[8+optioncount]
+		args[0] = JavaExecPath
+		args[1] = "-Xms16M"
+		args[2] = "-cp"
+		args[3] = ClassPathArgs
+		args[4] = "COM.ibm.netrexx.process.NetRexxC"
+		args[5] = FullFileName
+		args[6] = "-compact"
+		args[7] = "-prompt"
+		i=int
+		loop i=1 to OptionCount
+			args[7+i]=OptionTokenizer.nextToken()
+		end
+
+		performOutput(args[0] args[1] args[2] args[3] args[4] args[5] "\n")
+
+		rt=Runtime.getRuntime()
+		do
+		  CompileProcess=rt.exec(args,null,OurFile.getParentFile())
+		catch IOException
+			performOutput("Cannot Compile Program. \n" -
+		 			"Check if Java Exec & Path has been properly set \n"-
+					"for NetRexxDE using the Global Option DialogBox \n")
+			CompileErrors = 1
+			ProcessLabel.setVisible(0)
+			ProcessLabel1.setVisible(1)			
+			return
+		end
+
+		CompileBW=BufferedWriter(OutputStreamWriter((CompileProcess.getOutputStream())))
+		br=BufferedReader(InputStreamReader((CompileProcess.getInputStream())))
+		CompileErrBR=BufferedReader(InputStreamReader((CompileProcess.getErrorStream())))
+		CompileOutputCatcher(br).start()
+		ErrorCatcher(CompileErrBR).start()
+		CompilerStarted=1
+
+	method getClassPath() returns String
+		ClassPath = "."||PathSep||(String NrxClassPath)||PathSep||(String ToolsPath)||PathSep||System.getProperty("java.class.path")
+		
+		CPFieldText = CPField.getText()
+		if CPFieldText \= null then
+		do
+			if CPFieldText.length() > 0 then
+			ClassPath=ClassPath||PathSep||CPFieldText
+		end
+
+		ucp=jEdit.getProperty("options.netrexxscript.classpath","")			--	get the scripting user specified classpath
+		if ucp\="" then ClassPath=ClassPath||PathSep||ucp
+		
+		return ClassPath
+
+	/*
+	 * This is used to save the file if user choose this in the global option
+	 * or to ask user if the file should be saved if he didnot choose this in global option.
+	 */
+	method saveFileIfChanged() private
+		if OurView.getBuffer().isDirty() then
+		do
+			if SaveFile then 
+			do
+				OurView.getBuffer().save(OurView,null)
+				VFSManager.waitForRequests()
+			end
+			else
+			do
+				ans=int JOptionPane.showConfirmDialog(OurView,"File has changed. Save before proceeding ?","Save File",JOptionPane.YES_NO_OPTION)
+				if ans = JOptionPane.YES_OPTION then
+				do
+					OurView.getBuffer().save(OurView,null)
+					VFSManager.waitForRequests()
+				end
+			end
+		end
+
+	method switchProjecMode(newProjectMode = boolean)
+		
+		if newProjectMode then
+			select
+				when \checkPV() then 
+				do
+					performOutput("Project Viewer plugin seems not to be present" -
+							"in this jEdit installation!\n")
+					return
+				end
+				when \projectsEnabled then
+				do
+					performOutput("Project Mode has not been enabled/configured" -
+							"at NetRexxDE options pane!\n")
+					return
+				end
+				otherwise
+					nop
+			end
+		
+		projectMode = newProjectMode
+		jEdit.setBooleanProperty( -
+			"plugin.netrexxde.projectModeActivated", newProjectMode)
+		
+		if newProjectMode then
+			do
+			operationModeButton.setIcon(projectModeIcon)
+			operationModeButton.setToolTipText("Switch to Single File Mode")
+			(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"ProjectPanel")
+			end
+		else
+			do
+			operationModeButton.setIcon(singleFileModeIcon)
+			operationModeButton.setToolTipText("Switch to Project Mode")
+			(CardLayout MiddlePanel.getLayout).show(MiddlePanel,"OutputPanel")
+			end
+
+	method checkPV() returns boolean
+			pv=jEdit.getPlugin("projectviewer.ProjectPlugin",false)
+			if null = pv then
+				return false
+			else
+				return true
+			
+
+	method performOutput(text=String)
+		ProcessOut.append(text)
+		ProcessOut.setCaretPosition( -
+			ProcessOut.getDocument().getLength())
+
+	method performErrorOutput(text=String)
+		
+		isTrace = boolean FALSE
+		reader = BufferedReader(StringReader(text));
+		
+		loop forever
+
+			do
+
+				line = reader.readLine()
+
+			catch io=IOException
+				errorConsole.append(io.toString() "\n")
+				leave
+			end
+			if line = null then leave
+				
+			loop i=0 to TRACE_MARKERS.length -1
+				if (Rexx line).pos(TRACE_MARKERS[i]) > 0 then
+					isTrace = TRUE
+				end
+				
+			if isTrace then do
+				if ActiveOutPane \== traceConsole then
+					TracerButton.setIcon(AlertTraceIcon)
+				traceConsole.appendln(line)
+				traceConsole.setCaretPosition( -
+					traceConsole.getDocument().getLength())
+				end
+			else do
+				if ActiveOutPane \== errorConsole then
+					ErrOutButton.setIcon(AlertErrOutputIcon)
+				errorConsole.appendln(line)
+				errorConsole.setCaretPosition( -
+					errorConsole.getDocument().getLength())
+				end
+			end
+
+	method switchPlayerButon(to=Rexx "Run")
+		currentIcon = runButton.getIcon()
+--		if currentIcon = PlayIcon then do
+		if to="Stop" then do
+			runButton.setIcon(StopIcon)
+			RunButton.setToolTipText("Stop this program")
+			end
+		else do
+			runButton.setIcon(PlayIcon)
+			RunButton.setToolTipText("Run this program")
+			end
+
+class NetRexxCompile.RunOutputCatcher dependent extends Thread
+
+		Runbr = BufferedReader
+
+	method RunOutputCatcher(br=BufferedReader)
+		this.Runbr = br
+
+	method run() public
+
+		loop forever
+
+			do
+				ln= Runbr.readLine()
+			catch io=IOException
+				parent.performOutput(io.toString() "\n")
+				leave
+			end
+		
+			if ln=null then
+			do
+				parent.performOutput("=> Finished <= \n")
+				parent.switchPlayerButon()
+				leave
+			end
+
+			parent.performOutput(ln "\n")
+		end
+
+		parent.ProcessOut.setCaretPosition(parent.ProcessOut.getDocument().getLength())
+		parent.ProcessLabel.setVisible(0)
+		parent.ProcessLabel1.setVisible(1)
+		
+		
+class NetRexxCompile.ErrorCatcher dependent extends Thread
+
+		ErrBR = BufferedReader
+
+	method ErrorCatcher(br=BufferedReader)
+		this.ErrBR = br
+	
+	method run() public
+
+		loop forever
+	
+			do
+				ln= ErrBR.readLine()
+			catch io=IOException
+				parent.performErrorOutput(io.toString() "\n")
+				leave
+			end
+
+			if ln=null then leave
+
+			parent.performErrorOutput(ln"\n")
+			if parent.ProcessStatus = "CompileJava" then
+			do	
+				parse ln p1 ":" p2 ":" p3
+				if p1 == parent.FileName then
+				do
+					if parent.errorsource \= null then
+						parent.errorsource.addError(NetRexxErrorList.ERROR,parent.FullFileName,(int p2)-1,0,0,p3)
+				end
+			end
+
+		end
+
+class NetRexxCompile.CompileOutputCatcher dependent extends Thread
+	
+
+	properties private
+		br = BufferedReader
+
+	method CompileOutputCatcher(CompileBR=BufferedReader)
+		this.br=CompileBR
+
+	method run() public
+
+		errors='n'
+		ln = Rexx ""
+		parent.CompileErrors = 1
+		loop forever
+			do
+				ln= br.readLine()
+			catch io=IOException
+				parent.performOutput(io.toString() "\n")
+				parent.CompileErrors = 1
+				leave
+			end
+		
+			if ln=null then
+			do
+				select
+					when (parent.PlugInStop)  then
+					do
+						parent.CompilerCmd=""
+						parent.ProcessLabel.setVisible(0)
+						parent.ProcessLabel1.setVisible(1)
+					end
+					when (parent.CompilerCmd == "exit") then
+					do
+						parent.CompilerCmd=""
+					end
+					otherwise
+						parent.performOutput("=> Aborted <= \n")
+						parent.CompileErrors = 1
+						parent.ProcessLabel.setVisible(0)
+						parent.ProcessLabel1.setVisible(1)
+				end
+				leave
+			end
+	
+			if ln=="Enter new files and additional options, '=' to repeat, 'exit' to end:" then 
+			do
+				if errors == 'n' then parent.CompileErrors = 0
+				else 
+				do
+					parent.CompileErrors = 1
+					errors = 'n'
+				end
+				parent.performOutput("=> Finished <= \n")
+				parent.ProcessLabel.setVisible(0)
+				parent.ProcessLabel1.setVisible(1)
+			end
+			else
+			do
+				parent.performOutput(ln "\n")
+				parent.ProcessOut.setCaretPosition(parent.ProcessOut.getDocument().getLength())
+				if ln.pos("] Error:") > 0  then
+				do
+					errors='y'
+					parse ln "[" ErrMsgDetails "] Error:"  ErrMsg 
+					if parent.errorsource \= null then
+						AddErrMsg(NetRexxErrorList.ERROR, ErrMsgDetails, ErrMsg)
+				end   
+				if ln.pos("] Warning:") > 0  then
+				do
+					parse ln "[" ErrMsgDetails "] Warning:"  ErrMsg
+					if parent.errorsource \= null then					
+						AddErrMsg(NetRexxErrorList.WARNING, ErrMsgDetails, ErrMsg)
+				end   
+			end
+		end
+		parent.CompilerStarted = 0
+
+	method AddErrMsg(ErrType=int, ErrMsgDetails=Rexx, ErrMsg=Rexx) private
+
+		wc 		= int ErrMsgDetails.words()
+		lineIndex 	= int ErrMsgDetails.word(wc-2)-1
+		colStart 	= int ErrMsgDetails.word(wc-1)-1
+		colEnd  	= int colStart + ErrMsgDetails.word(wc) 
+		if lineIndex >=0 then 
+			if parent.errorsource \= null then
+				parent.errorsource.addError(ErrType,parent.FullFileName,lineIndex,colStart,colEnd,ErrMsg)
+
+class NetRexxCompile.PathBuilderControl
+	
+	dialog=PathBuilderDialog
+	pathBuilder = common.gui.pathbuilder.PathBuilder
+	TRUE=boolean 1
+	
+	method PathBuilderControl(CPField = HistoryTextField, OurView = org.gjt.sp.jedit.View, dad=NetRexx)
+	
+				parent = Frame dad.getTopLevelAncestor();
+				dialog=PathBuilderDialog( parent, "Build Classpath" )
+				pathBuilder = dialog.getPathBuilder()
+				pathBuilder.setPath(String CPField.getText() )
+				pathBuilder.setStartDirectory(OurView.getBuffer().getDirectory())
+				pathBuilder.setFileFilter( ClasspathFilter() )
+				pathBuilder.setMultiSelectionEnabled( 1 )
+				dialog.pack()
+				dialog.setLocationRelativeTo( parent )
+				dialog.setVisible(true)
+				
+	method getResult returns boolean
+		return dialog.getResult
+		
+	method getPath returns String
+		return pathBuilder.getPath

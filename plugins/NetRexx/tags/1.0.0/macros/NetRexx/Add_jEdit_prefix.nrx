@@ -1,0 +1,39 @@
+trace results
+carot=int textarea.getCaretPosition()
+setdir=jEdit.getSettingsDirectory()
+fs=File.separator
+prefix=setdir||fs"NetRexx"fs"prefix.txt"
+bfr=BufferedReader(FileReader(File(prefix)))
+sw=StringWriter(1024)
+bsw=BufferedWriter(sw)
+(Writer bsw).write("import org.gjt.sp.jedit.")
+bsw.newLine
+(Writer bsw).write("import netrexxplugin.")
+bsw.newLine
+(Writer bsw).write("import javax.swing.")
+bsw.newLine
+bname=Rexx(buffer.getName)
+(Writer bsw).write("class" bname.substr(1,bname.lastpos('.')-1))
+bsw.newLine
+copyfile(bfr,bsw)
+bsw.newLine
+(Writer bsw).write("method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg")
+bsw.close
+say sw.getBuffer.toString
+SwingUtilities.invokeAndWait(BuffUp(carot,sw.getBuffer.toString))
+
+
+method copyfile(ifq=java.io.BufferedReader,ofq=java.io.BufferedWriter) static returns Rexx signals IOException
+	line=ifq.readline
+	if line = null then return 0
+	linecount=1
+	ofq.write(string line,0,line.length)
+  loop while ifq.ready
+			line=ifq.readline
+			linecount=linecount+1
+			ofq.newline()
+			ofq.write(string line,0,line.length)
+			end	
+  return linecount
+
+

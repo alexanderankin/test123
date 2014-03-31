@@ -1,0 +1,372 @@
+/*
+ * NetRexxDE.java - NetRexx jEdit Plugin implementation
+ * Copyright (C) 2000 Satguru Srivastava
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+options binary strictsignal 
+
+import org.gjt.sp.jedit
+import org.gjt.sp.jedit.textarea
+import javax.swing
+import javax.swing.text
+import javax.swing.event
+
+package netrexxplugin
+
+class NetRexxConsole extends JTextPane implements MouseInputListener
+	
+	properties public constant
+		CONSOLE_MODE_REGULAR = 0
+		CONSOLE_MODE_TRACE = 1
+		CONSOLE_MODE_ERROR = 2
+		CONSOLE_MODE_REPL = 3
+		TRUE = 1
+		FALSE = 0
+
+	properties private constant
+		ATTRIB_HOTLINK = "hlmark"
+		ATTRIB_HOTLINK_REF = "hlref"
+		FILE_SEPARATOR = System.getProperty("file.separator")
+		PATH_SEPARATOR = System.getProperty("path.separator")
+		
+		properties private static
+		cpFolderElements = Rexx ""
+
+		properties private
+		consoleDocument = DefaultStyledDocument
+		consoleMode = int
+		ourView = org.gjt.sp.jedit.View
+		regularStyle = Style
+		hotlinkStyle = Style
+		headerStyle = Style
+		nrxFontFamily = String
+		nrxFontStyle = int
+		nrxFontSize = int
+		traceFilePath = String
+		traceLinePad
+		
+	method NetRexxConsole(mode=int, background=Color, view=org.gjt.sp.jedit.View)
+		this(mode, view)
+		setBackground(background)
+		
+	method NetRexxConsole(mode=int, view=org.gjt.sp.jedit.View)
+		super()
+		consoleMode = mode
+		ourView = view
+		getProperties()
+		consoleDocument = DefaultStyledDocument this.getStyledDocument()
+		addMouseMotionListener(this)
+		addMouseListener(this)
+		setEditable(FALSE)
+		
+	method appendln(text=String)
+		do
+			performOutput(text, TRUE)
+		catch ex=Exception
+			ex.printStackTrace()
+			end
+		
+	method append(text=String)
+		do
+			performOutput(text, FALSE)
+		catch ex=Exception
+			ex.printStackTrace()
+			end
+		
+	method performOutput(text=String, addNewline=boolean) signals Exception
+		select
+			when consoleMode = CONSOLE_MODE_REGULAR then
+				performRegularOutput(text, addNewline)
+			when consoleMode = CONSOLE_MODE_TRACE then
+				performTraceOutput(text, addNewline)
+			when consoleMode = CONSOLE_MODE_ERROR then
+				performErrorOutput(text, addNewline)
+			otherwise signal Exception("Console is uninitialized")
+			end
+				
+	method performRegularOutput(text=String, addNewline=boolean)
+		do
+			if addNewline then terminator = "\n"
+			else terminator = ""
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				text terminator, -
+				regularStyle)
+		catch blex = BadLocationException
+			blex.printStackTrace()
+			end
+		
+	method performTraceOutput(text=String, addNewline=boolean)
+		
+		if addNewline then terminator = "\n"
+		else terminator = " "
+
+		traceLineStart = (Rexx text).lastpos("---")
+		if traceLineStart > 0 then do
+			traceLinePad = traceLineStart - 3
+			parse text . traceFilename
+			traceFilePath = searchFileInClassPath(traceFilename, TRUE)
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				"\n"(Rexx " ").copies(traceLineStart-1)"--- ", -
+				regularStyle)
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				traceFilename terminator, -
+				headerStyle)
+			return
+			catch blex = BadLocationException
+				blex.printStackTrace()
+				end
+		
+		parse text linenum tail
+		if linenum.datatype("N") then do
+			parse tail tracetype linetext
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				" "linenum.right(traceLinePad) tracetype" ", -
+				regularStyle)
+			if traceFilePath = null then effectiveStyle = regularStyle
+			else do
+				stl = this.addStyle(null, hotlinkStyle);
+				stl.addAttribute( -
+					ATTRIB_HOTLINK_REF, traceFilePath"@"linenum)
+				effectiveStyle = stl
+				end
+			payload = linetext.changestr("\t"," ").strip("Both")
+			indentlength = linetext.pos(payload) - 1
+			if indentlength >= 0 then indent = linetext.left(indentlength)
+			else indent = ""
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				indent, -
+				regularStyle)
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				payload, -
+				effectiveStyle)
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				terminator, -
+				regularStyle)
+			catch blex = BadLocationException
+				blex.printStackTrace()
+				end
+		else do
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				text terminator, -
+				regularStyle)
+			catch blex = BadLocationException
+				blex.printStackTrace()
+				end
+
+	method performErrorOutput(text=String, addNewline=boolean)
+
+		linetext = Rexx text
+		
+		if addNewline then terminator = "\n"
+		else terminator = " "
+
+		parse linetext "at " methodname "(" filename ":" linenum ")" .
+		if methodname = "" | filename = "" | linenum = "" then do
+			consoleDocument.insertString(consoleDocument.getLength(), -
+				text||terminator, -
+				regularStyle)
+			catch blex = BadLocationException
+				blex.printStackTrace()
+				end
+		else do
+			classname = methodname.left(methodname.lastpos(".")-1)
+			lastsep = classname.lastpos(".")
+			if lastsep > 0 then
+				subpath = (classname.left(classname.lastpos(".")-1)-
+				||FILE_SEPARATOR).changestr(".", FILE_SEPARATOR)
+			else
+				subpath = ""
+
+			filepath = searchFileInClassPath(subpath||filename, FALSE)
+			if filepath \= null then do
+				payload = linetext.right(linetext.length() - linetext.pos("at")+1)
+				indent = linetext.left(linetext.pos(payload) - 1)
+				consoleDocument.insertString(consoleDocument.getLength(), -
+					indent, -
+					regularStyle)
+				stl = this.addStyle(null, hotlinkStyle);
+				stl.addAttribute(ATTRIB_HOTLINK_REF, filepath"@"linenum)
+				consoleDocument.insertString(consoleDocument.getLength(), -
+					payload, -
+					stl)
+				consoleDocument.insertString(consoleDocument.getLength(), -
+					terminator, -
+					regularStyle)
+				catch blex = BadLocationException
+					blex.printStackTrace()
+					end
+			else do
+				consoleDocument.insertString(consoleDocument.getLength(), -
+					text terminator, -
+					regularStyle)
+				catch blex = BadLocationException
+					blex.printStackTrace()
+					end
+			end
+
+	method getCurrentBufferPath() returns Rexx
+		currentPath = Rexx ourView.getBuffer().getPath()
+		currentPath = currentPath.left(currentPath.lastpos(FILE_SEPARATOR) - 1)
+		return currentPath
+					
+	method searchFileInClassPath(filename=Rexx, doSubdirs=boolean) private returns Rexx
+		foundPath = Rexx null
+		loop indx over cpFolderElements
+			trypath = cpFolderElements[indx]
+			if trypath = "." then
+				trypath = getCurrentBufferPath()
+			aFile = File(trypath||FILE_SEPARATOR||filename)
+			if aFile.exists() then do
+				foundPath = aFile.getPath()
+				leave
+				end
+			if doSubdirs then do
+				foundPath = searchForFileInSubdirs(filename, File(trypath))
+				if foundPath \= null then do
+					aFile = File(foundPath)
+					foundPath = aFile.getPath()
+					leave
+					end
+				end
+
+			end
+		return foundPath
+
+	method searchForFileInSubdirs(filename=Rexx, directory=File) private returns Rexx
+		foundfilepath = Rexx null
+		subdirs = directory.listFiles(NetRexxConsole.DirectoryFilter())
+		ubound = subdirs.length
+		if ubound = 0 then
+			return null
+		loop i=0 to ubound-1
+			dirpath = subdirs[i].getPath()
+			aFile = File(dirpath||FILE_SEPARATOR||filename)
+			if aFile.exists() then do
+				foundfilepath = aFile.getPath()
+				leave
+				end
+			else do
+				foundfilepath = searchForFileInSubdirs(filename, subdirs[i])
+				if foundfilepath \= null then do
+					leave
+					end
+				end
+			end
+		return foundfilepath
+			
+	method setupClasspathFolderElements(classpath=String) static
+		cpFolderElements = Rexx("")
+		count = 0
+		loop while classpath \= ""
+			count = count+1
+			parse classpath cpelement (PATH_SEPARATOR) classpath
+			ext = cpelement.right(4)
+			if ext=".jar" | ext=".zip" then iterate
+			else do
+				cpFolderElements[count] = cpelement
+				end
+			end
+
+	method getProperties() private
+		nrxFontFamily = jEdit.getProperty("plugin.netrexxde.FontFamily")
+		If nrxFontFamily == null then NrxFontFamily="Monospaced"
+		do
+			nrxFontStyle = Integer.parseInt(jEdit.getProperty( -
+				"plugin.netrexxde.FontStyle"))
+		catch NumberFormatException
+			nrxFontStyle = Font.PLAIN
+		end
+		do
+			nrxFontSize = Integer.parseInt(jEdit.getProperty( -
+				"plugin.netrexxde.FontSize"))
+		catch NumberFormatException
+			nrxFontSize = 14
+		end
+		
+		initializeStyles(Font(nrxFontFamily,nrxFontStyle,nrxFontSize))
+
+	method resetProperties()
+		getProperties()
+		
+	method initializeStyles(consoleFont=Font) private
+		
+		startStyle = StyleContext.getDefaultStyleContext().getStyle( -
+			StyleContext.DEFAULT_STYLE)
+		
+		regularStyle = this.addStyle(null, startStyle)
+		StyleConstants.setFontFamily(regularStyle, nrxFontFamily)
+		StyleConstants.setFontSize(regularStyle, nrxFontSize)
+		StyleConstants.setBold(regularStyle, consoleFont.isBold)
+		StyleConstants.setItalic(regularStyle, consoleFont.isItalic)
+        
+		hotlinkStyle = this.addStyle(null, regularStyle)
+		hotlinkStyle.addAttribute(ATTRIB_HOTLINK, "hlmark_true")
+		StyleConstants.setUnderline(hotlinkStyle, TRUE); 
+		StyleConstants.setForeground(hotlinkStyle, Color.BLUE);
+
+		headerStyle = this.addStyle(null, regularStyle)
+		StyleConstants.setBold(headerStyle, TRUE); 
+		StyleConstants.setForeground(headerStyle, Color.DARK_GRAY);
+
+	
+	method mouseClicked(me=MouseEvent)
+		pt = Point(me.getX(), me.getY())
+		position = this.viewToModel(pt)
+		doc = DefaultStyledDocument this.getStyledDocument()
+		element = doc.getCharacterElement(position)
+		attrib = element.getAttributes()
+		isHot = attrib.getAttribute(ATTRIB_HOTLINK) \= null
+		if isHot then do
+			ref = attrib.getAttribute(ATTRIB_HOTLINK_REF)
+			parse ref filename "@" linenum
+			buffer = jEdit.openFile(ourView, filename)
+			ourView.goToBuffer(buffer)
+			lstart = buffer.getLineStartOffset(linenum - 1)
+			lend = buffer.getLineEndOffset(linenum - 1)
+			ourView.getTextArea().setSelection( -
+					Selection.Range(lstart, lend))
+			ourView.getTextArea().moveCaretPosition(lstart)
+			end
+
+	method mouseMoved(me=MouseEvent)
+		pt = Point(me.getX(), me.getY())
+		position = this.viewToModel(pt)
+		doc = DefaultStyledDocument this.getStyledDocument()
+		element = doc.getCharacterElement(position)
+		attrib = element.getAttributes()
+		isHot = attrib.getAttribute(ATTRIB_HOTLINK) \= null
+		if isHot then
+			this.setCursor(Cursor.getPredefinedCursor( -
+				Cursor.HAND_CURSOR))
+		else
+			this.setCursor(null)
+	
+	-- not interested at all in these...
+	method mouseEntered(me=MouseEvent); nop
+	method mouseExited(me=MouseEvent); nop
+	method mousePressed(me=MouseEvent); nop
+	method mouseReleased(me=MouseEvent); nop
+	method mouseDragged(me=MouseEvent); nop
+
+class NetRexxConsole.DirectoryFilter implements FileFilter
+	
+	method accept(aFile=File) returns boolean
+		if aFile.isDirectory then
+			return NetRexxConsole.TRUE
+		else
+			return NetRexxConsole.FALSE
+

@@ -1,0 +1,24 @@
+	
+say "this is the iosample.nrx script"
+
+-- This scipt demonstrates easy GUI IO to the end user:
+
+Macros.message(view,scriptPath)
+
+Macros.error(view,"This is a sample error message from a script.")
+
+result = Macros.input(view, "Type something here.")
+
+if result \= null then Macros.message(view,"This was your input ==>"result)
+
+result = Macros.input(view, "When were you born?",-
+    "I don't remember, I was very young at the time")
+    
+if result \= null then Macros.message(view,"This was your input ==>"result)
+
+result = Macros.confirm(view, "Do you really want to learn about NetRexx?",JOptionPane.YES_NO_OPTION)	--	option flag requires import javax.swing statement
+
+if result \= null then Macros.message(view,"This was your input ==>"result)
+    
+	
+
