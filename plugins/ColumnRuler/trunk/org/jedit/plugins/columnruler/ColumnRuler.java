@@ -86,7 +86,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//{{{ Get ready
 		Graphics2D gfx = (Graphics2D) g;
 		Color foreground = determineForegroundColor();
-		int xOffset = _textArea.getGutter().getWidth();
+		int xOffset = 0;
 		double lineHeight = getLineHeight();
 		double charWidth = getCharWidth();
 		double charHeight = (new TextLayout("X", gfx.getFont(), gfx.getFontRenderContext())).getBounds().getHeight();
