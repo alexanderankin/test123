@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<project default="build-debug" basedir=".">
+
+    <!-- The local.properties file is created and updated by the 'android' tool.
+         It contains the path to the SDK. It should *NOT* be checked in in Version
+         Control Systems. -->
+    <property file="local.properties" />
+
+	<!-- Allow properties to be overridden: -->
+    <property file="build.properties" />
+    <property file="../build.properties" />
+    <property file="${user.home}/.build.properties" />
+    <property file="${user.home}/build.properties" />
+    
+	<!-- Project properties -->
+	<property name="project.version" value="${src.version}" description="Project's build version"/>
+	<property name="project.root.dir" value="." description="Project's root directory"/>
+	<property name="project.src.dir" value="${src.dir}" description="Project's source directory"/>
+	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
+	<property name="project.netrexx.libdir" value="${nrc.dir}" description="Location of NetRexxC.jar file"/>
+	<property name="project.android.libdir" value="${sdk.dir}\platforms\${platform}" description="Location of android.jar file"/>
+	
+	<import file="build.xml" optional="false" />
+
+  <target name="prepare">
+    <mkdir dir="NetRexx"/>
+
+    <!-- Build Classpath has build.classes prepended, all libs included -->
+    <property name="prj.libs" refid="jar.libs.ref"/> 
+    <path id="build.class.path">
+      <pathelement path="${project.netrexx.libdir}"/>
+      <pathelement path="${project.android.libdir}/android.jar"/>
+      <pathelement path="./bin/classes"/>
+      <pathelement path="${prj.libs}"/>
+      <fileset dir="${build.path}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+    <pathconvert property="build.classpath" refid="build.class.path"/>
+    
+    <!-- define special Ant NetRexx task -->
+    <taskdef name="buildnrc" classname="org.apache.tools.ant.taskdefs.optional.NetRexx" classpath="${build.classpath}"/>
+
+  </target>
+  
+    <target name="buildnrx" depends="prepare" description="Compiles NetRexx source files">
+
+    	<echo message="prj.libs:${prj.libs}"/>
+    	<echo message="build.classpath:${build.classpath}"/>
+        <buildnrc srcDir="${project.src.dir}"  javaDir="${project.src.dir}" destDir="bin/classes/${pack.dir}" includes="*.nrx"
+        	classpath=".${path.separator}${build.classpath}${path.separator}${prj.libs}"
+        	comments="true" savelog="false" time="true" compact="false" compile="true" format="true" removeSourceCopies="true"
+        	verbose='verbose4' crossref="false" />
+    </target>
+    
+    <target name="restorenrx" description="Restores NetRexx source files to source directory">
+		<move todir="${project.src.dir}" includeemptydirs="false">
+			<fileset dir="NetRexx">
+			  <include name="*.nrx"/>
+			</fileset>
+		  </move>
+		 <delete>
+			<fileset dir="NetRexx" />
+		  </delete>
+
+    </target>    
+  
+    <target name="-post-compile" depends="buildnrx" description="NetRexx source files must be temporairily removed from src dir or they will be added to the APK file">
+		<move todir="NetRexx" includeemptydirs="false">
+			<fileset dir="${project.src.dir}">
+			  <include name="*.nrx"/>
+			</fileset>
+		  </move>    
+    	<delete>
+			<fileset dir="${project.src.dir}" includes="*.nrx"/>
+		 </delete>
+    </target>
+    
+    <target name="build-debug" depends="debug,restorenrx" description="Compiles NetRexx source files, then Android debug build">
+    </target>
+    
+    <target name="build-release" depends="release,restorenrx" description="Compiles NetRexx source files, then Android release build">
+    </target>
+    
+   <target name="showprops" depends="all" description="Displays default property settings">
+      <echoproperties />
+    </target>    
+    
+</project>

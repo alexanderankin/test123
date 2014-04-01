@@ -1,0 +1,26 @@
+	
+-- This script turns the plugin debug flag on or off 
+-- ***** warning - setting flag on can produce lots of log and other output
+
+import org.gjt.sp.jedit.
+import netrexxplugin.
+import javax.swing.
+class debug
+properties private static
+	view=jEdit.getActiveView()
+	buffer=view.getBuffer
+	wm=view.getDockableWindowManager()
+	editPane=view.getEditPane()
+	textArea=editPane.getTextArea()
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+properties private static unused
+	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm	
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
+
+	trace results
+
+	OPTION_PREFIX = String "options.netrexxscript."
+	t=boolean 1		--	"true"
+	f=boolean 0		--	"false"	
+
+   	jEdit.setBooleanProperty(OPTION_PREFIX"debug",\jEdit.getBooleanProperty(OPTION_PREFIX"debug",f)) 

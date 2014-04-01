@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+
+	<DOCKABLE NAME="NetRexxScript">
+		new netrexxplugin.NetRexxScript(view, position);
+	</DOCKABLE>
+
+	<DOCKABLE NAME="NetRexxDE">
+		new netrexxplugin.NetRexxDE(view, position);
+	</DOCKABLE>
+
+	<DOCKABLE NAME="NetRexx">
+		new netrexxplugin.NetRexx(view, position);
+	</DOCKABLE>
+		
+</DOCKABLES>
+	
+
