@@ -1,0 +1,846 @@
+/*
+ * NetRexxDEOptionPane.java - NetRexxDE options panel
+ * Copyright (C) 2000 Satguru Srivastava
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+options binary strictcase
+import javax.swing
+import java.util.Vector
+import org.gjt.sp.jedit.gui
+import org.gjt.sp.jedit
+import projectviewer.gui
+import projectviewer.
+import projectviewer.vpt
+
+package netrexxplugin
+
+class NetRexxDEOptionPane public extends AbstractOptionPane implements ActionListener, ItemListener
+
+	properties constant
+		TRUE=boolean 1
+		FALSE=boolean 0
+
+	properties private
+		optionsPanel = JPanel
+		pathsPanel = JPanel
+		projectPanel = JPanel
+		jvmPath = JTextField
+		nrxPath = JTextField
+		toolsPath = JTextField
+		fontButton = FontSelector
+		clearConsoleCKB = JCheckBox
+		clearTraceCKB = JCheckBox
+		saveFilesCKB = JCheckBox
+		sortSKEntriesCKB = JCheckBox
+		sortSKEntriesCaseSensitiveCKB = JCheckBox
+		renameFilesCKB = JCheckBox
+		runINjEdit = JCheckBox
+		groupOptLabel = JLabel
+		sbGroupingOptionBttnGrp = ButtonGroup
+		classicIdentGroupRBttn = JRadioButton
+		constrGroupRBttn = JRadioButton
+		methCroupRBttn = JRadioButton
+		sharedGroupRBttn = JRadioButton
+		nestedGroupRBttn = JRadioButton
+		sbCustomGroupingOption = ButtonGroup
+		sbGroupingOption = int
+		fullGroupRBttn = JRadioButton
+		classicGroupRBttn = JRadioButton
+		useProjectsCKB = JCheckBox
+		autoOpenPVCKB = JCheckBox
+		autoClosePVCKB = JCheckBox
+		forceDirectoriesCKB = JCheckBox
+		pvGroupLabel = JLabel
+		pvGroupName = JTextField
+		missingPluginsMsgLabel = JLabel
+		projectSelectionButton = JButton
+		grpSelectionDlg = ProjectSelectionDialog
+		currentProjectGroup = NrxVPTGroup
+		
+		JEP = String
+		NCP = String
+		TP  = String
+
+		properties inheritable
+		ourView = View
+
+	method NetRexxDEOptionPane(view=View) public
+		super("NetRexxDE")
+		ourView = view
+	
+	method _init() inheritable
+
+		-- general options panel
+		NrxFontFamily = jEdit.getProperty("plugin.netrexxde.FontFamily")
+		If NrxFontFamily == null then NrxFontFamily="Monospaced"
+		do
+			NrxFontStyle = int Integer.parseInt(jEdit.getProperty( -
+				"plugin.netrexxde.FontStyle"))
+			catch NumberFormatException
+				NrxFontStyle = Font.PLAIN
+		end
+		do
+			NrxFontSize = int Integer.parseInt(jEdit.getProperty( -
+				"plugin.netrexxde.FontSize"))
+			catch NumberFormatException
+				NrxFontSize = 14
+		end
+		
+		sbGroupingOption = jEdit.getIntegerProperty("plugin.netrexxde.parsing.sbgrouping", -
+			NrxParser.SB_GROUP_FULL)
+		
+		optionsPanel = JPanel()
+		optionsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder( -
+			"General options"))
+		optionsPanel.setLayout(java.awt.GridBagLayout());
+
+			fontLabel = JLabel("Set Console Font")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(fontLabel, gridBagConstraints)
+			
+			fontButton = FontSelector( -
+				Font(NrxFontFamily,NrxFontStyle,NrxFontSize))
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER
+			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.weightx = 1.0
+			gridBagConstraints.insets = java.awt.Insets(0, 5, 0, 0)
+			optionsPanel.add(fontButton, gridBagConstraints)
+
+			clearConsoleCKB = JCheckBox( -
+				"Clear Console before any processing",-
+				jEdit.getBooleanProperty("plugin.netrexxde.ClearConsole"))
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 1
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(clearConsoleCKB, gridBagConstraints)
+
+			clearTraceCKB = JCheckBox( -
+				"Clear TRACE and ERROR output before any processing",-
+				jEdit.getBooleanProperty("plugin.netrexxde.ClearTrace"))
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 2
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(clearTraceCKB, gridBagConstraints)
+
+			saveFilesCKB = JCheckBox( -
+				"Save File before any processing", -
+				jEdit.getBooleanProperty("plugin.netrexxde.SaveFile"))
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 3
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(saveFilesCKB, gridBagConstraints)
+
+			renameFilesCKB = JCheckBox( -
+				"Change file type from JAVA.KEEP to JAVA after Java Processing", -
+				jEdit.getBooleanProperty("plugin.netrexxde.KeepName"))
+			gridBagConstraints = java.awt.GridBagConstraints();
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 4
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(renameFilesCKB, gridBagConstraints)
+
+			sortSKEntriesCKB = JCheckBox( -
+				"Sort entries in structure browser", -
+				jEdit.getBooleanProperty("plugin.netrexxde.parsing.sortentries", -
+				TRUE))
+			gridBagConstraints = java.awt.GridBagConstraints();
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 5
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(sortSKEntriesCKB, gridBagConstraints)
+
+			sortSKEntriesCaseSensitiveCKB = JCheckBox( -
+				"Use case sensitive sorting", -
+				jEdit.getBooleanProperty( -
+					"plugin.netrexxde.parsing.sortentries.casesensitive", -
+					FALSE))
+			gridBagConstraints = java.awt.GridBagConstraints();
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 6
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.insets = java.awt.Insets(0, 20, 0, 0)
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(sortSKEntriesCaseSensitiveCKB, gridBagConstraints)
+
+			groupOptLabel = JLabel("Grouping model for Structure Browser")
+			groupOptLabel.setPreferredSize(renameFilesCKB.getPreferredSize())
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 7
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 5, 0, 0)
+			optionsPanel.add(groupOptLabel, gridBagConstraints)
+
+			fullGroupRBttn = JRadioButton("Full element type grouping")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 8
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 25, 0, 0)
+			optionsPanel.add(fullGroupRBttn, gridBagConstraints)
+			fullGroupRBttn.setActionCommand("SetFullSBGrouping")
+			fullGroupRBttn.addActionListener(this)
+
+			classicGroupRBttn = JRadioButton("Classic partial grouping")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 9
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 25, 0, 0)
+			optionsPanel.add(classicGroupRBttn, gridBagConstraints)
+			classicGroupRBttn.setActionCommand("SetClassicSBGrouping")
+			classicGroupRBttn.addActionListener(this)
+
+			customGroupRBttn = JRadioButton("Custom grouping")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 10
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 25, 0, 0)
+			optionsPanel.add(customGroupRBttn, gridBagConstraints)
+			customGroupRBttn.setActionCommand("SetCustomSBGrouping")
+			customGroupRBttn.addActionListener(this)
+
+			sbGroupingOptionBttnGrp = ButtonGroup()
+			sbGroupingOptionBttnGrp.add(fullGroupRBttn)
+			sbGroupingOptionBttnGrp.add(classicGroupRBttn)
+			sbGroupingOptionBttnGrp.add(customGroupRBttn)
+
+			classicIdentGroupRBttn = JRadioButton( -
+				"Classic but identify constructors and put them at the top");
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 11
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 50, 0, 0)
+			optionsPanel.add(classicIdentGroupRBttn, gridBagConstraints)
+			classicIdentGroupRBttn.setActionCommand("SetClassicIdentSBGrouping")
+			classicIdentGroupRBttn.addActionListener(this)
+
+			constrGroupRBttn = JRadioButton( -
+				"Create node just for constructors")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 12
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 50, 0, 0)
+			optionsPanel.add(constrGroupRBttn, gridBagConstraints)
+			constrGroupRBttn.setActionCommand("SetConstructorsSBGrouping")
+			constrGroupRBttn.addActionListener(this)
+		
+			methCroupRBttn = JRadioButton("Create node just for methods")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 13
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 50, 0, 0)
+			optionsPanel.add(methCroupRBttn, gridBagConstraints)
+			methCroupRBttn.setActionCommand("SetMethodsSBGrouping")
+			methCroupRBttn.addActionListener(this)
+
+			sharedGroupRBttn = JRadioButton( -
+				"Create a shared node for methods and constructors")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 14
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 50, 0, 0)
+			optionsPanel.add(sharedGroupRBttn, gridBagConstraints)
+			sharedGroupRBttn.setActionCommand("SetSharedSBGrouping")
+			sharedGroupRBttn.addActionListener(this)
+
+			nestedGroupRBttn = JRadioButton( -
+				"Create a methods node with a nested constructors node")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 15
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 50, 0, 0)
+			optionsPanel.add(nestedGroupRBttn, gridBagConstraints)
+			nestedGroupRBttn.setActionCommand("SetNestedSBGrouping")
+			nestedGroupRBttn.addActionListener(this)
+
+			sbCustomGroupingOption = ButtonGroup()
+			sbCustomGroupingOption.add(classicIdentGroupRBttn)
+			sbCustomGroupingOption.add(constrGroupRBttn)
+			sbCustomGroupingOption.add(methCroupRBttn)
+			sbCustomGroupingOption.add(sharedGroupRBttn)
+			sbCustomGroupingOption.add(nestedGroupRBttn)
+			
+			select
+				when sbGroupingOption = NrxParser.SB_GROUP_FULL then do
+					fullGroupRBttn.setSelected(TRUE)
+					constrGroupRBttn.setSelected(TRUE)
+					setCustomGroupOptsVisibility(FALSE)
+					end
+				when sbGroupingOption = NrxParser.SB_GROUP_CLASSIC then do
+					classicGroupRBttn.setSelected(TRUE)
+					constrGroupRBttn.setSelected(TRUE)
+					setCustomGroupOptsVisibility(FALSE)
+					end
+				otherwise do
+					select
+						when sbGroupingOption = NrxParser.SB_GROUP_IDENT_CONSTRUCTORS then
+							classicIdentGroupRBttn.setSelected(TRUE)
+						when sbGroupingOption = NrxParser.SB_GROUP_CONSTRUCTORS then
+							constrGroupRBttn.setSelected(TRUE)
+						when sbGroupingOption = NrxParser.SB_GROUP_METHODS then
+							methCroupRBttn.setSelected(TRUE)
+						when sbGroupingOption = NrxParser.SB_GROUP_SHARED then
+							sharedGroupRBttn.setSelected(TRUE)
+						when sbGroupingOption = NrxParser.SB_GROUP_NESTED then
+							nestedGroupRBttn.setSelected(TRUE)
+						otherwise do
+							sbGroupingOption = NrxParser.SB_GROUP_CONSTRUCTORS
+							constrGroupRBttn.setSelected(TRUE)
+							end
+						end
+					customGroupRBttn.setSelected(TRUE)
+					setCustomGroupOptsVisibility(TRUE)
+					end
+				end
+				
+			runINjEdit = JCheckBox( -
+				"Run compiled classes in jEdit rather than a separate Java environment", -
+				jEdit.getBooleanProperty("plugin.netrexxde.runINjEdit"))
+			gridBagConstraints = java.awt.GridBagConstraints();
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 16
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			optionsPanel.add(runINjEdit, gridBagConstraints)
+
+		addComponent(optionsPanel, GridBagConstraints.HORIZONTAL)
+		
+		-- runtime paths panel
+		JEP=NetRexxDEPathFinder.getJavaExecPath()
+		NCP=NetRexxDEPathFinder.getNrxClassPath()
+		TP =NetRexxDEPathFinder.getToolsPath()
+		if JEP=="NotSet" then JEP=""
+		if NCP=="NotSet" then NCP=""
+		if TP =="NotSet" then TP =""
+
+		pathsPanel = JPanel()
+		pathsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder( -
+			"Runtime paths"))
+		pathsPanel.setLayout(java.awt.GridBagLayout());
+
+			jvmPathLabel = JLabel("Path to JVM")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			pathsPanel.add(jvmPathLabel, gridBagConstraints)
+
+			jvmPath = JTextField(JEP)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER
+			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST
+			gridBagConstraints.weightx = 1.0
+			gridBagConstraints.insets = java.awt.Insets(0, 5, 0, 0)
+			pathsPanel.add(jvmPath, gridBagConstraints)
+
+			nrxPathLabel = JLabel("Path to NetRexxC.jar")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 1
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			pathsPanel.add(nrxPathLabel, gridBagConstraints)
+			
+			nrxPath = JTextField(NCP)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 1
+			gridBagConstraints.gridy = 1
+			gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER
+			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST
+			gridBagConstraints.insets = java.awt.Insets(5, 5, 5, 0)
+			pathsPanel.add(nrxPath, gridBagConstraints)		
+			
+			toolsPathLabel = JLabel("Path to Tools.jar")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			pathsPanel.add(toolsPathLabel, gridBagConstraints)
+		
+			toolsPath = JTextField(TP)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 1
+			gridBagConstraints.gridy = 2
+			gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER
+			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL
+			gridBagConstraints.ipadx = 1
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST
+			gridBagConstraints.insets = java.awt.Insets(0, 5, 0, 0)
+			pathsPanel.add(toolsPath, gridBagConstraints)
+			
+		addComponent(pathsPanel, GridBagConstraints.HORIZONTAL)
+/*
+		-- proectmode options panel
+		PVG = String (Rexx jEdit.getProperty("plugin.netrexxde.ProjectsPVGroup","NotSet")).changestr("\\", " \\ ")
+		if PVG=="NotSet" then PVG=""
+
+			projectPanel = JPanel()
+			projectPanel.setBorder(javax.swing.BorderFactory.createTitledBorder( -
+				"Project options"))
+			projectPanel.setLayout(java.awt.GridBagLayout());
+
+			ProjectsEnabled = jEdit.getBooleanProperty("plugin.netrexxde.UseProjects")
+			useProjectsCKB = JCheckBox( -
+				"Enable Project Mode",-
+				ProjectsEnabled)
+		-- hasta que lo activemos en 1.0.3
+			ProjectsEnabled = FALSE
+			useProjectsCKB.setEnabled(FALSE)
+		-- final hasta que lo activemos
+			useProjectsCKB.addItemListener(this)
+			gridBagConstraints = java.awt.GridBagConstraints();
+			gridBagConstraints.gridwidth = 2;
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			projectPanel.add(useProjectsCKB, gridBagConstraints)
+			
+			
+			autoOpenPVCKB = JCheckBox( -
+				"Restore Project Viewer's dockable when entering Project Mode",-
+				jEdit.getBooleanProperty("plugin.netrexxde.AutoOpenPV"))
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 1
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 20, 0, 0)
+			projectPanel.add(autoOpenPVCKB, gridBagConstraints)
+			
+			autoClosePVCKB = JCheckBox( -
+				"Minimize Project Viewer's dockable when exiting Project Mode",-
+				jEdit.getBooleanProperty("plugin.netrexxde.AutoClosePV"))
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 2
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 20, 0, 0)
+			projectPanel.add(autoClosePVCKB, gridBagConstraints)
+			
+			forceDirectoriesCKB = JCheckBox( -
+				"Use real directories with Project Viewer plugin",-
+				jEdit.getBooleanProperty("plugin.netrexxde.ForceProjectDirs"))
+			forceDirectoriesCKB.setSelected(TRUE)
+			forceDirectoriesCKB.setEnabled(FALSE)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 3
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 20, 0, 0)
+			projectPanel.add(forceDirectoriesCKB, gridBagConstraints)
+			
+			pvGroupLabel = JLabel("Project Viewer group")
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 4
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 25, 0, 0)
+			projectPanel.add(pvGroupLabel, gridBagConstraints)
+			
+			pvGroupName = JTextField(PVG)
+			pvGroupName.setEditable(FALSE)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 1
+			gridBagConstraints.gridy = 4
+			gridBagConstraints.gridwidth = 2
+			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST
+			gridBagConstraints.weightx = 1.0
+			gridBagConstraints.insets = java.awt.Insets(0, 5, 0, 0)
+			projectPanel.add(pvGroupName, gridBagConstraints)
+
+			missingPluginsMsgLabel = JLabel("Either ProjectViewerPlugin" -
+				"or AntPlugin are missing or unloaded on this jEdit" -
+				"installation!")
+			missingPluginsMsgLabel.setForeground(java.awt.Color.red)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 0
+			gridBagConstraints.gridy = 5
+			gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER
+			gridBagConstraints.insets = java.awt.Insets(10, 0, 5, 0)
+			missingPluginsMsgLabel.setVisible(FALSE)
+			projectPanel.add(missingPluginsMsgLabel, gridBagConstraints)
+			
+			projectSelectionButton = JButton("Select")
+			projectSelectionButton.setActionCommand("SelectProject")
+			projectSelectionButton.addActionListener(this)
+			gridBagConstraints = java.awt.GridBagConstraints()
+			gridBagConstraints.gridx = 3
+			gridBagConstraints.gridy = 4
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+			gridBagConstraints.insets = java.awt.Insets(0, 5, 0, 0);
+			projectPanel.add(projectSelectionButton, gridBagConstraints)
+			
+		setProjectOptionsState(ProjectsEnabled)
+		addComponent(projectPanel, GridBagConstraints.HORIZONTAL)
+*/	
+	method _save() inheritable
+		NrxFont = Font fontButton.getFont()
+		jEdit.setProperty("plugin.netrexxde.FontFamily",NrxFont.getFamily())
+		jEdit.setProperty("plugin.netrexxde.FontSize",String.valueOf(NrxFont.getSize()))
+		jEdit.setProperty("plugin.netrexxde.FontStyle",String.valueOf(NrxFont.getStyle()))
+		
+		JEP=jvmPath.getText()
+		NCP=nrxPath.getText()
+		TP =toolsPath.getText()
+		if JEP == "" then JEP="NotSet"
+		if NCP == "" then NCP="NotSet"
+		if TP  == "" then TP ="NotSet"
+		jEdit.setProperty("plugin.netrexxde.javapath",JEP)
+		jEdit.setProperty("plugin.netrexxde.NrxClassPath",NCP)
+		jEdit.setProperty("plugin.netrexxde.ToolsPath",TP)
+
+		jEdit.setBooleanProperty("plugin.netrexxde.ClearConsole",clearConsoleCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.ClearTrace",clearTraceCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.SaveFile",saveFilesCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.KeepName",renameFilesCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.runINjEdit",runINjEdit.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.parsing.sortentries",sortSKEntriesCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.parsing.sortentries.casesensitive",sortSKEntriesCaseSensitiveCKB.isSelected())
+		jEdit.setIntegerProperty("plugin.netrexxde.parsing.sbgrouping",sbGroupingOption)
+/*		
+		jEdit.setBooleanProperty("plugin.netrexxde.UseProjects",useProjectsCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.AutoOpenPV",autoOpenPVCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.AutoClosePV",autoClosePVCKB.isSelected())
+		jEdit.setBooleanProperty("plugin.netrexxde.ForceProjectDirs",forceDirectoriesCKB.isSelected())
+
+		PVG =pvGroupName.getText()
+		if PVG == "" then PVG = "NotSet"
+		jEdit.setProperty("plugin.netrexxde.ProjectsPVGroup",String (Rexx PVG).changestr(" \\ ", "\\"))
+*/
+	method itemStateChanged(ie=ItemEvent) 
+
+		src = ie.getItemSelectable();
+
+		select
+			when src = useProjectsCKB then do
+				if ie.getStateChange() == ItemEvent.SELECTED then
+					setProjectOptionsState(TRUE)
+				else
+					setProjectOptionsState(FALSE)
+				projectPanel.repaint()
+				end
+		end
+		
+	method actionPerformed(ae=ActionEvent)
+
+		action = String ae.getActionCommand()
+		
+		select
+			when action = "SetFullSBGrouping" then do
+				setCustomGroupOptsVisibility(FALSE)
+				sbGroupingOption = NrxParser.SB_GROUP_FULL
+				end
+			
+			when action = "SetClassicSBGrouping" then do
+				setCustomGroupOptsVisibility(FALSE)
+				sbGroupingOption = NrxParser.SB_GROUP_CLASSIC
+				end
+				
+			when action = "SetCustomSBGrouping" then do
+				setCustomGroupOptsVisibility(TRUE)
+				end
+				
+			when action = "SetClassicIdentSBGrouping" then do
+				sbGroupingOption = NrxParser.SB_GROUP_IDENT_CONSTRUCTORS
+				end
+
+			when action = "SetConstructorsSBGrouping" then do
+				sbGroupingOption = NrxParser.SB_GROUP_CONSTRUCTORS
+				end
+
+			when action = "SetMethodsSBGrouping" then do
+				sbGroupingOption = NrxParser.SB_GROUP_METHODS
+				end
+
+			when action = "SetSharedSBGrouping" then do
+				sbGroupingOption = NrxParser.SB_GROUP_SHARED
+				end
+			when action = "SetNestedSBGrouping" then do
+				sbGroupingOption = NrxParser.SB_GROUP_NESTED
+				end
+			when action = "SelectProject" then do
+				if grpSelectionDlg \= null then
+					grpSelectionDlg.setVisible(TRUE)
+				else do
+					parentObject = Object
+					parentObject = getTopLevelAncestor()
+					parentDialog = Dialog
+					parentFrame = Frame
+					if parentObject <= Dialog then
+						parentDialog = Dialog parentObject
+					else if parentObject <= Frame then
+						parentFrame = Frame parentObject
+			
+					if parentFrame \= null then do
+						grpSelectionDlg = ProjectSelectionDialog(parentFrame, TRUE)
+						grpSelectionDlg.setLocationRelativeTo(parentFrame)
+						end
+					else do
+						grpSelectionDlg = ProjectSelectionDialog(parentDialog, TRUE)
+						grpSelectionDlg.setLocationRelativeTo(parentDialog)
+						end
+					
+					--grpSelectionDlg.setSelectedValue(currentProjectGroup, TRUE)
+					grpSelectionDlg.setVisible(TRUE)
+					end
+				end
+			when action = "ProjectGroupSelection" then do
+				pvGroupName.setText(grpSelectionDlg.getSelectedGroup().getPath())
+				grpSelectionDlg.setVisible(FALSE)
+				end
+			when action = "CancelProjectGroupSelection" then do
+				grpSelectionDlg.setVisible(FALSE)
+				end
+			otherwise nop
+		end
+
+		
+	method setProjectOptionsState(newState)
+		
+		if checkProjectModeNeededPlugins() then do
+			autoOpenPVCKB.setEnabled(newState)
+			autoClosePVCKB.setEnabled(newState)
+			pvGroupLabel.setEnabled(newState)
+			pvGroupName.setEnabled(newState)
+			projectSelectionButton.setEnabled(newState)
+			end
+		else do
+			autoOpenPVCKB.setEnabled(FALSE)
+			autoClosePVCKB.setEnabled(FALSE)
+			pvGroupLabel.setEnabled(FALSE)
+			pvGroupName.setEnabled(FALSE)
+			projectSelectionButton.setEnabled(FALSE)
+			disableProjectOptions()
+			end
+			
+	method checkProjectModeNeededPlugins() returns boolean
+		plugin=jEdit.getPlugin("projectviewer.ProjectPlugin")
+		if null = plugin then
+			return FALSE
+		plugin=jEdit.getPlugin("ant.AntPlugin")
+		if null = plugin then
+			return FALSE
+		return TRUE
+		
+	method disableProjectOptions()
+		useProjectsCKB.setSelected(FALSE)
+		useProjectsCKB.setEnabled(FALSE)
+		missingPluginsMsgLabel.setVisible(TRUE)
+		
+	method setCustomGroupOptsVisibility(newVisibility=boolean)
+		classicIdentGroupRBttn.setVisible(newVisibility)
+		constrGroupRBttn.setVisible(newVisibility)
+		methCroupRBttn.setVisible(newVisibility)
+		sharedGroupRBttn.setVisible(newVisibility)
+		nestedGroupRBttn.setVisible(newVisibility)
+
+
+class NetRexxDEOptionPane.ProjectSelectionDialog dependent extends JDialog
+	
+	properties private
+		dlgTextLabelLabel = JLabel
+		prjListList = JList
+		prjListContainerScrollPane = JScrollPane
+		okButton = JButton
+		cancelButton = JButton
+		
+	method ProjectSelectionDialog(parentFrame=java.awt.Frame, modal = boolean)
+		super(parentFrame, modal)
+		initComponents()
+
+	method ProjectSelectionDialog(parentDialog=java.awt.Dialog, modal = boolean)
+		super(parentDialog, modal)
+		initComponents()
+		
+	method initComponents()
+		
+		setTitle("..:: Group selection ::..")
+		setMinimumSize(java.awt.Dimension(250, 300))
+		getContentPane().setLayout(java.awt.GridBagLayout());
+		
+		dlgTextLabelLabel = JLabel()
+		dlgTextLabelLabel.setText("<html>Please select the ProjectViewerPlugin" -
+			"project group that NetRexxDE will use to manage its projects</html>")
+		gridBagConstraints = java.awt.GridBagConstraints()
+		gridBagConstraints.gridx = 0
+		gridBagConstraints.gridy = 0
+		gridBagConstraints.gridwidth = 4
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL
+		gridBagConstraints.weightx = 1.0
+		gridBagConstraints.insets = java.awt.Insets(10, 20, 0, 20)
+		getContentPane().add(dlgTextLabelLabel, gridBagConstraints)
+
+		prjListList = JList()
+		prjListList.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5))
+		prjListList.setModel(ProjectGroupListModel())
+		prjListList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION)
+		prjListList.setCellRenderer(ProjectGroupListRenderer())
+
+		prjListContainerScrollPane = JScrollPane()
+		prjListContainerScrollPane.setViewportView(prjListList)
+		gridBagConstraints = java.awt.GridBagConstraints()
+		gridBagConstraints.gridx = 0
+		gridBagConstraints.gridy = 1
+		gridBagConstraints.gridwidth = 4;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH
+		gridBagConstraints.weightx = 1.0
+		gridBagConstraints.weighty = 1.0
+		gridBagConstraints.insets = java.awt.Insets(10, 20, 10, 20)
+		getContentPane().add(prjListContainerScrollPane, gridBagConstraints);
+
+		okButton = JButton()
+		okButton.setText("Ok")
+		okButton.setActionCommand("ProjectGroupSelection")
+		okButton.addActionListener(NetRexxDEOptionPane.this)
+		gridBagConstraints = java.awt.GridBagConstraints()
+		gridBagConstraints.gridx = 0
+		gridBagConstraints.gridy = 2
+		gridBagConstraints.gridwidth = 2
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST
+		gridBagConstraints.weightx = 0.5
+		gridBagConstraints.insets = java.awt.Insets(0, 0, 10, 2)
+		getContentPane().add(okButton, gridBagConstraints)
+
+		cancelButton = JButton()
+		cancelButton.setText("Cancel")
+		cancelButton.setActionCommand("CancelProjectGroupSelection")
+		cancelButton.addActionListener(NetRexxDEOptionPane.this)
+		gridBagConstraints = java.awt.GridBagConstraints()
+		gridBagConstraints.gridx = 2
+		gridBagConstraints.gridy = 2
+		gridBagConstraints.gridwidth = 2
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST
+		gridBagConstraints.weightx = 0.5
+		gridBagConstraints.insets = java.awt.Insets(0, 2, 10, 0)
+		getContentPane().add(cancelButton, gridBagConstraints)
+
+		pack()
+		
+	method getSelectedGroup() returns NetRexxDEOptionPane.NrxVPTGroup
+		return NetRexxDEOptionPane.NrxVPTGroup prjListList.getSelectedValue()
+		
+
+class NetRexxDEOptionPane.ProjectSelectionDialog.ProjectGroupListModel dependent extends AbstractListModel
+
+	properties private
+		pv = ProjectViewer
+		pvroot = VPTNode
+		vptGroupNodes = Vector()
+		
+	method ProjectGroupListModel()
+		pv = ProjectViewer.getViewer(NetRexxDEOptionPane.this.ourView)
+		pvroot =  pv.getRoot()
+		if pvroot.isGroup() then do
+			groupElement = NetRexxDEOptionPane.this.NrxVPTGroup(pvroot, pvroot.getName())
+			vptGroupNodes.add(groupElement)
+			end
+		getChildGroups(groupElement, vptGroupNodes)
+
+	method getChildGroups(nrxGroup=NetRexxDEOptionPane.NrxVPTGroup, groups = Vector)
+		children = nrxGroup.getNode().children()
+		loop while children.hasMoreElements()
+			child =  VPTNode children.nextElement()
+			if child.isGroup() then do
+				groupElement = NetRexxDEOptionPane.this.NrxVPTGroup(child, nrxGroup.getPath() "\\" child.getName())
+				groups.add(groupElement)
+				getChildGroups(groupElement, groups)
+				end
+		end
+
+
+	method getSize() returns int
+		return vptGroupNodes.size
+		
+	method getElementAt(i=int) returns Object
+		return vptGroupNodes.elementAt(i)
+
+class NetRexxDEOptionPane.ProjectSelectionDialog.ProjectGroupListRenderer dependent extends JLabel implements ListCellRenderer
+	
+	method getListCellRendererComponent(list= JList, group=Object, index=int, isSelected=boolean, cellHasFocus= boolean) returns java.awt.Component
+		
+		vptgroup = NetRexxDEOptionPane.NrxVPTGroup group
+		path = Rexx vptgroup.getPath()
+		seppos = path.lastpos(" \\ ")
+		if seppos = 0 then do
+			leftpart = path.left(seppos)
+			rightpart = path.right(path.length() - seppos)
+			end
+		else do
+			leftpart = path.left(seppos + 2)
+			rightpart = path.right(path.length() - seppos - 2)
+			end
+			
+		s = "<html>"leftpart"<b><font color='blue'>"rightpart"</font></b></html>"
+		setText(s)
+		
+		if isSelected then do
+			setBackground(list.getSelectionBackground())
+			setForeground(list.getSelectionForeground())
+			end
+		else do
+			setBackground(list.getBackground())
+			setForeground(list.getForeground())
+			end
+
+		setEnabled(list.isEnabled())
+		setFont(list.getFont())
+		setOpaque(NetRexxDEOptionPane.TRUE)
+		
+		return this
+
+class NetRexxDEOptionPane.NrxVPTGroup dependent
+	
+	properties private
+		node = VPTNode
+		nodepath = String
+	
+	method NrxVPTGroup(newNode=VPTNode, newPath=String)
+		node = newNode
+		nodepath = newPath
+		
+	method getNode() returns VPTNode
+		return node
+		
+	method getPath() returns String
+		return nodepath
+

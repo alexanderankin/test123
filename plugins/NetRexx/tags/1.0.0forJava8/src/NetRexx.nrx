@@ -1,0 +1,426 @@
+/*
+ * NetRexx.nrx - NetRexx jEdit Compiler/Interpreter Plugin dockable window, based on NetRexxJE plugin by Satguru Srivastava
+ * Copyright (C) 2012 David Requena, Kermit Kiser
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ Version 0.2.0 (Oct 24, 2012)
+
+    *  first step in merge of NetRexxDE and NetRexxScript dockable windows - modify to share a window
+
+ Version 0.1.0 (Nov. 23, 2009)
+
+    *  Change command line to History TextField
+    *  add flush button
+ 
+ Version 0.0.3 (Nov. 06, 2009)
+
+    *  Remove display of parse window in commandstarted method to prevent window flashing
+ 
+ Version 0.0.2 (Oct. 22, 2009)
+
+    *  Allow window to kill scripts started from menu runcurrent option
+    *  Fix bug causing window to ignore next command after a kill request
+    *  Change textareas to autoscroll to end of text as added
+    *  Add buttons to move command bar to top or bottom of window
+       
+ Version 0.0.1 (Oct. 2009)
+
+    *  Add dockable window for script console output/input (final major feature!?)
+       Most of this code was copied from NetRexxJe and modified a bit!
+ 
+*/
+
+options strictsignal
+
+--import errorlist
+import org.gjt.sp.jedit.
+import javax.swing.
+import COM.ibm.netrexx.process.NetRexxA
+
+package netrexxplugin
+
+class NetRexx adapter extends JPanel implements ActionListener, EBComponent, NetRexxInterface	
+	
+	properties constant
+		TRUE=boolean 1
+		FALSE=boolean 0
+		OPTION_PREFIX = String "options.netrexxscript."		
+		ps=File.pathSeparator
+		fs=File.separator		
+			
+	properties private
+		NavButton=JButton
+		OptionButton=JToggleButton
+		CompileButton=JToggleButton
+		JavaButton=JToggleButton
+
+		ClearButton=JToggleButton
+		TracerButton=JToggleButton
+		ErrOutButton=JToggleButton
+		outbutton=JToggleButton
+		parsebutton=JToggleButton
+		upbutton=JToggleButton
+		downbutton=JToggleButton
+		CPButton=JButton
+		CPField = HistoryTextField
+		RunButton=JToggleButton
+		flushbutton=JToggleButton
+		cmdtoolbar=JToolBar
+		mp=JPanel		
+		cl=HistoryTextField
+		
+		ProcessLabel = JLabel
+		ProcessLabel1 = JLabel
+		
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
+		
+	properties static public
+		compile=NetRexxCompile
+		interpret=NetRexxInterpret
+		nr=NetRexx
+		compileroperation=boolean 0
+    	
+	method NetRexx(v=org.gjt.sp.jedit.View, pos=String)
+		
+		nr=this
+		cmdtoolbar=JToolBar()
+		cmdtoolbar.setFloatable(FALSE)
+	
+		mp=JPanel()
+		title = BorderFactory.createTitledBorder("NetRexx output area")
+		mp.setBorder(title)
+		mp.setLayout(CardLayout())
+
+		RunButton = CreateButton("Run","/res/Play16.gif")
+		RunButton.setToolTipText("Run this program")
+				
+		TracerButton = CreateButton("ShowTrace","/res/TraceConsoleOFF16.gif")
+		TracerButton.setToolTipText("Show TRACE output")
+		
+		ErrOutButton = CreateButton("ShowErrorOutput","/res/ErrorConsoleOFF16.gif")
+		ErrOutButton.setToolTipText("Show System.err output")
+		
+		RunArgsLabel = JLabel("Cmd/Args/StdIn",SwingConstants.LEFT)
+		RunArgsLabel.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 2))
+		
+		outbutton = CreateButton("Out","/res/AlignJustify16.gif")
+		outbutton.setToolTipText("Show program output")
+		
+		parsebutton = CreateButton("PO","/res/Information16.gif")
+		parsebutton.setToolTipText("Show interpreter parse output")
+		
+		flushbutton = CreateButton("Flush","/res/refresh.png")
+		flushbutton.setToolTipText("Flush scripts from memory")
+	
+		CPButton  = JButton("ClassPath")
+		CPButton.setActionCommand("SetCP")
+--		CPButton.setMargin(Insets(0,0,0,0))
+		CPButton.addActionListener(this)
+
+		CPField =  HistoryTextField("netrexxde.ClassPaths")
+		dim = Dimension CPField.getPreferredSize()
+		dim.width = 400
+		CPField.setPreferredSize(dim)		
+		
+		cl=HistoryTextField("NetRexxScript.commandline",0,1)
+		cl.addActionListener(this)
+		cl.setColumns(30)		
+					
+			NavButton = JButton(ImageIcon(getClass().getResource("/res/Nav16.gif")))
+			NavButton.setToolTipText("Structure Browser")
+			NavButton.setActionCommand("Nav")
+			NavButton.addActionListener(this)
+
+			CompileButton=createButton("Compile","/res/Application16.gif")
+			CompileButton.setToolTipText("Compile")
+
+			JavaButton = createButton("Java","/res/JavaCup16.gif")
+			JavaButton.setToolTipText("Create the Java File")
+
+			OptionButton = createButton("Options","/res/Preferences16.gif")
+			OptionButton.setToolTipText("Set Compiler Options")
+
+			ClearButton = createButton("Clear","/res/Delete16.gif")
+			ClearButton.setToolTipText("Clear the NetRexx Console")
+		
+		upbutton = CreateButton("up","/res/go-up.png")
+		upbutton.setToolTipText("Move command bar to top")
+		downbutton = CreateButton("down","/res/go-down.png")
+		downbutton.setToolTipText("Move command bar to bottom")
+			
+		ProcessLabel1=JLabel(ImageIcon(getClass().getResource("/res/ProcessStill.gif")))
+		ProcessLabel1.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
+		ProcessLabel =JLabel(ImageIcon(getClass().getResource("/res/ProcessDyn.gif")))
+		ProcessLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0))
+		ProcessLabel.setVisible(0)
+		
+		compile=NetRexxCompile(v,pos,cmdtoolbar,mp, cl, TracerButton, CPButton, CPField, RunButton, -
+										ErrOutButton, NavButton, OptionButton, CompileButton, JavaButton, ProcessLabel1, ProcessLabel)
+		interpret=NetRexxInterpret(v,pos,cmdtoolbar,mp, cl, TracerButton, RunArgsLabel, outbutton, -
+									 RunButton, parsebutton, flushbutton, CPField)
+									 
+		if jEdit.getPlugin("sidekick.SideKickPlugin") \= null then
+		cmdtoolbar.add(NavButton)
+		cmdtoolbar.add(OptionButton)
+		cmdtoolbar.add(CompileButton)
+		cmdtoolbar.add(JavaButton)
+		cmdtoolbar.add(ProcessLabel1)
+		cmdtoolbar.add(ProcessLabel)
+		RunButton.setIcon(compile.PlayIcon)
+		cmdtoolbar.add(RunButton)
+		cmdtoolbar.add(outbutton)
+		cmdtoolbar.add(TracerButton)
+		cmdtoolbar.add(ErrOutButton)		
+--		cmdtoolbar.add(parsebutton)
+		cmdtoolbar.add(ClearButton)
+		cmdtoolbar.add(flushbutton)
+
+			jars=jEdit.getPluginJARs
+			loop pj over jars
+				if Rexx(pj.getPath).pos("CommonControls.jar")\=0 then 
+					cmdtoolbar.add(CPButton)
+				end		
+		cmdtoolbar.add(CPField)		
+		
+		cmdtoolbar.add(RunArgsLabel)
+		cmdtoolbar.add(cl)
+
+		bar=jEdit.getProperty(OPTION_PREFIX"cmdbarloc","up")	--	get the user preferred cmd bar loc
+		if bar="up" then cmdtoolbar.add(downbutton)
+			else cmdtoolbar.add(upbutton)
+
+		setLayout(BorderLayout())
+		add(mp,BorderLayout.CENTER)
+		if bar="up" then add(cmdtoolbar,BorderLayout.NORTH)
+			else add(cmdtoolbar,BorderLayout.SOUTH)
+			
+	method createButton(lbl=String,IconFile=String "") returns JToggleButton private
+
+		if IconFIle = "" then aButton = JToggleButton(lbl)
+			else aButton = JToggleButton(ImageIcon(getClass().getResource(IconFile)))
+		aButton.setActionCommand(lbl)
+--		aButton.setMargin(Insets(0,0,0,0))
+		aButton.addActionListener(this)
+		return aButton
+	
+	method shadowcp
+		
+				pathfile=File(jEdit.getActiveView.getBuffer.getPath)
+				tempclasspath=pathfile.getParent
+				pi=NetRexxScriptPlugin.nrsplugin	
+--			    if Rexx(pi.lastcpath).pos(tempclasspath)=0 then do
+						optioncp=jEdit.getProperty(OPTION_PREFIX"classpath","")
+						if optioncp\="" then tempclasspath=tempclasspath||ps||optioncp
+						if CPField.getText() \= "" then  tempclasspath=tempclasspath||ps||CPField.getText()
+			  			jEdit.setProperty(OPTION_PREFIX"classpath",tempclasspath)
+			  			pi.optionflush
+			  			jEdit.setProperty(OPTION_PREFIX"classpath",optioncp)
+--			  			end
+
+	method compileroperation(who=boolean)
+		compileroperation=who
+		if compileroperation then swapbutton(parsebutton,ErrOutButton)
+																		 else swapbutton(ErrOutButton,parsebutton)
+		
+	method swapbutton(oldbut=JToggleButton,newbut=JToggleButton)
+			bdex=getComponentIndex(oldbut)
+			if bdex>=0 then do
+				cmdtoolbar.remove(bdex)
+				cmdtoolbar.add(newbut,bdex)
+				validate()
+				end
+		
+	method getComponentIndex(comp=Component) returns int
+		c=comp.getParent()
+		if c\=null then 
+		 loop i=0 by 1 while i < c.getComponentCount()
+			if c.getComponent(i) == comp then return i
+			end
+		return -1
+			  			
+  method clearoutputselection
+					if TracerButton.getActionCommand="HideTrace" then 
+											compile.performAction("HideTrace")
+					if ErrOutButton.getActionCommand="HideErrorOutput" then 
+					 			  		compile.performAction("HideErrorOutput")
+					if OptionButton.getActionCommand="Output" then 
+					 			  		compile.performAction("Output")
+					unsetoutbuttons
+					
+  method unsetoutbuttons
+					outbutton.setSelected(0)
+					parsebutton.setSelected(0)
+					TracerButton.setSelected(0)
+					ErrOutButton.setSelected(0)
+			  			
+	method actionPerformed(ae=ActionEvent) 
+
+		df=jEdit.getBooleanProperty(OPTION_PREFIX"debug",0) 		--	options may have changed
+
+		ButtonClicked = String ae.getActionCommand()
+		s=ae.getSource
+
+		cl.addCurrentToHistory()		--	save any command line text
+		
+		if ae.getSource=cl then do
+			if df then say "you entered" cl.getText
+			if compile.ProcessStatus\="" then compile.actionPerformed(ae)  -- pass if compiler code is running something
+														  else  interpret.actionPerformed(ae)		--	pass if interpreter request
+			return
+			end		
+		
+		select
+
+			when s=ErrOutButton then do
+				ErrOutButton.setSelected(0)
+				if compileroperation then do
+					unsetoutbuttons
+					ErrOutButton.setSelected(1)
+					compile.actionPerformed(ae)
+					end
+				end
+	
+			when s=TracerButton then do
+					unsetoutbuttons
+					TracerButton.setSelected(1)
+					if compileroperation then compile.actionPerformed(ae)
+													else interpret.actionPerformed(ae)
+				end
+	
+			when s=OptionButton then do
+					unsetoutbuttons
+					OptionButton.setSelected(1)
+					compile.actionPerformed(ae)
+				end
+				
+			when ButtonClicked == "Compile",  ButtonClicked == "Java", ButtonClicked = "Nav", ButtonClicked == "Options", ButtonClicked == "Output", ButtonClicked=="SetCP" then do
+					clearoutputselection
+					compile.actionPerformed(ae)
+					end
+				
+			when ButtonClicked == "up" then
+				do
+					remove(cmdtoolbar)
+					cmdtoolbar.remove(upbutton)
+					upbutton.setSelected(0)
+					cmdtoolbar.add(downbutton)
+					add(cmdtoolbar,BorderLayout.NORTH)
+					jEdit.setProperty(OPTION_PREFIX"cmdbarloc","up")	--	set the user preferred cmd bar loc
+					validate()
+					return
+				end
+	
+			when ButtonClicked == "down" then
+				do
+					remove(cmdtoolbar)
+					cmdtoolbar.remove(downbutton)
+					downbutton.setSelected(0)
+					cmdtoolbar.add(upbutton)
+					add(cmdtoolbar,BorderLayout.SOUTH)
+					jEdit.setProperty(OPTION_PREFIX"cmdbarloc","down")	--	set the user preferred cmd bar loc
+					validate()
+					return
+				end
+
+			when ButtonClicked == "Clear" then
+				do
+					interpret.actionPerformed(ae)
+					compile.actionPerformed(ae)
+					clearbutton.setSelected(0)
+					return
+				end
+
+			when ButtonClicked == "Out" then
+				do
+					clearoutputselection
+					outbutton.setSelected(1)
+					if \compileroperation then
+											interpret.actionPerformed(ae)
+				end
+
+			when ButtonClicked == "Run" then
+				do
+				if df then trace results
+				clearoutputselection
+				if compile.ProcessStatus\="" then do
+							compile.actionPerformed(ae)  -- pass if compiler code is running something
+							return
+							end
+				if interpret.runflag then do
+							interpret.actionPerformed(ae)  -- pass if interpreter code is running something
+							return
+							end							
+				view=jEdit.getActiveView
+				buffer=view.getBuffer
+				if \buffer.isDirty then do
+					path=Rexx(buffer.getPath)
+					pathfile=File(path)
+					pathtoclass=path.substr(1,path.lastpos('.'))"class"
+					classfile=File(pathtoclass)
+					if classfile.exists then do			--		we have an associated classfile
+						if classfile.lastModified>=pathfile.lastModified then	do	--	classfile is valid
+								runINjEdit=	jEdit.getBooleanProperty("plugin.netrexxde.runINjEdit")
+								if \runINjEdit then compile.actionPerformed(ae)			--		if not jEdit then simple enough
+									else do 			--		run classfile in jEdit context
+										  compileroperation=0
+											interpret.commandstarted
+											cname=Rexx(classfile.getName)
+											cname=cname.substr(1,cname.lastpos('.')-1)
+											shadowcp		--	need temp classpath update?
+											pi=NetRexxScriptPlugin.nrsplugin				
+											pi.runbysearch(cname cl.getText)			
+											interpret.commandended
+										end
+								return
+								end
+						end
+					end
+				interpret.actionPerformed(ae)
+				end
+
+			when ButtonClicked == "PO" then do
+					parsebutton.setSelected(0)
+					if \compileroperation then do
+						unsetoutbuttons
+						parsebutton.setSelected(1)
+						interpret.actionPerformed(ae)
+						return
+						end
+				 end
+
+			when ButtonClicked == "Flush" then
+				do
+					interpret.actionPerformed(ae)
+					return
+				end
+				
+			otherwise 
+				NOP
+		end
+		
+	method getComponent() returns Component
+		return this
+		
+	method addNotify()
+		super.addNotify()
+		compile.addNotify()
+
+	method removeNotify()
+		super.removeNotify()
+		compile.removeNotify()
+
+	method handleMessage(message=EBMessage)
+		compile.handleMessage(message)

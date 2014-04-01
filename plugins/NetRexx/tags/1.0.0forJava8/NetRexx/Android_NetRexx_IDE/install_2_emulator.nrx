@@ -1,0 +1,29 @@
+import org.gjt.sp.jedit.
+
+import netrexxplugin.
+
+import javax.swing.
+
+class install_2_emulator
+
+properties private static
+
+	view=jEdit.getActiveView()
+
+	buffer=view.getBuffer
+
+	wm=view.getDockableWindowManager()
+
+	editPane=view.getEditPane()
+
+	textArea=editPane.getTextArea()
+
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+
+properties private static unused
+
+	nowarn$scriptPath=scriptPath;nowarn$textArea=textArea;nowarn$buffer=buffer;nowarn$wm=wm		
+
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
+
+	install_apk.main([String "e"])
