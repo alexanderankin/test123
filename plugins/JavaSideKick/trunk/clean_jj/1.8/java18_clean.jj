@@ -756,14 +756,14 @@ void SingleTypeImportDeclaration():
 void TypeImportOnDemandDeclaration():
 {}
 {
-    "import" PackageOrTypeName() "." "*" ";"
+    "import" PackageOrTypeName() [ "." "*" ] ";"
 
 }
 
 void SingleStaticImportDeclaration():
 {}
 {
-    "import" "static" TypeName() "." Identifier() ";"
+    "import" "static" PackageOrTypeName() [ "." "*" ] ";"
 
 }
 
@@ -1195,7 +1195,7 @@ void SimpleTypeName():
 void ConstructorBody():
 {}
 {
-    "{" [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] [ LOOKAHEAD(10) BlockStatements() ] "}"
+    "{" [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] [ LOOKAHEAD(BlockStatements()) BlockStatements() ] "}"
 }
 
 void ExplicitConstructorInvocation():
@@ -2113,7 +2113,7 @@ void Assignment():
 void LeftHandSide():
 {}
 {
-    LOOKAHEAD(3) 
+    LOOKAHEAD(3)
     ExpressionName()
     |
     LOOKAHEAD(3) 
