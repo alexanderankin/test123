@@ -1,0 +1,2298 @@
+/*
+This is a clean java 1.8 grammar from scratch.
+
+Copyright (c) 2014, Dale Anson
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+    * Neither the name of the <ORGANIZATION> nor the names of its contributors
+    may be used to endorse or promote products derived from this software without
+    specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+options {
+  JAVA_UNICODE_ESCAPE = true;
+  ERROR_REPORTING = true;
+  STATIC = false;
+  DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN(JavaParser)
+import java.io.*;
+
+public class JavaParser
+{
+
+   private InputStream inputStream = null;
+   
+    public static void main(String args[]) {
+        JavaParser parser;
+        if (args.length == 0) {
+            System.out.println("JavaParser:  Reading from standard input . . .");
+            parser = new JavaParser(System.in);
+        } else if (args.length == 1) {
+            System.out.println("JavaParser:  Reading from file " + args[0] + " . . .");
+            try {
+                parser = new JavaParser(new java.io.FileInputStream(args[0]));
+            } catch (java.io.FileNotFoundException e) {
+                System.out.println("JavaParser:  File " + args[0] + " not found.");
+                return;
+            }
+        } else {
+            System.out.println("JavaParser:  Usage is one of:");
+            System.out.println("         java JavaParser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java JavaParser inputfile");
+            return;
+        }
+        try {
+            parser.enable_tracing();
+            parser.CompilationUnit();
+            System.out.println("JavaParser:  input parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println("JavaParser:  Encountered errors during parse.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+   public JavaParser(String filename)
+   {
+      this(System.in);
+      try {
+          inputStream = new FileInputStream(new File(filename));
+          ReInit(inputStream);
+      }
+      catch(Exception e) {
+        e.printStackTrace();
+      }
+   }
+
+   JavaParser(JavaCharStream stream) {
+        jj_input_stream = stream;
+        token_source = new JavaParserTokenManager(jj_input_stream);
+        token = new Token();
+        jj_ntk = -1;
+   }
+
+  /*
+   * Returns true if the next token is not in the FOLLOW list of "expansion".
+   * It is used to decide when the end of an "expansion" has been reached.
+   */
+  private boolean notTailOfExpansionUnit() {
+    Token t;
+    t = getToken(1);
+    if (t.kind == BIT_OR || t.kind == COMMA || t.kind == RPAREN || t.kind == RBRACE || t.kind == RBRACKET) return false;
+    return true;
+  }
+}
+
+PARSER_END(JavaParser)
+
+/********************************************
+ * THE JAVA TOKEN SPECIFICATION STARTS HERE *
+ ********************************************/
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  /* added backup(2) for special handling of single line comments at
+  the end of a file, see <IN_SINGLE_LINE_COMMENT> special token below */
+  "//" { input_stream.backup(2); } : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  /* this is the original, I've replaced with the next line to allow a single
+  line comment at the end of a java file without a new line following the
+  comment.  The java language specification says that single line comments
+  must be followed by an end-of-line marker (see section 3.4), so this new rule
+  relaxes that requirement slightly by allowing the line terminator to be
+  optional.  This only makes sense when the comment is the last line of the
+  source file, all other single line comments will have a line terminator. This
+  request was posted as a bug against JBrowse, I don't see any problem with
+  allowing it, especially since Sun's compiler doesn't complain. */
+  /* <SINGLE_LINE_COMMENT:
+
+ "\n" | "\r" | "\r\n" > : DEFAULT */
+  < SINGLE_LINE_COMMENT:
+
+ "//"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT:
+ "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT:
+ "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+
+MORE :
+{
+  < ~[] >
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < ABSTRACT: "abstract" >
+| < ASSERT: "assert" >
+| < BOOLEAN: "boolean" >
+| < BREAK: "break" >
+| < BYTE: "byte" >
+| < CASE: "case" >
+| < CATCH: "catch" >
+| < CHAR: "char" >
+| < CLASS: "class" >
+| < CONST: "const" >
+| < CONTINUE: "continue" >
+| < _DEFAULT: "default" >
+| < DO: "do" >
+| < DOUBLE: "double" >
+| < ELSE: "else" >
+| < ENUM: "enum" >
+| < EXTENDS: "extends" >
+| < FALSE: "false" >
+| < FINAL: "final" >
+| < FINALLY: "finally" >
+| < FLOAT: "float" >
+| < FOR: "for" >
+| < GOTO: "goto" >
+| < IF: "if" >
+| < IMPLEMENTS: "implements" >
+| < IMPORT: "import" >
+| < INSTANCEOF: "instanceof" >
+| < INT: "int" >
+| < INTERFACE: "interface" >
+| < LONG: "long" >
+| < NATIVE: "native" >
+| < NEW: "new" >
+| < NULL: "null" >
+| < PACKAGE: "package">
+| < PRIVATE: "private" >
+| < PROTECTED: "protected" >
+| < PUBLIC: "public" >
+| < RETURN: "return" >
+| < SHORT: "short" >
+| < STATIC: "static" >
+| < STRICTFP: "strictfp" >
+| < SUPER: "super" >
+| < SWITCH: "switch" >
+| < SYNCHRONIZED: "synchronized" >
+| < THIS: "this" >
+| < THROW: "throw" >
+| < THROWS: "throws" >
+| < TRANSIENT: "transient" >
+| < TRUE: "true" >
+| < TRY: "try" >
+| < VOID: "void" >
+| < VOLATILE: "volatile" >
+| < WHILE: "while" >
+}
+
+/* LITERALS */
+TOKEN :
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <BINARY_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] ((["_"])*["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])((["_"])*["0"-"9","a"-"f","A"-"F"])* >
+|
+  < #BINARY_LITERAL: "0" ["b","B"] (["0"-"1"])((["_"])*["0"-"1"])* >   
+|
+  < #OCTAL_LITERAL: "0" ((["_"])*(["0"-"7"]))* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])((["_"])*(["0"-"9"]))* "." ((["0"-"9"])((["_"])*(["0"-"9"]))*)* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])((["_"])*(["0"-"9"]))* (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])((["_"])*(["0"-"9"]))* <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])((["_"])*(["0"-"9"]))* (<EXPONENT>)? ["f","F","d","D"]
+  >
+  
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+|
+  < BOOLEAN_LITERAL:
+    "true"
+    |
+    "false"
+  >
+}
+
+/* IDENTIFIERS */
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < DOT: "." >
+| < AT: "@" >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < ASSIGN: "=" >
+| < LT: "<" >
+| < BANG: "!" >
+| < TILDE: "~" >
+| < HOOK: "?" >
+| < COLON:
+
+ ":" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "||" >
+| < SC_AND: "&&" >
+| < INCR: "++" >
+| < DECR: "--" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < BIT_AND: "&" >
+| < BIT_OR: "|" >
+| < XOR: "^" >
+| < REM: "%" >
+| < LSHIFT: "<<" >
+| < PLUSASSIGN: "+=" >
+| < MINUSASSIGN: "-=" >
+| < STARASSIGN: "*=" >
+| < SLASHASSIGN: "/=" >
+| < ANDASSIGN: "&=" >
+| < ORASSIGN: "|=" >
+| < XORASSIGN: "^=" >
+| < REMASSIGN: "%=" >
+| < LSHIFTASSIGN: "<<=" >
+| < RSIGNEDSHIFTASSIGN: ">>=" >
+| < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| < ELLIPSIS: "..." >
+}
+
+/* >'s need special attention due to generics syntax. */
+TOKEN :
+{
+  < RUNSIGNEDSHIFT: ">>>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     input_stream.backup(2);
+  }
+| < RSIGNEDSHIFT: ">>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
+     input_stream.backup(1);
+  }
+| < GT: ">" >
+}
+
+/*
+--------------------------------------------------------------------------------
+Literals
+*/
+void Literal():
+{}
+{
+    IntegerLiteral()
+    |
+    FloatingPointLiteral()
+    |
+    BooleanLiteral()
+    |
+    CharacterLiteral()
+    |
+    StringLiteral()
+    |
+    NullLiteral()
+}
+
+void IntegerLiteral():
+{}
+{
+    <INTEGER_LITERAL>   
+}
+
+void FloatingPointLiteral():
+{}
+{
+    <FLOATING_POINT_LITERAL>   
+}
+
+void BooleanLiteral():
+{}
+{
+    <BOOLEAN_LITERAL>   
+}
+
+void CharacterLiteral():
+{}
+{
+    <CHARACTER_LITERAL>   
+}
+
+void StringLiteral():
+{}
+{
+    <STRING_LITERAL>   
+}
+
+void NullLiteral():
+{}
+{
+    <NULL>   
+}
+
+/*
+--------------------------------------------------------------------------------
+Types(), Values(), and Variables()
+*/
+
+void Identifier():
+{}
+{
+    <IDENTIFIER>
+}
+
+void Type():
+{}
+{
+    LOOKAHEAD(3)
+    PrimitiveType()
+    |
+    ReferenceType()
+}
+
+void PrimitiveType():
+{}
+{
+    LOOKAHEAD(3)
+    (Annotation())* NumericType()
+    |
+    (Annotation())* "boolean"
+}
+
+void NumericType():
+{}
+{
+    IntegralType()
+    |
+    FloatingPointType()
+}
+
+void IntegralType():
+{}
+{
+    "byte" 
+    |
+    "short" 
+    |
+    "int" 
+    |
+    "long" 
+    |
+    "char"
+}
+
+void FloatingPointType():
+{}
+{
+    "float"
+    |
+    "double"
+}
+
+void ReferenceType():
+{}
+{
+    LOOKAHEAD(3)
+    ClassOrInterfaceType()
+    |
+    LOOKAHEAD(3)
+    TypeVariable()
+    |
+    LOOKAHEAD(3)
+    ArrayType()
+
+}
+
+void ClassOrInterfaceType():
+{}
+{
+    LOOKAHEAD(3)
+    ClassType()
+    |
+    LOOKAHEAD(3)
+    InterfaceType()
+}
+
+void ClassType():
+{}
+{
+    (Annotation())* Identifier() [ LOOKAHEAD(2) TypeArguments() ] ( LOOKAHEAD(2) "." (Annotation() )* Identifier() [ LOOKAHEAD(2) TypeArguments() ] )*
+}
+
+void InterfaceType():
+{}
+{
+    ClassType()
+}
+
+void TypeVariable():
+{}
+{
+    (Annotation())* Identifier()
+}
+
+void ArrayType():
+{}
+{
+    LOOKAHEAD(3)
+    PrimitiveType() Dims()
+    |
+    LOOKAHEAD(3)
+    ClassOrInterfaceType() Dims()
+    |
+    LOOKAHEAD(3)
+    TypeVariable() Dims()
+}
+
+void Dims():
+{}
+{
+    (Annotation())* "[" "]" ( LOOKAHEAD(2) (Annotation())* "[" "]" )*
+
+}
+
+void TypeParameter():
+{}
+{
+    (TypeParameterModifier())* Identifier() [TypeBound()]
+}
+
+void TypeParameterModifier():
+{}
+{
+    Annotation()
+}
+
+void TypeBound():
+{}
+{
+    LOOKAHEAD(3)
+    "extends" TypeVariable()
+    |
+    LOOKAHEAD(3)
+    "extends" ClassOrInterfaceType() (AdditionalBound())*
+}
+
+void AdditionalBound():
+{}
+{
+   "&" InterfaceType()
+}
+
+void TypeArguments():
+{}
+{
+    "<" TypeArgumentList() ">"
+}
+
+void TypeArgumentList():
+{}
+{
+    TypeArgument() ("," TypeArgument())*
+}
+
+void TypeArgument():
+{}
+{
+    LOOKAHEAD(3)
+    ReferenceType()
+    |
+    LOOKAHEAD(3)
+    Wildcard()
+}
+
+void Wildcard():
+{}
+{
+    (Annotation())* "?" [WildcardBounds()]
+
+}
+
+void WildcardBounds():
+{}
+{
+    "extends" ReferenceType()
+    |
+    "super" ReferenceType()
+}
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §7 (Packages())
+*/
+void PackageName():
+{}
+{
+    Identifier() ("." Identifier())*
+}
+
+void TypeName():
+{}
+{
+    LOOKAHEAD(2)
+    Identifier()
+    |
+    LOOKAHEAD(2)
+    PackageOrTypeName() "." Identifier()
+}
+
+void PackageOrTypeName():
+{}
+{
+    Identifier()( LOOKAHEAD(2) "." Identifier() )*
+}
+
+void ExpressionName():
+{}
+{
+    [ LOOKAHEAD(2) AmbiguousName() "." ] Identifier()
+}
+
+void MethodName():
+{}
+{
+    Identifier()
+}
+
+void AmbiguousName():
+{}
+{
+    Identifier()( LOOKAHEAD(2) "." Identifier() )*
+}
+
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §7 (Packages())
+*/
+
+/* main entry point */
+void CompilationUnit():
+{}
+{
+    [ LOOKAHEAD(2) PackageDeclaration() ] ( ImportDeclaration() )* ( TypeDeclaration() )* 
+}
+
+void PackageDeclaration():
+{}
+{
+    (PackageModifier())* "package" Identifier() ("." Identifier())* ";"
+}
+
+void PackageModifier():
+{}
+{
+    Annotation()
+}
+
+void ImportDeclaration():
+{}
+{
+    LOOKAHEAD(3)
+    SingleTypeImportDeclaration()
+    |
+    LOOKAHEAD(3)
+    TypeImportOnDemandDeclaration()
+    |
+    LOOKAHEAD(3)
+    SingleStaticImportDeclaration()
+    |
+    LOOKAHEAD(3)
+    StaticImportOnDemandDeclaration()
+}
+
+void SingleTypeImportDeclaration():
+{}
+{
+    "import" TypeName() ";"
+
+}
+
+void TypeImportOnDemandDeclaration():
+{}
+{
+    "import" PackageOrTypeName() "." "*" ";"
+
+}
+
+void SingleStaticImportDeclaration():
+{}
+{
+    "import" "static" TypeName() "." Identifier() ";"
+
+}
+
+void StaticImportOnDemandDeclaration():
+{}
+{
+    "import" "static" TypeName() "." "*" ";"
+
+}
+
+void TypeDeclaration():
+{}
+{
+    LOOKAHEAD(3)
+    ClassDeclaration()
+    |
+    LOOKAHEAD(3)
+    InterfaceDeclaration()
+    |
+    ";"
+}
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §8 (Classes())
+*/
+
+void ClassDeclaration():
+{}
+{
+    LOOKAHEAD(3)
+    NormalClassDeclaration()
+    |
+    LOOKAHEAD(3)
+    EnumDeclaration()
+}
+
+void NormalClassDeclaration():
+{}
+{
+    (ClassModifier())* "class" Identifier() [TypeParameters()] [Superclass()] [Superinterfaces()] ClassBody()
+}
+
+void ClassModifier():
+{}
+{
+    Annotation() 
+    |
+    "public" 
+    |
+    "protected" 
+    |
+    "private"
+    |
+    "abstract" 
+    |
+    "static" 
+    |
+    "final" 
+    |
+    "strictfp"
+}
+
+void TypeParameters():
+{}
+{
+    "<" TypeParameterList() ">"
+}
+
+void TypeParameterList():
+{}
+{
+    TypeParameter() ("," TypeParameter())*
+}
+
+void Superclass():
+{}
+{
+    "extends" ClassType()
+}
+
+void Superinterfaces():
+{}
+{
+    "implements" InterfaceTypeList()
+}
+
+void InterfaceTypeList():
+{}
+{
+    InterfaceType() ("," InterfaceType())*
+}
+
+void ClassBody():
+{}
+{
+   "{" (ClassBodyDeclaration())* "}"
+}
+
+void ClassBodyDeclaration():
+{}
+{
+    LOOKAHEAD(10)
+    ClassMemberDeclaration()
+    |
+    InstanceInitializer()
+    |
+    StaticInitializer()
+    |
+    LOOKAHEAD(2)
+    ConstructorDeclaration()
+}
+
+void ClassMemberDeclaration():
+{}
+{
+    LOOKAHEAD(10)
+    FieldDeclaration()
+    |
+    LOOKAHEAD(10)
+    MethodDeclaration()
+    |
+    LOOKAHEAD(3)
+    ClassDeclaration()
+    |
+    LOOKAHEAD(3)
+    InterfaceDeclaration()
+    |
+    ";"
+}
+
+void FieldDeclaration():
+{}
+{
+    (FieldModifier())* UnannType() VariableDeclaratorList() ";"
+}
+
+void FieldModifier():
+{}
+{
+    Annotation()
+    |
+    "public" 
+    |
+    "protected" 
+    |
+    "private"
+    |
+    "static" 
+    |
+    "final" 
+    |
+    "transient" 
+    |
+    "volatile"
+}
+
+void VariableDeclaratorList():
+{}
+{
+    VariableDeclarator() ("," VariableDeclarator())*
+}
+
+void VariableDeclarator():
+{}
+{
+    VariableDeclaratorId() ["=" VariableInitializer()]
+}
+
+void VariableDeclaratorId():
+{}
+{
+    Identifier() [Dims()]
+}
+
+void VariableInitializer():
+{}
+{
+    Expression()
+    |
+    ArrayInitializer()
+}
+
+void UnannType():
+{}
+{
+    LOOKAHEAD(3)
+    UnannPrimitiveType()
+    |
+    LOOKAHEAD(3)
+    UnannReferenceType()
+}
+
+void UnannPrimitiveType():
+{}
+{
+    NumericType()
+    |
+    "boolean"
+}
+
+void UnannReferenceType():
+{}
+{
+    LOOKAHEAD(3)
+    UnannClassOrInterfaceType()
+    |
+    LOOKAHEAD(3)
+    UnannTypeVariable()
+    |
+    LOOKAHEAD(3)
+    UnannArrayType()
+}
+
+void UnannClassOrInterfaceType():
+{}
+{
+    LOOKAHEAD(3)
+    UnannClassType()
+    |
+    LOOKAHEAD(3)
+    UnannInterfaceType()
+}
+
+void UnannClassType():
+{}
+{
+    Identifier() [TypeArguments()] ("." (Annotation())* Identifier() [TypeArguments()])*
+}
+
+void UnannInterfaceType():
+{}
+{
+    UnannClassType()
+}
+
+void UnannTypeVariable():
+{}
+{
+    Identifier()
+}
+
+void UnannArrayType():
+{}
+{
+    UnannPrimitiveType() Dims()
+    |
+    LOOKAHEAD(3)
+    UnannClassOrInterfaceType() Dims()
+    |
+    LOOKAHEAD(3)
+    UnannTypeVariable() Dims()
+}
+
+void MethodDeclaration():
+{}
+{
+    (MethodModifier())* MethodHeader() MethodBody()
+}
+
+void MethodModifier():
+{}
+{
+    Annotation()
+    |
+    "public" 
+    |
+    "protected" 
+    |
+    "private"
+    |
+    "abstract" 
+    |
+    "static" 
+    |
+    "final" 
+    |
+    "synchronized" 
+    |
+    "native" 
+    |
+    "strictfp"
+}
+
+void MethodHeader():
+{}
+{
+        Result() MethodDeclarator() [Throws()]
+        |
+        TypeParameters() (Annotation())* Result() MethodDeclarator() [Throws()]
+}
+
+void Result():
+{}
+{
+    UnannType()
+    |
+    "void"
+}
+
+void MethodDeclarator():
+{}
+{
+    Identifier() "(" [FormalParameterList()] ")" [Dims()]
+}
+
+void FormalParameterList():
+{}
+{
+    LOOKAHEAD(3)
+    FormalParameters() [ "," LastFormalParameter() ]
+    |
+    LOOKAHEAD(3)
+    LastFormalParameter()
+}
+
+void FormalParameters():
+{}
+{
+    LOOKAHEAD(3)
+    FormalParameter() ( LOOKAHEAD(2) "," FormalParameter() )*
+    |
+    LOOKAHEAD(3)
+    ReceiverParameter() ( LOOKAHEAD(2) "," FormalParameter() )*
+}
+
+void FormalParameter():
+{}
+{
+    (VariableModifier())* UnannType() VariableDeclaratorId()
+}
+
+void VariableModifier():
+{}
+{
+    Annotation() 
+    |
+    "final"
+}
+
+void LastFormalParameter():
+{}
+{
+    LOOKAHEAD(3)
+    (VariableModifier())* UnannType() (Annotation())* "..." VariableDeclaratorId()
+    |
+    LOOKAHEAD(3)
+    FormalParameter()
+}
+
+void ReceiverParameter():
+{}
+{
+    (Annotation())* UnannType() [Identifier() "."] "this"
+}
+
+void Throws():
+{}
+{
+    "throws" ExceptionTypeList()
+}
+
+void ExceptionTypeList():
+{}
+{
+    ExceptionType() ("," ExceptionType())*
+}
+
+void ExceptionType():
+{}
+{
+    LOOKAHEAD(3)
+    ClassType()
+    |
+    LOOKAHEAD(3)
+    TypeVariable()
+}
+
+void MethodBody():
+{}
+{
+    Block()
+    |
+    ";"
+}
+
+void InstanceInitializer():
+{}
+{
+    Block()
+}
+
+void StaticInitializer():
+{}
+{
+    "static" Block()
+}
+
+void ConstructorDeclaration():
+{}
+{
+    (ConstructorModifier())* ConstructorDeclarator() [Throws()] ConstructorBody()
+}
+
+void ConstructorModifier():
+{}
+{
+    Annotation()
+    |
+    "public"
+    |
+    "protected"
+    |
+    "private"
+}
+
+void ConstructorDeclarator():
+{}
+{
+    [TypeParameters()] SimpleTypeName() "(" [FormalParameterList()] ")" 
+}
+
+void SimpleTypeName():
+{}
+{
+    Identifier()
+}
+
+void ConstructorBody():
+{}
+{
+    "{" [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] [ LOOKAHEAD(10) BlockStatements() ] "}"
+}
+
+void ExplicitConstructorInvocation():
+{}
+{
+    LOOKAHEAD(3)
+    [TypeArguments()] "this" "(" [ArgumentList()] ")" ";"
+    |
+    LOOKAHEAD(3)
+    [TypeArguments()] "super" "(" [ArgumentList()] ")" ";"
+    |
+    LOOKAHEAD(3)
+    ExpressionName() "." [TypeArguments()] "super" "(" [ArgumentList()] ")" ";"
+    |
+    LOOKAHEAD(3)
+    Primary() "." [TypeArguments()] "super" "(" [ArgumentList()] ")" ";"
+}
+
+void EnumDeclaration():
+{}
+{
+    (ClassModifier())* "enum" Identifier() [Superinterfaces()] EnumBody()
+}
+
+void EnumBody():
+{}
+{
+    "{" [EnumConstantList()] [","] [EnumBodyDeclarations()] "}"
+}
+
+void EnumConstantList():
+{}
+{
+    EnumConstant() ( LOOKAHEAD(2) "," EnumConstant())*
+}
+
+void EnumConstant():
+{}
+{
+    ( EnumConstantModifier() )* Identifier() [ "(" [ArgumentList()] ")" ] [ ClassBody() ]
+}
+
+void EnumConstantModifier():
+{}
+{
+    Annotation()
+}
+
+void EnumBodyDeclarations():
+{}
+{
+    ";" (ClassBodyDeclaration())*
+}
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §9 (Interfaces())
+*/
+
+void InterfaceDeclaration():
+{}
+{
+    LOOKAHEAD(3)
+    NormalInterfaceDeclaration()
+    |
+    LOOKAHEAD(3)
+    AnnotationTypeDeclaration()
+}
+
+void NormalInterfaceDeclaration():
+{}
+{
+    ( LOOKAHEAD(2) InterfaceModifier() )* "interface" Identifier() [ LOOKAHEAD(2) TypeParameters() ] [ExtendsInterfaces()] InterfaceBody()
+}
+
+void InterfaceModifier():
+{}
+{
+    Annotation()
+    |
+    "public" 
+    |
+    "protected" 
+    |
+    "private"
+    |
+    "abstract" 
+    |
+    "static" 
+    |
+    "strictfp"
+}
+
+void ExtendsInterfaces():
+{}
+{
+    "extends" InterfaceTypeList()
+}
+
+void InterfaceBody():
+{}
+{
+    "{" ( LOOKAHEAD(2) InterfaceMemberDeclaration() )* "}" 
+}
+
+void InterfaceMemberDeclaration():
+{}
+{
+    LOOKAHEAD(3)
+    ConstantDeclaration()
+    |
+    LOOKAHEAD(3)
+    InterfaceMethodDeclaration()
+    |
+    LOOKAHEAD(3)
+    ClassDeclaration()
+    |
+    LOOKAHEAD(3)
+    InterfaceDeclaration()
+    |
+    ";"
+}
+
+void ConstantDeclaration():
+{}
+{
+    (ConstantModifier())* UnannType() VariableDeclaratorList() ";"
+}
+
+void ConstantModifier():
+{}
+{
+    Annotation()
+    |
+    "public"
+    |
+    "static" 
+    |
+    "final"
+}
+
+void InterfaceMethodDeclaration():
+{}
+{
+    (InterfaceMethodModifier())* MethodHeader() MethodBody()
+}
+
+void InterfaceMethodModifier():
+{}
+{
+    Annotation()
+    |
+    "public"
+    |
+    "abstract" 
+    |
+    "default" 
+    |
+    "static" 
+    |
+    "strictfp"
+}
+
+void AnnotationTypeDeclaration():
+{}
+{
+    ( LOOKAHEAD(2) InterfaceModifier())* "@" "interface" Identifier() AnnotationTypeBody()
+}
+
+void AnnotationTypeBody():
+{}
+{
+    "{" ( LOOKAHEAD(2) AnnotationTypeMemberDeclaration() )* "}" 
+}
+
+void AnnotationTypeMemberDeclaration():
+{}
+{
+    LOOKAHEAD(3)
+    AnnotationTypeElementDeclaration()
+    |
+    LOOKAHEAD(3)
+    ConstantDeclaration()
+    |
+    LOOKAHEAD(3)
+    ClassDeclaration()
+    |
+    LOOKAHEAD(3)
+    InterfaceDeclaration()
+    |
+    ";"
+}
+
+void AnnotationTypeElementDeclaration():
+{}
+{
+    (AnnotationTypeElementModifier())* UnannType() Identifier() "(" ")" [Dims()] [DefaultValue()] ";"
+}
+
+void AnnotationTypeElementModifier():
+{}
+{
+    Annotation()
+    |
+    "public"
+    |
+    "abstract"
+}
+
+void DefaultValue():
+{}
+{
+    "default" ElementValue()
+}
+
+void Annotation():
+{}
+{
+    LOOKAHEAD(3)
+    NormalAnnotation()
+    |
+    LOOKAHEAD(3)
+    MarkerAnnotation()
+    |
+    LOOKAHEAD(3)
+    SingleElementAnnotation()
+}
+
+void NormalAnnotation():
+{}
+{
+    "@" TypeName() "(" [ElementValuePairList()] ")" 
+}
+
+void ElementValuePairList():
+{}
+{
+    ElementValuePair() ("," ElementValuePair())*
+}
+
+void ElementValuePair():
+{}
+{
+    Identifier() "=" ElementValue()
+}
+
+void ElementValue():
+{}
+{
+    LOOKAHEAD(3)
+    ConditionalExpression()
+    |
+    ElementValueArrayInitializer()
+    |
+    LOOKAHEAD(3)
+    Annotation()
+}
+
+void ElementValueArrayInitializer():
+{}
+{
+    "{" [ElementValueList()] [","] "}"
+}
+
+void ElementValueList():
+{}
+{
+    ElementValue() ( LOOKAHEAD(2) "," ElementValue())*
+}
+
+void MarkerAnnotation():
+{}
+{
+    "@" TypeName()
+}
+
+void SingleElementAnnotation():
+{}
+{
+    "@" TypeName() "(" ElementValue() ")"
+}
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §10 (Arrays())
+*/
+
+void ArrayInitializer():
+{}
+{
+    "{" [VariableInitializerList()] [","] "}"
+}
+
+void VariableInitializerList():
+{}
+{
+    VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer())*
+}
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §14 (Blocks() and Statements())
+*/
+
+void Block():
+{}
+{
+    "{" [BlockStatements()] "}"
+}
+
+void BlockStatements():
+{}
+{
+    BlockStatement() ( LOOKAHEAD(2) BlockStatement())*
+}
+
+void BlockStatement():
+{}
+{
+    LOOKAHEAD(3)
+    LocalVariableDeclarationStatement()
+    |
+    LOOKAHEAD(3)
+    ClassDeclaration()
+    |
+    LOOKAHEAD(4)
+    Statement()
+}
+
+void LocalVariableDeclarationStatement():
+{}
+{
+    LocalVariableDeclaration() ";"
+}
+
+void LocalVariableDeclaration():
+{}
+{
+    (VariableModifier())* UnannType() VariableDeclaratorList()
+}
+
+void Statement():
+{}
+{
+    LOOKAHEAD(2)
+    StatementWithoutTrailingSubstatement()
+    |
+    LOOKAHEAD(2)
+    LabeledStatement()
+    |
+    LOOKAHEAD(3)
+    IfThenStatement()
+    |
+    LOOKAHEAD(3)
+    IfThenElseStatement()
+    |
+    WhileStatement()
+    |
+    ForStatement()
+}
+
+void StatementNoShortIf():
+{}
+{
+    LOOKAHEAD(2)
+    StatementWithoutTrailingSubstatement()
+    |
+    LOOKAHEAD(2)
+    LabeledStatementNoShortIf()
+    |
+    IfThenElseStatementNoShortIf()
+    |
+    WhileStatementNoShortIf()
+    |
+    ForStatementNoShortIf()
+}
+
+void StatementWithoutTrailingSubstatement():
+{}
+{
+    Block()
+    |
+    EmptyStatement()
+    |
+    ExpressionStatement()
+    |
+    AssertStatement()
+    |
+    SwitchStatement()
+    |
+    DoStatement()
+    |
+    BreakStatement()
+    |
+    ContinueStatement()
+    |
+    ReturnStatement()
+    |
+    SynchronizedStatement()
+    |
+    ThrowStatement()
+    |
+    TryStatement()
+}
+
+void EmptyStatement():
+{}
+{
+    ";"
+}
+
+void LabeledStatement():
+{}
+{
+    Identifier() ":" Statement()
+}
+
+void LabeledStatementNoShortIf():
+{}
+{
+    Identifier() ":" StatementNoShortIf()
+}
+
+void ExpressionStatement():
+{}
+{
+    StatementExpression() ";"
+}
+
+void StatementExpression():
+{}
+{
+    LOOKAHEAD(3)
+    Assignment()
+    |
+    LOOKAHEAD(3)
+    PreIncrementExpression()
+    |
+    LOOKAHEAD(3)
+    PreDecrementExpression()
+    |
+    LOOKAHEAD(3)
+    PostIncrementExpression()
+    |
+    LOOKAHEAD(3)
+    PostDecrementExpression()
+    |
+    LOOKAHEAD(3)
+    MethodInvocation()
+    |
+    LOOKAHEAD(3)
+    ClassInstanceCreationExpression()
+}
+
+void IfThenStatement():
+{}
+{
+    "if" "(" Expression() ")" Statement()
+}
+
+void IfThenElseStatement():
+{}
+{
+    "if" "(" Expression() ")" StatementNoShortIf() "else" Statement()
+}
+
+void IfThenElseStatementNoShortIf():
+{}
+{
+    "if" "(" Expression() ")" StatementNoShortIf() "else" StatementNoShortIf()
+}
+
+void AssertStatement():
+{}
+{
+    LOOKAHEAD(3)
+    "assert" Expression() ";"
+    |
+    LOOKAHEAD(3)
+    "assert" Expression() ":" Expression() ";"
+}
+
+void SwitchStatement():
+{}
+{
+    "switch" "(" Expression() ")" SwitchBlock()
+}
+
+void SwitchBlock():
+{}
+{
+    "{" (LOOKAHEAD(2) SwitchBlockStatementGroup())* (LOOKAHEAD(2) SwitchLabel())* "}" 
+}
+
+void SwitchBlockStatementGroup():
+{}
+{
+    SwitchLabels() BlockStatements()
+}
+
+void SwitchLabels():
+{}
+{
+    SwitchLabel() (SwitchLabel())*
+}
+
+void SwitchLabel():
+{}
+{
+    "case" ConstantExpression() ":"
+    "case" EnumConstantName() ":"
+    "default" ":"
+}
+
+void EnumConstantName():
+{}
+{
+    Identifier()
+}
+
+void WhileStatement():
+{}
+{
+    "while" "(" Expression() ")" Statement()
+}
+
+void WhileStatementNoShortIf():
+{}
+{
+    "while" "(" Expression() ")" StatementNoShortIf()
+}
+
+void DoStatement():
+{}
+{
+    "do" Statement() "while" "(" Expression() ")" ";"
+}
+
+void ForStatement():
+{}
+{
+    LOOKAHEAD(3)
+    BasicForStatement()
+    |
+    LOOKAHEAD(3)
+    EnhancedForStatement()
+}
+
+void ForStatementNoShortIf():
+{}
+{
+    LOOKAHEAD(3)
+    BasicForStatementNoShortIf()
+    |
+    LOOKAHEAD(3)
+    EnhancedForStatementNoShortIf()
+}
+
+void BasicForStatement():
+{}
+{
+    "for" "(" [ForInit()] ";" [Expression()] ";" [ForUpdate()] ")" Statement()
+}
+
+void BasicForStatementNoShortIf():
+{}
+{
+    "for" "(" [ForInit()] ";" [Expression()] ";" [ForUpdate()] ")" StatementNoShortIf()
+}
+
+void ForInit():
+{}
+{
+    LOOKAHEAD(3)
+    StatementExpressionList()
+    |
+    LOOKAHEAD(3)
+    LocalVariableDeclaration()
+}
+
+void ForUpdate():
+{}
+{
+    StatementExpressionList()
+}
+
+void StatementExpressionList():
+{}
+{
+    StatementExpression() ("," StatementExpression())*
+}
+
+void EnhancedForStatement():
+{}
+{
+    "for" "(" (VariableModifier())* UnannType() VariableDeclaratorId() ":" Expression() ")" Statement()
+}
+
+void EnhancedForStatementNoShortIf():
+{}
+{
+    "for" "(" (VariableModifier())* UnannType() VariableDeclaratorId() ":" Expression() ")" StatementNoShortIf()
+}
+
+void BreakStatement():
+{}
+{
+    "break" [Identifier()] ";"
+}
+
+void ContinueStatement():
+{}
+{
+    "continue" [Identifier()] ";"
+}
+
+void ReturnStatement():
+{}
+{
+    "return" [Expression()] ";"
+}
+
+void ThrowStatement():
+{}
+{
+    "throw" Expression() ";"
+}
+
+void SynchronizedStatement():
+{}
+{
+    "synchronized" "(" Expression() ")" Block()
+}
+
+void TryStatement():
+{}
+{
+    LOOKAHEAD(2)
+    "try" Block() Catches()
+    |
+    LOOKAHEAD(2)
+    "try" Block() [Catches()] Finally()
+    |
+    LOOKAHEAD(2)
+    TryWithResourcesStatement()
+}
+
+void Catches():
+{}
+{
+    CatchClause() (CatchClause())*
+}
+
+void CatchClause():
+{}
+{
+    "catch" "(" CatchFormalParameter() ")" Block()
+}
+
+void CatchFormalParameter():
+{}
+{
+    (VariableModifier())* CatchType() VariableDeclaratorId()
+}
+
+void CatchType():
+{}
+{
+    UnannClassType() ("|" ClassType())*
+}
+
+void Finally():
+{}
+{
+    "finally" Block()
+}
+
+void TryWithResourcesStatement():
+{}
+{
+    "try" ResourceSpecification() Block() [Catches()] [Finally()]
+}
+
+void ResourceSpecification():
+{}
+{
+    "(" ResourceList() [";"] ")" 
+}
+
+void ResourceList():
+{}
+{
+    Resource() (LOOKAHEAD(2) ";" Resource())*
+}
+
+void Resource():
+{}
+{
+    (VariableModifier())* UnannType() VariableDeclaratorId() "=" Expression()
+}
+
+/*
+--------------------------------------------------------------------------------
+Productions() from §15 (Expressions())
+*/
+
+void Primary():
+{}
+{
+    LOOKAHEAD(3)
+    PrimaryNoNewArray()
+    |
+    LOOKAHEAD(3)
+    ArrayCreationExpression()
+}
+
+void PrimaryNoNewArray():
+{}
+{
+    Literal()
+    |
+    LOOKAHEAD(3)
+    TypeName() ( "[" "]" )* "." "class"
+    |
+    "void" "." "class"
+    |
+    "this"
+    |
+    LOOKAHEAD(3)
+    TypeName() "." "this"
+    |
+     "(" Expression() ")" 
+    |
+    LOOKAHEAD(3)
+    ClassInstanceCreationExpression()
+    |
+    LOOKAHEAD(3)
+    FieldAccess()
+    |
+    LOOKAHEAD(3)
+    ArrayAccess()
+    |
+    LOOKAHEAD(3)
+    MethodInvocation()
+    |
+    LOOKAHEAD(3)
+    MethodReference()
+}
+
+void ClassInstanceCreationExpression():
+{}
+{
+    "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [ClassBody()] (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [ClassBody()] )*
+    |
+    ExpressionName() (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [ClassBody()] )*
+}
+
+void TypeArgumentsOrDiamond():
+{}
+{
+    TypeArguments()
+    |
+    "<>"
+}
+
+void FieldAccess():
+{}
+{
+    "super" (LOOKAHEAD(2) "." Identifier() )*
+    |
+    TypeName() "." "super" (LOOKAHEAD(2) "." Identifier() )*
+}
+
+void ArrayAccess():
+{}
+{
+    ExpressionName() ( "[" Expression() "]" )*
+}
+
+void MethodInvocation():
+{}
+{
+    LOOKAHEAD(2)
+    MethodName() "(" [ArgumentList()] ")" 
+    |
+    LOOKAHEAD(3)
+    TypeName() (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    |
+    LOOKAHEAD(3)
+    ExpressionName() (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    |
+    "super" (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    |
+    LOOKAHEAD(3)
+    TypeName() "." "super" ( LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+}
+
+void ArgumentList():
+{}
+{
+    Expression() ("," Expression())*
+}
+
+void MethodReference():
+{}
+{
+    LOOKAHEAD(3)
+    ExpressionName() ( "::" [TypeArguments()] Identifier() )*
+    |
+    LOOKAHEAD(3)
+    ReferenceType() ( "::" [TypeArguments()] Identifier() )*
+    |
+    "super" ( "::" [TypeArguments()] Identifier() )*
+    |
+    LOOKAHEAD(3)
+    TypeName() "." "super" ( "::" [TypeArguments()] Identifier() )*
+    |
+    LOOKAHEAD(3)
+    ClassType() "::" [TypeArguments()] "new"
+    |
+    LOOKAHEAD(3)
+    ArrayType() "::" "new"
+}
+
+void ArrayCreationExpression():
+{}
+{
+    LOOKAHEAD(3)
+    "new" PrimitiveType() DimExprs() [LOOKAHEAD(2)Dims()]
+    |
+    LOOKAHEAD(3)
+    "new" ClassOrInterfaceType() DimExprs() [LOOKAHEAD(2) Dims()]
+    |
+    LOOKAHEAD(3)
+    "new" PrimitiveType() Dims() ArrayInitializer()
+    |
+    LOOKAHEAD(3)
+    "new" ClassOrInterfaceType() Dims() ArrayInitializer()
+}
+
+void DimExprs():
+{}
+{
+    DimExpr() (LOOKAHEAD(2) DimExpr())*
+}
+
+void DimExpr():
+{}
+{
+    (Annotation())* "[" Expression() "]"
+}
+
+void ConstantExpression():
+{}
+{
+    Expression()
+}
+
+void Expression():
+{}
+{
+    LOOKAHEAD(3)
+    LambdaExpression()
+    |
+    AssignmentExpression()
+}
+
+void LambdaExpression():
+{}
+{
+    LambdaParameters() "->" LambdaBody()
+}
+
+void LambdaParameters():
+{}
+{
+    Identifier()
+    |
+    LOOKAHEAD(3) 
+     "(" [FormalParameterList()] ")" 
+    |
+    LOOKAHEAD(3) 
+     "(" InferredFormalParameterList() ")" 
+}
+
+void InferredFormalParameterList():
+{}
+{
+    Identifier() ("," Identifier())*
+}
+
+void LambdaBody():
+{}
+{
+    Expression()
+    |
+    Block()
+}
+
+void AssignmentExpression():
+{}
+{
+    LOOKAHEAD(3)
+    ConditionalExpression()
+    |
+    Assignment()
+}
+
+void Assignment():
+{}
+{
+    LeftHandSide() AssignmentOperator() Expression()
+}
+
+void LeftHandSide():
+{}
+{
+    LOOKAHEAD(3) 
+    ExpressionName()
+    |
+    LOOKAHEAD(3) 
+    FieldAccess()
+    |
+    LOOKAHEAD(3) 
+    ArrayAccess()
+}
+
+void AssignmentOperator():
+{}
+{
+
+    "="
+    |
+    "*="  
+    |
+    "/="  
+    |
+    "%="  
+    |
+    "+="  
+    |
+    "-="  
+    |
+    "<<="  
+    |
+    ">>="  
+    |
+    ">>>="  
+    |
+    "&="  
+    |
+    "^="  
+    |
+    "|="
+
+}
+
+void ConditionalExpression():
+{}
+{
+    LOOKAHEAD(3) 
+    ConditionalOrExpression()
+    |
+    ConditionalOrExpression() "?" Expression() ":" ConditionalExpression()
+}
+
+void ConditionalOrExpression():
+{}
+{
+    ConditionalAndExpression() ( LOOKAHEAD(2) "||" ConditionalAndExpression() )*
+}
+
+void ConditionalAndExpression():
+{}
+{
+    InclusiveOrExpression() ( LOOKAHEAD(2) "&&" InclusiveOrExpression() )*
+}
+
+void InclusiveOrExpression():
+{}
+{
+    ExclusiveOrExpression() ( LOOKAHEAD(2) "|" ExclusiveOrExpression() )*
+}
+
+void ExclusiveOrExpression():
+{}
+{
+    AndExpression() ( LOOKAHEAD(2) "^" AndExpression() )*
+}
+
+void AndExpression():
+{}
+{
+    EqualityExpression() ( LOOKAHEAD(2) "&" EqualityExpression() )*
+}
+
+void EqualityExpression():
+{}
+{
+    RelationalExpression() ( LOOKAHEAD(2) ( "==" | "!=" ) RelationalExpression() )*
+}
+
+void RelationalExpression():
+{}
+{
+    ShiftExpression() ( LOOKAHEAD(2) ( "<" | ">" | "<=" | ">=" | "instanceof" ) ShiftExpression() )*
+}
+
+void ShiftExpression():
+{}
+{
+    AdditiveExpression() ( LOOKAHEAD(2) ( "<<" | ">>" | ">>>") AdditiveExpression() )*
+}
+
+void AdditiveExpression():
+{}
+{
+    MultiplicativeExpression() ( LOOKAHEAD(2) ( "+" | "-" ) MultiplicativeExpression() )*
+}
+
+void MultiplicativeExpression():
+{}
+{
+    UnaryExpression() ( LOOKAHEAD(2)( "*" | "/" | "%" ) UnaryExpression()  )*
+}
+
+void UnaryExpression():
+{}
+{
+    PreIncrementExpression()
+    |
+    PreDecrementExpression()
+    |
+     "+" UnaryExpression()
+    |
+    "-" UnaryExpression()
+    |
+    UnaryExpressionNotPlusMinus()
+}
+
+void PreIncrementExpression():
+{}
+{
+    "++" UnaryExpression()
+}
+
+void PreDecrementExpression():
+{}
+{
+    "--" UnaryExpression()
+}
+
+void UnaryExpressionNotPlusMinus():
+{}
+{
+    LOOKAHEAD(3)
+    PostfixExpression()
+    |
+     "~" UnaryExpression()
+    |
+     "!" UnaryExpression()
+    |
+    CastExpression()
+}
+
+void PostfixExpression():
+{}
+{
+    LOOKAHEAD(2)
+    Primary() ( LOOKAHEAD(2)("++" | "--"))* 
+    |
+    ExpressionName() ( LOOKAHEAD(2)( "++" | "--"))*
+}
+
+void PostIncrementExpression():
+{}
+{
+    PostfixExpression() "++"
+}
+
+void PostDecrementExpression():
+{}
+{
+    PostfixExpression() "--"
+}
+
+void CastExpression():
+{}
+{
+    LOOKAHEAD(3)
+    "(" PrimitiveType() ")" UnaryExpression()
+    |
+    LOOKAHEAD(3)
+    "(" ReferenceType() (AdditionalBound())* ")" UnaryExpressionNotPlusMinus()
+    |
+    "(" ReferenceType() (AdditionalBound())* ")" LambdaExpression() 
+}
+
+
+
