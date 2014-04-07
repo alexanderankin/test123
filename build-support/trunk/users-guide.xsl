@@ -16,7 +16,8 @@
 	version="1.0"
 	xmlns="http://www.w3.org/TR/xhtml1/transitional"
 	xmlns:date="http://exslt.org/dates-and-times"
-	extension-element-prefixes="date"
+	xmlns:common="http://exslt.org/common"
+	extension-element-prefixes="date common"
 	exclude-result-prefixes="#default">
 
 	<xsl:import href="file:///@docs.style.sheet@" />
@@ -428,7 +429,47 @@
     </xsl:call-template>
     
 </xsl:template>
+<!-- }}} -->
 
+<!-- {{{ hijack processing of the article or book, to inject a feedback appendix
+         if the document doesn't have one already.
+         Testing for the absence of appendix also serves to stop the recursion,
+         otherwise the template would match the generated variable contents.
+  -->
+<xsl:template match="/*[not(appendix[@id = 'feedback'] | chapter[@id = 'feedback'])]"
+	>
+	<xsl:variable name="whole">
+		<xsl:copy>
+		<xsl:copy-of select="@*"/>
+		<xsl:copy-of select="*"/>
+		
+		<!-- rebinding default ns here so that appendix is really {no-namespace}:appendix,
+			 not {http://www.w3.org/TR/xhtml1/transitional}:appendix
+		 -->
+		<appendix id="feedback" xmlns="">
+		<title>Feedback</title>
+		
+		<para>All jEdit users are encouraged to join the
+		<email>jedit-users@lists.sourceforge.net</email> mailing list to give
+		feedback or ask questions to other users and developers. </para>
+		
+		<para>The preferred way to send bug reports against most jEdit plugins
+		is to use the <ulink url="https://sourceforge.net/p/jedit/plugin-bugs/?limit=100">
+		jEdit Plugin Bugs Tracker</ulink>. </para>
+		
+		<para>Feature requests can be found on the <ulink
+		url="https://sourceforge.net/p/jedit/plugin-feature-requests/?limit=100">  
+		jEdit Plugin feature requests tracker</ulink>. </para>
+		
+		<para>Development questions should be posted to the jEdit development
+		mailing-list <email>jedit-devel@lists.sourceforge.net</email>. </para>
+		</appendix>
+		
+		</xsl:copy>
+	</xsl:variable>
 
+	<xsl:apply-templates select="common:node-set($whole)"/>
+
+</xsl:template>
 <!-- }}} -->
 </xsl:stylesheet>
