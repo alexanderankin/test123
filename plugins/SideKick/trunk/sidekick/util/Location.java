@@ -30,7 +30,7 @@ package sidekick.util;
 /**
  * danson: Class to represent a location in a source file by line and column.
  */
-public class Location implements Comparable {
+public class Location implements Comparable<Location> {
     public int line = 0;
     public int column = 0;
     
@@ -41,8 +41,7 @@ public class Location implements Comparable {
         this.column = column;
     }
     
-    public int compareTo(Object o) {
-        Location loc = (Location)o;
+    public int compareTo(Location loc) {
         if (line < loc.line) {
             return -1;   
         }

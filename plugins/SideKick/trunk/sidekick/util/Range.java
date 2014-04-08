@@ -49,6 +49,29 @@ public class Range {
         endColumn = second.column;
     }
     
+    public Location getStartLocation() {
+        return new Location(startLine, startColumn);    
+    }
+    
+    public void setStartLocation(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("start location may not be null");
+        }
+        startLine = location.line;
+        startColumn = location.column;
+    }
+    
+    public Location getEndLocation() {
+        return new Location(endLine, endColumn);    
+    }
+    
+    public void setEndLocation(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("end location may not be null");
+        }
+        endLine = location.line;
+        endColumn = location.column;
+    }
     public String toString() {
         return "Range:[startLine=" + startLine + ",startColumn=" + startColumn + ",endLine=" + endLine + ",endColumn=" + endColumn + "]";   
     }
