@@ -29,6 +29,9 @@ package sidekick.java.node;
 
 import java.util.*;
 
+import sidekick.util.Location;
+import sidekick.util.Range;
+
 /**
  * An extension of TigerNode for a compilation unit.  A compilation unit should
  * be the top-level unit for parsing, all other productions represented by TigerNodes
@@ -67,10 +70,12 @@ public class CUNode extends TigerNode {
     }
 
     public void addImport( ImportNode in ) {
-        if ( in == null )
-            return ;
-        if ( imports == null )
+        if ( in == null ) {
+            return;
+        }
+        if ( imports == null ) {
             imports = new ArrayList<ImportNode>();
+        }
         imports.add( in );
     }
 
@@ -91,12 +96,12 @@ public class CUNode extends TigerNode {
     public List<ImportNode> getImportNodes() {
         if ( imports != null ) {
             Collections.sort( imports, new Comparator<ImportNode>() {
-                        public int compare( ImportNode a, ImportNode b ) {
-                            return a.getName().compareTo( b.getName() );
-                        }
-                    }
-                            );
-            return new ArrayList<ImportNode>(imports);
+                public int compare( ImportNode a, ImportNode b ) {
+                    return a.getName().compareTo( b.getName() );
+                }
+            }
+            );
+            return new ArrayList<ImportNode>( imports );
         }
         return new ArrayList<ImportNode>();
     }
@@ -112,6 +117,39 @@ public class CUNode extends TigerNode {
             }
         }
         return null;
+    }
+
+    /**
+     * @return A range representing the entire span of the import statements or null
+     * if there are no import statements.
+     */
+    public Range getImportsRange() {
+        if ( imports == null ) {
+            return null;
+        }
+
+        switch ( imports.size() ) {
+            case 0:
+                return null;
+            case 1:
+                ImportNode in = imports.get( 0 );
+                return new Range( in.getStartLocation(), in.getEndLocation() );
+            default:
+                // there are at least 2 import nodes
+                ImportNode node = imports.get( 0 );
+                Range range = new Range( node.getStartLocation(), node.getEndLocation() );
+                for ( int i = 1; i < imports.size(); i++ ) {
+                    node = imports.get( i );
+                    if ( node.getStartLocation().compareTo( range.getStartLocation() ) < 0 ) {
+                        range.setStartLocation( node.getStartLocation() );
+                    }
+                    if ( node.getEndLocation().compareTo( range.getEndLocation() ) > 0 ) {
+                        range.setEndLocation( node.getEndLocation() );
+                    }
+                }
+                return range;
+        }
+
     }
 
     public void setResults( Results r ) {
