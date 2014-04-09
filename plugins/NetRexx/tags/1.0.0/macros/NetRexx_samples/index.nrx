@@ -1,0 +1,18 @@
+
+-- This script demonstrates the effect of caching on indexed variables 
+-- If cached, the second execution will show different results for the second display of s['x']
+
+say 'starting index.nrx'
+s='bozo';say 's='s
+say "s.exists('x')="s.exists('x') "s['x']="s['x']
+s='zip';say 's='s
+say "s.exists('x')="s.exists('x') "s['x']="s['x']
+s['x']='value';say "s['x']='value'"
+say "s.exists('x')="s.exists('x') "s['x']="s['x']
+--s['x']=null
+
+s='empty';say "s='empty'"
+say "s.exists('x')="s.exists('x') "s['x']="s['x']
+s='zip';say 's='s
+say "s.exists('x')="s.exists('x') "s['x']="s['x']
+

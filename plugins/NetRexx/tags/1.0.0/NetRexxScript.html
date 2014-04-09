@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+
+
+<meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type"><title>NetRexx Plugin Help</title></head><body style="background-color: rgb(255, 255, 255);">
+<table summary="Header" bgcolor="#ccccff" border="0" cellspacing="0" cols="2" width="100%">
+<tbody>
+<tr width="100%">
+<td valign="top"><b><font size="+2">NetRexx Plugin Interpreter (Scripting) usage<br>
+</font></b></td>
+<td align="right" valign="top"><font size="-1"><b> Version 1.0.0&nbsp; (March 15, 2014)</b>
+<br>
+By Kermit Kiser (nrs@kermitkiser.com) <br>
+</font></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><a href="NetRexxScript.html#intro">Introduction</a></li>
+<li><a href="doc/NetRexx-Script-features.html">Features</a></li>
+
+
+<li><a href="NetRexxScript.html#start">Getting
+Started and using
+NetRexx Scripts</a></li>
+<li><a href="NetRexxScript.html#options">Options</a></li>
+<li><a href="doc/Sample-Scripts-provided-with-the-NetRexxScript-plugin.html">Sample
+scripts provided with this plugin</a></li><li><a href="#advanced">Advanced usage options</a></li>
+<li><a href="development-guide.html#notes">Notes</a>
+</li>
+<li><a href="development-guide.html#todo">ToDo</a>
+</li>
+<li><a href="development-guide.html#log">Change Log</a>
+</li>
+<li><a href="NetRexxScript.html#feedback">FeedBack</a></li>
+<li><a href="atOnce/netrexxAtOnce.html">The
+"NetRexx at Once" cross-reference guide for Java and NetRexx</a></li>
+<li><a href="http://netrexx.org/documentation.nsp">A detailed description of the NetRexx language can be found
+here: http://netrexx.org/documentation.nsp</a></li>
+</ul>
+<table summary="Introduction" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr width="100%" align="center">
+<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"> <a name="intro">Introduction</a></font></b></td>
+</tr>
+</tbody>
+</table>
+<p>
+The "NetRexx" plugin adds support to jEdit for running scripts, macros, and programs written in
+NetRexx.
+</p>
+<table summary="Getting Started" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr width="100%" align="center">
+<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"> <a name="start">Getting
+Started and using NetRexx Scripts</a></font></b></td>
+</tr>
+</tbody>
+</table>
+<p>The&nbsp;plugin will start automatically when jEdit
+starts. The plugin will create "NetRexx" and NetRexxScript subdirectories under the user account's jEdit macros directory
+and copy any sample scripts bundled with the plugin there. You can save
+your
+NetRexx scripts in either directory depending on where you want them to
+appear in the Macros menu. They must be ".nrx" files for the plugin to
+handle them. Select them from the macro menu to execute
+them.</p>
+<p>If the option called Prefix ("add jEdit variables") is turned
+on,
+the
+plugin will add the default jEdit macro variables to the start of the
+script (see below). If the option is turned off, the plugin does not
+alter the NetRexx scripts - they are passed
+unchanged to the interpreter. If your script contains a class instruction, the plugin will not add
+the jEdit variables even if the add option is turned on. In that case
+if you need the variables described in the jEdit
+beanshell guide to writing macros, you must create them yourself by
+adding something like this to the beginning of your macro:</p>
+-- These are the lines added automatically by the default "Prefix"
+option:<br>
+<br>
+&nbsp;&nbsp;&nbsp; import org.gjt.sp.jedit<br>
+&nbsp;&nbsp;&nbsp; view=jEdit.getActiveView()<br>
+&nbsp;&nbsp;&nbsp; buffer=view.getBuffer<br>
+&nbsp;&nbsp;&nbsp; wm=view.getDockableWindowManager()<br>
+&nbsp;&nbsp;&nbsp; editPane=view.getEditPane()<br>
+&nbsp;&nbsp;&nbsp; textArea=editPane.getTextArea()<br>
+&nbsp;&nbsp;&nbsp; scriptPath=jEdit.getProperty(String
+"NetRexxScriptPath") <br>
+<br>
+You can change the automatic prefix lines by altering the
+"prefix.txt" file in the NetRexx directory in the jEdit profile
+directory (not the one under the macros directory). A macro "Add Jedit
+Prefix" is provided to insert the prefix lines into the current buffer
+at the cursor location.<br>
+<br>
+You can add NetRexx scripts to the jEdit startup
+directory but they must contain a
+class instruction if the prefix option is on in order to prevent access
+to jEdit variables that don't yet exist such as a "view". There is
+currently no provision to save or pass objects from startup scripts.<br>
+<br>
+All
+errors, traces, debugging info and std output currently go&nbsp;to
+the
+activity log
+(Utilities&gt;Troubleshooting&gt;Activity log to see any error
+messages
+if things don't work.). Parse errors will be reflected to the script as
+colored underlines and to the error list window. When debugging
+scripts, it is strongly recommended that you open the NetRexx
+plugin's dockable window and dock it top or bottom. This will give you
+windows to see output from the script, trace output, and interpreter
+parse output as well as to interact with scripts from a command line
+console.<br>
+<br>
+<table style="text-align: left; width: 100%; color: white;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td style="vertical-align: top; background-color: rgb(127, 178, 255); text-align: center;"><big><a name="options"></a><span style="font-weight: bold;">Options</span></big><br>
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+</ul>Here are the NetRexx plugin functions available from the plugin menu and/or the dockable window:<br>
+<ul>
+  <li>Cache&nbsp;&nbsp;&nbsp;&nbsp; - If scripts
+are cached, then they
+can be reexecuted without the overhead of parseing them again. This can
+improve performance but may have unexpected effects (see Notes).
+If a new script is executed which is not in the cache, all cached
+scripts will be reparsed.</li>
+
+<li>Preparse
+- This option will cause all available NetRexx scripts
+to be parsed and cached at plugin startup or when it is switched from
+off to on. This improves performance but is mainly used to allow
+scripts to share classes and methods, ie one script can call methods in
+another script.
+Note that if any script fails to parse when activating this option, it
+will be switched to off and the cache will be cleared. Do not duplicate script names when using this option.<br>
+</li>
+<li>Flush&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+This will clear all scripts
+from the cache forcing them to be reparsed before the next execution.
+If preparse is on, all scripts will be reparsed and recached. This is
+mostly useful if copying scripts since the plugin automatically detects
+a save of an
+edited script and clears it from the cache. Precompiled scripts (.class files) are also cleared from memory.</li>
+<li>Trace
+&nbsp; &nbsp; - Allows trace instructions to be suppressed
+except
+during testing. If this option is off, trace instructions are ignored.
+Not really needed if using dockable console window as traced output can
+be viewed separate from output without trace but it may be a
+performance improvement.</li>
+
+<li>Run
+Current &nbsp; - &nbsp;This option will execute the current
+edit buffer
+as a NetRexx script . Changes are included but the buffer is not saved
+- this allows testing changes without modifying the original file or
+running quick scripts without creating a permanent file.</li>
+<li>NetRexx - opens a dockable window to run scripts and
+view
+output. There is a "start" button which is equivalent to the "Run
+Current" menu option but starts the current edit buffer if it is a
+script using command line content as script parms. You can also enter
+script names from the command line to start
+them if they are in your Scriptpath. More specifically, if there is a
+script file named "test.nrx" in your scriptpath, then entering "test"
+on the command line will load that file and invoke the main method of
+the script in it. The command line can also be used to respond to
+console input requests from your scripts. There are buttons to display
+script output (minus trace data), script output with trace data, and
+interpreter parse output. Note that the start button becomes a "stop"
+button if a script is currently running. The command line can be moved
+to the top or bottom of the console window. Command line input is
+remembered and can be selected using the drop arrow to the right or by
+using the keyboard up arrow. There is also a shortcut button for the
+flush option.<br></li>
+</ul>
+The plugin provides two options panels - one for compiler options and
+one for interpreter options. Here are the interpreter options available:
+<ul>
+
+<li>------------------------------
+The following options are only available from the plugin interpreter options screen
+for NetRexx: &nbsp;
+------------------------------------------------------</li>
+  <li>Clear
+output before running scripts - This option controls whether or not
+script output
+windows are cleared before running a script. If you turn it off, then
+you will have to clear the windows yourself by clicking the little
+"trashcan" button in the dockable window.</li>
+
+<li>Prefix - (Add jEdit variables)&nbsp;-&nbsp;If
+this option is turned on, the plugin will
+add the default jEdit macro variables to the start of&nbsp;scripts
+(see
+above example) unless the script contains a
+class instruction.</li>
+<li>Verbosity&nbsp;- Controls the level of error messages
+generated by the NetRexx Interpreter. See the NetRexx Language
+Definition for more details on the levels.</li>
+<li>Classpath - List directories and jar files to search for
+classes used by scripts. Do not add the NetRexxC.jar or jEdit.jar files
+as they are added automatically.</li>
+<li>Scriptpath - List directories and individual NetRexx files
+that contain functions used by your scripts in Preparse mode or command line only scripts.&nbsp;Do not list jEdit macro
+directories as they are included automatically. Note that this path
+includes subdirectories automatically.</li>
+</ul>
+
+<table summary="Advanced Usage" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr width="100%" align="center">
+<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"> <a name="advanced">Advanced
+Usage</a></font></b></td>
+</tr>
+</tbody>
+</table><br>If you have scripts which are very stable, you can compile
+them into Java class files and the
+NetRexx plugin can then&nbsp;execute them directly from the class files
+without needing to parse them. This can greatly improve script
+performance. The class files can be executed from the console Run button or command
+line by entering the class name or from the Macros menu&nbsp;if you
+place them in a jEdit macro directory. Note these items if using this
+feature:<br><ul><li>If
+a script uses jEdit functions, you must add the
+jEdit variable prefix code to the script before compiling as the
+"Prefix" feature does not modify class files before execution. A
+utility script is provided to add the jEdit prefix to a script at the
+cursor location: Add_jEdit_prefix. </li><li>If
+you change and recompile a script after executing it from a class file,
+you will need to use the "Flush" option to clear the old class file
+from memory before you can use the recompiled version. </li><li>If
+compiling a multi script application that uses cross script access via
+"Preparse", you will need to compile all the scripts together in one
+compile run or separately in reference order. </li><li>You can optionally bundle your application
+classes into a jar file and add the jar file to the NetRexxScript
+Classpath option which may improve performance by reducing file system
+IO and make application distribution easier.</li></ul><br>
+
+<table summary="Feedback" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr width="100%" align="center">
+<td bgcolor="#7fb2ff" width="100%"><b><font color="#ffffff" size="+1"> <a name="feedback">Feedback</a></font></b></td>
+</tr>
+</tbody>
+</table>
+<p>
+Please send any bug reports or feedback to me at the following address
+<br>
+<em>nrs@kermitkiser.com</em>
+</p>
+<p>Thanks
+<br>
+Kermit Kiser
+</p>
+</body></html>

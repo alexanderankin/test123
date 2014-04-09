@@ -1,0 +1,61 @@
+import org.gjt.sp.jedit.
+import netrexxplugin.
+import javax.swing.
+class uninstall_from_emulator
+properties private static
+	view=jEdit.getActiveView()
+	buffer=view.getBuffer
+	wm=view.getDockableWindowManager()
+	editPane=view.getEditPane()
+	textArea=editPane.getTextArea()
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+properties private static unused
+	nowarn$scriptPath=scriptPath;nowarn$textArea=textArea;nowarn$buffer=buffer;nowarn$wm=wm		
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
+
+OPTION_PREFIX = String "options.android."
+	fs=File.separator
+	set_adk_location.main([String "check"])
+    sdk=jEdit.getProperty(OPTION_PREFIX"sdk","")
+    lap=jEdit.getProperty(OPTION_PREFIX"lastproject","")
+    lac=jEdit.getProperty(OPTION_PREFIX"lastclass","")
+    if lap="" then pd=sdk
+    	--	else pd=lap"\\bin\\classes"
+    	else pd=lap||fs"bin"fs"classes"
+    if lac\="" then pd=lac
+	chooser = JFileChooser(pd);
+    filter = FileNameExtensionFilter("Android main activity class", [String "class"]);
+    chooser.setFileFilter(filter);
+    
+    returnVal = chooser.showOpenDialog(view);
+    if returnVal \= JFileChooser.APPROVE_OPTION then return
+    	
+    apkp=chooser.getSelectedFile.getPath
+    jEdit.setProperty(OPTION_PREFIX"lastclass",apkp)
+    say "apkp="apkp
+    --	parse apkp . "classes\\" cn
+    trace results
+    parse apkp . "classes" (fs) cn
+    --	cn=cn.substr(1,cn.lastpos("\\")-1).changestr("\\",".")".apk"
+    cn=cn.substr(1,cn.lastpos(fs)-1).changestr(fs,".")
+--    cn=cn.substr(1,cn.lastpos(fs)-1).changestr(fs,".")".apk"
+--    cn=cn.changestr("\\",".").changestr(".class",".apk")
+    say "rm file name="cn
+    
+		if sdk="" then adb="adb"
+				else adb=sdk||fs"platform-tools"fs"adb"
+    
+    shell.cmd(adb "start-server","detach")
+--    shell.cmd("adb start-server","detach")
+ 
+    adbstarted=jEdit.getProperty(OPTION_PREFIX"adbstarted","no")
+    if adbstarted ="no" then Thread.sleep(5000)
+    jEdit.setTemporaryProperty(OPTION_PREFIX"adbstarted","yes")
+    trace results
+--    cn=getTarget(cn)
+    
+	cdc=adb '-e  uninstall' cn
+--	cdc='adb -e  uninstall' cn
+--	cdc='adb shell rm data/app/'cn
+	shell.cmd(cdc)
+	

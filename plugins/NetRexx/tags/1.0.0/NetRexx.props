@@ -1,0 +1,22 @@
+# NetRexx plugin properties
+# Author:  Kermit Kiser and David Requena
+
+#						- the first three sections are required to create the basic plugin
+plugin.netrexxplugin.NetRexxPlugin.activate=startup
+plugin.netrexxplugin.NetRexxPlugin.name=NetRexx
+plugin.netrexxplugin.NetRexxPlugin.author=Kermit Kiser
+plugin.netrexxplugin.NetRexxPlugin.version=1.0.0
+plugin.netrexxplugin.NetRexxPlugin.description=NetRexx Programmer Tools
+plugin.netrexxplugin.NetRexxPlugin.usePluginHome=false
+plugin.netrexxplugin.NetRexxPlugin.docs=NetRexxPlugin.html
+
+# plugin dependencies
+plugin.netrexxplugin.NetRexxPlugin.depend.0=jdk 1.5
+plugin.netrexxplugin.NetRexxPlugin.depend.1=jedit 04.03.03.00
+plugin.netrexxplugin.NetRexxPlugin.depend.2=optional plugin errorlist.ErrorListPlugin 1.5
+plugin.netrexxplugin.NetRexxPlugin.depend.3=optional plugin CommonControlsPlugin 0.2
+plugin.netrexxplugin.NetRexxPlugin.depend.4=optional plugin sidekick.SideKickPlugin 0.1
+plugin.netrexxplugin.NetRexxPlugin.depend.5=optional plugin console.ConsolePlugin 4.5
+
+# external packages required
+plugin.netrexxplugin.NetRexxPlugin.jars=NetRexxC.jar

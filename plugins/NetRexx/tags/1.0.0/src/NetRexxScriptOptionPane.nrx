@@ -1,0 +1,217 @@
+import javax.swing.
+/*
+ * NetRexxScriptOptionPane.nrx - NetRexx jEdit Scripting Plugin Options Handler
+ * Copyright (C) 2009 Kermit Kiser
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ 
+  
+Version 0.0.5 (Nov. 07 2009)
+
+    * Disable gridbag and add JScrollPane to fix problem when option window is too small in jEdit 4.2 
+ 
+Version 0.0.4 (Oct. 31 2009)
+
+    * fix prefix check - failing on Linux due to missing file sep char
+    
+Version 0.0.3 (Oct. 12 2009)
+
+    * add hidden debug option for user=dad
+
+Version 0.0.2 (Oct. 2009)
+
+    * new options: prefix (addjeditvars), classpath, scriptpath 
+    
+Version 0.0.1 (Oct. 2009)
+
+    * created to allow user control of parse/execute options for NetRexx scripts 
+ 
+ */
+
+import org.gjt.sp.jedit.
+
+package netrexxplugin
+
+class NetRexxScriptOptionPane extends AbstractOptionPane implements ActionListener
+	
+	properties private
+	
+	OPTION_PREFIX = String "options.netrexxscript."
+	ps=File.pathSeparator
+	fs=File.separator	
+	
+	debugbox=JCheckBox
+	clearbox=JCheckBox
+	tracebox=JCheckBox
+	cachebox=JCheckBox
+	preparsebox=JCheckBox
+	addjeditbox=JCheckBox
+	verbbox=JComboBox
+    verbset=[String 'noverbose','verbose', 'verbose0', 'verbose1', 'verbose2', 'verbose3', 'verbose4', 'verbose5']
+    classpath=JTextField
+    scriptpath=JTextField
+
+	method NetRexxScriptOptionPane		-----------------------------  create the option panel
+	
+		super("NetRexxScriptOptions")
+		
+    method _init						-----------------------------  initialize the option panel
+
+    	wrapper=JPanel()
+    	wrapper.setLayout(BoxLayout(wrapper, BoxLayout.PAGE_AXIS))
+		topspace=JPanel()
+		wrapper.add(topspace)    	
+    	
+    	mp=JPanel()
+    	title = BorderFactory.createTitledBorder("Main NetRexx Script Options")
+    	mp.setBorder(title)
+    	mp.setLayout(BoxLayout(mp, BoxLayout.PAGE_AXIS))
+
+    	debugbox = JCheckBox("debug output",jEdit.getBooleanProperty(OPTION_PREFIX"debug"))
+    	clearbox = JCheckBox("clear output before running scripts",jEdit.getBooleanProperty(OPTION_PREFIX"clear"))
+    	tracebox = JCheckBox("trace allowed",jEdit.getBooleanProperty(OPTION_PREFIX"trace"))
+    	cachebox = JCheckBox("cache scripts",jEdit.getBooleanProperty(OPTION_PREFIX"cache"))
+    	cachebox.addActionListener(this)
+    	preparsebox = JCheckBox("preparse all scripts",jEdit.getBooleanProperty(OPTION_PREFIX"preparse"))
+    	preparsebox.addActionListener(this)
+    	addjeditbox = JCheckBox("add jEdit variables to all scripts",jEdit.getBooleanProperty(OPTION_PREFIX"addjeditvars"))
+    	addjeditbox.addActionListener(this)
+    	
+    	if System.getProperty("user.name")='dad' then mp.add(debugbox)
+    	mp.add(clearbox)
+    	mp.add(tracebox)
+    	mp.add(cachebox)
+    	mp.add(preparsebox)
+    	mp.add(addjeditbox)
+    	
+		wrapper.add(mp)
+		mp.setAlignmentX(Component.LEFT_ALIGNMENT) 
+    	
+-------------------------------------------------------------------------	setup the verbosity selector    	
+    	verbval=jEdit.getProperty(OPTION_PREFIX"verbosity","verbose3")
+    	verbbox=JComboBox(verbset)
+    	verbbox.setSelectedIndex(Rexx(verbset).wordpos(verbval)-1)
+    	verbbox.setMaximumSize(verbbox.getPreferredSize)
+    	
+    	jp=JPanel()
+    	title = BorderFactory.createTitledBorder("Verbosity")
+    	jp.setBorder(title)
+    	jp.setLayout(BoxLayout(jp, BoxLayout.LINE_AXIS))
+
+    	tf=JLabel('Set parse verbosity:')
+    	jp.add(tf)
+    	jp.add(verbbox)
+    	
+		wrapper.add(jp)
+		jp.setAlignmentX(Component.LEFT_ALIGNMENT) 
+		
+-------------------------------------------------------------------------	setup the classpath specification panel    	
+    	cpp=JPanel()
+    	cpp.setLayout(BoxLayout(cpp, BoxLayout.PAGE_AXIS));
+    	title = BorderFactory.createTitledBorder("Classpath")
+    	cpp.setBorder(title) 
+    	
+    	classval=jEdit.getProperty(OPTION_PREFIX"classpath","")
+    	classpath=JTextField(classval,80)
+    	classpath.setMaximumSize(classpath.getPreferredSize)
+    	cpp.add(classpath)
+    	cpp.setAlignmentX(Component.LEFT_ALIGNMENT) 
+    	
+		wrapper.add(cpp)
+		
+-------------------------------------------------------------------------	setup the scriptpath specification panel    	
+    	spp=JPanel()
+    	spp.setLayout(BoxLayout(spp, BoxLayout.PAGE_AXIS));
+    	title2 = BorderFactory.createTitledBorder("Scriptpath")
+    	spp.setBorder(title2) 
+    	
+    	scriptval=jEdit.getProperty(OPTION_PREFIX"scriptpath","")
+    	scriptpath=JTextField(scriptval,80)
+    	scriptpath.setMaximumSize(scriptpath.getPreferredSize)
+    	spp.add(scriptpath)
+    	spp.setAlignmentX(Component.LEFT_ALIGNMENT) 
+    	
+		wrapper.add(spp)
+		
+		somespace=JPanel()
+		wrapper.add(somespace)
+    	    	
+		this.setLayout(BoxLayout(this, BoxLayout.PAGE_AXIS))
+    	this.add(JScrollPane(wrapper))
+    	
+    method _save				-----------------------------------------------	this method saves any option data   
+			
+		jEdit.setBooleanProperty(OPTION_PREFIX"debug",debugbox.isSelected)
+		jEdit.setBooleanProperty(OPTION_PREFIX"clear",clearbox.isSelected)
+		jEdit.setBooleanProperty(OPTION_PREFIX"trace",tracebox.isSelected)
+		jEdit.setBooleanProperty(OPTION_PREFIX"cache",cachebox.isSelected)
+		jEdit.setBooleanProperty(OPTION_PREFIX"preparse",preparsebox.isSelected)
+		jEdit.setBooleanProperty(OPTION_PREFIX"addjeditvars",addjeditbox.isSelected)
+		
+		jEdit.setProperty(OPTION_PREFIX"verbosity",verbset[verbbox.getSelectedIndex])
+		
+		tpath=Rexx(classpath.getText).strip
+		npath=''
+		loop while tpath \=''
+			parse tpath test (ps) tpath
+			tfile=File(test)
+			if tfile.exists then -
+				if tfile.isFile then -
+					if test.right(4)='.jar' then npath=Rexx(npath||ps||test).strip('b',ps)		--	add new jar file
+						else Macros.error(jedit.getActiveView(),"This entry is not a jar file - it has been removed:\n" test )
+					else npath=Rexx(npath||ps||test).strip('b',ps)								--	add new directory
+			  else Macros.error(jedit.getActiveView(),"This entry does not exist - it has been removed:\n" test )
+			end
+		jEdit.setProperty(OPTION_PREFIX"classpath",npath)
+		classpath.setText(npath)
+		
+		tpath=Rexx(scriptpath.getText).strip
+		npath=''
+		loop while tpath \=''
+			parse tpath test (ps) tpath
+			tfile=File(test)
+			if tfile.exists then -
+				if tfile.isFile then -
+					if test.right(4)='.nrx' then npath=Rexx(npath||ps||test).strip('b',ps)		--	add new nrx file
+						else Macros.error(jedit.getActiveView(),"This entry is not a NetRexx file - it has been removed:\n" test )
+					else npath=Rexx(npath||ps||test).strip('b',ps)								--	add new directory
+			  else Macros.error(jedit.getActiveView(),"This entry does not exist - it has been removed:\n" test )
+			end
+		jEdit.setProperty(OPTION_PREFIX"scriptpath",npath)
+		scriptpath.setText(npath)			
+			
+		pi=NetRexxScriptPlugin NetRexxPlugin.Script
+--		pi=NetRexxScriptPlugin jEdit.getPlugin("netrexxplugin.NetRexxPlugin").Script
+		pi.optionflush				--		ask plugin to flush memory and reset paths if needed
+		
+	method actionPerformed(e=ActionEvent)
+		
+		say e.getSource
+		
+		if e.getSource=cachebox then do
+			if \cachebox.isSelected then preparsebox.setSelected(0)
+			end
+		
+		if e.getSource=preparsebox then do
+			if preparsebox.isSelected then cachebox.setSelected(1)
+			end			
+			
+		if e.getSource=addjeditbox then do
+			setdir=jEdit.getSettingsDirectory()	--	string with settings directory path (add \macros to get default script paths)
+--			tfd=File(setdir'\\NetRexx')
+			tfd=File(setdir||fs'NetRexx')
+			if \tfd.exists then addjeditbox.setSelected(0)
+			end
+		return
