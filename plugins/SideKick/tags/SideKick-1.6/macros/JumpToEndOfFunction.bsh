@@ -1,0 +1,23 @@
+void JumpToEndOfFunction(JEditTextArea textArea)
+{
+	int position = textArea.getCaretPosition();
+	// Select the current asset
+	sidekick.SideKickActions.selectAsset(view);
+	// Search for the first occurrence of '{'
+	Selection[] selection = textArea.getSelection();
+	String s = null;
+	if (selection == null || selection.length == 0) {
+		return;
+	}
+	int start = selection[0].getStart();
+	s = textArea.getSelectedText(selection[0]);
+	for (int i = s.length() - 1; i >= 0; i--) {
+		if (s.charAt(i) == '}') {
+			textArea.setCaretPosition(start + i);
+			return;
+		}
+	}
+}
+
+
+
