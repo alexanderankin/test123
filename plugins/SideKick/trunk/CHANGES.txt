@@ -1,7 +1,10 @@
  :encoding=UTF-8:maxLineLen=95:wrap=hard:folding=indent:collapseFolds=2:
  jEdit SideKick Plugin Changelog
 
-    Version 1.5 requires Java 1.6, jEdit 5.0, ErrorList 2.0, Markets 0.8 (optional)
+    Version 1.6 requires Java 1.6, jEdit 5.0, ErrorList 2.1, MarkerSets 0.8 (optional)
+        Better calculation of asset ranges which helps with sidekick folding mode.
+        
+    Version 1.5 requires Java 1.6, jEdit 5.0, ErrorList 2.0, MarkerSets 0.8 (optional)
         Fixed NPE in handlePluginUpdate for plugins that do not have a pluginJAR. (kpouer) 
         German Localization (rschwenn)
 

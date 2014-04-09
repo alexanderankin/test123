@@ -237,7 +237,8 @@
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Show
   Completion Popup</guimenuitem> command. Each plugin that uses SideKick
   implements its own specific completion behavior; see the plugin documentation
-  for details.
+  for details. Since completion is often based on an accurate parsing of the file,
+  it is suggested that "Parse on keystroke" be selected in the Sidekick options.
  </para>
 
   </chapter>
@@ -259,7 +260,7 @@
   property file:
  </para>
 
-      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 1.4</programlisting>
+      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 1.6</programlisting>
 
       <para>
   Note that you must replace <replaceable>n</replaceable> with the
