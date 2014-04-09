@@ -1,5 +1,0 @@
-carot=int textarea.getCaretPosition()
-newText=String "method main($cmdin1=String[]) static;arg=Rexx($cmdin1)"
-SwingUtilities.invokeAndWait(BuffUp(carot,newText))
-
-

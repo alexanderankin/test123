@@ -1,6 +1,0 @@
-
-class debug_build
-
-method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
-
-	android_build.main([String "debug"])

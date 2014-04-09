@@ -1,9 +1,0 @@
-properties private static
-	view=jEdit.getActiveView()
-	buffer=view.getBuffer
-	wm=view.getDockableWindowManager()
-	editPane=view.getEditPane()
-	textArea=editPane.getTextArea()
-	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
-properties private static unused
-	nowarn$scriptPath=scriptPath;nowarn$textArea=textArea;nowarn$buffer=buffer;nowarn$wm=wm		
