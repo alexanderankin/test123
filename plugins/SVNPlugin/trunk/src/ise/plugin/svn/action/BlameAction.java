@@ -50,6 +50,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
+import org.tmatesoft.svn.core.wc.SVNRevision;
+
 /**
  * ActionListener to perform an svn blame.
  * This is not dependent on ProjectViewer.
@@ -95,6 +97,9 @@ public class BlameAction extends SVNAction {
             data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
+            if (!pathsAreUrls) {
+                data.setEndRevision(SVNRevision.WORKING);
+            }
 
             if ( getUsername() == null ) {
                 verifyLogin( paths.get( 0 ) );
@@ -159,7 +164,6 @@ public class BlameAction extends SVNAction {
                         BlamePane pane = new BlamePane( model );
                         editPane.setBuffer(buffer);
                         pane.install(buffer);
-                        
                         logger.log( Level.INFO, jEdit.getProperty( "ips.Done.", "Done." ) );
                         if ( model.outOfDate() ) {
                             JOptionPane.showMessageDialog( getView(),
