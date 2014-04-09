@@ -1,0 +1,168 @@
+/*
+ * NetRexxScriptClassLoader.nrx - NetRexx jEdit Scripting Classloader
+ * Copyright (C) 2009 Kermit Kiser
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ Version 0.0.2 (Oct 25, 2009)
+
+    *  Add loadThisClass entry to load specific classes without a search
+    
+ Version 0.0.1 (Oct 22, 2009)
+
+    *  Create custom classloader to execute java classes
+    
+*/
+
+		package netrexxplugin
+
+    class NetRexxScriptClassLoader extends ClassLoader
+    
+    	properties private
+    	
+    	    mypath=Rexx
+    	    df=boolean 0
+    	    ps=File.pathSeparator
+    	    fs=File.Separator
+    	    b=byte[]
+    	    filter=classFilter()
+    	    
+    	method NetRexxScriptClassLoader(parent=ClassLoader,path=String null)
+    		super(parent)
+    		if path\=null then mypath=path
+    			
+    	method setPath(path=String)
+    		mypath=path
+   			
+    	method getPath returns String
+    		return mypath.toString
+
+    	method setDebug(dbf=boolean)
+    		df=dbf
+    		
+    	method findClass(name=String) returns Class
+    		if searchlibs(name) then return defineClass(name, b, 0, b.length)
+    		signal ClassNotFoundException(name)
+    		
+    	method loadThisClass(name=String) returns Class
+    		if df then trace results
+    		do
+				tfn=Rexx(File(name).getName)		--	temp file name
+				tcn=tfn.left(tfn.lastpos('.')-1)	--	temp class name
+				ocl=findLoadedClass(tcn)			--	old class load exists?
+				if ocl\=null then return ocl		--	cannot reload the class name
+				buffer=ByteArrayOutputStream(9999)
+				is=FileInputStream(name)
+				if copyStream(is,buffer) then do
+					tc = defineClass(tcn, b, 0, b.length)
+					if tc=null then say "defineClass returned null" tcn
+					return tc
+					end
+--				catch fnf=FileNotFoundException
+				catch cde=Error
+					say "classname="name cde
+				catch fnf=Exception
+					say "classname="name fnf   		
+				end
+			signal ClassNotFoundException(name)
+    		
+		method searchlibs(scriptname)  --	scans internal classpath for a script by class name
+			ulp=mypath
+			loop while ulp\="" 
+				parse ulp nextpath (ps) ulp
+				if df then say "nextpath="nextpath
+				ne=File(nextpath)
+				if ne.isFile then -
+					if Rexx(ne.getName).right(4)=".jar" then -
+						if searchjar(ne.getPath,scriptname) then return 1
+				if ne.isDirectory then -
+					if searchdir(nextpath,scriptname) then return 1
+				end
+			return 0
+				
+		method searchdir(dir,scriptname) -- searches a directory and it's subdirectories for a class file
+			if df then trace all
+--			filter=classFilter()
+			if df then say "searching dir:"dir
+			dirf=File(dir)
+			if checklist(dir,dirf.list(filter),scriptname) then return 1	--	first check any scripts in the dir
+			fa=dirf.listFiles						--	array of names in the directory
+			loop i=0 to fa.length-1					--	second search any subdirectories
+				if fa[i].isDirectory then -
+					if searchdir(fa[i].getPath,scriptname) then return 1	--	recursive call to self for subdirs
+				end
+			return 0
+		
+		method checklist(dir=Rexx,fa=String[],scriptname) -- check files in a directory for a classname match
+			if df then trace results
+			if fa.length=0 then return 0
+			loop i=0 to fa.length-1
+				if df then say fa[i]
+				if scriptname".class"=fa[i] then do
+					buffer=ByteArrayOutputStream(9999)
+					is=FileInputStream(dir||fs||fa[i])
+					if copyStream(is,buffer) then return 1
+					catch fnf=FileNotFoundException
+						say "classname="scriptname fnf
+					end
+				end
+			return 0
+			
+		method searchjar(jar,scriptname) returns boolean  --  searches a jar file for a class 
+				do
+				jf=JarFile(jar)
+				entries = jf.entries()
+				loop while entries.hasMoreElements()				
+					je=JarEntry entries.nextElement()
+	--	another Java "gotcha" - jar entries have unix file separators thus requireing the translate					
+					if Rexx(je.getName).translate(fs,'/').pos(scriptname'.class')>0 then -
+						if copyjarentry(jf,je) then return 1
+					end
+				catch err=IOException
+					say "Jar error ==>" err
+				end
+				return 0
+				
+		method copyjarentry(jf=JarFile,je=JarEntry)  --	method to load a jarfile entry
+			do
+			buffer=ByteArrayOutputStream(9999)
+			is=jf.getInputStream(je)
+			if copyStream(is,buffer) then return 1
+			catch ioe=IOException
+				say "copyjarentry" ioe
+			end
+			return 0
+		
+		method copyStream(is=InputStream,buffer=ByteArrayOutputStream) -- copies a class file to a byte array
+			do
+			data = is.read
+			loop while data \= -1
+				buffer.write(data)
+				data = is.read()
+				end
+			catch ioe=IOException
+				say "class copy" ioe
+				return 0
+			end
+			b=buffer.toByteArray
+			return 1
+			
+	-- special class required for .class file filtering
+			
+		Class NetRexxScriptClassLoader.classFilter implements FilenameFilter  -- filter to select .class files
+			method accept(f=File,n=String) returns boolean
+				fn=Rexx(n)
+				if fn.right(6)='.class' then return 1
+					else return 0		

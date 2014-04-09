@@ -1,0 +1,71 @@
+--  This macro will set the NetRexx run time library path.
+
+import org.gjt.sp.jedit.
+import netrexxplugin.
+import javax.swing.
+class set_nrx_run_time_location
+properties private static
+	view=jEdit.getActiveView()
+	buffer=view.getBuffer
+	wm=view.getDockableWindowManager()
+	editPane=view.getEditPane()
+	textArea=editPane.getTextArea()
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+properties private static unused
+	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm	
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1)
+
+	parse arg flag .
+	if flag="check" then check(flag)
+		else check("setup")
+
+	method check(flag="") static returns Rexx
+		
+	if flag="check" then rtl=""
+		else if flag="setup" then rtl="" 
+			else rtl=flag
+		
+	OPTION_PREFIX = String "options.android."
+	suffix=File.separator"NetRexxR.jar"
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath")
+
+--	parse arg flag rtl .
+	if "check setup".pos(rtl)\=0 then 
+		jEdit.setProperty(OPTION_PREFIX"nrxrtl",rtl)
+--	if rtl\="" then jEdit.setProperty(OPTION_PREFIX"nrxrtl",rtl)
+	
+   	rtl=jEdit.getProperty(OPTION_PREFIX"nrxrtl","")
+   	if rtl="" then do
+   		rtl=File(scriptPath).getParent||suffix
+   		if \File(rtl).exists then rtl="Please enter NetRexx run time jar path here--------------"
+   		end
+   	
+   	if flag\="setup" then -
+   		if validrtl(rtl) then return rtl
+   	
+   	rtl=JOptionPane.showInputDialog("NetRexx run time location: ", rtl)
+   	if rtl=null then return rtl
+   	if rtl="" then rtl=File(scriptPath).getParent||suffix
+	--	if Rexx(rtl).right(4) \= ".jar" then rtl=rtl"\\NetRexxR.jar"
+	if Rexx(rtl).right(4) \= ".jar" then rtl=rtl||suffix
+		
+   	loop while \validrtl(rtl)
+   		rtl=JOptionPane.showInputDialog("Invalid NetRexx run lib location: ", rtl)
+   		--	if Rexx(rtl).right(4) \= ".jar" then rtl=rtl"\\NetRexxR.jar"
+   		if Rexx(rtl).right(4) \= ".jar" then rtl=rtl||suffix
+   		if rtl=null then return rtl
+   		end
+   	
+   	say "valid NetRexx rtl location:" rtl 
+   	jEdit.setProperty(OPTION_PREFIX"nrxrtl",rtl)
+   	return rtl
+   	
+   	method validrtl(rtl=String) static returns boolean
+   		
+   			t=boolean 1		--	"true"
+   			f=boolean 0		--	"false"	
+   		
+   		rtlf=File(rtl)
+   		if \rtlf.exists then return f
+
+   		return t

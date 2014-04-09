@@ -1,0 +1,74 @@
+--  This macro will set the NetRexxC compiler path.
+
+import org.gjt.sp.jedit.
+import netrexxplugin.
+import javax.swing.
+class set_NetRexxC_location
+properties private static
+	view=jEdit.getActiveView()
+	buffer=view.getBuffer
+	wm=view.getDockableWindowManager()
+	editPane=view.getEditPane()
+	textArea=editPane.getTextArea()
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+properties private static unused
+	nowarnscriptPath=scriptPath;nowarntextArea=textArea;nowarnbuffer=buffer;nowarnwm=wm
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1)
+	
+	parse arg flag .
+	if flag="check" then check(flag)
+		else check("setup")
+
+	method check(flag) static returns Rexx
+		
+	if flag="check" then nrc=""
+		else if flag="setup" then nrc="" 
+			else nrc=flag
+				
+	OPTION_PREFIX = String "options.android."
+	suffix=File.separator"NetRexxC.jar"
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath")
+
+--	parse arg flag nrc .
+	if "check setup".pos(nrc)\=0 then 
+		jEdit.setProperty(OPTION_PREFIX"netrexxc",nrc)
+--	if nrc\="" then jEdit.setProperty(OPTION_PREFIX"netrexxc",nrc)
+	
+   	nrc=jEdit.getProperty(OPTION_PREFIX"netrexxc", "")
+   	if nrc="" then do
+   		nrc=File(scriptPath).getParent||suffix
+		nrcf=File(nrc)
+   		if \nrcf.exists then nrc="Please enter NetRexxC jar path here--------------"
+   		end
+   	
+--   	if flag="check" then -
+   	if flag\="setup" then -
+   		if validnrc(nrc) then return nrc
+   	
+   	nrc=JOptionPane.showInputDialog("NetRexxC compiler location: ", nrc)
+   	if nrc=null then return null
+   	if nrc="" then nrc=File(scriptPath).getParent||suffix
+	--	if Rexx(nrc).right(4) \= ".jar" then nrc=nrc"\\NetRexxC.jar"
+	if Rexx(nrc).right(4) \= ".jar" then nrc=nrc||suffix
+		
+   	loop while \validnrc(nrc)
+   		nrc=JOptionPane.showInputDialog("Invalid NetRexxC location: ", nrc)
+   		if nrc="" then nrc=File(scriptPath).getParent||suffix
+   		--	if Rexx(nrc).right(4) \= ".jar" then nrc=nrc"\\NetRexxC.jar"
+   		if Rexx(nrc).right(4) \= ".jar" then nrc=nrc||suffix
+   		if nrc=null then return nrc
+   		end
+   	
+   	say "valid NetRexx nrc location:" nrc 
+   	jEdit.setProperty(OPTION_PREFIX"netrexxc",nrc)
+   	return nrc
+   	
+   	method validnrc(nrc=String) static returns boolean
+   		
+   			t=boolean 1		--	"true"
+   			f=boolean 0		--	"false"	
+   		
+   		nrcf=File(nrc)
+   		if \nrcf.exists then return f
+
+   		return t

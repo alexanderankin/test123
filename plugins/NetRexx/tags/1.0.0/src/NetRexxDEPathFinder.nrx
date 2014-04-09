@@ -1,0 +1,65 @@
+options binary strictcase
+import org.gjt.sp.jedit
+
+package netrexxplugin
+
+Class NetRexxDEPathFinder
+
+	method getJavaExecPath() public static returns String				
+		fs=String System.getProperty("file.separator")
+
+		JavaExecPath = String jEdit.getProperty("plugin.netrexxde.javapath","NotSet")
+
+		if JavaExecPath == "NotSet" then
+		do
+			JavaExecPath=System.getProperty("java.home")||fs||"bin"||fs||"java"
+			if System.getProperty("os.name").indexOf("Windows") \= -1 then
+			do
+				JavaExecPath = JavaExecPath||"w.exe"
+			end
+			if \(File(JavaExecPath).exists()) then JavaExecPath="NotSet"
+			else jEdit.setProperty("plugin.netrexxde.javapath",JavaExecPath)
+		end
+
+		return JavaExecPath
+	/**
+	 * check for the NetRexxC.jar file in plugin directory in jedit home and if not there
+	 * then in plugin directory in user home/.jedit directory
+	 */
+	method getNrxClassPath() public static returns String
+		fs=String System.getProperty("file.separator")
+
+		NrxClassPath =String jEdit.getProperty("plugin.netrexxde.NrxClassPath","NotSet")
+
+		if NrxClassPath == "NotSet" then 
+		do
+			NrxClassPath=jEdit.getJEditHome()||fs||"jars"||fs||"NetRexxC.jar"
+			if \(File(NrxClassPath).exists()) then
+			do
+				NrxClassPath=System.getProperty("user.home")||fs||".jedit"||fs||"jars"||fs||"NetRexxC.jar"
+--				if \(File(NrxClassPath).exists()) then NrxClassPath="NotSet"
+				if \(File(NrxClassPath).exists()) then
+				do
+					NrxClassPath=System.getProperty("user.home")||fs||"AppData"||fs||"Roaming"||fs||"jEdit"||fs||"jars"||fs||"NetRexxC.jar"  -- jEdit 5 moved windows profile, perhaps for portable apps?
+					if \(File(NrxClassPath).exists()) then NrxClassPath="NotSet"
+				end
+			end
+			if \(NrxClassPath="") then jEdit.setProperty("plugin.netrexxde.NrxClassPath", NrxClassPath)
+		end
+
+		return NrxClassPath
+
+	method getToolsPath() public static returns String
+
+		fs=String System.getProperty("file.separator")
+
+		ToolsPath =String jEdit.getProperty("plugin.netrexxde.ToolsPath","NotSet")
+
+		if ToolsPath == "NotSet" then
+		do
+			ToolsPath=System.getProperty("java.home")||fs||".."||fs||"lib"||fs||"tools.jar"
+			if \(File(ToolsPath).exists()) then ToolsPath="NotSet"
+			else jEdit.setProperty("plugin.netrexxde.ToolsPath", ToolsPath)
+		end
+
+		return ToolsPath

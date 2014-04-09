@@ -1,0 +1,27 @@
+-- this macro starts the android sdk utility console
+
+import org.gjt.sp.jedit.
+import netrexxplugin.
+import javax.swing.
+class android_update
+properties private static
+	view=jEdit.getActiveView()
+	buffer=view.getBuffer
+	wm=view.getDockableWindowManager()
+	editPane=view.getEditPane()
+	textArea=editPane.getTextArea()
+	scriptPath=jEdit.getProperty(String "NetRexxScriptPath") 	/* This will now work with jEdit 4.2  */
+properties private static unused
+	nowarn$scriptPath=scriptPath;nowarn$textArea=textArea;nowarn$buffer=buffer;nowarn$wm=wm		
+method main($cmdin1=String[]) static;arg=Rexx($cmdin1);arg=arg
+	
+	OPTION_PREFIX = String "options.android."
+	fs=File.separator
+ --													verify default locations:
+	set_adk_location.main([String "check"])
+	sdk=jEdit.getProperty(OPTION_PREFIX"sdk","")
+	if sdk="" then android="android"
+		else android=sdk||fs"tools"fs"android"
+	
+shell.cmd(android,"detach noconsole")
+--shell.cmd("android","detach")

@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+
+<project name="NetRexxPlugin" default="build" basedir=".">
+
+	<!-- Allow properties to be overridden: -->
+    <property file="build.properties" />
+    <property file="../build.properties" />
+    <property file="${user.home}/.build.properties" />
+    <property file="${user.home}/build.properties" />
+	<property name="build.sysclasspath" value="ignore"/>    
+    
+	<!-- JEdit's local installation properties -->
+
+	<property name="install.dir" value=".." description="Installation output directory for plugin jars"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" description="Location of required plugin jars"/>
+	
+	<!-- Project properties -->
+	<property name="project.version" value="1.0.0" description="Project's build version"/>
+	<property name="project.root.dir" value="." description="Project's root directory"/>
+	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
+	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
+	<property name="project.utilities.dir" value="${project.root.dir}/NetRexx" description="Project's utilities"/>
+	<property name="project.build.binjar.name" value="${ant.project.name}.jar" description="Binary jar file name"/>
+	<property name="project.package.plugin" value="netrexxplugin" description="plugin package name/dir"/>
+	
+	<property name="ant.netrexxc.verbose" value="verbose3"/>
+	
+	<import file="${user.home}/test-build.xml" optional="true" />
+	
+	<!-- This should have been set elsewhere already! -->
+	<!-- This must point to the location of the jEdit 4.2 main jar in order to support 4.2 users in addition to 4.3 users. -->
+	<!-- <property name="jedit.install.dir" value="C:\Program Files\jEdit"/> -->
+	<!-- <property name="jedit.install.dir" value="C:/downloads/jEdit/4.2" description="jEdit installation to build against"/> -->
+	<!-- <property name="jedit.install.dir" value="../../../jedit/4.2" description="jEdit installation to build against"/> -->
+    
+    <!-- define our own netrexx compiler task to bypass some Ant problems such as missing optional tasks -->
+	
+    <target name="prep"  description="Defines NetRexx compiler task">
+		<taskdef name="buildnrc" classname="org.apache.tools.ant.taskdefs.optional.NetRexx" classpath="${project.netrexx.libdir}${file.separator}ant-netrexx.jar${path.separator}${project.netrexx.libdir}${file.separator}NetRexxC.jar"/>
+		
+		 <path id="netrexxc.classpath">
+		 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		 	<pathelement location="${project.src.dir}"/>
+		 	<pathelement location="${project.utilities.dir}"/>
+		 	<pathelement location="${project.root.dir}"/>
+		 	<fileset dir="${project.netrexx.libdir}">
+				<include name="NetRexxC.jar"/>
+				<include name="ant-netrexx.jar"/>
+			</fileset>
+		 	<fileset dir="${jedit.plugins.dir}">
+				<include name="ErrorList.jar"/>
+				<include name="CommonControls.jar"/>
+				<include name="SideKick.jar"/>
+				<include name="Console.jar"/>
+				<include name="ProjectViewer.jar"/>
+			</fileset>
+		 </path>
+		
+    </target>
+    
+    <target name="buildnrx"  depends="prep" description="Compiles NetRexx source files">
+    
+        <buildnrc srcDir="src" destDir="${project.package.plugin}" includes="*.nrx"
+        	classpath="${toString:netrexxc.classpath}"
+        	comments="false" savelog="false" time="true" compact="false"
+        	verbose='verbose1' crossref="false" replace="false" keep="false"/>
+ 
+     </target>
+    
+    <target name="compilemacros" depends="prep" description="Builds sample script classfiles">
+    
+        <buildnrc srcDir="NetRexx" includes="*.nrx" excludes="error.nrx netrexx*.nrx"
+			classpath="${toString:netrexxc.classpath}"
+        	comments="false" savelog="false" time="true" compact="false"
+        	verbose='verbose3' crossref="false" replace="false" keep="false"/>
+        
+		<move todir="macros/NetRexx_samples">
+			<fileset dir="NetRexx">
+			  <include name="class*.class"/>
+			</fileset>
+		</move>
+        
+        <buildnrc srcDir="NetRexx/Android_NetRexx_IDE" includes="*.nrx"
+			classpath="${toString:netrexxc.classpath}"
+        	comments="false" savelog="false" time="true" compact="false"
+        	verbose='verbose3' crossref="false" replace="false" keep="false"/>
+          
+		<move todir="macros/Android_NetRexx_IDE">
+			<fileset dir="NetRexx/Android_NetRexx_IDE">
+			  <include name="*.class"/>
+			</fileset>
+		</move>      
+		
+    </target>
+    
+    <target name="build" depends="init,cleannrx" description="Builds NetRexx plugin jar">
+        <jar destfile="${install.dir}/${project.build.binjar.name}" basedir="." 
+        	excludes="*.java *.nrx **\*.log build.xml src\ lib\ build\ dist\"/>
+         <copy file="${project.netrexx.libdir}/NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" verbose="true" />
+    </target>  
+    
+    <target name="cleannrx" depends="buildnrx,compilemacros" description="Cleans up work files for normal build">
+       <delete verbose="true" >
+        	<fileset dir="." includes="*.nrx" />
+        	<fileset dir="${project.package.plugin}" includes="*.nrx" />
+        	<fileset dir="macros/NetRexx_samples" includes="class*.nrx" />        	
+        	<fileset dir="NetRexx" includes="*.java *.keep" />        	
+        	</delete>
+    </target>
+    
+    <target name="clean" description="Cleans out all build work files for fresh start">
+       <delete verbose="true" includeEmptyDirs="true" >
+        	<fileset dir="." includes="*.nrx *.class *.java *.keep" />
+        	<fileset dir="${project.package.plugin}" erroronmissingdir="no" />
+        	<fileset dir="macros/NetRexx" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="macros/NetRexx_samples" includes="class*.nrx *.class *.java" />        	
+        	<fileset dir="macros/Android_NetRexx_IDE" includes="*.class *.java" />        	
+        	<fileset dir="NetRexx/Android_NetRexx_IDE" includes="*.class *.java" />        	
+        	<fileset dir="NetRexx" includes="*.class *.java *.keep" />        	
+        	</delete>
+    </target>
+	
+	<target name="init"  description="Set build number and document version level">
+		<tstamp/>
+		<buildnumber file="${project.settings.dir}/build.number"/>
+		<property name="build.id.string"
+			value="${ant.project.name} ${project.version}, build ${build.number}-${DSTAMP}"/>
+		<echo level="info" message="Starting building for ${build.id.string}"/>
+	</target>
+	
+    <target name="dist" depends="clean,build" description="Builds JAR file from scratch">
+    </target>
+    
+</project>
+
+
