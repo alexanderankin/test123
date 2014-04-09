@@ -36,33 +36,32 @@ import org.tmatesoft.svn.core.wc.ISVNAnnotateHandler;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
-import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.wc.SVNStatus;
 
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.data.LogData;
-//import ise.plugin.svn.gui.component.BlameModel;
+// import ise.plugin.svn.gui.component.BlameModel;
 import common.gui.blame.BlameModel;
 
 public class Blame {
 
     private ArrayList<String> results = new ArrayList<String>();
-    private PrintStream out = null;        // NOPMD
+    private PrintStream out = null;    // NOPMD
 
     /**
      * @return a list of revision and author, one entry per line of the file.
      */
-    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
+    @SuppressWarnings( "deprecation" )
+
+    // SVNURL.parseURIEncoded
     public BlameModel getBlame( LogData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
 
         // validate data values
         if ( data.getPaths() == null ) {
-            return null;     // nothing to do
+            return null;            // nothing to do
         }
         if ( data.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
@@ -83,7 +82,7 @@ public class Blame {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword() ) );
 
         // get a client
         SVNLogClient client = clientManager.getLogClient();
@@ -94,49 +93,42 @@ public class Blame {
         out = data.getOut();
 
         ISVNAnnotateHandler handler = new ISVNAnnotateHandler() {
-                    @Deprecated
-                    public void handleLine( Date date, long revision,
-                            String author, String line ) {
-                        results.add( revision + " " + author );
-                    }
-                    public void handleEOF() {
-                        
-                    }
-                    
-                    public boolean handleRevision(Date date, long revision, String author, File contents) {
-                        return false;
-                    }
-                    
-                    public void handleLine(Date data, long revision, String author, 
-                        String line, Date mergedDate, long mergedRevision, 
-                        String mergedAuthor, String mergedPath, int lineNumber) {
-                        results.add( revision + " " + author );
-                    }
-                };
 
+            @Deprecated
+            public void handleLine( Date date, long revision, String author, String line ) {
+            }
+
+            public void handleEOF() {
+            }
+
+            public boolean handleRevision( Date date, long revision, String author, File contents ) {
+                return false;
+            }
+
+            public void handleLine( Date data, long revision, String author, String line, Date mergedDate, long mergedRevision, String mergedAuthor, String mergedPath, int lineNumber ) {
+                String revStr = revision >= 0 ? String.valueOf( revision ) : " -- ";
+                String authorStr = author != null ? author : " -- ";
+                results.add( revStr + " " + authorStr );
+            }
+        };
+
+        // collect the "blame" lines
         BlameModel model = new BlameModel();
         if ( data.pathsAreURLs() ) {
             SVNURL svnurl = SVNURL.parseURIDecoded( path );
             client.doAnnotate( svnurl, SVNRevision.HEAD, data.getStartRevision(), data.getEndRevision(), handler );
-        }
-        else {
-            // collect the "blame" lines
+        } else {
             client.doAnnotate( file, SVNRevision.HEAD, data.getStartRevision(), data.getEndRevision(), handler );
-            SVNStatusClient status_client = clientManager.getStatusClient();
-
-            // check if the local file has been modified and set out of date if it has
-            SVNStatus status = status_client.doStatus( file, true );
-            model.setOutOfDate( SVNStatusType.STATUS_MODIFIED.equals( status.getContentsStatus() ) );
         }
         model.setBlame( results );
 
         out.flush();
         out.close();
         clientManager.dispose();
-        
+
         return model;
     }
-    public static void main ( String[] args ) {
+    public static void main( String[] args ) {
         // for testing
         LogData data = new LogData();
         data.setUsername( "danson" );
@@ -152,8 +144,7 @@ public class Blame {
             org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
             BlameModel results = blame.getBlame( data );
             System.out.println( results );
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
     }
