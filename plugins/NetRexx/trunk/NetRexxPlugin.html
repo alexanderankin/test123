@@ -82,7 +82,7 @@ The minimum requirements are:
 </li>
   <li>NetRexxC.jar (Rexx Language Association Open NetRexx version 3.02 or later)</li>
 
-  
+
 </ul>Additional plugins needed to activate all features (install before activating NetRexx plugin):<br>
 <ul>
 
@@ -122,10 +122,15 @@ Start jEdit, from menu select
 "Plugins"=&gt;"Plugin Manager", select "Install" tab, check box for
 NetRexx Plugin, click "Install button".<br>
 <br>
-Skip to step 3 below if installing via Plugin Manager.<br>
+Skip to step 4 below if installing via Plugin Manager.<br>
 
 </p>You can also install it manually if needed:
 <ol>
+
+    <li>Delete any old plugin directories from previous versions before running the new plugin:&nbsp;  <tt><i>SettingsDir</i>/NetRexx</tt> and <tt><i>SettingsDir</i>/macros/NetRexx*</tt>
+    <br>
+    Go to <tt>Utilities - Settings Directory</tt> to see where the jedit user settings directory is on your system.
+    </li>
 
   <li> Download the <a href="https://kenai.com/projects/netrexx-plus/downloads/download/jEdit%20NetRexxPlugin/NetRexxPlugin.jar">NetRexxPlugin.jar</a>&nbsp;file and the <a href="http://netrexx.org/netrexx/netrexxc/trunk/build/lib/NetRexxC.jar">NetRexxC.jar</a>
 file:<br>
@@ -134,40 +139,16 @@ http://netrexx.org/netrexx/netrexxc/trunk/lib/NetRexxC.jar<br>
     <br>
  </li>
 
-  <li> Copy both&nbsp;files to&nbsp;the&nbsp;user
-account's jEdit jars directory.<br>
-    <br>
-
-On Windows the user's jEdit jars directory could be C:\Documents and
-Settings\useracct\.jedit\jars or C:\Documents and
-Settings\useracct\Appdata\Roaming\jedit\jars (Where "useracct" is the actual userid,
-of course.)<br>
-
-On Linux the user's jEdit jars directory could be
-/home/useracct/.jedit/jars<br>
-    <br>
+  <li> Copy both&nbsp;files to&nbsp;the&nbsp;user account's jEdit <tt><i>SettingsDir</i>/jars</tt> directory.<br>
   </li>
 
-  
-  <li>Delete any old plugin directories from previous versions before running the new plugin:&nbsp;  C:\Documents and
-Settings\useracct\.jedit\NetRexx and C:\Documents and
-Settings\useracct\.jedit\macros\NetRexx*  <br>
-or in newer jEdit versions: C:\Documents and
-Settings\useracct\Appdata\Roaming\jedit\NetRexx and C:\Documents and
-Settings\useracct\Appdata\Roaming\jedit\macros\NetRexx*<br>
 
-On Linux the user's jEdit profile directory should be
-/home/useracct/.jedit<br>
-Mac?<br><br>
-  </li>
-
-  
-  <li>Start jEdit, then open the plugin window from the jEdit menu:
+  <li>Start jEdit, then open the NetRexx dockable from the jEdit menu:
 "Plugins"=&gt;"NetRexx"=&gt;"NetRexx", then click the down arrow at
 upper left of window and select to dock (Top or Bottom work best).<br>
     <br>
   </li>
-  <li>Verify installation: In a new file enter the following line:<br>
+  <li>Verify installation: In a new netrexx buffer, enter the following line:<br>
  say "Hello World"<br>
 Click the Run button in the NetRexx window (right arrowhead). This output should appear in the output window: Hello World <br>
   </li>
