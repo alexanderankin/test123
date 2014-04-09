@@ -240,8 +240,9 @@ There are workarounds for that, see our bug tracker entry #3491410,
      <listitem><para><emphasis role="bold">Version 1.1</emphasis>
       by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. </para>
     <itemizedlist>
-      <listitem><para> Fix plugin-bug #1776 FTP 1.0.8 multiple master password
-      dialog. </para> </listitem>
+      <listitem><para> Updated to jsch-0.1.51.jar </para></listitem> 
+      <listitem><para> Plugin-bug #1776 Fixed: Removed possible duplicate
+      password dialogs on startup. </para> </listitem>
       <listitem><para> Now properly hides SplashScreen before popping up
       password dialogs. </para></listitem>
     </itemizedlist> </listitem>
