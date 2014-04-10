@@ -690,6 +690,7 @@ void PackageOrTypeName():
 void ExpressionName():
 {}
 {
+    // TODO: this isn't right, it needs to account for 'this'.
     [ LOOKAHEAD(2) AmbiguousName() "." ] Identifier()
 }
 
@@ -1195,7 +1196,10 @@ void SimpleTypeName():
 void ConstructorBody():
 {}
 {
-    "{" [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] [ LOOKAHEAD(BlockStatements()) BlockStatements() ] "}"
+    "{" 
+        [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] 
+        [ LOOKAHEAD(BlockStatements()) BlockStatements() ] 
+    "}"
 }
 
 void ExplicitConstructorInvocation():
@@ -1922,6 +1926,7 @@ void PrimaryNoNewArray():
     |
     "void" "." "class"
     |
+    LOOKAHEAD(2)
     "this"
     |
     LOOKAHEAD(3)
@@ -1948,9 +1953,9 @@ void PrimaryNoNewArray():
 void ClassInstanceCreationExpression():
 {}
 {
-    "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [ClassBody()] (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [ClassBody()] )*
+    "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
     |
-    ExpressionName() (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [ClassBody()] )*
+    ExpressionName() (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
 }
 
 void TypeArgumentsOrDiamond():
@@ -2113,7 +2118,7 @@ void Assignment():
 void LeftHandSide():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
     ExpressionName()
     |
     LOOKAHEAD(3) 
