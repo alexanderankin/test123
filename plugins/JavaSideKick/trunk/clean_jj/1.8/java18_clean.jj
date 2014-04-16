@@ -69,8 +69,9 @@ public class JavaParser
             parser.CompilationUnit();
             System.out.println("JavaParser:  input parsed successfully.");
         } catch (ParseException e) {
-            System.out.println("JavaParser:  Encountered errors during parse.");
-            System.out.println(e.getMessage());
+            System.err.println("JavaParser:  Encountered errors during parse.");
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
@@ -402,6 +403,7 @@ TOKEN :
 }
 
 /* >'s need special attention due to generics syntax. */
+/*
 TOKEN :
 {
   < RUNSIGNEDSHIFT: ">>>" >
@@ -418,7 +420,7 @@ TOKEN :
   }
 | < GT: ">" >
 }
-
+*/
 /*
 --------------------------------------------------------------------------------
 Literals
@@ -611,11 +613,11 @@ void TypeParameterModifier():
 void TypeBound():
 {}
 {
-    LOOKAHEAD(3)
-    "extends" TypeVariable()
+    LOOKAHEAD(6)
+    "extends" ClassOrInterfaceType() (AdditionalBound())*
     |
     LOOKAHEAD(3)
-    "extends" ClassOrInterfaceType() (AdditionalBound())*
+    "extends" TypeVariable()
 }
 
 void AdditionalBound():
