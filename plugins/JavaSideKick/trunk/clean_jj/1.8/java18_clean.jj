@@ -67,9 +67,20 @@ public class JavaParser
         try {
             parser.enable_tracing();
             parser.CompilationUnit();
-            System.out.println("JavaParser:  input parsed successfully.");
+            //parser.MethodDeclaration();
+            if (args.length == 0) {
+                System.out.println("JavaParser:  input parsed successfully.");
+            } 
+            else if (args.length == 1) {
+                System.out.println("JavaParser: " + args[0] + " parsed successfully.");   
+            }
         } catch (ParseException e) {
-            System.err.println("JavaParser:  Encountered errors during parse.");
+            if (args.length == 0) {
+                System.err.println("JavaParser:  Encountered errors during parse.");
+            } 
+            else if (args.length == 1) {
+                System.err.println("JavaParser: Encountered errors during parse of " + args[0]);   
+            }
             System.err.println(e.getMessage());
             System.exit(1);
         }
@@ -883,7 +894,7 @@ void ClassBodyDeclaration():
 void ClassMemberDeclaration():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
     FieldDeclaration()
     |
     LOOKAHEAD(6)
@@ -971,36 +982,26 @@ void UnannPrimitiveType():
 void UnannReferenceType():
 {}
 {
+    LOOKAHEAD(8)
+    UnannArrayType()
+    |
     LOOKAHEAD(3)
     UnannClassOrInterfaceType()
     |
     LOOKAHEAD(3)
     UnannTypeVariable()
-    |
-    LOOKAHEAD(3)
-    UnannArrayType()
 }
 
 void UnannClassOrInterfaceType():
 {}
 {
-    LOOKAHEAD(3)
     UnannClassType()
-    |
-    LOOKAHEAD(3)
-    UnannInterfaceType()
 }
 
 void UnannClassType():
 {}
 {
     Identifier() [TypeArguments()] ("." (Annotation())* Identifier() [TypeArguments()])*
-}
-
-void UnannInterfaceType():
-{}
-{
-    UnannClassType()
 }
 
 void UnannTypeVariable():
@@ -1076,7 +1077,7 @@ void MethodDeclarator():
 void FormalParameterList():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
     FormalParameters() [ "," LastFormalParameter() ]
     |
     LOOKAHEAD(3)
