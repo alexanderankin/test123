@@ -690,21 +690,21 @@ void PackageOrTypeName():
 void ExpressionName():
 {}
 {
-    // TODO: this isn't right, it needs to account for 'this'.
-    [ LOOKAHEAD(2) AmbiguousName() "." ] Identifier()
+    LOOKAHEAD(6)
+    Identifier()( LOOKAHEAD(2) "." Identifier() )* "." "this" ( LOOKAHEAD(2) "." Identifier() )*
+    |
+    LOOKAHEAD(3)
+    Identifier()( LOOKAHEAD(2) "." Identifier() )*
+    |
+    "this" (LOOKAHEAD(2) "." Identifier() )*
 }
 
 void MethodName():
 {}
 {
-    Identifier()
+    ExpressionName()
 }
 
-void AmbiguousName():
-{}
-{
-    Identifier()( LOOKAHEAD(2) "." Identifier() )*
-}
 
 
 /*
@@ -867,7 +867,7 @@ void ClassBody():
 void ClassBodyDeclaration():
 {}
 {
-    LOOKAHEAD(10)
+    LOOKAHEAD(3)
     ClassMemberDeclaration()
     |
     InstanceInitializer()
@@ -881,10 +881,10 @@ void ClassBodyDeclaration():
 void ClassMemberDeclaration():
 {}
 {
-    LOOKAHEAD(10)
+    LOOKAHEAD(3)
     FieldDeclaration()
     |
-    LOOKAHEAD(10)
+    LOOKAHEAD(6)
     MethodDeclaration()
     |
     LOOKAHEAD(3)
@@ -1052,9 +1052,9 @@ void MethodModifier():
 void MethodHeader():
 {}
 {
-        Result() MethodDeclarator() [Throws()]
-        |
-        TypeParameters() (Annotation())* Result() MethodDeclarator() [Throws()]
+    TypeParameters() (Annotation())* Result() MethodDeclarator() [Throws()]
+    |
+    Result() MethodDeclarator() [Throws()]
 }
 
 void Result():
@@ -1519,14 +1519,14 @@ void BlockStatements():
 void BlockStatement():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
+    Statement()
+    |
+    LOOKAHEAD(6)
     LocalVariableDeclarationStatement()
     |
     LOOKAHEAD(3)
     ClassDeclaration()
-    |
-    LOOKAHEAD(4)
-    Statement()
 }
 
 void LocalVariableDeclarationStatement():
@@ -1544,7 +1544,7 @@ void LocalVariableDeclaration():
 void Statement():
 {}
 {
-    LOOKAHEAD(2)
+    LOOKAHEAD(6)
     StatementWithoutTrailingSubstatement()
     |
     LOOKAHEAD(2)
@@ -1647,7 +1647,7 @@ void StatementExpression():
     LOOKAHEAD(3)
     PostDecrementExpression()
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
     MethodInvocation()
     |
     LOOKAHEAD(3)
@@ -1984,6 +1984,11 @@ void MethodInvocation():
 {}
 {
     LOOKAHEAD(2)
+    "super" "(" [ArgumentList()] ")"
+    |
+    "super" (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    |
+    LOOKAHEAD(2)
     MethodName() "(" [ArgumentList()] ")" 
     |
     LOOKAHEAD(3)
@@ -1991,8 +1996,6 @@ void MethodInvocation():
     |
     LOOKAHEAD(3)
     ExpressionName() (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
-    |
-    "super" (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
     |
     LOOKAHEAD(3)
     TypeName() "." "super" ( LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
