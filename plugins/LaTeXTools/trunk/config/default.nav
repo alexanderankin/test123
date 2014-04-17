@@ -1,6 +1,7 @@
 @All1
 1:(\\bibliography\{(.+?)\})|(\\begin\{thebibliography\}):Biblio\u003A $2:0: :1
 1:\\part[\[{](.+?)[\]}]:  $1 :0: :1
+1:\\((input)|(include))\{(.+?)\}:$1\u003A $4:0: :7
 2:\\chapter[\[{](.+?)[\]}]:  $1 :0: :1
 3:\\section[\[{](.+?)[\]}]:  $1 :0: :1
 4:\\subsection[\[{](.+?)[\]}]:  $1 :0: :1
@@ -25,7 +26,6 @@
 7:\\begin\{itemize\}:Itemize:3:\\end\{itemize\}:5
 7:\\begin\{enumerate\}:Enumerate:3:\\end\{enumerate\}:5
 7:\\begin\{(cpp|verbatim)\}:$1:3:\\end\{(cpp|verbatim)\}:6
-8:\\((input)|(include))\{(.+?)\}:$1\u003A $4:0: :7
 
 @Sections2
 1:\\part[\[{](.+?)[\]}]:  $1 :0: :1
