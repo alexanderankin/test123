@@ -2036,10 +2036,11 @@ void LambdaBody():
 void AssignmentExpression():
 {}
 {
+    LOOKAHEAD(Assignment())
+    Assignment()
+    |
     LOOKAHEAD(ConditionalExpression())
     ConditionalExpression()
-    |
-    Assignment()
 }
 
 void Assignment():
