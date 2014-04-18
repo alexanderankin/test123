@@ -672,16 +672,6 @@ void PackageName():
 void TypeName():
 {}
 {
-    LOOKAHEAD(2)
-    Identifier()
-    |
-    LOOKAHEAD(2)
-    PackageOrTypeName() "." Identifier()
-}
-
-void PackageOrTypeName():
-{}
-{
     Identifier()( LOOKAHEAD(2) "." Identifier() )*
 }
 
@@ -696,7 +686,6 @@ void ExpressionName():
 void MethodName():
 {}
 {
-    // TODO: can this be right? Chapter 6 says Identifier()
     ExpressionName()
 }
 
@@ -729,45 +718,7 @@ void PackageModifier():
 void ImportDeclaration():
 {}
 {
-    LOOKAHEAD(3)
-    SingleTypeImportDeclaration()
-    |
-    LOOKAHEAD(3)
-    TypeImportOnDemandDeclaration()
-    |
-    LOOKAHEAD(3)
-    SingleStaticImportDeclaration()
-    |
-    LOOKAHEAD(3)
-    StaticImportOnDemandDeclaration()
-}
-
-void SingleTypeImportDeclaration():
-{}
-{
-    "import" TypeName() ";"
-
-}
-
-void TypeImportOnDemandDeclaration():
-{}
-{
-    "import" PackageOrTypeName() "." "*" ";"
-
-}
-
-void SingleStaticImportDeclaration():
-{}
-{
-    "import" "static" TypeName() "." Identifier() ";"
-
-}
-
-void StaticImportOnDemandDeclaration():
-{}
-{
-    "import" "static" TypeName() "." "*" ";"
-
+    "import" ["static"] TypeName() ["." "*"] ";"
 }
 
 void TypeDeclaration():
@@ -938,13 +889,15 @@ void VariableDeclaratorId():
 void VariableInitializer():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(ArrayInitializer())
+    ArrayInitializer()
+    |
+    // TODO: added Primary(), it seems to be necessary. Confirm.
+    LOOKAHEAD(Expression())
     Expression()
     |
-    // TODO: added this, it seems to be necessary. Confirm.
+    LOOKAHEAD(Primary())
     Primary()
-    |
-    ArrayInitializer()
 }
 
 void UnannType():
@@ -1510,11 +1463,11 @@ void BlockStatements():
 void BlockStatement():
 {}
 {
-    LOOKAHEAD(6)
-    Statement()
-    |
-    LOOKAHEAD(6)
+    LOOKAHEAD(LocalVariableDeclarationStatement())
     LocalVariableDeclarationStatement()
+    |
+    LOOKAHEAD(Statement())
+    Statement()
     |
     LOOKAHEAD(3)
     ClassDeclaration()
@@ -1535,7 +1488,9 @@ void LocalVariableDeclaration():
 void Statement():
 {}
 {
-    LOOKAHEAD(6)
+    ForStatement()
+    |
+    LOOKAHEAD(StatementWithoutTrailingSubstatement())
     StatementWithoutTrailingSubstatement()
     |
     LOOKAHEAD(2)
@@ -1548,8 +1503,6 @@ void Statement():
     IfThenStatement()
     |
     WhileStatement()
-    |
-    ForStatement()
 }
 
 void StatementNoShortIf():
@@ -1727,7 +1680,7 @@ void DoStatement():
 void ForStatement():
 {}
 {
-    LOOKAHEAD(6)
+    LOOKAHEAD(BasicForStatement())
     BasicForStatement()
     |
     EnhancedForStatement()
@@ -1900,19 +1853,19 @@ void Primary():
 void PrimaryNoNewArray():
 {}
 {
-    LOOKAHEAD(6)
+    LOOKAHEAD(MethodInvocation())
     MethodInvocation() (LOOKAHEAD(2) "." MethodInvocation())*
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(ArrayAccess())
     ArrayAccess()
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(FieldAccess())
     FieldAccess()
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(MethodReference())
     MethodReference()
     |
-    LOOKAHEAD(6)
+    LOOKAHEAD(ClassInstanceCreationExpression())
     ClassInstanceCreationExpression()
     |
     Literal()
@@ -2083,10 +2036,10 @@ void LambdaBody():
 void AssignmentExpression():
 {}
 {
-    LOOKAHEAD(3)
-    Assignment()
-    |
+    LOOKAHEAD(ConditionalExpression())
     ConditionalExpression()
+    |
+    Assignment()
 }
 
 void Assignment():
@@ -2098,10 +2051,10 @@ void Assignment():
 void LeftHandSide():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(ArrayAccess())
     ArrayAccess()
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(FieldAccess())
     FieldAccess()
     |
     ExpressionName()
