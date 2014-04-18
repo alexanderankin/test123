@@ -104,7 +104,7 @@ echo "		</trackers>
 for i in $source/*.json; do
 	j=${i%.json}.xml
 	echo "$i --> $j"
-	java -cp "$jackson:."  org.jedit.JSonXMLReader "$i" > "$j"
+	java -cp "$jackson:$mydir"  org.jedit.JSonXMLReader "$i" > "$j"
 done
 
 echo Running transformation...
