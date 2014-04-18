@@ -453,19 +453,19 @@
 					</th>
 					<th>
 					<xsl:sequence select="local:filter-select('submitter', (distinct-values(for $i in
-						(self::json:obj,json:obj)[1]/tickets/json:arr/json:obj[local:status(status) = $status_to_include]
+						(self::json:obj,json:obj)/tickets/json:arr/json:obj[local:status(status) = $status_to_include]
 						return local:submitter($i))))"/>
 					</th>
 					<th>
 					<xsl:sequence select="local:filter-select('assigned', (distinct-values(for $i in
-						(self::json:obj,json:obj)[1]/tickets/json:arr/json:obj[local:status(status) = $status_to_include]
+						(self::json:obj,json:obj)/tickets/json:arr/json:obj[local:status(status) = $status_to_include]
 						return $i/assigned_to)))"/>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
 			<!-- always called on trackers or tracker -->
-    		<xsl:for-each select="(self::json:obj,json:obj)[1]">
+			<xsl:for-each select="(self::json:obj,json:obj)">
 			<xsl:sort select="name"/>
 				<xsl:variable name="dir" select="if($item-directory) then concat(tracker_config/json:obj/options/json:obj/mount_label,'/') else ''"/>
 
