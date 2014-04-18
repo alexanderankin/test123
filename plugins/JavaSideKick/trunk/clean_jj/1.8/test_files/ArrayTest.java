@@ -5,7 +5,7 @@ class ArrayTest {
         // System.out.println(hello == ("Hel"+lo).intern());
         System.out.print("gradual underflow: " + d + "\n   ");
         for (int i = 0; i < 4; i++) {
-            System.out.print(" " + (d += 100000));
+            System.out.print(" " + (d /= 100000));
         }
         // System.out.print(" " + (d /= 100000));
         // int cn = rw.myNumbers();
