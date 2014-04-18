@@ -1496,10 +1496,10 @@ void Statement():
     LOOKAHEAD(2)
     LabeledStatement()
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(IfThenElseStatement())
     IfThenElseStatement()
     |
-    LOOKAHEAD(3)
+    LOOKAHEAD(IfThenStatement())
     IfThenStatement()
     |
     WhileStatement()
