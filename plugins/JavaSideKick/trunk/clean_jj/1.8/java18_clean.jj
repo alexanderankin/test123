@@ -67,7 +67,6 @@ public class JavaParser
         try {
             parser.enable_tracing();
             parser.CompilationUnit();
-            //parser.MethodDeclaration();
             if (args.length == 0) {
                 System.out.println("JavaParser:  input parsed successfully.");
             } 
@@ -511,10 +510,7 @@ void Type():
 void PrimitiveType():
 {}
 {
-    LOOKAHEAD(3)
-    (Annotation())* NumericType()
-    |
-    (Annotation())* "boolean"
+    (Annotation())* ( LOOKAHEAD(2) NumericType() | "boolean" )
 }
 
 void NumericType():
@@ -612,23 +608,13 @@ void Dims():
 void TypeParameter():
 {}
 {
-    (TypeParameterModifier())* Identifier() [TypeBound()]
-}
-
-void TypeParameterModifier():
-{}
-{
-    Annotation()
+    (Annotation())* Identifier() [TypeBound()]
 }
 
 void TypeBound():
 {}
 {
-    LOOKAHEAD(6)
-    "extends" ClassOrInterfaceType() (AdditionalBound())*
-    |
-    LOOKAHEAD(3)
-    "extends" TypeVariable()
+    "extends" (LOOKAHEAD(3) ClassOrInterfaceType() (AdditionalBound())* | TypeVariable())
 }
 
 void AdditionalBound():
@@ -669,14 +655,13 @@ void Wildcard():
 void WildcardBounds():
 {}
 {
-    "extends" ReferenceType()
-    |
-    "super" ReferenceType()
+    ("extends" | "super") ReferenceType()
 }
 
 /*
 --------------------------------------------------------------------------------
-Productions() from §7 (Packages())
+Productions() from §7 (Packages()) -- this section is missing from Chapter 19
+see chapter 6
 */
 void PackageName():
 {}
@@ -703,11 +688,7 @@ void PackageOrTypeName():
 void ExpressionName():
 {}
 {
-    LOOKAHEAD(6)
-    Identifier()( LOOKAHEAD(2) "." Identifier() )* "." "this" ( LOOKAHEAD(2) "." Identifier() )*
-    |
-    LOOKAHEAD(3)
-    Identifier()( LOOKAHEAD(2) "." Identifier() )*
+    Identifier()( LOOKAHEAD(2) "." Identifier() )* [LOOKAHEAD(2) "." "this" ( LOOKAHEAD(2) "." Identifier() )*]
     |
     "this" (LOOKAHEAD(2) "." Identifier() )*
 }
@@ -715,6 +696,7 @@ void ExpressionName():
 void MethodName():
 {}
 {
+    // TODO: can this be right? Chapter 6 says Identifier()
     ExpressionName()
 }
 
@@ -735,7 +717,7 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
-    (PackageModifier())* "package" Identifier() ("." Identifier())* ";"
+    (PackageModifier())* "package" PackageName() ";"
 }
 
 void PackageModifier():
@@ -770,14 +752,14 @@ void SingleTypeImportDeclaration():
 void TypeImportOnDemandDeclaration():
 {}
 {
-    "import" PackageOrTypeName() [ "." "*" ] ";"
+    "import" PackageOrTypeName() "." "*" ";"
 
 }
 
 void SingleStaticImportDeclaration():
 {}
 {
-    "import" "static" PackageOrTypeName() [ "." "*" ] ";"
+    "import" "static" TypeName() "." Identifier() ";"
 
 }
 
@@ -956,7 +938,11 @@ void VariableDeclaratorId():
 void VariableInitializer():
 {}
 {
+    LOOKAHEAD(3)
     Expression()
+    |
+    // TODO: added this, it seems to be necessary. Confirm.
+    Primary()
     |
     ArrayInitializer()
 }
@@ -965,10 +951,9 @@ void UnannType():
 {}
 {
     LOOKAHEAD(3)
-    UnannPrimitiveType()
-    |
-    LOOKAHEAD(3)
     UnannReferenceType()
+    |
+    UnannPrimitiveType()
 }
 
 void UnannPrimitiveType():
@@ -1103,6 +1088,8 @@ void FormalParameter():
 void VariableModifier():
 {}
 {
+    // TODO: Ch 19 says 'Annotation final' all on one line. I assume that means
+    // Annotation OR final. Confirm.
     Annotation() 
     |
     "final"
@@ -1200,6 +1187,7 @@ void ConstructorBody():
 {}
 {
     "{" 
+        // TODO: check these lookaheads
         [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] 
         [ LOOKAHEAD(BlockStatements()) BlockStatements() ] 
     "}"
@@ -1554,10 +1542,10 @@ void Statement():
     LabeledStatement()
     |
     LOOKAHEAD(3)
-    IfThenStatement()
+    IfThenElseStatement()
     |
     LOOKAHEAD(3)
-    IfThenElseStatement()
+    IfThenStatement()
     |
     WhileStatement()
     |
@@ -1635,23 +1623,23 @@ void ExpressionStatement():
 void StatementExpression():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
     Assignment()
-    |
-    LOOKAHEAD(3)
-    PreIncrementExpression()
-    |
-    LOOKAHEAD(3)
-    PreDecrementExpression()
-    |
-    LOOKAHEAD(3)
-    PostIncrementExpression()
-    |
-    LOOKAHEAD(3)
-    PostDecrementExpression()
     |
     LOOKAHEAD(6)
     MethodInvocation()
+    |
+    LOOKAHEAD(6)
+    PreIncrementExpression()
+    |
+    LOOKAHEAD(6)
+    PreDecrementExpression()
+    |
+    LOOKAHEAD(6)
+    PostIncrementExpression()
+    |
+    LOOKAHEAD(6)
+    PostDecrementExpression()
     |
     LOOKAHEAD(3)
     ClassInstanceCreationExpression()
@@ -1678,11 +1666,7 @@ void IfThenElseStatementNoShortIf():
 void AssertStatement():
 {}
 {
-    LOOKAHEAD(3)
-    "assert" Expression() ";"
-    |
-    LOOKAHEAD(3)
-    "assert" Expression() ":" Expression() ";"
+    "assert" [ LOOKAHEAD(2) Expression() ":" ] Expression() ";"
 }
 
 void SwitchStatement():
@@ -1706,14 +1690,13 @@ void SwitchBlockStatementGroup():
 void SwitchLabels():
 {}
 {
-    SwitchLabel() (SwitchLabel())*
+    (SwitchLabel())+
 }
 
 void SwitchLabel():
 {}
 {
-    "case" ConstantExpression() ":"
-    "case" EnumConstantName() ":"
+    "case" ( LOOKAHEAD(2) ConstantExpression() | EnumConstantName() ) ":"
     "default" ":"
 }
 
@@ -1744,10 +1727,9 @@ void DoStatement():
 void ForStatement():
 {}
 {
-    LOOKAHEAD(3)
+    LOOKAHEAD(6)
     BasicForStatement()
     |
-    LOOKAHEAD(3)
     EnhancedForStatement()
 }
 
@@ -1757,7 +1739,6 @@ void ForStatementNoShortIf():
     LOOKAHEAD(3)
     BasicForStatementNoShortIf()
     |
-    LOOKAHEAD(3)
     EnhancedForStatementNoShortIf()
 }
 
@@ -1841,10 +1822,7 @@ void TryStatement():
 {}
 {
     LOOKAHEAD(2)
-    "try" Block() Catches()
-    |
-    LOOKAHEAD(2)
-    "try" Block() [Catches()] Finally()
+    "try" Block() (LOOKAHEAD(3) Catches() | [Catches()] Finally())
     |
     LOOKAHEAD(2)
     TryWithResourcesStatement()
@@ -1853,7 +1831,7 @@ void TryStatement():
 void Catches():
 {}
 {
-    CatchClause() (CatchClause())*
+    (CatchClause())+
 }
 
 void CatchClause():
@@ -1922,35 +1900,33 @@ void Primary():
 void PrimaryNoNewArray():
 {}
 {
-    Literal()
-    |
-    LOOKAHEAD(3)
-    TypeName() ( "[" "]" )* "." "class"
-    |
-    "void" "." "class"
-    |
-    LOOKAHEAD(2)
-    "this"
-    |
-    LOOKAHEAD(3)
-    TypeName() "." "this"
-    |
-     "(" Expression() ")" 
-    |
-    LOOKAHEAD(3)
-    ClassInstanceCreationExpression()
-    |
-    LOOKAHEAD(3)
-    FieldAccess()
+    LOOKAHEAD(6)
+    MethodInvocation() (LOOKAHEAD(2) "." MethodInvocation())*
     |
     LOOKAHEAD(3)
     ArrayAccess()
     |
     LOOKAHEAD(3)
-    MethodInvocation()
+    FieldAccess()
     |
     LOOKAHEAD(3)
     MethodReference()
+    |
+    LOOKAHEAD(6)
+    ClassInstanceCreationExpression()
+    |
+    Literal()
+    |
+    LOOKAHEAD(3)
+    TypeName() (LOOKAHEAD(2) ( "[" "]" )* "." "class" | "." "this")
+    |
+    LOOKAHEAD(3)
+    "(" Expression() ")" (LOOKAHEAD(2) "." MethodInvocation())*
+    |
+    "void" "." "class"
+    |
+    LOOKAHEAD(2)
+    "this"
 }
 
 void ClassInstanceCreationExpression():
@@ -1972,36 +1948,33 @@ void TypeArgumentsOrDiamond():
 void FieldAccess():
 {}
 {
+    LOOKAHEAD(3)
+    Identifier() (LOOKAHEAD(2) "." Identifier() )*
+    |
     "super" (LOOKAHEAD(2) "." Identifier() )*
     |
-    TypeName() "." "super" (LOOKAHEAD(2) "." Identifier() )*
+    TypeName() "." "super" "." Identifier()
 }
 
 void ArrayAccess():
 {}
 {
-    ExpressionName() ( "[" Expression() "]" )*
+    ExpressionName() "[" Expression() "]" ( "[" Expression() "]" )*
 }
 
 void MethodInvocation():
 {}
 {
-    LOOKAHEAD(2)
-    "super" "(" [ArgumentList()] ")"
-    |
-    "super" (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
-    |
-    LOOKAHEAD(2)
+    LOOKAHEAD(6)
     MethodName() "(" [ArgumentList()] ")" 
     |
     LOOKAHEAD(3)
-    TypeName() (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    TypeName() "." ["super" "."] [LOOKAHEAD(2) TypeArguments()] Identifier() "(" [LOOKAHEAD(2) ArgumentList()] ")" 
     |
     LOOKAHEAD(3)
-    ExpressionName() (LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    ExpressionName() "." [LOOKAHEAD(2) TypeArguments()] Identifier() "(" [LOOKAHEAD(2) ArgumentList()] ")"  
     |
-    LOOKAHEAD(3)
-    TypeName() "." "super" ( LOOKAHEAD(2) "." [TypeArguments()] Identifier() "(" [ArgumentList()] ")" )* 
+    "super" ["." [LOOKAHEAD(2) TypeArguments()] Identifier()] "(" [LOOKAHEAD(2) ArgumentList()] ")"  
 }
 
 void ArgumentList():
@@ -2014,15 +1987,15 @@ void MethodReference():
 {}
 {
     LOOKAHEAD(3)
-    ExpressionName() ( "::" [TypeArguments()] Identifier() )*
+    ExpressionName() "::" [TypeArguments()] Identifier()
     |
     LOOKAHEAD(3)
-    ReferenceType() ( "::" [TypeArguments()] Identifier() )*
+    ReferenceType() "::" [TypeArguments()] Identifier()
     |
-    "super" ( "::" [TypeArguments()] Identifier() )*
+    "super" "::" [TypeArguments()] Identifier()
     |
     LOOKAHEAD(3)
-    TypeName() "." "super" ( "::" [TypeArguments()] Identifier() )*
+    TypeName() "." "super" "::" [TypeArguments()] Identifier()
     |
     LOOKAHEAD(3)
     ClassType() "::" [TypeArguments()] "new"
@@ -2034,6 +2007,7 @@ void MethodReference():
 void ArrayCreationExpression():
 {}
 {
+    // TODO: left factor?
     LOOKAHEAD(3)
     "new" PrimitiveType() DimExprs() [LOOKAHEAD(2)Dims()]
     |
@@ -2069,9 +2043,9 @@ void Expression():
 {}
 {
     LOOKAHEAD(3)
-    LambdaExpression()
-    |
     AssignmentExpression()
+    |
+    LambdaExpression()
 }
 
 void LambdaExpression():
@@ -2086,10 +2060,10 @@ void LambdaParameters():
     Identifier()
     |
     LOOKAHEAD(3) 
-     "(" [FormalParameterList()] ")" 
+    "(" [FormalParameterList()] ")" 
     |
     LOOKAHEAD(3) 
-     "(" InferredFormalParameterList() ")" 
+    "(" InferredFormalParameterList() ")" 
 }
 
 void InferredFormalParameterList():
@@ -2110,9 +2084,9 @@ void AssignmentExpression():
 {}
 {
     LOOKAHEAD(3)
-    ConditionalExpression()
-    |
     Assignment()
+    |
+    ConditionalExpression()
 }
 
 void Assignment():
@@ -2124,14 +2098,13 @@ void Assignment():
 void LeftHandSide():
 {}
 {
-    LOOKAHEAD(6)
-    ExpressionName()
+    LOOKAHEAD(3)
+    ArrayAccess()
     |
-    LOOKAHEAD(3) 
+    LOOKAHEAD(3)
     FieldAccess()
     |
-    LOOKAHEAD(3) 
-    ArrayAccess()
+    ExpressionName()
 }
 
 void AssignmentOperator():
@@ -2167,10 +2140,7 @@ void AssignmentOperator():
 void ConditionalExpression():
 {}
 {
-    LOOKAHEAD(3) 
-    ConditionalOrExpression()
-    |
-    ConditionalOrExpression() "?" Expression() ":" ConditionalExpression()
+    ConditionalOrExpression() [LOOKAHEAD(2) "?" Expression() ":" ConditionalExpression()]
 }
 
 void ConditionalOrExpression():
@@ -2262,14 +2232,12 @@ void PreDecrementExpression():
 void UnaryExpressionNotPlusMinus():
 {}
 {
-    LOOKAHEAD(3)
-    PostfixExpression()
+    ( "~" | "!" ) UnaryExpression()
     |
-     "~" UnaryExpression()
-    |
-     "!" UnaryExpression()
-    |
+    LOOKAHEAD( CastLookahead() )
     CastExpression()
+    |
+    PostfixExpression()
 }
 
 void PostfixExpression():
@@ -2284,13 +2252,28 @@ void PostfixExpression():
 void PostIncrementExpression():
 {}
 {
-    PostfixExpression() "++"
+    PostfixExpression()
 }
 
 void PostDecrementExpression():
 {}
 {
-    PostfixExpression() "--"
+    PostfixExpression()
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead():
+{}
+{
+    LOOKAHEAD(2)
+    "(" PrimitiveType()
+    |
+    LOOKAHEAD("(" Type() "[")
+    "(" Type() "[" "]"
+    |
+    "(" Type() ")" ( "~" | "!" | "(" | Identifier() | "this" | "super" | "new" | Literal() )
 }
 
 void CastExpression():
@@ -2299,10 +2282,7 @@ void CastExpression():
     LOOKAHEAD(3)
     "(" PrimitiveType() ")" UnaryExpression()
     |
-    LOOKAHEAD(3)
-    "(" ReferenceType() (AdditionalBound())* ")" UnaryExpressionNotPlusMinus()
-    |
-    "(" ReferenceType() (AdditionalBound())* ")" LambdaExpression() 
+    "(" ReferenceType() (AdditionalBound())* ")" ( LOOKAHEAD(3) UnaryExpressionNotPlusMinus() | LambdaExpression() )
 }
 
 

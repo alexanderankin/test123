@@ -1,0 +1,506 @@
+
+<project
+    name="1.8"
+    default="test"
+    basedir=".">
+
+    <property
+        file="../../../build.properties"/>
+
+    <property
+        name="parser.src.dir"
+        value="."/>
+    <property
+        name="classes.dir"
+        location="." />
+        
+   <!-- ========================================================================
+      Target: build, does a complete clean, compile, and test cycle
+   ========================================================================= -->
+    <target
+        name="build"
+        depends="javacc, compile, test"/>
+        
+
+   <!-- ========================================================================
+      Target: test, main entry point
+   ========================================================================= -->
+    <target
+        name="test"
+        depends="setClasspath">
+
+        <antcall
+            target="ColoredPoint"
+            inheritrefs="true"/>
+        <antcall
+            target="GUITest"
+            inheritrefs="true"/>
+        <antcall
+            target="MembersOfATypeVariable"
+            inheritrefs="true"/>
+        <antcall
+            target="Move"
+            inheritrefs="true"/>
+        <antcall
+            target="Point"
+            inheritrefs="true"/>
+        <antcall
+            target="RawTypes"
+            inheritrefs="true"/>
+        <antcall
+            target="RawTypes2"
+            inheritrefs="true"/>
+        <antcall
+            target="RawTypesAndInheritance"
+            inheritrefs="true"/>
+        <antcall
+            target="TestConstructor"
+            inheritrefs="true"/>
+        <antcall
+            target="TestObjectCreation"
+            inheritrefs="true"/>
+        <antcall
+            target="UnboundedWildcards"
+            inheritrefs="true"/>
+        <antcall
+            target="UsageOfAType"
+            inheritrefs="true"/>
+        <antcall
+            target="StringLiterals"
+            inheritrefs="true"/>
+        <antcall
+            target="IntegerOperations"
+            inheritrefs="true"/>
+        <antcall
+            target="FloatingPointOperations"
+            inheritrefs="true"/>
+    </target>
+    
+   <!-- ========================================================================
+      Tests
+   ========================================================================= -->
+
+    <target
+        name="ColoredPoint">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="ColoredPointerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/ColoredPoint.java"/>
+        </java>
+        <fail
+            message="ColoredPoint failed: ${ColoredPointerror}">
+            <condition>
+                <not>
+                    <equals arg1="${ColoredPointerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="GUITest">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="guitesterror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/GUITest.java"/>
+        </java>
+        <fail
+            message="GUITest failed: ${guitesterror}">
+            <condition>
+                <not>
+                    <equals arg1="${guitesterror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="Move">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="Moveerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/Move.java"/>
+        </java>
+        <fail
+            message="Move failed: ${Moveerror}">
+            <condition>
+                <not>
+                    <equals arg1="${Moveerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="Point">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="Pointerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/Point.java"/>
+        </java>
+        <fail
+            message="Point failed: ${Pointerror}">
+            <condition>
+                <not>
+                    <equals arg1="${Pointerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="RawTypes">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="RawTypeserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/RawTypes.java"/>
+        </java>
+        <fail
+            message="RawTypes failed: ${RawTypeserror}">
+            <condition>
+                <not>
+                    <equals arg1="${RawTypeserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="RawTypes2">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="RawTypes2error">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/RawTypes2.java"/>
+        </java>
+        <fail
+            message="RawTypes2 failed: ${RawTypes2error}">
+            <condition>
+                <not>
+                    <equals arg1="${RawTypes2error}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="RawTypesAndInheritance">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="RawTypesAndInheritanceerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/RawTypesAndInheritance.java"/>
+        </java>
+        <fail
+            message="RawTypesAndInheritance failed: ${RawTypesAndInheritanceerror}">
+            <condition>
+                <not>
+                    <equals arg1="${RawTypesAndInheritanceerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="MembersOfATypeVariable">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="membersofatypevariableerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/MembersOfATypeVariable.java"/>
+        </java>
+        <fail
+            message="MembersOfATypeVariable failed: ${membersofatypevariableerror}">
+            <condition>
+                <not>
+                    <equals arg1="${membersofatypevariableerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+   
+    <target
+        name="TestConstructor">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="TestConstructorerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/TestConstructor.java"/>
+        </java>
+        <fail
+            message="TestConstructor failed: ${TestConstructorerror}">
+            <condition>
+                <not>
+                    <equals arg1="${TestConstructorerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+   
+    <target
+        name="TestObjectCreation">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="TestObjectCreationerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/TestObjectCreation.java"/>
+        </java>
+        <fail
+            message="TestObjectCreation failed: ${TestObjectCreationerror}">
+            <condition>
+                <not>
+                    <equals arg1="${TestObjectCreationerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+   
+    <target
+        name="UnboundedWildcards">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="UnboundedWildcardserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/UnboundedWildcards.java"/>
+        </java>
+        <fail
+            message="UnboundedWildcards failed: ${UnboundedWildcardserror}">
+            <condition>
+                <not>
+                    <equals arg1="${UnboundedWildcardserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+   
+    <target
+        name="UsageOfAType">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="UsageOfATypeerror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/UsageOfAType.java"/>
+        </java>
+        <fail
+            message="UsageOfAType failed: ${UsageOfATypeerror}">
+            <condition>
+                <not>
+                    <equals arg1="${UsageOfATypeerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+   
+    <target
+        name="StringLiterals">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="StringLiteralserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/StringLiterals.java"/>
+        </java>
+        <fail
+            message="StringLiterals failed: ${StringLiteralserror}">
+            <condition>
+                <not>
+                    <equals arg1="${StringLiteralserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+   
+    <target
+        name="IntegerOperations">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="IntegerOperationserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/IntegerOperations.java"/>
+        </java>
+        <fail
+            message="IntegerOperations failed: ${IntegerOperationserror}">
+            <condition>
+                <not>
+                    <equals arg1="${IntegerOperationserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+    
+    <target
+        name="FloatingPointOperations">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="FloatingPointOperationserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/FloatingPointOperations.java"/>
+        </java>
+        <fail
+            message="FloatingPointOperations failed: ${FloatingPointOperationserror}">
+            <condition>
+                <not>
+                    <equals arg1="${FloatingPointOperationserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+    
+   <!-- ========================================================================
+      Target: javacc clean and create
+   ========================================================================= -->
+    <target
+        name="javacc"
+        depends="javacc_clean"
+        description="Run javacc">
+        <available
+            file="${javacc}"
+            property="javacc.present"/>
+        <fail
+            unless="javacc.present"
+            message="Javacc not found."/>
+
+        <exec
+            dir="${parser.src.dir}"
+            executable="${javacc}"
+            resultproperty="javaccerror">
+            <arg
+                value="${parser.src.dir}/java18_clean.jj"/>
+        </exec>
+        <fail
+            message="javacc failed: ${javaccerror}">
+            <condition>
+                <not>
+                    <equals arg1="${javaccerror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+
+    </target>
+   
+   <!-- ========================================================================
+      Target: javacc clean and create
+   ========================================================================= -->
+    <target
+        name="javacc_clean">
+        <delete>
+            <fileset
+                dir="${parser.src.dir}">
+                <include
+                    name="JavaParser.java"/>
+                <include
+                    name="JavaParserTokenManager.java"/>
+                <include
+                    name="JavaParserConstants.java"/>
+                <include
+                    name="*CharStream*.java"/>
+                <include
+                    name="TokenMgrError.java"/>
+                <include
+                    name="ParseException.java"/>
+                <include
+                    name="Token.java"/>
+            </fileset>
+        </delete>
+    </target>
+  
+   <!-- ========================================================================
+      Target: compile
+   ========================================================================= -->
+    <target
+        name="compile"
+        description="Compile"
+        depends="setClasspath">
+        <javac
+            deprecation="on"
+            debug="on"
+            nowarn="on"
+            destdir="."
+            srcdir="."
+            target="1.7"
+            source="1.7"
+            includeantruntime="false"
+            excludes="test_files/**">
+            <!-- compilerarg value="-Xlint:unchecked"/ -->
+            <classpath
+                refid="classpathref" />
+        </javac>
+    </target>
+
+   <!-- ========================================================================
+      Target: clean
+      deletes all files from the temp directory
+   ========================================================================= -->
+    <target
+        name="clean"
+        description="Delete all files from the classes directory.">
+        <delete>
+            <fileset
+                dir="."
+                includes="*.class"/>
+        </delete>
+    </target>
+   
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+    <target
+        name="setClasspath">
+        <path
+            id="classpathref">
+         <!-- required locations/jars -->
+            <pathelement
+                location="${classes.dir}" />
+        </path>
+    </target>
+
+</project>
