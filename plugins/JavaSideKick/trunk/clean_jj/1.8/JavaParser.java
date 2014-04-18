@@ -339,11 +339,11 @@ Types(), Values(), and Variables()
     trace_call("ReferenceType");
     try {
       if (jj_2_3(3)) {
-        ClassOrInterfaceType();
+        ArrayType();
       } else if (jj_2_4(3)) {
         TypeVariable();
       } else if (jj_2_5(3)) {
-        ArrayType();
+        ClassOrInterfaceType();
       } else {
         jj_consume_token(-1);
         throw new ParseException();
@@ -9879,7 +9879,7 @@ Productions() from §15 (Expressions())
   }
 
   private boolean jj_3_15() {
-    if (jj_3R_96()) return true;
+    if (jj_3R_98()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -10094,7 +10094,7 @@ Productions() from §15 (Expressions())
   }
 
   private boolean jj_3_12() {
-    if (jj_3R_96()) return true;
+    if (jj_3R_98()) return true;
     if (jj_3R_103()) return true;
     return false;
   }
@@ -10109,7 +10109,7 @@ Productions() from §15 (Expressions())
     return false;
   }
 
-  private boolean jj_3R_98() {
+  private boolean jj_3R_96() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_11()) {
@@ -10227,7 +10227,7 @@ Productions() from §15 (Expressions())
     return false;
   }
 
-  private boolean jj_3R_96() {
+  private boolean jj_3R_98() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_6()) {
@@ -10348,11 +10348,6 @@ Productions() from §15 (Expressions())
     return false;
   }
 
-  private boolean jj_3R_429() {
-    if (jj_3R_155()) return true;
-    return false;
-  }
-
   private boolean jj_3R_333() {
     Token xsp;
     xsp = jj_scanpos;
@@ -10372,6 +10367,11 @@ Productions() from §15 (Expressions())
     return false;
   }
 
+  private boolean jj_3R_429() {
+    if (jj_3R_155()) return true;
+    return false;
+  }
+
   private boolean jj_3R_383() {
     if (jj_3R_138()) return true;
     return false;
@@ -10384,6 +10384,21 @@ Productions() from §15 (Expressions())
 
   private boolean jj_3R_220() {
     if (jj_3R_334()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_95() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_219()) {
+    jj_scanpos = xsp;
+    if (jj_3R_220()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_219() {
+    if (jj_3R_333()) return true;
     return false;
   }
 
@@ -10405,21 +10420,6 @@ Productions() from §15 (Expressions())
     return false;
   }
 
-  private boolean jj_3R_95() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_219()) {
-    jj_scanpos = xsp;
-    if (jj_3R_220()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_219() {
-    if (jj_3R_333()) return true;
-    return false;
-  }
-
   private boolean jj_3_157() {
     if (jj_3R_154()) return true;
     return false;
@@ -10427,18 +10427,6 @@ Productions() from §15 (Expressions())
 
   private boolean jj_3R_218() {
     if (jj_3R_155()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_166() {
-    if (jj_3R_287()) return true;
-    if (jj_3R_288()) return true;
-    if (jj_3R_118()) return true;
-    return false;
-  }
-
-  private boolean jj_3_156() {
-    if (jj_3R_166()) return true;
     return false;
   }
 
@@ -10453,6 +10441,18 @@ Productions() from §15 (Expressions())
     jj_scanpos = xsp;
     if (jj_scan_token(15)) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3R_166() {
+    if (jj_3R_287()) return true;
+    if (jj_3R_288()) return true;
+    if (jj_3R_118()) return true;
+    return false;
+  }
+
+  private boolean jj_3_156() {
+    if (jj_3R_166()) return true;
     return false;
   }
 
@@ -10731,7 +10731,7 @@ Productions() from §15 (Expressions())
 
   private boolean jj_3_151() {
     if (jj_scan_token(NEW)) return true;
-    if (jj_3R_96()) return true;
+    if (jj_3R_98()) return true;
     if (jj_3R_103()) return true;
     if (jj_3R_117()) return true;
     return false;
@@ -10762,7 +10762,7 @@ Productions() from §15 (Expressions())
 
   private boolean jj_3_149() {
     if (jj_scan_token(NEW)) return true;
-    if (jj_3R_96()) return true;
+    if (jj_3R_98()) return true;
     if (jj_3R_200()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -10807,7 +10807,7 @@ Productions() from §15 (Expressions())
   }
 
   private boolean jj_3_145() {
-    if (jj_3R_98()) return true;
+    if (jj_3R_96()) return true;
     if (jj_scan_token(126)) return true;
     if (jj_scan_token(NEW)) return true;
     return false;

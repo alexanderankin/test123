@@ -11,10 +11,12 @@ class ArrayTest {
         // int cn = rw.myNumbers();
         //int d = 7;
         //int a = b + c;
-        for (int i = 0; i < 100; i++) {
-            float z = 1.0f / i;
-            if (z * i != 1.0f)
-                System.out.print(" " + i);
-        }
+        // for (int i = 0; i < 100; i++) {
+        //     float z = 1.0f / i;
+        //     if (z * i != 1.0f)
+        //         System.out.print(" " + i);
+        // }
+        ColoredPoint[] cpa = (ColoredPoint[])pa;
+
     }
 }

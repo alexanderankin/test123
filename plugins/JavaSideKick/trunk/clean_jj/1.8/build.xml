@@ -74,6 +74,9 @@
         <antcall
             target="FloatingPointOperations"
             inheritrefs="true"/>
+        <antcall
+            target="Conversions"
+            inheritrefs="true"/>
     </target>
     
    <!-- ========================================================================
@@ -390,6 +393,27 @@
             <condition>
                 <not>
                     <equals arg1="${FloatingPointOperationserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+    
+    <target
+        name="Conversions">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="Conversionserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/Conversions.java"/>
+        </java>
+        <fail
+            message="Conversions failed: ${Conversionserror}">
+            <condition>
+                <not>
+                    <equals arg1="${Conversionserror}" arg2="0" trim="true"/>
                 </not>
             </condition>
         </fail>
