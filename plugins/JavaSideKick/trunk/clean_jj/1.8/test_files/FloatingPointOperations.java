@@ -7,8 +7,9 @@ class Test {
         // An example of gradual underflow:
         d = 1e-305 * Math.PI;
         System.out.print("gradual underflow: " + d + "\n   ");
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++) {
             System.out.print(" " + (d /= 100000));
+        }
         System.out.println();
         // An example of NaN:
         System.out.print("0.0/0.0 is Not-a-Number: ");
