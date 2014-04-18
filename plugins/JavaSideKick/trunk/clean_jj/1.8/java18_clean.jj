@@ -547,14 +547,13 @@ void ReferenceType():
 {}
 {
     LOOKAHEAD(3)
-    ClassOrInterfaceType()
+    ArrayType()
     |
     LOOKAHEAD(3)
     TypeVariable()
     |
     LOOKAHEAD(3)
-    ArrayType()
-
+    ClassOrInterfaceType()
 }
 
 void ClassOrInterfaceType():
