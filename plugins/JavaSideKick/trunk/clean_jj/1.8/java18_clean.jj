@@ -412,25 +412,6 @@ TOKEN :
 | < ELLIPSIS: "..." >
 }
 
-/* >'s need special attention due to generics syntax. */
-/*
-TOKEN :
-{
-  < RUNSIGNEDSHIFT: ">>>" >
-  {
-     matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
-     input_stream.backup(2);
-  }
-| < RSIGNEDSHIFT: ">>" >
-  {
-     matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
-     input_stream.backup(1);
-  }
-| < GT: ">" >
-}
-*/
 /*
 --------------------------------------------------------------------------------
 Literals
@@ -491,12 +472,6 @@ void NullLiteral():
 --------------------------------------------------------------------------------
 Types(), Values(), and Variables()
 */
-
-void Identifier():
-{}
-{
-    <IDENTIFIER>
-}
 
 void Type():
 {}
@@ -559,17 +534,13 @@ void ReferenceType():
 void ClassOrInterfaceType():
 {}
 {
-    LOOKAHEAD(3)
     ClassType()
-    |
-    LOOKAHEAD(3)
-    InterfaceType()
 }
 
 void ClassType():
 {}
 {
-    (Annotation())* Identifier() [ LOOKAHEAD(2) TypeArguments() ] ( LOOKAHEAD(2) "." (Annotation() )* Identifier() [ LOOKAHEAD(2) TypeArguments() ] )*
+    (Annotation())* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] ( LOOKAHEAD(2) "." (Annotation() )* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
 }
 
 void InterfaceType():
@@ -581,7 +552,7 @@ void InterfaceType():
 void TypeVariable():
 {}
 {
-    (Annotation())* Identifier()
+    (Annotation())* <IDENTIFIER>
 }
 
 void ArrayType():
@@ -607,7 +578,7 @@ void Dims():
 void TypeParameter():
 {}
 {
-    (Annotation())* Identifier() [TypeBound()]
+    (Annotation())* <IDENTIFIER> [TypeBound()]
 }
 
 void TypeBound():
@@ -665,21 +636,21 @@ see chapter 6
 void PackageName():
 {}
 {
-    Identifier() ("." Identifier())*
+    <IDENTIFIER> ("." <IDENTIFIER>)*
 }
 
 void TypeName():
 {}
 {
-    Identifier()( LOOKAHEAD(2) "." Identifier() )*
+    <IDENTIFIER>( LOOKAHEAD(2) "." <IDENTIFIER> )*
 }
 
 void ExpressionName():
 {}
 {
-    Identifier()( LOOKAHEAD(2) "." Identifier() )* [LOOKAHEAD(2) "." "this" ( LOOKAHEAD(2) "." Identifier() )*]
+    <IDENTIFIER>( LOOKAHEAD(2) "." <IDENTIFIER> )* [LOOKAHEAD(2) "." "this" ( LOOKAHEAD(2) "." <IDENTIFIER> )*]
     |
-    "this" (LOOKAHEAD(2) "." Identifier() )*
+    "this" (LOOKAHEAD(2) "." <IDENTIFIER> )*
 }
 
 void MethodName():
@@ -750,7 +721,7 @@ void ClassDeclaration():
 void NormalClassDeclaration():
 {}
 {
-    (ClassModifier())* "class" Identifier() [TypeParameters()] [Superclass()] [Superinterfaces()] ClassBody()
+    (ClassModifier())* "class" <IDENTIFIER> [TypeParameters()] [Superclass()] [Superinterfaces()] ClassBody()
 }
 
 void ClassModifier():
@@ -882,7 +853,7 @@ void VariableDeclarator():
 void VariableDeclaratorId():
 {}
 {
-    Identifier() [Dims()]
+    <IDENTIFIER> [Dims()]
 }
 
 void VariableInitializer():
@@ -926,7 +897,7 @@ void UnannReferenceType():
     UnannClassOrInterfaceType()
     |
     LOOKAHEAD(3)
-    UnannTypeVariable()
+    <IDENTIFIER>
 }
 
 void UnannClassOrInterfaceType():
@@ -938,13 +909,7 @@ void UnannClassOrInterfaceType():
 void UnannClassType():
 {}
 {
-    Identifier() [TypeArguments()] ("." (Annotation())* Identifier() [TypeArguments()])*
-}
-
-void UnannTypeVariable():
-{}
-{
-    Identifier()
+    <IDENTIFIER> [TypeArguments()] ("." (Annotation())* <IDENTIFIER> [TypeArguments()])*
 }
 
 void UnannArrayType():
@@ -956,7 +921,7 @@ void UnannArrayType():
     UnannClassOrInterfaceType() Dims()
     |
     LOOKAHEAD(3)
-    UnannTypeVariable() Dims()
+    <IDENTIFIER> Dims()
 }
 
 void MethodDeclaration():
@@ -1008,7 +973,7 @@ void Result():
 void MethodDeclarator():
 {}
 {
-    Identifier() "(" [FormalParameterList()] ")" [Dims()]
+    <IDENTIFIER> "(" [FormalParameterList()] ")" [Dims()]
 }
 
 void FormalParameterList():
@@ -1060,7 +1025,7 @@ void LastFormalParameter():
 void ReceiverParameter():
 {}
 {
-    (Annotation())* UnannType() [Identifier() "."] "this"
+    (Annotation())* UnannType() [<IDENTIFIER> "."] "this"
 }
 
 void Throws():
@@ -1126,13 +1091,7 @@ void ConstructorModifier():
 void ConstructorDeclarator():
 {}
 {
-    [TypeParameters()] SimpleTypeName() "(" [FormalParameterList()] ")" 
-}
-
-void SimpleTypeName():
-{}
-{
-    Identifier()
+    [TypeParameters()] <IDENTIFIER> "(" [FormalParameterList()] ")" 
 }
 
 void ConstructorBody():
@@ -1164,7 +1123,7 @@ void ExplicitConstructorInvocation():
 void EnumDeclaration():
 {}
 {
-    (ClassModifier())* "enum" Identifier() [Superinterfaces()] EnumBody()
+    (ClassModifier())* "enum" <IDENTIFIER> [Superinterfaces()] EnumBody()
 }
 
 void EnumBody():
@@ -1182,7 +1141,7 @@ void EnumConstantList():
 void EnumConstant():
 {}
 {
-    ( EnumConstantModifier() )* Identifier() [ "(" [ArgumentList()] ")" ] [ ClassBody() ]
+    ( EnumConstantModifier() )* <IDENTIFIER> [ "(" [ArgumentList()] ")" ] [ ClassBody() ]
 }
 
 void EnumConstantModifier():
@@ -1215,7 +1174,7 @@ void InterfaceDeclaration():
 void NormalInterfaceDeclaration():
 {}
 {
-    ( LOOKAHEAD(2) InterfaceModifier() )* "interface" Identifier() [ LOOKAHEAD(2) TypeParameters() ] [ExtendsInterfaces()] InterfaceBody()
+    ( LOOKAHEAD(2) InterfaceModifier() )* "interface" <IDENTIFIER> [ LOOKAHEAD(2) TypeParameters() ] [ExtendsInterfaces()] InterfaceBody()
 }
 
 void InterfaceModifier():
@@ -1309,7 +1268,7 @@ void InterfaceMethodModifier():
 void AnnotationTypeDeclaration():
 {}
 {
-    ( LOOKAHEAD(2) InterfaceModifier())* "@" "interface" Identifier() AnnotationTypeBody()
+    ( LOOKAHEAD(2) InterfaceModifier())* "@" "interface" <IDENTIFIER> AnnotationTypeBody()
 }
 
 void AnnotationTypeBody():
@@ -1339,7 +1298,7 @@ void AnnotationTypeMemberDeclaration():
 void AnnotationTypeElementDeclaration():
 {}
 {
-    (AnnotationTypeElementModifier())* UnannType() Identifier() "(" ")" [Dims()] [DefaultValue()] ";"
+    (AnnotationTypeElementModifier())* UnannType() <IDENTIFIER> "(" ")" [Dims()] [DefaultValue()] ";"
 }
 
 void AnnotationTypeElementModifier():
@@ -1386,7 +1345,7 @@ void ElementValuePairList():
 void ElementValuePair():
 {}
 {
-    Identifier() "=" ElementValue()
+    <IDENTIFIER> "=" ElementValue()
 }
 
 void ElementValue():
@@ -1557,13 +1516,13 @@ void EmptyStatement():
 void LabeledStatement():
 {}
 {
-    Identifier() ":" Statement()
+    <IDENTIFIER> ":" Statement()
 }
 
 void LabeledStatementNoShortIf():
 {}
 {
-    Identifier() ":" StatementNoShortIf()
+    <IDENTIFIER> ":" StatementNoShortIf()
 }
 
 void ExpressionStatement():
@@ -1648,14 +1607,8 @@ void SwitchLabels():
 void SwitchLabel():
 {}
 {
-    "case" ( LOOKAHEAD(2) ConstantExpression() | EnumConstantName() ) ":"
+    "case" ( LOOKAHEAD(2) ConstantExpression() | <IDENTIFIER> ) ":"
     "default" ":"
-}
-
-void EnumConstantName():
-{}
-{
-    Identifier()
 }
 
 void WhileStatement():
@@ -1743,13 +1696,13 @@ void EnhancedForStatementNoShortIf():
 void BreakStatement():
 {}
 {
-    "break" [Identifier()] ";"
+    "break" [<IDENTIFIER>] ";"
 }
 
 void ContinueStatement():
 {}
 {
-    "continue" [Identifier()] ";"
+    "continue" [<IDENTIFIER>] ";"
 }
 
 void ReturnStatement():
@@ -1884,9 +1837,9 @@ void PrimaryNoNewArray():
 void ClassInstanceCreationExpression():
 {}
 {
-    "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
+    "new" [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
     |
-    ExpressionName() (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* Identifier() [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
+    ExpressionName() (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
 }
 
 void TypeArgumentsOrDiamond():
@@ -1901,11 +1854,11 @@ void FieldAccess():
 {}
 {
     LOOKAHEAD(3)
-    Identifier() (LOOKAHEAD(2) "." Identifier() )*
+    <IDENTIFIER> (LOOKAHEAD(2) "." <IDENTIFIER> )*
     |
-    "super" (LOOKAHEAD(2) "." Identifier() )*
+    "super" (LOOKAHEAD(2) "." <IDENTIFIER> )*
     |
-    TypeName() "." "super" "." Identifier()
+    TypeName() "." "super" "." <IDENTIFIER>
 }
 
 void ArrayAccess():
@@ -1921,12 +1874,12 @@ void MethodInvocation():
     MethodName() "(" [ArgumentList()] ")" 
     |
     LOOKAHEAD(3)
-    TypeName() "." ["super" "."] [LOOKAHEAD(2) TypeArguments()] Identifier() "(" [LOOKAHEAD(2) ArgumentList()] ")" 
+    TypeName() "." ["super" "."] [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> "(" [LOOKAHEAD(2) ArgumentList()] ")" 
     |
     LOOKAHEAD(3)
-    ExpressionName() "." [LOOKAHEAD(2) TypeArguments()] Identifier() "(" [LOOKAHEAD(2) ArgumentList()] ")"  
+    ExpressionName() "." [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> "(" [LOOKAHEAD(2) ArgumentList()] ")"  
     |
-    "super" ["." [LOOKAHEAD(2) TypeArguments()] Identifier()] "(" [LOOKAHEAD(2) ArgumentList()] ")"  
+    "super" ["." [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER>] "(" [LOOKAHEAD(2) ArgumentList()] ")"  
 }
 
 void ArgumentList():
@@ -1939,15 +1892,15 @@ void MethodReference():
 {}
 {
     LOOKAHEAD(3)
-    ExpressionName() "::" [TypeArguments()] Identifier()
+    ExpressionName() "::" [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
-    ReferenceType() "::" [TypeArguments()] Identifier()
+    ReferenceType() "::" [TypeArguments()] <IDENTIFIER>
     |
-    "super" "::" [TypeArguments()] Identifier()
+    "super" "::" [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
-    TypeName() "." "super" "::" [TypeArguments()] Identifier()
+    TypeName() "." "super" "::" [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
     ClassType() "::" [TypeArguments()] "new"
@@ -2009,7 +1962,7 @@ void LambdaExpression():
 void LambdaParameters():
 {}
 {
-    Identifier()
+    <IDENTIFIER>
     |
     LOOKAHEAD(3) 
     "(" [FormalParameterList()] ")" 
@@ -2021,7 +1974,7 @@ void LambdaParameters():
 void InferredFormalParameterList():
 {}
 {
-    Identifier() ("," Identifier())*
+    <IDENTIFIER> ("," <IDENTIFIER>)*
 }
 
 void LambdaBody():
@@ -2226,7 +2179,7 @@ void CastLookahead():
     LOOKAHEAD("(" Type() "[")
     "(" Type() "[" "]"
     |
-    "(" Type() ")" ( "~" | "!" | "(" | Identifier() | "this" | "super" | "new" | Literal() )
+    "(" Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
 }
 
 void CastExpression():
