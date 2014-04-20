@@ -50,7 +50,6 @@ import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
 import errorlist.DefaultErrorSource;
 
-import projectviewer.action.EditProjectAction;
 
 // }}}
 
