@@ -31,23 +31,21 @@
   error reporting API must be installed.
  </para>
 
- <para>
-  The error reporting API is particularly well-suited to reporting compiler errors
-  and such; plugins that use this API include Console, JCompiler, and
-  SideKick.
-  If you would like to use it from your plugin, see <xref linkend="api" />.
- </para>
-</section>
- <section><title>FileOpenerService and FastOpen/SmartOpen. </title>
- <para>
-   In projects with multiple subfolders, a build error message may not report the
-   complete pathname of the file with the error, and ErrorList may not know where the file
-   is. In such a case, it can use a <literal>FileOpenerService</literal>, such as
-   <literal>FastOpen</literal> or <literal>SmartOpen</literal>, to open the file
-   for you. Since each of these plugins can search the current project or the open buffers,
-   this gives you flexibility on how ErrorList can open the files it is displaying
-   errors for in the dockable. To use a FileOpenerService, simply install one of these
-   plugins: <ulink url="jeditresource:/SmartOpen.jar!/docs/SmartOpen.html">SmartOpen</ulink>
+ <para> The error reporting API is particularly well-suited to reporting compiler errors
+ and such; plugins that use this API include Console, JCompiler, and SideKick. If you
+ would like to use it from your plugin, see <xref linkend="api" />. </para> </section>
+ 
+ <section id="FileOpenerService"><title>FileOpenerService and FastOpen/SmartOpen. </title>
+ 
+ <para> In projects with multiple subfolders, a build error message may not report the
+ complete or correct pathname of the file with the error, and ErrorList may have trouble
+ opening it. In such a case, it will use a <literal>FileOpenerService</literal>, such as
+ <literal>FastOpen</literal> or <literal>SmartOpen</literal>, to open the file. Since each
+ of these plugins can be configured to search the current project and/or the recently open
+ buffers, this gives you flexibility on how ErrorList can open the files you click on in
+ it. To tell ErrorList to use a <literal>FileOpenerService</literal>, simply install one
+ of these plugins:
+   <ulink url="jeditresource:/SmartOpen.jar!/docs/SmartOpen.html">SmartOpen</ulink> 
    or <ulink url="jeditresource:/FastOpen.jar!/docs/index.html">FastOpen</ulink>. </para>
  </section>
 
@@ -467,7 +465,7 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist> 
  
- <listitem><formalpara><title>Version 2.1.1</title> <para> Requires Java 1.6, and jEdit
+ <listitem><formalpara><title>Version 2.2</title> <para> Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
   <listitem><para> Revisited #3596333: Preserve contents when floating/docking. 
