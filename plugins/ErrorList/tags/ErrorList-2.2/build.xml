@@ -1,0 +1,30 @@
+<project name="ErrorList" default="build" basedir=".">
+
+<!-- :tabSize=4:indentSize=4:noTabs=false: -->
+
+<!-- This is a build.xml file for building the ErrorList plugin.      -->
+<!--                                                                  -->
+<!-- The 'dist' target compiles the plugin, creates the documentation -->
+<!--      and the ErrorList.jar file.                                 -->
+<!--                                                                  -->
+    <property name="docs-proc.target"       value="xsltproc" />
+	<property name="user-doc.xml" location= "users-guide.xml"/>
+	
+
+  <!-- One of these two property files below should define build.support to point to 
+       a checkout of the build-support project:
+       svn co https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk
+  -->	
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="build.support" value="../../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+
+	<selector id="packageFiles">
+	  <or>
+	  	<filename name="errorlist/*.png" />
+	  </or>
+    </selector>
+</project>
