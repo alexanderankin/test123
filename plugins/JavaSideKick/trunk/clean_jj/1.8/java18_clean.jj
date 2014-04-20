@@ -412,6 +412,8 @@ TOKEN :
 | < ELLIPSIS: "..." >
 }
 
+
+
 /*
 --------------------------------------------------------------------------------
 Literals
@@ -676,13 +678,7 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
-    (PackageModifier())* "package" PackageName() ";"
-}
-
-void PackageModifier():
-{}
-{
-    Annotation()
+    (Annotation())* "package" PackageName() ";"
 }
 
 void ImportDeclaration():
@@ -862,10 +858,10 @@ void VariableInitializer():
     LOOKAHEAD(ArrayInitializer())
     ArrayInitializer()
     |
-    // TODO: added Primary(), it seems to be necessary. Confirm.
     LOOKAHEAD(Expression())
     Expression()
     |
+    // TODO: added Primary(), it seems to be necessary. Confirm.
     LOOKAHEAD(Primary())
     Primary()
 }
@@ -896,7 +892,6 @@ void UnannReferenceType():
     LOOKAHEAD(3)
     UnannClassOrInterfaceType()
     |
-    LOOKAHEAD(3)
     <IDENTIFIER>
 }
 
@@ -1005,8 +1000,6 @@ void FormalParameter():
 void VariableModifier():
 {}
 {
-    // TODO: Ch 19 says 'Annotation final' all on one line. I assume that means
-    // Annotation OR final. Confirm.
     Annotation() 
     |
     "final"
@@ -1098,7 +1091,7 @@ void ConstructorBody():
 {}
 {
     "{" 
-        // TODO: check these lookaheads
+        // TODO: check these lookaheads, they are excessive
         [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] 
         [ LOOKAHEAD(BlockStatements()) BlockStatements() ] 
     "}"
@@ -1912,18 +1905,19 @@ void MethodReference():
 void ArrayCreationExpression():
 {}
 {
-    // TODO: left factor?
-    LOOKAHEAD(3)
-    "new" PrimitiveType() DimExprs() [LOOKAHEAD(2)Dims()]
-    |
-    LOOKAHEAD(3)
-    "new" ClassOrInterfaceType() DimExprs() [LOOKAHEAD(2) Dims()]
-    |
-    LOOKAHEAD(3)
-    "new" PrimitiveType() Dims() ArrayInitializer()
-    |
-    LOOKAHEAD(3)
-    "new" ClassOrInterfaceType() Dims() ArrayInitializer()
+    "new" 
+    (
+        LOOKAHEAD(3)
+        PrimitiveType() DimExprs() [LOOKAHEAD(2)Dims()]
+        |
+        LOOKAHEAD(3)
+        ClassOrInterfaceType() DimExprs() [LOOKAHEAD(2) Dims()]
+        |
+        LOOKAHEAD(3)
+        PrimitiveType() Dims() ArrayInitializer()
+        |
+        ClassOrInterfaceType() Dims() ArrayInitializer()
+    )
 }
 
 void DimExprs():
