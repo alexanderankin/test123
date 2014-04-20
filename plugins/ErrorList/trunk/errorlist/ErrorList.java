@@ -895,11 +895,11 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			Log.log(Log.ERROR, "WTF?", ioe);
 		}
 		
-		if (error.getFilePath().equals(error.getFileName())) {
+/*		if (error.getFilePath().equals(error.getFileName())) {
 			FileOpenerService.open(error.getFileName(), view);
 			return;
 		}
-		
+*/		
 		final Buffer buffer = error.getBuffer() != null? error.getBuffer() : view.getEditPane().getBuffer();
 		
 		ThreadUtilities.runInDispatchThread(new Runnable()
