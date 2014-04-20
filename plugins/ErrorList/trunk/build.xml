@@ -9,11 +9,14 @@
 <!--                                                                  -->
     <property name="docs-proc.target"       value="xsltproc" />
 	<property name="user-doc.xml" location= "users-guide.xml"/>
+	
+
+  <!-- One of these two property files below should define build.support to point to 
+       a checkout of the build-support project:
+       svn co https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk
+  -->	
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
-	<!-- You should set this property below in your build.properties to
-	     the location of the jedit "build-support/trunk" project
-	     checked out from jEdit's SVN repository -->
 	<property name="build.support" value="../../build-support" />
 	<import file="${build.support}/plugin-build.xml" />
 	<property name="src.dir" value="."/>

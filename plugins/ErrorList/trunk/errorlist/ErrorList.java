@@ -31,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,9 +53,13 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.EnhancedTreeCellRenderer;
+import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
 import org.jedit.core.FileOpenerService;
 
@@ -873,19 +878,30 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	//{{{ openError() method
 	private void openError(final ErrorSource.Error error)
 	{
+		
+		
+		String fullPath = error.getFilePath();
+		
+		if (view.getBuffer().isNewFile() || !view.getBuffer().getName().equals(error.getFileName())) try {
+			VFS vfs = VFSManager.getVFSForPath(fullPath);
+			VFSFile file = vfs._getFile(null, fullPath, null);
+			if (file == null || file.getLength() == 0) {
+				FileOpenerService.open(error.getFileName(), view);
+				return;
+			}
+			else jEdit.openFile(view,fullPath);
+		}
+		catch (IOException ioe) {
+			Log.log(Log.ERROR, "WTF?", ioe);
+		}
+		
 		if (error.getFilePath().equals(error.getFileName())) {
 			FileOpenerService.open(error.getFileName(), view);
+			return;
 		}
-		final Buffer buffer;
-		if(error.getBuffer() != null)
-			buffer = error.getBuffer();
-		else
-		{
-			buffer = jEdit.openFile(view,error.getFilePath());
-			if(buffer == null)
-				return;
-		}
-
+		
+		final Buffer buffer = error.getBuffer() != null? error.getBuffer() : view.getEditPane().getBuffer();
+		
 		ThreadUtilities.runInDispatchThread(new Runnable()
 		{
 			public void run()

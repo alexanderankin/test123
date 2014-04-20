@@ -47,7 +47,8 @@
    for you. Since each of these plugins can search the current project or the open buffers,
    this gives you flexibility on how ErrorList can open the files it is displaying
    errors for in the dockable. To use a FileOpenerService, simply install one of these
-   plugins: SmartOpen or FastOpen. </para>
+   plugins: <ulink url="jeditresource:/SmartOpen.jar!/docs/SmartOpen.html">SmartOpen</ulink>
+   or <ulink url="jeditresource:/FastOpen.jar!/docs/index.html">FastOpen</ulink>. </para>
  </section>
 
 
@@ -466,11 +467,13 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist> 
  
- <listitem><formalpara><title>Version 2.2</title> <para> Requires Java 1.6, and jEdit
+ <listitem><formalpara><title>Version 2.1.1</title> <para> Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
   <listitem><para> Revisited #3596333: Preserve contents when floating/docking. 
   </para></listitem>
+  <listitem><para> FileOpenerService is now being used in the correct way by
+  ErrorList </para></listitem>
  </itemizedlist>
  </listitem>
  
