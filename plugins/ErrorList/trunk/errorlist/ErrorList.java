@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -327,8 +328,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		TreePath path = new TreePath(new TreeNode[] { errorRoot, next });
 		errorTree.setSelectionPath(path);
 		errorTree.scrollPathToVisible(path);
-
-		jEdit.openFile(view,(String)next.getUserObject());
+		_openFile((String)next.getUserObject());
 	} //}}}
 
 	//{{{ prevErrorFile() method
@@ -384,7 +384,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		errorTree.setSelectionPath(path);
 		errorTree.scrollPathToVisible(path);
 
-		jEdit.openFile(view,(String)prev.getUserObject());
+		_openFile((String)prev.getUserObject());
 	} //}}}
 
 	//{{{ nextError() method
@@ -875,32 +875,32 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		}
 	} //}}}
 
-	//{{{ openError() method
-	private void openError(final ErrorSource.Error error)
-	{
-		
-		
-		String fullPath = error.getFilePath();
-		
-		if (view.getBuffer().isNewFile() || !view.getBuffer().getName().equals(error.getFileName())) try {
-			VFS vfs = VFSManager.getVFSForPath(fullPath);
-			VFSFile file = vfs._getFile(null, fullPath, null);
+	//{{{ _openFile() method
+	private void _openFile(String vfsPath) {
+		try {
+			VFS vfs = VFSManager.getVFSForPath(vfsPath);
+			VFSFile file = vfs._getFile(null, vfsPath, null);
 			if (file == null || file.getLength() == 0) {
-				FileOpenerService.open(error.getFileName(), view);
-				return;
+				FileOpenerService.open(MiscUtilities.getFileName(vfsPath), view);
 			}
-			else jEdit.openFile(view,fullPath);
+			else {
+				jEdit.openFile(view,vfsPath);
+			}
 		}
 		catch (IOException ioe) {
 			Log.log(Log.ERROR, "WTF?", ioe);
 		}
+	}//}}}
+	
+	//{{{ openError() method
+	private void openError(final ErrorSource.Error error)
+	{
+		String fullPath = error.getFilePath();
+		_openFile(fullPath);
 		
-/*		if (error.getFilePath().equals(error.getFileName())) {
-			FileOpenerService.open(error.getFileName(), view);
-			return;
-		}
-*/		
 		final Buffer buffer = error.getBuffer() != null? error.getBuffer() : view.getEditPane().getBuffer();
+		
+		if (buffer.isNewFile() || !buffer.getName().equals(error.getFileName())) return;
 		
 		ThreadUtilities.runInDispatchThread(new Runnable()
 		{
@@ -956,7 +956,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		}
 		else if(object instanceof String)
 		{
-			jEdit.openFile(view,(String)object);
+			_openFile((String)object);
 		}
 		else if(object instanceof Extra)
 		{
