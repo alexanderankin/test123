@@ -33,23 +33,23 @@
  </para>
 
  <para> The error reporting API is particularly well-suited to reporting compiler errors
- and such; plugins that use this API include Console, JCompiler, and SideKick. If you
- would like to use it from your plugin, see <xref linkend="api" />. </para> </section>
+ and such; plugins that use this API include Console, SideKick, and ClangCompletion. If
+ you would like to use it from your plugin, see <xref linkend="api" />. </para> </section>
  
  <section id="FileOpenerService"><title>FileOpenerService and FastOpen/SmartOpen. </title>
  
  <para> In projects with multiple subfolders, a build error message may not report the
  complete or correct pathname of the file with the error, and ErrorList may have trouble
- opening it. In such a case, it will use a <literal>FileOpenerService</literal>, such as
+ opening the correct file when the user clicks on an ErrorList entry.
+ In such a case, ErrorList will use a <literal>FileOpenerService</literal>, such as
  <literal>FastOpen</literal> or <literal>SmartOpen</literal>, to open the file. Since each
  of these plugins can be configured to search the current project and/or the recently open
- buffers, this gives you flexibility on how ErrorList can open the files you click on in
- it. To tell ErrorList to use a <literal>FileOpenerService</literal>, simply install one
- of these plugins:
+ buffers, this gives you flexibility on how ErrorList can open the files of the errors
+ you click on in ErrorList. To tell ErrorList to use a
+ <literal>FileOpenerService</literal>, simply install one of these plugins:
    <ulink url="jeditresource:/SmartOpen.jar!/docs/SmartOpen.html">SmartOpen</ulink> 
    or <ulink url="jeditresource:/FastOpen.jar!/docs/index.html">FastOpen</ulink>. </para>
  </section>
-
 
 <section id="window"><title>The error list window</title>
 

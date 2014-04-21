@@ -894,11 +894,10 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	
 	//{{{ openError() method
 	private void openError(final ErrorSource.Error error)
-	{
-		String fullPath = error.getFilePath();
-		_openFile(fullPath);
-		
-		final Buffer buffer = error.getBuffer() != null? error.getBuffer() : view.getEditPane().getBuffer();
+	{	
+		_openFile(error.getFilePath());
+		final Buffer buffer = error.getBuffer() != null ?
+				error.getBuffer() : view.getEditPane().getBuffer();
 		
 		if (buffer.isNewFile() || !buffer.getName().equals(error.getFileName())) return;
 		
