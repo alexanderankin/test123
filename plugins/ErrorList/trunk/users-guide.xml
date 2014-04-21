@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <!-- ErrorList user's guide -->
-<!-- (C) 2001, 2005 Slava Pestov -->
+<!-- (C) 2001-2014 Slava Pestov, Alan Ezust -->
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:wrap=hard:maxLineLen=90:noTabs=true:folding=sidekick: -->
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
-<articleinfo><title>ErrorList plugin user's guide</title>
+<articleinfo><title>jEdit ErrorList plugin user's guide</title>
 
  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
-
+ <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+  
  <legalnotice><title>Legal Notice</title>
   <para>
    Permission is granted to copy, distribute and/or modify this document
@@ -465,7 +466,7 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist> 
  
- <listitem><formalpara><title>Version 2.2</title> <para> Requires Java 1.6, and jEdit
+ <listitem><formalpara><title>Version 2.2</title> <para> by Alan Ezust, Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
   <listitem><para> Revisited #3596333: Preserve contents when floating/docking. 
