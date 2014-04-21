@@ -888,7 +888,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			}
 		}
 		catch (IOException ioe) {
-			Log.log(Log.ERROR, "WTF?", ioe);
+			Log.log(Log.ERROR, this, ioe);
 		}
 	}//}}}
 	
