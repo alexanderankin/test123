@@ -249,7 +249,7 @@ public class DefaultErrorSource extends ErrorSource
 	//{{{ addError() method
 	/**
 	 * Adds an error to this error source. This method is thread-safe.
-	 * @param errorType The error type (ErrorSource.ERROR or
+	 * @param type The error type (ErrorSource.ERROR or
 	 * ErrorSource.WARNING)
 	 * @param path The path name
 	 * @param lineIndex The line number

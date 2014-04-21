@@ -21,6 +21,7 @@
 	<import file="${build.support}/plugin-build.xml" />
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
+	<property name="javadoc.packagenames"	value="errorlist.*" />
 
 	<selector id="packageFiles">
 	  <or>
