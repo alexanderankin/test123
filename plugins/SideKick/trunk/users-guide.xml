@@ -252,7 +252,7 @@
   how it's done.
  </para>
 
-    <sect1 id="preliminaries">
+    <section id="preliminaries">
       <title>Preliminaries</title>
 
       <para>
@@ -292,9 +292,9 @@
 &lt;/SERVICES&gt;
 </programlisting>
 
-    </sect1>
+    </section>
 
-    <sect1 id="class-sidekickparser">
+    <section id="class-sidekickparser">
       <title>The SideKickParser class</title>
 
       <para>
@@ -338,9 +338,9 @@ mode.shtml.sidekick.parser=html
 mode.sgml.sidekick.parser=html
 mode.velocity.sidekick.parser=html</programlisting>
 
-    </sect1>
+    </section>
 
-    <sect1 id="implement-sidekick-parser">
+    <section id="implement-sidekick-parser">
       <title>Implementing a Sidekick parser</title>
 
       <para>
@@ -390,9 +390,9 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
         <para> Some SideKick parsers, such as CtagsSideKick, offer an additional toolbar to provide a convenient interface to change certain mode options such as sort by, and group by. They achieve this by overriding the <literal>getPanel()</literal> method of SideKickParser. </para>
       </formalpara>
 
-    </sect1>
+    </section>
 
-    <sect1 id="implement-completion">
+    <section id="implement-completion">
       <title>Implementing completion popups</title>
 
       <para> Your derived instance of
@@ -431,21 +431,8 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
       <para>How you actually create the completion depends on the specific language and support classes, and the information provided by the parser for the current file. </para>
 
 
-    </sect1>
-
+    </section>
   </chapter>
-
-  <appendix id="futureplans">
-    <title> Future Plans </title>
-    <itemizedlist>
-      <listitem>
-        <para> Adding a Help tooltip to the CompletionPopup window and methods to the CompletinoInfo for getting/setting help.
-  </para>
-      </listitem>
-
-
-    </itemizedlist>
-  </appendix>
 
   <appendix id="changes">
     <title>Changes</title>
