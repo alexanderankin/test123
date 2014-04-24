@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007, 2011 Matthieu Casanova
+ * Copyright (C) 2007, 2014 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@ public class AncestorPlugin extends EditPlugin
 	//{{{ addAncestorToolBar() method
 	private void addAncestorToolBar(View view)
 	{
-		if (viewAncestorToolBar.containsKey(view))
+		if (view.isPlainView() || viewAncestorToolBar.containsKey(view))
 			return;
 		AncestorToolBar ancestorToolBar = new AncestorToolBar(view);
 		EditPane editPane = view.getEditPane();
