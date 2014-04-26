@@ -1,6 +1,6 @@
 /*
  * WorkRequest.java - a work request in a WorkThreadPool.
- * Copyright (c) 2005 Marcelo Vanzin
+ * Copyright (c) 2005-2014 Marcelo Vanzin
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -20,6 +20,10 @@
  */
 package common.threads;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 import org.gjt.sp.util.Log;
 
 /**
@@ -32,40 +36,38 @@ import org.gjt.sp.util.Log;
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
  */
- 
+@Deprecated
 public final class WorkRequest
 {
 
-	private volatile boolean done;
-	private Object		lock;
-	private Runnable	work;
-	private Exception	error;
+	private final Runnable work;
+	private final Future<?> future;
+	private Exception error;
 
-	public WorkRequest(Runnable work)
+	WorkRequest(ExecutorService executor, Runnable work)
 	{
-		this.done = false;
-		this.lock = new Object();
 		this.work = work;
+		this.future = executor.submit(new Runnable() {
+			@Override
+			public void run()
+			{
+				WorkRequest.this.run();
+			}
+		});
 	}
 
 	/** Waits until the running job is finished. */
 	public void waitFor() throws InterruptedException
 	{
-		if (done)
-			return;
-		synchronized (lock)
-		{
-			while (!done) {
-				lock.wait(1000);
-			}
+		try {
+			future.get();
+		} catch (ExecutionException ee) {
+			Log.log(Log.ERROR, this, ee);
 		}
 	}
 
 	public boolean isDone() {
-		synchronized (lock)
-		{
-			return done;
-		}
+		return future.isDone();
 	}
 
 	/**
@@ -85,11 +87,6 @@ public final class WorkRequest
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
 			error = e;
-		}
-		synchronized (lock)
-		{
-			done = true;
-			lock.notifyAll();
 		}
 	}
 

@@ -1,6 +1,6 @@
 /*
  * WorkerThreadPool.java - a thread pool that handles groups of requests.
- * Copyright (c) 2005 Marcelo Vanzin
+ * Copyright (c) 2005-2014 Marcelo Vanzin
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -23,6 +23,12 @@ package common.threads;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /** A thread pool that handles groups of requests (<i>Runnable</i> objects).
  *
@@ -39,8 +45,9 @@ import java.util.List;
  *	@author		Marcelo Vanzin
  *	@since		CC 0.9.0
  *  @see org.gjt.sp.util.ThreadUtilities
+ *	@deprecated Use java.util.concurrent instead.
  */
-
+@Deprecated
 public class WorkerThreadPool
 {
 
@@ -50,11 +57,13 @@ public class WorkerThreadPool
 		return instance;
 	}
 
-	private 		List		threads;
-	private 		List		requests	= new LinkedList();
+	private final ExecutorService executor;
 
-	private final 	Object		lock		= new Object();
-	private final 	ThreadGroup	group		= new ThreadGroup("CommonControls Worker Pool");
+	public WorkerThreadPool()
+	{
+		this.executor = new ThreadPoolExecutor(10, 64, 10, TimeUnit.SECONDS,
+			new LinkedBlockingQueue<Runnable>(), new CCThreadFactory());
+	}
 
 	/**
 	 *	Adds a request to the pool. The request will be run in the first
@@ -66,14 +75,7 @@ public class WorkerThreadPool
 	 */
 	public WorkRequest addRequest(Runnable req)
 	{
-		ensureCapacity(1);
-		WorkRequest wreq = new WorkRequest(req);
-		synchronized (lock)
-		{
-			requests.add(wreq);
-			lock.notifyAll();
-		}
-		return wreq;
+		return new WorkRequest(executor, req);
 	}
 
 	/**
@@ -90,13 +92,10 @@ public class WorkerThreadPool
 	 */
 	public WorkRequest[] addRequests(Runnable[] reqs)
 	{
-		ensureCapacity(reqs.length);
-		WorkRequest[] wreqs = toWorkRequest(reqs);
-		synchronized (lock)
-		{
-			for (int i = 0; i < wreqs.length; i++)
-				requests.add(wreqs[i]);
-			lock.notifyAll();
+		int i = 0;
+		WorkRequest[] wreqs = new WorkRequest[reqs.length];
+		for (Runnable req : reqs) {
+			wreqs[i++] = new WorkRequest(executor, req);
 		}
 		return wreqs;
 	}
@@ -110,27 +109,7 @@ public class WorkerThreadPool
 	 */
 	public WorkRequest[] runRequests(Runnable[] reqs)
 	{
-		WorkRequest[] wreqs = toWorkRequest(reqs);
-		ensureCapacity(wreqs.length);
-		synchronized (lock) {
-			int curr = 0;
-			for (Iterator i = threads.iterator();
-				 curr < wreqs.length && i.hasNext(); )
-			{
-				WorkerThread wt = (WorkerThread) i.next();
-				if (wt.isIdle()) {
-					wt.setWorkload(wreqs[curr++]);
-				}
-			}
-			for (int i = curr; i < wreqs.length; i++) {
-				WorkerThread t = new WorkerThread();
-				t.setWorkload(wreqs[i]);
-				t.start();
-				threads.add(t);
-			}
-			lock.notifyAll();
-		}
-		return wreqs;
+		return addRequests(reqs);
 	}
 
 	/**
@@ -138,118 +117,36 @@ public class WorkerThreadPool
 	 *	handle requests.
 	 */
 	public void ensureCapacity(int size) {
-		synchronized (lock)
-		{
-			if (threads == null)
-			{
-				threads = new LinkedList();
-			}
-
-			while (threads.size() < size)
-			{
-				Thread t = new WorkerThread();
-				t.start();
-				threads.add(t);
-			}
-		}
+		// no-op; handled by underlying executor already.
 	}
 
 	/** Asks all running threads to shutdown. */
 	public void shutdown()
 	{
-		synchronized (lock)
-		{
-			if (threads != null)
-			{
-				for (Iterator i = threads.iterator(); i.hasNext(); ) {
-					((WorkerThread)i.next()).requestShutdown();
-					i.remove();
-				}
-			}
-		}
+		executor.shutdownNow();
 	}
 
-	private WorkRequest[] toWorkRequest(Runnable[] reqs) {
-		WorkRequest[] wreqs = new WorkRequest[reqs.length];
-		for (int i = 0; i < wreqs.length; i++)
-			wreqs[i] = new WorkRequest(reqs[i]);
-		return wreqs;
+	/**
+	 * Returns the underlying executor service.
+	 *
+	 * @since CC 1.7.4
+	 */
+	public ExecutorService getExecutor()
+	{
+		return executor;
 	}
 
-	private static int THREAD_ID = 0;
-
-	private class WorkerThread extends Thread
+	private static class CCThreadFactory implements ThreadFactory
 	{
 
-		private boolean run 		= true;
-		private int		idleCount	= 0;
-		private volatile WorkRequest work = null;
+		private static final AtomicLong threadId = new AtomicLong();
 
-		public WorkerThread() {
-			super(group, "CC::Worker #" + (++THREAD_ID));
-			setDaemon(true);
-		}
-
-		/** not synchronized. call while holding "lock". */
-		public void setWorkload(WorkRequest work) {
-			this.work = work;
-		}
-
-		/** not synchronized. call while holding "lock". */
-		public boolean isIdle() {
-			return (work == null);
-		}
-
-		public void run()
+		@Override
+		public Thread newThread(Runnable r)
 		{
-			while (run)
-			{
-				idleCount = 0;
-				synchronized (lock)
-				{
-					while (run && work == null && idleCount < 10)
-					{
-						if (requests.size() > 0)
-						{
-							work = (WorkRequest) requests.remove(0);
-							break;
-						}
-
-						try {
-							lock.wait(10000);
-						} catch (InterruptedException ie) {
-							// ignore.
-							ie.printStackTrace();
-						}
-
-						idleCount++;
-					}
-				}
-				if (work != null)
-				{
-					work.run();
-					work = null;
-				}
-				else if (idleCount >= 10)
-				{
-					// stop the thread if if has been inactive for a long
-					// time and there's more than 1 thread running
-					synchronized (lock)
-					{
-						run = !(threads.size() > 1);
-						if (!run)
-							threads.remove(this);
-					}
-				}
-			}
-		}
-
-		public void requestShutdown()
-		{
-			synchronized (lock) {
-				run = false;
-				lock.notifyAll();
-			}
+			Thread t = new Thread(r);
+			t.setName("CC::Worker #" + threadId.incrementAndGet());
+			return t;
 		}
 
 	}
