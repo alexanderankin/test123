@@ -3,7 +3,7 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy(former), Jakub Hol
 plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.6.1
 
 # new jEdit 4.3 plugin API for short description.
-plugin.uk.co.antroy.latextools.LaTeXPlugin.description=A simple LaTeX plugin offering compilation actions and navigation.
+plugin.uk.co.antroy.latextools.LaTeXPlugin.description=A simple LaTeX plugin offering compilation actions, navigation, and a SideKick parser.
 # points to a file relative to the root of the jar
 plugin.uk.co.antroy.latextools.LaTeXPlugin.longdescription=description.html
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
@@ -14,7 +14,7 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.2=plugin errorlist.ErrorListPl
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.3=plugin sidekick.SideKickPlugin 1.3
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.4=plugin console.ConsolePlugin 4.5
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.5=plugin GnuRegexpPlugin 1.0
-plugin.null.description=hoi
+
 #4.2 API - activate plugin
 plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
 
@@ -144,7 +144,7 @@ sidekick.parser.latex.label=LaTeX
 latex.compile.command=pdflatex
 # Switch passed to latex to print file:line:error style messages
 # MiKTeX: -c-style-errors, Linux (TeTeX): -file-line-error-style -halt-on-error
-latex.compile.c-errors=-c-style-errors
+latex.compile.c-errors=-c-style-errors -halt-on-error
 latex.compile.c-errors.linux=-file-line-error-style -halt-on-error
 latex.compile.parse-errors=true
 latex.viewoutput.command=acrord32.exe
