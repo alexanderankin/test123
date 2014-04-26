@@ -24,13 +24,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,16 +42,12 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.util.Log;
 
 import uk.co.antroy.latextools.macros.ProjectMacros;
 import uk.co.antroy.latextools.macros.UtilityMacros;
 
 
-public abstract class AbstractToolPanel
-    extends JPanel
-    implements EBComponent {
-
+public abstract class AbstractToolPanel extends JPanel implements EBComponent {
     //~ Instance/static variables .............................................
 
     protected Action refresh; //Binary flags: reload-refresh
@@ -89,9 +83,9 @@ public abstract class AbstractToolPanel
     //~ Methods ...............................................................
 
     /**
-     * ¤
      * 
-     * @param message ¤
+     * 
+     * @param message 
      */
     public void handleMessage(EBMessage message) {
 
@@ -121,14 +115,14 @@ public abstract class AbstractToolPanel
     }
 
     /**
-     * ¤
+     * 
      */
     public void refresh() {
         view.repaint();
     }
 
     /**
-     * ¤
+     * 
      */
     public abstract void reload();
 
@@ -219,7 +213,8 @@ public abstract class AbstractToolPanel
         add(p, position);
     }
 
-    private void createActions() {
+    @SuppressWarnings("serial")
+	private void createActions() {
         refresh = new AbstractAction("", UtilityMacros.getIcon("ref.gif")) {
             public void actionPerformed(ActionEvent e) {
                 refresh();

@@ -92,7 +92,7 @@ public class LaTeXOptionPane
         addComponent(cStyleErrors);
         
         compileShowErrorsSwitch = new JTextField(30);
-        compileShowErrorsSwitch.setText(jEdit.getProperty("latex.compile.c-errors"));
+        compileShowErrorsSwitch.setText(jEdit.getProperty("latex.compile.options"));
         String showErrTooltip = jEdit.getProperty("options.latextools.general.compilation.errortooltip");
         compileShowErrorsSwitch.setToolTipText(showErrTooltip);
         
@@ -153,6 +153,6 @@ public class LaTeXOptionPane
         jEdit.setBooleanProperty("latex.viewoutput.detach", 
                                  viewerDetach.getModel().isSelected());
         jEdit.setProperty("latex.classpath.dirs", classpathField.getText());
-        jEdit.setProperty("latex.compile.c-errors", compileShowErrorsSwitch.getText());
+        jEdit.setProperty("latex.compile.options", compileShowErrorsSwitch.getText());
     }
 }
