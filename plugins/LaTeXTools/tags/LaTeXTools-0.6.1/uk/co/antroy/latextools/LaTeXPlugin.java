@@ -30,9 +30,9 @@ import java.util.List;
 public class LaTeXPlugin extends EditPlugin {
 
     private static List<EBComponent> editBusList = new ArrayList<EBComponent>();
-        
+
     //~ Methods ...............................................................
-    
+
     public static void addToEditBus(EBComponent component){
             EditBus.addToBus(component);
             editBusList.add(component);
@@ -42,7 +42,7 @@ public class LaTeXPlugin extends EditPlugin {
             EditBus.removeFromBus(component);
             editBusList.remove(component);
     }
-    
+
     public void stop(){
         for (EBComponent component: editBusList) {
             EditBus.removeFromBus(component);
@@ -52,10 +52,11 @@ public class LaTeXPlugin extends EditPlugin {
 
     public void start() {
     	String options = jEdit.getProperty("latex.compile.options") ;
-    	if (options == null || options.length() == 0) {    		
+    	if (options == null || !jEdit.getBooleanProperty("latex.compile.c-errors.initialized")) {
+    		jEdit.setBooleanProperty("latex.compile.c-errors.initialized", true);
     		options = jEdit.getProperty("latex.compile.c-errors");
     		if (OperatingSystem.isUnix()) options = jEdit.getProperty("latex.compile.c-errors.linux");
-    		jEdit.setProperty("latex.compile.options", options);    		
+    		jEdit.setProperty("latex.compile.options", options);
     	}
     }
 }
