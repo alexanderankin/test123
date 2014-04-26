@@ -19,19 +19,17 @@
 package uk.co.antroy.latextools;
 
 import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.jEdit;
 
-import sidekick.SideKickPlugin;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class LaTeXPlugin extends EditPlugin {
 
-    private static List editBusList = new ArrayList();
+    private static List<EBComponent> editBusList = new ArrayList<EBComponent>();
         
     //~ Methods ...............................................................
     
@@ -46,20 +44,18 @@ public class LaTeXPlugin extends EditPlugin {
     }
     
     public void stop(){
-        for (Iterator it = editBusList.iterator(); it.hasNext(); ){
-            EBComponent component = (EBComponent) it.next();
+        for (EBComponent component: editBusList) {
             EditBus.removeFromBus(component);
-            it.remove();
         }
+        editBusList.clear();
     }
 
     public void start() {
-        if(System.getProperty("os.name").indexOf("Linux")!= -1 &&
-           !jEdit.getBooleanProperty("latex.compile.c-errors.initialized")) {
-            
-            jEdit.setBooleanProperty("latex.compile.c-errors.initialized", true);
-            String linuxErrorStyleSwitch = jEdit.getProperty("latex.compile.c-errors.linux");
-            jEdit.setProperty("latex.compile.c-errors", linuxErrorStyleSwitch);
-        }
+    	String options = jEdit.getProperty("latex.compile.options") ;
+    	if (options == null || options.length() == 0) {    		
+    		options = jEdit.getProperty("latex.compile.c-errors");
+    		if (OperatingSystem.isUnix()) options = jEdit.getProperty("latex.compile.c-errors.linux");
+    		jEdit.setProperty("latex.compile.options", options);    		
+    	}
     }
 }
