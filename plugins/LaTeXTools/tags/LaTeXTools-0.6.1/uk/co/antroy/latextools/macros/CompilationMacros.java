@@ -177,7 +177,7 @@ public class CompilationMacros {
 
         if (commandProps.equals("latex.compile") && 
             jEdit.getBooleanProperty("latex.compile.parse-errors")) {
-            str.append(" ").append(jEdit.getProperty("latex.compile.c-errors"));
+            str.append(" ").append(jEdit.getProperty("latex.compile.options"));
         }
 
         str.append(" '").append(tex).append(ext).append("'");
