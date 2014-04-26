@@ -1,5 +1,5 @@
 /*
- * (c) 2012 Marcelo Vanzin
+ * (c) 2012-2014 Marcelo Vanzin
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -29,11 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import org.gjt.sp.util.Log;
 
 import common.threads.WorkerThreadPool;
-import common.threads.WorkRequest;
 
 /** A class that encapsulates running a process and processing its streams.
  *
@@ -58,9 +60,9 @@ public class ProcessExecutor
 
 	private List<VisitorEntry> visitors;
 
-	private WorkRequest		stderrReq;
-	private WorkRequest		stdoutReq;
-
+	private Future<?>		stderrReq;
+	private Future<?>		stdoutReq;
+	private ExecutorService	executor;
 
 	/**
 	 * Creates a new executor for the given process with the given arguments.
@@ -75,6 +77,8 @@ public class ProcessExecutor
 		assert (cmd.length > 0) : "cmd cannot be empty";
 		this.cmd = cmd;
 		this.visitors = new LinkedList<VisitorEntry>();
+		this.executor = WorkerThreadPool.getSharedInstance()
+			.getExecutor();
 	}
 
 
@@ -96,7 +100,7 @@ public class ProcessExecutor
 	public String[] getCmd() {
 		return cmd;
 	}
-	
+
 	/**
 	 * Adds the current process's environment to the child.
 	 * <p>
@@ -169,6 +173,20 @@ public class ProcessExecutor
 	}
 
 	/**
+	 * Changes the executor used to process the sub-process's
+	 * streams. The executor should allow 2 tasks to run
+	 * concurrently for this class to be able to monitor the
+	 * child process.
+	 *
+	 * @since CC 1.7.4
+	 */
+	public ProcessExecutor setExecutor(ExecutorService executor)
+	{
+		this.executor = executor;
+		return this;
+	}
+
+	/**
 	 * Executes the child commmand, returning a process on success.
 	 *
 	 * @return A process on success, null otherwise.
@@ -194,14 +212,12 @@ public class ProcessExecutor
 
 		child = Runtime.getRuntime().exec(cmd, env, fcwd);
 
-		stderr = new StreamReader(child.getErrorStream(), true);
 		stdout = new StreamReader(child.getInputStream(), false);
+		stdoutReq = executor.submit(stdout);
 
-		WorkRequest[] reqs =
-			WorkerThreadPool.getSharedInstance().runRequests(
-				new Runnable[] { stdout, stderr });
-		stdoutReq = reqs[0];
-		stderrReq = reqs[1];
+		stderr = new StreamReader(child.getErrorStream(), true);
+		stderrReq = executor.submit(stderr);
+
 		return child;
 	}
 
@@ -216,8 +232,16 @@ public class ProcessExecutor
 	{
 		assert (child != null) : "command not yet executed";
 		child.waitFor();
-		stdoutReq.waitFor();
-		stderrReq.waitFor();
+		try {
+			stdoutReq.get();
+		} catch (ExecutionException ee) {
+			Log.log(Log.ERROR, this, ee);
+		}
+		try {
+			stderrReq.get();
+		} catch (ExecutionException ee) {
+			Log.log(Log.ERROR, this, ee);
+		}
 		return child.exitValue();
 	}
 
