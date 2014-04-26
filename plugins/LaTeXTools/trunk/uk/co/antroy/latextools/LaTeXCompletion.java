@@ -1,4 +1,4 @@
-/*:folding=indent:
+/*:folding=sidekick:
 * LaTeXCompletion.java - Code completion.
 * Copyright (C) 2003 Anthony Roy
 *
