@@ -912,6 +912,53 @@ loop:			for(;;)
 		}
 	} //}}}
 
+	//{{{ getAsciiEntityString() method
+	/**
+	 * Return the characters for the given ascii <code>entity</code>.
+	 * @param entity A numeric value starting with <code>#</code>,
+	 *               not including terminating <code>;</code>,
+	 *               being a Character Reference
+	 * @return <code>null</code> if this is not a valid Character Reference.
+	 */
+	private static char[] getAsciiEntityString(String entity)
+	{
+		char[] rv = null;
+		if (entity.charAt(0) == '#')
+		{
+			int codePoint = 0;
+			try
+			{
+				if (entity.length() >= 2 && entity.charAt(1) == 'x')
+				{
+					// hexadecimal value
+					codePoint = Integer.parseInt(entity.substring(2), 16);
+				}
+				else
+				{
+					// decimal value
+					codePoint = Integer.parseInt(entity.substring(1));
+				}
+			}
+			catch (NumberFormatException nfe)
+			{
+				// just leave codePoint == 0
+			}
+			if (codePoint != 0)
+			{
+				// any Unicode character, excluding the surrogate blocks, FFFE, and FFFF
+				if(codePoint == 0x9 || codePoint == 0xA || codePoint == 0xD
+					|| (codePoint >= 0x20 && codePoint <= 0xD7FF)
+					|| (codePoint >= 0xE000 && codePoint <= 0xFFFD)
+					|| (codePoint >= 0x10000 && codePoint <= 0x10FFFF)
+					)
+				{
+					rv = Character.toChars(codePoint);
+				}
+			}
+		}
+		return rv;
+	} //}}}
+
 	//{{{ charactersToEntities() methods
 	public static String charactersToEntities(String s, Map hash)
 	{
@@ -983,6 +1030,16 @@ loop:			for(;;)
 						buf.append(c.charValue());
 						i = index;
 						continue;
+					}
+					else
+					{
+						char[] ascii = getAsciiEntityString(entityName);
+						if (ascii != null)
+						{
+							buf.append(ascii);
+							i = index;
+							continue;
+						}
 					}
 				}
 			}
