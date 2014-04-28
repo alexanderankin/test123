@@ -243,6 +243,10 @@ TOKEN :
 TOKEN [IGNORE_CASE] :
 {
     <AND: "and" >
+    |
+    <ONLY: "only">
+    |
+    <NOT: "not">
 } 
 
 <DEFAULT>
@@ -573,13 +577,15 @@ void importDeclaration() :
         <S>
     ) *
     (
-        medium()
+        //medium()
+        media_type()
         (
             <COMMA> 
             (
                 <S>
             ) *
-            medium()
+            //medium()
+            media_type()
         ) *
     ) ?
     <SEMICOLON> 
@@ -588,7 +594,131 @@ void importDeclaration() :
     ) *
 }
 
+/*
+From Mozilla:
+https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Media_queries
 
+@media <media_query_list> { ruleSet }
+media_query_list: <media_query> [, <media_query> ]*
+media_query: [[only | not]? <media_type> [ and <expression> ]*]
+  | <expression> [ and <expression> ]*
+expression: ( <media_feature> [: <value>]? )
+media_type: all | aural | braille | handheld | print |
+  projection | screen | tty | tv | embossed
+media_feature: width | min-width | max-width
+  | height | min-height | max-height
+  | device-width | min-device-width | max-device-width
+  | device-height | min-device-height | max-device-height
+  | aspect-ratio | min-aspect-ratio | max-aspect-ratio
+  | device-aspect-ratio | min-device-aspect-ratio | max-device-aspect-ratio
+  | color | min-color | max-color
+  | color-index | min-color-index | max-color-index
+  | monochrome | min-monochrome | max-monochrome
+  | resolution | min-resolution | max-resolution
+  | scan | grid
+  
+From w3.org:  
+http://www.w3.org/TR/css3-mediaqueries/
+The media query syntax is described in terms of the CSS2 grammar. As such, rules 
+not defined here are defined in CSS2. The media_query_list production defined 
+below replaces the media_list production from CSS2.  
+
+media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDENT
+ ;
+ 
+CSS 2:
+media
+  : MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
+  ;
+media_list
+  : medium [ COMMA S* medium]*
+  ;
+medium
+  : IDENT S*
+  ;
+  
+Putting the two above together gives:
+media
+  : MEDIA_SYM S* media_query_list '{' S* ruleset* '}' S*
+  ;
+media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDENT
+ ;
+
+*/
+// new version, based on comment above
+void media() :
+{}
+{
+    <MEDIA_SYM> ( LOOKAHEAD(2) <S> )* media_query_list() <LBRACE> 
+        ( <S> )* 
+        ( ruleSet() )* 
+    <RBRACE> ( <S> )*
+}
+
+void media_query_list() :
+{}
+{
+    ( LOOKAHEAD(2) <S> )* [ LOOKAHEAD(2) media_query() ( <COMMA> ( LOOKAHEAD(2) <S> )* media_query() )* ]    
+}
+
+void media_query() :
+{}
+{
+    [ <ONLY> | <NOT> ] ( <S> )* media_type() ( LOOKAHEAD(2) <S> )* ( <AND> ( <S> )* media_expression() )*   
+    
+    |
+    
+    media_expression() ( <AND> ( <S> )* media_expression() )*
+}
+
+void media_type() :
+{}
+{
+    <IDENT>   
+}
+
+void media_expression() :
+{}
+{
+    <LPARAN> ( <S> )* media_feature() ( <S> )* [ <COLON> ( <S> )* expr() ] <RPARAN> (LOOKAHEAD(2) <S> )*  
+}
+
+void media_feature() :
+{}
+{
+    <IDENT>   
+}
+
+// CSS 2.1 media definitions, replaced by above
+/*
 void media() :
 {
 }
@@ -639,8 +769,8 @@ void media() :
     ) *
 }
 
-
-void medium() :/* tv, projection, screen, ... */
+// tv, projection, screen, ...
+void medium() :  
 {
 
 }
@@ -650,6 +780,7 @@ void medium() :/* tv, projection, screen, ... */
         <S>
     ) *
 }
+*/
 
 void unused_production_generic_syntax() :
 {

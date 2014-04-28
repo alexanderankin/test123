@@ -638,3 +638,6 @@ BODY {
 SPAN.color {
     background-color: silver;
 }
+LI p {
+    width: 10px;
+}
