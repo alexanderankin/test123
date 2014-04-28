@@ -333,6 +333,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     CSSNode firstNode = null;
     CSSNode childNode = null;
     List<CSSNode> children = null;
+    System.out.println("+++++ in stylesheet");
     try {
       label_1:
       while (true) {
@@ -455,6 +456,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     } catch (TokenMgrError err) {
         addException ( new ParseException ("Unrecognized token, " + err.getMessage()));
     }
+        System.out.println("+++++ CSS3Parser completed parsing");
         {if (true) return rootNode;}
     throw new Error("Missing return statement in function");
   }
@@ -535,7 +537,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         case PSEUDOELEMENT_SYM:
         case CLASS:
         case FUNCTIONNOT:
-        case 99:
+        case 101:
           node = ruleSet();
                                 if (node != null) list.add(node);
           break;
@@ -728,7 +730,7 @@ public class CSS3Parser implements CSS3ParserConstants {
  */
   final public CSSNode importDeclaration() throws ParseException {
     Token start = null;
-    CSSNode medium = null;
+    Token medium = null;
     List<CSSNode> mediumList = new ArrayList<CSSNode>();
     Token uri = null;
     Token end = null;
@@ -773,8 +775,10 @@ public class CSS3Parser implements CSS3ParserConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENT:
-        medium = medium();
-                             if (medium != null) mediumList.add(medium);
+        medium = media_type();
+                if (medium != null) {
+                    mediumList.add(createNode(medium));
+                }
         label_17:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -798,8 +802,10 @@ public class CSS3Parser implements CSS3ParserConstants {
             }
             jj_consume_token(S);
           }
-          medium = medium();
-                                 if (medium != null) mediumList.add(medium);
+          medium = media_type();
+                    if (medium != null) {
+                        mediumList.add(createNode(medium));
+                    }
         }
         break;
       default:
@@ -839,168 +845,96 @@ public class CSS3Parser implements CSS3ParserConstants {
     throw new Error("Missing return statement in function");
   }
 
+/*
+From w3.org:  
+http://www.w3.org/TR/css3-mediaqueries/
+The media query syntax is described in terms of the CSS2 grammar. As such, rules 
+not defined here are defined in CSS2. The media_query_list production defined 
+below replaces the media_list production from CSS2.  
+
+media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDENT
+ ;
+ 
+CSS 2:
+media
+  : MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
+  ;
+media_list
+  : medium [ COMMA S* medium]*
+  ;
+medium
+  : IDENT S*
+  ;
+  
+Putting the two above together gives:
+media
+  : MEDIA_SYM S* media_query_list '{' S* ruleset* '}' S*
+  ;
+media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDENT
+ ;
+
+*/
+// new version, based on comment above
   final public CSSNode media() throws ParseException {
     Token start = null;
-    Token mr = null;
-    CSSNode medium = null;
-    CSSNode mdecl = null;
+    Token end = null;
+    List<CSSNode> mediaQueryList = new ArrayList<CSSNode>();
     CSSNode ruleset = null;
     List<CSSNode> ruleList = new ArrayList<CSSNode>();
-    Token end = null;
-    StringBuilder label = new StringBuilder("media");
     try {
       start = jj_consume_token(MEDIA_SYM);
       label_20:
       while (true) {
+        if (jj_2_1(2)) {
+          ;
+        } else {
+          break label_20;
+        }
         jj_consume_token(S);
+      }
+      mediaQueryList = media_query_list();
+      jj_consume_token(LBRACE);
+      label_21:
+      while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
           jj_la1[26] = jj_gen;
-          break label_20;
-        }
-      }
-      label_21:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case MEDIARESTRICTOR:
-          mr = jj_consume_token(MEDIARESTRICTOR);
-          label_22:
-          while (true) {
-            jj_consume_token(S);
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[27] = jj_gen;
-              break label_22;
-            }
-          }
-                                  label.append(" ").append(mr.image);
-          break;
-        default:
-          jj_la1[28] = jj_gen;
-          ;
-        }
-        // </CSS3>
-        
-                                medium = medium();
-                                         if (medium != null) label.append(" ").append(medium.toString());
-        label_23:
-        while (true) {
-          if (jj_2_1(2)) {
-            ;
-          } else {
-            break label_23;
-          }
-          jj_consume_token(COMMA);
-          label_24:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[29] = jj_gen;
-              break label_24;
-            }
-            jj_consume_token(S);
-          }
-          medium = medium();
-                                                 if (medium != null) label.append(" ").append(medium.toString());
-        }
-        label_25:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case AND:
-            ;
-            break;
-          default:
-            jj_la1[30] = jj_gen;
-            break label_25;
-          }
-          jj_consume_token(AND);
-          label_26:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[31] = jj_gen;
-              break label_26;
-            }
-            jj_consume_token(S);
-          }
-          jj_consume_token(LPARAN);
-          label_27:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[32] = jj_gen;
-              break label_27;
-            }
-            jj_consume_token(S);
-          }
-          mdecl = mediadeclaration();
-                                                          if (mdecl != null) label.append("(").append(mdecl.toString()).append(")");
-          jj_consume_token(RPARAN);
-          label_28:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[33] = jj_gen;
-              break label_28;
-            }
-            jj_consume_token(S);
-          }
-        }
-        label_29:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case COMMA:
-            ;
-            break;
-          default:
-            jj_la1[34] = jj_gen;
-            break label_29;
-          }
-          jj_consume_token(COMMA);
-          jj_consume_token(S);
-        }
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case IDENT:
-        case MEDIARESTRICTOR:
-          ;
-          break;
-        default:
-          jj_la1[35] = jj_gen;
           break label_21;
-        }
-      }
-      jj_consume_token(LBRACE);
-      label_30:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[36] = jj_gen;
-          break label_30;
         }
         jj_consume_token(S);
       }
-      label_31:
+      label_22:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case IDENT:
@@ -1020,26 +954,28 @@ public class CSS3Parser implements CSS3ParserConstants {
         case PSEUDOELEMENT_SYM:
         case CLASS:
         case FUNCTIONNOT:
-        case 99:
+        case 101:
           ;
           break;
         default:
-          jj_la1[37] = jj_gen;
-          break label_31;
+          jj_la1[27] = jj_gen;
+          break label_22;
         }
         ruleset = ruleSet();
-                               if(ruleset != null) ruleList.add(ruleset);
+                    if (ruleset != null) {
+                        ruleList.add(ruleset);
+                    }
       }
       end = jj_consume_token(RBRACE);
-      label_32:
+      label_23:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[38] = jj_gen;
-          break label_32;
+          jj_la1[28] = jj_gen;
+          break label_23;
         }
         jj_consume_token(S);
       }
@@ -1049,10 +985,14 @@ public class CSS3Parser implements CSS3ParserConstants {
         {if (true) return null;}
     }
         if (notNull(start, end)) {
-                if (label.length()>64)
-                        label.replace(64,label.length(),"...");
+            StringBuilder label = new StringBuilder();
+            label.append(start.image);
+            for (CSSNode mediaQuery : mediaQueryList) {
+                label.append(' ').append(mediaQuery.getName());
+            }
             CSSNode node = new CSSNode(label.toString());
-                        node.addChildren(ruleList);
+            //node.addChildren(mediaQueryList);
+            node.addChildren(ruleList);
             node.setStartLocation(getStartLocation(start));
             node.setEndLocation(getEndLocation(end));
             {if (true) return node;}
@@ -1061,25 +1001,338 @@ public class CSS3Parser implements CSS3ParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public CSSNode medium() throws ParseException {
-    Token t = null;
-    t = jj_consume_token(IDENT);
-    label_33:
-    while (true) {
+  final public List<CSSNode> media_query_list() throws ParseException {
+    CSSNode mediaQuery = null;
+    List<CSSNode> mediaQueryList = new ArrayList<CSSNode>();
+    try {
+      label_24:
+      while (true) {
+        if (jj_2_2(2)) {
+          ;
+        } else {
+          break label_24;
+        }
+        jj_consume_token(S);
+      }
+      if (jj_2_4(2)) {
+        mediaQuery = media_query();
+                if (mediaQuery != null) {
+                    mediaQueryList.add(mediaQuery);
+                }
+        label_25:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case COMMA:
+            ;
+            break;
+          default:
+            jj_la1[29] = jj_gen;
+            break label_25;
+          }
+          jj_consume_token(COMMA);
+          label_26:
+          while (true) {
+            if (jj_2_3(2)) {
+              ;
+            } else {
+              break label_26;
+            }
+            jj_consume_token(S);
+          }
+          mediaQuery = media_query();
+                    if (mediaQuery != null) {
+                        mediaQueryList.add(mediaQuery);
+                    }
+        }
+      } else {
+        ;
+      }
+    } catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        {if (true) return null;}
+    }
+        {if (true) return mediaQueryList;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public CSSNode media_query() throws ParseException {
+    Token mediaType = null;
+    Token mediaRestriction = null;
+    CSSNode mediaExpression = null;
+    List<CSSNode> mediaExpressionList = new ArrayList<CSSNode>();
+    try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case S:
-        ;
+      case ONLY:
+      case NOT:
+      case IDENT:
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ONLY:
+        case NOT:
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case ONLY:
+            mediaRestriction = jj_consume_token(ONLY);
+            break;
+          case NOT:
+            mediaRestriction = jj_consume_token(NOT);
+            break;
+          default:
+            jj_la1[30] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+          break;
+        default:
+          jj_la1[31] = jj_gen;
+          ;
+        }
+        label_27:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[32] = jj_gen;
+            break label_27;
+          }
+          jj_consume_token(S);
+        }
+        mediaType = media_type();
+        label_28:
+        while (true) {
+          if (jj_2_5(2)) {
+            ;
+          } else {
+            break label_28;
+          }
+          jj_consume_token(S);
+        }
+        label_29:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case AND:
+            ;
+            break;
+          default:
+            jj_la1[33] = jj_gen;
+            break label_29;
+          }
+          jj_consume_token(AND);
+          label_30:
+          while (true) {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case S:
+              ;
+              break;
+            default:
+              jj_la1[34] = jj_gen;
+              break label_30;
+            }
+            jj_consume_token(S);
+          }
+          mediaExpression = media_expression();
+                if (mediaExpression != null) {
+                    mediaExpressionList.add(mediaExpression);
+                }
+        }
+        break;
+      case LPARAN:
+        mediaExpression = media_expression();
+            if (mediaExpression != null) {
+                mediaExpressionList.add(mediaExpression);
+            }
+        label_31:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case AND:
+            ;
+            break;
+          default:
+            jj_la1[35] = jj_gen;
+            break label_31;
+          }
+          jj_consume_token(AND);
+          label_32:
+          while (true) {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case S:
+              ;
+              break;
+            default:
+              jj_la1[36] = jj_gen;
+              break label_32;
+            }
+            jj_consume_token(S);
+          }
+          mediaExpression = media_expression();
+                if (mediaExpression != null) {
+                    mediaExpressionList.add(mediaExpression);
+                }
+        }
         break;
       default:
-        jj_la1[39] = jj_gen;
-        break label_33;
+        jj_la1[37] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(S);
+    } catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        {if (true) return null;}
     }
-        if (notNull(t)) {
-            {if (true) return createNode(t);}
+        StringBuilder sb = new StringBuilder();
+        if (mediaRestriction != null) {
+            sb.append(mediaRestriction);
+        }
+        if (mediaType != null) {
+            sb.append(' ').append(mediaType.image);
+        }
+        if (!mediaExpressionList.isEmpty()) {
+            if (mediaType != null) {
+                sb.append(' ');
+            }
+            for (Iterator<CSSNode> it = mediaExpressionList.iterator(); it.hasNext(); ) {
+                CSSNode child = it.next();
+                sb.append(child.getName());
+                if (it.hasNext()) {
+                    sb.append(" and ");
+                }
+            }
+        }
+        if (sb.length() > 0) {
+            CSSNode node = new CSSNode(sb.toString());
+            if (mediaRestriction != null) {
+                node.setStartLocation(getStartLocation(mediaRestriction));
+            } else if (mediaType != null) {
+                node.setStartLocation(getStartLocation(mediaType));
+                if (mediaExpressionList.isEmpty()) {
+                    node.setEndLocation(getEndLocation(mediaType));
+                }
+            } else if (!mediaExpressionList.isEmpty()) {
+                node.addChildren(mediaExpressionList);
+                node.setStartLocation(mediaExpressionList.get(0).getStartLocation());
+                node.setEndLocation(mediaExpressionList.get(mediaExpressionList.size() - 1).getEndLocation());
+            }
+            {if (true) return node;}
         }
         {if (true) return null;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Token media_type() throws ParseException {
+    Token t = null;
+    try {
+      t = jj_consume_token(IDENT);
+    } catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        {if (true) return null;}
+    }
+        {if (true) return t;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public CSSNode media_expression() throws ParseException {
+    Token start = null;
+    Token end = null;
+    Token mediaFeature = null;
+    CSSNode expression = null;
+    try {
+      start = jj_consume_token(LPARAN);
+      label_33:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[38] = jj_gen;
+          break label_33;
+        }
+        jj_consume_token(S);
+      }
+      mediaFeature = media_feature();
+      label_34:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[39] = jj_gen;
+          break label_34;
+        }
+        jj_consume_token(S);
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COLON:
+        jj_consume_token(COLON);
+        label_35:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[40] = jj_gen;
+            break label_35;
+          }
+          jj_consume_token(S);
+        }
+        expression = expr();
+        break;
+      default:
+        jj_la1[41] = jj_gen;
+        ;
+      }
+      end = jj_consume_token(RPARAN);
+      label_36:
+      while (true) {
+        if (jj_2_6(2)) {
+          ;
+        } else {
+          break label_36;
+        }
+        jj_consume_token(S);
+      }
+    } catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        {if (true) return null;}
+    }
+        if (notNull(start, end)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append('(');
+            if (mediaFeature != null) {
+                sb.append(mediaFeature.image);
+            }
+            if (expression != null) {
+                sb.append(':');
+                sb.append(expression.getName());
+            }
+            sb.append(')');
+            CSSNode node = new CSSNode(sb.toString());
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            node.addChild(expression);
+            {if (true) return node;}
+        }
+        {if (true) return null;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Token media_feature() throws ParseException {
+    Token t = null;
+    try {
+      t = jj_consume_token(IDENT);
+    } catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        {if (true) return null;}
+    }
+        {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
@@ -1089,15 +1342,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(LPARAN);
-      label_34:
+      label_37:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[40] = jj_gen;
-          break label_34;
+          jj_la1[42] = jj_gen;
+          break label_37;
         }
         jj_consume_token(S);
       }
@@ -1125,15 +1378,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(LBRACKET);
-      label_35:
+      label_38:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[41] = jj_gen;
-          break label_35;
+          jj_la1[43] = jj_gen;
+          break label_38;
         }
         jj_consume_token(S);
       }
@@ -1163,15 +1416,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       start = jj_consume_token(PAGE_SYM);
                           if (start != null) node.setName(start.image);
-      label_36:
+      label_39:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[42] = jj_gen;
-          break label_36;
+          jj_la1[44] = jj_gen;
+          break label_39;
         }
         jj_consume_token(S);
       }
@@ -1179,21 +1432,21 @@ public class CSS3Parser implements CSS3ParserConstants {
       case IDENT:
         i = jj_consume_token(IDENT);
                        if (i != null) node.setName(node.getName() + ' ' + i.image);
-        label_37:
+        label_40:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[43] = jj_gen;
-            break label_37;
+            jj_la1[45] = jj_gen;
+            break label_40;
           }
           jj_consume_token(S);
         }
         break;
       default:
-        jj_la1[44] = jj_gen;
+        jj_la1[46] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1202,34 +1455,34 @@ public class CSS3Parser implements CSS3ParserConstants {
                                  if (child != null) node.addChild(child);
         break;
       default:
-        jj_la1[45] = jj_gen;
+        jj_la1[47] = jj_gen;
         ;
       }
       jj_consume_token(LBRACE);
-      label_38:
+      label_41:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[46] = jj_gen;
-          break label_38;
+          jj_la1[48] = jj_gen;
+          break label_41;
         }
         jj_consume_token(S);
       }
       contents = pageContent();
                                     if (contents != null) node.addChildren(contents);
       end = jj_consume_token(RBRACE);
-      label_39:
+      label_42:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[47] = jj_gen;
-          break label_39;
+          jj_la1[49] = jj_gen;
+          break label_42;
         }
         jj_consume_token(S);
       }
@@ -1259,7 +1512,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         node = prefAtRule();
         break;
       default:
-        jj_la1[48] = jj_gen;
+        jj_la1[50] = jj_gen;
         list = declarations();
       }
     } catch (ParseException e) {
@@ -1298,38 +1551,11 @@ public class CSS3Parser implements CSS3ParserConstants {
         start = jj_consume_token(ATRIGHT);
         break;
       default:
-        jj_la1[49] = jj_gen;
+        jj_la1[51] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      label_40:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[50] = jj_gen;
-          break label_40;
-        }
-        jj_consume_token(S);
-      }
-      jj_consume_token(LBRACE);
-      label_41:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[51] = jj_gen;
-          break label_41;
-        }
-        jj_consume_token(S);
-      }
-      decls = declarations();
-      end = jj_consume_token(RBRACE);
-      label_42:
+      label_43:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -1337,7 +1563,34 @@ public class CSS3Parser implements CSS3ParserConstants {
           break;
         default:
           jj_la1[52] = jj_gen;
-          break label_42;
+          break label_43;
+        }
+        jj_consume_token(S);
+      }
+      jj_consume_token(LBRACE);
+      label_44:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[53] = jj_gen;
+          break label_44;
+        }
+        jj_consume_token(S);
+      }
+      decls = declarations();
+      end = jj_consume_token(RBRACE);
+      label_45:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[54] = jj_gen;
+          break label_45;
         }
         jj_consume_token(S);
       }
@@ -1363,15 +1616,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       start = jj_consume_token(COLON);
       t = jj_consume_token(IDENT);
-      label_43:
+      label_46:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[53] = jj_gen;
-          break label_43;
+          jj_la1[55] = jj_gen;
+          break label_46;
         }
         jj_consume_token(S);
       }
@@ -1395,34 +1648,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(FONT_FACE_SYM);
-      label_44:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[54] = jj_gen;
-          break label_44;
-        }
-        jj_consume_token(S);
-      }
-      jj_consume_token(LBRACE);
-      label_45:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[55] = jj_gen;
-          break label_45;
-        }
-        jj_consume_token(S);
-      }
-      decls = declarations();
-      end = jj_consume_token(RBRACE);
-      label_46:
+      label_47:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -1430,7 +1656,34 @@ public class CSS3Parser implements CSS3ParserConstants {
           break;
         default:
           jj_la1[56] = jj_gen;
-          break label_46;
+          break label_47;
+        }
+        jj_consume_token(S);
+      }
+      jj_consume_token(LBRACE);
+      label_48:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[57] = jj_gen;
+          break label_48;
+        }
+        jj_consume_token(S);
+      }
+      decls = declarations();
+      end = jj_consume_token(RBRACE);
+      label_49:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[58] = jj_gen;
+          break label_49;
         }
         jj_consume_token(S);
       }
@@ -1456,34 +1709,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(COLOR_PROFILE);
-      label_47:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[57] = jj_gen;
-          break label_47;
-        }
-        jj_consume_token(S);
-      }
-      jj_consume_token(LBRACE);
-      label_48:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[58] = jj_gen;
-          break label_48;
-        }
-        jj_consume_token(S);
-      }
-      decls = declarations();
-      end = jj_consume_token(RBRACE);
-      label_49:
+      label_50:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -1491,7 +1717,34 @@ public class CSS3Parser implements CSS3ParserConstants {
           break;
         default:
           jj_la1[59] = jj_gen;
-          break label_49;
+          break label_50;
+        }
+        jj_consume_token(S);
+      }
+      jj_consume_token(LBRACE);
+      label_51:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[60] = jj_gen;
+          break label_51;
+        }
+        jj_consume_token(S);
+      }
+      decls = declarations();
+      end = jj_consume_token(RBRACE);
+      label_52:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[61] = jj_gen;
+          break label_52;
         }
         jj_consume_token(S);
       }
@@ -1517,34 +1770,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(PREF_SYM);
-      label_50:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[60] = jj_gen;
-          break label_50;
-        }
-        jj_consume_token(S);
-      }
-      jj_consume_token(LBRACE);
-      label_51:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[61] = jj_gen;
-          break label_51;
-        }
-        jj_consume_token(S);
-      }
-      decls = declarations();
-      end = jj_consume_token(RBRACE);
-      label_52:
+      label_53:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -1552,7 +1778,34 @@ public class CSS3Parser implements CSS3ParserConstants {
           break;
         default:
           jj_la1[62] = jj_gen;
-          break label_52;
+          break label_53;
+        }
+        jj_consume_token(S);
+      }
+      jj_consume_token(LBRACE);
+      label_54:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[63] = jj_gen;
+          break label_54;
+        }
+        jj_consume_token(S);
+      }
+      decls = declarations();
+      end = jj_consume_token(RBRACE);
+      label_55:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[64] = jj_gen;
+          break label_55;
         }
         jj_consume_token(S);
       }
@@ -1578,28 +1831,28 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(PHONETIC_ALPHABET_SYM);
-      label_53:
+      label_56:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[63] = jj_gen;
-          break label_53;
+          jj_la1[65] = jj_gen;
+          break label_56;
         }
         jj_consume_token(S);
       }
       middle = jj_consume_token(STRING);
-      label_54:
+      label_57:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[64] = jj_gen;
-          break label_54;
+          jj_la1[66] = jj_gen;
+          break label_57;
         }
         jj_consume_token(S);
       }
@@ -1635,43 +1888,43 @@ public class CSS3Parser implements CSS3ParserConstants {
         t = jj_consume_token(PERCENTAGE);
         break;
       default:
-        jj_la1[65] = jj_gen;
+        jj_la1[67] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
                  if (t != null) selectors.add(new CSSNode(t.image));
-      label_55:
+      label_58:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[66] = jj_gen;
-          break label_55;
+          jj_la1[68] = jj_gen;
+          break label_58;
         }
         jj_consume_token(S);
       }
-      label_56:
+      label_59:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case COMMA:
           ;
           break;
         default:
-          jj_la1[67] = jj_gen;
-          break label_56;
+          jj_la1[69] = jj_gen;
+          break label_59;
         }
         jj_consume_token(COMMA);
-        label_57:
+        label_60:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[68] = jj_gen;
-            break label_57;
+            jj_la1[70] = jj_gen;
+            break label_60;
           }
           jj_consume_token(S);
         }
@@ -1683,48 +1936,48 @@ public class CSS3Parser implements CSS3ParserConstants {
           t = jj_consume_token(PERCENTAGE);
           break;
         default:
-          jj_la1[69] = jj_gen;
+          jj_la1[71] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
                          if (t != null) selectors.add(new CSSNode(t.image));
-        label_58:
+        label_61:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[70] = jj_gen;
-            break label_58;
+            jj_la1[72] = jj_gen;
+            break label_61;
           }
           jj_consume_token(S);
         }
       }
       jj_consume_token(LBRACE);
-      label_59:
+      label_62:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[71] = jj_gen;
-          break label_59;
+          jj_la1[73] = jj_gen;
+          break label_62;
         }
         jj_consume_token(S);
       }
       decls = declarations();
       end = jj_consume_token(RBRACE);
-      label_60:
+      label_63:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[72] = jj_gen;
-          break label_60;
+          jj_la1[74] = jj_gen;
+          break label_63;
         }
         jj_consume_token(S);
       }
@@ -1758,45 +2011,45 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(ATKEYFRAMES);
-      label_61:
+      label_64:
       while (true) {
         jj_consume_token(S);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[73] = jj_gen;
-          break label_61;
-        }
-      }
-      animationname = jj_consume_token(IDENT);
-      label_62:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[74] = jj_gen;
-          break label_62;
-        }
-        jj_consume_token(S);
-      }
-      jj_consume_token(LBRACE);
-      label_63:
-      while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
           jj_la1[75] = jj_gen;
-          break label_63;
+          break label_64;
+        }
+      }
+      animationname = jj_consume_token(IDENT);
+      label_65:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[76] = jj_gen;
+          break label_65;
         }
         jj_consume_token(S);
       }
-      label_64:
+      jj_consume_token(LBRACE);
+      label_66:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[77] = jj_gen;
+          break label_66;
+        }
+        jj_consume_token(S);
+      }
+      label_67:
       while (true) {
         ruleset = keyframeRuleSet();
                                        if(ruleset != null) ruleList.add(ruleset);
@@ -1806,20 +2059,20 @@ public class CSS3Parser implements CSS3ParserConstants {
           ;
           break;
         default:
-          jj_la1[76] = jj_gen;
-          break label_64;
+          jj_la1[78] = jj_gen;
+          break label_67;
         }
       }
       end = jj_consume_token(RBRACE);
-      label_65:
+      label_68:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[77] = jj_gen;
-          break label_65;
+          jj_la1[79] = jj_gen;
+          break label_68;
         }
         jj_consume_token(S);
       }
@@ -1875,25 +2128,25 @@ public class CSS3Parser implements CSS3ParserConstants {
                     op = ',';
           break;
         default:
-          jj_la1[78] = jj_gen;
+          jj_la1[80] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_66:
+        label_69:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[79] = jj_gen;
-            break label_66;
+            jj_la1[81] = jj_gen;
+            break label_69;
           }
           jj_consume_token(S);
         }
         break;
       default:
-        jj_la1[80] = jj_gen;
+        jj_la1[82] = jj_gen;
         ;
       }
     } catch (ParseException e) {
@@ -1926,25 +2179,25 @@ public class CSS3Parser implements CSS3ParserConstants {
                     connector = '~' ;
           break;
         default:
-          jj_la1[81] = jj_gen;
+          jj_la1[83] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_67:
+        label_70:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[82] = jj_gen;
-            break label_67;
+            jj_la1[84] = jj_gen;
+            break label_70;
           }
           jj_consume_token(S);
         }
         break;
       case S:
-        label_68:
+        label_71:
         while (true) {
           jj_consume_token(S);
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1952,14 +2205,14 @@ public class CSS3Parser implements CSS3ParserConstants {
             ;
             break;
           default:
-            jj_la1[83] = jj_gen;
-            break label_68;
+            jj_la1[85] = jj_gen;
+            break label_71;
           }
         }
                 connector = ' ' ;
         break;
       default:
-        jj_la1[84] = jj_gen;
+        jj_la1[86] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1985,7 +2238,7 @@ public class CSS3Parser implements CSS3ParserConstants {
             unary = '+';
         break;
       default:
-        jj_la1[85] = jj_gen;
+        jj_la1[87] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2002,15 +2255,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token t = null;
     try {
       t = jj_consume_token(IDENT);
-      label_69:
+      label_72:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[86] = jj_gen;
-          break label_69;
+          jj_la1[88] = jj_gen;
+          break label_72;
         }
         jj_consume_token(S);
       }
@@ -2038,26 +2291,26 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       sel = selector();
                         if (sel != null) selectors.add(sel);
-      label_70:
+      label_73:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case COMMA:
           ;
           break;
         default:
-          jj_la1[87] = jj_gen;
-          break label_70;
+          jj_la1[89] = jj_gen;
+          break label_73;
         }
         jj_consume_token(COMMA);
-        label_71:
+        label_74:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[88] = jj_gen;
-            break label_71;
+            jj_la1[90] = jj_gen;
+            break label_74;
           }
           jj_consume_token(S);
         }
@@ -2065,29 +2318,29 @@ public class CSS3Parser implements CSS3ParserConstants {
                             if (sel != null) selectors.add(sel);
       }
       jj_consume_token(LBRACE);
-      label_72:
+      label_75:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[89] = jj_gen;
-          break label_72;
+          jj_la1[91] = jj_gen;
+          break label_75;
         }
         jj_consume_token(S);
       }
       decls = declarations();
       end = jj_consume_token(RBRACE);
-      label_73:
+      label_76:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[90] = jj_gen;
-          break label_73;
+          jj_la1[92] = jj_gen;
+          break label_76;
         }
         jj_consume_token(S);
       }
@@ -2123,30 +2376,30 @@ public class CSS3Parser implements CSS3ParserConstants {
                                 if (node != null) nodes.add(node);
         break;
       default:
-        jj_la1[91] = jj_gen;
+        jj_la1[93] = jj_gen;
         ;
       }
-      label_74:
+      label_77:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case SEMICOLON:
           ;
           break;
         default:
-          jj_la1[92] = jj_gen;
-          break label_74;
+          jj_la1[94] = jj_gen;
+          break label_77;
         }
         semi = jj_consume_token(SEMICOLON);
                       if (node != null) node.setEndLocation(getEndLocation(semi));
-        label_75:
+        label_78:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[93] = jj_gen;
-            break label_75;
+            jj_la1[95] = jj_gen;
+            break label_78;
           }
           jj_consume_token(S);
         }
@@ -2156,7 +2409,7 @@ public class CSS3Parser implements CSS3ParserConstants {
                                     if (node != null) nodes.add(node);
           break;
         default:
-          jj_la1[94] = jj_gen;
+          jj_la1[96] = jj_gen;
           ;
         }
       }
@@ -2177,7 +2430,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       node = simple_selector();
                                   if(node != null) nodes.add(node);
-      label_76:
+      label_79:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -2187,8 +2440,8 @@ public class CSS3Parser implements CSS3ParserConstants {
           ;
           break;
         default:
-          jj_la1[95] = jj_gen;
-          break label_76;
+          jj_la1[97] = jj_gen;
+          break label_79;
         }
         c = combinator();
                             combs.add(c);
@@ -2227,17 +2480,17 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       node = simple_selector();
                                 if (node != null) nodes.add(node);
-      label_77:
+      label_80:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[96] = jj_gen;
-          break label_77;
+          jj_la1[98] = jj_gen;
+          break label_80;
         }
-        label_78:
+        label_81:
         while (true) {
           jj_consume_token(S);
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2245,8 +2498,8 @@ public class CSS3Parser implements CSS3ParserConstants {
             ;
             break;
           default:
-            jj_la1[97] = jj_gen;
-            break label_78;
+            jj_la1[99] = jj_gen;
+            break label_81;
           }
         }
         node = simple_selector();
@@ -2279,10 +2532,10 @@ public class CSS3Parser implements CSS3ParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENT:
       case ANY:
-      case 99:
+      case 101:
         child = element_name();
                                 if (child != null) children.add(child);
-        label_79:
+        label_82:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case HASHIDENT:
@@ -2303,8 +2556,8 @@ public class CSS3Parser implements CSS3ParserConstants {
             ;
             break;
           default:
-            jj_la1[98] = jj_gen;
-            break label_79;
+            jj_la1[100] = jj_gen;
+            break label_82;
           }
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case HASHIDENT:
@@ -2338,7 +2591,7 @@ public class CSS3Parser implements CSS3ParserConstants {
                               if (child != null) children.add(child);
             break;
           default:
-            jj_la1[99] = jj_gen;
+            jj_la1[101] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
@@ -2359,7 +2612,7 @@ public class CSS3Parser implements CSS3ParserConstants {
       case PSEUDOELEMENT_SYM:
       case CLASS:
       case FUNCTIONNOT:
-        label_80:
+        label_83:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case HASHIDENT:
@@ -2393,7 +2646,7 @@ public class CSS3Parser implements CSS3ParserConstants {
                               if (child != null) children.add(child);
             break;
           default:
-            jj_la1[100] = jj_gen;
+            jj_la1[102] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
@@ -2416,13 +2669,13 @@ public class CSS3Parser implements CSS3ParserConstants {
             ;
             break;
           default:
-            jj_la1[101] = jj_gen;
-            break label_80;
+            jj_la1[103] = jj_gen;
+            break label_83;
           }
         }
         break;
       default:
-        jj_la1[102] = jj_gen;
+        jj_la1[104] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2464,7 +2717,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         node = deprecated_class();
         break;
       default:
-        jj_la1[103] = jj_gen;
+        jj_la1[105] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2512,7 +2765,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         t = jj_consume_token(DIMEN);
         break;
       default:
-        jj_la1[104] = jj_gen;
+        jj_la1[106] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2532,7 +2785,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token t1 = null;
     Token t2 = null;
     try {
-      if (jj_2_2(2)) {
+      if (jj_2_7(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case IDENT:
         case ANY:
@@ -2544,16 +2797,16 @@ public class CSS3Parser implements CSS3ParserConstants {
             t1 = jj_consume_token(ANY);
             break;
           default:
-            jj_la1[105] = jj_gen;
+            jj_la1[107] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           break;
         default:
-          jj_la1[106] = jj_gen;
+          jj_la1[108] = jj_gen;
           ;
         }
-        jj_consume_token(99);
+        jj_consume_token(101);
       } else {
         ;
       }
@@ -2565,7 +2818,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         t2 = jj_consume_token(ANY);
         break;
       default:
-        jj_la1[107] = jj_gen;
+        jj_la1[109] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2597,28 +2850,28 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(LBRACKET);
-      label_81:
+      label_84:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[108] = jj_gen;
-          break label_81;
+          jj_la1[110] = jj_gen;
+          break label_84;
         }
         jj_consume_token(S);
       }
       t1 = jj_consume_token(IDENT);
-      label_82:
+      label_85:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[109] = jj_gen;
-          break label_82;
+          jj_la1[111] = jj_gen;
+          break label_85;
         }
         jj_consume_token(S);
       }
@@ -2649,19 +2902,19 @@ public class CSS3Parser implements CSS3ParserConstants {
           t2 = jj_consume_token(SUBSTRINGMATCH);
           break;
         default:
-          jj_la1[110] = jj_gen;
+          jj_la1[112] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_83:
+        label_86:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[111] = jj_gen;
-            break label_83;
+            jj_la1[113] = jj_gen;
+            break label_86;
           }
           jj_consume_token(S);
         }
@@ -2673,25 +2926,25 @@ public class CSS3Parser implements CSS3ParserConstants {
           t3 = jj_consume_token(STRING);
           break;
         default:
-          jj_la1[112] = jj_gen;
+          jj_la1[114] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_84:
+        label_87:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[113] = jj_gen;
-            break label_84;
+            jj_la1[115] = jj_gen;
+            break label_87;
           }
           jj_consume_token(S);
         }
         break;
       default:
-        jj_la1[114] = jj_gen;
+        jj_la1[116] = jj_gen;
         ;
       }
       end = jj_consume_token(RBRACKET);
@@ -2716,22 +2969,22 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(FUNCTIONNOT);
-      label_85:
+      label_88:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[115] = jj_gen;
-          break label_85;
+          jj_la1[117] = jj_gen;
+          break label_88;
         }
         jj_consume_token(S);
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENT:
       case ANY:
-      case 99:
+      case 101:
         node = element_name();
         break;
       case HASHIDENT:
@@ -2760,19 +3013,19 @@ public class CSS3Parser implements CSS3ParserConstants {
         node = negation();
         break;
       default:
-        jj_la1[116] = jj_gen;
+        jj_la1[118] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      label_86:
+      label_89:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[117] = jj_gen;
-          break label_86;
+          jj_la1[119] = jj_gen;
+          break label_89;
         }
         jj_consume_token(S);
       }
@@ -2818,15 +3071,15 @@ public class CSS3Parser implements CSS3ParserConstants {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case FUNCTIONLANG:
             f = jj_consume_token(FUNCTIONLANG);
-            label_87:
+            label_90:
             while (true) {
               switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
               case S:
                 ;
                 break;
               default:
-                jj_la1[118] = jj_gen;
-                break label_87;
+                jj_la1[120] = jj_gen;
+                break label_90;
               }
               jj_consume_token(S);
             }
@@ -2841,54 +3094,54 @@ public class CSS3Parser implements CSS3ParserConstants {
               n = jj_consume_token(STRING);
               break;
             default:
-              jj_la1[119] = jj_gen;
+              jj_la1[121] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
-            label_88:
+            label_91:
             while (true) {
               switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
               case S:
                 ;
                 break;
               default:
-                jj_la1[120] = jj_gen;
-                break label_88;
+                jj_la1[122] = jj_gen;
+                break label_91;
               }
               jj_consume_token(S);
             }
             break;
           case FUNCTION:
             f = jj_consume_token(FUNCTION);
-            label_89:
+            label_92:
             while (true) {
               switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
               case S:
                 ;
                 break;
               default:
-                jj_la1[121] = jj_gen;
-                break label_89;
+                jj_la1[123] = jj_gen;
+                break label_92;
               }
               jj_consume_token(S);
             }
             expr = expression();
             break;
           default:
-            jj_la1[122] = jj_gen;
+            jj_la1[124] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           end = jj_consume_token(RPARAN);
           break;
         default:
-          jj_la1[123] = jj_gen;
+          jj_la1[125] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[124] = jj_gen;
+        jj_la1[126] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2940,7 +3193,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         t = jj_consume_token(HASH);
         break;
       default:
-        jj_la1[125] = jj_gen;
+        jj_la1[127] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2965,15 +3218,15 @@ public class CSS3Parser implements CSS3ParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COLON:
         jj_consume_token(COLON);
-        label_90:
+        label_93:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[126] = jj_gen;
-            break label_90;
+            jj_la1[128] = jj_gen;
+            break label_93;
           }
           jj_consume_token(S);
         }
@@ -2983,12 +3236,12 @@ public class CSS3Parser implements CSS3ParserConstants {
           prio = prio();
           break;
         default:
-          jj_la1[127] = jj_gen;
+          jj_la1[129] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[128] = jj_gen;
+        jj_la1[130] = jj_gen;
         ;
       }
     } catch (ParseException e) {
@@ -3030,15 +3283,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       prop = property();
       jj_consume_token(COLON);
-      label_91:
+      label_94:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[129] = jj_gen;
-          break label_91;
+          jj_la1[131] = jj_gen;
+          break label_94;
         }
         jj_consume_token(S);
       }
@@ -3048,7 +3301,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         imp = prio();
         break;
       default:
-        jj_la1[130] = jj_gen;
+        jj_la1[132] = jj_gen;
         ;
       }
     } catch (ParseException e) {
@@ -3070,15 +3323,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token t = null;
     try {
       t = jj_consume_token(IMPORTANT_SYM);
-      label_92:
+      label_95:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[131] = jj_gen;
-          break label_92;
+          jj_la1[133] = jj_gen;
+          break label_95;
         }
         jj_consume_token(S);
       }
@@ -3097,7 +3350,7 @@ public class CSS3Parser implements CSS3ParserConstants {
   final public CSSNode expression() throws ParseException {
     Token t = null;
     try {
-      label_93:
+      label_96:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PLUS:
@@ -3119,19 +3372,19 @@ public class CSS3Parser implements CSS3ParserConstants {
           t = jj_consume_token(IDENT);
           break;
         default:
-          jj_la1[132] = jj_gen;
+          jj_la1[134] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_94:
+        label_97:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[133] = jj_gen;
-            break label_94;
+            jj_la1[135] = jj_gen;
+            break label_97;
           }
           jj_consume_token(S);
         }
@@ -3145,8 +3398,8 @@ public class CSS3Parser implements CSS3ParserConstants {
           ;
           break;
         default:
-          jj_la1[134] = jj_gen;
-          break label_93;
+          jj_la1[136] = jj_gen;
+          break label_96;
         }
       }
     } catch (ParseException e) {
@@ -3170,7 +3423,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     try {
       term = term();
                         if(term != null) terms.add(term);
-      label_95:
+      label_98:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PLUS:
@@ -3198,8 +3451,8 @@ public class CSS3Parser implements CSS3ParserConstants {
           ;
           break;
         default:
-          jj_la1[135] = jj_gen;
-          break label_95;
+          jj_la1[137] = jj_gen;
+          break label_98;
         }
         op = operator();
                            ops.add(op);
@@ -3256,7 +3509,7 @@ public class CSS3Parser implements CSS3ParserConstants {
           unary = unaryOperator();
           break;
         default:
-          jj_la1[136] = jj_gen;
+          jj_la1[138] = jj_gen;
           ;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3297,19 +3550,19 @@ public class CSS3Parser implements CSS3ParserConstants {
           func = function();
           break;
         default:
-          jj_la1[137] = jj_gen;
+          jj_la1[139] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_96:
+        label_99:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[138] = jj_gen;
-            break label_96;
+            jj_la1[140] = jj_gen;
+            break label_99;
           }
           jj_consume_token(S);
         }
@@ -3338,25 +3591,25 @@ public class CSS3Parser implements CSS3ParserConstants {
           t = jj_consume_token(UNICODERANGE);
           break;
         default:
-          jj_la1[139] = jj_gen;
+          jj_la1[141] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-        label_97:
+        label_100:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[140] = jj_gen;
-            break label_97;
+            jj_la1[142] = jj_gen;
+            break label_100;
           }
           jj_consume_token(S);
         }
         break;
       default:
-        jj_la1[141] = jj_gen;
+        jj_la1[143] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3385,15 +3638,15 @@ public class CSS3Parser implements CSS3ParserConstants {
     Token end = null;
     try {
       start = jj_consume_token(FUNCTION);
-      label_98:
+      label_101:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[142] = jj_gen;
-          break label_98;
+          jj_la1[144] = jj_gen;
+          break label_101;
         }
         jj_consume_token(S);
       }
@@ -3425,7 +3678,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         t = jj_consume_token(HASH);
         break;
       default:
-        jj_la1[143] = jj_gen;
+        jj_la1[145] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3551,37 +3804,167 @@ public class CSS3Parser implements CSS3ParserConstants {
     finally { jj_save(1, xla); }
   }
 
+  private boolean jj_2_3(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_3(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(2, xla); }
+  }
+
+  private boolean jj_2_4(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_4(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(3, xla); }
+  }
+
+  private boolean jj_2_5(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_5(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
+  }
+
+  private boolean jj_2_6(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_6(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
+  }
+
+  private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
+  }
+
+  private boolean jj_3_6() {
+    if (jj_scan_token(S)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_111() {
+    if (jj_scan_token(IDENT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_102() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_105()) {
+    jj_scanpos = xsp;
+    if (jj_3R_106()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_106() {
+    if (jj_3R_110()) return true;
+    return false;
+  }
+
+  private boolean jj_3_4() {
+    if (jj_3R_102()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_103()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
   private boolean jj_3_1() {
-    if (jj_scan_token(COMMA)) return true;
+    if (jj_scan_token(S)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_scan_token(S)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_109() {
+    if (jj_scan_token(AND)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_108() {
+    if (jj_scan_token(IDENT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_110() {
+    if (jj_scan_token(LPARAN)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_scan_token(21)) { jj_scanpos = xsp; break; }
     }
-    if (jj_3R_99()) return true;
+    if (jj_3R_111()) return true;
     return false;
   }
 
-  private boolean jj_3R_100() {
+  private boolean jj_3R_104() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(34)) {
+    if (jj_scan_token(36)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(49)) return true;
     }
     return false;
   }
 
-  private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_100()) jj_scanpos = xsp;
-    if (jj_scan_token(99)) return true;
+  private boolean jj_3_3() {
+    if (jj_scan_token(S)) return true;
     return false;
   }
 
-  private boolean jj_3R_99() {
-    if (jj_scan_token(IDENT)) return true;
+  private boolean jj_3_5() {
+    if (jj_scan_token(S)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_107() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(32)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(33)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_103() {
+    if (jj_scan_token(COMMA)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_105() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_107()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(21)) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_108()) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_5()) { jj_scanpos = xsp; break; }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_104()) jj_scanpos = xsp;
+    if (jj_scan_token(101)) return true;
     return false;
   }
 
@@ -3596,7 +3979,7 @@ public class CSS3Parser implements CSS3ParserConstants {
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[144];
+  final private int[] jj_la1 = new int[146];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -3608,18 +3991,18 @@ public class CSS3Parser implements CSS3ParserConstants {
       jj_la1_init_3();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x0,0x0,0x0,0xe00000,0xe00000,0x0,0x0,0x200000,0x200000,0x0,0xc00000,0xc00000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x0,0x200000,0x200000,0x200000,0x0,0x200000,0x80000000,0x200000,0x200000,0x200000,0x20000000,0x0,0x200000,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x20000000,0x58000000,0x200000,0x200000,0x58200000,0x8000000,0x200000,0x20000000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x0,0x58200000,0x200000,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200000,0x200000,0x3000000,0x200000,0x0,0x200000,0x3000000,0x200000,0x0,0x200000,0x200000,0x0,0x200000,0x200000,0x0,0x0,0x0,0x0,0x200000,0x0,0x0,0x200000,0x0,0x200000,0x8000000,0x200000,0x8000000,0x28000000,0x8000000,0x0,0x200000,0x0,0x200000,0x8000000,0x200000,0x0,};
+      jj_la1_0 = new int[] {0x0,0x0,0x0,0xe00000,0xe00000,0x0,0x0,0x200000,0x200000,0x0,0xc00000,0xc00000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x0,0x200000,0x200000,0x0,0x200000,0x20000000,0x0,0x0,0x200000,0x80000000,0x200000,0x80000000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x200000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x20000000,0x58000000,0x200000,0x200000,0x58200000,0x8000000,0x200000,0x20000000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x0,0x58200000,0x200000,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200000,0x200000,0x3000000,0x200000,0x0,0x200000,0x3000000,0x200000,0x0,0x200000,0x200000,0x0,0x200000,0x200000,0x0,0x0,0x0,0x0,0x200000,0x0,0x0,0x200000,0x0,0x200000,0x8000000,0x200000,0x8000000,0x28000000,0x8000000,0x0,0x200000,0x0,0x200000,0x8000000,0x200000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x5fc8a01c,0x0,0x0,0x0,0x0,0x0,0x4,0x200001,0x0,0x0,0x0,0x200001,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x100004,0x0,0x5fc8a01c,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x80000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000004,0x0,0x0,0x0,0x80000004,0x0,0x0,0x0,0x0,0x0,0x0,0x80000004,0x0,0x1000,0x0,0x1000,0x0,0x0,0x0,0x0,0x400,0x0,0x0,0x0,0x0,0x0,0x4,0x800,0x0,0x4,0x0,0x0,0x0,0x5fc82018,0x5fc82018,0x5fc82018,0x5fc82018,0x5fc8a01c,0x5fc00000,0x5fc00000,0x8004,0x8004,0x8004,0x0,0x0,0x3c0,0x0,0x5,0x0,0x3c0,0x0,0x5fc8a01c,0x0,0x0,0x5,0x0,0x0,0x0,0x4,0x80000,0x18,0x0,0x0,0x80000,0x0,0x0,0x0,0x40000405,0x0,0x40000405,0xffe0141d,0x400,0xffc00000,0x0,0x20001d,0x0,0xffe0041d,0x0,0x18,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7f228070,0x0,0x0,0x0,0x0,0x0,0x10,0x800004,0x0,0x0,0x0,0x800004,0x0,0x0,0x0,0x10,0x0,0x0,0x7f228070,0x0,0x0,0x3,0x3,0x0,0x0,0x0,0x0,0x0,0x100013,0x0,0x0,0x0,0x200000,0x0,0x0,0x0,0x0,0x10,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x4000,0x0,0x4000,0x0,0x0,0x0,0x0,0x1000,0x0,0x0,0x0,0x0,0x0,0x10,0x2000,0x0,0x10,0x0,0x0,0x0,0x7f208060,0x7f208060,0x7f208060,0x7f208060,0x7f228070,0x7f000000,0x7f000000,0x20010,0x20010,0x20010,0x0,0x0,0xf00,0x0,0x14,0x0,0xf00,0x0,0x7f228070,0x0,0x0,0x14,0x0,0x0,0x0,0x10,0x200000,0x60,0x0,0x0,0x200000,0x0,0x0,0x0,0x1014,0x0,0x1014,0xff805074,0x1000,0xff000000,0x0,0x800074,0x0,0xff801074,0x0,0x60,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x8,0x0,0x0,0x10,0x20,0x0,0x0,0xa00307c4,0x40000,0x40000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa0000004,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7800,0x7800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa0000004,0xa0000004,0xa0000004,0xa0000004,0xa0000004,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa0000004,0x0,0x0,0x1,0x0,0x0,0x40000000,0x40000000,0x4,0x0,0x0,0x2,0x0,0x0,0x2,0x0,0x1,0x0,0x1,0x10000001,0x0,0x1,0x0,0x10000000,0x0,0x10000001,0x0,0x0,};
+      jj_la1_2 = new int[] {0x0,0x0,0x20,0x0,0x0,0x40,0x80,0x0,0x0,0x800c1f11,0x100000,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000011,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e000,0x1e000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000011,0x80000011,0x80000011,0x80000011,0x80000011,0x80000001,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000011,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x8,0x0,0x0,0x8,0x0,0x5,0x0,0x5,0x40000007,0x0,0x7,0x0,0x40000000,0x0,0x40000007,0x0,0x0,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x6,0x6,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,};
+      jj_la1_3 = new int[] {0x18,0x18,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x22,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x22,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x2,0x22,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x22,0x0,0x0,0x0,0x0,0x0,0x5,0x5,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x4,0x0,0x0,0x0,0x4,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[2];
+  final private JJCalls[] jj_2_rtns = new JJCalls[7];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -3634,7 +4017,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 144; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 146; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3649,7 +4032,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 144; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 146; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3660,7 +4043,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 144; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 146; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3671,7 +4054,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 144; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 146; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3681,7 +4064,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 144; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 146; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3691,7 +4074,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 144; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 146; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3803,12 +4186,12 @@ public class CSS3Parser implements CSS3ParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[100];
+    boolean[] la1tokens = new boolean[102];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 144; i++) {
+    for (int i = 0; i < 146; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -3826,7 +4209,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         }
       }
     }
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 102; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -3853,7 +4236,7 @@ public class CSS3Parser implements CSS3ParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 7; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -3862,6 +4245,11 @@ public class CSS3Parser implements CSS3ParserConstants {
           switch (i) {
             case 0: jj_3_1(); break;
             case 1: jj_3_2(); break;
+            case 2: jj_3_3(); break;
+            case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
           }
         }
         p = p.next;

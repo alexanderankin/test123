@@ -424,6 +424,10 @@ TOKEN :
 TOKEN [IGNORE_CASE] :
 {
     <AND: "and" >
+    |
+    <ONLY: "only">
+    |
+    <NOT: "not">
 } 
 
 <DEFAULT>
@@ -604,6 +608,7 @@ CSSNode styleSheet() :
     CSSNode firstNode = null;
     CSSNode childNode = null;
     List<CSSNode> children = null;
+    System.out.println("+++++ in stylesheet");
 }
 {
     try {
@@ -681,6 +686,7 @@ CSSNode styleSheet() :
         addException ( new ParseException ("Unrecognized token, " + err.getMessage()));
     }
     {
+        System.out.println("+++++ CSS3Parser completed parsing");
         return rootNode;      
     }
 }
@@ -852,7 +858,7 @@ CSSNode namespaceDeclaration() :
 CSSNode importDeclaration() :
 {
     Token start = null;
-    CSSNode medium = null;
+    Token medium = null;
     List<CSSNode> mediumList = new ArrayList<CSSNode>();
     Token uri = null;
     Token end = null;
@@ -874,13 +880,21 @@ CSSNode importDeclaration() :
         ) *
     
         (
-            medium=medium() {if (medium != null) mediumList.add(medium);}
+            medium=media_type() {
+                if (medium != null) {
+                    mediumList.add(createNode(medium));
+                }
+            }
             (
                 <COMMA> 
                 (
                     <S>
                 ) *
-                medium=medium() {if (medium != null) mediumList.add(medium);}
+                medium=media_type() {
+                    if (medium != null) {
+                        mediumList.add(createNode(medium));
+                    }
+                }
             ) *
     
         ) ?
@@ -910,97 +924,100 @@ CSSNode importDeclaration() :
     }
 }
 
+/*
+From w3.org:  
+http://www.w3.org/TR/css3-mediaqueries/
+The media query syntax is described in terms of the CSS2 grammar. As such, rules 
+not defined here are defined in CSS2. The media_query_list production defined 
+below replaces the media_list production from CSS2.  
+
+media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDENT
+ ;
+ 
+CSS 2:
+media
+  : MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
+  ;
+media_list
+  : medium [ COMMA S* medium]*
+  ;
+medium
+  : IDENT S*
+  ;
+  
+Putting the two above together gives:
+media
+  : MEDIA_SYM S* media_query_list '{' S* ruleset* '}' S*
+  ;
+media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDENT
+ ;
+
+*/
+// new version, based on comment above
 CSSNode media() :
 {
     Token start = null;
-    Token mr = null;
-    CSSNode medium = null;
-    CSSNode mdecl = null;
+    Token end = null;
+    List<CSSNode> mediaQueryList = new ArrayList<CSSNode>();
     CSSNode ruleset = null;
     List<CSSNode> ruleList = new ArrayList<CSSNode>();
-    Token end = null;
-    StringBuilder label = new StringBuilder("media");
 }
 {
     try {
-        start=<MEDIA_SYM> 
-        (
-            <S>
-        ) +
-        
-        (
-			// <CSS3>
-			(
-				mr = <MEDIARESTRICTOR>
-				(
-					<S>
-				) +
-				{ label.append(" ").append(mr.image); }
-			) ?
-			// </CSS3>
-			
-			medium=medium() {if (medium != null) label.append(" ").append(medium.toString());}
-			(
-				LOOKAHEAD(2)
-				<COMMA> 
-				(
-					<S>
-				) *
-				medium=medium() {if (medium != null) label.append(" ").append(medium.toString());}
-			) *
-		 
-			// <CSS3>
-			(
-				<AND> 
-				(
-					<S>
-				) *
-		
-				<LPARAN> 
-				(
-					<S>
-				) *
-		
-				mdecl=mediadeclaration() {if (mdecl != null) label.append("(").append(mdecl.toString()).append(")");}
-				<RPARAN> 
-				(
-					<S>
-				) *
-		
-			) *
-			
-			(
-				<COMMA> 
-				<S>
-			) *
-        )+
-        
-        <LBRACE> 
-        (
-            <S>
-        ) *
-     
-        (
-            ruleset=ruleSet() {if(ruleset != null) ruleList.add(ruleset);}
-        ) *
-    
-        end=<RBRACE> 
-        (
-            <S>
-        ) *
-        
-    } 
-    catch ( ParseException e ) {
+        start=<MEDIA_SYM> ( LOOKAHEAD(2) <S> )* mediaQueryList = media_query_list() <LBRACE> 
+            ( <S> )* 
+            ( 
+                ruleset = ruleSet() {
+                    if (ruleset != null) {
+                        ruleList.add(ruleset);   
+                    }
+                }
+            )* 
+        end=<RBRACE> ( <S> )*
+        }
+    catch (ParseException e) {
         addException(e);
         error_skipto(RBRACE);
         return null;
-    } 
+    }
     {
         if (notNull(start, end)) {
-        	if (label.length()>64)
-        		label.replace(64,label.length(),"...");
-            CSSNode node = new CSSNode(label.toString());
-			node.addChildren(ruleList);
+            StringBuilder label = new StringBuilder();
+            label.append(start.image);
+            for (CSSNode mediaQuery : mediaQueryList) {
+                label.append(' ').append(mediaQuery.getName());
+            }
+            CSSNode node = new CSSNode(label.toString());  
+            //node.addChildren(mediaQueryList);
+            node.addChildren(ruleList);
             node.setStartLocation(getStartLocation(start));
             node.setEndLocation(getEndLocation(end));
             return node;
@@ -1009,23 +1026,197 @@ CSSNode media() :
     }
 }
 
+List<CSSNode> media_query_list() :
+{
+    CSSNode mediaQuery = null;
+    List<CSSNode> mediaQueryList = new ArrayList<CSSNode>();
+}
+{
+    try {
+        ( LOOKAHEAD(2) <S> )* 
+        [ 
+            LOOKAHEAD(2) mediaQuery = media_query() {
+                if (mediaQuery != null) {
+                    mediaQueryList.add(mediaQuery);   
+                }
+            }
+            ( 
+                <COMMA> 
+                ( LOOKAHEAD(2) <S> )* 
+                mediaQuery = media_query() {
+                    if (mediaQuery != null) {
+                        mediaQueryList.add(mediaQuery);   
+                    }
+                }
+            )* 
+        ]
+    }
+    catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        return mediaQueryList;   
+    }
+}
 
-CSSNode medium() :/* tv, projection, screen, ... */
+CSSNode media_query() :
+{
+    Token mediaType = null;
+    Token mediaRestriction = null;
+    CSSNode mediaExpression = null; 
+    List<CSSNode> mediaExpressionList = new ArrayList<CSSNode>();
+}
+{
+    try {
+        [ mediaRestriction = <ONLY> | mediaRestriction = <NOT> ] 
+        ( <S> )* 
+        mediaType = media_type() 
+        ( LOOKAHEAD(2) <S> )* 
+        ( 
+            <AND> 
+            ( <S> )* 
+            mediaExpression = media_expression() {
+                if (mediaExpression != null) {
+                    mediaExpressionList.add(mediaExpression);   
+                }
+            } 
+        )*   
+        
+        |
+        
+        mediaExpression = media_expression() {
+            if (mediaExpression != null) {
+                mediaExpressionList.add(mediaExpression);   
+            }
+        }
+        ( 
+            <AND> 
+            ( <S> )* 
+            mediaExpression = media_expression() {
+                if (mediaExpression != null) {
+                    mediaExpressionList.add(mediaExpression);   
+                }
+            }
+        )*
+    }
+    catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        StringBuilder sb = new StringBuilder();
+        if (mediaRestriction != null) {
+            sb.append(mediaRestriction);   
+        }
+        if (mediaType != null) {
+            sb.append(' ').append(mediaType.image);   
+        }
+        if (!mediaExpressionList.isEmpty()) {
+            if (mediaType != null) {
+                sb.append(' ');   
+            }
+            for (Iterator<CSSNode> it = mediaExpressionList.iterator(); it.hasNext(); ) {
+                CSSNode child = it.next();
+                sb.append(child.getName());
+                if (it.hasNext()) {
+                    sb.append(" and ");   
+                }
+            }
+        }
+        if (sb.length() > 0) {
+            CSSNode node = new CSSNode(sb.toString());
+            if (mediaRestriction != null) {
+                node.setStartLocation(getStartLocation(mediaRestriction));   
+            } else if (mediaType != null) {
+                node.setStartLocation(getStartLocation(mediaType));  
+                if (mediaExpressionList.isEmpty()) {
+                    node.setEndLocation(getEndLocation(mediaType));   
+                }
+            } else if (!mediaExpressionList.isEmpty()) {
+                node.addChildren(mediaExpressionList);
+                node.setStartLocation(mediaExpressionList.get(0).getStartLocation()); 
+                node.setEndLocation(mediaExpressionList.get(mediaExpressionList.size() - 1).getEndLocation());
+            }
+            return node;
+        }
+        return null;
+    }
+}
+
+Token media_type() :
 {
     Token t = null;
 }
 {
-    t=<IDENT> 
-    (
-        <S>
-    ) *
-
-
+    try {
+        t = <IDENT>
+    }
+    catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
     {
-        if (notNull(t)) {
-            return createNode(t);
+        return t;
+    }
+}
+
+CSSNode media_expression() :
+{
+    Token start = null;
+    Token end = null;
+    Token mediaFeature = null;
+    CSSNode expression = null;
+}
+{
+    try {
+        start = <LPARAN> ( <S> )* mediaFeature = media_feature() ( <S> )* [ <COLON> ( <S> )* expression = expr() ] end = <RPARAN> (LOOKAHEAD(2) <S> )*
+    }
+    catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, end)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append('(');
+            if (mediaFeature != null) {
+                sb.append(mediaFeature.image);   
+            }
+            if (expression != null) {
+                sb.append(':');
+                sb.append(expression.getName());
+            }
+            sb.append(')');
+            CSSNode node = new CSSNode(sb.toString());
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            node.addChild(expression);
+            return node;
         }
         return null;
+    }
+}
+
+Token media_feature() :
+{
+    Token t = null;
+}
+{
+    try {
+        t = <IDENT>
+    }
+    catch (ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        return t;
     }
 }
 
