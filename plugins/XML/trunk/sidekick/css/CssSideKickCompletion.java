@@ -235,9 +235,12 @@ public class CssSideKickCompletion extends SideKickCompletion {
 				Element ele = (Element) values.item(j);
 				String name = ele.getAttribute("name");
 
-				if (ele.getTagName().equals("include")) {
-
-					NodeList incValues = doc.getElementById(name).getElementsByTagName("value");
+				if (name != null && ele.getTagName().equals("include")) {
+				    Element includeElement = doc.getElementById(name);
+				    if (includeElement == null) {
+				        continue;    
+				    }
+					NodeList incValues = includeElement.getElementsByTagName("value");
 					int incValCount = incValues.getLength();
 
 					// loop included values

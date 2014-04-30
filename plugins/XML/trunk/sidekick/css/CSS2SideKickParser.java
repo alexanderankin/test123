@@ -128,7 +128,6 @@ public class CSS2SideKickParser extends SideKickParser implements EBComponent {
      * @return             Description of the Returned Value
      */
     public SideKickParsedData parse( Buffer buffer, String text, DefaultErrorSource errorSource ) {
-
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new CSSParsedData( buffer.getName() );
         DefaultMutableTreeNode root = parsedData.root;

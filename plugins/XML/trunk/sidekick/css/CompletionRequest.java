@@ -26,9 +26,9 @@ package sidekick.css;
 import java.util.*;
 import java.util.regex.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.util.Log;
 import sidekick.*;
+import sidekick.util.*;
 //}}}
 
 public class CompletionRequest {
@@ -39,13 +39,15 @@ public class CompletionRequest {
 			CssSideKickCompletion.initialize();
 		}
 		completionList = new ArrayList<String>();
-		buffer = editPane.getBuffer();
-		textBeforeCaret = buffer.getText(0, caret);
+		Buffer buffer = editPane.getBuffer();
+		int length = caret < 1024 ? caret : 1024;
+		int start = caret < 1024 ? 0 : caret - 1024;
+		textBeforeCaret = buffer.getText(start, length);
 		word = getWord(textBeforeCaret);
 		// Log.log(Log.DEBUG, CompletionRequest.class, "[" + textBeforeCaret + "]");
 	}
 	//}}}
-
+	
 	//{{{ getSideKickCompletion() method
 	public SideKickCompletion getSideKickCompletion() {
 		boolean selectedProperty = false;
@@ -101,7 +103,6 @@ public class CompletionRequest {
 	//{{{ Private members
 	
 	private List<String> completionList;
-	private JEditBuffer buffer;
 	private String textBeforeCaret;
 	private String word;
 
