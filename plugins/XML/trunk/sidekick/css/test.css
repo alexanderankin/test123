@@ -36,6 +36,7 @@ EM {
 }
 #two, #twot {
     color: navy;
+    width: 1.em;
 }
 .three {
     color: purple;

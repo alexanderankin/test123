@@ -74,7 +74,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     private void addException(ParseException pe) {
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
-        pe.printStackTrace();
+        //pe.printStackTrace();
     }
 
     private void addWarning(ParseError pe) {
@@ -333,7 +333,6 @@ public class CSS3Parser implements CSS3ParserConstants {
     CSSNode firstNode = null;
     CSSNode childNode = null;
     List<CSSNode> children = null;
-    System.out.println("+++++ in stylesheet");
     try {
       label_1:
       while (true) {
@@ -456,7 +455,6 @@ public class CSS3Parser implements CSS3ParserConstants {
     } catch (TokenMgrError err) {
         addException ( new ParseException ("Unrecognized token, " + err.getMessage()));
     }
-        System.out.println("+++++ CSS3Parser completed parsing");
         {if (true) return rootNode;}
     throw new Error("Missing return statement in function");
   }
@@ -1377,7 +1375,7 @@ media_feature
     CSSNode term = null;
     Token end = null;
     try {
-      start = jj_consume_token(LBRACKET);
+      start = jj_consume_token(LBRACE);
       label_38:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1391,7 +1389,7 @@ media_feature
         jj_consume_token(S);
       }
       term = term();
-      end = jj_consume_token(RBRACKET);
+      end = jj_consume_token(RBRACE);
     } catch (ParseException e) {
         addException(e);
         error_skipto(RBRACKET);
@@ -2355,7 +2353,7 @@ media_feature
                 sb.append(s.getName()).append(',');
             }
             String name = sb.substring(0, Math.max(0, sb.length() - 1));
-            CSSNode node = new CSSNode(name);
+            CSSNode node = new CSSRuleSetNode(name);
             node.addChildren(decls);
             node.setStartLocation(selectors.get(0).getStartLocation());
             node.setEndLocation(getEndLocation(end));
@@ -2390,7 +2388,7 @@ media_feature
           break label_77;
         }
         semi = jj_consume_token(SEMICOLON);
-                      if (node != null) node.setEndLocation(getEndLocation(semi));
+                              if (node != null) node.setEndLocation(getEndLocation(semi));
         label_78:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3839,6 +3837,34 @@ media_feature
     finally { jj_save(6, xla); }
   }
 
+  private boolean jj_3R_105() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_107()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(21)) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_108()) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_5()) { jj_scanpos = xsp; break; }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_104()) jj_scanpos = xsp;
+    if (jj_scan_token(101)) return true;
+    return false;
+  }
+
   private boolean jj_3_6() {
     if (jj_scan_token(S)) return true;
     return false;
@@ -3874,12 +3900,12 @@ media_feature
     return false;
   }
 
-  private boolean jj_3_1() {
+  private boolean jj_3_2() {
     if (jj_scan_token(S)) return true;
     return false;
   }
 
-  private boolean jj_3_2() {
+  private boolean jj_3_1() {
     if (jj_scan_token(S)) return true;
     return false;
   }
@@ -3937,34 +3963,6 @@ media_feature
 
   private boolean jj_3R_103() {
     if (jj_scan_token(COMMA)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_105() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_107()) jj_scanpos = xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(21)) { jj_scanpos = xsp; break; }
-    }
-    if (jj_3R_108()) return true;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_5()) { jj_scanpos = xsp; break; }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_109()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_104()) jj_scanpos = xsp;
-    if (jj_scan_token(101)) return true;
     return false;
   }
 
