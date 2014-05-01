@@ -378,9 +378,8 @@ TOKEN :
 | < BANG: "!" >
 | < TILDE: "~" >
 | < HOOK: "?" >
-| < COLON:
-
- ":" >
+| < COLON: ":" >
+| < DOUBLECOLON: "::" >
 | < EQ: "==" >
 | < LE: "<=" >
 | < GE: ">=" >
@@ -396,7 +395,7 @@ TOKEN :
 | < BIT_AND: "&" >
 | < BIT_OR: "|" >
 | < XOR: "^" >
-| < REM: "%" >
+| < PERCENT: "%" >
 | < LSHIFT: "<<" >
 | < PLUSASSIGN: "+=" >
 | < MINUSASSIGN: "-=" >
@@ -405,11 +404,13 @@ TOKEN :
 | < ANDASSIGN: "&=" >
 | < ORASSIGN: "|=" >
 | < XORASSIGN: "^=" >
-| < REMASSIGN: "%=" >
+| < PERCENTASSIGN: "%=" >
 | < LSHIFTASSIGN: "<<=" >
 | < RSIGNEDSHIFTASSIGN: ">>=" >
 | < RUNSIGNEDSHIFTASSIGN: ">>>=" >
 | < ELLIPSIS: "..." >
+| < POINTER: "->" >
+| < DIAMOND: "<>" >
 }
 
 
@@ -487,7 +488,7 @@ void Type():
 void PrimitiveType():
 {}
 {
-    (Annotation())* ( LOOKAHEAD(2) NumericType() | "boolean" )
+    (Annotation())* ( LOOKAHEAD(2) NumericType() | <BOOLEAN> )
 }
 
 void NumericType():
@@ -501,23 +502,23 @@ void NumericType():
 void IntegralType():
 {}
 {
-    "byte" 
+    <BYTE>
     |
-    "short" 
+    <SHORT> 
     |
-    "int" 
+    <INT>
     |
-    "long" 
+    <LONG> 
     |
-    "char"
+    <CHAR>
 }
 
 void FloatingPointType():
 {}
 {
-    "float"
+    <FLOAT>
     |
-    "double"
+    <DOUBLE>
 }
 
 void ReferenceType():
@@ -542,7 +543,7 @@ void ClassOrInterfaceType():
 void ClassType():
 {}
 {
-    (Annotation())* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] ( LOOKAHEAD(2) "." (Annotation() )* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
+    (Annotation())* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] ( LOOKAHEAD(2) <DOT> (Annotation() )* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
 }
 
 void InterfaceType():
@@ -573,7 +574,7 @@ void ArrayType():
 void Dims():
 {}
 {
-    (Annotation())* "[" "]" ( LOOKAHEAD(2) (Annotation())* "[" "]" )*
+    (Annotation())* <LBRACKET> <RBRACKET> ( LOOKAHEAD(2) (Annotation())* <LBRACKET> <RBRACKET> )*
 
 }
 
@@ -586,25 +587,25 @@ void TypeParameter():
 void TypeBound():
 {}
 {
-    "extends" (LOOKAHEAD(3) ClassOrInterfaceType() (AdditionalBound())* | TypeVariable())
+    <EXTENDS> (LOOKAHEAD(3) ClassOrInterfaceType() (AdditionalBound())* | TypeVariable())
 }
 
 void AdditionalBound():
 {}
 {
-   "&" InterfaceType()
+   <BIT_AND> InterfaceType()
 }
 
 void TypeArguments():
 {}
 {
-    "<" TypeArgumentList() ">"
+    <LT> TypeArgumentList() ">"
 }
 
 void TypeArgumentList():
 {}
 {
-    TypeArgument() ("," TypeArgument())*
+    TypeArgument() (<COMMA> TypeArgument())*
 }
 
 void TypeArgument():
@@ -620,14 +621,14 @@ void TypeArgument():
 void Wildcard():
 {}
 {
-    (Annotation())* "?" [WildcardBounds()]
+    (Annotation())* <HOOK> [WildcardBounds()]
 
 }
 
 void WildcardBounds():
 {}
 {
-    ("extends" | "super") ReferenceType()
+    (<EXTENDS> | <SUPER>) ReferenceType()
 }
 
 /*
@@ -638,21 +639,21 @@ see chapter 6
 void PackageName():
 {}
 {
-    <IDENTIFIER> ("." <IDENTIFIER>)*
+    <IDENTIFIER> (<DOT> <IDENTIFIER>)*
 }
 
 void TypeName():
 {}
 {
-    <IDENTIFIER>( LOOKAHEAD(2) "." <IDENTIFIER> )*
+    <IDENTIFIER>( LOOKAHEAD(2) <DOT> <IDENTIFIER> )*
 }
 
 void ExpressionName():
 {}
 {
-    <IDENTIFIER>( LOOKAHEAD(2) "." <IDENTIFIER> )* [LOOKAHEAD(2) "." "this" ( LOOKAHEAD(2) "." <IDENTIFIER> )*]
+    <IDENTIFIER>( LOOKAHEAD(2) <DOT> <IDENTIFIER> )* [LOOKAHEAD(2) <DOT> <THIS> ( LOOKAHEAD(2) <DOT> <IDENTIFIER> )*]
     |
-    "this" (LOOKAHEAD(2) "." <IDENTIFIER> )*
+    <THIS> (LOOKAHEAD(2) <DOT> <IDENTIFIER> )*
 }
 
 void MethodName():
@@ -678,13 +679,13 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
-    (Annotation())* "package" PackageName() ";"
+    (Annotation())* <PACKAGE> PackageName() <SEMICOLON>
 }
 
 void ImportDeclaration():
 {}
 {
-    "import" ["static"] TypeName() ["." "*"] ";"
+    <IMPORT> [<STATIC>] TypeName() [<DOT> <STAR>] <SEMICOLON>
 }
 
 void TypeDeclaration():
@@ -696,7 +697,7 @@ void TypeDeclaration():
     LOOKAHEAD(3)
     InterfaceDeclaration()
     |
-    ";"
+    <SEMICOLON>
 }
 
 /*
@@ -717,7 +718,7 @@ void ClassDeclaration():
 void NormalClassDeclaration():
 {}
 {
-    (ClassModifier())* "class" <IDENTIFIER> [TypeParameters()] [Superclass()] [Superinterfaces()] ClassBody()
+    (ClassModifier())* <CLASS> <IDENTIFIER> [TypeParameters()] [Superclass()] [Superinterfaces()] ClassBody()
 }
 
 void ClassModifier():
@@ -725,55 +726,55 @@ void ClassModifier():
 {
     Annotation() 
     |
-    "public" 
+    <PUBLIC> 
     |
-    "protected" 
+    <PROTECTED> 
     |
-    "private"
+    <PRIVATE>
     |
-    "abstract" 
+    <ABSTRACT> 
     |
-    "static" 
+    <STATIC> 
     |
-    "final" 
+    <FINAL> 
     |
-    "strictfp"
+    <STRICTFP>
 }
 
 void TypeParameters():
 {}
 {
-    "<" TypeParameterList() ">"
+    <LT> TypeParameterList() ">"
 }
 
 void TypeParameterList():
 {}
 {
-    TypeParameter() ("," TypeParameter())*
+    TypeParameter() (<COMMA> TypeParameter())*
 }
 
 void Superclass():
 {}
 {
-    "extends" ClassType()
+    <EXTENDS> ClassType()
 }
 
 void Superinterfaces():
 {}
 {
-    "implements" InterfaceTypeList()
+    <IMPLEMENTS> InterfaceTypeList()
 }
 
 void InterfaceTypeList():
 {}
 {
-    InterfaceType() ("," InterfaceType())*
+    InterfaceType() (<COMMA> InterfaceType())*
 }
 
 void ClassBody():
 {}
 {
-   "{" (ClassBodyDeclaration())* "}"
+   <LBRACE> (ClassBodyDeclaration())* <RBRACE>
 }
 
 void ClassBodyDeclaration():
@@ -805,13 +806,13 @@ void ClassMemberDeclaration():
     LOOKAHEAD(3)
     InterfaceDeclaration()
     |
-    ";"
+    <SEMICOLON>
 }
 
 void FieldDeclaration():
 {}
 {
-    (FieldModifier())* UnannType() VariableDeclaratorList() ";"
+    (FieldModifier())* UnannType() VariableDeclaratorList() <SEMICOLON>
 }
 
 void FieldModifier():
@@ -819,31 +820,31 @@ void FieldModifier():
 {
     Annotation()
     |
-    "public" 
+    <PUBLIC> 
     |
-    "protected" 
+    <PROTECTED> 
     |
-    "private"
+    <PRIVATE>
     |
-    "static" 
+    <STATIC> 
     |
-    "final" 
+    <FINAL> 
     |
-    "transient" 
+    <TRANSIENT> 
     |
-    "volatile"
+    <VOLATILE>
 }
 
 void VariableDeclaratorList():
 {}
 {
-    VariableDeclarator() ("," VariableDeclarator())*
+    VariableDeclarator() (<COMMA> VariableDeclarator())*
 }
 
 void VariableDeclarator():
 {}
 {
-    VariableDeclaratorId() ["=" VariableInitializer()]
+    VariableDeclaratorId() [<ASSIGN> VariableInitializer()]
 }
 
 void VariableDeclaratorId():
@@ -880,7 +881,7 @@ void UnannPrimitiveType():
 {
     NumericType()
     |
-    "boolean"
+    <BOOLEAN>
 }
 
 void UnannReferenceType():
@@ -904,7 +905,7 @@ void UnannClassOrInterfaceType():
 void UnannClassType():
 {}
 {
-    <IDENTIFIER> [TypeArguments()] ("." (Annotation())* <IDENTIFIER> [TypeArguments()])*
+    <IDENTIFIER> [TypeArguments()] (<DOT> (Annotation())* <IDENTIFIER> [TypeArguments()])*
 }
 
 void UnannArrayType():
@@ -930,23 +931,23 @@ void MethodModifier():
 {
     Annotation()
     |
-    "public" 
+    <PUBLIC> 
     |
-    "protected" 
+    <PROTECTED> 
     |
-    "private"
+    <PRIVATE>
     |
-    "abstract" 
+    <ABSTRACT> 
     |
-    "static" 
+    <STATIC> 
     |
-    "final" 
+    <FINAL> 
     |
-    "synchronized" 
+    <SYNCHRONIZED> 
     |
-    "native" 
+    <NATIVE> 
     |
-    "strictfp"
+    <STRICTFP>
 }
 
 void MethodHeader():
@@ -962,20 +963,20 @@ void Result():
 {
     UnannType()
     |
-    "void"
+    <VOID>
 }
 
 void MethodDeclarator():
 {}
 {
-    <IDENTIFIER> "(" [FormalParameterList()] ")" [Dims()]
+    <IDENTIFIER> <LPAREN> [FormalParameterList()] <RPAREN> [Dims()]
 }
 
 void FormalParameterList():
 {}
 {
     LOOKAHEAD(6)
-    FormalParameters() [ "," LastFormalParameter() ]
+    FormalParameters() [ <COMMA> LastFormalParameter() ]
     |
     LOOKAHEAD(3)
     LastFormalParameter()
@@ -985,10 +986,10 @@ void FormalParameters():
 {}
 {
     LOOKAHEAD(3)
-    FormalParameter() ( LOOKAHEAD(2) "," FormalParameter() )*
+    FormalParameter() ( LOOKAHEAD(2) <COMMA> FormalParameter() )*
     |
     LOOKAHEAD(3)
-    ReceiverParameter() ( LOOKAHEAD(2) "," FormalParameter() )*
+    ReceiverParameter() ( LOOKAHEAD(2) <COMMA> FormalParameter() )*
 }
 
 void FormalParameter():
@@ -1002,7 +1003,7 @@ void VariableModifier():
 {
     Annotation() 
     |
-    "final"
+    <FINAL>
 }
 
 void LastFormalParameter():
@@ -1018,19 +1019,19 @@ void LastFormalParameter():
 void ReceiverParameter():
 {}
 {
-    (Annotation())* UnannType() [<IDENTIFIER> "."] "this"
+    (Annotation())* UnannType() [<IDENTIFIER> <DOT>] <THIS>
 }
 
 void Throws():
 {}
 {
-    "throws" ExceptionTypeList()
+    <THROWS> ExceptionTypeList()
 }
 
 void ExceptionTypeList():
 {}
 {
-    ExceptionType() ("," ExceptionType())*
+    ExceptionType() (<COMMA> ExceptionType())*
 }
 
 void ExceptionType():
@@ -1048,7 +1049,7 @@ void MethodBody():
 {
     Block()
     |
-    ";"
+    <SEMICOLON>
 }
 
 void InstanceInitializer():
@@ -1060,7 +1061,7 @@ void InstanceInitializer():
 void StaticInitializer():
 {}
 {
-    "static" Block()
+    <STATIC> Block()
 }
 
 void ConstructorDeclaration():
@@ -1074,67 +1075,67 @@ void ConstructorModifier():
 {
     Annotation()
     |
-    "public"
+    <PUBLIC>
     |
-    "protected"
+    <PROTECTED>
     |
-    "private"
+    <PRIVATE>
 }
 
 void ConstructorDeclarator():
 {}
 {
-    [TypeParameters()] <IDENTIFIER> "(" [FormalParameterList()] ")" 
+    [TypeParameters()] <IDENTIFIER> <LPAREN> [FormalParameterList()] <RPAREN> 
 }
 
 void ConstructorBody():
 {}
 {
-    "{" 
+    <LBRACE> 
         // TODO: check these lookaheads, they are excessive
         [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ] 
         [ LOOKAHEAD(BlockStatements()) BlockStatements() ] 
-    "}"
+    <RBRACE>
 }
 
 void ExplicitConstructorInvocation():
 {}
 {
     LOOKAHEAD(3)
-    [TypeArguments()] "this" "(" [ArgumentList()] ")" ";"
+    [TypeArguments()] <THIS> <LPAREN> [ArgumentList()] <RPAREN> <SEMICOLON>
     |
     LOOKAHEAD(3)
-    [TypeArguments()] "super" "(" [ArgumentList()] ")" ";"
+    [TypeArguments()] <SUPER> <LPAREN> [ArgumentList()] <RPAREN> <SEMICOLON>
     |
     LOOKAHEAD(3)
-    ExpressionName() "." [TypeArguments()] "super" "(" [ArgumentList()] ")" ";"
+    ExpressionName() <DOT> [TypeArguments()] <SUPER> <LPAREN> [ArgumentList()] <RPAREN> <SEMICOLON>
     |
     LOOKAHEAD(3)
-    Primary() "." [TypeArguments()] "super" "(" [ArgumentList()] ")" ";"
+    Primary() <DOT> [TypeArguments()] <SUPER> <LPAREN> [ArgumentList()] <RPAREN> <SEMICOLON>
 }
 
 void EnumDeclaration():
 {}
 {
-    (ClassModifier())* "enum" <IDENTIFIER> [Superinterfaces()] EnumBody()
+    (ClassModifier())* <ENUM> <IDENTIFIER> [Superinterfaces()] EnumBody()
 }
 
 void EnumBody():
 {}
 {
-    "{" [EnumConstantList()] [","] [EnumBodyDeclarations()] "}"
+    <LBRACE> [EnumConstantList()] [<COMMA>] [EnumBodyDeclarations()] <RBRACE>
 }
 
 void EnumConstantList():
 {}
 {
-    EnumConstant() ( LOOKAHEAD(2) "," EnumConstant())*
+    EnumConstant() ( LOOKAHEAD(2) <COMMA> EnumConstant())*
 }
 
 void EnumConstant():
 {}
 {
-    ( EnumConstantModifier() )* <IDENTIFIER> [ "(" [ArgumentList()] ")" ] [ ClassBody() ]
+    ( EnumConstantModifier() )* <IDENTIFIER> [ <LPAREN> [ArgumentList()] <RPAREN> ] [ ClassBody() ]
 }
 
 void EnumConstantModifier():
@@ -1146,7 +1147,7 @@ void EnumConstantModifier():
 void EnumBodyDeclarations():
 {}
 {
-    ";" (ClassBodyDeclaration())*
+    <SEMICOLON> (ClassBodyDeclaration())*
 }
 
 /*
@@ -1167,7 +1168,7 @@ void InterfaceDeclaration():
 void NormalInterfaceDeclaration():
 {}
 {
-    ( LOOKAHEAD(2) InterfaceModifier() )* "interface" <IDENTIFIER> [ LOOKAHEAD(2) TypeParameters() ] [ExtendsInterfaces()] InterfaceBody()
+    ( LOOKAHEAD(2) InterfaceModifier() )* <INTERFACE> <IDENTIFIER> [ LOOKAHEAD(2) TypeParameters() ] [ExtendsInterfaces()] InterfaceBody()
 }
 
 void InterfaceModifier():
@@ -1175,29 +1176,29 @@ void InterfaceModifier():
 {
     Annotation()
     |
-    "public" 
+    <PUBLIC> 
     |
-    "protected" 
+    <PROTECTED> 
     |
-    "private"
+    <PRIVATE>
     |
-    "abstract" 
+    <ABSTRACT> 
     |
-    "static" 
+    <STATIC> 
     |
-    "strictfp"
+    <STRICTFP>
 }
 
 void ExtendsInterfaces():
 {}
 {
-    "extends" InterfaceTypeList()
+    <EXTENDS> InterfaceTypeList()
 }
 
 void InterfaceBody():
 {}
 {
-    "{" ( LOOKAHEAD(2) InterfaceMemberDeclaration() )* "}" 
+    <LBRACE> ( LOOKAHEAD(2) InterfaceMemberDeclaration() )* <RBRACE> 
 }
 
 void InterfaceMemberDeclaration():
@@ -1215,13 +1216,13 @@ void InterfaceMemberDeclaration():
     LOOKAHEAD(3)
     InterfaceDeclaration()
     |
-    ";"
+    <SEMICOLON>
 }
 
 void ConstantDeclaration():
 {}
 {
-    (ConstantModifier())* UnannType() VariableDeclaratorList() ";"
+    (ConstantModifier())* UnannType() VariableDeclaratorList() <SEMICOLON>
 }
 
 void ConstantModifier():
@@ -1229,11 +1230,11 @@ void ConstantModifier():
 {
     Annotation()
     |
-    "public"
+    <PUBLIC>
     |
-    "static" 
+    <STATIC> 
     |
-    "final"
+    <FINAL>
 }
 
 void InterfaceMethodDeclaration():
@@ -1247,27 +1248,27 @@ void InterfaceMethodModifier():
 {
     Annotation()
     |
-    "public"
+    <PUBLIC>
     |
-    "abstract" 
+    <ABSTRACT> 
     |
-    "default" 
+    <_DEFAULT> 
     |
-    "static" 
+    <STATIC> 
     |
-    "strictfp"
+    <STRICTFP>
 }
 
 void AnnotationTypeDeclaration():
 {}
 {
-    ( LOOKAHEAD(2) InterfaceModifier())* "@" "interface" <IDENTIFIER> AnnotationTypeBody()
+    ( LOOKAHEAD(2) InterfaceModifier())* <AT> <INTERFACE> <IDENTIFIER> AnnotationTypeBody()
 }
 
 void AnnotationTypeBody():
 {}
 {
-    "{" ( LOOKAHEAD(2) AnnotationTypeMemberDeclaration() )* "}" 
+    <LBRACE> ( LOOKAHEAD(2) AnnotationTypeMemberDeclaration() )* <RBRACE> 
 }
 
 void AnnotationTypeMemberDeclaration():
@@ -1285,13 +1286,13 @@ void AnnotationTypeMemberDeclaration():
     LOOKAHEAD(3)
     InterfaceDeclaration()
     |
-    ";"
+    <SEMICOLON>
 }
 
 void AnnotationTypeElementDeclaration():
 {}
 {
-    (AnnotationTypeElementModifier())* UnannType() <IDENTIFIER> "(" ")" [Dims()] [DefaultValue()] ";"
+    (AnnotationTypeElementModifier())* UnannType() <IDENTIFIER> <LPAREN> <RPAREN> [Dims()] [DefaultValue()] <SEMICOLON>
 }
 
 void AnnotationTypeElementModifier():
@@ -1299,15 +1300,15 @@ void AnnotationTypeElementModifier():
 {
     Annotation()
     |
-    "public"
+    <PUBLIC>
     |
-    "abstract"
+    <ABSTRACT>
 }
 
 void DefaultValue():
 {}
 {
-    "default" ElementValue()
+    <_DEFAULT> ElementValue()
 }
 
 void Annotation():
@@ -1326,19 +1327,19 @@ void Annotation():
 void NormalAnnotation():
 {}
 {
-    "@" TypeName() "(" [ElementValuePairList()] ")" 
+    <AT> TypeName() <LPAREN> [ElementValuePairList()] <RPAREN> 
 }
 
 void ElementValuePairList():
 {}
 {
-    ElementValuePair() ("," ElementValuePair())*
+    ElementValuePair() (<COMMA> ElementValuePair())*
 }
 
 void ElementValuePair():
 {}
 {
-    <IDENTIFIER> "=" ElementValue()
+    <IDENTIFIER> <ASSIGN> ElementValue()
 }
 
 void ElementValue():
@@ -1356,25 +1357,25 @@ void ElementValue():
 void ElementValueArrayInitializer():
 {}
 {
-    "{" [ElementValueList()] [","] "}"
+    <LBRACE> [ElementValueList()] [<COMMA>] <RBRACE>
 }
 
 void ElementValueList():
 {}
 {
-    ElementValue() ( LOOKAHEAD(2) "," ElementValue())*
+    ElementValue() ( LOOKAHEAD(2) <COMMA> ElementValue())*
 }
 
 void MarkerAnnotation():
 {}
 {
-    "@" TypeName()
+    <AT> TypeName()
 }
 
 void SingleElementAnnotation():
 {}
 {
-    "@" TypeName() "(" ElementValue() ")"
+    <AT> TypeName() <LPAREN> ElementValue() <RPAREN>
 }
 
 /*
@@ -1385,13 +1386,13 @@ Productions() from §10 (Arrays())
 void ArrayInitializer():
 {}
 {
-    "{" [VariableInitializerList()] [","] "}"
+    <LBRACE> [VariableInitializerList()] [<COMMA>] <RBRACE>
 }
 
 void VariableInitializerList():
 {}
 {
-    VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer())*
+    VariableInitializer() ( LOOKAHEAD(2) <COMMA> VariableInitializer())*
 }
 
 /*
@@ -1402,7 +1403,7 @@ Productions() from §14 (Blocks() and Statements())
 void Block():
 {}
 {
-    "{" [BlockStatements()] "}"
+    <LBRACE> [BlockStatements()] <RBRACE>
 }
 
 void BlockStatements():
@@ -1427,7 +1428,7 @@ void BlockStatement():
 void LocalVariableDeclarationStatement():
 {}
 {
-    LocalVariableDeclaration() ";"
+    LocalVariableDeclaration() <SEMICOLON>
 }
 
 void LocalVariableDeclaration():
@@ -1503,25 +1504,25 @@ void StatementWithoutTrailingSubstatement():
 void EmptyStatement():
 {}
 {
-    ";"
+    <SEMICOLON>
 }
 
 void LabeledStatement():
 {}
 {
-    <IDENTIFIER> ":" Statement()
+    <IDENTIFIER> <COLON> Statement()
 }
 
 void LabeledStatementNoShortIf():
 {}
 {
-    <IDENTIFIER> ":" StatementNoShortIf()
+    <IDENTIFIER> <COLON> StatementNoShortIf()
 }
 
 void ExpressionStatement():
 {}
 {
-    StatementExpression() ";"
+    StatementExpression() <SEMICOLON>
 }
 
 void StatementExpression():
@@ -1552,37 +1553,37 @@ void StatementExpression():
 void IfThenStatement():
 {}
 {
-    "if" "(" Expression() ")" Statement()
+    <IF> <LPAREN> Expression() <RPAREN> Statement()
 }
 
 void IfThenElseStatement():
 {}
 {
-    "if" "(" Expression() ")" StatementNoShortIf() "else" Statement()
+    <IF> <LPAREN> Expression() <RPAREN> StatementNoShortIf() <ELSE> Statement()
 }
 
 void IfThenElseStatementNoShortIf():
 {}
 {
-    "if" "(" Expression() ")" StatementNoShortIf() "else" StatementNoShortIf()
+    <IF> <LPAREN> Expression() <RPAREN> StatementNoShortIf() <ELSE> StatementNoShortIf()
 }
 
 void AssertStatement():
 {}
 {
-    "assert" [ LOOKAHEAD(2) Expression() ":" ] Expression() ";"
+    <ASSERT> [ LOOKAHEAD(2) Expression() <COLON> ] Expression() <SEMICOLON>
 }
 
 void SwitchStatement():
 {}
 {
-    "switch" "(" Expression() ")" SwitchBlock()
+    <SWITCH> <LPAREN> Expression() <RPAREN> SwitchBlock()
 }
 
 void SwitchBlock():
 {}
 {
-    "{" (LOOKAHEAD(2) SwitchBlockStatementGroup())* (LOOKAHEAD(2) SwitchLabel())* "}" 
+    <LBRACE> (LOOKAHEAD(2) SwitchBlockStatementGroup())* (LOOKAHEAD(2) SwitchLabel())* <RBRACE> 
 }
 
 void SwitchBlockStatementGroup():
@@ -1600,26 +1601,26 @@ void SwitchLabels():
 void SwitchLabel():
 {}
 {
-    "case" ( LOOKAHEAD(2) ConstantExpression() | <IDENTIFIER> ) ":"
-    "default" ":"
+    <CASE> ( LOOKAHEAD(2) ConstantExpression() | <IDENTIFIER> ) <COLON>
+    <_DEFAULT> <COLON>
 }
 
 void WhileStatement():
 {}
 {
-    "while" "(" Expression() ")" Statement()
+    <WHILE> <LPAREN> Expression() <RPAREN> Statement()
 }
 
 void WhileStatementNoShortIf():
 {}
 {
-    "while" "(" Expression() ")" StatementNoShortIf()
+    <WHILE> <LPAREN> Expression() <RPAREN> StatementNoShortIf()
 }
 
 void DoStatement():
 {}
 {
-    "do" Statement() "while" "(" Expression() ")" ";"
+    <DO> Statement() <WHILE> <LPAREN> Expression() <RPAREN> <SEMICOLON>
 }
 
 void ForStatement():
@@ -1643,13 +1644,13 @@ void ForStatementNoShortIf():
 void BasicForStatement():
 {}
 {
-    "for" "(" [ForInit()] ";" [Expression()] ";" [ForUpdate()] ")" Statement()
+    <FOR> <LPAREN> [ForInit()] <SEMICOLON> [Expression()] <SEMICOLON> [ForUpdate()] <RPAREN> Statement()
 }
 
 void BasicForStatementNoShortIf():
 {}
 {
-    "for" "(" [ForInit()] ";" [Expression()] ";" [ForUpdate()] ")" StatementNoShortIf()
+    <FOR> <LPAREN> [ForInit()] <SEMICOLON> [Expression()] <SEMICOLON> [ForUpdate()] <RPAREN> StatementNoShortIf()
 }
 
 void ForInit():
@@ -1671,56 +1672,56 @@ void ForUpdate():
 void StatementExpressionList():
 {}
 {
-    StatementExpression() ("," StatementExpression())*
+    StatementExpression() (<COMMA> StatementExpression())*
 }
 
 void EnhancedForStatement():
 {}
 {
-    "for" "(" (VariableModifier())* UnannType() VariableDeclaratorId() ":" Expression() ")" Statement()
+    <FOR> <LPAREN> (VariableModifier())* UnannType() VariableDeclaratorId() <COLON> Expression() <RPAREN> Statement()
 }
 
 void EnhancedForStatementNoShortIf():
 {}
 {
-    "for" "(" (VariableModifier())* UnannType() VariableDeclaratorId() ":" Expression() ")" StatementNoShortIf()
+    <FOR> <LPAREN> (VariableModifier())* UnannType() VariableDeclaratorId() <COLON> Expression() <RPAREN> StatementNoShortIf()
 }
 
 void BreakStatement():
 {}
 {
-    "break" [<IDENTIFIER>] ";"
+    <BREAK> [<IDENTIFIER>] <SEMICOLON>
 }
 
 void ContinueStatement():
 {}
 {
-    "continue" [<IDENTIFIER>] ";"
+    <CONTINUE> [<IDENTIFIER>] <SEMICOLON>
 }
 
 void ReturnStatement():
 {}
 {
-    "return" [Expression()] ";"
+    <RETURN> [Expression()] <SEMICOLON>
 }
 
 void ThrowStatement():
 {}
 {
-    "throw" Expression() ";"
+    <THROW> Expression() <SEMICOLON>
 }
 
 void SynchronizedStatement():
 {}
 {
-    "synchronized" "(" Expression() ")" Block()
+    <SYNCHRONIZED> <LPAREN> Expression() <RPAREN> Block()
 }
 
 void TryStatement():
 {}
 {
     LOOKAHEAD(2)
-    "try" Block() (LOOKAHEAD(3) Catches() | [Catches()] Finally())
+    <TRY> Block() (LOOKAHEAD(3) Catches() | [Catches()] Finally())
     |
     LOOKAHEAD(2)
     TryWithResourcesStatement()
@@ -1735,7 +1736,7 @@ void Catches():
 void CatchClause():
 {}
 {
-    "catch" "(" CatchFormalParameter() ")" Block()
+    <CATCH> <LPAREN> CatchFormalParameter() <RPAREN> Block()
 }
 
 void CatchFormalParameter():
@@ -1747,37 +1748,37 @@ void CatchFormalParameter():
 void CatchType():
 {}
 {
-    UnannClassType() ("|" ClassType())*
+    UnannClassType() (<BIT_OR> ClassType())*
 }
 
 void Finally():
 {}
 {
-    "finally" Block()
+    <FINALLY> Block()
 }
 
 void TryWithResourcesStatement():
 {}
 {
-    "try" ResourceSpecification() Block() [Catches()] [Finally()]
+    <TRY> ResourceSpecification() Block() [Catches()] [Finally()]
 }
 
 void ResourceSpecification():
 {}
 {
-    "(" ResourceList() [";"] ")" 
+    <LPAREN> ResourceList() [<SEMICOLON>] <RPAREN> 
 }
 
 void ResourceList():
 {}
 {
-    Resource() (LOOKAHEAD(2) ";" Resource())*
+    Resource() (LOOKAHEAD(2) <SEMICOLON> Resource())*
 }
 
 void Resource():
 {}
 {
-    (VariableModifier())* UnannType() VariableDeclaratorId() "=" Expression()
+    (VariableModifier())* UnannType() VariableDeclaratorId() <ASSIGN> Expression()
 }
 
 /*
@@ -1799,7 +1800,7 @@ void PrimaryNoNewArray():
 {}
 {
     LOOKAHEAD(MethodInvocation())
-    MethodInvocation() (LOOKAHEAD(2) "." MethodInvocation())*
+    MethodInvocation() (LOOKAHEAD(2) <DOT> MethodInvocation())*
     |
     LOOKAHEAD(ArrayAccess())
     ArrayAccess()
@@ -1816,23 +1817,23 @@ void PrimaryNoNewArray():
     Literal()
     |
     LOOKAHEAD(3)
-    TypeName() (LOOKAHEAD(2) ( "[" "]" )* "." "class" | "." "this")
+    TypeName() (LOOKAHEAD(2) ( <LBRACKET> <RBRACKET> )* <DOT> <CLASS> | <DOT> <THIS>)
     |
     LOOKAHEAD(3)
-    "(" Expression() ")" (LOOKAHEAD(2) "." MethodInvocation())*
+    <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <DOT> MethodInvocation())*
     |
-    "void" "." "class"
+    <VOID> <DOT> <CLASS>
     |
     LOOKAHEAD(2)
-    "this"
+    <THIS>
 }
 
 void ClassInstanceCreationExpression():
 {}
 {
-    "new" [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
+    <NEW> [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] <LPAREN> [ArgumentList()] <RPAREN> [LOOKAHEAD(2) ClassBody()] (LOOKAHEAD(2) <DOT> <NEW> [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] <LPAREN> [ArgumentList()] <RPAREN> [LOOKAHEAD(2) ClassBody()] )*
     |
-    ExpressionName() (LOOKAHEAD(2) "." "new" [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] "(" [ArgumentList()] ")" [LOOKAHEAD(2) ClassBody()] )*
+    ExpressionName() (LOOKAHEAD(2) <DOT> <NEW> [TypeArguments()] (Annotation())* <IDENTIFIER> [TypeArgumentsOrDiamond()] <LPAREN> [ArgumentList()] <RPAREN> [LOOKAHEAD(2) ClassBody()] )*
 }
 
 void TypeArgumentsOrDiamond():
@@ -1840,72 +1841,72 @@ void TypeArgumentsOrDiamond():
 {
     TypeArguments()
     |
-    "<>"
+    <DIAMOND>
 }
 
 void FieldAccess():
 {}
 {
     LOOKAHEAD(3)
-    <IDENTIFIER> (LOOKAHEAD(2) "." <IDENTIFIER> )*
+    <IDENTIFIER> (LOOKAHEAD(2) <DOT> <IDENTIFIER> )*
     |
-    "super" (LOOKAHEAD(2) "." <IDENTIFIER> )*
+    <SUPER> (LOOKAHEAD(2) <DOT> <IDENTIFIER> )*
     |
-    TypeName() "." "super" "." <IDENTIFIER>
+    TypeName() <DOT> <SUPER> <DOT> <IDENTIFIER>
 }
 
 void ArrayAccess():
 {}
 {
-    ExpressionName() "[" Expression() "]" ( "[" Expression() "]" )*
+    ExpressionName() <LBRACKET> Expression() <RBRACKET> ( <LBRACKET> Expression() <RBRACKET> )*
 }
 
 void MethodInvocation():
 {}
 {
     LOOKAHEAD(6)
-    MethodName() "(" [ArgumentList()] ")" 
+    MethodName() <LPAREN> [ArgumentList()] <RPAREN> 
     |
     LOOKAHEAD(3)
-    TypeName() "." ["super" "."] [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> "(" [LOOKAHEAD(2) ArgumentList()] ")" 
+    TypeName() <DOT> [<SUPER> <DOT>] [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
     |
     LOOKAHEAD(3)
-    ExpressionName() "." [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> "(" [LOOKAHEAD(2) ArgumentList()] ")"  
+    ExpressionName() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
     |
-    "super" ["." [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER>] "(" [LOOKAHEAD(2) ArgumentList()] ")"  
+    <SUPER> [<DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER>] <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
 }
 
 void ArgumentList():
 {}
 {
-    Expression() ("," Expression())*
+    Expression() (<COMMA> Expression())*
 }
 
 void MethodReference():
 {}
 {
     LOOKAHEAD(3)
-    ExpressionName() "::" [TypeArguments()] <IDENTIFIER>
+    ExpressionName() <DOUBLECOLON> [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
-    ReferenceType() "::" [TypeArguments()] <IDENTIFIER>
+    ReferenceType() <DOUBLECOLON> [TypeArguments()] <IDENTIFIER>
     |
-    "super" "::" [TypeArguments()] <IDENTIFIER>
-    |
-    LOOKAHEAD(3)
-    TypeName() "." "super" "::" [TypeArguments()] <IDENTIFIER>
+    <SUPER> <DOUBLECOLON> [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
-    ClassType() "::" [TypeArguments()] "new"
+    TypeName() <DOT> <SUPER> <DOUBLECOLON> [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
-    ArrayType() "::" "new"
+    ClassType() <DOUBLECOLON> [TypeArguments()] <NEW>
+    |
+    LOOKAHEAD(3)
+    ArrayType() <DOUBLECOLON> <NEW>
 }
 
 void ArrayCreationExpression():
 {}
 {
-    "new" 
+    <NEW> 
     (
         LOOKAHEAD(3)
         PrimitiveType() DimExprs() [LOOKAHEAD(2)Dims()]
@@ -1929,7 +1930,7 @@ void DimExprs():
 void DimExpr():
 {}
 {
-    (Annotation())* "[" Expression() "]"
+    (Annotation())* <LBRACKET> Expression() <RBRACKET>
 }
 
 void ConstantExpression():
@@ -1950,7 +1951,7 @@ void Expression():
 void LambdaExpression():
 {}
 {
-    LambdaParameters() "->" LambdaBody()
+    LambdaParameters() <POINTER> LambdaBody()
 }
 
 void LambdaParameters():
@@ -1959,16 +1960,16 @@ void LambdaParameters():
     <IDENTIFIER>
     |
     LOOKAHEAD(3) 
-    "(" [FormalParameterList()] ")" 
+    <LPAREN> [FormalParameterList()] <RPAREN> 
     |
     LOOKAHEAD(3) 
-    "(" InferredFormalParameterList() ")" 
+    <LPAREN> InferredFormalParameterList() <RPAREN> 
 }
 
 void InferredFormalParameterList():
 {}
 {
-    <IDENTIFIER> ("," <IDENTIFIER>)*
+    <IDENTIFIER> (<COMMA> <IDENTIFIER>)*
 }
 
 void LambdaBody():
@@ -2011,96 +2012,96 @@ void AssignmentOperator():
 {}
 {
 
-    "="
+    <ASSIGN>
     |
-    "*="  
+    <STARASSIGN>
     |
-    "/="  
+    <SLASHASSIGN>
     |
-    "%="  
+    <PERCENTASSIGN>
     |
-    "+="  
+    <PLUSASSIGN>  
     |
-    "-="  
+    <MINUSASSIGN>
     |
-    "<<="  
+    <LSHIFTASSIGN>
     |
-    ">>="  
+    <RSIGNEDSHIFTASSIGN>
     |
-    ">>>="  
+    <RUNSIGNEDSHIFTASSIGN>
     |
-    "&="  
+    <ANDASSIGN>  
     |
-    "^="  
+    <XORASSIGN>
     |
-    "|="
+    <ORASSIGN>
 
 }
 
 void ConditionalExpression():
 {}
 {
-    ConditionalOrExpression() [LOOKAHEAD(2) "?" Expression() ":" ConditionalExpression()]
+    ConditionalOrExpression() [LOOKAHEAD(2) <HOOK> Expression() <COLON> ConditionalExpression()]
 }
 
 void ConditionalOrExpression():
 {}
 {
-    ConditionalAndExpression() ( LOOKAHEAD(2) "||" ConditionalAndExpression() )*
+    ConditionalAndExpression() ( LOOKAHEAD(2) <SC_OR> ConditionalAndExpression() )*
 }
 
 void ConditionalAndExpression():
 {}
 {
-    InclusiveOrExpression() ( LOOKAHEAD(2) "&&" InclusiveOrExpression() )*
+    InclusiveOrExpression() ( LOOKAHEAD(2) <SC_AND> InclusiveOrExpression() )*
 }
 
 void InclusiveOrExpression():
 {}
 {
-    ExclusiveOrExpression() ( LOOKAHEAD(2) "|" ExclusiveOrExpression() )*
+    ExclusiveOrExpression() ( LOOKAHEAD(2) <BIT_OR> ExclusiveOrExpression() )*
 }
 
 void ExclusiveOrExpression():
 {}
 {
-    AndExpression() ( LOOKAHEAD(2) "^" AndExpression() )*
+    AndExpression() ( LOOKAHEAD(2) <XOR> AndExpression() )*
 }
 
 void AndExpression():
 {}
 {
-    EqualityExpression() ( LOOKAHEAD(2) "&" EqualityExpression() )*
+    EqualityExpression() ( LOOKAHEAD(2) <BIT_AND> EqualityExpression() )*
 }
 
 void EqualityExpression():
 {}
 {
-    RelationalExpression() ( LOOKAHEAD(2) ( "==" | "!=" ) RelationalExpression() )*
+    RelationalExpression() ( LOOKAHEAD(2) ( <EQ> | <NE> ) RelationalExpression() )*
 }
 
 void RelationalExpression():
 {}
 {
-    ShiftExpression() ( LOOKAHEAD(2) ( "<" | ">" | "<=" | ">=" | "instanceof" ) ShiftExpression() )*
+    ShiftExpression() ( LOOKAHEAD(2) ( <LT> | ">" | <LE> | <GE> | <INSTANCEOF> ) ShiftExpression() )*
 }
 
 void ShiftExpression():
 {}
 {
-    AdditiveExpression() ( LOOKAHEAD(2) ( "<<" | ">>" | ">>>") AdditiveExpression() )*
+    AdditiveExpression() ( LOOKAHEAD(2) ( <LSHIFT> | ">>" | ">>>") AdditiveExpression() )*
 }
 
 void AdditiveExpression():
 {}
 {
-    MultiplicativeExpression() ( LOOKAHEAD(2) ( "+" | "-" ) MultiplicativeExpression() )*
+    MultiplicativeExpression() ( LOOKAHEAD(2) ( <PLUS> | <MINUS> ) MultiplicativeExpression() )*
 }
 
 void MultiplicativeExpression():
 {}
 {
-    UnaryExpression() ( LOOKAHEAD(2)( "*" | "/" | "%" ) UnaryExpression()  )*
+    UnaryExpression() ( LOOKAHEAD(2)( <STAR> | <SLASH> | <PERCENT> ) UnaryExpression()  )*
 }
 
 void UnaryExpression():
@@ -2110,9 +2111,9 @@ void UnaryExpression():
     |
     PreDecrementExpression()
     |
-     "+" UnaryExpression()
+     <PLUS> UnaryExpression()
     |
-    "-" UnaryExpression()
+    <MINUS> UnaryExpression()
     |
     UnaryExpressionNotPlusMinus()
 }
@@ -2120,19 +2121,19 @@ void UnaryExpression():
 void PreIncrementExpression():
 {}
 {
-    "++" UnaryExpression()
+    <INCR> UnaryExpression()
 }
 
 void PreDecrementExpression():
 {}
 {
-    "--" UnaryExpression()
+    <DECR> UnaryExpression()
 }
 
 void UnaryExpressionNotPlusMinus():
 {}
 {
-    ( "~" | "!" ) UnaryExpression()
+    ( <TILDE> | <BANG> ) UnaryExpression()
     |
     LOOKAHEAD( CastLookahead() )
     CastExpression()
@@ -2144,9 +2145,9 @@ void PostfixExpression():
 {}
 {
     LOOKAHEAD(2)
-    Primary() ( LOOKAHEAD(2)("++" | "--"))* 
+    Primary() ( LOOKAHEAD(2)(<INCR> | <DECR>))* 
     |
-    ExpressionName() ( LOOKAHEAD(2)( "++" | "--"))*
+    ExpressionName() ( LOOKAHEAD(2)( <INCR> | <DECR>))*
 }
 
 void PostIncrementExpression():
@@ -2168,21 +2169,21 @@ void CastLookahead():
 {}
 {
     LOOKAHEAD(2)
-    "(" PrimitiveType()
+    <LPAREN> PrimitiveType()
     |
-    LOOKAHEAD("(" Type() "[")
-    "(" Type() "[" "]"
+    LOOKAHEAD(<LPAREN> Type() <LBRACKET>)
+    <LPAREN> Type() <LBRACKET> <RBRACKET>
     |
-    "(" Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
+    <LPAREN> Type() <RPAREN> ( <TILDE> | <BANG> | <LPAREN> | <IDENTIFIER> | <THIS> | <SUPER> | <NEW> | Literal() )
 }
 
 void CastExpression():
 {}
 {
     LOOKAHEAD(3)
-    "(" PrimitiveType() ")" UnaryExpression()
+    <LPAREN> PrimitiveType() <RPAREN> UnaryExpression()
     |
-    "(" ReferenceType() (AdditionalBound())* ")" ( LOOKAHEAD(3) UnaryExpressionNotPlusMinus() | LambdaExpression() )
+    <LPAREN> ReferenceType() (AdditionalBound())* <RPAREN> ( LOOKAHEAD(3) UnaryExpressionNotPlusMinus() | LambdaExpression() )
 }
 
 
