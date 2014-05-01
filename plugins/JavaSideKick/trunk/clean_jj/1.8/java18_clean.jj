@@ -413,6 +413,27 @@ TOKEN :
 | < DIAMOND: "<>" >
 }
 
+/* >'s need special attention due to generics syntax. */
+TOKEN :
+{
+  < RUNSIGNEDSHIFT: ">>>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     input_stream.backup(2);
+  }
+| < RSIGNEDSHIFT: ">>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
+     input_stream.backup(1);
+     System.out.println("+++++ found >>");
+  }
+| < GT: ">" >
+  {
+    System.out.println("+++++ found GT");   
+  }
+}
 
 
 /*
@@ -525,13 +546,13 @@ void ReferenceType():
 {}
 {
     LOOKAHEAD(3)
+    ClassOrInterfaceType()
+    |
+    LOOKAHEAD(3)
     ArrayType()
     |
     LOOKAHEAD(3)
     TypeVariable()
-    |
-    LOOKAHEAD(3)
-    ClassOrInterfaceType()
 }
 
 void ClassOrInterfaceType():
@@ -543,7 +564,7 @@ void ClassOrInterfaceType():
 void ClassType():
 {}
 {
-    (Annotation())* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] ( LOOKAHEAD(2) <DOT> (Annotation() )* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
+    (Annotation())* <IDENTIFIER> [ LOOKAHEAD(6) TypeArguments() ] ( LOOKAHEAD(2) <DOT> (Annotation() )* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
 }
 
 void InterfaceType():
@@ -744,7 +765,7 @@ void ClassModifier():
 void TypeParameters():
 {}
 {
-    <LT> TypeParameterList() ">"
+    <LT> TypeParameterList() <GT>
 }
 
 void TypeParameterList():
@@ -887,12 +908,15 @@ void UnannPrimitiveType():
 void UnannReferenceType():
 {}
 {
-    LOOKAHEAD(8)
+    // DONE: this doesn't always select the right production. UnannArrayType is
+    // a UnannClassOrInterfaceType followed by Dims(). See the fix in UnannArrayType,
+    // I made Dims optional for UnannClassOrInterfaceType
+    LOOKAHEAD(2)
     UnannArrayType()
     |
-    LOOKAHEAD(3)
-    UnannClassOrInterfaceType()
-    |
+    //LOOKAHEAD(UnannClassOrInterfaceType())
+    //UnannClassOrInterfaceType()
+    //|
     <IDENTIFIER>
 }
 
@@ -914,7 +938,7 @@ void UnannArrayType():
     UnannPrimitiveType() Dims()
     |
     LOOKAHEAD(3)
-    UnannClassOrInterfaceType() Dims()
+    UnannClassOrInterfaceType() [LOOKAHEAD(2) Dims()]
     |
     LOOKAHEAD(3)
     <IDENTIFIER> Dims()
@@ -1010,7 +1034,7 @@ void LastFormalParameter():
 {}
 {
     LOOKAHEAD(3)
-    (VariableModifier())* UnannType() (Annotation())* "..." VariableDeclaratorId()
+    (VariableModifier())* UnannType() (Annotation())* <ELLIPSIS> VariableDeclaratorId()
     |
     LOOKAHEAD(3)
     FormalParameter()
@@ -2089,7 +2113,27 @@ void RelationalExpression():
 void ShiftExpression():
 {}
 {
-    AdditiveExpression() ( LOOKAHEAD(2) ( <LSHIFT> | ">>" | ">>>") AdditiveExpression() )*
+    AdditiveExpression() ( LOOKAHEAD(2) ( <LSHIFT> | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+}
+
+void RUNSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                 getToken(1) instanceof Token.GTToken &&
+                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
+   ">" ">" ">"
+  )
+}
+
+void RSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                 getToken(1) instanceof Token.GTToken &&
+                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
+  ">" ">"
+  )
 }
 
 void AdditiveExpression():
