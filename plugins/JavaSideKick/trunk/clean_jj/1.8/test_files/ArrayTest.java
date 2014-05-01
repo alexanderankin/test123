@@ -16,9 +16,9 @@ class ArrayTest {
         //     if (z * i != 1.0f)
         //         System.out.print(" " + i);
         // }
-        //ColoredPoint[] cpa = (ColoredPoint[])pa;
-        System.out.println(c.toString().length() + args[].length);
-        //Seq<Pair<S, T>> sequence;
+        ColoredPoint[] cpa = (ColoredPoint[])pa;
+        //System.out.println(c.toString().length() + args[].length);
+        //Seq< Pair <S, T>> sequence;
 
     }
 }

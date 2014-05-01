@@ -179,63 +179,75 @@ public interface JavaParserConstants {
   /** RegularExpression Id. */
   int COLON = 94;
   /** RegularExpression Id. */
-  int EQ = 95;
+  int DOUBLECOLON = 95;
   /** RegularExpression Id. */
-  int LE = 96;
+  int EQ = 96;
   /** RegularExpression Id. */
-  int GE = 97;
+  int LE = 97;
   /** RegularExpression Id. */
-  int NE = 98;
+  int GE = 98;
   /** RegularExpression Id. */
-  int SC_OR = 99;
+  int NE = 99;
   /** RegularExpression Id. */
-  int SC_AND = 100;
+  int SC_OR = 100;
   /** RegularExpression Id. */
-  int INCR = 101;
+  int SC_AND = 101;
   /** RegularExpression Id. */
-  int DECR = 102;
+  int INCR = 102;
   /** RegularExpression Id. */
-  int PLUS = 103;
+  int DECR = 103;
   /** RegularExpression Id. */
-  int MINUS = 104;
+  int PLUS = 104;
   /** RegularExpression Id. */
-  int STAR = 105;
+  int MINUS = 105;
   /** RegularExpression Id. */
-  int SLASH = 106;
+  int STAR = 106;
   /** RegularExpression Id. */
-  int BIT_AND = 107;
+  int SLASH = 107;
   /** RegularExpression Id. */
-  int BIT_OR = 108;
+  int BIT_AND = 108;
   /** RegularExpression Id. */
-  int XOR = 109;
+  int BIT_OR = 109;
   /** RegularExpression Id. */
-  int REM = 110;
+  int XOR = 110;
   /** RegularExpression Id. */
-  int LSHIFT = 111;
+  int PERCENT = 111;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 112;
+  int LSHIFT = 112;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 113;
+  int PLUSASSIGN = 113;
   /** RegularExpression Id. */
-  int STARASSIGN = 114;
+  int MINUSASSIGN = 114;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 115;
+  int STARASSIGN = 115;
   /** RegularExpression Id. */
-  int ANDASSIGN = 116;
+  int SLASHASSIGN = 116;
   /** RegularExpression Id. */
-  int ORASSIGN = 117;
+  int ANDASSIGN = 117;
   /** RegularExpression Id. */
-  int XORASSIGN = 118;
+  int ORASSIGN = 118;
   /** RegularExpression Id. */
-  int REMASSIGN = 119;
+  int XORASSIGN = 119;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 120;
+  int PERCENTASSIGN = 120;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 121;
+  int LSHIFTASSIGN = 121;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFTASSIGN = 122;
+  int RSIGNEDSHIFTASSIGN = 122;
   /** RegularExpression Id. */
-  int ELLIPSIS = 123;
+  int RUNSIGNEDSHIFTASSIGN = 123;
+  /** RegularExpression Id. */
+  int ELLIPSIS = 124;
+  /** RegularExpression Id. */
+  int POINTER = 125;
+  /** RegularExpression Id. */
+  int DIAMOND = 126;
+  /** RegularExpression Id. */
+  int RUNSIGNEDSHIFT = 127;
+  /** RegularExpression Id. */
+  int RSIGNEDSHIFT = 128;
+  /** RegularExpression Id. */
+  int GT = 129;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -343,6 +355,7 @@ public interface JavaParserConstants {
     "\"~\"",
     "\"?\"",
     "\":\"",
+    "\"::\"",
     "\"==\"",
     "\"<=\"",
     "\">=\"",
@@ -372,12 +385,11 @@ public interface JavaParserConstants {
     "\">>=\"",
     "\">>>=\"",
     "\"...\"",
-    "\">\"",
-    "\"<>\"",
-    "\"::\"",
     "\"->\"",
-    "\">>\"",
+    "\"<>\"",
     "\">>>\"",
+    "\">>\"",
+    "\">\"",
   };
 
 }

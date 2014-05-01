@@ -117,12 +117,33 @@ public class Token implements java.io.Serializable {
     switch(ofKind)
     {
       default : return new Token(ofKind, image);
+       case JavaParserConstants.RUNSIGNEDSHIFT:
+       case JavaParserConstants.RSIGNEDSHIFT:
+       case JavaParserConstants.GT:
+          return new GTToken(ofKind, image);
     }
   }
 
   public static Token newToken(int ofKind)
   {
     return newToken(ofKind, null);
+  }
+  
+  public static class GTToken extends Token
+  {
+     int realKind = JavaParserConstants.GT;
+     
+     public GTToken() {
+        super();   
+     }
+     
+     public GTToken(int kind) {
+        super(kind);   
+     }
+     
+     public GTToken(int kind, String image) {
+        super(kind, image);   
+     }
   }
 
 }

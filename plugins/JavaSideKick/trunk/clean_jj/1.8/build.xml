@@ -471,8 +471,10 @@
                     name="TokenMgrError.java"/>
                 <include
                     name="ParseException.java"/>
+                <!--
                 <include
                     name="Token.java"/>
+                -->
             </fileset>
         </delete>
     </target>
