@@ -133,7 +133,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			}
 			
 			// Don't lock out user when exceeding bad password attempts on some servers
-			session.setConfig("MaxAuthTries", jEdit.getProperty("vfs.sftp.MaxAuthTries", "2"));	// (default is 6)
+			session.setConfig("MaxAuthTries", jEdit.getProperty("vfs.sftp.MaxAuthTries", "2"));	// (default was 6)
 
 			session.connect(ConnectionManager.connectionTimeout);
 
@@ -145,7 +145,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			home=sftp.getHome();
 			keyAttempts = 0;
 		} catch(Exception e) {			
-			throw new IOException(e.toString());
+			Log.log(Log.ERROR, this, e);
 		}
 	}//}}}
 
