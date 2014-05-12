@@ -1,4 +1,4 @@
-/*:folding=indent::latex.root=Thesis.tex:
+/*:folding=indent:encoding=UTF-8:
 * LabelParser.java - Label Parser
 * Copyright (C) 2002 Anthony Roy
 *
@@ -179,9 +179,9 @@ public class LabelParser {
                 if (key.equals("chapter")) {
                     prefix = "C ";
                 } else if (key.equals("section")) {
-                    prefix = "§ ";
+                    prefix = "Â§ ";
                 } else if (key.equals("subsection")) {
-                    prefix = "¶ ";
+                    prefix = "Â¶ ";
                 } else {
 
                     continue;
