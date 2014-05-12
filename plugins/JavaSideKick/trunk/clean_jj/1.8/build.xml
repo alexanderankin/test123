@@ -77,11 +77,64 @@
         <antcall
             target="Conversions"
             inheritrefs="true"/>
+        <antcall
+            target="Chapter6"
+            inheritrefs="true"/>
+        <antcall
+            target="Imports"
+            inheritrefs="true"/>
+        <antcall
+            target="NestedGenericClasses"
+            inheritrefs="true"/>
+            
+            
     </target>
     
    <!-- ========================================================================
       Tests
    ========================================================================= -->
+
+    <target
+        name="NestedGenericClasses">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="NestedGenericClasseserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/NestedGenericClasses.java"/>
+        </java>
+        <fail
+            message="NestedGenericClasses failed: ${NestedGenericClasseserror}">
+            <condition>
+                <not>
+                    <equals arg1="${NestedGenericClasseserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target
+        name="Imports">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="Importserror">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/Imports.java"/>
+        </java>
+        <fail
+            message="Imports failed: ${Importserror}">
+            <condition>
+                <not>
+                    <equals arg1="${Importserror}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
 
     <target
         name="ColoredPoint">
@@ -419,6 +472,27 @@
         </fail>
     </target>
     
+    <target
+        name="Chapter6">
+        <java
+            classname="JavaParser"
+            fork="true"
+            resultproperty="Chapter6error">
+            <classpath
+                refid="classpathref"/>
+            <arg
+                value="test_files/Chapter6.java"/>
+        </java>
+        <fail
+            message="Chapter6 failed: ${Chapter6error}">
+            <condition>
+                <not>
+                    <equals arg1="${Chapter6error}" arg2="0" trim="true"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+    
    <!-- ========================================================================
       Target: javacc clean and create
    ========================================================================= -->
@@ -471,10 +545,6 @@
                     name="TokenMgrError.java"/>
                 <include
                     name="ParseException.java"/>
-                <!--
-                <include
-                    name="Token.java"/>
-                -->
             </fileset>
         </delete>
     </target>
