@@ -515,14 +515,6 @@ void PrimitiveType():
 void NumericType():
 {}
 {
-    IntegralType()
-    |
-    FloatingPointType()
-}
-
-void IntegralType():
-{}
-{
     <BYTE>
     |
     <SHORT> 
@@ -532,11 +524,7 @@ void IntegralType():
     <LONG> 
     |
     <CHAR>
-}
-
-void FloatingPointType():
-{}
-{
+    |
     <FLOAT>
     |
     <DOUBLE>
@@ -558,19 +546,7 @@ void ReferenceType():
 void ClassOrInterfaceType():
 {}
 {
-    ClassType()
-}
-
-void ClassType():
-{}
-{
     (Annotation())* <IDENTIFIER> [ LOOKAHEAD(6) TypeArguments() ] ( LOOKAHEAD(2) <DOT> (Annotation() )* <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
-}
-
-void InterfaceType():
-{}
-{
-    ClassType()
 }
 
 void TypeVariable():
@@ -614,7 +590,7 @@ void TypeBound():
 void AdditionalBound():
 {}
 {
-   <BIT_AND> InterfaceType()
+   <BIT_AND> ClassOrInterfaceType()
 }
 
 void TypeArguments():
@@ -745,21 +721,9 @@ void NormalClassDeclaration():
 void ClassModifier():
 {}
 {
-    Annotation() 
-    |
-    <PUBLIC> 
-    |
-    <PROTECTED> 
-    |
-    <PRIVATE>
-    |
-    <ABSTRACT> 
-    |
-    <STATIC> 
+    InterfaceModifier()
     |
     <FINAL> 
-    |
-    <STRICTFP>
 }
 
 void TypeParameters():
@@ -777,7 +741,7 @@ void TypeParameterList():
 void Superclass():
 {}
 {
-    <EXTENDS> ClassType()
+    <EXTENDS> ClassOrInterfaceType()
 }
 
 void Superinterfaces():
@@ -789,7 +753,7 @@ void Superinterfaces():
 void InterfaceTypeList():
 {}
 {
-    InterfaceType() (<COMMA> InterfaceType())*
+    ClassOrInterfaceType() (<COMMA> ClassOrInterfaceType())*
 }
 
 void ClassBody():
@@ -953,25 +917,11 @@ void MethodDeclaration():
 void MethodModifier():
 {}
 {
-    Annotation()
-    |
-    <PUBLIC> 
-    |
-    <PROTECTED> 
-    |
-    <PRIVATE>
-    |
-    <ABSTRACT> 
-    |
-    <STATIC> 
-    |
-    <FINAL> 
+    ClassModifier()
     |
     <SYNCHRONIZED> 
     |
     <NATIVE> 
-    |
-    <STRICTFP>
 }
 
 void MethodHeader():
@@ -1062,7 +1012,7 @@ void ExceptionType():
 {}
 {
     LOOKAHEAD(3)
-    ClassType()
+    ClassOrInterfaceType()
     |
     LOOKAHEAD(3)
     TypeVariable()
@@ -1502,7 +1452,7 @@ void StatementWithoutTrailingSubstatement():
 {
     Block()
     |
-    EmptyStatement()
+    <SEMICOLON>
     |
     ExpressionStatement()
     |
@@ -1523,12 +1473,6 @@ void StatementWithoutTrailingSubstatement():
     ThrowStatement()
     |
     TryStatement()
-}
-
-void EmptyStatement():
-{}
-{
-    <SEMICOLON>
 }
 
 void LabeledStatement():
@@ -1625,7 +1569,7 @@ void SwitchLabels():
 void SwitchLabel():
 {}
 {
-    <CASE> ( LOOKAHEAD(2) ConstantExpression() | <IDENTIFIER> ) <COLON>
+    <CASE> ( LOOKAHEAD(2) Expression() | <IDENTIFIER> ) <COLON>
     <_DEFAULT> <COLON>
 }
 
@@ -1754,13 +1698,7 @@ void TryStatement():
 void Catches():
 {}
 {
-    (CatchClause())+
-}
-
-void CatchClause():
-{}
-{
-    <CATCH> <LPAREN> CatchFormalParameter() <RPAREN> Block()
+    (<CATCH> <LPAREN> CatchFormalParameter() <RPAREN> Block())+
 }
 
 void CatchFormalParameter():
@@ -1772,7 +1710,7 @@ void CatchFormalParameter():
 void CatchType():
 {}
 {
-    UnannClassType() (<BIT_OR> ClassType())*
+    UnannClassType() (<BIT_OR> ClassOrInterfaceType())*
 }
 
 void Finally():
@@ -1810,6 +1748,7 @@ void Resource():
 Productions() from §15 (Expressions())
 */
 
+// TODO: Left recursion detected: "Primary... --> PrimaryNoNewArray... --> MethodInvocation... --> Primary..."
 void Primary():
 {}
 {
@@ -1820,18 +1759,20 @@ void Primary():
     ArrayCreationExpression()
 }
 
+// TODO: Left recursion, see Primary() above.
 void PrimaryNoNewArray():
 {}
 {
     LOOKAHEAD(MethodInvocation())
     MethodInvocation() (LOOKAHEAD(2) <DOT> MethodInvocation())*
     |
-    LOOKAHEAD(ArrayAccess())
+    LOOKAHEAD(ArrayAccess())S
     ArrayAccess()
     |
     LOOKAHEAD(FieldAccess())
     FieldAccess()
     |
+    // TODO: Left recursion, see Primary() above.
     LOOKAHEAD(MethodReference())
     MethodReference()
     |
@@ -1888,15 +1829,30 @@ void ArrayAccess():
 void MethodInvocation():
 {}
 {
-    LOOKAHEAD(6)
-    MethodName() <LPAREN> [ArgumentList()] <RPAREN> 
+    /*
+    MethodInvocation:
+    MethodName ( [ArgumentList] )
+    TypeName . [TypeArguments] Identifier ( [ArgumentList] )
+    ExpressionName . [TypeArguments] Identifier ( [ArgumentList] )
+    Primary . [TypeArguments] Identifier ( [ArgumentList] )
+    super . [TypeArguments] Identifier ( [ArgumentList] )
+    TypeName . super . [TypeArguments] Identifier ( [ArgumentList] )    
+    
+    TODO: Primary causes left recursion.
+    */
+    
+    LOOKAHEAD(3)
+    MethodName() <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
     |
+    // combined the 2 typenames
     LOOKAHEAD(3)
     TypeName() <DOT> [<SUPER> <DOT>] [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
     |
     LOOKAHEAD(3)
     ExpressionName() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
     |
+    //Primary() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>
+    //|
     <SUPER> [<DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER>] <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
 }
 
@@ -1921,7 +1877,7 @@ void MethodReference():
     TypeName() <DOT> <SUPER> <DOUBLECOLON> [TypeArguments()] <IDENTIFIER>
     |
     LOOKAHEAD(3)
-    ClassType() <DOUBLECOLON> [TypeArguments()] <NEW>
+    ClassOrInterfaceType() <DOUBLECOLON> [TypeArguments()] <NEW>
     |
     LOOKAHEAD(3)
     ArrayType() <DOUBLECOLON> <NEW>
@@ -1955,12 +1911,6 @@ void DimExpr():
 {}
 {
     (Annotation())* <LBRACKET> Expression() <RBRACKET>
-}
-
-void ConstantExpression():
-{}
-{
-    Expression()
 }
 
 void Expression():
@@ -2155,7 +2105,7 @@ void UnaryExpression():
     |
     PreDecrementExpression()
     |
-     <PLUS> UnaryExpression()
+    <PLUS> UnaryExpression()
     |
     <MINUS> UnaryExpression()
     |
