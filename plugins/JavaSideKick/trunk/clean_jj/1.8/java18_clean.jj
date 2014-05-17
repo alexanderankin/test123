@@ -1763,16 +1763,21 @@ void Primary():
 void PrimaryNoNewArray():
 {}
 {
-    LOOKAHEAD(MethodInvocation())
-    MethodInvocation() (LOOKAHEAD(2) <DOT> MethodInvocation())*
+    LOOKAHEAD(3)
+    PrimaryNoMethodInvocation()
     |
-    LOOKAHEAD(ArrayAccess())S
+    MethodInvocation() (LOOKAHEAD(2) <DOT> MethodInvocation())*
+}
+
+void PrimaryNoMethodInvocation() :
+{}
+{
+    LOOKAHEAD(ArrayAccess())
     ArrayAccess()
     |
     LOOKAHEAD(FieldAccess())
     FieldAccess()
     |
-    // TODO: Left recursion, see Primary() above.
     LOOKAHEAD(MethodReference())
     MethodReference()
     |
@@ -1840,20 +1845,23 @@ void MethodInvocation():
     
     TODO: Primary causes left recursion.
     */
-    
-    LOOKAHEAD(3)
-    MethodName() <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
-    |
-    // combined the 2 typenames
-    LOOKAHEAD(3)
-    TypeName() <DOT> [<SUPER> <DOT>] [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
-    |
-    LOOKAHEAD(3)
-    ExpressionName() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
-    |
-    //Primary() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>
-    //|
-    <SUPER> [<DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER>] <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
+    (
+        LOOKAHEAD(3)
+        MethodName() <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
+        |
+        // combined the 2 typenames
+        LOOKAHEAD(3)
+        TypeName() <DOT> [<SUPER> <DOT>] [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> 
+        |
+        LOOKAHEAD(3)
+        ExpressionName() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>  
+        |
+        LOOKAHEAD(3)
+        PrimaryNoMethodInvocation() <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>
+        |
+        <SUPER> [<DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER>] <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN>
+    )
+    ( LOOKAHEAD(2) <DOT> [LOOKAHEAD(2) TypeArguments()] <IDENTIFIER> <LPAREN> [LOOKAHEAD(2) ArgumentList()] <RPAREN> )*
 }
 
 void ArgumentList():
