@@ -9,4 +9,14 @@ copy the jEdit folder on it to your Applications folder
 
 <p>Simply run the jEdit application in the jEdit folder, and code away...</p>
 
+<p>
+<b>Beware:</b> From 10.8 on your Mac will tell you that jEdit is damaged and you should move it to the trash.
+This is not true though. This is a new security feature called Gatekeeper that only allows
+apps from App Store or signed by a certificate issued by Apple for 100 USD per year.
+To allow jEdit to run, either lower your security settings in "System Preferences -> Security"
+and allow all apps to run, or Ctrl+click or right-click jEdit.app and choose "Open".
+As soon as jEdit was run once, Mac OS forgets about its downloaded state and allows it
+to run normally.
+</p>
+
 <!-- end mac.platinstall.text -->
