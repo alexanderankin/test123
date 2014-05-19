@@ -1,0 +1,1 @@
+2.8.0.1 - removed xml-apis.jar from package.

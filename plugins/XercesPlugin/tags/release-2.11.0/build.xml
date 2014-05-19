@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!--
+Use this ant script to build the Jedit ant plugin.
+This is based on the build-support plugin-build.xml file for building a jEdit plugin.
+-->
+
+<project name="XercesPlugin" default="install" basedir=".">
+
+  <property file="../build.properties"/>
+  <property file="build.properties"/>
+  
+  <property name="jar.file" value="XercesPlugin.jar"/>
+  
+  <target name="unzip" >
+    <unzip src="Xerces-J-bin.2.11.0.zip" dest="." />
+  </target>
+
+  <property name="UNZIPDIR" value="xerces-2_11_0" />
+
+  <target name="compile">
+     <javac srcdir="xerces" 
+        classpath="${jedit.install.dir}/jedit.jar"/>
+  </target>
+  
+  
+  <target name="jar" depends="unzip, compile">
+   <jar jarfile="${install.dir}/${jar.file}">
+     <fileset dir=".">
+        <include name="*.xml"/>
+        <include name="*.props"/>
+        <include name="xerces/*.*"/>
+     </fileset>
+     <fileset dir="${UNZIPDIR}">
+        <include name="docs/**/**"/>
+     </fileset>
+   </jar>
+  </target>
+	
+  <target name="install" depends="jar" >
+    <copy todir="${install.dir}">
+       <fileset dir="${UNZIPDIR}">
+         <include name="resolver.jar" />
+         <include name="xercesImpl.jar" />
+       </fileset>
+    </copy>
+    <delete failonerror="false" file="${install.dir}/xml-apis.jar" />
+  </target>
+  
+  <target name="clean">
+  </target>
+  
+  <target name="dist" depends="install">
+  </target>
+  
+</project>
