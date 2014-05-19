@@ -13,10 +13,10 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
   <property name="jar.file" value="XercesPlugin.jar"/>
   
   <target name="unzip" >
-    <unzip src="Xerces-J-bin.2.9.1.zip" dest="." />
+    <unzip src="Xerces-J-bin.2.11.0.zip" dest="." />
   </target>
 
-  <property name="UNZIPDIR" value="xerces-2_9_1" />
+  <property name="UNZIPDIR" value="xerces-2_11_0" />
 
   <target name="compile">
      <javac srcdir="xerces" 
