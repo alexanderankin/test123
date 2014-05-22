@@ -163,9 +163,11 @@ paths can be bookmarked just as easily as local paths.
 
 
 <listitem><para>
-FTP and SFTP connections are kept open for 2 minutes before being closed.
-Performing another operation while a connection is still open resets the 2
-minute timer. This improves performance by reducing network traffic.
+FTP and SFTP connections are kept open for 1 minute (by default) before being
+closed. This timeout value is configurable from the FTP plugin options. 
+Performing another operation while a connection is still open resets the
+timer. The timeout value can impact performance by reducing or increasing
+network traffic.
 </para> </listitem>
 
 
