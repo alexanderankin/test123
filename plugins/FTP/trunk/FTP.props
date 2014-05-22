@@ -3,7 +3,7 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov (Former), Nicholas O'Leary (Former), Vadim Voituk (former), Alan Ezust
-plugin.ftp.FtpPlugin.version=1.1
+plugin.ftp.FtpPlugin.version=1.1.1
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.05.99.00
@@ -33,6 +33,7 @@ options.ftp.useKeyFile=Use Key File for encrypting passwords
 options.ftp.useKeyFile.tooltip=Saves an AES256 hash of the master password here
 options.sftp.enableCompression=Enable compression over SFTP
 options.ftp.disableWeakCrypto=Disable (don't fallback on) weak encryption when saving passwords
+options.ftp.timeOutMinutes=Connection Timeout in minutes
 options.sftp.MaxAuthTries=SFTP MaxAuthTries
 
 # Actions
