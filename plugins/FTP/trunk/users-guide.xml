@@ -237,6 +237,14 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+ 
+     <listitem><para><emphasis role="bold">Version 1.1.1</emphasis>
+      by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. 
+      <itemizedlist>
+       <listitem><para> Request #336 FTP plugin: configure connection timeout
+       option </para></listitem>
+      </itemizedlist></para></listitem>
+ 
      <listitem><para><emphasis role="bold">Version 1.1</emphasis>
       by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. </para>
     <itemizedlist>

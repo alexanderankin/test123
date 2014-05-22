@@ -80,6 +80,11 @@ public class ConnectionManager
 	public static JSch client = null;
 	// }}}
 
+	
+	public static void setConnectionTimeout(int minutes) {
+		connectionTimeout = 60000 * minutes;
+	}
+	
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
@@ -604,6 +609,8 @@ public class ConnectionManager
 		}
 		else
 		{
+			int minutes = jEdit.getIntegerProperty("ftp.timeOutMinutes", 1);
+			connectionTimeout = 60000 * minutes;
 			String passwordDirectory = MiscUtilities.constructPath(settingsDirectory, "cache");
 			passwordFile = new File(MiscUtilities.constructPath(passwordDirectory,"password-cache"));
 			passwordFile.getParentFile().mkdirs();
