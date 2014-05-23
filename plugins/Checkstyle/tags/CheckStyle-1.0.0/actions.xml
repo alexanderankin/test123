@@ -1,0 +1,13 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="checkstyle-check-current-buffer">
+		<CODE>
+			com.kpouer.jedit.checkstyle.CheckstylePlugin.checkBuffer(buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="checkstyle-check-all-open-buffers">
+		<CODE>
+			com.kpouer.jedit.checkstyle.CheckstylePlugin.checkAllOpenBuffers();
+		</CODE>
+	</ACTION>
+</ACTIONS>
