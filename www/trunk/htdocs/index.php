@@ -28,7 +28,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 28 July 2013 | <?php /* * /?>Latest Version: <a class="header_text" href="CHANGES51.txt">5.1pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES51.txt">5.1.0</a></p>
+      <p class="header_text">Last Site Update: 27 May 2014 | <?php /* */?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES51.txt">5.1.0</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
@@ -160,7 +160,6 @@
                    width="100" height="26" border="0" alt="JProfiler Logo"></A>
               </td>
             </tr>
-            
             <tr  bgcolor="#BBBBBB">
               <td colspan="2"><span class="menu_headings">Donate</span></td>
             </tr>
