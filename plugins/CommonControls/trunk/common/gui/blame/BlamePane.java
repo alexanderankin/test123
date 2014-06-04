@@ -145,7 +145,7 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
         if ( old_blame != null ) {
             textArea.removeLeftOfScrollBar( ( JComponent ) old_blame );
             Object old_closer = buffer.getProperty( "_old_closer_" );
-            textArea.removeTopComponent( ( JComponent ) old_closer );
+            textArea.remove( ( JComponent ) old_closer );
         }
 
         // add column of revisions and author names to the right
@@ -155,7 +155,7 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
         // add a "close" button at the top of the text area to be
         // able to remove the blame display
         JComponent closer = getCloser( textArea.getView() );
-        textArea.addTopComponent( closer );
+        textArea.addTopRightComponent( closer );
 
         // caret listener moves the highlight in the text area to
         // correspond with the highlight in the blame pane
