@@ -5,6 +5,7 @@ plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.docs=docs/index.html
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.0=jdk 1.6.0
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.1=jedit 05.02.01.00
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate=defer
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.description=Provide a ruler above the text area.
 
 # Action labels
 columnruler.toggle-vis.label=Column Ruler
