@@ -2,8 +2,8 @@ plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.name=Column Ruler
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.author=Brad Mace
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.version=1.0.2
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.docs=docs/index.html
-plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.0=jdk 1.5.0
-plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.1=jedit 04.03.07.00
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.0=jdk 1.6.0
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.1=jedit 05.02.01.00
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate=defer
 
 # Action labels
