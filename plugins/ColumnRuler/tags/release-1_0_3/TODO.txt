@@ -1,7 +1,0 @@
-	- Make font selectable
-	- Wrap guide looks solid after scrolling
-	- adjust ruler alignment when caret is on wrapped portion of line
-	- Wrap at edge of screen
-	- draw guides in appropriate parts of wrapped lines
-	- adjust caretmark for overwrite mode
-	- Hide caret when guide is on
