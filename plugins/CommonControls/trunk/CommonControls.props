@@ -11,7 +11,7 @@ plugin.CommonControlsPlugin.description=Shared GUI Code
 plugin.CommonControlsPlugin.longdescription=description.html
 plugin.CommonControlsPlugin.usePluginHome=true
 
-plugin.CommonControlsPlugin.depend.0=jedit 05.00.99.00
+plugin.CommonControlsPlugin.depend.0=jedit 05.02.01.00
 plugin.CommonControlsPlugin.depend.1=jdk 1.6.0
 
 common.gui.error=Error
