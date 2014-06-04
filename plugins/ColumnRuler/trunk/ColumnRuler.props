@@ -1,6 +1,6 @@
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.name=Column Ruler
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.author=Brad Mace
-plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.version=1.0.2
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.version=1.0.3
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.docs=docs/index.html
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.0=jdk 1.6.0
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.1=jedit 05.02.01.00
