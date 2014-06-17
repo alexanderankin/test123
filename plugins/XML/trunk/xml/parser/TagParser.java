@@ -55,8 +55,7 @@ public class TagParser
 				int nextQuote = indexOf(text, ch,i+1);
 				if(nextQuote == -1)
 				{
-					System.err.println("quote is not closed !");
-					return null;
+					return null; // quote is not closed
 				}
 				else
 				{
@@ -253,8 +252,7 @@ public class TagParser
 					int nextQuote = indexOf(text,ch,i+1);
 					if(nextQuote == -1)
 					{
-						System.err.println("quote is not closed !");
-						return false;
+						return false; // quote is not closed
 					}
 					else
 					{
@@ -460,8 +458,7 @@ public class TagParser
 					int nextQuote = indexOf(text,ch,i+1);
 					if(nextQuote == -1)
 					{
-						System.err.println("quote is not closed !");
-						break;
+						break; // quote is not closed
 					}
 					else
 					{

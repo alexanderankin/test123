@@ -247,8 +247,7 @@ public class TagParser
 					int nextQuote = text.indexOf(ch,i+1);
 					if(nextQuote == -1)
 					{
-						System.err.println("quote is not closed !");
-						return false;
+						return false; // quote is not closed
 					}
 					else
 					{
