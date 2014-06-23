@@ -39,6 +39,9 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.internal.wc2.SvnWcGeneration;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
+import org.tmatesoft.svn.core.internal.wc17.db.ISVNWCDb;
+import org.tmatesoft.svn.core.wc2.SvnCheckout;
+import org.tmatesoft.svn.core.wc2.SvnTarget;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -54,20 +57,20 @@ import org.gjt.sp.jedit.jEdit;
 
 public class Checkout {
 
-    @SuppressWarnings("deprecation")    // SVNURL.parseURIEncoded
+    @SuppressWarnings( "deprecation" )
+    // SVNURL.parseURIEncoded
     public long doCheckout( CheckoutData cd ) throws CommandInitializationException, SVNException {
         if ( cd == null ) {
             throw new CommandInitializationException( "CheckoutData is null." );
         }
 
-
         // validate data values
         if ( cd.getPaths() == null || cd.getURL() == null ) {
-            return -1;      // nothing to do
+            return -1;            // nothing to do
         }
         File localPath = new File( cd.getPaths().get( 0 ) );
         if ( localPath == null ) {
-            return -1;      // nothing to do
+            return -1;            // nothing to do
         }
         if ( cd.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
@@ -84,33 +87,59 @@ public class Checkout {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  cd.getUsername(), cd.getDecryptedPassword() ) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( SVNPlugin.getSvnStorageDir(), cd.getUsername(), cd.getDecryptedPassword() ) );
 
         // get a client for checkout
         SVNUpdateClient client = clientManager.getUpdateClient();
+
+        // set the working copy format for the checked out files
         int wc_format = cd.getWorkingCopyFormat();
-        if (wc_format == -1) {
-            wc_format = jEdit.getIntegerProperty("ise.plugin.svn.defaultWCVersion");
+        if ( wc_format == -1 ) {
+            wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion" );
         }
-        client.getOperationsFactory().setPrimaryWcGeneration(wc_format == SVNAdminAreaFactory.WC_FORMAT_16 ? SvnWcGeneration.V16 : SvnWcGeneration.V17);
- 
+
+        // NOTE: better code from svnkit folks:
+        /*
+            final SvnCheckout checkout = svnOperationFactory.createCheckout();
+            checkout.setSource(SvnTarget.fromURL(url));
+            checkout.setSingleTarget(SvnTarget.fromFile(workingCopyDirectory));
+            checkout.setTargetWorkingCopyFormat(targetWorkingCopyFormat);
+            checkout.run();
+            
+            Possible values of targetWorkingCopyFormat are
+            
+            SVNAdminArea14Factory.WC_FORMAT
+            SVNAdminArea15Factory.WC_FORMAT
+            SVNAdminArea16Factory.WC_FORMAT
+            ISVNWCDb.WC_FORMAT_17
+            ISVNWCDb.WC_FORMAT_18            
+        */
+
+        final SvnCheckout checkout = client.getOperationsFactory().createCheckout();
+        checkout.setSource(SvnTarget.fromURL(SVNURL.parseURIDecoded( cd.getURL() )));
+        checkout.setSingleTarget(SvnTarget.fromFile(localPath));
+        checkout.setTargetWorkingCopyFormat(wc_format);
+        
         // set an event handler so that messages go to the data streams for display
-        client.setEventHandler( new SVNCommandEventProcessor( out, cd.getErr(), false ) );
+        client.getOperationsFactory().setEventHandler( new SVNCommandEventProcessor( out, cd.getErr(), false ) );
 
-
-        long revision = client.doCheckout( SVNURL.parseURIDecoded( cd.getURL() ), localPath, SVNRevision.HEAD, SVNRevision.HEAD, SVNDepth.INFINITY, false );
+        Long revision = checkout.run();
+        
 
         out.flush();
         out.close();
         clientManager.dispose();
 
         // possibly change working copy format
+        // TODO: Is this the right place to do this?
+        /*
         int current_wc_format = getWCVersion( localPath );
         int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
         if ( current_wc_format != default_wc_format ) {
             SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
             wc_client.doSetWCFormat( localPath, default_wc_format );
         }
+        */
         return revision;
     }
 
@@ -119,8 +148,7 @@ public class Checkout {
             SVNStatusClient st_client = SVNClientManager.newInstance().getStatusClient();
             SVNStatus status = st_client.doStatus( path, false );
             return status.getWorkingCopyFormat();
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             return SVNAdminAreaFactory.WC_FORMAT_15;
         }
     }

@@ -94,7 +94,20 @@ public class RepositoryComboBox extends JComboBox {
         while ( url != null );
 
         // sort and fill the combo box model
-        Collections.sort( names );
+        Collections.sort( names, new Comparator<String>() {
+            public int compare(String a, String b) {
+                if (a == null && b == null) {
+                    return 0;   
+                }
+                if (a == null && b != null) {
+                    return 1;   
+                }
+                if (a != null && b == null) {
+                    return -1;   
+                }
+                return a.compareToIgnoreCase(b);   
+            }
+        });
         dropdownModel = new DefaultComboBoxModel( ( Vector ) names );
 
         // add and choose the 'select' choice
