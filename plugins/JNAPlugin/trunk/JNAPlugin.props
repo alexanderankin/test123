@@ -7,12 +7,12 @@ plugin.jnaplugin.JNAPlugin.docs=docs/JNAPlugin.html
 plugin.jnaplugin.JNAPlugin.longdescription=description.html
 plugin.jnaplugin.JNAPlugin.name=JNAPlugin
 plugin.jnaplugin.JNAPlugin.usePluginHome=false
-plugin.jnaplugin.JNAPlugin.version=3.2.4
+plugin.jnaplugin.JNAPlugin.version=3.5.2
 
 # }}} Basic Plugin Information
 
 # Dependencies {{{
-plugin.jnaplugin.JNAPlugin.depend.0=jedit 04.03.99.00
-plugin.jnaplugin.JNAPlugin.depend.1=jdk 1.5
+plugin.jnaplugin.JNAPlugin.depend.0=jedit 05.02.01.00
+plugin.jnaplugin.JNAPlugin.depend.1=jdk 1.6.0
 plugin.jnaplugin.JNAPlugin.jars=jna.jar
 # }}} Dependencies
