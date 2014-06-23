@@ -73,7 +73,7 @@ public class SubversionOptions implements OptionPane {
         JLabel maxLogsLabel = new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) );
 
         JLabel fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7"} );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7", "1.8"} );
         fileformat.setEditable( false );
         String wc_item;
         int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_16 );
@@ -89,6 +89,9 @@ public class SubversionOptions implements OptionPane {
                 break;
             case ISVNWCDb.WC_FORMAT_17:
                 wc_item = "1.7";
+                break;                
+            case ISVNWCDb.WC_FORMAT_18:
+                wc_item = "1.8";
                 break;                
             case SVNAdminAreaFactory.WC_FORMAT_16:
             default:
@@ -127,6 +130,9 @@ public class SubversionOptions implements OptionPane {
         }
         else if ( new_wc_format.equals("1.7")) {
             wc_format = ISVNWCDb.WC_FORMAT_17;
+        }
+        else if ( new_wc_format.equals("1.8")) {
+            wc_format = ISVNWCDb.WC_FORMAT_18;
         }
         else {
             wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
