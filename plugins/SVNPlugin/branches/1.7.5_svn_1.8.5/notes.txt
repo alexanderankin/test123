@@ -149,3 +149,21 @@ Log from PV looks broke too, could only get 1 entry from header.jsp - not a bug.
 -- currently can only do against two revisions of the same file.  This is done in RemoteDiffAction, need to check if this class can be combined with DiffAction so all diff code is in one place.
 ++ 22 Oct 2008, apparently I don't remember what all I've already done.  I looked into the code for this, and found it has worked since January.  Just pick 2 files in the browser to diff.
 
+----------------------------------------------------------------------------
+
+June 2014, updating for svnkit 1.8.5
+
+At minimum, ensure these work:
+
+checkout -- done
+status -- done
+update -- works as is
+commit -- works as is
+info -- works as is
+log -- works as is
+revert -- works as is
+diff -- works against base, doesn't work against specific revision
+add -- works as is
+delete -- works as is
+blame -- works with new jEdit textarea layout
+

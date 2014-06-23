@@ -115,11 +115,14 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          * It is  SVNStatusType  who  contains  information on the state of  an
          * item.
          */
-        SVNStatusType contentsStatus = status.getContentsStatus();
+        SVNStatusType statusType = status.getNodeStatus();
+        if (statusType == null) {
+            statusType = SVNStatusType.STATUS_NONE;   
+        }
         String pathChangeType = " ";
 
         boolean isAddedWithHistory = status.isCopied();
-        if ( contentsStatus == SVNStatusType.STATUS_MODIFIED ) {
+        if ( statusType.equals(SVNStatusType.STATUS_MODIFIED) ) {
             /*
              * The contents of the file have been Modified.
              */
@@ -129,7 +132,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             modifiedFiles.add( status );
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_CONFLICTED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_CONFLICTED) ) {
             /*
              * The  file  item  is  in a state of  Conflict. That  is,  changes
              * received from the server during an  update  overlap  with  local
@@ -141,7 +144,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             conflictedFiles.add( status );
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_DELETED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_DELETED) ) {
             /*
              * The file, directory or symbolic link item has been scheduled for
              * Deletion from the repository.
@@ -152,7 +155,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             deletedFiles.add( status );
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_ADDED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_ADDED) ) {
             /*
              * The file, directory or symbolic link item has been scheduled for
              * Addition to the repository.
@@ -163,7 +166,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             addedFiles.add( status );
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_UNVERSIONED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_UNVERSIONED) ) {
             /*
              * The file, directory or symbolic link item is not  under  version
              * control.
@@ -174,13 +177,13 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             unversionedFiles.add( status );
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_EXTERNAL ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_EXTERNAL) ) {
             /*
              * The item is unversioned, but is used by an eXternals definition.
              */
             pathChangeType = "X";
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_IGNORED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_IGNORED) ) {
             /*
              * The file, directory or symbolic link item is not  under  version
              * control, and is configured to be Ignored during 'add',  'import'
@@ -188,8 +191,8 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              */
             pathChangeType = "I";
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_MISSING
-                || contentsStatus == SVNStatusType.STATUS_INCOMPLETE ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_MISSING)
+                || statusType.equals(SVNStatusType.STATUS_INCOMPLETE) ) {
             /*
              * The file, directory or  symbolic  link  item  is  under  version
              * control but is missing or somehow incomplete. The  item  can  be
@@ -205,7 +208,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             missingFiles.add( status );
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_OBSTRUCTED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_OBSTRUCTED) ) {
             /*
              * The file, directory or symbolic link item is in  the  repository
              * as one kind of object, but what's actually in the user's working
@@ -216,7 +219,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              */
             pathChangeType = "~";
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_REPLACED ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_REPLACED) ) {
             /*
              * The file, directory or symbolic link item was  Replaced  in  the
              * user's working copy; that is, the item was deleted,  and  a  new
@@ -226,8 +229,8 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              */
             pathChangeType = "R";
         }
-        else if ( contentsStatus == SVNStatusType.STATUS_NONE
-                || contentsStatus == SVNStatusType.STATUS_NORMAL ) {
+        else if ( statusType.equals(SVNStatusType.STATUS_NONE)
+                || statusType.equals(SVNStatusType.STATUS_NORMAL) ) {
             /*
              * The item was not modified (normal).
              */
@@ -245,8 +248,8 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          */
         String remoteChangeType = " ";
 
-        if ( status.getRemotePropertiesStatus() != SVNStatusType.STATUS_NONE ||
-                status.getRemoteContentsStatus() != SVNStatusType.STATUS_NONE ) {
+        if ( !status.getRemotePropertiesStatus().equals(SVNStatusType.STATUS_NONE) ||
+                !status.getRemoteContentsStatus().equals(SVNStatusType.STATUS_NONE) ) {
             /*
              * the local item is out of date
              */
@@ -261,11 +264,14 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          * contains information on the properties state.
          */
         SVNStatusType propertiesStatus = status.getPropertiesStatus();
+        if (propertiesStatus == null) {
+            propertiesStatus = SVNStatusType.STATUS_NONE;   
+        }
         /*
          * Default - properties are normal (unmodified).
          */
         String propertiesChangeType = " ";
-        if ( propertiesStatus == SVNStatusType.STATUS_MODIFIED ) {
+        if ( propertiesStatus.equals(SVNStatusType.STATUS_MODIFIED) ) {
             /*
              * Properties were modified.
              */
@@ -275,7 +281,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
             }
             modifiedFiles.add( status );
         }
-        else if ( propertiesStatus == SVNStatusType.STATUS_CONFLICTED ) {
+        else if ( propertiesStatus.equals(SVNStatusType.STATUS_CONFLICTED) ) {
             /*
              * Properties are in conflict with the repository.
              */
@@ -411,7 +417,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          * with the flag remote set to true - that is for  a  local  status  it
          * won't be dispatched.
          */
-        if ( action == SVNEventAction.STATUS_COMPLETED ) {
+        if ( SVNEventAction.STATUS_COMPLETED.equals(action) ) {
             System.out.println( "Status against revision:  " + event.getRevision() );
         }
 

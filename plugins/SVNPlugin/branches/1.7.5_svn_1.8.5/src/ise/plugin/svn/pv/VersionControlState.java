@@ -105,7 +105,7 @@ public class VersionControlState implements VersionControlService {
         if ( status == null ) {
             return NONE;
         }
-        SVNStatusType type = status.getContentsStatus();
+        SVNStatusType type = status.getNodeStatus();
         if ( SVNStatusType.STATUS_ADDED.equals( type ) ) {
             return LOCAL_ADD;
         } else if ( SVNStatusType.STATUS_CONFLICTED.equals( type ) ) {
