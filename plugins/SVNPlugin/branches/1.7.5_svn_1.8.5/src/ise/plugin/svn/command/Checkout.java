@@ -31,15 +31,10 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
-import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.internal.wc2.SvnWcGeneration;
-import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
-import org.tmatesoft.svn.core.internal.wc17.db.ISVNWCDb;
 import org.tmatesoft.svn.core.wc2.SvnCheckout;
 import org.tmatesoft.svn.core.wc2.SvnTarget;
 
@@ -49,9 +44,6 @@ import org.tmatesoft.svn.core.SVNURL;
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.SVNPlugin;
 
-import org.tmatesoft.svn.core.wc.SVNStatus;
-import org.tmatesoft.svn.core.wc.SVNStatusClient;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -130,27 +122,7 @@ public class Checkout {
         out.close();
         clientManager.dispose();
 
-        // possibly change working copy format
-        // TODO: Is this the right place to do this?
-        /*
-        int current_wc_format = getWCVersion( localPath );
-        int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
-        if ( current_wc_format != default_wc_format ) {
-            SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
-            wc_client.doSetWCFormat( localPath, default_wc_format );
-        }
-        */
         return revision;
-    }
-
-    private int getWCVersion( File path ) {
-        try {
-            SVNStatusClient st_client = SVNClientManager.newInstance().getStatusClient();
-            SVNStatus status = st_client.doStatus( path, false );
-            return status.getWorkingCopyFormat();
-        } catch ( Exception e ) {
-            return SVNAdminAreaFactory.WC_FORMAT_15;
-        }
     }
 
 }

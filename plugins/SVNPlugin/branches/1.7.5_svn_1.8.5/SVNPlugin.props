@@ -6,19 +6,19 @@
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
 plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
-plugin.ise.plugin.svn.SVNPlugin.version=1.7.9
+plugin.ise.plugin.svn.SVNPlugin.version=1.8.6
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
 
 # docs
 plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 
 # dependencies
-plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.6.0
+plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.7.0
 plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 05.02.01.00
-plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.4.4
+plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.5.2
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.3.0
-plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.1
+plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.2
 plugin.ise.plugin.svn.SVNPlugin.depend.6=plugin jnaplugin.JNAPlugin 3.5.2
 plugin.ise.plugin.svn.SVNPlugin.jars=antlr-runtime-3.4.jar jsch.agentproxy.connector-factory-0.0.7.jar jsch.agentproxy.core-0.0.7.jar jsch.agentproxy.pageant-0.0.7.jar jsch.agentproxy.sshagent-0.0.7.jar jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar jsch.agentproxy.usocket-jna-0.0.7.jar jsch.agentproxy.usocket-nc-0.0.7.jar platform-3.5.2.jar sequence-library-1.0.2.jar sqljet-1.1.10.jar svnkit-1.8.6.jar svnkit-cli-1.8.6.jar trilead-ssh2-1.0.0-build217.jar 
 
@@ -648,5 +648,5 @@ ips.Unable_to_stop_conversion_of_working_file_format.=Unable to stop conversion 
 ips.Completed_converting_working_copy_format_to_=Completed converting working copy format to 
 ips.Converting=Converting
 ips.Caution!_It_will_not_be_possible_to_convert_to_an_older_working_copy_format.\n\nConvert_anyway?\n\n=Caution! It will not be possible to convert to an older working copy format.\n\nConvert anyway?\n\n
-ips.Converting_to_1.7_working_format=Converting to 1.7 working format
+ips.Converting_to_1.7_working_format=Upgrading working file format
 ips.Automatically_import_added_files_and_remove_deleted_files_from_ProjectViewer=Automatically import added files and remove deleted files from ProjectViewer
