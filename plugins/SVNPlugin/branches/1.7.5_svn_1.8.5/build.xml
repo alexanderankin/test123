@@ -24,7 +24,7 @@
     <mkdir dir="${src.dir}"/>
     
     <!-- java source and target version for compile -->
-    <property name="target" value="1.6"/>
+    <property name="target" value="1.7"/>
 
     <!-- library directory, location for third party jars -->
     <property name="lib.dir" location="lib"/>
