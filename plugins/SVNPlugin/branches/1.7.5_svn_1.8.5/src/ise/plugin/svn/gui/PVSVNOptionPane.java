@@ -300,22 +300,25 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     }
 
     private int stringToWC( String wc ) {
-        switch ( wc ) {
-            case "1.3":
-                return SVNAdminAreaFactory.WC_FORMAT_13;
-            case "1.4":
-                return SVNAdminAreaFactory.WC_FORMAT_14;
-            case "1.5":
-                return SVNAdminAreaFactory.WC_FORMAT_15;
-            case "1.6":
-                return SVNAdminAreaFactory.WC_FORMAT_16;
-            case "1.7":
-                return ISVNWCDb.WC_FORMAT_17;
-            case "1.8":
-                return ISVNWCDb.WC_FORMAT_18;
-            default:
-                return -1;
+        if ( wc.equals( "1.3" ) ) {
+            return SVNAdminAreaFactory.WC_FORMAT_13;
         }
+        if ( wc.equals( "1.4" ) ) {
+            return SVNAdminAreaFactory.WC_FORMAT_14;
+        }
+        if ( wc.equals( "1.5" ) ) {
+            return SVNAdminAreaFactory.WC_FORMAT_15;
+        }
+        if ( wc.equals( "1.7" ) ) {
+            return SVNAdminAreaFactory.WC_FORMAT_16;
+        }
+        if ( wc.equals( "1.7" ) ) {
+            return ISVNWCDb.WC_FORMAT_17;
+        }
+        if ( wc.equals( "1.8" ) ) {
+            return ISVNWCDb.WC_FORMAT_18;
+        }
+        return -1;
     }
 
     private String getProjectName() {
