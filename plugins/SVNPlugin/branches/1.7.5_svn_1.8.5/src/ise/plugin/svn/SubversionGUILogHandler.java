@@ -277,6 +277,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             public void actionPerformed( ActionEvent ae ) {
                 textPane.selectAll();
                 textPane.replaceSelection( "" );
+                jEdit.getActiveView().getDockableWindowManager().hideDockableWindow( "subversion" );
             }
         }
         );
