@@ -49,8 +49,7 @@ public abstract class Mark implements Cloneable, Transferable {
 		}
 		TextArea textArea = ruler.getTextArea();
 		int hScroll = textArea.getHorizontalOffset();
-		int xOffset = textArea.getGutter().getWidth();
-		double x = xOffset + hScroll + getPositionOn(ruler) * ruler.getCharWidth();
+		double x = hScroll + getPositionOn(ruler) * ruler.getCharWidth();
 		gfx.setColor(getColor());
 		Rectangle2D mark;
 		if (getSize() % 2 == 0) {

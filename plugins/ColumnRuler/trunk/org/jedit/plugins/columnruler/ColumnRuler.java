@@ -470,8 +470,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	int getColumnAtPoint(Point p) {
 		int hScroll = _textArea.getHorizontalOffset();
-		int xOffset = _textArea.getGutter().getWidth();
-		double x = p.getX() - xOffset - hScroll;
+		double x = p.getX() - hScroll;
 		return (int) Math.round(x / getCharWidth());
 	}
 
