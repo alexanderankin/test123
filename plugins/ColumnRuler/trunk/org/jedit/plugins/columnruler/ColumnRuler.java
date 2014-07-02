@@ -298,7 +298,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public void handleMessage(EBMessage m) {
 		//Log.log(Log.DEBUG,this,m);
 		if (m instanceof ViewUpdate) {
-			ViewUpdate vu = (ViewUpdate) m;
 			fullUpdate();
 		}
 		
@@ -316,16 +315,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	//}}}
 
 	private void fullUpdate() {
-		java.util.List<StaticMark> marks = MarkManager.getInstance().getMarks();
-
 		Color bg = determineBackgroundColor();
 		if ((bg.getRed()+bg.getGreen()+bg.getBlue()) / 3 < 122) {
 			tempMark.setColor(Color.GRAY.brighter());
 		} else {
 			tempMark.setColor(Color.GRAY.darker());
 		}
-		//tempMark.setColor(new Color(255 - bg.getRed(), 255 - bg.getGreen(), 255 - bg.getBlue()));
-
 		repaint();
 	}
 
@@ -655,7 +650,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
-			TextArea textArea = ColumnRuler.this.getTextArea();
 			java.util.List<Mark> marks = new ArrayList<Mark>();
 			marks.addAll(MarkManager.getInstance().getMarks());
 			marks.add(tempMark);
