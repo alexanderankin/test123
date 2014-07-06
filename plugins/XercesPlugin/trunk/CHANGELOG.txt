@@ -1,2 +1,2 @@
-2.11.1 - added back xml-apis.jar from package (see pb #3871).
+2.11.0_1 - added back xml-apis.jar from package (see pb #3871).
 2.8.0.1 - removed xml-apis.jar from package.

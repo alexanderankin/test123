@@ -2,7 +2,7 @@
 plugin.xerces.XercesPlugin.name=XercesPlugin
 plugin.xerces.XercesPlugin.activate=defer
 plugin.xerces.XercesPlugin.author=xerces.apache.org
-plugin.xerces.XercesPlugin.version=2.11.0
+plugin.xerces.XercesPlugin.version=2.11.0_1
 plugin.xerces.XercesPlugin.docs=docs/index.html
 plugin.xerces.XercesPlugin.jars=resolver.jar xercesImpl.jar xml-apis.jar
 plugin.xerces.XercesPlugin.depend.0=jedit 04.05.99.00
