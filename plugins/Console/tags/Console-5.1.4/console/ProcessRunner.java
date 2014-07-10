@@ -161,12 +161,13 @@ public abstract class ProcessRunner
 		}
 		/* cmd, in contrast, can accept multiple arguments */
 		else {
-			if (containsBracketsOrRedirects(arglist))
-				arglist.addAll(args);
-			else { 
+			if (jEdit.getBooleanProperty("console.shell.system.wrapBrackets") && (!containsBracketsOrRedirects(args))) {
 				arglist.add ("(");
 				arglist.addAll(args);
 				arglist.add(")");
+			}
+			else {
+				arglist.addAll(args);
 			}
 		}
 		ProcessBuilder processBuilder = new ProcessBuilder();
@@ -183,11 +184,11 @@ public abstract class ProcessRunner
 	}
 	// }}}
 	
-	static final Pattern charPattern = Pattern.compile("[<>()]");
+	static final Pattern charPattern = Pattern.compile("[<>\\(\\)]");
 	
 	/** @return true if there are parantheses or redirect symbols
 	in the list of arguments */
-	static boolean containsBracketsOrRedirects(StringList arglist) {
+	static boolean containsBracketsOrRedirects(String[] arglist) {
 		
 		for (String a: arglist) {
 			Matcher m = charPattern.matcher(a);

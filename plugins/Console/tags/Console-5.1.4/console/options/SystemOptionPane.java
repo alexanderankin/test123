@@ -16,6 +16,7 @@ public class SystemOptionPane extends AbstractOptionPane
 {
 	private JComboBox prefix;
 	private JCheckBox clearBeforeExecute;
+	private JCheckBox wrapBracketsOnWindows;
 	private JCheckBox rememberCWD;
 	private JCheckBox nodeselect;
 	private JCheckBox mergeError;
@@ -49,6 +50,7 @@ public class SystemOptionPane extends AbstractOptionPane
 		pathDirs = new JTextField(jEdit.getProperty("console.shell.pathdirs"));
 		addComponent(pathLabel, pathDirs);
 
+		
 		pathDirsAppend = new JCheckBox(jEdit.getProperty("options.console.general.pathdirs.append"));
 		pathDirsAppend.setSelected(jEdit.getBooleanProperty("console.shell.pathdirs.append"));
 		addComponent(pathDirsAppend);
@@ -61,6 +63,11 @@ public class SystemOptionPane extends AbstractOptionPane
 		clearBeforeExecute = new JCheckBox(jEdit.getProperty("options.console.system.clearBeforeExecute"));
 		clearBeforeExecute.setSelected(jEdit.getBooleanProperty("console.clearBeforeExecute"));
 		addComponent(clearBeforeExecute);	
+
+		wrapBracketsOnWindows = new JCheckBox(jEdit.getProperty("options.console.shell.system.wrapBrackets"));
+		wrapBracketsOnWindows.setSelected(jEdit.getBooleanProperty("console.shell.system.wrapBrackets"));
+		addComponent(wrapBracketsOnWindows);
+
 		
 		showExitStatus = new JCheckBox();
 		showExitStatus.setText(jEdit.getProperty("options.console.general.showExitStatus"));
@@ -99,6 +106,9 @@ public class SystemOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.rememberCWD", rememberCWD.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
+		jEdit.setBooleanProperty("console.shell.system.wrapBrackets", wrapBracketsOnWindows.isSelected());
+		
+		
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
 		jEdit.setBooleanProperty("console.shell.pathdirs.append", pathDirsAppend.isSelected());
 		jEdit.setProperty("console.shell.prefix", prefix.getSelectedItem().toString());
