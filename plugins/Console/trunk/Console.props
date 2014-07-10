@@ -99,6 +99,8 @@ options.console.general.changedir.nodeselect=On tree node select (PV or FSB), cd
 options.console.general.changedir.pvchange=On Project change, cd to project root dir
 options.console.general.changedir.followTextArea=When TextArea buffer dir changes, cd to it
 
+options.console.shell.system.wrapBrackets=Wrap round brackets around argument lists in Windows shells
+
 # options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
 options.console.general.mergeError=Merge stdout and stderr
 options.console.general.welcome=Show welcome message
