@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -158,10 +161,13 @@ public abstract class ProcessRunner
 		}
 		/* cmd, in contrast, can accept multiple arguments */
 		else {
-			// to make sure the arguments are quoted properly, wrap them in parentheses
-			arglist.add("(");
-			arglist.addAll(args);
-			arglist.add(")");
+			if (containsBracketsOrRedirects(arglist))
+				arglist.addAll(args);
+			else { 
+				arglist.add ("(");
+				arglist.addAll(args);
+				arglist.add(")");
+			}
 		}
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		Map<String, String> processEnv = processBuilder.environment();
@@ -176,7 +182,20 @@ public abstract class ProcessRunner
 		return processBuilder.start();
 	}
 	// }}}
-
+	
+	static final Pattern charPattern = Pattern.compile("[<>()]");
+	
+	/** @return true if there are parantheses or redirect symbols
+	in the list of arguments */
+	static boolean containsBracketsOrRedirects(StringList arglist) {
+		
+		for (String a: arglist) {
+			Matcher m = charPattern.matcher(a);
+			if (m.find()) return true;
+		}
+		return false;
+	}
+	
 	// {{{ getProcessRunner() method
 	public static ProcessRunner getProcessRunner()
 	{
@@ -354,6 +373,7 @@ public abstract class ProcessRunner
 	// }}}
 
 } // }}}
+
 
 
 
