@@ -5,6 +5,7 @@ $Date$
     Version 5.1.4  Requires jEdit 5.0, Java 1.6, ErrorList 2.1, CommonControls 1.7, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
         New Project option: run commands from different directory (shadow build/run).
+        Fixed #1721 and #1788. Windows commands work with () or <> again.
 
     Version 5.1.3 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
