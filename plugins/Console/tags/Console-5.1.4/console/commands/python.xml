@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Application settings">
+                <ENTRY LABEL="Script Name" VARNAME="scriptname" EVAL="buffer.getPath();" />
+				<ENTRY LABEL="Application parameters" VARNAME="args" />
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" DIR="buffer.getDirectory();">
+			buf = new StringBuffer();
+			buf.append("python \"" + scriptname + "\"");
+
+			if(!args.equals(""))
+				buf.append(" "+args);
+
+			// return value
+			return buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
