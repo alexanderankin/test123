@@ -158,6 +158,13 @@
   <listitem><para><emphasis>Append extra dirs to PATH</emphasis> - if
         checked, append instead of prepend the extra directories.
   </para></listitem>
+  
+  <listitem><para><emphasis>Wrap round brackets around argument lists on Windows
+  shells</emphasis> - If this is checked, spaces will be processed differently
+  in argument lists. This helps <ulink
+  url="https://sourceforge.net/p/jedit/plugin-bugs/961/">some people for some
+  things</ulink>, and breaks things in other cases. </para></listitem>
+  
   </itemizedlist>
   
   <section id="chdirevents">
