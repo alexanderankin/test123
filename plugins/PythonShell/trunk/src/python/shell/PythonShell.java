@@ -41,10 +41,10 @@ import procshell.ProcessShell;
 //}}}
 
 public class PythonShell extends ProcessShell {
-	
+
 	private String prompt = ">>> ";
 	private String newline;
-	
+
 	/*
  	 * Constructor
  	 */
@@ -52,7 +52,7 @@ public class PythonShell extends ProcessShell {
 		super("Python");
 		this.newline = System.getProperty("line.separator");
 	}
-	
+
 	/**
 	 * Start up Python.
 	 */
@@ -64,6 +64,7 @@ public class PythonShell extends ProcessShell {
 		LinkedList<String> exec = new LinkedList<String>();
 		exec.add(cmd);
 		exec.add("-i"); // force python to run in interactive mode
+		exec.add("-u"); // force python to use fully unbuffered output
 		if (cmd.endsWith("ipython") || cmd.endsWith("ipython.exe")) {
 			// if we know this is ipython, disable readline
 			exec.add("-noreadline");
@@ -79,7 +80,7 @@ public class PythonShell extends ProcessShell {
 		state.p = pb.start();
 		Log.log(Log.DEBUG,this,"Python started.");
 	}
-	
+
 	/**
 	 * Evaluate text.
 	 */
@@ -87,7 +88,7 @@ public class PythonShell extends ProcessShell {
 		str = this.clean(str + "\n");
 		super.send(console, "eval(\""+str+"\")");
 	}
-	
+
 	/**
 	 * Execute text.
 	 */
@@ -95,21 +96,21 @@ public class PythonShell extends ProcessShell {
 		str = this.clean(str + "\n");
 		super.send(console, "exec(\""+str+"\")");
 	}
-	
+
 	/**
 	 * Execute a buffer.
 	 */
 	public void execBuffer(Console console, Buffer buffer) {
 		this.exec(console, buffer.getText(0, buffer.getLength()));
 	}
-	
+
 	/**
 	 * Execute a file.
 	 */
 	public void execFile(Console console, String path) {
 		super.send(console, "execfile(\""+path.replace("\\", "/")+"\")");
 	}
-	
+
 	/**
 	 * Called when data is available.
 	 */
@@ -123,7 +124,7 @@ public class PythonShell extends ProcessShell {
 			output.commandDone();
 		}
 	}
-	
+
 	/**
 	 * Print python shell info message.
 	 */
@@ -138,7 +139,7 @@ public class PythonShell extends ProcessShell {
 		this.stop(console);
 		this.start(console, console.getOutput(), null);
 	}
-	
+
 	private String clean(String str) {
 		return str.replace("\n", "\\n").replace("\t", "\\t").replace("\"", "\\\"");
 	}
