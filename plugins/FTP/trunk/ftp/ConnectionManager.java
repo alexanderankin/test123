@@ -602,8 +602,6 @@ public class ConnectionManager
 		passphrases = new HashMap<String, String>();
 
 		String settingsDirectory = jEdit.getSettingsDirectory();
-		int minutes = jEdit.getIntegerProperty("ftp.timeOutMinutes", 1);
-		connectionTimeout = 60000 * minutes;
 
 		if(settingsDirectory == null)
 		{
@@ -612,6 +610,8 @@ public class ConnectionManager
 		}
 		else
 		{
+			int minutes = jEdit.getIntegerProperty("ftp.timeOutMinutes", 1);
+			connectionTimeout = 60000 * minutes;
 			String passwordDirectory = MiscUtilities.constructPath(settingsDirectory, "cache");
 			passwordFile = new File(MiscUtilities.constructPath(passwordDirectory,"password-cache"));
 			passwordFile.getParentFile().mkdirs();
