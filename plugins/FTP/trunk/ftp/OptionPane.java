@@ -73,7 +73,7 @@ public class OptionPane extends AbstractOptionPane implements ActionListener {
 		addComponent(enableCompression);
 
 		
-		timeOutMinutes = new JComboBox<String>(new String[] {"1", "2", "4", "8", "16", "32", "64" });
+		timeOutMinutes = new JComboBox<String>(new String[] {"1", "2", "5", "10", "15", "30", "60" });
 		String timeOut = jEdit.getProperty("ftp.timeOutMinutes", "1");
 		timeOutMinutes.setSelectedItem(timeOut);
 		addComponent(jEdit.getProperty("options.ftp.timeOutMinutes"), timeOutMinutes);
