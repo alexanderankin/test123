@@ -825,6 +825,8 @@ public class SystemShell extends Shell implements TaskListener
 
 		/* run ant without adornments to make error parsing easier */
 		aliases.put("ant", "ant -emacs");
+		/* Force interactive mode in SVN from Console */
+		aliases.put("svn", "svn --force-interactive");
 		// load aliases from properties
 		String alias;
 		int i = 0;
