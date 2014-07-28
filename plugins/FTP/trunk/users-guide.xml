@@ -73,9 +73,12 @@ If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
 to DES (weak) encryption. In this case, you will see a warning in the activity
 log indicating that FTP plugin is falling back on weak encryption.
 If you don't like this, you can <guimenuitem>Disable weak encryption
-when saving passwords</guimenuitem> from FTP plugin options, and/or install <ulink url=
-"http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">
-JCE Strong Encryption</ulink> into your JRE. For more info, see <ulink url=
+when saving passwords</guimenuitem> from FTP plugin options, and/or install JCE String Encryption for 
+<ulink
+url="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">Java 1.7</ulink>
+or <ulink
+url="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html">Java 1.8</ulink> 
+into your JRE. For more info, see <ulink url=
 "http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">
 this article</ulink>. </para>
 
