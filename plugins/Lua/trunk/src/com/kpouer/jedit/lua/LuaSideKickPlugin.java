@@ -1,9 +1,9 @@
-/*
+﻿/*
  * jEdit - Programmer's Text Editor
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2012 Matthieu Casanova
+ * Copyright © 2012-2014 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,16 +34,6 @@ import org.luaj.vm2.lib.jse.JsePlatform;
  */
 public class LuaSideKickPlugin extends EditPlugin
 {
-	@Override
-	public void start()
-	{
-	}
-
-	@Override
-	public void stop()
-	{
-	}
-
 	public static void executeBuffer(Buffer buffer)
 	{
 		ScriptEngineManager mgr = new ScriptEngineManager();
