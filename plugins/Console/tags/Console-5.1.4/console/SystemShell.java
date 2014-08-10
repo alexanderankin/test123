@@ -167,8 +167,9 @@ public class SystemShell extends Shell implements TaskListener
 		{
 			currentDirectory = cstate.currentDirectory;
 		}
-		if (jEdit.getBooleanProperty("view.abbreviatePaths"))
-			currentDirectory = MiscUtlities.abbreviate(currentDirectory);
+		// earlier versions of jEdit won't have this set, so the default should be true: 
+		if (jEdit.getBooleanProperty("view.abbreviatePaths", true))
+			currentDirectory = MiscUtilities.abbreviate(currentDirectory);
 		
 		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), jEdit
 			.getProperty("console.shell.prompt", 
