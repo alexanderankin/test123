@@ -5,8 +5,11 @@ $Date$
     Version 5.1.4  Requires jEdit 5.0, Java 1.6, ErrorList 2.1, CommonControls 1.7, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
         New Project option: run commands from different directory (shadow build/run).
+        alias for svn supplies "--force-interactive" so you can commit from Console with svn 1.8
         Fixed #1721 and #1788. Windows commands work with () or <> again.
         Added new option for Windows users - wrap argument lists around round brackets.
+        Respect the View option, "Abbreviate Paths" to decide if the path in the system
+        shell prompt should be abbreviated.
 
     Version 5.1.3 Requires jEdit 5.0, Java 1.6, ErrorList 2.1, and ProjectViewer 3.5 (optional).
       [Alan Ezust]
@@ -50,7 +53,8 @@ $Date$
         Observe jEdit's general option "Check for changed files" and check after command
         executions too.
         #3558537 - restore values from properties destroys user custom error patterns.
-        Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5 (incorrect error paths - failed to open the correct remote files from ErrorList)
+        Fixed incompatibility with SshConsole/ErrorList integration introduced in Console 4.5 
+           (incorrect error paths - failed to open the correct remote files from ErrorList)
         New APIs: Console.shellForVFS(), Console.chDir(), Shell.chDir(), Shell.handlesVFS(). Refactored chdir code.
         New project option: Shell to use for executing build/run project commands.
         #3589470: Better regexes for gcc 4.7.2 - enhanced "generic" error pattern.
