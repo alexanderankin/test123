@@ -82,6 +82,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	//}}}
 
 	//{{{ paint() method
+	// synchronized??!! That's a pretty clear indication there is a threading issue here.
 	public synchronized void paint(Graphics g) {
 		//{{{ Get ready
 		Graphics2D gfx = (Graphics2D) g;
@@ -237,7 +238,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	//{{{ Draw numbers
-	private void drawNumbers(Graphics2D gfx, Color color, int xOffset, int hScroll, int textAreaWidth, double charWidth, double charHeight) {
+    private void drawNumbers(Graphics2D gfx, Color color, int xOffset, int hScroll, int textAreaWidth, double charWidth, double charHeight) {
 		gfx.setColor(color);
 		gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
 
@@ -261,7 +262,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 		for (int column = start; column < end; column += step) {
 			String digits = Integer.toString(column);
-			float x = (float) (x0 + (column * charWidth) - ((digits.length() * charWidth) / 2) + 1);
+			float x;
+			if (start == 0) {
+			    x = (float) (x0 + (column * charWidth) - ((digits.length() * charWidth)) + charWidth);
+			} else {
+			    x = (float) (x0 + (column * charWidth) - ((digits.length() * charWidth) / 2) + 1);
+			}
 			gfx.drawString(digits, x, y);
 		}
 	}//}}}
@@ -385,6 +391,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 					public void actionPerformed(ActionEvent ae) {
 						MarkDialog d = new MarkDialog((StaticMark) mark, "Edit Mark");
 						d.pack();
+						ColumnRulerPlugin.center(jEdit.getActiveView(), d);
 						d.setVisible(true);
 					}
 				};
@@ -416,6 +423,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			if (mark == null) {
 				MarkDialog d = new MarkDialog(getColumnAtPoint(e.getPoint()));
 				d.pack();
+                ColumnRulerPlugin.center(jEdit.getActiveView(), d);
 				d.setVisible(true);
 			} else {
 				mark.setGuideVisible(!mark.isGuideVisible());
