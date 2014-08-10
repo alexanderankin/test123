@@ -1,5 +1,9 @@
 package org.jedit.plugins.columnruler;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
@@ -125,6 +129,26 @@ public class ColumnRulerPlugin extends EBPlugin {
 		
 		return marks;
 	}
+
+   /**
+    * Centers <code>you</code> on <code>me</code>. Useful for centering
+    * dialogs on their parent frames.
+    *
+    * @param me   Component to use as basis for centering.
+    * @param you  Component to center on <code>me</code>.
+    */
+   public static void center( Component me, Component you ) {
+      Rectangle my = me.getBounds();
+      Dimension your = you.getSize();
+      int x = my.x + ( my.width - your.width ) / 2;
+      if ( x < 0 )
+         x = 0;
+      int y = my.y + ( my.height - your.height ) / 2;
+      if ( y < 0 )
+         y = 0;
+      you.setLocation( x, y );
+   }
+
 	
 }
 
