@@ -53,19 +53,22 @@ public class MarkDialog extends JDialog implements ActionListener {
 	}
 
 	private void init() {
+	    JPanel panel = new JPanel();
+	    panel.setBorder(BorderFactory.createEmptyBorder(11, 11, 11, 11));
 		ok = new JButton("OK");
 		ok.addActionListener(this);
 		cancel = new JButton("Cancel");
 		cancel.addActionListener(this);
-		getContentPane().setLayout(new GridLayout(4, 2));
-		getContentPane().add(new JLabel("Name"));
-		getContentPane().add(name);
-		getContentPane().add(new JLabel("Column"));
-		getContentPane().add(column);
-		getContentPane().add(new JLabel("Color"));
-		getContentPane().add(color);
-		getContentPane().add(cancel);
-		getContentPane().add(ok);
+		panel.setLayout(new GridLayout(4, 2, 6, 6));
+		panel.add(new JLabel("Name"));
+		panel.add(name);
+		panel.add(new JLabel("Column"));
+		panel.add(column);
+		panel.add(new JLabel("Color"));
+		panel.add(color);
+		panel.add(cancel);
+		panel.add(ok);
+		setContentPane(panel);
 	}
 
 	public void actionPerformed(ActionEvent e) {
