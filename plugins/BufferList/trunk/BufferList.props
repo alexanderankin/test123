@@ -24,10 +24,10 @@ plugin.bufferlist.BufferListPlugin.name=BufferList
 plugin.bufferlist.BufferListPlugin.author=Dirk Moebius
 # bump to 1.5 before release.
 # Also update BufferList.html after bumping version number
-plugin.bufferlist.BufferListPlugin.version=1.5
+plugin.bufferlist.BufferListPlugin.version=1.5.1
 plugin.bufferlist.BufferListPlugin.docs=BufferList.html
 plugin.bufferlist.BufferListPlugin.usePluginHome=true
-plugin.bufferlist.BufferListPlugin.depend.0=jedit 04.05.99.00
+plugin.bufferlist.BufferListPlugin.depend.0=jedit 05.01.99.00
 plugin.bufferlist.BufferListPlugin.depend.1=jdk 1.6
 plugin.bufferlist.BufferListPlugin.depend.2=plugin GnuRegexpPlugin 1.0.1
 plugin.bufferlist.BufferListPlugin.description=The BufferList Plugin shows the list of currently open files in a tree.
@@ -41,7 +41,6 @@ bufferlist.startExpanded=false
 # displayMode: 2 == BufferList.DISPLAY_MODE_HIERARCHICAL
 bufferlist.displayMode=1
 bufferlist.closeFilesOnDoubleClick=true
-bufferlist.shortenHome=true
 bufferlist.textClipping=1
 #}}}
 
@@ -97,7 +96,6 @@ options.bufferlist.autoshow=Auto-Show on buffer change
 options.bufferlist.closeFilesOnDoubleClick=Close files on double click
 options.bufferlist.startExpanded=Fully expand directory tree by default
 options.bufferlist.displayMode=Use flat tree by default
-options.bufferlist.shortenHome=Compress paths with variable prefixes in tree
 options.bufferlist.textClipping.label=Clip long paths with "...":
 options.bufferlist.textClipping.start=at start
 options.bufferlist.textClipping.end=at end

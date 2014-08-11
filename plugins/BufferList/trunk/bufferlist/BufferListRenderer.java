@@ -144,10 +144,7 @@ public class BufferListRenderer extends DefaultTreeCellRenderer
 		{
 			// Directory entry
 			String path = (String) node.getUserObject();
-			if (jEdit.getBooleanProperty("bufferlist.shortenHome", true))
-			{
-				path = MiscUtilities.abbreviate(path);
-			}
+			path = MiscUtilities.abbreviateView(path);
 			// setText((node.isExpanded()?"+":"-")+node.getReused()+":"+obj.toString());
 			// // NOTE: debug only
 			setText(path);

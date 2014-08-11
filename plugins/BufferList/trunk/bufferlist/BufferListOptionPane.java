@@ -53,8 +53,6 @@ public class BufferListOptionPane extends AbstractOptionPane
 
 	private JCheckBox bFlatTree;
 
-	private JCheckBox bShortenHome;
-
 	private JRadioButton rbTextClipStart;
 
 	private JRadioButton rbTextClipEnd;
@@ -87,9 +85,6 @@ public class BufferListOptionPane extends AbstractOptionPane
 			jEdit.getProperty("options.bufferlist.displayMode"),
 			jEdit.getIntegerProperty("bufferlist.displayMode", BufferList.DISPLAY_MODE_FLAT_TREE) == BufferList.DISPLAY_MODE_FLAT_TREE);
 
-		bShortenHome = new JCheckBox(jEdit.getProperty("options.bufferlist.shortenHome"), jEdit
-			.getBooleanProperty("bufferlist.shortenHome", true));
-
 		rbTextClipStart = new JRadioButton(jEdit
 			.getProperty("options.bufferlist.textClipping.start"));
 		rbTextClipEnd = new JRadioButton(jEdit.getProperty("options.bufferlist.textClipping.end"));
@@ -118,7 +113,6 @@ public class BufferListOptionPane extends AbstractOptionPane
 		addComponent(bCloseFilesOnDoubleClick);
 		addComponent(bStartExpanded);
 		addComponent(bFlatTree);
-		addComponent(bShortenHome);
 		addComponent(new JLabel(jEdit.getProperty("options.bufferlist.textClipping.label")));
 		addComponent("  ", rbTextClipStart);
 		addComponent("  ", rbTextClipEnd);
@@ -135,8 +129,7 @@ public class BufferListOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("bufferlist.startExpanded", bStartExpanded.isSelected());
 		jEdit.setIntegerProperty("bufferlist.displayMode",
 			bFlatTree.isSelected() ? BufferList.DISPLAY_MODE_FLAT_TREE
-				: BufferList.DISPLAY_MODE_HIERARCHICAL);
-		jEdit.setBooleanProperty("bufferlist.shortenHome", bShortenHome.isSelected());
+				: BufferList.DISPLAY_MODE_HIERARCHICAL);		
 		jEdit.setIntegerProperty("bufferlist.textClipping", rbTextClipNone.isSelected() ? 0
 			: rbTextClipStart.isSelected() ? 1 : 2);
 	} // }}}
