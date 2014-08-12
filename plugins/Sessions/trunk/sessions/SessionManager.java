@@ -33,7 +33,9 @@ import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.bufferset.BufferSet;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
@@ -154,10 +156,13 @@ public class SessionManager implements EBComponent
 			// Do nothing, because save would recreate it.
 		}
 
-		// close all open buffers, if closeAll option is set:
+		// close all open buffers in this view, if closeAll option is set:
 		if (jEdit.getBooleanProperty("sessions.switcher.closeAll", true))
-			if (!jEdit.closeAllBuffers(view))
-				return;  // jEdit should have shown an error
+		for (EditPane ep: view.getEditPanes()) {
+			BufferSet bs = ep.getBufferSet();
+			for (Buffer b: bs.getAllBuffers()) 
+				jEdit.closeBuffer(ep, b);
+		}
 
 		final String oldSessionName = currentSession.getName();
 		EditBus.send(new SessionChanging(this, oldSessionName, newSessionName));
@@ -236,7 +241,7 @@ public class SessionManager implements EBComponent
 	 */
 	public boolean autosaveCurrentSession(View view)
 	{
-		if (currentSession.hasFileListChanged())
+		if (currentSession.hasFileListChanged(view))
 		{
 			// If autosave sessions is on, save current session silently.
 			if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
@@ -340,8 +345,11 @@ public class SessionManager implements EBComponent
 		Log.log(Log.DEBUG, this, "reloadCurrentSession: currentSession=" + currentSession);
 
 		// close all open buffers
-		if(!jEdit.closeAllBuffers(view))
-			return; // user cancelled
+		for (EditPane ep: view.getEditPanes()) {
+			BufferSet bs = ep.getBufferSet();
+			for (Buffer b: bs.getAllBuffers()) 
+				jEdit.closeBuffer(ep, b);
+		}
 
 		// FIXME: do we need to make sure this is not the AWT thread?!?
 		currentSession.open(view); // ignore any errors and return value
@@ -462,6 +470,7 @@ public class SessionManager implements EBComponent
 	/**
 	 * Return the directory where the session files are stored,
 	 * usually $HOME/.jedit/sessions.
+	 * TODO: getPluginHome() instead
 	 */
 	public static String getSessionsDir()
 	{

@@ -325,8 +325,7 @@ public class Session implements Cloneable
 		// the current list of open jEdit buffers, but this behavior could be
 		// changed in the future...
 		sessionFiles.clear();
-
-		for(Buffer buffer = jEdit.getFirstBuffer(); buffer != null; buffer = buffer.getNext())
+		for(Buffer buffer: view.getBuffers()) 
 			if(!buffer.isUntitled())
 				addFile(buffer.getPath(), buffer.getStringProperty(Buffer.ENCODING));
 
@@ -353,11 +352,11 @@ public class Session implements Cloneable
 	 *   since the previous load/update, 
 	 *   <code>false</code> if some file(s) have been opened/closed
 	 */
-	public boolean hasFileListChanged()
+	public boolean hasFileListChanged(View view)
 	{
 		Vector currentFiles = new Vector();
 		
-		for(Buffer buffer = jEdit.getFirstBuffer(); buffer != null; buffer = buffer.getNext())
+		for(Buffer buffer: view.getBuffers())
 			if(!buffer.isUntitled())
 				currentFiles.addElement(buffer.getPath());
 		
