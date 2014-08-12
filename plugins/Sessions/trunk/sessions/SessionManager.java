@@ -468,13 +468,13 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Return the directory where the session files are stored,
-	 * usually $HOME/.jedit/sessions.
-	 * TODO: getPluginHome() instead
+	 * Return the directory where the session files are stored.
+	 * using getPluginHome()
 	 */
 	public static String getSessionsDir()
 	{
-		return MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "sessions");
+		return EditPlugin.getPluginHome(SessionsPlugin.class).toString();
+		//return MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "sessions");
 	}
 
 
