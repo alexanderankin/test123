@@ -24,7 +24,6 @@ package sessions;
 
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -33,13 +32,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
@@ -60,7 +56,7 @@ class SessionManagerDialog
 	{
 		super(view, jEdit.getProperty("sessions.manager.title"), true);
 		this.currentSession = currentSession;
-
+		this.view = view;
 		lSessions = new JList(SessionManager.getInstance().getSessionNames());
 		lSessions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lSessions.addListSelectionListener(this);
@@ -213,7 +209,7 @@ class SessionManagerDialog
 		Session renameSession;
 		if (oldName.equals(currentSession))
 		{
-			renameSession = SessionManager.getInstance().getCurrentSessionInstance();
+			renameSession = SessionManager.getInstance().getSession(view);
 		} else {
 			renameSession = new Session(oldName);
 			try {
@@ -306,7 +302,7 @@ class SessionManagerDialog
 		}
 	}
 
-
+	private View view;
 	private JList lSessions;
 	private JButton bRename;
 	private JButton bDelete;

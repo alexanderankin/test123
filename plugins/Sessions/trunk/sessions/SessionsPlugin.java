@@ -69,15 +69,16 @@ public class SessionsPlugin extends EBPlugin
 		}
 		
 		SessionManager mgr = SessionManager.getInstance();
+		if (restore) mgr.restore();
 		
 		// Though we don't need to load the current session's files, we
 		//  still need to load the custom properties into memory.
-		mgr.getCurrentSessionInstance().open(jEdit.getActiveView(), false);
-			
+		View view = jEdit.getActiveView();
+		//		mgr.getSession(view).open(view, false);			
 		// Put the session name in the jEdit title bar
-		mgr.setSessionNameInTitleBar();
-		mgr.refreshTitleBar();
-		
+		//mgr.setSessionNameInTitleBar();
+		//mgr.refreshTitleBar();
+
 		if (jEdit.getBooleanProperty("sessions.switcher.showToolBar", false))
 		{
 			// If the switcher is to be shown in the BufferList dockable ...
@@ -100,7 +101,7 @@ public class SessionsPlugin extends EBPlugin
 					addSessionSwitcher(views[i]);
 				}
 			}
-		}
+		}		
 	}
 
 

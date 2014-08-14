@@ -55,11 +55,12 @@ public class SessionSwitcher
 
 		Insets nullInsets = new Insets(0,0,0,0);
 
-		combo = new JComboBox(SessionManager.getInstance().getSessionNames());
+		combo = new JComboBox<String>(SessionManager.getInstance().getSessionNames());
+		Session currentSession = SessionManager.getInstance().getSession(view);
 		int maxEntries = jEdit.getIntegerProperty(
 			"options.sessions.switcher.maxListSize", 8);
 		combo.setMaximumRowCount(maxEntries);
-		combo.setSelectedItem(SessionManager.getInstance().getCurrentSession());
+		combo.setSelectedItem(currentSession.getName());
 		combo.setEditable(false);
 		combo.addItemListener(this);
 
@@ -152,7 +153,7 @@ public class SessionSwitcher
 	public void actionPerformed(ActionEvent evt)
 	{
 		if (evt.getSource() == save)
-			SessionManager.getInstance().saveCurrentSession(view);
+			SessionManager.getInstance().saveCurrentSession(view, false);
 		else if (evt.getSource() == saveAs)
 			SessionManager.getInstance().saveCurrentSessionAs(view);
 		else if (evt.getSource() == reload)
@@ -173,10 +174,10 @@ public class SessionSwitcher
 		if(e.getStateChange() != ItemEvent.SELECTED || e.getItem() == null)
 			return;
 
-		String currentSession = SessionManager.getInstance().getCurrentSession();
+		String currentSessionName = SessionManager.getInstance().getSession(view).getName();
 		final String selectedSession = e.getItem().toString();
 
-		if (selectedSession.equals(currentSession)) return;
+		if (selectedSession.equals(currentSessionName)) return;
 		
 		SessionManager.getInstance().setCurrentSession(view, selectedSession);
 		// The session may not have been changed (eg. if the session change 
@@ -194,7 +195,7 @@ public class SessionSwitcher
 	
 	private void updateSessionComboBox()
 	{
-		final String newSession = SessionManager.getInstance().getCurrentSession();
+		final String newSession = SessionManager.getInstance().getSession(view).getName();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -252,7 +253,7 @@ public class SessionSwitcher
 
 
 	private View view;
-	private JComboBox combo;
+	private JComboBox<String> combo;
 	private JButton save;
 	private JButton saveAs;
 	private JButton reload;
