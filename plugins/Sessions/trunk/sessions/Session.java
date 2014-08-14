@@ -301,10 +301,36 @@ public class Session implements Cloneable
 					view.setBuffer(buffer);
 			}
 		}
-
+		updateTitle(view);
 		return true;
 	}
 
+	
+	
+	/**
+	 * Put the session name in the jEdit title bar
+	 */
+	void updateTitle(View view)
+	{
+		
+		if ( jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true) )
+		{
+			String userTitle;
+			if (jEdit.getBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", true))
+			{
+				userTitle = jEdit.getProperty("sessions.titlebar.startbracket") +
+					jEdit.getProperty("sessions.titlebar.prefix") + getName() +
+					jEdit.getProperty("sessions.titlebar.endbracket");	
+			}
+			else
+			{
+				userTitle = jEdit.getProperty("sessions.titlebar.startbracket") +
+					getName() + jEdit.getProperty("sessions.titlebar.endbracket");
+			}
+			view.setUserTitle(userTitle);
+		}
+	}
+	
 
 	/**
 	 * Saves the session.
