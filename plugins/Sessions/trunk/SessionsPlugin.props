@@ -18,7 +18,7 @@ plugin.sessions.SessionsPlugin.depend.1=jdk 1.6
 # menu
 #
 
-plugin.sessions.SessionsPlugin.menu=session-manager - session-save session-save-as session-reload - session-properties
+plugin.sessions.SessionsPlugin.menu=session-manager - session-save session-save-as session-reload - session-properties sessions-clear
 sessions.menu.label=Sessions
 
 
@@ -31,6 +31,7 @@ session-save.label=Save Session
 session-save-as.label=Save Session As...
 session-reload.label=Reload Session
 session-properties.label=Session Properties (experimental!)
+sessions-clear.label=Clear View Sessions
 
 
 #

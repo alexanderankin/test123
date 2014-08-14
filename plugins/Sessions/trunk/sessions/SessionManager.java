@@ -73,14 +73,10 @@ public class SessionManager implements EBComponent
 	// private Session currentSession;
 	private HashMap<View, Session> currentSessions = new HashMap<View, Session>();
 
-
 	/** The singleton SessionManager instance. */
 	private static SessionManager instance;
 
 	private Session blankSession;
-
-	/** The default jEdit view.title property. */
-	private String defaultViewTitle;
 	
 	/** Returns the singleton SessionManager instance */
 	public static SessionManager getInstance()
@@ -99,27 +95,24 @@ public class SessionManager implements EBComponent
 		// TODO: make translatable?
 		blankSession = new Session("none");
 		
-		// create directory <jedithome>/sessions if it not yet exists
+		// create directory sessions dir if it not yet exists
 		File dir = new File(getSessionsDir());
 		if(!dir.exists())
 			dir.mkdirs();
 
 		// convert old format session files, if necessary
 		new SessionFileConverter().run();
-
-		
-/*		// create default session file if it not yet exists
-		File defaultSessionFile = new File(createSessionFileName("default"));
-		if(!defaultSessionFile.exists())
-			new Session("default").save(null);
-	*/	
-				
-		// initialize the variables for the jEdit title bar
-		defaultViewTitle = jEdit.getProperty("view.title", 
-								jEdit.getProperty("sessions.titlebar.default"));
-		new String();
 	}
 
+	public void clear() {
+		jEdit.unsetProperty(SESSION_PROPERTY);
+		for (View v: currentSessions.keySet()) {
+			v.setUserTitle("Session: none");
+		}
+		currentSessions.clear();
+		
+	}
+	
 	/** Restore the session state of all views, since the last time the sessions were saved. */
 	void restore() {
 		String s = jEdit.getProperty(SESSION_PROPERTY, "none");
