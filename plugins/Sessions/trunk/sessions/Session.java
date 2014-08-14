@@ -365,7 +365,7 @@ public class Session implements Cloneable
 			// SessionManager.showErrorLater(view, "ioerror", new Object[] { io.getMessage() });
 			return false;
 		}
-
+		updateTitle(view);
 		return true;
 	}
 	

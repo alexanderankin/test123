@@ -336,7 +336,7 @@ public class SessionManager implements EBComponent
 		saveCurrentSessionProperty();
 		EditBus.send(new SessionListChanged(this));
 		EditBus.send(new SessionChanged(this, oldSessionName, newName, currentSession));
-		// update the jEdit title bar with the session name
+
 	}
 
 
@@ -509,7 +509,7 @@ public class SessionManager implements EBComponent
 				if (name.length() == 0)
 					GUIUtilities.error(relativeTo, "sessions.switcher.saveAs.error.empty", null);
 				if (name.indexOf('/') >= 0 || name.indexOf('\\') >= 0
-					|| name.indexOf(';') >= 0 || name.indexOf(':') >= 0)
+					|| name.indexOf(';') >= 0 || name.indexOf(',') >= 0 || name.indexOf(':') >= 0)
 				{
 					GUIUtilities.error(relativeTo, "sessions.switcher.saveAs.error.illegalChars", new Object[] { "/  \\  ;  :" });
 					name = "";
