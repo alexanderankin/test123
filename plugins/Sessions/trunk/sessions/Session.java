@@ -264,7 +264,11 @@ public class Session implements Cloneable
 	public boolean open(View view, boolean openFiles)
 	{
 		Log.log(Log.DEBUG, this, "open: name=" + name);
-
+		if (getName().equals("none")) {
+			updateTitle(view);
+			return true;
+		}
+		
 		try
 		{
 			loadXML();
@@ -362,7 +366,6 @@ public class Session implements Cloneable
 		}
 		catch (IOException io) {
 			Log.log(Log.ERROR, this, "Save Failed: ", io);
-			// SessionManager.showErrorLater(view, "ioerror", new Object[] { io.getMessage() });
 			return false;
 		}
 		updateTitle(view);
@@ -447,14 +450,8 @@ public class Session implements Cloneable
 	public void loadXML() throws Exception
 	{
 		Log.log(Log.DEBUG, this, "loadXML: name=" + name + " filename=" + filename);
-
 		clear();
-
-		// Reader reader = new BufferedReader(new FileReader(filename));
 		XMLUtilities.parseXML(new FileInputStream(filename), new SessionXmlHandler());
-		//XmlParser parser = new XmlParser();
-		//parser.setHandler(new SessionXmlHandler(parser));
-		//parser.parse(null, null, reader);
 	}
 
 
