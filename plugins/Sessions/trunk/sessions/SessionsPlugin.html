@@ -15,8 +15,7 @@
     </TD>
     <TD ALIGN="right">
         <SMALL>By Dirk M&ouml;bius<BR>
-        <A HREF="mailto:dmoebius@gmx.net"><EM>dmoebius@gmx.net</EM></A>
-        <p> $Date$ </p>
+        $Date$
         </SMALL>
     </TD>
   </TR>
@@ -28,6 +27,7 @@
     <LI><A HREF="#sessionmanagement">Session Management</A> </LI>
     <LI><A HREF="#customization">Customization</A> </LI>
     <LI><A HREF="#license">License</A> </LI>
+    <LI><A HREF="../CHANGELOG.txt">Changes</A> </LI>
     <LI><A HREF="#feedback">Feedback</A> </LI>
 </UL>
 
@@ -40,9 +40,16 @@ The Sessions Plugin maintains lists of open files - called <EM>sessions</EM>
 (aka <EM>workspaces</EM>) - and offers some functions to switch between them.
 </P>
 
+<p> Each view, or main window, can have a different session open, and switching sesions from one view
+should not affect the open files in the others (unless you are using Global Bufferset Scope).</p>
+
 
 <A NAME="sessionmanagement"></A>
 <H2>Session Management</H2>
+
+<p> Session data are stored as XML files in the <tt>plugins/sessions.SessionsPlugin/</tt> folder under your <tt>JEDIT_SETTINGS</tt> directory. In versions prior to 1.5.2, these files were stored in the
+<tt>sessions/</tt> directory. To continue using the old session data, move the files into the new location.
+</p>
 
 <H3>Menu Actions</H3>
 
@@ -133,14 +140,15 @@ The source code is distributed under the GPL. Please see
 </P>
 
 
+
 <A NAME="feedback"></A>
 <H2>Feedback</H2>
 
 <P>
 The preferred way to send bug reports against specific plugins is to use the
-<A HREF="https://sourceforge.net/p/jedit/plugin-bugs/">
+<A HREF="https://sourceforge.net/p/jedit/plugin-bugs">
 jEdit Plugin Bugs Tracker</A> on Sourceforge:</P>
-<p> There is a separate tracker for <a href="https://sourceforge.net/p/jedit/plugin-feature-requests/?limit=200">Plugin Feature Requests</a>. </p> 
+<p> There is a separate tracker for <a href="https://sourceforge.net/p/jedit/plugin-feature-requests">Plugin Feature Requests</a>. </p> 
 
 <P>
 You can also write to:

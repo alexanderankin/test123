@@ -84,7 +84,7 @@ public class SaveDialog extends EnhancedDialog
 		openedPanel.add(BorderLayout.NORTH, new JLabel(jEdit.getProperty("session.savedialog.added")));
 		closedPanel.add(BorderLayout.NORTH, new JLabel(jEdit.getProperty("session.savedialog.removed")));
 		
-		Session currentSession = SessionManager.getInstance().getCurrentSessionInstance();
+		Session currentSession = SessionManager.getInstance().getSession(view);
 		
 		Buffer[] buffers = jEdit.getBuffers();
 		Vector newFiles = new Vector(buffers.length);

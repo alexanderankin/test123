@@ -53,6 +53,7 @@ public class SessionPropertiesDialog extends EnhancedDialog
 			new Object[] { sessionName }), true);
 
 		this.rootGroup = rootGroup;
+		this.view =view;
 
 		view.showWaitCursor();
 
@@ -153,7 +154,7 @@ public class SessionPropertiesDialog extends EnhancedDialog
 		// Fire the SessionPropertiesChanged event
 		EditBus.send(new SessionPropertiesChanged(
 			SessionManager.getInstance(),
-			SessionManager.getInstance().getCurrentSessionInstance()));
+			SessionManager.getInstance().getSession(view)));
 		// get rid of this dialog if necessary
 		if(dispose)
 			dispose();
@@ -228,7 +229,7 @@ public class SessionPropertiesDialog extends EnhancedDialog
 	private JButton cancel;
 	private JButton apply;
 	private SessionPropertyGroup rootGroup;
-
+	private View view;
 
 	private TreeModel createTreeModel()
 	{

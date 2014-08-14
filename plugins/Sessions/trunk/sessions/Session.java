@@ -271,15 +271,14 @@ public class Session implements Cloneable
 		}
 		catch (IOException io)
 		{
-			Log.log(Log.ERROR, this, io);
-			SessionManager.showErrorLater(view, "ioerror", new Object[] { io.getMessage() });
+			Log.log(Log.ERROR, this, "Failed: ",  io);
+			// SessionManager.showErrorLater(view, "ioerror", new Object[] { io.getMessage() });
 			return false;
 		}
 		catch (Exception e)
 		{
 			// this is probably a xml parse exception
-			Log.log(Log.ERROR, this, e);
-			SessionManager.showErrorLater(view, "sessions.manager.error.load", new Object[] { name, e.getMessage() });
+			Log.log(Log.ERROR, this, "Failed:",  e);
 			return false;
 		}
 
@@ -317,7 +316,6 @@ public class Session implements Cloneable
 	public boolean save(View view)
 	{
 		Log.log(Log.DEBUG, this, "save: name=" + name);
-
 		if (view != null)
 			view.getEditPane().saveCaretInfo();
 
@@ -337,8 +335,8 @@ public class Session implements Cloneable
 			saveXML();
 		}
 		catch (IOException io) {
-			Log.log(Log.ERROR, this, io);
-			SessionManager.showErrorLater(view, "ioerror", new Object[] { io.getMessage() });
+			Log.log(Log.ERROR, this, "Save Failed: ", io);
+			// SessionManager.showErrorLater(view, "ioerror", new Object[] { io.getMessage() });
 			return false;
 		}
 
