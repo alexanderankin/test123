@@ -118,8 +118,6 @@ public class SessionsPlugin extends EBPlugin
 		
 		// update the title bar
 		SessionManager mgr = SessionManager.getInstance();
-		mgr.restoreTitleBarText();
-		mgr.refreshTitleBar();
 	}
 
 
@@ -234,17 +232,6 @@ public class SessionsPlugin extends EBPlugin
 		}
 		
 		SessionManager mgr = SessionManager.getInstance();
-		if (jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true) )
-		{
-			mgr.setSessionNameInTitleBar();
-		}
-		else
-		{
-			mgr.restoreTitleBarText();
-		}
-		
-		mgr.refreshTitleBar();
-		
 		
 	}
 

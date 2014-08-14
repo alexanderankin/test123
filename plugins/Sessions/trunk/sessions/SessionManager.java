@@ -2,6 +2,7 @@
  * SessionManager.java
  * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
  * Copyright (c) 2007, 2008 Steve Jakob
+ * Copyright (c) 2014 Alan Ezust
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -221,7 +222,6 @@ public class SessionManager implements EBComponent
 		changeFSBToBaseDirectory(view);
 		
 		// update the jEdit title bar with the session name
-		setSessionNameInTitleBar();
 	}
 
 	public Session getSession(View view) {
@@ -337,7 +337,6 @@ public class SessionManager implements EBComponent
 		EditBus.send(new SessionListChanged(this));
 		EditBus.send(new SessionChanged(this, oldSessionName, newName, currentSession));
 		// update the jEdit title bar with the session name
-		setSessionNameInTitleBar();
 	}
 
 
@@ -540,63 +539,6 @@ public class SessionManager implements EBComponent
 		}
 		jEdit.setProperty(SESSION_PROPERTY, sessionNames.join(","));
 		jEdit.saveSettings();
-	}
-	
-	/**
-	 * Put the session name in the jEdit title bar
-	 */
-	public void setSessionNameInTitleBar()
-	{
-		// TODO: use view.setUserTitle() instead
-		/*
-		if ( currentSession != null )
-		{
-			if ( jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true) )
-			{
-				if (jEdit.getBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", true))
-				{
-					titleBarSessionName = defaultViewTitle + 
-						jEdit.getProperty("sessions.titlebar.startbracket") +
-						jEdit.getProperty("sessions.titlebar.prefix") +
-						currentSession.getName() +
-						jEdit.getProperty("sessions.titlebar.endbracket");	
-				}
-				else
-				{
-					titleBarSessionName = defaultViewTitle + 
-						jEdit.getProperty("sessions.titlebar.startbracket") +
-						currentSession.getName() +
-						jEdit.getProperty("sessions.titlebar.endbracket");
-				}
-						
-				jEdit.setTemporaryProperty("view.title", titleBarSessionName);
-				refreshTitleBar();
-			}
-		} */
-	}
-	
-	/**
-	 * Restore the original jEdit title bar text
-	 */
-	public void restoreTitleBarText()
-	{
-//		jEdit.setTemporaryProperty("view.title", defaultViewTitle);	
-	}
-
-	/**
-	 * refreshes the jEdit Title Bar. This only needs to be called
-	 * when the plugin stops or restarts.
-	 */
-	public void refreshTitleBar()
-	{
-		/* View[] views = jEdit.getViews();
-		
-		for( int i = 0; i < views.length; i++ )
-		{
-			views[i].updateTitle();
-		}
-		*/	
-	}
-	
+	} 
 	// }}}
 }
