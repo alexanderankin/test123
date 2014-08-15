@@ -27,9 +27,10 @@
     <LI><A HREF="#sessionmanagement">Session Management</A> </LI>
     <LI><A HREF="#customization">Customization</A> </LI>
     <LI><A HREF="#license">License</A> </LI>
-    <LI><A HREF="../CHANGELOG.txt">Changes</A> </LI>
     <LI><A HREF="#credits">Credits</A> </LI>
     <LI><A HREF="#feedback">Feedback</A> </LI>
+    <LI><A HREF="../CHANGELOG.txt">Changes</A> </LI>
+
 </UL>
 
 
@@ -41,15 +42,16 @@ The Sessions Plugin maintains lists of open files - called <EM>sessions</EM>
 (aka <EM>workspaces</EM>) - and offers some functions to switch between them.
 </P>
 
-<p> Each view, or main window, can have a different active session, and switching sessions from one view
+<p> Each View, or main window, can have a different active session, and switching sessions from one view
 should not affect the open files in the other views (unless you are using Global Bufferset Scope).</p>
+
+<p> Each view "remembers" which session it is switched to, even after restarting jEdit. To tell Sessions to forget which views are open to which sessions, <tt>Plugins - Sessions - Clear View Sessions</tt>. </p>
 
 
 <A NAME="sessionmanagement"></A>
 <H2>Session Management</H2>
 
-<p> Session data are stored as XML files in the <tt>plugins/sessions.SessionsPlugin/</tt> folder under your <a href="jeditresource:/doc/users-guide/settings-directory.html">JEDIT_SETTINGS</a> directory. In versions prior to 1.5.2, these files were stored in the
-<tt>sessions/</tt> folder in the same location. To continue using the old session data, move the files into the new location.
+<p> Session data are stored as XML files in the <tt>plugins/sessions.SessionsPlugin/</tt> folder under your <a href="jeditresource:/doc/users-guide/settings-directory.html">JEDIT_SETTINGS</a> directory. In versions prior to 1.6, these files were stored in the <tt>sessions/</tt> folder in the same location. To continue using old session data, move the files into the new location.
 </p>
 
 <H3>Menu Actions</H3>
@@ -84,9 +86,8 @@ The Sessions Plugin is fully keyboard navigable.
 </P>
 
 <P>
-A prerequisite is that you assigned a keyboard shortcut to the action
-<b>Manage Sessions...</b>. You can assign a keyboard shortcut to this action
-under <b>Utilities&gt;Global&nbsp;options&gt;Shortcuts</b>.
+A recommendation is that you assign a keyboard shortcut to the action
+<b>Manage Sessions...</b>. from <b>Utilities&gt;Global&nbsp;options&gt;Shortcuts</b>.
 I suggest "A+s".
 </P>
 

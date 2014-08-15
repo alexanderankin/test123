@@ -182,30 +182,10 @@ public class SessionManager implements EBComponent
 				jEdit.closeBuffer(ep, b);
 		}
 
-		// load new session
-		// make sure this is not done from the AWT thread
-
-		// {{{ This section changed by Steve Jakob
-		//     Opening the new session in a separate thread would occasionally
-		//     cause jEdit to freeze. I've left the code here in case we wish to try 
-		//     this sort of thing in the future.
-		/*
-		new Thread()
-		{
-			public void run()
-			{
-				currentSession = new Session(newSessionName);
-				saveCurrentSessionProperty();
-				currentSession.open(view);
-				EditBus.send(new SessionChanged(
-					SessionManager.this, oldSessionName, newSessionName, currentSession));
-			}
-		}.start();
-		*/
 		
 		Session currentSession = new Session(newSessionName);
 		currentSessions.put(view, currentSession);
-		// saveCurrentSessionProperty();
+		saveCurrentSessionProperty();
 		currentSession.open(view);
 		EditBus.send(new SessionChanged(
 			SessionManager.this, oldSessionName, newSessionName, currentSession));
