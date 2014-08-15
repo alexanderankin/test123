@@ -1,5 +1,5 @@
-Version 1.5.2 (Alan Ezust)
-- Fixed plugin-bug #1153 Sessions does not work with multiple views / buffersets:
+Version 1.6 (Alan Ezust)
+- Fixed plugin-bug #1153. Sessions now works with multiple views and non-global scope BufferSets.
 - Now uses "getPluginHome()" to determine where to store/load session data.
 
 VERSION 1.5.1 (Steve Jakob)
