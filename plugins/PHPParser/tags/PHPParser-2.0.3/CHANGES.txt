@@ -1,0 +1,2 @@
+2.0.2 (not released)
+-Fixed ArrayDeclarator that do not give as used variable the array variable (#3490006)
