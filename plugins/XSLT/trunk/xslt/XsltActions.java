@@ -118,11 +118,14 @@ public class XsltActions {
 		@Override
 		public void _run() {
 			  String path = buffer.getPath();
-		  	  ErrorListenerToErrorList listener = new ErrorListenerToErrorList(view, PathUtilities.pathToURL(buffer.getPath()));
+		  	  ErrorListenerToErrorList listener = new ErrorListenerToErrorList(view, PathUtilities.pathToURL(path));
 		  	  try {
 		  	  	  
 		  	  	  // clear any existing error
 		  	  	  listener.errorSource.removeFileErrors(path);
+		  	  	  // clear any existing error reported upon compile-on-save
+		  	  	  // on the target of the symlink
+		  	  	  listener.errorSource.removeFileErrors(buffer.getSymlinkPath());
 		  	  	  
 		  	  	  XSLTUtilities.compileStylesheet(path, listener);
 		  	  	  

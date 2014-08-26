@@ -1,10 +1,10 @@
 plugin.xslt.XSLTPlugin.activate=xslt.compile-on-save
 plugin.xslt.XSLTPlugin.name=XSLT
 plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Wim Le Page, Pieter Wellens, Eric Le Lay
-plugin.xslt.XSLTPlugin.version=0.8.1
+plugin.xslt.XSLTPlugin.version=0.8.2
 plugin.xslt.XSLTPlugin.docs=index.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar serializer.jar
-plugin.xslt.XSLTPlugin.depend.0=jdk 1.5
+plugin.xslt.XSLTPlugin.depend.0=jdk 1.6
 plugin.xslt.XSLTPlugin.depend.1=jedit 05.00.99.00
 plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 2.8.5
 plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 2.1

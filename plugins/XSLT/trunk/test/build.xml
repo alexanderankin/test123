@@ -98,7 +98,7 @@
     <!-- override the value of test.current on the command line to run this test.
           eg. LANG=en_GB.UTF-8 ant -Dtest.current=xslt/Saxon9XPathAdapterTest.java test
       -->
-    <property name="test.current" value="xslt/XSLTPluginXPathTest.java"/>
+    <property name="test.current" value="xslt/XSLTCompileTest.java"/>
     <selector id="testcases.current">
         <filename name="${test.current}"/>
     </selector>

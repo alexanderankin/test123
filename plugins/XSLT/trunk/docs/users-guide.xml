@@ -457,6 +457,12 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
+      <emphasis role="bold">Changes from 0.8.1 to 0.8.2</emphasis>
+      <itemizedlist>
+        <listitem><para>XSLT: compile on save clears errors from symlinked files.</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
       <emphasis role="bold">Changes from 0.8.0 to 0.8.1</emphasis>
       <itemizedlist>
         <listitem><para>XPath tool: press Ctrl+Enter from expression panel to trigger evaluating the XPath expression.</para></listitem>
