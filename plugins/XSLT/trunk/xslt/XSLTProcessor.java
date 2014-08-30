@@ -467,6 +467,7 @@ public class XSLTProcessor extends JPanel implements DefaultFocusComponent {
 
 		final Buffer fOutputBuffer = outputBuffer;
 		
+		final Map xsltParameters = getStylesheetParameters();
 		Task t = new Task() {
 
 			@Override
@@ -477,7 +478,7 @@ public class XSLTProcessor extends JPanel implements DefaultFocusComponent {
 					
 					InputSource inputSource = xml.Resolver.instance().resolveEntity(/*publicId*/null,path);
 
-					XSLTUtilities.transform(inputSource, stylesheets , getStylesheetParameters(), result, listener);
+					XSLTUtilities.transform(inputSource, stylesheets , xsltParameters, result, listener);
 
 				} catch(SAXParseException spe){
 					listener.sendSAXError(spe);
