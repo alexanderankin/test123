@@ -124,12 +124,12 @@ public class ErrorListenerToErrorList implements ErrorListener{
 			}
 			errorSource.addError(new DefaultErrorSource.DefaultError(errorSource,
 			level,path,line,0,col,
-			"(XSLT error) "+exception.getMessage()));
+			"(XSLT) "+exception.getMessage()));
 		} else {
 			path = PathUtilities.urlToPath(stylesheetPath);
 			errorSource.addError(new DefaultErrorSource.DefaultError(errorSource,
 			level,path,1,0,0,
-			"(XSLT error) "+exception.getMessage()));
+			"(XSLT) "+exception.getMessage()));
 		}
 	}
 }

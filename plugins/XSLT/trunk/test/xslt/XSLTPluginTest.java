@@ -100,7 +100,7 @@ public class XSLTPluginTest{
 		assertThat(b.getName().matches("Untitled-\\d+"));
 		
 		errorlist.tree().selectRow(1);
-		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error) xsl:ourrtput"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT) xsl:ourrtput"));
 		errorlist.close();
 		xsltProcessor.close();
 		TestUtils.close(TestUtils.view(),b);
@@ -130,7 +130,7 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
 
 		errorlist.tree().selectRow(1);
-		assertTrue(errorlist.tree().valueAt(1).startsWith("15: (XSLT error)"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("15: (XSLT)"));
 		errorlist.close();
 		TestUtils.close(TestUtils.view(),b);
     }
@@ -154,7 +154,7 @@ public class XSLTPluginTest{
 		assertThat(b.getName().matches("Untitled-\\d+"));
 		
 		errorlist.tree().selectRow(1);
-		assertTrue(errorlist.tree().valueAt(1).startsWith("16: (XSLT error)"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("16: (XSLT)"));
 		errorlist.close();
 		xsltProcessor.close();
 		TestUtils.close(TestUtils.view(),b);
@@ -219,7 +219,7 @@ public class XSLTPluginTest{
 		Pause.pause(1000);
     	
 		errorlist.tree().selectRow(1);
-		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT)"));
 		errorlist.close();
     }
 

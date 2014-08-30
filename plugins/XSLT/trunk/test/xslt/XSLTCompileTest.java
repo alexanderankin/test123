@@ -70,7 +70,7 @@ public class XSLTCompileTest {
 		Pause.pause(3000);
     	
 		errorlist.tree().selectRow(1);
-		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT)"));
 		errorlist.close();
     }
 	
@@ -98,7 +98,7 @@ public class XSLTCompileTest {
 		Pause.pause(3000);
     	
 		errorlist.tree().selectRow(1);
-		assertTrue(errorlist.tree().valueAt(1).startsWith("11: (XSLT error)"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("11: (XSLT)"));
 		errorlist.close();
 		
 		GuiActionRunner.execute(new GuiTask() {
@@ -156,7 +156,7 @@ public class XSLTCompileTest {
     	action("save");
 		Pause.pause(3000);
     	
-		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT)"));
 		errorlist.close();
 		
 		GuiActionRunner.execute(new GuiTask() {
