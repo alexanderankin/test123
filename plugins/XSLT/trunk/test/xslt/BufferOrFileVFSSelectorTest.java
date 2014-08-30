@@ -28,6 +28,7 @@ import javax.swing.BorderFactory;
 import javax.swing.text.JTextComponent;
 
 import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.Containers;
 import org.fest.swing.fixture.DialogFixture;
@@ -54,7 +55,7 @@ public class BufferOrFileVFSSelectorTest{
     @Test
     public void testEnabledDisabled() throws IOException{
     	
-    	final BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
+    	final BufferOrFileVFSSelector selector = createSelector();
     	
     	final FrameFixture frame = new FrameFixture(TestUtils.robot(),Containers.frameFor(selector));
     	frame.show();
@@ -95,7 +96,7 @@ public class BufferOrFileVFSSelectorTest{
     public void testAPI() throws IOException{
     	final File f = new File(testData.get(), "simple/source.xml");
     	
-    	final BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
+    	final BufferOrFileVFSSelector selector = createSelector();
     	
     	final FrameFixture frame = new FrameFixture(TestUtils.robot(),Containers.frameFor(selector));
     	frame.show();
@@ -138,10 +139,20 @@ public class BufferOrFileVFSSelectorTest{
 		frame.close();
     }
 
+
+	private BufferOrFileVFSSelector createSelector() {
+		return GuiActionRunner.execute(new GuiQuery<BufferOrFileVFSSelector>() {
+			@Override
+			protected BufferOrFileVFSSelector executeInEDT() throws Throwable {
+				return new BufferOrFileVFSSelector(view(),"xslt.source");
+			}
+		});
+	}
+
     @Test
     public void testOpenFile(){
     	final File f = new File(testData.get(), "simple/source.xml");
-    	BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
+    	BufferOrFileVFSSelector selector = createSelector();
     	
 		assumeTrue(!view().getBuffer().getPath().equals(f.getPath()));
 
@@ -161,15 +172,22 @@ public class BufferOrFileVFSSelectorTest{
 		assertEquals(f.getPath(),view().getBuffer().getPath());
 		
 		frame.close();
-		jEdit.closeBuffer(view(),view().getBuffer());
+		TestUtils.close(view(), view().getBuffer());
     }
     
     @Test
     public void testSelectSource(){
     	final File xml = new File(testData.get(), "simple/source.xml");
     	File xsl = new File(testData.get(), "simple/transform.xsl");
-    	BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
-    	selector.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+    	final BufferOrFileVFSSelector selector = createSelector();
+    	GuiActionRunner.execute(new GuiTask() {
+			
+			@Override
+			protected void executeInEDT() throws Throwable {
+				selector.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+			}
+		});
+    	
     	final FrameFixture frame = new FrameFixture(TestUtils.robot(),Containers.frameFor(selector));
      	frame.show();
    	
@@ -213,7 +231,7 @@ public class BufferOrFileVFSSelectorTest{
 		frame.textBox("xslt.source.prompt").requireText(xml.getPath());
 		
 		frame.close();
-		jEdit.closeBuffer(view(),view().getBuffer());
+		TestUtils.close(view(), view().getBuffer());
     }
 
     @Test
@@ -221,7 +239,7 @@ public class BufferOrFileVFSSelectorTest{
     	final File f = new File(testData.get(), "simple/source.xml");
     	File xsl = new File(testData.get(), "simple/transform.xsl");
 
-    	BufferOrFileVFSSelector selector = new BufferOrFileVFSSelector(view(),"xslt.source");
+    	BufferOrFileVFSSelector selector = createSelector();
     	
 		assumeTrue(!view().getBuffer().getPath().equals(f.getPath()));
 
@@ -261,8 +279,8 @@ public class BufferOrFileVFSSelectorTest{
 		
 		assertEquals(xsl.getPath(),view().getBuffer().getPath());
 		
-		jEdit.closeBuffer(view(),view().getBuffer());
-		jEdit.closeBuffer(view(),view().getBuffer());
+		TestUtils.close(view(), view().getBuffer());
+		TestUtils.close(view(), view().getBuffer());
     }
 
 }

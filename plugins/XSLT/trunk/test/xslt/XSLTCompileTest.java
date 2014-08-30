@@ -174,7 +174,7 @@ public class XSLTCompileTest {
 	    	errorlist = TestUtils.findFrameByTitle("Error List");
 
 	    	action("save");
-			Pause.pause(30000);
+			Pause.pause(3000);
 	    	
 			assertEquals(0, errorlist.tree().target.getRowCount());
 			errorlist.close();
