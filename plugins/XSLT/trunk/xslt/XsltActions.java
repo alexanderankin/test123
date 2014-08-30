@@ -122,10 +122,7 @@ public class XsltActions {
 		  	  try {
 		  	  	  
 		  	  	  // clear any existing error
-		  	  	  listener.errorSource.removeFileErrors(path);
-		  	  	  // clear any existing error reported upon compile-on-save
-		  	  	  // on the target of the symlink
-		  	  	  listener.errorSource.removeFileErrors(buffer.getSymlinkPath());
+		  	  	  XSLTPlugin.getErrorSource(view).clear();
 		  	  	  
 		  	  	  XSLTUtilities.compileStylesheet(path, listener);
 		  	  	  
