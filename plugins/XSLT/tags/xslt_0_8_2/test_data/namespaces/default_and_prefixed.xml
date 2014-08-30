@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<hello
+	xmlns:world="urn:world"
+	xmlns="urn:joe">
+	
+	<world:end>Brave new world</world:end>
+	
+	<end>Joe</end>
+</hello>
