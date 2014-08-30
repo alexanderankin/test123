@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<DOCKABLES>
+  <DOCKABLE NAME="xslt-processor">new xslt.XSLTProcessor(view, position);</DOCKABLE>
+  <DOCKABLE NAME="xpath-tool">new xslt.XPathTool(view);</DOCKABLE>
+</DOCKABLES>
