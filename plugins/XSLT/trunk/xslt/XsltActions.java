@@ -28,14 +28,12 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.MiscUtilities;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.xml.transform.TransformerException;
 
-import java.util.Hashtable;
-
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import xml.PathUtilities;
 
@@ -126,6 +124,12 @@ public class XsltActions {
 		  	  	  
 		  	  	  XSLTUtilities.compileStylesheet(path, listener);
 		  	  	  
+		  	  } catch(TransformerException e){
+		  		Log.log(Log.WARNING,XsltActions.class,e.toString());
+		  	  } catch(SAXException e){
+		  		Log.log(Log.WARNING,XsltActions.class,e.toString());
+		  	  } catch(IOException e){
+		  		Log.log(Log.WARNING,XsltActions.class,e.toString());
 		  	  } catch (Exception e) {
 		  	  	  Log.log(Log.ERROR,XsltActions.class,e);
 		  	  }
@@ -181,7 +185,6 @@ public class XsltActions {
 				  }
 			  }
 		  }
-  	  	  String dir = MiscUtilities.getParentOfPath(view.getBuffer().getPath());
   	  	  // set up 3 untitled buffers
   	  	  view.unsplit();
   	  	  view.splitHorizontally();

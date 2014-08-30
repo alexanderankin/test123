@@ -30,6 +30,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
@@ -117,16 +118,24 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 	/**
 	 * Displays a user-friendly error message to go with the supplied exception.
 	 */
-	static void processException(Exception e, String message, Component component) {
-		Log.log(Log.ERROR, XSLTPlugin.class, "complete exception:"+e.toString());
-		while(e.getCause() != null && e.getCause() instanceof TransformerException){
-			System.out.println("exception : "+e);
-			e = (Exception) e.getCause();
+	static void processException(Exception e, String message, final Component component) {
+		Log.log(Log.WARNING, XSLTPlugin.class, "XSLT exception:"+e.toString());
+		Exception root = e;
+		while(root.getCause() != null && root.getCause() instanceof TransformerException){
+			root = (Exception) root.getCause();
 		}
-		Log.log(Log.ERROR, XSLTPlugin.class, e);
-		String msg = MessageFormat.format(jEdit.getProperty("xslt.message.error"),
+		if(root != e){
+			Log.log(Log.WARNING, XSLTPlugin.class, "XSLT exception root cause:"+root.toString());
+			e = root;
+		}
+		//stack trace is not helping Log.log(Log.ERROR, XSLTPlugin.class, e);
+		final String msg = MessageFormat.format(jEdit.getProperty("xslt.message.error"),
 				new Object[]{message, e.getMessage()});
-		JOptionPane.showMessageDialog(component, msg.toString());
+		ThreadUtilities.runInDispatchThread(new Runnable(){
+			public void run(){
+				JOptionPane.showMessageDialog(component, msg.toString());
+			}
+		});
 	}
 
 
