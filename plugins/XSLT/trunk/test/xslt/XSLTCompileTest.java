@@ -133,4 +133,59 @@ public class XSLTCompileTest {
 		}
     }
 	
+	@Test
+    public void testCompound() throws IOException{
+    	File xsl = new File(testData.get(),"broken/error_in_imported.xsl");
+    	
+    	/* see previous test for why plugin must be activated */
+    	jEdit.getPlugin("xslt.XSLTPlugin",true).getPluginJAR().activatePlugin();
+    	
+    	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
+    	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
+    	Pause.pause(1000);
+    	options.checkBox("compile-on-save").check();
+    	// Saxon is required
+    	options.comboBox("factory").selectItem(Pattern.compile("XSLT 2\\.0.*"));
+    	optionsF.OK();
+    	
+    	final Buffer buffer = TestUtils.openFile(xsl.getPath());
+    	
+		action("error-list-show");
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
+    	action("save");
+		Pause.pause(3000);
+    	
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
+		errorlist.close();
+		
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				String text = buffer.getText();
+				String bad = "<xsl:import href=\"transform.xsl\"/>";
+				int offset = text.indexOf(bad);
+				buffer.remove(offset, bad.length());
+			}
+		});
+		try{
+			
+			action("error-list-show");
+	    	errorlist = TestUtils.findFrameByTitle("Error List");
+
+	    	action("save");
+			Pause.pause(30000);
+	    	
+			assertEquals(0, errorlist.tree().target.getRowCount());
+			errorlist.close();
+			
+		}finally{
+			TestUtils.action("undo");
+			TestUtils.action("save");
+			Pause.pause(3000);
+			// otherwise the error stays and makes testNormal fail
+			TestUtils.action("error-list-clear");
+			TestUtils.close(TestUtils.view(), buffer);
+		}
+    }
 }

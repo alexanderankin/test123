@@ -459,7 +459,9 @@
     <para>
       <emphasis role="bold">Changes from 0.8.1 to 0.8.2</emphasis>
       <itemizedlist>
-        <listitem><para>XSLT: compile on save clears errors from symlinked files.</para></listitem>
+        <listitem><para>XSLT: compile on save clears all errors (fixes
+        errors not cleared in symlinked files or errors from imported
+        templates not cleared).</para></listitem>
       </itemizedlist>
     </para>
     <para>
