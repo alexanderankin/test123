@@ -9,6 +9,7 @@
 
  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+ <author><firstname>Tim</firstname><surname>Blackler</surname></author>
   
  <legalnotice><title>Legal Notice</title>
   <para>
@@ -75,6 +76,13 @@
   warnings. The two are differentiated with different-colored icons in the
   tree; errors have a red icon, warnings have a yellow one.
  </para>
+
+ <para>
+  It is possible to copy the text of all or some of the error messages to the 
+  system clipboard either from the actions menu, or from context menu on the
+  error list pane.
+ </para>
+ 
 
  <para>
   For information on keyboard-based navigation of the tree, see
@@ -176,6 +184,19 @@
   List</guisubmenu>&gt;<guimenuitem>Toggle Display of Warnings</guimenuitem>
   toggles the display of warnings in the tree.
  </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Copy Selected Error to Clip Board</guimenuitem>
+  copies the currently highlighted error to the clipboard.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Copy All Errors to Clip Board</guimenuitem>
+  copies all the errors from the current error list to the clipboard.
+ </para>
+
 
 </section>
 
@@ -465,6 +486,18 @@ errorSource.addError(new ErrorSource.DefaultError(
 
 <appendix id="changes"><title>Change log</title>
  <itemizedlist> 
+
+ <listitem><formalpara><title>Version 2.3</title> <para> by Tim Blackler, Requires Java 1.6, and jEdit
+ 5.0 </para></formalpara>
+ <itemizedlist>
+  <listitem><para> Fixed #208 ErrorList: Copy errors to clipboard. 
+  </para></listitem>
+  <listitem><para>Copy errors to clipboard either via right click menu, or by action 
+  menu</para></listitem>
+ </itemizedlist>
+ </listitem>
+ 
+
  
  <listitem><formalpara><title>Version 2.2</title> <para> by Alan Ezust, Requires Java 1.6, and jEdit
  5.0 </para></formalpara>

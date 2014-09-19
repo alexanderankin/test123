@@ -27,30 +27,53 @@ package errorlist;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.RolloverButton;
@@ -86,8 +109,9 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private HashSet<Error> errors;
 	private Vector<Integer> filteredTypes;
 	private Map<Integer, JToggleButton> toggleButtons;
+	private PopupMenu popupMenu;
         // }}}
-
+	
 	//{{{ ErrorList constructor
 	public ErrorList(View view)
 	{
@@ -177,9 +201,6 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 
 		toolBar.add(Box.createHorizontalStrut(6));
 
-
-
-
 		add(BorderLayout.NORTH,toolBar);
 
 		// Can't just use "" since the renderer expects string nodes
@@ -219,6 +240,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		add(BorderLayout.CENTER,scroller);
 		updateStatus();
 
+		popupMenu = new PopupMenu(new ErrorList.ActionHandler(this));
+		
 		load();
 	} //}}}
 
@@ -585,7 +608,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			updateStatus();
 		}
 	} //}}}
-
+	
 	//{{{ addErrorSource() method
 	private void addErrorSource(ErrorSource source,
 	                            ErrorSource.Error[] errors)
@@ -779,6 +802,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private void addErrorToTree(ErrorSource.Error error,
 		boolean init)
 	{
+		Log.log(Log.DEBUG,ErrorList.class,"Adding Error Line#" + (error.getLineNumber()+1)
+				+ " Start#" + (error.getStartOffset()+1)  + " Error Message:" + error.getErrorMessage());
 		String[] extras = error.getExtraMessages();
 		final DefaultMutableTreeNode newNode
 			= new DefaultMutableTreeNode(error,extras.length > 0);
@@ -977,7 +1002,111 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				selected.getLastPathComponent());
 		}
 	} //}}}
+	
+	//{{{ setClipboardContents() method
+	private void setClipboardContents(String errorMessage)
+	{
+		StringSelection stringSelection = new StringSelection(errorMessage);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, null);
+	} //}}}
 
+	//{{{ copySelectedNodeToClipboard() method
+	public void copySelectedNodeToClipboard()
+	{
+		TreePath[] allSelected = errorTree.getSelectionPaths();
+		StringBuilder fullError = new StringBuilder();
+		String lastPath = "";
+		Set<String> selectedFiles = new HashSet<String>();
+		
+		if(allSelected != null)
+		{   
+			for (TreePath selected : allSelected) 
+			{
+				DefaultMutableTreeNode node = 
+						(DefaultMutableTreeNode) selected.getLastPathComponent();
+				
+				Object object = node.getUserObject();
+				
+				if(object instanceof ErrorSource.Error)
+				{
+					// This is an error
+					ErrorSource.Error error = (ErrorSource.Error)object;
+					
+					// Skip if this has already been copied to clipboard by selecting the file name
+					if (!selectedFiles.contains(error.getFilePath()))
+					{
+						if (!lastPath.equals(error.getFilePath())) {
+							if (!"".equals(lastPath)) {
+								fullError.append("\n");	
+							}
+							fullError.append(error.getFilePath());
+							fullError.append("\n");	
+							lastPath = error.getFilePath();
+						}
+	
+						fullError.append(formatErrorDisplay(error));
+						fullError.append("\n");	
+					}
+	
+				} 
+				else if (object instanceof String)
+				{
+					// This is a file name
+					fullError.append((String)object);
+					fullError.append("\n");	
+					
+					// Keep track of Selected files, so that we don't accidentally get a a double selection if a node 
+					// is selected as well
+					selectedFiles.add((String)object);
+					
+					for(int i = 0; i < node.getChildCount(); i++)
+					{
+						DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
+							node.getChildAt(i);
+						ErrorSource.Error error = (ErrorSource.Error) errorNode.getUserObject();
+						fullError.append(formatErrorDisplay(error));
+						fullError.append("\n");
+					}
+				}
+			}
+
+			setClipboardContents(fullError.toString());		
+		}
+	} //}}}
+
+	//{{{ copyAllNodesToClipboard() method
+	public void copyAllNodesToClipboard()
+	{
+		StringBuilder allErrors = new StringBuilder();
+		String lastPath = "";
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				errorRoot.getChildAt(i);
+			for(int j = 0; j < node.getChildCount(); j++)
+			{
+				DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
+					node.getChildAt(j);
+				ErrorSource.Error error = (ErrorSource.Error) errorNode.getUserObject();
+				if (!lastPath.equals(error.getFilePath())) {
+					if (!"".equals(lastPath)) {
+						allErrors.append("\n");	
+					}
+					allErrors.append(error.getFilePath());
+					allErrors.append("\n");	
+					lastPath = error.getFilePath();
+				}
+				allErrors.append(formatErrorDisplay(error));
+				allErrors.append("\n");
+			}
+		}
+		
+		setClipboardContents(allErrors.toString());
+
+	} //}}}
+
+	
 	//}}}
 
 	//{{{ Root class
@@ -1012,6 +1141,22 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		statusProp += "-warning";
 		return statusProp;
 	}
+	
+	//{{{ formatErrorDisplay() method
+	static protected String formatErrorDisplay(ErrorSource.Error error) {
+		Log.log(Log.DEBUG,ErrorList.class,"Formatted Error Line#" + (error.getLineNumber()+1)
+				+ " Error Message: " + error.getErrorMessage());
+
+		
+		StringBuilder errorFormat = new StringBuilder();
+
+		errorFormat.append(error.getLineNumber() + 1);
+		errorFormat.append( ":");
+		errorFormat.append(error.getErrorMessage() == null ? "" : 
+						   error.getErrorMessage().replace('\t',' '));
+		return errorFormat.toString();
+
+	} //}}}
 
 	//{{{ ErrorCellRenderer class
 	static class ErrorCellRenderer extends EnhancedTreeCellRenderer
@@ -1076,12 +1221,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			{
 				setFont(plainFont);
 				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
-				setText((error.getLineNumber() + 1)
-					+ ": "
-					+ (error.getErrorMessage() == null
-					? ""
-					: error.getErrorMessage()
-					.replace('\t',' ')));
+				setText(formatErrorDisplay(error));
 				setIcon(error.getErrorType() == ErrorSource.WARNING
 					? WARNING_ICON : ERROR_ICON);
 			}
@@ -1115,12 +1255,19 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
-			TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
-			if(path == null)
-				return;
-			errorTree.setSelectionPath(path);
-			openNode((DefaultMutableTreeNode)
-				path.getLastPathComponent());
+			if (SwingUtilities.isRightMouseButton(evt)) {
+
+		        popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+		        popupMenu.enableSelectOne(!errorTree.isSelectionEmpty());
+		        
+			} else {
+				TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
+				if(path == null)
+					return;
+				errorTree.setSelectionPath(path);
+				openNode((DefaultMutableTreeNode)
+					path.getLastPathComponent());
+			}
 		}
 	} //}}}
 
@@ -1162,5 +1309,60 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		}
 	} //}}}
 
+	//{{{ ActionHandler class
+	class ActionHandler implements ActionListener
+	{
+		public ErrorList errorList;
+		
+		public ActionHandler (ErrorList errorList) 
+		{
+			this.errorList = errorList;
+		}
+		
+		public void actionPerformed(ActionEvent evt) 
+		{
+			JMenuItem item = (JMenuItem)(evt.getSource());
 
+			if ( jEdit.getProperty("hypersearch-results.copy-to-clipboard").equals(item.getText())) {
+				
+				copySelectedNodeToClipboard();
+				
+			} else if (jEdit.getProperty("error-list.copy-all-to-clipboard").equals(item.getText())) {
+				
+				copyAllNodesToClipboard();	
+		
+			} else {
+
+				JOptionPane.showMessageDialog(null, "Invalid Menu option.");
+				
+			}
+		}
+	} //}}}
+
+	
+	//{{{ PopupMenu class	
+	class PopupMenu extends JPopupMenu 
+	{
+		JMenuItem selectOne;
+		JMenuItem selectAll;
+		
+		public PopupMenu(ActionListener listener) 
+		{
+			selectOne = new JMenuItem(jEdit.getProperty("hypersearch-results.copy-to-clipboard"));
+			selectOne.addActionListener(listener);
+			selectAll = new JMenuItem(jEdit.getProperty("error-list.copy-all-to-clipboard"));
+			selectAll.addActionListener(listener);
+			add(selectOne);
+			add(selectAll);
+		}
+		
+		public void enableSelectOne(boolean enabled) 
+		{
+			selectOne.setEnabled(enabled);
+		}
+		
+		
+	} //}}}
+	
+	
 }

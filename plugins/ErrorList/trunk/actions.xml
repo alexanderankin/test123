@@ -61,4 +61,18 @@
 			wm.getDockableWindow("error-list").toggleWarnings();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="error-list-copy-selected-error">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").copySelectedNodeToClipboard();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-copy-all-errors">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").copyAllNodesToClipboard();
+		</CODE>
+	</ACTION>
+
+
 </ACTIONS>
