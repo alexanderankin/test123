@@ -487,13 +487,12 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist> 
 
- <listitem><formalpara><title>Version 2.3</title> <para> by Tim Blackler, Requires Java 1.6, and jEdit
+ <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
-  <listitem><para> Fixed #208 ErrorList: Copy errors to clipboard. 
-  </para></listitem>
-  <listitem><para>Copy errors to clipboard either via right click menu, or by action 
-  menu</para></listitem>
+  <listitem><para> Plugin Feature Request #208: Copy errors to clipboard,
+   either via right click menu, or by action menu. (Plugin Patch #163 - Tim Blackler)
+  </para></listitem> 
  </itemizedlist>
  </listitem>
  
