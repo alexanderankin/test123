@@ -154,7 +154,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		toolBar.add(toggleBtn);
 		toggleButtons.put(Integer.valueOf(ErrorSource.WARNING), toggleBtn);
 		toolBar.add(Box.createGlue());
-
+		
 		JButton btn = new RolloverButton(GUIUtilities.loadIcon(
 			"PreviousFile.png"));
 		btn.setToolTipText(jEdit.getProperty(
@@ -187,7 +187,25 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			jEdit.getActionContext(),
 			"error-list-next-error"));
 		toolBar.add(btn);
+		
+		btn = new RolloverButton(GUIUtilities.loadIcon(
+				"Plus.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-expand-all.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-expand-all"));
+		toolBar.add(btn);
 
+		btn = new RolloverButton(GUIUtilities.loadIcon(
+			"Minus.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-collapse-all.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-collapse-all"));
+		toolBar.add(btn);		
+		
 		toolBar.add(Box.createHorizontalStrut(6));
 
 		btn = new RolloverButton(GUIUtilities.loadIcon(
@@ -285,6 +303,36 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		errorTree.requestFocus();
 	} //}}}
 
+	
+	//{{{ expandAll() method
+	/**
+	 * Expand All the nodes on the ErrorList.
+	 */
+	public void expandAll()
+	{
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
+	} //}}}
+
+	//{{{ collapseAll() method
+	/**
+	 * Collapse All the nodes on the ErrorList.
+	 */
+	public void collapseAll()
+	{
+		TreeNode[] collapsePath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			collapsePath[1] = errorRoot.getChildAt(i);
+			errorTree.collapsePath(new TreePath(collapsePath));
+		}
+	} //}}}
+	
+	
 	//{{{ initFilteredTypes() method
 	private void initFilteredTypes() {
 		for (Integer type: allTypes)
@@ -1330,6 +1378,14 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			} else if (jEdit.getProperty("error-list.copy-all-to-clipboard").equals(item.getText())) {
 				
 				copyAllNodesToClipboard();	
+
+			} else if (jEdit.getProperty("error-list.expand-all").equals(item.getText())) {
+				
+				expandAll();	
+		
+			} else if (jEdit.getProperty("error-list.collapse-all").equals(item.getText())) {
+				
+				collapseAll();	
 		
 			} else {
 
@@ -1345,15 +1401,28 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	{
 		JMenuItem selectOne;
 		JMenuItem selectAll;
+		JMenuItem expandAll;
+		JMenuItem collapseAll;
 		
 		public PopupMenu(ActionListener listener) 
 		{
 			selectOne = new JMenuItem(jEdit.getProperty("hypersearch-results.copy-to-clipboard"));
 			selectOne.addActionListener(listener);
+
 			selectAll = new JMenuItem(jEdit.getProperty("error-list.copy-all-to-clipboard"));
 			selectAll.addActionListener(listener);
+
+			expandAll = new JMenuItem(jEdit.getProperty("error-list.expand-all"));
+			expandAll.addActionListener(listener);
+
+			collapseAll = new JMenuItem(jEdit.getProperty("error-list.collapse-all"));
+			collapseAll.addActionListener(listener);
+
 			add(selectOne);
 			add(selectAll);
+			addSeparator();
+			add(expandAll);
+			add(collapseAll);
 		}
 		
 		public void enableSelectOne(boolean enabled) 

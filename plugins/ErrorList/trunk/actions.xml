@@ -73,6 +73,18 @@
 			wm.getDockableWindow("error-list").copyAllNodesToClipboard();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="error-list-expand-all">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").expandAll();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-collapse-all">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").collapseAll();
+		</CODE>
+	</ACTION>
 
 
 </ACTIONS>
