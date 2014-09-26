@@ -28,7 +28,10 @@ plugin.errorlist.ErrorListPlugin.menu=error-list-show \
 	error-list-toggle-warnings \
 	- \
 	error-list-copy-selected-error \
-	error-list-copy-all-errors
+	error-list-copy-all-errors \
+	- \
+	error-list-expand-all \
+	error-list-collapse-all
 
 error-list.label=Error List
 error-overview.label=Error Overview
@@ -42,8 +45,12 @@ error-list-toggle-errors.label=Toggle Display of Errors
 error-list-toggle-warnings.label=Toggle Display of Warnings
 error-list-copy-selected-error.label=Copy Selected Error to Clipboard
 error-list-copy-all-errors.label=Copy All Errors to Clipboard
+error-list-expand-all.label=Expand All 
+error-list-collapse-all.label=Collapse All
 
 error-list.copy-all-to-clipboard=Copy all to clipboard
+error-list.expand-all=Expand All 
+error-list.collapse-all=Collapse All
 
 
 # Option pane
