@@ -37,6 +37,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,6 +64,7 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -310,12 +313,24 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	 */
 	public void expandAll()
 	{
-		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		TreePath path = new TreePath(new TreeNode[]{errorRoot});
+		expandRecursive(path);
+	}
+	
+	private void expandRecursive(TreePath parent) 
+	{
+		TreeModel m = errorTree.getModel();
+		TreeNode node = (TreeNode) parent.getLastPathComponent();
+		errorTree.expandPath(parent);
+		if (node.getChildCount() >= 0) 
 		{
-			expandPath[1] = errorRoot.getChildAt(i);
-			errorTree.expandPath(new TreePath(expandPath));
-		}
+			for (Enumeration<TreeNode> e = node.children(); e.hasMoreElements();) 
+			{
+		        TreeNode n = e.nextElement();
+		        TreePath path = parent.pathByAddingChild(n);
+		        expandRecursive(path);
+			}
+	    }
 	} //}}}
 
 	//{{{ collapseAll() method
