@@ -319,18 +319,15 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	
 	private void expandRecursive(TreePath parent) 
 	{
-		TreeModel m = errorTree.getModel();
 		TreeNode node = (TreeNode) parent.getLastPathComponent();
 		errorTree.expandPath(parent);
-		if (node.getChildCount() >= 0) 
+		Enumeration<TreeNode> e = node.children();			
+		while ( e.hasMoreElements()) 
 		{
-			for (Enumeration<TreeNode> e = node.children(); e.hasMoreElements();) 
-			{
-		        TreeNode n = e.nextElement();
-		        TreePath path = parent.pathByAddingChild(n);
-		        expandRecursive(path);
-			}
-	    }
+	        TreeNode n = e.nextElement();
+	        TreePath path = parent.pathByAddingChild(n);
+	        expandRecursive(path);
+		}
 	} //}}}
 
 	//{{{ collapseAll() method

@@ -499,7 +499,7 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist> 
 
- <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 1.6, and jEdit
+ <listitem><formalpara><title>Version 2.3</title> <para> By Alan Ezust, Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
   <listitem><para> Plugin Feature Request #208: Copy errors to clipboard,
@@ -507,11 +507,8 @@ errorSource.addError(new ErrorSource.DefaultError(
   </para></listitem> 
   <listitem><para> Plugin Feature Request #312: Expand/Collapse All (Plugin Patch #164 -
    Tim Blackler) </para></listitem>
-
  </itemizedlist>
  </listitem>
- 
-
  
  <listitem><formalpara><title>Version 2.2</title> <para> by Alan Ezust, Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
