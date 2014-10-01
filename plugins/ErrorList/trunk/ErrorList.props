@@ -3,8 +3,8 @@ plugin.errorlist.ErrorListPlugin.activate=defer
 
 plugin.errorlist.ErrorListPlugin.name=ErrorList
 plugin.errorlist.ErrorListPlugin.author=Slava Pestov(former), Shlomy Reinstein(Former), Alan Ezust
-# bump to 2.4 before releasing.
-plugin.errorlist.ErrorListPlugin.version=2.3
+# bump to 2.3 before releasing.
+plugin.errorlist.ErrorListPlugin.version=2.2.9
 plugin.errorlist.ErrorListPlugin.docs=index.html
 # See jEdit.getBuild() to understand build numbering scheme.
 plugin.errorlist.ErrorListPlugin.depend.0=jedit 05.00.99.00
