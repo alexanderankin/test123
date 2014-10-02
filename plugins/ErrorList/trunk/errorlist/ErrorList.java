@@ -114,7 +114,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private Map<Integer, JToggleButton> toggleButtons;
 	private PopupMenu popupMenu;
         // }}}
-	
+
 	//{{{ ErrorList constructor
 	public ErrorList(View view)
 	{
@@ -157,7 +157,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		toolBar.add(toggleBtn);
 		toggleButtons.put(Integer.valueOf(ErrorSource.WARNING), toggleBtn);
 		toolBar.add(Box.createGlue());
-		
+
 		JButton btn = new RolloverButton(GUIUtilities.loadIcon(
 			"PreviousFile.png"));
 		btn.setToolTipText(jEdit.getProperty(
@@ -190,7 +190,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			jEdit.getActionContext(),
 			"error-list-next-error"));
 		toolBar.add(btn);
-		
+
 		btn = new RolloverButton(GUIUtilities.loadIcon(
 				"Plus.png"));
 		btn.setToolTipText(jEdit.getProperty(
@@ -207,8 +207,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-collapse-all"));
-		toolBar.add(btn);		
-		
+		toolBar.add(btn);
+
 		toolBar.add(Box.createHorizontalStrut(6));
 
 		btn = new RolloverButton(GUIUtilities.loadIcon(
@@ -244,7 +244,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		for(int i = 0; i < sources.length; i++)
 		{
 			ErrorSource source = sources[i];
-			if ((sources[i].getView() == null) 
+			if ((sources[i].getView() == null)
 				|| (view == sources[i].getView()))
 				addErrorSource(source, source.getAllErrors());
 		}
@@ -262,7 +262,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		updateStatus();
 
 		popupMenu = new PopupMenu(new ErrorList.ActionHandler(this));
-		
+
 		load();
 	} //}}}
 
@@ -306,27 +306,26 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		errorTree.requestFocus();
 	} //}}}
 
-	
-	//{{{ expandAll() method
+
+	//{{{ expandAll() methods
 	/**
-	 * Expand All the nodes on the ErrorList.
+	 * Recursively expand all the nodes on the ErrorList.
 	 */
 	public void expandAll()
 	{
-		TreePath path = new TreePath(new TreeNode[]{errorRoot});
-		expandRecursive(path);
+		expandAll(new TreePath(new TreeNode[]{errorRoot}));
 	}
-	
-	private void expandRecursive(TreePath parent) 
+
+	public void expandAll(TreePath parent)
 	{
-		TreeNode node = (TreeNode) parent.getLastPathComponent();
 		errorTree.expandPath(parent);
-		Enumeration<TreeNode> e = node.children();			
-		while ( e.hasMoreElements()) 
+		TreeNode node = (TreeNode) parent.getLastPathComponent();
+		Enumeration<TreeNode> e = node.children();
+		while ( e.hasMoreElements())
 		{
 	        TreeNode n = e.nextElement();
 	        TreePath path = parent.pathByAddingChild(n);
-	        expandRecursive(path);
+	        expandAll(path);
 		}
 	} //}}}
 
@@ -343,8 +342,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			errorTree.collapsePath(new TreePath(collapsePath));
 		}
 	} //}}}
-	
-	
+
+
 	//{{{ initFilteredTypes() method
 	private void initFilteredTypes() {
 		for (Integer type: allTypes)
@@ -642,7 +641,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	{
 		Object what = message.getWhat();
 		ErrorSource es = message.getErrorSource();
-		View v = es.getView();	
+		View v = es.getView();
 		// Ignore messages that are not meant for me
 		if ((v != null) && (v != this.view)) return;
 		if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
@@ -668,7 +667,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			updateStatus();
 		}
 	} //}}}
-	
+
 	//{{{ addErrorSource() method
 	private void addErrorSource(ErrorSource source,
 	                            ErrorSource.Error[] errors)
@@ -976,16 +975,16 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			Log.log(Log.ERROR, this, ioe);
 		}
 	}//}}}
-	
+
 	//{{{ openError() method
 	private void openError(final ErrorSource.Error error)
-	{	
+	{
 		_openFile(error.getFilePath());
 		final Buffer buffer = error.getBuffer() != null ?
 				error.getBuffer() : view.getEditPane().getBuffer();
-		
+
 		if (buffer.isNewFile() || !buffer.getName().equals(error.getFileName())) return;
-		
+
 		ThreadUtilities.runInDispatchThread(new Runnable()
 		{
 			public void run()
@@ -1062,7 +1061,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				selected.getLastPathComponent());
 		}
 	} //}}}
-	
+
 	//{{{ setClipboardContents() method
 	private void setClipboardContents(String errorMessage)
 	{
@@ -1078,48 +1077,48 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		StringBuilder fullError = new StringBuilder();
 		String lastPath = "";
 		Set<String> selectedFiles = new HashSet<String>();
-		
+
 		if(allSelected != null)
-		{   
-			for (TreePath selected : allSelected) 
+		{
+			for (TreePath selected : allSelected)
 			{
-				DefaultMutableTreeNode node = 
+				DefaultMutableTreeNode node =
 						(DefaultMutableTreeNode) selected.getLastPathComponent();
-				
+
 				Object object = node.getUserObject();
-				
+
 				if(object instanceof ErrorSource.Error)
 				{
 					// This is an error
 					ErrorSource.Error error = (ErrorSource.Error)object;
-					
+
 					// Skip if this has already been copied to clipboard by selecting the file name
 					if (!selectedFiles.contains(error.getFilePath()))
 					{
 						if (!lastPath.equals(error.getFilePath())) {
 							if (!"".equals(lastPath)) {
-								fullError.append("\n");	
+								fullError.append("\n");
 							}
 							fullError.append(error.getFilePath());
-							fullError.append("\n");	
+							fullError.append("\n");
 							lastPath = error.getFilePath();
 						}
-	
+
 						fullError.append(formatErrorDisplay(error));
-						fullError.append("\n");	
+						fullError.append("\n");
 					}
-	
-				} 
+
+				}
 				else if (object instanceof String)
 				{
 					// This is a file name
 					fullError.append((String)object);
-					fullError.append("\n");	
-					
-					// Keep track of Selected files, so that we don't accidentally get a a double selection if a node 
+					fullError.append("\n");
+
+					// Keep track of Selected files, so that we don't accidentally get a a double selection if a node
 					// is selected as well
 					selectedFiles.add((String)object);
-					
+
 					for(int i = 0; i < node.getChildCount(); i++)
 					{
 						DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
@@ -1131,7 +1130,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				}
 			}
 
-			setClipboardContents(fullError.toString());		
+			setClipboardContents(fullError.toString());
 		}
 	} //}}}
 
@@ -1151,22 +1150,22 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				ErrorSource.Error error = (ErrorSource.Error) errorNode.getUserObject();
 				if (!lastPath.equals(error.getFilePath())) {
 					if (!"".equals(lastPath)) {
-						allErrors.append("\n");	
+						allErrors.append("\n");
 					}
 					allErrors.append(error.getFilePath());
-					allErrors.append("\n");	
+					allErrors.append("\n");
 					lastPath = error.getFilePath();
 				}
 				allErrors.append(formatErrorDisplay(error));
 				allErrors.append("\n");
 			}
 		}
-		
+
 		setClipboardContents(allErrors.toString());
 
 	} //}}}
 
-	
+
 	//}}}
 
 	//{{{ Root class
@@ -1201,18 +1200,18 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		statusProp += "-warning";
 		return statusProp;
 	}
-	
+
 	//{{{ formatErrorDisplay() method
 	static protected String formatErrorDisplay(ErrorSource.Error error) {
 		Log.log(Log.DEBUG,ErrorList.class,"Formatted Error Line#" + (error.getLineNumber()+1)
 				+ " Error Message: " + error.getErrorMessage());
 
-		
+
 		StringBuilder errorFormat = new StringBuilder();
 
 		errorFormat.append(error.getLineNumber() + 1);
 		errorFormat.append( ":");
-		errorFormat.append(error.getErrorMessage() == null ? "" : 
+		errorFormat.append(error.getErrorMessage() == null ? "" :
 						   error.getErrorMessage().replace('\t',' '));
 		return errorFormat.toString();
 
@@ -1319,7 +1318,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 
 		        popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 		        popupMenu.enableSelectOne(!errorTree.isSelectionEmpty());
-		        
+
 			} else {
 				TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
 				if(path == null)
@@ -1373,50 +1372,50 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	class ActionHandler implements ActionListener
 	{
 		public ErrorList errorList;
-		
-		public ActionHandler (ErrorList errorList) 
+
+		public ActionHandler (ErrorList errorList)
 		{
 			this.errorList = errorList;
 		}
-		
-		public void actionPerformed(ActionEvent evt) 
+
+		public void actionPerformed(ActionEvent evt)
 		{
 			JMenuItem item = (JMenuItem)(evt.getSource());
 
 			if ( jEdit.getProperty("hypersearch-results.copy-to-clipboard").equals(item.getText())) {
-				
+
 				copySelectedNodeToClipboard();
-				
+
 			} else if (jEdit.getProperty("error-list.copy-all-to-clipboard").equals(item.getText())) {
-				
-				copyAllNodesToClipboard();	
+
+				copyAllNodesToClipboard();
 
 			} else if (jEdit.getProperty("error-list.expand-all").equals(item.getText())) {
-				
-				expandAll();	
-		
+
+				expandAll();
+
 			} else if (jEdit.getProperty("error-list.collapse-all").equals(item.getText())) {
-				
-				collapseAll();	
-		
+
+				collapseAll();
+
 			} else {
 
 				JOptionPane.showMessageDialog(null, "Invalid Menu option.");
-				
+
 			}
 		}
 	} //}}}
 
-	
-	//{{{ PopupMenu class	
-	class PopupMenu extends JPopupMenu 
+
+	//{{{ PopupMenu class
+	class PopupMenu extends JPopupMenu
 	{
 		JMenuItem selectOne;
 		JMenuItem selectAll;
 		JMenuItem expandAll;
 		JMenuItem collapseAll;
-		
-		public PopupMenu(ActionListener listener) 
+
+		public PopupMenu(ActionListener listener)
 		{
 			selectOne = new JMenuItem(jEdit.getProperty("hypersearch-results.copy-to-clipboard"));
 			selectOne.addActionListener(listener);
@@ -1436,14 +1435,14 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			add(expandAll);
 			add(collapseAll);
 		}
-		
-		public void enableSelectOne(boolean enabled) 
+
+		public void enableSelectOne(boolean enabled)
 		{
 			selectOne.setEnabled(enabled);
 		}
-		
-		
+
+
 	} //}}}
-	
-	
+
+
 }
