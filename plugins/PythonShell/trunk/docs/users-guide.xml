@@ -32,9 +32,10 @@
 		<para>
 			For each interpreter, you may also define a list of parameters to pass in when it is
 			started. Be aware when adding parameters that no advanced parsing is done on them,
-			so quoted strings will not work as expected. In addition, the "-i" parameter (inspect
-			interactively) is always passed in and never needs to be specified; if the plugin detects
-			ipython as the interpreter, then "-noreadline" is passed in as well.
+			so quoted strings will not work as expected.
+			In addition, the "-i" parameter (inspect
+			interactively) is automatically passed in and should not need to be supplied.
+			If the plugin detects ipython as the interpreter, then "-noreadline" is passed in as well. For Python 3, the "-u" parameter (unbuffered binary stdout and stderr) is also need, and also automatically supplied by the plugin.
 		</para>
 		<para>
 			NOTE: some Python implementations may not work with this plugin. IronPython, for example,
@@ -51,7 +52,7 @@
 		</para>
 		<para>
 			These actions can be found in Plugins -> Python Shell. Using these actions, you can
-			use the shell to evaluate the active buffer, any selected text within that buffer, 
+			use the shell to evaluate the active buffer, any selected text within that buffer,
 			or an external Python script.
 		</para>
 		<para>
