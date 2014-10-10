@@ -19,6 +19,7 @@ package python.shell;
 
 //{{{ Imports
 import console.Shell;
+import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.EditPlugin;
 //}}}
 
@@ -39,7 +40,7 @@ public class PythonShellPlugin extends EditPlugin {
 			shell.stop();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, "Can't stop plugin:", e);
 		}
 	}
 }

@@ -20,23 +20,13 @@ package python.shell;
 //{{{ Imports
 import console.Console;
 import console.Output;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import javax.swing.text.AttributeSet;
+import java.lang.ProcessBuilder;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
-
+import org.gjt.sp.util.StringList;
 import procshell.ProcessShell;
 //}}}
 
@@ -59,12 +49,10 @@ public class PythonShell extends ProcessShell {
 	protected void init(ConsoleState state, String command) throws IOException {
 		Integer selected = jEdit.getIntegerProperty("python-shell.selected-interpreter");
 		String cmd = jEdit.getProperty("python-shell.interpreter." + String.valueOf(selected));
-		Log.log(Log.DEBUG,this,"Attempting to start Python process: "+cmd);
-
-		LinkedList<String> exec = new LinkedList<String>();
+		StringList exec = new StringList();
 		exec.add(cmd);
-		exec.add("-i"); // force python to run in interactive mode
 		exec.add("-u"); // force python to use fully unbuffered output
+		exec.add("-i"); // force python to run in interactive mode
 		if (cmd.endsWith("ipython") || cmd.endsWith("ipython.exe")) {
 			// if we know this is ipython, disable readline
 			exec.add("-noreadline");
@@ -78,7 +66,8 @@ public class PythonShell extends ProcessShell {
 		ProcessBuilder pb = new ProcessBuilder(exec);
 		pb.environment().put("TERM", "dumb");
 		state.p = pb.start();
-		Log.log(Log.DEBUG,this,"Python started.");
+
+		Log.log(Log.DEBUG,this, "Starting \"" + exec.join(" ") + "\"");
 	}
 
 	/**
