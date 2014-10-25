@@ -165,7 +165,7 @@ public class Project
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(inStream);
+			IOUtilities.closeQuietly((Closeable)inStream);
 		}
 		checkProperties();
 	}
@@ -627,7 +627,7 @@ public class Project
 			}
 			finally
 			{
-				IOUtilities.closeQuietly(outStream);
+				IOUtilities.closeQuietly((Closeable)outStream);
 			}
 		}
 		long end = System.currentTimeMillis();
@@ -1190,7 +1190,7 @@ public class Project
 			}
 			finally
 			{
-				IOUtilities.closeQuietly(reader);
+				IOUtilities.closeQuietly((Closeable)reader);
 			}
 		}
 	}

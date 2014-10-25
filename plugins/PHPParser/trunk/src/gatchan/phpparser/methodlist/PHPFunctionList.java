@@ -22,6 +22,7 @@
 package gatchan.phpparser.methodlist;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class PHPFunctionList
 		}
 		finally
 		{
-			IOUtilities.closeQuietly(reader);
+			IOUtilities.closeQuietly((Closeable)reader);
 		}
 		this.functions = functions;
 	}
