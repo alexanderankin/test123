@@ -514,7 +514,7 @@ public class BufferList extends JPanel implements EBComponent
 	private void updateBufferCounts()
 	{
 		int dirtyBuffers = 0;
-		Buffer buffers[] = getBuffers();
+		Buffer buffers[] = view.getBuffers();
 		for (Buffer buffer : buffers)
 		{
 			if (buffer.isDirty())
@@ -708,25 +708,6 @@ public class BufferList extends JPanel implements EBComponent
 		createModel();
 		restoreExpansionState();
 	} // }}}
-
-	//{{{ -getBuffers(): Buffer[]
-	/**
-	 * Returns an array of Buffers opened from view. 
-	 */
-	private Buffer[] getBuffers() {
-		BufferSetManager mgr = jEdit.getBufferSetManager();
-		HashSet<Buffer> retval = new HashSet<Buffer>();
-		for (EditPane ep: view.getEditPanes()) {
-			BufferSet bs = ep.getBufferSet();
-			for (Buffer b: bs.getAllBuffers()) 
-				retval.add(b);
-			if (mgr.getScope() != BufferSet.Scope.editpane)
-				break;	
-		}
-		Buffer[] bufs = new Buffer[retval.size()];
-		retval.toArray(bufs);
-		return bufs;
-	}
 	
 	// {{{ -createModel() : void
 	/**
@@ -735,34 +716,7 @@ public class BufferList extends JPanel implements EBComponent
 	private void createModel()
 	{
 		
-		Buffer[] buffers = getBuffers();
-			
-		Arrays.sort(buffers, new Comparator<Buffer>()
-		{
-			public int compare(Buffer buf1, Buffer buf2)
-			{
-				if (buf1 == buf2)
-				{
-					return 0;
-				}
-				else
-				{
-					String dir1 = getDir(buf1);
-					String dir2 = getDir(buf2);
-					int cmpDir = StandardUtilities.compareStrings(dir1, dir2, sortIgnoreCase);
-					if (MiscUtilities.pathsEqual(dir1, dir2)) cmpDir = 0;
-					if (cmpDir == 0)
-					{
-						return StandardUtilities.compareStrings(buf1.getName(), buf2.getName(),
-							sortIgnoreCase);
-					}
-					else
-					{
-						return cmpDir;
-					}
-				}
-			}
-		});
+		Buffer[] buffers = view.getBuffers();
 		for (BufferListTreeNode node : distinctDirs.values())
 		{
 			node.removeAllChildren();
