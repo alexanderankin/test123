@@ -637,6 +637,14 @@ public class NavigatorPlugin extends EBPlugin {
             else if ( what.equals( ViewUpdate.CLOSED ) ) {
                 viewNavigatorMap.remove( v );
             }
+            else if ( what.equals( ViewUpdate.FULL_SCREEN_TOGGLED ) ) {
+                if ( showOnToolBars() ) {
+                    setToolBars();
+                }
+                else {
+                    clearToolBars();
+                }
+            }
         }
 
         // update properties for this plugin on PropertiesChanged message
