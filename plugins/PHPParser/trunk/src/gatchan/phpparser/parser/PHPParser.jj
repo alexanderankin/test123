@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2012 Matthieu Casanova
+ * Copyright (C) 2003, 2014 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -117,6 +117,8 @@ public class PHPParser
 	 * The current namespace
 	 */
 	private String namespace;
+	
+	private String currentBuffer;
 	//}}}
 
 	//{{{ PHPParser constructor
@@ -307,6 +309,7 @@ public class PHPParser
 
 	public void parse(String s) throws ParseException
 	{
+		currentBuffer = s;
 		Reader reader = new StringReader(s);
 		parse(reader);
 	}
@@ -333,23 +336,18 @@ public class PHPParser
 		phpDocument.analyzeCode(this);
 	} //}}}
 
-	//{{{ createNewHTMLCode()
+	//{{{ createNewHTMLCode() method
 	/**
 	 * Put a new html block in the stack.
 	 */
 	public void createNewHTMLCode()
 	{
 		int currentPosition = token.sourceStart;
-		if (currentPosition == htmlStart ||
-		    currentPosition < htmlStart ||
-		    currentPosition > jj_input_stream.getCurrentBuffer().length())
-		{
+
+		if (currentPosition <= htmlStart)
 			return;
-		}
-		// todo : reactivate this
-		//String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
-		String html = "";
-		pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
+		pushOnAstNodes(new HTMLCode(currentBuffer.substring(htmlStart, currentPosition),
+			htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
 	} //}}}
 
 	//{{{ error_skipto(int kind)
@@ -790,7 +788,7 @@ void phpFile() :
 {
 	try
 	{
-		(PhpBlock())*
+		(phpBlock())*
 		{
 			createNewHTMLCode();
 		}
@@ -812,16 +810,17 @@ void phpFile() :
 	}
 } //}}}
 
-//{{{ PhpBlock()
+//{{{ phpBlock() method
 /**
  * A php block is a <?= expression [;]?>
  * or <?php somephpcode ?>
  * or <? somephpcode ?>
  */
-void PhpBlock() :
+void phpBlock():
 {
 	PHPEchoBlock phpEchoBlock;
-	Token token,phpEnd;
+	Token token;
+	Token phpEnd;
 }
 {
 	phpEchoBlock = phpEchoBlock()
@@ -831,16 +830,16 @@ void PhpBlock() :
 |
 	//{{{ <? | <?php
 	[
-  	<PHPSTARTLONG>
-	|
-	token = <PHPSTARTSHORT>
-	{
-		fireParseMessage(new PHPParseMessageEvent(INFO,
-							  WarningMessageClass.shortOpenTag,
-							  path,
-							  "You should use '<?php' instead of '<?' it will avoid some problems with XML",
-							  token));
-	}
+		<PHPSTARTLONG>
+		|
+		token = <PHPSTARTSHORT>
+		{
+			fireParseMessage(new PHPParseMessageEvent(INFO,
+								  WarningMessageClass.shortOpenTag,
+								  path,
+								  "You should use '<?php' instead of '<?' it will avoid some problems with XML",
+								  token));
+		}
 	]
 	//}}}
 	{
@@ -861,8 +860,8 @@ void PhpBlock() :
 	}
 } //}}}
 
-//{{{ phpEchoBlock()
-PHPEchoBlock phpEchoBlock() :
+//{{{ phpEchoBlock() method
+PHPEchoBlock phpEchoBlock():
 {
 	Expression expr;
 	PHPEchoBlock echoBlock;
@@ -870,7 +869,10 @@ PHPEchoBlock phpEchoBlock() :
 	Token echoEndToken;
 }
 {
-	echoStartToken = <PHPECHOSTART> {createNewHTMLCode();}
+	echoStartToken = <PHPECHOSTART>
+	{
+		createNewHTMLCode();
+	}
 	expr = Expression() [ <SEMICOLON> ]
 	try
 	{
@@ -879,7 +881,6 @@ PHPEchoBlock phpEchoBlock() :
 			htmlStart = echoEndToken.sourceEnd;
 			htmlLineStart = echoEndToken.endLine;
 			htmlColumnStart = echoEndToken.endColumn;
-
 			echoBlock = new PHPEchoBlock(expr,echoStartToken.sourceStart,
 						     echoEndToken.sourceEnd,
 						     echoStartToken.beginLine,
@@ -4823,7 +4824,7 @@ Statement StatementNoBreak() :
 	|
 		statement = SwitchStatement()
 	|
-		statement = IfStatement()
+		statement = ifStatement()
 	|
 		statement = WhileStatement()
 	|
@@ -5328,7 +5329,7 @@ Statement Statement():
 } //}}}
 
 
-//{{{ htmlBlock()
+//{{{ htmlBlock() method
 /**
  * An html block inside a php syntax.
  */
@@ -6597,67 +6598,70 @@ Break BreakStatement():
 }
 
 //}}}
-//{{{ Condition(String keyword)
 
-Expression Condition(String keyword) :
+//{{{ condition() method
+Expression condition(String keyword):
 {
-  Expression condition;
+	Expression condition;
 }
 {
-  try {
-    <LPAREN>
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'(' expected",
-                                          "(",
-                                          e.currentToken.image,
-                                          token.sourceEnd,
-                                          token.sourceEnd+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  condition = Expression()
-  try {
-     <RPAREN>
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "')' expected",
-                                          ")",
-                                          e.currentToken.image,
-                                          condition.getSourceEnd(),
-                                          condition.getSourceEnd()+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {return condition;}
-}
-
-//}}}
+	try
+	{
+		<LPAREN>
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"'(' expected",
+			"(",
+			e.currentToken.image,
+			token.sourceEnd,
+			token.sourceEnd+1,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn+1));
+	}
+	condition = Expression()
+	try
+	{
+		<RPAREN>
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"')' expected",
+			")",
+			e.currentToken.image,
+			condition.getSourceEnd(),
+			condition.getSourceEnd()+1,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn+1));
+	}
+	{
+		return condition;
+	}
+} //}}}
 
 //{{{ IF
-//{{{ IfStatement()
-
-IfStatement IfStatement() :
+//{{{ ifStatement method
+IfStatement ifStatement():
 {
-  Expression condition;
-  IfStatement ifStatement;
-  Token ifToken;
+	Expression condition;
+	IfStatement ifStatement;
+	Token ifToken;
 }
 {
-  ifToken = <IF> condition = Condition("if")
-  ifStatement = ifStatementAction(condition,ifToken)
-  {
-    return ifStatement;
-  }
-}
-
-//}}}
+	ifToken = <IF> condition = condition("if")
+	ifStatement = ifStatementAction(condition,ifToken)
+	{
+		return ifStatement;
+	}
+} //}}}
 
 //{{{ statementList()
 List<Statement> statementList():
@@ -6683,9 +6687,8 @@ List<Statement> statementList():
 	}
 } //}}}
 
-
-//{{{ ifStatementAction(Expression condition, Token ifToken)
-IfStatement ifStatementAction(Expression condition, Token ifToken) :
+//{{{ ifStatementAction() method
+IfStatement ifStatementAction(Expression condition, Token ifToken):
 {
 	Statement statement;
 	Statement stmt;
@@ -6704,14 +6707,16 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 {
 	colonToken = <COLON>
 	stmts = statementList()
+	//{{{ elseif *
 	(
-		elseifStatement = ElseIfStatementColon()
+		elseifStatement = elseIfStatementColon()
 		{
 			elseIfList.add(elseifStatement);
 		}
-	)*
-	[ elseStatement = elseStatementColon() ]
-
+	)* //}}}
+	[
+		elseStatement = elseStatementColon() 
+	]
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
 			WarningMessageClass.ifEndIf,
@@ -6719,6 +6724,7 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 			"Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
 			colonToken));
 	}
+	//{{{ endif;
 	try
 	{
 		<ENDIF>
@@ -6745,7 +6751,7 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 		errorStart = e.currentToken.sourceStart;
 		errorEnd   = e.currentToken.sourceEnd;
 		throw e;
-	}
+	} //}}}
 	{
 		elseIfs = new ElseIf[elseIfList.size()];
 		elseIfList.toArray(elseIfs);
@@ -6754,8 +6760,8 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 			return new IfStatement(condition,
 				stmts.get(0),
 				elseIfs,
-					elseStatement,
-					ifToken.sourceStart,
+				elseStatement,
+				ifToken.sourceStart,
 				sourceEnd,
 				ifToken.beginLine,
 				endLine,
@@ -6775,8 +6781,8 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 					colonToken.endColumn,
 					endColumn),
 				elseIfs,
-					elseStatement,
-					ifToken.sourceStart,
+				elseStatement,
+				ifToken.sourceStart,
 				sourceEnd,
 				ifToken.beginLine,
 				endLine,
@@ -6786,32 +6792,39 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 	}
 
 	|
-	(stmt = Statement() | stmt = htmlBlock())
-	( LOOKAHEAD(1) elseifStatement = ElseIfStatement() {elseIfList.add(elseifStatement);})*
-	[ LOOKAHEAD(1)
-	elseToken = <ELSE>
-	try
-{
-		statement = Statement()
-		{elseStatement = new Else(statement,
-                                elseToken.sourceStart,
-                                	statement.getSourceEnd(),
-                                elseToken.beginLine,
-                                	statement.getEndLine(),
-                                elseToken.beginColumn,
-                statement.getEndColumn());}
-        }
-        catch (ParseException e)
-        {
-        	if (errorMessage != null)
-        	{
-        		throw e;
-        	}
-        	errorMessage = "unexpected token '"+e.currentToken.next.image+"', a statement was expected";
-        	errorStart = e.currentToken.sourceStart;
-        	errorEnd   = e.currentToken.sourceEnd;
-        	throw e;
-        }
+	(
+		stmt = Statement()
+	|
+		stmt = htmlBlock()
+	)
+	(
+		LOOKAHEAD(1) elseifStatement = elseIfStatement() {elseIfList.add(elseifStatement);}
+	)*
+	[
+		LOOKAHEAD(1)
+		elseToken = <ELSE>
+		try
+		{
+			statement = Statement()
+			{elseStatement = new Else(statement,
+					elseToken.sourceStart,
+						statement.getSourceEnd(),
+					elseToken.beginLine,
+						statement.getEndLine(),
+					elseToken.beginColumn,
+			statement.getEndColumn());}
+		}
+		catch (ParseException e)
+		{
+			if (errorMessage != null)
+			{
+				throw e;
+			}
+			errorMessage = "unexpected token '"+e.currentToken.next.image+"', a statement was expected";
+			errorStart = e.currentToken.sourceStart;
+			errorEnd   = e.currentToken.sourceEnd;
+			throw e;
+		}
         ]
         {
         	elseIfs = new ElseIf[elseIfList.size()];
@@ -6829,28 +6842,30 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
         }
 } //}}}
 
-//{{{ ElseIfStatementColon()
-ElseIf ElseIfStatementColon():
+//{{{ elseIfStatementColon() method
+ElseIf elseIfStatementColon():
 {
 	Expression condition;
 	List<Statement> list;
 	Token elseifToken;
 }
 {
-	elseifToken = <ELSEIF> condition = Condition("elseif")
-		<COLON>
+	elseifToken = <ELSEIF> condition = condition("elseif")
+	<COLON>
 	list = statementList()
 	{
 		int sizeList = list.size();
 		Statement[] stmtsArray = new Statement[sizeList];
 		list.toArray(stmtsArray);
-		return new ElseIf(condition,stmtsArray ,
+		return new ElseIf(condition,
+			stmtsArray, 
 			elseifToken.sourceStart,
-				stmtsArray[sizeList-1].getSourceEnd(),
+			stmtsArray[sizeList-1].getSourceEnd(),
 			elseifToken.beginLine,
-				stmtsArray[sizeList-1].getEndLine(),
+			stmtsArray[sizeList-1].getEndLine(),
 			elseifToken.beginColumn,
-	stmtsArray[sizeList-1].getEndColumn());}
+			stmtsArray[sizeList-1].getEndColumn());
+	}
 } //}}}
 
 //{{{ elseStatementColon()
@@ -6888,15 +6903,15 @@ Else elseStatementColon():
 	}
 } //}}}
 
-//{{{ ElseIfStatement()
-ElseIf ElseIfStatement():
+//{{{ elseIfStatement() method
+ElseIf elseIfStatement():
 {
 	Expression condition;
 	Token elseifToken;
 	Statement[] statement = new Statement[1];
 }
 {
-	elseifToken = <ELSEIF> condition = Condition("elseif") statement[0] = Statement()
+	elseifToken = <ELSEIF> condition = condition("elseif") statement[0] = Statement()
 	{
 		return new ElseIf(condition,
 			statement,
@@ -6922,7 +6937,7 @@ WhileStatement WhileStatement() :
 }
 {
   whileToken = <WHILE>
-    condition = Condition("while")
+    condition = condition("while")
     action    = WhileStatementAction(whileToken)
     {
       return new WhileStatement(condition,
@@ -7011,7 +7026,7 @@ DoStatement DoStatement() :
   Token token2 = null;
 }
 {
-  token = <DO> action = Statement() <WHILE> condition = Condition("while")
+  token = <DO> action = Statement() <WHILE> condition = condition("while")
   try {
     token2 = <SEMICOLON>
   } catch (ParseException e) {

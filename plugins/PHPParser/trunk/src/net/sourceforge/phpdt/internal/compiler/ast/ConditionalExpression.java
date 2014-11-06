@@ -158,18 +158,21 @@ public class ConditionalExpression extends OperatorExpression
 		}
 		Type typeFalse = valueIfFalse.getType();
 		Type typeTrue = valueIfTrue.getType();
-		if (typeFalse != typeTrue && !typeFalse.isEmpty() && !typeTrue.isEmpty())
+		if (!typeFalse.isCompatibleWith(typeTrue))
 		{
-			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-				WarningMessageClass.conditionalExpressionCheck,
-				parser.getPath(),
-				"Conditional expression : warning, the true value is type " + typeTrue + " and the false value is " + typeFalse,
-				sourceStart,
-				sourceEnd,
-				beginLine,
-				endLine,
-				beginColumn,
-				endColumn));
+			if (!Type.NUMBER.isCompatibleWith(typeFalse) && !Type.NUMBER.isCompatibleWith(typeTrue))
+			{
+				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+					WarningMessageClass.conditionalExpressionCheck,
+					parser.getPath(),
+					"Conditional expression : warning, the true value is type " + typeTrue + " and the false value is " + typeFalse,
+					sourceStart,
+					sourceEnd,
+					beginLine,
+					endLine,
+					beginColumn,
+					endColumn));
+			}
 		}
 	} //}}}
 }
