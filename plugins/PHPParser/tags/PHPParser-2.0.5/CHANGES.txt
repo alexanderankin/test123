@@ -1,0 +1,2 @@
+2.0.3 (not released)
+-Fixed a bug in html block parsing
