@@ -77,12 +77,12 @@ public class PropertyParser extends SideKickParser {
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new PropertySideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
-        sidekick.property.parser.property.PropertyParser parser = null;
+        sidekick.property.parser.property.PropertyParser2 parser = null;
         StringReader reader = new StringReader( buffer.getText(0, buffer.getLength() ) );
         try {
             /* create the property parser property Property Parser -- I think
             this thing is going to parse some properties...! */
-            parser = new sidekick.property.parser.property.PropertyParser( reader );
+            parser = new sidekick.property.parser.property.PropertyParser2( reader );
 
             // this makes the locations returned by the parser more accurate
             parser.setTabSize( buffer.getTabSize() );
@@ -90,6 +90,7 @@ public class PropertyParser extends SideKickParser {
             /* get the properties as Property objects, convert them to SideKick Assets,
             and add them to the tree */
             List<Property> properties = parser.Properties();
+            System.out.println("+++++ properties.size = " + properties.size());
             for ( Property property : properties ) {
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode( property );
                 root.add( node );
@@ -109,6 +110,9 @@ public class PropertyParser extends SideKickParser {
     /* the parser accumulates errors as it parses.  This method passed them all
     to the ErrorList plugin. */
     private void handleErrors( Buffer buffer, DefaultErrorSource errorSource, List<ParseException> errors ) {
+        if (errors == null) {
+            return;   
+        }
         for ( ParseException pe : errors ) {
             Location loc = getExceptionLocation( pe );
             errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, pe.getMessage() );
