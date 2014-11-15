@@ -10,7 +10,7 @@
  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  <author><firstname>Tim</firstname><surname>Blackler</surname></author>
-  
+
  <legalnotice><title>Legal Notice</title>
   <para>
    Permission is granted to copy, distribute and/or modify this document
@@ -36,9 +36,9 @@
  <para> The error reporting API is particularly well-suited to reporting compiler errors
  and such; plugins that use this API include Console, SideKick, and ClangCompletion. If
  you would like to use it from your plugin, see <xref linkend="api" />. </para> </section>
- 
+
  <section id="FileOpenerService"><title>FileOpenerService and FastOpen/SmartOpen. </title>
- 
+
  <para> In projects with multiple subfolders, a build error message may not report the
  complete or correct pathname of the file with the error, and ErrorList may have trouble
  opening the correct file when the user clicks on an ErrorList entry.
@@ -48,8 +48,8 @@
  buffers, this gives you flexibility on how ErrorList can open the files of the errors
  you click on in ErrorList. To tell ErrorList to use a
  <literal>FileOpenerService</literal>, simply install one of these plugins:
-   <ulink url="jeditresource:/SmartOpen.jar!/docs/SmartOpen.html">SmartOpen</ulink> 
-   or <ulink url="jeditresource:/FastOpen.jar!/docs/index.html">FastOpen</ulink>. </para>
+   <ulink url="../SmartOpen.jar!/docs/SmartOpen.html">SmartOpen</ulink>
+   or <ulink url="../FastOpen.jar!/docs/index.html">FastOpen</ulink>. </para>
  </section>
 
 <section id="window"><title>The error list window</title>
@@ -78,11 +78,11 @@
  </para>
 
  <para>
-  It is possible to copy the text of all or some of the error messages to the 
+  It is possible to copy the text of all or some of the error messages to the
   system clipboard either from the actions menu, or from context menu on the
   error list pane.
  </para>
- 
+
 
  <para>
   For information on keyboard-based navigation of the tree, see
@@ -330,7 +330,7 @@ plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3</programlisting>
    accepts two parameters; the first is a string that will identify the error source.
    Currently, this identifier is not used, but in the future the ErrorList plugin
    might show which error comes from which plugin, for example.
-   The second argument is the View that errors should be shown in. Plugins that 
+   The second argument is the View that errors should be shown in. Plugins that
    send errors should take care to send them to the correct View's ErrorList, so that
    they do not appear in all Views.
   </para>
@@ -497,41 +497,41 @@ errorSource.addError(new ErrorSource.DefaultError(
 </section>
 
 <appendix id="changes"><title>Change log</title>
- <itemizedlist> 
+ <itemizedlist>
 
  <listitem><formalpara><title>Version 2.3</title> <para> By Alan Ezust, Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
   <listitem><para> Plugin Feature Request #208: Copy errors to clipboard,
    either via right click menu, or by action menu. (Plugin Patch #163 - Tim Blackler)
-  </para></listitem> 
+  </para></listitem>
   <listitem><para> Plugin Feature Request #312: Expand/Collapse All (Plugin Patch #164 -
    Tim Blackler) </para></listitem>
  </itemizedlist>
  </listitem>
- 
+
  <listitem><formalpara><title>Version 2.2</title> <para> by Alan Ezust, Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
-  <listitem><para> Revisited #3596333: Preserve contents when floating/docking. 
+  <listitem><para> Revisited #3596333: Preserve contents when floating/docking.
   </para></listitem>
   <listitem><para> FileOpenerService is now being used in the correct way by
   ErrorList </para></listitem>
  </itemizedlist>
  </listitem>
- 
+
  <listitem><formalpara><title>Version 2.1</title> <para> Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
-   <listitem><para> Fixed #3573458: ErrorList does not work with SymLinks (Patrick Eibl) 
+   <listitem><para> Fixed #3573458: ErrorList does not work with SymLinks (Patrick Eibl)
    </para> </listitem>
    <listitem><para> Fixed errors not appearing without manual dockable activation,
    a bug introduced in version 2.0
    (#3556671 Jarek Czekalski) </para></listitem>
    <listitem><para> Added squiggle underline style (Matthieu Casanova) </para></listitem>
    <listitem><para> "Clear Errors" no longer clears errors in all views (Alan Ezust).
-   </para></listitem> 
-   <listitem><para> Fixed #3596333: bad initial contents when creating a new view 
+   </para></listitem>
+   <listitem><para> Fixed #3596333: bad initial contents when creating a new view
    (Alan Ezust).  </para></listitem>
    <listitem><para> German localization (Robert Schwenn) </para></listitem>
  </itemizedlist>
@@ -543,11 +543,11 @@ errorSource.addError(new ErrorSource.DefaultError(
    <listitem><para> Uses jEdit 5's <literal>FileOpenerService</literal> for filenames when
    no full path is supplied to the DefaultError. (#3481157 - Alan Ezust)
    </para></listitem>
-   <listitem><para> New API for specifying the View of an ErrorSource. 
+   <listitem><para> New API for specifying the View of an ErrorSource.
    (#2106739 - Alan Ezust) </para></listitem>
    <listitem><para> Fixed a deadlock and concurrency issues.
    (#3526070, #3530999 Jarek Czekalski) </para></listitem>
-   <listitem><para> Fixed errors appearing twice at first time. 
+   <listitem><para> Fixed errors appearing twice at first time.
    (#3028049 Jarek Czekalski) </para></listitem>
    <listitem><para> French localization (jojaba_67) </para></listitem>
  </itemizedlist>
