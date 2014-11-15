@@ -11,7 +11,7 @@
   <TR>
     <TD>
       <H1>jEdit Sessions Plugin</H1>
-      
+
     </TD>
     <TD ALIGN="right">
         <SMALL>By Dirk M&ouml;bius<BR>
@@ -42,8 +42,7 @@ The Sessions Plugin maintains lists of open files - called <EM>sessions</EM>
 (aka <EM>workspaces</EM>) - and offers some functions to switch between them.
 </P>
 
-<p> Each View, or main window, can have a different active session, and switching sessions from one view
-should not affect the open files in the other views (unless you are using Global Bufferset Scope).</p>
+<p> Each View, or main window, can have a different active session, and switching sessions from one View should not affect the open files in other views (unless you are using Global Bufferset Scope - see <a href="/doc/users-guide/buffersets.html">BufferSets</a> for details).</p>
 
 <p> Each view "remembers" which session it is switched to, even after restarting jEdit. To tell Sessions to forget which views are open to which sessions, <tt>Plugins - Sessions - Clear View Sessions</tt>. </p>
 
@@ -51,7 +50,7 @@ should not affect the open files in the other views (unless you are using Global
 <A NAME="sessionmanagement"></A>
 <H2>Session Management</H2>
 
-<p> Session data are stored as XML files in the <tt>plugins/sessions.SessionsPlugin/</tt> folder under your <a href="jeditresource:/doc/users-guide/settings-directory.html">JEDIT_SETTINGS</a> directory. In versions prior to 1.6, these files were stored in the <tt>sessions/</tt> folder in the same location. To continue using old session data, move the files into the new location.
+<p> Session data are stored as XML files in the <tt>plugins/sessions.SessionsPlugin/</tt> folder under your <a href="/doc/users-guide/settings-directory.html">JEDIT_SETTINGS</a> directory. In versions prior to 1.6, these files were stored in the <tt>sessions/</tt> folder in the same location. To continue using old session data, move the files into the new location.
 </p>
 
 <H3>Menu Actions</H3>
@@ -119,7 +118,7 @@ The following options are available:
 		<LI><B>Display "Confirm Save" dialog</B></LI>
 	</UL>
 	<LI><B>Close all files before switching to new session</B> </LI>
-	<LI><B>Show Session Switcher toolbar</B>  
+	<LI><B>Show Session Switcher toolbar</B>
 	<UL>
 		<LI><B>Show below JEdit's main toolbar</B></LI>
 		<LI><B>Show inside JEdit's main toolbar (at the end)</B></LI>
@@ -159,7 +158,7 @@ The source code is distributed under the GPL. Please see
 The preferred way to send bug reports against specific plugins is to use the
 <A HREF="https://sourceforge.net/p/jedit/plugin-bugs">
 jEdit Plugin Bugs Tracker</A> on Sourceforge:</P>
-<p> There is a separate tracker for <a href="https://sourceforge.net/p/jedit/plugin-feature-requests">Plugin Feature Requests</a>. </p> 
+<p> There is a separate tracker for <a href="https://sourceforge.net/p/jedit/plugin-feature-requests">Plugin Feature Requests</a>. </p>
 
 <P>
 You can also write to:
