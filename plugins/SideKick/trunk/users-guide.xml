@@ -157,7 +157,7 @@
 
     <para>
       <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
-  to Next Asset</guimenuitem> moves the caret to start of the next asset. 
+  to Next Asset</guimenuitem> moves the caret to start of the next asset.
  </para>
 
  <para>
@@ -169,16 +169,16 @@
     <itemizedlist>
       <listitem><para> Up and Down arrow keys let you navigate between sibling nodes,
       or to parents/children of exploded nodes. </para></listitem>
-      <listitem><para> Ctrl+Up and Ctrl+Down keys go to previous/next asset. 
+      <listitem><para> Ctrl+Up and Ctrl+Down keys go to previous/next asset.
       </para></listitem>
-      <listitem><para> Right and Left arrow keys expand and collapse tree nodes. 
-      </para></listitem>  
+      <listitem><para> Right and Left arrow keys expand and collapse tree nodes.
+      </para></listitem>
     </itemizedlist>
   </chapter>
 
   <chapter id="toolbar">
     <title>Toolbar</title>
-    
+
     <para>
   SideKick can optionally display the structure of the buffer in a toolbar, using
   one or more combo-boxes. This option is useful where screen real-estate is
@@ -203,7 +203,7 @@
       <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Tree/combo-box selection
       follows caret position</guimenuitem>.
     </para>
-  
+
   </chapter>
 
   <chapter id="folding">
@@ -275,9 +275,7 @@
       <para>
    Parser instances must be registered using the
    <literal>services.xml</literal> file. With this, you define a service which
-   returns a derived instance of <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
-      <classname>SideKickParser</classname>
-        </ulink>
+   returns a derived instance of <classname>SideKickParser</classname>
       </para>
 
       <programlisting>
@@ -298,9 +296,7 @@
       <title>The SideKickParser class</title>
 
       <para>
-        <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
-          <classname>SideKickParser</classname>
-        </ulink> is an abstract class. The constructor takes one string parameter. This string is used in several properties:
+        <classname>SideKickParser</classname> is an abstract class. The constructor takes one string parameter. This string is used in several properties:
  </para>
 
       <itemizedlist>
@@ -344,9 +340,8 @@ mode.velocity.sidekick.parser=html</programlisting>
       <title>Implementing a Sidekick parser</title>
 
       <para>
- The <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
-      <classname>SideKickParser</classname>
-        </ulink> has one abstract method that all
+ The
+      <classname>SideKickParser</classname> has one abstract method that all
   subclasses must implement:
  </para>
 
@@ -379,7 +374,7 @@ mode.velocity.sidekick.parser=html</programlisting>
       <para>
   Your implementation of the <function>parse()</function> method should create and return
 an instance of
-   <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParsedData.html">SideKickParsedData </ulink>.   Its constructor of the takes one parameter, which is the file name (to be shown at the root of the structure tree). Your method should
+   <classname>SideKickParsedData </classname>. Its constructor of the takes one parameter, which is the file name (to be shown at the root of the structure tree). Your method should
 add  structure elements to the <varname>root</varname> field of the instance.
 <varname>root</varname> is an instance of Java's <classname>DefaultMutableTreeNode</classname> class,
 and is given an initial value by the <classname>SideKickParsedData</classname> constructor.
@@ -395,10 +390,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
     <section id="implement-completion">
       <title>Implementing completion popups</title>
 
-      <para> Your derived instance of
-     <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
-       SideKickParser</ulink> can implement additional
-       methods to tell Sidekick that your parser supports completions.
+      <para> Your derived instance of <classname>SideKickParser</classname> can implement additional methods to tell Sidekick that your parser supports completions.
    </para>
 
       <programlisting>
@@ -418,8 +410,8 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
       <para> If your SideKickParser does support completion, the actual
      brains of the plugin goes in the last method, <literal>complete()</literal>,
-     which must construct an instance of    <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickCompletion.html">
-     SideKickCompletion</ulink>, given an <literal>EditPane</literal> and a caret position.
+     which must construct an instance of <literal>SideKickCompletion</literal>
+     given an <literal>EditPane</literal> and a caret position.
    </para>
 
       <para>
