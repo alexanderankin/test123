@@ -73,11 +73,11 @@ If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
 to DES (weak) encryption. In this case, you will see a warning in the activity
 log indicating that FTP plugin is falling back on weak encryption.
 If you don't like this, you can <guimenuitem>Disable weak encryption
-when saving passwords</guimenuitem> from FTP plugin options, and/or install JCE String Encryption for 
-<ulink
+when saving passwords</guimenuitem> from FTP plugin options, and/or install JCE
+Strong Encryption for <ulink
 url="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">Java 1.7</ulink>
 or <ulink
-url="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html">Java 1.8</ulink> 
+url="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html">Java 1.8</ulink>
 into your JRE. For more info, see <ulink url=
 "http://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters">
 this article</ulink>. </para>
@@ -141,11 +141,15 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para>
 
+<para> URLs that begin with <literal>sftp://</literal> can also be bookmarked
+and entered manually into the <guilabel>Path:</guilabel> field of jEdit's
+<ulink url="../doc/users-guide/vfs-browser.html">File System
+Browser</ulink>. </para>
 
 <para> It is possble to use the ssh protocol to execute arbitrary
-commands on the remote host. Install SshConsole and read its <ulink
-url="jeditresource:/SshConsole.jar!/index.html">plugin documentation</ulink> for
-more details.
+commands on the remote host. To do this from jEdit, install SshConsole and read
+its <ulink url="../SshConsole.jar!/index.html">plugin
+documentation</ulink> for more details.
 </para>
 
 </chapter>
@@ -167,7 +171,7 @@ paths can be bookmarked just as easily as local paths.
 
 <listitem><para>
 FTP and SFTP connections are kept open for 1 minute (by default) before being
-closed. This timeout value is configurable from the FTP plugin options. 
+closed. This timeout value is configurable from the FTP plugin options.
 Performing another operation while a connection is still open resets the
 timer. The timeout value can impact performance by reducing or increasing
 network traffic.
@@ -212,14 +216,20 @@ something to happen and it is not, check the <guilabel>Errors</guilabel> status
 bar widget, or the Activity Log dockable to find out what happened.
 </para></listitem>
 
+<listitem><para>Currently, the FTP plugin's SSH functionality does not work with
+Java 1.8. On connect, I get <literal>com.jcraft.jsch.JSchException: Auth
+Cancel</literal>. I am not sure why this is yet, so I opened <ulink
+url="https://sourceforge.net/p/jedit/plugin-bugs/1787/">a ticket</ulink> against
+it. </para></listitem>
+
 <listitem><para> The Plugin Option <guilabel>MaxAuthTries</guilabel> is
 a tweak which tells the SFTP protocol to retry that number of times before
 giving up with an "Auth Fail". In Versions prior to 1.0.3, the value was 6,
 which meant that with incorrect passwords, 6 bad password attempts would be
 made, often causing accidental lockout from the server. In FTP 1.0.7, the value
-was changed to 1, which caused Auth Fail problems on other systems, using keys
-and not even passwords. It is for this reason that the value is now configrable
-via this new plugin option. Hopefully most people will not need to 
+was changed to 1, which caused Auth Fail problems with another user.
+It is for this reason that the value is now configrable
+via this new plugin option. Hopefully most people will not need to
 change this value but it is there if you need it. </para></listitem>
 
 <listitem><para> If for some reason the FTP plugin is in a non-working state and
@@ -242,18 +252,18 @@ There are workarounds for that, see our bug tracker entry #3491410,
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
- 
-     <listitem><para><emphasis role="bold">Version 1.1.1</emphasis>
-      by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. 
+
+     <listitem><para><emphasis role="bold">Version 1.2</emphasis>
+      by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5.
       <itemizedlist>
        <listitem><para> Request #336 FTP plugin: configure connection timeout
        option </para></listitem>
       </itemizedlist></para></listitem>
- 
+
      <listitem><para><emphasis role="bold">Version 1.1</emphasis>
       by Alan Ezust Requires Java 1.6, CommonControls 1.5, and jEdit 4.5. </para>
     <itemizedlist>
-      <listitem><para> Updated to jsch-0.1.51.jar </para></listitem> 
+      <listitem><para> Updated to jsch-0.1.51.jar </para></listitem>
       <listitem><para> Plugin-bug #1776 Fixed: Removed possible duplicate
       password dialogs on startup. </para> </listitem>
       <listitem><para> Now properly hides SplashScreen before popping up
