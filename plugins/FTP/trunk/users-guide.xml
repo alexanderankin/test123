@@ -216,11 +216,11 @@ something to happen and it is not, check the <guilabel>Errors</guilabel> status
 bar widget, or the Activity Log dockable to find out what happened.
 </para></listitem>
 
-<listitem><para>Currently, the FTP plugin's SSH functionality does not work with
-Java 1.8. On connect, I get <literal>com.jcraft.jsch.JSchException: Auth
-Cancel</literal>. I am not sure why this is yet, so I opened <ulink
-url="https://sourceforge.net/p/jedit/plugin-bugs/1787/">a ticket</ulink> against
-it. </para></listitem>
+<listitem><para>Currently, even with JCE, Java 1.8 can't process certain strong
+encryption keys, and this affects the FTP plugin's SSH functionality. On
+connect, I get <literal>com.jcraft.jsch.JSchException: Auth Cancel</literal>.
+Here is <ulink url="https://sourceforge.net/p/jedit/plugin-bugs/1787/">a
+ticket</ulink> against it. </para></listitem>
 
 <listitem><para> The Plugin Option <guilabel>MaxAuthTries</guilabel> is
 a tweak which tells the SFTP protocol to retry that number of times before
