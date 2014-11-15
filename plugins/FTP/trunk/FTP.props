@@ -3,6 +3,7 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov (Former), Nicholas O'Leary (Former), Vadim Voituk (former), Alan Ezust
+# bump to 1.2 before release
 plugin.ftp.FtpPlugin.version=1.1.1
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
