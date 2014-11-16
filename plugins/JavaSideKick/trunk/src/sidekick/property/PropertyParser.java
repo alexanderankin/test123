@@ -78,31 +78,24 @@ public class PropertyParser extends SideKickParser {
         SideKickParsedData parsedData = new PropertySideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
         sidekick.property.parser.property.PropertyParser2 parser = null;
-        StringReader reader = new StringReader( buffer.getText(0, buffer.getLength() ) );
         try {
-            /* create the property parser property Property Parser -- I think
-            this thing is going to parse some properties...! */
-            parser = new sidekick.property.parser.property.PropertyParser2( reader );
+            parser = new sidekick.property.parser.property.PropertyParser2();
 
             // this makes the locations returned by the parser more accurate
             parser.setTabSize( buffer.getTabSize() );
 
             /* get the properties as Property objects, convert them to SideKick Assets,
             and add them to the tree */
-            List<Property> properties = parser.Properties();
-            System.out.println("+++++ properties.size = " + properties.size());
+            List<Property> properties = parser.parse(buffer);
             for ( Property property : properties ) {
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode( property );
                 root.add( node );
             }
             ElementUtil.convert( buffer, root );
-        } catch ( Exception e ) {
-            e.printStackTrace();
         } finally {
             if ( parser != null ) {
                 handleErrors( buffer, errorSource, parser.getExceptions() );
             }
-            reader.close();
         }
         return parsedData;
     }
