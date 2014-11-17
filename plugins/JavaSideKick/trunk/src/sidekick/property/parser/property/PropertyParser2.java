@@ -37,7 +37,7 @@ public class PropertyParser2 {
         tabSize = size;
     }
 
-    // the actual parsing starts here. Soft tabs and tab size should be set prior 
+    // the actual parsing starts here. Soft tabs and tab size should be set prior
     // to calling this method. This simple parser reads the buffer contents line
     // by line. Comment liness and blank lines are ignored.
     public List<Property> parse( Buffer buffer ) {
@@ -88,7 +88,7 @@ public class PropertyParser2 {
             if ( ! hasContinuation ) {
                 // finish out the multi-line property
                 endLine = reader.getLineNumber();
-                endColumn = buffer.getLineEndOffset( endLine );
+                endColumn = buffer.getLineLength( endLine - 1 );
                 finishCurrentProperty();
             }
         } else {
@@ -103,7 +103,7 @@ public class PropertyParser2 {
                 inMultiline = true;
             } else {
                 endLine = startLine;
-                endColumn = buffer.getLineLength(endLine - 1);
+                endColumn = buffer.getLineLength( endLine - 1 );
                 finishCurrentProperty();
             }
         }
