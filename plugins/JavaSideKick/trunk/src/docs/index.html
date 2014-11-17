@@ -45,7 +45,7 @@
     <li><a href="#navigate">Navigating the Tree</a></li>
     <li><a href="#code_completion">Code Completion</a> </li>
     <li><a href="#classpath">Configuring the Classpath</a></li>
-    <li><a href="#building">Building with javacc</a></li>
+    <li><a href="#building">Building a parser with javacc</a></li>
 </ul>
 
 
@@ -62,7 +62,7 @@
 </table>
 
 <p>
-The Java SideKick plug-in provides a highly customizable tool for navigating through Java source code. Using SideKick, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.
+The Java SideKick plug-in provides a highly customizable tool for navigating through Java source code. Using <a href="/SideKick.jar!/index.html">SideKick</a>, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.
 </p>
 <p> JavaSideKick parses and displays these files: </p>
 <ul>
@@ -576,7 +576,7 @@ end of each example represents the cursor position when completion is invoked
 <h3>Using with SuperAbbrevs</h3>
 
 <p>
-If you have the SuperAbbrevs plugin installed, completing methods or constructors
+If you have the <a href="/SuperAbbrevs.jar!/index.html">SuperAbbrevs</a> plugin installed, completing methods or constructors
 works a little bit differently. Rather than insert just the name of the method, the entire
 declaration will be inserted, with each parameter highlighted; pressing Tab cycles through
 the parameters.
@@ -606,7 +606,7 @@ the parameters.
 Classpath settings have been migrated to the <a href="/Classpath.jar!/index.html">Classpath plugin</a>.
 
 <table
-    summary="Building with javacc"
+    summary="Building a parser with javacc"
     border="0"
     cellspacing="0"
     cellpadding="3"
@@ -614,16 +614,16 @@ Classpath settings have been migrated to the <a href="/Classpath.jar!/index.html
 >
     <tr align="CENTER" width="100%">
         <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
-        <a name="building">Building with javacc</a></font></strong></td>
+        <a name="building">Building a parser with javacc</a></font></strong></td>
     </tr>
 </table>
 
 
-<h4>Building the Parser with javacc</h4>
+<h4>Building a Parser with javacc</h4>
 
 The source code for the JavaSideKick plugin is ready to build with javac and
 jar.  On occasion, it may be necessary to make changes to the parser.  The
-parser is actually created by javacc (home page https://javacc.dev.java.net/).
+parser is actually created by <a href="https://javacc.java.net/">javacc</a>.
 Javacc is a parser generator, it reads a 'grammar specification' file, and
 from that file creates a number of java files that can recognize matches to
 that grammar.
