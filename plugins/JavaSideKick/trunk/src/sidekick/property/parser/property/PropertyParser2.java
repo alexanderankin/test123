@@ -103,7 +103,7 @@ public class PropertyParser2 {
                 inMultiline = true;
             } else {
                 endLine = startLine;
-                endColumn = buffer.getLineEndOffset( endLine );
+                endColumn = buffer.getLineLength(endLine - 1);
                 finishCurrentProperty();
             }
         }
@@ -253,6 +253,7 @@ public class PropertyParser2 {
         if ( e == null ) {
             return;
         }
+        e.printStackTrace();
         ParseException pe = new ParseException( e.getMessage() );
         if ( exceptions == null ) {
             exceptions = new ArrayList<ParseException>();
