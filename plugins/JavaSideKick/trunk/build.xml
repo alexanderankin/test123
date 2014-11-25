@@ -74,6 +74,7 @@
 		 <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
          <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
          <pathelement location="${jedit.plugins.dir}/Classpath.jar"/>
+         <pathelement location="${jedit.plugins.dir}/antlr-4.4-complete.jar"/>
       </path>
    </target>
 
@@ -88,8 +89,8 @@
                nowarn="on"
                destdir="${classes.dir}"
                srcdir="${src.dir}"
-               target="1.5"
-			   source="1.5"
+               target="1.7"
+			   source="1.7"
 			   includeantruntime="false">
             <!-- compilerarg value="-Xlint:unchecked"/ -->
             <classpath refid="classpathref" />

@@ -14,7 +14,7 @@ plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
 
 
 # dependencies
-plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.6.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.7.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 05.00.99.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.6
@@ -22,6 +22,7 @@ plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.7
 plugin.sidekick.java.JavaSideKickPlugin.depend.5=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.6=plugin classpath.ClasspathPlugin 1.0.1
 plugin.sidekick.java.JavaSideKickPlugin.depend.7=optional plugin SuperAbbrevsPlugin 2.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.8=plugin antlr.AntlrPlugin 4.4
 
 
 Tiger2.title=JavaSideKick

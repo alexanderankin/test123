@@ -15,7 +15,7 @@
 */
 package sidekick.java;
 
-//{{{ Imports
+// {{{ Imports
 import errorlist.*;
 
 import java.awt.event.*;
@@ -42,34 +42,38 @@ import sidekick.java.parser.*;
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.Range;
-//}}}
+
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+import sidekick.java.parser.antlr.*;
+// }}}
 
 public class JavaParser extends SideKickParser implements EBComponent {
 
-	//{{{ Private members
+    // {{{ Private members
     private View currentView = null;
     private OptionValues optionValues = new OptionValues();
     private JavaCompletionFinder completionFinder = null;
-	
+
     // which type of parser, java or javacc
     private int parser_type = JAVA_PARSER;
-	//}}}
+    // }}}
 
-	//{{{ Static members
+    // {{{ Static members
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
     public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
-	//}}}
+    // }}}
 
-	//{{{ JavaParser()
+    // {{{ JavaParser()
     /**
      * Defaults to parsing java files.
      */
     public JavaParser() {
         this( JAVA_PARSER );
-    } //}}}
+    }    // }}}
 
-	//{{{ JavaParser(int)
+    // {{{ JavaParser(int)
     /**
      * @param type one of 'java' or 'javacc'
      */
@@ -82,9 +86,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 parser_type = JAVA_PARSER;
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ activate(EditPane) : void
+    // {{{ activate(EditPane) : void
     /**
      * This method is called when a buffer using this parser is selected
      * in the specified view.
@@ -94,15 +98,15 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public void activate( EditPane editPane ) {
         super.activate( editPane );
         currentView = editPane.getView();
-    } //}}}
+    }    // }}}
 
-	//{{{ deactivate(EditPane) : void
+    // {{{ deactivate(EditPane) : void
     public void deactivate( EditPane editPane ) {
         completionFinder = null;
         super.deactivate( editPane );
-    } //}}}
+    }    // }}}
 
-	//{{{ handleMessage(EBMessage) : void
+    // {{{ handleMessage(EBMessage) : void
     /**
      * Reparse if the option settings have changed.
      */
@@ -116,9 +120,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
             EditBus.send( new SideKickUpdate( currentView ) );
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ parse() : SideKickParsedData
+    // {{{ parse() : SideKickParsedData
     /**
      * Parse the current buffer in the current view.
      */
@@ -127,9 +131,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             currentView = jEdit.getActiveView();
         }
         return parse( currentView.getBuffer(), null );
-    } //}}}
+    }    // }}}
 
-	//{{{ parse(Buffer, DefaultErrorSource) : SideKickParsedData
+    // {{{ parse(Buffer, DefaultErrorSource) : SideKickParsedData
     /**
      * Parse the contents of the given buffer.
      * @param buffer the buffer to parse
@@ -139,7 +143,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
-        TigerParser parser = null;
         CUNode compilationUnit = null;
         try {
             // re-init the labeler
@@ -153,17 +156,29 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // 1) a modifed buffer can be parsed without a save
             // 2) reading the buffer should be faster than reading from the file, and
             // 3) jEdit has that 'gzip file on disk' option which won't parse.
-            String contents = buffer.getText(0, buffer.getLength());
-            input = new StringReader(contents);
-            parser = new TigerParser( input );
-            int tab_size = buffer.getTabSize();
+            String contents = buffer.getText( 0, buffer.getLength() );
+            input = new StringReader( contents );
+
             switch ( parser_type ) {
                 case JAVACC_PARSER:
-                    compilationUnit = parser.getJavaCCRootNode( tab_size );
+                    // use the javacc parser for javacc files
+                    TigerParser tigerParser = new TigerParser( input );
+                    int tab_size = buffer.getTabSize();
+                    compilationUnit = tigerParser.getJavaCCRootNode( tab_size );
+                    compilationUnit.setResults( tigerParser.getResults() );
                     break;
                 default:
-                    compilationUnit = parser.getJavaRootNode( tab_size );
-                    break;
+                    // use the antlr parser for java files
+                    ANTLRInputStream antlrInput = new ANTLRInputStream( input );
+                    Java8Lexer lexer = new Java8Lexer( antlrInput );
+                    CommonTokenStream tokens = new CommonTokenStream( lexer );
+                    Java8Parser java8parser = new Java8Parser( tokens );
+                    ParseTree tree = java8parser.compilationUnit();
+                    ParseTreeWalker walker = new ParseTreeWalker();
+                    Java8SidekickListener listener = new Java8SidekickListener();
+                    walker.walk( listener, tree );
+                    compilationUnit = listener.getCompilationUnit();
+                    compilationUnit.setResults( listener.getResults() );
             }
             if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
                 System.out.println( compilationUnit.dump() );
@@ -172,23 +187,22 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // compilationUnit is root node
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setFilename( filename );
-            compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( ElementUtil.createStartPosition( buffer, compilationUnit ) );
             compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
             root.setUserObject( compilationUnit );
             buffer.setProperty( COMPILATION_UNIT, compilationUnit );
 
             ExpansionModel expansionModel = new ExpansionModel();
-            expansionModel.add();   // cu
+            expansionModel.add();            // cu
             parsedData.expansionModel = expansionModel.getModel();
 
             // maybe show imports, but don't expand them
             if ( optionValues.getShowImports() == true ) {
                 List<ImportNode> imports = compilationUnit.getImportNodes();
                 if ( imports != null && !imports.isEmpty() ) {
-                    TigerNode importsParent = new ImportNode("Imports");
-                    importsParent.setStart(ElementUtil.createStartPosition(buffer, imports.get(0)));
-                    importsParent.setEnd(ElementUtil.createEndPosition(buffer, imports.get(imports.size() - 1)));
+                    TigerNode importsParent = new ImportNode( "Imports" );
+                    importsParent.setStart( ElementUtil.createStartPosition( buffer, imports.get( 0 ) ) );
+                    importsParent.setEnd( ElementUtil.createEndPosition( buffer, imports.get( imports.size() - 1 ) ) );
                     DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( importsParent );
                     root.add( importsNode );
                     expansionModel.inc();
@@ -202,20 +216,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             // show constructors, fields, methods, etc
             addChildren( root, buffer, expansionModel );
-        }
-        catch ( ParseException e ) {    // NOPMD
-            // removed exception handling, all ParseExceptions are now caught
-            // and accumulated in the parser, then dealt with in handleErrors.
-        }
-        catch ( TokenMgrError e ) {      // NOPMD
-            // don't worry about this one, most likely it is due to attempting
-            // to parse during code completion.
-        }
-        finally {
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        } finally {
             try {
                 input.close();
-            }
-            catch ( Exception e ) {     // NOPMD
+            } catch ( Exception e ) {                // NOPMD
                 // not to worry, StringReader won't actually throw an exception.
             }
         }
@@ -226,31 +232,28 @@ public class JavaParser extends SideKickParser implements EBComponent {
         boolean complete_instant = jEdit.getBooleanProperty( "sidekick.complete-instant.toggle", true );
         boolean complete_delay = jEdit.getBooleanProperty( "sidekick.complete-delay.toggle", true );
         boolean complete_on = complete_instant || complete_delay;
-        if ( !complete_on && errorSource != null ) {
-			handleErrors( errorSource, parser, buffer );
+        if ( ! complete_on && errorSource != null ) {
+            /// handleErrors( errorSource, parser, buffer );
         }
 
         return parsedData;
-    } //}}}
+    }    // }}}
 
-	//{{{ handleErrors(DefaultErrorSource, TigerParser, Buffer) : void
+    // {{{ handleErrors(DefaultErrorSource, TigerParser, Buffer) : void
     /**
-	 * The parser accumulates errors as it parses.  This method passed them all to
+     * The parser accumulates errors as it parses.  This method passed them all to
      * the ErrorList plugin.
-	 */
+     */
     private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
         /* only show errors for java files.  If the default edit mode is "java" then by default,
         the parser will be invoked by SideKick.  It's annoying to get parse error messages for
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
         might be java or javacc files eventually.  Otherwise, require a ".java" extension on
         the file. */
-        if ( optionValues.getShowErrors() &&
-				(!buffer.isDirty() || !optionValues.getIgnoreDirtyBuffers()) && 
-				( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || 
-				buffer.getMode().getName().equals( "javacc" ) ) ) {
+        if ( optionValues.getShowErrors() && ( !buffer.isDirty() || !optionValues.getIgnoreDirtyBuffers() ) && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
             errorSource.clear();
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
-                ErrorNode en = ( ErrorNode ) it.next();
+                sidekick.java.node.ErrorNode en = ( sidekick.java.node.ErrorNode ) it.next();
                 Exception e = en.getException();
                 ParseException pe = null;
                 Range range = new Range();
@@ -258,27 +261,31 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     pe = ( ParseException ) e;
                     range = getExceptionLocation( pe );
                 }
-				// This is a fix for hard tabs
-				// Hard tabs mess up column counting, so this would occasionally cause out-of-index errors
-				int tab = (Integer) buffer.getMode().getProperty("tabSize");
-				StringBuilder sub = new StringBuilder();
-				for (int i = 0; i < tab; i++) {
-					sub.append(" ");
-				}
-				String startLineText = buffer.getLineText(range.startLine);
-				int index;
-				while ((index = startLineText.indexOf('\t')) != -1) {
-					startLineText = startLineText.replace("\t", sub.toString());
-					if (range.startColumn > index) range.startColumn -= (tab-1);
-					if (range.endColumn > index) range.endColumn -= (tab-1);
-				}
-				// Add the error
+                // This is a fix for hard tabs
+                // Hard tabs mess up column counting, so this would occasionally cause out-of-index errors
+                int tab = ( Integer ) buffer.getMode().getProperty( "tabSize" );
+                StringBuilder sub = new StringBuilder();
+                for ( int i = 0; i < tab; i++ ) {
+                    sub.append( " " );
+                }
+                String startLineText = buffer.getLineText( range.startLine );
+                int index;
+                while ( ( index = startLineText.indexOf( '\t' ) ) != -1 ) {
+                    startLineText = startLineText.replace( "\t", sub.toString() );
+                    if ( range.startColumn > index ) {
+                        range.startColumn -= ( tab - 1 );
+                    }
+                    if ( range.endColumn > index ) {
+                        range.endColumn -= ( tab - 1 );
+                    }
+                }
+                // Add the error
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ addChildren(DefaultMutableTreeNode, Buffer, ExpansionModel) : void
+    // {{{ addChildren(DefaultMutableTreeNode, Buffer, ExpansionModel) : void
     private void addChildren( DefaultMutableTreeNode node, Buffer buffer, ExpansionModel expansionModel ) {
         TigerNode parent = ( TigerNode ) node.getUserObject();
         List<TigerNode> children = parent.getChildren();
@@ -299,12 +306,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     if ( ordinal == TigerNode.ENUM ) {
                         // don't expand enum nodes
                         expansionModel.inc();
-                    }
-                    else if ( ordinal == TigerNode.CLASS && optionValues.getExpandClasses() ) {
+                    } else if ( ordinal == TigerNode.CLASS && optionValues.getExpandClasses() ) {
                         // maybe expand inner classes, depends on option setting
                         expansionModel.add();
-                    }
-                    else if (ordinal == TigerNode.CONSTRUCTOR || ordinal == TigerNode.METHOD) {
+                    } else if ( ordinal == TigerNode.CONSTRUCTOR || ordinal == TigerNode.METHOD ) {
                         // constructors and methods get an 'inc'
                         expansionModel.inc();
                     }
@@ -313,16 +318,15 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( child );
                     node.add( childNode );
                     addChildren( childNode, buffer, expansionModel );
-                }
-                else {
+                } else {
                     // need to fill in start and end positions for code completion
                     setChildPositions( buffer, child );
                 }
             }
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ setChildPositions(Buffer, TigerNode) : void
+    // {{{ setChildPositions(Buffer, TigerNode) : void
     private void setChildPositions( Buffer buffer, TigerNode tn ) {
         for ( int i = 0; i < tn.getChildCount(); i++ ) {
             TigerNode child = tn.getChildAt( i );
@@ -330,9 +334,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
             setChildPositions( buffer, child );
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ getExceptionLocation(ParseException) : Range
+    // {{{ getExceptionLocation(ParseException) : Range
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
@@ -340,7 +344,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * exception.
      */
     private Range getExceptionLocation( ParseException pe ) {
-        Token t = pe.currentToken;
+        sidekick.java.parser.Token t = pe.currentToken;
         if ( t != null ) {
             return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
         }
@@ -354,28 +358,29 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 String cn = m.group( 4 );
                 int line_number = -1;
                 int column_number = 0;
-                if ( ln != null )
+                if ( ln != null ) {
                     line_number = Integer.parseInt( ln );
-                if ( cn != null )
+                }
+                if ( cn != null ) {
                     column_number = Integer.parseInt( cn );
+                }
                 return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
             }
             return new Range();
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             e.printStackTrace();
             return new Range();
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ canShow(TigerNode) : boolean
+    // {{{ canShow(TigerNode) : boolean
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
-        if ( !isVisible( node ) ) {      // visibility based on option settings
+        if ( !isVisible( node ) ) {            // visibility based on option settings
             return false;
         }
-        if ( !node.isVisible() ) {        // visibility based on the node itself
+        if ( !node.isVisible() ) {            // visibility based on the node itself
             return false;
         }
         if ( node.getOrdinal() == TigerNode.BLOCK ) {
@@ -403,9 +408,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             return optionValues.getShowThrows();
         }
         return true;
-    } //}}}
+    }    // }}}
 
-	//{{{ isVisible(TigerNode) : boolean
+    // {{{ isVisible(TigerNode) : boolean
     // check if a node should be visible based on the 'top level' or 'member visible' settings
     private boolean isVisible( TigerNode tn ) {
         if ( ( tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE ) && tn.getParent() != null && tn.getParent().getOrdinal() == TigerNode.COMPILATION_UNIT ) {
@@ -430,62 +435,62 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 return true;
         }
-    } //}}}
+    }    // }}}
 
-	//{{{ nodeSorter : Comparator<TigerNode>
-    private Comparator<TigerNode> nodeSorter =
-        new Comparator<TigerNode>() {
-            /**
-             * Compares a TigerNode to another TigerNode for sorting. 
-             * @param tna A TigerNode to compare.
-             * @param tnb A TigerNode to compare.
-             * @return a negative integer, zero, or a positive integer as the first TigerNode is
-             * less than, equal to, or greater than the second TigerNode.
-             */
-            public int compare( TigerNode tna, TigerNode tnb ) {
-                int sortBy = optionValues.getSortBy();
-                switch ( sortBy ) {     // NOPMD, no breaks are necessary here
-                    case OptionValues.SORT_BY_LINE:
-                        Integer my_line = new Integer( tna.getStartLocation().line );
-                        Integer other_line = new Integer( tnb.getStartLocation().line );
-                        return my_line.compareTo( other_line );
-                    case OptionValues.SORT_BY_VISIBILITY:
-                        Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
-                        Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
-                        int comp = my_vis.compareTo( other_vis );
-                        return comp == 0 ? compareNames( tna, tnb ) : comp;
-                    case OptionValues.SORT_BY_NAME:
-                    default:
-                        return compareNames( tna, tnb );
-                }
+    // {{{ nodeSorter : Comparator<TigerNode>
+    private Comparator<TigerNode> nodeSorter = new Comparator<TigerNode>() {
+        /**
+         * Compares a TigerNode to another TigerNode for sorting.
+         * @param tna A TigerNode to compare.
+         * @param tnb A TigerNode to compare.
+         * @return a negative integer, zero, or a positive integer as the first TigerNode is
+         * less than, equal to, or greater than the second TigerNode.
+         */
+        public int compare( TigerNode tna, TigerNode tnb ) {
+            int sortBy = optionValues.getSortBy();
+            switch ( sortBy ) {                // NOPMD, no breaks are necessary here
+                case OptionValues.SORT_BY_LINE:
+                    Integer my_line = new Integer( tna.getStartLocation().line );
+                    Integer other_line = new Integer( tnb.getStartLocation().line );
+                    return my_line.compareTo( other_line );
+                case OptionValues.SORT_BY_VISIBILITY:
+                    Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
+                    Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
+                    int comp = my_vis.compareTo( other_vis );
+                    return comp == 0 ? compareNames( tna, tnb ) : comp;
+                case OptionValues.SORT_BY_NAME:
+                default:
+                    return compareNames( tna, tnb );
             }
+        }
 
-            private int compareNames( TigerNode tna, TigerNode tnb ) {
-                // sort by name
-                Integer my_ordinal = new Integer( tna.getOrdinal() );
-                Integer other_ordinal = new Integer( tnb.getOrdinal() );
-                int comp = my_ordinal.compareTo( other_ordinal );
-                return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
-            }
-        }; //}}}
+        private int compareNames( TigerNode tna, TigerNode tnb ) {
+            // sort by name
+            Integer my_ordinal = new Integer( tna.getOrdinal() );
+            Integer other_ordinal = new Integer( tnb.getOrdinal() );
+            int comp = my_ordinal.compareTo( other_ordinal );
+            return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
+        }
+    };    // }}}
 
-	//{{{ supportsCompletion() : boolean
+    // {{{ supportsCompletion() : boolean
     /**
      * @return true, this parser does support code completion
      */
     public boolean supportsCompletion() {
         return true;
-    } //}}}
+    }    // }}}
 
-	//{{{ complete(EditPane, int) : SideKickCompletion
+    // {{{ complete(EditPane, int) : SideKickCompletion
     public SideKickCompletion complete( EditPane editPane, int caret ) {
-        if ( completionFinder == null )
+        if ( completionFinder == null ) {
             completionFinder = new JavaCompletionFinder();
+        }
         return completionFinder.complete( editPane, caret );
-    } //}}}
+    }    // }}}
 
-	//{{{ getPanel() : JPanel
+    // {{{ getPanel() : JPanel
     public JPanel getPanel() {
         return new JavaModeToolBar( this );
-    } //}}}
+    }    // }}}
 }

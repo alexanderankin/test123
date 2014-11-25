@@ -55,6 +55,10 @@ public class Type extends TigerNode {
         
     }
     
+    public Type(String name) {
+        type = name;   
+    }
+    
     public Type(Type t) {
         if (t != null) {
             type = t.getType();
