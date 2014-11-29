@@ -71,7 +71,8 @@ previous versions of this plugin. </para>
 <para> When available, the FTP plugin uses AES-256 encryption to save passwords.
 If JCE Unlimited Strength Encryption is not available, FTP plugin will step down
 to DES (weak) encryption. In this case, you will see a warning in the activity
-log indicating that FTP plugin is falling back on weak encryption.
+log indicating that FTP plugin is falling back on weak encryption. This limits
+the key strength you can use for ssh keys as well.
 If you don't like this, you can <guimenuitem>Disable weak encryption
 when saving passwords</guimenuitem> from FTP plugin options, and/or install JCE
 Strong Encryption for <ulink
@@ -147,9 +148,8 @@ and entered manually into the <guilabel>Path:</guilabel> field of jEdit's
 Browser</ulink>. </para>
 
 <para> It is possble to use the ssh protocol to execute arbitrary
-commands on the remote host. To do this from jEdit, install SshConsole and read
-its <ulink url="../SshConsole.jar!/index.html">plugin
-documentation</ulink> for more details.
+commands on the remote host. To do this from jEdit, install
+<ulink url="../SshConsole.jar!/index.html">SshConsole</ulink>.
 </para>
 
 </chapter>
@@ -216,11 +216,27 @@ something to happen and it is not, check the <guilabel>Errors</guilabel> status
 bar widget, or the Activity Log dockable to find out what happened.
 </para></listitem>
 
-<listitem><para>Currently, even with JCE, Java 1.8 can't process certain strong
-encryption keys, and this affects the FTP plugin's SSH functionality. On
-connect, I get <literal>com.jcraft.jsch.JSchException: Auth Cancel</literal>.
-Here is <ulink url="https://sourceforge.net/p/jedit/plugin-bugs/1787/">a
-ticket</ulink> against it. </para></listitem>
+<listitem><para>Currently, even with JCE, Java 1.8 can't process certain
+old SSH keys, such as a 2048-bit DSA key (no longer possible to create).
+This affects the FTP plugin's SSH functionality. On
+connect, I get <literal>com.jcraft.jsch.JSchException: Auth Cancel</literal>
+when it worked fine with Java 1.7. Here is <ulink
+url="https://sourceforge.net/p/jedit/plugin-bugs/1787/">a ticket</ulink> against
+it. Re-creating your SSH key pair with newer version of
+<literal>ssh-keygen</literal> will remedy the situation.
+</para></listitem>
+
+<listitem><para> If for some reason the FTP plugin is in a non-working state and
+you are unable to do anything, you can reset the plugin by invoking the
+<guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem>, which is similar to
+reloading the plugin - all connections are closed, all cached directories are
+cleared, and all passwords in memory are forgotten. The saved passwords
+file is not touched by this action. </para></listitem>
+
+<listitem><para>Problems were reported when connecting to FTP servers
+from Windows 7, related to Windows Firewall. For workarounds, see
+<ulink url="https://sourceforge.net/p/jedit/plugin-bugs/1562/?page=1">Plugin
+Bugs 1562</ulink>.</para></listitem>
 
 <listitem><para> The Plugin Option <guilabel>MaxAuthTries</guilabel> is
 a tweak which tells the SFTP protocol to retry that number of times before
@@ -232,18 +248,6 @@ It is for this reason that the value is now configrable
 via this new plugin option. Hopefully most people will not need to
 change this value but it is there if you need it. </para></listitem>
 
-<listitem><para> If for some reason the FTP plugin is in a non-working state and
-you are unable to do anything, you can reset the plugin by invoking the
-<guimenuitem>Plugins - Ftp - Reset FTP Plugin</guimenuitem>, which is similar to
-reloading the plugin - all connections are closed, all cached directories are
-cleared, and all passwords in memory are forgotten. The saved passwords
-file is not touched by this action. </para></listitem>
-
-<listitem><para>Problems were reported when connecting to ftp servers
-from Windows 7. Probably there is a bug in Windows firewall.
-There are workarounds for that, see our bug tracker entry #3491410,
-<ulink url="https://sourceforge.net/tracker/index.php?func=detail&amp;aid=3491410&amp;group_id=588&amp;atid=565475" />
-</para></listitem>
 
 </itemizedlist>
 
