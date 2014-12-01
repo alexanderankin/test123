@@ -29,9 +29,12 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
@@ -57,13 +60,14 @@ public class Session implements Cloneable
 	private String name;
 	private String filename;
 	private String currentFile;
-	private Hashtable properties, sessionFiles;
+	private LinkedHashMap sessionFiles;
+	private Hashtable properties;
 
 
 	public Session(String name)
 	{
 		setName(name);
-		this.sessionFiles = new Hashtable();
+		this.sessionFiles = new LinkedHashMap();
 		this.properties = new Hashtable();
 	}
 
@@ -217,9 +221,9 @@ public class Session implements Cloneable
 	 * <code>java.io.File</code> objects corresponding to the files 
 	 * managed by this <code>Session</code> object.
 	 */
-	public Enumeration getAllFiles()
+	public Collection getAllFiles()
 	{
-		return sessionFiles.elements();
+		return sessionFiles.values();
 	}
 
 
@@ -228,9 +232,9 @@ public class Session implements Cloneable
 	 * <code>String</code> objects corresponding to the names of the files 
 	 * managed by this <code>Session</code> object.
 	 */
-	public Enumeration getAllFilenames()
+	public Collection getAllFilenames()
 	{
-		return sessionFiles.keys();
+		return sessionFiles.keySet();
 	}
 
 
@@ -438,7 +442,7 @@ public class Session implements Cloneable
 	public Session getClone()
 	{
 		Session clone = new Session(this.name);
-		clone.sessionFiles = (Hashtable) this.sessionFiles.clone();
+		clone.sessionFiles = (LinkedHashMap) this.sessionFiles.clone();
 		clone.properties = (Hashtable) this.properties.clone();
 		return clone;
 	}
@@ -495,10 +499,10 @@ public class Session implements Cloneable
 
 	private void saveFiles(BufferedWriter out) throws IOException
 	{
-		Enumeration myEnum = sessionFiles.elements();
-		while(myEnum.hasMoreElements())
+		Iterator myIterator = sessionFiles.values().iterator();
+		while(myIterator.hasNext())
 		{
-			SessionFile sf = (SessionFile)myEnum.nextElement();
+			SessionFile sf = (SessionFile)myIterator.next();
 			String filename = sf.getPath().replace('\\','/');
 			out.write("      <FILE filename=\"");
 			out.write(ParseUtilities.encodeXML(filename));
