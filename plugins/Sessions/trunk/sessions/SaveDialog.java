@@ -28,6 +28,7 @@ import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.Enumeration;
 import org.gjt.sp.jedit.io.*;
@@ -101,11 +102,11 @@ public class SaveDialog extends EnhancedDialog
 			newFiles.add(buffer.getPath());
 		}
 		
-		Enumeration oldFiles = currentSession.getAllFilenames();
+		Iterator oldFiles = currentSession.getAllFilenames().iterator();
 		
-		while (oldFiles.hasMoreElements())
+		while (oldFiles.hasNext())
 		{
-			String oneFilename = (String)oldFiles.nextElement();
+			String oneFilename = (String)oldFiles.next();
 			if (!newFiles.contains(oneFilename))
 			{
 				closedBufferModel.addElement(oneFilename);
