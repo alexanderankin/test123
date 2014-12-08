@@ -97,7 +97,10 @@ public class TigerNode extends Asset implements SideKickElement {
     private Location endLocation = startLocation;
 
     // child nodes, may be null.
-    private ArrayList<TigerNode> children;
+    private List<TigerNode> children;
+    
+    // annotation nodes, may be null.
+    private List<AnnotationNode> annotations;
 
     private Type type = null;
 
@@ -118,6 +121,10 @@ public class TigerNode extends Asset implements SideKickElement {
      */
     public TigerNode() {
         this( "", 0 );
+    }
+    
+    public TigerNode(String name) {
+        this( name, 0 );   
     }
 
     /**
@@ -208,6 +215,10 @@ public class TigerNode extends Asset implements SideKickElement {
     public String getType() {
         return type == null ? "" : type.getType();
     }
+    
+    public Type getRealType() {
+        return type;   
+    }
 
     public String getTypeParams() {
         return type == null ? "" : type.getTypeParams();
@@ -226,11 +237,17 @@ public class TigerNode extends Asset implements SideKickElement {
     }
 
     /**
-     * @return line: modifiers name, e.g. "83: public int getLineNumber"
+     * @return line: annotations modifiers name, e.g. "83: @Override public int getLineNumber"
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( "<html>" ).append( startLocation.line ).append( ": " ).append( ModifierSet.toString( modifiers ) ).append( " " ).append( name );
+        sb.append( "<html>" ).append( startLocation.line ).append( ": " );
+        if (annotations != null) {
+            for (AnnotationNode annotation : annotations) {
+                sb.append(annotation).append(' ');   
+            }
+        }
+        sb.append( ModifierSet.toString( modifiers ) ).append( ' ' ).append( name );
         return sb.toString();
     }
 
@@ -270,6 +287,7 @@ public class TigerNode extends Asset implements SideKickElement {
             children.add( child );
         }
         else {
+            System.out.println("+++++ Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
             Log.log(Log.DEBUG, this, "Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
         }
     }
@@ -300,7 +318,7 @@ public class TigerNode extends Asset implements SideKickElement {
      * @return the child nodes of this node, may be null.  Nodes will be sorted
      * per the current sorting scheme.
      */
-    public ArrayList<TigerNode> getChildren() {
+    public List<TigerNode> getChildren() {
         return children;
     }
 
@@ -312,6 +330,17 @@ public class TigerNode extends Asset implements SideKickElement {
         if ( children == null )
             return null;
         return ( TigerNode ) children.get( index );
+    }
+    
+    public void addAnnotation(AnnotationNode an) {
+        if (annotations == null) {
+            annotations = new ArrayList<AnnotationNode>();   
+        }
+        annotations.add(an);   
+    }
+    
+    public List<AnnotationNode> getAnnotation() {
+        return annotations;   
     }
 
     public void setParent( TigerNode p ) {
@@ -357,10 +386,10 @@ public class TigerNode extends Asset implements SideKickElement {
     protected String dump(int level) {
         StringBuilder tabs = new StringBuilder();
         for (int i = 0; i < level; i++) {
-            tabs.append("\t");
+            tabs.append('\t');
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(tabs).append( this.getClass().getName()).append(":").append(this.toString() ).append( '\n' );
+        sb.append(tabs).append( this.getClass().getName()).append(':').append(this.toString() ).append( '\n' );
         List children = getChildren();
         if ( children != null ) {
             for ( Iterator it = children.iterator(); it.hasNext(); ) {

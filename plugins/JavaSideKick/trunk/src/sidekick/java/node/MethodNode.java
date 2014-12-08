@@ -27,49 +27,53 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java.node;
 
-
 import java.util.*;
-
 
 // an extension of TigerNode for a method
 public class MethodNode extends TigerNode implements Parameterizable {
-    
-    String typeParams = null;
-    List formalParams = null;
-    Type returnType = null;
 
+    String typeParams = null;
+    List<Parameter> formalParams = null;
+    Type returnType = null;
 
     public MethodNode() {
         super();
     }
-    
+
     public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
-        super(name, modifiers);
+        super( name, modifiers );
         this.typeParams = typeParams;
         this.formalParams = formalParams;
-        setReturnType(returnType);
+        setReturnType( returnType );
     }
-    
+
     public int getOrdinal() {
         return METHOD;
     }
-    
-    public void setFormalParams( List p ) {
+
+    public void addFormalParameter( Parameter p ) {
+        if ( formalParams == null ) {
+            formalParams = new ArrayList<Parameter>();
+        }
+        formalParams.add( p );
+    }
+
+    public void setFormalParams( List<Parameter> p ) {
         formalParams = p;
     }
 
     /**
-     * @return raw value for formal params    
+     * @return raw value for formal params
      */
-    public List getFormalParams() {
+    public List<Parameter> getFormalParams() {
         return formalParams;
     }
 
     /**
      * Returns a string showing the formal parameters for this method.  The
-     * returned string is a comma separated list of parameter types, if 
+     * returned string is a comma separated list of parameter types, if
      * <code>withNames</code> is true, then the returned string is a comma
-     * separated list of type:name.  
+     * separated list of type:name.
      * <p>
      * Example: method is "void getX(int a, int b)",
      * <code>withNames</code> is false, returned string is "int,int".
@@ -77,7 +81,7 @@ public class MethodNode extends TigerNode implements Parameterizable {
      * Example: method is "void getX(int a, int b)",
      * <code>withNames</code> is true, returned string is "int a,int b".
      * @param withNames should returned string include the formal parameter names
-     * @param typeAsSuffix if true and if withNames is true, name and type will 
+     * @param typeAsSuffix if true and if withNames is true, name and type will
      * be reversed, e.g. method is "void getX(int a, int b), returned string is
      * "a : int, b : int"
      * @param includeFinal if true, include any "final" modifier, e.g. method is
@@ -87,37 +91,46 @@ public class MethodNode extends TigerNode implements Parameterizable {
      * @return parameters as string, see above
      */
     public String getFormalParams( boolean withNames, boolean typeAsSuffix, boolean includeFinal, boolean includeTypeArgs ) {
-        
-        if (formalParams == null || formalParams.size() == 0)
+
+        if ( formalParams == null || formalParams.size() == 0 ) {
             return "";
-        
+        }
+
         StringBuffer sb = new StringBuffer();
-        for (Iterator it = formalParams.iterator(); it.hasNext(); ) {
-            Parameter param = (Parameter)it.next();
-            if (typeAsSuffix) {
-                if (includeFinal && param.isFinal()) 
-                    sb.append("final ");
-                sb.append(param.getType());
-                if (includeTypeArgs)
-                    sb.append(param.type.typeArgs);
-                if (param.isVarArg())
-                    sb.append("...");
-                if (withNames)
-                    sb.append(" : ").append(param.getType());
+        for ( Iterator it = formalParams.iterator(); it.hasNext(); ) {
+            Parameter param = ( Parameter ) it.next();
+            if ( typeAsSuffix ) {
+                if ( includeFinal && param.isFinal() ) {
+                    sb.append( "final " );
+                }
+                sb.append( param.getType() );
+                if ( includeTypeArgs && param.getType() != null ) {
+                    sb.append( param.getRealType().typeArgs );
+                }
+                if ( param.isVarArg() ) {
+                    sb.append( "..." );
+                }
+                if ( withNames ) {
+                    sb.append( " : " ).append( param.getType() );
+                }
+            } else {
+                if ( withNames ) {
+                    sb.append( param.getName() ).append( " : " );
+                }
+                if ( includeFinal && param.isFinal() ) {
+                    sb.append( "final " );
+                }
+                sb.append( param.getType() );
+                if ( includeTypeArgs ) {
+                    sb.append( param.getTypeParams() );
+                }
+                if ( param.isVarArg() ) {
+                    sb.append( "..." );
+                }
             }
-            else {
-                if (withNames)
-                    sb.append(param.getName()).append(" : ");
-                if (includeFinal && param.isFinal()) 
-                    sb.append("final ");
-                sb.append(param.getType());
-                if (includeTypeArgs)
-                    sb.append(param.getTypeParams());
-                if (param.isVarArg())
-                    sb.append("...");
+            if ( it.hasNext() ) {
+                sb.append( ", " );
             }
-            if (it.hasNext())
-                sb.append(", ");
         }
         return sb.toString();
     }
@@ -130,23 +143,22 @@ public class MethodNode extends TigerNode implements Parameterizable {
     }
 
     public void setThrows( List t ) {
-        if (t == null) {
-            return;   
+        if ( t == null ) {
+            return;
         }
-        for (Iterator it = t.iterator(); it.hasNext(); ) {
-            TigerNode tn = (TigerNode)it.next();
-            ThrowsNode thn = new ThrowsNode(tn.getName());
-            thn.setStartLocation(tn.getStartLocation());
-            thn.setEndLocation(tn.getEndLocation());
-            addChild(thn);
+        for ( Iterator it = t.iterator(); it.hasNext(); ) {
+            TigerNode tn = ( TigerNode ) it.next();
+            ThrowsNode thn = new ThrowsNode( tn.getName() );
+            thn.setStartLocation( tn.getStartLocation() );
+            thn.setEndLocation( tn.getEndLocation() );
+            addChild( thn );
         }
     }
 
     /**
-     * Overridden to return true if the node is a ThrowsNode.    
+     * Overridden to return true if the node is a ThrowsNode.
      */
     public boolean canAdd( TigerNode node ) {
-        //return node.getOrdinal() == TigerNode.THROWS || node.getOrdinal() == TigerNode.BLOCK;
         return true;
     }
 
@@ -160,14 +172,15 @@ public class MethodNode extends TigerNode implements Parameterizable {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append( super.toString() );
-        if (getTypeParams() != null)
-            sb.append(getTypeParams());
-        sb.append("(").append( getFormalParams( true, false, true, true ) ).append(")");
-        if ( returnType != null )
+        if ( getTypeParams() != null ) {
+            sb.append( getTypeParams() );
+        }
+        sb.append( '(' ).append( getFormalParams( true, false, true, true ) ).append( ')' );
+        if ( returnType != null ) {
             sb.append( ": " ).append( returnType );
+        }
 
         return sb.toString();
     }
 }
-
 

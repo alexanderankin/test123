@@ -41,6 +41,9 @@ import java.util.*;
  */
 public class LocalVariableNode extends FieldNode {
 
+    public LocalVariableNode( String name ) {
+        super( name, 0, null );   
+    }
     
     public LocalVariableNode( String name, Type type ) {
         super( name, 0, type );

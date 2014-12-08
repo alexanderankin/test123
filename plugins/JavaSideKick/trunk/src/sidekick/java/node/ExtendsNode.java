@@ -36,6 +36,10 @@ package sidekick.java.node;
 public class ExtendsNode extends Type {
     
     
+    public ExtendsNode(String name) {
+        super(name);
+    }
+    
     public ExtendsNode( Type type ) {
         super(type);
     }
@@ -46,7 +50,7 @@ public class ExtendsNode extends Type {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( getStartLocation().line ).append( ": " ).append( ModifierSet.toString( getModifiers() ) ).append( " " ).append( getType().toString() );
+        sb.append( getStartLocation().line ).append( ": " ).append( ModifierSet.toString( getModifiers() ) ).append( ' ' ).append( getType().toString() );
         return sb.toString();
     }
 }

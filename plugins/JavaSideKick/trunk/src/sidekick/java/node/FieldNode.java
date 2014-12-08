@@ -38,7 +38,6 @@ package sidekick.java.node;
 public class FieldNode extends TigerNode {
 
 
-    Type type = null;
     boolean isFinal = false;
 
     public FieldNode() {
@@ -46,14 +45,14 @@ public class FieldNode extends TigerNode {
 
     public FieldNode( String name, int modifiers, Type type ) {
         super( name, modifiers );
-        this.type = type;
+        setType(type);
     }
 
     /**
      * @returns true if this field represents a primitive type.
      */
     public boolean isPrimitive() {
-        return type == null ? false : type.isPrimitive;
+        return getRealType() == null ? false : getRealType().isPrimitive;
     }
 
     public void setFinal( boolean b ) {
@@ -64,24 +63,22 @@ public class FieldNode extends TigerNode {
         return isFinal;
     }
 
-    public void setType( Type type ) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type == null ? "" : type.getType();
-    }
-
-    public String getTypeParams() {
-        return type == null ? "" : type.getTypeParams();
-    }
-
-
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( super.toString() );
-        if ( type != null ) {
-            sb.append( ": " ).append( type.toString() );
+        Type type = getRealType();
+        java.util.List<TigerNode> children = getChildren();
+        if (children != null) {
+            for (TigerNode child : children) {
+                sb.append( child.toString() );
+                if ( type != null ) {
+                    sb.append( ": " ).append( type.toString() );
+                }
+            }
+        } else {
+            sb.append(getName());
+            if ( type != null ) {
+                sb.append( ": " ).append( type.toString() );
+            }
         }
         return sb.toString();
     }

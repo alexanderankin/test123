@@ -29,16 +29,14 @@ package sidekick.java.node;
 
 import java.util.*;
 
-
-
 // an extension of TigerNode for a constructor
 public class ConstructorNode extends TigerNode implements Parameterizable {
     String typeParams = null;
-    List formalParams = null;
+    List<Parameter> formalParams = null;
 
-    public ConstructorNode() {}
+    public ConstructorNode() { }
 
-    public ConstructorNode( String name, int modifiers, String typeParams, List formalParams ) {
+    public ConstructorNode( String name, int modifiers, String typeParams, List<Parameter> formalParams ) {
         super( name, modifiers );
         this.typeParams = typeParams;
         this.formalParams = formalParams;
@@ -48,7 +46,14 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
         return CONSTRUCTOR;
     }
 
-    public void setFormalParams( List p ) {
+    public void addFormalParameter( Parameter p ) {
+        if ( formalParams == null ) {
+            formalParams = new ArrayList<Parameter>();
+        }
+        formalParams.add( p );
+    }
+
+    public void setFormalParams( List<Parameter> p ) {
         formalParams = p;
     }
 
@@ -60,7 +65,7 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
         return formalParams.toString();
     }
     */
-    public List getFormalParams() {
+    public List<Parameter> getFormalParams() {
         return formalParams;
     }
 
@@ -87,36 +92,45 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
      */
     public String getFormalParams( boolean withNames, boolean typeAsSuffix, boolean includeFinal, boolean includeTypeArgs ) {
 
-        if (formalParams == null || formalParams.size() == 0)
+        if ( formalParams == null || formalParams.size() == 0 ) {
             return "";
+        }
 
         StringBuffer sb = new StringBuffer();
-        for (Iterator it = formalParams.iterator(); it.hasNext(); ) {
-            Parameter param = (Parameter)it.next();
-            if (typeAsSuffix) {
-                if (includeFinal && param.isFinal())
-                    sb.append("final ");
-                sb.append(param.type.type);
-                if (includeTypeArgs)
-                    sb.append(param.type.typeArgs);
-                if (param.isVarArg())
-                    sb.append("...");
-                if (withNames)
-                    sb.append(" : ").append(param.getName());
+        for ( Iterator it = formalParams.iterator(); it.hasNext(); ) {
+            Parameter param = ( Parameter ) it.next();
+            if ( typeAsSuffix ) {
+                if ( includeFinal && param.isFinal() ) {
+                    sb.append( "final " );
+                }
+                sb.append( param.getType() );
+                if ( includeTypeArgs && param.getType() != null ) {
+                    sb.append( param.getRealType().typeArgs );
+                }
+                if ( param.isVarArg() ) {
+                    sb.append( "..." );
+                }
+                if ( withNames ) {
+                    sb.append( " : " ).append( param.getType() );
+                }
+            } else {
+                if ( withNames ) {
+                    sb.append( param.getName() ).append( " : " );
+                }
+                if ( includeFinal && param.isFinal() ) {
+                    sb.append( "final " );
+                }
+                sb.append( param.getType() );
+                    if ( includeTypeArgs ) {
+                    sb.append( param.getTypeParams() );
+                }
+                if ( param.isVarArg() ) {
+                    sb.append( "..." );
+                }
             }
-            else {
-                if (withNames)
-                    sb.append(param.getName()).append(" : ");
-                if (includeFinal && param.isFinal())
-                    sb.append("final ");
-                sb.append(param.type.type);
-                if (includeTypeArgs)
-                    sb.append(param.type.typeArgs);
-                if (param.isVarArg())
-                    sb.append("...");
+            if ( it.hasNext() ) {
+                sb.append( ", " );
             }
-            if (it.hasNext())
-                sb.append(", ");
         }
         return sb.toString();
     }
@@ -129,35 +143,31 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
     }
 
     public void setThrows( List t ) {
-        if (t == null) {
+        if ( t == null ) {
             return;
         }
-        for (Iterator it = t.iterator(); it.hasNext(); ) {
-            TigerNode tn = (TigerNode)it.next();
-            ThrowsNode thn = new ThrowsNode(tn.getName());
-            thn.setStartLocation(tn.getStartLocation());
-            thn.setEndLocation(tn.getEndLocation());
-            addChild(thn);
+        for ( Iterator it = t.iterator(); it.hasNext(); ) {
+            TigerNode tn = ( TigerNode ) it.next();
+            ThrowsNode thn = new ThrowsNode( tn.getName() );
+            thn.setStartLocation( tn.getStartLocation() );
+            thn.setEndLocation( tn.getEndLocation() );
+            addChild( thn );
         }
     }
 
     /**
      * Overridden to return true if the node is a ThrowsNode.
      */
-    /*
     public boolean canAdd( TigerNode node ) {
-        return node.getOrdinal() == TigerNode.THROWS;
+        return true;
     }
-    */
-
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append( super.toString() );
-        sb.append("(").append( getFormalParams( true, false, true, true ) ).append(")");
+        sb.append( '(' ).append( getFormalParams( true, false, true, true ) ).append( ')' );
         sb.append( ": <init>" );
         return sb.toString();
     }
 }
-
 
