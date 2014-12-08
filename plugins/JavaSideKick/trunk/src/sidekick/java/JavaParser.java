@@ -144,6 +144,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
         CUNode compilationUnit = null;
+        List<sidekick.java.node.ErrorNode> errorList = null;
         try {
             // re-init the labeler
             TigerLabeler.setOptionValues( optionValues );
@@ -166,19 +167,24 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     int tab_size = buffer.getTabSize();
                     compilationUnit = tigerParser.getJavaCCRootNode( tab_size );
                     compilationUnit.setResults( tigerParser.getResults() );
+                    errorList = tigerParser.getErrors();
                     break;
                 default:
-                    // use the antlr parser for java files
+                    // use the antlr 4 parser for java files
                     ANTLRInputStream antlrInput = new ANTLRInputStream( input );
                     Java8Lexer lexer = new Java8Lexer( antlrInput );
                     CommonTokenStream tokens = new CommonTokenStream( lexer );
                     Java8Parser java8parser = new Java8Parser( tokens );
+                    JavaSideKickErrorListener errorListener = new JavaSideKickErrorListener();
+                    java8parser.removeErrorListeners();
+                    java8parser.addErrorListener(errorListener);
                     ParseTree tree = java8parser.compilationUnit();
                     ParseTreeWalker walker = new ParseTreeWalker();
                     Java8SidekickListener listener = new Java8SidekickListener();
                     walker.walk( listener, tree );
                     compilationUnit = listener.getCompilationUnit();
                     compilationUnit.setResults( listener.getResults() );
+                    errorList = errorListener.getErrors();
             }
             if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
                 System.out.println( compilationUnit.dump() );
@@ -233,7 +239,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         boolean complete_delay = jEdit.getBooleanProperty( "sidekick.complete-delay.toggle", true );
         boolean complete_on = complete_instant || complete_delay;
         if ( ! complete_on && errorSource != null ) {
-            /// handleErrors( errorSource, parser, buffer );
+            handleErrors( errorSource, errorList, buffer );
         }
 
         return parsedData;
@@ -244,7 +250,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * The parser accumulates errors as it parses.  This method passed them all to
      * the ErrorList plugin.
      */
-    private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
+    private void handleErrors( DefaultErrorSource errorSource, List<sidekick.java.node.ErrorNode> errorList, Buffer buffer ) {
         /* only show errors for java files.  If the default edit mode is "java" then by default,
         the parser will be invoked by SideKick.  It's annoying to get parse error messages for
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
@@ -252,7 +258,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         the file. */
         if ( optionValues.getShowErrors() && ( !buffer.isDirty() || !optionValues.getIgnoreDirtyBuffers() ) && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
             errorSource.clear();
-            for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
+            for ( Iterator it = errorList.iterator(); it.hasNext(); ) {
                 sidekick.java.node.ErrorNode en = ( sidekick.java.node.ErrorNode ) it.next();
                 Exception e = en.getException();
                 ParseException pe = null;

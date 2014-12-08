@@ -41,6 +41,7 @@ import sidekick.util.Range;
 public class CUNode extends TigerNode {
 
     private String packageName = "";
+    private TigerNode packageNode = null;
     private List<ImportNode> imports = null;
     private Results results = null;
     private String filename = null;
@@ -57,14 +58,24 @@ public class CUNode extends TigerNode {
         return filename;
     }
 
+    @Deprecated
     public void setPackageName( String name ) {
         packageName = name;
     }
 
+    @Deprecated
     public String getPackageName() {
-        return packageName;
+        return packageNode == null ? "" : packageNode.toString();
+    }
+    
+    public void setPackage(TigerNode packageNode) {
+        this.packageNode = packageNode;   
     }
 
+    public TigerNode getPackage() {
+        return packageNode;   
+    }
+    
     public int getOrdinal() {
         return TigerNode.COMPILATION_UNIT;
     }

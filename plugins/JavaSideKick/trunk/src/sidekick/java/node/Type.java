@@ -59,6 +59,10 @@ public class Type extends TigerNode {
         type = name;   
     }
     
+    public void setTypeName(String name) {
+        type = name;   
+    }
+    
     public Type(Type t) {
         if (t != null) {
             type = t.getType();
@@ -80,6 +84,17 @@ public class Type extends TigerNode {
         return type == null ? "" : type + dimString();
     }
     
+    public void addTypeParam(String param) {
+        if (typeArgs == null) {
+            typeArgs = "";   
+        }
+        StringBuilder sb = new StringBuilder(typeArgs);
+        if (sb.length() > 0 ) {
+            sb.append(',');   
+        }
+        sb.append(param);
+        typeArgs = sb.toString();
+    }
     public String getTypeParams() {
         return typeArgs == null ? "" : typeArgs;   
     }
@@ -101,11 +116,11 @@ public class Type extends TigerNode {
     }
     
     private String dimString() {
-        String dims = "";
+        StringBuilder dims = new StringBuilder();
         for (int i = 0; i < arrayDimensions; i++) {
-            dims += "[]";
+            dims.append("[]");
         }
-        return dims;
+        return dims.toString();
     }
     
     /**
@@ -118,7 +133,7 @@ public class Type extends TigerNode {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         if (qualifier != null && qualifier.length() > 0) {
-            sb.append(qualifier).append(" ");   
+            sb.append(qualifier).append(' ');   
         }
         sb.append(type).append(dimString()).append(typeArgs);
         return sb.toString();

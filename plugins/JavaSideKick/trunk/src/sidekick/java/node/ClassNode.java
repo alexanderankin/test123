@@ -36,6 +36,10 @@ public class ClassNode extends TigerNode {
 
     private String typeParams = null;
 
+    public ClassNode(String name) {
+        super(name, 0);   
+    }
+    
     public ClassNode( String name, int modifiers ) {
         super( name, modifiers );
     }

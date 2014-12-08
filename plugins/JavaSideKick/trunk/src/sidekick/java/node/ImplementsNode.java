@@ -34,6 +34,10 @@ package sidekick.java.node;
  */
 public class ImplementsNode extends Type {
     
+    public ImplementsNode(String name) {
+        super(name);   
+    }
+    
     public ImplementsNode( Type type ) {
         super(type);
     }
