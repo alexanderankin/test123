@@ -15,4 +15,8 @@ class ColoredPoint implements Point {
         super(x, y);
         this.color = color;
     }
+    
+    public void getColor() throws IllegalArgumentException {
+        
+    }
 }
