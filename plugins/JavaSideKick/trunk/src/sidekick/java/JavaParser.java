@@ -62,6 +62,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // {{{ Static members
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
+    public static final int JAVA_8_PARSER = 3;
     public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
     // }}}
 
@@ -82,6 +83,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
         switch ( type ) {
             case JAVACC_PARSER:
                 parser_type = JAVACC_PARSER;
+                break;
+            case JAVA_8_PARSER:
+                parser_type = JAVA_8_PARSER;
                 break;
             default:
                 parser_type = JAVA_PARSER;
@@ -159,17 +163,17 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // 3) jEdit has that 'gzip file on disk' option which won't parse.
             String contents = buffer.getText( 0, buffer.getLength() );
             input = new StringReader( contents );
+            int tab_size = buffer.getTabSize();
 
             switch ( parser_type ) {
                 case JAVACC_PARSER:
                     // use the javacc parser for javacc files
                     TigerParser tigerParser = new TigerParser( input );
-                    int tab_size = buffer.getTabSize();
                     compilationUnit = tigerParser.getJavaCCRootNode( tab_size );
                     compilationUnit.setResults( tigerParser.getResults() );
                     errorList = tigerParser.getErrors();
                     break;
-                default:
+                case JAVA_8_PARSER:
                     // use the antlr 4 parser for java files
                     ANTLRInputStream antlrInput = new ANTLRInputStream( input );
                     Java8Lexer lexer = new Java8Lexer( antlrInput );
@@ -185,6 +189,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit = listener.getCompilationUnit();
                     compilationUnit.setResults( listener.getResults() );
                     errorList = errorListener.getErrors();
+                    break;
+                default:
+                    TigerParser java7parser = new TigerParser( input );
+                    compilationUnit = java7parser.getJavaRootNode( tab_size );
+                    compilationUnit.setResults( java7parser.getResults() );
+                    errorList = java7parser.getErrors();
             }
             if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
                 System.out.println( compilationUnit.dump() );
@@ -272,7 +282,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 int tab = ( Integer ) buffer.getMode().getProperty( "tabSize" );
                 StringBuilder sub = new StringBuilder();
                 for ( int i = 0; i < tab; i++ ) {
-                    sub.append( " " );
+                    sub.append( ' ' );
                 }
                 String startLineText = buffer.getLineText( range.startLine );
                 int index;
