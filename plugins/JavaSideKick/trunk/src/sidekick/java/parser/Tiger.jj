@@ -755,7 +755,7 @@ TigerNode production() :
 TigerNode javacode_production() :
 {
     JavaCodeProductionNode mn = new JavaCodeProductionNode();
-    List<TigerNode> params = null;
+    List<Parameter> params = null;
     Token start_t = null;
     Type resultType = null;
     String identifier = "";
@@ -792,7 +792,7 @@ TigerNode javacode_production() :
 TigerNode bnf_production() :
 {
     BNFProductionNode mn = new BNFProductionNode();
-    List<TigerNode> params = null;
+    List<Parameter> params = null;
     Type resultType = null;
     String identifier = "";
     Token end_t = null;
@@ -1973,7 +1973,7 @@ MethodNode MethodDeclarator():
 {
     Token t = null;
     String s = "";
-    List<TigerNode> f = null;
+    List<Parameter> f = null;
 }
 {
     try {
@@ -1995,9 +1995,9 @@ MethodNode MethodDeclarator():
     }
 }
 
-List<TigerNode> FormalParameters():
+List<Parameter> FormalParameters():
 {
-    ArrayList<TigerNode> params = new ArrayList<TigerNode>();
+    ArrayList<Parameter> params = new ArrayList<Parameter>();
     Parameter a = null;
 }
 {
@@ -2072,7 +2072,7 @@ Parameter FormalParameter():
 ConstructorNode ConstructorDeclaration(Modifier m):
 {
     Token t = null;
-    List<TigerNode> params = null;
+    List<Parameter> params = null;
     List<TigerNode> name_list = null;
     String type_params = null;
     Token end_t = null;

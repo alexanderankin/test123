@@ -425,7 +425,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public TigerNode javacode_production() throws ParseException {
     JavaCodeProductionNode mn = new JavaCodeProductionNode();
-    List<TigerNode> params = null;
+    List<Parameter> params = null;
     Token start_t = null;
     Type resultType = null;
     String identifier = "";
@@ -485,7 +485,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public TigerNode bnf_production() throws ParseException {
     BNFProductionNode mn = new BNFProductionNode();
-    List<TigerNode> params = null;
+    List<Parameter> params = null;
     Type resultType = null;
     String identifier = "";
     Token end_t = null;
@@ -2388,7 +2388,7 @@ public class TigerParser implements TigerParserConstants {
   final public MethodNode MethodDeclarator() throws ParseException {
     Token t = null;
     String s = "";
-    List<TigerNode> f = null;
+    List<Parameter> f = null;
     try {
       t = jj_consume_token(IDENTIFIER);
       f = FormalParameters();
@@ -2419,8 +2419,8 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List<TigerNode> FormalParameters() throws ParseException {
-    ArrayList<TigerNode> params = new ArrayList<TigerNode>();
+  final public List<Parameter> FormalParameters() throws ParseException {
+    ArrayList<Parameter> params = new ArrayList<Parameter>();
     Parameter a = null;
     try {
       jj_consume_token(LPAREN);
@@ -2516,7 +2516,7 @@ public class TigerParser implements TigerParserConstants {
 
   final public ConstructorNode ConstructorDeclaration(Modifier m) throws ParseException {
     Token t = null;
-    List<TigerNode> params = null;
+    List<Parameter> params = null;
     List<TigerNode> name_list = null;
     String type_params = null;
     Token end_t = null;

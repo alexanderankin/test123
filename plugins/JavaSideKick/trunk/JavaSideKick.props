@@ -152,6 +152,7 @@ options.sidekick.java.showErrors=Show parse errors in ErrorList
 options.sidekick.java.ignoreDirtyBuffers=Ignore dirty buffers
 options.sidekick.java.parseOnComplete=Parse buffer on code completion (may be slow on large files)
 options.sidekick.java.importPackage=Insert import statement on package completion
+options.sidekick.java.javaParser=Java parser:
 
 options.sidekick.java.sortBy=Sort by
 options.sidekick.java.sortByLine=Line
@@ -188,6 +189,7 @@ sidekick.java.showStatusBar=true
 sidekick.java.automaticParse=false
 sidekick.java.sort=false
 sidekick.java.importPackage=false
+sidekick.java.useJava7Parser=true
 
 #member filters by type
 sidekick.java.showAttr=false
