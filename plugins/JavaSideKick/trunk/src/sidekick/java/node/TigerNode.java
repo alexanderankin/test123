@@ -339,6 +339,15 @@ public class TigerNode extends Asset implements SideKickElement {
         annotations.add(an);   
     }
     
+    public void addAnnotations(List<AnnotationNode> an) {
+        if (an != null) {
+            if (annotations == null) {
+                annotations = new ArrayList<AnnotationNode>();
+            }
+            annotations.addAll(an);
+        }
+    }
+    
     public List<AnnotationNode> getAnnotation() {
         return annotations;   
     }
