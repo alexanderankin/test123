@@ -43,9 +43,6 @@ import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.Range;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
-import sidekick.java.parser.antlr.*;
 // }}}
 
 public class JavaParser extends SideKickParser implements EBComponent {
@@ -62,7 +59,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // {{{ Static members
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
-    public static final int JAVA_8_PARSER = 3;
     public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
     // }}}
 
@@ -83,9 +79,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         switch ( type ) {
             case JAVACC_PARSER:
                 parser_type = JAVACC_PARSER;
-                break;
-            case JAVA_8_PARSER:
-                parser_type = JAVA_8_PARSER;
                 break;
             default:
                 parser_type = JAVA_PARSER;
@@ -172,23 +165,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit = tigerParser.getJavaCCRootNode( tab_size );
                     compilationUnit.setResults( tigerParser.getResults() );
                     errorList = tigerParser.getErrors();
-                    break;
-                case JAVA_8_PARSER:
-                    // use the antlr 4 parser for java files
-                    ANTLRInputStream antlrInput = new ANTLRInputStream( input );
-                    Java8Lexer lexer = new Java8Lexer( antlrInput );
-                    CommonTokenStream tokens = new CommonTokenStream( lexer );
-                    Java8Parser java8parser = new Java8Parser( tokens );
-                    JavaSideKickErrorListener errorListener = new JavaSideKickErrorListener();
-                    java8parser.removeErrorListeners();
-                    java8parser.addErrorListener(errorListener);
-                    ParseTree tree = java8parser.compilationUnit();
-                    ParseTreeWalker walker = new ParseTreeWalker();
-                    Java8SidekickListener listener = new Java8SidekickListener();
-                    walker.walk( listener, tree );
-                    compilationUnit = listener.getCompilationUnit();
-                    compilationUnit.setResults( listener.getResults() );
-                    errorList = errorListener.getErrors();
                     break;
                 default:
                     TigerParser java7parser = new TigerParser( input );

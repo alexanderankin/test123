@@ -1170,14 +1170,14 @@ CUNode CompilationUnit(int tab_size):
     setTabSize(tab_size);
     CUNode n = new CUNode();
     TigerNode a;
-    String packageName = "";
+    TigerNode packageNode = null;
     ImportNode in = null;
 }
 {
     try {
       (
           
-           [ LOOKAHEAD(2) packageName=PackageDeclaration() ]
+           [ LOOKAHEAD(2) packageNode=PackageDeclaration() ]
            ( in=ImportDeclaration() { n.addImport(in); } )*
 
            // TypeDeclaration, this will be one or more classes or
@@ -1193,7 +1193,8 @@ CUNode CompilationUnit(int tab_size):
     }
 
     {
-        n.setPackageName(packageName);
+        if (packageNode != null)
+            n.setPackage(packageNode);
         return n;
     }
 }
@@ -1228,26 +1229,38 @@ CUNode JavaCompilationUnit(int tab_size):
    }
 }
 
-// TODO: need PackageNode so annotations can be captured
-String PackageDeclaration():
+TigerNode PackageDeclaration():
 {
     NameNode name = null;
     List<AnnotationNode> annotations = null;
+    Token start = null;
+    Token end = null;
 }
 {
     try {
         [ annotations = Annotation() ]        // Java 8
-        "package" name=Name() ";"  
+        start = "package" name=Name() end=";"  
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON, IMPORT, CLASS, INTERFACE, ENUM, PUBLIC, PRIVATE, PROTECTED);
     }
 
     {
-        if (name == null) {
-            return "";
+        TigerNode packageNode = new TigerNode();
+        if (name != null) {
+            packageNode.setName(name.getFullyQualifiedTypeName());
         }
-        return name.getFullyQualifiedTypeName();
+        if (annotations != null) {
+            packageNode.setStartLocation(annotations.get(0).getStartLocation());
+            packageNode.addAnnotations(annotations);
+        } else {
+            packageNode.setStartLocation(getLocation(start));   
+        }
+        
+        if (end != null)
+            packageNode.setEndLocation(getEndLocation(end));
+        
+        return packageNode;
     }
 }
 

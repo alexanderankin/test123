@@ -44,7 +44,6 @@ public class JavaSideKickPlugin extends EBPlugin {
 
     private static HashMap<View, JavaParser> javaParsers = new HashMap<View, JavaParser>();
     private static HashMap<View, JavaParser> javaccParsers = new HashMap<View, JavaParser>();
-    private static HashMap<View, JavaParser> java8Parsers = new HashMap<View, JavaParser>();
 
     public void start() {
     }
@@ -69,19 +68,10 @@ public class JavaSideKickPlugin extends EBPlugin {
         View view = jEdit.getActiveView();
         switch (type) {
             case JavaParser.JAVA_PARSER:
-                boolean useJava7Parser = jEdit.getBooleanProperty("sidekick.java.useJava7Parser", true);
-                if (useJava7Parser) {
-                    parser = javaParsers.get(view);
-                    if (parser == null) {
-                        parser = new JavaParser(JavaParser.JAVA_PARSER);
-                        javaParsers.put(view, parser);
-                    }
-                } else {
-                    parser = java8Parsers.get(view);
-                    if (parser == null) {
-                        parser = new JavaParser(JavaParser.JAVA_8_PARSER);
-                        java8Parsers.put(view, parser);
-                    }
+                parser = javaParsers.get(view);
+                if (parser == null) {
+                    parser = new JavaParser(JavaParser.JAVA_PARSER);
+                    javaParsers.put(view, parser);
                 }
                 EditBus.addToBus(parser);
                 break;

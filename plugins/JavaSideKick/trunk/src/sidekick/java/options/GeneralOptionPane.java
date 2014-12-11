@@ -11,8 +11,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
     private JCheckBox ignoreDirtyBuffers;
     private JCheckBox parseOnCodeComplete;
     private JCheckBox importPackage;
-    private JRadioButton java7;
-    private JRadioButton java8;
 
     public GeneralOptionPane() {
         super( "sidekick.java.general" );
@@ -42,19 +40,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
         addComponent( errorPanel );
         addComponent( parseOnCodeComplete );
         addComponent( importPackage );
-        java7 = new JRadioButton( "Java 7" );
-        java8 = new JRadioButton( "Java 8" );
-        ButtonGroup bg = new ButtonGroup();
-        bg.add( java7 );
-        bg.add( java8 );
-        JPanel javaPanel = new JPanel();
-        javaPanel.setLayout( new BoxLayout( javaPanel, BoxLayout.X_AXIS ) );
-        javaPanel.add( new JLabel( jEdit.getProperty( "options.sidekick.java.javaParser", "Java parser: " ) ) );
-        javaPanel.add( Box.createHorizontalStrut( 11 ) );
-        javaPanel.add( java7 );
-        javaPanel.add( Box.createHorizontalStrut( 6 ) );
-        javaPanel.add( java8 );
-        addComponent( javaPanel );
     }
 
     /**
@@ -65,8 +50,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
         ignoreDirtyBuffers.setSelected( jEdit.getBooleanProperty( "sidekick.java.ignoreDirtyBuffers", true ) );
         parseOnCodeComplete.setSelected( jEdit.getBooleanProperty( "sidekick.java.parseOnComplete", true ) );
         importPackage.setSelected( jEdit.getBooleanProperty( "sidekick.java.importPackage", false ) );
-        java7.setSelected( jEdit.getBooleanProperty( "sidekick.java.useJava7Parser", true ) );
-        java8.setSelected( !jEdit.getBooleanProperty( "sidekick.java.useJava7Parser", false ) );
     }
 
     protected void _save() {
@@ -74,6 +57,5 @@ public class GeneralOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty( "sidekick.java.ignoreDirtyBuffers", ignoreDirtyBuffers.isSelected() );
         jEdit.setBooleanProperty( "sidekick.java.parseOnComplete", parseOnCodeComplete.isSelected() );
         jEdit.setBooleanProperty( "sidekick.java.importPackage", importPackage.isSelected() );
-        jEdit.setBooleanProperty( "sidekick.java.useJava7Parser", java7.isSelected() );
     }
 }
