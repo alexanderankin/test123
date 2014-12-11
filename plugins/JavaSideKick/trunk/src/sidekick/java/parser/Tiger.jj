@@ -31,6 +31,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
 options {
   JAVA_UNICODE_ESCAPE = true;
   //ERROR_REPORTING = true;
@@ -79,6 +80,16 @@ import java.util.*;
  * <p>
  * References like JLS X.X are section numbers in the Java Language Specification
  * Third Edition.
+ *
+ * This has been modified to support Java 7.
+ *
+ * For Java 8 features, see http://docs.oracle.com/javase/8/docs/technotes/guides/language/enhancements.html#javase8
+ * - Lambda Expressions
+ * - Improved Type Inference
+ * - Annotations on Java Types
+ * - Repeating Annotations
+ * - Method Parameter Reflection
+ *
  */
 public class TigerParser
 {
@@ -247,8 +258,7 @@ public class TigerParser
   private String toTigerString(List<TigerNode> list) {
       if (list != null) {
         StringBuffer sb = new StringBuffer();
-        for (Iterator it = list.iterator(); it.hasNext(); ) {
-            TigerNode tn = (TigerNode)it.next();
+        for (TigerNode tn : list ) {
             sb.append(tn.getName()).append(", ");
             if (tn.getChildCount() > 0) {
                 sb.append(toTigerString(tn.getChildren()));
@@ -566,6 +576,9 @@ TOKEN :
 | < RSIGNEDSHIFTASSIGN: ">>=" >
 | < RUNSIGNEDSHIFTASSIGN: ">>>=" >
 | < ELLIPSIS: "..." >
+| < POINTER: "->" >
+| < DIAMOND: "<>" >
+
 }
 
 /* >'s need special attention due to generics syntax. */
@@ -641,7 +654,11 @@ List<TigerNode> javacc_input() :
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("PARSER_END")} )
   cunode_end_t=<IDENTIFIER> "(" identifier() parser_node_end_t=")"
 
-  ( production_node=production() { children.add(production_node); } )+
+  ( 
+      production_node = production() { 
+          children.add(production_node); 
+      } 
+  )+
   <EOF>
 
   {
@@ -1159,7 +1176,8 @@ CUNode CompilationUnit(int tab_size):
 {
     try {
       (
-           [ packageName=PackageDeclaration() ]
+          
+           [ LOOKAHEAD(2) packageName=PackageDeclaration() ]
            ( in=ImportDeclaration() { n.addImport(in); } )*
 
            // TypeDeclaration, this will be one or more classes or
@@ -1210,13 +1228,16 @@ CUNode JavaCompilationUnit(int tab_size):
    }
 }
 
+// TODO: need PackageNode so annotations can be captured
 String PackageDeclaration():
 {
     NameNode name = null;
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
-        "package" name=Name() ";"   ////
+        [ annotations = Annotation() ]        // Java 8
+        "package" name=Name() ";"  
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON, IMPORT, CLASS, INTERFACE, ENUM, PUBLIC, PRIVATE, PROTECTED);
@@ -1300,9 +1321,6 @@ Modifier Modifiers():
   |
    t="strictfp" { modifiers |= ModifierSet.STRICTFP;  adjustModifier(m, t);}
   |
-   // TODO: Annotation doesn't work as a modifier, at least, not the way the 
-   // Modifer and ModifierSet classes are set up.  Need to figure out how to
-   // represent Annotation as a modifier.
    Annotation()
   )
  )*
@@ -1330,6 +1348,7 @@ TigerNode TypeDeclaration():
         |
           modifier = Modifiers()
           (
+              LOOKAHEAD(2)
              tn=ClassOrInterfaceDeclaration(modifier)
            |
              tn=EnumDeclaration(modifier)
@@ -1359,10 +1378,14 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
    List<TigerNode> extends_list = null;
    List<TigerNode> implements_list = null;
    Token type = null;
+   List<AnnotationNode> annotations = null;
 }
 {
     try {
-      ( type="class" | type="interface" { isInterface = true; } )
+      ( 
+          [ annotations = Annotation() ]      // Java 8
+          type="class" | type="interface" { isInterface = true; } 
+      )
       t=<IDENTIFIER>
       [ type_params = TypeParameters() ]
       [ extends_list=ExtendsList(isInterface) ]
@@ -1378,6 +1401,7 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
       [ LOOKAHEAD(2) <SEMICOLON> ]
     }
     catch(ParseException pe) {
+        pe.printStackTrace();
         error_skipto(pe, SEMICOLON, CLASS, INTERFACE, ENUM, PUBLIC, PRIVATE, PROTECTED);
     }
 
@@ -1404,8 +1428,13 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
         if (kids != null && kids.getChildren() != null)
             node.addChildren(kids.getChildren());
         node.setTypeParams(type_params);
-        node.setExtendsList(extends_list);
-        node.setImplementsList(implements_list);
+        if (extends_list != null)
+            node.setExtendsList(extends_list);
+        if (implements_list != null)
+            node.setImplementsList(implements_list);
+        if (annotations != null) {
+            node.addAnnotations(annotations);   
+        }
         return node;
    }
 }
@@ -1551,9 +1580,11 @@ TigerNode EnumConstant():
 {
     Token t = null;
     TigerNode node = null;
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
+        [ annotations = Annotation() ]     // Java 8
         t=<IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
     }
     catch(ParseException pe) {
@@ -1570,6 +1601,8 @@ TigerNode EnumConstant():
             node.setName(t.image);
             node.setStartLocation(getLocation(t));
             node.setEndLocation(getEndLocation(t));
+            if (annotations != null)
+                node.addAnnotations(annotations);
         }
         return node;
     }
@@ -1735,6 +1768,7 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
           m = Modifiers() // Just get all the modifiers out of the way. If you want to do
                       // more checks, pass the modifiers down to the member
           (
+              LOOKAHEAD(3)
               a=ClassOrInterfaceDeclaration(m)
             |
               a=EnumDeclaration(m)
@@ -1745,9 +1779,10 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
               LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
               a=FieldDeclaration(m)
             |
-              a=MethodDeclaration(m)
-            |
+              LOOKAHEAD(2)
               a=AnnotationTypeDeclaration(m)
+            |
+              a=MethodDeclaration(m)
 
           )
         |
@@ -1775,6 +1810,7 @@ FieldNode FieldDeclaration(Modifier m):
     VariableDeclarator name  = null;
     VariableDeclarator a;
     Token et = null;
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
@@ -1786,6 +1822,7 @@ FieldNode FieldDeclaration(Modifier m):
             /// field with Type "int" and name "x, y".  It might be better to create individual
             /// nodes for each, so for this example, this method could return 2 fields, one
             /// for "int x" and one for "int y".
+            [ LOOKAHEAD(2) annotations = Annotation() ]        // Java 8
             type=Type() name=VariableDeclarator()
             {
                 fn = new FieldNode(name.getName(), m.modifiers, type);
@@ -1794,6 +1831,8 @@ FieldNode FieldDeclaration(Modifier m):
                   results.incPrimitiveFieldCount();
                 else
                   results.incReferenceFieldCount();
+                if (annotations != null)
+                  fn.addAnnotations(annotations);
             }
             (
                 "," a=VariableDeclarator()
@@ -1849,10 +1888,22 @@ VariableDeclarator VariableDeclarator():
 VariableDeclarator VariableDeclaratorId():
 {
     Token t = null;
+    List<AnnotationNode> annotations = null;
+    List<AnnotationNode> moreAnnotations = null;
 }
 {
     try {
-        t=<IDENTIFIER> ( "[" "]" )*
+        [ annotations = Annotation() ]        // Java 8 
+        t=<IDENTIFIER> 
+        ( 
+            [ moreAnnotations = Annotation() {
+                if (annotations == null)
+                    annotations = new ArrayList<AnnotationNode>();
+                annotations.addAll(moreAnnotations); 
+              } 
+            ]    // Java 8
+            "[" "]" 
+        )*
     }
     catch(ParseException pe) {
         //error_skipto(pe, SEMICOLON);
@@ -1864,6 +1915,8 @@ VariableDeclarator VariableDeclaratorId():
         VariableDeclarator tn = new VariableDeclarator(t.image);
         tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
         tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
+        if (annotations != null)
+            tn.addAnnotations(annotations);
         return tn;
     }
 }
@@ -1926,13 +1979,17 @@ TigerNode MethodDeclaration(Modifier m):
     BlockNode block = null;
     Location endLoc = null;
     Token t = null;
+    List<AnnotationNode> annotations = null;
+    List<AnnotationNode> moreAnnotations = null;
 }
 {
     try {
         (
           // Modifiers already matched in the caller!
+          [ LOOKAHEAD(2) annotations = Annotation() ]        // Java 8
           [ type_params = TypeParameters() ]
           return_type = ResultType()
+          [ moreAnnotations = Annotation() ]    // Java 8
           m_node = MethodDeclarator() [ "throws" name_list=NameList() ]
           ( block = Block() | t=";" )
         )
@@ -1954,6 +2011,10 @@ TigerNode MethodDeclaration(Modifier m):
         node.setReturnType(return_type);
         node.setTypeParams(type_params);
         node.setThrows(name_list);
+        if (annotations != null) 
+            node.addAnnotations(annotations);
+        if (moreAnnotations != null)
+            node.addAnnotations(moreAnnotations);
         if ( t != null) {
             node.setEndLocation(getLocation(t));
         }
@@ -2031,6 +2092,7 @@ Parameter FormalParameter():
     Type type_a = null;
     Token t = null;
     Modifier m = null;
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
@@ -2045,8 +2107,9 @@ Parameter FormalParameter():
 
        type_a = Type()
        { param.setType(type_a); }
+       [ LOOKAHEAD(2) annotations = Annotation() ]     // Java 8
        [
-        "..."
+        <ELLIPSIS>  // ...
         { param.setVarArg(true); }
        ]
        n = VariableDeclaratorId()
@@ -2065,6 +2128,8 @@ Parameter FormalParameter():
         throw pe;
     }
     {
+        if (annotations != null)
+            param.addAnnotations(annotations);
         return param;
     }
 }
@@ -2079,10 +2144,12 @@ ConstructorNode ConstructorDeclaration(Modifier m):
     TigerNode child = null;
     ConstructorNode cn = new ConstructorNode();
     cn.setModifiers(m.modifiers);
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
         (
+            [ annotations = Annotation() ]
             [ type_params=TypeParameters() ]
             t=<IDENTIFIER> params=FormalParameters() [ "throws" name_list=NameList() ]
             "{"
@@ -2108,6 +2175,8 @@ ConstructorNode ConstructorDeclaration(Modifier m):
         cn.setFormalParams(params);
         cn.setTypeParams(type_params);
         cn.setThrows(name_list);
+        if (annotations != null)
+            cn.addAnnotations(annotations);
         return cn;
     }
 }
@@ -2195,6 +2264,7 @@ Type ReferenceType():
 {
     try {
         (
+            LOOKAHEAD(3)
             s=PrimitiveType() ( LOOKAHEAD(2) "[" "]" { isArray = true; ++dimensions; } )+
         |
         ( s=ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" { isArray = true; ++dimensions; } )*
@@ -2215,10 +2285,13 @@ Type ClassOrInterfaceType():
     Type s = new Type();
     List<TigerNode> type_args = null;
     Token t = null;
+    List<AnnotationNode> annotations = null;
+    List<AnnotationNode> moreAnnotations = null;
 }
 {
     try {
         (
+          [ annotations = Annotation() ]    // Java 8
           t=<IDENTIFIER> [ LOOKAHEAD(2) type_args=TypeArguments() ]
           {
             s.type = t.image;
@@ -2230,7 +2303,15 @@ Type ClassOrInterfaceType():
           }
           // checks for types with package names, like com.whatever.MyClass as
           // opposed to just MyClass, which is covered in the block above
-          ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_args=TypeArguments() ]
+          ( LOOKAHEAD(2) "." 
+              [ 
+                moreAnnotations = Annotation() {
+                    if (annotations == null)
+                        annotations = new ArrayList<AnnotationNode>();
+                    annotations.addAll(moreAnnotations);
+                } 
+              ]      // Java 8 
+              t=<IDENTIFIER> [ LOOKAHEAD(2) type_args=TypeArguments() ]
               {
                 Type a = new Type();
                 a.type = t.image;
@@ -2253,13 +2334,15 @@ Type ClassOrInterfaceType():
         error_skipto(pe, SEMICOLON);
     }
     {
+        if (annotations != null) 
+            s.addAnnotations(annotations);
         return s;
     }
 }
 
 /*
     for generics, returns a list of the things between the < and >.
-    DONE: Java 7 allows <> as type inference indicator, 
+    DONE: Java 7 allows <> (<DIAMOND>) as type inference indicator, 
     e.g. Map<String> map = new HashMap<>();
 */
 List<TigerNode> TypeArguments():
@@ -2270,7 +2353,7 @@ List<TigerNode> TypeArguments():
 {
     try {
         (
-         "<>"   
+         <DIAMOND>   
         )
         |
         (
@@ -2340,27 +2423,28 @@ Type PrimitiveType():
 {
     Token t = null;
     Type s = new Type();
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
-
-          (
-          t="boolean" { s.type = "boolean"; }
-        |
-          t="char" { s.type = "char"; }
-        |
-          t="byte" { s.type = "byte"; }
-        |
-          t="short" { s.type = "short"; }
-        |
-          t="int" { s.type = "int"; }
-        |
-          t="long" { s.type = "long"; }
-        |
-          t="float" { s.type = "float"; }
-        |
-          t="double" { s.type = "double"; }
-          )
+        [ annotations = Annotation() ]        // Java 8
+        (
+              t="boolean" { s.type = "boolean"; }
+            |
+              t="char" { s.type = "char"; }
+            |
+              t="byte" { s.type = "byte"; }
+            |
+              t="short" { s.type = "short"; }
+            |
+              t="int" { s.type = "int"; }
+            |
+              t="long" { s.type = "long"; }
+            |
+              t="float" { s.type = "float"; }
+            |
+              t="double" { s.type = "double"; }
+        )
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON);
@@ -2371,6 +2455,8 @@ Type PrimitiveType():
         s.setEndLocation(getEndLocation(t));
       }
       s.isPrimitive = true;
+      if (annotations != null) 
+          s.addAnnotations(annotations);
       return s;
     }
 }
@@ -2508,12 +2594,16 @@ List<TigerNode> Expression():
 }
 {
     try {
-      a = ConditionalExpression()
-      [
-        LOOKAHEAD(2)
-        AssignmentOperator() b = Expression() { if (b != null) a.addAll(b); }
-      ]
-
+      LOOKAHEAD(LambdaExpression())
+      a=LambdaExpression()      // Java 8
+      |
+      (
+          a = ConditionalExpression()
+          [
+            LOOKAHEAD(2)
+            AssignmentOperator() b = Expression() { if (b != null) a.addAll(b); }
+          ]
+      )
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON);
@@ -2522,6 +2612,145 @@ List<TigerNode> Expression():
         return a;
     }
 
+}
+
+List<TigerNode> LambdaExpression():
+{
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    TigerNode parameters = null;
+    TigerNode body = null;
+}
+{
+    try {
+        parameters = LambdaParameters() <POINTER> body = LambdaBody()
+    }
+    catch(ParseException pe) {
+        error_skipto(pe, SEMICOLON);
+    }
+    {
+        if (parameters != null)
+            list.add(parameters);
+        if (body != null)
+            list.add(body);
+        return list;
+    }
+}
+
+TigerNode LambdaParameters():
+{
+    Token t = null;
+    TigerNode node = null;
+    Token start = null;
+    Token end = null;
+    List<Parameter> parameters = null;
+}
+{
+    try {
+        t=<IDENTIFIER> {
+            if (t != null) {
+                node = new TigerNode();
+                node.setName(t.image);
+                node.setStartLocation(getLocation(t));
+                node.setEndLocation(getEndLocation(t));
+            }
+        }
+        |
+        LOOKAHEAD(3) 
+        start=<LPAREN> [parameters=FormalParameters()] end=<RPAREN> {
+            node = new TigerNode();
+            node.setStartLocation(getLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            node.addChildren(parameters);
+        }
+        |
+        LOOKAHEAD(3) 
+        start=<LPAREN> node=InferredFormalParameterList() end=<RPAREN> {
+            node.setStartLocation(getLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+    }
+    catch(ParseException pe) {
+        error_skipto(pe, SEMICOLON);
+    }
+    
+    {
+        return node;
+    }
+}
+
+// Java 8
+TigerNode InferredFormalParameterList():
+{
+    Token t = null;
+    TigerNode node = null;
+    TigerNode child = null;
+}
+{
+    try {
+        t=<IDENTIFIER> {
+            if (t != null) {
+                node = new TigerNode();
+                node.setName(t.image);
+                node.setStartLocation(getLocation(t));
+                node.setEndLocation(getEndLocation(t));
+            }
+        }
+        (
+            <COMMA> 
+            t=<IDENTIFIER> {
+                if (t != null) {
+                    child = new TigerNode();
+                    child.setName(t.image);
+                    child.setStartLocation(getLocation(t));
+                    child.setEndLocation(getEndLocation(t));
+                    node.addChild(child);
+                }
+            }
+        )*
+    }
+    catch(ParseException pe) {
+        error_skipto(pe, SEMICOLON);
+    }
+    
+    {
+        return node;
+        
+    }
+}
+
+// Java 8
+TigerNode LambdaBody():
+{
+    TigerNode node = null;
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> expr = null;
+    BlockNode block = null;
+}
+{
+    try {
+        expr = Expression()
+        |
+        block = Block()
+    }
+    catch(ParseException pe) {
+        error_skipto(pe, SEMICOLON);
+    }
+    
+    {
+        if (expr != null && expr.size() > 0) {
+            node = new TigerNode();
+            node.setStartLocation(expr.get(0).getStartLocation());
+            node.setEndLocation(expr.get(0).getEndLocation());
+            node.addChildren(expr);
+        }
+        if ( block != null ) {
+            node = new TigerNode();
+            node.addChildren(block.getChildren());
+            node.setStartLocation(block.getStartLocation());
+            node.setEndLocation(block.getEndLocation());
+        }        
+        return node;
+    }
 }
 
 void AssignmentOperator():
@@ -3245,6 +3474,7 @@ TigerNode BlockStatement():
           LOOKAHEAD( Modifiers() Type() <IDENTIFIER>)
           tn=LocalVariableDeclaration() ";"
         |
+          LOOKAHEAD(3)
           tn=Statement()
         |
           tn=ClassOrInterfaceDeclaration(new Modifier())
@@ -3302,6 +3532,7 @@ TigerNode TokenMgrDeclBlockStatement():
           LOOKAHEAD(3)
           tn=MethodDeclaration(modifiers)
         |
+          LOOKAHEAD(3)
           tn=Statement()
         |
           tn=ClassOrInterfaceDeclaration(modifiers)
@@ -3816,9 +4047,9 @@ void RSIGNEDSHIFT():
 
 /* Annotation syntax follows. */
 
-List<TigerNode> Annotation():
+List<AnnotationNode> Annotation():
 {
-    List<TigerNode> list = null;
+    List<AnnotationNode> list = null;
 }
 {
     try {
@@ -3839,15 +4070,17 @@ List<TigerNode> Annotation():
    }
 }
 
-List<TigerNode> NormalAnnotation():
+List<AnnotationNode> NormalAnnotation():
 {
-    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<AnnotationNode> list = new ArrayList<AnnotationNode>();
     NameNode nn = null;
     List<TigerNode> mvp = null;
+    Token start = null;
+    Token end = null;
 }
 {
     try {
-        "@" nn=Name(){nn.setName("@" + nn.getName());} "(" [ mvp=MemberValuePairs() ] ")"
+        start="@" nn=Name() "(" [ mvp=MemberValuePairs() ] end=")"
     }
     catch(ParseException pe) {
         error_skipto(pe, RPAREN);   
@@ -3855,50 +4088,69 @@ List<TigerNode> NormalAnnotation():
    
    {
        if (nn != null) {
-           list.add(nn);
-       }
-       if (mvp != null) {
-           list.addAll(mvp);
+           AnnotationNode an = new AnnotationNode(nn.getName());
+           an.setStartLocation(getLocation(start));
+           an.setEndLocation(getEndLocation(end));
+           list.add(an);
+           if (mvp != null) {
+               an.addChildren(mvp);
+           }
        }
        return list;
    }
 }
 
-List<TigerNode> MarkerAnnotation():
+List<AnnotationNode> MarkerAnnotation():
 {
-    List<TigerNode> list = null;
+    List<AnnotationNode> list = new ArrayList<AnnotationNode>();
     NameNode nn = null;
+    Token start = null;
 }
 {
     try {
-    "@" nn=Name(){nn.setName("@" + nn.getName());}
+        start="@" nn=Name()
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON);    // TODO is there a better token to skip to?   
     }
     
     {
-        list = new ArrayList<TigerNode>();
-        list.add(nn);
+        if (nn != null) {
+            AnnotationNode an = new AnnotationNode(nn.getName());
+            an.setStartLocation(getLocation(start));
+            an.setEndLocation(nn.getEndLocation());
+            list.add(an);
+        }
         return list;
     }
 }
 
-List<TigerNode> SingleMemberAnnotation():
+List<AnnotationNode> SingleMemberAnnotation():
 {
-    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<AnnotationNode> list = new ArrayList<AnnotationNode>();
     List<TigerNode> mv = null;
     NameNode nn = null;
+    Token start = null;
+    Token end = null;
 }
 {
     try {
-    "@" nn=Name(){nn.setName("@" + nn.getName());list.add(nn);} "(" mv=MemberValue(){list.addAll(mv);} ")"
+        start="@" nn=Name() "(" mv=MemberValue() end=")"
     }
     catch(ParseException pe) {
         error_skipto(pe, RPAREN);   
     }
     
     {
+        if (nn != null) {
+            AnnotationNode an = new AnnotationNode(nn.getName());
+            an.setStartLocation(getLocation(start));
+            an.setEndLocation(getEndLocation(end));
+            if (mv != null) {
+                an.addChildren(mv);   
+            }
+            list.add(an);
+        }
         return list;   
     }
 }
@@ -3946,11 +4198,12 @@ List<TigerNode> MemberValuePair():
 List<TigerNode> MemberValue():
 {
     List<TigerNode> list = null;
-
+    List<AnnotationNode> annotations = null;
 }
 {
     try {
-           list = Annotation()
+           LOOKAHEAD(2)
+           annotations = Annotation()      
          |
            list = MemberValueArrayInitializer()
          |
@@ -3961,6 +4214,10 @@ List<TigerNode> MemberValue():
     }
    
    {
+        if (annotations != null) {
+            list = new ArrayList<TigerNode>();
+            list.addAll(annotations);
+        }
         return list;   
    }
 }
@@ -4054,10 +4311,12 @@ TigerNode AnnotationTypeMemberDeclaration():
          LOOKAHEAD(Type() <IDENTIFIER> "(")
          type=Type() {tn.setType(type);tn.setStartLocation(type.getStartLocation());} t=<IDENTIFIER> {tn.setName(t.image);} "(" ")" [ dv=DefaultValue(){tn.addChildren(dv);} ] et=";" {tn.setEndLocation(getEndLocation(et));}
          |
+         LOOKAHEAD(3)
          tn=ClassOrInterfaceDeclaration(m)
          |
          tn=EnumDeclaration(m)
          |
+         LOOKAHEAD(2)
          tn=AnnotationTypeDeclaration(m)
          |
          tn=FieldDeclaration(m)
