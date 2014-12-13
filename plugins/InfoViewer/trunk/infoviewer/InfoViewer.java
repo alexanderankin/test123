@@ -120,7 +120,7 @@ import org.gjt.sp.util.Log;
 public class InfoViewer extends JPanel implements HyperlinkListener, PropertyChangeListener,
 	EBComponent, DefaultFocusComponent
 {
-    // {{{ Proteced Members
+	// {{{ Protected Members
 	protected JPanel outerPanel;
 
 	protected JPanel innerPanel;
