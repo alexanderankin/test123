@@ -3,6 +3,10 @@ $Date$
 :encoding=UTF-8:
 ===========================================================================
 
+Version 1.6.3 depends on jEdit 4.4 and Java 1.6
+  Fixed [bug:#3671] HelpViewer incorrect encoding for .txt files on Windows
+  (Eric Le Lay). 
+
 Version 1.6.2 depends on jEdit 4.4 and Java 1.6
   French and German Localization. 
 
