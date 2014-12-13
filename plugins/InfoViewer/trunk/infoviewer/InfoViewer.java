@@ -42,12 +42,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -98,7 +101,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.io.AutoDetection;
 import org.gjt.sp.jedit.io.FileVFS;
+import org.gjt.sp.jedit.io.RegexEncodingDetector;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -115,7 +120,7 @@ import org.gjt.sp.util.Log;
 public class InfoViewer extends JPanel implements HyperlinkListener, PropertyChangeListener,
 	EBComponent, DefaultFocusComponent
 {
-	// {{{ Proteced Members
+    // {{{ Proteced Members
 	protected JPanel outerPanel;
 
 	protected JPanel innerPanel;
@@ -377,6 +382,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		try
 		{
 			// viewer.getEditorKit().createDefaultDocument();
+			setViewerEncoding(url);
 			viewer.setPage(url);
 
 			// the style of the viewer
@@ -1177,6 +1183,29 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		return jEdit.getProperty(key, args);
 	}
 
+	private void setViewerEncoding(URL url) throws IOException {
+		viewer.putClientProperty("charset", null);
+		// guess encoding
+		if(url.getPath().matches(".+\\.([tT][xX][tT])"))
+		{
+			URLConnection connection = url.openConnection();
+			if(connection.getContentEncoding() == null)
+			{
+				InputStream is = connection.getInputStream();
+				BufferedInputStream in = AutoDetection.getMarkedStream(is);
+				String encoding = ENCODING_DETECTOR.detectEncoding(in);
+				if(encoding != null)
+				{
+					// JEditorPane uses charset to create the reader passed to the
+					// EditorKit in JEditorPane.read().
+					viewer.putClientProperty("charset", encoding);
+				}
+				in.close();
+			}
+		}
+	}
+
+    private static final RegexEncodingDetector ENCODING_DETECTOR = new RegexEncodingDetector(":encoding=([^:]+):", "$1");
 
 	// greet string
 	private final static String GREET = props("infoviewer.greetstring", new Object[] {
