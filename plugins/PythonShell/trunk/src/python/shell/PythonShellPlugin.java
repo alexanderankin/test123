@@ -29,6 +29,7 @@ public class PythonShellPlugin extends EditPlugin {
 	 */
 	public void start() {
 
+
 	}
 
 	/**
