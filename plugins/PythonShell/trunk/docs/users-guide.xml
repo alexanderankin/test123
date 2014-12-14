@@ -1,73 +1,79 @@
 <?xml version="1.0"?>
+<!-- :tabSize=2:indentSize=2:noTabs=true:maxLineLen=80:wrap=hard: -->
 <book>
-	<bookinfo>
-		<title>Python Shell</title>
-		<author>
-			<firstname>Damien</firstname>
-			<surname>Radtke</surname>
-		</author>
-	</bookinfo>
-	<chapter id="overview"><title>Overview</title>
-		<para>
-			The Python Shell plugin maintains an interactive Python environment within jEdit.
-			This can be useful for running quick tests, or simply to play around with the language
-			to get a better feel for its syntax.
-		</para>
-		<para>
-			To use the plugin, open up the Console dockable and select the Python shell.
-			Once selected, it will attempt to start up the Read-Eval-Print-Loop, and if successful,
-			the Python information message and prompt will be displayed. If not successful,
-			you will need to tell the plugin where to find Python; this can be done by going to
-			Plugins -> Plugin Options -> Python Shell. This should only be necessary if the Python
-			executable can not be found on your system path.
-		</para>
-	</chapter>
-	<chapter id="interpreters"><title>Specifying Interpreters</title>
-		<para>
-			The plugin supports specifying multiple Python interpreters in the Plugin Options menu.
-			By default, only one interpreter is provided, which is simply the command "python".
-			Others can be added easily, and can be switched to in the Plugins menu. Switching
-			to a different interpreter will restart the current session if one is already running.
-		</para>
-		<para>
-			For each interpreter, you may define a list of parameters to pass in when
-			it is started. Be aware when adding parameters that no advanced parsing is done
-			on them, so quoted strings will not work as expected.
-			</para>
+  <bookinfo>
+    <title>Python Shell</title>
+    <author>
+      <firstname>Damien</firstname>
+      <surname>Radtke</surname>
+    </author>
+  </bookinfo>
+  <chapter id="overview"><title>Overview</title>
 
-			<para>The <literal>-i</literal> parameter (inspect interactively) is required by this plugin, and automatically passed in. If combined with my particular
-			<literal>PYTHONSTARTUP</literal> script, I still need to
-			supply <literal>-i</literal> explicitly here for things to startup cleanly.</para>
+    <para> The Python Shell plugin maintains an interactive Python environment
+    within jEdit. This can be useful for running quick tests, or simply to play
+    around with the language to get a better feel for its syntax. </para>
 
-			<para> For Python 3, and perhaps some other implementations of Python 2, the <literal>-u</literal> parameter (unbuffered binary stdout and stderr) is also needed, and automatically supplied by the plugin.</para>
+    <para> To use the plugin, open up the Console dockable and select the Python
+    shell. Once selected, it will attempt to start up the Read-Eval-Print-Loop,
+    and if successful, the Python information message and prompt will be
+    displayed. If not successful, you will need to tell the plugin where to find
+    Python; this can be done by going to Plugins -> Plugin Options -> Python
+    Shell. This should only be necessary if the Python executable can not be
+    found on your system path. </para>
+  </chapter>
 
-			<para> If the plugin detects <literal>ipython</literal> as the interpreter, then <literal>-noreadline</literal> is automatically supplied as well.</para>
+  <chapter id="interpreters"><title>Specifying Interpreters</title>
 
-		<note> <title> Iron Python </title>
-		<para> Some Python implementations may not work with this plugin. IronPython, for example, fails for God knows what reason. All testing has been done with the default interpreter, so if you run into any problems using a different one, try switching to the default interpreter provided by python.org. </para></note>
+    <para> The plugin supports specifying multiple Python interpreters in the
+    Plugin Options menu. By default, only one interpreter is provided, which is
+    simply the command "python". Others can be added easily, and can be switched
+    to in the Plugins menu. Switching to a different interpreter will restart
+    the current session if one is already running. </para>
 
-	</chapter>
-	<chapter id="actions"><title>Evaluating Code</title>
-		<para>
-			The easiest way to evaluate code in the shell is to simply type it in and hit enter.
-			But there are several actions available that make it easier to test a portion of your
-			code without having to manually copy and paste it.
-		</para>
-		<para>
-			These actions can be found in Plugins -> Python Shell. Using these actions, you can
-			use the shell to evaluate the active buffer, any selected text within that buffer,
-			or an external Python script.
-		</para>
-		<para>
-			Any variables or functions defined in the shell will persist until the loop is
-			manually stopped and restarted.
-		</para>
-	</chapter>
-	<chapter id="stop-restart"><title>Stopping and Restarting</title>
-		<para>
-			To stop the loop, click on the Stop button in the Console dockable. After it's stopped,
-			hit Enter to start it back up again. Restarting can be used to reset the environment,
-			or you can simply stop the loop to conserve system resources.
-		</para>
-	</chapter>
+    <para> For each interpreter, you may define a list of parameters to pass in
+    when it is started. Be aware when adding parameters that no advanced parsing
+    is done on them, so quoted strings will not work as expected. </para>
+
+    <para> The environment variables <literal>PYTHONUNBUFFERED</literal> and
+    <literal>PYTHONINSPECT</literal> are both set to <literal>1</literal> before
+    starting a Python process. However, it still seems necessary to
+    specify an additional <literal>-i</literal> command line option in the
+    plugin options for the Python interpreter to start Python without errors.
+    </para>
+
+    <para> If the plugin detects <literal>ipython</literal> as the interpreter,
+    then <literal>-noreadline</literal> is automatically supplied as
+    well.</para>
+
+    <note> <title> Iron Python </title>
+      <para> Some Python implementations may not work with this plugin.
+      IronPython, for example, fails for God knows what reason. All testing has
+      been done with the default interpreter, so if you run into any problems
+      using a different one, try switching to the default interpreter provided
+      by python.org. </para>
+    </note>
+  </chapter>
+
+  <chapter id="actions"><title>Evaluating Code</title>
+
+    <para> The easiest way to evaluate code in the shell is to simply type it in
+    and hit enter. But there are several actions available that make it easier
+    to test a portion of your code without having to manually copy and paste it.
+    </para>
+
+    <para> These actions can be found in Plugins -> Python Shell. Using these
+    actions, you can use the shell to evaluate the active buffer, any selected
+    text within that buffer, or an external Python script. </para>
+
+    <para> Any variables or functions defined in the shell will persist until
+    the loop is manually stopped and restarted. </para>
+  </chapter>
+
+  <chapter id="stop-restart"><title>Stopping and Restarting</title>
+    <para> To stop the loop, click on the Stop button in the Console dockable.
+    After it's stopped, hit Enter to start it back up again. Restarting can be
+    used to reset the environment, or you can simply stop the loop to conserve
+    system resources. </para>
+  </chapter>
 </book>

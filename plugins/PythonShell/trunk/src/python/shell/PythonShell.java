@@ -36,8 +36,8 @@ public class PythonShell extends ProcessShell {
 	private String newline;
 
 	/*
- 	 * Constructor
- 	 */
+	 * Constructor
+	 */
 	public PythonShell() {
 		super("Python");
 		this.newline = System.getProperty("line.separator");
@@ -51,7 +51,7 @@ public class PythonShell extends ProcessShell {
 		String cmd = jEdit.getProperty("python-shell.interpreter." + String.valueOf(selected));
 		StringList exec = new StringList();
 		exec.add(cmd);
-		exec.add("-u"); // force python to use fully unbuffered output
+		// The below line seems to have no effect:
 		exec.add("-i"); // force python to run in interactive mode
 		if (cmd.endsWith("ipython") || cmd.endsWith("ipython.exe")) {
 			// if we know this is ipython, disable readline
@@ -65,6 +65,8 @@ public class PythonShell extends ProcessShell {
 
 		ProcessBuilder pb = new ProcessBuilder(exec);
 		pb.environment().put("TERM", "dumb");
+		pb.environment().put("PYTHONUNBUFFERED", "1");  // do not buffer output
+		pb.environment().put("PYTHONINSPECT", "1"); 	// force python to run in interactive mode
 		state.p = pb.start();
 
 		Log.log(Log.DEBUG,this, "Starting \"" + exec.join(" ") + "\"");

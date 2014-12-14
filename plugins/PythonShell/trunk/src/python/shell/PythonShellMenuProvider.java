@@ -23,6 +23,7 @@ import console.Console;
 import console.Shell;
 
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
@@ -36,7 +37,7 @@ import javax.swing.JMenu;
 
 public class PythonShellMenuProvider implements DynamicMenuProvider {
 	private LinkedList<JCheckBoxMenuItem> items;
-	
+
 	/**
 	 * We don't want this menu to update every time it's shown.
 	 */
@@ -54,7 +55,7 @@ public class PythonShellMenuProvider implements DynamicMenuProvider {
 			String interpreter = jEdit.getProperty("python-shell.interpreter." + i);
 			if (interpreter == null)
 				break;
-			
+
 			JCheckBoxMenuItem item = new JCheckBoxMenuItem(interpreter, i == selected);
 			item.addActionListener(new InterpreterListener(i));
 			menu.add(item);
@@ -81,7 +82,10 @@ public class PythonShellMenuProvider implements DynamicMenuProvider {
 			PythonShell shell = (PythonShell) Shell.getShell("Python");
 			Console console = ConsolePlugin.getConsole(jEdit.getActiveView());
 			if (shell != null && console != null) {
+				DockableWindowManager wm = console.getView().getDockableWindowManager();
+				wm.showDockableWindow("console");
 				shell.restart(console);
+				console.setShell(shell.getName());
 			}
 		}
 	}
