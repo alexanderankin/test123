@@ -130,6 +130,9 @@ public class IndexImpl extends AbstractIndex implements Index
 			VFSFile file = files.next();
 			if (file == null)
 				return;
+			
+			Log.log(Log.DEBUG, this, "IndexImpl Index Filename = " + file.getPath());
+
 			openWriter();
 			if (writer == null)
 				return;
@@ -346,11 +349,7 @@ public class IndexImpl extends AbstractIndex implements Index
 				}
 			}
 		}
-		catch (ParseException e)
-		{
-			Log.log(Log.ERROR, this, e, e);
-		}
-		catch (IOException e)
+		catch (ParseException | IOException e)
 		{
 			Log.log(Log.ERROR, this, e, e);
 		}

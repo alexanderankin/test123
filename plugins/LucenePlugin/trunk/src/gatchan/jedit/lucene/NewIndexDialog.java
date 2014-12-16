@@ -20,48 +20,45 @@
  */
 package gatchan.jedit.lucene;
 
-import java.awt.*;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
 public class NewIndexDialog extends JDialog
 {
-	public static final String OPTION = "lucene.option.";
+	public static final String OPTIONS = "lucene.options.";
 	public static final String MESSAGE = "lucene.message.";
-	private static final String GEOMETRY = OPTION + "NewLuceneIndexDialog";
-	private JTextField name;
-	private JComboBox analyzer;
+	private static final String GEOMETRY = OPTIONS + "NewLuceneIndexDialog";
+	private static final String CLEAN_FILENAME_REGEX = "CleanFileRegex";
+	
+	private final JTextField name;
+	private final JComboBox<String> analyzer;
 	private boolean accepted;
-
-	private void saveGeometry()
-	{
-		GUIUtilities.saveGeometry(this, GEOMETRY);
-	}
-
-	public NewIndexDialog(Frame frame)
-	{
-		this(frame, null);
-	}
+	
+	private final Pattern pattern;
+	private Matcher matcher;
 
 	public NewIndexDialog(Frame frame, String initialName)
 	{
 		super(frame, jEdit.getProperty(MESSAGE + "NewIndexDialogTitle"), true);
+		Log.log(Log.DEBUG, this, OPTIONS + CLEAN_FILENAME_REGEX + " = " +
+				jEdit.getProperty(OPTIONS + CLEAN_FILENAME_REGEX));
+
+		pattern = Pattern.compile(jEdit.getProperty(OPTIONS + CLEAN_FILENAME_REGEX));
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
@@ -71,27 +68,43 @@ public class NewIndexDialog extends JDialog
 			}
 		});
 		setLayout(new GridLayout(0, 1));
+		
+		final JLabel fileNameError = new JLabel();
+		
 		// Name panel
 		JPanel p = new JPanel();
 		add(p);
 		p.add(new JLabel(jEdit.getProperty(MESSAGE + "IndexName")));
-		name = new JTextField(30);
-		p.add(name);
+		p.add(name = new JTextField(30));
 		if (initialName != null)
 		{
 			name.setText(initialName);
-			name.setEditable(false);
+			matcher = pattern.matcher(initialName);
+			Log.log(Log.DEBUG, this, "Matching " + initialName + " : " + matcher
+					+ " : " + matcher.matches());
+			
+			if (matcher.matches())
+				fileNameError.setText(jEdit.getProperty(MESSAGE + "BadFileName"));
+			else
+				fileNameError.setText("");
 		}
+
 		// Analyzer panel
 		p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		add(p);
 		p.add(new JLabel(jEdit.getProperty(MESSAGE + "Analyzer")));
-		analyzer = new JComboBox(AnalyzerFactory.getAnalyzerNames());
+		
+		analyzer = new JComboBox<>(AnalyzerFactory.getAnalyzerNames());
 		p.add(analyzer);
+		
 		String defaultAnalyzer = jEdit.getProperty(LucenePlugin.LUCENE_DEFAULT_ANALYZER);
 		if (defaultAnalyzer != null)
 			analyzer.setSelectedItem(defaultAnalyzer);
 		// Button panel
+
+		fileNameError.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		add(fileNameError);
+
 		JPanel buttons = new JPanel();
 		add(buttons);
 		JButton ok = new JButton("Ok");
@@ -102,10 +115,19 @@ public class NewIndexDialog extends JDialog
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
-			{
-				saveGeometry();
-				save();
-				setVisible(false);
+			{				
+				matcher = pattern.matcher(name.getText());
+				Log.log(Log.DEBUG, this,"Matching " + name.getText() + " : " + matcher
+						+ " : " + matcher.matches());
+
+				if (matcher.matches())
+					fileNameError.setText(jEdit.getProperty(MESSAGE + "BadFileName"));
+				else
+				{
+					saveGeometry();
+					save();
+					dispose();
+				}
 			}
 		});
 		cancel.addActionListener(new ActionListener()
@@ -149,5 +171,10 @@ public class NewIndexDialog extends JDialog
 	public boolean accepted()
 	{
 		return accepted;
+	}
+
+	private void saveGeometry()
+	{
+		GUIUtilities.saveGeometry(this, GEOMETRY);
 	}
 }

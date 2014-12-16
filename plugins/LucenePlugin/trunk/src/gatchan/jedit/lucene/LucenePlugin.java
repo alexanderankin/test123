@@ -58,7 +58,8 @@ public class LucenePlugin extends EditPlugin
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
 	private static final String SEARCH_DOCKABLE_NAME = "lucene-search";
-	private final Map<String, Index> indexMap = new HashMap<String, Index>();
+
+	private final Map<String, Index> indexMap = new HashMap<>();
 	private ProjectWatcher projectWatcher;
 	
 	public static LucenePlugin instance;
@@ -238,6 +239,9 @@ public class LucenePlugin extends EditPlugin
 			return index;
 
 		File path = getIndexFile(name);
+		
+		Log.log(Log.DEBUG, this, "Index Filename = " + path.getAbsolutePath());
+
 		index = new IndexImpl(name, path);
 		Analyzer analyzer = AnalyzerFactory.getAnalyzer(analyzerName);
 		if (analyzer != null)
@@ -304,6 +308,8 @@ public class LucenePlugin extends EditPlugin
 	 */
 	public String createNewIndex(String suggestedName)
 	{
+		Log.log(Log.DEBUG, this, "suggested createNewIndex = " + suggestedName);
+
 		NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView(), suggestedName);
 		dlg.setVisible(true);
 		if (!dlg.accepted())
@@ -311,6 +317,9 @@ public class LucenePlugin extends EditPlugin
 		Index index = createIndex(dlg.getIndexName(), dlg.getIndexAnalyzer());
 		if (index == null)
 			return null;
+
+		Log.log(Log.DEBUG, this, "clean createNewIndex = " + index.getName());
+
 		// Update the properties
 		return index.getName();
 	}
@@ -399,8 +408,8 @@ public class LucenePlugin extends EditPlugin
 			return null;
 		File indexFolder = new File(home, "indexes");
 		return new File(indexFolder, name);
-	}
-
+	}	
+	
 	private static SearchResults getSearchDockable(View view, boolean show)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
