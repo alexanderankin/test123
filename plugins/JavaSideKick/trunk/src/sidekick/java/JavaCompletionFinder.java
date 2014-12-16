@@ -33,7 +33,6 @@ import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import sidekick.SideKickParsedData;
-import sidekick.util.Location;
 
 /**
  * Finds 2 kinds of completions, word completions and method/field completions,
@@ -51,7 +50,7 @@ import sidekick.util.Location;
  *         }
  *     }
  *
- * );
+ * );                                                              
  *
  * Code completion no longer works inside of comments
  * If a word-break character wasn't found, the completion could potentially mix
@@ -63,28 +62,24 @@ public class JavaCompletionFinder {
 	
 	private JavaSideKickParsedData data = null;
 	private CUNode rootNode = null;
-	private JavaParser parser = null;
-	private EditPane editPane = null;
-	private Buffer buffer = null;
 	private View view = null;
 	private int caret = 0;
 
 	public JavaCompletion complete( EditPane editPane, int caret ) {
-		this.editPane = editPane;
 		this.caret = caret;
-		this.buffer = editPane.getBuffer();
+		Buffer buffer = editPane.getBuffer();
 		this.view = editPane.getView();
-		this.parser = new JavaParser();
+		JavaParser parser = new JavaParser();
 		
 		SideKickParsedData skpd = null;
 		if ( jEdit.getBooleanProperty("sidekick.java.parseOnComplete") ) {
-			skpd = this.parser.parse(buffer, null);
+			skpd = parser.parse(buffer, null);
 			rootNode = (CUNode) buffer.getProperty("javasidekick.compilationUnit");
 		}
 		else {
 			skpd = SideKickParsedData.getParsedData(view);
 			if ( skpd == null ) {
-				skpd = this.parser.parse(buffer, null);
+				skpd = parser.parse(buffer, null);
 			}
 
 			rootNode = (CUNode) buffer.getProperty("javasidekick.compilationUnit");
@@ -152,13 +147,12 @@ public class JavaCompletionFinder {
 			if (offset == lineText.length()) offset--;
 			if (offset < 0) continue;
 			Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
-			String tokenText = lineText.substring(t.offset, t.length+t.offset);
 			if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION &&
 					t.id != Token.LITERAL1 && t.id != Token.LITERAL2 && t.id != Token.LITERAL3 &&
 					t.id != Token.LITERAL4 && t.id != Token.KEYWORD1 && t.id != Token.KEYWORD2 &&
 					t.id != Token.KEYWORD3 && t.id != Token.KEYWORD4) {
 				// This stops at an open parenthese
-				if (t.id == Token.OPERATOR) {
+				if (t.id == Token.OPERATOR) {            // NOPMD
 					char op = lineText.charAt(offset);
 					if (op == ')')
 						closed++;
@@ -280,8 +274,8 @@ public class JavaCompletionFinder {
 		int i = 0, j = 0;
 		
 		while (true) {
-			int dot = qualification.indexOf(".", j);
-			int paren = qualification.indexOf("(", j);
+			int dot = qualification.indexOf('.', j);
+			int paren = qualification.indexOf('(', j);
 			if (dot == -1) {
 				list.add(qualification.substring(i));
 				break;
@@ -341,8 +335,8 @@ public class JavaCompletionFinder {
 		ArrayList<String> list = new ArrayList<String>();
 		int i = 0, j = 0;
 		while (true) {
-			int dot = qualification.indexOf(".", j);
-			int paren = qualification.indexOf("(", j);
+			int dot = qualification.indexOf('.', j);
+			int paren = qualification.indexOf('(', j);
 			if (dot == -1) {
 				list.add(qualification.substring(i));
 				break;
@@ -380,7 +374,7 @@ public class JavaCompletionFinder {
 
 		for (j = 0; j<list.size(); j++) {
 			if (j>0)
-				tokenBuilder.append(".");
+				tokenBuilder.append('.');
 
 			String newToken = list.get(j);
 			if (newToken.equals("this")) {
@@ -410,7 +404,7 @@ public class JavaCompletionFinder {
 				// if it ends with ']' and has '[' somewhere in it, make sure it's an array
 				boolean array_access = false;
 				int arrayIndexStart;
-				if (newToken.endsWith("]") && (arrayIndexStart = newToken.indexOf("[")) != -1) {
+				if (newToken.endsWith("]") && (arrayIndexStart = newToken.indexOf('[')) != -1) {
 					String arrayName = newToken.substring(0, arrayIndexStart);
 					tokenBuilder.append(arrayName);
 					array_access = true;
@@ -480,8 +474,8 @@ public class JavaCompletionFinder {
 									// Check for cast
 									String castToken = newToken.trim();
 									if (castToken.startsWith("(") && castToken.endsWith(")")) {
-										int open = castToken.lastIndexOf("(");
-										int close = castToken.indexOf(")");
+										int open = castToken.lastIndexOf('(');
+										int close = castToken.indexOf(')');
 										//c = getClassForType( castToken.substring(open+1, close), (CUNode) data.root.getUserObject());
 										c = getClassForType( castToken.substring(open+1, close), rootNode);
 									}
@@ -540,7 +534,7 @@ public class JavaCompletionFinder {
 
 		if (c == null) {
 			// Might be inside a method call, like: while (tokenizer.<COMPLETION>
-			int paren = qualification.lastIndexOf("(");
+			int paren = qualification.lastIndexOf('(');
 			if (paren != -1 && paren != qualification.length()-1 ) {
 				String halfWord = qualification.substring(paren+1).trim();
 
@@ -613,7 +607,7 @@ public class JavaCompletionFinder {
 	 */
 	private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
 		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "getting non-qualified completions on: " + word);
-		word = word.substring(word.lastIndexOf("(")+1);
+		word = word.substring(word.lastIndexOf('(') + 1);
 		
 		// check if this word is a valid unqualified class name
 		// if it is, then return all possible fully-qualified class names
@@ -731,13 +725,15 @@ public class JavaCompletionFinder {
 		else {
 			//c = getClassForType(cn.getName(), rootNode);
 			// TODO: need a way to get the package for this classnode
+			// NOTE: from Dale -- to get the package, recursively call ClassNode.getParent
+			// until the parent is a CUNode, then call getPackage on the CUNode.
 			// this call should *not* check for all classes with the same name
 			try {
 				c = Class.forName(cn.getName());
 				if (c != null)
 					return c.getSuperclass();
 			}
-			catch (ClassNotFoundException e) {
+			catch (ClassNotFoundException e) {        // NOPMD
 				// ignore
 			}
 		}
@@ -863,46 +859,6 @@ public class JavaCompletionFinder {
 	}
 
 
-	// returns a completion containing a list of fields and methods contained by a
-	// specific enclosing class
-	/**
-	 * @Deprecated. This functionality is now implemented in getPossibleQualifiedCompletions()
-	 */
-	private JavaCompletion getQualifiedThisCompletion( String word ) {
-		int index = word.lastIndexOf( ".this" );
-		String classname = word.substring( 0, index );
-
-		// get the containing asset
-		TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-
-		// find the first parent class with the classname
-		while ( tn != null ) {
-			if (tn.getOrdinal() == TigerNode.CLASS && tn.getName().endsWith( classname )) {
-				break;
-			}
-			tn = tn.getParent();
-		}
-
-		if (tn != null) {
-			// get the members (fields and methods) for the class node
-			List m = getMembersForClass( ( ClassNode ) tn );
-			if ( m == null || m.size() == 0 )
-				return null;
-			if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
-				return null;
-			}
-			return new JavaCompletion( view, word, JavaCompletion.DOT, m );
-		} else {
-			//Class c = getClassForType( classname, (CUNode) data.root.getUserObject() );
-			Class c = getClassForType( classname, rootNode );
-			if (c != null) {
-				return new JavaCompletion( view, word, JavaCompletion.DOT,
-						getMembersForClass( c ));
-			}
-			return null;
-		}
-	}
-
 
 	// returns a completion containing a list of fields and methods contained contained by the type defined by the word,
 	// for example, if the word is "my_word" and it is a String, return the fields and methods
@@ -985,9 +941,8 @@ public class JavaCompletionFinder {
 			List<TigerNode> children = tn.getChildren();
 			if (children != null) {
 				for (TigerNode child : children) {
-					if (child instanceof EnumNode) {
-						if (child.getName().equals(name))
-							return (EnumNode) child;
+					if (child instanceof EnumNode && child.getName().equals(name)) {
+                        return (EnumNode) child;
 					}
 				}
 			}
@@ -1005,10 +960,8 @@ public class JavaCompletionFinder {
 			List<TigerNode> children = tn.getChildren();
 			if ( children != null ) {
 				for (TigerNode child : children) {
-					if ( child instanceof MethodNode ) {
-						if ( child.getName().equals(name) ) {
-							return (MethodNode) child;
-						}
+					if ( child instanceof MethodNode && child.getName().equals(name) ) {
+                        return (MethodNode) child;
 					}
 				}
 			}
@@ -1026,10 +979,8 @@ public class JavaCompletionFinder {
 			List<TigerNode> children = tn.getChildren();
 			if ( children != null ) {
 				for (TigerNode child : children) {
-					if ( child instanceof ClassNode ) {
-						if ( child.getName().equals(name) ) {
-							return (ClassNode) child;
-						}
+					if ( child instanceof ClassNode && child.getName().equals(name) ) {
+                        return (ClassNode) child;
 					}
 				}
 			}
@@ -1066,25 +1017,28 @@ public class JavaCompletionFinder {
 		}
 
 		// check in same package
-		String packageName = cu.getPackageName();
-		if ( packageName != null ) {
-			// check same package
-			String className = ( packageName.length() > 0 ? packageName + "." : "" ) + type;
-			Class c = validateClassName( className );
-			if ( c != null ) {
-				return c;
-			}
+		String packageName;
+		if (cu.getPackage() != null) {
+            packageName = cu.getPackage().getName();
+            if ( packageName != null ) {
+                // check same package
+                String className = ( packageName.length() > 0 ? packageName + "." : "" ) + type;
+                Class c = validateClassName( className );
+                if ( c != null ) {
+                    return c;
+                }
+            }
 		}
 
 		// check imports
-		List imports = cu.getImports();
+		List imports = cu.getImportNames();
 		for ( Iterator it = imports.iterator(); it.hasNext(); ) {
 			packageName = ( String ) it.next();
 			if ( packageName != null ) {
 				String className = packageName;
 				// might have a fully qualified import
 				if ( className.endsWith( type ) ) {
-					Class c = validateClassName( className, type, filename );
+					Class c = validateClassName( className );
 					if ( c != null ) {
 						return c;
 					}
@@ -1093,7 +1047,7 @@ public class JavaCompletionFinder {
 					// wildcard import, need to add . and type
 					className = packageName + "." + type;
 					try {
-						Class c = validateClassName( className, type, filename );
+						Class c = validateClassName( className );
 						if ( c != null ) {
 							return c;
 						}
@@ -1121,7 +1075,7 @@ public class JavaCompletionFinder {
 				return null;
 			}
 			else {
-				return validateClassName( classNames.get(0), type, filename );
+				return validateClassName( classNames.get(0) );
 			}
 		}
 		// check jars in project classpath. These are the jars and/or directories
@@ -1137,7 +1091,7 @@ public class JavaCompletionFinder {
 			}
 			else if (classNames != null && classNames.length > 0) {
 				className = classNames[0];
-				c = validateClassName( className, type, filename );
+				c = validateClassName( className );
 				if (c != null) {
 					return c;
 				}
@@ -1154,7 +1108,7 @@ public class JavaCompletionFinder {
 			}
 			else if (classNames != null && classNames.length > 0) {
 				className = classNames[0];
-				c = validateClassName( className, type, filename );
+				c = validateClassName( className );
 				if (c != null) {
 					return c;
 				}
@@ -1172,7 +1126,7 @@ public class JavaCompletionFinder {
 			}
 			else if (classNames != null && classNames.length > 0) {
 				className = classNames[0];
-				c = validateClassName( className, type, filename );
+				c = validateClassName( className );
 				if (c != null) {
 					return c;
 				}
@@ -1182,22 +1136,15 @@ public class JavaCompletionFinder {
 		//return null;
 	}
 
-
-	private Class validateClassName( String classname ) {
-		return validateClassName( classname, null, null );
-	}
-
 	/**
 	 * Attempts to find the class in the current classloader.  If not found,
 	 * attempts to find the class in the project classloader.  If not found,
 	 * attempts to find the class in the build output directory.
 	 *
 	 * @param classname The name of the class to find.
-	 * @param type The type that represents the class.
-	 * @param filename The name of the current file/buffer.
 	 * @return The class if found, null if not.
 	 */
-	private Class validateClassName( String classname, String type, String filename ) {
+	private Class validateClassName( String classname ) {
 		if ( classname == null ) {
 			return null;
 		}
@@ -1229,7 +1176,7 @@ public class JavaCompletionFinder {
 					if (Modifier.isPrivate(methods[i].getModifiers()))
 						continue;
 
-					int j = token.indexOf("(");
+					int j = token.indexOf('(');
 					if (j>0)
 						token = token.substring(0, j).trim();
 

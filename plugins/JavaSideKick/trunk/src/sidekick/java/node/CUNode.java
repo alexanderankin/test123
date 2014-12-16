@@ -29,7 +29,6 @@ package sidekick.java.node;
 
 import java.util.*;
 
-import sidekick.util.Location;
 import sidekick.util.Range;
 
 /**
@@ -40,9 +39,8 @@ import sidekick.util.Range;
 
 public class CUNode extends TigerNode {
 
-    private String packageName = "";
     private TigerNode packageNode = null;
-    private List<ImportNode> imports = null;
+    private ImportNode importNode = null;
     private Results results = null;
     private String filename = null;
 
@@ -58,76 +56,53 @@ public class CUNode extends TigerNode {
         return filename;
     }
 
-    @Deprecated
-    public void setPackageName( String name ) {
-        packageName = name;
-    }
-
-    @Deprecated
-    public String getPackageName() {
-        return packageNode == null ? "" : packageNode.toString();
-    }
-    
-    public void setPackage(TigerNode packageNode) {
-        this.packageNode = packageNode;   
+    public void setPackage( TigerNode packageNode ) {
+        this.packageNode = packageNode;
     }
 
     public TigerNode getPackage() {
-        return packageNode;   
+        return packageNode;
     }
-    
+
     public int getOrdinal() {
         return TigerNode.COMPILATION_UNIT;
     }
 
-    public void addImport( ImportNode in ) {
-        if ( in == null ) {
-            return;
-        }
-        if ( imports == null ) {
-            imports = new ArrayList<ImportNode>();
-        }
-        imports.add( in );
-    }
-
-    /** @return List<String> */
-    public List<String> getImports() {
+    /**
+     * Used once by completion finder.
+     * TODO: change completion finder to use one of the other methods?
+     * @return List<String> of import names, This will be an empty list if there
+     * are no import statements.
+     */
+    public List<String> getImportNames() {
         List<String> list = new ArrayList<String>();
-        if ( imports == null ) {
+        if ( importNode == null ) {
             return list;
         }
-        for ( ImportNode in : imports ) {
+        for ( TigerNode in : importNode.getChildren() ) {
             list.add( in.getName() );
         }
         Collections.sort( list );
         return list;
     }
-
-    /** @return List<ImportNode> */
-    public List<ImportNode> getImportNodes() {
-        if ( imports != null ) {
-            Collections.sort( imports, new Comparator<ImportNode>() {
-                public int compare( ImportNode a, ImportNode b ) {
-                    return a.getName().compareTo( b.getName() );
-                }
-            }
-            );
-            return new ArrayList<ImportNode>( imports );
+    
+    /**
+     * @return A list sorted by name of the import statement nodes as stored in the
+     * node returned by <code>getImmportNode</code>. This will be an empty
+     * list if there are no import statements.
+     */
+    public List<TigerNode> getImportNodes() {
+        if ( importNode == null ) {
+            return new ArrayList<TigerNode>();
         }
-        return new ArrayList<ImportNode>();
-    }
-
-    public ImportNode getImport( String name ) {
-        if ( imports == null ) {
-            return null;
-        }
-        for ( Iterator it = imports.iterator(); it.hasNext(); ) {
-            ImportNode in = ( ImportNode ) it.next();
-            if ( in.getName().equals( name ) ) {
-                return in;
+        ArrayList<TigerNode> imports = new ArrayList<TigerNode>( importNode.getChildren() );
+        Collections.sort( imports, new Comparator<TigerNode>() {
+            public int compare( TigerNode a, TigerNode b ) {
+                return a.getName().compareTo( b.getName() );
             }
         }
-        return null;
+        );
+        return imports;
     }
 
     /**
@@ -135,32 +110,21 @@ public class CUNode extends TigerNode {
      * if there are no import statements.
      */
     public Range getImportsRange() {
-        if ( imports == null ) {
+        if ( importNode == null ) {
             return null;
         }
+        return new Range( importNode.getStartLocation(), importNode.getEndLocation() );
+    }
+    
+    /**
+     * @return the top level import node, this node contains all the actual import statement nodes.    
+     */
+    public ImportNode getImportNode() {
+        return importNode;   
+    }
 
-        switch ( imports.size() ) {
-            case 0:
-                return null;
-            case 1:
-                ImportNode in = imports.get( 0 );
-                return new Range( in.getStartLocation(), in.getEndLocation() );
-            default:
-                // there are at least 2 import nodes
-                ImportNode node = imports.get( 0 );
-                Range range = new Range( node.getStartLocation(), node.getEndLocation() );
-                for ( int i = 1; i < imports.size(); i++ ) {
-                    node = imports.get( i );
-                    if ( node.getStartLocation().compareTo( range.getStartLocation() ) < 0 ) {
-                        range.setStartLocation( node.getStartLocation() );
-                    }
-                    if ( node.getEndLocation().compareTo( range.getEndLocation() ) > 0 ) {
-                        range.setEndLocation( node.getEndLocation() );
-                    }
-                }
-                return range;
-        }
-
+    public void setImportNode( ImportNode in ) {
+        importNode = in;
     }
 
     public void setResults( Results r ) {
