@@ -22,7 +22,6 @@ package gatchan.jedit.lucene;
 
 //{{{ Imports
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -89,6 +88,8 @@ public abstract class AbstractIndex
 			return;
 		try
 		{
+			Log.log(Log.DEBUG, this, "Writer Index Filename = " + path.getAbsolutePath());
+
 			path.mkdirs();
 			FSDirectory directory = FSDirectory.open(path);
 			if (IndexWriter.isLocked(directory))
@@ -209,5 +210,4 @@ public abstract class AbstractIndex
 	{
 		listeners.remove(al);
 	} //}}}
-
 }
