@@ -117,9 +117,9 @@ public class Token implements java.io.Serializable {
     switch(ofKind)
     {
       default : return new Token(ofKind, image);
-       case JavaParserConstants.RUNSIGNEDSHIFT:
-       case JavaParserConstants.RSIGNEDSHIFT:
-       case JavaParserConstants.GT:
+       case TigerParserConstants.RUNSIGNEDSHIFT:
+       case TigerParserConstants.RSIGNEDSHIFT:
+       case TigerParserConstants.GT:
           return new GTToken(ofKind, image);
     }
   }
@@ -131,7 +131,7 @@ public class Token implements java.io.Serializable {
   
   public static class GTToken extends Token
   {
-     int realKind = JavaParserConstants.GT;
+     int realKind = TigerParserConstants.GT;
      
      public GTToken() {
         super();   
