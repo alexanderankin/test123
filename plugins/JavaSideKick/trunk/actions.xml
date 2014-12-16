@@ -8,7 +8,7 @@
 	</ACTION>
 	<ACTION NAME="javasidekick-refresh-global">
 		<CODE>
-			sidekick.java.util.Locator.getInstance().refreshGlobal();
+			sidekick.java.util.Locator.getInstance().refresh();
 		</CODE>
 	</ACTION>
 </ACTIONS>
