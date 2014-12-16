@@ -15,7 +15,6 @@
 */
 package sidekick.java;
 
-// {{{ Imports
 import errorlist.*;
 
 import java.awt.event.*;
@@ -42,8 +41,6 @@ import sidekick.java.parser.*;
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.Range;
-
-// }}}
 
 public class JavaParser extends SideKickParser implements EBComponent {
 
@@ -167,10 +164,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     errorList = tigerParser.getErrors();
                     break;
                 default:
-                    TigerParser java7parser = new TigerParser( input );
-                    compilationUnit = java7parser.getJavaRootNode( tab_size );
-                    compilationUnit.setResults( java7parser.getResults() );
-                    errorList = java7parser.getErrors();
+                    TigerParser java8parser = new TigerParser( input );
+                    compilationUnit = java8parser.getJavaRootNode( tab_size );
+                    compilationUnit.setResults( java8parser.getResults() );
+                    errorList = java8parser.getErrors();
             }
             if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
                 System.out.println( compilationUnit.dump() );
@@ -190,15 +187,15 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             // maybe show imports, but don't expand them
             if ( optionValues.getShowImports() == true ) {
-                List<ImportNode> imports = compilationUnit.getImportNodes();
-                if ( imports != null && !imports.isEmpty() ) {
-                    TigerNode importsParent = new ImportNode( "Imports" );
-                    importsParent.setStart( ElementUtil.createStartPosition( buffer, imports.get( 0 ) ) );
-                    importsParent.setEnd( ElementUtil.createEndPosition( buffer, imports.get( imports.size() - 1 ) ) );
-                    DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( importsParent );
-                    root.add( importsNode );
+                ImportNode imports = compilationUnit.getImportNode();
+                if (imports != null && imports.getChildCount() > 0) {
+                    imports.setStart( ElementUtil.createStartPosition( buffer, imports ) );
+                    imports.setEnd( ElementUtil.createEndPosition( buffer, imports ) );
+                    DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode(imports);
+                    root.add(importsNode);
                     expansionModel.inc();
-                    for ( TigerNode anImport : imports ) {
+                    
+                    for (TigerNode anImport : compilationUnit.getImportNodes()) {
                         anImport.setStart( ElementUtil.createStartPosition( buffer, anImport ) );
                         anImport.setEnd( ElementUtil.createEndPosition( buffer, anImport ) );
                         importsNode.add( new DefaultMutableTreeNode( anImport ) );
@@ -208,8 +205,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             // show constructors, fields, methods, etc
             addChildren( root, buffer, expansionModel );
-        } catch ( Exception e ) {
-            e.printStackTrace();
+        } catch ( Exception e ) {       // NOPMD
+            // there can be a lot of exceptions thrown if parse on keystroke is
+            // enabled for code completion.
         } finally {
             try {
                 input.close();
@@ -227,7 +225,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( ! complete_on && errorSource != null ) {
             handleErrors( errorSource, errorList, buffer );
         }
-
         return parsedData;
     }    // }}}
 
@@ -326,6 +323,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
             setChildPositions( buffer, child );
         }
+        tn.setStart(ElementUtil.createStartPosition(buffer, tn));
+        tn.setEnd(ElementUtil.createEndPosition(buffer, tn));
+            
     }    // }}}
 
     // {{{ getExceptionLocation(ParseException) : Range

@@ -608,7 +608,7 @@ TOKEN :
 CUNode getJavaCCRootNode(int tab_size) :
 {
     setTabSize(tab_size);
-    CUNode n = new CUNode();
+    CUNode cuNode = new CUNode();
     List<TigerNode> children = null;
 }
 {
@@ -617,15 +617,17 @@ CUNode getJavaCCRootNode(int tab_size) :
   {
     if (children != null ) {
         for (TigerNode child : children) {
+            /*
             if (child instanceof CUNode) {
                 for (ImportNode in : ((CUNode)child).getImportNodes()) {
-                    n.addImport(in);   
+                    cuNode.addImport(in);   
                 }
             }
-            n.addChild(child);
+            */
+            cuNode.addChild(child);
         }
     }
-    return n;
+    return cuNode;
   }
 }
 
@@ -681,9 +683,7 @@ List<TigerNode> javacc_input() :
             else {
                 parser_node.addChild(cunode);
             }
-            for (ImportNode in : cunode.getImportNodes()) {
-                parser_node.addImport(in); 
-            }
+            parser_node.setImportNode(cunode.getImportNode());
         }
     }
     return children;
@@ -1168,7 +1168,8 @@ CUNode getJavaRootNode(int tab_size) :
 CUNode CompilationUnit(int tab_size):
 {
     setTabSize(tab_size);
-    CUNode n = new CUNode();
+    CUNode cuNode = new CUNode();
+    ImportNode importNode = new ImportNode("Imports");
     TigerNode a;
     TigerNode packageNode = null;
     ImportNode in = null;
@@ -1178,13 +1179,13 @@ CUNode CompilationUnit(int tab_size):
       (
           
            [ LOOKAHEAD(2) packageNode=PackageDeclaration() ]
-           ( in=ImportDeclaration() { n.addImport(in); } )*
+           ( in=ImportDeclaration() { importNode.addChild(in); } )*
 
            // TypeDeclaration, this will be one or more classes or
            // interfaces, add these as child nodes of the root node
            (
              a=TypeDeclaration()
-             { n.addChild(a); }
+             { cuNode.addChild(a); }
            )*
        )
     }
@@ -1194,8 +1195,17 @@ CUNode CompilationUnit(int tab_size):
 
     {
         if (packageNode != null)
-            n.setPackage(packageNode);
-        return n;
+            cuNode.setPackage(packageNode);
+        int importsCount = importNode.getChildCount();
+        if (importsCount > 0) {
+            cuNode.setImportNode(importNode);
+            importNode.setStartLocation(importNode.getChildAt(0).getStartLocation());
+            importNode.setEndLocation(importNode.getChildAt(importsCount - 1).getEndLocation());
+        } else {
+            cuNode.setImportNode(null);   
+        }
+        
+        return cuNode;
     }
 }
 
@@ -1239,7 +1249,7 @@ TigerNode PackageDeclaration():
 {
     try {
         [ annotations = Annotation() ]        // Java 8
-        start = "package" name=Name() end=";"  
+        start = <PACKAGE> name=Name() end=";"  
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON, IMPORT, CLASS, INTERFACE, ENUM, PUBLIC, PRIVATE, PROTECTED);
@@ -1279,7 +1289,7 @@ ImportNode ImportDeclaration():
 }
 {
     try {
-        st="import" [ "static" ] name=Name() [ "." "*" ] et=";" ////
+        st=<IMPORT> [ <STATIC> ] name=Name() [ "." "*" ] et=";" ////
     }
     catch(ParseException pe) {
         error_skipto(pe, SEMICOLON, IMPORT, CLASS, INTERFACE, ENUM, PUBLIC, PRIVATE, PROTECTED);
@@ -1290,7 +1300,8 @@ ImportNode ImportDeclaration():
             return null;
         }
         ImportNode in = new ImportNode(name.getFullyQualifiedTypeName());
-        in.setStartLocation(getLocation(st));
+        Location l = getLocation(st);
+        in.setStartLocation(l);
         in.setEndLocation(getEndLocation(et));
         return in;
     }
@@ -1312,27 +1323,27 @@ Modifier Modifiers():
  (
   LOOKAHEAD(2)
   (
-   t="public" { modifiers |= ModifierSet.PUBLIC; adjustModifier(m, t);}
+   t=<PUBLIC> { modifiers |= ModifierSet.PUBLIC; adjustModifier(m, t);}
   |
-   t="static" { modifiers |= ModifierSet.STATIC;  adjustModifier(m, t);}
+   t=<STATIC> { modifiers |= ModifierSet.STATIC;  adjustModifier(m, t);}
   |
-   t="protected" { modifiers |= ModifierSet.PROTECTED;  adjustModifier(m, t);}
+   t=<PROTECTED> { modifiers |= ModifierSet.PROTECTED;  adjustModifier(m, t);}
   |
-   t="private" { modifiers |= ModifierSet.PRIVATE;  adjustModifier(m, t);}
+   t=<PRIVATE> { modifiers |= ModifierSet.PRIVATE;  adjustModifier(m, t);}
   |
-   t="final" { modifiers |= ModifierSet.FINAL;  adjustModifier(m, t);}
+   t=<FINAL> { modifiers |= ModifierSet.FINAL;  adjustModifier(m, t);}
   |
-   t="abstract" { modifiers |= ModifierSet.ABSTRACT;  adjustModifier(m, t);}
+   t=<ABSTRACT> { modifiers |= ModifierSet.ABSTRACT;  adjustModifier(m, t);}
   |
-   t="synchronized" { modifiers |= ModifierSet.SYNCHRONIZED;  adjustModifier(m, t);}
+   t=<SYNCHRONIZED> { modifiers |= ModifierSet.SYNCHRONIZED;  adjustModifier(m, t);}
   |
-   t="native" { modifiers |= ModifierSet.NATIVE;  adjustModifier(m, t);}
+   t=<NATIVE> { modifiers |= ModifierSet.NATIVE;  adjustModifier(m, t);}
   |
-   t="transient" { modifiers |= ModifierSet.TRANSIENT;  adjustModifier(m, t);}
+   t=<TRANSIENT> { modifiers |= ModifierSet.TRANSIENT;  adjustModifier(m, t);}
   |
-   t="volatile" { modifiers |= ModifierSet.VOLATILE;  adjustModifier(m, t);}
+   t=<VOLATILE> { modifiers |= ModifierSet.VOLATILE;  adjustModifier(m, t);}
   |
-   t="strictfp" { modifiers |= ModifierSet.STRICTFP;  adjustModifier(m, t);}
+   t=<STRICTFP> { modifiers |= ModifierSet.STRICTFP;  adjustModifier(m, t);}
   |
    Annotation()
   )
@@ -2224,7 +2235,7 @@ TigerNode Initializer():
 }
 {
     try {
-        [ t="static" ] block=Block()
+        [ t=<STATIC> ] block=Block()
     }
     catch(ParseException pe) {
         //error_skipto(pe, SEMICOLON);
@@ -3937,7 +3948,7 @@ BlockNode SynchronizedStatement():
 }
 {
     try {
-        start_t="synchronized" "(" list=Expression() ")" child=Block()
+        start_t=<SYNCHRONIZED> "(" list=Expression() ")" child=Block()
 
     }
     catch(ParseException pe) {

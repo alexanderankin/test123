@@ -103,7 +103,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
             return super.canAddToPath( node );
         }
     }
-    
+
     /**
      * @return A special fold handler for java.
      */
@@ -113,9 +113,9 @@ public class JavaSideKickParsedData extends SideKickParsedData {
         }
         return foldHandler;
     }
-    
+
     /**
-     * Java fold handler.    
+     * Java fold handler.
      */
     private class JavaFoldHandler extends FoldHandler {
 
@@ -132,25 +132,27 @@ public class JavaSideKickParsedData extends SideKickParsedData {
             if ( path == null ) {
                 return 0;
             } else {
-                // check if in imports range
                 Object userObject = ( ( DefaultMutableTreeNode ) root ).getUserObject();
                 if ( ! ( userObject instanceof CUNode ) ) {
                     return 0;
                 }
+                
+                // check if in imports range
                 Range importsRange = ( ( CUNode ) userObject ).getImportsRange();
-                if ( importsRange != null ) {
-                    if ( lineIndex >= importsRange.getStartLocation().line && lineIndex <= importsRange.getEndLocation().line ) {
-                        return 1;
-                    }
+                if ( importsRange != null && lineIndex >= importsRange.getStartLocation().line && lineIndex < importsRange.getEndLocation().line ) {
+                    return 1;
                 }
 
                 // otherwise, proceed as usual
                 TreeNode treeNode = ( TreeNode ) path.getLastPathComponent();
                 IAsset asset = getAsset( treeNode );
-                if (userObject.equals(asset)) {
-                    return 0;   
+                if ( userObject.equals( asset ) ) {
+                    return 0;
                 }
                 if ( asset.getStart().getOffset() == lineStartOffset ) {
+                    if ( userObject instanceof CUNode ) {
+                        return 0;   
+                    }
                     return path.getPathCount() - 2;
                 }
 
