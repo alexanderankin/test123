@@ -34,6 +34,7 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
 		<pathelement location="${install.dir}/antlr-4.4-complete.jar"/>
+		<pathelement location="${install.dir}/EclipseIcons.jar"/>
 	</path>
    
 
