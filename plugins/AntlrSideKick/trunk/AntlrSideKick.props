@@ -17,3 +17,7 @@ plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.3=plugin eclipseicons.EclipseI
 # set mode antlr4 for this sidekick
 sidekick.parser.antlr4.label=antlr4
 mode.antlr4.sidekick.parser=antlr4
+
+# menu
+plugin.sidekick.antlr4.AntlrSideKickPlugin.menu=antlr4-generate-files
+antlr4-generate-files.label=Generate files
