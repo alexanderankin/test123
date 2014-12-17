@@ -1,13 +1,15 @@
 package sidekick.antlr4.parser;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.text.Position;
+import sidekick.Asset;
 import sidekick.util.Location;
 import sidekick.util.SideKickElement;
 
-public class AntlrNode implements Comparable, SideKickElement {
+public class AntlrNode extends Asset implements Comparable, SideKickElement {
 
-    private String name = null;
-    
+    private Icon icon = null;
     private Location startLocation = new Location();
     private Location endLocation = new Location();
     private Position startPosition = new Position() {
@@ -22,18 +24,11 @@ public class AntlrNode implements Comparable, SideKickElement {
     };
 
     public AntlrNode() {
+        super("");
     }
 
     public AntlrNode(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;   
+        super(name);
     }
 
     public void setStartLocation(Location start) {
@@ -58,6 +53,7 @@ public class AntlrNode implements Comparable, SideKickElement {
 
     public void setStartPosition(Position p) {
         startPosition = p;
+        start = p;
     }
 
     public Position getEndPosition() {
@@ -66,10 +62,28 @@ public class AntlrNode implements Comparable, SideKickElement {
 
     public void setEndPosition( Position p ) {
         endPosition = p;
+        end = p;
+    }
+    
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;   
+    }
+    
+    public Icon getIcon() {
+        System.out.println("+++++ getIcon: " + icon);
+        return icon;
     }
 
     public String toString() {
         return name;
+    }
+    
+    public String getShortString() {
+        return name;   
+    }
+    
+    public String getLongString() {
+        return name;   
     }
 
     public int compareTo(Object o) {

@@ -98,19 +98,21 @@ public class AntlrParser extends SideKickParser {
                 DefaultMutableTreeNode lexerTreeNode = new DefaultMutableTreeNode( "Lexer Rules" );
                 root.add( lexerTreeNode );
                 for ( AntlrNode rule : lexerRules ) {
-                    DefaultMutableTreeNode node = new DefaultMutableTreeNode( rule );
-                    lexerTreeNode.add( node );
+                    rule.setStart( ElementUtil.createStartPosition( buffer, rule ) );
+                    rule.setEnd( ElementUtil.createEndPosition( buffer, rule ) );
+                    lexerTreeNode.add(  new DefaultMutableTreeNode( rule ) );
                 }
             }
             if ( parserRules != null && parserRules.size() > 0 ) {
                 DefaultMutableTreeNode parserTreeNode = new DefaultMutableTreeNode( "Parser Rules" );
                 root.add( parserTreeNode );
                 for ( AntlrNode rule : parserRules ) {
-                    DefaultMutableTreeNode node = new DefaultMutableTreeNode( rule );
-                    parserTreeNode.add( node );
+                    rule.setStart( ElementUtil.createStartPosition( buffer, rule ) );
+                    rule.setEnd( ElementUtil.createEndPosition( buffer, rule ) );
+                    parserTreeNode.add(  new DefaultMutableTreeNode( rule ) );
                 }
             }
-            ElementUtil.convert( buffer, root );
+            //ElementUtil.convert( buffer, root );
         } catch ( Exception e ) {
             e.printStackTrace();
         } finally {

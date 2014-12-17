@@ -12,6 +12,7 @@ plugin.sidekick.antlr4.AntlrSideKickPlugin.version=4.0
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.0=jedit 05.02.01.00
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.1=jdk 1.7.0
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.2=plugin antlr.AntlrPlugin 4.4
+plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.3=plugin eclipseicons.EclipseIconsPlugin 1.0
 
 # set mode antlr4 for this sidekick
 sidekick.parser.antlr4.label=antlr4
