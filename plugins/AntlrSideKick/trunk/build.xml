@@ -24,7 +24,7 @@
    <selector id="packageFiles">
       <and>
          <or>
-            <filename name="**/AntlrSideKick.html" />
+            <filename name="**/antlr.html" />
          </or>
       </and>
    </selector>

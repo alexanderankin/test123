@@ -2,7 +2,7 @@
 plugin.sidekick.antlr4.AntlrSideKickPlugin.activate=defer
 plugin.sidekick.antlr4.AntlrSideKickPlugin.author=Dale Anson
 plugin.sidekick.antlr4.AntlrSideKickPlugin.description=A SideKick for working with Antlr 4 grammar files.
-plugin.sidekick.antlr4.AntlrSideKickPlugin.docs=docs/sidekick.html
+plugin.sidekick.antlr4.AntlrSideKickPlugin.docs=docs/antlr.html
 plugin.sidekick.antlr4.AntlrSideKickPlugin.longdescription=description.html
 plugin.sidekick.antlr4.AntlrSideKickPlugin.name=AntlrSideKick
 plugin.sidekick.antlr4.AntlrSideKickPlugin.usePluginHome=false
