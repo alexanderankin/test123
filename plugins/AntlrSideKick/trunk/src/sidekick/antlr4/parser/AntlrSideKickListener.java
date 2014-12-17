@@ -1,7 +1,7 @@
 package sidekick.antlr4.parser;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sidekick.util.Location;
 import eclipseicons.EclipseIconsPlugin;
@@ -38,7 +38,14 @@ public class AntlrSideKickListener extends ANTLRv4ParserBaseListener {
 	@Override public void enterLexerRule(@NotNull ANTLRv4Parser.LexerRuleContext ctx) {
         AntlrNode node = new AntlrNode();
         node.setName(ctx.TOKEN_REF().getText());
-        node.setStartLocation(new Location(ctx.TOKEN_REF().getSymbol().getLine(), ctx.TOKEN_REF().getSymbol().getCharPositionInLine()));
+        Location startLocation;
+        TerminalNode fragment = ctx.FRAGMENT();
+        if (fragment != null) {
+            startLocation = new Location(ctx.FRAGMENT().getSymbol().getLine(), ctx.FRAGMENT().getSymbol().getCharPositionInLine());
+        } else {
+            startLocation = new Location(ctx.TOKEN_REF().getSymbol().getLine(), ctx.TOKEN_REF().getSymbol().getCharPositionInLine());   
+        }
+        node.setStartLocation(startLocation);
         node.setEndLocation(new Location(ctx.SEMI().getSymbol().getLine(), ctx.SEMI().getSymbol().getCharPositionInLine() + 1));
         node.setIcon(lexerIcon);
         lexerRules.add(node);
