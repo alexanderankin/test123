@@ -70,7 +70,6 @@ public class AntlrNode extends Asset implements Comparable, SideKickElement {
     }
     
     public Icon getIcon() {
-        System.out.println("+++++ getIcon: " + icon);
         return icon;
     }
 
@@ -83,7 +82,7 @@ public class AntlrNode extends Asset implements Comparable, SideKickElement {
     }
     
     public String getLongString() {
-        return name;   
+        return name + ": " + getStartLocation() + ":" + getEndLocation();   
     }
 
     public int compareTo(Object o) {

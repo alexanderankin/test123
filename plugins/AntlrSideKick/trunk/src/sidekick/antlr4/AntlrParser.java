@@ -116,7 +116,7 @@ public class AntlrParser extends SideKickParser {
         } catch ( Exception e ) {
             e.printStackTrace();
         } finally {
-            // handle errors here
+            // TODO: handle errors here, need an error listener to collect the errors and send them to ErrorList
         }
         return parsedData;
     }
