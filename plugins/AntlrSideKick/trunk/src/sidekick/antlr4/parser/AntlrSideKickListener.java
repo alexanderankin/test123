@@ -34,11 +34,12 @@ public class AntlrSideKickListener extends ANTLRv4ParserBaseListener {
     }
     
     // field_public_obj.gif
+    // NOTE: could use Positions, the Token has a getStartIndex and getEndIndex which are offsets from the start of the input stream
 	@Override public void enterLexerRule(@NotNull ANTLRv4Parser.LexerRuleContext ctx) {
         AntlrNode node = new AntlrNode();
         node.setName(ctx.TOKEN_REF().getText());
-        node.setStartLocation(new Location(ctx.TOKEN_REF().getSymbol().getLine(), ctx.TOKEN_REF().getSymbol().getStartIndex()));
-        node.setEndLocation(getEndLocation(ctx));
+        node.setStartLocation(new Location(ctx.TOKEN_REF().getSymbol().getLine(), ctx.TOKEN_REF().getSymbol().getCharPositionInLine()));
+        node.setEndLocation(new Location(ctx.SEMI().getSymbol().getLine(), ctx.SEMI().getSymbol().getCharPositionInLine() + 1));
         node.setIcon(lexerIcon);
         lexerRules.add(node);
 	}
@@ -47,24 +48,10 @@ public class AntlrSideKickListener extends ANTLRv4ParserBaseListener {
 	@Override public void enterParserRuleSpec(@NotNull ANTLRv4Parser.ParserRuleSpecContext ctx) {
         AntlrNode node = new AntlrNode();
         node.setName(ctx.RULE_REF().getText());
-        node.setStartLocation(new Location(ctx.RULE_REF().getSymbol().getLine(), ctx.RULE_REF().getSymbol().getStartIndex()));
-        node.setEndLocation(getEndLocation(ctx));
+        node.setStartLocation(new Location(ctx.RULE_REF().getSymbol().getLine(), ctx.RULE_REF().getSymbol().getCharPositionInLine()));
+        node.setEndLocation(new Location(ctx.SEMI().getSymbol().getLine(), ctx.SEMI().getSymbol().getCharPositionInLine() + 1));
         node.setIcon(parserIcon);
         parserRules.add(node);
 	}
     
-    // return a Location representing the start of the rule context
-    private Location getStartLocation(ParserRuleContext ctx) {
-        int line = ctx.getStart().getLine();
-        int col = ctx.getStart().getCharPositionInLine();
-        return new Location(line, col);
-    }
-    
-    // return a Location representing the end of the rule context
-    private Location getEndLocation(ParserRuleContext ctx) {
-        int line = ctx.getStop().getLine();
-        int col = ctx.getStop().getCharPositionInLine();
-        return new Location(line, col);
-    }
-
 }
