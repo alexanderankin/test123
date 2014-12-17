@@ -44,7 +44,9 @@ import org.antlr.v4.runtime.tree.*;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 import sidekick.util.*;
+
 import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 public class AntlrParser extends SideKickParser {
 
@@ -77,21 +79,31 @@ public class AntlrParser extends SideKickParser {
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new AntlrSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
+        SideKickErrorListener errorListener = null;
         try {
             if ( buffer.getLength() <= 0 ) {
                 return parsedData;
             }
+            // set up the parser to read the buffer
             String contents = buffer.getText( 0, buffer.getLength() );
             input = new StringReader( contents );
             ANTLRInputStream antlrInput = new ANTLRInputStream( input );
             ANTLRv4Lexer lexer = new ANTLRv4Lexer( antlrInput );
             CommonTokenStream tokens = new CommonTokenStream( lexer );
             ANTLRv4Parser antlrParser = new ANTLRv4Parser( tokens );
+            
+            // add an error listener to the parser to capture any errors
+            antlrParser.removeErrorListeners();
+            errorListener = new SideKickErrorListener();
+            antlrParser.addErrorListener(errorListener);
+            
+            // parse the buffer contents
             ParseTree tree = antlrParser.grammarSpec();
             ParseTreeWalker walker = new ParseTreeWalker();
             AntlrSideKickListener listener = new AntlrSideKickListener();
             walker.walk( listener, tree );
 
+            // build the tree
             List<AntlrNode> lexerRules = listener.getLexerRules();
             List<AntlrNode> parserRules = listener.getParserRules();
             if ( lexerRules != null && lexerRules.size() > 0 ) {
@@ -112,13 +124,23 @@ public class AntlrParser extends SideKickParser {
                     parserTreeNode.add(  new DefaultMutableTreeNode( rule ) );
                 }
             }
-            //ElementUtil.convert( buffer, root );
         } catch ( Exception e ) {
             e.printStackTrace();
         } finally {
-            // TODO: handle errors here, need an error listener to collect the errors and send them to ErrorList
+            handleErrors( buffer, errorSource, errorListener.getErrors() );
         }
         return parsedData;
     }
 
+    /* the parser accumulates errors as it parses.  This method passed them all
+    to the ErrorList plugin. */
+    private void handleErrors( Buffer buffer, DefaultErrorSource errorSource, List<ParseException> errors ) {
+        if (errors == null || errors.isEmpty()) {
+            return;   
+        }
+        for ( ParseException pe : errors ) {
+            errorSource.addError( ErrorSource.ERROR, buffer.getPath(), pe.getLineNumber(), pe.getColumn(), pe.getColumn() + pe.getLength(), pe.getMessage() );
+        }
+    }
+    
 }
