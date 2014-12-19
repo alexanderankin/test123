@@ -3589,7 +3589,7 @@ LocalVariableNode LocalVariableDeclaration():
       VariableDeclarator returns a TigerNode representing the LHS of the declaration.
       The RHS is contained within that node as the children of the node.
       */
-      m=Modifiers() type=Type() a=VariableDeclarator()
+      [LOOKAHEAD(2) Annotation()] m=Modifiers() type=Type() a=VariableDeclarator()
       {
         lvn = new LocalVariableNode(a.getName(), type);
         if (m != null)
@@ -3815,8 +3815,8 @@ BlockNode ForStatement():
       start_t="for" "("
 
       (
-          LOOKAHEAD([ "final" ] Type() <IDENTIFIER> ":")
-          [ "final" ] Type() <IDENTIFIER> ":" exp_a=Expression()
+          LOOKAHEAD([Annotation()]["final"] Type() <IDENTIFIER> ":")
+          [LOOKAHEAD(2) Annotation()]["final"] Type() <IDENTIFIER> ":" exp_a=Expression()
         |
          [ exp_a=ForInit() ] ";" [ exp_b=Expression() ] ";" [ ForUpdate() ]
       )
@@ -3843,6 +3843,12 @@ BlockNode ForStatement():
         }
         return bn;
     }
+}
+
+void VariableModifier() :
+{}
+{
+    [LOOKAHEAD(2) Annotation()] ["final"]   
 }
 
 List<TigerNode> ForInit():
