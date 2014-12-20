@@ -1,0 +1,178 @@
+<HTML>
+<HEAD>
+<TITLE>jEdit Sessions Plugin</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+
+<TABLE BGCOLOR="#CCCCFF" BORDER="0" CELLSPACING="0" CELLPADDING="5"
+       WIDTH="100%">
+  <TR>
+    <TD>
+      <H1>jEdit Sessions Plugin</H1>
+
+    </TD>
+    <TD ALIGN="right">
+        <SMALL>By Dirk M&ouml;bius<BR>
+        $Date$
+        </SMALL>
+    </TD>
+  </TR>
+</TABLE>
+
+
+<UL>
+    <LI><A HREF="#general">Introduction</A> </LI>
+    <LI><A HREF="#sessionmanagement">Session Management</A> </LI>
+    <LI><A HREF="#customization">Customization</A> </LI>
+    <LI><A HREF="#license">License</A> </LI>
+    <LI><A HREF="#credits">Credits</A> </LI>
+    <LI><A HREF="#feedback">Feedback</A> </LI>
+    <LI><A HREF="../CHANGELOG.txt">Changes</A> </LI>
+
+</UL>
+
+
+<A NAME="general"></A>
+<H2>Introduction</H2>
+
+<P>
+The Sessions Plugin maintains lists of open files - called <EM>sessions</EM>
+(aka <EM>workspaces</EM>) - and offers some functions to switch between them.
+</P>
+
+<p> Each View, or main window, can have a different active session, and switching sessions from one View should not affect the open files in other views (unless you are using Global Bufferset Scope - see <a href="/doc/users-guide/buffersets.html">BufferSets</a> for details).</p>
+
+<p> Each view "remembers" which session it is switched to, even after restarting jEdit. To tell Sessions to forget which views are open to which sessions, <tt>Plugins - Sessions - Clear View Sessions</tt>. </p>
+
+<p> If the plugin options are checked, Sessions will rename the jEdit View, and add information about which session is
+active in the window title bar. If you've uninstalled Sessions, and want to clear the custom titlebar string, go to <tt>View - Set View Title</tt> and change it back to <tt>jEdit</tt>, or create a new View and close the old one. </p>
+
+
+<A NAME="sessionmanagement"></A>
+<H2>Session Management</H2>
+
+<p> Session data are stored as XML files in the <tt>plugins/sessions.SessionsPlugin/</tt> folder under your <a href="/doc/users-guide/settings-directory.html">JEDIT_SETTINGS</a> directory. In versions prior to 1.6, these files were stored in the <tt>sessions/</tt> folder in the same location. To continue using old session data, move the files into the new location.
+</p>
+
+<H3>Menu Actions</H3>
+
+<P>
+The following menu actions are available in menu <B>Plugins&gt;Sessions</B>:
+</P>
+
+<UL>
+	<LI><B>Manage Sessions...</B><BR/>
+		...description follows...
+	</LI>
+	<LI><B>Save Session</B><BR/>
+		...description follows...
+	</LI>
+	<LI><B>Save Session As...</B><BR/>
+		...description follows...
+	</LI>
+	<LI><B>Reload Session</B><BR/>
+		...description follows...
+	</LI>
+	<LI><B>Session Properties (experimental)</B><BR/>
+		...description follows...
+	</LI>
+</UL>
+
+
+<H3>Key Actions</H3>
+
+<P>
+The Sessions Plugin is fully keyboard navigable.
+</P>
+
+<P>
+A recommendation is that you assign a keyboard shortcut to the action
+<b>Manage Sessions...</b>. from <b>Utilities&gt;Global&nbsp;options&gt;Shortcuts</b>.
+I suggest "A+s".
+</P>
+
+<TABLE BORDER>
+  <TR> <TD><B>Key Shortcut</B></TD> <TD><B>Action</B></TD>                </TR>
+  <TR> <TD>[Alt-s]</TD>             <TD>Show Session Manager</TD>         </TR>
+  <TR> <TD>[Up] / [Down]</TD>       <TD>Choose session</TD>               </TR>
+  <TR> <TD>[Enter] / [Return]</TD>  <TD>Jump to/Open selected session</TD></TR>
+  <TR> <TD>[Esc]</TD>               <TD>Close dialog</TD>                 </TR>
+</TABLE>
+
+<BR>
+
+
+<A NAME="customization">
+</A><H2>Customization</H2>
+
+<H3>Appearance</H3>
+
+<P>
+You can customize the Sessions Plugin settings in
+<b>Utilities&gt;Global&nbsp;options&gt;Plugin&nbsp;Options&gt;Sessions</b>.
+The following options are available:
+</P>
+
+<UL>
+	<LI><B>Autosave Sessions</B> </LI>
+	<UL>
+		<LI><B>Display "Confirm Save" dialog</B></LI>
+	</UL>
+	<LI><B>Close all files before switching to new session</B> </LI>
+	<LI><B>Show Session Switcher toolbar</B>
+	<UL>
+		<LI><B>Show below JEdit's main toolbar</B></LI>
+		<LI><B>Show inside JEdit's main toolbar (at the end)</B></LI>
+		<LI><B>Show inside BufferList</B><BR/>
+			This requires BufferList 0.8 or higher.<BR/>
+			The toolbar can only be shown, if the BufferList is docked (ie. non-floating).
+		</LI>
+		<LI><B>Show "Session:" label</B></LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<A NAME="license">
+</A><H2>License</H2>
+
+<P>
+The source code is distributed under the GPL. Please see
+<A HREF="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</A>
+</P>
+
+
+<A NAME="credits"></A>
+<H2>Credits</H2>
+
+<p> Thanks to the following people for helping to maintain Sessions Plugin over the years: </p>
+<ul>
+<li> Steve Jakob </li>
+<li> Alan Ezust </li>
+</ul>
+
+
+<A NAME="feedback"></A>
+<H2>Feedback</H2>
+
+<P>
+The preferred way to send bug reports against specific plugins is to use the
+<A HREF="https://sourceforge.net/p/jedit/plugin-bugs">
+jEdit Plugin Bugs Tracker</A> on Sourceforge:</P>
+<p> There is a separate tracker for <a href="https://sourceforge.net/p/jedit/plugin-feature-requests">Plugin Feature Requests</a>. </p>
+
+<P>
+You can also write to:
+</P>
+
+<UL>
+    <LI>jEdit-users mailing-list <a href="mailto:jedit-users@lists.sourceforge.net"><EM>&lt;jedit-users@lists.sourceforge.net&gt;</EM></a>, or
+    <LI>jEdit-devel mailing-list <a href="mailto:jedit-devel@lists.sourceforge.net"><EM>&lt;jedit-devel@lists.sourceforge.net&gt;</EM></a>.
+</UL>
+
+
+</BODY>
+</HTML>
+
