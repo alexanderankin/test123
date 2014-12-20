@@ -19,6 +19,9 @@
     <SERVICE CLASS="sidekick.SideKickParser" NAME="ecmascript">
         new sidekick.ecmascript.EcmaScriptSideKickParser();
     </SERVICE>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="json">
+        new sidekick.json.JsonParser();
+    </SERVICE>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="xml:XmlIndenter">
         new xml.indent.XmlBeautifier();
     </SERVICE>
