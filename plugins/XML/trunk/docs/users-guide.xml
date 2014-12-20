@@ -44,12 +44,12 @@
  </para>
 
  <para> The XML plugin makes jEdit one of the most advanced free Website editing tools available.
- It combines parsers for XML, HTML, JSP, Sidekick,  and CSS files. Here are its features: </para>
+ It combines parsers for XML, HTML, JSP, JSON, Sidekick, and CSS files. Here are its features: </para>
 
  <itemizedlist>
   <listitem><para>On-the-fly validation of XML files with DTD, XSD, or RNG schemas. </para></listitem>
   <listitem><para>Tag, attribute, and entity completion popups for XML, HTML and CSS</para></listitem>
-  <listitem><para>Display of the element tree in a dockable window, for XML, HTML, JavaScript, JSP, and CSS</para></listitem>
+  <listitem><para>Display of the element tree in a dockable window, for XML, HTML, JavaScript, JSP, JSON, and CSS</para></listitem>
   <listitem><para>Matching tag highlighting</para></listitem>
   <listitem><para>One click insertion of tags and entities</para></listitem>
   <listitem><para>Graphical form to edit tags and attributes</para></listitem>

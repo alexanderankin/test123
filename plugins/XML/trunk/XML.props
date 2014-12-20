@@ -3,10 +3,10 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil, Eric Le Lay
-plugin.xml.XmlPlugin.version=2.8.8
+plugin.xml.XmlPlugin.version=2.9.0
 plugin.xml.XmlPlugin.docs=index.html
 
-plugin.xml.XmlPlugin.depend.0=jdk 1.6
+plugin.xml.XmlPlugin.depend.0=jdk 1.7
 plugin.xml.XmlPlugin.depend.1=jedit 05.00.01.00
 plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.9.1
 plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
@@ -16,6 +16,7 @@ plugin.xml.XmlPlugin.depend.6=plugin CommonControlsPlugin 1.5
 plugin.xml.XmlPlugin.depend.7=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.xml.XmlPlugin.depend.8=optional plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 1.1.0
 plugin.xml.XmlPlugin.depend.9=optional plugin templates.TemplatesPlugin 4.1.2
+plugin.xml.XmlPlugin.depend.10=plugin antlr.AntlrPlugin 4.4
 
 plugin.xml.XmlPlugin.jars=jing.jar relaxngDatatype.jar trang.jar
 
@@ -147,6 +148,8 @@ mode.xsl.sidekick.parser=xml
 mode.maven.sidekick.parser=xml
 mode.css.sidekick.parser=css
 mode.jedit-actions.sidekick.parser=xml
+sidekick.parser.json.label=json
+mode.json.sidekick.parser=json
 
 # specialized tag classes. Mostly, these provide a different icon set for the
 # nodes of these file modes.The naming convention is xml.xmltag.modename, where
