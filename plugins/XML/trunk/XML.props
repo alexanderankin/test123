@@ -20,7 +20,7 @@ plugin.xml.XmlPlugin.depend.10=plugin antlr.AntlrPlugin 4.4
 
 plugin.xml.XmlPlugin.jars=jing.jar relaxngDatatype.jar trang.jar
 
-plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD, XSD, or RNG. For all languages, it displays element trees in the SideKick dockable. For XML, HTML5 and CSS3, you get completion popups for elements, attributes, and entities.
+plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript JSON, and CSS files. For XML files, it does validation against a DTD, XSD, or RNG. For all languages, it displays element trees in the SideKick dockable. For XML, HTML5 and CSS3, you get completion popups for elements, attributes, and entities.
 
 # Menu bar stuff
 
@@ -39,7 +39,7 @@ plugin.xml.XmlPlugin.menu= \
     xml-close-tag \
     xml-remove-tags \
     xml-split-tag \
-	xml-join-tag \
+    xml-join-tag \
     xml-copy-xpath \
     - \
     xml-chars-to-entities \
