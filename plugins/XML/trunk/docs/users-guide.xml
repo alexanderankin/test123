@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
- <!-- 
+ <!--
  <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd"> -->
   <title>XML plugin user's guide</title>
 
@@ -12,7 +12,7 @@
   <author><firstname>Eric</firstname><surname>Le Lay</surname></author>
   <author><firstname>Robert</firstname><surname>McKinnon</surname></author>
   <author><firstname>Martin</firstname><surname>Raspe</surname></author>
-  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author> 
+  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
 
@@ -44,7 +44,7 @@
  </para>
 
  <para> The XML plugin makes jEdit one of the most advanced free Website editing tools available.
- It combines parsers for XML, HTML, JSP, JSON, Sidekick, and CSS files. Here are its features: </para>
+ It combines parsers for XML, HTML, JSP, JSON, JavaScript, and CSS files. Here are its features: </para>
 
  <itemizedlist>
   <listitem><para>On-the-fly validation of XML files with DTD, XSD, or RNG schemas. </para></listitem>
@@ -57,7 +57,7 @@
   <listitem><para>And more. </para></listitem>
 
  </itemizedlist>
- 
+
  <section id="sidekick"><title>XML and SideKick</title>
  <para>
  To provide most of its functionality, the XML plugin relies on
@@ -71,10 +71,10 @@
  </section>
  <section id="otherplugins">
  <title>XML and other plugins</title>
- 
+
  <para>The XML plugin can take advantage of other plugins, in addition to the required
  ones like Sidekick.</para>
- 
+
  <itemizedlist>
  <listitem><para>If you want to follow hyperlinks in HTML or XML, you'll have to install the
  <emphasis>Hyperlinks</emphasis> plugin.</para></listitem>
@@ -246,16 +246,16 @@
   <guimenuitem>Copy XPath</guimenuitem> should handle namespaces and prefixes gracefully :
  </para>
  <itemizedlist>
- 	<listitem><para>namespaces and local-names are used for comparison - not prefixes,
- 	though prefixes found in the document are retained;
- 	</para></listitem>
- 	<listitem><para>only the first of 2 prefixes bound to the same namespace in the source
- 	document will be used in the XPath;
- 	</para></listitem>
- 	<listitem><para>if the same prefix is bound to different namespaces, the second
- 	instance of the prefix will get a numbered suffix to distinguish it in the XPath.
- 	</para></listitem>
- 	
+  <listitem><para>namespaces and local-names are used for comparison - not prefixes,
+  though prefixes found in the document are retained;
+  </para></listitem>
+  <listitem><para>only the first of 2 prefixes bound to the same namespace in the source
+  document will be used in the XPath;
+  </para></listitem>
+  <listitem><para>if the same prefix is bound to different namespaces, the second
+  instance of the prefix will get a numbered suffix to distinguish it in the XPath.
+  </para></listitem>
+
  </itemizedlist>
 
 
@@ -485,7 +485,7 @@
  <programlisting>
 &lt;!-- :xml.validate.ignore-dtd=true: -->
 &lt;!DOCTYPE article [
-  &lt;!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" 
+  &lt;!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML"
                 "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
   &lt;!ENTITY % isogrk1 PUBLIC "ISO 8879:1986//ENTITIES Greek Letters//EN//XML"
                 "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-grk1.ent" >
@@ -501,13 +501,13 @@
  </programlisting>
  </para>
  </section>
- 
+
  <section id="schema-mapping"><title>Finding Schemas</title>
- 
+
   <para>
   Validation will be performed if it is enabled (see <xref linkend="customizing-validation"/>)
   and if a schema or a DTD can be found.</para>
-  
+
   <para>
   While DTDs and XSD schemas are declared in the
   document (see <xref linkend="schemas"/>), Relax NG schemas are not declared in the document.
@@ -526,7 +526,7 @@
  a system Id by some catalog (e.g. <filename>locate.rng</filename>).
  </para>
   </listitem>
-  
+
   <listitem>
   <para>on a per directory and/or global basis, by using schema mapping rules
   (the so called <filename>schemas.xml</filename>). This is consistent with
@@ -535,10 +535,10 @@
   work on filenames, paths, root element, namespace, etc.
   </para>
   </listitem>
-  
+
   </itemizedlist>
-  
-  <para>When the XML plugin parses an XML buffer, it will look for a file named 
+
+  <para>When the XML plugin parses an XML buffer, it will look for a file named
   <filename>schemas.xml</filename> in the same directory. Or, if it doesn't exist,
   for a global
   file in the settings directory (under <filename><replaceable>JEDIT_SETTINGS</replaceable>/plugins/xml.XmlPlugin/schemas.xml</filename>),
@@ -547,20 +547,20 @@
   prefix, local name, namespace of the parsed document. The first rule to match
   returns the schema that will be used for validation.
   </para>
-  
+
   <para>You can edit manually these <filename>schemas.xml</filename> files.
   There is a built-in rule to find their schema, so XML completion and
   validation should work. The schema is under <filename>xml/dtds/locate.rng</filename>
-  in the XML.jar archive (simply open your mapping document and use 
+  in the XML.jar archive (simply open your mapping document and use
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
   <guimenuitem>Open Schema</guimenuitem>).</para>
-  
+
   <para>There are also three actions associated with schema mapping :</para>
-  
+
   <para>You can set the type of current buffer to a known type via
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
   <guimenuitem>Set Schema Type...</guimenuitem>. You will be prompted for a type, like :
-  
+
   <glosslist>
   <glossentry>
   <glossterm>RNG</glossterm>
@@ -575,9 +575,9 @@
   <glossdef><para>for any well formed XML</para></glossdef>
   </glossentry>
   </glosslist>
-  
+
   </para>
-               
+
   <para>You can also directly point to an XSD or RNG schema via
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
   <guimenuitem>Set Schema...</guimenuitem>. You will be able to choose
@@ -585,7 +585,7 @@
   </para>
 
   <warning><para>It does not work from a remote filesystem yet !</para></warning>
-  
+
   <para>Both of these actions will create a <filename>schemas.xml</filename> file
   alongside the current buffer. If such a file exists already, it is updated.
   </para>
@@ -595,16 +595,16 @@
   beware that all commented-out section of the schema-mapping will disappear
   next time you use <guimenuitem>Set Schema...</guimenuitem>.
   </para></warning>
-  
+
   <section id="disabling-schema-mapping">
   <title>Disabling the schema-mapping</title>
-  
+
   <para>If, for some reason, you want to disable this schema-mapping mechanism,
   you can do it on a global basis by unchecking the
   <guibutton>enable schema mapping</guibutton> checkbox,
   in the <guibutton>XML</guibutton>&gt;<guibutton>Xml</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem>.
   </para>
-  
+
   <para>You can also disable schema-mapping on a per-buffer basis (let's say on a file in a read-only directory),
   by inserting the following in the first or last 10 lines of the buffer:
  </para>
@@ -614,8 +614,8 @@
  However, it will still pick a schema defined via a buffer-local property in a buffer,
  or if you set a schema via <guimenuitem>Set Schema...</guimenuitem> or <guimenuitem>Set Schema Type...</guimenuitem>.
   </para>
-  
-  <para>What will happen if you use <guimenuitem>Set Schema...</guimenuitem> 
+
+  <para>What will happen if you use <guimenuitem>Set Schema...</guimenuitem>
   and schema-mapping is disabled is that
   the chosen schema won't be saved and any existing <filename>schemas.xml</filename>
   in the same directory won't be updated. You will have to select the schema
@@ -629,7 +629,7 @@
   schema), the schema defined for the buffer won't be updated and you'll have to do
   <guimenuitem>Set Schema Type...</guimenuitem> again.
   </para>
- 
+
  </section>
 
  <section id="see-schema">
@@ -640,7 +640,7 @@
   via the menu item, or via a schema-mapping rule.</para>
   </section>
  </section>
-  
+
 </section>
 
 <section id="translate"><title>Translating between schemas</title>
@@ -649,7 +649,7 @@
 from any of DTD, RNG, RNC, XML instances to DTD, RNG, RNC, XSD.
 </para>
 
-<para>Trang (<uri>http://www.thaiopensource.com/relaxng/trang.html</uri>, James Clark and others) 
+<para>Trang (<uri>http://www.thaiopensource.com/relaxng/trang.html</uri>, James Clark and others)
 is Copyright © 2002, 2003, 2008 Thai Open Source Software Center Ltd.</para>
 
 <para>A copy of its user-guide is included <ulink url="docs/trang-manual.html">here</ulink>.</para>
@@ -826,14 +826,14 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
  and hover over them with the mouse. A solid blue underline
  will appear under attribute values recognised as hyperlinks.
  Then, clicking on the link will open the referenced document
- in a buffer and in some cases move to the referenced element.</para> 
- 
+ in a buffer and in some cases move to the referenced element.</para>
+
  <para>Hereafter is the list of supported hyperlinks in the <code>XML</code> mode.
  <code>xml:base</code> attributes are used to resolve relative hyperlinks.</para>
  <para>
  <itemizedlist>
- 	<listitem><para>href attributes in <emphasis>XInclude</emphasis> (&lt;xi:include href="..."/&gt;).
- 	Fragments are not supported: the buffer is opened and that's all.</para></listitem>
+  <listitem><para>href attributes in <emphasis>XInclude</emphasis> (&lt;xi:include href="..."/&gt;).
+  Fragments are not supported: the buffer is opened and that's all.</para></listitem>
       <listitem><para>simple <emphasis>XLinks</emphasis> (&lt;myelt xlink:href="..."/&gt;).
       Only simple links are supported and the fragment identifier is ignored: the buffer is opened and that's all.</para></listitem>
       <listitem><para><emphasis>IDREF attributes</emphasis>, when the buffer has been parsed and the attribute has the
@@ -858,15 +858,15 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
  </para>
  <para>
  <itemizedlist>
- 	<listitem><para><code>href</code> attributes in <code>a</code>, <code>area</code>, <code>link</code>
- 	elements.</para></listitem>
+  <listitem><para><code>href</code> attributes in <code>a</code>, <code>area</code>, <code>link</code>
+  elements.</para></listitem>
       <listitem><para><code>longdesc</code>, <code>usemap</code> attributes of <code>img</code> element.</para></listitem>
       <listitem><para><code>cite</code> attribute of <code>q</code>, <code>blockquote</code>,
       <code>ins</code> and <code>del</code> elements.</para></listitem>
       <listitem><para><code>usemap</code> attribute of <code>input</code> and <code>object</code> elements.
       </para></listitem>
       <listitem><para><code>src</code> attribute of <code>script</code> element.</para></listitem>
-      <listitem><para>Attributes with type <code>anyURI</code> 
+      <listitem><para>Attributes with type <code>anyURI</code>
       are recognised as hyperlinks.</para></listitem>
       <listitem><para>Attributes with type <code>IDREF</code> and <code>IDREFS</code> work
       as hyperlinks to the referenced element.</para></listitem>
@@ -874,7 +874,7 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
  </para>
 
  </section>
- 
+
 
  <section id="xmlindenter">
     <title>XML Indenter</title>
@@ -924,21 +924,21 @@ The HTML/HEAD/BASE element is used to resolve URIs, if present.
  </section>
 
 <appendix id="changes">
-<title>Change log</title> 
+<title>Change log</title>
 <para> Click <ulink url="docs/CHANGES.txt">here</ulink> to see the detailed changelog of the XML plugin. There are also separate changelogs for <ulink url="docs/CHANGES.xmlindenter.txt">XmlIndenter</ulink> and <ulink url="docs/CHANGES.javascript.txt">JavaScript SideKick</ulink>, two plugins that were merged into the XML plugin. </para>
 </appendix>
 
 <appendix id="feedback">
     <title>Feedback</title>
 
-    <para>All jEdit users are encouraged to join the   <email>jedit-users@lists.sourceforge.net</email> mailing list to give feedback or ask questions of other users and developers. </para> 
-    
+    <para>All jEdit users are encouraged to join the   <email>jedit-users@lists.sourceforge.net</email> mailing list to give feedback or ask questions of other users and developers. </para>
+
     <para>The preferred way to send bug reports against the XML plugin is to use the <ulink url="https://sourceforge.net/tracker/?limit=100&amp;func=&amp;group_id=588&amp;atid=565475&amp;status=1">
     jEdit Plugin Bugs Tracker</ulink>. </para>
-    
+
     <para>Feature requests can be found on the <ulink
     url="https://sourceforge.net/tracker/?limit=100&amp;func=&amp;group_id=588&amp;atid=997936&amp;status=1">
-    jEdit Plugin feature requests tracker</ulink>. </para> 
+    jEdit Plugin feature requests tracker</ulink>. </para>
 
     <para>Development questions should be posted to the jEdit development
     mailing-list <email>jedit-devel@lists.sourceforge.net</email>. </para>
