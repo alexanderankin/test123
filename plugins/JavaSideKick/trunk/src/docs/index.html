@@ -1,10 +1,11 @@
 <html>
+<!-- :wrap=soft:maxLineLen=0:tabSize=2:indentSize=2:noTabs=true:encoding=utf-8: -->
 <head>
    <title>JavaSideKick Plugin</title>
-    <!-- Java SideKick - A Java Source navigation tool the plugs-in to jEdit
+    <!-- Java SideKick - A Java Source navigation tool that plugs-in to jEdit
     Portions are based on JBrowse,
          (c) 1999 George Latkiewicz,
-         (c) 2000, 2001, 2002 Andre Kaplan
+         (c) 2000, 2001, 2002 André Kaplan
     -->
 </head>
 
@@ -25,7 +26,7 @@
         <p> <strong>Version @@build.num@@ (@@tstamp@@)</strong> </p>
         <p> Dale Anson </p>
         <p> Sreenivasa Viswanadha (base Java 1.5 grammar for javacc) </p>
-        <p> Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer) </p>
+        <p> André Kaplan (JBrowse maintainer) </p>
         <p> George Latkiewicz (original JBrowse author) </p>
         <p> Alain Robert (JBrowse contributor) </p>
         <p> Damien Radtke, Java code completion </p>
@@ -147,7 +148,7 @@ Fix the error and reparse to redisplay the tree.
 </p>
 
 <p>
-It is possible to show these icons in the same style as Eclipse.  Go to Plugins - Plugin Options - Java SideKick, then check "Show icons" and "like Eclipse".
+It is possible to show these icons in the same style as Eclipse.  Go to <b>Plugins - Plugin Options - Java SideKick</b>, then check <b>Show icons</b> and <b>like Eclipse</b>.
 </p>
 
 <p>
@@ -260,8 +261,8 @@ common to all the standard look &amp; feels.
 
 <p>
 Note: Java SideKick is a SideKick extension, so some settings are controlled
-by the SideKick plugin itself (Plugins-&gt;Plugin Options-&gt;SideKick).  The
-options described here are specific to Java SideKick (Plugins-&gt;Plugin Options-&gt;JavaSideKick);
+by the SideKick plugin itself (<b>Plugins-&gt;Plugin Options-&gt;SideKick</b>).  The
+options described here are specific to Java SideKick (<b>Plugins-&gt;Plugin Options-&gt;JavaSideKick</b>);
 </p>
 <p>
 Java SideKick is highly configurable, using a set of option values
@@ -514,63 +515,61 @@ actions there.
 
 <h4>Code Completion</h4>
 
-<p>
-JavaSideKick offers several different uses for code completion. The line at the
-end of each example represents the cursor position when completion is invoked
-(Plugins -&gt; SideKick -&gt; Show Completion Popup).
-</p>
+<p> JavaSideKick offers several different uses for code completion.
+The line at the end of each example represents the cursor position when completion is invoked (<b>Plugins -&gt; SideKick -&gt; Show Completion Popup</b>). </p>
+<p> The delay and behavior of auto-completion can be configured from <b>Plugin Options - Sidekick - General</b>. </p>
 
 <ul>
-	<li>Local variables and methods:
-	<pre>
-	String word = getWordAtCursor();
-	wo|
-	</pre>
-	</li>
+    <li>Local variables and methods:
+    <pre>
+    String word = getWordAtCursor();
+    wo|
+    </pre>
+    </li>
 
-	<li>Public methods and fields of a variable:
-	<pre>
-	String word = getWordAtCursor();
-	word.|
-	</pre>
-	or, to filter results by name:
-	<pre>
-	String word = getWordAtCursor();
-	word.rep|
-	</pre>
-	</li>
+    <li>Public methods and fields of a variable:
+    <pre>
+    String word = getWordAtCursor();
+    word.|
+    </pre>
+    or, to filter results by name:
+    <pre>
+    String word = getWordAtCursor();
+    word.rep|
+    </pre>
+    </li>
 
-	<li>Methods, fields, and inner classes of the current buffer:
-	<pre>
-	this.|
-	</pre>
-	or, values of the buffer's superclass (includes protected values,
-	which are displayed in the popup as italics):
-	<pre>
-	super.|
-	</pre>
-	</li>
+    <li>Methods, fields, and inner classes of the current buffer:
+    <pre>
+    this.|
+    </pre>
+    or, values of the buffer's superclass (includes protected values,
+    which are displayed in the popup as italics):
+    <pre>
+    super.|
+    </pre>
+    </li>
 
-	<li>Constructors:
-	<pre>
-	String word = new String(|
-	</pre>
-	</li>
+    <li>Constructors:
+    <pre>
+    String word = new String(|
+    </pre>
+    </li>
 
-	<li>Packages. By default, this will replace the class name with its fully-qualified
-	name, but it is possible to turn on an option which will instead insert an import
-	statement for you at the top of the buffer:
-	<pre>
-	Scanner|
-	</pre>
-	</li>
+    <li>Packages. By default, this will replace the class name with its fully-qualified
+    name, but it is possible to turn on an option which will instead insert an import
+    statement for you at the top of the buffer:
+    <pre>
+    Scanner|
+    </pre>
+    </li>
 
-	<li>Casts:
-	<pre>
-	Object ob = getStringAsObject();
-	((String) ob).|
-	</pre>
-	</li>
+    <li>Casts:
+    <pre>
+    Object ob = getStringAsObject();
+    ((String) ob).|
+    </pre>
+    </li>
 </ul>
 
 <h3>Using with SuperAbbrevs</h3>
