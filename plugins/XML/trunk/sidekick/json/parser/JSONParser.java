@@ -20,10 +20,10 @@ public class JSONParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__1=1, T__0=2, STRING=3, NUMBER=4, WS=5, LBRACE=6, RBRACE=7, LSQUARE=8, 
-		RSQUARE=9;
+		RSQUARE=9, DQUOTE=10;
 	public static final String[] tokenNames = {
 		"<INVALID>", "','", "':'", "STRING", "NUMBER", "WS", "'{'", "'}'", "'['", 
-		"']'"
+		"']'", "'\"'"
 	};
 	public static final int
 		RULE_json = 0, RULE_object = 1, RULE_pair = 2, RULE_array = 3, RULE_value = 4;
@@ -358,7 +358,7 @@ public class JSONParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\139\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\f9\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\5\2\17\n\2\3\3\3\3\3\3\3\3\7\3\25\n"+
 		"\3\f\3\16\3\30\13\3\3\3\3\3\3\3\3\3\5\3\36\n\3\3\4\3\4\3\4\3\4\3\5\3\5"+
 		"\3\5\3\5\7\5(\n\5\f\5\16\5+\13\5\3\5\3\5\3\5\3\5\5\5\61\n\5\3\6\3\6\3"+

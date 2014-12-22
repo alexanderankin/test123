@@ -1,3 +1,4 @@
+DQUOTE=10
 WS=5
 LSQUARE=8
 RBRACE=7
@@ -7,6 +8,7 @@ T__0=2
 LBRACE=6
 STRING=3
 NUMBER=4
+'"'=10
 '}'=7
 ':'=2
 '['=8
