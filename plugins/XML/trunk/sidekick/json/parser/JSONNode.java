@@ -81,6 +81,10 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
         children.add(child);
     }
     
+    public boolean hasChildren() {
+        return children != null && !children.isEmpty();   
+    }
+    
     // this is useful when it is known that the node can have only one child 
     public JSONNode getFirstChild() {
         if (children == null || children.isEmpty()) {
