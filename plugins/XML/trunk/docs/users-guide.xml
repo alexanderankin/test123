@@ -31,7 +31,7 @@
    A copy of the GPL can be found in the jEdit online help.
   </para>
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin and EcmaScript parser by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztocil, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin, <ulink url="http://iso-relax.sourceforge.net/">ISO-RELAX</ulink> and <ulink url="http://code.google.com/p/jing-trang/">jing-trang</ulink>, for validation and translation of documents that use Relax-NG schemas.
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin and EcmaScript parser by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztočil, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin, <ulink url="http://iso-relax.sourceforge.net/">ISO-RELAX</ulink> and <ulink url="http://code.google.com/p/jing-trang/">jing-trang</ulink>, for validation and translation of documents that use Relax-NG schemas.
  </para>
 
  </legalnotice>
