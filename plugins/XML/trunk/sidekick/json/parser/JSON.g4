@@ -35,7 +35,7 @@ value
     |   array   // recursion
     ;
 
-STRING :  '"' (ESC | ~["\\])* '"' ;
+STRING :  DQUOTE (ESC | ~["\\])* DQUOTE ;
 
 fragment ESC :   '\\' (["\\/bfnrt] | UNICODE) ;
 fragment UNICODE : 'u' HEX HEX HEX HEX ;
@@ -59,3 +59,4 @@ LBRACE  :   '{' ;
 RBRACE  :   '}' ;
 LSQUARE :   '[' ;
 RSQUARE :   ']' ;
+DQUOTE  :   '"' ;

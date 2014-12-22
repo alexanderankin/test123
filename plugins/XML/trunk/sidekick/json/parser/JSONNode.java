@@ -13,8 +13,11 @@ import sidekick.util.SideKickElement;
 public class JSONNode extends Asset implements Comparable, SideKickElement {
 
     private boolean isArray = false;
+    private boolean isObject = false;
+    private boolean isPair = false;
+    private boolean isNumberOrString = false;
     private Icon icon = null;
-    private Set<JSONNode> children = null;
+    private TreeSet<JSONNode> children = null;
     private Location startLocation = new Location();
     private Location endLocation = new Location();
     private Position startPosition = new Position() {
@@ -36,13 +39,37 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
         super(name);
     }
     
-    public void setIsArray(boolean b) {
-        isArray = b;   
-    }
-    
-    public boolean isArray() {
-        return isArray;   
-    }
+	public boolean isArray() {
+		return isArray;
+	}
+
+	public void setIsArray(boolean isArray) {
+		this.isArray = isArray;
+	}
+
+	public boolean isObject() {
+		return isObject;
+	}
+
+	public void setIsObject(boolean isObject) {
+		this.isObject = isObject;
+	}
+
+	public boolean isPair() {
+		return isPair;
+	}
+
+	public void setIsPair(boolean isPair) {
+		this.isPair = isPair;
+	}
+
+	public boolean isNumberOrString() {
+		return isNumberOrString;
+	}
+
+	public void setIsNumberOrString(boolean b) {
+		this.isNumberOrString = b;
+	}
     
     public void addChild(JSONNode child) {
         if (child == null) {
@@ -54,8 +81,20 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
         children.add(child);
     }
     
+    // this is useful when it is known that the node can have only one child 
+    public JSONNode getFirstChild() {
+        if (children == null || children.isEmpty()) {
+            return null;   
+        }
+        return children.first();
+    }
+    
     public Set<JSONNode> getChildren() {
         return children;   
+    }
+    
+    public void removeChildren() {
+        children = null;   
     }
 
     public void setStartLocation(Location start) {
@@ -109,7 +148,16 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
     }
     
     public String getLongString() {
-        return name + ": " + getStartLocation() + ":" + getEndLocation();   
+        String type = null;
+        if (isObject())
+            type = "object";
+        else if (isArray())
+            type = "array";
+        else if (isPair())
+            type = "pair";
+        else if (isNumberOrString())
+            type = "atom";
+        return name + ": type=" + type + ":" + getStartLocation() + ":" + getEndLocation() + ":" + getStartPosition().getOffset() + ":" + getEndPosition().getOffset();   
     }
 
     public int compareTo(Object o) {

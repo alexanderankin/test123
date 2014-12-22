@@ -105,11 +105,8 @@ public class JsonParser extends SideKickParser {
 
             // build the tree
             JSONNode parserRoot = listener.getRoot();
-            parserRoot.setStartPosition(ElementUtil.createStartPosition(buffer, parserRoot));
-            parserRoot.setEndPosition(ElementUtil.createEndPosition(buffer, parserRoot));
-            DefaultMutableTreeNode jsonNode = new DefaultMutableTreeNode(parserRoot);
-            root.add( jsonNode );
-            addChildren(jsonNode, buffer);
+            root.setUserObject( parserRoot );
+            addChildren(root, buffer);
         } catch ( Exception e ) {
             e.printStackTrace();
         } finally {
@@ -124,9 +121,6 @@ public class JsonParser extends SideKickParser {
         if ( children != null && children.size() > 0 ) {
             // add the children as tree nodes
             for ( JSONNode child : children ) {
-                child.setStartPosition( ElementUtil.createStartPosition( buffer, child ) );
-                child.setEndPosition( ElementUtil.createEndPosition( buffer, child ) );
-                
                 // create a tree node for the child and recursively add the childs children
                 DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( child );
                 node.add( childNode );
@@ -145,5 +139,4 @@ public class JsonParser extends SideKickParser {
             errorSource.addError( ErrorSource.ERROR, buffer.getPath(), pe.getLineNumber(), pe.getColumn(), pe.getColumn() + pe.getLength(), pe.getMessage() );
         }
     }
-
 }
