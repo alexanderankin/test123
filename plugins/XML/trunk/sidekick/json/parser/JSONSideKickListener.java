@@ -64,8 +64,10 @@ public class JSONSideKickListener extends JSONBaseListener {
     @Override public void exitObject( @NotNull JSONParser.ObjectContext ctx ) {
         JSONNode node = stack.pop();
         JSONNode parent = stack.peek();
-        for (JSONNode newKid : node.getChildren()) {
-            parent.addChild(newKid);   
+        if (node.hasChildren()) {
+            for (JSONNode newKid : node.getChildren()) {
+                parent.addChild(newKid);   
+            }
         }
     }
     
@@ -82,8 +84,10 @@ public class JSONSideKickListener extends JSONBaseListener {
     @Override public void exitArray( @NotNull JSONParser.ArrayContext ctx ) {
         JSONNode node = stack.pop();
         JSONNode parent = stack.peek();
-        for (JSONNode newKid : node.getChildren()) {
-            parent.addChild(newKid);   
+        if (node.hasChildren()) {
+            for (JSONNode newKid : node.getChildren()) {
+                parent.addChild(newKid);   
+            }
         }
     }
 
@@ -107,13 +111,17 @@ public class JSONSideKickListener extends JSONBaseListener {
                 node.setName(node.getName() + ": " + child.getName());  
                 node.setIcon(pairIcon);
             } else if (child.isObject()) {
-                for (JSONNode newKid : child.getChildren()) {
-                    node.addChild(newKid);   
+                if (child.hasChildren()) {
+                    for (JSONNode newKid : child.getChildren()) {
+                        node.addChild(newKid);   
+                    }
                 }
                 node.setIcon(objectIcon);   
             } else if (child.isArray()) {
-                for (JSONNode newKid : child.getChildren()) {
-                    node.addChild(newKid);   
+                if (child.hasChildren()) {
+                    for (JSONNode newKid : child.getChildren()) {
+                        node.addChild(newKid);   
+                    }
                 }
                 node.setIcon(arrayIcon);   
             }
