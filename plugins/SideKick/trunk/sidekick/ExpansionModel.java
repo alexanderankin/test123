@@ -45,4 +45,17 @@ public class ExpansionModel {
     public int getRow() {
         return row;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("ExpansionModel:[");
+        for (int i = 0; i < model.size(); i++) {
+            sb.append(model.get(i));
+            if (i < model.size() - 1) {
+                sb.append(',');   
+            }
+        }
+        sb.append(']');
+        return sb.toString();
+    }
 }

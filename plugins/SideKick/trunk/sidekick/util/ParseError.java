@@ -36,6 +36,9 @@ package sidekick.util;
 public class ParseError {
     public String message = "";   
     public Range range = null;
+    private int lineNumber;
+    private int column;
+    private int length;
     
     public ParseError(String message){
         this(message, new Range());
@@ -44,9 +47,42 @@ public class ParseError {
     public ParseError(String message, Range range) {
         this.message = message;
         this.range = range;
+        if (range != null) {
+            lineNumber = range.getStartLocation().line;
+            column = range.getStartLocation().column;
+            length = 1;
+        }
+    }
+    
+    public ParseError(String message, int lineNumber, int column, int length) {
+        this.message = message;
+        this.lineNumber = lineNumber;
+        this.column = column;
+        this.length = length;
+        this.range = new Range(new Location(lineNumber, column), new Location(lineNumber, column + length));
+    }
+    
+    public String getMessage() {
+        return message;   
+    }
+    
+    public int getLineNumber() {
+        return lineNumber;   
+    }
+    
+    public int getColumn() {
+        return column;   
+    }
+    
+    public int getLength() {
+        return length;   
+    }
+    
+    public Range getRange() {
+        return range;   
     }
     
     public String toString() {
-        return "ParseError:[message=" + message + ", " + range.toString() + "]";   
+        return "ParseError:[message=" + message + ", " + lineNumber + ':' + column + ']';   
     }
 }
