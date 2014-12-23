@@ -107,13 +107,7 @@ public class ElementUtil {
     }
 
     public static Position createPosition( int line_offset, int column_offset ) {
-        final int lo = line_offset;
-        final int co = column_offset;
-        return new Position() {
-                   public int getOffset() {
-                       return lo + co;
-                   }
-               };
+        return new SideKickPosition(line_offset + column_offset);
     }
 
     /**

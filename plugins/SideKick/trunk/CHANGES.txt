@@ -4,6 +4,10 @@
     Version 1.7
         Fixed bug 1800, removed extraneous remove-marker menu item from tree popup menu.
         (Dale Anson)
+        German language update (Robert Schwenn)
+        Fixed bad hyperlinks to API docs (Alan Ezust)
+        Added SideKickPosition and updated ParserError since these are used by several sidekick
+        parsers (Dale Anson)
 
     Version 1.6 requires Java 1.6, jEdit 5.0, ErrorList 2.1, MarkerSets 0.8 (optional)
         Better calculation of asset ranges which helps with sidekick folding mode.
