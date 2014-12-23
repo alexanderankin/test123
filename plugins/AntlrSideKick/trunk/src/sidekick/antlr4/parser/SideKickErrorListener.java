@@ -4,11 +4,13 @@ import org.antlr.v4.runtime.*;
 
 import java.util.*;
 
+import sidekick.util.ParseError;
+
 public class SideKickErrorListener extends BaseErrorListener {
 
-    private List<ParseException> errors = new ArrayList<ParseException>();
+    private List<ParseError> errors = new ArrayList<ParseError>();
 
-    public List<ParseException> getErrors() {
+    public List<ParseError> getErrors() {
         return errors;
     }
 
@@ -20,7 +22,7 @@ public class SideKickErrorListener extends BaseErrorListener {
             int endOffset = e.getOffendingToken().getStopIndex();
             length = endOffset - startOffset;
         }
-        ParseException pe = new ParseException( msg, line - 1, charPositionInLine, length );
+        ParseError pe = new ParseError( msg, line - 1, charPositionInLine, length );
         errors.add( pe );
     }
 }
