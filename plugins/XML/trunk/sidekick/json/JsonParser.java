@@ -43,7 +43,7 @@ import org.antlr.v4.runtime.tree.*;
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
-import sidekick.util.*;
+import sidekick.util.ParseError;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -131,11 +131,11 @@ public class JsonParser extends SideKickParser {
 
     /* the parser accumulates errors as it parses.  This method passed them all
     to the ErrorList plugin. */
-    private void handleErrors( Buffer buffer, DefaultErrorSource errorSource, List<ParseException> errors ) {
+    private void handleErrors( Buffer buffer, DefaultErrorSource errorSource, List<sidekick.util.ParseError> errors ) {
         if ( errors == null || errors.isEmpty() ) {
             return;
         }
-        for ( ParseException pe : errors ) {
+        for ( sidekick.util.ParseError pe : errors ) {
             errorSource.addError( ErrorSource.ERROR, buffer.getPath(), pe.getLineNumber(), pe.getColumn(), pe.getColumn() + pe.getLength(), pe.getMessage() );
         }
     }

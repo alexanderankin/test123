@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sidekick.util.Location;
+import sidekick.util.SideKickPosition;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
