@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sidekick.util.Location;
+import sidekick.util.SideKickPosition;
 import eclipseicons.EclipseIconsPlugin;
 
 import java.util.ArrayDeque;
