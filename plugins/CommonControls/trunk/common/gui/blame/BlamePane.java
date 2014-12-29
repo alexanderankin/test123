@@ -234,7 +234,7 @@ public class BlamePane extends JComponent implements CaretListener, EBComponent 
                 Object old_closer = buffer.getProperty( "_old_closer_" );
                 if ( old_blame != null && old_closer != null ) {
                     textArea.addLeftOfScrollBar( ( JComponent ) old_blame );
-                    textArea.addTopComponent( ( JComponent ) old_closer );
+                    textArea.addTopRightComponent( ( JComponent ) old_closer );
                     epu.getEditPane().getView().invalidate();
                     epu.getEditPane().getView().validate();
                 }
