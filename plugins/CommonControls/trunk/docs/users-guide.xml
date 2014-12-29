@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- CommonControls users' guide -->
-<!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+  xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'>
   <articleinfo>
     <title>Common Controls user's guide</title>
     <author>
