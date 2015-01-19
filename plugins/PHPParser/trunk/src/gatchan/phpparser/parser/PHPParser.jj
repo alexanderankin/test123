@@ -4384,6 +4384,15 @@ ClassAccess classAccess(Expression prefix):
 				 setTypeFromScope((Variable) expression);
 			 }
 			 //}}}
+		|
+			//{{{ interface identifier (because interface is allowed for fields name.
+			{
+				Token interfaceIdentifier;
+			}
+		 	interfaceIdentifier = <INTERFACE>
+		 	{
+		 		expression =  new ConstantIdentifier(interfaceIdentifier);
+		 	} //}}}
 		 |
 			 //{{{ method or field access
 			{
