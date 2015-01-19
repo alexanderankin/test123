@@ -7,6 +7,7 @@
 	<!-- Latter ones override previous properties. -->
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property name="build.support" value="../../build-support" />
 	<property name="docs-proc.target" value="none"/>
 	<property name="plugin.dependencies" value="CommonControls" />
 	<property name="dist.target" value="dist.complete" />

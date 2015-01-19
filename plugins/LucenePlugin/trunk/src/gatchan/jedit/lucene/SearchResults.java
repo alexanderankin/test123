@@ -619,6 +619,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		public void done() {
 			try {
 				List<Object> files = get();	
+				StringBuilder sb = new StringBuilder();
 				if (lineResult)
 				{
 					SearchRootNode rootNode = new SearchRootNode(text);
@@ -647,14 +648,25 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 						((DefaultTreeModel) model).nodeChanged(parent);
 					tree.setExpandedOnly(parent);
 					((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
+					
+					sb.append(jEdit.getProperty("lucene.search-result-1.label"));
+					sb.append(count);
+					sb.append(jEdit.getProperty("lucene.search-result-2.label"));
+					sb.append(max);
 				}
 				else
 				{
 					model.setFiles(files);
 					((CardLayout) mainPanel.getLayout()).show(mainPanel, "list");
+
+					sb.append(jEdit.getProperty("lucene.search-result.label"));
+					sb.append(max);
 				}
+
+				view.getStatus().setMessageAndClear(sb.toString());
 			}
-			catch(Exception e) {
+			catch(Exception e)
+			{
 				// ignore this
 			}
 		}
