@@ -21,22 +21,24 @@
 package gatchan.jedit.lucene;
 
 //{{{ Imports
-import org.apache.lucene.index.DirectoryReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.channels.ClosedByInterruptException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-
-import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.gjt.sp.util.Log;
 //}}}
 
 /**
@@ -56,13 +58,13 @@ public abstract class AbstractIndex
 		this.path = path;
 	} //}}}
 
-	public void clear()
+	public void clear() throws IndexInterruptedException
 	{
 		close();
 	}
 
 	//{{{ close() method
-	public void close()
+	public void close() throws IndexInterruptedException
 	{
 		Log.log(Log.DEBUG, this, "close()");
 		closeWriter();
@@ -113,20 +115,25 @@ public abstract class AbstractIndex
 	} //}}}
 
 	//{{{ getSearcher() method
-	protected IndexSearcher getSearcher()
+	protected IndexSearcher getSearcher() throws IndexInterruptedException
 	{
 		initReader();
 		return new IndexSearcher(reader);
 	} //}}}
 
 	//{{{ initReader() method
-	private void initReader()
+	private void initReader() throws IndexInterruptedException
 	{
 		if (reader == null)
 		{
 			try
 			{
 				reader = DirectoryReader.open(FSDirectory.open(path));
+			}
+			catch (ClosedByInterruptException e) 
+			{
+				Log.log(Log.WARNING, this, "Halting due to Interrupt");
+				throw new IndexInterruptedException("Halting due to Interrupt");
 			}
 			catch (IOException e)
 			{
@@ -143,6 +150,11 @@ public abstract class AbstractIndex
 					this.reader = reader;
 				}
 			}
+			catch (ClosedByInterruptException e) 
+			{
+				Log.log(Log.WARNING, this, "Halting due to Interrupt");
+				throw new IndexInterruptedException("Halting due to Interrupt");
+			}
 			catch (IOException e)
 			{
 				Log.log(Log.ERROR, this, "Unable to open reopen IndexReader", e);
@@ -151,13 +163,18 @@ public abstract class AbstractIndex
 	} //}}}
 
 	//{{{ closeWriter() method
-	protected void closeWriter()
+	protected void closeWriter() throws IndexInterruptedException
 	{
 		if (writer != null)
 		{
 			try
 			{
 				writer.close();
+			}
+			catch (ClosedByInterruptException e) 
+			{
+				Log.log(Log.WARNING, this, "Halting due to Interrupt");
+				throw new IndexInterruptedException("Halting due to Interrupt");
 			}
 			catch (IOException e)
 			{

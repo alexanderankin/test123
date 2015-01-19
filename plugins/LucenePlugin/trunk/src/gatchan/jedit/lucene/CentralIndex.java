@@ -74,7 +74,16 @@ public class CentralIndex extends AbstractIndex
 						@Override
 						public void run()
 						{
-							fileUpdated(bufferUpdate.getBuffer());
+							try 
+							{
+								fileUpdated(bufferUpdate.getBuffer());
+							} 
+							catch (IndexInterruptedException e) 
+							{
+								Log.log(Log.WARNING, this, "Indexing Halted by user");
+								Thread.currentThread().interrupt();
+								return;
+							}
 						}
 					});
 				}
@@ -120,8 +129,9 @@ public class CentralIndex extends AbstractIndex
 	 *
 	 * @param path      the path to add
 	 * @param indexName the index that contains this path
+	 * @throws IndexInterruptedException 
 	 */
-	void addFile(String path, String indexName)
+	void addFile(String path, String indexName) throws IndexInterruptedException
 	{
 		openWriter();
 
@@ -144,7 +154,7 @@ public class CentralIndex extends AbstractIndex
 		}
 	}
 
-	List<String> getAllDocuments(String indexName)
+	List<String> getAllDocuments(String indexName) throws IndexInterruptedException
 	{
 		final IndexSearcher searcher = getSearcher();
 		final List<String> documents = new ArrayList<String>();
@@ -212,7 +222,7 @@ public class CentralIndex extends AbstractIndex
 		}
 	}
 
-	private void fileUpdated(Buffer buffer)
+	private void fileUpdated(Buffer buffer) throws IndexInterruptedException
 	{
 		IndexSearcher searcher = getSearcher();
 		try

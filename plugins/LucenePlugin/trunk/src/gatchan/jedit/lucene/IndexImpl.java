@@ -52,6 +52,7 @@ import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 
 import java.io.*;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -94,7 +95,7 @@ public class IndexImpl extends AbstractIndex implements Index
 	} //}}}
 
 	//{{{ endActivity() method
-	private void endActivity(boolean close)
+	private void endActivity(boolean close) throws IndexInterruptedException
 	{
 		synchronized (this)
 		{
@@ -120,7 +121,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	//{{{ addFiles() method
 	@Override
-	public void addFiles(FileProvider files, ProgressObserver progressObserver)
+	public void addFiles(FileProvider files, ProgressObserver progressObserver) throws IndexInterruptedException
 	{
 		try
 		{
@@ -167,7 +168,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	//{{{ addFile() methods
 	@Override
-	public void addFile(String path)
+	public void addFile(String path) throws IndexInterruptedException
 	{
 		openWriter();
 		if (writer == null)
@@ -205,7 +206,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	private void addFile(final VFSFile file, final Object session)
+	private void addFile(final VFSFile file, final Object session) throws IndexInterruptedException
 	{
 		if (file.getType() == VFSFile.DIRECTORY)
 		{
@@ -243,6 +244,12 @@ public class IndexImpl extends AbstractIndex implements Index
 						{
 							Log.log(Log.ERROR, this,
 								"Unable to list directory " + file.getPath(), e);
+						}
+						catch (IndexInterruptedException e) 
+						{
+							Log.log(Log.WARNING, this, "Indexing Halted by user");
+							Thread.currentThread().interrupt();
+							return;
 						}
 						finally
 						{
@@ -284,7 +291,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	//{{{ reindex() method
 	@Override
-	public void reindex(ProgressObserver progressObserver)
+	public void reindex(ProgressObserver progressObserver) throws IndexInterruptedException
 	{
 		Log.log(Log.DEBUG, this, "reindex()");
 		openWriter();
@@ -314,7 +321,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	//{{{ search() method
 	@Override
-	public void search(String query, String fileType, int max, ResultProcessor processor)
+	public void search(String query, String fileType, int max, ResultProcessor processor) throws IndexInterruptedException
 	{
 		if (max < 1)
 			max = 1;
@@ -362,7 +369,7 @@ public class IndexImpl extends AbstractIndex implements Index
 	} //}}}
 
 	//{{{ addDocument() method
-	protected void addDocument(VFSFile file, Object session)
+	protected void addDocument(VFSFile file, Object session) throws IndexInterruptedException
 	{
 		if (file.getPath() == null)
 			return;
@@ -380,6 +387,11 @@ public class IndexImpl extends AbstractIndex implements Index
 			doc.add(new TextField("content", reader));
 			LucenePlugin.CENTRAL.addFile(file.getPath(), name);
 			writer.updateDocument(new Term("_path", file.getPath()), doc);
+		}
+		catch (ClosedByInterruptException e)
+		{
+			Log.log(Log.WARNING, this, "Halting due to Interrupt");
+			throw new IndexInterruptedException("Halting due to Interrupt");
 		}
 		catch (IOException e)
 		{

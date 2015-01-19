@@ -28,9 +28,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.gjt.sp.jedit.io.VFSFile;
-
+import org.gjt.sp.util.Log;
 import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
+
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -83,10 +84,28 @@ public class IndexProjectAction extends Action
 		@Override
 		public void _run()
 		{
-			index.clear();
-			LucenePlugin.instance.addToIndex(index.getName(),
-							 new ProjectFileList(project),
-							 true, this);
+			try 
+			{
+				index.clear();
+				
+				LucenePlugin.instance.addToIndex(index.getName(),
+								 new ProjectFileList(project),
+								 true, this);
+			} 
+			catch (IndexInterruptedException e) 
+			{
+				Log.log(Log.WARNING, this, "Indexing Halted by user");
+				try 
+				{
+					index.clear();
+				} 
+				catch (IndexInterruptedException e1) 
+				{
+					Log.log(Log.WARNING, this, "Interrupted clearing index");
+				}
+				Thread.currentThread().interrupt();
+				return;
+			}
 		}
 
 		private class ProjectFileList implements FileProvider

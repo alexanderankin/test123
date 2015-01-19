@@ -59,6 +59,12 @@ class ReindexTask extends Task
 					try
 					{
 						index.reindex(this);
+					} 
+					catch (IndexInterruptedException e) 
+					{
+						Log.log(Log.WARNING, this, "Indexing Halted by user");
+						Thread.currentThread().interrupt();
+						return;
 					}
 					finally
 					{
