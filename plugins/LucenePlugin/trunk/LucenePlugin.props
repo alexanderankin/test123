@@ -90,3 +90,6 @@ lucene.index-combo-selected.tooltip=\
 lucene.search-in-type.label=Search files of this type
 
 lucene.extendedoptions.tooltip=Additional Options
+lucene.search-result.label=Search Complete. Max results: 
+lucene.search-result-1.label=Search Complete. Total results: 
+lucene.search-result-2.label=, Max results: 
