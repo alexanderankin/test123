@@ -40,6 +40,7 @@ import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
 
 import javax.swing.*;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -180,11 +181,30 @@ public class LucenePlugin extends EditPlugin
 			projectWatcher.stop();
 			projectWatcher = null;
 		}
+		
 		EditBus.removeFromBus(CENTRAL);
-		CENTRAL.close();
+		
+		try 
+		{
+			CENTRAL.close();			
+		}
+		catch (IndexInterruptedException e)
+		{
+			Log.log(Log.WARNING, this, "Halting due to Interrupt");	
+		}
+		
 		CENTRAL = null;
 		instance = null;
-		closeAllIndexes();
+		
+		try 
+		{
+			closeAllIndexes();
+		} 
+		catch (IndexInterruptedException e) 
+		{
+			Log.log(Log.WARNING, this, "Halting due to Interrupt");	
+		}
+
 		indexMap.clear();
 		AnalyzerFactory.dispose();
 	}
@@ -192,8 +212,9 @@ public class LucenePlugin extends EditPlugin
 	/**
 	 * Close all opened indexes.
 	 * This release memory
+	 * @throws IndexInterruptedException 
 	 */
-	public void closeAllIndexes()
+	public void closeAllIndexes() throws IndexInterruptedException
 	{
 		Log.log(Log.DEBUG, this, "closeAllIndexes");
 		Collection<Index> indexCollection = indexMap.values();
@@ -258,8 +279,9 @@ public class LucenePlugin extends EditPlugin
 	 * Delete an index.
 	 *
 	 * @param name the name of the index.
+	 * @throws IndexInterruptedException 
 	 */
-	public void removeIndex(String name)
+	public void removeIndex(String name) throws IndexInterruptedException
 	{
 		Index index = indexMap.remove(name);
 		saveIndexes();
@@ -330,9 +352,10 @@ public class LucenePlugin extends EditPlugin
 	 * @param indexName the index name
 	 * @param files     the file array to add
 	 * @param sharedSession whether the VFS session can be shared by all files
+	 * @throws IndexInterruptedException 
 	 */
 	public void addToIndex(String indexName, FileProvider files,
-		boolean sharedSession, ProgressObserver progressObserver)
+		boolean sharedSession, ProgressObserver progressObserver) throws IndexInterruptedException
 	{
 		Index index = getIndex(indexName);
 		if (index == null)
@@ -368,7 +391,16 @@ public class LucenePlugin extends EditPlugin
 			@Override
 			public void _run()
 			{
-				addToIndex(indexName, new FileArrayProvider(files), sharedSession, this);
+				try 
+				{
+					addToIndex(indexName, new FileArrayProvider(files), sharedSession, this);
+				} 
+				catch (IndexInterruptedException e) 
+				{
+					Log.log(Log.WARNING, this, "Indexing Halted by user");
+					Thread.currentThread().interrupt();
+					return;
+				}
 			}
 		};
 		ThreadUtilities.runInBackground(task);
@@ -438,8 +470,9 @@ public class LucenePlugin extends EditPlugin
 
 	/**
 	 * Searches for the word at the caret location.
+	 * @throws IndexInterruptedException 
 	 */
-	public static void searchWordAtCaret(View view)
+	public static void searchWordAtCaret(View view) throws IndexInterruptedException
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		dwm.showDockableWindow(SEARCH_DOCKABLE_NAME);
@@ -487,7 +520,7 @@ public class LucenePlugin extends EditPlugin
 	// Plugin-API
 
 	public static boolean search(String indexName, String text, int max,
-		List<Object> files, TokenFilter tokenFilter)
+		List<Object> files, TokenFilter tokenFilter) throws IndexInterruptedException
 	{
 		LucenePlugin instance = getPluginInstance();
 		if (instance == null)

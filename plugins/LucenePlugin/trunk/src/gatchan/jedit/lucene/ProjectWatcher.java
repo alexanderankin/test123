@@ -49,7 +49,7 @@ public class ProjectWatcher
 	}
 
 	@EBHandler
-	public void handleStructureUpdate(StructureUpdate su)
+	public void handleStructureUpdate(StructureUpdate su) throws IndexInterruptedException
 	{
 		if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
 			checkRemoveProjectIndex(su.getNode().getName());
@@ -62,7 +62,7 @@ public class ProjectWatcher
 			LucenePlugin.instance.setCurrentIndex(vu.getView(), vu.getNode().getName());
 	}
 
-	private static void checkRemoveProjectIndex(String project)
+	private static void checkRemoveProjectIndex(String project) throws IndexInterruptedException
 	{
 		Index index = LucenePlugin.instance.getIndex(project);
 		if (index == null)

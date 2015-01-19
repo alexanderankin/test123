@@ -32,10 +32,10 @@ public interface Index
 	/**
 	 * Release resources.
 	 */
-	void close();
+	void close() throws IndexInterruptedException;
 
 	void commit();
-	void reindex(ProgressObserver progressObserver);
+	void reindex(ProgressObserver progressObserver) throws IndexInterruptedException;
 
 	String getName();
 	Analyzer getAnalyzer();
@@ -43,10 +43,11 @@ public interface Index
 	/**
 	 * Add a single file to the index.
 	 * @param path the path of the added file.
+	 * @throws IndexInterruptedException 
 	 */
-	void addFile(String path);
+	void addFile(String path) throws IndexInterruptedException;
 
-	void clear();
+	void clear() throws IndexInterruptedException;
 
 	interface FileProvider
 	{
@@ -57,8 +58,9 @@ public interface Index
 	/**
 	 * Add several files to an index
 	 * @param files the file provider
+	 * @throws IndexInterruptedException 
 	 */
-	void addFiles(FileProvider files, ProgressObserver progressObserver);
+	void addFiles(FileProvider files, ProgressObserver progressObserver) throws IndexInterruptedException;
 	void removeFile(String path);
 
 	void setAnalyzer(Analyzer analyzer);
@@ -69,8 +71,9 @@ public interface Index
 	 * @param query the query to execute
 	 * @param max the maximal number of results to search for
 	 * @param processor the processor that will get the results
+	 * @throws IndexInterruptedException 
 	 */
-	void search(String query, String fileType, int max, ResultProcessor processor);
+	void search(String query, String fileType, int max, ResultProcessor processor) throws IndexInterruptedException;
 
 	interface ActivityListener
 	{

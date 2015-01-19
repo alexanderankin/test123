@@ -155,11 +155,23 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				Index index = getSelectedIndex();
+				Index index = null;
+				try {
+					index = getSelectedIndex();
+				} 
+				catch (IndexInterruptedException e1) 
+				{
+					Log.log(Log.WARNING, this, "Indexing Halted by user");
+					Thread.currentThread().interrupt();
+					return;
+				}
+				
 				if (index == null)
 					return;
+				
 				if (prevIndex != null)
 					prevIndex.removeActivityListener(listener);
+				
 				prevIndex = index;
 				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
 				index.addActivityListener(listener);
@@ -438,7 +450,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		updateMultiStatus();
 	}
 
-	private Index getSelectedIndex()
+	private Index getSelectedIndex() throws IndexInterruptedException
 	{
 		String indexName = (String) indexes.getSelectedItem();
 		if (indexName == null)
@@ -473,7 +485,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		searchField.setText(text);
 	}
 
-	public void search(String text, String fileType)
+	public void search(String text, String fileType) throws IndexInterruptedException
 	{
 		if (text.isEmpty())
 			return;
@@ -603,7 +615,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		}
 		
 		@Override
-		public List<Object> doInBackground() {
+		public List<Object> doInBackground() throws IndexInterruptedException {
 			Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
 			ResultProcessor processor;
 			final List<Object> files = new ArrayList<Object>();
@@ -617,7 +629,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		
 		@Override
 		public void done() {
-			try {
+			try 
+			{
 				List<Object> files = get();	
 				StringBuilder sb = new StringBuilder();
 				if (lineResult)
@@ -813,7 +826,15 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		{
 			String search = searchField.getText().trim();
 			String fileType = type.getText().trim();
-			search(search, fileType);
+			try {
+				search(search, fileType);
+			} 
+			catch (IndexInterruptedException e1) 
+			{
+				Log.log(Log.WARNING, this, "Indexing Halted by user");
+				Thread.currentThread().interrupt();
+				return;
+			}
 		}
 	}
 

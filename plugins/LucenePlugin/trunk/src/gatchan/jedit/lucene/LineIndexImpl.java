@@ -48,7 +48,7 @@ public class LineIndexImpl extends IndexImpl
 	}
 
 	@Override
-	protected void addDocument(VFSFile file, Object session)
+	protected void addDocument(VFSFile file, Object session) throws IndexInterruptedException
 	{
 		if (file.getPath() == null)
 			return;

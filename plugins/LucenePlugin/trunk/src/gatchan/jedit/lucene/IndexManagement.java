@@ -174,20 +174,27 @@ public class IndexManagement extends AbstractOptionPane
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if (e.getSource() == delete)
+				try
 				{
-					Log.log(Log.NOTICE, this, "Delete " + indexName + " asked");
-					LucenePlugin.instance.removeIndex(indexName);
-					updateListModel();
-					Log.log(Log.NOTICE, this, "Delete " + indexName + " DONE");
-				}
-				else if (e.getSource() == reindex)
+					if (e.getSource() == delete)
+					{
+						Log.log(Log.NOTICE, this, "Delete " + indexName + " asked");
+							LucenePlugin.instance.removeIndex(indexName);
+						updateListModel();
+						Log.log(Log.NOTICE, this, "Delete " + indexName + " DONE");
+					}
+					else if (e.getSource() == reindex)
+					{
+						indexList.setEnabled(false);
+						reindex.setEnabled(false);
+						delete.setEnabled(false);
+						ReindexTask wr = new ReindexTask(indexName, new GUIEnabledRunnable(indexName));
+						ThreadUtilities.runInBackground(wr);
+					}
+				} 
+				catch (IndexInterruptedException e1) 
 				{
-					indexList.setEnabled(false);
-					reindex.setEnabled(false);
-					delete.setEnabled(false);
-					ReindexTask wr = new ReindexTask(indexName, new GUIEnabledRunnable(indexName));
-					ThreadUtilities.runInBackground(wr);
+					Log.log(Log.WARNING, this, "Halting due to Interrupt");					
 				}
 			}
 		}
