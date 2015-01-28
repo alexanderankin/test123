@@ -1,0 +1,24 @@
+# Basic Plugin Information
+plugin.bigdoc.BigDocPlugin.activate=defer
+plugin.bigdoc.BigDocPlugin.author=Dale Anson
+plugin.bigdoc.BigDocPlugin.description=A plugin to work with really large text files.
+plugin.bigdoc.BigDocPlugin.docs=docs/bigdoc.html
+plugin.bigdoc.BigDocPlugin.longdescription=description.html
+plugin.bigdoc.BigDocPlugin.name=BigDoc
+plugin.bigdoc.BigDocPlugin.usePluginHome=false
+plugin.bigdoc.BigDocPlugin.version=0.1
+
+# Dependencies
+plugin.bigdoc.BigDocPlugin.depend.0=jedit 05.02.01.00
+plugin.bigdoc.BigDocPlugin.depend.1=jdk 1.7.0
+plugin.bigdoc.BigDocPlugin.depend.2=plugin CommonControlsPlugin 1.7.3
+
+
+# menu
+plugin.bigdoc.BigDocPlugin.menu=bigdoc-open bigdoc-save
+bigdoc-open.label=Open
+bigdoc-save.label=Save
+
+# dockable window name
+bigdoc.title=BigDoc
+bigdoc.label=BigDoc
