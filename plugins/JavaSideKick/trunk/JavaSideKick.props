@@ -15,10 +15,10 @@ plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
 
 # dependencies
 plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.7.0
-plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 05.00.99.00
+plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 05.02.01.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.7
-plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.7.3
+plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.7.4
 plugin.sidekick.java.JavaSideKickPlugin.depend.5=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.6=plugin classpath.ClasspathPlugin 1.0.1
 plugin.sidekick.java.JavaSideKickPlugin.depend.7=optional plugin SuperAbbrevsPlugin 2.0
@@ -30,7 +30,7 @@ Tiger2.label=JavaSideKick
 # menu
 # Menu bar properties
 plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick.parser.java-switch javasidekick-insert-import \
-	javasidekick-refresh-global
+    javasidekick-refresh-global
 sidekick.parser.java-switch.label=Java SideKick
 javasidekick-insert-import.label=Insert Import for Class Under Cursor
 javasidekick-refresh-global.label=Refresh Global Classloader
@@ -78,16 +78,16 @@ sidekick.java.msg.notAJavaBuffer.message=\
     The current buffer [{0}] is not a java buffer.
 sidekick.java.msg.bufferNotParsed.title=Buffer Not Parsed
 sidekick.java.msg.bufferNotParsed.message=The parsed data for this view \
-	was not parsed by JavaSideKick.\nCheck to make sure that java \
-	is set as the parser for this mode,\nand that the buffer has been parsed \
-	in the SideKick dockable.
+    was not parsed by JavaSideKick.\nCheck to make sure that java \
+    is set as the parser for this mode,\nand that the buffer has been parsed \
+    in the SideKick dockable.
 sidekick.java.msg.noClassDefFound.title=Class Definition Not Found
 sidekick.java.msg.noClassDefFound.message=Class not in classpath: {0}
 
 # Option pane properties
 plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
-	sidekick.java.filter \
-	sidekick.java.display
+    sidekick.java.filter \
+    sidekick.java.display
 
 options.sidekick.java.general.label=General
 options.sidekick.java.general.code=new sidekick.java.options.GeneralOptionPane();
@@ -179,7 +179,7 @@ options.sidekick.java.reparseWarning=You may need to reparse for changes to take
 
 options.sidekick.java.ambiguousClass.title=Ambiguous Class
 options.sidekick.java.ambiguousClass.message=The class {0} is ambiguous. Use an \
-	import or the full class name to resolve the correct class.
+    import or the full class name to resolve the correct class.
 
 # Option values
 # general options
