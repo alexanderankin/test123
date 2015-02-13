@@ -32,7 +32,9 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies, 
 either expressed or implied, of Dr Turner.
 
-danson: added some code to the constructor to build an index of lines.
+danson: added some code to the constructor to build an index of lines, support
+inserts, deletes, and saves, did some clean up to make this academic code more
+readable and usable.
 */
 
 package bigdoc;
@@ -40,10 +42,7 @@ package bigdoc;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FileMap {
@@ -54,6 +53,7 @@ public class FileMap {
     private long length;
     private File file;
     private RandomAccessFile fileAccessor;
+    private Set<Edit> edits = new TreeSet<Edit>();
 
     // <line number, line details>
     private Map<Long, LineDetails> lines = new HashMap<Long, LineDetails>();
@@ -68,6 +68,8 @@ public class FileMap {
 
         fileAccessor = new RandomAccessFile( file, "rw" );
         FileChannel channelMapper = fileAccessor.getChannel();
+
+        // map file to byte buffers
         long nChunks = size / MAX_INT;
         if ( nChunks > Integer.MAX_VALUE ) {
             throw new ArithmeticException( "Requested File Size Too Large" );
@@ -82,7 +84,8 @@ public class FileMap {
             from += len;
             countDown -= len;
         }
-        
+
+        // map of lines
         long lineNumber = 0l;
         long offset = 0l;
         long start = 0l;
@@ -94,7 +97,7 @@ public class FileMap {
                     LineDetails line = new LineDetails();
                     line.lineStartOffset = start;
                     line.lineEndOffset = offset;
-                    line.lineLength = Math.max(0, offset - start);
+                    line.lineLength = Math.max( 0, offset - start );
                     lines.put( lineNumber, line );
                     start = offset;
                     ++lineNumber;
@@ -102,53 +105,111 @@ public class FileMap {
             }
         }
     }
-    
+
     public Map<Long, LineDetails> getLineDetails() {
         return lines;
     }
 
-    public byte[] get( long offSet, int size ) throws IndexOutOfBoundsException {
-        // Quick and dirty but will go wrong for massive numbers
-        double a = offSet;
+    public byte[] get( long offset, int size ) throws IndexOutOfBoundsException {
+        System.out.println( "+++++ get( " + offset + ", " + size + ')' );
+        // check edits, adjust size as necessary, may need to asjust size to
+        // account for inserts and deletes
+        int editCount = 0;
+        for ( Edit edit : edits ) {
+            switch ( edit.type ) {
+                case Edit.INSERT:
+                    editCount += edit.count;
+                    break;
+                case Edit.DELETE:
+                    editCount -= edit.count;
+                    break;
+            }
+        }
+        int readSize = Math.max( size, size - editCount );        // minus is correct, need to read less if there are inserts, more if there are deletes
+        // int readSize = size;
+        System.out.println( "+++++ size = " + size + ", readSize = " + readSize + ", editCount = " + editCount );
+        double a = offset;
         double b = MAX_INT;
-        byte[] dst = new byte[size];
+        byte[] fileBytes = new byte[readSize];
         long whichChunk = ( long ) Math.floor( a / b );
-        long withinChunk = offSet - whichChunk * MAX_INT;
+        long withinChunk = offset - whichChunk * MAX_INT;
 
         // Data does not straddle two chunks
-        if ( MAX_INT - withinChunk > dst.length ) {
+        if ( MAX_INT - withinChunk > fileBytes.length ) {
             ByteBuffer chunk = chunks.get( ( int ) whichChunk );
             // Allows free threading
             ByteBuffer readBuffer = chunk.asReadOnlyBuffer();
             readBuffer.position( ( int ) withinChunk );
-            readBuffer.get( dst, 0, dst.length );
+            readBuffer.get( fileBytes, 0, fileBytes.length );
         } else {
-            int l1 = ( int ) ( MAX_INT - withinChunk );
-            int l2 = ( int ) dst.length - l1;
+            int bufferOffset = ( int ) ( MAX_INT - withinChunk );
+            int readLength = ( int ) fileBytes.length - bufferOffset;
             ByteBuffer chunk = chunks.get( ( int ) whichChunk );
             // Allows free threading
             ByteBuffer readBuffer = chunk.asReadOnlyBuffer();
             readBuffer.position( ( int ) withinChunk );
-            readBuffer.get( dst, 0, l1 );
+            readBuffer.get( fileBytes, 0, bufferOffset );
 
             chunk = chunks.get( ( int ) whichChunk + 1 );
             readBuffer = chunk.asReadOnlyBuffer();
             readBuffer.position( 0 );
             try {
-                readBuffer.get( dst, l1, l2 );
+                readBuffer.get( fileBytes, bufferOffset, readLength );
             } catch ( java.nio.BufferUnderflowException e ) {
                 throw e;
             }
         }
-        return dst;
+
+        if ( edits.isEmpty() ) {
+            System.out.println( "+++++ returning fileBytes" );
+            return fileBytes;
+        }
+
+        // file bytes as byte buffer
+        ByteBuffer fileBuffer = ByteBuffer.allocate( fileBytes.length );
+        fileBuffer.put( fileBytes );
+        fileBuffer.position( 0 );
+        // new buffer with inserts/deletes added
+        ByteBuffer returnBytes = ByteBuffer.allocate( size );
+
+        Iterator<Edit> editIterator = edits.iterator();
+        Edit currentEdit = editIterator.next();
+
+        while ( fileBuffer.hasRemaining() && returnBytes.hasRemaining() ) {
+            System.out.println( "+++++ currentEdit: " + currentEdit );
+            long editOffset;
+            if ( currentEdit == null ) {
+                editOffset = fileBuffer.capacity();
+            } else {
+                editOffset = currentEdit.offset - offset;
+            }
+            while ( fileBuffer.position() < editOffset && fileBuffer.hasRemaining() && returnBytes.hasRemaining() ) {
+                returnBytes.put( fileBuffer.get() );
+            }
+            if ( currentEdit != null ) {
+                if ( currentEdit.type == Edit.INSERT ) {
+                    returnBytes.put( currentEdit.data );
+                } else {
+                    fileBuffer.position( fileBuffer.position() + currentEdit.count );
+                }
+            }
+            if ( editIterator.hasNext() ) {
+                currentEdit = editIterator.next();
+            } else {
+                currentEdit = null;
+            }
+        }
+        System.out.println( "+++++ returning returnBytes: " + returnBytes.array().length );
+        return returnBytes.array();
     }
 
-    public void put( long offSet, byte[] src ) throws IndexOutOfBoundsException {
+    // this overwrites content at the given offset
+    public void put( long offset, byte[] src ) throws IndexOutOfBoundsException {
         // Quick and dirty but will go wrong for massive numbers
-        double a = offSet;
+        double a = offset;
         double b = MAX_INT;
         long whichChunk = ( long ) Math.floor( a / b );
-        long withinChunk = offSet - whichChunk * MAX_INT;
+        long withinChunk = offset - whichChunk * MAX_INT;
 
         // Data does not straddle two chunks
         if ( MAX_INT - withinChunk > src.length ) {
@@ -170,6 +231,40 @@ public class FileMap {
             writeBuffer = chunk.duplicate();
             writeBuffer.position( 0 );
             writeBuffer.put( src, l1, l2 );
+        }
+    }
+
+    // TODO: need method "insert(long offset, byte[] src)
+    public void insert( long offset, byte[] src ) {
+        Edit ed = new Edit();
+        ed.type = Edit.INSERT;
+        ed.offset = offset;
+        ed.data = Arrays.copyOf( src, src.length );
+        ed.count = src.length;
+        edits.add( ed );
+        System.out.println( "+++++ " + ed );
+    }
+
+    public void insert( long offset, String str ) {
+        insert( offset, str.getBytes() );
+    }
+
+    // delete a single byte
+    public void delete( long offset ) {
+        delete( offset, 1 );
+    }
+
+    public void delete( long offset, int count ) {
+        Edit ed = new Edit();
+        ed.type = Edit.DELETE;
+        ed.offset = offset;
+        ed.count = count;
+        edits.add( ed );
+    }
+
+    public void save() {
+        // TODO: finish this!
+        for ( Edit edit : edits ) {
 
         }
     }
@@ -197,6 +292,64 @@ public class FileMap {
 
         public String toString() {
             return "LineDetails: " + lineStartOffset + ',' + lineLength + ',' + lineEndOffset;
+        }
+    }
+
+    public class Range {
+        public long start = 0;
+        public long end = 0;
+
+        public Range() {
+
+        }
+
+        public Range( int start, int end ) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public boolean equals( Object other ) {
+            if ( ! ( other instanceof Range ) ) {
+                return false;
+            }
+            Range r = ( Range ) other;
+            return r.start == this.start && r.end == this.end;
+        }
+
+        public int hashCode() {
+            return ( int ) start * 100000 + ( int ) end;
+        }
+
+        public String toString() {
+            return "Range: [" + start + ", " + end + ']';
+        }
+    }
+
+    public class Edit implements Comparable<Edit> {
+        public long offset = 0;
+        public static final int INSERT = 1;
+        public static final int DELETE = 2;
+        public int type = INSERT;
+        public byte[] data;
+        public int count = 0;
+
+        public boolean equals( Object other ) {
+            if ( ! ( other instanceof Edit ) ) {
+                return false;
+            }
+            return offset == ( ( Edit ) other ).offset;
+        }
+
+        public int hashCode() {
+            return ( int ) offset;
+        }
+
+        public int compareTo( Edit other ) {
+            return Long.compare( offset, other.offset );
+        }
+
+        public String toString() {
+            return new StringBuilder( "Edit:[" ).append( "offset=" ).append( offset ).append( ",type=" ).append( type ).append( ",count=" ).append( count ).append( ']' ).toString();
         }
     }
 }
