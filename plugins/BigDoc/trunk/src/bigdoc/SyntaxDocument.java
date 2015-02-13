@@ -34,6 +34,8 @@ public class SyntaxDocument extends PlainDocument {
     // Uses the file map to build the document elements
     public SyntaxDocument( FileMap fileMap ) {
         super( new MappedContent( fileMap ) );
+        
+        // populate document with elements consisting of lines
         AbstractDocument.BranchElement root = ( AbstractDocument.BranchElement ) getDefaultRootElement();
         Map<Long, FileMap.LineDetails> lineDetails = fileMap.getLineDetails();
         Element[] lineElements = new Element[lineDetails.size()];
@@ -165,5 +167,10 @@ public class SyntaxDocument extends PlainDocument {
         }
 
         super.fireRemoveUpdate( evt );
+    }
+    
+    public void save() {
+        MappedContent content = (MappedContent)getContent();
+        content.save();
     }
 }
