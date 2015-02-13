@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import java.net.URL;
@@ -33,53 +34,32 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
 //}}}
 public class ClojurePlugin extends EditPlugin {
 
-	public static final String CORE = "options.clojure.clojure-core-path";
-	public static final String CONTRIB = "options.clojure.clojure-contrib-path";
-
-	public static final String INCLUDED_CORE = MiscUtilities.constructPath(
-		jEdit.getSettingsDirectory(),
-		"jars/"+jEdit.getProperty("options.clojure.clojure-core-jar"));
-
-	public static final String INCLUDED_CONTRIB = MiscUtilities.constructPath(
-		jEdit.getSettingsDirectory(),
-		"jars/"+jEdit.getProperty("options.clojure.clojure-contrib-jar"));
-	
 	public static final String CMD_PATH = "/clojure/bsh";
 	public static final String[] COMMANDS = new String[] { "clojure.xml" };
-	
-	private static String INSTALLED_CORE = null;
-	private static String INSTALLED_CONTRIB = null;
-	
+
 	public void start() {
 		// Add the script path to beanshell's command path
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
-		
-		// These lines just check to see which libraries are installed
-		// If none, then the included jars are used
-		if (jEdit.getProperty(CORE) == null) {
-			jEdit.setProperty(CORE, INCLUDED_CORE);
-		}
-		if (jEdit.getProperty(CONTRIB) == null) {
-			jEdit.setProperty(CONTRIB, INCLUDED_CONTRIB);
+
+		String clojurePath = jEdit.getProperty("clojure.path");
+		if (clojurePath == null || clojurePath.equals("")) {
+			jEdit.setProperty("clojure.path", MiscUtilities.constructPath(super.getPluginHome().getAbsolutePath(), "clojure.jar"));
 		}
 
-		INSTALLED_CORE = getClojureCore();
-		if (!INSTALLED_CORE.equals(INCLUDED_CORE)) {
-			jEdit.removePluginJAR(jEdit.getPluginJAR(INCLUDED_CORE), false);
-			jEdit.addPluginJAR(INSTALLED_CORE);
-		}
-		INSTALLED_CONTRIB = getClojureContrib();
-		if (!INSTALLED_CONTRIB.equals(INCLUDED_CONTRIB)) {
-			jEdit.removePluginJAR(jEdit.getPluginJAR(INCLUDED_CONTRIB), false);
-			jEdit.addPluginJAR(INSTALLED_CONTRIB);
+		File home = getPluginHome();
+		if (!home.exists()) {
+			home.mkdir();
 		}
 
 		setVars();
-		
+
+		ClojureDownloader.downloadIfMissing();
+
 		// This background thread installs the commando files, if necessary
 		ThreadUtilities.runInBackground(new Runnable() {
 			public void run() {
@@ -104,27 +84,8 @@ public class ClojurePlugin extends EditPlugin {
 			}
 		});
 	}
+
 	public void stop() {}
-
-	/**
-	 * Set the loaded embeddable clojure core jar
-	 */
-	public void setClojureCore(String path) {
-		jEdit.setProperty(CORE, path);
-		jEdit.removePluginJAR(jEdit.getPluginJAR(INSTALLED_CORE), false);
-		jEdit.addPluginJAR(path);
-		INSTALLED_CORE = path;
-	}
-
-	/**
-	 * Set the loaded embeddable clojure contrib jar
-	 */
-	public void setClojureContrib(String path) {
-		jEdit.setProperty(CONTRIB, path);
-		jEdit.removePluginJAR(jEdit.getPluginJAR(INSTALLED_CONTRIB), false);
-		jEdit.addPluginJAR(path);
-		INSTALLED_CONTRIB = path;
-	}
 
 	/**
 	 * If Console is installed, set some environment variables
@@ -132,32 +93,7 @@ public class ClojurePlugin extends EditPlugin {
 	 */
 	public void setVars() {
 		if (jEdit.getPlugin("console.ConsolePlugin") != null) {
-			console.ConsolePlugin.setSystemShellVariableValue("CLOJURE", getClojure());
+			console.ConsolePlugin.setSystemShellVariableValue("CLOJURE", jEdit.getProperty("clojure.path"));
 		}
 	}
-
-	/**
-	 * Returns the location of the clojure core jar
-	 */
-	public String getClojureCore() {
-		return jEdit.getProperty(CORE);
-	}
-
-	/**
-	 * Returns the location of the clojure contrib jar
-	 */
-	public String getClojureContrib() {
-		return jEdit.getProperty(CONTRIB);
-	}
-
-	/**
-	 * Returns the paths of core and contrib respectively, separated by a path separator
-	 * Ideal for setting environment paths and for use in the system shell
-	 */
-	public String getClojure() {
-		String core = getClojureCore();
-		String contrib = getClojureContrib();
-		return core + File.pathSeparator + contrib;
-	}
-
 }

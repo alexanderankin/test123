@@ -2,13 +2,12 @@
 # Basic Plugin Information {{{
 plugin.clojure.ClojurePlugin.activate=startup
 plugin.clojure.ClojurePlugin.author=Damien Radtke
-plugin.clojure.ClojurePlugin.description=Provides Clojure to jEdit
+plugin.clojure.ClojurePlugin.description=Clojure JAR provider for jEdit.
 plugin.clojure.ClojurePlugin.docs=index.html
 plugin.clojure.ClojurePlugin.longdescription=description.html
 plugin.clojure.ClojurePlugin.name=Clojure
 plugin.clojure.ClojurePlugin.usePluginHome=false
-plugin.clojure.ClojurePlugin.version=1.2.1
-plugin.clojure.ClojurePlugin.jars=clojure-1.2.1.jar clojure-contrib-1.2.0.jar
+plugin.clojure.ClojurePlugin.version=2.0
 # }}} Basic Plugin Information
 
 # Dependencies {{{
@@ -19,13 +18,26 @@ plugin.clojure.ClojurePlugin.depend.3=optional plugin console.ConsolePlugin 4.4.
 # }}} Dependencies
 
 # Options {{{
-plugin.clojure.ClojurePlugin.option-group=clojure-provider
-options.clojure-provider.label=Provider
-options.clojure-provider.code=new clojure.ClojureProviderOptionPane();
-options.clojure.clojure-core-jar=clojure-1.2.1.jar
-options.clojure.clojure-contrib-jar=clojure-contrib-1.2.0.jar
+plugin.clojure.ClojurePlugin.option-group=clojure-version clojure-libs
+options.clojure-version.label=Version
+options.clojure-version.code=new clojure.ClojureVersionOptionPane();
+options.clojure-libs.label=Libraries
+options.clojure-libs.code=new clojure.ClojureLibsOptionPane();
+#options.clojure.clojure-core-jar=clojure-1.2.1.jar
+#options.clojure.clojure-contrib-jar=clojure-contrib-1.2.0.jar
 
 options.clojure.included-core-label=Included (1.2.1)
 options.clojure.included-contrib-label=Included (1.2.0)
 options.clojure.choose-label=Choose jar
 # }}} Options
+
+clojure.path=
+clojure.channel=
+clojure.version=
+
+# Space-separated list of libraries added in the options pane.
+clojure.libs=
+
+# Some other variables will be set by the libraries option pane:
+#     clojure.<lib>.version
+#     clojure.<lib>.path
