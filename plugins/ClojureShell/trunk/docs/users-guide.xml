@@ -49,4 +49,26 @@
 			or you can simply stop the loop to conserve system resources.
 		</para>
 	</chapter>
+	<chapter id="using-leiningen"><title>Using Leiningen</title>
+		<para>
+			The Read-Eval-Print-Loop (REPL) is hosted by default by the
+			clojure.jar installed using the Clojure plugin.
+			It is also possible to use the Leiningen REPL,
+			which will automatically configure itself using your project's settings.
+		</para>
+		<para>
+			Use the Shell Configuration plugin options settings for the ClojureShell
+			to choose which shell to use. Choose to always use the clojure.jar configured
+			by the Clojure plugin, always use Leiningen, or use Leiningen when working
+			in a ProjectViewer project with a defined project.clj file in the root path
+			and the clojure.jar otherwise.
+		</para>
+		<para>
+			If you use the Leiningen REPL with a properly configured project,
+			(one with a project.clj file) the prompt should show you the name
+			of your main Clojure namespace as configured by project.clj.
+			In other cases you will see the unconfigured 'user' namespace
+			in the prompt.
+		</para>
+	</chapter>
 </book>
