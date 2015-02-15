@@ -8,15 +8,17 @@ plugin.clojure.shell.ClojureShellPlugin.docs=index.html
 plugin.clojure.shell.ClojureShellPlugin.longdescription=description.html
 plugin.clojure.shell.ClojureShellPlugin.name=Clojure Shell
 plugin.clojure.shell.ClojureShellPlugin.usePluginHome=false
-plugin.clojure.shell.ClojureShellPlugin.version=1.0.2
+plugin.clojure.shell.ClojureShellPlugin.version=2.0.0
 # }}} Basic Plugin Information
 
 # Dependencies {{{
 plugin.clojure.shell.ClojureShellPlugin.depend.0=jedit 04.04.99.01
 plugin.clojure.shell.ClojureShellPlugin.depend.1=jdk 1.5
-plugin.clojure.shell.ClojureShellPlugin.depend.2=plugin clojure.ClojurePlugin 1.2.1
+plugin.clojure.shell.ClojureShellPlugin.depend.2=plugin clojure.ClojurePlugin 2.0
 plugin.clojure.shell.ClojureShellPlugin.depend.3=plugin procshell.ProcessShellPlugin 1.0
 plugin.clojure.shell.ClojureShellPlugin.depend.4=plugin classpath.ClasspathPlugin 1.0
+plugin.clojure.shell.ClojureShellPlugin.depend.5=optional plugin console.ConsolePlugin 4.4.2
+plugin.clojure.shell.ClojureShellPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 3.5.3
 # }}} Dependencies
 
 # Menu {{{
@@ -31,3 +33,20 @@ clojure-eval-file.label=Evaluate file in Clojure shell ...
 # Messages {{{
 msg.clojureshell.info-message=Interactive Clojure console.
 # }}} Messages
+
+# Options {{{
+plugin.clojure.shell.ClojureShellPlugin.option-group=clojureshell
+options.clojureshell.label=Shell Configuration
+options.clojureshell.code=new clojure.shell.ClojureShellOptionPane();
+options.clojureshell.leinAlways=false
+options.clojureshell.leinAlwaysLbl=Use Leiningen REPL regardless.
+options.clojureshell.leinIfProject=false
+options.clojureshell.leinIfProjectLbl=Use Leiningen REPL with ProjectViewer projects with project.clj.
+options.clojureshell.leinRunCmd=lein repl
+options.clojureshell.leinRunCmdLbl=Command to run Leiningen: 
+options.clojureshell.plainShell=true
+options.clojureshell.plainShellLbl=Use Clojure.jar REPL directly.
+options.clojureshell.plainShellRunCmd=java -cp $CLOJURE clojure.main
+options.clojureshell.plainShellRunCmdLbl=Command to start REPL: 
+# }}} Options
+

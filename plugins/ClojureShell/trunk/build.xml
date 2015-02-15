@@ -41,6 +41,7 @@
 	<pathelement path="${jedit.plugins.dir}/ProcessShell.jar" />
 	<pathelement path="${jedit.plugins.dir}/Clojure.jar" />
 	<pathelement path="${jedit.plugins.dir}/Classpath.jar" />
+	<pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
 	<!-- /mark:plugins -->
 	</path>
 	

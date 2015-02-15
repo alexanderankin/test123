@@ -1,0 +1,26 @@
+There are four environments to check:
+
+ 1. Running without ProjectViewer installed.
+    The rest of the environments assume that it is installed.
+ 2. Running without a project selected.
+ 3. Running with a non-Leiningen project selected (e.g. Java).
+    Or any project without a project.clj present in the project root path.
+ 4. Running with a Leiningen project selected.
+    Project root path must be set and a project.clj file present therein.
+
+It seems impossible to create a ProjectViewer project without setting a
+root path. There is code to handle this case but it has not been tested.
+
+For each environment there are three settings to check:
+
+ 1. Use the clojure.jar.
+ 2. Use the Leiningen REPL where appropriate (context 4 above).
+ 3. Use the Leiningen REPL regardless.
+
+Leiningen should only be used for setting #3 or a combination of setting #2
+and environment #4. All other environment/setting combination should use the
+installed Clojure.jar.
+
+All testing was done against Clojure plugin version 2. No consideration was
+given to supporting previous versions of the Clojure plugin.
+
