@@ -96,4 +96,22 @@ public class ClojurePlugin extends EditPlugin {
 			console.ConsolePlugin.setSystemShellVariableValue("CLOJURE", jEdit.getProperty("clojure.path"));
 		}
 	}
+
+	/**
+ 	 * Returns the path of the installed Clojure jar, plus all libs, separated by the path separator.
+	 */
+	public String getClojure() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(jEdit.getProperty("clojure.path"));
+
+		String[] libs = jEdit.getProperty("clojure.libs").split(" ");
+		for (String lib : libs) {
+			if ("".equals(lib)) {
+				continue;
+			}
+			builder.append(File.pathSeparator + jEdit.getProperty("clojure." + lib + ".path"));
+		}
+
+		return builder.toString();
+	}
 }
