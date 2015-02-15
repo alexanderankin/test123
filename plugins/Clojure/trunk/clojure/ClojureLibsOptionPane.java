@@ -41,7 +41,8 @@ public class ClojureLibsOptionPane extends AbstractOptionPane {
 				availableLibs = ClojureDownloader.getAvailableLibs();
 				availableLibs.add(0, "");
 
-				for (String lib : jEdit.getProperty("clojure.libs", "").split(" ")) {
+				String[] libs = jEdit.getProperty("clojure.libs", "").split(" ");
+				for (String lib : libs) {
 					if ("".equals(lib)) {
 						continue;
 					}
