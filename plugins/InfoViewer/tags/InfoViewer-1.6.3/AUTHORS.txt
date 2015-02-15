@@ -1,0 +1,3 @@
+The original author is Dirk Moebius
+Some classes are by Slava Pestov and Stefan Kost 
+Infoviewer is sometimes maintained by Alan Ezust
