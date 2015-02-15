@@ -3,12 +3,13 @@ $Date$
 :encoding=UTF-8:
 ===========================================================================
 
-Version 1.6.3 depends on jEdit 4.4 and Java 1.6
+Version 1.6.3 depends on jEdit 5.0 and Java 1.6
   Fixed [bug:#3671] HelpViewer incorrect encoding for .txt files on Windows
-  (Eric Le Lay). 
+  (Eric Le Lay).
+  No longer overrides built-in jEdit help action.
 
 Version 1.6.2 depends on jEdit 4.4 and Java 1.6
-  French and German Localization. 
+  French and German Localization.
 
 Version 1.6.1 depends on jEdit 4.4 and Java 1.6
   New option to restore previous page instead of showing home page
@@ -21,13 +22,13 @@ Version 1.6.1 depends on jEdit 4.4 and Java 1.6
 Version 1.6 depends on jEdit 4.3, Java 1.5
     Removed font size actions which didn't work. Now uses the same font as
     secondary metal font (jEdit 4.3) or new helpviewer font (jEdit 4.4) as
-    specified in appearance option pane. (Ezust) 
+    specified in appearance option pane. (Ezust)
 
 Version 1.5.9 Depends on jedit 4.3pre5, Java 1.5
     Reload on buffer save reloads same address, rather than opening the
-    current buffer. 
+    current buffer.
     Remembers vertical scrollbar positions in the history - back and forward
-    restore them properly. (Alan Ezust)  
+    restore them properly. (Alan Ezust)
 
 Version 1.5.8  Depends on jedit 4.3pre5, Java 1.4
     Listens to arrow keys in the viewer
@@ -36,14 +37,14 @@ Version 1.5.8  Depends on jedit 4.3pre5, Java 1.4
     that doesn't exist anymore (Matthieu Casanova)
 
 Version 1.5.5 Depends: jEdit 4.3pre3, Java 1.4
-      HelpViewer shows the help sidebar, InfoViewer hides the help sidebar 
+      HelpViewer shows the help sidebar, InfoViewer hides the help sidebar
       The same class is used for both dockables, so you can show/hide it
       from the "View" menu. (Alan Ezust)
 
-Version 1.5 - requires jedit 4.3pre3, Java 1.4 
+Version 1.5 - requires jedit 4.3pre3, Java 1.4
     Added option to use InfoViewer instead of HelpViewer (Alan Ezust)
     Added HelpInfoViewer - an InfoViewer with the Help table of contents
-    as an optional sidebar. (Alan Ezust) 
+    as an optional sidebar. (Alan Ezust)
 
 Version 1.4 - requires jEdit 4.3pre2, Java 1.4
     Updated for Jedit 4.3pre2 (Alan Ezust)

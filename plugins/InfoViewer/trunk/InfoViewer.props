@@ -3,10 +3,10 @@ plugin.infoviewer.InfoViewerPlugin.name=Info Viewer
 plugin.infoviewer.InfoViewerPlugin.activate=startup
 
 plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius
-plugin.infoviewer.InfoViewerPlugin.version=1.6.3
+plugin.infoviewer.InfoViewerPlugin.version=1.6.4
 plugin.infoviewer.InfoViewerPlugin.docs=index.html
 plugin.infoviewer.InfoViewerPlugin.description=A Swing-based web browser, which can also provide a replacement for HelpViewer.
-plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.04.99.01
+plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 05.00.99.01
 plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.6
 
 # Two option panes
@@ -16,14 +16,14 @@ plugin.infoviewer.InfoViewerPlugin.option-group=chooseBrowser internalBrowser
 options.chooseBrowser.label=Choose Browser
 options.chooseBrowser.code=new infoviewer.InfoViewerOptionPane();
 
-# second optionpane 
+# second optionpane
 options.internalBrowser.label=Internal Browser
 options.internalBrowser.code=new infoviewer.InfoViewerOptionPane2();
 
 # plugin menu
 plugin.infoviewer.InfoViewerPlugin.menu = infoviewer helpviewer - infoviewer.open-buffer infoviewer.open-sel
 
-# Plugin menu properties 
+# Plugin menu properties
 infoviewer-toggle.label=Toggle InfoViewer
 helpviewer-toggle.label=Toggle HelpViewer
 infoviewer.menu.label=InfoViewer

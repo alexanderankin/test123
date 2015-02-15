@@ -1,8 +1,5 @@
-
 TODO for InfoViewer
 -------------------
-
-When using "infoviewer" action, initially un-check the "show help tree" action.
 
 If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all.
 
@@ -12,7 +9,7 @@ For tree nodes that point to a part of the document i.e. end with something like
 
 Add a "auto-reload" toggle button, which will toggle reload on buffer-save.
 
-Under Edit, add a "preferences" menu. show the "internnal infoviewer" options from there?
+Under Edit, add a "preferences" menu. show the "internal infoviewer" options from there?
 
 F6 should focus on textarea and select text from all other widgets.
 
