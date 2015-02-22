@@ -43,10 +43,10 @@ options.clojureshell.leinAlwaysLbl=Use Leiningen REPL regardless.
 options.clojureshell.leinIfProject=false
 options.clojureshell.leinIfProjectLbl=Use Leiningen REPL with ProjectViewer projects with project.clj.
 options.clojureshell.leinRunCmd=lein repl
-options.clojureshell.leinRunCmdLbl=Command to run Leiningen: 
+options.clojureshell.leinRunCmdLbl=Command to run Leiningen:
 options.clojureshell.plainShell=true
 options.clojureshell.plainShellLbl=Use Clojure.jar REPL directly.
-options.clojureshell.plainShellRunCmd=java -cp $CLOJURE clojure.main
-options.clojureshell.plainShellRunCmdLbl=Command to start REPL: 
+options.clojureshell.plainShellRunCmd=java -cp $CLASSPATH clojure.main
+options.clojureshell.plainShellRunCmdLbl=Command to start REPL:
 # }}} Options
 
