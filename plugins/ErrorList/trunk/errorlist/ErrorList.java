@@ -1069,102 +1069,94 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		clipboard.setContents(stringSelection, null);
 	} //}}}
-
+	
 	//{{{ copySelectedNodeToClipboard() method
 	public void copySelectedNodeToClipboard()
 	{
 		TreePath[] allSelected = errorTree.getSelectionPaths();
-		StringBuilder fullError = new StringBuilder();
-		String lastPath = "";
+		StringBuilder allErrors = new StringBuilder();
 		Set<String> selectedFiles = new HashSet<String>();
 
 		if(allSelected != null)
 		{
 			for (TreePath selected : allSelected)
 			{
-				DefaultMutableTreeNode node =
-						(DefaultMutableTreeNode) selected.getLastPathComponent();
-
-				Object object = node.getUserObject();
-
-				if(object instanceof ErrorSource.Error)
-				{
-					// This is an error
-					ErrorSource.Error error = (ErrorSource.Error)object;
-
-					// Skip if this has already been copied to clipboard by selecting the file name
-					if (!selectedFiles.contains(error.getFilePath()))
-					{
-						if (!lastPath.equals(error.getFilePath())) {
-							if (!"".equals(lastPath)) {
-								fullError.append("\n");
-							}
-							fullError.append(error.getFilePath());
-							fullError.append("\n");
-							lastPath = error.getFilePath();
-						}
-
-						fullError.append(formatErrorDisplay(error));
-						fullError.append("\n");
-					}
-
-				}
-				else if (object instanceof String)
-				{
-					// This is a file name
-					fullError.append((String)object);
-					fullError.append("\n");
-
-					// Keep track of Selected files, so that we don't accidentally get a a double selection if a node
-					// is selected as well
-					selectedFiles.add((String)object);
-
-					for(int i = 0; i < node.getChildCount(); i++)
-					{
-						DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
-							node.getChildAt(i);
-						ErrorSource.Error error = (ErrorSource.Error) errorNode.getUserObject();
-						fullError.append(formatErrorDisplay(error));
-						fullError.append("\n");
-					}
-				}
+				copyNode(selected, allErrors, "", selectedFiles);
 			}
 
-			setClipboardContents(fullError.toString());
+			setClipboardContents(allErrors.toString());
 		}
 	} //}}}
 
+	
 	//{{{ copyAllNodesToClipboard() method
 	public void copyAllNodesToClipboard()
 	{
 		StringBuilder allErrors = new StringBuilder();
-		String lastPath = "";
-		for(int i = 0; i < errorRoot.getChildCount(); i++)
-		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-				errorRoot.getChildAt(i);
-			for(int j = 0; j < node.getChildCount(); j++)
+		Set<String> selectedFiles = new HashSet<String>();
+		copyNode(new TreePath(new TreeNode[]{errorRoot}), allErrors, "", selectedFiles);
+		setClipboardContents(allErrors.toString());
+	} //}}}
+
+	private void copyNode(TreePath parent, StringBuilder allErrors, String lastPath, Set<String> selectedFiles)
+	{
+		DefaultMutableTreeNode selectedNode =
+			       (DefaultMutableTreeNode)parent.getLastPathComponent();
+		
+		if (selectedNode.getUserObject() instanceof ErrorSource.Error) 
+		{		
+			ErrorSource.Error error = (ErrorSource.Error) selectedNode.getUserObject();
+
+			if (!lastPath.equals(error.getFilePath()) && !selectedFiles.contains(error.getFilePath())) 
 			{
-				DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
-					node.getChildAt(j);
-				ErrorSource.Error error = (ErrorSource.Error) errorNode.getUserObject();
-				if (!lastPath.equals(error.getFilePath())) {
-					if (!"".equals(lastPath)) {
-						allErrors.append("\n");
-					}
-					allErrors.append(error.getFilePath());
+				if (!"".equals(lastPath)) 
+				{
 					allErrors.append("\n");
-					lastPath = error.getFilePath();
 				}
-				allErrors.append(formatErrorDisplay(error));
+				allErrors.append(error.getFilePath());
 				allErrors.append("\n");
+				lastPath = error.getFilePath();
+				selectedFiles.add(error.getFilePath());
+			}
+	
+			allErrors.append(formatErrorDisplay(error));
+			allErrors.append("\n");
+		} 
+		else if (selectedNode.getUserObject() instanceof Extra) 
+		{
+			Extra extra = (Extra) selectedNode.getUserObject();
+
+			allErrors.append(extra.toString());
+			allErrors.append("\n");
+			
+		} 
+		else if (selectedNode.getUserObject() instanceof String)
+		{
+			// This is a file name
+			// Skip if this has already been copied to clipboard by selecting the file name
+			String fileName = (String)selectedNode.getUserObject();
+			if (!selectedFiles.contains(fileName))
+			{
+				allErrors.append(fileName);
+				allErrors.append("\n");
+	
+				// Keep track of Selected files, so that we don't accidentally get a a double selection if a node
+				// is selected as well
+				selectedFiles.add(fileName);
 			}
 		}
 
-		setClipboardContents(allErrors.toString());
-
+		TreeNode node = (TreeNode) parent.getLastPathComponent();
+		Enumeration<TreeNode> e = node.children();
+		while ( e.hasMoreElements())
+		{
+	        TreeNode n = e.nextElement();
+	        TreePath path = parent.pathByAddingChild(n);
+	        copyNode(path, allErrors, lastPath, selectedFiles);
+		}
 	} //}}}
 
+	
 
 	//}}}
 
