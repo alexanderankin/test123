@@ -40,12 +40,12 @@ public class ClojureShell extends ProcessShell {
 		super.openConsole(console);
 		findConsoleMap.put(consoleStateMap.get(console), console);
 	}
-	
+
 	public void closeConsole(Console console) {
 		findConsoleMap.remove(consoleStateMap.get(console));
 		super.closeConsole(console);
 	}
-	
+
 	/*
 	 * Constructor for ClojureShell
 	 */
@@ -67,17 +67,17 @@ public class ClojureShell extends ProcessShell {
 	 */
 	protected void init(ConsoleState state, String command) throws IOException {
 		Console thisConsole = findConsoleMap.get(state);
-		
+
 		if (thisConsole == null) {
 			Log.log(Log.ERROR, this, "Unable to acquire Console object.");
 			return;
 		}
-		
+
 		boolean hasProjectViewer = jEdit.getPlugin("projectviewer.ProjectPlugin") != null;
 		boolean useLeiningen = false;
 		String rootPath = null;
 		String shellName = "Clojure";
-		
+
 		if (getBooleanProperty("plainShell")) {
 			// Start plain shell from Clojure.jar.
 		} else if (getBooleanProperty("leinIfProject")) {
@@ -86,14 +86,14 @@ public class ClojureShell extends ProcessShell {
 			if (hasProjectViewer) {
 				projectviewer.vpt.VPTProject project =
 					projectviewer.ProjectViewer.getActiveProject(thisConsole.getView());
-				
+
 				if (project == null) {
 					Log.log(Log.DEBUG, this,
 						"No project selected for Leiningen REPL.");
 				} else {
 					// We have a project, does it have a root path?
 					rootPath = project.getRootPath();
-					
+
 					if (rootPath == null || rootPath.isEmpty()) {
 					    // ProjectViewer configuration should not allow this case.
 						Log.log(Log.DEBUG, this,
@@ -102,7 +102,7 @@ public class ClojureShell extends ProcessShell {
 					} else {
 						// We have a root directory, does it have a project.clj?
 						File file = new File(rootPath + File.separator + "project.clj");
-						
+
 						if (file.exists() && file.isFile()) {
 							// OK, it is probably a valid Leiningen project.
 							shellName = "Leiningen";
@@ -122,38 +122,37 @@ public class ClojureShell extends ProcessShell {
 			Log.log(Log.ERROR, this,
 				"Unrecognized shell choice, default to plain shell.");
 		}
-		
+
 		Log.log(Log.DEBUG, this, "Attempting to start " + shellName + " REPL.");
-		
+
 		ProcessBuilder procBuilder = null;
-		
+
 		if (useLeiningen) {
 			String cmd = getProperty("leinRunCmd");
-			
+
 			Log.log(Log.DEBUG, this, "Cmd: " + cmd);
 			procBuilder = new ProcessBuilder(cmd.split("\\s+"));
-			
+
 			if (rootPath != null) {
 				Log.log(Log.DEBUG, this,
 					"Leiningen starting in directory " + rootPath);
 				procBuilder.directory(new File(rootPath));
 			}
 		} else {
-			String cmd = getProperty("plainShellRunCmd")
-				.replace("$CLOJURE",
-					console.ConsolePlugin.getSystemShellVariableValue(
-						thisConsole.getView(), "CLOJURE"));
-			
+			ClojurePlugin clojure = (ClojurePlugin) jEdit.getPlugin("clojure.ClojurePlugin");
+			String classPath = clojure.getClojure() + File.pathSeparator + ClasspathPlugin.getClasspath();
+			String cmd = getProperty("plainShellRunCmd").replace("$CLASSPATH", classPath);
+
 			Log.log(Log.DEBUG, this, "Cmd: " + cmd);
 			procBuilder = new ProcessBuilder(cmd.split("\\s+"));
 		}
-		
+
 		state.p = procBuilder.start();
-		
+
 		Log.log(Log.DEBUG, this, shellName + " REPL started.");
 	}
 	//}}}
-	
+
 	//{{{ eval()
 	/**
 	 * Evaluate text
