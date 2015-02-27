@@ -30,6 +30,9 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
             return 0;
         }
     };
+    
+    public static int arrayCount = 0;
+    public static int objectCount = 0;
 
     public JSONNode() {
         super("");
@@ -45,6 +48,8 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
 
 	public void setIsArray(boolean isArray) {
 		this.isArray = isArray;
+		++ arrayCount;
+		setName("array_" + arrayCount);
 	}
 
 	public boolean isObject() {
@@ -53,6 +58,8 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
 
 	public void setIsObject(boolean isObject) {
 		this.isObject = isObject;
+		++ objectCount;
+		setName("object_" + objectCount);
 	}
 
 	public boolean isPair() {
@@ -148,6 +155,12 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
     }
     
     public String getShortString() {
+        if (isArray() && name != null && name.startsWith("array_")) {
+            return "";
+        }
+        if (isObject() && name != null && name.startsWith("object_")) {
+            return "";
+        }
         return name;   
     }
     
@@ -166,5 +179,13 @@ public class JSONNode extends Asset implements Comparable, SideKickElement {
 
     public int compareTo(Object o) {
         return toString().compareToIgnoreCase(o.toString());
+    }
+    
+    @Override
+    public String getName() {
+        if (name == null || name.isEmpty()) {
+            name = "unknown_" + ++objectCount;   
+        }
+        return name;
     }
 }
