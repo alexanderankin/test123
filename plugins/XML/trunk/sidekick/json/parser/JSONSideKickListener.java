@@ -22,7 +22,7 @@ public class JSONSideKickListener extends JSONBaseListener {
     
     ImageIcon pairIcon = EclipseIconsPlugin.getIcon("field_public_obj.gif");
     ImageIcon objectIcon = EclipseIconsPlugin.getIcon("javaassist_co.gif");
-    ImageIcon arrayIcon = EclipseIconsPlugin.getIcon("packd_obj.gif");
+    ImageIcon arrayIcon = EclipseIconsPlugin.getIcon("scope_obj.gif");
     
 
     public JSONNode getRoot() {
@@ -30,14 +30,14 @@ public class JSONSideKickListener extends JSONBaseListener {
     }
 
     @Override public void enterJson( @NotNull JSONParser.JsonContext ctx ) {
-        root = new JSONNode();
+        root = new JSONNode("root");
         root.setStartLocation( getStartLocation( ctx ) );
         root.setEndLocation( getEndLocation( ctx ) );
         stack.push( root );
     }
     
     @Override public void exitJson( @NotNull JSONParser.JsonContext ctx ) {
-        stack.pop();    // stack is empty at this point
+        stack.pop();    // stack should be empty at this point
         JSONNode child = root.getFirstChild();
         Position start;
         Position end;
@@ -53,8 +53,9 @@ public class JSONSideKickListener extends JSONBaseListener {
     }
 
     @Override public void enterObject( @NotNull JSONParser.ObjectContext ctx ) {
-        JSONNode node = new JSONNode();
+        JSONNode node = new JSONNode("object");
         node.setIsObject(true);
+        node.setIcon(objectIcon);
         node.setStartLocation( getStartLocation( ctx ) );
         node.setEndLocation( getEndLocation( ctx ) );
         node.setStartPosition(new SideKickPosition(ctx.LBRACE().getSymbol().getStartIndex()));
@@ -65,16 +66,13 @@ public class JSONSideKickListener extends JSONBaseListener {
     @Override public void exitObject( @NotNull JSONParser.ObjectContext ctx ) {
         JSONNode node = stack.pop();
         JSONNode parent = stack.peek();
-        if (node.hasChildren()) {
-            for (JSONNode newKid : node.getChildren()) {
-                parent.addChild(newKid);   
-            }
-        }
+        parent.addChild(node);
     }
     
     @Override public void enterArray( @NotNull JSONParser.ArrayContext ctx ) {
-        JSONNode node = new JSONNode();
+        JSONNode node = new JSONNode("array");
         node.setIsArray(true);
+        node.setIcon(arrayIcon);
         node.setStartLocation( getStartLocation( ctx ) );
         node.setEndLocation( getEndLocation( ctx ) );
         node.setStartPosition(new SideKickPosition(ctx.LSQUARE().getSymbol().getStartIndex()));
@@ -85,11 +83,7 @@ public class JSONSideKickListener extends JSONBaseListener {
     @Override public void exitArray( @NotNull JSONParser.ArrayContext ctx ) {
         JSONNode node = stack.pop();
         JSONNode parent = stack.peek();
-        if (node.hasChildren()) {
-            for (JSONNode newKid : node.getChildren()) {
-                parent.addChild(newKid);   
-            }
-        }
+        parent.addChild(node);
     }
 
     @Override public void enterPair( @NotNull JSONParser.PairContext ctx ) {
@@ -104,27 +98,29 @@ public class JSONSideKickListener extends JSONBaseListener {
     
     @Override public void exitPair( @NotNull JSONParser.PairContext ctx ) {
         JSONNode node = stack.pop();            
-        JSONNode child = node.getFirstChild();  
-        node.setEndPosition(child.getEndPosition());
+        JSONNode value = node.getFirstChild();  
+        node.setEndPosition(value.getEndPosition());
         node.removeChildren();
-        if (child != null ) {
-            if (child.isNumberOrString()) {
-                node.setName(node.getName() + ": " + child.getName());  
+        if (value != null ) {
+            if (value.isNumberOrString()) {
+                node.setName(node.getName() + ": " + value.getName());  
                 node.setIcon(pairIcon);
-            } else if (child.isObject()) {
-                if (child.hasChildren()) {
-                    for (JSONNode newKid : child.getChildren()) {
-                        node.addChild(newKid);   
-                    }
-                }
+            } else if (value.isObject()) {
+                //node.addChild(value);
                 node.setIcon(objectIcon);   
-            } else if (child.isArray()) {
-                if (child.hasChildren()) {
-                    for (JSONNode newKid : child.getChildren()) {
+                if (value.hasChildren()) {
+                    for (JSONNode newKid : value.getChildren()) {
                         node.addChild(newKid);   
                     }
                 }
+            } else if (value.isArray()) {
+                //node.addChild(value);
                 node.setIcon(arrayIcon);   
+                if (value.hasChildren()) {
+                    for (JSONNode newKid : value.getChildren()) {
+                        node.addChild(newKid);   
+                    }
+                }
             }
         }
         JSONNode parent = stack.peek();
@@ -139,32 +135,28 @@ public class JSONSideKickListener extends JSONBaseListener {
             node.setIsNumberOrString(true);
             node.setStartPosition(new SideKickPosition(value.getSymbol().getStartIndex()));
             node.setEndPosition(new SideKickPosition(value.getSymbol().getStopIndex()));
+            node.setStartLocation( getStartLocation( ctx ) );
+            node.setEndLocation( getEndLocation( ctx ) );
+            stack.push( node );
         } else if (ctx.STRING() != null) {
             TerminalNode value = ctx.STRING();
             node.setName(value.getText());
             node.setIsNumberOrString(true);
             node.setStartPosition(new SideKickPosition(value.getSymbol().getStartIndex()));
             node.setEndPosition(new SideKickPosition(value.getSymbol().getStopIndex()));
-        } else if (ctx.object() != null) {
-            JSONParser.ObjectContext value = ctx.object();
-            node.setIsObject(true);
-            node.setStartPosition(new SideKickPosition(value.LBRACE().getSymbol().getStartIndex()));
-            node.setEndPosition(new SideKickPosition(value.RBRACE().getSymbol().getStopIndex()));
-        } else if (ctx.array() != null) {
-            JSONParser.ArrayContext value = ctx.array();
-            node.setIsArray(true);
-            node.setStartPosition(new SideKickPosition(value.LSQUARE().getSymbol().getStartIndex()));
-            node.setEndPosition(new SideKickPosition(value.RSQUARE().getSymbol().getStopIndex()));
-        }
-        node.setStartLocation( getStartLocation( ctx ) );
-        node.setEndLocation( getEndLocation( ctx ) );
-        stack.push( node );
+            node.setStartLocation( getStartLocation( ctx ) );
+            node.setEndLocation( getEndLocation( ctx ) );
+            stack.push( node );
+        } 
     }
     
     @Override public void exitValue( @NotNull JSONParser.ValueContext ctx ) {
-        JSONNode node = stack.pop();
-        JSONNode parent = stack.peek();
-        parent.addChild(node);
+        JSONNode node = stack.peek();
+        if (node.isNumberOrString()) {
+            node = stack.pop();
+            JSONNode parent = stack.peek();
+            parent.addChild(node);
+        }
     }
     
     // return a Location representing the start of the rule context
