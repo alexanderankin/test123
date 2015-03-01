@@ -1126,7 +1126,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		{
 			Extra extra = (Extra) selectedNode.getUserObject();
 
-			allErrors.append(extra.toString());
+			allErrors.append(extra.toString().trim());
 			allErrors.append("\n");
 			
 		} 
