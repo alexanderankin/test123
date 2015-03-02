@@ -113,7 +113,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private Vector<Integer> filteredTypes;
 	private Map<Integer, JToggleButton> toggleButtons;
 	private PopupMenu popupMenu;
-        // }}}
+		// }}}
 
 	//{{{ ErrorList constructor
 	public ErrorList(View view)
@@ -323,9 +323,9 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		Enumeration<TreeNode> e = node.children();
 		while ( e.hasMoreElements())
 		{
-	        TreeNode n = e.nextElement();
-	        TreePath path = parent.pathByAddingChild(n);
-	        expandAll(path);
+			TreeNode n = e.nextElement();
+			TreePath path = parent.pathByAddingChild(n);
+			expandAll(path);
 		}
 	} //}}}
 
@@ -670,7 +670,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 
 	//{{{ addErrorSource() method
 	private void addErrorSource(ErrorSource source,
-	                            ErrorSource.Error[] errors)
+								ErrorSource.Error[] errors)
 	{
 		if(errors == null || errors.length == 0)
 			return;
@@ -1069,7 +1069,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		clipboard.setContents(stringSelection, null);
 	} //}}}
-	
+
 	//{{{ copySelectedNodeToClipboard() method
 	public void copySelectedNodeToClipboard()
 	{
@@ -1088,7 +1088,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		}
 	} //}}}
 
-	
+
 	//{{{ copyAllNodesToClipboard() method
 	public void copyAllNodesToClipboard()
 	{
@@ -1101,15 +1101,15 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	private void copyNode(TreePath parent, StringBuilder allErrors, String lastPath, Set<String> selectedFiles)
 	{
 		DefaultMutableTreeNode selectedNode =
-			       (DefaultMutableTreeNode)parent.getLastPathComponent();
-		
-		if (selectedNode.getUserObject() instanceof ErrorSource.Error) 
-		{		
+				   (DefaultMutableTreeNode)parent.getLastPathComponent();
+
+		if (selectedNode.getUserObject() instanceof ErrorSource.Error)
+		{
 			ErrorSource.Error error = (ErrorSource.Error) selectedNode.getUserObject();
 
-			if (!lastPath.equals(error.getFilePath()) && !selectedFiles.contains(error.getFilePath())) 
+			if (!lastPath.equals(error.getFilePath()) && !selectedFiles.contains(error.getFilePath()))
 			{
-				if (!"".equals(lastPath)) 
+				if (!"".equals(lastPath))
 				{
 					allErrors.append("\n");
 				}
@@ -1118,18 +1118,18 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 				lastPath = error.getFilePath();
 				selectedFiles.add(error.getFilePath());
 			}
-	
+
 			allErrors.append(formatErrorDisplay(error));
 			allErrors.append("\n");
-		} 
-		else if (selectedNode.getUserObject() instanceof Extra) 
+		}
+		else if (selectedNode.getUserObject() instanceof Extra)
 		{
 			Extra extra = (Extra) selectedNode.getUserObject();
 
-			allErrors.append(extra.toString().trim());
+			allErrors.append(extra.toString().replaceAll("\n", ""));
 			allErrors.append("\n");
-			
-		} 
+
+		}
 		else if (selectedNode.getUserObject() instanceof String)
 		{
 			// This is a file name
@@ -1139,7 +1139,7 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 			{
 				allErrors.append(fileName);
 				allErrors.append("\n");
-	
+
 				// Keep track of Selected files, so that we don't accidentally get a a double selection if a node
 				// is selected as well
 				selectedFiles.add(fileName);
@@ -1150,13 +1150,13 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		Enumeration<TreeNode> e = node.children();
 		while ( e.hasMoreElements())
 		{
-	        TreeNode n = e.nextElement();
-	        TreePath path = parent.pathByAddingChild(n);
-	        copyNode(path, allErrors, lastPath, selectedFiles);
+			TreeNode n = e.nextElement();
+			TreePath path = parent.pathByAddingChild(n);
+			copyNode(path, allErrors, lastPath, selectedFiles);
 		}
 	} //}}}
 
-	
+
 
 	//}}}
 
@@ -1308,8 +1308,8 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 		{
 			if (SwingUtilities.isRightMouseButton(evt)) {
 
-		        popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-		        popupMenu.enableSelectOne(!errorTree.isSelectionEmpty());
+				popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				popupMenu.enableSelectOne(!errorTree.isSelectionEmpty());
 
 			} else {
 				TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
