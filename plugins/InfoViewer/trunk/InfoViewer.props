@@ -6,7 +6,7 @@ plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius
 plugin.infoviewer.InfoViewerPlugin.version=1.6.3
 plugin.infoviewer.InfoViewerPlugin.docs=index.html
 plugin.infoviewer.InfoViewerPlugin.description=A Swing-based web browser, which can also provide a replacement for HelpViewer.
-plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 05.00.99.01
+plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 05.00.99.00
 plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.6
 
 # Two option panes
