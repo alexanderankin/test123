@@ -383,6 +383,10 @@ public class AntCompleteTask extends Task
 				{
 					attrType = "CDATA";
 				}
+				catch (NoClassDefFoundError ncdfe) {
+				    System.out.println("!!! Check that commons-net.XXX.jar is installed as an Ant library !!!");
+				    throw new BuildException(ncdfe);
+				}
 			}
 			printAttribute(out, attrName, attrType, false);
 		}
