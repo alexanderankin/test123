@@ -84,6 +84,7 @@ public class SqlPlugin extends EBPlugin
 	 *
 	 * @since
 	 */
+	@Override
 	public void start()
 	{
 		final File settingsDir = new File(MiscUtilities.constructPath(
@@ -98,6 +99,15 @@ public class SqlPlugin extends EBPlugin
 		SqlUtils.init();
 	}
 
+	@Override
+	public void stop()
+	{
+		View[] views = jEdit.getViews();
+		for (View view : views)
+		{
+			removeToolBar(view);
+		}
+	}
 
 	/**
 	 *  Description of the Method
@@ -105,6 +115,7 @@ public class SqlPlugin extends EBPlugin
 	 * @param  message  Description of Parameter
 	 * @since
 	 */
+	@Override
 	public void handleMessage(EBMessage message)
 	{
 		if (message instanceof ViewUpdate)
