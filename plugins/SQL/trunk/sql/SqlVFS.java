@@ -95,6 +95,7 @@ public class SqlVFS extends VFS
 	 * @since
 	 */
 	public final static String RUN_ON_LOAD_PROPERTY = "run_on_load";
+	private final LoadListener loadListener;
 
 
 	/**
@@ -105,7 +106,7 @@ public class SqlVFS extends VFS
 	public SqlVFS()
 	{
 		super("sql", READ_CAP | CASE_INSENSITIVE_CAP);
-		EditBus.addToBus(new LoadListener());
+		EditBus.addToBus(loadListener = new LoadListener());
 	}
 
 
@@ -436,6 +437,10 @@ public class SqlVFS extends VFS
 		return path;
 	}
 
+	public void dispose()
+	{
+		EditBus.removeFromBus(loadListener);
+	}
 
 	public static class LoadListener implements EBComponent
 	{

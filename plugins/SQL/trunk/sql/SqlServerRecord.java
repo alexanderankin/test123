@@ -25,7 +25,6 @@ package sql;
 
 import java.awt.*;
 import java.io.*;
-import java.net.*;
 import java.sql.*;
 import java.util.*;
 import java.text.*;
@@ -86,17 +85,6 @@ public class SqlServerRecord extends Properties
 	public final static String PROP_PASSWORD = "password";
 
 	protected static Map allRecordsPerProject = new HashMap();
-
-
-	/**
-	 *  Constructor for the SqlServerRecord object
-	 *
-	 * @param  type  Description of Parameter
-	 * @since
-	 */
-	public SqlServerRecord()
-	{
-	}
 
 
 	/**
@@ -755,6 +743,11 @@ public class SqlServerRecord extends Properties
 			return rv;
 
 		return null;
+	}
+
+	public static void dispose()
+	{
+		allRecordsPerProject = null;
 	}
 }
 

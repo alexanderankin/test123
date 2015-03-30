@@ -23,24 +23,18 @@
 
 package sql;
 
-import java.awt.*;
 import java.util.*;
 import java.sql.*;
-import java.text.*;
 
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.*;
 
 import errorlist.*;
 
 import projectviewer.*;
 import projectviewer.vpt.*;
-
-import sql.*;
-import sql.preprocessors.*;
 
 /**
  *  Description of the Class
@@ -49,7 +43,7 @@ import sql.preprocessors.*;
  */
 public class SqlUtils
 {
-	protected static DefaultErrorSource errorSource = null;
+	protected static DefaultErrorSource errorSource;
 
 	protected static SqlThreadGroup sqlThreadGroup;
 
@@ -161,15 +155,14 @@ public class SqlUtils
 		return errorSource;
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @since
-	 */
 	public static void init()
 	{
 		sqlThreadGroup = new SqlThreadGroup("SQL Queries");
+	}
+
+	public static void dispose()
+	{
+		sqlThreadGroup = null;
 	}
 
 

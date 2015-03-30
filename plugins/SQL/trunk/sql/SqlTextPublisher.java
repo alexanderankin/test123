@@ -56,7 +56,7 @@ public class SqlTextPublisher
 	protected final static DateFormat dFormat =
 	        new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss", Locale.US);
 
-	protected static Map preprocessors = null;
+	protected static Map preprocessors;
 
 	protected static String lastRunQuery = null;
 	protected static int lastStartPos = 0;
@@ -580,12 +580,6 @@ public class SqlTextPublisher
 
 	}
 
-
-	/**
-	 *Description of the Method
-	 *
-	 * @since
-	 */
 	protected static void fillPreprocessors()
 	{
 		preprocessors = new TreeMap();
@@ -605,6 +599,11 @@ public class SqlTextPublisher
 				Log.log(Log.ERROR, SqlTextPublisher.class, ex);
 			}
 		}
+	}
+
+	public static void dispose()
+	{
+		preprocessors = null;
 	}
 
 }

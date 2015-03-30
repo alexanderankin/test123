@@ -1,3 +1,10 @@
+2015-03-30        Matthieu Casanova
+
+	* Use ThreadUtilities instead of VFSManager
+	* Unload the toolbar when unloading the plugin
+	* Automatically hide Resultset tab when there are no more resultsets
+	* Fix plugin unload
+
 2009-12-31        svu
 
 	* services.xml, sql/SqlPlugin.java, sql/SqlPluginPVListener.java:
