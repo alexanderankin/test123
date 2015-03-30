@@ -34,7 +34,6 @@ import org.w3c.dom.*;
 import org.xml.sax.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
@@ -89,7 +88,7 @@ public class SqlServerType extends Properties
 	 */
 	public final static String DEFAULT_STMT_DELIMITER_REGEX = "defStatementDelimiterRegex";
 
-	protected static Map allTypes = null;
+	protected static Map allTypes;
 
 	protected static DocumentBuilder docBuilder = null;
 

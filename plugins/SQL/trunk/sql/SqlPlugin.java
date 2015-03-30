@@ -40,6 +40,7 @@ import projectviewer.event.*;
 import projectviewer.config.*;
 import projectviewer.vpt.*;
 
+import sql.ResultSetWindow.BufferListener;
 import sql.options.*;
 
 /**
@@ -77,6 +78,7 @@ public class SqlPlugin extends EBPlugin
 	public static ImageIcon icon;
 
 	protected static SqlVFS sqlVFS;
+	private BufferListener bufferListener;
 
 
 	/**
@@ -94,7 +96,7 @@ public class SqlPlugin extends EBPlugin
 
 		registerJdbcClassPath();
 
-		EditBus.addToBus(new ResultSetWindow.BufferListener());
+		EditBus.addToBus(bufferListener = new BufferListener());
 
 		SqlUtils.init();
 	}
@@ -102,11 +104,22 @@ public class SqlPlugin extends EBPlugin
 	@Override
 	public void stop()
 	{
+		EditBus.removeFromBus(bufferListener);
 		View[] views = jEdit.getViews();
 		for (View view : views)
-		{
 			removeToolBar(view);
-		}
+
+		Buffer[] buffers = jEdit.getBuffers();
+		for (Buffer buffer : buffers)
+			buffer.setProperty(ResultSetWindow.RESULT_SETS_BUF_PROPERTY, null);
+
+		SqlUtils.dispose();
+		SqlServerRecord.dispose();
+		SqlTextPublisher.dispose();
+		SqlServerType.dropAll();
+		SqlVFS sql = (SqlVFS) VFSManager.getVFSForProtocol("sql");
+		if (sql != null)
+			sql.dispose();
 	}
 
 	/**
