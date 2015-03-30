@@ -25,24 +25,14 @@ package sql;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
-import java.sql.*;
 import java.util.*;
-import java.util.regex.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.text.Element;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
-
-import common.gui.*;
-
-import sql.*;
 
 /**
  *  Description of the Class
@@ -64,7 +54,7 @@ public class ResultSetWindow extends JPanel
 	 * @param  view  Description of Parameter
 	 * @since
 	 */
-	public ResultSetWindow(View view)
+	public ResultSetWindow(final View view)
 	{
 		this.view = view;
 
@@ -96,19 +86,16 @@ public class ResultSetWindow extends JPanel
 			        }
 		        });
 
-		notebook.addContainerListener(new ContainerListener()
-		                              {
-			                              public void componentAdded(ContainerEvent e)
-			                              {
-				                              componentRemoved(e);
-			                              }
-
-			                              public void componentRemoved(ContainerEvent e)
-			                              {
-				                              closeAllBtn.setEnabled(notebook.getComponentCount() != 0);
-			                              }
-		                              });
-
+		notebook.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent e)
+			{
+				closeAllBtn.setEnabled(notebook.getTabCount() != 0);
+				if (notebook.getTabCount() == 0)
+					view.getDockableWindowManager().hideDockableWindow("sql.resultSet");
+			}
+		});
 		closeAllBtn.setEnabled(false);
 
 		status.setText(jEdit.getProperty("sql.resultSet.status",
@@ -117,7 +104,8 @@ public class ResultSetWindow extends JPanel
 		SqlUtils.getThreadGroup().addListener(
 		        new SqlThreadGroup.Listener()
 		        {
-			        public void groupChanged(final int numberOfActiveThreads)
+			        @Override
+					public void groupChanged(final int numberOfActiveThreads)
 			        {
 				        SwingUtilities.invokeLater(
 				                new Runnable()
@@ -139,6 +127,7 @@ public class ResultSetWindow extends JPanel
 	 * @return    The Name value
 	 * @since
 	 */
+	@Override
 	public String getName()
 	{
 		return SqlPlugin.resultSetWinName;
@@ -215,7 +204,7 @@ public class ResultSetWindow extends JPanel
 
 	public static class BufferListener implements EBComponent
 	{
-
+		@Override
 		public void handleMessage(EBMessage msg)
 		{
 			if (!(msg instanceof BufferUpdate))
