@@ -43,9 +43,9 @@ import javax.swing.event.ListSelectionListener;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
+import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.vpt.VPTProject;
 import sql.SqlServerRecord;
 import sql.SqlUtils;
@@ -66,9 +66,9 @@ public class ServersOptionPane extends SqlOptionPane
 	private JButton importServerBtn;
 	private JButton exportServerBtn;
 
-	private JDialog parentDialog = null;
+	private JDialog parentDialog;
 
-	private VPTProject project;
+	private final VPTProject project;
 
 
 	/**
@@ -89,6 +89,7 @@ public class ServersOptionPane extends SqlOptionPane
 	 *
 	 * @since
 	 */
+	@Override
 	public void _init()
 	{
 		super._init();
@@ -240,12 +241,14 @@ public class ServersOptionPane extends SqlOptionPane
 				        Log.log(Log.DEBUG, ServersOptionPane.class,
 				                "Exporting " + name + " to the file: " + file);
 
-				        VFSManager.runInWorkThread(new Runnable() {
-					                                   public void run()
-					                                   {
-						                                   rec.exportTo(file, parentDialog);
-					                                   }
-				                                   });
+						ThreadUtilities.runInBackground(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								rec.exportTo(file, parentDialog);
+							}
+						});
 			        }
 		        }
 		);
@@ -270,7 +273,7 @@ public class ServersOptionPane extends SqlOptionPane
 					        if (name == null)
 						        return;
 
-					        if ("".equals(name))
+					        if (name.isEmpty())
 					        {
 						        GUIUtilities.message(parentDialog,
 						                             "sql.configurationError",
@@ -294,24 +297,25 @@ public class ServersOptionPane extends SqlOptionPane
 						        continue;
 					        }
 
-					        VFSManager.runInWorkThread(new Runnable() {
-						                                   public void run()
-						                                   {
-							                                   final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
-							                                   if (rec == null)
-								                                   return;
+							ThreadUtilities.runInBackground(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
+									if (rec == null)
+										return;
 
-							                                   rec.setName(name);
-							                                   rec.save(project);
-											   EventQueue.invokeLater(new Runnable() {
-								                                                             public void run()
-								                                                             {
-									                                                             updateServerList();
-								                                                             }
-							                                                             });
-						                                   }
-					                                   });
-				        }
+									rec.setName(name);
+									rec.save(project);
+									EventQueue.invokeLater(new Runnable() {
+										public void run() {
+											updateServerList();
+										}
+									});
+								}
+							});
+						}
 
 			        }
 		        }
@@ -322,19 +326,19 @@ public class ServersOptionPane extends SqlOptionPane
 		addAncestorListener(this);
 	}
 
-
+	@Override
 	public void ancestorAdded(AncestorEvent evt)
 	{
 		final Component cp = this.getTopLevelAncestor();
 		parentDialog = (cp instanceof JDialog) ? (JDialog) cp : null;
 	}
 
-
+	@Override
 	public void ancestorMoved(AncestorEvent evt)
 	{
 	}
 
-
+	@Override
 	public void ancestorRemoved(AncestorEvent evt)
 	{
 		ancestorAdded(evt);
@@ -346,6 +350,7 @@ public class ServersOptionPane extends SqlOptionPane
 	 *
 	 * @since
 	 */
+	@Override
 	public void _save()
 	{
 		for (Iterator e = SqlServerRecord.getAllRecords(project).values().iterator(); e.hasNext();)
