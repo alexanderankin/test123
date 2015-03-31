@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Derby">
+
+  <!-- Our first choice is the open source derby driver. 
+       This comes with Derby 10.1 and is in derbyclient.jar -->
+  <driverClass>org.apache.derby.jdbc.ClientDriver</driverClass>
+  
+  <!-- The old IBM driver that Cloudscape came with.
+       Works in Cloudscape, any Derby version
+  <driverClass>com.ibm.db2.jcc.DB2Driver</driverClass>
+  -->
+
+  <connection>
+    <parameter name="host" default="localhost"/>
+    <parameter name="port" default="1527"/>
+    <parameter name="database" default=""/> 
+    <parameter name="attributes" default="retrieveMessagesFromServerOnGetMessage=true;"/>
+    <parameter name="user" default=""/>
+    <parameter name="password" default=""/>
+   
+    <string>jdbc:derby://{host}/{database};{attributes}</string>
+
+  </connection>
+  
+  <statements>
+  
+    <!-- Retrieve the Groups that have a child table/view -->
+    <statement purpose="selectObjectGroups">
+      select distinct s.schemaname 
+        from sys.sysschemas s, sys.systables t
+       where s.schemaid = t.schemaid
+    </statement>
+    
+    <!-- For each Groups from selectObjectGroups, show it's tables and views -->
+    <statement purpose="selectTablesInGroup">
+      select t.tablename
+        from sys.sysschemas s, sys.systables t
+       where s.schemaid = t.schemaid
+         and s.schemaname = ?
+    </statement>
+    
+  </statements>
+
+</serverType>
