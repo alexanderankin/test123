@@ -20,8 +20,10 @@
  */
 package gatchan.jedit.hyperlinks;
 
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PositionChanging;
 
 /**
  * This hyperlink will open a file path in jEdit.
@@ -40,6 +42,7 @@ public class jEditOpenFileHyperlink extends AbstractHyperlink
 
 	public void click(View view)
 	{
+		EditBus.send(new PositionChanging(view.getTextArea()));
 		jEdit.openFile(view, path);
 	}
 }
