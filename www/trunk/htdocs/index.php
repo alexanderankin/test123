@@ -4,31 +4,23 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link href="https://plus.google.com/105573242513550708576" rel="publisher" />
 <?php
-		$page = trim($_GET['page']);
+        $page = trim($_GET['page']);
 
-		if ($page == "")
-			$page = "main";
+        if ($page == "")
+            $page = "main";
 ?>
-<title> jEdit - Programmer's Text Editor - 
+<title> jEdit - Programmer's Text Editor -
 <?php include($page.".title"); ?>
 </title>
 
 <link href="stylesheet.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript">
-  var uvOptions = {};
-  (function() {
-    var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
-    uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/PBf9IJPQtpxVh9tbgSth2A.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
-  })();
-</script>
 </head>
 
 <body>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 27 May 2014 | <?php /* */?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php /**/?>Stable Version: <a class="header_text" href="CHANGES51.txt">5.1.0</a></p>
+      <p class="header_text">Last Site Update: 07 February 2015 | <?php /* * /?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php/**/?>Stable Version: <a class="header_text" href="CHANGES52.txt">5.2.0</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
@@ -40,7 +32,7 @@
   <tr>
     <td width="9" rowspan="3">&nbsp;</td>
     <td height="100" colspan="3" align="center" valign="middle">
-	<table width="100%"  border="0" cellspacing="0" cellpadding="0">
+    <table width="100%"  border="0" cellspacing="0" cellpadding="0">
       <tr>
         <td width="200" height="100" align="center" valign="middle">&nbsp;</td>
         <td align="center" valign="middle">
@@ -49,7 +41,7 @@
 
   </td>
         <td width="200" align="left" valign="middle">
-			<table border="0" align="right" cellpadding="3" cellspacing="0">
+            <table border="0" align="right" cellpadding="3" cellspacing="0">
             <tr valign="middle">
               <td colspan="2"><center>
                   <a href="index.php?page=download"><img src="images/logo64.png" width="64" height="64" border="0" /></a>
@@ -116,11 +108,11 @@
             <tr>
               <td width="12"><img src="images/button.png" width="12" height="12" /></td>
               <td><a class="menu_links" href="http://community.jedit.org/">jEdit Community</a></td>
-            </tr>         
+            </tr>
             <tr>
               <td width="12"><img src="images/button.png" width="12" height="12" /></td>
               <td><a class="menu_links" href="http://community.jedit.org/wiki/">jEdit Wiki</a></td>
-            </tr>         
+            </tr>
             <tr bgcolor="#BBBBBB">
               <td colspan="2"><span class="menu_headings">Help</span></td>
             </tr>
@@ -154,9 +146,17 @@
             </tr>
             <tr>
               <td colspan="2" class="menu_links" align="center">
+                <A href="http://www.jetbrains.com/idea/"><IMG
+                   src="images/logo_intellij_idea.png"
+                   title="IntelliJ IDEA license provided free to jEdit developers for improving jEdit."
+                   width="100" height="20" border="0" alt="IntelliJ IDEA Logo"></A>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="menu_links" align="center">
                 <A href="http://www.ej-technologies.com/products/jprofiler/overview.html"><IMG
                    src="images/jProfiler.png"
-				   title="JProfiler licenses provided free to jEdit developers for improving jEdit."
+                   title="JProfiler license provided free to jEdit developers for improving jEdit."
                    width="100" height="26" border="0" alt="JProfiler Logo"></A>
               </td>
             </tr>
@@ -165,8 +165,8 @@
             </tr>
             <tr>
               <td colspan="2" class="menu_links" align="center">
-                <a href="http://sourceforge.net/project/project_donations.php?group_id=588"><img border="0" width="72" height="29" src="http://sourceforge.net/images/x-click-but7.gif" 
-				title="Make a donation with PayPal - it's fast, free and secure!" /></a>
+                <a href="http://sourceforge.net/project/project_donations.php?group_id=588"><img border="0" width="72" height="29" src="http://sourceforge.net/images/x-click-but7.gif"
+                title="Make a donation with PayPal - it's fast, free and secure!" /></a>
               </td>
             </tr>
         </table></td>

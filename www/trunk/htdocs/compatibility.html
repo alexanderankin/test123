@@ -10,23 +10,17 @@
 <li><a href="#macx">Mac OS X</a></li>
 <li><a href="#vms">VMS</a></li>
 </ul>
-
-<p> jEdit 4.5 <b>requires</b> JRE 1.6 (aka Java 6) or later. </p>
-<p> jEdit 4.3.3 is the last release to support Sun's JRE 1.5 (aka Java 5) or later. </p>
-
-<h3> What about OpenJDK? </h3>
-<p>
-OpenJDK 1.5 used to be problematic with jEdit 4.3, but so far,
-<tt>openjdk-6-jdk</tt> and <tt>openjdk-7-jdk</tt> both <i>seem</i> to run jEdit 4.5 on Linux without compatibility problems. </p>
+<p> jEdit 5.2 <b>requires</b> JRE 1.7 (aka Java 7) or later. 
+<p> jEdit 4.5 - 5.1 <b>require</b> JRE 1.6 (aka Java 6) or later. </p>
+<p> jEdit 4.3.3 is the last release to support Sun's Java 5. </p>
 
 <h2><a name="win">Windows/Linux</a></h2>
 
 <p><a href="http://java.com/en/download/index.jsp">Oracle</a> provides
-a 1.6 VM (aka 6 VM) for Windows, Linux, and Solaris.</p
->
+a Java VM for Windows, Linux, and Solaris.</p>
 
 <p><a href="http://www.ibm.com/developerworks/java/">IBM</a> provides
-a 1.6 VM (aka 6 VM) for Linux, AIX, and OS/390. There may be some compatibility issues since are very few developers who test that platform.  </p>
+a Java VM for Linux, AIX, and OS/390. There may be some compatibility issues since are very few developers who test that platform.  </p>
 
 <p>Some Linux distributions (Debian, Ubuntu) used to have Sun's java in the "non-free" section of 
 their repository to get packages like <tt>sun-java6-jdk</tt>.
@@ -45,29 +39,32 @@ Java HotSpot(TM) Client VM (build 1.4.2_11-b06, mixed mode)
 sh-3.1$ <b>sudo apt-get install openjdk-6-jdk</b> # or <b>sun-java6-jdk</b>, or <b>default-jdk</b>
 </pre>
 
-<p> Maybe it is already installed but not set up as the default java. To change the default version of java at any time, use <tt>update-alternatives</tt>.  </p>
+<p> Maybe it is already installed but not set up as the default java. To see the existing system versions, and choose the default system version of java at any time, use <tt>update-alternatives</tt>.  </p>
 <pre>
 $ <b>sudo update-alternatives --config java</b>
-There are 4 alternatives which provide `java'.
+[ezust@cerberus] /home/ezust/workspace/m3uplayer> update-alternatives --config java
+There are 2 choices for the alternative java (providing /usr/bin/java).
 
-  Selection    Alternative
------------------------------------------------
-          1    /usr/lib/jvm/java-1.5.0-sun/jre/bin/java
-          2    /usr/bin/gij-wrapper-4.1
- +        3    /usr/lib/jvm/java-gcj/jre/bin/java
-*         4    /usr/lib/jvm/java-6-sun/jre/bin/java
+  Selection    Path                                            Priority   Status
+------------------------------------------------------------
+* 0            /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java   1071      auto mode
+  1            /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java   1061      manual mode
+  2            /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java   1071      manual mode
 </pre>
 
 <p> See <a href="http://tuxicity.wordpress.com/2007/01/31/howto-switching-from-sun-java5-to-sun-java6-in-ubuntu610-edgy/">this howto</a> for more details about java alternatives. </p>
 
 <h2><a name="macx">Mac OS X </a></h2>
 
-Go to the <a href="http://support.apple.com/kb/HT4141">Support.apple.com</a>
-grab the latest version of Java 1.6 (aka Java 6) that you can for your platform. 
-For example, at the time this website was last updated, you can get JDK 1.6.0_20. 
+<p> For Java 7, go to <a href="http://java.com/en/download/index.jsp">Oracle</a>. </p>
+
+<p>For Java 6, it should be installed automatically by the app store, but if you still can't
+find it, go to the <a href="http://support.apple.com/kb/HT4141">Support.apple.com</a>
+grab the latest version of Java 6 that you can for your platform.
+</p>
+
 
 <h2><a name="vms">VMS</a></h2>
 
 <p>Java virtual machines for VMS on Alpha can be downloaded from
-<a href="http://h18012.www1.hp.com/java/download/index.html">HP</a>; be sure to get the Java 1.6 (aka Java 6) version, and read and follow instructions about supported VMS versions and patches.</p>
-
+<a href="http://h18012.www1.hp.com/java/download/index.html">HP</a>; read and follow instructions about supported VMS versions and patches.</p>

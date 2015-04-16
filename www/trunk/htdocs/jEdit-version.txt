@@ -1,9 +1,8 @@
-.version 5.2pre1
-.build 05.02.01.00
-.stablebuild 05.01.99.00
+.version 5.2.0
+.build 05.02.99.00
+.stablebuild 05.02.99.00
 
-The current development version is 5.2pre1. You can find a list of major
+There is currently no development version
+
+The current stable version is 5.2.0. You can find a list of major
 changes since 5.1 at www.jedit.org/CHANGES52.txt
-
-The current stable version is 5.1.0. You can find a list of major
-changes since 5.0 at www.jedit.org/CHANGES51.txt

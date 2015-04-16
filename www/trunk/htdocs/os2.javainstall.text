@@ -1,0 +1,30 @@
+<!-- begin os2.javainstall.text -->
+
+<!-- for jEdit: :mode=php:indentSize=2:tabSize=2:noTabs=true: -->
+
+<p>To find out which Java virtual machine is best for running jEdit on OS/2,
+see the <a href="index.php?page=compatibility">compatibility</a> page.</p>
+
+<p>To install jEdit, open a command prompt and
+enter the following commands:</p>
+
+<pre>cd <i>directory where you downloaded the JAR file</i>
+java -jar <i>filename</i>.jar</pre>
+
+<p>For example, if you downloaded <code>jedit40install.jar</code>
+into <code>C:\Downloads</code>,
+you would enter:</p>
+
+<pre>cd C:\Downloads
+java -jar jedit40install.jar</pre>
+
+<p>If for whatever reason
+you want to start the installer in text-only mode, specify
+<code>text</code> as the last parameter on the command line. In text only mode,
+the installer will not display it's GUI, and instead it will ask
+questions from the command prompt.</p>
+
+<p>To start jEdit, run the <code>jedit.cmd</code> script, which will be
+installed in the same directory as jEdit.</p>
+
+<!-- end os2.javainstall.text -->
