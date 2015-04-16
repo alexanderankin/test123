@@ -7,207 +7,77 @@
 <h2>General</h2>
 
 <ul>
-<li>Combines the best functionality of Unix, Windows and MacOS text editors.
-<li>Runs on any operating system with a Java 1.6 or higher virtual
+<li>Combines the best functionality of Unix, Windows and MacOS text editors. </li>
+<li>Runs on any operating system with a Java 1.6 or higher virtual </li>
 machine - this includes MacOS X, Linux, Unix, VMS and Windows.
 <li>Efficient keyboard shortcuts for everything, with predefined keymaps for 
-Emacs, Intellij IDEA, and Mac OSX <b>(5.0)</b>
-<li>Comprehensive online help
-<li>Unlimited undo/redo
+Emacs, Intellij IDEA, and Mac OSX <b>(5.0)</b> </li>
+<li>Comprehensive online help </li>
+<li>Unlimited undo/redo </li>
 <li>Copy and paste with an unlimited number of clipboards (known as "registers")
-<li>Register contents are saved across editing sessions 
-<li>"Kill ring" automatically remembers previously deleted text 
+<li>Register contents are saved across editing sessions </li>
+<li>"Kill ring" automatically remembers previously deleted text </li> 
 <li>Rich set of keyboard commands for manipulating entire words, lines and
-paragraphs at a time
+paragraphs at a time </li>
 <li>"Markers" for remembering positions in files to return to later
-<li>Marker locations are saved across editing sessions
+<li>Marker locations are saved across editing sessions </li>
 <li>Any number of editor windows may be open, each window may be split into
 several areas, each area can view a different file and keep track of an
-independent set of buffers. Alternatively, different
-locations in one file can be viewed in more than one area
+independent set of buffers. Alternatively, different 
+locations in one file can be viewed in more than one area </li>
 <li>Multiple open windows and split windows are remembered between editing
-sessions 
-<li>Rectangular selection
+sessions </li>
+<li>Rectangular selection </li>
 <li>Multiple selection (sometimes known as "discontinuous" or "additive"
 selection) for manipulating several chunks of text at once
-<li>Word wrap
+<li>Word wrap </li>
 </ul>
 
-<h2>Syntax Highlighting</h2>
+<a name="modes">
+<h2>Syntax Highlighting Modes</h2> </a>
+<h3> Supported File Types / Languages in jEdit 5.1: 211</h3>
+ <table><tbody><tr>
+	<td>actionscript</td>	<td>ada</td>	<td>ada95</td>	<td>ant</td>	<td>antlr</td>	<td>apacheconf</td>  </tr><tr>
+	<td>apdl</td>	<td>applescript</td>	<td>asp</td>	<td>aspect-j</td>	<td>assembly-agc</td>	<td>assembly-ags</td>  </tr><tr>
+	<td>assembly-m68k</td>	<td>assembly-macro32</td>	<td>assembly-mcs51</td>	<td>assembly-r2000</td>	<td>assembly-parrot</td>	<td>assembly-x86</td>  </tr><tr>
+	<td>avro</td>	<td>awk</td>	<td>b</td>	<td>batch</td>	<td>bbj</td>	<td>bcel</td>  </tr><tr>
+	<td>beanshell</td>	<td>bibtex</td>	<td>binsource-agc</td>	<td>c</td>	<td>cfscript</td>	<td>chill</td>  </tr><tr>
+	<td>cil</td>	<td>clips</td>	<td>clojure</td>	<td>cmake</td>	<td>cobol</td>	<td>coffeescript</td>  </tr><tr>
+	<td>coldfusion</td>	<td>cplex-lp</td>	<td>c++</td>	<td>c#</td>	<td>css</td>	<td>csv</td>  </tr><tr>
+	<td>cvs-commit</td>	<td>d</td>	<td>dart</td>	<td>django</td>	<td>dot</td>	<td>doxygen</td>  </tr><tr>
+	<td>dsssl</td>	<td>embperl</td>	<td>erlang</td>	<td>eiffel</td>	<td>fhtml</td>	<td>factor</td>  </tr><tr>
+	<td>jflex</td>	<td>forth</td>	<td>fortran</td>	<td>fortran90</td>	<td>foxpro</td>	<td>freemarker</td>  </tr><tr>
+	<td>gcbasic</td>	<td>gettext</td>	<td>gnuplot</td>	<td>go</td>	<td>gradle</td>	<td>groovy</td>  </tr><tr>
+	<td>gsp</td>	<td>haskell</td>	<td>haxe</td>	<td>hxml</td>	<td>hex</td>	<td>hlsl</td>  </tr><tr>
+	<td>htaccess</td>	<td>html</td>	<td>i4gl</td>	<td>icalendar</td>	<td>icon</td>	<td>idl</td>  </tr><tr>
+	<td>inform</td>	<td>inno-setup</td>	<td>ini</td>	<td>interlis</td>	<td>io</td>	<td>jamon</td>  </tr><tr>
+	<td>javacc</td>	<td>java</td>	<td>javafx</td>	<td>javascript</td>	<td>jcl</td>	<td>jedit-actions</td>  </tr><tr>
+	<td>jhtml</td>	<td>jmk</td>	<td>json</td>	<td>jsp</td>	<td>latex</td>	<td>lex</td>  </tr><tr>
+	<td>lilypond</td>	<td>lisp</td>	<td>literate-haskell</td>	<td>logs</td>	<td>logtalk</td>	<td>lotos</td>  </tr><tr>
+	<td>lua</td>	<td>macroscheduler</td>	<td>mail</td>	<td>makefile</td>	<td>maple</td>	<td>maven</td>  </tr><tr>
+	<td>metapost</td>	<td>mxml</td>	<td>ml</td>	<td>modula3</td>	<td>moin</td>	<td>mqsc</td>  </tr><tr>
+	<td>myghty</td>	<td>mysql</td>	<td>n3</td>	<td>netrexx</td>	<td>nqc</td>	<td>nsis2</td>  </tr><tr>
+	<td>objective-c</td>	<td>objectrexx</td>	<td>occam</td>	<td>omnimark</td>	<td>outline</td>	<td>pascal</td>  </tr><tr>
+	<td>patch</td>	<td>perl</td>	<td>php</td>	<td>pike</td>	<td>plaintex</td>	<td>PostgreSQL</td>  </tr><tr>
+	<td>pl-sql</td>	<td>pl-sql9</td>	<td>pl1</td>	<td>pop11</td>	<td>postscript</td>	<td>povray</td>  </tr><tr>
+	<td>powerdynamo</td>	<td>powershell</td>	<td>prolog</td>	<td>progress</td>	<td>properties</td>	<td>psp</td>  </tr><tr>
+	<td>ptl</td>	<td>pure</td>	<td>pvwave</td>	<td>pyrex</td>	<td>python</td>	<td>rebol</td>  </tr><tr>
+	<td>redcode</td>	<td>relax-ng-compact</td>	<td>renderman-rib</td>	<td>rd</td>	<td>rest</td>	<td>rhtml</td>  </tr><tr>
+	<td>roff</td>	<td>rpm-spec</td>	<td>rtf</td>	<td>rakefile</td>	<td>ruby</td>	<td>rview</td>  </tr><tr>
+	<td>s+</td>	<td>s#</td>	<td>sas</td>	<td>sbt</td>	<td>scala</td>	<td>scheme</td>  </tr><tr>
+	<td>sgml</td>	<td>sip</td>	<td>rcp</td>	<td>shellscript</td>	<td>shtml</td>	<td>slate</td>  </tr><tr>
+	<td>slax</td>	<td>smalltalk</td>	<td>smarty</td>	<td>sdl/pr</td>	<td>sql-loader</td>	<td>smi-mib</td>  </tr><tr>
+	<td>sqr</td>	<td>squidconf</td>	<td>stata</td>	<td>svn-commit</td>	<td>swig</td>	<td>tcl</td>  </tr><tr>
+	<td>texinfo</td>	<td>tex</td>	<td>text</td>	<td>rfc</td>	<td>tld</td>	<td>tsp</td>  </tr><tr>
+	<td>transact-sql</td>	<td>template-toolkit</td>	<td>twiki</td>	<td>typoscript</td>	<td>url</td>	<td>uscript</td>  </tr><tr>
+	<td>vala</td>	<td>vbscript</td>	<td>velocity</td>	<td>verilog</td>	<td>vhdl</td>	<td>visualbasic</td>  </tr><tr>
+	<td>vrml2</td>	<td>xml</td>	<td>xq</td>	<td>xsl</td>	<td>yab</td>	<td>yaml</td>  </tr></tbody></table>
+<p>Using jEdit 5.1pre1 on Fri Apr 26 02:20:09 PDT 2013 with Oracle Corporation Java 1.7.0_03 on Linux 3.1.0-1-amd64
+ Generated from macro <tt>Misc/Generate Modes List.bsh</tt> </p>
 
-<p>jEdit supports syntax highlighting for more than 200 file types. Some are listed here:</p>
-
-<table cellpadding="2" cellspacing="2">
-<tr>
-<td>ActionScript</td>
-<td>Ada 95</td>
-<td>ANTLR</td>
-<td>Apache HTTPD</td>
-<td>APDL</td>
-<td>AppleScript</td>
-<td>ASP</td>
-</tr>
-<tr>
-<td>Aspect-J</td>
-<td>Assembly</td>
-<td>AWK</td>
-<td>B formal method</td>
-<td>Batch</td>
-<td>BBj</td>
-<td>BCEL</td>
-</tr>
-<tr>
-<td>BibTeX</td>
-<td>C</td>
-<td>C++</td>
-<td>C#</td>
-<td>CHILL</td>
-<td>CIL</td>
-<td>COBOL</td>
-</tr>
-<tr>
-<td>ColdFusion</td>
-<td>CSS</td>
-<td>CVS Commit</td>
-<td>D</td>
-<td>DOxygen</td>
-<td>DSSSL</td>
-<td>Eiffel</td>
-</tr>
-<tr>
-<td>EmbPerl</td>
-<td>Erlang</td>
-<td>Factor</td>
-<td>Fortran</td>
-<td>Foxpro</td>
-<td>FreeMarker</td>
-<td>Fortran</td>
-</tr>
-<tr>
-<td>Gettext</td>
-<td>Groovy</td>
-<td>Haskell</td>
-<td>HTML</td>
-<td>Icon</td>
-<td>IDL</td>
-<td>Inform</td>
-</tr>
-<tr>
-<td>INI</td>
-<td>Inno Setup</td>
-<td>Informix 4GL</td>
-<td>Interlis</td>
-<td>Io</td>
-<td>Java</td>
-<td>JavaScript</td>
-</tr>
-<tr>
-<td>JCL</td>
-<td>JHTML</td>
-<td>JMK</td>
-<td>JSP</td>
-<td>Latex</td>
-<td>Lilypond</td>
-<td>Lisp</td>
-</tr>
-<tr>
-<td>LOTOS</td>
-<td>Lua</td>
-<td>Makefile</td>
-<td>Maple</td>
-<td>ML</td>
-<td>Modula-3</td>
-<td>MoinMoin</td>
-</tr>
-<tr>
-<td>MQSC</td>
-<td>NetRexx</td>
-<td>NQC</td>
-<td>NSIS2</td>
-<td>Objective C</td>
-<td>ObjectRexx</td>
-<td>Occam</td>
-</tr>
-<tr>
-<td>Omnimark</td>
-<td>Parrot</td>
-<td>Pascal</td>
-<td>Patch</td>
-<td>Perl</td>
-<td>PHP</td>
-<td>Pike</td>
-</tr>
-<tr>
-<td>PL-SQL</td>
-<td>PL/I</td>
-<td>Pop11</td>
-<td>PostScript</td>
-<td>Povray</td>
-<td>PowerDynamo</td>
-<td>Progress 4GL</td>
-</tr>
-<tr>
-<td>Prolog</td>
-<td>Properties</td>
-<td>PSP</td>
-<td>PV-WAVE</td>
-<td>Pyrex</td>
-<td>Python</td>
-<td>REBOL</td>
-</tr>
-<tr>
-<td>Redcode</td>
-<td>Relax-NG</td>
-<td>RelationalView</td>
-<td>Rest</td>
-<td>Rib</td>
-<td>RPM spec</td>
-<td>RTF</td>
-</tr>
-<tr>
-<td>Ruby</td>
-<td>Ruby-HTML</td>
-<td>RView</td>
-<td>S+</td>
-<td>S#</td>
-<td>SAS</td>
-<td>Scheme</td>
-</tr>
-<tr>
-<td>SDL/PL</td>
-<td>SGML</td>
-<td>Shell Script</td>
-<td>SHTML</td>
-<td>Smalltalk</td>
-<td>SMI MIB</td>
-<td>SQR</td>
-</tr>
-<tr>
-<td>Squidconf</td>
-<td>SVN Commit</td>
-<td>Swig</td>
-<td>TCL</td>
-<td>TeX</td>
-<td>Texinfo</td>
-<td>TPL</td>
-</tr>
-<tr>
-<td>Transact-SQL</td>
-<td>UnrealScript</td>
-<td>VBScript</td>
-<td>Velocity</td>
-<td>Verilog</td>
-<td>VHDL</td>
-<td>XML</td>
-</tr>
-<tr>
-<td>XSL</td>
-<td>ZPT</td>
-</tr>
-</table>
-
+<p> 
 There are even more contributed syntax highlighting modes at the
-<a href="http://community.jedit.org/modules.php?op=modload&name=downloads&file=index&req=viewdownload&cid=9">jEdit community</a>
+<a href="http://community.jedit.org/modules.php?op=modload&amp;name=downloads&amp;file=index&amp;req=viewdownload&amp;cid=9">jEdit community</a>
 web site.
 
 <h2>Source Code Editing</h2>
@@ -241,7 +111,7 @@ functionality!
 
 <ul>
 <li>Any number of files can be opened at once
-<li>Supports a large number of character encodings including UTF8 and UTF16
+<li>Supports over 160 character encodings including UTF8 and UTF16
 <li>Automatic detection of several character encodings
 <li>Automatic compression and decompression of GZipped (.gz) files
 <li>Any character encoding supported by Java can be used to load and save files
