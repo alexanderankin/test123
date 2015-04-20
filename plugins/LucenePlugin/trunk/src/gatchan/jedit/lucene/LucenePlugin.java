@@ -323,6 +323,19 @@ public class LucenePlugin extends EditPlugin
 		return name;
 	}
 
+	public void updateIndex()
+	{
+		Log.log(Log.DEBUG, this, "Before Update index");
+
+		UpdateIndexDialog dlg = new UpdateIndexDialog(jEdit.getActiveView());
+		dlg.setVisible(true);
+
+		Log.log(Log.DEBUG, this, "After Update index");
+		return;
+	}
+
+	
+	
 	/*
 	 * Open the new index dialog.
 	 * Returns the name of the new index, or null if cancelled.

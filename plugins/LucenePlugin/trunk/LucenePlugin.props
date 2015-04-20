@@ -18,7 +18,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.menu=\
 	lucene.go-to-next-result \
 	lucene.go-to-prev-result \
 	- \
-	lucene.remove-index
+	lucene.update-index
 plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
 plugin.gatchan.jedit.lucene.LucenePlugin.docs=docs/LucenePlugin.html
 plugin.gatchan.jedit.lucene.LucenePlugin.description=\
@@ -32,8 +32,10 @@ lucene.go-to-prev-result.label=Go to previous result
 lucene-search.label=Lucene Search
 lucene-search.title=Search with Lucene
 lucene.remove-index.label=Delete an index
+lucene.update-index.label=View or Remove indexes
 
 lucene.message.NewIndexDialogTitle=New Lucene Index
+lucene.message.UpdateIndexDialogTitle=Update Lucene Indexes
 lucene.message.IndexName=Name:
 lucene.message.Analyzer=Analyzer:
 lucene.message.BadFileName=Index Name contains invalid characters
