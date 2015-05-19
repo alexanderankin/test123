@@ -55,6 +55,8 @@ public class JavaInsightPlugin extends EBPlugin
                     mode = jEdit.getMode("bcel");
                 } else if (JodeVFS.PROTOCOL.equals(vfs.getName())) {
                     mode = jEdit.getMode("java");
+                } else if (ProcyonVFS.PROTOCOL.equals(vfs.getName())) {
+                    mode = jEdit.getMode("java");
                 }
                 if (mode != null) {
                     buffer.setMode(mode);

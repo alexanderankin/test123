@@ -4,8 +4,9 @@ The JavaInsight plugin for jEdit
 The JavaInsight plugin developers/maintainers:
 
     * Kevin A. Burton <burton@relativity.yi.org> (No longer in the project)
-    * André Kaplan <akaplan@jedit.org>
-    * Dirk Möbius <dmoebius@gmx.net>
+    * Andrï¿½ Kaplan <akaplan@jedit.org>
+    * Dirk Mï¿½bius <dmoebius@gmx.net>
+    * Tim Blackler <grepppo@users.sf.net>
 
 
 The JavaInsight plugin uses the following external libraries:
@@ -15,5 +16,7 @@ The JavaInsight plugin uses the following external libraries:
 - BCEL (ByteCode Engineering Library) written by
   Markus Dahm (markus.dahm@berlin.de). BCEL is available at:
   http://jakarta.apache.org/bcel
-
+- The Procyon Decompiler, a program and library written by
+  Mike Strobel (mike.strobel@gmail.com). Procyon is available at:
+  https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler
 
