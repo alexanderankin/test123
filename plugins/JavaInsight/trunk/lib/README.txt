@@ -6,3 +6,8 @@ jode.jar
     A class decompiler library written by Jochen Hoenicke (jochen@gnu.org)
     Homepage: http://jode.sourceforge.net
 
+procyon-decompiler.jar
+	Version 0.5.28
+	
+	A decompiler library written by Mike Strobel (mike.strobel@gmail.com)
+	Homepage: https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler

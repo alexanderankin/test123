@@ -93,7 +93,8 @@ public class VFSLocation extends ClassPath.Location
     }
 
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Enumeration listFiles(final String directory) {
         if (!isDirectory(directory)) {
             return null;

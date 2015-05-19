@@ -30,6 +30,12 @@
             <surname>Burton</surname>
             <othername role="mi">A.</othername>
         </author>
+
+        <author>
+            <firstname>Tim</firstname>
+            <surname>Blackler</surname>
+        </author>
+
     </authorgroup>
 
     <legalnotice>
@@ -60,7 +66,7 @@
     </para>
 
     <para>
-    JavaInsight uses two external libraries:
+    JavaInsight uses three external libraries:
     </para>
 
     <itemizedlist>
@@ -74,11 +80,19 @@
         </para></listitem>
 
         <listitem><para>
-        The decompilation is performed by <emphasis>Jode</emphasis>, a tool written by
+        The decompilation was originally performed only by <emphasis>Jode</emphasis>, a tool written by
         Jochen Hoenicke <email>jochen@gnu.org</email>.
         More information about Jode can be found at
         <ulink url="http://jode.sourceforge.net">http://jode.sourceforge.net</ulink>.
         Jode comes with the JavaInsight plugin.
+        </para></listitem>
+
+        <listitem><para>
+        It is also possible to perform decompilation using <emphasis>Procyon</emphasis>, a tool written by
+        Mike Strobel <email>mike.strobel@gmail.com</email>.
+        More information about Procyon can be found at
+        <ulink url="https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler">https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler</ulink>.
+        Procyon comes with the JavaInsight plugin.
         </para></listitem>
     </itemizedlist>
 
@@ -100,6 +114,15 @@
     </para>
 
     <variablelist>
+        <varlistentry>
+            <term>Decompile with Procyon</term>
+
+            <listitem><para>
+            Decompiles the currently selected file with Procyon. The file should
+            be a class file, otherwise you&#39;ll get an error.
+            </para></listitem>
+        </varlistentry>
+
         <varlistentry>
             <term>Decompile with Jode</term>
 
@@ -133,6 +156,13 @@
     ZIP archive. Install to Archive plugin to browse JAR/ZIP files with the
     filesystem browser.
     </para>
+
+    <para>
+    Note: Although it is possible to use Procyon to decompile an entire jar, 
+    this has not yet been implemented within JavaInsight, although this may be included in 
+    a subsequent release.
+    </para>
+
 </chapter>
 
 
@@ -147,7 +177,7 @@
     </para>
 
     <para>
-    The following options can be set:
+    The following options can be set for the Jode Decompiler:
     </para>
 
     <variablelist>
@@ -218,6 +248,114 @@
 
     </variablelist>
 
+    <para>
+    The following options can be set for the Procyon Decompiler:
+    </para>
+
+    <variablelist>
+
+        <varlistentry>
+            <term>Attempt to merge variables</term>
+
+            <listitem><para>
+			Attempt to merge as many variables as possible.  This may lead to fewer declarations,
+            but at the expense of inlining and useful naming.  This feature is experimental and
+            may be removed or become the standard behavior in future releases.
+            </para></listitem>
+        </varlistentry>
+        
+        <varlistentry>
+            <term>Force explicit imports</term>
+
+            <listitem><para>
+			Force explicit type imports (i.e., never import '*').
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Always print type arguments to generic methods</term>
+
+            <listitem><para>
+			Always print type arguments to generic methods
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Do not remove redundant explicit casts.</term>
+
+            <listitem><para>
+			Do not remove redundant explicit casts.
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Remove Braces in Switch Blocks.</term>
+
+            <listitem><para>
+			Flatten the switch block by dropping the braces statements around 
+			switch sections when possible.
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Show compiler generated members.</term>
+
+            <listitem><para>
+			Show synthetic (compiler-generated) members.
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Show unoptimized AST byte-code.</term>
+
+            <listitem><para>
+			(Unused option)Displays unoptiomised code when generating AST 
+			byte code.
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Exclude nested types.</term>
+
+            <listitem><para>
+			Exclude nested types when decompiling their enclosing types.
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Do not lift the contents of switches.</term>
+
+            <listitem><para>
+			Do not lift the contents of switches having only a default label.
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Enable eager loading of method bodies.</term>
+
+            <listitem><para>
+			Enable eager loading of method bodies (may speed up decompilation 
+			of larger archives).
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Simplify type-qualified member references.</term>
+
+            <listitem><para>
+			Simplify type-qualified member references in Java output [EXPERIMENTAL].
+			</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Disable &#39;for each&#39; loop transforms.</term>
+
+            <listitem><para>
+			Disable &quot;for each&quot; loop transforms.
+			</para></listitem>
+        </varlistentry>
+
+    </variablelist>
 </chapter>
 
 
@@ -256,6 +394,10 @@
         </para></listitem>
 
         <listitem><para>
+            Tim Blackler<email>grepppo@users.sf.net</email>
+        </para></listitem>
+
+        <listitem><para>
             jEdit-users mailing-list
             <email>jedit-users@lists.sourceforge.net</email>
         </para></listitem>
@@ -273,6 +415,17 @@
 
     <para>
     <variablelist>
+    <varlistentry>
+        <term>VERSION 1.1 (Tim Blackler)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                <para>
+                Added ability to decompile using Procyon (v0.5.28); This allows the decompilation
+                of java classes from Java 5 onwards.
+                </para>
+            </listitem></itemizedlist>
+        </listitem>
+    </varlistentry>
     <varlistentry>
         <term>VERSION 1.0 (Dirk M&ouml;bius)</term>
         <listitem><itemizedlist>

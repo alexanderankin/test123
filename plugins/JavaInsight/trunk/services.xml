@@ -14,5 +14,9 @@
 	<SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="jode">
 		new javainsight.JodeVFS();
 	</SERVICE>
+
+	<SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="procyon">
+		new javainsight.ProcyonVFS();
+	</SERVICE>
 </SERVICES>
 
