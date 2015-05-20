@@ -41,10 +41,12 @@ public class ProjectWatcher
 	@EBHandler
 	public void handlePluginUpdate(PluginUpdate pu) 
 	{
-		if (PluginUpdate.LOADED.equals(pu.getWhat()) && LucenePlugin.instance.isProjectViewerAvailable())
+		if (PluginUpdate.LOADED.equals(pu.getWhat()) && LucenePlugin.isProjectViewerAvailable())
 		{
 			View view = jEdit.getActiveView();
-			LucenePlugin.instance.setCurrentIndex(view, LucenePlugin.instance.getProjectName(view));
+			if (view == null) // it can happens at jEdit's startup
+				return;
+			LucenePlugin.instance.setCurrentIndex(view, LucenePlugin.getProjectName(view));
 		}
 	}
 
