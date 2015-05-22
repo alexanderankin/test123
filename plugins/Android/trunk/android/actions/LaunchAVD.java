@@ -29,7 +29,11 @@ public class LaunchAVD implements Command {
         public Vector<String> doInBackground() {
             Vector<String> avds = new Vector<String>();
             try {
-                Process p = Runtime.getRuntime().exec( "android list avd" );
+                String sdkPath = jEdit.getProperty("android.sdk.path", "");
+                if (!sdkPath.isEmpty()) {
+                    sdkPath += "/tools/";   
+                }
+                Process p = Runtime.getRuntime().exec( sdkPath + "android list avd" );
                 BufferedReader in = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
                 while ( true ) {
                     String line = in.readLine();
@@ -69,7 +73,7 @@ public class LaunchAVD implements Command {
                 dialog.setContentPane( content );
 
                 // create the components
-                final JList avdList = new JList( avds );
+                final JList<String> avdList = new JList<String>( avds );
                 avdList.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
                 // ok/cancel panel
@@ -91,14 +95,13 @@ public class LaunchAVD implements Command {
                 // add listeners
                 ok.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent event ) {
-                        Object[] selected = avdList.getSelectedValues();
-                        if ( selected == null || selected.length == 0 ) {
+                        List<String> selected = avdList.getSelectedValuesList();
+                        if ( selected == null || selected.size() == 0 ) {
                             Util.showError( view, jEdit.getProperty( "android.Error", "Error" ), jEdit.getProperty( "android.No_AVDs_selected_to_launch.", "No AVDs selected to launch." ) );
                             return;
                         }
                         dialog.dispose();
-                        for ( int i = 0; i < selected.length; i++ ) {
-                            String avd = ( String ) selected[i];
+                        for ( String avd : selected ) {
                             startEmulator( avd );
                         }
                     }

@@ -34,8 +34,8 @@
     <property name="install.dir" value=".."/>
     <property name="build.dir" value="build"/>
     <property name="jedit.plugins.dir" value="${install.dir}" />
-    <property name="compiler.source" value="1.5" />
-    <property name="compiler.target" value="1.5" />
+    <property name="compiler.source" value="1.6" />
+    <property name="compiler.target" value="1.6" />
 	
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -65,7 +65,8 @@
              srcdir="${src.dir}" 
              target="${compiler.target}"
              bootclasspath="${compiler.bootclasspath}"
-             extdirs="${compiler.extdirs}">
+             extdirs="${compiler.extdirs}"
+             includeantruntime="false">
             <classpath refid="project.class.path"/>
             <compilerarg value="-Xlint:unchecked"/>
         </javac>

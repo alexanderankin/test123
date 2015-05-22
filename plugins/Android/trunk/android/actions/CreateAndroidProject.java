@@ -33,12 +33,16 @@ public class CreateAndroidProject implements Command {
         runner.execute();
     }
 
-    class Runner extends SwingWorker<Vector, Object> {
+    class Runner extends SwingWorker<Vector<String>, Object> {
         @Override
-        public Vector doInBackground() {
+        public Vector<String> doInBackground() {
             try {
                 // load the available target names
-                Process p = Runtime.getRuntime().exec( "android list targets" );
+                String sdkPath = jEdit.getProperty("android.sdk.path", "");
+                if (!sdkPath.isEmpty()) {
+                    sdkPath += "/tools/";   
+                }
+                Process p = Runtime.getRuntime().exec( sdkPath + "android list targets" );
                 BufferedReader in = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
                 Vector<String> targetList = new Vector<String>();                // NOPMD
                 try {
@@ -66,7 +70,7 @@ public class CreateAndroidProject implements Command {
 
         @Override
         public void done() {
-            Vector targetList = null;
+            Vector<String> targetList = null;
             try {
                 targetList = get();
             } catch ( Exception e ) {
@@ -82,7 +86,7 @@ public class CreateAndroidProject implements Command {
 
                 // create the components
                 final JTextField projectNameField = new JTextField();
-                final JComboBox targetField = new JComboBox( targetList );
+                final JComboBox<String> targetField = new JComboBox<String>( targetList );
                 final JTextField pathField = new JTextField();
                 final JButton chooseButton = new JButton( "Browse" );
                 final JTextField activityNameField = new JTextField();
@@ -230,7 +234,7 @@ public class CreateAndroidProject implements Command {
         project.setRootPath( projectPath );
 
         // show the 'create project' dialog
-        ProjectOptions.run( project, true, null );
+        ProjectOptions.run( project, true, null, null );
 
         // get the group as set in the 'create project' dialog
         VPTGroup group = ( VPTGroup ) project.getParent();

@@ -19,8 +19,8 @@ public class CreateAVD implements Command {
     // targets start with a number, sort on the number
     TreeMap<String, String> targetSkins = new TreeMap<String, String>( new Comparator<String>() {
         public int compare( String a, String b ) {
-            String inta = a.substring(0, a.indexOf( ' ' ) );
-            String intb = b.substring(0, b.indexOf( ' ' ) );
+            String inta = a.substring( 0, a.indexOf( ' ' ) );
+            String intb = b.substring( 0, b.indexOf( ' ' ) );
             return ( new Integer( inta ).compareTo( new Integer( intb ) ) );
         }
     } );
@@ -50,27 +50,27 @@ public class CreateAVD implements Command {
                 targets = get();
             } catch ( Exception e ) {
                 e.printStackTrace();
-                Util.showError(view, jEdit.getProperty("android.Error", "Error"), e.getMessage());
+                Util.showError( view, jEdit.getProperty( "android.Error", "Error" ), e.getMessage() );
                 return;
             }
             if ( targets == null ) {
-                Util.showError(view, jEdit.getProperty("android.Error", "Error"), jEdit.getProperty("android.No_targets_found.", "No targets found."));
+                Util.showError( view, jEdit.getProperty( "android.Error", "Error" ), jEdit.getProperty( "android.No_targets_found.", "No targets found." ) );
                 return;
             }
             // create the dialog
             String title = "Create Android Virtual Device (AVD)";
             final JDialog dialog = new JDialog( view, title, false );
             JPanel content = new JPanel( new KappaLayout() );
-            content.setBorder( BorderFactory.createEmptyBorder(12, 12, 12, 12 ) );
+            content.setBorder( BorderFactory.createEmptyBorder( 12, 12, 12, 12 ) );
             dialog.setContentPane( content );
 
             // create the components
             final JTextField nameField = new JTextField();
-            final JComboBox targetField = new JComboBox( targets );
+            final JComboBox<String> targetField = new JComboBox<String>( targets );
             final JTextField cardSizeField = new JTextField();
             final JRadioButton kButton = new JRadioButton( "K" );
             final JRadioButton mButton = new JRadioButton( "M" );
-            final JComboBox skinField = new JComboBox();
+            final JComboBox<String> skinField = new JComboBox<String>();
 
             // km stuff
             JPanel kmPanel = new JPanel();
@@ -89,7 +89,7 @@ public class CreateAVD implements Command {
             JButton cancel = new JButton( "Cancel" );
             buttonPanel.add( "0,1,,,,w, 3", ok );
             buttonPanel.add( "1,1,,,,w, 3", cancel );
-            kl.makeColumnsSameWidth(0, 1 );
+            kl.makeColumnsSameWidth( 0, 1 );
 
             // add the components to the dialog
             content.add( "0, 0, 1, 1, W, w, 3", new JLabel( "AVD Name" ) );
@@ -105,19 +105,19 @@ public class CreateAVD implements Command {
             content.add( "0, 3, 1, 1, W, w, 3", new JLabel( "Skin:" ) );
             content.add( "1, 3, 4, 1, W, w, 3", skinField );
 
-            content.add( "0, 5", KappaLayout.createVerticalStrut(11 ) );
+            content.add( "0, 5", KappaLayout.createVerticalStrut( 11 ) );
 
             content.add( "0, 6, 5, 1, E,, 3", buttonPanel );
 
             // add listeners
-            ok.addActionListener ( new ActionListener() {
+            ok.addActionListener( new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     String selectedItem = ( String ) targetField.getSelectedItem();
-                    String target = selectedItem.substring(0, selectedItem.indexOf( ' ' ) );
+                    String target = selectedItem.substring( 0, selectedItem.indexOf( ' ' ) );
                     String name = nameField.getText();
                     if ( name != null && name.trim().length() > 0 ) {
                         if ( name.indexOf( ' ' ) > -1 ) {
-                            Util.showError(view, jEdit.getProperty("android.Error", "Error"), jEdit.getProperty("android.Name_may_not_have_spaces.", "Name may not have spaces."));
+                            Util.showError( view, jEdit.getProperty( "android.Error", "Error" ), jEdit.getProperty( "android.Name_may_not_have_spaces.", "Name may not have spaces." ) );
                             name = name.replaceAll( " ", "" );
                             return;
                         }
@@ -130,26 +130,26 @@ public class CreateAVD implements Command {
 
                     String skin = ( String ) skinField.getSelectedItem();
                     if ( skin.indexOf( "(default)" ) > -1 ) {
-                        skin = skin.substring(0, skin.indexOf( "(default)" ) ).trim();
+                        skin = skin.substring( 0, skin.indexOf( "(default)" ) ).trim();
                     }
                     boolean success = createAndroidAVD( name, target, cardSize, skin );
-                    if (success) {
+                    if ( success ) {
                         dialog.dispose();
                     }
-                    
-                    
+
+
                 }
             }
             );
-            cancel.addActionListener ( new ActionListener() {
+            cancel.addActionListener( new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     dialog.dispose();
                 }
             }
             );
-            targetField.addActionListener ( new ActionListener() {
+            targetField.addActionListener( new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    String target = (String)targetField.getSelectedItem();
+                    String target = ( String ) targetField.getSelectedItem();
                     loadSkinCombo( skinField, target );
                 }
             }
@@ -157,7 +157,7 @@ public class CreateAVD implements Command {
 
             // show the dialog
             dialog.pack();
-            String target = (String)targetField.getSelectedItem();
+            String target = ( String ) targetField.getSelectedItem();
             loadSkinCombo( skinField, target );
             dialog.setLocationRelativeTo( view );
             dialog.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
@@ -167,11 +167,11 @@ public class CreateAVD implements Command {
 
     boolean createAndroidAVD( String name, String targetId, String cardSize, String skin ) {
         if ( name == null || name.trim().length() == 0 ) {
-            Util.showError(view, jEdit.getProperty("android.Error", "Error"), jEdit.getProperty("android.Name_cannot_be_empty.", "Name cannot be empty."));
+            Util.showError( view, jEdit.getProperty( "android.Error", "Error" ), jEdit.getProperty( "android.Name_cannot_be_empty.", "Name cannot be empty." ) );
             return false;
         }
         if ( targetId == null || targetId.trim().length() == 0 ) {
-            Util.showError(view, jEdit.getProperty("android.Error", "Error"), jEdit.getProperty("android.Target_ID_cannot_be_empty.", "Target ID cannot be empty."));
+            Util.showError( view, jEdit.getProperty( "android.Error", "Error" ), jEdit.getProperty( "android.Target_ID_cannot_be_empty.", "Target ID cannot be empty." ) );
             return false;
         }
         if ( cardSize == null || cardSize.trim().length() == 0 ) {
@@ -179,10 +179,10 @@ public class CreateAVD implements Command {
         }
         if ( skin == null || skin.trim().length() == 0 ) {
             skin = getDefaultSkin( targetId );
-            skin = skin.substring(0, skin.indexOf( "(default)" ) ).trim();
+            skin = skin.substring( 0, skin.indexOf( "(default)" ) ).trim();
         }
         String command = "android create avd -n " + name + " -t " + targetId + " -c " + cardSize + " -s " + skin;
-        Util.runInSystemShell(view, command);
+        Util.runInSystemShell( view, command );
         return true;
     }
 
@@ -200,7 +200,11 @@ public class CreateAVD implements Command {
     void loadTargetsAndSkins() {
         // load the available target names
         try {
-            Process p = Runtime.getRuntime().exec( "android list targets" );
+            String sdkPath = jEdit.getProperty( "android.sdk.path", "" );
+            if ( !sdkPath.isEmpty() ) {
+                sdkPath += "/tools/";
+            }
+            Process p = Runtime.getRuntime().exec( sdkPath + "android list targets" );
             BufferedReader in = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
             String name = null;
             while ( true ) {
@@ -209,7 +213,7 @@ public class CreateAVD implements Command {
                     break;
                 }
                 if ( line.startsWith( "id:" ) ) {
-                    String id = line.substring(4, line.indexOf( ' ', 4 ) );
+                    String id = line.substring( 4, line.indexOf( ' ', 4 ) );
                     name = line.substring( line.indexOf( ' ', 4 ) + " or ".length() );
                     name = name.replaceAll( "\"", "" );
                     name = id + ' ' + name;
@@ -234,9 +238,9 @@ public class CreateAVD implements Command {
         return v;
     }
 
-    void loadSkinCombo( JComboBox skinField, String target ) {
+    void loadSkinCombo( JComboBox<String> skinField, String target ) {
         Vector<String> skins = getSkins( target );
-        skinField.setModel( new DefaultComboBoxModel( skins ) );
+        skinField.setModel( new DefaultComboBoxModel<String>( skins ) );
         skinField.setSelectedItem( getDefaultSkin( target ) );
     }
 

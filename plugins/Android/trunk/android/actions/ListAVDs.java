@@ -23,7 +23,11 @@ public class ListAVDs implements Command {
         @Override
         public String doInBackground() {
             try {
-                Process p = Runtime.getRuntime().exec( "android list avd" );
+                String sdkPath = jEdit.getProperty("android.sdk.path", "");
+                if (!sdkPath.isEmpty()) {
+                    sdkPath += "/tools/";   
+                }
+                Process p = Runtime.getRuntime().exec( sdkPath + "android list avd" );
                 BufferedReader in = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
                 StringBuilder avdList = new StringBuilder( "<html><h3>Android AVD List</h3>" );
                 while ( true ) {

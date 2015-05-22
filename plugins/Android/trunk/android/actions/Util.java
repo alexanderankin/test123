@@ -39,7 +39,6 @@ public class Util {
         SwingUtilities.invokeLater( new Runnable() {
             public void run() {
                 JOptionPane.showMessageDialog( parent, message, title, messageType, icon );
-
             }
         } );
     }
