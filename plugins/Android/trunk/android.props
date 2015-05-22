@@ -5,16 +5,16 @@
 
 plugin.android.AndroidPlugin.name=Android
 plugin.android.AndroidPlugin.author=Dale Anson
-plugin.android.AndroidPlugin.version=1.0
+plugin.android.AndroidPlugin.version=1.1
 plugin.android.AndroidPlugin.activate=defer
 plugin.android.AndroidPlugin.description=Android plugin provides some utilities to help create and run Android projects.
 
 # dependencies
 plugin.android.AndroidPlugin.depend.0=jdk 1.6
-plugin.android.AndroidPlugin.depend.1=jedit 04.04.02.00
-plugin.android.AndroidPlugin.depend.2=plugin CommonControlsPlugin 1.4.1
-plugin.android.AndroidPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.1.0
-plugin.android.AndroidPlugin.depend.4=plugin console.ConsolePlugin 4.4.4
+plugin.android.AndroidPlugin.depend.1=jedit 05.03.00.00
+plugin.android.AndroidPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
+plugin.android.AndroidPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.5.1
+plugin.android.AndroidPlugin.depend.4=plugin console.ConsolePlugin 5.1.4
 
 # docs
 plugin.android.AndroidPlugin.docs=index.html
@@ -37,11 +37,22 @@ plugin.android.AndroidPlugin.menu=\
 android.createAVD.label=Create AVD
 android.createProject.label=Create Project
 android.launchAVD.label=Launch AVD
-android.launchDDMS.label=Launch Dalvik Debug Monitor
+android.launchDDMS.label=Launch Debug Monitor
 android.listTargets.label=List Targets
 android.listAVDs.label=List AVDs
 android.buildDebug.label=Build App (Debug)
 android.deployDebug.label=Deploy App (Debug)
+
+# option pane
+plugin.android.AndroidPlugin.option-pane=android
+options.android.label=Android
+options.android.code=new android.OptionPane();
+
+# option pane labels
+options.android.instructions=Enter path to SDK and Ant below. These may be left blank, if so, these will be assumed to be in the system path.
+options.android.sdk.path=Android SDK Path
+options.android.ant.path=Ant Path
+
 
 # various messages
 android.Activity_name_cannot_be_null.=Activity name cannot be null.

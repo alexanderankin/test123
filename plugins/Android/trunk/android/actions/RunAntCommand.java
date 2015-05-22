@@ -37,7 +37,11 @@ public class RunAntCommand {
             return;
         }
 
-        String command = "ant -f " + buildFile.getAbsolutePath() + " " + target;
+                String antPath = jEdit.getProperty("android.ant.path", "");
+                if (!antPath.isEmpty()) {
+                    antPath += "/bin/";   
+                }
+        String command = antPath + "ant -f " + buildFile.getAbsolutePath() + " " + target;
         Util.runInSystemShell(view, command);
     }
 

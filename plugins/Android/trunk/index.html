@@ -1,14 +1,14 @@
 <html>
 <body>
 <h2>Android</h2>
-The Android plugin helps you create and run AVDs, and create Android projects 
+The Android plugin helps you create and run AVDs (Android Virtual Device), and create Android projects 
 and import them into ProjectViewer.
 <p>
 Prerequisites:
 <ul>
 <li>Android development kit is installed.</li>
-<li>Android development kit tools are in your system path.</li>
-<li>Ant 1.8 or later is installed and in your system path.</li>
+<li>Android development kit tools are in your system path or specified in the plugin option settings.</li>
+<li>Ant 1.8 or later is installed and in your system path or specified in the plugin option settings.</li>
 </ul>
 Until these are installed, some or all of this plugin will not work.
 <p>
@@ -16,7 +16,7 @@ Available actions:
 <br>
 <ul>
 
-<li><b>Create AVD</b> Creates a new AVD. You may select any of the currently
+<li><b>Create AVD</b> Creates a new Android Virtual Device. You may select any of the currently
 existing Android platform targets provided by your Android development kit 
 along with any of the skins supported by the selected platform target.</li>
 
@@ -29,8 +29,10 @@ created, you will be asked if you want to add this project to ProjectViewer.</li
 
 <li><b>Launch AVD</b> Select any existing AVD and start it.</li>
 
-<li><b>Launch Dalvik Debug Monitor</b> Starts the Dalvik Debug Monitor, which
-is useful in debugging Android apps running in an emulator.</li>
+<li><b>Launch Debug Monitor</b> Starts the Debug Monitor, which
+is useful in debugging Android apps running in an emulator. Depending on your
+sdk version, this will launch either the Dalvic Debug Monitor or the Android
+Device Monitor. </li>
 
 <li><b>Build App (Debug)</b> Build the debug version of your app. Output is to 
 Console. The <code>debug</code> target in the <code>build.xml</code> file in 
