@@ -1,9 +1,9 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2012 Matthieu Casanova
+ * Copyright © 2011-2015 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,14 +50,12 @@ public class IndexProjectUpdateTask extends Task
 	{
 		if (removedFiles != null)
 		{
-			FileProvider removedFileProvider =
-				new VPTFileProvider(removedFiles.toArray(new VPTFile[removedFiles.size()]));
+			FileProvider removedFileProvider = new VPTFileProvider(removedFiles);
 			SmartOpenPlugin.itemFinder.removeFiles(removedFileProvider, this);
 		}
 		if (addedFiles != null)
 		{
-			FileProvider addedFileProvider =
-				new VPTFileProvider(addedFiles.toArray(new VPTFile[addedFiles.size()]));
+			FileProvider addedFileProvider = new VPTFileProvider(addedFiles);
 			SmartOpenPlugin.itemFinder.addFiles(addedFileProvider, this, true);
 		}
 	} //}}}

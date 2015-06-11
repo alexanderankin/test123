@@ -1,6 +1,6 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright © 2012 Alan Ezust
@@ -22,12 +22,14 @@
 package com.kpouer.jedit.smartopen;
 
 import org.gjt.sp.jedit.View;
+import org.jedit.core.FileOpenerService;
 
 /**
   @author Alan Ezust
  */
-public class FileOpener extends org.jedit.core.FileOpenerService
+public class FileOpener extends FileOpenerService
 {
+	@Override
 	public void openFile(String fileName, View view)
 	{
 		SmartOpenPlugin.smartOpenDialog(view, fileName);

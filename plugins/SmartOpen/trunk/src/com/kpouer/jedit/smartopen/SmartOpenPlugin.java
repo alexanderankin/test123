@@ -1,9 +1,9 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2013 Matthieu Casanova
+ * Copyright © 2011-2015 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,20 +85,13 @@ public class SmartOpenPlugin extends EditPlugin
 	@Override
 	public void start()
 	{
-		propertiesChanged(null);
 		itemFinder = new FileIndex(null);
+		propertiesChanged(null);
 		if (smartToolbar != null)
 			smartToolbar.setFileIndex(itemFinder);
 
 		EditBus.addToBus(this);
-		timer = new Timer(60000, new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				indexFiles(false);
-			}
-		});
+		timer = new Timer(60000, e -> indexFiles(false));
 		timer.start();
 	} //}}}
 
@@ -139,11 +132,7 @@ public class SmartOpenPlugin extends EditPlugin
 				}
 			}
 		}
-		catch (NoSuchFieldException e)
-		{
-			Log.log(Log.ERROR, this, e);
-		}
-		catch (IllegalAccessException e)
+		catch (NoSuchFieldException | IllegalAccessException e)
 		{
 			Log.log(Log.ERROR, this, e);
 		}
@@ -351,13 +340,13 @@ public class SmartOpenPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ smartOpenDialog() methods
-	public static void smartOpenDialog(View view, final String fileName)
+	public static void smartOpenDialog(View view, String fileName)
 	{
 		if (extensionTextField == null)
 			extensionTextField = new JTextField(6);
 		ItemFinder<String> filetItemFinder = new FileItemFinder(itemFinder, extensionTextField);
 
-		final ItemFinderWindow<String> itemFinderWindow = new ItemFinderWindow<>(filetItemFinder);
+		ItemFinderWindow<String> itemFinderWindow = new ItemFinderWindow<>(filetItemFinder);
 		ItemFinderPanel<?> itemFinderPanel = (ItemFinderPanel<?>) itemFinderWindow.getContentPane();
 		JPanel topPanel = new JPanel(new BorderLayout());
 		JPanel extensionPanel = new JPanel();
@@ -365,7 +354,7 @@ public class SmartOpenPlugin extends EditPlugin
 		extensionPanel.add(extensionTextField);
 
 		Component label = itemFinderPanel.getLabel();
-		final Component searchField = itemFinderPanel.getSearchField();
+		Component searchField = itemFinderPanel.getSearchField();
 		topPanel.add(label);
 		topPanel.add(extensionPanel, BorderLayout.EAST);
 		itemFinderPanel.removeAll();
@@ -375,14 +364,10 @@ public class SmartOpenPlugin extends EditPlugin
 		itemFinderWindow.pack();
 		itemFinderWindow.setLocationRelativeTo(view);
 		itemFinderWindow.setVisible(true);
-		EventQueue.invokeLater(new Runnable()
+		EventQueue.invokeLater(() ->
 		{
-			@Override
-			public void run()
-			{
-				itemFinderWindow.getItemFinderPanel().setText(fileName);
-				searchField.requestFocus();
-			}
+			itemFinderWindow.getItemFinderPanel().setText(fileName);
+			searchField.requestFocus();
 		});
 	}
 
