@@ -1,9 +1,9 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2013 Matthieu Casanova
+ * Copyright © 2011-2015 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import common.gui.itemfinder.ItemFinder;
 import common.gui.itemfinder.ItemFinderPanel;
 import org.gjt.sp.jedit.View;
 //}}}
@@ -38,13 +37,12 @@ import org.gjt.sp.jedit.View;
 public class SmartOpenToolbar extends JToolBar
 {
 	private final ItemFinderPanel<String> itemFinderPanel;
-	private final JTextField extensionTextField;
 	private final FileItemFinder itemFinder;
 
 	//{{{ SmartOpenToolbar constructor
 	public SmartOpenToolbar(View view, FileIndex itemIndex)
 	{
-		extensionTextField = new JTextField(6);
+		JTextField extensionTextField = new JTextField(6);
 		itemFinder = new FileItemFinder(itemIndex, extensionTextField);
 		itemFinderPanel = new ItemFinderPanel<>(view, itemFinder);
 		Dimension maximumSize = itemFinderPanel.getMaximumSize();

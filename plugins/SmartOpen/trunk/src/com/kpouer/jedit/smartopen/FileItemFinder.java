@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2014 Matthieu Casanova
+ * Copyright © 2011-2015 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 	private String position;
 
-	private JTextField extensionTextField;
+	private final JTextField extensionTextField;
 
 	//{{{ FileItemFinder constructor
 	public FileItemFinder(FileIndex itemFinder, JTextField extensionTextField)
@@ -103,15 +103,15 @@ public class FileItemFinder extends AbstractItemFinder<String>
 
 	//{{{ selectionMade() method
 	@Override
-	public void selectionMade(final String path)
+	public void selectionMade(String path)
 	{
 		Buffer buffer = jEdit.getBuffer(path);
 		if (position != null)
 		{
-			final String[] split = position.split(",");
+			String[] split = position.split(",");
 			try
 			{
-				final int _seletedLine = Integer.parseInt(split[0]) - 1;
+				int _seletedLine = Integer.parseInt(split[0]) - 1;
 				if (buffer == null)
 				{
 					// not loaded

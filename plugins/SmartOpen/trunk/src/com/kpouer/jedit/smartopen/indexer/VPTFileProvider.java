@@ -1,9 +1,9 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2015 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,8 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+import java.util.Collection;
+
 import projectviewer.vpt.VPTFile;
 
 /**
@@ -31,9 +33,9 @@ public class VPTFileProvider implements FileProvider
 	private final VPTFile[] fileArray;
 	private int index;
 
-	public VPTFileProvider(VPTFile[] files)
+	public VPTFileProvider(Collection<VPTFile> files)
 	{
-		fileArray = files;
+		fileArray = files.toArray(new VPTFile[files.size()]);
 	}
 
 	@Override

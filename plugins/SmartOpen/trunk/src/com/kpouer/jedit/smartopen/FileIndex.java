@@ -1,9 +1,9 @@
 /*
  * jEdit - Programmer's Text Editor
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2013 Matthieu Casanova
+ * Copyright © 2011-2015 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -211,7 +211,7 @@ public class FileIndex implements Closeable
 			}
 			catch (IOException e)
 			{
-				return 0;
+				return 0L;
 			}
 		}
 		return new FrequencySearch(reader).getFrequency(path);
@@ -234,11 +234,8 @@ public class FileIndex implements Closeable
 		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
 		{
-			IndexWriter writer = null;
-			try
+			try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
 			{
-				writer = new IndexWriter(directory, indexWriterConfig);
-
 				Collection<String> knownFiles;
 				if (append)
 				{
@@ -277,10 +274,6 @@ public class FileIndex implements Closeable
 			catch (IOException e)
 			{
 				Log.log(Log.ERROR, this, e);
-			}
-			finally
-			{
-				IOUtilities.closeQuietly(writer);
 			}
 		}
 		try
@@ -327,14 +320,12 @@ public class FileIndex implements Closeable
 	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
 	{
 		long start = System.currentTimeMillis();
-		IndexWriter writer = null;
 		observer.setMaximum(fileProvider.size());
 
 		synchronized (LOCK)
 		{
-			try
+			try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
 			{
-				writer = new IndexWriter(directory, indexWriterConfig);
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
 					String path = fileProvider.next();
@@ -346,10 +337,6 @@ public class FileIndex implements Closeable
 			catch (IOException e)
 			{
 				Log.log(Log.ERROR, this, e);
-			}
-			finally
-			{
-				IOUtilities.closeQuietly(writer);
 			}
 		}
 		try
@@ -370,23 +357,17 @@ public class FileIndex implements Closeable
 		Term term = new Term("path",path);
 		synchronized (LOCK)
 		{
-			IndexWriter writer = null;
-			try
+			try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
 			{
-				writer = new IndexWriter(directory, indexWriterConfig);
 				long frequency = getFrequency(path);
-				if (frequency == 0)
+				if (frequency == 0L)
 					return;
 				writer.deleteDocuments(term);
-				writer.addDocument(documentFactory.createDocument(path, frequency + 1));
+				writer.addDocument(documentFactory.createDocument(path, frequency + 1L));
 			}
 			catch (Exception e)
 			{
 				Log.log(Log.ERROR, this, e);
-			}
-			finally
-			{
-				IOUtilities.closeQuietly(writer);
 			}
 			try
 			{
@@ -435,24 +416,18 @@ public class FileIndex implements Closeable
 
 			synchronized (LOCK)
 			{
-				IndexWriter writer = null;
-				try
+				try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
 				{
-					writer = new IndexWriter(directory, indexWriterConfig);
 					for (String path : existingFiles)
 					{
 						Term term = new Term("path", path);
 						writer.deleteDocuments(term);
-						writer.addDocument(documentFactory.createDocument(path, 1));
+						writer.addDocument(documentFactory.createDocument(path, 1L));
 					}
 				}
 				catch (Exception e)
 				{
 					Log.log(Log.ERROR, this, e);
-				}
-				finally
-				{
-					IOUtilities.closeQuietly(writer);
 				}
 				try
 				{
@@ -471,8 +446,6 @@ public class FileIndex implements Closeable
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Frequency cache resetted in "+(end - start) + "ms");
 	}
-
-
 
 	private static class FrequencySearch
 	{
