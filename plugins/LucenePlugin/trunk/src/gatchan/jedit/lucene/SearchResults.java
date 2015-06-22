@@ -64,6 +64,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String DOCKABLE_NAME = "lucene-search";
 	private static final String MESSAGE_IDLE = "";
+	private static final String MESSAGE_INDEXING_TAG = " - Indexing";
 	private static final String MESSAGE_INDEXING = "Indexing";
 	private final HistoryTextField searchField;
 	private final JTextField type;
@@ -133,12 +134,14 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		});
 		indexActionListener = new ActionListener()
 		{
+			//TODO probably a change here
 			private Index prevIndex;
 			private ActivityListener listener = new ActivityListener()
 			{
 				@Override
 				public void indexingEnded(Index index)
 				{
+					removeIndexingTag(index.getName());
 					indexStatus.setText(MESSAGE_IDLE);
 					indexStatus.setToolTipText(MESSAGE_IDLE);
 				}
@@ -146,10 +149,59 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				@Override
 				public void indexingStarted(Index index)
 				{
+					addIndexingTag(index.getName());
 					indexStatus.setText(MESSAGE_INDEXING);
 					indexStatus.setToolTipText(jEdit.getProperty("task.progress.tooltip",
 						"See Utilities - Troubleshooting - Task Monitor for progress"));
 				}
+				
+				private void removeIndexingTag(String indexName) 
+				{
+					List<String> items = new ArrayList<String>();
+					for (int i = 0; i < indexModel.getSize(); i++)
+					{
+						String modelName = (String) indexModel.getElementAt(i);
+						if (modelName != CURRENT_BUFFER && modelName != ALL_BUFFERS) 
+						{
+							if (modelName.contains(indexName) && modelName.contains(MESSAGE_INDEXING_TAG))
+							{
+								items.add(indexName);
+							}
+							else
+							{
+								items.add(modelName);							
+							}
+						}
+					}
+					String [] names = new String[items.size()];
+					items.toArray(names);
+					indexModel.setIndexes(names);
+				}
+				
+				private void addIndexingTag(String indexName) 
+				{
+					List<String> items = new ArrayList<String>();
+					for (int i = 0; i < indexModel.getSize(); i++)
+					{
+						String modelName = (String) indexModel.getElementAt(i);
+						if (modelName != CURRENT_BUFFER && modelName != ALL_BUFFERS) 
+						{
+							if (modelName.equals(indexName))
+							{
+								items.add(indexingIndexName(indexName));
+								//items.add(indexName);
+							}
+							else
+							{
+								items.add(modelName);							
+							}
+						}
+					}
+					String [] names = new String[items.size()];
+					items.toArray(names);
+					indexModel.setIndexes(names);					
+				}
+				
 			};
 
 			@Override
@@ -169,8 +221,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				if (index == null)
 					return;
 				
-				if (prevIndex != null)
-					prevIndex.removeActivityListener(listener);
+				//if (prevIndex != null && prevIndex != index)
+				//	prevIndex.removeActivityListener(listener);
 				
 				prevIndex = index;
 				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
@@ -348,12 +400,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		horizontalLayout = horizontal;
 		Component c = ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.NORTH);
 		if (c != null)
-			remove(c);
+			remove(c);		
 		if (horizontal)
-		{
+		{			
 			JPanel searchPanel = new JPanel(new BorderLayout());
-
 			searchPanel.add(textLabel, BorderLayout.WEST);
+			
 			JPanel searchFieldContainer = new JPanel();
 			searchFieldContainer.setLayout(new BoxLayout(searchFieldContainer,
 				BoxLayout.PAGE_AXIS));
@@ -367,8 +419,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			p.add(clear);
 			p.add(multi);
 			p.add(indexStatus);
-
 			p.add(extendedOptions);
+						
+			searchPanel.add(searchOptions, BorderLayout.SOUTH);
+			
 			searchOptions = new JPanel(new FlowLayout(FlowLayout.LEADING));
 			searchOptions.add(lineResults);
 			searchOptions.add(fileTypeLabel);
@@ -379,7 +433,9 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			searchOptions.add(filterComments);
 			searchOptions.add(filterLiterals);
 			searchOptions.setVisible(extendedOptions.isSelected());
+
 			searchPanel.add(searchOptions, BorderLayout.SOUTH);
+			
 			add(searchPanel, BorderLayout.NORTH);
 		}
 		else
@@ -413,8 +469,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			p.add(textLabel, BorderLayout.WEST);
 			p.add(searchField, BorderLayout.CENTER);
 
-			searchPanel.add(p);
-
+			searchPanel.add(p);			
 			searchPanel.add(indexes);
 			p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 
@@ -472,7 +527,9 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			index.commit();
 			return index;
 		}
-		return LucenePlugin.instance.getIndex(indexName);
+		
+		//TODO this gets an index from the repo remove suffix too
+		return LucenePlugin.instance.getIndex(cleanIndexName(indexName));
 	}
 
 	public void setType(String fileType)
@@ -551,11 +608,21 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			if (indexName != CURRENT_BUFFER && indexName != ALL_BUFFERS)
 				items.add(indexName);
 		}
-		String indexName = (String) msg.getSource();
-		if (msg.getWhat() == LuceneIndexUpdate.What.CREATED)
+		String indexName = (String) msg.getSource(); 
+		if (msg.getWhat() == LuceneIndexUpdate.What.CREATED) 
+		{
+			Index index = LucenePlugin.instance.getIndex(indexName);
+			if (index.isChanging()) 
+			{
+				indexName = indexingIndexName(indexName);
+			}
 			items.add(indexName);
+		}
 		else
-			items.remove(indexName);
+		{
+			items.remove(cleanIndexName(indexName));
+		}
+		
 		String [] names = new String[items.size()];
 		items.toArray(names);
 		indexModel.setIndexes(names);
@@ -843,4 +910,19 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		searchField.requestFocusInWindow();
 	}
+	
+	private String cleanIndexName(String indexName)
+	{
+		if (indexName.contains(MESSAGE_INDEXING_TAG)) {
+			indexName = indexName.replace(MESSAGE_INDEXING_TAG, "").trim();		
+		}
+		
+		return indexName;
+	}
+
+	private String indexingIndexName(String indexName)
+	{
+		return indexName + MESSAGE_INDEXING_TAG;
+	}
+
 }

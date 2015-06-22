@@ -43,6 +43,7 @@ import javax.swing.KeyStroke;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 @SuppressWarnings("serial")
 public class UpdateIndexDialog extends JDialog
@@ -92,6 +93,8 @@ public class UpdateIndexDialog extends JDialog
 		buttons.add(display);
 		final JButton delete = new JButton("Delete");
 		buttons.add(delete);
+		final JButton reIndex = new JButton("ReIndex");
+		buttons.add(reIndex);
 		display.addActionListener(new ActionListener()
 		{
 			@Override
@@ -150,6 +153,26 @@ public class UpdateIndexDialog extends JDialog
 			}
 		});
 
+		reIndex.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				final int index = indexList.getSelectedIndex();
+				String indexName = indexList.getItemAt(index);
+				ReindexTask wr = new ReindexTask(indexName, new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						indexList.setSelectedIndex(index);
+					}
+				});
+				ThreadUtilities.runInBackground(wr);			
+			}
+		});
+		
+		
 		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 		ActionListener cancelListener = new ActionListener()
 		{

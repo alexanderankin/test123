@@ -32,13 +32,14 @@ lucene.go-to-prev-result.label=Go to previous result
 lucene-search.label=Lucene Search
 lucene-search.title=Search with Lucene
 lucene.remove-index.label=Delete an index
-lucene.update-index.label=View or Remove indexes
+lucene.update-index.label=Maintain indexes
 
 lucene.message.NewIndexDialogTitle=New Lucene Index
 lucene.message.UpdateIndexDialogTitle=Update Lucene Indexes
 lucene.message.IndexName=Name:
 lucene.message.Analyzer=Analyzer:
 lucene.message.BadFileName=Index Name contains invalid characters
+lucene.message.Version=Version:
 
 # Options
 plugin.gatchan.jedit.lucene.LucenePlugin.option-group=Lucene IndexManagement
