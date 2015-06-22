@@ -24,8 +24,8 @@ package gatchan.jedit.lucene;
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.ClosedByInterruptException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -50,7 +50,7 @@ public abstract class AbstractIndex
 	private DirectoryReader reader;
 	protected File path;
 	protected Analyzer analyzer;
-	protected List<Index.ActivityListener> listeners = new ArrayList<Index.ActivityListener> ();
+	protected List<Index.ActivityListener> listeners = new CopyOnWriteArrayList<Index.ActivityListener> ();
 
 	//{{{ AbstractIndex constructor
 	protected AbstractIndex(File path)
@@ -219,7 +219,10 @@ public abstract class AbstractIndex
 	//{{{ addActivityListener() method
 	public void addActivityListener(Index.ActivityListener al)
 	{
-		listeners.add(al);
+		if (!listeners.contains(al))
+		{
+			listeners.add(al);
+		}
 	} //}}}
 
 	//{{{ removeActivityListener() method
