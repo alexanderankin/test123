@@ -20,25 +20,22 @@
  */
 package gatchan.jedit.lucene;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.util.CharTokenizer;
-import org.apache.lucene.util.Version;
 
 public class SourceCodeAnalyzer extends Analyzer
 {
 	@Override
-	protected TokenStreamComponents createComponents(String fieldName, Reader reader)
+	protected TokenStreamComponents createComponents(String fieldName)
 	{
-		return new TokenStreamComponents(new SourceCodeTokenizer(reader));
+		return new TokenStreamComponents(new SourceCodeTokenizer());
 	}
 
 	private static class SourceCodeTokenizer extends CharTokenizer
 	{
-		SourceCodeTokenizer(Reader input)
+		SourceCodeTokenizer()
 		{
-			super(Version.LUCENE_42, input);
+			super();
 		}
 
 		@Override

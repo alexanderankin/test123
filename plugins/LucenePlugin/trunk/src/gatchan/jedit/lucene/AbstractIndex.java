@@ -93,7 +93,7 @@ public abstract class AbstractIndex
 			Log.log(Log.DEBUG, this, "Writer Index Filename = " + path.getAbsolutePath());
 
 			path.mkdirs();
-			FSDirectory directory = FSDirectory.open(path);
+			FSDirectory directory = FSDirectory.open(path.toPath());
 			if (IndexWriter.isLocked(directory))
 			{
 				Log.log(Log.WARNING, this, "The lucene index at " + path + " is locked");
@@ -102,10 +102,10 @@ public abstract class AbstractIndex
 				                               JOptionPane.ERROR_MESSAGE);
 				if (ret == JOptionPane.YES_OPTION)
 				{
-					IndexWriter.unlock(directory);
+					//IndexWriter.unlock(directory);
 				}
 			}
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_42, getAnalyzer());
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(getAnalyzer());
 			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
@@ -128,7 +128,7 @@ public abstract class AbstractIndex
 		{
 			try
 			{
-				reader = DirectoryReader.open(FSDirectory.open(path));
+				reader = DirectoryReader.open(FSDirectory.open(path.toPath()));
 			}
 			catch (ClosedByInterruptException e) 
 			{
