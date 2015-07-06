@@ -55,6 +55,7 @@ public class UpdateIndexDialog extends JDialog
 	
 	private final JComboBox<String> indexList;
 	private final JTextArea displayArea;
+
 	private boolean accepted;
 	
 	public UpdateIndexDialog(Frame frame)
@@ -80,7 +81,7 @@ public class UpdateIndexDialog extends JDialog
 		
 		indexList = new JComboBox<>(LucenePlugin.instance.getIndexes());
 		p.add(indexList);
-		
+				
 		displayArea = new JTextArea();
 		displayArea.setEditable(false);
 		
@@ -99,7 +100,8 @@ public class UpdateIndexDialog extends JDialog
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
-			{				
+			{	
+				displayArea.setText("");
 				int index = indexList.getSelectedIndex();
 				String indexName = indexList.getItemAt(index);
 				

@@ -329,7 +329,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		if (searcher == null)
 			return;
 		QueryParser parser =
-			new MultiFieldQueryParser(Version.LUCENE_42, new String[] { "path", "content" }, getAnalyzer());
+			new MultiFieldQueryParser(new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			Query parsedQuery = parser.parse(query);

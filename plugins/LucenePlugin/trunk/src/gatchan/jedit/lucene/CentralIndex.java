@@ -20,28 +20,35 @@
  */
 package gatchan.jedit.lucene;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.SimpleCollector;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.ThreadUtilities;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
 
 /**
  * This index will contains documents to link files to indexes. Each document has the following fields : "indexName" and
@@ -64,7 +71,7 @@ public class CentralIndex extends AbstractIndex
 		   and/or no index has been created yet */
 		try
 		{
-			if (DirectoryReader.indexExists(FSDirectory.open(path)))
+			if (DirectoryReader.indexExists(FSDirectory.open(path.toPath())))
 			{
 				final BufferUpdate bufferUpdate = message;
 				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
@@ -142,6 +149,7 @@ public class CentralIndex extends AbstractIndex
 			TopDocs docs = searcher.search(query, 1);
 			if (docs.scoreDocs.length == 0)
 			{
+				Log.log(Log.DEBUG, this, "Adding to Central Index Filename = " + path);
 				Document document = new Document();
 				document.add(new StringField("path", path, Field.Store.YES));
 				document.add(new StringField("indexName", indexName, Field.Store.YES));
@@ -160,7 +168,7 @@ public class CentralIndex extends AbstractIndex
 		final List<String> documents = new ArrayList<String>();
 		try
 		{
-			searcher.search(new TermQuery(new Term("indexName", indexName)), new Collector()
+			searcher.search(new TermQuery(new Term("indexName", indexName)), new SimpleCollector()
 			{
 				@Override
 				public void setScorer(Scorer scorer)
@@ -182,12 +190,7 @@ public class CentralIndex extends AbstractIndex
 				}
 
 				@Override
-				public void setNextReader(AtomicReaderContext context)
-				{
-				}
-
-				@Override
-				public boolean acceptsDocsOutOfOrder()
+				public boolean needsScores()
 				{
 					return false;
 				}
@@ -215,6 +218,8 @@ public class CentralIndex extends AbstractIndex
 		{
 			Query query = getPathIndexQuery(path, indexName);
 			writer.deleteDocuments(query);
+			writer.forceMergeDeletes(false);
+			writer.commit();
 		}
 		catch (IOException e)
 		{

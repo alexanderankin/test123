@@ -62,11 +62,11 @@ public class TemporaryIndex implements Index
 	public TemporaryIndex(String name)
 	{
 		this.name = name;
-		analyzer = new StandardAnalyzer(Version.LUCENE_42);
+		analyzer = new StandardAnalyzer();
 		directory = new RAMDirectory();
 		try
 		{
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_42, analyzer);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
@@ -93,7 +93,7 @@ public class TemporaryIndex implements Index
 		directory = new RAMDirectory();
 		try
 		{
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_42, analyzer);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 			writer = new IndexWriter(directory, indexWriterConfig);
 		}
 		catch (IOException e)
@@ -202,7 +202,7 @@ public class TemporaryIndex implements Index
 		if (searcher == null)
 			return;
 		QueryParser parser =
-			new MultiFieldQueryParser(Version.LUCENE_42, new String[] { "path", "content" }, getAnalyzer());
+			new MultiFieldQueryParser(new String[] { "path", "content" }, getAnalyzer());
 		try
 		{
 			Query parsedQuery = parser.parse(query);
