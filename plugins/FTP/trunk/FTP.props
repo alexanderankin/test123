@@ -4,7 +4,7 @@ plugin.ftp.FtpPlugin.activate=defer
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov (Former), Nicholas O'Leary (Former), Vadim Voituk (former), Alan Ezust
 # bump to 1.2 before release
-plugin.ftp.FtpPlugin.version=1.1.1
+plugin.ftp.FtpPlugin.version=1.2
 plugin.ftp.FtpPlugin.dev.revision=$Rev$
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.05.99.00
@@ -14,15 +14,15 @@ plugin.ftp.FtpPlugin.depend.2=plugin CommonControlsPlugin 1.5
 plugin.ftp.FtpPlugin.jars=jsch.jar jzlib.jar
 plugin.ftp.FtpPlugin.description=The FTP plugin adds the ability to browse directories and edit files on (S)FTP servers.
 plugin.ftp.FtpPlugin.menu=open-ftp \
-	save-ftp \
-	- \
-	open-sftp \
-	save-sftp \
-	- \
-	forget-passwords \
-	clear-directory-cache \
-	ftp-cleanup
-	
+    save-ftp \
+    - \
+    open-sftp \
+    save-sftp \
+    - \
+    forget-passwords \
+    clear-directory-cache \
+    ftp-cleanup
+
 plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
 plugin.ftp.FtpPlugin.option-pane=ftp
 
@@ -68,7 +68,7 @@ login.useProxy=Connect using proxy
 login.useProxyHttp=Connect using proxy (HTTP Proxy only)
 
 ftp.bad-master-password=Bad Master Password (failed to restore saved passwords)
-ftp.jce.strongkeys.missing=JCE Unlimited Key Strength unavailable. Password saving disabled. 
+ftp.jce.strongkeys.missing=JCE Unlimited Key Strength unavailable. Password saving disabled.
 ftp.cancel-master-password=Saving Passwords disabled. Perhaps you need to "Forget Remote Passwords"? Saved passwords from FTP 1.0.3 and earlier are not readable.
 ftp.using.weak-crypto=JCE Unlimited Key Strength unavailable. Falling back to weak crypto for saving passwords.
 
@@ -83,7 +83,7 @@ vfs.sftp.MaxAuthTries=1
 # Error messages
 # XXX - FTP responses seem to end with a newline?
 ftperror={0}\
-	See Utilities->Activity Log for a full connection trace.
+    See Utilities->Activity Log for a full connection trace.
 
 vfs.sftp.failed-authentication.title=Authentication Failed
 vfs.sftp.failed-authentication.message=Failed to authenticate using {0} authentication.
