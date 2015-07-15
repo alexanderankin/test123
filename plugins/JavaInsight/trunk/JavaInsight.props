@@ -10,7 +10,7 @@ plugin.javainsight.JavaInsightPlugin.longdescription=description.html
 plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.7
 plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.03.09.00
 plugin.javainsight.JavaInsightPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.2
-plugin.javainsight.JavaInsightPlugin.depend.2=optional plugin archive.ArchivePlugin 0.2
+plugin.javainsight.JavaInsightPlugin.depend.3=optional plugin archive.ArchivePlugin 0.2
 plugin.javainsight.JavaInsightPlugin.jars=jode.jar procyon-decompiler.jar
 
 # Option pane
