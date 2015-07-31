@@ -95,6 +95,10 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
                 theme = "Business";
             }
             theme_choices.setSelectedItem( theme );
+            
+            showMenuSearch = new JCheckBox("Show menu search");
+            showMenuSearch.setSelected(jEdit.getBooleanProperty(SubstanceLookAndFeelPlugin.SUBSTANCE_MENU_SEARCH));
+            addComponent(showMenuSearch);
         }
 
         /**
@@ -108,6 +112,7 @@ public class SubstanceLnfInstaller implements LookAndFeelInstaller {
             else {
                 jEdit.setProperty( SubstanceLookAndFeelPlugin.SUBSTANCE_THEME_PROP, theme_setting );
             }
+            jEdit.setBooleanProperty(SubstanceLookAndFeelPlugin.SUBSTANCE_MENU_SEARCH, showMenuSearch.isSelected());
             try {
                 SubstanceLnfInstaller.this.install();
             }
