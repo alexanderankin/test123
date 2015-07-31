@@ -104,6 +104,8 @@ public class SourceTree extends SideKickTree {
         if (jEdit.getProperty(menu) == null)
             menu = "sidekick-tree.menu";
         popup = GUIUtilities.loadPopupMenu(menu);
+        setComponentPopupMenu(popup);
+        setInheritsPopupMenu(true);
         } //}}}
 
     protected void update() {
@@ -174,7 +176,7 @@ public class SourceTree extends SideKickTree {
     public void handleMouse( MouseEvent evt ) {
         //{{{ handleMouse() method
         if ( GUIUtilities.isPopupTrigger( evt ) ) {
-            GUIUtilities.showPopupMenu( popup, this, evt.getX(), evt.getY() );
+            GUIUtilities.showPopupMenu( getComponentPopupMenu(), evt.getComponent(), evt.getX(), evt.getY() );
             view.getTextArea().requestFocus();
         }
     } //}}}
