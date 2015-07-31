@@ -1173,6 +1173,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 TreePath p = new TreePath(node.getPath());
                                 selectPath(p);
+								if (!model.isVisible(node))
+								{
+										next();
+								}
                         }
                 }
 
@@ -1203,6 +1207,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 {
                                         TreePath p = new TreePath(node.getPath());
                                         selectPath(p);
+										if (!model.isVisible(node))
+										{
+												nextLeaf();
+										}
                                 }
                         }
                 }
@@ -1250,6 +1258,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 TreePath p = new TreePath(node.getPath());
                                 selectPath(p);
+								if (!model.isVisible(node))
+								{
+										prev();
+								}
                         }
                 }
 
