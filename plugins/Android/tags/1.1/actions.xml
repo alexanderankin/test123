@@ -1,0 +1,61 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="android.createAVD">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.CreateAVD().execute(view);
+            ]]>
+        </CODE>
+	</ACTION>
+	<ACTION NAME="android.createProject">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.CreateAndroidProject().execute(view);
+            ]]>
+		</CODE>
+	</ACTION>
+	<ACTION NAME="android.launchAVD">
+		<CODE>
+		    <![CDATA[
+                new android.actions.LaunchAVD().execute(view);
+		    ]]>
+		</CODE>
+	</ACTION>
+	<ACTION NAME="android.listTargets">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.ListTargets().execute(view);
+            ]]>
+		</CODE>
+	</ACTION>
+	<ACTION NAME="android.listAVDs">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.ListAVDs().execute(view);
+            ]]>
+		</CODE>
+	</ACTION>
+	<ACTION NAME="android.launchDDMS">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.LaunchDDMS().execute(view);
+            ]]>
+		</CODE>
+	</ACTION>
+	<ACTION NAME="android.buildDebug">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.RunAntCommand().execute(view, "clean debug");
+            ]]>
+		</CODE>
+	</ACTION>
+	<ACTION NAME="android.deployDebug">
+		<CODE>
+		    <![CDATA[
+		        new android.actions.RunAntCommand().execute(view, "installd");
+            ]]>
+		</CODE>
+	</ACTION>
+</ACTIONS>
+

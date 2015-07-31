@@ -1,0 +1,65 @@
+<html>
+<body>
+<h2>Android</h2>
+<p>
+Dale Anson
+<br>
+Version 1.1
+<p>
+The Android plugin helps you create and run AVDs (Android Virtual Device), and create Android projects 
+and import them into ProjectViewer.
+<p>
+Prerequisites:
+<ul>
+<li>Android development kit is installed.</li>
+<li>Android development kit tools are in your system path or specified in the plugin option settings.</li>
+<li>Ant 1.8 or later is installed and in your system path or specified in the plugin option settings.</li>
+</ul>
+Until these are installed, some or all of this plugin will not work.
+<p>
+Available actions:
+<br>
+<ul>
+
+<li><b>Create AVD</b> Creates a new Android Virtual Device. You may select any of the currently
+existing Android platform targets provided by your Android development kit 
+along with any of the skins supported by the selected platform target.</li>
+
+<li><b>Create Project</b> Creates a new Android project. This creates a skeleton
+Android project at the location you specify. The "Build target" is the
+minimum Android platform target that your app will run on. The "activity" is
+the main Android activity class in your project. A class with this name will
+be created and your apk file will also have this name. After the project is
+created, you will be asked if you want to add this project to ProjectViewer.</li>
+
+<li><b>Launch AVD</b> Select any existing AVD and start it.</li>
+
+<li><b>Launch Debug Monitor</b> Starts the Debug Monitor, which
+is useful in debugging Android apps running in an emulator. Depending on your
+sdk version, this will launch either the Dalvic Debug Monitor or the Android
+Device Monitor. </li>
+
+<li><b>Build App (Debug)</b> Build the debug version of your app. Output is to 
+Console. The <code>debug</code> target in the <code>build.xml</code> file in 
+the base directory of the current ProjectViewer project is executed.</li>
+
+<li><b>Deploy App (Debug)</b> Deploy the debug version of your app to a currently
+running emulator. Output is to Console. The <code>installd</code> target in the 
+<code>build.xml</code> file in the base directory of the current ProjectViewer 
+project is executed.</li>
+
+<li><b>List Targets</b> List the available Android target platforms.</li>
+
+<li><b>List AVDs</b> List the available AVDs.</li>
+
+</ul>
+<p>
+Changelog:<br>
+Version 1.0, 2012-01-20: initial release<br>
+Version 1.1, 2015-07-31: <br>
+<ul>
+<li>Updated for latest Android 5.1 SDK</li>
+<li>Added option pane to set SDK and Ant paths</li>
+</ul>
+</body>
+</html>
