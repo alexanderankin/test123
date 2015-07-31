@@ -151,6 +151,7 @@ sidekick.parsing-complete={0} parsing complete, {1} error(s)
 # Completion Popup
 sidekick-complete.none=No completions
 # Filter
+sidekick.showFilter=true
 options.sidekick.showFilter.label=Show filter text box
 options.sidekick.persistentFilter.label=Filter persists after tree selection
 options.sidekick.persistentFilter=true

@@ -84,7 +84,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		// checkbox to show/hide filter, indent next 2 checkboxes
 		addComponent(showFilter = 
 			     new JCheckBox(jEdit.getProperty("options.sidekick.showFilter.label", "Show filter text box")));
-		showFilter.setSelected(jEdit.getBooleanProperty(SideKick.SHOW_FILTER, true));
+		showFilter.setSelected(jEdit.getBooleanProperty(SideKick.SHOW_FILTER));
 		
 		JPanel filterOptionPanel = new JPanel(new GridLayout(2, 1));
 		filterOptionPanel.setBorder(BorderFactory.createEmptyBorder(0, 21, 0, 0));
