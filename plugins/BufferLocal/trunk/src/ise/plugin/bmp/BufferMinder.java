@@ -191,7 +191,7 @@ public class BufferMinder implements WindowListener {
                             view = jEdit.getActiveView();
                         }
                         Buffer buffer = br.getBuffer();
-                        if ( buffer.equals( view.getEditPane().getBuffer() ) ) {
+                        if ( buffer != null && buffer.equals( view.getEditPane().getBuffer() ) ) {
                             // don't close the current buffer, even though it may
                             // been open for more than stale time
                             continue;
