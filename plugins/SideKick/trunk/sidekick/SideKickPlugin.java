@@ -34,7 +34,6 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -329,7 +328,10 @@ public class SideKickPlugin extends EditPlugin
 
 	public static void cleanup(View view)
 	{
-		workers.remove(view);
+		if (workers != null && view != null) 
+		{
+			workers.remove(view);
+		}
 	}
 
 	//{{{ isParsingBuffer()
