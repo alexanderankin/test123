@@ -26,6 +26,7 @@ package sidekick;
 import java.lang.ref.WeakReference;
 import javax.swing.tree.*;
 import javax.swing.Timer;
+import javax.swing.SwingUtilities;
 import java.awt.event.*;
 
 import org.gjt.sp.jedit.textarea.*;
@@ -184,8 +185,7 @@ public class SideKickActions
 			return;
 		}
 
-		JEditTextArea textArea = view.getTextArea();
-
+		final JEditTextArea textArea = view.getTextArea();
 		IAsset asset = data.getAssetAtOffset(
 			textArea.getCaretPosition());
 
@@ -201,12 +201,19 @@ public class SideKickActions
 		    view.getToolkit().beep();
 		    return;
 		}
-			
 		textArea.setCaretPosition(pos);
 		textArea.addToSelection(
 			new Selection.Range(
 				asset.getStart().getOffset(),
 				pos));
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				textArea.scrollToCaret(true);
+				textArea.requestFocus();
+			}
+		});
 	} //}}}
 
 	//{{{ narrowToAsset() method

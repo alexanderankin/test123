@@ -852,10 +852,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
                 protected void shiftClick(View view, IAsset asset, TreePath path)
                 {
-                        JEditTextArea textArea = view.getTextArea();
-                        textArea.setCaretPosition(asset.getEnd().getOffset());
-                        Selection.Range range = new Selection.Range(asset.getStart().getOffset(), asset.getEnd().getOffset());
-                        textArea.addToSelection(range);
+                		SideKickActions.selectAsset(view);
                 }
 
                 protected void controlClick(View view, IAsset asset, TreePath path)
