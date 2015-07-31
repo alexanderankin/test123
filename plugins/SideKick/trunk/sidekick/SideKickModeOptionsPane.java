@@ -60,7 +60,7 @@ public class SideKickModeOptionsPane extends AbstractModeOptionPane implements M
 		super("sidekick.mode");
 		controller = new ModeOptionPaneController(this);
 		
-		showStatusWindow = new JCheckBox(jEdit.getProperty("options." + SideKick.SHOW_STATUS));
+		showStatusWindow = new JCheckBox(jEdit.getProperty("options." + SideKick.SHOW_STATUS), getBooleanProperty(SideKick.SHOW_STATUS));
 		addComponent(showStatusWindow);
 		
 		treeFollowsCaret = new JCheckBox(jEdit.getProperty("options.sidekick.tree-follows-caret"));
