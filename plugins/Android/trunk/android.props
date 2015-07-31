@@ -49,7 +49,7 @@ options.android.label=Android
 options.android.code=new android.OptionPane();
 
 # option pane labels
-options.android.instructions=Enter path to SDK and Ant below. These may be left blank, if so, these will be assumed to be in the system path.
+options.android.instructions=<html>Enter path to SDK and Ant below. These may be left blank,<br/>if so, these will be assumed to be in the system path.
 options.android.sdk.path=Android SDK Path
 options.android.ant.path=Ant Path
 

@@ -54,17 +54,17 @@ public class ListTargets implements Command {
                         if ( id == null ) {
                             break;
                         }
-                        System.out.println("+++++ id: " + id);
+                        //System.out.println("+++++ id: " + id);
                         String name = in.readLine();
                         if ( name == null ) {
                             break;
                         }
-                        System.out.println( "+++++ name: " + name );
+                        //System.out.println( "+++++ name: " + name );
                         String type = in.readLine();
                         if ( type == null ) {
                             break;
                         }
-                        System.out.println( "+++++ type: " + type );
+                        //System.out.println( "+++++ type: " + type );
                         if ( type != null && "type: platform".equals( type.toLowerCase().trim() ) ) {
                             targetList.append( name.split( ":" )[1].trim() + "\n" );
                         }
