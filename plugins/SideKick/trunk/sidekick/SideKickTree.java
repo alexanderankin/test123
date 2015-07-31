@@ -590,7 +590,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 }
 
                 // show or hide the filter box
-                final boolean showFilter = jEdit.getBooleanProperty(SideKick.SHOW_FILTER, true);
+                final boolean showFilter = jEdit.getBooleanProperty(SideKick.SHOW_FILTER);
                 if (showFilter != filterBox.isVisible())
                 {
                         SwingUtilities.invokeLater(new Runnable()
