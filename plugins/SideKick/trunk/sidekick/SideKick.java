@@ -292,20 +292,15 @@ public class SideKick
 				if (tree != null) tree.reloadParserCombo();
 				return;
 			}
-			// check if this is the currently focused edit pane
+			removeBufferChangeListener(this.buffer);
+			deactivateParser();
+			buffer = editPane.getBuffer();
+			if (! buffer.isLoaded())
+				return;
+			parser = SideKickPlugin.getParserForBuffer(buffer);
+			activateParser();
 
-			if(editPane == view.getEditPane())
-			{
-				removeBufferChangeListener(this.buffer);
-				deactivateParser();
-				buffer = editPane.getBuffer();
-				if (! buffer.isLoaded())
-					return;
-				parser = SideKickPlugin.getParserForBuffer(buffer);
-				activateParser();
-
-				parse(true);
-			}
+			parse(true);
 		}
 	} //}}}
 
