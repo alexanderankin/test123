@@ -2,12 +2,15 @@
 plugin.xquery.XQueryPlugin.activate=defer
 plugin.xquery.XQueryPlugin.name=XQuery Plugin
 plugin.xquery.XQueryPlugin.author=Wim le Page, Pieter Wellens
-plugin.xquery.XQueryPlugin.version=1.0.0
+plugin.xquery.XQueryPlugin.version=1.1.0
 plugin.xquery.XQueryPlugin.docs=index.html
 plugin.xquery.XQueryPlugin.depend.0=jdk 1.6
 plugin.xquery.XQueryPlugin.depend.1=jedit 04.04.99.00
 plugin.xquery.XQueryPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.xquery.XQueryPlugin.depend.3=plugin infoviewer.InfoViewerPlugin 1.6
+plugin.xquery.XQueryPlugin.depend.4=plugin antlr.AntlrPlugin 4.4
+plugin.xquery.XQueryPlugin.depend.5=plugin sidekick.SideKickPlugin 1.7
+plugin.xquery.XQueryPlugin.depend.6=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.xquery.XQueryPlugin.description=The XQuery plugin provides features for querying XML documents, setting options for output, performance monitoring and other XQuery processor specific variables.
 plugin.xquery.XQueryPlugin.jars=saxon7.jar SaxonAdapter.jar
 plugin.xquery.XQueryPlugin.usePluginHome=true
@@ -83,3 +86,8 @@ xquery.selectInput.pane=Use Pane
 #evaluate panel
 xquery.evaluate.button.icon=/xquery/icons/EvaluateQ.png
 xquery.evaluate.button.tooltip=Evaluate XQuery
+
+# SideKick parsers
+sidekick.parser.xquery.label=XQuery
+mode.xq.sidekick.parser=xquery
+mode.xqry.sidekick.parser=xquery

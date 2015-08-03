@@ -37,6 +37,9 @@
     <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     <pathelement location="${jedit.plugins.dir}/XmlIndenter.jar"/>
     <pathelement location="${jedit.plugins.dir}/InfoViewer.jar"/>
+	<pathelement location="${jedit.plugins.dir}/antlr-4.4-complete.jar"/>
+    <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+    <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
   </path>
 	
   <path id="saxon.class.path">
@@ -64,8 +67,8 @@
   <target name="compileXQuery" depends="init" description="compiles java source of XQueryPlugin">
     <delete dir="${classes.xquery.dir}"/>
     <mkdir dir="${classes.xquery.dir}"/>
-    <javac srcdir="${basedir}" destdir="${classes.xquery.dir}" deprecation="on" debug="on" includes="xquery/*.java xquery/options/*.java" source="1.4">
-      <classpath refid="xquery.class.path"/>
+    <javac srcdir="${basedir}" destdir="${classes.xquery.dir}" deprecation="on" debug="on" includes="xquery/*.java xquery/options/*.java sidekick/xquery/*.java sidekick/xquery/parser/*.java" source="1.5">
+      <classpath refid="xquery.class.path"/> 
     </javac>
   </target>
 
