@@ -18,6 +18,10 @@
         <firstname>Pieter</firstname>
         <surname>Wellens</surname>
       </author>
+      <author>
+        <firstname>Tim</firstname>
+        <surname>Blackler</surname>
+      </author>
     </authorgroup>
 
     <legalnotice>
@@ -39,6 +43,10 @@
         The XQuery plugin bundles the Saxon XSLT and XQuery processor  developed 
 	by Michael Kay.
 	Saxon is released under the Mozilla Public License 1.0 (MPL).
+      </para>
+     <para>
+        The ANTLR file use to generate the XQuery is Copyright (c) 2013 Antonio García-Domínguez.
+        Please see the attached file XQuery-ANTLR-Licence.txt for the licensing details.
       </para>
     </legalnotice>
   </bookinfo>
@@ -339,7 +347,10 @@
       has produced version 0.6.0 </para>
       
     <para>Pieter Wellens <email>pitje@users.sourceforge.net</email>
-      has produces version 0.6.0 </para>
+      has produced version 0.6.0 </para>
+
+    <para>Tim Blackler <email>grepppo@users.sourceforge.net</email>
+      has produced version 0.7.0 </para>
 
   </chapter>
 
@@ -363,6 +374,17 @@
 
   <appendix id="changelog">
     <title>Change log</title>
+    <section>
+	    <title>Changes from 1.0.0 to 1.1.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Added Sidekick Parser.</para>
+		</listitem>
+	     </itemizedlist>
+	    </para>
+    </section> 
+
     <section>
 	    <title>Changes from 0.5.0 to 0.6.0</title>
 	    <para>
