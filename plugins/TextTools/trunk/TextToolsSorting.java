@@ -248,7 +248,7 @@ public class TextToolsSorting
 	static ArrayList getData(JEditTextArea textArea, boolean onlyRectSelection)
 	{
 		JEditBuffer buffer = textArea.getBuffer();
-		if (buffer.isReadOnly())
+		if (!buffer.isEditable())
 		{
 			Log.log(Log.NOTICE, TextToolsSorting.class, jEdit.getProperty(
 				"texttoolsplugin.error.isReadOnly.message"));
