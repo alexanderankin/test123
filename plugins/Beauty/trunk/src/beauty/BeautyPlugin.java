@@ -199,7 +199,7 @@ public class BeautyPlugin extends EditPlugin {
     public static void beautify(Buffer buffer, View view) {
         boolean showErrorDialogs = jEdit.getBooleanProperty("beauty.general.showErrorDialogs", true);
 
-        if (buffer.isReadOnly()) {
+        if (!buffer.isEditable()) {
             Log.log(Log.NOTICE, BeautyPlugin.class, jEdit.getProperty("beauty.error.isReadOnly.message"));
             if (showErrorDialogs) {
                 GUIUtilities.error(view, "beauty.error.isReadOnly", null);
