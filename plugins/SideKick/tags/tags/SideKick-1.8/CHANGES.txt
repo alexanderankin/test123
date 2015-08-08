@@ -1,0 +1,244 @@
+ :encoding=UTF-8:maxLineLen=95:wrap=hard:folding=indent:collapseFolds=2:
+ jEdit SideKick Plugin Changelog
+ 
+    Version 1.7
+        Fixed bug 1800, removed extraneous remove-marker menu item from tree popup menu.
+        (Dale Anson)
+        German language update (Robert Schwenn)
+        Fixed bad hyperlinks to API docs (Alan Ezust)
+        Added SideKickPosition and updated ParserError since these are used by several sidekick
+        parsers (Dale Anson)
+
+    Version 1.6 requires Java 1.6, jEdit 5.0, ErrorList 2.1, MarkerSets 0.8 (optional)
+        Better calculation of asset ranges which helps with sidekick folding mode.
+        
+    Version 1.5 requires Java 1.6, jEdit 5.0, ErrorList 2.0, MarkerSets 0.8 (optional)
+        Fixed NPE in handlePluginUpdate for plugins that do not have a pluginJAR. (kpouer) 
+        German Localization (rschwenn)
+
+    Version 1.4 requires Java 1.6, jEdit 5.0pre1, ErrorList 2.0 and MarkerSets 0.8(optional)
+        Fixed #2311948, auto-displayed ErrorList kills CompletionPopup (Jarek Czekalski)
+        Fixed #3536025, Sidekick displays same errors in all views (XML plugin) (Alan Ezust)
+        Fixed #3480846, Sidekick doesn't remember my parser (Jarek Czekalski)
+        
+    Version 1.3 Requires Java 1.6, jEdit 4.5, ErrorList 1.9, and
+        MarkerSets 0.8 (Optional)
+        Sidekick unable to clear checkbox tree/combo follows caret (#3445893 -
+        Shlomy)
+        Integration with Markersets (#3392131 - shlomy).
+        Default Focus on Tree, not filter field. (#3405334 - ezust).
+        Fixed sidekick unload problem (Matthieu Casanova)
+        Fixed memory leak (Matthieu Casanova)
+        Allow Look and Feel changes at runtime.
+        Fix completion popup regarding macro recorder (3175336 - Eric Le Lay).
+    Version 1.1
+        Added options for showing the structure of the buffer in a toolbar
+        (using combo-boxes), for cases where the tree takes too much screen
+        space.
+    Version 1.0
+        New macros / actions: search asset for selection and go to begin/end of
+        function.
+        Added a "macros/" dir where additional bsh macros can be placed.
+        Fixes for 'go to next' and 'go to previous' asset, which also fixes
+        Tracker 3008037.
+        Fix for Shift-Click on sidekick tree to select the entire asset.
+        Fix for Tracker 3081956, race condition during parse on save.
+    Version 0.9
+        Added ability for SideKick derivatives to specify an initial tree
+        expansion model. This model can be based on option settings or specific
+        language characteristics. For example, the JavaSideKick could expand
+        inner classes to show method names while leaving the imports node
+        collapsed.
+        Added ability to hide and disable the filter text area. Some users don't
+        use it and it tends to grab focus away from the tree, so this new
+        feature helps those users.
+        Added alternate keyboard handling to the tree. Now using the arrow keys
+        causes movement through the tree to work as a normal tree and all nodes
+        are accessible with the arrow keys. Nodes are not automatically expanded
+        as they are highlighted. The previous keyboard handling is accessible by
+        using the Ctrl key with the up and down arrows, this will move the tree
+        selection to the next/prev leaf nodes, which some people find useful
+        when used in conjunction with the filter text box.
+    Version 0.8 requires JDK 1.5, jEdit 4.3pre17 and ErrorListPlugin 1.4.
+        Fixed issue where 'Select asset at caret' was not select the last
+        character of the asset.
+
+    Version 0.7.7 requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.
+        Updated to 4.3pre17 API (using Iterator instead of Enumerator)
+        Fixed "parse on save" so parsing does not occur when parse on save is
+        not selected. (danson)
+        Possible fix for 1633393, "TextArea painting corruption when saving".
+        (danson)
+        Fixed the auto-expand tree functionality that I broke earlier when
+        adjusting it for the new filtering. (danson)
+        Rearranged SideKick toolbars in dockable to add a text field for the
+        "Filter" and a "clear" button to remove the current filter. Typing works
+        as it did previously, that is, you don't have to click into the text
+        field to begin entering a filter. (danson)
+        Applied patch from bug#2134884 to resolve focus issues with filter
+        textfield (Matthew Gilbert).
+    Version 0.7.6 requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.
+        Filtering capability in tree view (Matthew Gilbert, #1902558)
+        Fixed a minor bug; typing over an active completion popup inactivated
+        the popup. (Kazutoshi Satoda)
+        Completion popup for explicit completion is now active as same as
+        builtin completion. (Kazutoshi Satoda)
+        Added a new option, which makes automatic completion popups get focus,
+        to make the new behavior in 0.7.5 optional. (Kazutoshi Satoda, Bug
+        #2027704)
+        Fixed a memory leak; multiple parser specific panels could be held in
+        SideKickTree. (Kazutoshi Satoda)
+
+    Version 0.7.5 requires JDK 1.5, jEdit 4.3pre11 and ErrorListPlugin 1.4.
+        Uses refactored CompletionPopup class in 4.3pre11. Checks the edit mode
+        at the caret position for valid completions. When multiple completions
+        are possible, Sidekick no longer selects the first item automatically
+        when a space is typed. (1752044 - Kazutoshi Satoda).
+        Fixed "sidekick fold starts in the previous line when the corresponding
+        folding node starts at the beginning of the line ( 1767390 - Matthieu
+        Casanova )
+        Fixed a minor memory leak when Sidekick is unloaded ( Matthieu Casanova )
+        Improved Mode Option Pane so it works properly when the edit mode is
+        changed before an "ok/apply" (Shlomy Reinstein)
+
+    Version 0.7.4 requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.
+        Fixed "can't determine mode of buffer" ( 1744627 - Shlomy Reinstein )
+        Added support for SideKick Parser Services to offer a JPanel for
+        inserting above the SideKickTree. (Shlomy Reinstein, # 1744797 )
+        Preserve horizontal scroll position (Vladimir Avondin # 1746146)
+
+    Version 0.7.3 requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.
+        Added parser setting from mode options pane. (ezust)
+        NPE after install from plugin manager fixed. (Matthieu Casanova)
+        Bug 1643614 fixed (reparse on mode change)
+
+    Version 0.7.2 requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.
+        Bugs 1617620,1624552 - Can't get rid of wrong parser. (hertzhaft, ezust)
+        NPE fixed when a jEdit mode had no parser. (Matthieu Casanova)
+        Added a dynamic parser switcher menu to a new ActionSet, allowing you to
+        switch parsers via keyboard shortcuts. (ezust)
+        Rewrote and simplified fold handler code (Matthieu Casanova).
+
+    Version 0.7.1 requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.
+        SF.net bugs 1072043, 1553554, 1506964 - Sidekick FoldHandler bugs fixed.
+        SF.net bug # 1593604 - reparse on save happens only in the active view.
+        Sf.net bug # 1595835 - can't switch to default parser
+
+    Version 0.7 requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.
+        Added a mode-specific option pane, so that settings can be customized on
+        a mode basis by SideKick and its parser service plugins. (ezust).
+        Made the completion popup accept-characters configurable. Prevented the
+        completion popup from showing when the word at the caret is the same as
+        a completion list entry. (hertzhaft)
+        Recuses into non-asset nodes #1571697, 1573034. (shlomy)
+
+    Version 0.6.6 requires JDK 1.5, jEdit 4.3pre5 and ErrorListPlugin 1.4.
+        Added sidekick.util package. This contains classes to help integrate
+        javacc-generated parsers with sidekick. (danson)
+        Some work on the popup for code completion. It still doesn't work right
+        with picking from the list with a mouse. (danson)
+        Fix for a null pointer exception. (danson)
+
+    Version 0.6.4 requires JDK 1.5, jEdit 4.3pre5 and ErrorListPlugin 1.4.
+        Emits new EBMessage msg.CaretChanging when an asset is selected in the
+        tree. (ezust)
+        Mouse Clicks, PgUp and PgDn keys work from completion popups. Arrow keys
+        don't wrap around anymore. (ezust)
+        Popup menu on parse button for conveniently changing auto parse
+        settings/caret follow settings (requires JDK 1.5). (ezust)
+        Parse event bugfixes (ezust)
+
+    Version 0.6.2 requires JDK 1.4, jEdit 4.3pre3 and ErrorListPlugin 1.4.
+        Broke up options "parse on buffer switch/save" into 2 separate options.
+        Now you can parse on switch, or on save, or on both, and when you switch
+        buffers with parse-on-switch off, the tree keeps its state. (Alan Ezust)
+
+        Added option setting to turn off tool tips. Tool tips can be annoying on
+        slower systems as they are not necessarily drawn quickly. (Dale Anson)
+        Added option setting to be able to display a status window at the bottom
+        of the tree. This window is larger than the jEdit status bar, so the
+        full display of tree node can be shown. This is nice when tool tips are
+        off and the node details are shown on more than one line. (Dale Anson)
+
+    Version 0.6.1 requires jEdit 4.3pre3 and ErrorListPlugin 1.4.
+        Made SideKickParser.name protected.
+        Bug 1504746 fixed [combobox].
+
+    Version 0.6 requires jEdit 4.3pre3 and ErrorListPlugin 1.4.
+        Added a combo box to let you switch parsers on an individual buffer
+        basis. (Alan Ezust)
+        Improved Documentation. (Alan Ezust)
+        No more multi-line StatusBar messages. Using getShortString() instead of
+        getLongString(). (Alan Ezust)
+
+    Version 0.5 requires jEdit 4.3pre3 and ErrorListPlugin 1.2.
+        SideKick now auto-expands the proper depth of the tree, and properly
+        follows the textarea's caret as the selected node in the sidekick. (Dale
+        Anson)
+        A new context menu exists in SideKick permitting the user to set and
+        view markers. (Martin Raspe)
+
+    Version 0.4 requires jEdit 4.3pre3 and ErrorListPlugin 1.2.
+        Moved 4 classes from the PerlSideKick plugin into this plugin. The
+        classes are in package sidekick.enhanced. This is so that we can break
+        the dependency between JavaScriptSideKick and PerlSideKick.
+        Patched for 4.3pre3 API
+
+    Version 0.3.4 requires jEdit 4.2final.
+        Added a new IAsset interface that can be used instead of the Asset
+        abstract class to realize more flexible inheritance relationships.
+        Added a new option pane to associate edit modes with SideKick parsers.
+
+    Version 0.3.3 requires jEdit 4.2final.
+        The completion popup is now positioned within the screen bounds.
+        The SideKickCompletion class is now much more full-featured (but
+        backwards-compatible, if you ignore the new features).
+        Some changes were made to the way the parser works to improve perceived
+        responsiveness.
+        The SideKickParsedData associated with a buffer was not unset when the
+        SideKick plugin was unloaded, and as a result, reloading the SideKick
+        plugin would horribly break buffers using the "sidekick" fold handler.
+
+        The option to delay parsing after a keystroke did not work; the timeout
+        was always fixed at 1.5 seconds.
+
+    Version 0.3.2 requires jEdit 4.2final and ErrorListPlugin 1.2.
+        Fixed NullPointerException in Select Asset.
+        Sometimes a buffer would be parsed more than once in a row.
+        Fixed a bug that would show the completion popup twice if the Show
+        completion popups where possible option was on andthe popup trigger
+        delay was larger than 0 seconds and the user invoked the complete action
+        before the trigger delay run out. (Dirk Moebius)
+        Fixed a bug where typing with the completion popup open would not insert
+        keys if there were no completions available.
+
+    Version 0.3.1 requires jEdit 4.2pre3 and ErrorListPlugin 1.2.
+        SideKickCompletion implementations can now disable automatic completion
+        popups.
+        Fix a problem in buffer listener handling.
+        Various other minor fixes.
+
+    Version 0.3 requires jEdit 4.2pre3 and ErrorListPlugin 1.1.
+        Updated for jEdit 4.2 API changes.
+        Added getParseTriggers() method to SideKickParser class.
+        Added getErrorSource() method to SideKickPlugin class.
+        Cleaned up and debugged completion code.
+        Previously if the parse on keystroke option was on, an in-progress parse
+        was not stopped. This resulted in poor performance. Now, an API has been
+        added for stopping parsing (although only the XML plugin uses it at the
+        moment). Combined with the position optimization in jEdit 4.2pre3, this
+        should result in improved responsiveness when editing large XML files.
+
+
+    Version 0.2 requires jEdit 4.1pre11 and ErrorListPlugin 1.0.
+        Fixed a thread safety problem.
+        Added activate() and deactivate() methods to SideKickParser class. These
+        methods are called when a buffer using this parser is selected and
+        deselected in a given view.
+        The priority of the thread used by SideKick to parse files is now the
+        minimum priority.
+        jEdit keyboard shortcuts now work when invoked while a completion popup
+        is open.
+
+    Version 0.1 requires jEdit 4.1pre11.
+        Initial release.
