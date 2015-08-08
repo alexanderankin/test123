@@ -7,11 +7,11 @@
 plugin.astyleplugin.AStylePlugin.activate=defer
 plugin.astyleplugin.AStylePlugin.name=AStylePlugin
 plugin.astyleplugin.AStylePlugin.author=Dirk Moebius, Tal Davidson
-plugin.astyleplugin.AStylePlugin.version=0.8.2
+plugin.astyleplugin.AStylePlugin.version=0.8.3
 plugin.astyleplugin.AStylePlugin.docs=astyleplugin/help.html
-plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.4
-plugin.astyleplugin.AStylePlugin.depend.1=jedit 04.02.01.00
-plugin.astyleplugin.AStylePlugin.depend.2=plugin beauty.BeautyPlugin 0.1
+plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.6
+plugin.astyleplugin.AStylePlugin.depend.1=jedit 05.03.00.00
+plugin.astyleplugin.AStylePlugin.depend.2=plugin beauty.BeautyPlugin 0.7.0
 
 astyleplugin.label=AStyle Beautifier
 

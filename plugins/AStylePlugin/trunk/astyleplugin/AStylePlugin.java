@@ -73,7 +73,7 @@ public class AStylePlugin extends EBPlugin {
 	 *        used when the property "formatOnSave" is set.
 	 */
 	public static void beautify(Buffer buffer, View view, boolean showErrorDialogs) {
-		if (buffer.isReadOnly()) {
+		if (!buffer.isEditable()) {
 			Log.log(Log.NOTICE, AStylePlugin.class, jEdit.getProperty("astyleplugin.error.isReadOnly.message"));
 			if (showErrorDialogs)
 				GUIUtilities.error(view, "astyleplugin.error.isReadOnly", null);
