@@ -67,8 +67,8 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includejavaruntime="yes"
-            source="1.4"
-            target="1.4"
+            source="1.6"
+            target="1.6"
             debug="yes"
 		/>
 	</target>
