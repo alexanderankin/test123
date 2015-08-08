@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true:folding=sidekick: -->
+  <bookinfo>
+    <title>SideKick plugin user's guide</title>
+
+
+    <authorgroup>
+      <author>
+        <firstname>Slava</firstname>
+        <surname>Pestov</surname>
+      </author>
+      <author>
+        <firstname>Dale</firstname>
+        <surname>Anson</surname>
+      </author>
+      <author>
+        <firstname>Martin</firstname>
+        <surname>Raspe</surname>
+      </author>
+      <author>
+        <firstname>Alan</firstname>
+        <surname>Ezust</surname>
+      </author>
+      <author>
+        <firstname>Shlomy</firstname>
+        <surname>Reinstein</surname>
+      </author>
+    </authorgroup>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+      <para>
+   The SideKick plugin itself is released under the GNU General Public License.
+   A copy of the GPL can be found in the jEdit online help.
+  </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="browser">
+    <title>The SideKick dockable</title>
+
+    <para>
+  The SideKick plugin provides a dockable in which other plugins can
+  display buffer structure.
+ </para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>SideKick</guimenuitem> displays the current buffer's structure in a dockable window. This window is floating by default, but it can be docked into the view 2 ways.
+  </para>
+    <orderedlist>
+      <listitem>
+        <para> Choosing a docking area from the docking menu (a little arrow in the upper left corner of each floating dockable)</para>
+      </listitem>
+      <listitem>
+        <para> Go to the <guibutton>Docking</guibutton>
+  pane of the <guimenuitem>Global Options</guimenuitem> dialog box </para>
+      </listitem>
+    </orderedlist>
+
+    <para> On the top of the window, you will see a combobox which lists all installed SideKick parsers. You can switch to another parser temporarily for a buffer by selecting it from the combo box. </para>
+
+    <para>
+  The SideKick plugin can automatically parse your buffer depending on various events, such as: Buffer Switch, Buffer Save, or on the fly (after it is idle for a period of time). The last option is rarely used since it can eat up CPU time, so it is disabled by default. </para>
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly  parsing, for the current buffer only.
+ </para>
+
+
+    <para> You can also manually parse a buffer by clicking on the "Parse" button in the Sidekick dockable, or through a keyboard shortcut, if you bind Sidekick's "parse buffer" action to a keystroke. <footnote><para>
+  global options - jedit - Shortcuts - Plugin: Sidekick (combo) - Parse Buffer</para>
+      </footnote>
+    </para>
+
+    <para>
+  The current buffer can be parsed at any other time by clicking the parse
+  button in the <guimenuitem>Sidekick</guimenuitem> window, or by
+  invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  Buffer</guimenuitem> command.
+ </para>
+
+    <tip>
+      <title> Parse button menu </title>
+      <para> A popup menu is available in JDK 1.5 which
+ appears when you right-click the "Parse" button.
+ From there, you can set some auto-parse options
+ without going to the plugin options. </para>
+    </tip>
+
+    <tip>
+      <title> Mode Options </title>
+      <para> SideKick supports what are called "Mode Options". Certain properties can be set on an edit-mode basis, such as the SideKick parser, tree expansion depth, etc. Other plugins (such as CtagsSideKick) added their own optionpane to this dialog, via the
+ services API. </para>
+    </tip>
+
+    <tip>
+      <title> Filter textfield </title>
+      <para>
+ Also at the top of the window is a "Filter" box.  Entering text into the box will cause the tree to collapse to show only those items in the tree whose names contain the text in the filter box.  This makes it easy to quickly locate items in the tree.  By default, clicking on an item in the tree clears the filter, but this can be changed in the SideKick plugin option settings by using the "Filter persists after tree selection" checkbox.
+ </para>
+
+      <para>
+ You don't have to click into the filter box to begin typing. As long as SideKick has focus, keystrokes are automatically sent to the box to make locating items even faster.
+ </para>
+    </tip>
+
+    <para>
+  Any errors found while parsing the buffer are sent to the
+  <application>ErrorList</application> plugin, which means they are highlighted
+  in the text area, and shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt; window. See the
+  documentation for the <application>ErrorList</application> plugin for details.
+ </para>
+
+    <para>
+  Clicking on a node in the tree will move the caret to its location in the
+  buffer;
+  conversely, moving the caret in the buffer will select the corresponding
+  node.
+ </para>
+
+    <para>
+      <keycap>Shift</keycap>-clicking on a node will select that node in the text
+  area. <keycap>Alt</keycap>-clicking on a node will narrow the text area
+  display to that node.
+ </para>
+
+    <para>
+  If SideKick is docked into the current view, hovering the mouse
+  over a node will display its attributes in the status bar.
+ </para>
+
+  </chapter>
+
+  <chapter id="moving-around">
+    <title>Moving around</title>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
+  to Previous Asset</guimenuitem> moves the caret to start of the structure
+  element (<quote>asset</quote>).
+ </para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
+  to Next Asset</guimenuitem> moves the caret to start of the next asset.
+ </para>
+
+ <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Select
+  Asset at Caret</guimenuitem> selects the asset at the caret position.
+ </para>
+
+  <bridgehead> Keyboard Shortcuts </bridgehead>
+    <itemizedlist>
+      <listitem><para> Up and Down arrow keys let you navigate between sibling nodes,
+      or to parents/children of exploded nodes. </para></listitem>
+      <listitem><para> Ctrl+Up and Ctrl+Down keys go to previous/next asset.
+      </para></listitem>
+      <listitem><para> Right and Left arrow keys expand and collapse tree nodes.
+      </para></listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="toolbar">
+    <title>Toolbar</title>
+
+    <para>
+  SideKick can optionally display the structure of the buffer in a toolbar, using
+  one or more combo-boxes. This option is useful where screen real-estate is
+  important and the tree takes too much of the screen. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Show the assets in a
+      combo-box (inside a toolbar)</guimenuitem>.
+  By default, a single combo-box is shown, which can be used to jump to various
+  positions inside the buffer.
+    </para>
+    <para>
+  There is also an option to show a separate check-box for each level in the
+  SideKick tree. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Use a separate combo-box
+      for each level of the tree</guimenuitem>.
+    </para>
+    <para>
+  To make the combo-box (or multiple combo-boxes) show the asset where the caret is
+  currently located, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Tree/combo-box selection
+      follows caret position</guimenuitem>.
+    </para>
+
+  </chapter>
+
+  <chapter id="folding">
+    <title>Folding</title>
+
+    <para>
+  The SideKick plugin adds a new <quote>sidekick</quote> fold handler that
+  folds the buffer according to the sidekick tree. See the jEdit user's guide
+  for general details about folding.
+  </para>
+  <para>
+    Since the folding is based on an accurate parsing of the file, it is suggested
+    that "Parse on keystroke" be selected in the Sidekick options. Otherwise, the
+    folding will be out of sync with the file until the file is reparsed.
+  </para>
+
+    <para>
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Narrow to
+  Asset at Caret</guimenuitem> hides all text except that of the asset at the
+  caret location. This works in any folding mode, not just the <quote>sidekick</quote>
+  mode.
+ </para>
+  </chapter>
+
+  <chapter id="completion">
+    <title>Completion</title>
+
+    <para>
+  A completion popup can be shown at any time
+  by invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Show
+  Completion Popup</guimenuitem> command. Each plugin that uses SideKick
+  implements its own specific completion behavior; see the plugin documentation
+  for details. Since completion is often based on an accurate parsing of the file,
+  it is suggested that "Parse on keystroke" be selected in the Sidekick options.
+ </para>
+
+  </chapter>
+
+  <chapter id="other-plugins">
+    <title>Developing SideKick back-ends</title>
+
+    <para>
+  By itself the SideKick plugin is not very useful; it relies on other plugins to
+  provide buffer structure information. This chapter gives a brief overview of
+  how it's done.
+ </para>
+
+    <section id="preliminaries">
+      <title>Preliminaries</title>
+
+      <para>
+  First you will also need to add a dependency for the SideKick plugin in your plugin's
+  property file:
+ </para>
+
+      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 1.6</programlisting>
+
+      <para>
+  Note that you must replace <replaceable>n</replaceable> with the
+  appropriate number, as dependency properties must have consecutive numbers.
+ </para>
+
+      <para>
+  All SideKick plugin classes are in the <classname>sidekick</classname> package;
+  you will need to add <literal>import</literal> statements where appropriate.
+ </para>
+
+      <para>
+   Parser instances must be registered using the
+   <literal>services.xml</literal> file. With this, you define a service which
+   returns a derived instance of <classname>SideKickParser</classname>
+      </para>
+
+      <programlisting>
+&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;!DOCTYPE SERVICES SYSTEM &quot;services.dtd&quot;&gt;
+
+&lt;SERVICES&gt;
+        &lt;SERVICE CLASS=&quot;sidekick.SideKickParser&quot; NAME=&quot;xml&quot;&gt;
+                new xml.parser.SAXParserImpl();
+        &lt;/SERVICE&gt;
+&lt;/SERVICES&gt;
+</programlisting>
+
+    </section>
+
+    <section id="class-sidekickparser">
+      <title>The SideKickParser class</title>
+
+      <para>
+        <classname>SideKickParser</classname> is an abstract class. The constructor takes one string parameter. This string is used in several properties:
+ </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            <literal>sidekick.parser.<replaceable>name</replaceable>.label</literal>
+  - specifies a human-readable label for the parser, shown in status messages. </para>
+          <para> Your derived parser class should return this same name from the <literal>getName()</literal> function.
+  </para>
+        </listitem>
+        <listitem>
+          <para>
+            <literal>mode.<replaceable>mode</replaceable>.sidekick.parser</literal>
+  - properties of this form are used to associate a parser with an edit mode.
+ </para>
+        </listitem>
+      </itemizedlist>
+
+      <para>
+  For example, the XML plugin, which provides many <classname>SideKickParser</classname>
+  implementations, has these properties:
+ </para>
+
+      <programlisting>sidekick.parser.xml.label=XML
+mode.xml.sidekick.parser=xml
+mode.xsl.sidekick.parser=xml
+sidekick.parser.html.label=HTML
+mode.asp.sidekick.parser=html
+mode.coldfusion.sidekick.parser=html
+mode.html.sidekick.parser=html
+mode.jhtml.sidekick.parser=html
+mode.jsp.sidekick.parser=html
+mode.php.sidekick.parser=html
+mode.shtml.sidekick.parser=html
+mode.sgml.sidekick.parser=html
+mode.velocity.sidekick.parser=html</programlisting>
+
+    </section>
+
+    <section id="implement-sidekick-parser">
+      <title>Implementing a Sidekick parser</title>
+
+      <para>
+ The
+      <classname>SideKickParser</classname> has one abstract method that all
+  subclasses must implement:
+ </para>
+
+      <funcsynopsis>
+        <funcprototype>
+
+          <funcdef>public
+
+   SideKickParsedData <function>parse</function>
+          </funcdef>
+          <paramdef>Buffer <parameter>buffer</parameter>
+          </paramdef>
+          <paramdef>DefaultErrorSource <parameter>errorSource</parameter>
+          </paramdef>
+        </funcprototype>
+      </funcsynopsis>
+
+      <para>
+  The <literal>errorSource</literal> is an instance of a class provided by the
+  <application>ErrorList</application> plugin; consult its documentation for
+  details.
+ </para>
+
+      <para>
+  The method is called from a thread, so care must be taken to access the
+  buffer in a thread-safe manner; the API documentation for the
+  <classname>Buffer</classname> class describes how this is done.
+ </para>
+
+      <para>
+  Your implementation of the <function>parse()</function> method should create and return
+an instance of
+   <classname>SideKickParsedData </classname>. Its constructor of the takes one parameter, which is the file name (to be shown at the root of the structure tree). Your method should
+add  structure elements to the <varname>root</varname> field of the instance.
+<varname>root</varname> is an instance of Java's <classname>DefaultMutableTreeNode</classname> class,
+and is given an initial value by the <classname>SideKickParsedData</classname> constructor.
+ </para>
+
+      <formalpara id="optionalPanel">
+        <title> getPanel() </title>
+        <para> Some SideKick parsers, such as CtagsSideKick, offer an additional toolbar to provide a convenient interface to change certain mode options such as sort by, and group by. They achieve this by overriding the <literal>getPanel()</literal> method of SideKickParser. </para>
+      </formalpara>
+
+    </section>
+
+    <section id="implement-completion">
+      <title>Implementing completion popups</title>
+
+      <para> Your derived instance of <classname>SideKickParser</classname> can implement additional methods to tell Sidekick that your parser supports completions.
+   </para>
+
+      <programlisting>
+        /* @return true if plugin supports completion */
+        public boolean supportsCompletion();
+        /* @return true if we show completions after a period of inactivity. */
+    public boolean canCompleteAnywhere() ;
+        /* @return a list of characters which trigger completion immediately. */
+    public String getInstantCompletionTriggers();
+
+
+        /* @return all completions at a given caret position for this
+        editpane */
+        public SideKickCompletion complete(EditPane editPane, int caret)
+      </programlisting>
+
+
+      <para> If your SideKickParser does support completion, the actual
+     brains of the plugin goes in the last method, <literal>complete()</literal>,
+     which must construct an instance of <literal>SideKickCompletion</literal>
+     given an <literal>EditPane</literal> and a caret position.
+   </para>
+
+      <para>
+   The constructor for <literal>SideKickCompletion</literal> accepts a list (or array) of possible values, these are the values that are displayed in the dropdown.
+   This is an abstract class, so you'll need to derive a specific implementation.  You may want to override the 'insert(int)' method to
+   support language specifics, like "dot" completion.
+   </para>
+
+      <para>How you actually create the completion depends on the specific language and support classes, and the information provided by the parser for the current file. </para>
+
+
+    </section>
+  </chapter>
+
+  <appendix id="changes">
+    <title>Changes</title>
+    <para> Click <ulink url="CHANGES.txt">here</ulink> to see the detailed changes. </para>
+    </appendix>
+</book>
