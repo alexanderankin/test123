@@ -653,7 +653,7 @@ public class TaskListPlugin extends EditPlugin {
 
     // {{{ removeTask method
     public static void removeTask( View view, Buffer buffer, Task task ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null ) {
+        if ( buffer == null || !buffer.isEditable() || task == null ) {
             view.getToolkit().beep();
             return;
         }
@@ -670,7 +670,7 @@ public class TaskListPlugin extends EditPlugin {
 
     // {{{ removeTaskTag method
     public static void removeTag( View view, Buffer buffer, Task task ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null ) {
+        if ( buffer == null || !buffer.isEditable() || task == null ) {
             view.getToolkit().beep();
             return;
         }
@@ -687,7 +687,7 @@ public class TaskListPlugin extends EditPlugin {
 
     // {{{ replaceTaskTag() method
     public static void replaceTag( View view, Buffer buffer, Task task, String newTag ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null ) {
+        if ( buffer == null || !buffer.isEditable() || task == null ) {
             view.getToolkit().beep();
             return;
         }
