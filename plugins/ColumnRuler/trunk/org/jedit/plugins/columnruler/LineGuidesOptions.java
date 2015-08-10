@@ -10,191 +10,234 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
 
+import org.jedit.plugins.columnruler.event.MarkManagerListener;
+
 /**
  *  Option pane for custom marks and guides.
  *
  * @author     Brad Mace
  * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
  */
-public class LineGuidesOptions extends AbstractOptionPane implements ActionListener {
-	private Map<DynamicMark, JCheckBox> dynamicMarks;
-	private java.util.List<StaticMark> staticMarks;
-	private JButton addButton;
-	private JButton removeButton;
-	private JTable table;
-	private GuideTableModel model;
-	private Comparator columnComparator;
+public class LineGuidesOptions extends AbstractOptionPane implements ActionListener, MarkManagerListener {
+    private Map<DynamicMark, JCheckBox> dynamicMarks;
+    private java.util.List<StaticMark> staticMarks;
+    private JButton addButton;
+    private JButton removeButton;
+    private JTable table;
+    private GuideTableModel model;
+    private Comparator columnComparator;
 
-	public LineGuidesOptions() {
-		super("columnruler.lineguides");
-	}
+    public LineGuidesOptions() {
+        super( "columnruler.lineguides" );
+    }
 
-	protected void _init() {
-		columnComparator = new ColumnComparator();
-		dynamicMarks = new HashMap<DynamicMark, JCheckBox>();
+    protected void _init() {
+        columnComparator = new ColumnComparator();
+        dynamicMarks = new HashMap<DynamicMark, JCheckBox>();
 
-		String[] services = ServiceManager.getServiceNames("org.jedit.plugins.columnruler.DynamicMark");
-		JPanel dynamicGuides = new JPanel(new GridLayout(services.length, 1));
-		dynamicGuides.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Dynamic Marks/Guides"));
-		
-		for (String service : services) {
-			DynamicMark m = (DynamicMark) ServiceManager.getService("org.jedit.plugins.columnruler.DynamicMark", service);
-			JCheckBox box = new JCheckBox("Show "+m.getName()+" Mark");
-			dynamicMarks.put(m, box);
-			if (m.isVisible()) {
-				box.setSelected(true);
-			}
-			dynamicGuides.add(box);
-		}
-		
-		addComponent(dynamicGuides, GridBagConstraints.HORIZONTAL);
+        String[] services = ServiceManager.getServiceNames( "org.jedit.plugins.columnruler.DynamicMark" );
+        JPanel dynamicGuides = new JPanel( new GridLayout( services.length, 1 ) );
+        dynamicGuides.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "Dynamic Marks/Guides" ) );
 
-		MarkManager mm = MarkManager.getInstance();
-		staticMarks = new ArrayList<StaticMark>();
-		try {
-			for (StaticMark m : mm.getMarks()) {
-				staticMarks.add((StaticMark) m.clone());
-			}
-		} catch (CloneNotSupportedException e) {
-			Log.log(Log.ERROR, this, "Couldn't load existing marks");
-		}
-		
-		model = new GuideTableModel();
-		table = new JTable(model);
-		addComponent(createTablePanel(), GridBagConstraints.BOTH);
-		
-	}
+        for ( String service : services ) {
+            DynamicMark m = ( DynamicMark ) ServiceManager.getService( "org.jedit.plugins.columnruler.DynamicMark", service );
+            JCheckBox box = new JCheckBox( "Show " + m.getName() + " Mark" );
+            dynamicMarks.put( m, box );
+            if ( m.isVisible() ) {
+                box.setSelected( true );
+            }
+            dynamicGuides.add( box );
+        }
 
+        addComponent( dynamicGuides, GridBagConstraints.HORIZONTAL );
 
-	protected void _save() {
-		for (DynamicMark mark : dynamicMarks.keySet()) {
-			JCheckBox box = dynamicMarks.get(mark);
-			mark.setVisible(box.isSelected());
-			jEdit.setBooleanProperty(mark.getPropertyPrefix()+".visible", mark.isVisible());
-		}
+        MarkManager mm = MarkManager.getInstance();
+        staticMarks = new ArrayList<StaticMark>();
+        try {
+            for ( StaticMark m : mm.getMarks() ) {
+                staticMarks.add( ( StaticMark ) m.clone() );
+            }
+        } catch ( CloneNotSupportedException e ) {
+            Log.log( Log.ERROR, this, "Couldn't load existing marks" );
+        }
 
-		MarkManager mm = MarkManager.getInstance();
-		mm.removeAll();
-		for (StaticMark m : staticMarks) {
-			mm.addMark(m, false);
-		}
-		
-		mm.save();
-		jEdit.getActiveView().getTextArea().repaint();
-	}
+        model = new GuideTableModel();
+        table = new JTable( model );
+        table.setDefaultRenderer( Color.class, new ColorCellRenderer() );
+        addComponent( createTablePanel(), GridBagConstraints.BOTH );
 
-	//{{{ actionPerformed()
-	public void actionPerformed(ActionEvent evt) {
-		Object obj = evt.getSource();
+        MarkManager.getInstance().addMarkManagerListener( this );
+    }
 
-		if (obj == addButton) {
-			addGuide();
-		} else if (obj == removeButton) {
-			int[] rows = table.getSelectedRows();
-			for (int i = rows.length-1; i >= 0; i--) {
-				removeGuide(rows[i]);
-			}
-		}
-	}//}}}
+    protected void _save() {
+        for ( DynamicMark mark : dynamicMarks.keySet() ) {
+            JCheckBox box = dynamicMarks.get( mark );
+            mark.setVisible( box.isSelected() );
+            jEdit.setBooleanProperty( mark.getPropertyPrefix() + ".visible", mark.isVisible() );
+        }
 
-	private JPanel createTablePanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Static Marks/Guides"));
+        MarkManager mm = MarkManager.getInstance();
+        mm.removeAll();
+        for ( StaticMark m : staticMarks ) {
+            mm.addMark( m, false );
+        }
 
-		JPanel buttonPanel = new JPanel();
-		addButton = new JButton("Add Mark/Guide");
-		addButton.addActionListener(this);
-		buttonPanel.add(addButton);
-		removeButton = new JButton("Remove Mark(s)/Guide(s)");
-		removeButton.addActionListener(this);
-		buttonPanel.add(removeButton);
-		panel.add(buttonPanel, BorderLayout.SOUTH);
+        mm.save();
+        jEdit.getActiveView().getTextArea().repaint();
+    }
 
-		panel.add(new JScrollPane(table), BorderLayout.CENTER);
-		return panel;
-	}
+    // {{{ actionPerformed()
+    public void actionPerformed( ActionEvent evt ) {
+        Object obj = evt.getSource();
 
-	//{{{ add/remove guide
-	public void addGuide() {
-		MarkDialog dialog = new MarkDialog(null, "Add Mark/Guide");
-		dialog.pack();
-		dialog.setVisible(true);
-	}
+        if ( obj == addButton ) {
+            addGuide();
+        } else if ( obj == removeButton ) {
+            int[] rows = table.getSelectedRows();
+            for ( int i = rows.length - 1; i >= 0; i-- ) {
+                removeGuide( rows[i] );
+            }
+        }
+    }    // }}}
 
-	public void removeGuide(int index) {
-		staticMarks.remove(index);
-		model.fireTableDataChanged();
-	}
-	//}}}
+    private JPanel createTablePanel() {
+        JPanel panel = new JPanel( new BorderLayout() );
+        panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "Static Marks/Guides" ) );
 
-	//{{{ Inner Classes
+        JPanel buttonPanel = new JPanel();
+        addButton = new JButton( "Add Mark/Guide" );
+        addButton.addActionListener( this );
+        buttonPanel.add( addButton );
+        removeButton = new JButton( "Remove Mark(s)/Guide(s)" );
+        removeButton.addActionListener( this );
+        buttonPanel.add( removeButton );
+        panel.add( buttonPanel, BorderLayout.SOUTH );
 
-	//{{{ GuideTableModel
-	/**
-	 *  Description of the Class
-	 *
-	 * @author     Brad Mace
-	 * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
-	 */
-	class GuideTableModel extends AbstractTableModel {
-		public GuideTableModel() { }
+        panel.add( new JScrollPane( table ), BorderLayout.CENTER );
+        return panel;
+    }
 
-		public String getColumnName(int col) {
-			switch (col) {
-							case 0:
-								return "Name";
-							case 1:
-								return "Column";
-							case 2:
-								return "Color";
-							default:
-								return "error";
-			}
-		}
+    // {{{ add/remove guide
+    public void addGuide() {
+        new MarkDialog( null, "Add Mark/Guide" );
+    }
 
-		public int getColumnCount() {
-			return 3;
-		}
+    public void removeGuide( int index ) {
+        staticMarks.remove( index );
+        model.fireTableDataChanged();
+    }
+    // }}}
 
-		public int getRowCount() {
-			return staticMarks.size();
-		}
+    public void markAdded( StaticMark m ) {
+        System.out.println( "+++++ got markAdded: " + m );
+        if ( m != null ) {
+            staticMarks.add( m );
+            model.fireTableDataChanged();
+        }
+    }
 
-		public Object getValueAt(int row, int col) {
-			StaticMark mark = staticMarks.get(row);
-			switch (col) {
-							case 0:
-								return mark.getName();
-							case 1:
-								return new Integer(mark.getColumn());
-							case 2:
-								return mark.getColor();
-							default:
-								return "error";
-			}
-		}
-	}//}}}
+    public void markRemoved( StaticMark m ) {
+        if ( m != null ) {
+            staticMarks.remove( m );
+            model.fireTableDataChanged();
+        }
+    }
 
-	//{{{ ColumnComparator
-	/**
-	 *  Description of the Class
-	 *
-	 * @author     Brad Mace
-	 * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
-	 */
-	class ColumnComparator implements Comparator {
-		public int compare(Object a, Object b) {
-			StaticMark first = (StaticMark) a;
-			StaticMark second = (StaticMark) b;
-			return first.getColumn() - second.getColumn();
-		}
+    public void marksUpdated() {
+        model.fireTableDataChanged();
+    }
 
-		public boolean equals(Object other) {
-			return other instanceof ColumnComparator;
-		}
-	}//}}}
+    public void guidesUpdated() {
+        model.fireTableDataChanged();
+    }
 
-	//}}}
+    // {{{ Inner Classes
+
+    // {{{ GuideTableModel
+    /**
+     *  Description of the Class
+     *
+     * @author     Brad Mace
+     * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
+     */
+    class GuideTableModel extends AbstractTableModel {
+        public GuideTableModel() { }
+
+        public String getColumnName( int col ) {
+            switch ( col ) {
+                case 0:
+                    return "Name";
+                case 1:
+                    return "Column";
+                case 2:
+                    return "Color";
+                default:
+                    return "error";
+            }
+        }
+
+        public int getColumnCount() {
+            return 3;
+        }
+
+        public int getRowCount() {
+            return staticMarks.size();
+        }
+
+        public Object getValueAt( int row, int col ) {
+            StaticMark mark = staticMarks.get( row );
+            switch ( col ) {
+                case 0:
+                    return mark.getName();
+                case 1:
+                    return new Integer( mark.getColumn() );
+                case 2:
+                    return mark.getColor();
+                default:
+                    return "error";
+            }
+        }
+
+        public Class getColumnClass( int c ) {
+            return getValueAt(0, c ).getClass();
+        }
+    }    // }}}
+
+    public class ColorCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col ) {
+
+            JLabel cell = ( JLabel ) super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, col );
+
+            if ( col == 2 ) {
+                cell.setBackground( ( Color ) value );
+                cell.setText( " " );
+            }
+            return cell;
+
+        }
+    }
+
+    // {{{ ColumnComparator
+    /**
+     *  Description of the Class
+     *  TODO: this isn't used anywhere, remove it?
+     * @author     Brad Mace
+     * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
+     */
+    class ColumnComparator implements Comparator {
+        public int compare( Object a, Object b ) {
+            StaticMark first = ( StaticMark ) a;
+            StaticMark second = ( StaticMark ) b;
+            return first.getColumn() - second.getColumn();
+        }
+
+        public boolean equals( Object other ) {
+            return other instanceof ColumnComparator;
+        }
+    }    // }}}
+
+    // }}}
 
 }
 

@@ -32,7 +32,7 @@ import org.jedit.plugins.columnruler.event.*;
  * @version    $Revision: 1.10 $ $Date: 2006-10-11 18:18:40 $ by $Author: k_satoda $
  *      
  */
-public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
+public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener, CaretListener {
 	private TextArea _textArea;
 	private DnDManager _dndManager;
 	private StaticMark tempMark = new StaticMark("", Color.GRAY);
@@ -53,6 +53,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 				MarkManager.getInstance().removeAll();
 			}
 		};
+		_textArea.addCaretListener(this);
 	}
 
 	//{{{ MarkManagerListener impl
@@ -194,7 +195,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			//Log.log(Log.DEBUG, this, "Painted Dynamic Mark: "+mark.getName());
 			if (mark.isVisible()) {
 				mark.drawMark(gfx, this);
-			}
+			}           
 		}
 		//}}}
 
@@ -389,10 +390,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			if (mark instanceof StaticMark) {
 				Action editMark = new AbstractAction("Edit '"+mark.getName()+"' Mark") {
 					public void actionPerformed(ActionEvent ae) {
-						MarkDialog d = new MarkDialog((StaticMark) mark, "Edit Mark");
-						d.pack();
-						ColumnRulerPlugin.center(jEdit.getActiveView(), d);
-						d.setVisible(true);
+						new MarkDialog((StaticMark) mark, "Edit Mark");
 					}
 				};
 				Action deleteMark = new AbstractAction("Delete '"+mark.getName()+"' mark") {
@@ -421,10 +419,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		
 		if (e.getClickCount() == 2) {
 			if (mark == null) {
-				MarkDialog d = new MarkDialog(getColumnAtPoint(e.getPoint()));
-				d.pack();
-                ColumnRulerPlugin.center(jEdit.getActiveView(), d);
-				d.setVisible(true);
+				new MarkDialog(getColumnAtPoint(e.getPoint()));
 			} else {
 				mark.setGuideVisible(!mark.isGuideVisible());
 				MarkManager.getInstance().fireMarksUpdated();
@@ -468,7 +463,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	//}}}
-
+	
+	public void caretUpdate(CaretEvent ce) {
+	    if (_textArea.getSelectionCount() > 0)
+	        repaint();
+	}
+	
 	//}}}
 
 	int getColumnAtPoint(Point p) {

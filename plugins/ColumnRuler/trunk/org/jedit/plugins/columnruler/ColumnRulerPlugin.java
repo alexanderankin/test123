@@ -52,6 +52,8 @@ public class ColumnRulerPlugin extends EBPlugin {
 		for (DynamicMark mark : getDynamicMarks()) {	
 			mark.activate(textArea);
 		}
+		textArea.revalidate();
+		textArea.repaint();
 	}
 
 	private static void removeColumnRulerFromTextArea(TextArea textArea) {
