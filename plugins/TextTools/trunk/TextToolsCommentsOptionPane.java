@@ -61,6 +61,10 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 			jEdit.getProperty("options.toggle-comments.moveDown.title"),
 			jEdit.getBooleanProperty("options.toggle-comments.moveDown"));
 		addComponent(moveDown);
+		insertSpaceAfterComment = new JCheckBox(
+			jEdit.getProperty("options.toggle-comments.insert-space.title"),
+			jEdit.getBooleanProperty("options.insert-space"));
+		addComponent(insertSpaceAfterComment);
 		// line comment indenting options go in a group
 		indentAtLineStart = new JRadioButton(
 			jEdit.getProperty("options.toggle-comments.indentAtLineStart.title"),
@@ -96,6 +100,8 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 			indentWithCode.isSelected());
 		jEdit.setBooleanProperty("options.toggle-comments.indentAsBlock",
 			indentAsBlock.isSelected());
+		jEdit.setBooleanProperty("options.toggle-comment.insert-space",
+			insertSpaceAfterComment.isSelected());
 	} //}}}
 	
 	//{{{ Private members
@@ -106,6 +112,7 @@ public class TextToolsCommentsOptionPane extends AbstractOptionPane
 	private JRadioButton indentAtLineStart;
 	private JRadioButton indentWithCode;
 	private JRadioButton indentAsBlock;
+	private JCheckBox insertSpaceAfterComment;
 	//}}}
 
 }
