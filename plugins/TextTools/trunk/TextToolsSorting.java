@@ -354,7 +354,7 @@ public class TextToolsSorting
 			int[] selRows = new int[2];
 			int selLine = selection[0].getStartLine();
 			selRows[0] = selection[0].getStart(buffer, selLine) - buffer.getLineStartOffset(selLine);
-			selRows[1] = selection[0].getEnd(buffer, selLine) - buffer.getLineStartOffset(selLine) - 1;
+			selRows[1] = selection[0].getEnd(buffer, selLine) - buffer.getLineStartOffset(selLine);
 			return selRows;
 		} else
 			return null;
