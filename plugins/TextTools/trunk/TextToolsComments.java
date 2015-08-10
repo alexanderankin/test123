@@ -23,9 +23,7 @@
 //{{{ Imports
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
 import javax.swing.text.Segment;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
@@ -193,7 +191,9 @@ public class TextToolsComments
 							Segment seg = new Segment();
 							buffer.getLineText(lines[i], seg);
 							Log.log(Log.DEBUG, TextToolsComments.class, "commenting line: "+lines[i]);
-							buffer.insert(lineStart + StandardUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), lineComment + " ");
+							buffer.insert(lineStart + 
+								StandardUtilities.getOffsetOfVirtualColumn(seg, buffer.getTabSize(), leftmost, null), 
+								lineComment + (jEdit.getBooleanProperty("options.toggle-comment.insert-space") ? " " : ""));
 						}
 						// - or after all leading whitespace
 						else
@@ -273,10 +273,8 @@ public class TextToolsComments
 			}
 
 			// loop through each selection
-			String selectTxt;
 			for(int i = 0; i < selections.length; i++)
 			{
-				selectTxt = textArea.getSelectedText(selections[i]);
 				try
 				{
 					lockBuffer(buffer);
