@@ -11,7 +11,7 @@ plugin.android.AndroidPlugin.description=Android plugin provides some utilities 
 
 # dependencies
 plugin.android.AndroidPlugin.depend.0=jdk 1.6
-plugin.android.AndroidPlugin.depend.1=jedit 05.03.00.00
+plugin.android.AndroidPlugin.depend.1=jedit 05.02.01.00
 plugin.android.AndroidPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
 plugin.android.AndroidPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.5.1
 plugin.android.AndroidPlugin.depend.4=plugin console.ConsolePlugin 5.1.4
