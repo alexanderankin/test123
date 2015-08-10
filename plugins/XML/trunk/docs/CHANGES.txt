@@ -1,9 +1,13 @@
 :encoding=UTF-8:maxLineLen=0:wrap=soft:folding=indent:noTabs=true:tabSize=4:
 XML Plugin Change log
 
-    Version 2.9.0 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.4
+    Version 3.0 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.4
         Added new sidekick for json files. (Dale Anson)
         Plugin patch #147: Convert ascii entities (Character References) into chars in Entities to Characters action (Jarek Czekalski)
+        CSS: better handling of @media queries
+        CSS: bug #1784, css code completion is too slow
+        XML: bug #1633 XML debugging output "quote is not closed"
+        documentation updates, code refactoring
 
     Version 2.8.7 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
         Fix #3614106: XML plugin: Missing Hyperlinks to xref linkend= elements (Alan Ezust, Eric Le Lay)
