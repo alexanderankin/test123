@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!--
+     This build.xml file for building the TextTools plugin is based
+	 upon the model file used for building the QuickNotepad plugin.
+     
+     A build.properties file is required to define the developer's build
+     environment.
+-->
+
+<project name="TextTools" default="build">
+    <description>
+        This is an ant build.xml file for building the TextTools plugin for jEdit.
+    </description>
+    <property file="../build.properties" />
+    <property file="build.properties" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+    <property name="docs-proc.target" value="none" />
+    <import file="${build.support}/plugin-build.xml" />
+    
+    <!-- Help is not build but exists as an html file -->
+    <selector id="packageFiles">
+        <filename name="TextTools.html" />
+    </selector>
+</project>
