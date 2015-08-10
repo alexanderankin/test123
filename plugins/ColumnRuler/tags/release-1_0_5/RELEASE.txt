@@ -1,0 +1,35 @@
+This file contains the latest release profile.
+(See http://plugins.jedit.org/releasing.php)
+
+Name:
+    Column Ruler
+
+Version Number:
+    1.0.2
+
+Requirements:
+    * JDK 1.5.0
+    * jEdit 4.3pre7
+
+Announcement:
+    - Fixed some NPEs, including one which started to happen with
+      jEdit 4.3pre15 (SF.net plugin bug #2062585)
+    - Fixed the initial selection of customized background and
+      border colors on the option pane. (SF.net plugin bug #1672342)
+    - Fixed the grouping of radio buttons for numbering option
+    - Imporved the painting performance, especially much for large
+      number of columns
+
+Source:
+    plugins/ColumnRuler (in SVN repository)
+    tag: release-1_0_2
+
+Short Description:
+    Provides a ruler across the top of the text area which marks off columns.
+
+Long Description:
+    This plugin provides a ruler above the text area which marks off columns. Hopefully it's obvious that this only makes sense if you're using a fixed-width font such as Courier.
+
+    It also indicates the column where the caret is, the wrap column, and when text is selected, it highlights the columns of the current selection and displays the selection size.
+
+    The wrap mode for the current buffer can be set by right-clicking the ruler, and the wrap column for a buffer can be set by dragging the wrap marker.
