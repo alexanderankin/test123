@@ -1,6 +1,12 @@
 ChangeLog for AStyle Beautifier plugin
 ===========================================================================
 
+Version 0.8.1
+-------------
+* Renamed AStyle to AStylePlugin - Alan Ezust
+* Fixed naming inconsistency - Alan Ezust
+* Allow beautifying read-only buffers - Dale Anson
+
 Version 0.7
 -----------
 * Dale Anson: fixed a couple of potential null pointer exceptions. Updated
