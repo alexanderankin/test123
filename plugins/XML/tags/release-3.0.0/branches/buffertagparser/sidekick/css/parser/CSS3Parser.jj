@@ -1,0 +1,2344 @@
+/* -*-java-extended-*-
+ *
+ * (c) COPYRIGHT MIT and INRIA, 1997.
+ * Please first read the full copyright statement in file COPYRIGHT.html
+ *
+ * $Id: CssParser.jj,v 1.71 2010-01-05 13:55:48 ylafon Exp $
+ *
+ * danson, adapting for jEdit Sidekick CSS parser.  I've removed a lot of things
+ * because they aren't necessary in the context of Sidekick.  I also replaced
+ * the old collections classes (Vector, Enumeration, etc) with the faster
+ * equivalents.  Essentially, I gutted this down to the basic grammar, then
+ * rebuilt it for SideKick.
+ */
+
+
+
+options {
+    IGNORE_CASE = true;
+    STATIC = false;
+    UNICODE_INPUT = true;
+    //DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN (CSS3Parser)
+
+package sidekick.css.parser;
+
+import java.io.*;
+import java.net.*;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.regex.*;
+import sidekick.util.*;
+
+
+/**
+ * A CSS3 parser
+ *
+ * @author Philippe Le Hegaret and Sijtsche Smeman
+ * @author Dale Anson, major modifications for jEdit Sidekick
+ * @version Revision: 1.71 (W3C version)
+ */
+
+
+public class CSS3Parser {
+
+    private int lineOffset = 0;
+    private List<ParseError> parseErrors = new ArrayList<ParseError>();
+    private boolean proprietaryAsError = true;
+
+    private static char hexdigits[] = { '0' ,'1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' } ;
+    
+    /**
+     * Set the tab size on the input stream.  This should be set to the same
+     * tab size as used in the buffer being parsed, otherwise, locations will
+     * be off.    
+     */
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+    }
+    
+    /**
+     * @return the current tab size used by the input stream.    
+     */
+    public int getTabSize() {
+        return jj_input_stream.getTabSize(0);
+    }
+    
+    /**
+     * The line offset is used when the css to be parsed is only part of a file,
+     * for example when the css is the contents of a style block contained within
+     * an html document.
+     * @param offset The line number of the first line of the css.
+     */
+    public void setLineOffset(int offset) {
+        lineOffset = offset > 0 ? offset : 0;
+    }
+    
+    /**
+     * If set to true, then a warning will be generated when proprietary
+     * CSS markup is used.
+     * @param b If set to true, then a warning will be generated when proprietary
+     * CSS markup is used.
+     */
+    public void setProprietaryAsError(boolean b) {
+        proprietaryAsError = b;
+    }
+    
+    /**
+     * Adds a parse exception to the list of parse exceptions. It is intended
+     * that a complete file will be parsed and accumulate the exceptions rather
+     * than quitting on the first exception.
+     * @param pe A parse exception to add to the list.
+     */
+    private void addException(ParseException pe) {
+        Range range = getExceptionLocation( pe );
+        parseErrors.add(new ParseError(pe.getMessage(), range));
+        //pe.printStackTrace();
+    }
+    
+    /**
+     * @return The list of parse exceptions found during parsing of a file.    
+     */
+    public List<ParseError> getParseErrors() {
+       //System.out.println("getParserErrors, there are " + parseErrors.size() + " errors");
+       return parseErrors;
+    }
+
+    // regex to extract line and colun from a ParseException message
+    // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
+    private Pattern pePattern = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
+
+    /**
+     * @return attempts to return a Location indicating the location of a parser
+     * exception.  If the ParseException contains a Token reference, all is well,
+     * otherwise, this method attempts to parse the message string for the
+     * exception.
+     */
+    private Range getExceptionLocation( ParseException pe ) {
+        Token t = pe.currentToken;
+        if ( t != null ) {
+            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+        }
+
+        // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
+        try {
+            Matcher m = pePattern.matcher( pe.getMessage() );
+            if ( m.matches() ) {
+                String ln = m.group( 2 );
+                String cn = m.group( 4 );
+                int line_number = -1;
+                int column_number = 0;
+                if ( ln != null )
+                    line_number = Integer.parseInt( ln );
+                if ( cn != null )
+                    column_number = Integer.parseInt( cn );
+                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
+            }
+            return new Range();
+        } catch ( Exception e ) {
+            //e.printStackTrace();
+            return new Range();
+        }
+    }
+    
+    public void error_skipto(int kind) {
+       Token t = null;
+       int i = 0;
+       do {
+           i++;
+           if (i > 100) {
+                break;
+           }
+           t = getNextToken();
+       } while (t != null && t.kind != kind);
+    }
+    
+    /**
+     * @param A token to create a location from.
+     * @return A location representing the start of the token.
+     */
+    public Location getStartLocation(Token t) {
+       if (t == null)
+           return new Location(0 + lineOffset, 0);
+       return new Location(t.beginLine + lineOffset, t.beginColumn);
+    }
+
+    /**
+     * @param A token to create a location from.
+     * @return A location representing the end of the token.
+     */
+    public Location getEndLocation(Token t) {
+       if (t == null)
+           return new Location(0 + lineOffset, 0);
+       return new Location(t.endLine + lineOffset, t.endColumn + 1);
+    }
+    
+    /**
+     * Creates a CSSNode from a token using the token image as the node name
+     * and the token start and end for node start and end locations.
+     */
+    public CSSNode createNode(Token t) {
+        if (t == null) {
+            return new CSSNode();
+        }
+        CSSNode node = new CSSNode(t.image);
+        node.setStartLocation(getStartLocation(t));
+        node.setEndLocation(getEndLocation(t));
+        return node;
+    }
+    
+    /**
+     * Simple check to verify that all arguments are not null.
+     */
+    public boolean notNull(Object... args) {
+        for (Object o : args) {
+            if (o == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+
+    // For testing.  Usage: java CSS3Parser < inputfile
+    public static void main(String[] args) {
+        try {
+            CSS3Parser parser = new CSS3Parser(System.in);
+            parser.styleSheet();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+}
+
+PARSER_END (CSS3Parser)
+
+/*
+ * The tokenizer
+ */
+<DEFAULT>
+SPECIAL_TOKEN :
+{
+    <COMMENT: "/*" (
+    ~["*"] )* ( "*" )+ (
+    ~["/", "*"] (
+    ~["*"] )* ( "*" )+ )* "/" >
+} 
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :/* basic tokens */
+
+ 
+{ 
+    <#H :
+    ["0"-"9", "a"-"f"] >
+  | <#NONASCII :
+    ["\200"-"\377"] >
+  | <#UNICODE : "\\" <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( "\r\n" |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )? >
+  | <#ESCAPE : <UNICODE> | ( "\\"
+    ~[ "\r", "\n", "\f", "0"-"9", "a"-"f" ] ) >
+  | <#NMSTART :
+    [ "a"-"z", "A"-"Z", "-", "_" ] | <NONASCII> | <ESCAPE> >
+  | <#NMCHAR :
+    ["a"-"z", "A"-"Z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
+  | <#STRING1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* "\"" >
+  | <#STRING2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* "\'" >
+  | <#INVALID1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#INVALID2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#_IDENT : ( <MINUS> )? <NMSTART> ( <NMCHAR> )* >
+  | <#NAME : ( <NMCHAR> )+ >
+  | <#NUM : (
+    ["0"-"9"] )+ | (
+    ["0"-"9"] )* "." (
+    ["0"-"9"] )+ >
+  | <#_STRING : <STRING1> | <STRING2> >
+  | <#_INVALID : <INVALID1> | <INVALID2> >
+  | <#_URL : (
+    [ "!", "#", "$", "%", "&", "*"-"[", "]"-"~" ] | <NONASCII> | <ESCAPE> )* >
+  | <#_S : (
+    [ " ", "\t" , "\n" , "\r", "\f" ] ) ( <COMMENT> |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )* >
+  | <#_W : ( <_S> )? >
+  | <#NL : ( "\n" | "\r\n" | "\r" | "\f" ) >
+}
+
+/*
+ * The _S definition is not  ( [ " ", "\t" , "\n" , "\r", "\f" ] ) + as we need to add support
+ * for the unput(' ') (see http://www.w3.org/TR/CSS21/grammar.html#scanner )
+ */
+<DEFAULT>
+TOKEN :
+{
+    <S: ( <_S> ) >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CDO: "<!--" >
+  | <CDC: "-->" >
+  | <INCLUDES: <TILDE> "=" >
+  | <DASHMATCH: "|=" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <LBRACE: <_W> "{" >
+  | <PLUS: <_W> "+" >
+  | <GREATER: <_W> ">" >
+  | <COMMA: <_W> "," >
+  | <TILDE: <_W> "~" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <AND: "and" >
+} 
+
+<DEFAULT>
+TOKEN :
+{
+    <STRING: <_STRING> >
+  | <INVALID: <_INVALID> >
+  | <IDENT: <_IDENT> >
+  | <HASHIDENT: "#" <_IDENT> >
+  | <HASH: "#" <NAME> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <RBRACE: "}">
+  | <PREFIXMATCH: "^=" >
+  | <SUFFIXMATCH: "$=" >
+  | <SUBSTRINGMATCH: "*=" >
+  | <EQ: "=" >
+  | <MINUS: "-" >
+  | <SEMICOLON: ";" >
+  | <DIV: "/" >
+  | <LBRACKET: "[" >
+  | <RBRACKET: "]" >
+  | <ANY: "*" >
+  | <DOT: "." >
+  | <RPARAN: ")" >
+  | <LPARAN: "(">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <COLON: ":" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <MEDIARESTRICTOR: "only" | "not" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <URL: "url(" ( <S> )* ( <STRING> | <_URL> ) ( <S> )* ")" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <LENGTH: <NUM> "pt" 
+ | <NUM> "mm" | <NUM> "cm" | <NUM> "pc" | <NUM> "in" | <NUM> "gd" | <NUM> "px" >
+  | <EMS: <NUM> "em" >
+  | <EXS: <NUM> "ex" >
+  | <ANGLE: <NUM> ( "deg" | "grad" | "rad" ) >
+  | <TIME: <NUM> ( "ms" | "s" ) >
+  | <FREQ: <NUM> "Hz" | <NUM> "kHz" >
+  | <RESOLUTION: <NUM> "dpi" | <NUM> "dpcm" >
+  | <DATE: <NUM> "/" <NUM> "/" <NUM> >
+  | <DIMEN: <NUM> <NMSTART> ( <NMCHAR> )* >
+  | <PERCENTAGE: <NUM> "%" >
+  | <NUMBER: <NUM> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORTANT_SYM: "!" ( <_W> )* "important" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <PSEUDOELEMENT_SYM: "::" >
+}
+
+/* RESERVED ATRULE WORDS */
+<DEFAULT>
+TOKEN : 
+{
+    <CHARSET_SYM: "@charset" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORT_SYM: "@import">
+  | <NAMESPACE_SYM: "@namespace">
+  | <MEDIA_SYM: "@media" >
+  | <PAGE_SYM: "@page" >
+  | <FONT_FACE_SYM: "@font-face" >
+  | <PREF_SYM: "@preference" >
+  | <COLOR_PROFILE: "@color-profile" >
+  | <ATTOP: "@top" >
+  | <ATRIGHT: "@right" >
+  | <ATBOTTOM: "@bottom" >
+  | <ATLEFT: "@left" >
+  | <ATCOUNTER: "@counter" >
+  | <PHONETIC_ALPHABET_SYM: "@phonetic-alphabet" >
+  | <ATKEYWORD: "@" <IDENT> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <#RANGE0 : <H> <H> <H> <H> <H> <H> >
+  | <#RANGE1 : <H> <H> <H> <H> <H> ( "?" )? >
+  | <#RANGE2 : <H> <H> <H> <H> ( "?" )? ( "?" )? >
+  | <#RANGE3 : <H> <H> <H> ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE4 : <H> <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE5 : <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE6 : "?" ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE : <RANGE0> | <RANGE1> | <RANGE2> | <RANGE3> | <RANGE4> | <RANGE5> | <RANGE6> >
+  | <#UNI : <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? >
+  | <UNICODERANGE: "U+" <RANGE> | "U+" <UNI> "-" <UNI> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CLASS: "." <IDENT> >
+}
+
+/* FIXED, added a special case for lang pseudoclass */
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONLANG: "lang(" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONNOT: ":not(" >
+}
+
+
+<DEFAULT>
+TOKEN :
+{
+    <FUNCTION: <IDENT> "(" >
+}
+
+/* Quick and dirty way to catch HTML tags starting CSS documents
+(common mistake) */
+<DEFAULT>
+TOKEN :
+{
+    <HTMLSTARTTAG: "<" ( <S> )* <IDENT> ( <S> )* ( <IDENT> "=" ( <IDENT> | <STRING> ) ( <S> )* )* ">" >
+  | <HTMLENDTAG: "</" ( <S> )* <IDENT> ( <S> )* ">" >
+}
+
+//<DEFAULT, IN_COMMENT>
+//TOKEN :
+//{ /* avoid token manager error */
+//   < UNKNOWN : ~[] >
+//}
+
+
+
+/*
+ * The grammar for CSS2 and CSS3 starts here.
+ */
+
+
+/**
+ * The main entry for the parser. The W3C version called this method "parserUnit".
+ * I changed the name so it matches up with the older CSS2 parser.
+ *
+ * @exception ParseException exception during the parse
+ */
+CSSNode styleSheet() :
+{
+    CSSNode rootNode = new CSSNode("style");
+    CSSNode firstNode = null;
+    CSSNode childNode = null;
+    List<CSSNode> children = null;
+}
+{
+    try {
+        // used as an error recovery for HTML tags in CSS pages
+        (
+            (
+                <HTMLSTARTTAG>
+              | <HTMLENDTAG>
+            )
+            {
+                // TODO: put message in properties file
+                addException ( new ParseException ("Do not mix html within CSS.")); 
+            }
+        ) *
+        (
+            childNode=charset()
+            {
+                if (childNode != null) {
+                    rootNode.addChild(childNode);          
+                    if (firstNode == null) {
+                        firstNode = childNode;
+                        rootNode.setStartLocation(firstNode.getStartLocation());
+                    }
+                }
+            }
+        ) *
+     
+        (
+            <S>
+          | <CDO>
+          | <CDC>
+        ) *
+     
+        (
+            childNode=importDeclaration()
+            {
+                if (childNode != null) {
+                    rootNode.addChild(childNode);   
+                    if (firstNode == null) {
+                        firstNode = childNode;
+                        rootNode.setStartLocation(firstNode.getStartLocation());
+                    }
+                }
+            }
+            (
+                ignoreStatement()
+            )
+        ) *
+     
+        (
+            childNode=namespaceDeclaration()
+            {
+                if (childNode != null) {
+                    rootNode.addChild(childNode);   
+                    if (firstNode == null) {
+                        firstNode = childNode;
+                        rootNode.setStartLocation(firstNode.getStartLocation());
+                    }
+                }
+            }
+            (
+                ignoreStatement()
+            )
+        ) *
+     
+        children=afterImportDeclaration()
+        {
+            if (children != null && children.size() > 0) {
+                rootNode.setEndLocation(children.get(children.size() - 1).getEndLocation());
+                rootNode.addChildren(children);   
+            }
+        }
+        <EOF> 
+            
+    } catch ( TokenMgrError err ) {
+        addException ( new ParseException ("Unrecognized token, " + err.getMessage()));
+    }
+    {
+        return rootNode;      
+    }
+}
+
+CSSNode charset() :
+{
+    Token start = null;
+    Token middle = null;
+    Token end = null;
+    CSSNode node = null;
+}
+{ 
+    try {
+        start=<CHARSET_SYM> 
+        (
+            <S> {
+            }
+        ) *
+     
+        middle=<STRING> 
+        (
+            <S>
+        ) *
+    
+        end=<SEMICOLON> {
+    }
+    } catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, middle, end)) {
+            String name = start.image + " " + middle.image;
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+        return node;
+    }
+}
+
+List<CSSNode> afterImportDeclaration() :
+{
+    CSSNode node = null;
+    List<CSSNode> list = new ArrayList<CSSNode>();
+    String skip = null;
+}
+{
+    try {
+        (
+            (
+                node=ruleSet() {if (node != null) list.add(node);}
+              | node=media() {if (node != null) list.add(node);}
+              | node=page() {if (node != null) list.add(node);}
+              | node=fontFace() {if (node != null) list.add(node);}
+              | node=preference() {if (node != null) list.add(node);}
+              | node=colorprofile() {if (node != null) list.add(node);}
+              | node=phoneticAlphabet() {if (node != null) list.add(node);}
+              | skip=skipStatement() {
+                  if (skip == null || skip.length() == 0) {
+                    return list;   
+                  }
+              }
+            )
+            ignoreStatement()
+        ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        return list;   
+    }
+
+}
+
+void ignoreStatement() :
+{
+}
+{
+ 
+ 
+    (
+        (
+            <CDO>
+          | <CDC>
+          | atRuleDeclaration()
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+    ) *
+
+    {
+        
+    }
+
+}
+
+CSSNode namespaceDeclaration() :
+{
+    CSSNode node = null;
+    Token start = null;
+    Token ident = null;
+    Token uri = null;
+    Token end = null;
+}
+{
+    try {
+    (
+        start=<NAMESPACE_SYM> 
+        (
+            <S>
+        ) *
+ 
+        (
+            ident=<IDENT>  
+            (
+                <S>
+            ) *
+
+        ) ?
+ 
+        (
+            uri=<STRING>
+          | uri=<URL>
+        )
+ 
+        (
+            <S>
+        ) *
+
+        end=<SEMICOLON> 
+        (
+            <S>
+        ) *
+    )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(SEMICOLON);
+        return null;
+    }
+
+    {
+        if (notNull(start, uri, end)) {
+            String name = start.image + " " + (ident != null ? ident.image : "") + uri.image;
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+        return node;
+    }
+}
+
+
+/**
+ * The import statement
+ *
+ * @exception ParseException exception during the parse
+ */
+CSSNode importDeclaration() :
+{
+    Token start = null;
+    CSSNode medium = null;
+    List<CSSNode> mediumList = new ArrayList<CSSNode>();
+    Token uri = null;
+    Token end = null;
+    CSSNode node = null;
+}
+{
+    try {
+        start=<IMPORT_SYM> 
+        (
+            <S>
+        ) *
+        (
+            uri=<STRING>
+          | uri=<URL> 
+        )
+     
+        (
+            <S>
+        ) *
+    
+        (
+            medium=medium() {if (medium != null) mediumList.add(medium);}
+            (
+                <COMMA> 
+                (
+                    <S>
+                ) *
+                medium=medium() {if (medium != null) mediumList.add(medium);}
+            ) *
+    
+        ) ?
+    
+        end=<SEMICOLON> 
+        (
+            <S>
+        ) *
+    } catch ( ParseException e ) {
+        addException(e);
+        error_skipto(SEMICOLON);
+        return null;
+    }
+    {
+        if (notNull(start, end)) {
+            StringBuilder sb = new StringBuilder();
+            for (CSSNode m : mediumList) {
+                sb.append(m).append(',');   
+            }
+            String mediumNames = sb.substring(0, Math.max(0, sb.length() - 1));   // trims the trailing comma
+            String name = start.image + (uri != null ? " " + uri.image : "") + (mediumNames.length() > 0 ? " " + mediumNames : "");
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+        return node;
+    }
+}
+
+
+CSSNode media() :
+{
+    Token start = null;
+    Token mr = null;
+    CSSNode medium = null;
+    List<CSSNode> mlist = new ArrayList<CSSNode>();
+    CSSNode mdecl = null;
+    List<CSSNode> mdeclList = new ArrayList<CSSNode>();
+    CSSNode ruleset = null;
+    Token end = null;
+}
+{
+    try {
+        start=<MEDIA_SYM> 
+        (
+            <S>
+        ) *
+    
+        // <CSS3>
+        (
+            mr=<MEDIARESTRICTOR>
+            (
+                <S>
+            ) +
+        ) ?
+        // </CSS3>
+        
+        medium=medium() {if (medium != null) mlist.add(medium);}
+        (
+            <COMMA> 
+            (
+                <S>
+            ) *
+            medium=medium() {if (medium != null) mlist.add(medium);}
+        ) *
+     
+        // <CSS3>
+        (
+            <AND> 
+            (
+                <S>
+            ) *
+    
+            <LPARAN> 
+            (
+                <S>
+            ) *
+    
+            mdecl=mediadeclaration() {if(mdecl != null) mdeclList.add(mdecl);}
+            <RPARAN> 
+            (
+                <S>
+            ) *
+    
+        ) *
+        
+        <LBRACE> 
+        (
+            <S>
+        ) *
+     
+        (
+            ruleset=ruleSet()
+        ) *
+    
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    } 
+    {
+        if (notNull(start, end)) {
+            CSSNode node = new CSSNode(start.image);
+            if (mr != null) {
+                node.addChild(createNode(mr));   
+            }
+            node.addChildren(mlist);
+            node.addChildren(mdeclList);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode medium() :/* tv, projection, screen, ... */
+{
+    Token t = null;
+}
+{
+    t=<IDENT> 
+    (
+        <S>
+    ) *
+
+
+    {
+        if (notNull(t)) {
+            return createNode(t);
+        }
+        return null;
+    }
+}
+
+CSSNode unused_production_generic_syntax() :
+{
+    Token start = null;
+    CSSNode term = null;
+    Token end = null;
+}
+{
+    try {
+        start="("
+        (
+            <S>
+        ) *
+        term=term() 
+        end=")"
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RPARAN);
+        return null;
+    }
+    {
+        if (notNull(start, term, end)) {
+            CSSNode node = new CSSNode('[' + term.getName() + ']');
+            node.addChildren(term.getChildren());
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode definition() :
+{
+    Token start = null;
+    CSSNode term = null;
+    Token end = null;
+}
+{
+    try {
+        start="["
+        (
+            <S>
+        ) *
+        term=term() 
+        end="]"
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACKET);
+        return null;        
+    }
+    {
+        if (notNull(start, term, end)) {
+            CSSNode node = new CSSNode('[' + term.getName() + ']');
+            node.addChildren(term.getChildren());
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+    }
+}
+
+CSSNode page() :
+{
+    CSSNode node = new CSSNode();
+    CSSNode child = null;
+    List<CSSNode> contents = null;
+    Token start = null;
+    Token i = null;
+    Token end = null;
+}
+{
+    try {
+        start=<PAGE_SYM> {if (start != null) node.setName(start.image);}
+        (
+            <S>
+        ) *
+        (
+            i=<IDENT> {if (i != null) node.setName(node.getName() + ' ' + i.image);}
+            (
+                <S>
+            ) *
+        ) ?
+        (
+            child=pseudo_page() {if (child != null) node.addChild(child);}
+        ) ?
+        <LBRACE> 
+        (
+            <S>
+        ) *
+        (
+            contents=pageContent() {if (contents != null) node.addChildren(contents);}
+        )
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, end)) {
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+List<CSSNode> pageContent() :
+{
+    CSSNode node = null;
+    List<CSSNode> list = null;
+}
+{
+    try {
+        node=prefAtRule()
+      | 
+        list=declarations()
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (node != null) {
+            list = new ArrayList<CSSNode>();
+            list.add(node);
+            return list;
+        }
+        else if (list != null) {
+            return list;
+        }
+        return null;
+    }
+}
+
+CSSNode prefAtRule() :
+{
+    Token start = null;
+    List<CSSNode> decls = null;
+    Token end = null;
+}
+{
+    try {
+        (
+            start=<ATTOP>
+          | start=<ATBOTTOM>
+          | start=<ATLEFT>
+          | start=<ATRIGHT>
+        )
+        (
+            <S>
+        ) *
+        <LBRACE> 
+        (
+            <S>
+        ) *
+        decls=declarations()
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, decls, end)) {
+            CSSNode node = new CSSNode(start.image);
+            node.addChildren(decls);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode pseudo_page() :
+{
+    Token start = null;
+    Token t = null;
+}
+{
+    try {
+        start=":" t=<IDENT> 
+        (
+            <S>
+        ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            CSSNode node = new CSSNode(':' + t.image);   
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(start));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode fontFace() :
+{
+    Token start = null;
+    List<CSSNode> decls = null;
+    Token end = null;
+}
+{
+    try {
+        start=<FONT_FACE_SYM> 
+        (
+            <S>
+        ) *
+        <LBRACE> 
+        (
+            <S>
+        ) *
+        decls=declarations()
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, decls, end)) {
+            CSSNode node = new CSSNode(start.image);
+            node.addChildren(decls);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode colorprofile() :
+{
+    Token start = null;
+    List<CSSNode> decls = null;
+    Token end = null;
+}
+{
+    try {
+        start=<COLOR_PROFILE> 
+        (
+            <S>
+        ) *
+        <LBRACE> 
+        (
+            <S>
+        ) *
+        decls=declarations()
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, decls, end)) {
+            CSSNode node = new CSSNode(start.image);
+            node.addChildren(decls);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode preference() :
+{
+    Token start = null;
+    List<CSSNode> decls = null;
+    Token end = null;
+}
+{
+    try {
+        start=<PREF_SYM>         (
+            <S>
+        ) *
+        <LBRACE> 
+        (
+            <S>
+        ) *
+    
+        decls=declarations()
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(start, decls, end)) {
+            CSSNode node = new CSSNode(start.image);
+            node.addChildren(decls);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode phoneticAlphabet() :
+{
+    Token start = null;
+    Token middle = null;
+    Token end = null;
+}
+{
+    try {
+        start=<PHONETIC_ALPHABET_SYM> 
+        (
+            <S>
+        ) *
+        middle=<STRING> 
+        (
+            <S>
+        ) *
+        end=";"
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(SEMICOLON);
+        return null;
+    }
+    {
+        if (notNull(start, middle, end)) {
+            StringBuilder name = new StringBuilder();
+            name.append(start.image).append(' ').append(middle.image);
+            CSSNode node = new CSSNode(name.toString());   
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode atRuleDeclaration() :
+{
+    Token t = null;
+}
+{
+    try {
+        t=<ATKEYWORD>
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);   
+        }
+        return null;
+    }
+}
+
+char operator() :
+{
+    char op = ' ';
+}
+{
+    try {
+        (
+            (
+                <DIV> {
+                    op = '/';
+                }
+              | <COMMA> {
+                    op = ',';
+                }
+            )
+            (
+                <S>
+            ) *
+        ) ?
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return op;
+    }
+    {
+        return op;   
+    }
+}
+
+
+char combinator() :
+{
+    char connector = ' ';
+}
+{
+    try {
+        (
+            (
+                <PLUS> {
+                    connector = '+' ;
+                }
+              | <GREATER> {
+                    connector = '>' ;
+                }
+              | <TILDE> {
+                    connector = '~' ;
+                }
+            )
+            (
+                <S>
+            ) *
+     
+          | 
+            (
+                <S>
+            ) +
+            {
+                connector = ' ' ;
+            }
+        )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return connector;
+    }
+    {
+        return connector;
+    }
+}
+
+char unaryOperator() :
+{
+    char unary;
+}
+{
+    // FIXME <MINUS> | <PLUS> ? warning as <PLUS> is <_W>? "+"
+    try {
+        "-" 
+        {
+            unary = '-';
+        }
+        | <PLUS> 
+        {
+            unary = '+';
+        }
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return ' ';
+    }
+    {
+        return unary;   
+    }
+}
+
+CSSNode property() :
+{
+    Token t = null;
+}
+{
+    try {
+    t=<IDENT> 
+    (
+        <S>
+    ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);   
+        }
+        return null;
+    }
+}
+
+
+CSSNode ruleSet() :
+{
+    CSSNode sel = null;
+    List<CSSNode> selectors = new ArrayList<CSSNode>();
+    List<CSSNode> decls = null;
+    Token end = null;
+}
+{
+    try {
+        sel=selector() {if (sel != null) selectors.add(sel); }
+        (
+            <COMMA> 
+            (
+                <S>
+            ) *
+            sel=selector() {if (sel != null) selectors.add(sel); }
+        ) *
+        <LBRACE>
+        (
+            <S>
+        ) *
+        decls=declarations()
+        end=<RBRACE> 
+        (
+            <S>
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (selectors.size() > 0 && notNull(decls, end)) {
+            StringBuilder sb = new StringBuilder();
+            for (CSSNode s : selectors) {
+                sb.append(s.getName()).append(',');   
+            }
+            String name = sb.substring(0, Math.max(0, sb.length() - 1));
+            CSSNode node = new CSSNode(name);
+            node.addChildren(decls);
+            node.setStartLocation(selectors.get(0).getStartLocation());
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+List<CSSNode> declarations() :
+{
+    CSSNode node = null;
+    List<CSSNode> nodes = new ArrayList<CSSNode>();
+    Token semi;
+}
+{ 
+    try {
+        (
+            node=declaration() {if (node != null) nodes.add(node); }
+        ) ?
+        (
+            semi=";" {node.setEndLocation(getEndLocation(semi)); }
+            (
+                <S>
+            ) *
+            (
+                node=declaration() {if (node != null) nodes.add(node); }
+            ) ?
+        ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        return nodes;
+    }
+}
+
+CSSNode selector() :
+{
+    CSSNode node = null;
+    List<CSSNode> nodes = new ArrayList<CSSNode>();
+    char c;
+    List<Character> combs = new ArrayList<Character>();
+}
+{
+    try {
+        node = simple_selector() {if(node != null) nodes.add(node); }
+        (
+            c=combinator() {combs.add(c); }
+            node=simple_selector() {if(node != null) nodes.add(node); }
+        ) *
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (nodes.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < nodes.size(); i++) {
+                sb.append(nodes.get(i).getName());
+                if (combs.size() < i) {
+                    sb.append(combs.get(i));   
+                }
+            }
+            node = new CSSNode(sb.toString());
+            node.setStartLocation(nodes.get(0).getStartLocation());
+            node.setEndLocation(nodes.get(nodes.size() - 1).getEndLocation());
+            return node;
+        }
+        return null;
+    }
+}
+
+/**
+ * I made this rule to parse a selector from a document. Combinator are avoid.
+ * @exception ParseException exception during the parse
+ */
+CSSNode externalSelector() :
+{
+    CSSNode node = null;
+    List<CSSNode> nodes = new ArrayList<CSSNode>();
+}
+{
+    try {
+        node=simple_selector() {if (node != null) nodes.add(node); }
+        (
+            (
+                <S>
+            ) +
+            node=simple_selector() {if (node != null) nodes.add(node); }
+        ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (nodes.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (CSSNode n : nodes) {
+                sb.append(n.getName()).append(' ');
+            }
+            node = new CSSNode();
+            node.setName(sb.toString());
+            node.setStartLocation(nodes.get(0).getStartLocation());
+            node.setEndLocation(nodes.get(nodes.size() - 1).getEndLocation());
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode simple_selector() :
+{
+    CSSNode child = null;
+    List<CSSNode> children = new ArrayList<CSSNode>();
+}
+{
+    try {
+        child = element_name() {if (child != null) children.add(child);}
+        (
+            child=hash() {if (child != null) children.add(child); }
+          | child=_class() {if (child != null) children.add(child); }
+          | child=attrib() {if (child != null) children.add(child); }
+          | child=pseudo() {if (child != null) children.add(child); }
+          | child=negation() {if (child != null) children.add(child); }
+        ) *
+      | 
+        (
+            child=hash() {if (child != null) children.add(child); }
+          | child=_class() {if (child != null) children.add(child); }
+          | child=attrib() {if (child != null) children.add(child); }
+          | child=pseudo() {if (child != null) children.add(child); }
+          | child=negation() {if (child != null) children.add(child); }
+        ) +
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (children.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (CSSNode c : children) {
+                sb.append(c.getName()).append(' ');   
+            }
+            CSSNode node = new CSSNode(sb.toString());
+            node.setStartLocation(children.get(0).getStartLocation());
+            node.setEndLocation(children.get(children.size() - 1).getEndLocation());
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode _class() :
+{
+    Token t = null;
+    CSSNode node = null;
+}
+{
+    try {
+        t=<CLASS>
+      | 
+        (
+            node=deprecated_class()
+        )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);
+        }
+        else if (notNull(node)) {
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode deprecated_class() :
+{
+    Token t = null;
+}
+{
+    try {
+        (
+            t=<LENGTH>
+          | t=<EMS>
+          | t=<EXS>
+          | t=<ANGLE>
+          | t=<TIME>
+          | t=<FREQ>
+          | t=<RESOLUTION>
+          | t=<DIMEN>
+        )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);   
+        }
+        return null;
+    }
+}
+
+
+CSSNode element_name() :
+{
+    Token t1 = null;
+    Token t2 = null;
+}
+{
+    try {
+        (
+            LOOKAHEAD ( 2 )
+            (
+                t1=<IDENT>
+              | t1=<ANY>
+            ) ?
+            "|"
+        ) ?
+        (
+            t2=<IDENT>
+          | t2=<ANY>
+        )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t2)) {
+            StringBuilder sb = new StringBuilder();
+            if (notNull(t1)) {
+                sb.append(t1.image).append('|');
+            }
+            sb.append(t2.image);
+            CSSNode node = new CSSNode(sb.toString());
+            node.setStartLocation(t1 == null ? getStartLocation(t2) : getStartLocation(t1));
+            node.setEndLocation(getEndLocation(t2));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode attrib() :
+{
+    Token start = null;
+    Token t1 = null;
+    Token t2 = null;
+    Token t3 = null;
+    Token end = null;
+}
+{
+    try {
+        start=<LBRACKET> 
+        (
+            <S>
+        ) *
+    
+        t1=<IDENT> 
+        (
+            <S>
+        ) *
+        (
+            (
+                t2=<EQ>
+              | t2=<INCLUDES>
+              | t2=<DASHMATCH>
+              | t2=<PREFIXMATCH>
+              | t2=<SUFFIXMATCH>
+              | t2=<SUBSTRINGMATCH>
+            )
+            (
+                <S>
+            ) *
+            (
+                t3=<IDENT>
+              | t3=<STRING>
+            )
+            (
+                <S>
+            ) *
+        ) ?
+        end=<RBRACKET>
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACKET);
+        return null;
+    }
+    {
+        if (notNull(start, t1, t2, t3, end)) {
+            CSSNode node = new CSSNode(t1.image + t2.image + t3.image);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+CSSNode negation() :
+{
+    Token start = null;
+    CSSNode node = null;
+    Token end = null;
+}
+{    // S* negation_arg S* ')'
+    // type_selector | universal | HASH | class | attrib | pseudo
+
+    try {
+        start=<FUNCTIONNOT>
+        (
+            <S>
+        ) *
+        (
+            node=element_name()
+          | node=hash()
+          | node=_class()
+          | node=attrib()
+          | node=pseudo()
+          | node=negation()
+        )
+        (
+            <S>
+        ) *
+        end=<RPARAN>
+    }
+    catch(ParseException e) {
+        e.printStackTrace();
+        error_skipto(RPARAN);
+        addException(e);
+        return null;
+    }
+    {
+        if (notNull(start, node, end)) {
+            node = new CSSNode(start.image + node.getName());
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode pseudo() :
+{
+    Token p = null;
+    Token c = null;
+    Token i = null;
+    Token f = null;
+    Token n = null;
+    CSSNode expr = null; 
+    Token end = null;
+}
+{
+    try {
+        p=<PSEUDOELEMENT_SYM> 
+        (
+            i=<IDENT>
+        )
+      | c=<COLON> 
+        (
+            (
+                i=<IDENT>
+            )
+          | 
+            (
+                (
+                    f=<FUNCTIONLANG> 
+                    (
+                        <S>
+                    ) *
+                    (
+                        n=<NUMBER>
+                      | n=<IDENT>
+                      | n=<STRING>
+                    )
+                    (
+                        <S>
+                    ) *
+                )
+              | 
+                (
+                    f=<FUNCTION> 
+                    (
+                        <S>
+                    ) *
+                    expr=expression()
+                )
+            )
+            end=<RPARAN>
+        )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RPARAN);
+        return null;
+    }
+    {
+        if (notNull(p, i)) {
+            CSSNode node = new CSSNode(p.image + ' ' + i.image);
+            node.setStartLocation(getStartLocation(p));
+            node.setEndLocation(getEndLocation(i));
+            return node;
+        }
+        else if (notNull(c)) {
+            if (notNull(i)) {
+                CSSNode node = new CSSNode(':' + i.image);
+                node.setStartLocation(getStartLocation(c));
+                node.setEndLocation(getEndLocation(i));
+                return node;
+            }
+            else if (notNull(f)) {
+                if (notNull(n)) {
+                    CSSNode node = new CSSNode(f.image + ' ' + n.image);
+                    node.setStartLocation(getStartLocation(f));
+                    node.setEndLocation(getEndLocation(n));
+                    return node;
+                }
+                else if (notNull(expr)) {
+                    CSSNode node = new CSSNode(f.image + ' ' + expr.getName());
+                    node.setStartLocation(getStartLocation(f));
+                    node.setEndLocation(expr.getEndLocation());
+                    return node;
+                }
+            }
+        }
+        return null;
+    }
+}
+
+
+CSSNode hash() :
+{
+    Token t = null;
+}
+{
+    try {
+        t=<HASHIDENT>
+      | t=<HASH> 
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);   
+        }
+        return null;
+    }
+}
+
+
+CSSNode mediadeclaration() :
+{
+    CSSNode prop = null;
+    CSSNode expr = null;
+    CSSNode prio = null;
+}
+{
+    try {
+        prop=property() 
+        (
+            ":"
+            (
+                <S>
+            ) *
+            expr=expr() 
+            (
+                prio=prio()
+            ) ?
+    
+        ) ?
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(prop)) {
+            StringBuilder name = new StringBuilder();   
+            name.append(prop.getName());
+            if (expr != null) {
+                name.append(':').append(expr.getName());
+            }
+            if (prio != null) {
+                name.append(' ').append(prio.getName());   
+            }
+            CSSNode node = new CSSNode(name.toString());
+            node.setStartLocation(prop.getStartLocation());
+            if (prio != null) {
+                node.setEndLocation(prio.getEndLocation());   
+            }
+            else if (expr != null) {
+                node.setEndLocation(expr.getEndLocation());   
+            }
+            else {
+                node.setEndLocation(prop.getEndLocation());   
+            }
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode declaration() :
+{
+    CSSNode node = null;
+    CSSNode prop = null;
+    CSSNode expr = null;
+    CSSNode imp = null;
+}
+{
+    try {
+        prop=property() 
+        ":"
+        (
+            <S>
+        ) *
+    
+        expr=expr()
+        (
+            imp=prio()
+        ) ?
+    } 
+    catch ( ParseException e ) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(prop, expr)) {
+            String name = prop.getName() + ": " + expr.getName();
+            node = new CSSNode(name);       
+            node.setStartLocation(prop.getStartLocation());
+            node.setEndLocation(imp == null ? expr.getEndLocation() : imp.getEndLocation());
+        }
+        return node;
+    }
+}
+
+
+CSSNode prio() :
+{
+    Token t = null;
+}
+{
+    try {
+        t=<IMPORTANT_SYM> 
+        (
+            <S>
+        ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);   
+        }
+        return null;
+    }
+}
+
+CSSNode expression() :
+{
+    Token t = null;
+}
+{
+    try {
+        (
+            (
+                t = <PLUS>
+              | t = <MINUS>
+              | t = <NUMBER>
+              | t = <DIMEN>
+              | t = <STRING>
+              | t = <IDENT>
+            )
+            (
+                <S>
+            ) *
+        ) +
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            t.image = t.image.trim();
+            return createNode(t);   
+        }
+        return null;
+    } 
+}
+
+CSSNode expr() :
+{
+    List<CSSNode> terms = new ArrayList<CSSNode>();
+    List<Character> ops = new ArrayList<Character>();
+    CSSNode term = null;
+    char op;
+}
+{
+    try {
+        term = term() { if(term != null) terms.add(term);}
+        (
+            op=operator() {ops.add(op);}
+            term=term() { if(term != null) terms.add(term);}
+        ) *
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (terms.size() > 0) {
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < terms.size(); i++) {
+                sb.append(terms.get(i).getName());
+                if (i < ops.size()) {
+                    sb.append(ops.get(i));   
+                }
+            }
+            CSSNode node = new CSSNode(sb.toString());
+            node.setStartLocation(terms.get(0).getStartLocation());
+            node.setEndLocation(terms.get(terms.size() - 1).getEndLocation());
+            return node;
+        }
+        return null;
+    }
+}
+
+
+CSSNode term() :
+{
+    CSSNode term = null;
+    char unary;
+    CSSNode func = null;
+    CSSNode hex = null;
+    Token t = null;
+}
+{
+    try {
+        (
+            (
+                unary=unaryOperator()
+            ) ?
+            (
+                t=<NUMBER> 
+              | t=<PERCENTAGE>
+              | t=<LENGTH>
+              | t=<EMS>
+              | t=<EXS>
+              | t=<ANGLE>
+              | t=<TIME>
+              | t=<FREQ>
+              | t=<RESOLUTION>
+              | t=<DATE>
+              | t=<DIMEN>
+              | func=function()
+            )
+            (
+                <S>
+            ) *
+        )
+      | 
+        (
+            (
+                t=<STRING>
+              | t=<IDENT>
+              | hex=hexcolor()
+              | t=<URL>
+              | t=<UNICODERANGE>
+            )
+            (
+                <S>
+            ) *
+        )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            term = createNode(t);
+        }
+        else if (notNull(func)) {
+            term = func;
+        }
+        else if (notNull(hex)) {
+            term = hex;
+        }
+        return term;
+    }
+}
+
+
+CSSNode function() :
+{
+    CSSNode node = null;
+    Token start = null;
+    CSSNode expr = null;
+    Token end = null;
+}
+{
+    try {
+        start=<FUNCTION> 
+        (
+            <S>
+        ) *
+    
+        expr=expr() 
+        end=")" 
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RPARAN);
+        return null;
+    }
+    {
+        if (notNull(start, expr, end)) {
+            node = new CSSNode(start.image);
+            node.addChild(expr);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
+        return node;
+    }
+}
+
+CSSNode hexcolor() :
+{
+    Token t = null;    
+}
+{
+    try {
+    (
+        t=<HASHIDENT>
+      | t=<HASH>
+    )
+    }
+    catch(ParseException e) {
+        addException(e);
+        error_skipto(RBRACE);
+        return null;
+    }
+    {
+        if (notNull(t)) {
+            return createNode(t);   
+        }
+        return null;
+    }
+}
+
+
+JAVACODE String skipStatement() {
+    StringBuilder s = new StringBuilder ();
+    Token tok = getToken(0);
+    boolean first = true;
+
+    if ( tok.image != null) {
+        s.append(tok.image); 
+    }
+    
+    /* FIXME here, two option, we skip during an error, or outside
+    an error, currently both can fail with a TokenMgrError, should
+    we catch all, or only when filling message for errors?
+    
+    -> taking the "always skip" approach.
+     */
+    while (true) {
+        try {
+            tok = getToken(1);
+            if ( tok.kind == EOF) {
+                if (first) {
+                    return null;
+                } else {
+                    break;
+                }
+            } 
+            s.append(tok.image);
+            if ( tok.kind == LBRACE) {
+                getNextToken();
+                s.append(skip_to_matching_brace());
+                getNextToken();
+                tok = getToken(1);
+                break;
+            } else if ( (tok.kind == RBRACE) || (tok.kind == SEMICOLON)) {
+                getNextToken();
+                tok = getToken(1);
+                break;
+            }
+            getNextToken();
+        } catch ( TokenMgrError tokenerror ) {
+            // read one char at a time, and loop
+            try {
+                s.append(jj_input_stream.readChar());
+                continue;
+            } catch ( java.io.IOException ioex ) {
+                return s.toString().trim();
+            }
+        }
+        first = false;
+    }
+ 
+    // skip white space
+    while ( tok.kind == S) {
+        getNextToken();
+        tok = getToken(1);
+    }
+    String statement = s.toString().trim();
+    return statement;
+}
+
+JAVACODE String skip_to_matching_brace() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok;
+    int nesting = 1;
+    /* FIXME
+    same as above */
+ 
+ 
+    while (true) {
+
+
+        tok = getToken(1);
+        if ( tok.kind == EOF) {
+
+
+            break;
+        }
+        s.append(tok.image);
+        if ( tok.kind == LBRACE) {
+
+
+            nesting++;
+        } else if ( tok.kind == RBRACE) {
+
+
+            nesting--;
+            if ( nesting == 0) {
+
+
+                break;
+            }
+        }
+        getNextToken();
+    }
+    return s.toString();
+}
+
+
+

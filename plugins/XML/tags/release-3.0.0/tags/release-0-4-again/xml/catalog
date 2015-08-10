@@ -1,0 +1,17 @@
+-- If your plugin includes DTDs, feel free to add them here and send
+     me a patch. I would like the XML plugin to work out of the box with
+     any XML files other plugins might use. --
+
+SYSTEM "actions.dtd" "jeditresource:/org/gjt/sp/jedit/actions.dtd"
+
+SYSTEM "catalog.dtd" "jeditresource:/org/gjt/sp/jedit/catalog.dtd"
+
+SYSTEM "recent.dtd" "jeditresource:/org/gjt/sp/jedit/recent.dtd"
+
+SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/xmode.dtd"
+
+SYSTEM "plugins.dtd" "jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd"
+
+SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commando/commando.dtd"
+
+SYSTEM "xml-completion-info.dtd" "jeditresource:/XML.jar!/xml/xml-completion-info.dtd"

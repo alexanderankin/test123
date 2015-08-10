@@ -1,0 +1,4 @@
+<!DOCTYPE r PUBLIC "-//URI//BLA BLA" "sample.dtd">
+<r>
+	<p>Text&nbsp;text &test;</p>
+</r>

@@ -1,0 +1,648 @@
+/*
+ * HtmlParser.jj -- JavaCC grammar for HTML.
+ * Copyright (C) 1999 Quiotix Corporation.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2, as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License (http://www.gnu.org/copyleft/gpl.txt)
+ * for more details.
+ */
+
+
+/*
+ * JavaCC grammar file for HTML.
+ *
+ * Author: Brian Goetz, Quiotix
+ * Version: 1.03
+ * Revision: $Id$
+ *
+ * This grammar parses an HTML document and produces a (flat) parse "tree"
+ * representing the document.  It preserves almost all information in the
+ * source document, including carriage control and spacing (except inside
+ * of tags.)  See the HtmlDocument and HtmlDocument.* classes for a
+ * description of the parse tree.  The parse tree supports traversal using
+ * the commonly used "Visitor" pattern.  The HtmlDumper class is a visitor
+ * which dumps out the tree to an output stream.
+ *
+ * It does not require begin tags to be matched with end tags, or validate
+ * the names or contents of the tags (this can easily be done post-parsing;
+ * see the HtmlCollector class (which matches begin tags with end tags)
+ * for an example.)
+ *
+ * Notable edge cases include:
+ * - Quoted string processing.  Quoted strings are matched inside of comments, and
+ *   as tag attribute values.  Quoted strings are matched in normal text only
+ *   to the extent that they do not span line breaks.
+ *
+ * Please direct comments, questions, gripes or praise to
+ * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!
+ *
+ * danson: Modified for HtmlSideKick plugin for jEdit, added ability to handle
+ * jsp as well as html, added locations for tags, etc.  This parser works well
+ * for most xml-based markup also.
+ */
+
+options { IGNORE_CASE = true; STATIC = false; }
+
+PARSER_BEGIN(HtmlParser)
+
+package sidekick.html.parser.html;
+
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.regex.*;
+import sidekick.util.*;
+
+public class HtmlParser {
+
+  static String NL = System.getProperty("line.separator");
+
+  private List<ParseError> parseErrors = new ArrayList<ParseError>();
+
+  public void setLineSeparator(String ls) {
+    NL = ls;
+  }
+
+  private static String getTokenText(Token first, Token cur) {
+    Token t;
+    StringBuffer sb = new StringBuffer();
+
+    for (t=first; t != cur.next; t = t.next) {
+      if (t.specialToken != null) {
+        Token tt=t.specialToken;
+        while (tt.specialToken != null)
+          tt = tt.specialToken;
+        for (; tt != null; tt = tt.next)
+          sb.append(tt.image);
+      };
+      sb.append(t.image);
+    };
+    return sb.toString();
+  }
+
+  public static void main(String[] args) throws ParseException {
+    HtmlParser parser = new HtmlParser(System.in);
+    HtmlDocument doc = parser.HtmlDocument();
+    doc.accept(new HtmlDumper(System.out));
+    System.exit(0);
+  }
+
+   public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+   }
+
+   public int getTabSize() {
+        return jj_input_stream.getTabSize(0);
+   }
+
+    private void addException(ParseException pe) {
+        Range range = getExceptionLocation( pe );
+        parseErrors.add(new ParseError(pe.getMessage(), range));
+        pe.printStackTrace();
+    }
+
+    public List<ParseError> getParseErrors() {
+       System.out.println("getParserErrors, there are " + parseErrors.size() + " errors");
+       return parseErrors;
+    }
+
+    // regex to extract line and colun from a ParseException message
+    // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
+    private Pattern pePattern = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
+
+    /**
+     * @return attempts to return a Location indicating the location of a parser
+     * exception.  If the ParseException contains a Token reference, all is well,
+     * otherwise, this method attempts to parse the message string for the
+     * exception.
+     */
+    private Range getExceptionLocation( ParseException pe ) {
+        Token t = pe.currentToken;
+        if ( t != null ) {
+            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+        }
+
+        // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
+        try {
+            Matcher m = pePattern.matcher( pe.getMessage() );
+            if ( m.matches() ) {
+                String ln = m.group( 2 );
+                String cn = m.group( 4 );
+                int line_number = -1;
+                int column_number = 0;
+                if ( ln != null )
+                    line_number = Integer.parseInt( ln );
+                if ( cn != null )
+                    column_number = Integer.parseInt( cn );
+                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
+            }
+            return new Range();
+        }
+        catch ( Exception e ) {
+            //e.printStackTrace();
+            return new Range();
+        }
+    }
+
+    // regex pattern for a valid non-quoted attribute.
+    // Attributes can be single or double quoted, or consist solely of
+    // letters in the range A-Z and a-z, digits (0-9), hyphens ("-"),
+    // and periods (".")
+    private Pattern attributePattern = Pattern.compile( "([a-zA-Z0-9.-])*" );
+    private boolean isProperAttribute(String s) {
+        // could have double quotes
+        if (s.startsWith("\"") && s.endsWith("\"")) {
+            return true;
+        }
+        // or single quotes
+        else if (s.startsWith("'") && s.endsWith("'")) {
+            return true;
+        }
+        // or might be jsp
+        else if (s.startsWith("<%") && (s.endsWith("%>") || s.endsWith("%")) ) {
+            return true;
+        }
+        boolean rtn = attributePattern.matcher(s).matches();
+        if (rtn == false) {
+            System.out.println("bad attribute: " + s);
+        }
+        return rtn;
+    }
+}
+
+PARSER_END(HtmlParser)
+
+MORE:
+{
+    "<%" : IN_JSP_EXP
+}
+
+<IN_JSP_EXP>
+SPECIAL_TOKEN :
+{
+  <JSP_EXP_END: "%>" > : DEFAULT
+}
+<IN_JSP_EXP>
+MORE :
+{
+  < ~[] >
+}
+
+<*> TOKEN :
+{
+  <#ALPHA_CHAR: [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",       // Latin with diacritics
+       "\u00d8"-"\u00f6",       // Latin with diacritics
+       "\u00f8"-"\u00ff",       // Latin with diacritics
+       "\u0100"-"\u1fff",       // Latin Extended-A through Greek Extended
+       "\u3040"-"\u318f",       // Hiragana through Hangul Compatibility Jamo
+       "\u3300"-"\u337f",       // CJK Compatibility
+       "\u3400"-"\u3d2d",       // CJK Unified Ideographs Extension A
+       "\u4e00"-"\u9fff",       // CJK Unified Ideographs
+       "\uf900"-"\ufaff" ] >    // CJK Compatibility Ideographs
+| <#NUM_CHAR:   ["0"-"9"] >
+| <#ALPHANUM_CHAR: [ "a"-"z", "A"-"Z", "0"-"9" ] >
+| <#IDENTIFIER_CHAR: [ "a"-"z", "A"-"Z", "0"-"9", "_", "-", ".", ":" ] >
+| <#IDENTIFIER: <ALPHA_CHAR> (<IDENTIFIER_CHAR>)* >
+| <#STYLE_IDENTIFIER: (<ALPHA_CHAR>)+ >
+| <#QUOTED_STRING_NB: ( "'" ( ~["'", "\r", "\n"] )* "'" )
+                    | ( "\"" ( ~["\"", "\r", "\n"] )* "\"" ) >
+| <#QUOTED_STRING: ( "'" ( ~["'"] )* "'" ) | ( "\"" ( ~["\""] )* "\"" ) >
+| <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
+| <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
+| <#QUOTE:      ( "'" | "\"" ) >
+}
+
+<DEFAULT> TOKEN :
+{
+  <EOL:               ( " " | "\t" )* <NEWLINE> >
+| <COMMENT_START:     "<!--" | "<%--"    >                 : LexComment
+| <ENDTAG_START:      "</" | "</" <IDENTIFIER> ":" >       : LexStartTag
+| <TAG_START:         "<" | "<%@" | "<" <IDENTIFIER> ":" > : LexStartTag
+| <DECL_START:        "<!"      >                          : LexDecl
+| <PCDATA:            ( ~["<", "\r", "\n"] )+ >
+}
+
+<LexStartTag> SPECIAL_TOKEN :
+{
+  < (<WHITESPACE>)+ >
+}
+
+<LexStartTag> TOKEN :
+{
+  <TAG_SCRIPT: "SCRIPT">    : LexInTag
+| <TAG_STYLE:  "STYLE">     : LexInTag
+| <TAG_NAME: <IDENTIFIER> > : LexInTag
+| <LST_ERROR: ~[]>          : DEFAULT
+}
+
+<LexInTag> SPECIAL_TOKEN :
+{
+  < (<WHITESPACE>)+ >
+}
+
+<LexInTag> TOKEN :
+{
+  <ATTR_NAME: <IDENTIFIER> >
+| <TAG_END: ">" | "%>" >                : DEFAULT
+| <TAG_SLASHEND: "/>" >                 : DEFAULT
+| <ATTR_EQ: "=" >                       : LexAttrVal
+| <IMPLICIT_TAG_END: "<">
+  {
+    Token t = new Token();
+    t.image       = "<";
+    t.kind        = TAG_START;
+    t.next        = matchedToken.next;
+    t.beginLine   = matchedToken.beginLine;
+    t.beginColumn = matchedToken.beginColumn;
+    t.endLine     = matchedToken.endLine;
+    t.endColumn   = matchedToken.endColumn;
+    matchedToken.next  = t;
+    matchedToken.kind  = TAG_END;
+    matchedToken.image = ">";
+  }                                     : LexStartTag
+| <LIT_ERROR: ~[]>
+}
+
+<LexAttrVal> SPECIAL_TOKEN :
+{
+  < <WHITESPACE> >
+}
+
+<LexAttrVal> TOKEN :
+{
+  <ATTR_VAL: <QUOTED_STRING>
+| ( ~[">", "\"", "'", " ", "\t", "\n", "\r"] )+ > : LexInTag
+| <LAV_ERROR: ~[]>
+}
+
+<LexComment> TOKEN :
+{
+  < COMMENT_END:  ("--" (" ")* ">" | "->" | "--%>" ) > : DEFAULT
+| < DASH:         "-" >
+| < COMMENT_EOL:  <NEWLINE> >
+| < COMMENT_WORD: ( (~[ "\n", "\r", "'", "\"", "-" ])+
+                    | <QUOTED_STRING_NB>
+                    | <QUOTE> ) >
+}
+
+<LexDecl> TOKEN :
+{
+  <DECL_ANY: ( <QUOTED_STRING_NB> | <QUOTE> | ~[ ">" ] )+ >
+| <DECL_END: ">" > : DEFAULT
+}
+
+<LexScript> TOKEN : {
+  <SCRIPT_END:   "</SCRIPT>" > : DEFAULT
+}
+
+<LexStyle> TOKEN : {
+  <STYLE_END:    "</STYLE>" > : DEFAULT
+}
+
+<LexScript, LexStyle> TOKEN :
+{
+  <BLOCK_EOL:    <NEWLINE> >
+| <BLOCK_LBR:    "<" >
+| <BLOCK_WORD:   ( <QUOTED_STRING_NB>
+                   | <QUOTE>
+                   | (~[ "\n", "\r", "'", "\"", "<"])+ ) >
+}
+
+HtmlDocument HtmlDocument() :
+{
+  HtmlDocument.ElementSequence s;
+}
+{
+  s=ElementSequence() <EOF>
+  { return new HtmlDocument(s); }
+}
+
+HtmlDocument.ElementSequence ElementSequence() :
+{
+  HtmlDocument.ElementSequence s = new HtmlDocument.ElementSequence();
+  HtmlDocument.HtmlElement h;
+}
+{
+  ( h=Element() { s.addElement(h); } ) *
+  { return s; }
+}
+
+HtmlDocument.HtmlElement Element() :
+{
+  HtmlDocument.HtmlElement e;
+  Token text;
+}
+{
+(
+    LOOKAHEAD(2)
+         e = Tag()        { return e; }
+  |      e = EndTag()     { return e; }
+  |      e = CommentTag() { return e; }
+  |      e = DeclTag()    { return e; }
+  | LOOKAHEAD(2)
+         e = ScriptBlock() { return e; }
+  | LOOKAHEAD(2)
+         e = StyleBlock()  { return e; }
+  | LOOKAHEAD(2)
+             <TAG_START> text=<LST_ERROR>
+                          { return new HtmlDocument.Text("<" + text.image); }
+  |   text = <PCDATA>     { return new HtmlDocument.Text(text.image); }
+  |          <EOL>        { return new HtmlDocument.Newline(); }
+)
+}
+
+HtmlDocument.Attribute Attribute() :
+{
+  HtmlDocument.Attribute a;
+  Token t1, t2=null;
+}
+{
+    try {
+      t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
+      {
+    
+        if (t2 == null) {
+          a = new HtmlDocument.Attribute(t1.image);
+        }
+        else {
+          a = new HtmlDocument.Attribute(t1.image, t2.image);
+          if (!isProperAttribute(t2.image)) {
+           ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
+           addException(e);
+          }
+        }
+    
+         return a;
+      }
+    }
+      catch(ParseException e) {
+        addException(e);          
+      }
+}
+
+HtmlDocument.AttributeList AttributeList() :
+{
+  HtmlDocument.AttributeList alist = new HtmlDocument.AttributeList();
+  HtmlDocument.Attribute a;
+}
+{
+  (a=Attribute() { alist.addAttribute(a); } )*
+  {
+    return alist;
+  }
+}
+
+HtmlDocument.HtmlElement Tag() :
+{
+  Token t, et;
+  HtmlDocument.AttributeList alist;
+  Token firstToken = getToken(1);
+  Token st = null;
+  boolean isJspTag = false;
+}
+{
+  try {
+    st=<TAG_START>  t=<TAG_NAME> alist=AttributeList()
+    ( et=<TAG_END> | et=<TAG_SLASHEND> )
+    {
+        String tag_start = "<";
+        String tag_name = "";
+        if (st.image.startsWith("<") && st.image.endsWith(":")) {
+            isJspTag = true;
+            tag_start = "<";
+            tag_name = st.image.substring(1) + t.image;
+        }
+        else {
+            tag_name = t.image;
+        }
+        if (st.image.startsWith("<%")) {
+            isJspTag = true;
+        }
+      HtmlDocument.Tag rtn_tag = new HtmlDocument.Tag(tag_start, tag_name, alist, et.image);
+      if (et.kind == TAG_SLASHEND) {
+          rtn_tag.setEmpty(true);
+      }
+      rtn_tag.setStartLocation(st.beginLine, st.beginColumn);
+      rtn_tag.setEndLocation(et.endLine, et.endColumn + 1);
+      rtn_tag.setIsJspTag(isJspTag);
+      return rtn_tag;
+    }
+  }
+  catch (ParseException ex) {
+      addException(ex);
+    token_source.SwitchTo(DEFAULT);
+    String s = getTokenText(firstToken, getNextToken());
+    return new HtmlDocument.Text(s);
+  }
+}
+
+
+String StyleBlockContents() :
+{
+    StringBuffer sb = new StringBuffer();
+    Token t = null;
+}
+{
+    try {
+        ( t=<BLOCK_EOL> { sb.append(t.image); }
+        | t=<BLOCK_WORD> { sb.append(t.image); }
+        | t=<BLOCK_LBR> { sb.append(t.image); }
+        )*
+        {
+            String contents = sb.toString();
+            contents = contents.trim();
+            // sometimes people wrap the contents of style tags with html comments
+            // to protect older browsers that don't understand style tags from puking.
+            // I'm removing them here as they don't serve a purpose as far as a jEdit
+            // SideKick plugin is concerned.
+            if (contents.startsWith("<!--")) {
+                contents = contents.substring(4);
+            }
+            if (contents.endsWith("-->")) {
+                contents = contents.substring(0, contents.length() - 3);
+            }
+            return contents.trim();
+        }
+      }
+      catch(ParseException e) {
+        addException(e);          
+      }
+}
+
+String ScriptBlockContents() :
+{
+  //HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
+  StringBuffer sb = new StringBuffer();
+  Token t = null;
+}
+{
+    try {
+      ( t=<BLOCK_EOL>    { sb.append(t.image); }
+        | t=<BLOCK_WORD>  { sb.append(t.image); }
+        | t=<BLOCK_LBR>  { sb.append(t.image); }
+      )*
+      {
+            String contents = sb.toString();
+            contents = contents.trim();
+            // sometimes people wrap the contents of script tags with html comments
+            // to protect older browsers that don't understand script tags from puking.
+            // I'm removing them here as they don't serve a purpose as far as a jEdit
+            // SideKick plugin is concerned.
+            if (contents.startsWith("<!--")) {
+                contents = contents.substring(4);
+            }
+            if (contents.endsWith("//-->")) {
+                contents = contents.substring(0, contents.length() - 5);
+            }
+            return contents.trim();
+        //return e;
+      }
+  }
+  catch(ParseException e) {
+    addException(e);          
+  }
+}
+
+HtmlDocument.HtmlElement ScriptBlock() :
+{
+  HtmlDocument.AttributeList alist;
+  Token firstToken = getToken(1);
+  Token st, et;
+  String contents = "";
+}
+{
+  try {
+    st=<TAG_START> <TAG_SCRIPT> alist=AttributeList() <TAG_END>
+    {
+      token_source.SwitchTo(LexScript);
+    }
+    contents=ScriptBlockContents()
+    et=<SCRIPT_END>
+    {
+        HtmlDocument.Text text = new HtmlDocument.Text(contents);
+        HtmlDocument.ElementSequence seq = new HtmlDocument.ElementSequence();
+        seq.addElement(text);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, seq);
+        b.setStartLocation(st.beginLine, st.beginColumn);
+        b.setEndLocation(et.endLine, et.endColumn + 1);
+        return b;
+    }
+  }
+  catch (ParseException ex) {
+    addException(ex);
+    token_source.SwitchTo(DEFAULT);
+    String s = getTokenText(firstToken, getNextToken());
+    return new HtmlDocument.Text(s);
+  }
+}
+
+
+HtmlDocument.HtmlElement StyleBlock() :
+{
+  HtmlDocument.AttributeList alist;
+  Token firstToken = getToken(1);
+  Token st, et;
+  String contents = "";
+}
+{
+  try {
+    st=<TAG_START> <TAG_STYLE> alist=AttributeList() <TAG_END>
+    {
+      token_source.SwitchTo(LexStyle);
+    }
+    contents=StyleBlockContents()
+    et=<STYLE_END>
+    {
+        HtmlDocument.Text text = new HtmlDocument.Text(contents);
+        HtmlDocument.ElementSequence seq = new HtmlDocument.ElementSequence();
+        seq.addElement(text);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, seq);
+        b.setStartLocation(st.beginLine, st.beginColumn);
+        b.setEndLocation(et.endLine, et.endColumn + 1);
+        return b;
+    }
+  }
+  catch (ParseException ex) {
+    addException(ex);
+    token_source.SwitchTo(DEFAULT);
+    String s = getTokenText(firstToken, getNextToken());
+    return new HtmlDocument.Text(s);
+  }
+}
+
+
+HtmlDocument.HtmlElement EndTag() :
+{
+  Token t;
+  Token firstToken = getToken(1);
+  Token st, et;
+}
+{
+  try {
+    st=<ENDTAG_START> t=<TAG_NAME> et=<TAG_END>
+    {
+        String tag_name = "";
+        if (st.image.startsWith("</") && st.image.endsWith(":")) {
+            tag_name = st.image.substring(2) + t.image;
+        }
+        else
+            tag_name = t.image;
+        HtmlDocument.EndTag b = new HtmlDocument.EndTag(tag_name);
+        b.setStartLocation(st.beginLine, st.beginColumn);
+        b.setEndLocation(et.endLine, et.endColumn + 1);
+        return b;
+    }
+  }
+  catch (ParseException ex) {
+    addException(ex);
+    token_source.SwitchTo(DEFAULT);
+    String s = getTokenText(firstToken, getNextToken());
+    return new HtmlDocument.Text(s);
+  }
+}
+
+HtmlDocument.Comment CommentTag() :
+{
+  Token t, comment_start, comment_end = null;
+  StringBuffer s = new StringBuffer();
+}
+{
+    try {
+          comment_start=<COMMENT_START>
+          ( t=<DASH> { s.append(t.image); }
+            | <COMMENT_EOL>  { s.append(NL); }
+            | t=<COMMENT_WORD> { s.append(t.image); } )*
+          (<EOF> | comment_end=<COMMENT_END>)
+          { return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image)); }
+      }
+      catch(ParseException e) {
+        addException(e);          
+      }
+  
+}
+
+HtmlDocument.Comment DeclTag() :
+{
+  Token t;
+}
+{
+    try {
+          <DECL_START> t=<DECL_ANY> <DECL_END>
+          {
+            return new HtmlDocument.Comment(t.image);
+          }
+      }
+      catch(ParseException e) {
+        addException(e);          
+      }
+}

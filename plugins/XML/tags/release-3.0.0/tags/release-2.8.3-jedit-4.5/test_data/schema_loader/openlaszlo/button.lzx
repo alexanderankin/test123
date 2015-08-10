@@ -1,0 +1,80 @@
+<!-- :mode=xml: -->
+<canvas xmlns="http://www.laszlosystems.com/2003/05/lzx">
+    <include href="../lib/"/>
+    <resource name="tweety" src="bird.png"/>
+
+    <stylesheet>
+        canvas {
+            font-family: Helvetica,Sans;
+            font-size: 16;
+        }
+        basepanel {
+            border-width: 1;
+            border-radius: 10;
+            border-color: #CCCCCC;
+            base-color: #eeeeee;
+            gradient-fill: 'top,#eeeeee 0%,#e6e6e6 5%,#cccccc 100%';
+        }
+        btn {
+            padding: 10;
+            icon-padding: 20;
+            color: #144a9c;
+            shadow-distance: 2;
+            shadow-blur-radius: 2;
+        }
+        btn[mousestate=over]{
+            gradient-fill: 'top,#ffffff 0%,#f6f6f6 5%,#dddddd 100%';
+        }
+        .tweety {
+            icon-resource: tweety;
+        }
+    </stylesheet> 
+
+    <class name="toggleiconbutton" extends="btn">
+        <handler name="onclick" args="ignore=null">
+            var pos = this.iconposition;
+            if (pos == 'left') {
+                pos = 'top';
+            } else if (pos == 'top') {
+                pos = 'right';
+            } else if (pos == 'right') {
+                pos = 'bottom';
+            } else if (pos == 'bottom') {
+                pos = 'left';
+            }
+            this.setAttribute('iconposition', pos);
+        </handler>
+    </class>
+
+    <!-- you'll get an error as basepanel is not allowed there according to lzx.rng... -->
+    <basepanel x="10" y="10" width="100%">
+        <simplelayout spacing="10"/>
+
+        <hbox spacing="10">
+            <bsbtn x="10" width="50" height="50"/>
+            <btn x="10" text="tweet this"/>
+            <btn x="10" width="200" text="tweet this"/>
+            <btn x="10" height="200" text="tweet this"/>
+            <btn x="10" width="200" height="200" text="tweet this"/>
+            <btn x="10" styleclass="tweety"/>
+        </hbox>
+        <hbox spacing="10">
+            <toggleiconbutton x="10" text="tweet this" styleclass="tweety"/>
+            <toggleiconbutton x="10" text="tweet this" styleclass="tweety" iconposition="right"/>
+            <toggleiconbutton x="10" text="tweet this" styleclass="tweety" iconposition="top"/>
+            <toggleiconbutton x="10" text="tweet this" styleclass="tweety" iconposition="bottom"/>
+        </hbox>
+        <hbox spacing="10">
+            <toggleiconbutton x="10" text="tweet this fixed height" styleclass="tweety" height="300"/>
+            <toggleiconbutton x="10" text="tweet this fixed height" styleclass="tweety" height="300" iconposition="right"/>
+            <toggleiconbutton x="10" text="tweet this fixed height" styleclass="tweety" height="300" iconposition="top"/>
+            <toggleiconbutton x="10" text="tweet this fixed height" styleclass="tweety" height="300" iconposition="bottom"/>
+        </hbox>
+        <vbox spacing="10">
+            <toggleiconbutton x="10" text="tweet this fixed width" width="300" styleclass="tweety"/>
+            <toggleiconbutton x="10" text="tweet this fixed width" width="300" styleclass="tweety" iconposition="right"/>
+            <toggleiconbutton x="10" text="tweet this fixed width" width="300" styleclass="tweety" iconposition="top"/>
+            <toggleiconbutton x="10" text="tweet this fixed width" width="300" styleclass="tweety" iconposition="bottom"/>
+        </vbox>
+    </basepanel>
+</canvas>

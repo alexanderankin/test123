@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    - this is the root of a compound document, similar to
+      user-guide.xml.
+    - fragment1.xml and fragment2.xml are included via external entities
+    - they both refer to this file as the root, so when parsing them,
+      it's this document which is parsed and all irrelevant elements are ignored
+    - IDs are collected across all fragments, for easy composition of xlinks
+  -->
+<!DOCTYPE book [
+<!ENTITY frag1 SYSTEM "fragment1.xml">
+<!ENTITY frag2 SYSTEM "fragment2.xml">
+<!ENTITY frags SYSTEM "absent.xml">
+<!ELEMENT book (chapter*,para*)>
+<!ATTLIST book 
+    xml:id ID #IMPLIED
+>
+<!ELEMENT chapter (title,section*)>
+<!ATTLIST chapter 
+    xml:id ID #IMPLIED
+>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT section (title)>
+<!ATTLIST section 
+    xml:id ID #IMPLIED
+>
+]>
+<book xml:id="root">
+&frag1;
+<!-- for instance, 
+     "XML Insert" dockable shows all the IDs of the fragments here
+  -->
+&frag2;
+<!-- still an issue here : the error is reported in each sub-document... -->
+&frags;
+</book>

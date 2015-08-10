@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="html">
+        new sidekick.html.HtmlParser();
+    </SERVICE>
+
+    <SERVICE  CLASS="sidekick.SideKickParser" NAME="css" >
+        new sidekick.css.CSS2SideKickParser();
+    </SERVICE>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
+        new xml.parser.XercesParserImpl();
+    </SERVICE>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="javascript">
+        new sidekick.javascript.JavaScriptParser();
+    </SERVICE>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="ecmascript">
+        new sidekick.ecmascript.EcmaScriptSideKickParser();
+    </SERVICE>
+    <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="xml:XmlIndenter">
+        new xml.indent.XmlBeautifier();
+    </SERVICE>
+</SERVICES>

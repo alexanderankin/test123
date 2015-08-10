@@ -1,0 +1,192 @@
+<section id="styletest" c="remark"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://slackerdoc.tigris.org/xsd/slackerdoc.xsd'>
+    <title> Stylesheet Test  </title>
+  <abstract> <p>
+  This file is an example that uses all Slacker document elements, and a subset of common/popular elements from the <a href="@docbookdoc@/part2.html">Docbook</a> language. It's also a testcase for the scripts and stylesheets. </p>
+  </abstract>
+
+<question>
+<title> What is Slacker's Docbook? </title>
+<p> hi there </p>
+</question>
+
+<indexterm><primary>Slacker's Docbook</primary>  </indexterm>
+<indexterm><primary>Docbook/XML</primary>  </indexterm>
+
+<p> Slacker's Docbook is two things. </p>
+<ol>
+<li> A language which you can write books in </li>
+<li> A set of scripts and files which convert from Slacker's Docbook (the language) into Docbook/XML, and later to other file formats such as HTML, PDF, LaTex. </li>
+</ol>
+
+<p> Most of the non-Docbook tags added to Slacker's Docbook will be familiar to anyone who has edited an HTML page, since they were taken from HTML. </p>
+
+<p> It is much faster and easier to compose Slacker's than to use standard Docbook/XML. </p>
+
+<p> The scripts are organized and deployed by <a href="http://ant.apache.org"> Apache Ant,</a> an open source, cross platform, Java-based build tool.</p>
+
+<p> Output format is controlled by easily customizable stylesheets which we have provided. </p>
+
+<p> The use of several Slacker's Docbook tags and directives is demonstrated below. </p>
+
+<p condition="textbook">
+  This text is in a condition="textbook" element, so it only appears
+  in the textbook version.
+</p>
+
+<p c="textbook">
+    <tt>ant bookhtml</tt> or <tt>ant pdf</tt> both generate versions that include textbook elements. An alternate way of describing textbook conditionals is with the <tag>textbook</tag> tag. This is equivalent to a <tag>p condition="textbook"</tag>
+</p>
+
+ <figure id="examplefigure">
+ <title> A title for a figure </title>
+ <img scale="50" src="./uml/entitymgr.png" alt="a beautiful UML diagram" />
+ </figure>
+
+ <p condition="slides" >
+ <tt>ant slides</tt> generates a slides version of the document. Like <tag>textbook</tag>, <tag>slides</tag> is another conditional name and tag.
+ </p>
+
+  <ol>
+     <li> Here is an ordered list. item.
+     It should look familiar since it's tag is borrowed from XHTML. </li>
+     <li>
+       This ordered list shows you which version(s) you are reading: </li>
+        <li condition="textbook"> You are reading textbook text. </li>
+        <li condition="slides"> You are reading slides text.  </li>
+        <li condition="remark"> You are also reading draft remarks. These are notes to other authors and reviewers, and some sections under construction.  </li>
+        <li condition="solution"> Solutions to exercises </li>
+        <li condition="instructor"> Instructor's notes </li>
+        <li condition="junk"> This is a junk tag. It shouldn't appear at all since I haven't defined it as a condition in the script yet.</li>
+        <li condition="todo"> Make it possible to detect new conditions? Or have "all" blindly include everything?
+        </li>
+        <li> This listitem item appears in every version </li>
+    </ol>
+
+    <p> An <b>admonition</b> is a Docbook tag with a title and an associated icon. </p>
+
+    <p> Here are the available admonitions. The original Docbook admonitions are all supported in Slacker's Docbook; however, we have added two new tags: <tag>prereq</tag> and <tag>question</tag>.
+     </p>
+
+   <warning> <title> Warning </title>
+   <p>
+   Danger Will Robinson. Things to be careful about. </p>
+   </warning>
+
+   <caution> <title> Caution </title>
+   <p>
+   Cautions can be dangerous to your health.
+   They happen to be mapped to <tag>warning</tag> anyway. </p>
+   </caution>
+
+  <note> <title> This is a note </title>
+  <p>
+   Take note of that. It's important!
+   </p>
+   </note>
+
+   <important> <title> Important </title>
+   <p>
+   This is actually not so important, since it's
+   mapped to <tag>note</tag>. </p>
+   </important>
+
+   <tip> <title> Tip </title> <p>
+   This is a tip. It's very good advice. It could save you time. </p>
+
+   </tip>
+
+   <question>
+   <p>
+   The Docbook meaning of <tag>question</tag> remains the same if it appears inside a <tag>qandaset</tag>. However, if it appears where a other admonitions are allowed, <tag>question</tag> is mapped to the docbook <tt>important</tt> admonition. </p>
+   </question>
+
+   <prereq>
+   <p>
+   This is inside a <tag>prereq</tag>. It's mapped to the
+   <tag>caution</tag> admonition since we are not using it.
+   </p>
+   </prereq>
+
+ <p>
+    The glyphs are taken from Bobco fonts, with copyrights held by the <a href="http://www.subgenius.com/">Subgenius Foundation</a> <footnote><para> Praise Bob! </para></footnote>.</p>
+
+ <sidebar>
+ <title> This is the title of a sidebar </title> <p>
+ This is a sidebar. Passages which elaborate further
+ ideas in the slides belong in a sidebar.  </p>
+ </sidebar>
+
+<formalpara>
+   <title> A formalpara about parabullet (<tag>pb</tag>)  </title>
+   <p>
+   This is a <tag>formalpara</tag> which is discussing the parabullet that follows. parabullets are very interesting because they are rendered quite differently depending on which version you are generating. In order to simultaneously write bullet-text for the slides version and paragraph text in the book version without repeating yourself, mark each paragraph as a <tag>pb</tag>, marking up each major idea in it as an <tag>li</tag>. </p>
+ </formalpara>
+
+    <pb>
+        <li> This content is inside <tag>pb</tag>, which is short for <i>parabullet</i>. </li>
+        <li> When a <tag>pb</tag> is encountered, and condition['slides'] is not true, we translate <tag>pb</tag> into <tag>para</tag>, stripping all <tag>li</tag>s.
+        </li>
+        <li> Otherwise, the preprocessor translates each <tag>li</tag> into a <tag>listitem</tag> <tag>para</tag>
+              and the <tag>pb</tag> maps to an <tag>unorderedlist</tag>. They appear as bullets in the slides version and paragraphs in the textbook. </li>
+
+        <li> This means that unordered lists inside <tag>pb</tag>should be properly punctuated.  </li>
+        <li> <tag>li</tag> is much easier to type than <tag>listitem</tag> <tag>para</tag>.  </li>
+    </pb>
+
+
+    <ul>
+      <li> This is a regular unordered list. </li>
+      <li> It should appear always as a bullet in all versions. </li>
+    </ul>
+
+    <todo>
+      The <tag>todo</tag> element is mapped to <tag>p</tag> but also has a bold heading that says "Todo Items". </todo>
+
+      <ol>
+      <li> Add keyword-processing with hyperlinks to the
+      <a href="@docbookdoc@/ref-elements.html">Element
+      Reference Guide</a>. We have it already in the C++ textbook. </li>
+      </ol>
+
+
+    <p c="remark">
+       This is a paragraph marked conditionally with remark, but using the abbreviated c= attribuite. Since it is a remark, it should only be visible in the  development version, and is styled for remark. </p>
+
+   <remark>
+         The <tag>remark</tag> tag is just shorthand for a
+         <tag>para class=&quot;remark&quot;</tag>
+     </remark>
+
+    <solution>
+       We have a solution tag which creates a formalpara with a "solution" title, and wraps around whatever needs to be part of the solution. Content between solution tags can easily be excluded from a particular target if you want to control the time and place of its release (e.g., to students).
+    </solution>
+
+<p condition="remark"> <tt>ant dev</tt> Generates the HTML "development" version which contains every conditional included in the output, highlighted in different colors as specified in the css file.
+</p>
+
+<bridgehead> About including files </bridgehead>
+
+    <p> We can include xml files as <tt>mode="text"</tt> (the default for all files which do not have a .cpp or .h suffix). It does simple line-wrap. </p>
+
+ <include src="impl.xml" mode="text" />
+
+   <todo> Add conditional inclusion tags for XML
+          inside proper XML comments. </todo>
+
+    <p> When including C++, you can use //start and //end comments to switch on/off inclusion. </p>
+
+    <p> In addition, c-style comments appear as callouts in the listings. </p>
+
+<p> Click on filename, or the "link" icon below the included code to see the original file before processing. Notice we only see a small piece.
+ </p>
+
+    <include src="dialogs.cpp" mode="cpp" segid="menu"/>
+
+    <p> In this next example, there is no link, and in fact, the included file has restricted permissions, so you should not be able to see it even if you guessed at its url.
+    </p>
+
+    <include src="sample.cpp" mode="cpp" segid="main" link="false"/>
+
+</section>

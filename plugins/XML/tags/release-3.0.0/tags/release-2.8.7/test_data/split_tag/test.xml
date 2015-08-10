@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<a> bbbb
+<b></b>
+<c:c xmlns:c="urn:hello">you could
+handle namespace bindings !</c:c>
+<and even="entities, like &lt;
+instead of simply replacing them !"/>
+	<simple a="1" b="2"
+			c="3">
+	test
+	</simple>
+</a>

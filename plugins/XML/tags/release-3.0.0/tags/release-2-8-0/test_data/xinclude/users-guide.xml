@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'>
+    <bookinfo>
+        <title>Some User's Guide</title>
+    </bookinfo>
+
+    <chapter id="c1">
+        <title>Referencing</title>
+
+        <!-- reference to chapter with id='conventions' -->
+        <para>There are some conventions somewhere in an included document:
+        see <xref linkend="conventions"/>.</para>
+
+    </chapter>
+    <!-- If you comment out the xi:include, the xref above should give you an error.
+         If you see an error on the xi:include, that means that XInclude is not enabled. -->
+    <xi:include  href="conventions.xml"
+             xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+</book>

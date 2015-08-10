@@ -1,0 +1,527 @@
+# :mode=properties:folding=explicit:
+# Plugin properties
+plugin.xml.XmlPlugin.activate=defer
+plugin.xml.XmlPlugin.name=XML
+plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil, Eric Le Lay
+plugin.xml.XmlPlugin.version=2.8.0
+plugin.xml.XmlPlugin.docs=index.html
+
+plugin.xml.XmlPlugin.depend.0=jdk 1.5
+plugin.xml.XmlPlugin.depend.1=jedit 04.03.99.00
+plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.9.1
+plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
+plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.9
+plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.3.0
+plugin.xml.XmlPlugin.depend.6=plugin CommonControlsPlugin 1.1
+plugin.xml.XmlPlugin.depend.7=plugin eclipseicons.EclipseIconsPlugin 1.0
+
+plugin.xml.XmlPlugin.jars=jing.jar relaxngDatatype.jar trang.jar
+
+plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD, XSD, or RNG. For all languages, it displays element trees in the SideKick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
+
+# Menu bar stuff
+
+plugin.xml.XmlPlugin.menu= \
+    sidekick.parser.xml-switch \
+    sidekick.parser.html-switch \
+    sidekick.parser.javascript-switch \
+    sidekick.parser.ecmascript-switch \
+    - \
+    xml-match-tag \
+    xml-select-element \
+    xml-select-between-tags \
+    - \
+    xml-insert \
+    xml-edit-tag \
+    xml-close-tag \
+    xml-remove-tags \
+    xml-split-tag \
+	xml-join-tag \
+    xml-copy-xpath \
+    - \
+    xml-chars-to-entities \
+    xml-entities-to-chars \
+    xmlindenter.indent \
+    xmlindenter.toggleSplitAttributes \
+    - \
+    xml-generate-dtd \
+    xml-trang-translate \
+    - \
+    csssidekick-insert-relative-path \
+    - \
+    xml-prompt-typeid \
+    xml-prompt-schema \
+    xml-open-schema \
+    - \
+    xml-clear-cache \
+    csssidekick-reload-completion-config \
+    xml-reload-catalogs
+
+# Indent action
+xmlindenter.indent.message.failure=Indenting failed to complete.
+xmlindenter.message.error={0}\nError : {1}
+xmlindenter.indent.label=Indent XML
+xmlindenter.toggleSplitAttributes.label=Split/Unsplit Attributes
+
+xml-match-tag.label=Go to Matching Tag or Bracket
+xml-insert.label=XML Insert
+xml-edit-tag.label=Edit Tag at Caret...
+xml-close-tag.label=Close Last Open Tag
+xml-remove-tags.label=Remove All Tags
+xml-split-tag.label=Split Tag
+xml-join-tag.label=Join Tag
+xml-copy-xpath.label=Copy XPath
+xml-chars-to-entities.label=Characters to Entities
+xml-entities-to-chars.label=Entities to Characters
+xml-clear-cache.label=Clear Resource Cache
+xml-reload-catalogs.label=Reload Catalogs
+xml-select-element.label=Select Element or Code Block
+xml-select-between-tags.label=Selection Between Tags
+xml-generate-dtd.label=Generate DTD
+xml-trang-translate.label=Translate Schema using Trang
+xml-open-schema.label=Open Schema
+xml-prompt-typeid.label=Set Schema Type...
+xml-prompt-schema.label=Set Schema...
+
+# Option panes
+plugin.xml.XmlPlugin.option-group=xml.general xmlindenter sidekick.html sidekick.ecmascript sidekick.css xml.catalogs
+
+# {{ HTML option pane
+options.sidekick.html.label=HTML
+options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
+# }}}
+
+# {{{ ecmascript option pane
+options.sidekick.ecmascript.label=Ecmascript
+options.sidekick.ecmascript.general.allNodes.label=Show all nodes
+options.sidekick.ecmascript.code=new sidekick.ecmascript.options.GeneralOptionPane();
+# }}}
+
+# {{{ XML options
+
+options.xml.catalogs.label=Catalogs
+options.xml.catalogs.code=new xml.options.CatalogsOptionPane();
+options.xml.catalogs.caption=Catalog files to import:
+options.xml.catalogs.add=Add
+options.xml.catalogs.remove=Remove
+
+options.xml.general.label=XML
+options.xml.general.code=new xml.options.GeneralOptionPane();
+options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
+options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.network-mode=Downloading DTDs and schemas:
+
+options.xml.general.validate-separator=Validate
+
+options.xml.general.network.local=Local files only
+options.xml.general.network.ask=Ask before downloading
+options.xml.general.network.always=Download without asking
+options.xml.general.network.cache=Cache remote files locally
+options.xml.general.enable-schema-mapping=Enable the schema mapping mechanism (schemas.xml files)
+options.xml.general.enable-schema-mapping.tooltip=Safe to uncheck if you only use XSD schemas.\
+ You can also set it on a per-buffer basis (see help topic). 
+
+options.xml.general.tree-separator=Tree
+options.xml.general.show-attributes=Show tag attributes in tree:
+options.xml.general.show-attributes.none=None
+options.xml.general.show-attributes.id-only=ID only
+options.xml.general.show-attributes.all=All
+options.xml.general.tags-separator= Edit
+options.xml.general.close-complete=Insert closing tag when "</" is typed
+options.xml.general.close-complete.tooltip=Also enables SideKick "complete immediately when possible" option
+options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
+options.xml.general.standalone-extra-space=Space before "/>" in stand-alone tags
+options.xml.general.xinclude-separator=XInclude
+options.xml.general.xinclude=Activate XInclude
+options.xml.general.xinclude-xmlbase=Activate Base URI Fixup (recommended)
+options.xml.general.xinclude-xmlbase.tooltip=relative URIs in the included fragment\
+ are resolved based on the URI of the fragment, not of the parent.
+
+# SideKick parsers
+sidekick.parser.xml.label=XML
+mode.xml.sidekick.parser=xml
+mode.xsl.sidekick.parser=xml
+mode.css.sidekick.parser=css
+
+# specialized tag classes. Mostly, these provide a different icon set for the
+# nodes of these file modes.The naming convention is xml.xmltag.modename, where
+# 'modename' is the name of the mode for the file.
+xml.xmltag.ant=xml.parser.AntXmlTag
+xml.xmltag.tld=xml.parser.TldXmlTag
+xml.xmltag.maven=xml.parser.MvnXmlTag
+
+# specialized SideKickParsedData classes
+xml.xmlparseddata.ant=xml.AntXmlParsedData
+xml.xmlparseddata.tld=xml.TldXmlParsedData
+xml.xmlparseddata.maven=xml.MvnXmlParsedData
+
+# modes supported by xml toolbar
+xml.xmltoolbar.modes=ant,tld,xml,maven
+
+# Show attributes in XML tree?
+# 0: none; 1: id only; 2: all
+xml.show-attributes=1
+
+# DTD validation
+# this can be set on a per-buffer basis too
+buffer.xml.validate=true
+
+# Enable network operations
+xml.general.network.mode=ask
+
+#enable resource cache by default
+xml.general.network.cache=true
+
+# Insert closing tag automatically after '</' typed
+xml.close-complete=true
+
+# Insert closing tag automatically after '>' typed
+xml.close-complete-open=false
+
+# Insert space before /> when completing stand-alone tags
+xml.standalone-extra-space=false
+
+# use schemas.xml to associate RNG schemas to xml documents
+# it may be set on a per-buffer basis
+buffer.xml.enable-schema-mapping=true
+
+# Tag highlight
+xml.tag-highlight=true
+xml.tag-highlight-color=black
+
+# Completion info
+xml.completion.glob.0.key=build.xml
+xml.completion.glob.0.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.glob.1.key=*-build.xml
+xml.completion.glob.1.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.glob.2.key=build-*.xml
+xml.completion.glob.2.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.glob.3.key=*.css
+xml.completion.glob.3.value=jeditresource:/XML.jar!/xml/completion/css-complete.xml
+
+xml.completion.namespace.0.key=http://www.w3.org/1999/XMLSchema
+xml.completion.namespace.0.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+xml.completion.namespace.1.key=http://www.w3.org/2001/XMLSchema
+xml.completion.namespace.1.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+xml.completion.namespace.2.key=http://www.w3.org/1999/XSL/Transform
+xml.completion.namespace.2.value=jeditresource:/XML.jar!/xml/completion/xsl-complete.xml
+
+xml.completion.namespace.3.key=http://www.w3.org/TR/xhtml1/transitional
+xml.completion.namespace.3.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+xml.completion.namespace.4.key=http://www.w3.org/1999/xhtml
+xml.completion.namespace.4.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+xml.completion.namespace.5.key=http://www.w3.org/1999/XSL/Format
+xml.completion.namespace.5.value=jeditresource:/XML.jar!/xml/completion/fo-complete.xml
+
+
+xml.completion.namespace.6.key=http://exslt.org/common
+xml.completion.namespace.6.value=jeditresource:/XML.jar!/xml/completion/exslt-common-complete.xml
+
+
+xml.completion.namespace.7.key=http://exslt.org/functions
+xml.completion.namespace.7.value=jeditresource:/XML.jar!/xml/completion/exslt-functions-complete.xml
+
+xml.completion.namespace.8.key=http://exslt.org/dates-and-times
+xml.completion.namespace.8.value=jeditresource:/XML.jar!/xml/completion/exslt-dates-and-times-complete.xml
+
+
+
+
+
+mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/jhtml-complete.xml
+mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+# Completion
+xml-insert-closing-tag.shortcut=>
+
+# Insert tag window
+xml-insert.title=XML Insert
+xml-insert.elements=Elements allowed at caret:
+xml-insert.entities=Entities:
+xml-insert.ids=IDs:
+xml-insert.not-parsed=Not parsed
+
+# Edit tag dialog box
+xml-no-data.title=No SideKick parsed data
+xml-no-data.message=This command can only be used on XML/HTML files after a SideKick parse.
+
+xml-edit-tag.undefined-element.title=Element Not Defined
+xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
+
+xml-edit-tag.title=Edit Tag
+xml-edit-tag.element-name=Element name:
+xml-edit-tag.empty=Empty
+xml-edit-tag.set=Set
+xml-edit-tag.attribute=Attribute
+xml-edit-tag.type=Type
+xml-edit-tag.value=Value
+xml-edit-tag.preview=Preview:
+
+xml-edit-tag.required=#REQUIRED
+
+# Status messages shown when doing completion
+xml.network.error=User cancelled downloading resource.
+
+xml.download-resource.title=Getting resource from remote server
+xml.download-resource.message=This XML file depends on a resource which is stored at the following\n\
+    Internet address:\n\
+    \n\
+    {0}\n\
+    \n\
+    Do you want the XML plugin to download the resource and cache it\n\
+    for future use?\n\
+    \n\
+    If you want resources to be downloaded every time without prompting,\n\
+    disable the resource cache in the XML plugin options.
+
+# }}}
+# {{{ CSS Options
+options.sidekick.css.label=CSS
+options.sidekick.css.code=new sidekick.css.CssSideKickOptionPane();
+
+# css toolbar text
+options.sidekick.css.sortBy=Sort
+options.sidekick.css.sortByLine=Line
+options.sidekick.css.sortByName=Name
+options.sidekick.css.showLineNums=Line Numbers
+
+# xml/tld/ant toolbar text
+options.sidekick.xml.sortBy=Sort by:
+options.sidekick.xml.sortByLine=Line
+options.sidekick.xml.sortByName=Name
+options.sidekick.xml.sortByType=Type
+options.sidekick.xml.sortDirection=Sort direction
+
+# actions labels
+csssidekick-reload-completion-config.label=Reload css completion config
+csssidekick-insert-relative-path.label=Insert relative css path
+
+# sidekick
+sidekick.parser.CssSidekick.label=css
+
+# errors
+csssidekick.config-io-error.title=CssSideKick: completion config IO error
+csssidekick.config-io-error.message={0}
+
+csssidekick.config-xml-error.title=CssSideKick: completion config XML error
+csssidekick.config-xml-error.message={0}
+
+
+# options
+options.csssidekick.completion-config.title=XML file containing competion config
+options.csssidekick.completion-config=css-complete.xml
+
+options.csssidekick.quote.title=Use single quotes instead of double
+options.csssidekick.quote='
+
+options.csssidekick.colon.title=Insert colon when property is completed
+options.csssidekick.colon=true
+
+options.csssidekick.space-after-colon.title=Insert space after colon when property is completed
+options.csssidekick.space-after-colon=true
+
+options.csssidekick.showProprietaryAsError.title=List proprietary CSS tags in Error List as error
+options.csssidekick.showProprietaryAsError=true
+
+# }}}
+# {{{ HTMLSideKick props
+
+# popup menu
+sidekick-tree.html.menu=htmlsidekick-showall htmlsidekick-expandall
+htmlsidekick-showall.label=Show All
+htmlsidekick-expandall.label=Expand All
+
+
+# action labels
+htmlsidekick-gotodockable.label=Go to structure browser
+htmlsidekick-match-tag.label=Go to Matching Tag
+
+
+# registration with SideKick as a mode parser
+sidekick.parser.html.label=html
+mode.html.sidekick.parser=html
+mode.jsp.sidekick.parser=html
+
+# option labels:
+options.sidekick.html.showAttributes.label=Show Attributes
+options.sidekick.html.showTagAttributes.label=Tag Attributes
+options.sidekick.html.showCoreAttributes.label=Core Attributes
+options.sidekick.html.showLangAttributes.label=Language Attributes
+options.sidekick.html.showScriptAttributes.label=Script Attributes
+options.sidekick.html.showBrackets.label=Show tags with < and >
+options.sidekick.html.showAllElements.label=Show All HTML Tags
+options.sidekick.html.showBlockElements.label=Show Block HTML Tags only
+options.sidekick.html.showJspElements.label=Show JSP Tags
+
+
+# }}}
+# {{{ JavaScript Properties
+
+# Default Javascript Parser
+mode.javascript.sidekick.parser=javascript
+
+sidekick.parser.javascript.label=javascript
+sidekick.parser.ecmascript.label=ecmascript
+
+#{{{ icons
+sidekick.parser.javascript.package-icon=package.gif
+sidekick.parser.javascript.use-icon=use.gif
+sidekick.parser.javascript.sub-icon=sub.gif
+sidekick.parser.javascript.package_invalid-icon=package_invalid.gif
+sidekick.parser.javascript.use-invalid-icon=use_invalid.gif
+sidekick.parser.javascript.sub-invalid-icon=sub_invalid.gif
+sidekick.parser.javascript.comment-icon=comment.gif
+# }}}
+
+# }}}
+
+sidekick.parser.xml-switch.label=Parse as XML
+sidekick.parser.html-switch.label=Parse as HTML
+sidekick.parser.javascript-switch.label=Parse as JavaScript
+sidekick.parser.ecmascript-switch.label=Parse as EcmaScript
+
+options.xmlindenter.label=XML Indenter
+options.xmlindenter.code=new xml.indent.PreserveWhitespaceOptionsPane();
+options.xmlindenter.caption=Preserve whitespace for these elements:
+options.xmlindenter.add=Add
+options.xmlindenter.remove=Remove
+options.xmlindenter.dialog.title=Add element
+options.xmlindenter.dialog.message=Enter qualified element name:
+
+# register modes for Beauty
+mode.xml.beauty.beautifier=XmlIndenter
+
+# xml-prompt-typeid
+xml.choose-type-id.message=Please Choose a typeID for the current buffer:
+xml.choose-type-id.title=Choose a TypeID...
+xml-error-to-document.message=An error occurred while saving the schema-mapping ({0}):\n\t{1}
+xml-error-to-document.title=error saving schema-mapping
+xml.no-type-id.message=no list of type ids; you'll have to edit schemas.xml manually
+
+# xml-prompt-schema
+xml.choose-schema.buffer-path=The buffer is:
+xml.choose-schema.message=Please Choose a schema for the current buffer:
+xml.choose-schema.title=Choose a Schema...
+xml.choose-schema.browse=Browse...
+xml.choose-schema.relative=make this location relative (preview bellow)
+xml.choose-schema.error-uri.title=Strange path indeed !
+xml.choose-schema.error-uri.message=Encountered an Exception with URI {0} :\n\t{1}
+
+xml.translate.choose-input-type.title=Couldn't guess input type
+xml.translate.choose-input-type.message=Please select the type of input...
+
+# {{{ TrangGUI props
+
+xml.gui.file.open.name=Open file
+xml.gui.file.open.short-desc=Open file
+xml.gui.file.open.small-icon=22x22/actions/document-open.png
+
+
+xml.translate.xml-inputs.label=Additional input Documents
+
+xml.translate.input.browse.prompt=Please select a source document
+
+xml.translate.input.select.name=Select source
+xml.translate.input.select.short-desc=Select source Schema
+xml.translate.input.select.small-icon=22x22/actions/document-open.png
+
+xml.translate.xml-inputs.add.name=Add
+xml.translate.xml-inputs.add.short-desc=Add Input
+xml.translate.xml-inputs.add.small-icon=22x22/actions/list-add.png
+
+xml.translate.xml-inputs.remove.name=Remove
+xml.translate.xml-inputs.remove.short-desc=Remove Input
+xml.translate.xml-inputs.remove.small-icon=22x22/actions/list-remove.png
+
+xml.translate.xml-inputs.up.name=Move up
+xml.translate.xml-inputs.up.short-desc=Move Input up
+xml.translate.xml-inputs.up.small-icon=22x22/actions/go-up.png
+
+xml.translate.xml-inputs.down.name=Move down
+xml.translate.xml-inputs.down.short-desc=Move Input down
+xml.translate.xml-inputs.down.small-icon=22x22/actions/go-down.png
+
+xml.translate.output.browse.prompt=Please select a main destination Schema
+xml.translate.output.select.name=Select destination
+xml.translate.output.select.short-desc=Select main destination Schema
+xml.translate.output.select.small-icon=22x22/actions/document-save.png
+
+xml.translate.output-type=rng
+
+xml.translate.failed.title = Translation failed
+xml.translate.failed.message = Translation failed ! Complete error is:\n{0}
+
+xml.translate.done.title = Translation succeeded
+xml.translate.done.message = Translation succeeded: created/updated {0} files
+
+# {{{ DTD input options
+xml.translate.dtd.xmlns.label=xmlns
+xml.translate.dtd.xmlns.tooltip=Specifies the default namespace (for unqualified element names)
+xml.translate.dtd.xmlns=
+
+xml.translate.dtd.colon-replacement.label=colon-replacement
+xml.translate.dtd.colon-replacement.tooltip=Replacement for colons in element and attribute lists names
+xml.translate.dtd.colon-replacement=
+
+xml.translate.dtd.namespaces.label=namespaces
+xml.translate.dtd.namespaces.tooltip=enter here a list of xmlns:prefix=uri namespace declarations (no quotes)
+xml.translate.dtd.namespaces=
+
+xml.translate.dtd.element-define.label=element-define
+xml.translate.dtd.element-define.tooltip=How to construct the name of the definition representing an element declaration from the name of the element
+xml.translate.dtd.element-define=
+
+xml.translate.dtd.inline-attlist.label=inline-attlist
+xml.translate.dtd.inline-attlist.tooltip=Move attributes declared in attribute list declarations into the definitions generated for element declarations
+xml.translate.dtd.inline-attlist=no-inline-attlist
+
+xml.translate.dtd.attlist-define.label=attlist-define
+xml.translate.dtd.attlist-define.tooltip=How to construct the name of the definition representing an attribute list declaration from the name of the element
+xml.translate.dtd.attlist-define=
+
+xml.translate.dtd.any-name.label=any-name
+xml.translate.dtd.any-name.tooltip=Name of the definition for the ANY content-model in the DTD
+xml.translate.dtd.any-name=
+
+xml.translate.dtd.strict-any.label=strict-any
+xml.translate.dtd.strict-any.tooltip=Preserves the exact semantics of ANY content models by using an explicit choice of references to all declared elements
+xml.translate.dtd.strict-any=no-strict-any
+
+xml.translate.dtd.annotation-prefix.label=annotation-prefix
+xml.translate.dtd.annotation-prefix.tooltip=prefix used for annotations
+xml.translate.dtd.annotation-prefix=a
+
+xml.translate.dtd.generate-start.label=generate-start
+xml.translate.dtd.generate-start.tooltip=Should it generate a start element
+xml.translate.dtd.generate-start=no-generate-start
+
+# }}}
+
+# {{{ XSD output options
+xml.translate.xsd.disable-abstract-elements.label=disable-abstract-elements
+xml.translate.xsd.disable-abstract-elements.message=No abstract elements and subsitution groups in the generated XML Schema
+xml.translate.xsd.disable-abstract-elements=no-disable-abstract-elements
+
+xml.translate.xsd.any-process-contents.label=any-process-contents
+xml.translate.xsd.any-process-contents.message=Value for the processContents attribute of any elements
+xml.translate.xsd.any-process-contents=skip
+
+xml.translate.xsd.any-attribute-process-contents.label=any-attribute-process-contents
+xml.translate.xsd.any-attribute-process-contents.message=Value for the processContents attribute of anyAttribute elements
+xml.translate.xsd.any-attribute-process-contents=skip
+# }}}
+
+# }}}
