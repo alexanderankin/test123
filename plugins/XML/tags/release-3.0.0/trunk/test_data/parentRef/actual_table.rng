@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<!-- example taken from the RelaxNG Tutorial
+	 http://www.relaxng.org/tutorial-20011203.html
+	 Copyright The Organization for the Advancement of Structured Information Standards [OASIS] 2001. All Rights Reserved.
+  -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+
+<start>
+  <element name="doc">
+    <zeroOrMore>
+      <choice>
+	<element name="p">
+	  <ref name="inline"/>
+	</element>
+	<grammar>
+	  <include href="table.rng">
+	    <define name="cell.content">
+	      <parentRef name="inline"/>
+	    </define>
+          </include>
+	</grammar>
+      </choice>
+    </zeroOrMore>
+  </element>
+</start>
+
+<define name="inline">
+  <zeroOrMore>
+    <choice>
+      <text/>
+      <element name="em">
+        <ref name="inline"/>
+      </element>
+    </choice>
+  </zeroOrMore>
+</define>
+
+</grammar>

@@ -1,0 +1,12 @@
+<section id="motivation"     
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://slackerdoc.tigris.org/xsd/slackerdoc.xsd'>  
+    <title> Motivation </title>
+<!-- :xml.root=index.xml: -->    
+<indexterm><primary>HTML</primary></indexterm>
+
+<p> If you're like me, you learned HTML a long time ago, and were quite frustrated by its limitations as a documentation language. </p>
+
+<p> Read the <xref linkend="userguide"/> for the user guide. </p>
+
+</section>

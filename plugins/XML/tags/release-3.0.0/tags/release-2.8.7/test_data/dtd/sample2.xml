@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<!DOCTYPE r PUBLIC "-//URI//BLA BLA" "sample.dtd" [
+<!ENTITY toto              "toto" >
+]>
+<!-- uses sample.dtd and defines a toto entity.
+     sample3.xml tries to use toto; if EntityMgrFixer.MyEntityManager.initFromDTD()
+     would copy internal entities, sample3.xml would be wrongly parsed OK.
+  -->
+<r>
+	<p>Text&nbsp;text &test; &toto;</p>
+</r>

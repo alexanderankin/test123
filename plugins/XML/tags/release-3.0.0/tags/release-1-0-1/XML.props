@@ -1,0 +1,179 @@
+# Plugin properties
+plugin.xml.XmlPlugin.activate=defer
+plugin.xml.XmlPlugin.name=XML
+plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust
+plugin.xml.XmlPlugin.version=1.0.1
+plugin.xml.XmlPlugin.docs=index.html
+
+plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
+plugin.xml.XmlPlugin.depend.1=plugin xerces.XercesPlugin 2.8.0
+plugin.xml.XmlPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.xml.XmlPlugin.depend.3=plugin sidekick.SideKickPlugin 0.6.4
+
+# Menu bar stuff
+plugin.xml.XmlPlugin.menu=sidekick-tree \
+	xml-match-tag \
+	- \
+	xml-insert \
+	xml-edit-tag \
+	xml-close-tag \
+	xml-remove-tags \
+	xml-split-tag \
+	- \
+	xml-chars-to-entities \
+	xml-entities-to-chars \
+	- \
+	xml-clear-cache \
+	xml-reload-catalogs
+xml-match-tag.label=Go to Matching Tag
+xml-insert.label=XML Insert
+xml-edit-tag.label=Edit Tag at Caret...
+xml-close-tag.label=Close Last Open Tag
+xml-remove-tags.label=Remove All Tags
+xml-split-tag.label=Split Tag
+xml-chars-to-entities.label=Characters to Entities
+xml-entities-to-chars.label=Entities to Characters
+xml-clear-cache.label=Clear Resource Cache
+xml-reload-catalogs.label=Reload Catalogs
+
+# Option panes
+plugin.xml.XmlPlugin.option-group=xml.catalogs xml.general
+
+options.xml.catalogs.label=Catalogs
+options.xml.catalogs.code=new xml.options.CatalogsOptionPane();
+options.xml.catalogs.caption=Catalog files to import:
+options.xml.catalogs.add=Add
+options.xml.catalogs.remove=Remove
+
+options.xml.general.label=General
+options.xml.general.code=new xml.options.GeneralOptionPane();
+options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
+options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.network-mode=Downloading DTDs and schemas:
+
+options.xml.general.network.local=Local files only
+options.xml.general.network.ask=Ask before downloading
+options.xml.general.network.always=Download without asking
+options.xml.general.network.cache=Cache remote files locally
+
+options.xml.general.show-attributes=Show tag attributes in tree:
+options.xml.general.show-attributes.none=None
+options.xml.general.show-attributes.id-only=ID only
+options.xml.general.show-attributes.all=All
+options.xml.general.close-complete=Insert closing tag when "</" is typed
+options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
+options.xml.general.standalone-extra-space=Space before "/>" in stand-alone tags
+
+# SideKick parsers
+sidekick.parser.xml.label=XML
+mode.xml.sidekick.parser=xml
+mode.xsl.sidekick.parser=xml
+
+# Show attributes in XML tree?
+# 0: none; 1: id only; 2: all
+xml.show-attributes=1
+
+# DTD validation
+# this can be set on a per-buffer basis too
+buffer.xml.validate=true
+
+# Enable network operations
+xml.general.network.mode=ask
+
+#enable resource cache by default
+xml.general.network.cache=true
+
+# Insert closing tag automatically after '</' typed
+xml.close-complete=true
+
+# Insert closing tag automatically after '>' typed
+xml.close-complete-open=false
+
+# Insert space before /> when completing stand-alone tags
+xml.standalone-extra-space=false
+
+
+# Tag highlight
+xml.tag-highlight=true
+xml.tag-highlight-color=black
+
+# Completion info
+xml.completion.glob.0.key=build.xml
+xml.completion.glob.0.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.glob.1.key=*-build.xml
+xml.completion.glob.1.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.glob.2.key=build-*.xml
+xml.completion.glob.2.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+
+xml.completion.namespace.0.key=http://www.w3.org/1999/XMLSchema
+xml.completion.namespace.0.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+xml.completion.namespace.1.key=http://www.w3.org/2001/XMLSchema
+xml.completion.namespace.1.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+xml.completion.namespace.2.key=http://www.w3.org/1999/XSL/Transform
+xml.completion.namespace.2.value=jeditresource:/XML.jar!/xml/completion/xsl-complete.xml
+
+xml.completion.namespace.3.key=http://www.w3.org/TR/xhtml1/transitional
+xml.completion.namespace.3.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+xml.completion.namespace.4.key=http://www.w3.org/1999/xhtml
+xml.completion.namespace.4.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+xml.completion.namespace.5.key=http://www.w3.org/1999/XSL/Format
+xml.completion.namespace.5.value=jeditresource:/XML.jar!/xml/completion/fo-complete.xml
+
+mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/jhtml-complete.xml
+mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+# Completion
+xml-insert-closing-tag.shortcut=>
+
+# Insert tag window
+xml-insert.title=XML Insert
+xml-insert.elements=Elements allowed at caret:
+xml-insert.entities=Entities:
+xml-insert.ids=IDs:
+xml-insert.not-parsed=Not parsed
+
+# Edit tag dialog box
+xml-no-data.title=Not an XML file
+xml-no-data.message=This command can only be used in XML files.
+
+xml-edit-tag.undefined-element.title=Element Not Defined
+xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
+
+xml-edit-tag.title=Edit Tag
+xml-edit-tag.element-name=Element name:
+xml-edit-tag.empty=Empty
+xml-edit-tag.set=Set
+xml-edit-tag.attribute=Attribute
+xml-edit-tag.type=Type
+xml-edit-tag.value=Value
+xml-edit-tag.preview=Preview:
+
+xml-edit-tag.required=#REQUIRED
+
+# Status messages shown when doing completion
+xml.network.error=User cancelled downloading resource.
+
+xml.download-resource.title=Getting resource from remote server
+xml.download-resource.message=This XML file depends on a resource which is stored at the following\n\
+	Internet address:\n\
+	\n\
+	{0}\n\
+	\n\
+	Do you want the XML plugin to download the resource and cache it\n\
+	for future use?\n\
+	\n\
+	If you want resources to be downloaded every time without prompting,\n\
+	disable the resource cache in the XML plugin options.

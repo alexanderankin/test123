@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<ACTIONS>
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+    <ACTION NAME="csssidekick-reload-completion-config">
+        <CODE>
+            sidekick.css.CssSideKickCompletion.initialize();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="csssidekick-insert-relative-path">
+        <CODE>
+            sidekick.css.Utils.insertRelativePathToBuffer();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="htmlsidekick-showall" NO_REPEAT="TRUE">
+        <!-- FIXME: no such method -->
+        <CODE>
+            sidekick.html.HtmlSideKickPlugin.toggleShowAll(view);
+        </CODE>
+    </ACTION>
+
+    <!-- commands invoked by user input -->
+    <ACTION NAME="xml-insert-closing-tag">
+        <CODE>
+            xml.XmlActions.insertClosingTagKeyTyped(view);
+        </CODE>
+    </ACTION>
+
+    <!-- normal actions -->
+    <ACTION NAME="xml-chars-to-entities">
+        <CODE>
+            xml.XmlActions.charactersToEntities(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-entities-to-chars">
+        <CODE>
+            xml.XmlActions.entitiesToCharacters(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-edit-tag">
+        <CODE>
+            xml.XmlActions.showEditTagDialog(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-close-tag">
+        <CODE>
+            xml.XmlActions.insertClosingTag(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-split-tag">
+        <CODE>
+            xml.XmlActions.split(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-join-tag">
+       <CODE>
+          xml.XmlActions.join(view);
+       </CODE>
+    </ACTION>
+    <ACTION NAME="xml-match-tag">
+        <CODE>
+            xml.XmlActions.matchTag(textArea);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-remove-tags">
+        <CODE>
+            xml.XmlActions.removeTags(buffer);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-clear-cache">
+        <CODE>
+            xml.Resolver.instance().clearCache();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-reload-catalogs">
+        <CODE>
+            xml.Resolver.instance().reloadCatalogs();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-select-element">
+        <CODE>
+            xml.XmlActions.selectElement(textArea);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-select-between-tags">
+        <CODE>
+            xml.XmlActions.selectBetweenTags(textArea);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-generate-dtd">
+        <CODE>
+            xml.XmlActions.generateDTD(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-open-schema">
+        <CODE>
+            xml.XmlActions.openSchema(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-copy-xpath">
+        <CODE>
+            xml.XmlActions.copyXPath(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-prompt-typeid">
+        <CODE>
+            xml.SchemaMappingManager.promptTypeIdForBuffer(view,buffer);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-prompt-schema">
+        <CODE>
+            xml.SchemaMappingManager.promptSchemaForBuffer(view,buffer);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="xml-trang-translate">
+        <CODE>
+            new xml.translate.TrangGUI(view,buffer).setVisible(true);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-dtd">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"dtd");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-rng">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"rng");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-rnc">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"rnc");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-xsd">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"xsd");
+        </CODE>
+    </ACTION>
+</ACTIONS>
+

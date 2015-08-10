@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article id="root-article" root="true" 
+    xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation = 'http://slackerdoc.tigris.org/xsd/slackerdoc.xsd'
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    >
+<title>Slacker's Docbook </title>
+
+<articleinfo>
+ <date>@date@</date>
+  <releaseinfo>@version@ </releaseinfo>
+</articleinfo>
+
+<abstract> <p>  Slacker's Docbook is yet another Docbook preprocessor. </p> 
+</abstract>
+<p> This is a para </p>
+
+<xi:include href="motivation.xml" />
+<xi:include href="userguide.xml" />
+<xi:include href="styletest.xml" />
+
+<index id="keywordindex" />
+
+</article>

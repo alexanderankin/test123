@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	
+	<start>
+		<element name="purchaseReport" ns="http://www.example.com/Report">
+			<oneOrMore>
+				<choice>
+				<element name="comment">
+					<element name="comment" ns="http://www.example.com/IPO">
+						<text/>
+					</element>
+					<optional>
+						<attribute name="inreport" ns="http://www.example.com/Report"><text/></attribute>
+						<attribute name="astranger" ns="urn:stranger"><text/></attribute>
+						<attribute name="astranger2" ns="urn:stranger"><text/></attribute>
+					</optional>
+					<optional>
+						<attribute name="aforeign" ns="urn:foreign"><text/></attribute>
+					</optional>
+				</element>
+				<element name="stranger" ns="urn:stranger"><text/></element>
+				<element name="foreign" ns="urn:foreign"><text/></element>
+				</choice>
+			</oneOrMore>
+		</element>
+	</start>
+</grammar>

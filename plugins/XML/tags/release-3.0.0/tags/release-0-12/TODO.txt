@@ -1,0 +1,59 @@
+Hi,
+
+XmlParsedData is a subclass of SideKickParsedData, which has:
+
+public DefaultMutableTreeNode root;
+
+DefaultMutableTreeNode has a simple API for accessing nodes:
+
+java.util.Enumeration children();
+TreeNode getChildAt(int);
+
+For each TreeNode, call getUserObject() which gives you an XmlTag
+instance.
+
+XmlTag has a lot of public members, among them:
+
+String name;
+Attributes attributes;
+Position start;
+Position end;
+
+- broken tag highlight with soft wrap:
+<EOL_SPAN_REGEXP AT_WHITESPACE_END="TRUE" HASH_CHAR="R" TYPE="COMMENT1">REM\s</EOL_SPAN_REGEXP>
+save triggers a close tag or something?
+- ids in xml.root's other children
+- fuckups parsing build.xml
+- use NekoXML
+- edit tag: preserve case
+- CatalogProperties complaints
+- document xml.root property
+- document xml.validate property
+- xcatalog format
+- newer ant completion
+- ids are kind of hackish -- use something similar to a hypersearch result
+- fix xerces 2.3 deprecation
+- if close complete off, / should not show a popup immediately
+  - remove this option altogether
+- swing HTML parser should be replaced with something else
+- html parser: empty tags
+- .dtd files need to be ignored
+- html files before parsing complete -- don't show CDATA in popup
+- fix IBM JDK problem
+- misplaced closing tags break everything
+- test XMLCatalog support, include an XMLCatalog DTD
+- &, < or > will show up twice if a DTD defines it
+- xml insert: show CDATA, comment in list?
+- xmlns attributes, XMLSchema-instance stuff
+- TagParser: use segments, not strings
+- instead of built-in completion info for xsd and xsl, pre-parse some
+  schemas to validate these file types.
+- preparsing and grammar cache needs a rework.
+- attribute completion.
+- clean up entity code
+- empty data -- see what's up, & clean up
+- tag highlight scope bracket in gutter
+- 'advanced' option pane for selecting completion info files,
+  built-in namespaces, etc.
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available

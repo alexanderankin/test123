@@ -1,0 +1,9 @@
+<section id="userguide"
+    xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation = 'http://slackerdoc.tigris.org/xsd/slackerdoc.xsd'
+>
+<!-- :xml.root=index.xml: -->
+
+<title> User Guide </title>
+<p> This is the users guide. Read the <xref linkend="styletest"/> for an example of all the elements that were added to docbook to make Slacker's docbook. </p>
+</section>

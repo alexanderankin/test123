@@ -1,0 +1,1424 @@
+/* -*-java-extended-*-
+ *
+ * (c) COPYRIGHT MIT and INRIA, 1997.
+ * Please first read the full copyright statement in file COPYRIGHT.html
+ * (danson, see below, I pasted it directly into this file.)
+ *
+ * $Id: CssParser.jj,v 1.71 2010-01-05 13:55:48 ylafon Exp $
+ *
+ * danson, adapting for jEdit Sidekick CSS parser.  I gutted this down to the 
+ * basic grammar, then made a copy to adapt to SideKick.  This file is meant to
+ * represent a minimal grammar to parse CSS2 and CSS3.  It doesn't actually do
+ * anything other than ensure the parsing works correctly.  Note that DEBUG_PARSER
+ * is set to true, which helps with troubleshooting.
+ */
+
+/*
+This is the contents of COPYRIGHT.html, mentioned above.
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang='en' lang='en'>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="http://www.w3.org/StyleSheets/base.css" />
+<title>W3C IPR SOFTWARE NOTICE</title>
+</head>
+<body>
+<h1>W3C<sup>&reg;</sup> SOFTWARE NOTICE AND LICENSE</h1>
+
+<h3>Copyright &copy; 1997-2002 <a href="http://www.w3.org/">World
+Wide Web Consortium</a>, (<a
+href="http://www.lcs.mit.edu/">Massachusetts Institute of
+Technology</a>, <a href="http://www.inria.fr/">Institut National de
+Recherche en Informatique et en Automatique</a>, <a
+href="http://www.keio.ac.jp/">Keio University</a>). All Rights
+Reserved. http://www.w3.org/Consortium/Legal/</h3>
+
+<p>This W3C work (including software, documents, or other related
+items) is being provided by the copyright holders under the
+following license. By obtaining, using and/or copying this work,
+you (the licensee) agree that you have read, understood, and will
+comply with the following terms and conditions:</p>
+
+<p>Permission to use, copy, modify, and distribute this software
+and its documentation, with or without modification,&nbsp; for any
+purpose and without fee or royalty is hereby granted, provided that
+you include the following on ALL copies of the software and
+documentation or portions thereof, including modifications, that
+you make:</p>
+
+<ol>
+<li>The full text of this NOTICE in a location viewable to users of
+the redistributed or derivative work.</li>
+
+<li>Any pre-existing intellectual property disclaimers, notices, or
+terms and conditions. If none exist, a short notice of the
+following form (hypertext is preferred, text is permitted) should
+be used within the body of any redistributed or derivative code:
+"Copyright &copy; [$date-of-software] <a
+href="http://www.w3.org/">World Wide Web Consortium</a>, (<a
+href="http://www.lcs.mit.edu/">Massachusetts Institute of
+Technology</a>, <a href="http://www.inria.fr/">Institut National de
+Recherche en Informatique et en Automatique</a>, <a
+href="http://www.keio.ac.jp/">Keio University</a>). All Rights
+Reserved. http://www.w3.org/Consortium/Legal/"</li>
+
+<li>Notice of any changes or modifications to the W3C files,
+including the date changes were made. (We recommend you provide
+URIs to the location from which the code is derived.)</li>
+</ol>
+
+<p>THIS SOFTWARE AND DOCUMENTATION IS PROVIDED "AS IS," AND
+COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO, WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE
+USE OF THE SOFTWARE OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD
+PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.</p>
+
+<p>COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT,
+SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE
+SOFTWARE OR DOCUMENTATION.</p>
+
+<p>The name and trademarks of copyright holders may NOT be used in
+advertising or publicity pertaining to the software without
+specific, written prior permission. Title to copyright in this
+software and any associated documentation will at all times remain
+with copyright holders.</p>
+
+<p>____________________________________</p>
+
+<p>This formulation of W3C's notice and license became active on
+August 14 1998 so as to improve compatibility with GPL. This
+version ensures that W3C software licensing terms are no more
+restrictive than GPL and consequently W3C software may be
+distributed in GPL packages. See the <a
+href="copyright-software-19980519.html">older formulation</a> for
+the policy prior to this date. Please see our <a
+href="IPR-FAQ.html">Copyright FAQ</a> for common questions about
+using materials from our site, including specific terms and
+conditions for packages like libwww, Amaya, and Jigsaw. Other
+questions about this notice can be directed to <a
+href="mailto:site-policy@w3.org">site-policy@w3.org</a>.<br />
+&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<address><a href="http://www.w3.org/Help/Webmaster.html">webmaster</a><br />
+ (last updated $Date: 2010-01-14 14:10:27 $)</address>
+
+</body>
+</html>
+
+*/
+
+options {
+    IGNORE_CASE = true;
+    STATIC = false;
+    UNICODE_INPUT = true;
+    DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN (CSS3Parser)
+
+package sidekick.css.parser;
+
+import java.io.*;
+import java.net.*;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.regex.*;
+import sidekick.util.*;
+
+
+/**
+ * A CSS3 parser
+ *
+ * @author Philippe Le Hegaret and Sijtsche Smeman
+ * @version Revision: 1.71 (W3C version)
+ */
+
+
+public class CSS3Parser {
+
+    // For testing.  Usage: java CSS3Parser < inputfile
+    public static void main(String[] args) {
+        try {
+            CSS3Parser parser = new CSS3Parser(System.in);
+            parser.styleSheet();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+}
+
+PARSER_END (CSS3Parser)
+
+/*******************************************************************************
+ * The tokenizer
+ ******************************************************************************/
+<DEFAULT>
+SPECIAL_TOKEN :
+{
+    <COMMENT: "/*" (
+    ~["*"] )* ( "*" )+ (
+    ~["/", "*"] (
+    ~["*"] )* ( "*" )+ )* "/" >
+} 
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :/* basic tokens */
+
+ 
+{ 
+    <#H :
+    ["0"-"9", "a"-"f"] >
+  | <#NONASCII :
+    ["\200"-"\377"] >
+  | <#UNICODE : "\\" <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( "\r\n" |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )? >
+  | <#ESCAPE : <UNICODE> | ( "\\"
+    ~[ "\r", "\n", "\f", "0"-"9", "a"-"f" ] ) >
+  | <#NMSTART :
+    [ "a"-"z", "A"-"Z", "-", "_" ] | <NONASCII> | <ESCAPE> >
+  | <#NMCHAR :
+    ["a"-"z", "A"-"Z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
+  | <#STRING1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* "\"" >
+  | <#STRING2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* "\'" >
+  | <#INVALID1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#INVALID2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#_IDENT : ( <MINUS> )? <NMSTART> ( <NMCHAR> )* >
+  | <#NAME : ( <NMCHAR> )+ >
+  | <#NUM : (
+    ["0"-"9"] )+ | (
+    ["0"-"9"] )* "." (
+    ["0"-"9"] )+ >
+  | <#_STRING : <STRING1> | <STRING2> >
+  | <#_INVALID : <INVALID1> | <INVALID2> >
+  | <#_URL : (
+    [ "!", "#", "$", "%", "&", "*"-"[", "]"-"~" ] | <NONASCII> | <ESCAPE> )* >
+  | <#_S : (
+    [ " ", "\t" , "\n" , "\r", "\f" ] ) ( <COMMENT> |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )* >
+  | <#_W : ( <_S> )? >
+  | <#NL : ( "\n" | "\r\n" | "\r" | "\f" ) >
+}
+
+/*
+ * The _S definition is not  ( [ " ", "\t" , "\n" , "\r", "\f" ] ) + as we need to add support
+ * for the unput(' ') (see http://www.w3.org/TR/CSS21/grammar.html#scanner )
+ */
+<DEFAULT>
+TOKEN :
+{
+    <S: ( <_S> ) >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CDO: "<!--" >
+  | <CDC: "-->" >
+  | <INCLUDES: <TILDE> "=" >
+  | <DASHMATCH: "|=" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <LBRACE: <_W> "{" >
+  | <PLUS: <_W> "+" >
+  | <GREATER: <_W> ">" >
+  | <COMMA: <_W> "," >
+  | <TILDE: <_W> "~" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <AND: "and" >
+} 
+
+<DEFAULT>
+TOKEN :
+{
+    <STRING: <_STRING> >
+  | <INVALID: <_INVALID> >
+  | <IDENT: <_IDENT> >
+  | <HASHIDENT: "#" <_IDENT> >
+  | <HASH: "#" <NAME> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <RBRACE: "}">
+  | <PREFIXMATCH: "^=" >
+  | <SUFFIXMATCH: "$=" >
+  | <SUBSTRINGMATCH: "*=" >
+  | <EQ: "=" >
+  | <MINUS: "-" >
+  | <SEMICOLON: ";" >
+  | <DIV: "/" >
+  | <LBRACKET: "[" >
+  | <RBRACKET: "]" >
+  | <ANY: "*" >
+  | <DOT: "." >
+  | <LPARAN: "(" >
+  | <RPARAN: ")">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <COLON: ":" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <MEDIARESTRICTOR: "only" | "not" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <URL: "url(" ( <S> )* ( <STRING> | <_URL> ) ( <S> )* ")" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <LENGTH: <NUM> "pt" 
+ | <NUM> "mm" | <NUM> "cm" | <NUM> "pc" | <NUM> "in" | <NUM> "gd" | <NUM> "px" >
+  | <EMS: <NUM> "em" >
+  | <EXS: <NUM> "ex" >
+  | <ANGLE: <NUM> ( "deg" | "grad" | "rad" ) >
+  | <TIME: <NUM> ( "ms" | "s" ) >
+  | <FREQ: <NUM> "Hz" | <NUM> "kHz" >
+  | <RESOLUTION: <NUM> "dpi" | <NUM> "dpcm" >
+  | <DATE: <NUM> "/" <NUM> "/" <NUM> >
+  | <DIMEN: <NUM> <NMSTART> ( <NMCHAR> )* >
+  | <PERCENTAGE: <NUM> "%" >
+  | <NUMBER: <NUM> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORTANT_SYM: "!" ( <_W> )* "important" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <PSEUDOELEMENT_SYM: "::" >
+}
+
+/* RESERVED ATRULE WORDS */
+<DEFAULT>
+TOKEN : 
+{
+    <CHARSET_SYM: "@charset" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORT_SYM: "@import">
+  | <NAMESPACE_SYM: "@namespace">
+  | <MEDIA_SYM: "@media" >
+  | <PAGE_SYM: "@page" >
+  | <FONT_FACE_SYM: "@font-face" >
+  | <PREF_SYM: "@preference" >
+  | <COLOR_PROFILE: "@color-profile" >
+  | <ATTOP: "@top" >
+  | <ATRIGHT: "@right" >
+  | <ATBOTTOM: "@bottom" >
+  | <ATLEFT: "@left" >
+  | <ATCOUNTER: "@counter" >
+  | <PHONETIC_ALPHABET_SYM: "@phonetic-alphabet" >
+  | <ATKEYWORD: "@" <IDENT> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <#RANGE0 : <H> <H> <H> <H> <H> <H> >
+  | <#RANGE1 : <H> <H> <H> <H> <H> ( "?" )? >
+  | <#RANGE2 : <H> <H> <H> <H> ( "?" )? ( "?" )? >
+  | <#RANGE3 : <H> <H> <H> ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE4 : <H> <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE5 : <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE6 : "?" ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE : <RANGE0> | <RANGE1> | <RANGE2> | <RANGE3> | <RANGE4> | <RANGE5> | <RANGE6> >
+  | <#UNI : <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? >
+  | <UNICODERANGE: "U+" <RANGE> | "U+" <UNI> "-" <UNI> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CLASS: "." <IDENT> >
+}
+
+/* FIXED, added a special case for lang pseudoclass */
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONLANG: "lang(" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONNOT: ":not(" >
+}
+
+
+<DEFAULT>
+TOKEN :
+{
+    <FUNCTION: <IDENT> "(" >
+}
+
+/* Quick and dirty way to catch HTML tags starting CSS documents
+(common mistake) */
+<DEFAULT>
+TOKEN :
+{
+    <HTMLSTARTTAG: "<" ( <S> )* <IDENT> ( <S> )* ( <IDENT> "=" ( <IDENT> | <STRING> ) ( <S> )* )* ">" >
+  | <HTMLENDTAG: "</" ( <S> )* <IDENT> ( <S> )* ">" >
+}
+
+//<DEFAULT, IN_COMMENT>
+//TOKEN :
+//{ /* avoid token manager error */
+//   < UNKNOWN : ~[] >
+//}
+
+
+/*******************************************************************************
+ * The grammar of CSS2 and CSS3 follows.
+ ******************************************************************************/
+
+/**
+ * The main entry for the parser.
+ *
+ * @exception ParseException exception during the parse
+ */
+void styleSheet() :
+{
+}
+{
+    try {
+            // used as an error recovery for HTML tags in CSS pages
+            (
+                (
+                    <HTMLSTARTTAG>
+                  | <HTMLENDTAG>
+                )
+            ) *
+            (
+                charset()
+            ) *
+        
+            // * instead of ? to capture the reinit part
+            (
+                <S>
+              | <CDO>
+              | <CDC>
+            ) *
+         
+            (
+                importDeclaration()
+                (
+                    ignoreStatement()
+                )
+            ) *
+         
+            (
+                namespaceDeclaration()
+                (
+                    ignoreStatement()
+                )
+            ) *
+         
+            afterImportDeclaration()
+            <EOF> 
+            
+    } 
+    catch(ParseException pe) {
+        pe.printStackTrace();   
+    }
+    catch ( TokenMgrError err ) {
+        err.printStackTrace();
+    }
+    {
+        System.out.println("----- completed parsing -----");   
+    }
+}
+
+void charset() :
+{
+}
+{ 
+        <CHARSET_SYM> 
+        (
+            <S>
+        ) *
+        <STRING> 
+        (
+            <S>
+        ) *
+        <SEMICOLON>
+}
+
+void afterImportDeclaration() :
+{
+    String ret;
+}
+{
+    (
+        (
+            ruleSet()
+          | media()
+          | page()
+          | fontFace()
+          | preference()
+          | colorprofile()
+          | phoneticAlphabet()
+          | ret = skipStatement() {
+              // the parser steps into a tight loop if this block is removed
+              if (ret == null || ret.length() == 0) {
+                return;   
+              }
+            }
+        )
+        ignoreStatement()
+    ) *
+}
+
+void ignoreStatement() :
+{
+}
+{
+    (
+        (
+            <CDO>
+          | <CDC>
+          | atRuleDeclaration()
+        )
+        (
+            <S>
+        ) *
+    ) *
+}
+
+void namespaceDeclaration() :
+{
+
+}
+{
+    (
+        <NAMESPACE_SYM> 
+        (
+            <S>
+        ) *
+        (
+            <IDENT>
+            (
+                <S>
+            ) *
+        ) ?
+        (
+            <STRING>
+          | <URL>
+        )
+        (
+            <S>
+        ) *
+        <SEMICOLON> 
+        (
+            <S>
+        ) *
+    )
+}
+
+
+/**
+ * The import statement
+ *
+ * @exception ParseException exception during the parse
+ */
+void importDeclaration() :
+{
+}
+{
+    <IMPORT_SYM> 
+    (
+        <S>
+    ) *
+    (
+        <STRING>
+      | <URL>
+    )
+    (
+        <S>
+    ) *
+    (
+        medium()
+        (
+            <COMMA> 
+            (
+                <S>
+            ) *
+            medium()
+        ) *
+    ) ?
+    <SEMICOLON> 
+    (
+        <S>
+    ) *
+}
+
+
+void media() :
+{
+}
+{
+    <MEDIA_SYM> 
+    (
+        <S>
+    ) *
+    (
+        <MEDIARESTRICTOR>
+        (
+            <S>
+        ) +
+    ) ?
+    medium()
+    (
+        <COMMA> 
+        (
+            <S>
+        ) *
+        medium()
+    ) *
+    (
+        <AND> 
+        (
+            <S>
+        ) *
+        <LPARAN> 
+        (
+            <S>
+        ) *
+        mediadeclaration()
+        <RPARAN> 
+        (
+            <S>
+        ) *
+    ) *
+    <LBRACE> 
+    (
+        <S>
+    ) *
+    (
+        ruleSet()
+    ) *
+    <RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+
+void medium() :/* tv, projection, screen, ... */
+{
+
+}
+{
+    <IDENT> 
+    (
+        <S>
+    ) *
+}
+
+void unused_production_generic_syntax() :
+{
+}
+{
+    "("
+    (
+        <S>
+    ) *
+    term() 
+    ")"
+}
+
+void definition() :
+{
+}
+{
+    "["
+    (
+        <S>
+    ) *
+    term() 
+    "]"
+}
+
+void page() :
+{
+}
+{
+    <PAGE_SYM> 
+    (
+        <S>
+    ) *
+    (
+        <IDENT>
+        (
+            <S>
+        ) *
+    ) ?
+    (
+        pseudo_page()
+    ) ?
+    <LBRACE> 
+    (
+        <S>
+    ) *
+    (
+        pageContent()
+    )
+    <RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+void pageContent() :
+{
+}
+{
+    prefAtRule()
+  | declarations()
+}
+
+void prefAtRule() :
+{
+}
+{
+    (
+        <ATTOP>
+      | <ATBOTTOM>
+      | <ATLEFT>
+      | <ATRIGHT>
+    )
+    (
+        <S>
+    ) *
+    <LBRACE> 
+    (
+        <S>
+    ) *
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+void pseudo_page() :
+{
+}
+{
+    ":"<IDENT> 
+    (
+        <S>
+    ) *
+}
+
+void fontFace() :
+{
+}
+{
+    <FONT_FACE_SYM> 
+    (
+        <S>
+    ) *
+    <LBRACE> 
+    (
+        <S>
+    ) *
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+void colorprofile() :
+{
+}
+{
+    <COLOR_PROFILE> 
+    (
+        <S>
+    ) *
+    <LBRACE> 
+    (
+        <S>
+    ) *
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+
+void preference() :
+{
+}
+{
+    <PREF_SYM> 
+    (
+        <S>
+    ) *
+    <LBRACE> 
+    (
+        <S>
+    ) *
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+void phoneticAlphabet() :
+{
+}
+{
+    <PHONETIC_ALPHABET_SYM> 
+    (
+        <S>
+    ) *
+
+    <STRING> 
+    (
+        <S>
+    ) *
+
+    ";"
+}
+
+void atRuleDeclaration() :
+{
+}
+{
+    <ATKEYWORD>
+}
+
+void operator() :
+{
+}
+{
+    (
+        (
+            <DIV>
+          | <COMMA>
+        )
+        (
+            <S>
+        ) *
+    ) ?
+}
+
+
+char combinator() :
+{
+    char connector = ' ';
+}
+{
+    (
+        (
+            <PLUS> {
+                connector = '+' ;
+            }
+          | <GREATER> {
+                connector = '>' ;
+            }
+          | <TILDE> {
+                connector = '~' ;
+            }
+        )
+        (
+            <S>
+        ) *
+      | 
+        (
+            <S>
+        ) +
+        {
+            connector = ' ' ;
+        }
+    )
+    {
+        return connector;
+    }
+}
+
+char unaryOperator() :
+{
+}
+{
+    "-" {
+        return '-';
+    }
+  | <PLUS> {
+        return '+';
+    }
+}
+
+void property() :
+{
+}
+{
+    <IDENT> 
+    (
+        <S>
+    ) *
+}
+
+
+void ruleSet() :
+{
+}
+{
+    selector()
+    (
+        <COMMA> 
+        (
+            <S>
+        ) *
+        selector()
+    ) *
+    <LBRACE>
+    (
+        <S>
+    ) *
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+}
+
+void declarations() :
+{
+}
+{ 
+    (
+        declaration()
+    ) ?
+    (
+        ";"
+        (
+            <S>
+        ) *
+ 
+        (
+            declaration()
+        ) ?
+    ) *
+}
+
+void selector() :
+{
+}
+{
+    simple_selector()
+    (
+        combinator() simple_selector()
+    ) *
+}
+
+/**
+ * I made this rule to parse a selector from a document. Combinator are avoid.
+ * @exception ParseException exception during the parse
+ */
+void externalSelector() :
+{
+}
+{
+    simple_selector() 
+    (
+        (
+            <S>
+        ) +
+        simple_selector()
+    ) *
+}
+
+
+void simple_selector() :
+{
+}
+{
+    element_name()
+    (
+        hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    ) *
+  | 
+    (
+        hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    ) +
+}
+
+
+void _class() :
+{
+}
+{
+    <CLASS>
+  | 
+    (
+        deprecated_class()
+    )
+}
+
+void deprecated_class() :
+{
+}
+{
+ 
+    (
+        <LENGTH>
+      | <EMS>
+      | <EXS>
+      | <ANGLE>
+      | <TIME>
+      | <FREQ>
+      | <RESOLUTION>
+      | <DIMEN>
+    )
+}
+
+
+void element_name() :
+{
+}
+{
+    (
+        LOOKAHEAD ( 2 )
+        (
+            <IDENT>
+          | <ANY>
+        ) ?
+        "|"
+    ) ?
+    (
+        <IDENT>
+      | <ANY>
+    )
+}
+
+void attrib() :
+{
+}
+{
+    <LBRACKET> 
+    (
+        <S>
+    ) *
+    <IDENT> 
+    (
+        <S>
+    ) *
+    (
+        (
+            <EQ>
+          | <INCLUDES>
+          | <DASHMATCH>
+          | <PREFIXMATCH>
+          | <SUFFIXMATCH>
+          | <SUBSTRINGMATCH>
+        )
+        (
+            <S>
+        ) *
+        (
+            <IDENT>
+          | <STRING>
+        )
+        (
+            <S>
+        ) *
+    ) ?
+    <RBRACKET>
+}
+
+void negation() :
+{
+}
+{    // S* negation_arg S* ')'
+    // type_selector | universal | HASH | class | attrib | pseudo
+ 
+    <FUNCTIONNOT> 
+    (
+        <S>
+    ) *
+    (
+        element_name()
+      | hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    )
+    (
+        <S>
+    ) *
+    <RPARAN> 
+}
+
+
+void pseudo() :
+{
+}
+{
+    <PSEUDOELEMENT_SYM> 
+    (
+        (
+            <IDENT>
+        )
+    )
+  | <COLON> 
+    (
+        (
+            <IDENT>
+        )
+      | 
+        (
+            (
+                <FUNCTIONLANG> 
+                (
+                    <S>
+                ) *
+                (
+                    <NUMBER>
+                  | <IDENT>
+                  | <STRING>
+                )
+                (
+                    <S>
+                ) *
+            )
+          | 
+            (
+                <FUNCTION> 
+                (
+                    <S>
+                ) *
+                expression()
+            )
+        )
+        <RPARAN>
+    )
+}
+
+
+void hash() :
+{
+}
+{
+    <HASHIDENT>
+  | <HASH>
+}
+
+
+void mediadeclaration() :
+{
+}
+{
+    property() 
+    (
+        ":"
+        (
+            <S>
+        ) *
+        expr() 
+        (
+            prio()
+        ) ?
+    ) ?
+}
+
+
+void declaration() :
+{
+}
+{
+    property() 
+    ":"
+    (
+        <S>
+    ) *
+
+    expr()
+    (
+        prio()
+    ) ?
+}
+
+
+void prio() :
+{
+}
+{
+    <IMPORTANT_SYM> 
+    (
+        <S>
+    ) *
+}
+
+void expression() :
+{
+    char operator = ' ';
+}
+{
+    (
+        (
+            <PLUS> {
+                operator = '+' ;
+            } 
+          | <MINUS> {
+                operator = '-';
+            }
+          | <NUMBER>
+          | <DIMEN>
+          | <STRING>
+          | <IDENT>
+        )
+        (
+            <S>
+        ) *
+    ) +
+} 
+
+
+void expr() :
+{
+}
+{
+    term()
+    (
+        operator() term()
+    ) *
+}
+
+
+void term() :
+{
+}
+{
+    (
+        (
+            unaryOperator()
+        ) ?
+        (
+            <NUMBER>
+          | <PERCENTAGE>
+          | <LENGTH>
+          | <EMS>
+          | <EXS>
+          | <ANGLE>
+          | <TIME>
+          | <FREQ>
+          | <RESOLUTION>
+          | <DATE>
+          | <DIMEN>
+          | function()
+        )
+        (
+            <S>
+        ) *
+    )
+  | 
+    (
+        (
+            <STRING>
+          | <IDENT>
+          | hexcolor()
+          | <URL>
+          | <UNICODERANGE>
+        )
+        (
+            <S>
+        ) *
+    )
+}
+
+
+void function() :
+{
+}
+{
+    <FUNCTION> 
+    (
+        <S>
+    ) *
+
+    expr() 
+    ")"
+}
+
+void hexcolor() :
+{
+}
+{
+    (
+        <HASHIDENT>
+      | <HASH>
+    )
+}
+
+
+JAVACODE String skipStatement() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok = getToken(0);
+    boolean first = true;
+
+    if ( tok.image != null) {
+
+
+        s.append(tok.image); 
+    }
+    /* FIXME here, two option, we skip during an error, or outside
+    an error, currently both can fail with a TokenMgrError, should
+    we catch all, or only when filling message for errors?
+    
+    -> taking the "always skip" approach.
+     */
+ 
+ 
+    while (true) {
+
+
+        try {
+
+
+            tok = getToken(1);
+            if ( tok.kind == EOF) {
+
+
+                if (first) {
+
+
+                    return null;
+                } else {
+
+
+                    break;
+                }
+            } 
+            s.append(tok.image);
+            if ( tok.kind == LBRACE) {
+
+
+                getNextToken();
+                s.append(skip_to_matching_brace());
+                getNextToken();
+                tok = getToken(1);
+                break;
+            } else if ( (tok.kind == RBRACE) || (tok.kind == SEMICOLON)) {
+
+
+                getNextToken();
+                tok = getToken(1);
+                break;
+            }
+            getNextToken();
+        } catch ( TokenMgrError tokenerror ) {
+
+
+            // read one char at a time, and loop
+            try {
+
+
+                s.append(jj_input_stream.readChar());
+                continue;
+            } catch ( java.io.IOException ioex ) {
+
+ 
+                return s.toString().trim();
+            }
+        }
+        first = false;
+    }
+ 
+    // skip white space
+    while ( tok.kind == S) {
+
+
+        getNextToken();
+        tok = getToken(1);
+    }
+    String statement = s.toString().trim();
+    return statement;
+}
+
+JAVACODE String skip_to_matching_brace() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok;
+    int nesting = 1;
+    /* FIXME
+    same as above */
+ 
+ 
+    while (true) {
+
+
+        tok = getToken(1);
+        if ( tok.kind == EOF) {
+
+
+            break;
+        }
+        s.append(tok.image);
+        if ( tok.kind == LBRACE) {
+
+
+            nesting++;
+        } else if ( tok.kind == RBRACE) {
+
+
+            nesting--;
+            if ( nesting == 0) {
+
+
+                break;
+            }
+        }
+        getNextToken();
+    }
+    return s.toString();
+}
+

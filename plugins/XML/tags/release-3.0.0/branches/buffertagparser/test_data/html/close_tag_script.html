@@ -1,0 +1,17 @@
+<!-- demonstrate an issue with xml-close-tag, where it doesn't ignore the contents
+	 of <script>
+  -->
+<html>
+<head>
+<script type="text/javascript" language="JavaScript">
+(function() {
+		document.write('<script type="text/javascript" src="', p, "/", root_lib, '/test-1.js"></scr', 'ipt>');
+		document.write('<script type="text/javascript" src="', p, "/", root_lib, '/test-2.js"></scr', 'ipt>');
+})();
+</script>
+</head>
+<body>
+<h1>Unit Test Results.</h1>
+<p></p>
+</body>
+</html>

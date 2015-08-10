@@ -1,0 +1,24 @@
+
+<schema targetNamespace="http://www.example.com/Report" 
+	xmlns="http://www.w3.org/2001/XMLSchema" 
+	xmlns:r="http://www.example.com/Report"
+	xmlns:xipo="http://www.example.com/IPO"
+	elementFormDefault="qualified">
+
+	<import namespace="http://www.example.com/IPO"/>
+
+	<annotation>
+		<documentation xml:lang="en">
+      import comment from source.xsd
+    </documentation>
+	</annotation>
+
+	<element name="purchaseReport">
+		<complexType>
+			<sequence maxOccurs="unbounded">
+				<element ref="xipo:comment"/>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>

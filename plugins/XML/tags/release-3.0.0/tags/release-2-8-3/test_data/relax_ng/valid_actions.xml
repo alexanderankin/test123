@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<!--
+  - valid file
+  - the schema is loaded via schemas.xml : it's actions.rng
+  - DONE: asks no more for permission to download actions.rng
+  -->
+<ACTIONS>
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>

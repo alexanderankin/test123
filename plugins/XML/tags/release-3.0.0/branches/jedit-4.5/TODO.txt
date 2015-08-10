@@ -1,0 +1,52 @@
+- jing
+- no completions popup in quoted areas, CDATA
+- fuckups parsing build.xml and schemas
+- .dtd files need to be ignored
+- record > in macro: becomes >>
+
+Hi,
+
+XmlParsedData is a subclass of SideKickParsedData, which has:
+
+public DefaultMutableTreeNode root;
+
+DefaultMutableTreeNode has a simple API for accessing nodes:
+
+java.util.Enumeration children();
+TreeNode getChildAt(int);
+
+For each TreeNode, call getUserObject() which gives you an XmlTag
+instance.
+
+XmlTag has a lot of public members, among them:
+
+String name;
+Attributes attributes;
+Position start;
+Position end;
+
+- schemas: element values should be choosable
+- ids in xml.root's other children
+    - it works now 
+      still some strange NPE in jEditBuffer.markTokens() : under investigation
+      Navigator silently catches it.
+- CatalogProperties complaints
+- ids are kind of hackish -- use something similar to a hypersearch result
+- html files before parsing complete -- don't show CDATA in popup
+- fix IBM JDK problem
+- misplaced closing tags break everything
+- &, < or > will show up twice if a DTD defines it
+- xml insert: show CDATA, comment in list?
+- xmlns attributes, XMLSchema-instance stuff
+- TagParser: use segments, not strings
+- instead of built-in completion info for xsd and xsl, pre-parse some
+  schemas to validate these file types.
+- preparsing and grammar cache needs a rework.
+- clean up entity code
+- empty data -- see what's up, & clean up
+- 'advanced' option pane for selecting completion info files,
+  built-in namespaces, etc.
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
+    - on the contrary, XercesParserImpl is more and more tied to Xerces.
+      This seems the way to go, as we depend on xerces plugin.
