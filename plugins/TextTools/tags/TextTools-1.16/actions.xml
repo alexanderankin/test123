@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="sort-lines">
+		<CODE>
+			TextToolsSorting.sortLines(textArea,false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="revsort-lines">
+		<CODE>
+			TextToolsSorting.sortLines(textArea,true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="transpose-chars">
+		<CODE>
+			TextToolsPlugin.transposeChars(textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="transpose-lines">
+		<CODE>
+			TextToolsPlugin.transposeLines(textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="transpose-words">
+		<CODE>
+			TextToolsPlugin.transposeWords(textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="delete-duplicated">
+		<CODE>
+			TextToolsSorting.deleteDuplicates(view, textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="sort-advanced">
+		<CODE>
+			TextToolsSorting.sortAdvanced(view, textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="shuffle-lines">
+		<CODE>
+			TextToolsSorting.shuffleLines(view, textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="column-insert">
+		<CODE>
+			TextToolsPlugin.doColumnInsert(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="textblock">
+		<CODE>
+			TextToolsPlugin.textToolsBlockHandling(view, textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-moveup">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_UP);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-movedown">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_DOWN);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-moveleft">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_LEFT);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-moveright">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_RIGHT);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="toggle-line-comment">
+		<CODE>
+			TextToolsComments.toggleLineComments(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="toggle-range-comment">
+		<CODE>
+			TextToolsComments.toggleRangeComments(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>

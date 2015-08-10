@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//SoftQuad//DTD HoTMetaL PRO 4.0::19971010::extensions to HTML 4.0//EN" "hmpro4.dtd"
+>
+
+<HTML>
+
+  <HEAD>
+    <TITLE>TextTools</TITLE>
+  </HEAD>
+
+  <BODY>
+
+    <H1>[ TextTools ]</H1>
+
+    <P>by mike dillon &lt;mdillon@jedit.org&gt;</P>
+
+    <P>The TextTools plugin provides a set of plugin actions for manipulating text in a buffer.</P>
+
+    <H3>TextTools actions</H3>
+
+    <UL>
+      <LI><A HREF="#Sort">Sort</A></LI>
+      <LI><A HREF="#RevSort">Reverse Sort</A></LI>
+      <LI><A HREF="#AdvSort">Advanced Sort (field sort)</A></LI>
+
+<!-- <LI><A HREF="#FieldSort">Field Sort</A></LI>
+-->
+
+      <LI><A HREF="#DelDups">Delete duplicates</A></LI>
+      <LI><A HREF="#Shuffle">Shuffle</A></LI>
+      <LI><A HREF="#TransposeChars">Transpose Characters</A></LI>
+      <LI><A HREF="#TransposeLines">Transpose Lines</A></LI>
+      <LI><A HREF="#TransposeWords">Transpose Words</A></LI>
+      <LI><A HREF="#ColumnInsert">Column Insert</A></LI>
+      <LI><A HREF="#BlockHandling">Block Fill Insert</A></LI>
+      <LI><A HREF="#BlockMove">Move Rectangular Selection</A></LI>
+      <LI><A HREF="#ToggleLineComment">Toggle Line Comment</A></LI>
+      <LI><A HREF="#ToggleRangeComment">Toggle Range Comment</A></LI>
+    </UL>
+
+    <P><STRONG><A NAME="Sort">Sort</A></STRONG> by mike dillon &lt;mdillon@jedit.org&gt;</P>
+
+    <P>This action sorts all selected lines in lexicographic order. If no text is selected, it
+      sorts the entire buffer. If the selection begins or ends in the middle of a line, the entire
+      line is sorted.</P>
+
+    <P>Since 1.10:</P>
+
+    <P>If the selection is rectangular, only the selection will be evaluated for lexicographic
+      sorting. The entire lines are sorted.</P>
+
+    <P><STRONG><A NAME="RevSort">Reverse Sort</A></STRONG> by mike dillon &lt;mdillon@jedit.org&gt;</P>
+
+    <P>Same as <A HREF="#Sort">Sort</A>, except the sorted lines are inserted in reverse order.</P>
+
+    <P><STRONG><A NAME="AdvSort">Advanced Sort</A></STRONG> by Carmine Lucarelli &lt;carmine@jedit.org&gt;,
+      extended by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
+
+    <P>Same as <A HREF="#Sort">Sort</A>, but with advanced options.</P>
+
+    <P>You enter the options in a dialog where you can specify which fields to use and how those
+      fields should be sorted.<BR>
+       </P>
+
+    <P>A field is specified by its left / right column.</P>
+
+    <P>Note: In case of rectangular selection, the left / right columns are preset in the dialog</P>
+
+    <P><STRONG>Important: If you press ok, the last entered field is not registered in the table. <BR>Therefore, press always TAB after the last cell you edit, or else your change will be ignored</STRONG>
+    </P>
+
+    <P>Globally you can specify </P>
+    <UL>
+      <LI>whether to delete duplicate entries in the data (duplicate means: entire lines are
+	identical)</LI>
+      <LI>Since 1.10: whether to sort entire lines or only the rectangular selection </LI>
+    </UL>
+
+    <P>For each of the fields you create, you can specify: </P>
+    <UL>
+      <LI> the start column (indexed starting at 1) </LI>
+      <LI> the end column </LI>
+      <LI> whether the field should be sorted in an ascending or descending order </LI>
+      <LI> whether case should be ignored </LI>
+      <LI> whether 'smart' number sorting should be done (selecting this option would place File2
+	before File10 in the sort) </LI>
+      <LI> whether whitespace at the start or end of the field should be ignored </LI>
+      <LI> since 1.10: whether to delete lines with duplicate fields (duplicate means: the entries
+	between the specified start/end columns are identical)</LI>
+    </UL>
+
+    <P><STRONG><A NAME="DelDups">Delete Duplicated </A></STRONG>by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
+
+    <P>Deletes duplicated lines, without sorting them. If no text is selected, it compares all
+      lines of the buffer. If the selection begins or ends in the middle of a line, the entire line
+      is compared.</P>
+
+    <P>If the selection is rectangular, only the selection will be evaluated for comparision. The
+      entire lines are deleted if the line parts of the selection are duplicated.</P>
+
+    <P><STRONG><A NAME="Shuffle">Shuffle Lines</A></STRONG> by Carmine Lucarelli &lt;carmine@jedit.org&gt;</P>
+
+    <P>Randomize the data, in effect 'unsorting' it.</P>
+
+    <P><STRONG><A NAME="TransposeChars">Transpose Characters</A></STRONG> by mike dillon &lt;mdillon@jedit.org&gt;</P>
+
+    <P>Transposes the characters on either side of the cursor. At the either end of a line, it
+      transposes the two characters nearest the cursor.</P>
+
+    <P><STRONG><A NAME="TransposeLines">Transpose Lines</A></STRONG> by mike dillon &lt;mdillon@jedit.org&gt;</P>
+
+    <P>Transposes the current line with the preceding line. If there is no preceding line, the
+      current line is transposed with the following line.</P>
+
+    <P><STRONG><A NAME="TransposeWords">Transpose Words</A></STRONG> by mike dillon &lt;mdillon@jedit.org&gt;</P>
+
+    <P>Transposes the nearest word to the cursor (which i'll call the &quot;pivot&quot; word) with
+      one of the adjacent words. If there is a word before the pivot, the pivot will be transposed
+      with that word; otherwise, it will be transposed with the following word. The intervening
+      non-word sequence is left between the transposed words. All letters and digits, in addition to
+      any character in the &quot;noWordSep&quot; Buffer property (which is typically defined by the
+      Buffer's current mode), are considered word characters. All other characters are not. If a
+      transposition takes place, the cursor is placed after the transposed sequence.</P>
+
+    <P><STRONG><A NAME="ColumnInsert">Column Insert</A></STRONG> by Nathan Tenney &lt;eulernt@yahoo.com&gt;</P>
+
+    <P>Inserts text in place of a rectangular selection. When invoked, a small dialog pops up for
+      user input. When enter is pressed, the text is placed on each line of the selection, replacing
+      any text selected. </P>
+
+    <P><STRONG><A NAME="BlockFill">Block Fill / Insert</A></STRONG> by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
+
+    <P>Inserts text in a rectangular selection. When invoked, a dialog pops up, with following
+      options:</P>
+    <UL>
+      <LI><B>overwrite</B>: <BR>
+	(if checked): overwrite selection <BR>
+	(not checked): insert at the left side of the selection</LI>
+      <LI><B>Textfield</B> : enter the text you want to insert. If you specify a numeric,
+	incrementing is possible</LI>
+      <LI><B>Increment</B>: increase a numeric given in &quot;Textarea&quot; in every line with an
+	increment. Note: increment is only possible in overwrite mode</LI>
+      <LI><B>leading Zeros</B>: fill increment rightbound with leading zeros</LI>
+    </UL>
+
+    <P>If you select &quot;overwrite&quot; , the tool overwrites exactly the rectangular selection.
+      This means:</P>
+    <UL>
+      <LI>If the length of the entered text / the calculated number exceeds the selection, the text
+	is cut.</LI>
+      <LI>If the length of the entered text is smaller as the selection, the text is filled with
+	white spaces or zeros.. </LI>
+    </UL>
+
+    <P>If you don't select &quot;overwrite&quot;, the tool inserts the entered text at the left
+      side of the rectangular selection. The length of the original selection is ignored.</P>
+
+    <P>Note: If the (rectangular !) selection selects only one line, the selected columns are
+      filled till end-of-file, extremly useful for numbering.</P>
+
+    <P><STRONG><A NAME="BlockMove">Move Rectangular Selection</A></STRONG> by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
+
+    <P>Moves the selected text in all directions</P>
+
+    <P><B><FONT SIZE="+1">Actions</FONT>:</B></P>
+    <UL>
+      <LI><B>rect move up </B>: move rectangular selection one row up</LI>
+      <LI><B>rect move down</B>: move rectangular selection one row down</LI>
+      <LI><B>rect move left</B>: move rectangular or range selection one column left</LI>
+      <LI><B>rect move right</B>: move rectangular or range selection one column right</LI>
+    </UL>
+
+    <P>Supports multi selection </P>
+
+    <P><STRONG><A NAME="ToggleLineComment">Toggle Line Comment</A></STRONG> by Robert Fletcher &lt;rfletch6@yahoo.co.uk&gt;</P>
+
+    <P>Comments or uncomments a single line or a selected group of lines. Options govern the
+      positioning of the comment symbol and the handling of already commented lines in a
+      selection.</P>
+
+    <P>Supports all edit modes with defined line comment symbols and works with embedded modes
+      such as JavaScript within HTML.</P>
+
+    <P><STRONG><A NAME="ToggleRangeComment">Toggle Range Comment</A></STRONG> by Robert Fletcher &lt;rfletch6@yahoo.co.uk&gt;</P>
+
+    <P>Toggles the state of range comments in the selection. Any text currently commented
+      out will become uncommented and vice-versa. If there is no selection the command
+      acts on the entire line at the caret position.</P>
+
+    <P>Supports all edit modes with defined range comment symbols and works with embedded modes
+      such as JavaScript within HTML.</P>
+  </BODY>
+</HTML>
