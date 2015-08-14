@@ -72,14 +72,14 @@ public class OptionPanel extends AbstractOptionPane {
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 11, 11 ) );
 
         // title
-        addComponent( new JLabel( "<html><h3>Navigator</h3>" ) );
+        addSeparator("navigator.options.separator1.label");
         
         useNavigatorGoToLine = new JCheckBox(jEdit.getProperty("navigator.useNavigatorGoToLine.label", "Use Navigator's 'Go to line' dialog"));
         useNavigatorGoToLine.setSelected(jEdit.getBooleanProperty("navigator.useNavigatorGoToLine", false));
         addComponent(useNavigatorGoToLine);
 
         // navigator scope
-        addComponent( new JLabel( "<html><h4>Navigator Scope</h4>" ) );
+        addSeparator( "navigator.options.separator2.label");
         viewScope = new JRadioButton( jEdit.getProperty( "navigator.viewScope.label", "View scope" ) );
         viewScope.setName( "viewScope" );
         JRadioButton editPaneScope = new JRadioButton( jEdit.getProperty( "navigator.editPaneScope.label", "EditPane scope" ) );
@@ -95,7 +95,7 @@ public class OptionPanel extends AbstractOptionPane {
 
         addComponent( Box.createVerticalStrut( 11 ) );
 
-        addComponent( new JLabel( "<html><h4>Configuration Options</h4>" ) );
+        addSeparator( "navigator.options.separator3.label" );
         
         showPath = new JCheckBox("Show path");
         showPath.setSelected(jEdit.getBooleanProperty("navigator.showPath", true));
