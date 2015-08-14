@@ -8,7 +8,6 @@ import javax.swing.event.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
-
 /**
  * @author Dale Anson
  */
@@ -23,11 +22,11 @@ public class OptionPanel extends AbstractOptionPane {
     }
 
     public void _init() {
-        setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+        setBorder( BorderFactory.createEmptyBorder(6, 6, 6, 6 ) );
 
-        //setName("BufferLocalOptions");
-        addComponent( new JLabel( "<html><h3>BufferLocal</h3>" ) );
-        removeStale = new JCheckBox( "Close files not used" );
+        // setName("BufferLocalOptions");
+        addSeparator("bufferlocal.options.title");
+        removeStale = new JCheckBox( jEdit.getProperty( "bufferlocal.options.removeStale" ) );
         removeStale.setSelected( jEdit.getBooleanProperty( "bufferlocal.removeStale", false ) );
         addComponent( removeStale );
         int stale_value = jEdit.getIntegerProperty( "bufferlocal.staleTime", 30 );
@@ -36,9 +35,9 @@ public class OptionPanel extends AbstractOptionPane {
             jEdit.setIntegerProperty( "bufferlocal.staleTime", 30 );
         }
         spinner = new JSpinner( new SpinnerNumberModel( stale_value, 1, Integer.MAX_VALUE, 1 ) );
-        addComponent( "for this many minutes", spinner );
+        addComponent( jEdit.getProperty( "bufferlocal.options.time" ), spinner );
 
-        whileActive = new JCheckBox( "while window is active." );
+        whileActive = new JCheckBox( jEdit.getProperty( "bufferlocal.options.whileActive" ) );
         whileActive.setSelected( jEdit.getBooleanProperty( "bufferlocal.whileActive", false ) );
         addComponent( whileActive );
 
