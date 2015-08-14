@@ -26,6 +26,10 @@ plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
 options.navigator.label=Navigator
 options.navigator.code=new ise.plugin.nav.OptionPanel();
 
+navigator.options.separator1.label=Navigator
+navigator.options.separator2.label=Scope
+navigator.options.separator3.label=Configuration Options
+
 navigator.options.groupByFile.label=Group history items by file
 navigator.options.groupByLine.label=Group history items by line
 
