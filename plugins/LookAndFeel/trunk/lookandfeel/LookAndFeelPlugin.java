@@ -26,6 +26,8 @@ import java.awt.Font;
 import java.awt.Window;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIDefaults;
@@ -41,9 +43,13 @@ public class LookAndFeelPlugin extends EBPlugin {
 
     public static boolean loadedInitialLnF = false;
     private static String lnfClassname = null;
+    
+    // <name, installer>, a list of installers for the system provided look and feels.
+    private static Map<String, LookAndFeelInstaller> systemInstallers;
 
     public void start() {
         try {
+            loadSystemInstallers();
             String lnf = jEdit.getProperty( "lookandfeel.lookandfeel" );
             if ( LookAndFeelPlugin.isEmpty( lnf ) ) {
                 return;
@@ -167,11 +173,11 @@ public class LookAndFeelPlugin extends EBPlugin {
      * Update the component trees of all windows.
      */
     private static void updateAllComponentTreeUIs() {
-        Frame[] frames = Frame.getFrames();
-        for ( Frame frame : frames ) {
-            if ( frame != null ) {
-                SwingUtilities.updateComponentTreeUI( frame );
-                updateAllDialogComponentTreeUIs( frame );
+        Window[] windows = Window.getWindows();
+        for ( Window window : windows ) {
+            if ( window != null ) {
+                SwingUtilities.updateComponentTreeUI( window );
+                updateAllDialogComponentTreeUIs( window );
             }
         }
     }
@@ -196,8 +202,21 @@ public class LookAndFeelPlugin extends EBPlugin {
      * Returns the list of the possible look and feel options.
      */
     public static String[] getAvailableLookAndFeels() {
-        String[] names = ServiceManager.getServiceNames( LookAndFeelInstaller.SERVICE_NAME );
-        Arrays.sort( names, new Comparator<String>() {
+        // look and feels provided by the system
+        UIManager.LookAndFeelInfo[] systemLnfs = UIManager.getInstalledLookAndFeels();
+        String[] systemNames = new String[systemLnfs.length];
+        for ( int i = 0; i < systemLnfs.length; i++ ) {
+            systemNames[i] = systemLnfs[i].getName();
+        }
+
+        // look and feels provided by this plugin or other plugins
+        String[] pluginNames = ServiceManager.getServiceNames( LookAndFeelInstaller.SERVICE_NAME );
+
+        String[] allNames = new String[ systemNames.length + pluginNames.length];
+        System.arraycopy( systemNames, 0, allNames, 0, systemNames.length );
+        System.arraycopy( pluginNames, 0, allNames, systemNames.length, pluginNames.length );
+
+        Arrays.sort( allNames, new Comparator<String>() {
             public int compare( String a, String b ) {
                 if ( "None".equals( a ) ) {
                     return -1;
@@ -208,14 +227,26 @@ public class LookAndFeelPlugin extends EBPlugin {
                 return a.compareTo( b );
             }
         } );
-        return names;
+        return allNames;
+    }
+
+    private void loadSystemInstallers() {
+        systemInstallers = new HashMap<String, LookAndFeelInstaller>();
+        UIManager.LookAndFeelInfo[] systemLnfs = UIManager.getInstalledLookAndFeels();
+        for ( UIManager.LookAndFeelInfo info : systemLnfs ) {
+            systemInstallers.put( info.getName(), new SystemLookAndFeelInstaller( info ) );
+        }
     }
 
     /**
      * Returns the installer for the named look and feel.
      */
     public static LookAndFeelInstaller getInstaller( String name ) {
-        return ( LookAndFeelInstaller ) ServiceManager.getService( LookAndFeelInstaller.SERVICE_NAME, name );
+        LookAndFeelInstaller installer = systemInstallers.get( name );
+        if ( installer == null ) {
+            installer = ( LookAndFeelInstaller ) ServiceManager.getService( LookAndFeelInstaller.SERVICE_NAME, name );
+        }
+        return installer;
     }
 
     /**

@@ -37,117 +37,115 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
 
-
 /**
  * This is the option pane that jEdit displays for the options of
  * the LookAndFeel plugin.
  */
-public class LookAndFeelOptionPane extends AbstractOptionPane
-	implements ItemListener {
+public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemListener {
 
-	private JComboBox lookAndFeels;
-	private JPanel lnfOptionPanel;
-	private AbstractOptionPane configComponent;
-	private JCheckBox useFont;
+    private JComboBox lookAndFeels;
+    private JPanel lnfOptionPanel;
+    private AbstractOptionPane configComponent;
+    private JCheckBox useFont;
+    private JCheckBox allowBeep = null;
 
-	public LookAndFeelOptionPane() {
-		super( "lookandfeel" );
-	}
+    public LookAndFeelOptionPane() {
+        super( "lookandfeel" );
+    }
 
+    public void _init() {
+        setBorder( BorderFactory.createEmptyBorder(6, 6, 6, 6 ) );
+        String[] lnfs = LookAndFeelPlugin.getAvailableLookAndFeels();
+        lookAndFeels = new JComboBox( lnfs );
+        addComponent( useFont = new JCheckBox( jEdit.getProperty( "lookandfeel.usejeditfont.label" ), jEdit.getBooleanProperty( "lookandfeel.usejeditfont", false ) ) );
+        addComponent( Box.createVerticalStrut(6 ) );
 
-	public void _init() {
-		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-		String[] lnfs = LookAndFeelPlugin.getAvailableLookAndFeels();
-		lookAndFeels = new JComboBox( lnfs );
-		addComponent( useFont = new JCheckBox(
-		            jEdit.getProperty( "lookandfeel.usejeditfont.label" ),
-		            jEdit.getBooleanProperty( "lookandfeel.usejeditfont", false ) ) );
-		addComponent( Box.createVerticalStrut(6));
+        if ( "true".equals( System.getProperty( "LNFAgentInstalled" ) ) ) {
+            addComponent( allowBeep = new JCheckBox( jEdit.getProperty( "lookandfeel.allowBeep.label" ), "true".equals(System.getProperty("allowBeep") ) ) );
+            addComponent( Box.createVerticalStrut(6 ) );
+        }
 
-		addComponent( jEdit.getProperty( "lookandfeel.lookandfeel.label" ), lookAndFeels );
-		addComponent( Box.createVerticalStrut(6));
-		addComponent( lnfOptionPanel = new JPanel( new BorderLayout() ) );
-		addComponent( Box.createVerticalStrut(6));
-		JButton button = new JButton(jEdit.getProperty("lookandfeel.chooseeditorscheme.label"));
-		button.setToolTipText(jEdit.getProperty("lookandfeel.chooseeditorschemetooltip.label"));
-		addComponent(button);
-		button.addActionListener( 
-			new ActionListener() {
-				public void actionPerformed( ActionEvent ae ) {
-					new editorscheme.EditorSchemeSelectorDialog(jEdit.getActiveView());
-				}
-			}
-		);
+        addComponent( jEdit.getProperty( "lookandfeel.lookandfeel.label" ), lookAndFeels );
+        addComponent( Box.createVerticalStrut(6 ) );
+        addComponent( lnfOptionPanel = new JPanel( new BorderLayout() ) );
+        addComponent( Box.createVerticalStrut(6 ) );
+        JButton button = new JButton( jEdit.getProperty( "lookandfeel.chooseeditorscheme.label" ) );
+        button.setToolTipText( jEdit.getProperty( "lookandfeel.chooseeditorschemetooltip.label" ) );
+        addComponent( button );
+        button.addActionListener ( new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                new editorscheme.EditorSchemeSelectorDialog( jEdit.getActiveView() );
+            }
+        }
+        );
 
-		addComponent( Box.createVerticalStrut(11));
-		addSeparator();
-		addComponent( Box.createVerticalStrut(11));
-		addComponent( new JLabel(jEdit.getProperty( "lookandfeel.message.restart.message" ) ));
+        addComponent( Box.createVerticalStrut(11 ) );
+        addSeparator();
+        addComponent( Box.createVerticalStrut(11 ) );
+        addComponent( new JLabel( jEdit.getProperty( "lookandfeel.message.restart.message" ) ) );
 
-		int idx = indexOf( lnfs, jEdit.getProperty( "lookandfeel.lookandfeel" ) );
-		lookAndFeels.setSelectedIndex( idx < 0 ? 0 : idx );
-		itemStateChanged( null );
-		lookAndFeels.addItemListener( this );
-		
-	}
+        int idx = indexOf( lnfs, jEdit.getProperty( "lookandfeel.lookandfeel" ) );
+        lookAndFeels.setSelectedIndex( idx < 0 ? 0 : idx );
+        itemStateChanged( null );
+        lookAndFeels.addItemListener( this );
 
+    }
 
-	public void _save() {
-		try {
-			if (configComponent != null) {
-				configComponent.save();
-			}
-			jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
-			jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
-			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
-			if (installer != null) {
-				LookAndFeelPlugin.installLookAndFeel( installer );
-			}
-		}
-		catch ( Exception e ) {
-			Log.log( Log.ERROR, this, e );
-			GUIUtilities.error( this, "lookandfeel.error.installer", null );
-		}
-	}
+    public void _save() {
+        try {
+            if ( configComponent != null ) {
+                configComponent.save();
+            }
+            jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
+            jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
+            if (allowBeep != null) {
+            	System.setProperty("allowBeep", allowBeep.isSelected() ? "true" : "false");
+            }
+            LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
+            if ( installer != null ) {
+                LookAndFeelPlugin.installLookAndFeel( installer );
+            }
+        } catch ( Exception e ) {
+            Log.log( Log.ERROR, this, e );
+            GUIUtilities.error( this, "lookandfeel.error.installer", null );
+        }
+    }
 
+    /**
+     * Handle a change in the combo box.
+     */
+    public final void itemStateChanged( ItemEvent evt ) {
+        try {
+            LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
+            if ( installer == null ) {
+                return;
+            }
+            if ( configComponent != null ) {
+                lnfOptionPanel.remove( configComponent );
+            }
+            configComponent = installer.getOptionPane();
+            if ( configComponent != null ) {
+                lnfOptionPanel.add( configComponent );
+            }
+            invalidate();
+            revalidate();
+            repaint();
+        } catch ( Exception e ) {
+            Log.log( Log.ERROR, this, e );
+            GUIUtilities.error( this, "lookandfeel.error.installer", null );
+        }
+    }
 
-	/**
-	 * Handle a change in the combo box.
-	 */
-	public final void itemStateChanged( ItemEvent evt ) {
-		try {
-			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
-			if (installer == null) {
-				return;	
-			}
-			if ( configComponent != null ) {
-				lnfOptionPanel.remove( configComponent );
-			}
-			configComponent = installer.getOptionPane();
-			if ( configComponent != null ) {
-				lnfOptionPanel.add( configComponent );
-			}
-			invalidate();
-			revalidate();
-			repaint();
-		}
-		catch ( Exception e ) {
-			Log.log( Log.ERROR, this, e );
-			GUIUtilities.error( this, "lookandfeel.error.installer", null );
-		}
-	}
-
-
-	/**
-	 * Returns the index of a string in the given string array.
-	 */
-	private static int indexOf( String[] arr, String s ) {
-		for ( int i = 0; i < arr.length; i++ ) {
-			if ( arr[ i ].equals( s ) ) {
-				return i;
-			}
-		}
-		return -1;
-	}
+    /**
+     * Returns the index of a string in the given string array.
+     */
+    private static int indexOf( String[] arr, String s ) {
+        for ( int i = 0; i < arr.length; i++ ) {
+            if ( arr[ i].equals( s ) ) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 }
