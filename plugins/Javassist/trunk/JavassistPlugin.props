@@ -9,7 +9,7 @@ plugin.javassist.JavassistPlugin.version=3.20
                 
 plugin.javassist.JavassistPlugin.depend.0=jedit 05.02.01.00
 plugin.javassist.JavassistPlugin.depend.1=jdk 1.7.0
-#plugin.javassist.JavassistPlugin.jars=javassist.jar
+plugin.javassist.JavassistPlugin.jars=javassist.jar
 
 plugin.javassist.JavassistPlugin.option-pane=javassist
 options.javassist.code=new javassist.OptionPane();
