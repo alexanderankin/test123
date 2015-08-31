@@ -1,0 +1,20 @@
+plugin.javassist.JavassistPlugin.activate=defer
+plugin.javassist.JavassistPlugin.author=Dale Anson
+plugin.javassist.JavassistPlugin.description=A dependency plugin for the Javassist library. (https://jboss-javassist.github.io/javassist/)
+plugin.javassist.JavassistPlugin.docs=docs/JavassistPlugin.html
+plugin.javassist.JavassistPlugin.longdescription=description.html
+plugin.javassist.JavassistPlugin.name=JavassistPlugin
+plugin.javassist.JavassistPlugin.usePluginHome=false
+plugin.javassist.JavassistPlugin.version=3.20
+                
+plugin.javassist.JavassistPlugin.depend.0=jedit 05.02.01.00
+plugin.javassist.JavassistPlugin.depend.1=jdk 1.7.0
+#plugin.javassist.JavassistPlugin.jars=javassist.jar
+
+plugin.javassist.JavassistPlugin.option-pane=javassist
+options.javassist.code=new javassist.OptionPane();
+options.javassist.label=Javassist
+
+
+javassist.allowBeep.label=Allow system beep
+javassist.noagent=Javassist was not installed as an agent. Please see the plugin documentation.
