@@ -1,7 +1,6 @@
 package lookandfeel;
 
 import java.awt.Font;
-import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -47,21 +46,6 @@ public class SystemLookAndFeelInstaller implements LookAndFeelInstaller {
         } catch ( Exception e ) {
             throw new UnsupportedLookAndFeelException( e.getMessage() );
         }
-
-        /*
-        try {
-            LNFClassLoader classLoader = new LNFClassLoader( info );
-            if ( "javax.swing.plaf.metal.MetalLookAndFeel".equals( info.getClassName() ) ) {
-                System.out.println("+++++ setting to ocean");
-                javax.swing.plaf.metal.MetalLookAndFeel.setCurrentTheme( new javax.swing.plaf.metal.OceanTheme());
-            }
-            UIManager.setLookAndFeel( ( LookAndFeel ) classLoader.loadClass( info.getClassName() ).newInstance() );
-            UIManager.put( "ClassLoader", classLoader );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            throw new UnsupportedLookAndFeelException( e.getMessage() );
-        }
-        */
     }
 
     /**
