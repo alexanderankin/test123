@@ -1,6 +1,8 @@
 :encoding=UTF-8:maxLineLen=0:wrap=soft:folding=indent:noTabs=true:tabSize=4:
 XML Plugin Change log
 
+    Version 3.0.1 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.4
+
     Version 3.0 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.4
         Added new sidekick for json files. (Dale Anson)
         Plugin patch #147: Convert ascii entities (Character References) into chars in Entities to Characters action (Jarek Czekalski)
