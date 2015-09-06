@@ -8,7 +8,7 @@ plugin.jakartacommons.JakartaCommonsPlugin.activate=defer
 
 plugin.jakartacommons.JakartaCommonsPlugin.name=Jakarta Commons
 plugin.jakartacommons.JakartaCommonsPlugin.author=Konstantin Pribluda, Dale Anson, Alan Ezust, Ian Lewis
-plugin.jakartacommons.JakartaCommonsPlugin.version=0.8
+plugin.jakartacommons.JakartaCommonsPlugin.version=0.9
 plugin.jakartacommons.JakartaCommonsPlugin.depend.0=jedit 05.00.99.00
 plugin.jakartacommons.JakartaCommonsPlugin.docs=index.html
 plugin.jakartacommons.JakartaCommonsPlugin.depend.1=jdk 1.6.0
@@ -26,7 +26,7 @@ plugin.jakartacommons.JakartaCommonsPlugin.jars=\
     commons-collections-3.2.jar \
     commons-httpclient-3.0.1.jar \
     commons-io-2.4.jar \
-    commons-lang-2.3.jar \
+    commons-lang3-3.3.2.jar \
     commons-logging-1.1.jar \
     commons-net-1.4.1.jar \
     log4j-1.2.14.jar \
