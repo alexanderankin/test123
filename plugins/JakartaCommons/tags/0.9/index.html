@@ -1,0 +1,54 @@
+<html>
+<head>
+   <meta name="Author" content="Alan Ezust" />
+   <title>JakartaCommons Plugin</title>
+</head>
+<body>
+<table border="0" cellspacing="2" width="100%" >
+  <tr>
+    <td valign="center" bgcolor="#CCCCFF">
+      <b><font size="+3">JakartaCommons Plugin</font></b>
+    </td>
+    <td valign="center" bgcolor="#CCCCFF">
+      <div align="right">
+        <font size="-1">Apache Commons Authors<br>
+        <font size="-1">$Date$<br>
+      </div>
+    </td>
+  </tr>
+</table><p>
+
+
+<a href="#intro">Introduction</a><br>
+</p>
+
+<hr width="100%" size="1">
+
+<a name="intro"></a>
+<h2>Introduction</h2>
+
+<p> The JakartaCommons plugin packages a bunch of jars from the <a href="http://commons.apache.org/">Apache Jakarta Commons</a> project.
+For an exact list, type this in the Console Beanshell: </p>
+
+<pre>
+jEdit.getProperty("plugin.jakartacommons.JakartaCommonsPlugin.jars")
+</pre>
+
+<h3> Escape and Unescape Actions </h3>
+
+<p> In addition, the plugin provides a couple of actions for escaping
+and unescaping unicode characters to hexadecimal numbers. 
+These actions work on the selection, or will select the "word" under or just before the caret. </p>
+
+<p> For example, if you had some funny characters like ❤❶⻪❷➗❸ and selected them, then invoked
+<tt>Escape Unicode</tt>, you would see them replaced by a unicode hex escaped form:
+<tt>\u2764\u2776\u2EEA\u2777\u2797\u2778</tt>. Likewise, By selecting the escaped strings and
+invoking the <tt>Unescape Unicode</tt> would bring back the same ❤❶⻪❷➗❸ characters. </p>
+
+<p> In addition, you can save typing by just entering the hexadecimal values before invoking 
+<tt>Unescape Unicode</tt>, which will "infer" the leading \u if a hexadecimal value is found
+in the selection or under the caret. </p>
+
+
+</body>
+</html>
