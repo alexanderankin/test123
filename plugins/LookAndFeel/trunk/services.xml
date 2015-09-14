@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 <SERVICES>
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="InfoNode">
+        new lookandfeel.InfoNodeLnfInstaller();
+    </SERVICE>
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="JGoodies Plastic 3D">
         new lookandfeel.JgoodiesExtWindows();
     </SERVICE>
@@ -30,6 +33,12 @@
     </SERVICE>                                     
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Skin">
         new lookandfeel.SkinLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Squareness">
+        new lookandfeel.SquarenessLnfInstaller();       
+    </SERVICE>                                     
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Tiny">
+        new lookandfeel.TinyLnfInstaller();       
     </SERVICE>                                     
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Tonic">
         new lookandfeel.TonicLnfInstaller();       

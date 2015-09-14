@@ -32,6 +32,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -48,6 +49,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
     private AbstractOptionPane configComponent;
     private JCheckBox useFont;
     private JCheckBox allowBeep = null;
+    private JCheckBox useAuditoryCues;
 
     public LookAndFeelOptionPane() {
         super( "lookandfeel" );
@@ -61,9 +63,11 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
         addComponent( Box.createVerticalStrut(6 ) );
 
         if ( "true".equals( System.getProperty( "LNFAgentInstalled" ) ) ) {
-            addComponent( allowBeep = new JCheckBox( jEdit.getProperty( "lookandfeel.allowBeep.label" ), "true".equals(System.getProperty("allowBeep") ) ) );
+            addComponent( allowBeep = new JCheckBox( jEdit.getProperty( "lookandfeel.allowBeep.label" ), "true".equals( System.getProperty( "allowBeep" ) ) ) );
             addComponent( Box.createVerticalStrut(6 ) );
         }
+
+        addComponent( useAuditoryCues = new JCheckBox( jEdit.getProperty( "lookandfeel.useAuditoryCues.label" ), jEdit.getBooleanProperty( "lookandfeel.useAuditoryCues", false ) ) );
 
         addComponent( jEdit.getProperty( "lookandfeel.lookandfeel.label" ), lookAndFeels );
         addComponent( Box.createVerticalStrut(6 ) );
@@ -72,7 +76,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
         JButton button = new JButton( jEdit.getProperty( "lookandfeel.chooseeditorscheme.label" ) );
         button.setToolTipText( jEdit.getProperty( "lookandfeel.chooseeditorschemetooltip.label" ) );
         addComponent( button );
-        button.addActionListener ( new ActionListener() {
+        button.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent ae ) {
                 new editorscheme.EditorSchemeSelectorDialog( jEdit.getActiveView() );
             }
@@ -98,8 +102,14 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
             }
             jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
             jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
-            if (allowBeep != null) {
-            	System.setProperty("allowBeep", allowBeep.isSelected() ? "true" : "false");
+            if ( allowBeep != null ) {
+                System.setProperty( "allowBeep", allowBeep.isSelected() ? "true" : "false" );
+            }
+            jEdit.setBooleanProperty( "lookandfeel.useAuditoryCues", useAuditoryCues.isSelected() );
+            if ( useAuditoryCues.isSelected() ) {
+                UIManager.put( "AuditoryCues.playList", UIManager.get( "AuditoryCues.allAuditoryCues" ) );
+            } else {
+                UIManager.put( "AuditoryCues.playList", null );
             }
             LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
             if ( installer != null ) {
@@ -141,7 +151,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
      */
     private static int indexOf( String[] arr, String s ) {
         for ( int i = 0; i < arr.length; i++ ) {
-            if ( arr[ i].equals( s ) ) {
+            if ( arr[i].equals( s ) ) {
                 return i;
             }
         }
