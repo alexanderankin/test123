@@ -1,5 +1,22 @@
 CHANGELOG for LookAndFeel plugin
 ================================
+Version 1.8
+-----------
+* Added system look and feels so those can also be selected directly from this
+plugin.
+
+* Added option to turn off system beep if the Javassist plugin is also installed
+and activated as a java agent. This feature won't work until at least jEdit 5.4.
+
+* Added option to turn on auditory cues that may be provided by the selected
+look and feel.
+
+* Added Squareness look and feel.
+
+* Added Tiny look and feel.
+
+* Added InfoNode look and feel.
+
 Version 1.7
 -----------
 * Integration with the Editor Scheme plugin so the scheme can be chosen on the

@@ -12,7 +12,7 @@
     <title>Look And Feel plugin user's guide</title>
 
     <copyright>
-      <year>1999-2010</year>
+      <year>1999-2015</year>
       <holder>Dirk M&ouml;bius, David Huttleston Jr., Jamie LaScolea, Calvin Yu, Dale Anson</holder>
     </copyright>
 
@@ -37,38 +37,10 @@
     <para>Skin your jEdit!</para>
     <para>
     The <application>LookAndFeel</application> plugin lets you choose between
-    different non standard look and feel implementations for jEdit.  Currently,
-    the following look and feel implementations are included:
+    JVM provided look and feels like Metal and Nimbus and a variety of
+    3rd party look and feel implementations for jEdit.  See below for the included
+    look and feels.
   </para>
-    <itemizedlist>
-      <listitem>
-        <para>JGoodies (see <xref linkend="jgoodies"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Kunststoff (see <xref linkend="kunststoff"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Lipstik (see <xref linkend="lipstik"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Metouia (see <xref linkend="metouia"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Napkin (see <xref linkend="napkin"/>)</para>
-      </listitem>
-      <listitem>
-        <para>NimROD (see <xref linkend="nimrod"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Oyoaha (see <xref linkend="oyoaha"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Skin (see <xref linkend="skin"/>)</para>
-      </listitem>
-      <listitem>
-        <para>Tonic (see <xref linkend="tonic"/>)</para>
-      </listitem>
-    </itemizedlist>
   
     <para>
       Other look and feels may be provided by additional plugins, for example,
@@ -98,6 +70,26 @@
       specified under <guilabel>jEdit</guilabel>&gt; <guilabel>Appearance</guilabel>
       under <guimenuitem>Global Options</guimenuitem>.  Note that this is a hint
       only, and might not work on some Look and Feel implementations.
+    </para>
+    </sect1>
+    <sect1 id="allow-beep">
+      <title>Allow system beep</title>
+      <para>
+      If the Javassist plugin is installed and used as a java agent (see the
+      Javassist plugin for details), then this option will appear as a checkbox,
+      which will allow you to turn off the annoying system beep. Maybe. Again,
+      see the Javassist plugin documentation for details and wait for jEdit 5.4.
+    </para>
+    </sect1>
+    <sect1 id="useAuditoryCues">
+      <title>Use auditory cues</title>
+      <para>
+      Some look and feels provide auditory feedback. Checking this box turns on
+      the auditory feedback via the UIManager, however, what sounds, if any, are
+      determined by the look and feel itself. For example, the Metal look and feel
+      will only provide auditory feedback for JOptionPanes. Others, such as the
+      Windows look and feel will provide the same auditory feedback as set in
+      Windows.
     </para>
     </sect1>
     <sect1 id="select-laf-impl">
@@ -139,7 +131,7 @@
     that defines the look of the GUI components.
   </para>
     <para>
-    Themes can be downloaded <ulink url="http://javootoo.l2fprod.com/plaf/skinlf/index.php">here</ulink>.
+    Themes can be downloaded <ulink url="http://javootoo.l2fprod.com/plaf/skinlf/themepacks/">here</ulink>.
     At the time of this writing, there are 10 themes available:
   </para>
     <itemizedlist>
@@ -540,6 +532,62 @@ contact mark@ms-studio.com or visit http://www.ms-studio.com.
   </chapter>
 
   
+  <chapter id="squareness">
+    <title>The Squareness Look And Feel</title>
+    <para>
+    Squareness is minimalistic and flat looking. It uses only two 3D effects to set off pressed controls and grippers on scrollbars. 
+    The colors of the original theme are bright and creamy.
+  </para>
+    <para>
+    The website for Squareness is
+    <ulink url="http://squareness.beeger.net/index.html">http://squareness.beeger.net/index.html</ulink>.
+  </para>
+    <sect1 id="squareness-license">
+      <title>License</title>
+      <para>
+      Distributed under BSD License. Please see
+      <ulink url="http://www.opensource.org/licenses/bsd-license.html">http://www.opensource.org/licenses/bsd-license.html</ulink>
+      for detailed license information.
+      </para>
+    </sect1>
+  </chapter>
+
+  <chapter id="Tiny">
+    <title>The Tiny Look And Feel, version 1.4.0 (25 Aug 2009)</title>
+    <para>
+    Tiny look and feel is a mostly painted look and feel for Java 1.4 and higher.
+  </para>
+    <para>
+    The website for Tiny is
+    <ulink url="http://www.muntjak.de/hans/java/tinylaf/">http://www.muntjak.de/hans/java/tinylaf/</ulink>.
+  </para>
+    <sect1 id="tiny-license">
+      <title>License</title>
+      <para>
+      TinyLaF is released under the GNU Lesser General Public License. 
+      </para>
+    </sect1>
+  </chapter>
+
+  <chapter id="InfoNode">
+    <title>The InfoNode Look And Feel</title>
+    <para>
+    InfoNode Look and Feel is a Java Swing look and feel based on the Metal look and feel. It's designed to have a slim, clean appearance. 
+  </para>
+    <para>
+    The website for Lipstik is
+    <ulink url="https://sourceforge.net/projects/lipstiklf/">https://sourceforge.net/projects/lipstiklf/</ulink>.
+  </para>
+    <sect1 id="infonode-license">
+      <title>License</title>
+      <para>
+      This look and feel is distributed under the GNU General Public License.
+      </para>
+    </sect1>
+  </chapter>
+
+  
+  
     <chapter id="feedback">
       <title>Feedback</title>
 
@@ -582,7 +630,7 @@ contact mark@ms-studio.com or visit http://www.ms-studio.com.
 
     <chapter id="changelog">
       <title>Changes</title>
-      <para>For a detailled list of changes have a look at the
+      <para>For a detailed list of changes have a look at the
     <ulink url="CHANGELOG.txt">CHANGELOG</ulink>.
   </para>
     </chapter>
