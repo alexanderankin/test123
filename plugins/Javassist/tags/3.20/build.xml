@@ -1,0 +1,176 @@
+<!--
+This does not use the standard plugin-build.xml. For this plugin, I need to 
+manipulate the library jar and include a special manifest in the jar, which
+isn't supported by the plugin-build.xml.
+-->
+
+<project name="JavassistPlugin" default="dist" basedir=".">
+
+    <!-- read build.props to override properties set below -->
+    <property file="../build.properties"/>
+    <property file="build.properties"/>
+    
+    <property name="javac.version" value="1.7"/>
+
+    <!-- default location of jedit.jar -->
+    <property name="jedit.install.dir" value="../.."/>
+
+    <!-- jar name -->
+    <property name="jar.name" value="${ant.project.name}.jar"/>
+
+    <!-- version number -->
+    <property name="build.num" value="3.20"/>
+
+    <!-- where to put the finished plugin -->
+    <property name="install.dir" value=".." />
+
+    <!-- source code directory, this is where the .java files live -->
+    <property name="src.dir" location="src" />
+    
+    <!-- library directory -->
+    <property name="lib.dir" location="lib"/>
+    
+    <!-- temporary directory for post-compile processing -->
+    <property name="build.dir" location="build"/>
+
+    <!-- documentation directory, this is where the plugin documentation
+      files live. Files in this directory will be distributed with the plugin -->
+    <property name="doc.dir" location="docs" />
+
+    <!-- the directory for the compiled classes. Files in this directory will be
+      included in the finished jar file. -->
+    <property name="classes.dir" location="${build.dir}/classes" />
+
+
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+    <target name="setClasspath">
+        <path id="classpathref">
+         <!-- required locations/jars -->
+        <pathelement location="${classes.dir}" />
+        <pathelement path="${java.class.path}"/>
+
+         <!-- required for jEdit plugin -->
+         <pathelement location="${jedit.install.dir}/jedit.jar" />
+
+         <!-- dependencies -->
+         <pathelement location="${lib.dir}/javassist.jar"/>
+        </path>
+    </target>
+
+   <!-- ========================================================================
+      Target: compile
+   ========================================================================= -->
+    <target name="compile"
+            description="Compile"
+            depends="init,setClasspath">
+        <javac deprecation="on"
+                debug="on"
+                nowarn="on"
+                destdir="${classes.dir}"
+                srcdir="${src.dir}"
+                includeantruntime="false"
+                target="${javac.version}"
+                source="${javac.version}">
+            <classpath refid="classpathref" />
+        </javac>
+        <copy todir="${classes.dir}/docs" overwrite="no">
+            <fileset dir="${doc.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+    </target>
+
+   <!-- ========================================================================
+      Target: dist
+      creates jar file suitable for dropping into jEdit and installed it to the
+      install.dir directory.
+   ========================================================================= -->
+    <target name="dist"
+            description="Compiles, jars, puts the jar in the jEdit jars directory."
+            depends="clean,init,prep_files,compile">
+
+        <!-- unzip javassist.jar to the classes directory -->
+        <unzip src="${lib.dir}/javassist.jar" dest="${build.dir}"/>
+        <delete dir="${build.dir}/META-INF"/>
+        
+        <!-- add the LNFAgent class -->
+        <move file="${classes.dir}/javassist/LNFAgent.class" todir="${build.dir}/javassist"/>
+        
+        <!-- make javassist.jar -->
+        <jar jarfile="${install.dir}/javassist.jar">
+            <manifest>
+                <attribute name="AppName" value="Javassist" />
+                <attribute name="AppVersion" value="${build.num}" />
+                <attribute name="Created-By" value="${user.name}" />
+                <attribute name="Created-On" value="${TODAY}"/>
+                <attribute name="Main-Class" value="javassist.CtClass"/>
+                <attribute name="Premain-Class" value="javassist.LNFAgent"/>
+                <attribute name="Agent-Class" value="javassist.LNFAgent"/>
+                <attribute name="Boot-Class-Path" value="javassist.jar"/>
+            </manifest>
+
+            <!-- include just the javassist classes -->
+            <fileset dir="${build.dir}">
+                <include name="javassist/**/*" />
+            </fileset>
+        </jar>
+
+        <!-- make the plugin jar file -->
+        <tstamp/>
+        <jar jarfile="${install.dir}/${ant.project.name}.jar">
+            <manifest>
+                <attribute name="AppName" value="${ant.project.name}" />
+                <attribute name="AppVersion" value="${build.num}" />
+                <attribute name="Created-By" value="${user.name}" />
+                <attribute name="Created-On" value="${TODAY}"/>
+            </manifest>
+
+            <!-- include everything in the classes directory -->
+            <fileset dir="${classes.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include configuration files -->
+            <fileset dir="${basedir}">
+                <include name="description.html" />
+                <include name="JavassistPlugin.props" />
+            </fileset>
+        </jar>
+    </target>
+
+   <!-- ========================================================================
+      Target: prep_files
+      prepares certain files for distribution by doing string replacement.
+      Assumes that the configuration files and documentation files are ready.
+   ========================================================================= -->
+    <target name="prep_files">
+        <echo>preparing files</echo>
+        <replace dir="${doc.dir}" token="@@build.num@@"
+                value="${build.num}" />
+        <tstamp/>
+        <replace dir="${doc.dir}" token="@@tstamp@@"
+                value="${TODAY}" />
+    </target>
+
+   <!-- ========================================================================
+      Target: clean
+      deletes all files from the temp directory
+   ========================================================================= -->
+    <target name="clean" description="Delete all files from the classes directory.">
+        <delete dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+   <!-- ========================================================================
+      Target: init
+      this target creates the directories needed for this project and
+      only needs to be done once.
+   ========================================================================= -->
+    <target name="init"
+            description="Create directory structure.">
+        <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
+        <mkdir dir="${classes.dir}" />
+    </target>
+</project>
