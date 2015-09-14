@@ -1,0 +1,93 @@
+<html>
+<body>
+<h3>Javassist Plugin</h3>
+Version: 3.20, August 31 2015<br/>
+Author: Dale Anson
+<p>
+This plugin is a library plugin providing Javassist, a java byte code toolkit.
+<p>
+<a href="https://jboss-javassist.github.io/javassist/">https://jboss-javassist.github.io/javassist/</a>
+<p>
+The main purpose of this plugin is to provide a way to turn off the annoying 
+"beeps" that the Swing UI likes to do on occasion. Since this must be done as 
+part of the JVM boot process, it's not just a matter of activating the plugin 
+like other plugins.
+<p>
+For this to work, it is required that both jEdit and all installed plugins
+make their beep in the appropriate way. Typically, developers will use
+<p>
+<code>Toolkit.getDefaultToolkit().beep();</code>
+<p>
+<strong>This is the wrong way to make a beep.</strong> Beeping this way 
+bypasses the LookAndFeel, which may have provided a different way to show the
+user that there is something that needs their attention, like play a musical 
+tune or flash the window.
+<p>
+<strong>This is the right way:</strong>
+<p>
+<code>UIManager.getLookAndFeel().provideErrorFeedback();</code>
+<p>
+The default implementation, which all JVM provided look and feels and most
+custom look and feels use, simply calls <code>Toolkit.getDefaultToolkit().beep()</code>.
+<p>
+Since Javassist is a byte code manipulation library, it is fairly straightforward
+to have it modify the <code>provideErrorFeedback</code> method to return early
+from the method based on a System property.
+<p>
+To make this work, start jEdit like this:
+<p>
+<code>java -javaagent:/path/to/javassist.jar -jar /path/to/jedit.jar</code>
+<p>
+
+Since this is packaged as a standard jEdit plugin, by default, the plugin is
+installed in the "jars" folder in the user settings directory. 
+Note that this plugin is in two jar files, <code>javassist.jar</code> and <code>JavassistPlugin.jar</code>.
+Be sure to use <code>javassist.jar</code> in the command line as shown above. You can find 
+the location of this directory in jEdit by going to Utilities - Settings Directory,
+so, for example, on my Linux system, this directory would be
+<p>
+<code>/home/danson/.jedit/jars</code>
+<p>
+You may want to include other options when you start jEdit, for example, here 
+is the script I use:
+<p>
+<code>
+#!/bin/sh<br/>
+export JEDIT_HOME=/home/danson/apps/jedit/current<br/>
+export JEDIT_JARS=/home/danson/.jedit/jars<br/>
+<br/>
+# Antialias fonts everywhere possible.<br/>
+ANTIALIAS_ALL="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"<br/>
+<br/>
+# no beeps<br/>
+java -javaagent:$JEDIT_JARS/javassist.jar -Xmx620m -Xms512m ${ANTIALIAS_ALL} "-Djedit.home=$JEDIT_HOME" -jar "$JEDIT_HOME/jedit.jar" -reuseview "$@"<br/>
+</code>
+<p>
+To actually turn on or off the beeps, you can use the Javassist plugin options 
+or the LookAndFeel options and
+check "Allow system beeps" or use the Console plugin with the Beanshell shell
+and enter 
+<p>
+<code>System.setProperty("allowBeep", "false");</code> (or "true")
+<p>
+or you can enter the property on the command line like this:
+<p>
+<code>java -javaagent:/path/to/javassist.jar -DallowBeep=false -jar /path/to/jedit.jar</code>
+<p>
+Some important notes:
+<ul>
+<li>Keep in mind that it doesn't matter if this property is set or not if the javassist.jar
+is not loaded as a java agent on the command line.</li>
+<li>Note that many plugins still use <code>Toolkit.getDefaultToolkit().beep()</code>.
+As I find these, I will either fix them, submit a patch, or enter a bug report 
+for this noise code to be removed.</li>
+<li><strong>This plugin may have been released before jEdit itself has been fixed to use
+UIManager.getLookAndFeel().provideErrorFeedback().</strong> You'll need to wait for jEdit
+5.4.</li>
+</ul>
+<p>
+If you're interested in more detail about how this is implemented, I've posted
+an article here: <a href="http://danson.grafidog.com/2015/08/getting-rid-of-java-beep.html">
+http://danson.grafidog.com/2015/08/getting-rid-of-java-beep.html</a>.
+</body>	
+</html>
