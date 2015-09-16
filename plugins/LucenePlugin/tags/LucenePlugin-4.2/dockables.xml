@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOsCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="lucene-search" MOVABLE="TRUE">
+		new gatchan.jedit.lucene.SearchResults(view);
+	</DOCKABLE>
+</DOCKABLES>
+
