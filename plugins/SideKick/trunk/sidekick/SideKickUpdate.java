@@ -31,7 +31,7 @@ public class SideKickUpdate extends EBMessage
 {
 	public SideKickUpdate(View view)
 	{
-		super(null);
+		super(view);
 		this.view = view;
 	}
 
