@@ -30,7 +30,7 @@ lucene.search-word-at-caret.label=Find word at caret
 lucene.go-to-next-result.label=Go to next result
 lucene.go-to-prev-result.label=Go to previous result
 lucene-search.label=Lucene Search
-lucene-search.title=Search with Lucene
+lucene-search.title=Lucene
 lucene.remove-index.label=Delete an index
 lucene.update-index.label=Maintain indexes
 
