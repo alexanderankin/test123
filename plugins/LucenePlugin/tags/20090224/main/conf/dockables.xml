@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
-<DOCKABLES>
-	<DOCKABLE NAME="luceneplugin.dockables.findfiles">
-		new com.townsfolkdesigns.lucene.jedit.FindFileForm().getView();
-	</DOCKABLE>
-</DOCKABLES>
