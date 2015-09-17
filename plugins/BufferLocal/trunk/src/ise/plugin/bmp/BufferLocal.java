@@ -13,7 +13,7 @@ import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 
-//import org.gjt.sp.util.Log;
+// import org.gjt.sp.util.Log;
 
 /**
  * This plugin stores buffer-local properties in a file and restores those
@@ -57,7 +57,7 @@ public class BufferLocal {
     // runs once every 10 minutes at a low priority to clean up the map
     private Thread janitor;
     public static final int TEN_MINUTES = 1000 * 60 * 10;
-    
+
     // storage for the properties, key is filename as a String,
     // value is the property settings String, see above
     private final Properties map = new Properties();
@@ -68,54 +68,50 @@ public class BufferLocal {
 
     // control for janitor thread.
     private boolean canClean;
-    
+
     private File configFile;
 
-    
     public BufferLocal() {
-        janitor = createJanitorThread(); 
+        janitor = createJanitorThread();
         start();
     }
 
     private Thread createJanitorThread() {
         return new Thread() {
-                   public void run() {
-                       setPriority( Thread.MIN_PRIORITY );
-                       while ( true ) {
-                           if ( canClean && map.size() > 0 ) {
-                               synchronized ( map ) {
-                                   try {
-                                       // do 2 loops to avoid ConcurrentModificationExceptions
-                                       List to_remove = new ArrayList();
-                                       Iterator it = map.keySet().iterator();
-                                       while ( it.hasNext() ) {
-                                           String filename = ( String ) it.next();
-                                           File f = new File( filename );
-                                           if ( !f.exists() ) {
-                                               to_remove.add( filename );
-                                           }
-                                       }
-                                       it = to_remove.iterator();
-                                       while ( it.hasNext() ) {
-                                           map.remove( it.next() );
-                                       }
-                                   }
-                                   catch ( Exception e ) {     // NOPMD
-                                       // ignored
-                                   }
-                               }
-                           }
-                           try {
-                               sleep( ( long ) TEN_MINUTES );
-                           }
-                           catch ( InterruptedException e ) {
-                               // ignored
-                           }
-                       }
-                   }
-               };
+            public void run() {
+                setPriority( Thread.MIN_PRIORITY );
+                while ( true ) {
+                    if ( canClean && map.size() > 0 ) {
+                        synchronized ( map ) {
+                            try {
+                                // do 2 loops to avoid ConcurrentModificationExceptions
+                                List to_remove = new ArrayList();
+                                Iterator it = map.keySet().iterator();
+                                while ( it.hasNext() ) {
+                                    String filename = ( String ) it.next();
+                                    File f = new File( filename );
+                                    if ( !f.exists() ) {
+                                        to_remove.add( filename );
+                                    }
+                                }
+                                it = to_remove.iterator();
+                                while ( it.hasNext() ) {
+                                    map.remove( it.next() );
+                                }
+                            } catch ( Exception e ) {                                // NOPMD
+                                // ignored
+                            }
+                        }
+                    }
+                    try {
+                        sleep( ( long ) TEN_MINUTES );
+                    } catch ( InterruptedException e ) {
+                        // ignored
+                    }
+                }
+            }
+        };
     }
-
 
     /**
      * Load the stored buffer local properties. The properties are stored in a
@@ -138,8 +134,7 @@ public class BufferLocal {
                 BufferedInputStream in = new BufferedInputStream( new FileInputStream( configFile ) );
                 map.load( in );
                 in.close();
-            }
-            else {
+            } else {
                 String oldDir = jEdit.getSettingsDirectory();
                 if ( oldDir == null ) {
                     oldDir = System.getProperty( "user.home" );
@@ -160,8 +155,7 @@ public class BufferLocal {
                     }
                 }
             }
-        }
-        catch (Exception e) {       // NOPMD
+        } catch ( Exception e ) {            // NOPMD
             // ignored
         }
 
@@ -195,15 +189,16 @@ public class BufferLocal {
                 out.flush();
                 out.close();
             }
-        }
-        catch ( Exception e ) {     // NOPMD
+        } catch ( Exception e ) {            // NOPMD
             // ignored
         }
     }
 
     /**
      * Check for BufferUpdate messages. Save properties on CLOSED, restore
-     * properties on LOADED.
+     * properties on LOADED, but do not change any buffer properties that are
+     * already the same value since that will generate unwanted property
+     * changed messages.
      *
      * @param message
      */
@@ -213,7 +208,7 @@ public class BufferLocal {
             Object what = bu.getWhat();
             Buffer buffer = bu.getBuffer();
             if ( buffer == null ) {
-                return ;
+                return;
             }
             String file = buffer.getPath();
             if ( BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
@@ -221,16 +216,16 @@ public class BufferLocal {
                 if ( props != null ) {
                     // parse the stored properties
                     String[] tokens = props.split( "[\\|]" );
-                    String ls = tokens[ 0 ];
-                    String enc = tokens[ 1 ];
-                    String gz = tokens[ 2 ];
-                    String em = tokens[ 3 ];
-                    String fm = tokens[ 4 ];
-                    String wm = tokens[ 5 ];
-                    String ll = tokens[ 6 ];
-                    String tw = tokens[ 7 ];
-                    String iw = tokens[ 8 ];
-                    String tabs = tokens[ 9 ];
+                    String ls = tokens[0];
+                    String enc = tokens[1];
+                    String gz = tokens[2];
+                    String em = tokens[3];
+                    String fm = tokens[4];
+                    String wm = tokens[5];
+                    String ll = tokens[6];
+                    String tw = tokens[7];
+                    String iw = tokens[8];
+                    String tabs = tokens[9];
 
                     // apply the stored properties to the buffer
                     /// see comments above, don't need this right now
@@ -238,35 +233,46 @@ public class BufferLocal {
                     /// stuff after all
                     if ( "n".equals( ls ) ) {
                         ls = "\n";
-                    }
-                    else if ( "r".equals( ls ) ) {
+                    } else if ( "r".equals( ls ) ) {
                         ls = "\r";
-                    }
-                    else {
+                    } else {
                         ls = "\r\n";
                     }
-                    buffer.setStringProperty( "lineSeparator", ls );
-                    buffer.setStringProperty( Buffer.ENCODING, enc );
-                    ///
+                    if ( !ls.equals( buffer.getStringProperty( "lineSeparator" ) ) ) {
+                        buffer.setStringProperty( "lineSeparator", ls );
+                    }
+                    if ( !enc.equals( buffer.getStringProperty( Buffer.ENCODING ) ) ) {
+                        buffer.setStringProperty( Buffer.ENCODING, enc );
+                    }
+                    /// 
 
-                    if ( gz != null && gz.length() > 0 )
+                    String bufferGZ = buffer.getBooleanProperty( Buffer.GZIPPED ) ? "t" : "f";
+                    if ( gz != null && gz.length() > 0 && !gz.equals( bufferGZ ) ) {
                         buffer.setBooleanProperty( Buffer.GZIPPED, "t".equals( gz ) ? true : false );
-                    if ( fm != null && fm.length() > 0 && FoldHandler.getFoldHandler( fm ) != null )
+                    }
+                    if ( fm != null && fm.length() > 0 && FoldHandler.getFoldHandler( fm ) != null && !fm.equals( buffer.getFoldHandler().getName() ) ) {
                         buffer.setFoldHandler( FoldHandler.getFoldHandler( fm ) );
-                    if ( wm != null && wm.length() > 0 )
+                    }
+                    if ( wm != null && wm.length() > 0 && !wm.equals( buffer.getStringProperty( "wrap" ) ) ) {
                         buffer.setStringProperty( "wrap", wm );
-                    if ( ll != null && ll.length() > 0 )
+                    }
+                    if ( ll != null && ll.length() > 0 && !ll.equals( String.valueOf( buffer.getIntegerProperty( "maxLineLength", 0 ) ) ) ) {
                         buffer.setIntegerProperty( "maxLineLength", Integer.parseInt( ll ) );
-                    if ( tw != null && tw.length() > 0 )
+                    }
+                    if ( tw != null && tw.length() > 0 && !tw.equals( String.valueOf( buffer.getIntegerProperty( "tabSize", 3 ) ) ) ) {
                         buffer.setIntegerProperty( "tabSize", Integer.parseInt( tw ) );
-                    if ( iw != null && iw.length() > 0 )
+                    }
+                    if ( iw != null && iw.length() > 0 && !iw.equals( String.valueOf( buffer.getIntegerProperty( "indentSize", 3 ) ) ) ) {
                         buffer.setIntegerProperty( "indentSize", Integer.parseInt( iw ) );
-                    if ( tabs != null && tabs.length() > 0 )
+                    }
+                    String bufferNT = buffer.getBooleanProperty( "noTabs" ) ? "t" : "f";
+                    if ( tabs != null && tabs.length() > 0 && !tabs.equals( bufferNT ) ) {
                         buffer.setBooleanProperty( "noTabs", "t".equals( tabs ) ? true : false );
-                    if ( em != null && em.length() > 0 )
+                    }
+                    if ( em != null && em.length() > 0 && !em.equals( buffer.getMode().getName() ) ) {
                         buffer.setMode( em );
-                }
-                else {
+                    }
+                } else {
                     // on load, if we don't already have properties stored for this file,
                     // stash the string to check against when the file is closed.
                     tempMap.setProperty( file, getBufferLocalString( buffer ) );
@@ -275,13 +281,11 @@ public class BufferLocal {
                 if ( view == null ) {
                     view = jEdit.getActiveView();
                 }
-            }
-            else if ( BufferUpdate.CLOSED.equals( what ) || BufferUpdate.PROPERTIES_CHANGED.equals( what ) ) {
-                String bufferLocalString = getBufferLocalString(buffer);
+            } else if ( BufferUpdate.CLOSED.equals( what ) || BufferUpdate.PROPERTIES_CHANGED.equals( what ) ) {
+                String bufferLocalString = getBufferLocalString( buffer );
                 map.setProperty( file, bufferLocalString );
             }
-        }
-        else if ( message instanceof EditorExitRequested ) {
+        } else if ( message instanceof EditorExitRequested ) {
             // jEdit may be shutting down, so update the map for any buffers still open.
             // Oddly enough, jEdit doesn't send CLOSED messages as it closes buffers
             // during shutdown. Or maybe it does, but this plugin is unloaded before
@@ -291,12 +295,12 @@ public class BufferLocal {
             String props;
             String tempProps;
             for ( int i = 0; i < buffers.length; i++ ) {
-                file = buffers[ i ].getPath();
+                file = buffers[i].getPath();
                 // only save if changed, no need to save if not. Doing it this way
                 // rather than on PROPERTY_CHANGED as jEdit sends lots of
                 // PROPERTY_CHANGED messages even though the properties really
                 // haven't changed
-                props = getBufferLocalString( buffers[ i ] );
+                props = getBufferLocalString( buffers[i] );
                 tempProps = tempMap.getProperty( file );
                 if ( tempProps == null ) {
                     continue;
@@ -319,10 +323,11 @@ public class BufferLocal {
         String enc = buffer.getStringProperty( Buffer.ENCODING );
         boolean gz = buffer.getBooleanProperty( Buffer.GZIPPED );
         String em;
-        if ( buffer.getMode() != null )
+        if ( buffer.getMode() != null ) {
             em = buffer.getMode().getName();
-        else
+        } else {
             em = "";
+        }
         String fm = buffer.getFoldHandler() == null ? "" : buffer.getFoldHandler().getName();
         String wm = buffer.getStringProperty( "wrap" );
         int ll = buffer.getIntegerProperty( "maxLineLength", 0 );
@@ -334,11 +339,9 @@ public class BufferLocal {
         StringBuffer prop = new StringBuffer();
         if ( "\n".equals( ls ) ) {
             prop.append( "n|" );
-        }
-        else if ( "\r".equals( ls ) ) {
+        } else if ( "\r".equals( ls ) ) {
             prop.append( "r|" );
-        }
-        else {
+        } else {
             prop.append( "rn|" );
         }
         prop.append( enc ).append( '|' );
