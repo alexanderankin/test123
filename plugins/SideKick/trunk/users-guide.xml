@@ -230,6 +230,16 @@
 
   <chapter id="completion">
     <title>Completion</title>
+    <para>
+    Completions are turned on or off by mode in the "Parsers" option pane,
+    Plugins - Plugin Options - SideKick - Parsers. By default, completion is
+    turned off for all modes. To turn on completion for a specific mode, just
+    check the box in the "Completion" column. Notice this is a SideKick option,
+    not a jEdit option, unchecking completion for a mode will not disable the
+    jEdit action of word completion (Edit - Complete Word). Not all SideKick
+    plugins actually implement completion, so turning on completion may not
+    actually do anything, it really depends on the plugin.
+    </para>
 
     <para>
   A completion popup can be shown at any time

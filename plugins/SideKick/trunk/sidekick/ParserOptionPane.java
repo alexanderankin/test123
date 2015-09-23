@@ -133,7 +133,7 @@ public class ParserOptionPane extends AbstractOptionPane
 //{{{ WindowTableModel class
 class MyTableModel extends AbstractTableModel
 {
-	private Vector modes;
+	private java.util.List<Entry> modes;
 
 //	public static final String DEFAULTPARSER = "default parser";
 
@@ -141,10 +141,12 @@ class MyTableModel extends AbstractTableModel
 	MyTableModel()
 	{
 		Mode[] modes = jEdit.getModes();
-		this.modes = new Vector(modes.length);
-		for(int i = 0; i < modes.length; i++)
+		this.modes = new ArrayList<Entry>(modes.length);
+		for(Mode mode : modes)
 		{
-			this.modes.addElement(new Entry(modes[i].getName()));
+			Entry entry = new Entry(mode.getName());
+			entry.completion = jEdit.getBooleanProperty("mode." + mode.getName() + ".sidekick.completion", false);
+			this.modes.add(entry);
 		}
 		Collections.sort(this.modes);
 	} //}}}
@@ -152,7 +154,7 @@ class MyTableModel extends AbstractTableModel
 	//{{{ getColumnCount() method
 	public int getColumnCount()
 	{
-		return 2;
+		return 3;
 	} //}}}
 
 	//{{{ getRowCount() method
@@ -169,6 +171,8 @@ class MyTableModel extends AbstractTableModel
 		case 0:
 		case 1:
 			return String.class;
+		case 2:
+			return Boolean.class;
 		default:
 			throw new InternalError();
 		}
@@ -177,13 +181,15 @@ class MyTableModel extends AbstractTableModel
 	//{{{ getValueAt() method
 	public Object getValueAt(int row, int col)
 	{
-		Entry modeParser = (Entry)modes.elementAt(row);
+		Entry modeParser = (Entry)modes.get(row);
 		switch(col)
 		{
 		case 0:
 			return modeParser.mode;
 		case 1:
 			return modeParser.parser;
+		case 2:
+			return modeParser.completion;
 		default:
 			throw new InternalError();
 		}
@@ -192,7 +198,7 @@ class MyTableModel extends AbstractTableModel
 	//{{{ isCellEditable() method
 	public boolean isCellEditable(int row, int col)
 	{
-		return col == 1;
+		return col == 1 || col == 2;
 	} //}}}
 
 	//{{{ setValueAt() method
@@ -201,11 +207,14 @@ class MyTableModel extends AbstractTableModel
 		if(col == 0)
 			return;
 
-		Entry modeParser = (Entry)modes.elementAt(row);
+		Entry modeParser = (Entry)modes.get(row);
 		switch(col)
 		{
 		case 1:
 			modeParser.parser = (String)value;
+			break;
+		case 2:
+			modeParser.completion = (Boolean)value;
 			break;
 		default:
 			throw new InternalError();
@@ -223,6 +232,8 @@ class MyTableModel extends AbstractTableModel
 			return jEdit.getProperty("options.sidekick.parser.mode");
 		case 1:
 			return jEdit.getProperty("options.sidekick.parser.parser");
+		case 2:
+			return jEdit.getProperty("options.sidekick.parser.completion");
 		default:
 			throw new InternalError();
 		}
@@ -231,9 +242,9 @@ class MyTableModel extends AbstractTableModel
 	//{{{ save() method
 	public void save()
 	{
-		for(int i = 0; i < modes.size(); i++)
+		for(Entry entry : modes)
 		{
-			((Entry)modes.elementAt(i)).save();
+			entry.save();
 		}
 	} //}}}
 
@@ -242,12 +253,13 @@ class MyTableModel extends AbstractTableModel
 	{
 		String mode;
 		String parser = null;
+		boolean completion = false;
 		
 		Entry(String mode)
 		{
 			this.mode = mode;
 			parser = jEdit.getProperty("mode."+ this.mode + ".sidekick.parser");
-			
+			completion = jEdit.getBooleanProperty("mode." + this.mode + ".sidekick.completion", false);
 		}
 		
 		void save()
@@ -256,6 +268,7 @@ class MyTableModel extends AbstractTableModel
 				jEdit.resetProperty("mode." + mode + ".sidekick.parser");
 			else
 				jEdit.setProperty("mode." + mode + ".sidekick.parser",parser);
+			jEdit.setBooleanProperty("mode." + mode + ".sidekick.completion", completion);
 		}
 		
 		public int compareTo(Object a) {
