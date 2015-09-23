@@ -1,6 +1,9 @@
  :encoding=UTF-8:maxLineLen=95:wrap=hard:folding=indent:collapseFolds=2:
  jEdit SideKick Plugin Changelog
  
+    Version 1.9, September 2015
+        Added feature to toggle completion per mode, tracker #153. (Dale Anson)
+        
     Version 1.8, August 2015
         Bug 1819, cleaned up setttings for show filter box. (Dale Anson)
         Bug 1497, issue with when status window is displayed. (Dale Anson)

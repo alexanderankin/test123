@@ -3,7 +3,7 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov, Dale Anson, Martin Raspe, Alan Ezust, Shlomy Reinstein, Matthieu Casanova
-plugin.sidekick.SideKickPlugin.version=1.8
+plugin.sidekick.SideKickPlugin.version=1.9
 plugin.sidekick.SideKickPlugin.docs=index.html
 # See jEdit.getBuild() to understand build numbering scheme.
 plugin.sidekick.SideKickPlugin.depend.0=jedit 05.00.99.00
@@ -73,6 +73,7 @@ options.sidekick.parser.label=Parsers
 options.sidekick.parser.code=new sidekick.ParserOptionPane();
 options.sidekick.parser.mode=Mode
 options.sidekick.parser.parser=Parser
+options.sidekick.parser.completion=Completion
 options.sidekick.general.label=General Settings
 options.sidekick.code-completion.label=Code Completion Options
 options.sidekick.tree-follows-caret=Tree/combo-box selection follows caret position

@@ -108,6 +108,12 @@ public class SideKickActions
 	{
 		EditPane editPane = view.getEditPane();
 		Buffer buffer = editPane.getBuffer();
+		Mode bufferMode = buffer.getMode();
+		
+		// check if user wants completion for this mode
+		if (!jEdit.getBooleanProperty("mode." + bufferMode.getName() + ".sidekick.completion", false))
+			return;
+		
 		JEditTextArea textArea = editPane.getTextArea();
 
 		SideKickParser parser = SideKickPlugin
