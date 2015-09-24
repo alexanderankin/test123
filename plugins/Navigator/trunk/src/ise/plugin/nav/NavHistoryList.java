@@ -50,7 +50,7 @@ import code2html.services.ExporterProvider;
 
 class NavHistoryList extends JPanel {
 
-    private JList list;
+    JList list;
     private View view;
     private NavPosition initialPosition = null;
     private Navigator navigator = null;
