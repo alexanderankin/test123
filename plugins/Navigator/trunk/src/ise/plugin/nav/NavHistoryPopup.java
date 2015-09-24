@@ -59,6 +59,7 @@ class NavHistoryPopup extends JPopupMenu {
         }
         this.view = view;
         historyList = new NavHistoryList(view, navigator, positions, currentPosition);
+        list = historyList.list;
 
         add( historyList );
 
