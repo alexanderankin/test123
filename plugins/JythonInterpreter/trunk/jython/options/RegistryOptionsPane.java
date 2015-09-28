@@ -53,6 +53,7 @@ public class RegistryOptionsPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ _init() method
+	@SuppressWarnings("unchecked")
 	public void _init()
 	{
 		JPanel panel;
@@ -77,13 +78,13 @@ public class RegistryOptionsPane extends AbstractOptionPane
 		browseForCache = new JButton("...");
 		browseForCache.addActionListener(this);
 		panel.add(cache = new JTextField(
-			jEdit.getProperty("options.jython.registry.value.1"))
-			, BorderLayout.CENTER);
+			jEdit.getProperty("options.jython.registry.value.1")),
+			BorderLayout.CENTER);
 		panel.add(browseForCache, BorderLayout.EAST);
 		addComponent(jEdit.getProperty("options.jython.registry.name.1"),panel);
 
 		// python.verbose
-		DefaultComboBoxModel levels = new DefaultComboBoxModel();
+		DefaultComboBoxModel<String> levels = new DefaultComboBoxModel<String>();
 		StringTokenizer st = new StringTokenizer(
 			jEdit.getProperty("options.jython.python.verbose.values"));
 		levels.addElement("");
@@ -176,8 +177,11 @@ public class RegistryOptionsPane extends AbstractOptionPane
 		}
 		else if (evt.getSource() == browseForCache)
 		{
-			String[] dirs = GUIUtilities.showVFSFileDialog(null, 
-				cache.getText(), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+			String[] dirs = GUIUtilities.showVFSFileDialog(
+					jEdit.getActiveView(), 
+					cache.getText(), 
+					VFSBrowser.CHOOSE_DIRECTORY_DIALOG, 
+					false);
 			if(dirs != null && dirs.length == 1)
 			{
 				cache.setText(dirs[0]);
