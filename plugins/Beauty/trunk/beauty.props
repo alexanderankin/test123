@@ -8,9 +8,10 @@ plugin.beauty.BeautyPlugin.name=Beauty
 plugin.beauty.BeautyPlugin.author=Dale Anson
 plugin.beauty.BeautyPlugin.version=0.8
 plugin.beauty.BeautyPlugin.docs=docs/index.html
-plugin.beauty.BeautyPlugin.depend.0=jdk 1.6
+plugin.beauty.BeautyPlugin.depend.0=jdk 1.7
 plugin.beauty.BeautyPlugin.depend.1=jedit 05.02.01.00
 plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.4
 plugin.beauty.BeautyPlugin.usePluginHome=true
 
 plugin.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.
