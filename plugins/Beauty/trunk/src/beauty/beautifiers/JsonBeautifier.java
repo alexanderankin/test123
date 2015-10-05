@@ -28,7 +28,7 @@ public class JsonBeautifier extends Beautifier {
             // parse and beautify the buffer contents
             ParseTree tree = jsonParser.json();
             ParseTreeWalker walker = new ParseTreeWalker();
-            JSONBeautyListener listener = new JSONBeautyListener(text.length());
+            JSONBeautyListener listener = new JSONBeautyListener(text.length(), getUseSoftTabs(), getTabWidth());
             walker.walk( listener, tree );
 
             return listener.getText();

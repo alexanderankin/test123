@@ -6,9 +6,20 @@ public class JSONBeautyListener extends JSONBaseListener {
 
     private StringBuilder output;
     private int tabCount = 0;
+    private String tab;
 
-    public JSONBeautyListener(int initialSize) {
-        output = new StringBuilder(initialSize);   
+    public JSONBeautyListener(int initialSize, boolean softTabs, int tabWidth) {
+        output = new StringBuilder(initialSize);
+        if (softTabs) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < tabWidth; i++) {
+                sb.append(' ');   
+            }
+            tab = sb.toString();
+        }
+        else {
+            tab = "\t";   
+        }
     }
     
     public String getText() {
@@ -104,15 +115,15 @@ public class JSONBeautyListener extends JSONBaseListener {
 
     private void indent() {
         for ( int i = 0; i < tabCount; i++ ) {
-            output.append( '\t' );
+            output.append( tab );
         }
     }
     
     private void outdent() {
-        if (output.length() == 0) {
+        if (output.length() < tab.length()) {
             return;   
         }
-        while(output.charAt(output.length() - 1) == '\t') {
+        while(output.charAt(output.length() - 1) == '\t' || output.charAt(output.length() - 1) == ' ') {
             output.deleteCharAt(output.length() - 1);   
         }
     }
