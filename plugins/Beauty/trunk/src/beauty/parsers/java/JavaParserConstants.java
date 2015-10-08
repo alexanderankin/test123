@@ -245,11 +245,15 @@ public interface JavaParserConstants {
   /** RegularExpression Id. */
   int ELLIPSIS = 118;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFT = 119;
+  int POINTER = 119;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFT = 120;
+  int DIAMOND = 120;
   /** RegularExpression Id. */
-  int GT = 121;
+  int RUNSIGNEDSHIFT = 121;
+  /** RegularExpression Id. */
+  int RSIGNEDSHIFT = 122;
+  /** RegularExpression Id. */
+  int GT = 123;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -375,10 +379,11 @@ public interface JavaParserConstants {
     "\">>=\"",
     "\">>>=\"",
     "\"...\"",
+    "\"->\"",
+    "\"<>\"",
     "\">>>\"",
     "\">>\"",
     "\">\"",
-    "\"<>\"",
   };
 
 }

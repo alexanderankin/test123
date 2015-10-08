@@ -69,6 +69,8 @@ public final class ModifierSet {
     public static final int NATIVE = 0x0100;        // Declared native; implemented in a language other than Java.
     public static final int ABSTRACT = 0x0400;      // Declared abstract; no implementation is provided.
     public static final int STRICTFP = 0x0800;      // Declared strictfp; floating-point mode is FP-strict
+    public static final int ANNOTATION = 0x1000;    // There is an annotation in the modifiers
+    public static final int DEFAULT = 0x2000;       
 
 	/**
 	 * This method may be used to sort by visibility/accessibility.    

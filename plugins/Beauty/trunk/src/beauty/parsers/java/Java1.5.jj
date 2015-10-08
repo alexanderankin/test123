@@ -1065,6 +1065,8 @@ TOKEN :
 | < RSIGNEDSHIFTASSIGN: ">>=" >
 | < RUNSIGNEDSHIFTASSIGN: ">>>=" >
 | < ELLIPSIS: "..." >
+| < POINTER: "->" >
+| < DIAMOND: "<>" >
 }
 
 /* >'s need special attention due to generics syntax. */
@@ -1123,6 +1125,7 @@ void CompilationUnit():
 void PackageDeclaration():
 {}
 {
+    [ Annotation(true) ]        // Java 8
     t="package" { add(t); } Name() ";" { add(";"); write(); }
 }
 
@@ -1147,29 +1150,29 @@ int Modifiers():
  (
   LOOKAHEAD(2)
   (
-   "public" { modifiers |= ModifierSet.PUBLIC; }
-  |
-   "static" { modifiers |= ModifierSet.STATIC; }
-  |
-   "protected" { modifiers |= ModifierSet.PROTECTED; }
-  |
-   "private" { modifiers |= ModifierSet.PRIVATE; }
-  |
-   "final" { modifiers |= ModifierSet.FINAL; }
-  |
-   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
-  |
-   "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
-  |
-   "native" { modifiers |= ModifierSet.NATIVE; }
-  |
-   "transient" { modifiers |= ModifierSet.TRANSIENT; }
-  |
-   "volatile" { modifiers |= ModifierSet.VOLATILE; }
-  |
-   "strictfp" { modifiers |= ModifierSet.STRICTFP; }
-  |
-   Annotation(true)
+       "public" { modifiers |= ModifierSet.PUBLIC; }
+      |
+       "static" { modifiers |= ModifierSet.STATIC; }
+      |
+       "protected" { modifiers |= ModifierSet.PROTECTED; }
+      |
+       "private" { modifiers |= ModifierSet.PRIVATE; }
+      |
+       "final" { modifiers |= ModifierSet.FINAL; }
+      |
+       "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+      |
+       "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
+      |
+       "native" { modifiers |= ModifierSet.NATIVE; }
+      |
+       "transient" { modifiers |= ModifierSet.TRANSIENT; }
+      |
+       "volatile" { modifiers |= ModifierSet.VOLATILE; }
+      |
+       "strictfp" { modifiers |= ModifierSet.STRICTFP; }
+      |
+       Annotation(true)
   )
  )*
     }
@@ -1194,6 +1197,7 @@ void TypeDeclaration():
 |
   modifiers = Modifiers()
   (
+     LOOKAHEAD(2)
      ClassOrInterfaceDeclaration(modifiers)
    |
      EnumDeclaration(modifiers)
@@ -1209,7 +1213,8 @@ void ClassOrInterfaceDeclaration(int modifiers):
    add(ModifierSet.toString(modifiers) + " ");
 }
 {
-  ( "class" { add("class"); } | "interface" { add("interface");  isInterface = true; } )
+    [ Annotation(true) ]      // Java 8
+  ( "class" { add("class "); } | "interface" { add("interface ");  isInterface = true; } )
   t=<IDENTIFIER> { add(t); }
   [ TypeParameters() ]
   [ ExtendsList(isInterface) ]
@@ -1264,7 +1269,8 @@ void EnumBody():
 void EnumConstant():
 {}
 {
-  t=<IDENTIFIER> { add(t); } [ Arguments() ] [ ClassOrInterfaceBody(false) ]
+    [ Annotation(true) ]     // Java 8
+    t=<IDENTIFIER> { add(t); } [ Arguments() ] [ ClassOrInterfaceBody(false) ]
 }
 
 void TypeParameters():
@@ -1329,6 +1335,7 @@ void FieldDeclaration(int modifiers):
 }
 {
   // Modifiers are already matched in the caller
+  [ LOOKAHEAD(2) Annotation(true) ]        // Java 8
   Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* ";" { add(";"); write(); }
 }
 
@@ -1341,7 +1348,12 @@ void VariableDeclarator():
 void VariableDeclaratorId():
 {}
 {
-  t=<IDENTIFIER> { add(t); } ( "[" "]" { trim(); add("[] "); } )*
+    [ Annotation(false) ]        // Java 8
+    t=<IDENTIFIER> { add(t); } 
+    ( 
+        [ Annotation(false) ]    // Java 8        
+        "[" "]" { trim(); add("[] "); } 
+    )*
 }
 
 void VariableInitializer():
@@ -1365,11 +1377,13 @@ void MethodDeclaration(int modifiers):
     add(ModifierSet.toString(modifiers) + " ");
 }
 {
-  // Modifiers already matched in the caller!
-  [ TypeParameters() ]
-  ResultType()
-  MethodDeclarator() [ "throws" { add("throws"); } NameList() ]
-  ( Block() | ";" { add(";"); write(); } )
+    // Modifiers already matched in the caller!
+    [ LOOKAHEAD(2) Annotation(true) ]        // Java 8
+    [ TypeParameters() ]
+    ResultType()
+    [ LOOKAHEAD(2) Annotation(false) ]    // Java 8
+    MethodDeclarator() [ "throws" { add("throws"); } NameList() ]
+    ( Block() | ";" { add(";"); write(); } )
 }
 
 void MethodDeclarator():
@@ -1383,13 +1397,28 @@ void FormalParameters():
     boolean added = false;
 }
 {
-    "(" { trimWhitespace(); trim(); add("( "); } [ [Annotation(false)] FormalParameter() { added = true; } ( "," { add(", "); } [Annotation(false)] FormalParameter() )* ] ")" { if (!added) trim(); add(" )"); }
+    "(" { trimWhitespace(); trim(); add("( "); } 
+    [ 
+        FormalParameter() { added = true; } 
+        ( 
+            "," { add(", "); } 
+            FormalParameter() 
+        )* 
+    ] 
+    ")" { if (!added) trim(); add(" )"); }
 }
 
 void FormalParameter():
 {}
 {
-  [ "final" { add("final "); } ] Type() [ "..." { trim(); add("..."); } ] VariableDeclaratorId()
+    [ Annotation(false) ]
+    [ "final" { add("final "); } ] 
+    Type() 
+    [ LOOKAHEAD(2) Annotation(false) ]     // Java 8
+    [ 
+        "..." { trim(); add("..."); } 
+    ] 
+    VariableDeclaratorId()
 }
 
 void ConstructorDeclaration(int modifiers):
@@ -1397,6 +1426,7 @@ void ConstructorDeclaration(int modifiers):
     add(ModifierSet.toString(modifiers) + " ");
 }
 {
+    [ LOOKAHEAD(2) Annotation(false) ]     // Java 8
   [ TypeParameters() ]
   t=<IDENTIFIER> { add(t); } FormalParameters() [ "throws" { add("throws"); } NameList() ]
   "{" { addStartBracket(); write(); incLevel();}
@@ -1444,15 +1474,17 @@ void ReferenceType():
 void ClassOrInterfaceType():
 {}
 {
-  t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2)  TypeArguments() ]
-  ( LOOKAHEAD(2) "." { trim(); add("."); } t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2) TypeArguments() ] )*
+    [ Annotation(true) ]    // Java 8
+    t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2)  TypeArguments() ]
+    ( LOOKAHEAD(2) "." { trim(); add("."); } [ Annotation(false) ] t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2) TypeArguments() ] )*
 }
 
 void TypeArguments():
 {}
 {
     (
-        "<>" { trim(); add("<>"); }
+        // Java 7 allows <>
+        <DIAMOND> { trim(); add("<>"); }
     )
     |
     (
@@ -1480,23 +1512,24 @@ void WildcardBounds():
 void PrimitiveType():
 {}
 {
+    [ Annotation(false) ]    // Java 8
     (
-  t="boolean"
-|
-  t="char"
-|
-  t="byte"
-|
-  t="short"
-|
-  t="int"
-|
-  t="long"
-|
-  t="float"
-|
-  t="double"
-  )
+          t="boolean"
+        |
+          t="char"
+        |
+          t="byte"
+        |
+          t="short"
+        |
+          t="int"
+        |
+          t="long"
+        |
+          t="float"
+        |
+          t="double"
+    )
     {
         add(t + " ");
     }
@@ -1545,11 +1578,58 @@ void Expression():
  */
 {}
 {
-  ConditionalExpression()
-  [
-    LOOKAHEAD(2)
-    AssignmentOperator() Expression()
-  ]
+    LOOKAHEAD(LambdaExpression())
+    LambdaExpression()      // Java 8
+    |
+    ConditionalExpression()
+    [
+        LOOKAHEAD(2)
+        AssignmentOperator() Expression()
+    ]
+}
+
+// Java 8
+void LambdaExpression():
+{
+}
+{
+    LambdaParameters() <POINTER> { add(" -> "); } LambdaBody()
+}
+
+// Java 8
+void LambdaParameters():
+{
+}
+{
+    t=<IDENTIFIER> { add(t); } 
+    |
+    LOOKAHEAD(3) 
+    <LPAREN> { add("("); } [FormalParameters()] <RPAREN> { add(")"); }
+    |
+    LOOKAHEAD(3) 
+    <LPAREN> { add("("); } InferredFormalParameterList() <RPAREN> { add(")"); }
+}
+
+// Java 8
+void InferredFormalParameterList():
+{
+}
+{
+    t=<IDENTIFIER> { add(t); }
+    (
+        <COMMA> { add(", "); } 
+        t=<IDENTIFIER> { add(t); }
+    )*
+}
+
+// Java 8
+void LambdaBody():
+{
+}
+{
+    Expression()
+    |
+    Block()
 }
 
 void AssignmentOperator():
@@ -1893,20 +1973,32 @@ void Block():
 void BlockStatement():
 {}
 {
-  LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
-  LocalVariableDeclaration() ";" { add(";"); write(); }
-|
-  Statement()
-|
-  Annotation(false)
-|
-  ClassOrInterfaceDeclaration(0)
+    [LOOKAHEAD(2) Annotation(false) ]
+    (
+        LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
+        LocalVariableDeclaration() ";" { add(";"); write(); }
+        |
+        LOOKAHEAD(3)
+        Statement()
+        |
+        ClassOrInterfaceDeclaration(0)
+    )
 }
 
 void LocalVariableDeclaration():
-{}
 {
-  [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* 
+    int m = 0;
+}
+{
+  // old: [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* 
+  [LOOKAHEAD(2) Annotation(false)] 
+  m = Modifiers() {add(ModifierSet.toString(m) + " ");} 
+  Type() 
+  VariableDeclarator() 
+  ( 
+      "," { add(", "); } 
+      VariableDeclarator() 
+  )* 
 }
 
 void EmptyStatement():
@@ -2132,8 +2224,8 @@ void ForStatement():
 
   (
       // DONE: allow optional "final" here, as in for(final myType : myList)
-      LOOKAHEAD([ "final" ] Type() <IDENTIFIER> ":")
-      [ "final" { add("final "); }] Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
+      LOOKAHEAD([Annotation(false)]["final"] Type() <IDENTIFIER> ":")
+      [LOOKAHEAD(2) Annotation(false)][ "final" { add("final "); }] Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
     |
     [ ForInit() ] ";" { add("; "); } [ Expression() ] ";" { add("; "); } [ ForUpdate() ]
   )
@@ -2354,53 +2446,67 @@ void RSIGNEDSHIFT():
 /* Annotation syntax follows. */
 
 void Annotation(boolean addLineBreak):
-{}
 {
-   LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-   NormalAnnotation()
- |
-   LOOKAHEAD( "@" Name() "(" )
-   SingleMemberAnnotation(addLineBreak) 
- |
-   MarkerAnnotation(addLineBreak) 
+    System.out.println("Annotation(" + addLineBreak + ")");
+}
+{
+    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
+    NormalAnnotation(addLineBreak)
+    |
+    LOOKAHEAD( "@" Name() "(" )
+    SingleMemberAnnotation(addLineBreak) 
+    |
+    MarkerAnnotation(addLineBreak)
 }
 
-void NormalAnnotation():
-{}
+void NormalAnnotation(boolean addLineBreak):
 {
-   "@" { add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" 
-   { 
-       trimWhitespace(); 
-       trim(); 
-       add(" )"); 
-       write();
-   }
+}
+{
+   "@" { if (addLineBreak){ writeln();} add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" 
+   
+    { 
+        trimWhitespace(); 
+        trim(); 
+        add(" )");
+        if (addLineBreak)
+            writeln();
+        else
+            write();
+    }
 }
 
 void MarkerAnnotation(boolean addLineBreak):
-{}
 {
-    "@" { token_source.trimNL(); add("@"); } Name() 
-    {
-        write();
-        if (addLineBreak)
-        {
-            writeln();   
+}
+{
+    "@" 
+    { 
+        if (addLineBreak) { 
+            token_source.trimNL(); 
+            writeln(); 
         }
+        add("@"); 
+    } 
+    Name() 
+    {
+        if (addLineBreak)
+            writeln();
+        else
+            write();
     }
 }
 
 void SingleMemberAnnotation(boolean addLineBreak):
-{}
 {
-  "@" { add("@"); } Name() "(" { add("( "); } MemberValue() ")" 
+}
+{
+  "@" { if (addLineBreak) writeln(); add("@"); } Name() "(" { add("( "); } MemberValue() ")" {add(")");}
   { 
-      add(" )"); 
-      write();
-      if (addLineBreak)
-      {
-          writeln();
-      }
+        if (addLineBreak)
+            writeln();
+        else
+            write();
   }
 }
 
@@ -2459,10 +2565,12 @@ void AnnotationTypeMemberDeclaration():
    LOOKAHEAD(Type() <IDENTIFIER> "(")
    Type() t=<IDENTIFIER> { add(t); } "(" ")" { add("()"); } [ DefaultValue() ] ";" { add(";"); write(); }
   |
+   LOOKAHEAD(3)
    ClassOrInterfaceDeclaration(modifiers)
   |
    EnumDeclaration(modifiers)
   |
+   LOOKAHEAD(2)
    AnnotationTypeDeclaration(modifiers)
   |
    FieldDeclaration(modifiers)

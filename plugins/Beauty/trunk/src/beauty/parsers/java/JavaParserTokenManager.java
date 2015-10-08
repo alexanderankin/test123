@@ -139,6 +139,10 @@ public class JavaParserTokenManager implements JavaParserConstants
         return trimmed;
     }
 
+    static void trimNLs() {
+        while(trimNL());
+    }
+
     // trim all \n and/or \r from the end of the given string
     static void trimNL(String s) {
         StringBuilder sb = new StringBuilder(s);
@@ -684,7 +688,7 @@ private int jjMoveStringLiteralDfa0_0()
          return jjStopAtPos(0, 81);
       case 45:
          jjmatchedKind = 99;
-         return jjMoveStringLiteralDfa1_0(0x0L, 0x100200000000L);
+         return jjMoveStringLiteralDfa1_0(0x0L, 0x80100200000000L);
       case 46:
          jjmatchedKind = 82;
          return jjMoveStringLiteralDfa1_0(0x0L, 0x40000000000000L);
@@ -697,13 +701,13 @@ private int jjMoveStringLiteralDfa0_0()
          return jjStopAtPos(0, 80);
       case 60:
          jjmatchedKind = 85;
-         return jjMoveStringLiteralDfa1_0(0x0L, 0x408040008000000L);
+         return jjMoveStringLiteralDfa1_0(0x0L, 0x108040008000000L);
       case 61:
          jjmatchedKind = 84;
          return jjMoveStringLiteralDfa1_0(0x0L, 0x4000000L);
       case 62:
-         jjmatchedKind = 121;
-         return jjMoveStringLiteralDfa1_0(0x0L, 0x1b0000010000000L);
+         jjmatchedKind = 123;
+         return jjMoveStringLiteralDfa1_0(0x0L, 0x630000010000000L);
       case 63:
          return jjStopAtPos(0, 88);
       case 64:
@@ -817,14 +821,16 @@ private int jjMoveStringLiteralDfa1_0(long active0, long active1)
             return jjStopAtPos(1, 114);
          break;
       case 62:
-         if ((active1 & 0x100000000000000L) != 0L)
+         if ((active1 & 0x80000000000000L) != 0L)
+            return jjStopAtPos(1, 119);
+         else if ((active1 & 0x100000000000000L) != 0L)
+            return jjStopAtPos(1, 120);
+         else if ((active1 & 0x400000000000000L) != 0L)
          {
-            jjmatchedKind = 120;
+            jjmatchedKind = 122;
             jjmatchedPos = 1;
          }
-         else if ((active1 & 0x400000000000000L) != 0L)
-            return jjStopAtPos(1, 122);
-         return jjMoveStringLiteralDfa2_0(active0, 0L, active1, 0xb0000000000000L);
+         return jjMoveStringLiteralDfa2_0(active0, 0L, active1, 0x230000000000000L);
       case 97:
          return jjMoveStringLiteralDfa2_0(active0, 0x4800400c000L, active1, 0L);
       case 98:
@@ -897,9 +903,9 @@ private int jjMoveStringLiteralDfa2_0(long old0, long active0, long old1, long a
             return jjStopAtPos(2, 116);
          break;
       case 62:
-         if ((active1 & 0x80000000000000L) != 0L)
+         if ((active1 & 0x200000000000000L) != 0L)
          {
-            jjmatchedKind = 119;
+            jjmatchedKind = 121;
             jjmatchedPos = 2;
          }
          return jjMoveStringLiteralDfa3_0(active0, 0L, active1, 0x20000000000000L);
@@ -2072,14 +2078,14 @@ null, null, null, "\50", "\51", "\173", "\175", "\133", "\135", "\73", "\54", "\
 "\41\75", "\174\174", "\46\46", "\53\53", "\55\55", "\53", "\55", "\52", "\57", "\46", 
 "\174", "\136", "\45", "\74\74", "\53\75", "\55\75", "\52\75", "\57\75", "\46\75", 
 "\174\75", "\136\75", "\45\75", "\74\74\75", "\76\76\75", "\76\76\76\75", "\56\56\56", 
-"\76\76\76", "\76\76", "\76", "\74\76", };
+"\55\76", "\74\76", "\76\76\76", "\76\76", "\76", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
    "DEFAULT",
 };
 static final long[] jjtoToken = {
-   0x7ffffffffffffe01L, 0x7fffffffffffce8L, 
+   0x7ffffffffffffe01L, 0xffffffffffffce8L, 
 };
 static final long[] jjtoSkip = {
    0x1feL, 0x0L, 
@@ -2331,16 +2337,16 @@ void TokenLexicalActions(Token matchedToken)
 {
    switch(jjmatchedKind)
    {
-      case 119 :
-        image.append(jjstrLiteralImages[119]);
-        lengthOfMatch = jjstrLiteralImages[119].length();
+      case 121 :
+        image.append(jjstrLiteralImages[121]);
+        lengthOfMatch = jjstrLiteralImages[121].length();
      matchedToken.kind = GT;
      ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
      input_stream.backup(2);
          break;
-      case 120 :
-        image.append(jjstrLiteralImages[120]);
-        lengthOfMatch = jjstrLiteralImages[120].length();
+      case 122 :
+        image.append(jjstrLiteralImages[122]);
+        lengthOfMatch = jjstrLiteralImages[122].length();
      matchedToken.kind = GT;
      ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
      input_stream.backup(1);
