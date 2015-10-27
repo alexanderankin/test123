@@ -40,18 +40,18 @@
 
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
-	<property name="docs-proc.target"  value="xsltproc"/>
+	<property name="docs-proc.target"  value="none"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
-
+	<property name="jedit.plugins.dir" value="${install.dir}" />
    <property name="jedit.jar" value="${jedit.install.dir}/jedit.jar"/>
 
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.jar}"/>
-        <pathelement location="${install.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
 	</path>
 
 
