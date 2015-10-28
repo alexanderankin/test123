@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-	<uri resource="xsd-schema.xml" uri="http://docs.oasis-open.org/docbook/xml/5.0/xsd/docbook.xsd"/>
-	<uri resource="xlink.xml" typeId="DOCBOOK5"/>
-	<uri resource="mathml_example.xml" uri="http://docs.oasis-open.org/docbook/rng/5.0/docbook.rnc"/>
-	<include rules="jeditresource:/XML.jar!/xml/dtds/schemas.xml" />
-</locatingRules>
