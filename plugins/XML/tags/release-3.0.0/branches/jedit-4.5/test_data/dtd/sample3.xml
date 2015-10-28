@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<!DOCTYPE r PUBLIC "-//URI//BLA BLA" "sample.dtd">
-<!-- uses sample.dtd and WRONGLY tries to use a toto entity declared in sample2.xml
-  -->
-<r>
-	<p>Text&nbsp;text &test; &toto;</p>
-</r>

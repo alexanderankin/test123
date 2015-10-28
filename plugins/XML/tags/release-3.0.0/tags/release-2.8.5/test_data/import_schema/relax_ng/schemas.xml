@@ -1,5 +1,0 @@
-<?xml version="1.0" ?>
-<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-	<uri pattern="instance.xml" uri="test_multi_ns.rng"/>
-	<uri pattern="test_multi_ns.rng" typeId="RNG"/>
-</locatingRules>
