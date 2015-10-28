@@ -24,7 +24,7 @@
         <!-- {{{ Paths -->
         <path id="project.class.path">
                 <pathelement location="${jedit.install.dir}/jedit.jar"/>
-                <pathelement location="${install.dir}/commons-lang-2.3.jar" />
+                <fileset dir="${lib.dir}" includes="commons-lang*.jar"/>
         </path>
         <!-- }}} -->
 
