@@ -1,0 +1,86 @@
+<project name="JakartaCommons" default="dist" basedir=".">
+        <!-- Build file for JakartaCommons jEdit plugin.
+            It is not based on build-support/plugin-build.xml so
+            please don't use it as a starting point for your build.xml
+        -->
+        <!-- {{{ Properties -->
+        <property file="build.properties"/>
+        <property file="../build.properties"/>
+        <property file="${user.home}/.build.properties"/>
+        <property file="${user.home}/build.properties"/>
+
+        <property name="jar.name" value="${ant.project.name}.jar"/>
+
+        <property name="jedit.install.dir" value="../.."/>
+        <property name="src.dir" value="./src"/>
+        <property name="lib.dir" value="./lib"/>
+
+        <property name="install.dir" value=".."/>
+        <property name="build.dir" value="build"/>
+
+        <!-- }}} -->
+
+
+        <!-- {{{ Paths -->
+        <path id="project.class.path">
+                <pathelement location="${jedit.install.dir}/jedit.jar"/>
+                <fileset dir="${lib.dir}" includes="commons-lang*.jar"/>
+        </path>
+        <!-- }}} -->
+
+        <!-- {{{ Targets -->
+        <!-- {{{ 'init' target -->
+        <target name="init" description="Initializes this project">
+                <mkdir dir="${build.dir}"/>
+                <copy todir="${install.dir}">
+                    <fileset dir="${lib.dir}">
+                        <include name="*.jar"/>
+                    </fileset>
+                </copy>
+        </target>
+        <!-- }}} -->
+
+        <!-- {{{ 'compile' target -->
+        <target name="compile" depends="init" description="Compile project files">
+                <javac srcdir="${src.dir}"
+                                classpathref="project.class.path"
+                                destdir="${build.dir}"
+                                deprecation="${compiler.deprecation}"
+                                verbose="${compiler.verbose}"
+                                optimize="${compiler.optimize}"
+                                debug="${compiler.debug}"
+                                includeJavaRuntime="yes"/>
+        </target>
+        <!-- }}} -->
+
+
+
+        <!-- {{{ 'dist' target -->
+        <target name="dist" depends="compile" description="Builds the plugin jar">
+                <mkdir dir="${install.dir}"/>
+                 <jar jarfile="${install.dir}/${jar.name}">
+                        <fileset dir="${build.dir}"/>
+                        <fileset dir="${basedir}">
+                              <include name="*.html" />
+                              <include name="actions.xml" />
+                              <include name="lang_*.properties"/>
+                              <include name="*.props"/>
+                        </fileset>
+                </jar>
+        </target>
+        <!-- }}} -->
+
+        <!-- {{{ 'clean' target -->
+        <target name="clean" description="Clean project directory">
+                <delete dir="${build.dir}"/>
+                <delete>
+                        <fileset dir="." defaultexcludes="no">
+                                <include name="**/*~"/>
+                        </fileset>
+                </delete>
+        </target>
+        <!-- }}} -->
+
+        <!-- }}} -->
+
+</project>
