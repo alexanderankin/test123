@@ -201,10 +201,7 @@ Parser methods follow.
 	    // ;
 	}
 	@Override public void exitClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
-	    // only thing to handle here is the semicolon, the other choices should already be on the stack
-	    if (ctx.fieldDeclaration() == null && ctx.methodDeclaration() == null && ctx.classDeclaration() == null && ctx.interfaceDeclaration() == null) {
-	        stack.push(";\n");   
-	    }
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
 	@Override public void enterStatementNoShortIf(@NotNull Java8Parser.StatementNoShortIfContext ctx) { 
@@ -223,26 +220,24 @@ Parser methods follow.
 	}
 	@Override public void exitAnnotationTypeElementDeclaration(@NotNull Java8Parser.AnnotationTypeElementDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String defaultValue = "";
-	    if (ctx.defaultValue() != null) {
-	        defaultValue = stack.pop();    
-	    }
-	    String dims = "";
-	    if (ctx.dims() != null) {
-	        dims = stack.pop();    
-	    }
+	    String semi = stack.pop();
+	    String defaultValue = ctx.defaultValue() == null ? "" : stack.pop();;
+	    String dims = ctx.dims() == null ? "" : stack.pop();
+	    String rparen = stack.pop();
+	    String lparen = stack.pop();
+	    String identifier = stack.pop();
 	    String type = stack.pop();
 	    if (ctx.annotationTypeElementModifier() != null) {
 	        sb.append(reverse(ctx.annotationTypeElementModifier().size(), " ")).append(' ');
 	    }
-	    sb.append(type).append(' ').append(ctx.Identifier().getText()).append("()");
+	    sb.append(type).append(' ').append(identifier).append(lparen).append(rparen);
 	    if (!dims.isEmpty()) {
 	        sb.append(' ').append(dims);    
 	    }
 	    if (!defaultValue.isEmpty()) {
 	        sb.append(' ').append(defaultValue);    
 	    }
-	    sb.append(";\n");
+	    sb.append(semi).append("\n");
 	    stack.push(sb.toString());
 	}
 
@@ -251,10 +246,13 @@ Parser methods follow.
 	}
 	@Override public void exitMethodInvocation_lf_primary(@NotNull Java8Parser.MethodInvocation_lf_primaryContext ctx) {
 	    StringBuilder sb = new StringBuilder();
+	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
-	    String identifier = ctx.Identifier().getText();
+	    String lparen = stack.pop();
+	    String identifier = stack.pop();
 	    String typeArguments = ctx.typeArguments() == null ? "" : stack.pop();
-	    sb.append('.').append(typeArguments).append(' ').append(identifier).append("(").append(argumentList).append(")");
+	    String dot = stack.pop();
+	    sb.append(dot).append(typeArguments).append(' ').append(identifier).append(lparen).append(argumentList).append(rparen);
 	    stack.push(sb.toString());
 	}
 
@@ -270,20 +268,22 @@ Parser methods follow.
 	}
 	@Override public void exitAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("{\n");
+	    String rbrace = stack.pop();
 	    if (ctx.annotationTypeMemberDeclaration() != null) {
 	        for (int i = 0; i < ctx.annotationTypeMemberDeclaration().size(); i++) {
 	            sb.append(stack.pop()).append("\n");    
 	        }
 	    }
-	    sb.append("}\n");
+	    String lbrace = stack.pop();
+	    sb.insert(0, lbrace);
+	    sb.append(rbrace).append("\n");
 	    stack.push(sb.toString());
 	}
 
 	@Override public void enterRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { }
 	
 	@Override public void exitRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { 
-	    stack.push(ctx.getText());
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 	
 	@Override public void enterConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
@@ -291,10 +291,7 @@ Parser methods follow.
 	    // static final	
 	}
 	@Override public void exitConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
-	    if (ctx.annotation() == null) {
-	        stack.push(ctx.getText());
-	    }
-	    // if there is an annotation, it will already be on the stack
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
 	@Override public void enterLambdaBody(@NotNull Java8Parser.LambdaBodyContext ctx) { 
@@ -310,7 +307,7 @@ Parser methods follow.
 	}
 	@Override public void exitArgumentList(@NotNull Java8Parser.ArgumentListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-        sb.append(reverse(ctx.expression().size(), ", "));
+        sb.append(reverse(ctx.expression().size() * 2, " "));
 	    stack.push(sb.toString());
 	}
 
@@ -320,7 +317,7 @@ Parser methods follow.
         // |   '>' '>' '>'
  	}
 	@Override public void exitShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) { 
-	    stack.push(ctx.getText());
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 	
 	@Override public void enterClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) {
@@ -341,28 +338,33 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    
 	    String classBody = ctx.classBody() == null ? "" : stack.pop();
+	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
+	    String lparen = stack.pop();
 	    String typeArgumentsOrDiamond = ctx.typeArgumentsOrDiamond() == null ? "" : stack.pop();
 	    
-	    // expression name
+	    // expression name choice
 	    if (ctx.expressionName() != null) {
 	        String annotationIdentifier = stack.pop();
 	        String typeArguments = ctx.typeArguments() == null ? "" : stack.pop();
+	        String new_ = stack.pop();    // 'new'
+	        String dot = stack.pop();
 	        String name = stack.pop();    // expression name
-	        sb.append(name).append(".new ").append(typeArguments).append(annotationIdentifier);
+	        sb.append(name).append(dot).append(new_).append(typeArguments).append(annotationIdentifier);
 	    }
 	    else {
             // 'new' choice
             String annotationIdentifiers = "";
             if (ctx.annotationIdentifier() != null) {
-                annotationIdentifiers = reverse(ctx.annotationIdentifier().size(), ".");
+                annotationIdentifiers = reverse(ctx.annotationIdentifier().size(), "");
             }
             String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
-            sb.append("new ").append(typeArguments).append(annotationIdentifiers);
+            String new_ = stack.pop();
+            sb.append(new_).append(' ').append(typeArguments).append(annotationIdentifiers);
 	    }
 	    
 	    // common ending
-	    sb.append(typeArgumentsOrDiamond).append("(").append(argumentList).append(")").append(classBody);
+	    sb.append(typeArgumentsOrDiamond).append(lparen).append(argumentList).append(rparen).append(classBody);
 	    stack.push(sb.toString());
 	}
 
@@ -423,7 +425,7 @@ Parser methods follow.
 	    // Identifier
 	}
 	@Override public void exitSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) {
-	    stack.push(ctx.Identifier().getText());
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
 	@Override public void enterExpressionName(@NotNull Java8Parser.ExpressionNameContext ctx) { 
@@ -432,8 +434,13 @@ Parser methods follow.
 	}
 	@Override public void exitExpressionName(@NotNull Java8Parser.ExpressionNameContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String typename = ctx.ambiguousName() == null ? "" : stack.pop() + '.';
-	    sb.append(typename).append(ctx.Identifier().getText());
+	    String identifier = stack.pop();
+	    if (ctx.ambiguousName() != null) {
+	        String dot = stack.pop();
+	        String name = stack.pop();
+	        sb.append(name).append(dot);
+	    }
+	    sb.append(identifier);
 	    stack.push(sb.toString());
 	    
 	}
@@ -458,14 +465,17 @@ Parser methods follow.
 	}
 
 	@Override public void enterConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) {
-	    // [TypeParamaters] SimpleTypeName ( [FormalParameterList] )
+	    // [TypeParameters] SimpleTypeName ( [FormalParameterList] )
 	}
 	@Override public void exitConstructorDeclarator(@NotNull Java8Parser.ConstructorDeclaratorContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
+	    indent(sb);
+	    String rparen = stack.pop();
 	    String formalParameters = "";
 	    if (ctx.formalParameterList() != null) {
 	        formalParameters = stack.pop();    
 	    }
+	    String lparen = stack.pop();
 	    String typeName = stack.pop();
 	    String typeParameters = "";
 	    if (ctx.typeParameters() != null) {
@@ -474,9 +484,9 @@ Parser methods follow.
 	    if (!typeParameters.isEmpty()) {
 	        sb.append(typeParameters).append(' ');    
 	    }
-	    sb.append(typeName).append('(');
+	    sb.append(typeName).append(lparen);
         sb.append(formalParameters);
-        sb.append(')');
+        sb.append(rparen);
         stack.push(sb.toString());
 	}
 
@@ -485,17 +495,19 @@ Parser methods follow.
         // assert Expression : Expression ;	
 	}
 	@Override public void exitAssertStatement(@NotNull Java8Parser.AssertStatementContext ctx) { 
-	    StringBuilder sb = new StringBuilder("assert ");
+	    StringBuilder sb = new StringBuilder();
+	    String semi = stack.pop();
 	    if (ctx.expression() != null) {
 	        switch(ctx.expression().size()) {
                 case 1:
                     String expression = stack.pop();
-                    sb.append(expression).append(";\n");
+                    sb.append(expression).append(semi).append("\n");
                     break;
                 case 2:
                     String expression2 = stack.pop();
+                    String colon = stack.pop();
                     String expression1 = stack.pop();
-                    sb.append(expression1).append(" : ").append(expression2).append(";\n");
+                    sb.append(expression1).append(' ').append(colon).append(' ').append(expression2).append(semi).append("\n");
 	        }
 	    }
 	    stack.push(sb.toString());
@@ -513,7 +525,8 @@ Parser methods follow.
 	        String ai = stack.pop();
 	        String dims = stack.pop();
 	        String type = stack.pop();
-	        sb.append("new ").append(type).append(' ').append(dims).append(' ').append(ai);
+	        String new_ = stack.pop();
+	        sb.append(new_).append(' ').append(type).append(' ').append(dims).append(' ').append(ai);
 	    }
 	    else {
 	        // first two choices    
@@ -523,7 +536,8 @@ Parser methods follow.
 	        }
 	        String dimExprs = stack.pop();
 	        String type = stack.pop();
-	        sb.append("new ").append(type).append(' ').append(dimExprs);
+	        String new_ = stack.pop();
+	        sb.append(new_).append(' ').append(type).append(' ').append(dimExprs);
 	        if (!dims.isEmpty()) {
 	            sb.append(' ').append(dims);    
 	        }
@@ -557,9 +571,11 @@ Parser methods follow.
 	}
 	@Override public void exitVariableDeclaratorId(@NotNull Java8Parser.VariableDeclaratorIdContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(ctx.Identifier().getText());
-	    if (ctx.dims() != null) {
-	        sb.append(' ').append(stack.pop());
+	    String dims = ctx.dims() == null ? "" : stack.pop();
+	    String identifier = stack.pop();
+	    sb.append(identifier);
+	    if (!dims.isEmpty()) {
+	        sb.append(' ').append(dims);   
 	    }
 	    stack.push(sb.toString());
 	}
@@ -579,7 +595,8 @@ Parser methods follow.
 	    }
 	    String block = stack.pop();
 	    String rs = stack.pop();
-	    sb.append("try ").append(rs).append(' ').append(block).append(catches).append(finally_);
+	    String try_ = stack.pop();
+	    sb.append(try_).append(' ').append(rs).append(' ').append(block).append(catches).append(finally_);
 	    stack.push(sb.toString());
 	}
 
@@ -588,7 +605,10 @@ Parser methods follow.
 	}
 	@Override public void exitTypeArguments(@NotNull Java8Parser.TypeArgumentsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append('<').append(stack.pop()).append('>');
+	    String rangle = stack.pop();
+	    String list = stack.pop();
+	    String langle = stack.pop();
+	    sb.append(langle).append(list).append(rangle);
 	    stack.push(sb.toString());
 	    
 	}
@@ -606,7 +626,7 @@ Parser methods follow.
 	@Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.exceptionType() != null) {
-	        sb.append(reverse(ctx.exceptionType().size(), ", "));
+	        sb.append(reverse(ctx.exceptionType().size() * 2, " "));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -620,9 +640,9 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.additiveExpression() != null) {
 	        // one of the last two choices
-	        String me = stack.pop();
+	        String me = stack.pop().trim();
 	        String ao = stack.pop();
-	        String ae = stack.pop();
+	        String ae = stack.pop().trim();
 	        sb.append(ae).append(' ').append(ao).append(' ').append(me);
 	    }
 	    else {
@@ -675,14 +695,18 @@ Parser methods follow.
 	    StringBuilder sh = new StringBuilder();
 	    if (ctx.primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary() != null) {
 	        for (int i = 0; i < ctx.primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary().size(); i++) {
+	            String rsquare = stack.pop();
                 String expr = stack.pop();
+                String lsquare = stack.pop();
                 String pn = stack.pop();
-                sb.append(pn).append('[').append(expr).append(']').append(' ');
+                sb.append(pn).append(lsquare).append(expr).append(rsquare).append(' ');
 	        }
 	    }
+	    String rsquare = stack.pop();
 	    String expr = stack.pop();
+	    String lsquare = stack.pop();
 	    String pn = stack.pop();
-	    sb.append(pn).append('[').append(expr).append(']').append(' ').append(sh);
+	    sb.append(pn).append(lsquare).append(expr).append(rsquare).append(' ').append(sh);
 	    stack.push(sb.toString());
 	}
 
@@ -691,12 +715,11 @@ Parser methods follow.
 	}
 	@Override public void exitInferredFormalParameterList(@NotNull Java8Parser.InferredFormalParameterListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-        // TODO: check if these are backwards. Don't use reverse() here as 
-        // Identifiers are not on the stack.
+        // TODO: check if these are backwards, maybe use reverse?
         for (int i = 0; i < ctx.Identifier().size(); i++) {
-            sb.append(ctx.Identifier(i).getText());
+            sb.append(stack.pop());
             if (i < ctx.Identifier().size() - 1) {
-                sb.append(", ");    
+                sb.append(stack.pop()); // pop the comma
             }
         }
 	    stack.push(sb.toString());
@@ -707,12 +730,14 @@ Parser methods follow.
 	}
 	@Override public void exitReturnStatement(@NotNull Java8Parser.ReturnStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("return");
-	    if (ctx.expression() != null) {
-	        sb.append(' ');
-	        sb.append(stack.pop());
+	    String semi = stack.pop();
+	    String expression = ctx.expression() == null ? "" : stack.pop();
+	    String return_ = stack.pop();
+	    sb.append(return_);
+	    if (!expression.isEmpty()) {
+	        sb.append(' ').append(expression);
 	    }
-	    sb.append(";\n");
+	    sb.append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
 	@Override public void enterTypeImportOnDemandDeclaration(@NotNull Java8Parser.TypeImportOnDemandDeclarationContext ctx) { 
@@ -720,9 +745,12 @@ Parser methods follow.
 	}
 	@Override public void exitTypeImportOnDemandDeclaration(@NotNull Java8Parser.TypeImportOnDemandDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("import ");
-	    sb.append(stack.pop());
-	    sb.append(".*;\n");
+	    String semi = stack.pop();
+	    String star = stack.pop();
+	    String dot = stack.pop();
+	    String name = stack.pop();
+	    String import_ = stack.pop();
+	    sb.append(import_).append(' ').append(name).append(dot).append(star).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
 	@Override public void enterTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) { 
@@ -730,7 +758,10 @@ Parser methods follow.
 	}
 	@Override public void exitTypeParameters(@NotNull Java8Parser.TypeParametersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append('<').append(stack.pop()).append('>');
+	    String rangle = stack.pop();
+	    String list = stack.pop();
+	    String langle = stack.pop();
+	    sb.append(langle).append(list).append(rangle);
 	    stack.push(sb.toString());
 	}
 	@Override public void enterLastFormalParameter(@NotNull Java8Parser.LastFormalParameterContext ctx) { 
@@ -743,27 +774,24 @@ Parser methods follow.
 	    // only need to handle the first choice
 	    if (ctx.unannType() != null) {
             String vdi = stack.pop();
-            
+            String ellipsis = stack.pop();
             String annotations = "";
             if (ctx.annotation() != null && !ctx.annotation().isEmpty()) {
                 annotations = reverse(ctx.annotation().size(), " ") + ' ';
             }
-            
             String type = stack.pop();
-            
             if (ctx.variableModifier() != null) {
                 for (int i = 0; i < ctx.variableModifier().size(); i++) {
                     sb.append(stack.pop()).append(' ');    
                 }
             }
-            
             sb.append(type);
             if (!annotations.isEmpty()) {
                 sb.append(' ').append(annotations);
             } else {
                 trim(sb);   // remove space after type
             }
-            sb.append("... ").append(vdi);
+            sb.append(ellipsis).append(' ').append(vdi);
             stack.push(sb.toString());
 	    }
 	}
@@ -777,7 +805,7 @@ Parser methods follow.
 	    // NullLiteral
 	}
 	@Override public void exitLiteral(@NotNull Java8Parser.LiteralContext ctx) { 
-	    stack.push(ctx.getText());
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
 	@Override public void enterResult(@NotNull Java8Parser.ResultContext ctx) {
@@ -785,9 +813,7 @@ Parser methods follow.
 	    // void
 	}
 	@Override public void exitResult(@NotNull Java8Parser.ResultContext ctx) { 
-	    if (ctx.unannType() == null) {
-	        stack.push("void ");   
-	    }
+	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
 	@Override public void enterFieldAccess_lfno_primary(@NotNull Java8Parser.FieldAccess_lfno_primaryContext ctx) {
@@ -797,10 +823,15 @@ Parser methods follow.
 	}
 	@Override public void exitFieldAccess_lfno_primary(@NotNull Java8Parser.FieldAccess_lfno_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
+	    String identifier = stack.pop();
+	    String dot = stack.pop();
+	    String super_ = stack.pop();
 	    if (ctx.typeName() != null) {
-	        sb.append(stack.pop()).append('.');    
+	        String dot2 = stack.pop();
+	        String name = stack.pop();
+	        sb.append(name).append(dot2);    
 	    }
-	    sb.append("super.").append(ctx.Identifier().getText());
+	    sb.append(super_).append(dot).append(identifier);
 	    stack.push(sb.toString());
 	}
 
@@ -810,10 +841,11 @@ Parser methods follow.
 	@Override public void exitVariableDeclarator(@NotNull Java8Parser.VariableDeclaratorContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String vi = ctx.variableInitializer() == null ? "" : stack.pop();
+	    String equal = ctx.variableInitializer() == null ? "" : stack.pop();
 	    String vd = stack.pop();
 	    sb.append(vd);
 	    if (!vi.isEmpty()) {
-	        sb.append(" = ").append(vi);    
+	        sb.append(' ').append(equal).append(' ').append(vi);    
 	    }
 	    stack.push(sb.toString());
 	}
@@ -822,8 +854,10 @@ Parser methods follow.
 	    // finally Block
 	}
 	@Override public void exitFinally_(@NotNull Java8Parser.Finally_Context ctx) { 
-	    StringBuilder sb = new StringBuilder("finally ");
-	    sb.append(stack.pop());
+	    StringBuilder sb = new StringBuilder();
+	    String block = stack.pop();
+	    String finally_ = stack.pop();
+	    sb.append(finally_).append(' ').append(block);
 	    stack.push(sb.toString());
 	}
 
@@ -832,14 +866,16 @@ Parser methods follow.
 	    ++tabCount;
 	}
 	@Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) {
+	    String end = stack.pop();    // }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("{\n");
 	    indent(sb);
 	    if (ctx.classBodyDeclaration() != null) {
 	        sb.append(reverse(ctx.classBodyDeclaration().size(), ""));
 	    }
+	    String start = stack.pop();    // {
+	    sb.insert(0, start);
 	    --tabCount;
-	    String end = indent("}");
+	    end = indent(end);
 	    sb.append(end).append("\n");
 	    stack.push(sb.toString());
 	}
@@ -1072,11 +1108,10 @@ Parser methods follow.
 	}
 	@Override public void exitConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    indent(sb);
 	    String body = stack.pop();
 	    String throws_ = ctx.throws_() == null ? "" : stack.pop() + ' ';
 	    String cd = stack.pop();
-	    if (ctx.constructorModifier() != null) {
+	    if (ctx.constructorModifier() != null && !ctx.constructorModifier().isEmpty()) {
 	        sb.append(reverse(ctx.constructorModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(cd).append(' ').append(throws_).append(body);
@@ -1237,7 +1272,7 @@ Parser methods follow.
 	    String dims = ctx.dims() == null ? "" : stack.pop();
 	    String params = ctx.formalParameterList() == null ? "" : stack.pop();
 	    String identifier = ctx.Identifier().getText();
-	    sb.append(identifier).append(" (").append(params).append(") ").append(dims);
+	    sb.append(identifier).append("(").append(params).append(")").append(dims);
 	    stack.push(sb.toString());
 	}
 
@@ -1415,17 +1450,18 @@ Parser methods follow.
         String superInterfaces = ctx.superinterfaces() == null ? "" : stack.pop();
         String superClass = ctx.superclass() == null ? "" : stack.pop() + ' ';
         String params = ctx.typeParameters() == null ? "" : stack.pop() + ' ';
-        String identifier = ctx.Identifier().getText() + ' ';
+        String identifier = stack.pop();
+        String classNode = stack.pop();
         if (ctx.classModifier() != null && !ctx.classModifier().isEmpty()) {
 	        sb.append(reverse(ctx.classModifier().size(), " ")).append(' ');
         }
-        sb.append("class ").append(identifier).append(params).append(superClass).append(superInterfaces).append(body);
+        sb.append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
         stack.push(sb.toString());
 	}
 
 	@Override public void enterFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) { 
 	    // ReceiverParameter
-	    // FormalParamters , LastFormalParameter
+	    // FormalParameters , LastFormalParameter
 	    // LastFormalParameter
 	}
 	@Override public void exitFormalParameterList(@NotNull Java8Parser.FormalParameterListContext ctx) { 
@@ -1494,6 +1530,13 @@ Parser methods follow.
         output.append(packageDeclaration);
         output.append(importDeclarations);
         output.append(typeDeclarations);
+        
+        // might be comments before the package declaration
+        if (stack.size() > 0) {
+            while(!stack.isEmpty()) {
+                output.insert(0, stack.pop());
+            }
+        }
 	    // all done!
 	}
 
@@ -1587,14 +1630,14 @@ Parser methods follow.
 	@Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    indent(sb);
-	    String body = stack.pop();
+        String body = stack.pop();
 	    String header = stack.pop();
 	    if (ctx.methodModifier() != null) {
 	        for (int i = 0; i < ctx.methodModifier().size(); i++) {
 	            sb.append(stack.pop()).append(' ');    
 	        }
 	    }
-	    sb.append(header).append(body);
+	    sb.append(header).append(' ').append(body);
 	    stack.push(sb.toString());
 	}
 
@@ -1664,13 +1707,19 @@ Parser methods follow.
 	    indent(sb);
 	    String args = ctx.argumentList() == null ? "" : stack.pop();
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
+	    
+	    // 3rd and 4th choice
 	    if (ctx.expressionName() != null || ctx.primary() != null) {
-	        sb.append(stack.pop()).append('.').append(typeArgs).append("super (").append(args).append(");\n");
+	        sb.append(stack.pop()).append('.').append(typeArgs).append("super(").append(args).append(");\n");
 	    }
 	    else {
-	        sb.append(typeArgs); 
+	        // 1st and second choice
+	        sb.append(typeArgs);
+	        if (!typeArgs.isEmpty()) {
+	            sb.append(' ');    
+	        }
 	        String raw = ctx.getText();
-	        sb.append(raw.indexOf("this") > -1 ? " this " : " super ");
+	        sb.append(raw.indexOf("this") > -1 ? "this" : "super");
 	        sb.append("(").append(args).append(");\n");
 	    }
 	    stack.push(sb.toString());
@@ -1941,7 +1990,8 @@ Parser methods follow.
 	@Override public void exitStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    indent(sb);
-	    sb.append("static ");
+	    sb.append("\n");
+	    sb.append(indent("static "));
 	    sb.append(stack.pop());
 	    stack.push(sb.toString());
 	}
@@ -2042,7 +2092,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
         String vdl = stack.pop();
         String type = stack.pop();
-	    if (ctx.variableModifier() != null) {
+	    if (ctx.variableModifier() != null && !ctx.variableModifier().isEmpty()) {
 	        sb.append(reverse(ctx.variableModifier().size(), " ")).append(' ');
 	    }
         sb.append(type).append(' ').append(vdl);
@@ -2311,11 +2361,13 @@ Parser methods follow.
 	}
 	@Override public void exitBlock(@NotNull Java8Parser.BlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
+	    String blockEnd = stack.pop();
 	    sb.append("{\n");
 	    if (ctx.blockStatements() != null) {
 	        sb.append(stack.pop()).append('\n');   
 	    }
 	    --tabCount;
+	    String blockStart = stack.pop();
 	    String end = indent("}");
 	    sb.append(end).append("\n");
 	    stack.push(sb.toString());
@@ -2401,23 +2453,13 @@ Parser methods follow.
 	}
 	@Override public void exitShiftExpression(@NotNull Java8Parser.ShiftExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String ae = stack.pop();
+	    String additiveExpression = stack.pop();
 	    if (ctx.shiftExpression() != null) {
-	         String se = stack.pop();
-	         String raw = ctx.getText();
-	         String operator = "";
-	         if (raw.indexOf(">>>") > -1) {
-	              operator = " >>> ";   
-	         }
-	         else if (raw.indexOf("<<") > -1) {
-	              operator = " << ";   
-	         }
-	         else {
-	             operator = " >> ";    
-	         }
-	         sb.append(se).append(operator);
+	         String shiftExpression = stack.pop();
+	         String shiftOperator = stack.pop();
+	         sb.append(shiftExpression).append(' ').append(shiftOperator).append(' ');
 	    }
-	    sb.append(ae);
+	    sb.append(additiveExpression);
 	    stack.push(sb.toString());
 	}
 	
@@ -2550,21 +2592,24 @@ Parser methods follow.
 	    // abstract static final strictfp
 	}
 	@Override public void exitClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) {
+	    /*
 	    if (ctx.annotation() == null) {
 	        stack.push(ctx.getText());
 	    }
+	    */
 	    // if there is an annotation, it will already be on the stack
+	    // nothing to do here, either an annotation or one of the terminals will be on the stack
 	}
 
 	@Override public void enterFieldAccess(@NotNull Java8Parser.FieldAccessContext ctx) { 
-	    // Primary . Identifier - Done
-	    // super . Identifier - Done
-	    // TypeName . super . Identifier - Done	
+	    // Primary . Identifier
+	    // super . Identifier
+	    // TypeName . super . Identifier
 	}
 	@Override public void exitFieldAccess(@NotNull Java8Parser.FieldAccessContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.primary() != null) {
-	        sb.append(stack.pop()).append('.').append(ctx.Identifier());
+	        sb.append(stack.pop().trim()).append('.').append(ctx.Identifier());
 	    }
 	    else if (ctx.typeName() != null) {
 	        sb.append(stack.pop()).append(".super.").append(ctx.Identifier());    
@@ -2594,9 +2639,11 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String bs = ctx.blockStatements() == null ? "" : stack.pop();
 	    String eci = ctx.explicitConstructorInvocation() == null ? "" : stack.pop();
-	    sb.append("{\n").append(eci).append(bs).append("\n}\n");
-	    stack.push(sb.toString());
+	    sb.append("{\n").append(eci).append(bs).append("\n");
 	    --tabCount;
+	    String end = indent("}");
+	    sb.append(end).append("\n");
+	    stack.push(sb.toString());
 	}
 
 	@Override public void enterCatchClause(@NotNull Java8Parser.CatchClauseContext ctx) {
@@ -2645,7 +2692,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String vdi = stack.pop();
 	    String unannType = stack.pop();
-	    if (ctx.variableModifier() != null) {
+	    if (ctx.variableModifier() != null && !ctx.variableModifier().isEmpty()) {
 	        sb.append(reverse(ctx.variableModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(unannType).append(' ').append(vdi);
@@ -2814,9 +2861,7 @@ Parser methods follow.
 	    // (one of) =  *=  /=  %=  +=  -=  <<=  >>=  >>>=  &=  ^=  |=
 	}
 	@Override public void exitAssignmentOperator(@NotNull Java8Parser.AssignmentOperatorContext ctx) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(' ').append(ctx.getText()).append(' ');
-	    stack.push(sb.toString());
+	    stack.push(ctx.getText());
 	}
 
 	@Override public void enterLabeledStatementNoShortIf(@NotNull Java8Parser.LabeledStatementNoShortIfContext ctx) { 
@@ -3328,10 +3373,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.typeParameters() == null) {
 	        // first option
-	        String throws_ = "";
-	        if (ctx.throws_() != null) {
-	            throws_ = stack.pop();   
-	        }
+	        String throws_ = ctx.throws_() == null ? "" : stack.pop();
 	        String methodDeclarator = stack.pop();
 	        String result = stack.pop();
 	        sb.append(result).append(' ').append(methodDeclarator);
@@ -3341,10 +3383,7 @@ Parser methods follow.
 	    }
 	    else {
 	        // second option 
-	        String throws_ = "";
-	        if (ctx.throws_() != null) {
-	            throws_ = stack.pop();   
-	        }
+	        String throws_ = ctx.throws_() == null ? "" : stack.pop();
 	        String methodDeclarator = stack.pop();
 	        String result = stack.pop();
 	        StringBuilder annotations = new StringBuilder();
@@ -3358,7 +3397,7 @@ Parser methods follow.
 	        sb.append(annotations.toString());
 	        sb.append(result).append(' ').append(methodDeclarator);
 	        if (!throws_.isEmpty()) {
-	            sb.append(' ').append(throws_);    
+	            sb.append(throws_);    
 	        }
 	    }
 	    stack.push(sb.toString());
@@ -3436,9 +3475,11 @@ Parser methods follow.
 	    }
 	    else {
 	        // super
+	        System.out.println("+++++ super before: >" + sb.toString() + "<");
 	        String identifier = ctx.Identifier().getText();
-	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
+	        String typeArgs = ctx.typeArguments() == null || ctx.typeArguments().isEmpty() ? "" : stack.pop() + ' ';
 	        sb.append("super.").append(typeArgs).append(identifier);
+	        System.out.println("+++++ super after: >" + sb.toString() + "<");
 	    }
 	    // common ending
 	    sb.append('(').append(argumentList).append(')');
@@ -3500,7 +3541,8 @@ Parser methods follow.
 	}
 	@Override public void exitLocalVariableDeclarationStatement(@NotNull Java8Parser.LocalVariableDeclarationStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-        sb.append(stack.pop()).append(";\n");
+	    //indent(sb);
+        sb.append(stack.pop().trim()).append(";");
 	    stack.push(sb.toString());
 	}
 
@@ -3791,39 +3833,54 @@ Parser methods follow.
 
 
 	@Override public void enterEveryRule(@NotNull ParserRuleContext ctx) {
+	    /*
         Token token = ctx.getStart(); 
         int tokenIndex = token.getTokenIndex();
+        System.out.println("+++++ token: " + token + ", " + tokenIndex);
         List<Token> commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, Java8Lexer.COMMENTS);
         if (commentTokens != null) {
             if ( commentTokens != null ) {
-                // TODO: there could be multiple line comments
+                // there could be multiple line comments
                 // like this comment is on two lines
                 for (Token commentToken : commentTokens) {
+                    System.out.println("+++++ commentToken: " + (commentToken == null ? "null" : commentToken.getText()));
                     if ( commentToken != null && commentToken.getType() == Java8Lexer.LINE_COMMENT) {
                         String comment = commentToken.getText();
-                        String last = stack.peek();
-                        if (last != null && last.indexOf(comment) == -1) {
-                            last = stack.pop();
-                            last = last + "    " + comment + "\n";
-                            stack.push(last);
+                        if (stack.size() == 0) {
+                            stack.push(comment + '\n');
+                        }
+                        else {
+                            String last = stack.peek();
+                            if (last != null && last.indexOf(comment) == -1) {
+                                last = stack.pop();
+                                last = last + "    " + comment + "\n";
+                                stack.push(last);
+                            }
                         }
                     }
-                    else if ( commentToken != null && commentToken.getType() == Java8Lexer.COMMENT) {
+                    else if ( commentToken != null && (commentToken.getType() == Java8Lexer.COMMENT || commentToken.getType() == Java8Lexer.DOC_COMMENT)) {
                         String comment = commentToken.getText();
-                        String last = stack.peek();
-                        if (last != null && last.indexOf(comment) == -1) {
-                            last = stack.pop();
-                            last = last + comment;
-                            stack.push(last);
+                        if (stack.size() == 0) {
+                            stack.push(comment + '\n');
+                        }
+                        else {
+                            String last = stack.peek();
+                            if (last != null && last.indexOf(comment) == -1) {
+                                last = stack.pop();
+                                last = last + comment;
+                                stack.push(last);
+                            }
                         }
                     }
                 }
             }
         }
+        */
 	}
 	
 	// handle comments
 	@Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { 
+	    /*
         Token semi = ctx.getStop(); 
         if (Java8Lexer.SEMI == semi.getType()) {
             int i = semi.getTokenIndex();
@@ -3851,8 +3908,48 @@ Parser methods follow.
                 }
             }
         }
+        */
 	}
 
-	@Override public void visitTerminal(@NotNull TerminalNode node) { }
+	@Override public void visitTerminal(@NotNull TerminalNode node) { 
+        String terminalText = node.getText();
+        stack.push(terminalText);
+        System.out.println("+++++ visitTerminal: " + terminalText);        
+        Token token = node.getSymbol(); 
+        int tokenIndex = token.getTokenIndex();
+        List<Token> commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, Java8Lexer.COMMENTS);
+        if (commentTokens != null) {
+            if ( commentTokens != null ) {
+                // there could be multiple line comments
+                // like this comment is on two lines
+                for (Token commentToken : commentTokens) {
+                    if ( commentToken != null && commentToken.getType() == Java8Lexer.LINE_COMMENT) {
+                        String comment = commentToken.getText();
+                        
+                        if (stack.size() == 0) {
+                            stack.push(comment + '\n');
+                        }
+                        else {
+                            String last = stack.peek();
+                            if (last != null && last.indexOf(comment) == -1) {
+                                last = stack.pop();
+                                last = last + "    " + comment + "\n";
+                                stack.push(last);
+                            }
+                        }
+                    }
+                    else if ( commentToken != null && (commentToken.getType() == Java8Lexer.COMMENT || commentToken.getType() == Java8Lexer.DOC_COMMENT)) {
+                        String comment = commentToken.getText();
+                        String last = stack.peek();
+                        if (last != null && last.indexOf(comment) == -1) {
+                            last = stack.pop();
+                            last = last + comment;
+                            stack.push(last);
+                        }
+                    }
+                }
+            }
+        }
+	}
 	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
 }
