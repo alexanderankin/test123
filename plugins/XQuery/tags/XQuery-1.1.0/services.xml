@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+    <SERVICE CLASS="xquery.Adapter" NAME="SaxonAdapter">
+        new saxonadapter.SaxonAdapter();
+    </SERVICE>
+    
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="xquery">
+        new sidekick.xquery.XQuerySideKickParser();
+    </SERVICE>
+    
+</SERVICES>
