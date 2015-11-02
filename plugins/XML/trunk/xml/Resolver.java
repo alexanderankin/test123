@@ -327,11 +327,11 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			if(is == null)return null;
 			else return new InputSourceAsLSInput(is);
 		}catch(SAXException e){
-			throw new RuntimeException("Error loading resource "+systemId,e);
-			//maybe return null
+			Log.log(Log.WARNING,Resolver.class,"resolveResource("+type+","+namespaceURI+","+publicId+","+systemId+","+baseURI+") error", e);
+			return null;
 		}catch(IOException e){
-			throw new RuntimeException("Error loading resource "+systemId,e);
-			//maybe return null
+			Log.log(Log.WARNING,Resolver.class,"resolveResource("+type+","+namespaceURI+","+publicId+","+systemId+","+baseURI+") "+e.getClass()+" "+e);
+			return null;
 		}
 	}
 	
