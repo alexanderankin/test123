@@ -2915,12 +2915,12 @@ Parser methods follow.
 	@Override public void exitCastExpression(@NotNull Java8Parser.CastExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.unaryExpression() != null) {
-	        String expr = stack.pop();
+	        String expr = stack.pop().trim();
 	        String type = stack.pop();
 	        sb.append("(").append(type).append(")").append(expr);
 	    }
 	    else {
-	        String expr = stack.pop();
+	        String expr = stack.pop().trim();
 	        StringBuilder bounds = new StringBuilder();
 	        if (ctx.additionalBound() != null) {
 	            for (int i = 0; i < ctx.additionalBound().size(); i++) {
@@ -2932,6 +2932,7 @@ Parser methods follow.
 	        if (!bounds.toString().isEmpty()) {
 	            sb.append(' ').append(bounds.toString());
 	        }
+	        sb.append(")");
 	        sb.append(expr);
 	    }
 	    stack.push(sb.toString());
@@ -3834,7 +3835,7 @@ Parser methods follow.
                         String last = stack.peek();
                         if (last.indexOf(comment) == -1) {
                             last = stack.pop().trim();
-                            last = last + "    " + comment + "\n";
+                            last = last + "    " + comment;
                             stack.push(last);
                         }
                     }
