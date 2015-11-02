@@ -18,6 +18,9 @@ package xml.parser;
 
 //{{{ Imports
 import org.xml.sax.SAXException;
+
+import com.thaiopensource.xml.sax.CountingErrorHandler;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.ErrorHandler;
 
@@ -110,6 +113,7 @@ public final class SchemaLoader
 
 			// get the factory
 			SchemaFactory factory;
+			CountingErrorHandler countingHandler = new CountingErrorHandler(handler);
 	
 			if(schemaFileNameOrURL.endsWith(".xsd"))factory = xsdFactory;
 			else if(schemaFileNameOrURL.endsWith(".rnc"))factory = rncFactory;
@@ -119,7 +123,7 @@ public final class SchemaLoader
 			
 			
 			factory.setResourceResolver(Resolver.instance());
-			factory.setErrorHandler(handler);
+			factory.setErrorHandler(countingHandler);
 			
 			
 			// compile the schema
@@ -134,11 +138,16 @@ public final class SchemaLoader
 		
 			javax.xml.transform.Source s = new javax.xml.transform.sax.SAXSource(is);
 			schema = factory.newSchema(s);
-			// FIXME: can't get the actual components of the schema this way
-			//        so the cache isn't cleared when a schema component has changed !
-			en = Cache.instance().put(realLocation,"Schema",schema);
-			// en will be null if cache is disabled
-			if(en != null)en.getRequestingBuffers().add(requestingBuffer);
+			if(countingHandler.getHadErrorOrFatalError()
+					|| countingHandler.getWarningCount()>0){
+				Log.log(Log.DEBUG, SchemaLoader.class, "errors/warnings loading schema "+schemaFileNameOrURL+"; not caching results");
+			}else {
+				// FIXME: can't get the actual components of the schema this way
+				//        so the cache isn't cleared when a schema component has changed !
+				en = Cache.instance().put(realLocation,"Schema",schema);
+				// en will be null if cache is disabled
+				if(en != null)en.getRequestingBuffers().add(requestingBuffer);
+			}
 		} else {
 			if(DEBUG_CACHE)Log.log(Log.DEBUG,SchemaLoader.class,"found schema in cache for "+schemaFileNameOrURL);
 			schema = (Schema)en.getCachedItem();
@@ -186,13 +195,15 @@ public final class SchemaLoader
         XMLGrammarPreparser preparser = new XMLGrammarPreparser(sym);
         CachedGrammarPool grammarPool = new CachedGrammarPool(current);
         
-		preparser.registerPreparser(XMLGrammarDescription.XML_SCHEMA, null);
+        CountingErrorHandler countingHandler = new CountingErrorHandler(handler);
+
+        preparser.registerPreparser(XMLGrammarDescription.XML_SCHEMA, null);
         preparser.setProperty(SCHEMA_LOCATION, schemaLocation);
         preparser.setProperty(SCHEMA_NONS_LOCATION, nonsSchemaLocation);
         preparser.setGrammarPool(grammarPool);
         preparser.setFeature(NAMESPACES_FEATURE_ID, true);
         preparser.setEntityResolver(new EntityResolver2Wrapper(Resolver.instance()));
-        preparser.setErrorHandler(new ErrorHandlerWrapper(handler));
+        preparser.setErrorHandler(new ErrorHandlerWrapper(countingHandler));
 
 		InputSource in = Resolver.instance().resolveEntity(null,null,current.getPath(),systemId);
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaLoader.class,"going to preparse "+systemId);
@@ -201,6 +212,10 @@ public final class SchemaLoader
 			//doesn't work : it's not resolved (see XMLEntityManager during step by step debugging)
 			// new XMLInputSource(null,systemId,current.getPath()));
 		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaLoader.class,"preparsed grammar="+g);
+		if(countingHandler.getHadErrorOrFatalError()
+				|| countingHandler.getWarningCount()>0){
+			Log.log(Log.WARNING, SchemaLoader.class, "there were errors/warnings loading "+systemId);
+		}
 		return g;
 	}
 
