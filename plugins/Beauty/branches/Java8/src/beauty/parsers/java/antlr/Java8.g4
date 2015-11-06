@@ -284,8 +284,12 @@ classDeclaration
 	;
 
 normalClassDeclaration
-	:	classModifier* 'class' Identifier typeParameters? superclass? superinterfaces? classBody
+	:	classModifiers 'class' Identifier typeParameters? superclass? superinterfaces? classBody
 	;
+	
+classModifiers
+    :   classModifier*
+    ;
 
 classModifier
 	:	annotation
@@ -338,8 +342,12 @@ classMemberDeclaration
 	;
 
 fieldDeclaration
-	:	fieldModifier* unannType variableDeclaratorList ';'
+	:	fieldModifiers unannType variableDeclaratorList ';'
 	;
+	
+fieldModifiers
+    :   fieldModifier*
+    ;
 
 fieldModifier
 	:	annotation
@@ -430,8 +438,12 @@ unannArrayType
 	;
 
 methodDeclaration
-	:	methodModifier* methodHeader methodBody
+	:	methodModifiers methodHeader methodBody
 	;
+	
+methodModifiers
+    :   methodModifier*
+    ;
 
 methodModifier
 	:	annotation
@@ -549,7 +561,7 @@ enumDeclaration
 	;
 
 enumBody
-	:	'{' enumConstantList? ','? enumBodyDeclarations? '}'
+	:	'{' enumConstantList? COMMA? enumBodyDeclarations? '}'
 	;
 
 enumConstantList
@@ -694,7 +706,7 @@ elementValue
 	;
 
 elementValueArrayInitializer
-	:	'{' elementValueList? ','? '}'
+	:	'{' elementValueList? COMMA? '}'
 	;
 
 elementValueList
@@ -714,7 +726,7 @@ singleElementAnnotation
  */
 
 arrayInitializer
-	:	'{' variableInitializerList? ','? '}'
+	:	'{' variableInitializerList? COMMA? '}'
 	;
 
 variableInitializerList
@@ -950,7 +962,7 @@ tryWithResourcesStatement
 	;
 
 resourceSpecification
-	:	'(' resourceList ';'? ')'
+	:	'(' resourceList SEMI? ')'
 	;
 
 resourceList
@@ -1120,7 +1132,7 @@ methodInvocation
 	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
 	|	primary '.' typeArguments? Identifier '(' argumentList? ')'
 	|	'super' '.' typeArguments? Identifier '(' argumentList? ')'
-	|	typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'
+	|	typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'  
 	;
 
 methodInvocation_lf_primary
@@ -1131,8 +1143,8 @@ methodInvocation_lfno_primary
 	:	methodName '(' argumentList? ')'
 	|	typeName '.' typeArguments? Identifier '(' argumentList? ')'
 	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
-	|	'super' '.' typeArguments? Identifier '(' argumentList? ')'
-	|	typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'
+	|	SUPER '.' typeArguments? Identifier '(' argumentList? ')'
+	|	typeName '.' SUPER '.' typeArguments? Identifier '(' argumentList? ')'
 	;
 
 argumentList
