@@ -1,3 +1,4 @@
+package beauty.parsers.java.antlr;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.*;
@@ -395,7 +396,7 @@ Parser methods follow.
 	    String expression = stack.pop();
 	    if (ctx.additiveOperator() != null) {
 	        String operator = stack.pop();
-	        sb.append(operator).append(' ');
+	        sb.append(operator);
 	    }
 	    sb.append(expression);
 	    stack.push(sb.toString());
@@ -2570,6 +2571,9 @@ Parser methods follow.
 	    String lbracket = stack.pop();
 	    rbracket = indent(rbracket);
 	    sb.insert(0, lbracket + '\n');
+	    if (!endsWith(sb, "\n")) {
+	        sb.append('\n');   
+	    }
 	    sb.append(rbracket).append('\n');
 	    stack.push(sb.toString());
 	}

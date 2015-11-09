@@ -65,6 +65,7 @@ mode.sgml.beauty.beautifier=html
 mode.xml.beauty.beautifier=html
 mode.jsp.beauty.beautifier=jsp
 mode.java.beauty.beautifier=java
+mode.java.beauty.beautifier=java8
 mode.javacc.beauty.beautifier=javacc
 
 

@@ -4,6 +4,9 @@
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="java:beauty">
         new beauty.beautifiers.JavaBeautifier();
     </SERVICE>
+    <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="java8:beauty">
+        new beauty.beautifiers.Java8Beautifier();
+    </SERVICE>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="javacc:beauty">
         new beauty.beautifiers.JavaCCBeautifier();
     </SERVICE>
