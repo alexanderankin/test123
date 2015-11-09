@@ -530,9 +530,13 @@ staticInitializer
 	;
 
 constructorDeclaration
-	:	constructorModifier* constructorDeclarator throws_? constructorBody
+	:	constructorModifiers constructorDeclarator throws_? constructorBody
 	;
 
+constructorModifiers
+    :   constructorModifier*
+    ;
+    
 constructorModifier
 	:	annotation
 	|	'public'

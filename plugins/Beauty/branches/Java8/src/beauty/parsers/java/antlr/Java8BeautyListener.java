@@ -108,10 +108,7 @@ public class Java8BeautyListener implements Java8Listener {
                 }
                 line = indent + line;
             }
-            sb.append(line);
-            if (lines.length > 1) {
-                sb.append('\n');    
-            }
+            sb.append(line).append('\n');    
         }
         return sb.toString();
     }
@@ -131,7 +128,10 @@ public class Java8BeautyListener implements Java8Listener {
     // StringBuilder doesn't have a "trim" method. This trims whitespace from
     // the end of the string builder. Whitespace on the front is not touched.
     public void trimEnd(StringBuilder sb) {
-        while(Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+        if (sb == null || sb.length() == 0) {
+            return;
+        }
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
             sb.deleteCharAt(sb.length() - 1);
         }
     }
@@ -153,7 +153,7 @@ public class Java8BeautyListener implements Java8Listener {
     
     private List<String> reverse(int howMany) {
         List<String> list = new ArrayList<String>();
-        for (int i = 0; i < howMany; i++) {
+        for (int i = 0; i < howMany && !stack.isEmpty(); i++) {
             list.add(stack.pop());    
         }
         Collections.reverse(list);
@@ -863,11 +863,15 @@ Parser methods follow.
 	    String body = "";
 	    if (ctx.classBodyDeclaration() != null) {
 	        body = reverse(ctx.classBodyDeclaration().size(), "\n");
+	        body = indent(body);
 	    }
 	    String lbrace = stack.pop();    // {
 	    sb.append(lbrace).append('\n');
 	    sb.append(body);
 	    --tabCount;
+	    if (!endsWith(sb, "\n")) {
+	        sb.append('\n');   
+	    }
 	    rbrace = indent(rbrace);
 	    sb.append(rbrace).append("\n");
 	    stack.push(sb.toString());
@@ -1122,22 +1126,18 @@ Parser methods follow.
 	}
 
 	@Override public void enterConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) {
-	    // {ConstructorModifier} ConstructorDeclarator [Throws] ConstructorBody
+	    // constructorModifiers constructorDeclarator throws_? constructorBody
 	}
 	@Override public void exitConstructorDeclaration(@NotNull Java8Parser.ConstructorDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String body = stack.pop();
 	    String throws_ = ctx.throws_() == null ? "" : stack.pop() + ' ';
 	    String cd = stack.pop();
-	    StringBuilder modifiers = new StringBuilder();
-	    if (ctx.constructorModifier() != null) {
-	        List<String> mods = reverse(ctx.constructorModifier().size());
-	        for (String m : mods) {
-	            modifiers.append(indent(m));
-	            if (!endsWith(modifiers, "\n")) {
-	                modifiers.append(' ');    
-	            }
-	        }
+	    String modifiers = stack.pop();
+	    if (modifiers.isEmpty()) {
+	        indent(sb);    
+	    } else {
+	        modifiers += ' ';   
 	    }
 	    sb.append(modifiers).append(cd).append(' ').append(throws_).append(body);
 	    stack.push(sb.toString());
@@ -1248,6 +1248,18 @@ Parser methods follow.
 	    // nothing to do here, one of the choices should already be on the stack.
 	}
 
+	@Override public void enterConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) { }
+	@Override public void exitConstructorModifiers(@NotNull Java8Parser.ConstructorModifiersContext ctx) {
+	    StringBuilder sb = new StringBuilder();
+	    if (ctx.constructorModifier() != null && ctx.constructorModifier().size() > 0) {
+	        sb.append(formatModifiers(ctx.constructorModifier().size()));
+	    }
+	    if (sb.length() == 0) {
+	        indent(sb);   
+	    }
+	    trimEnd(sb);
+        stack.push(sb.toString());
+	}
 	@Override public void enterConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) {
 	    // (one of) Annotation public protected private
 	}
@@ -1414,44 +1426,13 @@ Parser methods follow.
 	@Override public void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.methodModifier() != null && ctx.methodModifier().size() > 0) {
-            List<String> modifiers = new ArrayList<String>();
-            for (int i = 0; i < ctx.methodModifier().size(); i++) {
-                String modifier = stack.pop();
-                modifiers.add(modifier);    
-            }
-            Collections.reverse(modifiers);
-            
-            for (String modifier : modifiers) {
-                String[] lines = modifier.split("\n");
-                if (lines.length == 1) {
-                    sb.append(modifier).append(' ');    
-                }
-                else {
-                    for (int i = 0; i < lines.length; i++) {
-                        sb.append(lines[i]);
-                        if (i < lines.length - 1) {
-                            sb.append('\n');
-                        }
-                    }
-                    sb.append(' ');
-                }
-            }
-            String[] lines = sb.toString().split("\n");
-            sb = new StringBuilder();
-            for (int i = 0; i < lines.length; i++) {
-                String line = lines[i];
-                sb.append(indent(line));
-                if (i < lines.length - 1) {
-                    sb.append('\n');    
-                }
-            }
-            if (sb.length() > 0) {
-                sb.append(' ');    
-            }
+	        String modifiers = formatModifiers(ctx.methodModifier().size());
+	        sb.append(modifiers);
 	    }
 	    if (sb.length() == 0) {
 	        indent(sb);   
 	    }
+	    trimEnd(sb);
         stack.push(sb.toString());
 	}
 	@Override public void enterMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) {
@@ -1552,6 +1533,7 @@ Parser methods follow.
         String identifier = stack.pop();
         String classNode = stack.pop();
         String modifiers = stack.pop();
+        modifiers += modifiers.isEmpty() ? "" : " ";
         sb.append(modifiers).append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
         stack.push(sb.toString());
 	}
@@ -1618,10 +1600,12 @@ Parser methods follow.
 	}
 	@Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) {
 	    // TODO: remove this after debugging is complete
+	    printStack();
 	    System.out.println("=======================================================================================================================");
 	    
 	    // TODO: there is an extra blank item on the stack, need to figure out where it's coming from.
 	    // The next line is a temporary work-around.
+	    // -- it might be the EOF token
 	    stack.pop();
 	    
 	    String typeDeclarations = "";
@@ -1734,7 +1718,7 @@ Parser methods follow.
 	    if (modifiers.isEmpty()) {
 	        indent(sb);    
 	    }
-	    sb.append(modifiers).append(header).append(' ').append(body);
+	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
 	    stack.push(sb.toString());
 	}
 
@@ -2055,37 +2039,12 @@ Parser methods follow.
 	@Override public void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.fieldModifier() != null && ctx.fieldModifier().size() > 0) {
-            List<String> modifiers = new ArrayList<String>();
-            for (int i = 0; i < ctx.fieldModifier().size(); i++) {
-                modifiers.add(stack.pop());    
-            }
-            Collections.reverse(modifiers);
-            
-            sb = new StringBuilder();
-            for (String modifier : modifiers) {
-                String[] lines = modifier.split("\n");
-                if (lines.length == 1) {
-                    sb.append(modifier).append(' ');    
-                }
-                else {
-                    for (String line : lines) {
-                        sb.append(line).append("\n");    
-                    }
-                }
-            }
-            String[] lines = sb.toString().split("\n");
-            sb = new StringBuilder();
-            for (int i = 0; i < lines.length; i++) {
-                String line = lines[i];
-                sb.append(indent(line));
-                if (i < lines.length - 1) {
-                    sb.append('\n');    
-                }
-            }
-            if (sb.length() > 0) {
-                sb.append(' ');    
-            }
+	        sb.append(formatModifiers(ctx.fieldModifier().size()));
 	    }
+	    if (sb.length() == 0) {
+	        indent(sb);   
+	    }
+	    trimEnd(sb);
         stack.push(sb.toString());
 	}
 	@Override public void enterFieldModifier(@NotNull Java8Parser.FieldModifierContext ctx) { 
@@ -2547,8 +2506,10 @@ Parser methods follow.
 
 	@Override public void enterSuperclass(@NotNull Java8Parser.SuperclassContext ctx) { 
 	    // extends ClassType
+	    printStack("enterSuperclass");
 	}
 	@Override public void exitSuperclass(@NotNull Java8Parser.SuperclassContext ctx) {
+	    printStack("exitSuperClass");
 	    StringBuilder sb = new StringBuilder();
 	    String ct = stack.pop();
 	    String ext = stack.pop();
@@ -2808,41 +2769,12 @@ Parser methods follow.
 	@Override public void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.classModifier() != null && ctx.classModifier().size() > 0) {
-            List<String> modifiers = new ArrayList<String>();
-            for (int i = 0; i < ctx.classModifier().size(); i++) {
-                String modifier = stack.pop();
-                modifiers.add(modifier);    
-            }
-            Collections.reverse(modifiers);
-            
-            sb = new StringBuilder();
-            for (String modifier : modifiers) {
-                String[] lines = modifier.split("\n");
-                if (lines.length == 1) {
-                    sb.append(modifier).append(' ');    
-                }
-                else {
-                    for (String line : lines) {
-                        sb.append(line).append("\n");    
-                    }
-                }
-            }
-            String[] lines = sb.toString().split("\n");
-            sb = new StringBuilder();
-            for (int i = 0; i < lines.length; i++) {
-                String line = lines[i];
-                sb.append(indent(line));
-                if (i < lines.length - 1) {
-                    sb.append('\n');    
-                }
-            }
-            if (sb.length() > 0) {
-                sb.append(' ');    
-            }
+	        sb.append(formatModifiers(ctx.classModifier().size()));
 	    }
 	    if (sb.length() == 0) {
 	        indent(sb);   
 	    }
+	    trimEnd(sb);
         stack.push(sb.toString());
 	}
 	@Override public void enterClassModifier(@NotNull Java8Parser.ClassModifierContext ctx) { 
@@ -2894,14 +2826,16 @@ Parser methods follow.
 	}
 
 	@Override public void enterConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
-	    // { [ExplicitConstructorInvocation] [BlockStatement] }
+	    // '{' explicitConstructorInvocation? blockStatements? '}'
 	    ++tabCount;
 	}
 	@Override public void exitConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop();
 	    String bs = ctx.blockStatements() == null ? "" : stack.pop();
+	    bs = bs.isEmpty() ? "" : indent(bs);
 	    String eci = ctx.explicitConstructorInvocation() == null ? "" : stack.pop();
+	    eci = eci.isEmpty() ? "" : indent(eci);
 	    String lbracket = stack.pop();
 	    sb.append(lbracket).append("\n").append(eci).append(bs).append("\n");
 	    --tabCount;
@@ -3465,8 +3399,8 @@ Parser methods follow.
 	}
 
 	@Override public void enterClassType(@NotNull Java8Parser.ClassTypeContext ctx) { 
-	    // {Annotation} Identifier [TypeArguments]
-	    // ClassOrInterfaceType . {Annotation} Identifier [TypeArguments]
+	    //                          annotation* Identifier typeArguments?
+	    // classOrInterfaceType '.' annotation* Identifier typeArguments?
 	}
 	@Override public void exitClassType(@NotNull Java8Parser.ClassTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -3475,12 +3409,12 @@ Parser methods follow.
         String typeArguments = ctx.typeArguments() == null ? "" : stack.pop();
         String identifier = stack.pop();
         String annotations = "";
-        if (ctx.annotation() != null) {
+        if (ctx.annotation() != null && ctx.annotation().size() > 0) {
             annotations = reverse(ctx.annotation().size(), " ");
         }
 	    
         // 2nd choice
-	    if (ctx.classOrInterfaceType() == null) {
+	    if (ctx.classOrInterfaceType() != null) {
 	        String dot = stack.pop();
 	        String type = stack.pop();
 	        sb.append(type).append(dot);
@@ -4318,6 +4252,51 @@ Parser methods follow.
             }
         }
         return sb.toString();
+	}
+	
+	private String formatModifiers(int howMany) {
+	    if (howMany <= 0) {
+	        return "";   
+	    }
+	    StringBuilder sb = new StringBuilder();
+        List<String> modifiers = new ArrayList<String>();
+        for (int i = 0; i < howMany; i++) {
+            String modifier = stack.pop();
+            modifiers.add(modifier);    
+        }
+        Collections.reverse(modifiers);
+        
+        for (String modifier : modifiers) {
+            String[] lines = modifier.split("\n");
+            if (lines.length == 1) {
+                sb.append(modifier).append(' ');    
+            }
+            else {
+                for (int i = 0; i < lines.length; i++) {
+                    sb.append(lines[i]);
+                    if (i < lines.length - 1) {
+                        sb.append('\n');
+                    }
+                }
+                sb.append(' ');
+            }
+        }
+        String[] lines = sb.toString().split("\n");
+        sb = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            sb.append(indent(line));
+            if (i < lines.length - 1) {
+                sb.append('\n');    
+            }
+        }
+        if (sb.length() > 0) {
+            sb.append(' ');    
+        }
+	    if (sb.length() == 0) {
+	        indent(sb);   
+	    }
+	    return sb.toString();
 	}
 	
 	/**
