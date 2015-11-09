@@ -208,6 +208,18 @@ public class Java8BaseListener implements Java8Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterSimpleTypeName(@NotNull Java8Parser.SimpleTypeNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1403,6 +1415,18 @@ public class Java8BaseListener implements Java8Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitConditionalExpression(@NotNull Java8Parser.ConditionalExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -2615,6 +2639,18 @@ public class Java8BaseListener implements Java8Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUnaryExpressionNotPlusMinus(@NotNull Java8Parser.UnaryExpressionNotPlusMinusContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

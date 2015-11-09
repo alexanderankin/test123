@@ -168,6 +168,16 @@ public interface Java8Listener extends ParseTreeListener {
 	 */
 	void exitArrayType(@NotNull Java8Parser.ArrayTypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link Java8Parser#fieldModifiers}.
+	 * @param ctx the parse tree
+	 */
+	void enterFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#fieldModifiers}.
+	 * @param ctx the parse tree
+	 */
+	void exitFieldModifiers(@NotNull Java8Parser.FieldModifiersContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link Java8Parser#simpleTypeName}.
 	 * @param ctx the parse tree
 	 */
@@ -1167,6 +1177,16 @@ public interface Java8Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConditionalExpression(@NotNull Java8Parser.ConditionalExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Java8Parser#methodModifiers}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#methodModifiers}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethodModifiers(@NotNull Java8Parser.MethodModifiersContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link Java8Parser#fieldDeclaration}.
 	 * @param ctx the parse tree
@@ -2177,6 +2197,16 @@ public interface Java8Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUnaryExpressionNotPlusMinus(@NotNull Java8Parser.UnaryExpressionNotPlusMinusContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Java8Parser#classModifiers}.
+	 * @param ctx the parse tree
+	 */
+	void enterClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#classModifiers}.
+	 * @param ctx the parse tree
+	 */
+	void exitClassModifiers(@NotNull Java8Parser.ClassModifiersContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link Java8Parser#unannReferenceType}.
 	 * @param ctx the parse tree
