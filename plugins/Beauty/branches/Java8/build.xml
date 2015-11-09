@@ -233,10 +233,16 @@
         caused some confusion. -->
         <delete dir="config"/>
         <delete dir="docs"/>
+        <!--
         <delete dir="${temp}"/>
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${doc.dir}" />
         <mkdir dir="${config.dir}" />
+        -->
+        <delete dir="${temp}/config"/>
+        <delete dir="${temp}/docs"/>
+        <delete dir="${temp}/classes/beauty"/>
+        <delete dir="${temp}/classes/docs"/>
     </target>
 
    <!-- ========================================================================
