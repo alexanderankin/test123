@@ -139,6 +139,10 @@ public class JavaParserTokenManager implements JavaParserConstants
         return trimmed;
     }
 
+    static void trimNLs() {
+        while(trimNL());
+    }
+
     // trim all \n and/or \r from the end of the given string
     static void trimNL(String s) {
         StringBuilder sb = new StringBuilder(s);

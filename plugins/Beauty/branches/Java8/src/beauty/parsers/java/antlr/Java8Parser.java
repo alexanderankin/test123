@@ -1,4 +1,7 @@
 // Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/java/antlr/Java8.g4 by ANTLR 4.4
+
+package beauty.parsers.java.antlr;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -234,12 +237,12 @@ public class Java8Parser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class LiteralContext extends ParserRuleContext {
-		public TerminalNode StringLiteral() { return getToken(Java8Parser.StringLiteral, 0); }
 		public TerminalNode NullLiteral() { return getToken(Java8Parser.NullLiteral, 0); }
+		public TerminalNode CharacterLiteral() { return getToken(Java8Parser.CharacterLiteral, 0); }
 		public TerminalNode IntegerLiteral() { return getToken(Java8Parser.IntegerLiteral, 0); }
+		public TerminalNode StringLiteral() { return getToken(Java8Parser.StringLiteral, 0); }
 		public TerminalNode FloatingPointLiteral() { return getToken(Java8Parser.FloatingPointLiteral, 0); }
 		public TerminalNode BooleanLiteral() { return getToken(Java8Parser.BooleanLiteral, 0); }
-		public TerminalNode CharacterLiteral() { return getToken(Java8Parser.CharacterLiteral, 0); }
 		public LiteralContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -281,11 +284,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public ReferenceTypeContext referenceType() {
-			return getRuleContext(ReferenceTypeContext.class,0);
-		}
 		public PrimitiveTypeContext primitiveType() {
 			return getRuleContext(PrimitiveTypeContext.class,0);
+		}
+		public ReferenceTypeContext referenceType() {
+			return getRuleContext(ReferenceTypeContext.class,0);
 		}
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -333,11 +336,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimitiveTypeContext extends ParserRuleContext {
-		public List<AnnotationContext> annotation() {
-			return getRuleContexts(AnnotationContext.class);
-		}
 		public AnnotationContext annotation(int i) {
 			return getRuleContext(AnnotationContext.class,i);
+		}
+		public List<AnnotationContext> annotation() {
+			return getRuleContexts(AnnotationContext.class);
 		}
 		public NumericTypeContext numericType() {
 			return getRuleContext(NumericTypeContext.class,0);
@@ -415,11 +418,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class NumericTypeContext extends ParserRuleContext {
-		public IntegralTypeContext integralType() {
-			return getRuleContext(IntegralTypeContext.class,0);
-		}
 		public FloatingPointTypeContext floatingPointType() {
 			return getRuleContext(FloatingPointTypeContext.class,0);
+		}
+		public IntegralTypeContext integralType() {
+			return getRuleContext(IntegralTypeContext.class,0);
 		}
 		public NumericTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -556,11 +559,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ReferenceTypeContext extends ParserRuleContext {
-		public ArrayTypeContext arrayType() {
-			return getRuleContext(ArrayTypeContext.class,0);
-		}
 		public TypeVariableContext typeVariable() {
 			return getRuleContext(TypeVariableContext.class,0);
+		}
+		public ArrayTypeContext arrayType() {
+			return getRuleContext(ArrayTypeContext.class,0);
 		}
 		public ClassOrInterfaceTypeContext classOrInterfaceType() {
 			return getRuleContext(ClassOrInterfaceTypeContext.class,0);
@@ -620,20 +623,20 @@ public class Java8Parser extends Parser {
 		public List<InterfaceType_lf_classOrInterfaceTypeContext> interfaceType_lf_classOrInterfaceType() {
 			return getRuleContexts(InterfaceType_lf_classOrInterfaceTypeContext.class);
 		}
-		public ClassType_lf_classOrInterfaceTypeContext classType_lf_classOrInterfaceType(int i) {
-			return getRuleContext(ClassType_lf_classOrInterfaceTypeContext.class,i);
-		}
-		public ClassType_lfno_classOrInterfaceTypeContext classType_lfno_classOrInterfaceType() {
-			return getRuleContext(ClassType_lfno_classOrInterfaceTypeContext.class,0);
-		}
 		public InterfaceType_lfno_classOrInterfaceTypeContext interfaceType_lfno_classOrInterfaceType() {
 			return getRuleContext(InterfaceType_lfno_classOrInterfaceTypeContext.class,0);
+		}
+		public InterfaceType_lf_classOrInterfaceTypeContext interfaceType_lf_classOrInterfaceType(int i) {
+			return getRuleContext(InterfaceType_lf_classOrInterfaceTypeContext.class,i);
+		}
+		public ClassType_lf_classOrInterfaceTypeContext classType_lf_classOrInterfaceType(int i) {
+			return getRuleContext(ClassType_lf_classOrInterfaceTypeContext.class,i);
 		}
 		public List<ClassType_lf_classOrInterfaceTypeContext> classType_lf_classOrInterfaceType() {
 			return getRuleContexts(ClassType_lf_classOrInterfaceTypeContext.class);
 		}
-		public InterfaceType_lf_classOrInterfaceTypeContext interfaceType_lf_classOrInterfaceType(int i) {
-			return getRuleContext(InterfaceType_lf_classOrInterfaceTypeContext.class,i);
+		public ClassType_lfno_classOrInterfaceTypeContext classType_lfno_classOrInterfaceType() {
+			return getRuleContext(ClassType_lfno_classOrInterfaceTypeContext.class,0);
 		}
 		public ClassOrInterfaceTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -708,18 +711,18 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassTypeContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public List<AnnotationContext> annotation() {
 			return getRuleContexts(AnnotationContext.class);
 		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ClassOrInterfaceTypeContext classOrInterfaceType() {
 			return getRuleContext(ClassOrInterfaceTypeContext.class,0);
-		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
 		}
 		public ClassTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -812,11 +815,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassType_lf_classOrInterfaceTypeContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
 		public AnnotationIdentifierContext annotationIdentifier() {
 			return getRuleContext(AnnotationIdentifierContext.class,0);
+		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public ClassType_lf_classOrInterfaceTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -862,11 +865,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassType_lfno_classOrInterfaceTypeContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
 		public AnnotationIdentifierContext annotationIdentifier() {
 			return getRuleContext(AnnotationIdentifierContext.class,0);
+		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public ClassType_lfno_classOrInterfaceTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1025,12 +1028,12 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class TypeVariableContext extends ParserRuleContext {
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
+		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public List<AnnotationContext> annotation() {
 			return getRuleContexts(AnnotationContext.class);
-		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
 		}
 		public TypeVariableContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1205,13 +1208,13 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class TypeParameterContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public List<TypeParameterModifierContext> typeParameterModifier() {
 			return getRuleContexts(TypeParameterModifierContext.class);
 		}
 		public TypeParameterModifierContext typeParameterModifier(int i) {
 			return getRuleContext(TypeParameterModifierContext.class,i);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public TypeBoundContext typeBound() {
 			return getRuleContext(TypeBoundContext.class,0);
 		}
@@ -1310,17 +1313,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class TypeBoundContext extends ParserRuleContext {
-		public TypeVariableContext typeVariable() {
-			return getRuleContext(TypeVariableContext.class,0);
-		}
-		public ClassOrInterfaceTypeContext classOrInterfaceType() {
-			return getRuleContext(ClassOrInterfaceTypeContext.class,0);
-		}
 		public List<AdditionalBoundContext> additionalBound() {
 			return getRuleContexts(AdditionalBoundContext.class);
 		}
+		public TypeVariableContext typeVariable() {
+			return getRuleContext(TypeVariableContext.class,0);
+		}
 		public AdditionalBoundContext additionalBound(int i) {
 			return getRuleContext(AdditionalBoundContext.class,i);
+		}
+		public ClassOrInterfaceTypeContext classOrInterfaceType() {
+			return getRuleContext(ClassOrInterfaceTypeContext.class,0);
 		}
 		public TypeBoundContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1519,11 +1522,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class TypeArgumentContext extends ParserRuleContext {
-		public ReferenceTypeContext referenceType() {
-			return getRuleContext(ReferenceTypeContext.class,0);
-		}
 		public WildcardContext wildcard() {
 			return getRuleContext(WildcardContext.class,0);
+		}
+		public ReferenceTypeContext referenceType() {
+			return getRuleContext(ReferenceTypeContext.class,0);
 		}
 		public TypeArgumentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1571,14 +1574,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class WildcardContext extends ParserRuleContext {
-		public WildcardBoundsContext wildcardBounds() {
-			return getRuleContext(WildcardBoundsContext.class,0);
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
 		}
 		public List<AnnotationContext> annotation() {
 			return getRuleContexts(AnnotationContext.class);
 		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
+		public WildcardBoundsContext wildcardBounds() {
+			return getRuleContext(WildcardBoundsContext.class,0);
 		}
 		public WildcardContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1690,10 +1693,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PackageNameContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public PackageNameContext packageName() {
 			return getRuleContext(PackageNameContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public PackageNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1888,10 +1891,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ExpressionNameContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public AmbiguousNameContext ambiguousName() {
 			return getRuleContext(AmbiguousNameContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ExpressionNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1976,10 +1979,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AmbiguousNameContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public AmbiguousNameContext ambiguousName() {
 			return getRuleContext(AmbiguousNameContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public AmbiguousNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2049,12 +2052,6 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class CompilationUnitContext extends ParserRuleContext {
-		public TypeDeclarationContext typeDeclaration(int i) {
-			return getRuleContext(TypeDeclarationContext.class,i);
-		}
-		public ImportDeclarationContext importDeclaration(int i) {
-			return getRuleContext(ImportDeclarationContext.class,i);
-		}
 		public List<ImportDeclarationContext> importDeclaration() {
 			return getRuleContexts(ImportDeclarationContext.class);
 		}
@@ -2062,8 +2059,14 @@ public class Java8Parser extends Parser {
 		public PackageDeclarationContext packageDeclaration() {
 			return getRuleContext(PackageDeclarationContext.class,0);
 		}
+		public ImportDeclarationContext importDeclaration(int i) {
+			return getRuleContext(ImportDeclarationContext.class,i);
+		}
 		public List<TypeDeclarationContext> typeDeclaration() {
 			return getRuleContexts(TypeDeclarationContext.class);
+		}
+		public TypeDeclarationContext typeDeclaration(int i) {
+			return getRuleContext(TypeDeclarationContext.class,i);
 		}
 		public CompilationUnitContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2135,16 +2138,16 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PackageDeclarationContext extends ParserRuleContext {
-		public List<TerminalNode> Identifier() { return getTokens(Java8Parser.Identifier); }
-		public TerminalNode Identifier(int i) {
-			return getToken(Java8Parser.Identifier, i);
+		public PackageModifierContext packageModifier(int i) {
+			return getRuleContext(PackageModifierContext.class,i);
 		}
 		public List<PackageModifierContext> packageModifier() {
 			return getRuleContexts(PackageModifierContext.class);
 		}
-		public PackageModifierContext packageModifier(int i) {
-			return getRuleContext(PackageModifierContext.class,i);
+		public TerminalNode Identifier(int i) {
+			return getToken(Java8Parser.Identifier, i);
 		}
+		public List<TerminalNode> Identifier() { return getTokens(Java8Parser.Identifier); }
 		public PackageDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2248,14 +2251,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ImportDeclarationContext extends ParserRuleContext {
-		public SingleStaticImportDeclarationContext singleStaticImportDeclaration() {
-			return getRuleContext(SingleStaticImportDeclarationContext.class,0);
-		}
 		public StaticImportOnDemandDeclarationContext staticImportOnDemandDeclaration() {
 			return getRuleContext(StaticImportOnDemandDeclarationContext.class,0);
 		}
 		public SingleTypeImportDeclarationContext singleTypeImportDeclaration() {
 			return getRuleContext(SingleTypeImportDeclarationContext.class,0);
+		}
+		public SingleStaticImportDeclarationContext singleStaticImportDeclaration() {
+			return getRuleContext(SingleStaticImportDeclarationContext.class,0);
 		}
 		public TypeImportOnDemandDeclarationContext typeImportOnDemandDeclaration() {
 			return getRuleContext(TypeImportOnDemandDeclarationContext.class,0);
@@ -2400,10 +2403,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class SingleStaticImportDeclarationContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public TypeNameContext typeName() {
 			return getRuleContext(TypeNameContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public SingleStaticImportDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2487,11 +2490,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class TypeDeclarationContext extends ParserRuleContext {
-		public ClassDeclarationContext classDeclaration() {
-			return getRuleContext(ClassDeclarationContext.class,0);
-		}
 		public InterfaceDeclarationContext interfaceDeclaration() {
 			return getRuleContext(InterfaceDeclarationContext.class,0);
+		}
+		public ClassDeclarationContext classDeclaration() {
+			return getRuleContext(ClassDeclarationContext.class,0);
 		}
 		public TypeDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2597,9 +2600,8 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class NormalClassDeclarationContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public ClassBodyContext classBody() {
-			return getRuleContext(ClassBodyContext.class,0);
+		public SuperclassContext superclass() {
+			return getRuleContext(SuperclassContext.class,0);
 		}
 		public TypeParametersContext typeParameters() {
 			return getRuleContext(TypeParametersContext.class,0);
@@ -2607,9 +2609,10 @@ public class Java8Parser extends Parser {
 		public ClassModifiersContext classModifiers() {
 			return getRuleContext(ClassModifiersContext.class,0);
 		}
-		public SuperclassContext superclass() {
-			return getRuleContext(SuperclassContext.class,0);
+		public ClassBodyContext classBody() {
+			return getRuleContext(ClassBodyContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public SuperinterfacesContext superinterfaces() {
 			return getRuleContext(SuperinterfacesContext.class,0);
 		}
@@ -3047,11 +3050,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassBodyContext extends ParserRuleContext {
-		public List<ClassBodyDeclarationContext> classBodyDeclaration() {
-			return getRuleContexts(ClassBodyDeclarationContext.class);
-		}
 		public ClassBodyDeclarationContext classBodyDeclaration(int i) {
 			return getRuleContext(ClassBodyDeclarationContext.class,i);
+		}
+		public List<ClassBodyDeclarationContext> classBodyDeclaration() {
+			return getRuleContexts(ClassBodyDeclarationContext.class);
 		}
 		public ClassBodyContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3103,17 +3106,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassBodyDeclarationContext extends ParserRuleContext {
-		public ClassMemberDeclarationContext classMemberDeclaration() {
-			return getRuleContext(ClassMemberDeclarationContext.class,0);
-		}
 		public StaticInitializerContext staticInitializer() {
 			return getRuleContext(StaticInitializerContext.class,0);
+		}
+		public InstanceInitializerContext instanceInitializer() {
+			return getRuleContext(InstanceInitializerContext.class,0);
 		}
 		public ConstructorDeclarationContext constructorDeclaration() {
 			return getRuleContext(ConstructorDeclarationContext.class,0);
 		}
-		public InstanceInitializerContext instanceInitializer() {
-			return getRuleContext(InstanceInitializerContext.class,0);
+		public ClassMemberDeclarationContext classMemberDeclaration() {
+			return getRuleContext(ClassMemberDeclarationContext.class,0);
 		}
 		public ClassBodyDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3173,17 +3176,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassMemberDeclarationContext extends ParserRuleContext {
-		public MethodDeclarationContext methodDeclaration() {
-			return getRuleContext(MethodDeclarationContext.class,0);
-		}
-		public ClassDeclarationContext classDeclaration() {
-			return getRuleContext(ClassDeclarationContext.class,0);
-		}
 		public InterfaceDeclarationContext interfaceDeclaration() {
 			return getRuleContext(InterfaceDeclarationContext.class,0);
 		}
 		public FieldDeclarationContext fieldDeclaration() {
 			return getRuleContext(FieldDeclarationContext.class,0);
+		}
+		public MethodDeclarationContext methodDeclaration() {
+			return getRuleContext(MethodDeclarationContext.class,0);
+		}
+		public ClassDeclarationContext classDeclaration() {
+			return getRuleContext(ClassDeclarationContext.class,0);
 		}
 		public ClassMemberDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3437,11 +3440,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class VariableDeclaratorListContext extends ParserRuleContext {
-		public List<VariableDeclaratorContext> variableDeclarator() {
-			return getRuleContexts(VariableDeclaratorContext.class);
-		}
 		public VariableDeclaratorContext variableDeclarator(int i) {
 			return getRuleContext(VariableDeclaratorContext.class,i);
+		}
+		public List<VariableDeclaratorContext> variableDeclarator() {
+			return getRuleContexts(VariableDeclaratorContext.class);
 		}
 		public VariableDeclaratorListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3493,11 +3496,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class VariableDeclaratorContext extends ParserRuleContext {
-		public VariableInitializerContext variableInitializer() {
-			return getRuleContext(VariableInitializerContext.class,0);
-		}
 		public VariableDeclaratorIdContext variableDeclaratorId() {
 			return getRuleContext(VariableDeclaratorIdContext.class,0);
+		}
+		public VariableInitializerContext variableInitializer() {
+			return getRuleContext(VariableInitializerContext.class,0);
 		}
 		public VariableDeclaratorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3592,11 +3595,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class VariableInitializerContext extends ParserRuleContext {
-		public ArrayInitializerContext arrayInitializer() {
-			return getRuleContext(ArrayInitializerContext.class,0);
-		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
+		}
+		public ArrayInitializerContext arrayInitializer() {
+			return getRuleContext(ArrayInitializerContext.class,0);
 		}
 		public VariableInitializerContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3672,11 +3675,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnannTypeContext extends ParserRuleContext {
-		public UnannReferenceTypeContext unannReferenceType() {
-			return getRuleContext(UnannReferenceTypeContext.class,0);
-		}
 		public UnannPrimitiveTypeContext unannPrimitiveType() {
 			return getRuleContext(UnannPrimitiveTypeContext.class,0);
+		}
+		public UnannReferenceTypeContext unannReferenceType() {
+			return getRuleContext(UnannReferenceTypeContext.class,0);
 		}
 		public UnannTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3845,12 +3848,6 @@ public class Java8Parser extends Parser {
 		public UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext unannInterfaceType_lfno_unannClassOrInterfaceType() {
 			return getRuleContext(UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext.class,0);
 		}
-		public UnannInterfaceType_lf_unannClassOrInterfaceTypeContext unannInterfaceType_lf_unannClassOrInterfaceType(int i) {
-			return getRuleContext(UnannInterfaceType_lf_unannClassOrInterfaceTypeContext.class,i);
-		}
-		public UnannClassType_lfno_unannClassOrInterfaceTypeContext unannClassType_lfno_unannClassOrInterfaceType() {
-			return getRuleContext(UnannClassType_lfno_unannClassOrInterfaceTypeContext.class,0);
-		}
 		public UnannClassType_lf_unannClassOrInterfaceTypeContext unannClassType_lf_unannClassOrInterfaceType(int i) {
 			return getRuleContext(UnannClassType_lf_unannClassOrInterfaceTypeContext.class,i);
 		}
@@ -3859,6 +3856,12 @@ public class Java8Parser extends Parser {
 		}
 		public List<UnannClassType_lf_unannClassOrInterfaceTypeContext> unannClassType_lf_unannClassOrInterfaceType() {
 			return getRuleContexts(UnannClassType_lf_unannClassOrInterfaceTypeContext.class);
+		}
+		public UnannClassType_lfno_unannClassOrInterfaceTypeContext unannClassType_lfno_unannClassOrInterfaceType() {
+			return getRuleContext(UnannClassType_lfno_unannClassOrInterfaceTypeContext.class,0);
+		}
+		public UnannInterfaceType_lf_unannClassOrInterfaceTypeContext unannInterfaceType_lf_unannClassOrInterfaceType(int i) {
+			return getRuleContext(UnannInterfaceType_lf_unannClassOrInterfaceTypeContext.class,i);
 		}
 		public UnannClassOrInterfaceTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3933,18 +3936,18 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnannClassTypeContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public List<AnnotationContext> annotation() {
-			return getRuleContexts(AnnotationContext.class);
-		}
 		public UnannClassOrInterfaceTypeContext unannClassOrInterfaceType() {
 			return getRuleContext(UnannClassOrInterfaceTypeContext.class,0);
 		}
 		public AnnotationContext annotation(int i) {
 			return getRuleContext(AnnotationContext.class,i);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public List<AnnotationContext> annotation() {
+			return getRuleContexts(AnnotationContext.class);
+		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public UnannClassTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4024,11 +4027,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnannClassType_lf_unannClassOrInterfaceTypeContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
 		public AnnotationIdentifierContext annotationIdentifier() {
 			return getRuleContext(AnnotationIdentifierContext.class,0);
+		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public UnannClassType_lf_unannClassOrInterfaceTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4075,10 +4078,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnannClassType_lfno_unannClassOrInterfaceTypeContext extends ParserRuleContext {
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public TypeArgumentsContext typeArguments() {
 			return getRuleContext(TypeArgumentsContext.class,0);
 		}
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public UnannClassType_lfno_unannClassOrInterfaceTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -4273,6 +4276,9 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnannArrayTypeContext extends ParserRuleContext {
+		public UnannPrimitiveTypeContext unannPrimitiveType() {
+			return getRuleContext(UnannPrimitiveTypeContext.class,0);
+		}
 		public UnannClassOrInterfaceTypeContext unannClassOrInterfaceType() {
 			return getRuleContext(UnannClassOrInterfaceTypeContext.class,0);
 		}
@@ -4281,9 +4287,6 @@ public class Java8Parser extends Parser {
 		}
 		public DimsContext dims() {
 			return getRuleContext(DimsContext.class,0);
-		}
-		public UnannPrimitiveTypeContext unannPrimitiveType() {
-			return getRuleContext(UnannPrimitiveTypeContext.class,0);
 		}
 		public UnannArrayTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4340,14 +4343,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodDeclarationContext extends ParserRuleContext {
-		public MethodModifiersContext methodModifiers() {
-			return getRuleContext(MethodModifiersContext.class,0);
+		public MethodHeaderContext methodHeader() {
+			return getRuleContext(MethodHeaderContext.class,0);
 		}
 		public MethodBodyContext methodBody() {
 			return getRuleContext(MethodBodyContext.class,0);
 		}
-		public MethodHeaderContext methodHeader() {
-			return getRuleContext(MethodHeaderContext.class,0);
+		public MethodModifiersContext methodModifiers() {
+			return getRuleContext(MethodModifiersContext.class,0);
 		}
 		public MethodDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4542,20 +4545,20 @@ public class Java8Parser extends Parser {
 		public Throws_Context throws_() {
 			return getRuleContext(Throws_Context.class,0);
 		}
-		public List<AnnotationContext> annotation() {
-			return getRuleContexts(AnnotationContext.class);
-		}
 		public ResultContext result() {
 			return getRuleContext(ResultContext.class,0);
-		}
-		public MethodDeclaratorContext methodDeclarator() {
-			return getRuleContext(MethodDeclaratorContext.class,0);
 		}
 		public TypeParametersContext typeParameters() {
 			return getRuleContext(TypeParametersContext.class,0);
 		}
 		public AnnotationContext annotation(int i) {
 			return getRuleContext(AnnotationContext.class,i);
+		}
+		public List<AnnotationContext> annotation() {
+			return getRuleContexts(AnnotationContext.class);
+		}
+		public MethodDeclaratorContext methodDeclarator() {
+			return getRuleContext(MethodDeclaratorContext.class,0);
 		}
 		public MethodHeaderContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4707,11 +4710,11 @@ public class Java8Parser extends Parser {
 
 	public static class MethodDeclaratorContext extends ParserRuleContext {
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public FormalParameterListContext formalParameterList() {
-			return getRuleContext(FormalParameterListContext.class,0);
-		}
 		public DimsContext dims() {
 			return getRuleContext(DimsContext.class,0);
+		}
+		public FormalParameterListContext formalParameterList() {
+			return getRuleContext(FormalParameterListContext.class,0);
 		}
 		public MethodDeclaratorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4767,11 +4770,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class FormalParameterListContext extends ParserRuleContext {
-		public LastFormalParameterContext lastFormalParameter() {
-			return getRuleContext(LastFormalParameterContext.class,0);
-		}
 		public FormalParametersContext formalParameters() {
 			return getRuleContext(FormalParametersContext.class,0);
+		}
+		public LastFormalParameterContext lastFormalParameter() {
+			return getRuleContext(LastFormalParameterContext.class,0);
 		}
 		public FormalParameterListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4821,11 +4824,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class FormalParametersContext extends ParserRuleContext {
-		public List<FormalParameterContext> formalParameter() {
-			return getRuleContexts(FormalParameterContext.class);
-		}
 		public ReceiverParameterContext receiverParameter() {
 			return getRuleContext(ReceiverParameterContext.class,0);
+		}
+		public List<FormalParameterContext> formalParameter() {
+			return getRuleContexts(FormalParameterContext.class);
 		}
 		public FormalParameterContext formalParameter(int i) {
 			return getRuleContext(FormalParameterContext.class,i);
@@ -4909,14 +4912,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class FormalParameterContext extends ParserRuleContext {
-		public VariableModifierContext variableModifier(int i) {
-			return getRuleContext(VariableModifierContext.class,i);
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public List<VariableModifierContext> variableModifier() {
-			return getRuleContexts(VariableModifierContext.class);
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
 		}
 		public VariableDeclaratorIdContext variableDeclaratorId() {
 			return getRuleContext(VariableDeclaratorIdContext.class,0);
@@ -5022,26 +5025,26 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class LastFormalParameterContext extends ParserRuleContext {
-		public VariableModifierContext variableModifier(int i) {
-			return getRuleContext(VariableModifierContext.class,i);
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
 		}
-		public List<AnnotationContext> annotation() {
-			return getRuleContexts(AnnotationContext.class);
-		}
-		public FormalParameterContext formalParameter() {
-			return getRuleContext(FormalParameterContext.class,0);
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public List<VariableModifierContext> variableModifier() {
-			return getRuleContexts(VariableModifierContext.class);
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
+		}
+		public FormalParameterContext formalParameter() {
+			return getRuleContext(FormalParameterContext.class,0);
+		}
+		public List<AnnotationContext> annotation() {
+			return getRuleContexts(AnnotationContext.class);
 		}
 		public VariableDeclaratorIdContext variableDeclaratorId() {
 			return getRuleContext(VariableDeclaratorIdContext.class,0);
-		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
 		}
 		public LastFormalParameterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5118,15 +5121,15 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ReceiverParameterContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public List<AnnotationContext> annotation() {
-			return getRuleContexts(AnnotationContext.class);
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public List<AnnotationContext> annotation() {
+			return getRuleContexts(AnnotationContext.class);
 		}
 		public ReceiverParameterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5226,11 +5229,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ExceptionTypeListContext extends ParserRuleContext {
-		public List<ExceptionTypeContext> exceptionType() {
-			return getRuleContexts(ExceptionTypeContext.class);
-		}
 		public ExceptionTypeContext exceptionType(int i) {
 			return getRuleContext(ExceptionTypeContext.class,i);
+		}
+		public List<ExceptionTypeContext> exceptionType() {
+			return getRuleContexts(ExceptionTypeContext.class);
 		}
 		public ExceptionTypeListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5462,20 +5465,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ConstructorDeclarationContext extends ParserRuleContext {
-		public ConstructorBodyContext constructorBody() {
-			return getRuleContext(ConstructorBodyContext.class,0);
-		}
 		public Throws_Context throws_() {
 			return getRuleContext(Throws_Context.class,0);
-		}
-		public ConstructorDeclaratorContext constructorDeclarator() {
-			return getRuleContext(ConstructorDeclaratorContext.class,0);
 		}
 		public List<ConstructorModifierContext> constructorModifier() {
 			return getRuleContexts(ConstructorModifierContext.class);
 		}
 		public ConstructorModifierContext constructorModifier(int i) {
 			return getRuleContext(ConstructorModifierContext.class,i);
+		}
+		public ConstructorDeclaratorContext constructorDeclarator() {
+			return getRuleContext(ConstructorDeclaratorContext.class,0);
+		}
+		public ConstructorBodyContext constructorBody() {
+			return getRuleContext(ConstructorBodyContext.class,0);
 		}
 		public ConstructorDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5598,14 +5601,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ConstructorDeclaratorContext extends ParserRuleContext {
+		public TypeParametersContext typeParameters() {
+			return getRuleContext(TypeParametersContext.class,0);
+		}
 		public SimpleTypeNameContext simpleTypeName() {
 			return getRuleContext(SimpleTypeNameContext.class,0);
 		}
 		public FormalParameterListContext formalParameterList() {
 			return getRuleContext(FormalParameterListContext.class,0);
-		}
-		public TypeParametersContext typeParameters() {
-			return getRuleContext(TypeParametersContext.class,0);
 		}
 		public ConstructorDeclaratorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5756,17 +5759,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ExplicitConstructorInvocationContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public PrimaryContext primary() {
 			return getRuleContext(PrimaryContext.class,0);
 		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public ExplicitConstructorInvocationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5907,13 +5910,13 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class EnumDeclarationContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public EnumBodyContext enumBody() {
-			return getRuleContext(EnumBodyContext.class,0);
-		}
 		public List<ClassModifierContext> classModifier() {
 			return getRuleContexts(ClassModifierContext.class);
 		}
+		public EnumBodyContext enumBody() {
+			return getRuleContext(EnumBodyContext.class,0);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ClassModifierContext classModifier(int i) {
 			return getRuleContext(ClassModifierContext.class,i);
 		}
@@ -5979,13 +5982,13 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class EnumBodyContext extends ParserRuleContext {
-		public EnumBodyDeclarationsContext enumBodyDeclarations() {
-			return getRuleContext(EnumBodyDeclarationsContext.class,0);
-		}
 		public EnumConstantListContext enumConstantList() {
 			return getRuleContext(EnumConstantListContext.class,0);
 		}
 		public TerminalNode COMMA() { return getToken(Java8Parser.COMMA, 0); }
+		public EnumBodyDeclarationsContext enumBodyDeclarations() {
+			return getRuleContext(EnumBodyDeclarationsContext.class,0);
+		}
 		public EnumBodyContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -6105,18 +6108,18 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class EnumConstantContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
+		}
 		public ClassBodyContext classBody() {
 			return getRuleContext(ClassBodyContext.class,0);
-		}
-		public List<EnumConstantModifierContext> enumConstantModifier() {
-			return getRuleContexts(EnumConstantModifierContext.class);
 		}
 		public EnumConstantModifierContext enumConstantModifier(int i) {
 			return getRuleContext(EnumConstantModifierContext.class,i);
 		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public List<EnumConstantModifierContext> enumConstantModifier() {
+			return getRuleContexts(EnumConstantModifierContext.class);
 		}
 		public EnumConstantContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6230,11 +6233,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class EnumBodyDeclarationsContext extends ParserRuleContext {
-		public List<ClassBodyDeclarationContext> classBodyDeclaration() {
-			return getRuleContexts(ClassBodyDeclarationContext.class);
-		}
 		public ClassBodyDeclarationContext classBodyDeclaration(int i) {
 			return getRuleContext(ClassBodyDeclarationContext.class,i);
+		}
+		public List<ClassBodyDeclarationContext> classBodyDeclaration() {
+			return getRuleContexts(ClassBodyDeclarationContext.class);
 		}
 		public EnumBodyDeclarationsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6337,21 +6340,21 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class NormalInterfaceDeclarationContext extends ParserRuleContext {
+		public TypeParametersContext typeParameters() {
+			return getRuleContext(TypeParametersContext.class,0);
+		}
+		public ExtendsInterfacesContext extendsInterfaces() {
+			return getRuleContext(ExtendsInterfacesContext.class,0);
+		}
+		public InterfaceModifierContext interfaceModifier(int i) {
+			return getRuleContext(InterfaceModifierContext.class,i);
+		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public InterfaceBodyContext interfaceBody() {
 			return getRuleContext(InterfaceBodyContext.class,0);
 		}
 		public List<InterfaceModifierContext> interfaceModifier() {
 			return getRuleContexts(InterfaceModifierContext.class);
-		}
-		public InterfaceModifierContext interfaceModifier(int i) {
-			return getRuleContext(InterfaceModifierContext.class,i);
-		}
-		public TypeParametersContext typeParameters() {
-			return getRuleContext(TypeParametersContext.class,0);
-		}
-		public ExtendsInterfacesContext extendsInterfaces() {
-			return getRuleContext(ExtendsInterfacesContext.class,0);
 		}
 		public NormalInterfaceDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6596,17 +6599,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class InterfaceMemberDeclarationContext extends ParserRuleContext {
-		public ClassDeclarationContext classDeclaration() {
-			return getRuleContext(ClassDeclarationContext.class,0);
-		}
-		public InterfaceDeclarationContext interfaceDeclaration() {
-			return getRuleContext(InterfaceDeclarationContext.class,0);
+		public InterfaceMethodDeclarationContext interfaceMethodDeclaration() {
+			return getRuleContext(InterfaceMethodDeclarationContext.class,0);
 		}
 		public ConstantDeclarationContext constantDeclaration() {
 			return getRuleContext(ConstantDeclarationContext.class,0);
 		}
-		public InterfaceMethodDeclarationContext interfaceMethodDeclaration() {
-			return getRuleContext(InterfaceMethodDeclarationContext.class,0);
+		public InterfaceDeclarationContext interfaceDeclaration() {
+			return getRuleContext(InterfaceDeclarationContext.class,0);
+		}
+		public ClassDeclarationContext classDeclaration() {
+			return getRuleContext(ClassDeclarationContext.class,0);
 		}
 		public InterfaceMemberDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6672,17 +6675,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ConstantDeclarationContext extends ParserRuleContext {
-		public ConstantModifierContext constantModifier(int i) {
-			return getRuleContext(ConstantModifierContext.class,i);
+		public List<ConstantModifierContext> constantModifier() {
+			return getRuleContexts(ConstantModifierContext.class);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public List<ConstantModifierContext> constantModifier() {
-			return getRuleContexts(ConstantModifierContext.class);
-		}
 		public VariableDeclaratorListContext variableDeclaratorList() {
 			return getRuleContext(VariableDeclaratorListContext.class,0);
+		}
+		public ConstantModifierContext constantModifier(int i) {
+			return getRuleContext(ConstantModifierContext.class,i);
 		}
 		public ConstantDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6798,14 +6801,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class InterfaceMethodDeclarationContext extends ParserRuleContext {
-		public MethodBodyContext methodBody() {
-			return getRuleContext(MethodBodyContext.class,0);
-		}
 		public List<InterfaceMethodModifierContext> interfaceMethodModifier() {
 			return getRuleContexts(InterfaceMethodModifierContext.class);
 		}
 		public MethodHeaderContext methodHeader() {
 			return getRuleContext(MethodHeaderContext.class,0);
+		}
+		public MethodBodyContext methodBody() {
+			return getRuleContext(MethodBodyContext.class,0);
 		}
 		public InterfaceMethodModifierContext interfaceMethodModifier(int i) {
 			return getRuleContext(InterfaceMethodModifierContext.class,i);
@@ -6935,15 +6938,15 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AnnotationTypeDeclarationContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public AnnotationTypeBodyContext annotationTypeBody() {
 			return getRuleContext(AnnotationTypeBodyContext.class,0);
 		}
-		public List<InterfaceModifierContext> interfaceModifier() {
-			return getRuleContexts(InterfaceModifierContext.class);
-		}
 		public InterfaceModifierContext interfaceModifier(int i) {
 			return getRuleContext(InterfaceModifierContext.class,i);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public List<InterfaceModifierContext> interfaceModifier() {
+			return getRuleContexts(InterfaceModifierContext.class);
 		}
 		public AnnotationTypeDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7055,17 +7058,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AnnotationTypeMemberDeclarationContext extends ParserRuleContext {
-		public ClassDeclarationContext classDeclaration() {
-			return getRuleContext(ClassDeclarationContext.class,0);
-		}
-		public AnnotationTypeElementDeclarationContext annotationTypeElementDeclaration() {
-			return getRuleContext(AnnotationTypeElementDeclarationContext.class,0);
+		public ConstantDeclarationContext constantDeclaration() {
+			return getRuleContext(ConstantDeclarationContext.class,0);
 		}
 		public InterfaceDeclarationContext interfaceDeclaration() {
 			return getRuleContext(InterfaceDeclarationContext.class,0);
 		}
-		public ConstantDeclarationContext constantDeclaration() {
-			return getRuleContext(ConstantDeclarationContext.class,0);
+		public AnnotationTypeElementDeclarationContext annotationTypeElementDeclaration() {
+			return getRuleContext(AnnotationTypeElementDeclarationContext.class,0);
+		}
+		public ClassDeclarationContext classDeclaration() {
+			return getRuleContext(ClassDeclarationContext.class,0);
 		}
 		public AnnotationTypeMemberDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7131,21 +7134,21 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AnnotationTypeElementDeclarationContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public UnannTypeContext unannType() {
-			return getRuleContext(UnannTypeContext.class,0);
-		}
-		public DimsContext dims() {
-			return getRuleContext(DimsContext.class,0);
-		}
 		public DefaultValueContext defaultValue() {
 			return getRuleContext(DefaultValueContext.class,0);
 		}
-		public AnnotationTypeElementModifierContext annotationTypeElementModifier(int i) {
-			return getRuleContext(AnnotationTypeElementModifierContext.class,i);
+		public UnannTypeContext unannType() {
+			return getRuleContext(UnannTypeContext.class,0);
 		}
 		public List<AnnotationTypeElementModifierContext> annotationTypeElementModifier() {
 			return getRuleContexts(AnnotationTypeElementModifierContext.class);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public AnnotationTypeElementModifierContext annotationTypeElementModifier(int i) {
+			return getRuleContext(AnnotationTypeElementModifierContext.class,i);
+		}
+		public DimsContext dims() {
+			return getRuleContext(DimsContext.class,0);
 		}
 		public AnnotationTypeElementDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7312,11 +7315,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AnnotationContext extends ParserRuleContext {
-		public NormalAnnotationContext normalAnnotation() {
-			return getRuleContext(NormalAnnotationContext.class,0);
-		}
 		public MarkerAnnotationContext markerAnnotation() {
 			return getRuleContext(MarkerAnnotationContext.class,0);
+		}
+		public NormalAnnotationContext normalAnnotation() {
+			return getRuleContext(NormalAnnotationContext.class,0);
 		}
 		public SingleElementAnnotationContext singleElementAnnotation() {
 			return getRuleContext(SingleElementAnnotationContext.class,0);
@@ -7373,12 +7376,12 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AnnotationIdentifierContext extends ParserRuleContext {
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
+		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public List<AnnotationContext> annotation() {
 			return getRuleContexts(AnnotationContext.class);
-		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
 		}
 		public AnnotationIdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7429,14 +7432,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AnnotationDimContext extends ParserRuleContext {
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
+		}
 		public SquareBracketsContext squareBrackets() {
 			return getRuleContext(SquareBracketsContext.class,0);
 		}
 		public List<AnnotationContext> annotation() {
 			return getRuleContexts(AnnotationContext.class);
-		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
 		}
 		public AnnotationDimContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7540,11 +7543,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ElementValuePairListContext extends ParserRuleContext {
-		public ElementValuePairContext elementValuePair(int i) {
-			return getRuleContext(ElementValuePairContext.class,i);
-		}
 		public List<ElementValuePairContext> elementValuePair() {
 			return getRuleContexts(ElementValuePairContext.class);
+		}
+		public ElementValuePairContext elementValuePair(int i) {
+			return getRuleContext(ElementValuePairContext.class,i);
 		}
 		public ElementValuePairListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7596,10 +7599,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ElementValuePairContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ElementValueContext elementValue() {
 			return getRuleContext(ElementValueContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ElementValuePairContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -7637,14 +7640,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ElementValueContext extends ParserRuleContext {
-		public ConditionalExpressionContext conditionalExpression() {
-			return getRuleContext(ConditionalExpressionContext.class,0);
+		public AnnotationContext annotation() {
+			return getRuleContext(AnnotationContext.class,0);
 		}
 		public ElementValueArrayInitializerContext elementValueArrayInitializer() {
 			return getRuleContext(ElementValueArrayInitializerContext.class,0);
 		}
-		public AnnotationContext annotation() {
-			return getRuleContext(AnnotationContext.class,0);
+		public ConditionalExpressionContext conditionalExpression() {
+			return getRuleContext(ConditionalExpressionContext.class,0);
 		}
 		public ElementValueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7698,10 +7701,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ElementValueArrayInitializerContext extends ParserRuleContext {
+		public TerminalNode COMMA() { return getToken(Java8Parser.COMMA, 0); }
 		public ElementValueListContext elementValueList() {
 			return getRuleContext(ElementValueListContext.class,0);
 		}
-		public TerminalNode COMMA() { return getToken(Java8Parser.COMMA, 0); }
 		public ElementValueArrayInitializerContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -7852,11 +7855,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class SingleElementAnnotationContext extends ParserRuleContext {
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
 		public ElementValueContext elementValue() {
 			return getRuleContext(ElementValueContext.class,0);
+		}
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
 		}
 		public SingleElementAnnotationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7954,11 +7957,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class VariableInitializerListContext extends ParserRuleContext {
-		public List<VariableInitializerContext> variableInitializer() {
-			return getRuleContexts(VariableInitializerContext.class);
-		}
 		public VariableInitializerContext variableInitializer(int i) {
 			return getRuleContext(VariableInitializerContext.class,i);
+		}
+		public List<VariableInitializerContext> variableInitializer() {
+			return getRuleContexts(VariableInitializerContext.class);
 		}
 		public VariableInitializerListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -8115,11 +8118,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class BlockStatementContext extends ParserRuleContext {
-		public ClassDeclarationContext classDeclaration() {
-			return getRuleContext(ClassDeclarationContext.class,0);
-		}
 		public StatementContext statement() {
 			return getRuleContext(StatementContext.class,0);
+		}
+		public ClassDeclarationContext classDeclaration() {
+			return getRuleContext(ClassDeclarationContext.class,0);
 		}
 		public LocalVariableDeclarationStatementContext localVariableDeclarationStatement() {
 			return getRuleContext(LocalVariableDeclarationStatementContext.class,0);
@@ -8215,14 +8218,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class LocalVariableDeclarationContext extends ParserRuleContext {
-		public VariableModifierContext variableModifier(int i) {
-			return getRuleContext(VariableModifierContext.class,i);
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public List<VariableModifierContext> variableModifier() {
-			return getRuleContexts(VariableModifierContext.class);
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
 		}
 		public VariableDeclaratorListContext variableDeclaratorList() {
 			return getRuleContext(VariableDeclaratorListContext.class,0);
@@ -8277,8 +8280,8 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class StatementContext extends ParserRuleContext {
-		public IfThenStatementContext ifThenStatement() {
-			return getRuleContext(IfThenStatementContext.class,0);
+		public StatementWithoutTrailingSubstatementContext statementWithoutTrailingSubstatement() {
+			return getRuleContext(StatementWithoutTrailingSubstatementContext.class,0);
 		}
 		public LabeledStatementContext labeledStatement() {
 			return getRuleContext(LabeledStatementContext.class,0);
@@ -8292,8 +8295,8 @@ public class Java8Parser extends Parser {
 		public ForStatementContext forStatement() {
 			return getRuleContext(ForStatementContext.class,0);
 		}
-		public StatementWithoutTrailingSubstatementContext statementWithoutTrailingSubstatement() {
-			return getRuleContext(StatementWithoutTrailingSubstatementContext.class,0);
+		public IfThenStatementContext ifThenStatement() {
+			return getRuleContext(IfThenStatementContext.class,0);
 		}
 		public StatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -8365,20 +8368,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class StatementNoShortIfContext extends ParserRuleContext {
+		public WhileStatementNoShortIfContext whileStatementNoShortIf() {
+			return getRuleContext(WhileStatementNoShortIfContext.class,0);
+		}
 		public ForStatementNoShortIfContext forStatementNoShortIf() {
 			return getRuleContext(ForStatementNoShortIfContext.class,0);
 		}
-		public WhileStatementNoShortIfContext whileStatementNoShortIf() {
-			return getRuleContext(WhileStatementNoShortIfContext.class,0);
+		public StatementWithoutTrailingSubstatementContext statementWithoutTrailingSubstatement() {
+			return getRuleContext(StatementWithoutTrailingSubstatementContext.class,0);
 		}
 		public IfThenElseStatementNoShortIfContext ifThenElseStatementNoShortIf() {
 			return getRuleContext(IfThenElseStatementNoShortIfContext.class,0);
 		}
 		public LabeledStatementNoShortIfContext labeledStatementNoShortIf() {
 			return getRuleContext(LabeledStatementNoShortIfContext.class,0);
-		}
-		public StatementWithoutTrailingSubstatementContext statementWithoutTrailingSubstatement() {
-			return getRuleContext(StatementWithoutTrailingSubstatementContext.class,0);
 		}
 		public StatementNoShortIfContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -8444,41 +8447,41 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class StatementWithoutTrailingSubstatementContext extends ParserRuleContext {
-		public ExpressionStatementContext expressionStatement() {
-			return getRuleContext(ExpressionStatementContext.class,0);
-		}
-		public ThrowStatementContext throwStatement() {
-			return getRuleContext(ThrowStatementContext.class,0);
+		public BreakStatementContext breakStatement() {
+			return getRuleContext(BreakStatementContext.class,0);
 		}
 		public TryStatementContext tryStatement() {
 			return getRuleContext(TryStatementContext.class,0);
 		}
-		public DoStatementContext doStatement() {
-			return getRuleContext(DoStatementContext.class,0);
-		}
-		public SwitchStatementContext switchStatement() {
-			return getRuleContext(SwitchStatementContext.class,0);
-		}
-		public SynchronizedStatementContext synchronizedStatement() {
-			return getRuleContext(SynchronizedStatementContext.class,0);
-		}
-		public AssertStatementContext assertStatement() {
-			return getRuleContext(AssertStatementContext.class,0);
+		public ThrowStatementContext throwStatement() {
+			return getRuleContext(ThrowStatementContext.class,0);
 		}
 		public ContinueStatementContext continueStatement() {
 			return getRuleContext(ContinueStatementContext.class,0);
 		}
-		public BlockContext block() {
-			return getRuleContext(BlockContext.class,0);
+		public EmptyStatementContext emptyStatement() {
+			return getRuleContext(EmptyStatementContext.class,0);
 		}
 		public ReturnStatementContext returnStatement() {
 			return getRuleContext(ReturnStatementContext.class,0);
 		}
-		public EmptyStatementContext emptyStatement() {
-			return getRuleContext(EmptyStatementContext.class,0);
+		public SynchronizedStatementContext synchronizedStatement() {
+			return getRuleContext(SynchronizedStatementContext.class,0);
 		}
-		public BreakStatementContext breakStatement() {
-			return getRuleContext(BreakStatementContext.class,0);
+		public DoStatementContext doStatement() {
+			return getRuleContext(DoStatementContext.class,0);
+		}
+		public AssertStatementContext assertStatement() {
+			return getRuleContext(AssertStatementContext.class,0);
+		}
+		public BlockContext block() {
+			return getRuleContext(BlockContext.class,0);
+		}
+		public SwitchStatementContext switchStatement() {
+			return getRuleContext(SwitchStatementContext.class,0);
+		}
+		public ExpressionStatementContext expressionStatement() {
+			return getRuleContext(ExpressionStatementContext.class,0);
 		}
 		public StatementWithoutTrailingSubstatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -8645,10 +8648,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class LabeledStatementContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public StatementContext statement() {
 			return getRuleContext(StatementContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public LabeledStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -8686,10 +8689,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class LabeledStatementNoShortIfContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public StatementNoShortIfContext statementNoShortIf() {
 			return getRuleContext(StatementNoShortIfContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public LabeledStatementNoShortIfContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -8766,14 +8769,8 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class StatementExpressionContext extends ParserRuleContext {
-		public PostDecrementExpressionContext postDecrementExpression() {
-			return getRuleContext(PostDecrementExpressionContext.class,0);
-		}
 		public PostIncrementExpressionContext postIncrementExpression() {
 			return getRuleContext(PostIncrementExpressionContext.class,0);
-		}
-		public AssignmentContext assignment() {
-			return getRuleContext(AssignmentContext.class,0);
 		}
 		public MethodInvocationContext methodInvocation() {
 			return getRuleContext(MethodInvocationContext.class,0);
@@ -8781,11 +8778,17 @@ public class Java8Parser extends Parser {
 		public PreIncrementExpressionContext preIncrementExpression() {
 			return getRuleContext(PreIncrementExpressionContext.class,0);
 		}
+		public AssignmentContext assignment() {
+			return getRuleContext(AssignmentContext.class,0);
+		}
 		public PreDecrementExpressionContext preDecrementExpression() {
 			return getRuleContext(PreDecrementExpressionContext.class,0);
 		}
 		public ClassInstanceCreationExpressionContext classInstanceCreationExpression() {
 			return getRuleContext(ClassInstanceCreationExpressionContext.class,0);
+		}
+		public PostDecrementExpressionContext postDecrementExpression() {
+			return getRuleContext(PostDecrementExpressionContext.class,0);
 		}
 		public StatementExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -8908,11 +8911,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class IfThenElseStatementContext extends ParserRuleContext {
-		public StatementNoShortIfContext statementNoShortIf() {
-			return getRuleContext(StatementNoShortIfContext.class,0);
-		}
 		public StatementContext statement() {
 			return getRuleContext(StatementContext.class,0);
+		}
+		public StatementNoShortIfContext statementNoShortIf() {
+			return getRuleContext(StatementNoShortIfContext.class,0);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -8958,11 +8961,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class IfThenElseStatementNoShortIfContext extends ParserRuleContext {
-		public List<StatementNoShortIfContext> statementNoShortIf() {
-			return getRuleContexts(StatementNoShortIfContext.class);
-		}
 		public StatementNoShortIfContext statementNoShortIf(int i) {
 			return getRuleContext(StatementNoShortIfContext.class,i);
+		}
+		public List<StatementNoShortIfContext> statementNoShortIf() {
+			return getRuleContexts(StatementNoShortIfContext.class);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -9111,6 +9114,9 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class SwitchBlockContext extends ParserRuleContext {
+		public SwitchLabelContext switchLabel(int i) {
+			return getRuleContext(SwitchLabelContext.class,i);
+		}
 		public SwitchBlockStatementGroupContext switchBlockStatementGroup(int i) {
 			return getRuleContext(SwitchBlockStatementGroupContext.class,i);
 		}
@@ -9119,9 +9125,6 @@ public class Java8Parser extends Parser {
 		}
 		public List<SwitchBlockStatementGroupContext> switchBlockStatementGroup() {
 			return getRuleContexts(SwitchBlockStatementGroupContext.class);
-		}
-		public SwitchLabelContext switchLabel(int i) {
-			return getRuleContext(SwitchLabelContext.class,i);
 		}
 		public SwitchBlockContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9189,11 +9192,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class SwitchBlockStatementGroupContext extends ParserRuleContext {
-		public SwitchLabelsContext switchLabels() {
-			return getRuleContext(SwitchLabelsContext.class,0);
-		}
 		public BlockStatementsContext blockStatements() {
 			return getRuleContext(BlockStatementsContext.class,0);
+		}
+		public SwitchLabelsContext switchLabels() {
+			return getRuleContext(SwitchLabelsContext.class,0);
 		}
 		public SwitchBlockStatementGroupContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9231,11 +9234,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class SwitchLabelsContext extends ParserRuleContext {
-		public List<SwitchLabelContext> switchLabel() {
-			return getRuleContexts(SwitchLabelContext.class);
-		}
 		public SwitchLabelContext switchLabel(int i) {
 			return getRuleContext(SwitchLabelContext.class,i);
+		}
+		public List<SwitchLabelContext> switchLabel() {
+			return getRuleContexts(SwitchLabelContext.class);
 		}
 		public SwitchLabelsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9522,11 +9525,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ForStatementContext extends ParserRuleContext {
-		public BasicForStatementContext basicForStatement() {
-			return getRuleContext(BasicForStatementContext.class,0);
-		}
 		public EnhancedForStatementContext enhancedForStatement() {
 			return getRuleContext(EnhancedForStatementContext.class,0);
+		}
+		public BasicForStatementContext basicForStatement() {
+			return getRuleContext(BasicForStatementContext.class,0);
 		}
 		public ForStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9626,9 +9629,6 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class BasicForStatementContext extends ParserRuleContext {
-		public ForUpdateContext forUpdate() {
-			return getRuleContext(ForUpdateContext.class,0);
-		}
 		public ForInitContext forInit() {
 			return getRuleContext(ForInitContext.class,0);
 		}
@@ -9637,6 +9637,9 @@ public class Java8Parser extends Parser {
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
+		}
+		public ForUpdateContext forUpdate() {
+			return getRuleContext(ForUpdateContext.class,0);
 		}
 		public BasicForStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9703,9 +9706,6 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class BasicForStatementNoShortIfContext extends ParserRuleContext {
-		public ForUpdateContext forUpdate() {
-			return getRuleContext(ForUpdateContext.class,0);
-		}
 		public ForInitContext forInit() {
 			return getRuleContext(ForInitContext.class,0);
 		}
@@ -9714,6 +9714,9 @@ public class Java8Parser extends Parser {
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
+		}
+		public ForUpdateContext forUpdate() {
+			return getRuleContext(ForUpdateContext.class,0);
 		}
 		public BasicForStatementNoShortIfContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9780,11 +9783,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ForInitContext extends ParserRuleContext {
-		public LocalVariableDeclarationContext localVariableDeclaration() {
-			return getRuleContext(LocalVariableDeclarationContext.class,0);
-		}
 		public StatementExpressionListContext statementExpressionList() {
 			return getRuleContext(StatementExpressionListContext.class,0);
+		}
+		public LocalVariableDeclarationContext localVariableDeclaration() {
+			return getRuleContext(LocalVariableDeclarationContext.class,0);
 		}
 		public ForInitContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9870,11 +9873,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class StatementExpressionListContext extends ParserRuleContext {
-		public StatementExpressionContext statementExpression(int i) {
-			return getRuleContext(StatementExpressionContext.class,i);
-		}
 		public List<StatementExpressionContext> statementExpression() {
 			return getRuleContexts(StatementExpressionContext.class);
+		}
+		public StatementExpressionContext statementExpression(int i) {
+			return getRuleContext(StatementExpressionContext.class,i);
 		}
 		public StatementExpressionListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -9926,23 +9929,23 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class EnhancedForStatementContext extends ParserRuleContext {
-		public VariableModifierContext variableModifier(int i) {
-			return getRuleContext(VariableModifierContext.class,i);
-		}
-		public UnannTypeContext unannType() {
-			return getRuleContext(UnannTypeContext.class,0);
+		public StatementContext statement() {
+			return getRuleContext(StatementContext.class,0);
 		}
 		public List<VariableModifierContext> variableModifier() {
 			return getRuleContexts(VariableModifierContext.class);
 		}
-		public VariableDeclaratorIdContext variableDeclaratorId() {
-			return getRuleContext(VariableDeclaratorIdContext.class,0);
+		public UnannTypeContext unannType() {
+			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public StatementContext statement() {
-			return getRuleContext(StatementContext.class,0);
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
+		}
+		public VariableDeclaratorIdContext variableDeclaratorId() {
+			return getRuleContext(VariableDeclaratorIdContext.class,0);
 		}
 		public EnhancedForStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10000,23 +10003,23 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class EnhancedForStatementNoShortIfContext extends ParserRuleContext {
-		public VariableModifierContext variableModifier(int i) {
-			return getRuleContext(VariableModifierContext.class,i);
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public List<VariableModifierContext> variableModifier() {
-			return getRuleContexts(VariableModifierContext.class);
-		}
-		public VariableDeclaratorIdContext variableDeclaratorId() {
-			return getRuleContext(VariableDeclaratorIdContext.class,0);
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
 		}
 		public StatementNoShortIfContext statementNoShortIf() {
 			return getRuleContext(StatementNoShortIfContext.class,0);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
+		}
+		public VariableDeclaratorIdContext variableDeclaratorId() {
+			return getRuleContext(VariableDeclaratorIdContext.class,0);
 		}
 		public EnhancedForStatementNoShortIfContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10305,11 +10308,11 @@ public class Java8Parser extends Parser {
 		public Finally_Context finally_() {
 			return getRuleContext(Finally_Context.class,0);
 		}
-		public BlockContext block() {
-			return getRuleContext(BlockContext.class,0);
-		}
 		public TryWithResourcesStatementContext tryWithResourcesStatement() {
 			return getRuleContext(TryWithResourcesStatementContext.class,0);
+		}
+		public BlockContext block() {
+			return getRuleContext(BlockContext.class,0);
 		}
 		public TryStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10476,17 +10479,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class CatchFormalParameterContext extends ParserRuleContext {
-		public CatchTypeContext catchType() {
-			return getRuleContext(CatchTypeContext.class,0);
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
 		}
 		public VariableModifierContext variableModifier(int i) {
 			return getRuleContext(VariableModifierContext.class,i);
 		}
-		public List<VariableModifierContext> variableModifier() {
-			return getRuleContexts(VariableModifierContext.class);
-		}
 		public VariableDeclaratorIdContext variableDeclaratorId() {
 			return getRuleContext(VariableDeclaratorIdContext.class,0);
+		}
+		public CatchTypeContext catchType() {
+			return getRuleContext(CatchTypeContext.class,0);
 		}
 		public CatchFormalParameterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10541,11 +10544,11 @@ public class Java8Parser extends Parser {
 		public UnannClassTypeContext unannClassType() {
 			return getRuleContext(UnannClassTypeContext.class,0);
 		}
-		public ClassTypeContext classType(int i) {
-			return getRuleContext(ClassTypeContext.class,i);
-		}
 		public List<ClassTypeContext> classType() {
 			return getRuleContexts(ClassTypeContext.class);
+		}
+		public ClassTypeContext classType(int i) {
+			return getRuleContext(ClassTypeContext.class,i);
 		}
 		public CatchTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10639,11 +10642,11 @@ public class Java8Parser extends Parser {
 		public CatchesContext catches() {
 			return getRuleContext(CatchesContext.class,0);
 		}
-		public Finally_Context finally_() {
-			return getRuleContext(Finally_Context.class,0);
-		}
 		public ResourceSpecificationContext resourceSpecification() {
 			return getRuleContext(ResourceSpecificationContext.class,0);
+		}
+		public Finally_Context finally_() {
+			return getRuleContext(Finally_Context.class,0);
 		}
 		public BlockContext block() {
 			return getRuleContext(BlockContext.class,0);
@@ -10752,11 +10755,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ResourceListContext extends ParserRuleContext {
-		public ResourceContext resource(int i) {
-			return getRuleContext(ResourceContext.class,i);
-		}
 		public List<ResourceContext> resource() {
 			return getRuleContexts(ResourceContext.class);
+		}
+		public ResourceContext resource(int i) {
+			return getRuleContext(ResourceContext.class,i);
 		}
 		public ResourceListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10810,20 +10813,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ResourceContext extends ParserRuleContext {
-		public VariableModifierContext variableModifier(int i) {
-			return getRuleContext(VariableModifierContext.class,i);
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
 		}
 		public UnannTypeContext unannType() {
 			return getRuleContext(UnannTypeContext.class,0);
 		}
-		public List<VariableModifierContext> variableModifier() {
-			return getRuleContexts(VariableModifierContext.class);
-		}
-		public VariableDeclaratorIdContext variableDeclaratorId() {
-			return getRuleContext(VariableDeclaratorIdContext.class,0);
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
+		}
+		public VariableDeclaratorIdContext variableDeclaratorId() {
+			return getRuleContext(VariableDeclaratorIdContext.class,0);
 		}
 		public ResourceContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10880,14 +10883,14 @@ public class Java8Parser extends Parser {
 		public PrimaryNoNewArray_lf_primaryContext primaryNoNewArray_lf_primary(int i) {
 			return getRuleContext(PrimaryNoNewArray_lf_primaryContext.class,i);
 		}
+		public List<PrimaryNoNewArray_lf_primaryContext> primaryNoNewArray_lf_primary() {
+			return getRuleContexts(PrimaryNoNewArray_lf_primaryContext.class);
+		}
 		public PrimaryNoNewArray_lfno_primaryContext primaryNoNewArray_lfno_primary() {
 			return getRuleContext(PrimaryNoNewArray_lfno_primaryContext.class,0);
 		}
 		public ArrayCreationExpressionContext arrayCreationExpression() {
 			return getRuleContext(ArrayCreationExpressionContext.class,0);
-		}
-		public List<PrimaryNoNewArray_lf_primaryContext> primaryNoNewArray_lf_primary() {
-			return getRuleContexts(PrimaryNoNewArray_lf_primaryContext.class);
 		}
 		public PrimaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -10952,23 +10955,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimaryNoNewArrayContext extends ParserRuleContext {
+		public ArrayAccessContext arrayAccess() {
+			return getRuleContext(ArrayAccessContext.class,0);
+		}
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public MethodInvocationContext methodInvocation() {
+			return getRuleContext(MethodInvocationContext.class,0);
+		}
 		public FieldAccessContext fieldAccess() {
 			return getRuleContext(FieldAccessContext.class,0);
 		}
 		public List<SquareBracketsContext> squareBrackets() {
 			return getRuleContexts(SquareBracketsContext.class);
-		}
-		public MethodInvocationContext methodInvocation() {
-			return getRuleContext(MethodInvocationContext.class,0);
-		}
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
-		}
-		public ArrayAccessContext arrayAccess() {
-			return getRuleContext(ArrayAccessContext.class,0);
 		}
 		public MethodReferenceContext methodReference() {
 			return getRuleContext(MethodReferenceContext.class,0);
@@ -10981,6 +10981,9 @@ public class Java8Parser extends Parser {
 		}
 		public ClassInstanceCreationExpressionContext classInstanceCreationExpression() {
 			return getRuleContext(ClassInstanceCreationExpressionContext.class,0);
+		}
+		public LiteralContext literal() {
+			return getRuleContext(LiteralContext.class,0);
 		}
 		public PrimaryNoNewArrayContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -11138,20 +11141,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimaryNoNewArray_lfno_arrayAccessContext extends ParserRuleContext {
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public MethodInvocationContext methodInvocation() {
+			return getRuleContext(MethodInvocationContext.class,0);
+		}
 		public FieldAccessContext fieldAccess() {
 			return getRuleContext(FieldAccessContext.class,0);
 		}
 		public List<SquareBracketsContext> squareBrackets() {
 			return getRuleContexts(SquareBracketsContext.class);
-		}
-		public MethodInvocationContext methodInvocation() {
-			return getRuleContext(MethodInvocationContext.class,0);
-		}
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
 		}
 		public MethodReferenceContext methodReference() {
 			return getRuleContext(MethodReferenceContext.class,0);
@@ -11164,6 +11164,9 @@ public class Java8Parser extends Parser {
 		}
 		public ClassInstanceCreationExpressionContext classInstanceCreationExpression() {
 			return getRuleContext(ClassInstanceCreationExpressionContext.class,0);
+		}
+		public LiteralContext literal() {
+			return getRuleContext(LiteralContext.class,0);
 		}
 		public PrimaryNoNewArray_lfno_arrayAccessContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -11281,20 +11284,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimaryNoNewArray_lf_primaryContext extends ParserRuleContext {
-		public ClassInstanceCreationExpression_lf_primaryContext classInstanceCreationExpression_lf_primary() {
-			return getRuleContext(ClassInstanceCreationExpression_lf_primaryContext.class,0);
+		public MethodInvocation_lf_primaryContext methodInvocation_lf_primary() {
+			return getRuleContext(MethodInvocation_lf_primaryContext.class,0);
 		}
 		public ArrayAccess_lf_primaryContext arrayAccess_lf_primary() {
 			return getRuleContext(ArrayAccess_lf_primaryContext.class,0);
 		}
-		public MethodReference_lf_primaryContext methodReference_lf_primary() {
-			return getRuleContext(MethodReference_lf_primaryContext.class,0);
-		}
-		public MethodInvocation_lf_primaryContext methodInvocation_lf_primary() {
-			return getRuleContext(MethodInvocation_lf_primaryContext.class,0);
-		}
 		public FieldAccess_lf_primaryContext fieldAccess_lf_primary() {
 			return getRuleContext(FieldAccess_lf_primaryContext.class,0);
+		}
+		public ClassInstanceCreationExpression_lf_primaryContext classInstanceCreationExpression_lf_primary() {
+			return getRuleContext(ClassInstanceCreationExpression_lf_primaryContext.class,0);
+		}
+		public MethodReference_lf_primaryContext methodReference_lf_primary() {
+			return getRuleContext(MethodReference_lf_primaryContext.class,0);
 		}
 		public PrimaryNoNewArray_lf_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -11394,17 +11397,17 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext extends ParserRuleContext {
-		public ClassInstanceCreationExpression_lf_primaryContext classInstanceCreationExpression_lf_primary() {
-			return getRuleContext(ClassInstanceCreationExpression_lf_primaryContext.class,0);
-		}
-		public MethodReference_lf_primaryContext methodReference_lf_primary() {
-			return getRuleContext(MethodReference_lf_primaryContext.class,0);
-		}
 		public MethodInvocation_lf_primaryContext methodInvocation_lf_primary() {
 			return getRuleContext(MethodInvocation_lf_primaryContext.class,0);
 		}
 		public FieldAccess_lf_primaryContext fieldAccess_lf_primary() {
 			return getRuleContext(FieldAccess_lf_primaryContext.class,0);
+		}
+		public ClassInstanceCreationExpression_lf_primaryContext classInstanceCreationExpression_lf_primary() {
+			return getRuleContext(ClassInstanceCreationExpression_lf_primaryContext.class,0);
+		}
+		public MethodReference_lf_primaryContext methodReference_lf_primary() {
+			return getRuleContext(MethodReference_lf_primaryContext.class,0);
 		}
 		public PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -11464,38 +11467,38 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimaryNoNewArray_lfno_primaryContext extends ParserRuleContext {
-		public FieldAccess_lfno_primaryContext fieldAccess_lfno_primary() {
-			return getRuleContext(FieldAccess_lfno_primaryContext.class,0);
-		}
-		public List<SquareBracketsContext> squareBrackets() {
-			return getRuleContexts(SquareBracketsContext.class);
-		}
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
-		public ClassInstanceCreationExpression_lfno_primaryContext classInstanceCreationExpression_lfno_primary() {
-			return getRuleContext(ClassInstanceCreationExpression_lfno_primaryContext.class,0);
-		}
-		public MethodReference_lfno_primaryContext methodReference_lfno_primary() {
-			return getRuleContext(MethodReference_lfno_primaryContext.class,0);
-		}
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
-		}
 		public ArrayAccess_lfno_primaryContext arrayAccess_lfno_primary() {
 			return getRuleContext(ArrayAccess_lfno_primaryContext.class,0);
-		}
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
-		public SquareBracketsContext squareBrackets(int i) {
-			return getRuleContext(SquareBracketsContext.class,i);
 		}
 		public UnannPrimitiveTypeContext unannPrimitiveType() {
 			return getRuleContext(UnannPrimitiveTypeContext.class,0);
 		}
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public FieldAccess_lfno_primaryContext fieldAccess_lfno_primary() {
+			return getRuleContext(FieldAccess_lfno_primaryContext.class,0);
+		}
+		public MethodReference_lfno_primaryContext methodReference_lfno_primary() {
+			return getRuleContext(MethodReference_lfno_primaryContext.class,0);
+		}
+		public List<SquareBracketsContext> squareBrackets() {
+			return getRuleContexts(SquareBracketsContext.class);
+		}
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
 		public MethodInvocation_lfno_primaryContext methodInvocation_lfno_primary() {
 			return getRuleContext(MethodInvocation_lfno_primaryContext.class,0);
+		}
+		public SquareBracketsContext squareBrackets(int i) {
+			return getRuleContext(SquareBracketsContext.class,i);
+		}
+		public LiteralContext literal() {
+			return getRuleContext(LiteralContext.class,0);
+		}
+		public ClassInstanceCreationExpression_lfno_primaryContext classInstanceCreationExpression_lfno_primary() {
+			return getRuleContext(ClassInstanceCreationExpression_lfno_primaryContext.class,0);
 		}
 		public PrimaryNoNewArray_lfno_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -11674,35 +11677,35 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext extends ParserRuleContext {
-		public FieldAccess_lfno_primaryContext fieldAccess_lfno_primary() {
-			return getRuleContext(FieldAccess_lfno_primaryContext.class,0);
-		}
-		public List<SquareBracketsContext> squareBrackets() {
-			return getRuleContexts(SquareBracketsContext.class);
+		public UnannPrimitiveTypeContext unannPrimitiveType() {
+			return getRuleContext(UnannPrimitiveTypeContext.class,0);
 		}
 		public TypeNameContext typeName() {
 			return getRuleContext(TypeNameContext.class,0);
 		}
-		public ClassInstanceCreationExpression_lfno_primaryContext classInstanceCreationExpression_lfno_primary() {
-			return getRuleContext(ClassInstanceCreationExpression_lfno_primaryContext.class,0);
+		public FieldAccess_lfno_primaryContext fieldAccess_lfno_primary() {
+			return getRuleContext(FieldAccess_lfno_primaryContext.class,0);
 		}
 		public MethodReference_lfno_primaryContext methodReference_lfno_primary() {
 			return getRuleContext(MethodReference_lfno_primaryContext.class,0);
 		}
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
+		public List<SquareBracketsContext> squareBrackets() {
+			return getRuleContexts(SquareBracketsContext.class);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
+		public MethodInvocation_lfno_primaryContext methodInvocation_lfno_primary() {
+			return getRuleContext(MethodInvocation_lfno_primaryContext.class,0);
+		}
 		public SquareBracketsContext squareBrackets(int i) {
 			return getRuleContext(SquareBracketsContext.class,i);
 		}
-		public UnannPrimitiveTypeContext unannPrimitiveType() {
-			return getRuleContext(UnannPrimitiveTypeContext.class,0);
+		public LiteralContext literal() {
+			return getRuleContext(LiteralContext.class,0);
 		}
-		public MethodInvocation_lfno_primaryContext methodInvocation_lfno_primary() {
-			return getRuleContext(MethodInvocation_lfno_primaryContext.class,0);
+		public ClassInstanceCreationExpression_lfno_primaryContext classInstanceCreationExpression_lfno_primary() {
+			return getRuleContext(ClassInstanceCreationExpression_lfno_primaryContext.class,0);
 		}
 		public PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -11841,29 +11844,29 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassInstanceCreationExpressionContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
-		public AnnotationIdentifierContext annotationIdentifier(int i) {
-			return getRuleContext(AnnotationIdentifierContext.class,i);
-		}
-		public TypeArgumentsOrDiamondContext typeArgumentsOrDiamond() {
-			return getRuleContext(TypeArgumentsOrDiamondContext.class,0);
-		}
-		public ClassBodyContext classBody() {
-			return getRuleContext(ClassBodyContext.class,0);
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public PrimaryContext primary() {
 			return getRuleContext(PrimaryContext.class,0);
 		}
-		public ExpressionNameContext expressionName() {
-			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
+		public AnnotationIdentifierContext annotationIdentifier(int i) {
+			return getRuleContext(AnnotationIdentifierContext.class,i);
 		}
 		public List<AnnotationIdentifierContext> annotationIdentifier() {
 			return getRuleContexts(AnnotationIdentifierContext.class);
+		}
+		public ClassBodyContext classBody() {
+			return getRuleContext(ClassBodyContext.class,0);
+		}
+		public TypeArgumentsOrDiamondContext typeArgumentsOrDiamond() {
+			return getRuleContext(TypeArgumentsOrDiamondContext.class,0);
+		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
+		public ExpressionNameContext expressionName() {
+			return getRuleContext(ExpressionNameContext.class,0);
 		}
 		public ClassInstanceCreationExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -12041,8 +12044,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassInstanceCreationExpression_lf_primaryContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
+		}
+		public AnnotationContext annotation(int i) {
+			return getRuleContext(AnnotationContext.class,i);
+		}
+		public ClassBodyContext classBody() {
+			return getRuleContext(ClassBodyContext.class,0);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public List<AnnotationContext> annotation() {
@@ -12051,14 +12060,8 @@ public class Java8Parser extends Parser {
 		public TypeArgumentsOrDiamondContext typeArgumentsOrDiamond() {
 			return getRuleContext(TypeArgumentsOrDiamondContext.class,0);
 		}
-		public ClassBodyContext classBody() {
-			return getRuleContext(ClassBodyContext.class,0);
-		}
-		public AnnotationContext annotation(int i) {
-			return getRuleContext(AnnotationContext.class,i);
-		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public ClassInstanceCreationExpression_lf_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -12145,26 +12148,26 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ClassInstanceCreationExpression_lfno_primaryContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public AnnotationIdentifierContext annotationIdentifier(int i) {
 			return getRuleContext(AnnotationIdentifierContext.class,i);
 		}
-		public TypeArgumentsOrDiamondContext typeArgumentsOrDiamond() {
-			return getRuleContext(TypeArgumentsOrDiamondContext.class,0);
+		public List<AnnotationIdentifierContext> annotationIdentifier() {
+			return getRuleContexts(AnnotationIdentifierContext.class);
 		}
 		public ClassBodyContext classBody() {
 			return getRuleContext(ClassBodyContext.class,0);
 		}
+		public TypeArgumentsOrDiamondContext typeArgumentsOrDiamond() {
+			return getRuleContext(TypeArgumentsOrDiamondContext.class,0);
+		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
-		}
-		public List<AnnotationIdentifierContext> annotationIdentifier() {
-			return getRuleContexts(AnnotationIdentifierContext.class);
 		}
 		public ClassInstanceCreationExpression_lfno_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -12351,13 +12354,13 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class FieldAccessContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
 		public PrimaryContext primary() {
 			return getRuleContext(PrimaryContext.class,0);
 		}
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public FieldAccessContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -12455,10 +12458,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class FieldAccess_lfno_primaryContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public TypeNameContext typeName() {
 			return getRuleContext(TypeNameContext.class,0);
 		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public FieldAccess_lfno_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -12513,23 +12516,23 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ArrayAccessContext extends ParserRuleContext {
-		public PrimaryNoNewArray_lfno_arrayAccessContext primaryNoNewArray_lfno_arrayAccess() {
-			return getRuleContext(PrimaryNoNewArray_lfno_arrayAccessContext.class,0);
-		}
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
+		public List<PrimaryNoNewArray_lf_arrayAccessContext> primaryNoNewArray_lf_arrayAccess() {
+			return getRuleContexts(PrimaryNoNewArray_lf_arrayAccessContext.class);
+		}
 		public PrimaryNoNewArray_lf_arrayAccessContext primaryNoNewArray_lf_arrayAccess(int i) {
 			return getRuleContext(PrimaryNoNewArray_lf_arrayAccessContext.class,i);
+		}
+		public PrimaryNoNewArray_lfno_arrayAccessContext primaryNoNewArray_lfno_arrayAccess() {
+			return getRuleContext(PrimaryNoNewArray_lfno_arrayAccessContext.class,0);
 		}
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public List<PrimaryNoNewArray_lf_arrayAccessContext> primaryNoNewArray_lf_arrayAccess() {
-			return getRuleContexts(PrimaryNoNewArray_lf_arrayAccessContext.class);
 		}
 		public ArrayAccessContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -12601,8 +12604,8 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ArrayAccess_lf_primaryContext extends ParserRuleContext {
-		public PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext primaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary() {
-			return getRuleContext(PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext.class,0);
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
 		}
 		public PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary(int i) {
 			return getRuleContext(PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext.class,i);
@@ -12610,11 +12613,11 @@ public class Java8Parser extends Parser {
 		public List<PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext> primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary() {
 			return getRuleContexts(PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext.class);
 		}
-		public ExpressionContext expression(int i) {
-			return getRuleContext(ExpressionContext.class,i);
-		}
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
+		}
+		public PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext primaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary() {
+			return getRuleContext(PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext.class,0);
 		}
 		public ArrayAccess_lf_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -12675,20 +12678,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ArrayAccess_lfno_primaryContext extends ParserRuleContext {
-		public PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext primaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary() {
-			return getRuleContext(PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext.class,0);
-		}
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
-		}
-		public List<PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext> primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary() {
-			return getRuleContexts(PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext.class);
 		}
 		public PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary(int i) {
 			return getRuleContext(PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext.class,i);
 		}
+		public List<PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext> primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary() {
+			return getRuleContexts(PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext.class);
+		}
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
+		}
+		public PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext primaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary() {
+			return getRuleContext(PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext.class,0);
 		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
@@ -12765,24 +12768,24 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodInvocationContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public MethodNameContext methodName() {
 			return getRuleContext(MethodNameContext.class,0);
 		}
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public PrimaryContext primary() {
 			return getRuleContext(PrimaryContext.class,0);
 		}
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public MethodInvocationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -12967,12 +12970,12 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodInvocation_lf_primaryContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ArgumentListContext argumentList() {
 			return getRuleContext(ArgumentListContext.class,0);
+		}
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public MethodInvocation_lf_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13029,22 +13032,22 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodInvocation_lfno_primaryContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
-		}
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
-		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public MethodNameContext methodName() {
 			return getRuleContext(MethodNameContext.class,0);
+		}
+		public ArgumentListContext argumentList() {
+			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public TypeNameContext typeName() {
 			return getRuleContext(TypeNameContext.class,0);
 		}
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ArgumentListContext argumentList() {
-			return getRuleContext(ArgumentListContext.class,0);
 		}
 		public MethodInvocation_lfno_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13259,27 +13262,27 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodReferenceContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
+		public PrimaryContext primary() {
+			return getRuleContext(PrimaryContext.class,0);
+		}
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public ClassTypeContext classType() {
+			return getRuleContext(ClassTypeContext.class,0);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ArrayTypeContext arrayType() {
 			return getRuleContext(ArrayTypeContext.class,0);
 		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ReferenceTypeContext referenceType() {
 			return getRuleContext(ReferenceTypeContext.class,0);
 		}
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
-		public PrimaryContext primary() {
-			return getRuleContext(PrimaryContext.class,0);
-		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ClassTypeContext classType() {
-			return getRuleContext(ClassTypeContext.class,0);
 		}
 		public MethodReferenceContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13422,10 +13425,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodReference_lf_primaryContext extends ParserRuleContext {
+		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public TypeArgumentsContext typeArguments() {
 			return getRuleContext(TypeArgumentsContext.class,0);
 		}
-		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public MethodReference_lf_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -13471,24 +13474,24 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class MethodReference_lfno_primaryContext extends ParserRuleContext {
-		public TypeArgumentsContext typeArguments() {
-			return getRuleContext(TypeArgumentsContext.class,0);
+		public TypeNameContext typeName() {
+			return getRuleContext(TypeNameContext.class,0);
+		}
+		public ClassTypeContext classType() {
+			return getRuleContext(ClassTypeContext.class,0);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public ArrayTypeContext arrayType() {
 			return getRuleContext(ArrayTypeContext.class,0);
 		}
+		public TypeArgumentsContext typeArguments() {
+			return getRuleContext(TypeArgumentsContext.class,0);
+		}
 		public ReferenceTypeContext referenceType() {
 			return getRuleContext(ReferenceTypeContext.class,0);
 		}
-		public TypeNameContext typeName() {
-			return getRuleContext(TypeNameContext.class,0);
-		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
-		}
-		public ClassTypeContext classType() {
-			return getRuleContext(ClassTypeContext.class,0);
 		}
 		public MethodReference_lfno_primaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13618,17 +13621,17 @@ public class Java8Parser extends Parser {
 		public DimsContext dims() {
 			return getRuleContext(DimsContext.class,0);
 		}
-		public PrimitiveTypeContext primitiveType() {
-			return getRuleContext(PrimitiveTypeContext.class,0);
-		}
-		public ClassOrInterfaceTypeContext classOrInterfaceType() {
-			return getRuleContext(ClassOrInterfaceTypeContext.class,0);
-		}
 		public DimExprsContext dimExprs() {
 			return getRuleContext(DimExprsContext.class,0);
 		}
+		public PrimitiveTypeContext primitiveType() {
+			return getRuleContext(PrimitiveTypeContext.class,0);
+		}
 		public ArrayInitializerContext arrayInitializer() {
 			return getRuleContext(ArrayInitializerContext.class,0);
+		}
+		public ClassOrInterfaceTypeContext classOrInterfaceType() {
+			return getRuleContext(ClassOrInterfaceTypeContext.class,0);
 		}
 		public ArrayCreationExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13714,11 +13717,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class DimExprsContext extends ParserRuleContext {
-		public List<DimExprContext> dimExpr() {
-			return getRuleContexts(DimExprContext.class);
-		}
 		public DimExprContext dimExpr(int i) {
 			return getRuleContext(DimExprContext.class,i);
+		}
+		public List<DimExprContext> dimExpr() {
+			return getRuleContexts(DimExprContext.class);
 		}
 		public DimExprsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13771,11 +13774,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class DimExprContext extends ParserRuleContext {
-		public List<AnnotationContext> annotation() {
-			return getRuleContexts(AnnotationContext.class);
-		}
 		public AnnotationContext annotation(int i) {
 			return getRuleContext(AnnotationContext.class,i);
+		}
+		public List<AnnotationContext> annotation() {
+			return getRuleContexts(AnnotationContext.class);
 		}
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -13869,11 +13872,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ExpressionContext extends ParserRuleContext {
-		public AssignmentExpressionContext assignmentExpression() {
-			return getRuleContext(AssignmentExpressionContext.class,0);
-		}
 		public LambdaExpressionContext lambdaExpression() {
 			return getRuleContext(LambdaExpressionContext.class,0);
+		}
+		public AssignmentExpressionContext assignmentExpression() {
+			return getRuleContext(AssignmentExpressionContext.class,0);
 		}
 		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -13964,12 +13967,12 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class LambdaParametersContext extends ParserRuleContext {
+		public InferredFormalParameterListContext inferredFormalParameterList() {
+			return getRuleContext(InferredFormalParameterListContext.class,0);
+		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public FormalParameterListContext formalParameterList() {
 			return getRuleContext(FormalParameterListContext.class,0);
-		}
-		public InferredFormalParameterListContext inferredFormalParameterList() {
-			return getRuleContext(InferredFormalParameterListContext.class,0);
 		}
 		public LambdaParametersContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -14035,10 +14038,10 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class InferredFormalParameterListContext extends ParserRuleContext {
-		public List<TerminalNode> Identifier() { return getTokens(Java8Parser.Identifier); }
 		public TerminalNode Identifier(int i) {
 			return getToken(Java8Parser.Identifier, i);
 		}
+		public List<TerminalNode> Identifier() { return getTokens(Java8Parser.Identifier); }
 		public InferredFormalParameterListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -14169,11 +14172,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AssignmentExpressionContext extends ParserRuleContext {
-		public ConditionalExpressionContext conditionalExpression() {
-			return getRuleContext(ConditionalExpressionContext.class,0);
-		}
 		public AssignmentContext assignment() {
 			return getRuleContext(AssignmentContext.class,0);
+		}
+		public ConditionalExpressionContext conditionalExpression() {
+			return getRuleContext(ConditionalExpressionContext.class,0);
 		}
 		public AssignmentExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -14224,11 +14227,11 @@ public class Java8Parser extends Parser {
 		public LeftHandSideContext leftHandSide() {
 			return getRuleContext(LeftHandSideContext.class,0);
 		}
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
 		public AssignmentOperatorContext assignmentOperator() {
 			return getRuleContext(AssignmentOperatorContext.class,0);
+		}
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
 		}
 		public AssignmentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -14267,11 +14270,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class LeftHandSideContext extends ParserRuleContext {
-		public FieldAccessContext fieldAccess() {
-			return getRuleContext(FieldAccessContext.class,0);
-		}
 		public ArrayAccessContext arrayAccess() {
 			return getRuleContext(ArrayAccessContext.class,0);
+		}
+		public FieldAccessContext fieldAccess() {
+			return getRuleContext(FieldAccessContext.class,0);
 		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
@@ -14527,8 +14530,8 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ConditionalExpressionContext extends ParserRuleContext {
-		public ConditionalExpressionContext conditionalExpression() {
-			return getRuleContext(ConditionalExpressionContext.class,0);
+		public LambdaExpressionContext lambdaExpression() {
+			return getRuleContext(LambdaExpressionContext.class,0);
 		}
 		public ConditionalOrExpressionContext conditionalOrExpression() {
 			return getRuleContext(ConditionalOrExpressionContext.class,0);
@@ -14536,8 +14539,8 @@ public class Java8Parser extends Parser {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public LambdaExpressionContext lambdaExpression() {
-			return getRuleContext(LambdaExpressionContext.class,0);
+		public ConditionalExpressionContext conditionalExpression() {
+			return getRuleContext(ConditionalExpressionContext.class,0);
 		}
 		public ConditionalExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -14674,11 +14677,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ConditionalAndExpressionContext extends ParserRuleContext {
-		public InclusiveOrExpressionContext inclusiveOrExpression() {
-			return getRuleContext(InclusiveOrExpressionContext.class,0);
-		}
 		public ConditionalAndExpressionContext conditionalAndExpression() {
 			return getRuleContext(ConditionalAndExpressionContext.class,0);
+		}
+		public InclusiveOrExpressionContext inclusiveOrExpression() {
+			return getRuleContext(InclusiveOrExpressionContext.class,0);
 		}
 		public ConditionalAndExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -14749,11 +14752,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class InclusiveOrExpressionContext extends ParserRuleContext {
-		public InclusiveOrExpressionContext inclusiveOrExpression() {
-			return getRuleContext(InclusiveOrExpressionContext.class,0);
-		}
 		public ExclusiveOrExpressionContext exclusiveOrExpression() {
 			return getRuleContext(ExclusiveOrExpressionContext.class,0);
+		}
+		public InclusiveOrExpressionContext inclusiveOrExpression() {
+			return getRuleContext(InclusiveOrExpressionContext.class,0);
 		}
 		public InclusiveOrExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -14824,11 +14827,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ExclusiveOrExpressionContext extends ParserRuleContext {
-		public AndExpressionContext andExpression() {
-			return getRuleContext(AndExpressionContext.class,0);
-		}
 		public ExclusiveOrExpressionContext exclusiveOrExpression() {
 			return getRuleContext(ExclusiveOrExpressionContext.class,0);
+		}
+		public AndExpressionContext andExpression() {
+			return getRuleContext(AndExpressionContext.class,0);
 		}
 		public ExclusiveOrExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -15064,9 +15067,6 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class RelationalExpressionContext extends ParserRuleContext {
-		public ReferenceTypeContext referenceType() {
-			return getRuleContext(ReferenceTypeContext.class,0);
-		}
 		public RelationalExpressionContext relationalExpression() {
 			return getRuleContext(RelationalExpressionContext.class,0);
 		}
@@ -15075,6 +15075,9 @@ public class Java8Parser extends Parser {
 		}
 		public RelationalOperatorContext relationalOperator() {
 			return getRuleContext(RelationalOperatorContext.class,0);
+		}
+		public ReferenceTypeContext referenceType() {
+			return getRuleContext(ReferenceTypeContext.class,0);
 		}
 		public RelationalExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -15190,11 +15193,11 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class ShiftExpressionContext extends ParserRuleContext {
-		public AdditiveExpressionContext additiveExpression() {
-			return getRuleContext(AdditiveExpressionContext.class,0);
-		}
 		public ShiftExpressionContext shiftExpression() {
 			return getRuleContext(ShiftExpressionContext.class,0);
+		}
+		public AdditiveExpressionContext additiveExpression() {
+			return getRuleContext(AdditiveExpressionContext.class,0);
 		}
 		public ShiftOperatorContext shiftOperator() {
 			return getRuleContext(ShiftOperatorContext.class,0);
@@ -15349,14 +15352,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class AdditiveExpressionContext extends ParserRuleContext {
+		public AdditiveExpressionContext additiveExpression() {
+			return getRuleContext(AdditiveExpressionContext.class,0);
+		}
 		public AdditiveOperatorContext additiveOperator() {
 			return getRuleContext(AdditiveOperatorContext.class,0);
 		}
 		public MultiplicativeExpressionContext multiplicativeExpression() {
 			return getRuleContext(MultiplicativeExpressionContext.class,0);
-		}
-		public AdditiveExpressionContext additiveExpression() {
-			return getRuleContext(AdditiveExpressionContext.class,0);
 		}
 		public AdditiveExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -15545,20 +15548,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnaryExpressionContext extends ParserRuleContext {
-		public AdditiveOperatorContext additiveOperator() {
-			return getRuleContext(AdditiveOperatorContext.class,0);
-		}
 		public UnaryExpressionContext unaryExpression() {
 			return getRuleContext(UnaryExpressionContext.class,0);
-		}
-		public UnaryExpressionNotPlusMinusContext unaryExpressionNotPlusMinus() {
-			return getRuleContext(UnaryExpressionNotPlusMinusContext.class,0);
 		}
 		public PreIncrementExpressionContext preIncrementExpression() {
 			return getRuleContext(PreIncrementExpressionContext.class,0);
 		}
+		public AdditiveOperatorContext additiveOperator() {
+			return getRuleContext(AdditiveOperatorContext.class,0);
+		}
 		public PreDecrementExpressionContext preDecrementExpression() {
 			return getRuleContext(PreDecrementExpressionContext.class,0);
+		}
+		public UnaryExpressionNotPlusMinusContext unaryExpressionNotPlusMinus() {
+			return getRuleContext(UnaryExpressionNotPlusMinusContext.class,0);
 		}
 		public UnaryExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -15704,14 +15707,14 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class UnaryExpressionNotPlusMinusContext extends ParserRuleContext {
-		public PostfixExpressionContext postfixExpression() {
-			return getRuleContext(PostfixExpressionContext.class,0);
+		public CastExpressionContext castExpression() {
+			return getRuleContext(CastExpressionContext.class,0);
 		}
 		public UnaryExpressionContext unaryExpression() {
 			return getRuleContext(UnaryExpressionContext.class,0);
 		}
-		public CastExpressionContext castExpression() {
-			return getRuleContext(CastExpressionContext.class,0);
+		public PostfixExpressionContext postfixExpression() {
+			return getRuleContext(PostfixExpressionContext.class,0);
 		}
 		public UnaryExpressionNotPlusMinusContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -15773,20 +15776,20 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class PostfixExpressionContext extends ParserRuleContext {
-		public List<PostDecrementExpression_lf_postfixExpressionContext> postDecrementExpression_lf_postfixExpression() {
-			return getRuleContexts(PostDecrementExpression_lf_postfixExpressionContext.class);
-		}
-		public PostIncrementExpression_lf_postfixExpressionContext postIncrementExpression_lf_postfixExpression(int i) {
-			return getRuleContext(PostIncrementExpression_lf_postfixExpressionContext.class,i);
+		public PrimaryContext primary() {
+			return getRuleContext(PrimaryContext.class,0);
 		}
 		public PostDecrementExpression_lf_postfixExpressionContext postDecrementExpression_lf_postfixExpression(int i) {
 			return getRuleContext(PostDecrementExpression_lf_postfixExpressionContext.class,i);
 		}
-		public PrimaryContext primary() {
-			return getRuleContext(PrimaryContext.class,0);
+		public List<PostDecrementExpression_lf_postfixExpressionContext> postDecrementExpression_lf_postfixExpression() {
+			return getRuleContexts(PostDecrementExpression_lf_postfixExpressionContext.class);
 		}
 		public List<PostIncrementExpression_lf_postfixExpressionContext> postIncrementExpression_lf_postfixExpression() {
 			return getRuleContexts(PostIncrementExpression_lf_postfixExpressionContext.class);
+		}
+		public PostIncrementExpression_lf_postfixExpressionContext postIncrementExpression_lf_postfixExpression(int i) {
+			return getRuleContext(PostIncrementExpression_lf_postfixExpressionContext.class,i);
 		}
 		public ExpressionNameContext expressionName() {
 			return getRuleContext(ExpressionNameContext.class,0);
@@ -16014,26 +16017,26 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class CastExpressionContext extends ParserRuleContext {
-		public UnaryExpressionContext unaryExpression() {
-			return getRuleContext(UnaryExpressionContext.class,0);
-		}
-		public ReferenceTypeContext referenceType() {
-			return getRuleContext(ReferenceTypeContext.class,0);
-		}
-		public UnaryExpressionNotPlusMinusContext unaryExpressionNotPlusMinus() {
-			return getRuleContext(UnaryExpressionNotPlusMinusContext.class,0);
-		}
-		public PrimitiveTypeContext primitiveType() {
-			return getRuleContext(PrimitiveTypeContext.class,0);
+		public LambdaExpressionContext lambdaExpression() {
+			return getRuleContext(LambdaExpressionContext.class,0);
 		}
 		public List<AdditionalBoundContext> additionalBound() {
 			return getRuleContexts(AdditionalBoundContext.class);
 		}
-		public LambdaExpressionContext lambdaExpression() {
-			return getRuleContext(LambdaExpressionContext.class,0);
+		public UnaryExpressionContext unaryExpression() {
+			return getRuleContext(UnaryExpressionContext.class,0);
 		}
 		public AdditionalBoundContext additionalBound(int i) {
 			return getRuleContext(AdditionalBoundContext.class,i);
+		}
+		public PrimitiveTypeContext primitiveType() {
+			return getRuleContext(PrimitiveTypeContext.class,0);
+		}
+		public UnaryExpressionNotPlusMinusContext unaryExpressionNotPlusMinus() {
+			return getRuleContext(UnaryExpressionNotPlusMinusContext.class,0);
+		}
+		public ReferenceTypeContext referenceType() {
+			return getRuleContext(ReferenceTypeContext.class,0);
 		}
 		public CastExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -16140,30 +16143,40 @@ public class Java8Parser extends Parser {
 		}
 		return true;
 	}
-	private boolean shiftExpression_sempred(ShiftExpressionContext _localctx, int predIndex) {
+	private boolean andExpression_sempred(AndExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 16: return precpred(_ctx, 2);
-		case 17: return precpred(_ctx, 1);
-		case 15: return precpred(_ctx, 3);
+		case 7: return precpred(_ctx, 1);
 		}
 		return true;
 	}
-	private boolean additiveExpression_sempred(AdditiveExpressionContext _localctx, int predIndex) {
+	private boolean exclusiveOrExpression_sempred(ExclusiveOrExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 18: return precpred(_ctx, 2);
-		case 19: return precpred(_ctx, 1);
-		}
-		return true;
-	}
-	private boolean packageOrTypeName_sempred(PackageOrTypeNameContext _localctx, int predIndex) {
-		switch (predIndex) {
-		case 1: return precpred(_ctx, 1);
+		case 6: return precpred(_ctx, 1);
 		}
 		return true;
 	}
 	private boolean inclusiveOrExpression_sempred(InclusiveOrExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 5: return precpred(_ctx, 1);
+		}
+		return true;
+	}
+	private boolean equalityExpression_sempred(EqualityExpressionContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 8: return precpred(_ctx, 2);
+		case 9: return precpred(_ctx, 1);
+		}
+		return true;
+	}
+	private boolean packageName_sempred(PackageNameContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 0: return precpred(_ctx, 1);
+		}
+		return true;
+	}
+	private boolean ambiguousName_sempred(AmbiguousNameContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 2: return precpred(_ctx, 1);
 		}
 		return true;
 	}
@@ -16183,23 +16196,17 @@ public class Java8Parser extends Parser {
 		}
 		return true;
 	}
-	private boolean multiplicativeExpression_sempred(MultiplicativeExpressionContext _localctx, int predIndex) {
+	private boolean packageOrTypeName_sempred(PackageOrTypeNameContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 20: return precpred(_ctx, 3);
-		case 21: return precpred(_ctx, 2);
-		case 22: return precpred(_ctx, 1);
+		case 1: return precpred(_ctx, 1);
 		}
 		return true;
 	}
-	private boolean ambiguousName_sempred(AmbiguousNameContext _localctx, int predIndex) {
+	private boolean shiftExpression_sempred(ShiftExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 2: return precpred(_ctx, 1);
-		}
-		return true;
-	}
-	private boolean andExpression_sempred(AndExpressionContext _localctx, int predIndex) {
-		switch (predIndex) {
-		case 7: return precpred(_ctx, 1);
+		case 17: return precpred(_ctx, 1);
+		case 16: return precpred(_ctx, 2);
+		case 15: return precpred(_ctx, 3);
 		}
 		return true;
 	}
@@ -16209,22 +16216,18 @@ public class Java8Parser extends Parser {
 		}
 		return true;
 	}
-	private boolean exclusiveOrExpression_sempred(ExclusiveOrExpressionContext _localctx, int predIndex) {
+	private boolean additiveExpression_sempred(AdditiveExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 6: return precpred(_ctx, 1);
+		case 19: return precpred(_ctx, 1);
+		case 18: return precpred(_ctx, 2);
 		}
 		return true;
 	}
-	private boolean equalityExpression_sempred(EqualityExpressionContext _localctx, int predIndex) {
+	private boolean multiplicativeExpression_sempred(MultiplicativeExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 8: return precpred(_ctx, 2);
-		case 9: return precpred(_ctx, 1);
-		}
-		return true;
-	}
-	private boolean packageName_sempred(PackageNameContext _localctx, int predIndex) {
-		switch (predIndex) {
-		case 0: return precpred(_ctx, 1);
+		case 21: return precpred(_ctx, 2);
+		case 20: return precpred(_ctx, 3);
+		case 22: return precpred(_ctx, 1);
 		}
 		return true;
 	}
