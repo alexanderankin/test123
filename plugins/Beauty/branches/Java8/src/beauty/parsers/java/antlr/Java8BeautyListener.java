@@ -1140,6 +1140,10 @@ Parser methods follow.
 	        modifiers += ' ';   
 	    }
 	    sb.append(modifiers).append(cd).append(' ').append(throws_).append(body);
+	    String previous = stack.peek();
+	    if (!previous.endsWith("\n\n")) {
+	        sb.insert(0, "\n\n");    
+	    }
 	    stack.push(sb.toString());
 	}
 
@@ -1719,6 +1723,10 @@ Parser methods follow.
 	        indent(sb);    
 	    }
 	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
+	    String previous = stack.peek();
+	    if (!previous.endsWith("\n\n")) {
+	        sb.insert(0, "\n\n");    
+	    }
 	    stack.push(sb.toString());
 	}
 
