@@ -106,9 +106,14 @@ public class Java8BeautyListener implements Java8Listener {
                     // TODO: verify this is always true
                     line = ' ' + line;
                 }
-                line = indent + line;
+                else if (!"".equals(line)) {
+                    line = indent + line;
+                }
             }
-            sb.append(line).append('\n');    
+            sb.append(line);
+            if (!line.endsWith("\n")) {
+                sb.append('\n');    
+            }
         }
         return sb.toString();
     }
@@ -127,13 +132,21 @@ public class Java8BeautyListener implements Java8Listener {
     
     // StringBuilder doesn't have a "trim" method. This trims whitespace from
     // the end of the string builder. Whitespace on the front is not touched.
-    public void trimEnd(StringBuilder sb) {
+    // There are two ways to use this, pass in a StringBuilder then use the same
+    // StringBuilder, it's end will have been trimmed, or pass in a StringBuilder
+    // and use the returned String.
+    public String trimEnd(StringBuilder sb) {
         if (sb == null || sb.length() == 0) {
-            return;
+            return "";
         }
         while(sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
             sb.deleteCharAt(sb.length() - 1);
         }
+        return sb.toString();
+    }
+    
+    public String trimEnd(String s) {
+        return trimEnd(new StringBuilder(s));   
     }
     
     // pops 'howMany' items off of the stack, reverses the order, then
@@ -872,8 +885,9 @@ Parser methods follow.
 	    if (!endsWith(sb, "\n")) {
 	        sb.append('\n');   
 	    }
-	    rbrace = indent(rbrace);
-	    sb.append(rbrace).append("\n");
+	    trimEnd(sb);
+	    rbrace = indent(rbrace);    // indent adds a \n
+	    sb.append('\n').append(rbrace);
 	    stack.push(sb.toString());
 	}
 	
@@ -1566,13 +1580,19 @@ Parser methods follow.
 	@Override public void exitEnhancedForStatementNoShortIf(@NotNull Java8Parser.EnhancedForStatementNoShortIfContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
+	    stmt = trimEnd(stmt);
+	    if (!stmt.startsWith("{")) {
+	        ++tabCount;
+	        stmt = "{\n" + indent(stmt) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String expression = stack.pop();
 	    String colon = stack.pop();
 	    String vdi = stack.pop();
 	    String type = stack.pop();
 	    String vm = "";
-	    if (ctx.variableModifier() != null) {
+	    if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
 	         vm = reverse(ctx.variableModifier().size(), " ") + ' ';   
 	    }
 	    String lparen = stack.pop();
@@ -1613,11 +1633,11 @@ Parser methods follow.
 	    stack.pop();
 	    
 	    String typeDeclarations = "";
-	    if (ctx.typeDeclaration() != null) {
+	    if (ctx.typeDeclaration() != null && ctx.typeDeclaration().size() > 0) {
 	        typeDeclarations = reverse(ctx.typeDeclaration().size(), "");
 	    }
 	    String importDeclarations = "";
-	    if (ctx.importDeclaration() != null) {
+	    if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
 	        importDeclarations = reverse(ctx.importDeclaration().size(), "") + "\n";
 	    }
         String packageDeclaration = ctx.packageDeclaration() == null ? "" : stack.pop() + "\n\n";
@@ -1653,27 +1673,36 @@ Parser methods follow.
 	@Override public void exitEnhancedForStatement(@NotNull Java8Parser.EnhancedForStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String statement = stack.pop();
+	    statement = trimEnd(statement);
+	    if (!statement.startsWith("{")) {
+	        ++tabCount;
+	        statement = "{\n" + indent(statement) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String expression = stack.pop();
 	    String colon = stack.pop();
 	    String vdi = stack.pop();
 	    String type = stack.pop();
 	    String modifiers = "";
-	    if (ctx.variableModifier() != null) {
+	    if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
 	        modifiers = reverse(ctx.variableModifier().size(), " ") + ' ';
 	    }
 	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(lparen).append(modifiers).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(rparen).append(statement);
+	    sb.append(for_).append(' ').append(lparen).append(modifiers).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(rparen).append(' ').append(statement);
 	    stack.push(sb.toString());
 	}
 
 	@Override public void enterSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
-	    // SwitchLabels BlockStatements
+	    // switchLabels blockStatements
 	}
 	@Override public void exitSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String bs = stack.pop();
+	    ++tabCount;
+        bs = indent(bs);
+	    --tabCount;
 	    String sl = stack.pop();
 	    sb.append(sl).append(bs);
 	    stack.push(sb.toString());
@@ -1724,9 +1753,11 @@ Parser methods follow.
 	    }
 	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
 	    String previous = stack.peek();
+	    /*
 	    if (!previous.endsWith("\n\n")) {
 	        sb.insert(0, "\n\n");    
 	    }
+	    */
 	    stack.push(sb.toString());
 	}
 
@@ -1956,16 +1987,22 @@ Parser methods follow.
 	}
 
 	@Override public void enterIfThenStatement(@NotNull Java8Parser.IfThenStatementContext ctx) { 
-	    // if ( Expression ) Statement
+	    // 'if' '(' expression ')' statement
 	}
 	@Override public void exitIfThenStatement(@NotNull Java8Parser.IfThenStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
+	    stmt = trimEnd(stmt);
+	    if (!stmt.startsWith("{")) {
+	        ++tabCount;
+	        stmt = "{\n" + indent(stmt) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(lparen).append(expr).append(rparen).append(stmt);
+	    sb.append(if_).append(' ').append(lparen).append(expr).append(rparen).append(' ').append(stmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -2184,6 +2221,12 @@ Parser methods follow.
 	@Override public void exitBasicForStatement(@NotNull Java8Parser.BasicForStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
+	    stmt = trimEnd(stmt);
+	    if (!stmt.startsWith("{")) {
+	        ++tabCount;
+	        stmt = "{\n" + indent(stmt) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String update = ctx.forUpdate() == null ? "" : stack.pop();
 	    String semi2 = stack.pop();
@@ -2192,7 +2235,8 @@ Parser methods follow.
 	    String init = ctx.forInit() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(lparen).append(init).append(' ').append(semi1).append(' ').append(expr).append(' ').append(semi2).append(' ').append(update).append(rparen).append(stmt);
+	    sb.append(for_).append(' ').append(lparen).append(init).append(semi1).append(' ').append(expr).append(semi2).append(' ').append(update).append(rparen).append(' ').append(stmt);
+
 	    stack.push(sb.toString());
 	}
 
@@ -2202,11 +2246,21 @@ Parser methods follow.
 	@Override public void exitWhileStatement(@NotNull Java8Parser.WhileStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
+	    stmt = trimEnd(stmt);
+	    if (!stmt.startsWith("{")) {
+	        ++tabCount;
+	        stmt = "{\n" + indent(stmt) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String while_ = stack.pop();
-	    sb.append(while_).append(' ').append(lparen).append(expr).append(rparen).append(stmt);
+	    sb.append(while_).append(' ').append(lparen).append(expr).append(rparen);
+	    if (!";".equals(stmt)) {
+	        sb.append(' ');
+	    }
+	    sb.append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -2288,16 +2342,24 @@ Parser methods follow.
 	}
 
 	@Override public void enterSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
-	    // { {SwitchBlockStatementGroup} {SwitchLabel} }
+	    // '{' switchBlockStatementGroup* switchLabel* '}'
+	    ++tabCount;
 	}
 	@Override public void exitSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop();
-	    String label = stack.pop();
-	    String group = stack.pop();
+	    String label = "";
+	    if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
+	        label = reverse(ctx.switchLabel().size(), " "); 
+	    }
+	    String group = "";
+	    if (ctx.switchBlockStatementGroup() != null && ctx.switchBlockStatementGroup().size() > 0) {
+	        group = reverse(ctx.switchBlockStatementGroup().size(), "");
+	    }
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append("\n").append(group).append(' ').append(label).append("\n").append(rbracket).append("\n");
+	    sb.append(lbracket).append("\n").append(group).append(label).append(rbracket).append("\n");
 	    stack.push(sb.toString());
+	    --tabCount;
 	}
 
 	@Override public void enterForInit(@NotNull Java8Parser.ForInitContext ctx) { 
@@ -2703,7 +2765,7 @@ Parser methods follow.
 	    if (ctx.equalityExpression() != null) {
 	        String operator = stack.pop();
 	        String ee = stack.pop();
-	        sb.append(ee).append(operator);
+	        sb.append(ee).append(' ').append(operator).append(' ');
 	    }
 	    sb.append(re);
 	    stack.push(sb.toString());
@@ -2890,10 +2952,11 @@ Parser methods follow.
 	}
 	@Override public void exitSwitchLabels(@NotNull Java8Parser.SwitchLabelsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    if (ctx.switchLabel() != null) {
+	    if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
 	        sb.append(reverse(ctx.switchLabel().size(), " ")).append(' ');
 	    }
-	    stack.push(sb.toString());
+	    String indented = indent(sb.toString());
+	    stack.push(indented);
 	}
 
 	@Override public void enterFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) {
@@ -3020,11 +3083,21 @@ Parser methods follow.
 	@Override public void exitWhileStatementNoShortIf(@NotNull Java8Parser.WhileStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
+	    stmt = trimEnd(stmt);
+	    if (!stmt.startsWith("{")) {
+	        ++tabCount;
+	        stmt = "{\n" + indent(stmt) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String w = stack.pop();
-	    sb.append(w).append(' ').append(lparen).append(expr).append(rparen).append(stmt);
+	    sb.append(w).append(' ').append(lparen).append(expr).append(rparen);
+	    if (!";".equals(stmt)) {
+	        sb.append(' ');
+	    }
+	    sb.append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -3041,17 +3114,24 @@ Parser methods follow.
 	}
 
 	@Override public void enterDoStatement(@NotNull Java8Parser.DoStatementContext ctx) { 
-	    // do Statement while ( Expression )
+	    // 'do' statement 'while' '(' expression ')' ';'
 	}
 	@Override public void exitDoStatement(@NotNull Java8Parser.DoStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
+	    String semi = stack.pop();
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
-	    String w = stack.pop();
-	    String stmt = stack.pop();
-	    String d = stack.pop();
-	    sb.append(d).append(' ').append(stmt).append(' ').append(w).append(' ').append(lparen).append(expr).append(rparen);
+	    String while_ = stack.pop();
+	    String statement = stack.pop();
+	    statement = trimEnd(statement);
+	    if (!statement.startsWith("{")) {
+	        ++tabCount;
+	        statement = "{\n" + indent(statement) + "}";
+	        --tabCount;
+	    }
+	    String do_ = stack.pop();
+	    sb.append(do_).append(' ').append(statement).append(' ').append(while_).append(' ').append(lparen).append(expr).append(rparen).append(semi);
 	    stack.push(sb.toString());
 	}
 
@@ -3083,13 +3163,26 @@ Parser methods follow.
 	@Override public void exitIfThenElseStatement(@NotNull Java8Parser.IfThenElseStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String stmt = stack.pop();
+	    stmt = trimEnd(stmt);
+	    if (!stmt.startsWith("{") && !stmt.startsWith("if")) {
+	        ++tabCount;
+	        stmt = "{\n" + indent(stmt) + "}";
+	        --tabCount;
+	    }
 	    String else_ = stack.pop();
 	    String sn = stack.pop();
+	    if (!sn.startsWith("{")) {
+	        ++tabCount;
+	        sn = "{\n" + indent(sn) + "}";
+	        --tabCount;
+	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(lparen).append(expr).append(rparen).append(sn).append(' ').append(else_).append(' ').append(stmt);
+	    sb.append(if_).append(' ').append(lparen).append(expr).append(rparen).append(' ').append(sn);
+	    trimEnd(sb);
+	    sb.append(' ').append(else_).append(' ').append(stmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3366,13 +3459,25 @@ Parser methods follow.
 	@Override public void exitIfThenElseStatementNoShortIf(@NotNull Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String elseStmt = stack.pop();
-	    String e = stack.pop();
+	    elseStmt = trimEnd(elseStmt);
+	    if (!elseStmt.startsWith("{") && !elseStmt.startsWith("if")) {
+	        ++tabCount;
+	        elseStmt = "{\n" + indent(elseStmt) + "}";
+	        --tabCount;
+	    }
+	    String else_ = stack.pop();
 	    String ifStmt = stack.pop();
+	    ifStmt = trimEnd(ifStmt);
+	    if (!ifStmt.startsWith("{")) {
+	        ++tabCount;
+	        ifStmt = "{\n" + indent(ifStmt) + "}";
+	        --tabCount;
+	    }
 	    String rp = stack.pop();
 	    String expr = stack.pop();
 	    String lp = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(lp).append(expr).append(rp).append(ifStmt).append(' ').append(e).append(' ').append(elseStmt);
+	    sb.append(if_).append(' ').append(lp).append(expr).append(rp).append(ifStmt).append(' ').append(else_).append(' ').append(elseStmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3443,7 +3548,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String plus = stack.pop();
 	    sb.append(stack.pop());    // postfix expression
-	    sb.append(' ').append(plus);
+	    sb.append(plus);
 	    stack.push(sb.toString());
 	}
 
@@ -3512,6 +3617,13 @@ Parser methods follow.
 	@Override public void exitBasicForStatementNoShortIf(@NotNull Java8Parser.BasicForStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String statement = stack.pop();
+	    statement = trimEnd(statement);
+	    statement = trimEnd(statement);
+	    if (!statement.startsWith("{")) {
+	        ++tabCount;
+	        statement = "{\n" + indent(statement) + "}";
+	        --tabCount;
+	    }
 	    String rp = stack.pop();
 	    String forUpdate = ctx.forUpdate() == null ? "" : stack.pop();
 	    String semi2 = stack.pop();
@@ -3520,8 +3632,8 @@ Parser methods follow.
 	    String forInit = ctx.forInit() == null ? "" : stack.pop();
 	    String lp = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(' ').append(lp).append(forInit).append(' ').append(semi1);
-	    sb.append(' ').append(expression).append(' ').append(semi2).append(' ').append(forUpdate).append(rp).append(statement);
+	    sb.append(for_).append(' ').append(lp).append(forInit).append(semi1);
+	    sb.append(' ').append(expression).append(semi2).append(' ').append(forUpdate).append(rp).append(' ').append(statement);
 	    stack.push(sb.toString());
 	}
 
@@ -3543,7 +3655,7 @@ Parser methods follow.
 	}
 	
 	@Override public void enterSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) {
-	    // switch ( Expression ) SwitchBlock
+	    // 'switch' '(' expression ')' switchBlock
 	}
 	@Override public void exitSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -3552,7 +3664,7 @@ Parser methods follow.
 	    String expression = stack.pop();
 	    String lp = stack.pop();
 	    String switch_ = stack.pop();
-	    sb.append(switch_).append(' ').append(lp).append(expression).append(rp).append(switchBlock);
+	    sb.append(switch_).append(' ').append(lp).append(expression).append(rp).append(' ').append(switchBlock);
 	    stack.push(sb.toString());
 	}
 
@@ -3924,9 +4036,10 @@ Parser methods follow.
 	}
 
 	@Override public void enterSwitchLabel(@NotNull Java8Parser.SwitchLabelContext ctx) { 
-        // case ConstantExpression : 
-        // case EnumConstantName : 
-        // default :	
+        // 'case' constantExpression ':'
+        // 'case' enumConstantName ':'
+        // 'default' ':' 
+        ++tabCount;
 	}
 	@Override public void exitSwitchLabel(@NotNull Java8Parser.SwitchLabelContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -3934,14 +4047,15 @@ Parser methods follow.
 	    if (ctx.constantExpression() != null || ctx.enumConstantName() != null) {
 	        String expr = stack.pop();
 	        String case_ = stack.pop();
-	        sb.append(case_).append(' ').append(expr);
+	        sb.append(case_.trim()).append(' ').append(expr);
 	    }
 	    else {
 	        String default_ = stack.pop();
 	        sb.append(default_);   
 	    }
-	    sb.append(colon).append('\n');
+	    sb.append(colon);
 	    stack.push(sb.toString());
+	    --tabCount;
 	}
 
 	@Override public void enterMethodReference(@NotNull Java8Parser.MethodReferenceContext ctx) {
@@ -4237,7 +4351,7 @@ Parser methods follow.
 	}
 	
 	private String formatLineComment(String comment) {
-	    return indent(comment.trim()) + '\n';
+	    return indent(comment.trim());
 	}
 	
 	private String formatComment(String comment) {
@@ -4266,6 +4380,9 @@ Parser methods follow.
 	    if (howMany <= 0) {
 	        return "";   
 	    }
+	    
+	    // gather the modifiers into a list, then reverse the list so they are
+	    // in the right order
 	    StringBuilder sb = new StringBuilder();
         List<String> modifiers = new ArrayList<String>();
         for (int i = 0; i < howMany; i++) {
@@ -4274,27 +4391,35 @@ Parser methods follow.
         }
         Collections.reverse(modifiers);
         
+        // modifiers shouldn't be on multiple lines, but comments preceding the
+        // modifier may already be attached and can have multiple lines.
+        // Handle the multiple lines here.
         for (String modifier : modifiers) {
             String[] lines = modifier.split("\n");
             if (lines.length == 1) {
+                // something line "public "
                 sb.append(modifier).append(' ');    
             }
             else {
+                // multiple lines are likely comment lines
                 for (int i = 0; i < lines.length; i++) {
                     sb.append(lines[i]);
-                    if (i < lines.length - 1) {
+                    // annotations should be on a separate line also
+                    if ((i < lines.length - 1 || lines[i].startsWith("@")) && !lines[i].endsWith("\n")) {
                         sb.append('\n');
                     }
                 }
                 sb.append(' ');
             }
         }
+        
+        // next indent each line of the modifier
         String[] lines = sb.toString().split("\n");
         sb = new StringBuilder();
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             sb.append(indent(line));
-            if (i < lines.length - 1) {
+            if (i < lines.length - 1 && !endsWith(sb, "\n")) {
                 sb.append('\n');    
             }
         }
