@@ -118,12 +118,12 @@ classOrInterfaceType
 		)
 		(	classType_lf_classOrInterfaceType
 		|	interfaceType_lf_classOrInterfaceType
-		)*
+		)*                                               
 	;
 
 classType
-	:	annotation* Identifier typeArguments?
-	|	classOrInterfaceType '.' annotation* Identifier typeArguments?
+	:	annotationIdentifier typeArguments?
+	|	classOrInterfaceType '.' annotationIdentifier typeArguments?
 	;
 
 classType_lf_classOrInterfaceType
@@ -147,7 +147,7 @@ interfaceType_lfno_classOrInterfaceType
 	;
 
 typeVariable
-	:	annotation* Identifier
+	:	annotationIdentifier
 	;
 
 arrayType
@@ -407,7 +407,7 @@ unannClassOrInterfaceType
 
 unannClassType
 	:	Identifier typeArguments?
-	|	unannClassOrInterfaceType '.' annotation* Identifier typeArguments?
+	|	unannClassOrInterfaceType '.' annotationIdentifier typeArguments?
 	;
 
 unannClassType_lf_unannClassOrInterfaceType
@@ -1082,7 +1082,7 @@ classInstanceCreationExpression
 	;
 
 classInstanceCreationExpression_lf_primary
-	:	'.' 'new' typeArguments? annotation* Identifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
+	:	'.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	;
 
 classInstanceCreationExpression_lfno_primary
@@ -1400,8 +1400,8 @@ postDecrementExpression_lf_postfixExpression
 castExpression
 	:	'(' primitiveType ')' unaryExpression
 	|	'(' referenceType additionalBound* ')' unaryExpressionNotPlusMinus
-	|	'(' referenceType additionalBound* ')' lambdaExpression
-	;
+	|	'(' referenceType additionalBound* ')' lambdaExpression                
+	;                                                                         
 
 // LEXER
 
