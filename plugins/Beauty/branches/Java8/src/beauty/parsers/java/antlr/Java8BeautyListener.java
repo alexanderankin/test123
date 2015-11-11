@@ -14,10 +14,6 @@ import java.util.Collections;
  * This class provides an empty implementation of {@link Java8Listener},
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
- *
- * TODO: check all whatever*, they are probably backwards
- *
- *
  */
 public class Java8BeautyListener implements Java8Listener {
     
@@ -104,7 +100,7 @@ public class Java8BeautyListener implements Java8Listener {
                 if (line.startsWith("*")) {
                     // assume it's a comment line
                     // TODO: verify this is always true
-                    line = ' ' + line;
+                    line = indent + ' ' + line;
                 }
                 else if (!"".equals(line)) {
                     line = indent + line;
@@ -149,19 +145,33 @@ public class Java8BeautyListener implements Java8Listener {
         return trimEnd(new StringBuilder(s));   
     }
     
-    // pops 'howMany' items off of the stack, reverses the order, then
-    // assembles a string using 'separator' between the items. A separator is
-    // not appended to the end of the string.
-    private String reverse(int howMany, String separator) {
+    /**
+     * Pops 'howMany' items off of the stack, reverses the order, then
+     * assembles a string using 'separator' between the items. A separator is
+     * not appended to the end of the string, and the separator is only inserted
+     * every 'howOften' items. For example:
+     * Given "a,b,c" on the stack, where each character is a separate string on the stack,
+     * calling <code>reverse(5, " ", 2)</code> would return "a, b, c".
+     * @param howMany How many items to pop off of the stack and assemble into a string.
+     * @param separator A string to be placed between each item.
+     * @param howOften How often a separator should be inserted.
+     */
+    private String reverse(int howMany, String separator, int howOften) {
         StringBuilder sb = new StringBuilder();
 	    List<String> list = reverse(howMany);
         for (int i = 0; i < list.size(); i++) {
             sb.append(list.get(i));
             if (i < list.size() - 1) {
-                sb.append(separator); 
+                if (howOften == 1 || i % howOften == 1) {
+                    sb.append(separator);    
+                }
             }
         }
 	    return sb.toString();
+    }
+    
+    private String reverse(int howMany, String separator) {
+        return reverse(howMany, separator, 1);
     }
     
     private List<String> reverse(int howMany) {
@@ -254,7 +264,7 @@ Parser methods follow.
 	    if (!defaultValue.isEmpty()) {
 	        sb.append(' ').append(defaultValue);    
 	    }
-	    sb.append(semi).append("\n");
+	    sb.append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -269,7 +279,11 @@ Parser methods follow.
 	    String identifier = stack.pop();
 	    String typeArguments = ctx.typeArguments() == null ? "" : stack.pop();
 	    String dot = stack.pop();
-	    sb.append(dot).append(typeArguments).append(' ').append(identifier).append(lparen).append(argumentList).append(rparen);
+	    sb.append(dot);
+	    if (!typeArguments.isEmpty()) {
+	        sb.append(typeArguments).append(' ');
+	    }
+	    sb.append(identifier).append(lparen).append(argumentList).append(rparen);
 	    stack.push(sb.toString());
 	}
 
@@ -281,19 +295,20 @@ Parser methods follow.
 	}
 
 	@Override public void enterAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
-	    // { {AnnotationTypeMemberDeclaration} }	
+	    // '{' annotationTypeMemberDeclaration* '}'	
 	}
 	@Override public void exitAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbrace = stack.pop();
-	    if (ctx.annotationTypeMemberDeclaration() != null) {
-	        for (int i = 0; i < ctx.annotationTypeMemberDeclaration().size(); i++) {
-	            sb.append(stack.pop()).append("\n");    
-	        }
+	    String body = "";
+	    if (ctx.annotationTypeMemberDeclaration() != null && ctx.annotationTypeMemberDeclaration().size() > 0) {
+	        body = reverse(ctx.annotationTypeMemberDeclaration().size(), "");
+	        ++ tabCount;
+	        body = indent(body);
+	        -- tabCount;
 	    }
 	    String lbrace = stack.pop();
-	    sb.insert(0, lbrace);
-	    sb.append(rbrace).append("\n");
+	    sb.append(lbrace).append('\n').append(body).append(rbrace).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -324,7 +339,7 @@ Parser methods follow.
 	}
 	@Override public void exitArgumentList(@NotNull Java8Parser.ArgumentListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-        sb.append(reverse(ctx.expression().size() * 2 - 1, " "));
+        sb.append(reverse(ctx.expression().size() * 2 - 1, " ", 2));
 	    stack.push(sb.toString());
 	}
 
@@ -373,7 +388,7 @@ Parser methods follow.
             // 'new' choice
             String annotationIdentifiers = "";
             if (ctx.annotationIdentifier() != null) {
-                annotationIdentifiers = reverse(ctx.annotationIdentifier().size(), "");
+                annotationIdentifiers = reverse(ctx.annotationIdentifier().size() * 2 - 1, "");
             }
             String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
             String new_ = stack.pop();
@@ -517,13 +532,13 @@ Parser methods follow.
 	        switch(ctx.expression().size()) {
                 case 1:
                     String expression = stack.pop();
-                    sb.append(expression).append(semi).append("\n");
+                    sb.append(expression).append(semi).append('\n');
                     break;
                 case 2:
                     String expression2 = stack.pop();
                     String colon = stack.pop();
                     String expression1 = stack.pop();
-                    sb.append(expression1).append(' ').append(colon).append(' ').append(expression2).append(semi).append("\n");
+                    sb.append(expression1).append(' ').append(colon).append(' ').append(expression2).append(semi).append('\n');
 	        }
 	    }
 	    stack.push(sb.toString());
@@ -586,7 +601,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterTryWithResourcesStatement(@NotNull Java8Parser.TryWithResourcesStatementContext ctx) { 
-	    // try ResourceSpecification Block [Catches] [Finally]	
+	    // 'try' resourceSpecification block catches? finally_?	
 	}
 	@Override public void exitTryWithResourcesStatement(@NotNull Java8Parser.TryWithResourcesStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -599,9 +614,9 @@ Parser methods follow.
 	        catches = stack.pop();   
 	    }
 	    String block = stack.pop();
-	    String rs = stack.pop();
+	    String resources = stack.pop();
 	    String try_ = stack.pop();
-	    sb.append(try_).append(' ').append(rs).append(' ').append(block).append(catches).append(finally_);
+	    sb.append(try_).append(' ').append(resources).append(' ').append(block).append(catches).append(finally_);
 	    stack.push(sb.toString());
 	}
 
@@ -631,7 +646,7 @@ Parser methods follow.
 	@Override public void exitExceptionTypeList(@NotNull Java8Parser.ExceptionTypeListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.exceptionType() != null) {
-	        sb.append(reverse(ctx.exceptionType().size() * 2, " "));
+	        sb.append(reverse(ctx.exceptionType().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -720,13 +735,7 @@ Parser methods follow.
 	}
 	@Override public void exitInferredFormalParameterList(@NotNull Java8Parser.InferredFormalParameterListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-        // TODO: check if these are backwards, maybe use reverse?
-        for (int i = 0; i < ctx.Identifier().size(); i++) {
-            sb.append(stack.pop());
-            if (i < ctx.Identifier().size() - 1) {
-                sb.append(stack.pop()); // pop the comma
-            }
-        }
+	    sb.append(reverse(ctx.Identifier().size(), " ", 2));
 	    stack.push(sb.toString());
 	}
 
@@ -911,6 +920,7 @@ Parser methods follow.
 	    String identifier = stack.pop();
 	    String enum_ = stack.pop();
 	    if (ctx.classModifier() != null) {
+	        // TODO: use the formatModifiers method for these
 	        sb.append(reverse(ctx.classModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(enum_).append(' ').append(identifier);
@@ -932,7 +942,7 @@ Parser methods follow.
 	    if (ctx.constantModifier() != null) {
 	        sb.append(reverse(ctx.constantModifier().size(), " ")).append(' ');
 	    }
-	    sb.append(type).append(' ').append(vdl).append(semi).append("\n");
+	    sb.append(type).append(' ').append(vdl).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -1155,8 +1165,8 @@ Parser methods follow.
 	    }
 	    sb.append(modifiers).append(cd).append(' ').append(throws_).append(body);
 	    String previous = stack.peek();
-	    if (!previous.endsWith("\n\n")) {
-	        sb.insert(0, "\n\n");    
+	    if (previous != null && !previous.endsWith("\n")) {
+	        sb.insert(0, "\n");    
 	    }
 	    stack.push(sb.toString());
 	}
@@ -1253,6 +1263,7 @@ Parser methods follow.
 	    String identifier = stack.pop();
 	    String interface_ = stack.pop();
 	    if (ctx.interfaceModifier() != null) {
+	        // TODO: use the formatModifiers method for these
 	        sb.append(reverse(ctx.interfaceModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
@@ -1318,14 +1329,8 @@ Parser methods follow.
 	    else {
             // 'new' choice
             StringBuilder annotationIdentifiers = new StringBuilder();
-            if (ctx.annotationIdentifier() != null) {
-                // TODO: this is wrong, the dots are on the stack
-                for (int i = 0; i < ctx.annotationIdentifier().size(); i++) {
-                    annotationIdentifiers.append(stack.pop());
-                    if (i < ctx.annotationIdentifier().size() - 1) {
-                        annotationIdentifiers.append('.');    
-                    }
-                }
+            if (ctx.annotationIdentifier() != null && ctx.annotationIdentifier().size() > 0) {
+                annotationIdentifiers.append(reverse(ctx.annotationIdentifier().size(), ""));
             }
             String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
             String new_ = stack.pop();
@@ -1386,7 +1391,7 @@ Parser methods follow.
 	@Override public void exitVariableInitializerList(@NotNull Java8Parser.VariableInitializerListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.variableInitializer() != null) {
-	        sb.append(reverse(ctx.variableInitializer().size() * 2 - 1, ""));    // TODO: fix spacing so it's ", " not " , " nor ","
+	        sb.append(reverse(ctx.variableInitializer().size() * 2 - 1, " ", 2)); 
 	    }
 	    stack.push(sb.toString());
 	}
@@ -1451,6 +1456,7 @@ Parser methods follow.
 	        indent(sb);   
 	    }
 	    trimEnd(sb);
+	    System.out.println("+++++ exit method modifiers: " + sb);
         stack.push(sb.toString());
 	}
 	@Override public void enterMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) {
@@ -1467,7 +1473,7 @@ Parser methods follow.
 
 	@Override public void enterUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) {
 	    // Identifier [TypeArguments]
-	    // UnannClassOrInterfaceType . {Annotation} Identifier [TypeArguments]
+	    // UnannClassOrInterfaceType . annotationIdentifier [TypeArguments]
 	}
 	@Override public void exitUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -1488,16 +1494,9 @@ Parser methods follow.
 	            typeargs = stack.pop();
 	        }
 	        String identifier = stack.pop();
-	        StringBuilder annotations = new StringBuilder();
-	        if (ctx.annotation() != null) {
-	            for (int i = 0; i < ctx.annotation().size(); i++) {
-	                annotations.append(stack.pop());   
-	            }
-	        }
 	        String dot = stack.pop();
 	        String type = stack.pop();
 	        sb.append(type).append(dot);
-	        sb.append(annotations.toString());
 	        sb.append(identifier).append(' ');
 	        sb.append(typeargs);
 	    }
@@ -1532,9 +1531,8 @@ Parser methods follow.
 	}
 	@Override public void exitTypeParameterList(@NotNull Java8Parser.TypeParameterListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: fix this, the dots are already on the stack
 	    if (ctx.typeParameter() != null) {
-	        sb.append(reverse(ctx.typeParameter().size(), ", "));
+	        sb.append(reverse(ctx.typeParameter().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -1552,6 +1550,10 @@ Parser methods follow.
         String classNode = stack.pop();
         String modifiers = stack.pop();
         modifiers += modifiers.isEmpty() ? "" : " ";
+        String previous = stack.peek();
+        if (previous != null && !previous.endsWith("\n")) {
+            sb.append("\n");    
+        }
         sb.append(modifiers).append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
         stack.push(sb.toString());
 	}
@@ -1569,6 +1571,7 @@ Parser methods follow.
 	        String fp = stack.pop();
 	        StringBuilder sb = new StringBuilder(fp);
 	        sb.append(comma).append(' ').append(lfp);
+	        System.out.println("+++++ exit formal parameter list: " + sb.toString());
 	        stack.push(sb.toString());
 	    }
 	}
@@ -1602,7 +1605,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) {
-	    // {InterfaceModifier} @ interface Identifier AnnotationTypeBody
+	    // interfaceModifier* '@' 'interface' Identifier annotationTypeBody
 	    
 	}
 	@Override public void exitAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) {
@@ -1612,10 +1615,14 @@ Parser methods follow.
 	    String interface_ = stack.pop();
 	    String at = stack.pop();
 	    String ifm = "";
-	    if (ctx.interfaceModifier() != null) {
+	    if (ctx.interfaceModifier() != null && ctx.interfaceModifier().size() > 0) {
 	        ifm = reverse(ctx.interfaceModifier().size(), " ") + ' ';    
 	    }
-	    sb.append(ifm).append(' ').append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
+	    String previous = stack.peek();
+	    if (previous != null && !previous.endsWith("\n")) {
+	        sb.append("\n");    
+	    }
+	    sb.append(ifm).append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
 	    stack.push(sb.toString());
 	}
 
@@ -1709,16 +1716,11 @@ Parser methods follow.
 	}
 
 	@Override public void enterTypeVariable(@NotNull Java8Parser.TypeVariableContext ctx) {
-	    // {Annotation} Identifier
+	    // annotationIdentifier
 	}
 	@Override public void exitTypeVariable(@NotNull Java8Parser.TypeVariableContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
-	    if (ctx.annotation() != null) {
-	        for (int i = 0; i < ctx.annotation().size(); i++) {
-	            sb.append(stack.pop()).append(' ');    
-	        }
-	    }
 	    sb.append(identifier);
 	    stack.push(sb.toString());
 	}
@@ -1753,11 +1755,9 @@ Parser methods follow.
 	    }
 	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
 	    String previous = stack.peek();
-	    /*
-	    if (!previous.endsWith("\n\n")) {
-	        sb.insert(0, "\n\n");    
+	    if (previous != null && !previous.endsWith("\n")) {
+	        sb.insert(0, "\n");    
 	    }
-	    */
 	    stack.push(sb.toString());
 	}
 
@@ -1834,7 +1834,7 @@ Parser methods follow.
 	    if (ctx.expressionName() != null || ctx.primary() != null) {
 	        String dot = stack.pop();
 	        String name = stack.pop();    // expression name or primary
-	        sb.append(name).append(dot).append(typeArgs).append(word).append(lparen).append(args).append(rparen).append(semi).append("\n");
+	        sb.append(name).append(dot).append(typeArgs).append(word).append(lparen).append(args).append(rparen).append(semi).append('\n');
 	    }
 	    else {
 	        // 1st and second choice
@@ -1857,7 +1857,7 @@ Parser methods follow.
 	    String comma = ctx.COMMA() == null ? "" : stack.pop() + ' ';
 	    String list = ctx.enumConstantList() == null ? "" : stack.pop();
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append("\n").append(list).append(comma).append(body).append(rbracket).append('\n');
+	    sb.append(lbracket).append('\n').append(list).append(comma).append(body).append(rbracket).append('\n');
 	    stack.push(sb.toString());
 	}
 	@Override public void enterAdditionalBound(@NotNull Java8Parser.AdditionalBoundContext ctx) { 
@@ -1977,11 +1977,11 @@ Parser methods follow.
 	    if (ctx.unannClassType_lf_unannClassOrInterfaceType() != null || ctx.unannInterfaceType_lf_unannClassOrInterfaceType() != null) {
 	        int howMany = ctx.unannClassType_lf_unannClassOrInterfaceType() == null ? 0 : ctx.unannClassType_lf_unannClassOrInterfaceType().size();
 	        howMany += ctx.unannInterfaceType_lf_unannClassOrInterfaceType() == null ? 0 : ctx.unannInterfaceType_lf_unannClassOrInterfaceType().size();
-	        sh = reverse(howMany, " ");
+	        sh = reverse(howMany, "");
 	    }
 	    sb.append(stack.pop());        // first half
 	    if (!sh.isEmpty()) {
-	        sb.append(' ').append(sh);
+	        sb.append(sh);
 	    }
 	    stack.push(sb.toString());
 	}
@@ -2112,13 +2112,12 @@ Parser methods follow.
 	}
 
 	@Override public void enterResourceList(@NotNull Java8Parser.ResourceListContext ctx) {
-	    // Resource {; Resource}	
+	    // resource (';' resource)*	
 	}
 	@Override public void exitResourceList(@NotNull Java8Parser.ResourceListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: be sure to test this to make sure there are the right number of :
 	    if (ctx.resource() != null) {
-	        sb.append(reverse(ctx.resource().size() * 2 - 1, " ")).append(' ');
+	        sb.append(reverse(ctx.resource().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -2160,7 +2159,7 @@ Parser methods follow.
 	}
 	@Override public void exitStaticInitializer(@NotNull Java8Parser.StaticInitializerContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("\n");
+	    sb.append('\n');
 	    String block = stack.pop();
 	    String static_ = stack.pop();
 	    sb.append(indent(static_)).append(' ').append(block);
@@ -2272,7 +2271,6 @@ Parser methods follow.
 	    String semi = stack.pop();
 	    String identifiers = "";
 	    if (ctx.Identifier() != null ) {
-	        // TODO: check there are the right number of dots
 	        identifiers = reverse(ctx.Identifier().size() * 2 - 1, "");
 	    }
 	    String package_ = stack.pop();
@@ -2284,7 +2282,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) { 
-	    // {VariableModifier} UnannyType VariableDeclaratorList
+	    // {VariableModifier} UnannType VariableDeclaratorList
 	}
 	@Override public void exitLocalVariableDeclaration(@NotNull Java8Parser.LocalVariableDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -2320,7 +2318,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
-	    // '.' 'new' typeArguments? annotation* Identifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
+	    // '.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	}
 	@Override public void exitClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -2330,14 +2328,10 @@ Parser methods follow.
 	    String lparen = stack.pop();
 	    String typeOrDiamond = ctx.typeArgumentsOrDiamond() == null ? "" : stack.pop();
 	    String identifier = stack.pop();
-	    String annotations = "";
-	    if (ctx.annotation() != null) {
-	        annotations = reverse(ctx.annotation().size(), " ");
-	    }
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	    String new_ = stack.pop();
 	    String dot = stack.pop();
-	    sb.append(dot).append(new_).append(typeArgs).append(annotations).append(identifier).append(typeOrDiamond).append(lparen).append(argumentList).append(rparen).append(classBody);
+	    sb.append(dot).append(new_).append(typeArgs).append(identifier).append(typeOrDiamond).append(lparen).append(argumentList).append(rparen).append(classBody);
 	    stack.push(sb.toString());
 	}
 
@@ -2357,7 +2351,7 @@ Parser methods follow.
 	        group = reverse(ctx.switchBlockStatementGroup().size(), "");
 	    }
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append("\n").append(group).append(label).append(rbracket).append("\n");
+	    sb.append(lbracket).append('\n').append(group).append(label).append(rbracket).append('\n');
 	    stack.push(sb.toString());
 	    --tabCount;
 	}
@@ -2404,7 +2398,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    
 	    if (ctx.formalParameter() != null) {
-	        sb.append(reverse(ctx.formalParameter().size() * 2, " "));
+	        sb.append(reverse(ctx.formalParameter().size() * 2 - 1, " ", 2));
 	    }
         if (ctx.receiverParameter() != null) {
             sb.insert(0, stack.pop());    
@@ -2514,8 +2508,8 @@ Parser methods follow.
 	}
 	@Override public void exitDefaultValue(@NotNull Java8Parser.DefaultValueContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String def = stack.pop();
 	    String value = stack.pop();
+	    String def = stack.pop();
 	    sb.append(def).append(' ').append(value);
 	    stack.push(sb.toString());
 	}
@@ -2533,9 +2527,8 @@ Parser methods follow.
 	}
 	@Override public void exitElementValuePairList(@NotNull Java8Parser.ElementValuePairListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: check the commas
 	    if (ctx.elementValuePair() != null) {
-	        sb.append(reverse(ctx.elementValuePair().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.elementValuePair().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -2559,7 +2552,7 @@ Parser methods follow.
 	}
 	@Override public void exitUnannClassType_lf_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String args = ctx.typeArguments() == null ? "" :' ' + stack.pop();
+	    String args = ctx.typeArguments() == null ? "" : ' ' + stack.pop();
 	    String ann = stack.pop();
 	    String dot = stack.pop();
 	    sb.append(dot).append(ann).append(args);
@@ -2576,10 +2569,8 @@ Parser methods follow.
 
 	@Override public void enterSuperclass(@NotNull Java8Parser.SuperclassContext ctx) { 
 	    // extends ClassType
-	    printStack("enterSuperclass");
 	}
 	@Override public void exitSuperclass(@NotNull Java8Parser.SuperclassContext ctx) {
-	    printStack("exitSuperClass");
 	    StringBuilder sb = new StringBuilder();
 	    String ct = stack.pop();
 	    String ext = stack.pop();
@@ -2747,11 +2738,28 @@ Parser methods follow.
 	}
 
 	@Override public void enterClassOrInterfaceType(@NotNull Java8Parser.ClassOrInterfaceTypeContext ctx) {
-	    // ClassType
-	    // InterfaceType
+	    // (	classType_lfno_classOrInterfaceType
+	    // |	interfaceType_lfno_classOrInterfaceType
+	    // )
+	    // (	classType_lf_classOrInterfaceType
+	    // |	interfaceType_lf_classOrInterfaceType
+	    // )*                                               
 	}
 	@Override public void exitClassOrInterfaceType(@NotNull Java8Parser.ClassOrInterfaceTypeContext ctx) { 
-		// nothing to do here, one of the choices should already be on the stack.
+	    StringBuilder sb = new StringBuilder();
+	    // second half
+	    String sh = "";
+	    if (ctx.classType_lf_classOrInterfaceType() != null || ctx.interfaceType_lf_classOrInterfaceType() != null) {
+	        int howMany = ctx.classType_lf_classOrInterfaceType() == null ? 0 : ctx.classType_lf_classOrInterfaceType().size();
+	        howMany += ctx.interfaceType_lf_classOrInterfaceType() == null ? 0 : ctx.interfaceType_lf_classOrInterfaceType().size();
+	        sh = reverse(howMany, "");
+	    }
+	    sb.append(stack.pop());        // first half
+	    if (!sh.isEmpty()) {
+	        sb.append(sh);
+	    }
+	    stack.push(sb.toString());
+		
 	}
 
 	@Override public void enterEqualityExpression(@NotNull Java8Parser.EqualityExpressionContext ctx) {
@@ -2907,10 +2915,10 @@ Parser methods follow.
 	    String eci = ctx.explicitConstructorInvocation() == null ? "" : stack.pop();
 	    eci = eci.isEmpty() ? "" : indent(eci);
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append("\n").append(eci).append(bs).append("\n");
+	    sb.append(lbracket).append('\n').append(eci).append(bs).append('\n');
 	    --tabCount;
 	    String end = indent(rbracket);
-	    sb.append(end).append("\n");
+	    sb.append(end).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3038,9 +3046,8 @@ Parser methods follow.
 	}
 	@Override public void exitTypeArgumentList(@NotNull Java8Parser.TypeArgumentListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: check the commas
 	    if (ctx.typeArgument() != null) {
-	        sb.append(reverse(ctx.typeArgument().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.typeArgument().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -3106,9 +3113,8 @@ Parser methods follow.
 	}
 	@Override public void exitEnumConstantList(@NotNull Java8Parser.EnumConstantListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: check this one too for the right number of commas
 	    if (ctx.enumConstant() != null) {
-	        sb.append(reverse(ctx.enumConstant().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.enumConstant().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -3273,7 +3279,7 @@ Parser methods follow.
 	@Override public void exitVariableDeclaratorList(@NotNull Java8Parser.VariableDeclaratorListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.variableDeclarator() != null) {
-	        sb.append(reverse(ctx.variableDeclarator().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.variableDeclarator().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -3286,9 +3292,9 @@ Parser methods follow.
 	}
 
 	@Override public void enterCastExpression(@NotNull Java8Parser.CastExpressionContext ctx) { 
-	    // ( PrimitiveType ) UnaryExpression 
-	    // ( ReferenceType {AdditionalBound} ) UnaryExpressionNotPlusMinus 
-	    // ( ReferenceType {AdditionalBound} ) LambdaExpression 	
+	    // '(' primitiveType ')' unaryExpression
+	    // '(' referenceType additionalBound* ')' unaryExpressionNotPlusMinus
+	    // '(' referenceType additionalBound* ')' lambdaExpression                
 	}
 	@Override public void exitCastExpression(@NotNull Java8Parser.CastExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -3304,21 +3310,20 @@ Parser methods follow.
 	        // 2nd and 3rd choices can be handled the same
 	        String expr = stack.pop().trim();
 	        String rparen = stack.pop();
-	        StringBuilder bounds = new StringBuilder();
-	        if (ctx.additionalBound() != null) {
-	            for (int i = 0; i < ctx.additionalBound().size(); i++) {
-	                bounds.append(stack.pop()).append(' ');    
-	            }
+	        String bounds = "";
+	        if (ctx.additionalBound() != null && ctx.additionalBound().size() > 0) {
+	            bounds = reverse(ctx.additionalBound().size(), " ");
 	        }
 	        String type = stack.pop();
 	        String lparen = stack.pop();
 	        sb.append(lparen).append(type);
-	        if (!bounds.toString().isEmpty()) {
-	            sb.append(' ').append(bounds.toString());
+	        if (!bounds.isEmpty()) {
+	            sb.append(' ').append(bounds);
 	        }
 	        sb.append(rparen);
 	        sb.append(expr);
 	    }
+	    
 	    stack.push(sb.toString());
 	}
 
@@ -3397,7 +3402,7 @@ Parser methods follow.
 	    String eq = stack.pop();
 	    String vdi = stack.pop();
 	    String type = stack.pop();
-	    if (ctx.variableModifier() != null) {
+	    if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
 	        sb.append(reverse(ctx.variableModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(type).append(' ').append(vdi).append(' ').append(eq).append(' ').append(expr);
@@ -3429,7 +3434,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) {
-	    // '(' resourceList ';'? ')'	
+	    // '(' resourceList SEMI? ')'	
 	}
 	@Override public void exitResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -3446,9 +3451,8 @@ Parser methods follow.
 	}
 	@Override public void exitInterfaceTypeList(@NotNull Java8Parser.InterfaceTypeListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: check the commas
 	    if (ctx.interfaceType() != null) {
-	        sb.append(reverse(ctx.interfaceType().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.interfaceType().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -3512,8 +3516,8 @@ Parser methods follow.
 	}
 
 	@Override public void enterClassType(@NotNull Java8Parser.ClassTypeContext ctx) { 
-	    //                          annotation* Identifier typeArguments?
-	    // classOrInterfaceType '.' annotation* Identifier typeArguments?
+	    //                          annotationIdentifier typeArguments?
+	    // classOrInterfaceType '.' annotationIdentifier typeArguments?
 	}
 	@Override public void exitClassType(@NotNull Java8Parser.ClassTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -3521,10 +3525,6 @@ Parser methods follow.
 	    // same ending
         String typeArguments = ctx.typeArguments() == null ? "" : stack.pop();
         String identifier = stack.pop();
-        String annotations = "";
-        if (ctx.annotation() != null && ctx.annotation().size() > 0) {
-            annotations = reverse(ctx.annotation().size(), " ");
-        }
 	    
         // 2nd choice
 	    if (ctx.classOrInterfaceType() != null) {
@@ -3534,7 +3534,7 @@ Parser methods follow.
 	    }
 	    
 	    // append ending
-        sb.append(annotations).append(identifier);
+        sb.append(identifier);
         if (!typeArguments.isEmpty()) {
             sb.append(' ').append(typeArguments);    
         }
@@ -3591,7 +3591,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String identifier = stack.pop();
 	    String annotations = "";
-	    if (ctx.annotation() != null) {
+	    if (ctx.annotation() != null && ctx.annotation().size() > 0) {
 	        annotations = reverse(ctx.annotation().size(), " ");
 	    }
 	    sb.append(annotations).append(identifier);
@@ -3604,9 +3604,8 @@ Parser methods follow.
 	}
 	@Override public void exitElementValueList(@NotNull Java8Parser.ElementValueListContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: check the commas
 	    if (ctx.elementValue() != null) {
-	        sb.append(reverse(ctx.elementValue().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.elementValue().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -3752,7 +3751,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String vdi = stack.pop();
 	    String type = stack.pop();
-	    if (ctx.variableModifier() != null) {
+	    if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
 	        sb.append(reverse(ctx.variableModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(type).append(' ').append(vdi);
@@ -3918,7 +3917,10 @@ Parser methods follow.
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
 	    String ai = stack.pop();
 	    String dot = stack.pop();
-	    sb.append(dot).append(ai).append(' ').append(typeArgs);
+	    sb.append(dot).append(ai);
+	    if (!typeArgs.isEmpty()) {
+	        sb.append(' ').append(typeArgs);
+	    }
 	    stack.push(sb.toString());
 	}
 
@@ -4003,9 +4005,8 @@ Parser methods follow.
 	}
 	@Override public void exitStatementExpressionList(@NotNull Java8Parser.StatementExpressionListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    // TODO: check the commas
 	    if (ctx.statementExpression() != null) {
-	        sb.append(reverse(ctx.statementExpression().size() * 2 - 1, " "));
+	        sb.append(reverse(ctx.statementExpression().size() * 2 - 1, " ", 2));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -4025,7 +4026,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterThrows_(@NotNull Java8Parser.Throws_Context ctx) { 
-	    // throws ExceptionTypeList
+	    // 'throws' exceptionTypeList
 	}
 	@Override public void exitThrows_(@NotNull Java8Parser.Throws_Context ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -4351,7 +4352,27 @@ Parser methods follow.
 	}
 	
 	private String formatLineComment(String comment) {
-	    return indent(comment.trim());
+	    // ensure there is a space after the comment start. Handle the case
+	    // of multiple /, e.g. ////this is a comment
+	    // should look like    //// this is a comment
+	    String c = comment.trim();
+	    int slashCount = 0;
+	    for (int i = 0; i < c.length(); i++) {
+	        if (c.charAt(i) == '/') {
+	            ++ slashCount;    
+	        }
+	        else {
+	            break;    
+	        }
+	    }
+	    c = c.substring(slashCount).trim();
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 0; i < slashCount; i++) {
+	        sb.append('/');
+	    }
+	    sb.append(' ').append(c);
+	    c = sb.toString();
+	    return indent(c);
 	}
 	
 	private String formatComment(String comment) {
@@ -4362,74 +4383,17 @@ Parser methods follow.
         StringBuilder sb = new StringBuilder();
         for (String line : lines) {
             line = line.trim();
-            if (line.startsWith("/")) {
-                
+            if (line.startsWith("/*")) {
                 sb.append(line).append('\n');    
             }
             else if (line.startsWith("*")) {
-                sb.append(" ").append(line).append('\n');
+                sb.append(' ').append(line).append('\n');
             }
             else {
                 sb.append(" * ").append(line).append('\n');    
             }
         }
         return sb.toString();
-	}
-	
-	private String formatModifiers(int howMany) {
-	    if (howMany <= 0) {
-	        return "";   
-	    }
-	    
-	    // gather the modifiers into a list, then reverse the list so they are
-	    // in the right order
-	    StringBuilder sb = new StringBuilder();
-        List<String> modifiers = new ArrayList<String>();
-        for (int i = 0; i < howMany; i++) {
-            String modifier = stack.pop();
-            modifiers.add(modifier);    
-        }
-        Collections.reverse(modifiers);
-        
-        // modifiers shouldn't be on multiple lines, but comments preceding the
-        // modifier may already be attached and can have multiple lines.
-        // Handle the multiple lines here.
-        for (String modifier : modifiers) {
-            String[] lines = modifier.split("\n");
-            if (lines.length == 1) {
-                // something line "public "
-                sb.append(modifier).append(' ');    
-            }
-            else {
-                // multiple lines are likely comment lines
-                for (int i = 0; i < lines.length; i++) {
-                    sb.append(lines[i]);
-                    // annotations should be on a separate line also
-                    if ((i < lines.length - 1 || lines[i].startsWith("@")) && !lines[i].endsWith("\n")) {
-                        sb.append('\n');
-                    }
-                }
-                sb.append(' ');
-            }
-        }
-        
-        // next indent each line of the modifier
-        String[] lines = sb.toString().split("\n");
-        sb = new StringBuilder();
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            sb.append(indent(line));
-            if (i < lines.length - 1 && !endsWith(sb, "\n")) {
-                sb.append('\n');    
-            }
-        }
-        if (sb.length() > 0) {
-            sb.append(' ');    
-        }
-	    if (sb.length() == 0) {
-	        indent(sb);   
-	    }
-	    return sb.toString();
 	}
 	
 	/**
@@ -4446,6 +4410,56 @@ Parser methods follow.
  	 */
 	private String formatDocComment(String comment) {
 	    return formatComment(comment);
+	}
+	
+	private String formatModifiers(int howMany) {
+	    if (howMany <= 0) {
+	        return "";   
+	    }
+	    
+	    // gather the modifiers into a list, then reverse the list so they are
+	    // in the right order
+	    List<String> modifiers = reverse(howMany);
+        
+        // modifiers shouldn't be on multiple lines, but comments preceding the
+        // modifier may already be attached and can have multiple lines.
+        // Handle the multiple lines here.
+        StringBuilder sb = new StringBuilder();
+        for (String modifier : modifiers) {
+            modifier = modifier.trim();
+            String[] lines = modifier.split("\n");
+            if (lines.length == 1) {
+                // something like "public "
+                sb.append(modifier).append(' ');    
+                if (modifier.startsWith("@")) {
+                    sb.append('\n');   
+                }
+            }
+            else {
+                // multiple lines are likely comment lines
+                for (int i = 0; i < lines.length; i++) {
+                    String line = lines[i].trim();
+                    sb.append(line);
+                    // annotations should be on a separate line also, but they
+                    // should have already been handled above
+                    if (i < lines.length - 1 || line.startsWith("@")) {
+                        sb.append('\n');
+                    }
+                }
+                sb.append(' ');
+            }
+        }
+        
+        // next indent each line of the modifier
+        String indented = indent(sb.toString());
+        sb = new StringBuilder(indented);
+        if (sb.length() > 0) {
+            sb.append(' ');    
+        }
+	    if (sb.length() == 0) {
+	        indent(sb);   
+	    }
+	    return sb.toString();
 	}
 	
 	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
