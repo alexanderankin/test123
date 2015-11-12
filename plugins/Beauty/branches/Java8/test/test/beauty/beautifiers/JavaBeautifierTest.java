@@ -32,6 +32,8 @@ public class JavaBeautifierTest {
             sb.append( "import java.util.*;\n" );
             sb.append( "\n" );
             sb.append( "public class Test {\n" );
+            sb.append( "\n" );
+            sb.append( "\n" );
             sb.append( "}\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
@@ -400,6 +402,7 @@ public class JavaBeautifierTest {
             before.append( "}\n" );
             StringBuilder answer = new StringBuilder();
             answer.append( "public class CommentTest {\n" );
+            answer.append( "\n" );
             answer.append( "    //// a comment\n" );
             answer.append( "}\n" );
             Beautifier beautifier = new Java8Beautifier();
@@ -487,23 +490,27 @@ public class JavaBeautifierTest {
         }
     }
 
-    //@Test
+    @Test
     public void testTryCatch() {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append( "public class Test {\n" );
+            sb.append( "\n" );
             sb.append( "    public int tryCatch(int condition) {\n" );
             sb.append( "        try {\n" );
             sb.append( "            x = 1;\n" );
-            sb.append( "        } catch (ExceptionClass e) {\n" );
+            sb.append( "        }\n");
+            sb.append( "        catch (ExceptionClass e) {\n" );
             sb.append( "            x = 1;\n" );
             sb.append( "        }\n" );
             sb.append( "\n" );
             sb.append( "        try {\n" );
             sb.append( "            x = 1;\n" );
-            sb.append( "        } catch (ExceptionClass e) {\n" );
+            sb.append( "        }\n");
+            sb.append( "        catch (ExceptionClass e) {\n" );
             sb.append( "            x = 1;\n" );
-            sb.append( "        } finally {\n" );
+            sb.append( "        }\n");
+            sb.append( "        finally {\n" );
             sb.append( "            x = 1;\n" );
             sb.append( "        }\n" );
             sb.append( "    }\n" );
@@ -638,7 +645,6 @@ public class JavaBeautifierTest {
             sb.append( "    @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
-            sb.append( "\n" );
             sb.append( "}\n" );
             sb.append( "\n" );
             sb.append( "public @interface RequestForEnhancement {\n" );
@@ -673,32 +679,29 @@ public class JavaBeautifierTest {
         }
     }
 
-    //@Test
+    @Test
     public void testBlankLines() {
         // should be one blank line before each method
         try {
             StringBuilder sb = new StringBuilder();
             sb.append( "public class Test {\n" );
             sb.append( "\n" );
-            sb.append( "    //@Test\n" );
+            sb.append( "    @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
             sb.append( "    @SuppressWarnings(value = \"unchecked\")\n" );
             sb.append( "    public void methodName() {\n" );
-            sb.append( "\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
             sb.append( "    @SuppressWarnings({\"unchecked\", \"deprecation\"})\n" );
             sb.append( "    public void methodName() {\n" );
-            sb.append( "\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
-            sb.append( "    //@Test\n" );
+            sb.append( "    // @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
             sb.append( "}\n" );
-            sb.append( "\n" );
 
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
@@ -718,7 +721,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    //@Test
+    @Test
     public void testOperatorPadding() {
         try {
             StringBuilder before = new StringBuilder();
@@ -730,6 +733,7 @@ public class JavaBeautifierTest {
 
             StringBuilder answer = new StringBuilder();
             answer.append( "public class Test4 {\n" );
+            answer.append( "\n" );
             answer.append( "    int x = -1;\n" );
             answer.append( "    int y = i - j;\n" );
             answer.append( "    float z = +0.1;\n" );

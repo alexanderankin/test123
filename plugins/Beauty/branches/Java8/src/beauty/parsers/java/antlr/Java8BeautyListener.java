@@ -31,6 +31,10 @@ public class Java8BeautyListener implements Java8Listener {
     // stack for holding intermediate formatted parts 
     private Deque<String> stack = new ArrayDeque<String>();
     
+    public static final int START = 1;
+    public static final int END = 2;
+    public static final int BOTH = 3;
+    
     /**
      * @param initialSize Initial size of the output buffer.
      * @param softTabs If true, use spaces rather than '\t' for tabs.
@@ -114,6 +118,55 @@ public class Java8BeautyListener implements Java8Listener {
         return sb.toString();
     }
     
+    /**
+     * Add blank lines to the end of the last item on the stack.  Note that all
+     * blank lines are first removed then exactly howMany are added.
+     */
+    private void addBlankLines(int howMany) {
+        if (!stack.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < howMany + 1; i++) {
+                sb.append('\n');    
+            }
+            String ending = sb.toString();
+            String last = stack.pop();
+            last = removeBlankLines(last, END);
+            while (!last.endsWith(ending)) {
+                last += '\n';    
+            }
+            stack.push(last);
+        }
+    }
+    
+    private String removeBlankLines(String s, int whichEnd) {
+        if (s == null || s.isEmpty()) {
+            return s;    
+        }
+        StringBuilder sb = new StringBuilder(s);
+        switch(whichEnd) {
+            case START:
+                while(sb.length() > 0 && sb.charAt(0) == '\n') {
+                    sb.deleteCharAt(0);
+                }
+                break;
+            case END:
+                while(sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+                break;
+            case BOTH:
+            default:
+                while(sb.length() > 0 && sb.charAt(0) == '\n') {
+                    sb.deleteCharAt(0);
+                }
+                while(sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+                break;
+        }
+        return sb.toString();
+    }
+    
     // StringBuilder doesn't have an "endsWith" method
     public boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
@@ -143,6 +196,20 @@ public class Java8BeautyListener implements Java8Listener {
     
     public String trimEnd(String s) {
         return trimEnd(new StringBuilder(s));   
+    }
+    
+    public String trimFront(StringBuilder sb) {
+        if (sb == null || sb.length() == 0) {
+            return "";
+        }
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
+    }
+    
+    public String trimFront(String s) {
+        return trimFront(new StringBuilder(s));    
     }
     
     /**
@@ -881,22 +948,24 @@ Parser methods follow.
 	}
 	@Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) {
 	    String rbrace = stack.pop();    // }
+	    rbrace = removeBlankLines(rbrace, START);
+	    if (rbrace.startsWith("}")) {
+	        rbrace = '\n' + rbrace;    
+	    }
 	    StringBuilder sb = new StringBuilder();
 	    String body = "";
 	    if (ctx.classBodyDeclaration() != null) {
-	        body = reverse(ctx.classBodyDeclaration().size(), "\n");
+	        body = reverse(ctx.classBodyDeclaration().size(), "");
 	        body = indent(body);
+	        body = removeBlankLines(body, BOTH);
 	    }
+	    addBlankLines(1);
 	    String lbrace = stack.pop();    // {
-	    sb.append(lbrace).append('\n');
+	    sb.append(lbrace);
 	    sb.append(body);
 	    --tabCount;
-	    if (!endsWith(sb, "\n")) {
-	        sb.append('\n');   
-	    }
-	    trimEnd(sb);
 	    rbrace = indent(rbrace);    // indent adds a \n
-	    sb.append('\n').append(rbrace);
+	    sb.append(rbrace);
 	    stack.push(sb.toString());
 	}
 	
@@ -943,6 +1012,7 @@ Parser methods follow.
 	        sb.append(reverse(ctx.constantModifier().size(), " ")).append(' ');
 	    }
 	    sb.append(type).append(' ').append(vdl).append(semi).append('\n');
+	    addBlankLines(1);
 	    stack.push(sb.toString());
 	}
 
@@ -1456,7 +1526,6 @@ Parser methods follow.
 	        indent(sb);   
 	    }
 	    trimEnd(sb);
-	    System.out.println("+++++ exit method modifiers: " + sb);
         stack.push(sb.toString());
 	}
 	@Override public void enterMethodModifier(@NotNull Java8Parser.MethodModifierContext ctx) {
@@ -1472,8 +1541,8 @@ Parser methods follow.
 	}
 
 	@Override public void enterUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) {
-	    // Identifier [TypeArguments]
-	    // UnannClassOrInterfaceType . annotationIdentifier [TypeArguments]
+	    // Identifier typeArguments?
+	    // unannClassOrInterfaceType '.' annotationIdentifier typeArguments?
 	}
 	@Override public void exitUnannClassType(@NotNull Java8Parser.UnannClassTypeContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -1497,10 +1566,11 @@ Parser methods follow.
 	        String dot = stack.pop();
 	        String type = stack.pop();
 	        sb.append(type).append(dot);
-	        sb.append(identifier).append(' ');
+	        sb.append(identifier);
 	        sb.append(typeargs);
 	    }
 	    stack.push(sb.toString());
+	    System.out.println("+++++ exit unannClassType >" + sb.toString() + "<");
 	}
 
 	@Override public void enterLambdaExpression(@NotNull Java8Parser.LambdaExpressionContext ctx) { 
@@ -1550,10 +1620,7 @@ Parser methods follow.
         String classNode = stack.pop();
         String modifiers = stack.pop();
         modifiers += modifiers.isEmpty() ? "" : " ";
-        String previous = stack.peek();
-        if (previous != null && !previous.endsWith("\n")) {
-            sb.append("\n");    
-        }
+        addBlankLines(1);
         sb.append(modifiers).append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
         stack.push(sb.toString());
 	}
@@ -1571,7 +1638,6 @@ Parser methods follow.
 	        String fp = stack.pop();
 	        StringBuilder sb = new StringBuilder(fp);
 	        sb.append(comma).append(' ').append(lfp);
-	        System.out.println("+++++ exit formal parameter list: " + sb.toString());
 	        stack.push(sb.toString());
 	    }
 	}
@@ -1616,12 +1682,10 @@ Parser methods follow.
 	    String at = stack.pop();
 	    String ifm = "";
 	    if (ctx.interfaceModifier() != null && ctx.interfaceModifier().size() > 0) {
-	        ifm = reverse(ctx.interfaceModifier().size(), " ") + ' ';    
+	        ifm = reverse(ctx.interfaceModifier().size(), " ") + ' ';
+	        ifm = removeBlankLines(ifm, START);
 	    }
-	    String previous = stack.peek();
-	    if (previous != null && !previous.endsWith("\n")) {
-	        sb.append("\n");    
-	    }
+	    addBlankLines(1);
 	    sb.append(ifm).append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
 	    stack.push(sb.toString());
 	}
@@ -1642,13 +1706,19 @@ Parser methods follow.
 	    String typeDeclarations = "";
 	    if (ctx.typeDeclaration() != null && ctx.typeDeclaration().size() > 0) {
 	        typeDeclarations = reverse(ctx.typeDeclaration().size(), "");
+	        typeDeclarations = removeBlankLines(typeDeclarations, BOTH) + '\n';
 	    }
 	    String importDeclarations = "";
 	    if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
-	        importDeclarations = reverse(ctx.importDeclaration().size(), "") + "\n";
+	        importDeclarations = reverse(ctx.importDeclaration().size(), "");
+	        importDeclarations = removeBlankLines(importDeclarations, BOTH) + "\n\n";
 	    }
-        String packageDeclaration = ctx.packageDeclaration() == null ? "" : stack.pop() + "\n\n";
-        
+	    String packageDeclaration = "";
+	    if (ctx.packageDeclaration() != null) {
+	        packageDeclaration = stack.pop();
+	        packageDeclaration = removeBlankLines(packageDeclaration, BOTH) + "\n\n";
+	    }
+	    
         output.append(packageDeclaration);
         output.append(importDeclarations);
         output.append(typeDeclarations);
@@ -1753,11 +1823,11 @@ Parser methods follow.
 	    if (modifiers.isEmpty()) {
 	        indent(sb);    
 	    }
-	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
-	    String previous = stack.peek();
-	    if (previous != null && !previous.endsWith("\n")) {
-	        sb.insert(0, "\n");    
+	    else {
+	        modifiers = removeBlankLines(modifiers, START);    
 	    }
+	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
+	    addBlankLines(1);
 	    stack.push(sb.toString());
 	}
 
@@ -2200,7 +2270,7 @@ Parser methods follow.
 	    sb.append(modifiers);
 	    sb.append(modifiers.isEmpty() ? "" : " ");
 	    sb.append(type).append(' ');
-	    sb.append(vdl).append(semi);
+	    sb.append(vdl).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -2593,10 +2663,8 @@ Parser methods follow.
 	    String lbracket = stack.pop();
 	    rbracket = indent(rbracket);
 	    sb.insert(0, lbracket + '\n');
-	    if (!endsWith(sb, "\n")) {
-	        sb.append('\n');   
-	    }
-	    sb.append(rbracket).append('\n');
+	    trimEnd(sb);
+	    sb.append('\n').append(rbracket);
 	    stack.push(sb.toString());
 	}
 
@@ -2932,7 +3000,7 @@ Parser methods follow.
 	    String cfp = stack.pop();
 	    String lparen = stack.pop();
 	    String cat = stack.pop();
-	    sb.append(cat).append(' ').append(lparen).append(cfp).append(rparen).append(block);
+	    sb.append(cat).append(' ').append(lparen).append(cfp).append(rparen).append(' ').append(block);
 	    stack.push(sb.toString());
 	}
 
@@ -3142,16 +3210,19 @@ Parser methods follow.
 	}
 
 	@Override public void enterCatchType(@NotNull Java8Parser.CatchTypeContext ctx) {
-	    // UnannClassType {| ClassType}	
+	    // unannClassType ('|' classType)*
 	}
 	@Override public void exitCatchType(@NotNull Java8Parser.CatchTypeContext ctx) { 
-	    StringBuilder sb = new StringBuilder(" ");
+	    StringBuilder sb = new StringBuilder();
 	    String ct = "";
-	    if (ctx.classType() != null) {
-	        ct = reverse(ctx.classType().size() * 2, " ");
+	    if (ctx.classType() != null && ctx.classType().size() > 0) {
+	        ct = reverse(ctx.classType().size() * 2 - 1, " ");
 	    }
 	    String type = stack.pop();
-	    sb.append(type).append(' ').append(ct);
+	    sb.append(type);
+	    if (!ct.isEmpty()) {
+	        sb.append(' ').append(ct);
+	    }
 	    stack.push(sb.toString()); 
 	}
 
@@ -3751,8 +3822,12 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String vdi = stack.pop();
 	    String type = stack.pop();
+	    String vm = "";
 	    if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
-	        sb.append(reverse(ctx.variableModifier().size(), " ")).append(' ');
+	        vm = reverse(ctx.variableModifier().size(), " ");
+	    }
+	    if (!vm.isEmpty()) {
+	        sb.append(vm).append(' ');    
 	    }
 	    sb.append(type).append(' ').append(vdi);
 	    stack.push(sb.toString());
