@@ -27,6 +27,7 @@ public class Java8Beautifier extends Beautifier {
     
     public String beautify( String text ) throws ParserException {
         //System.out.println(text);
+        ErrorListener errorListener = null;
         try {
             // protect unicode escaped character sequences
             //text = text.replaceAll("\\\\u", "\\\\\\\\u");
@@ -52,6 +53,11 @@ public class Java8Beautifier extends Beautifier {
             parser.setPadParens(padParens);
             */
             
+            // add an error listener to the parser to capture any errors
+            javaParser.removeErrorListeners();
+            errorListener = new ErrorListener();
+            javaParser.addErrorListener( errorListener );
+
             // parse and beautify the buffer contents
             ParseTree tree = javaParser.compilationUnit();
             ParseTreeWalker walker = new ParseTreeWalker();
@@ -61,7 +67,13 @@ public class Java8Beautifier extends Beautifier {
             return listener.getText();
         }
         catch ( Exception e ) {
-            throw new ParserException(e);
+            List<ParserException> errors = errorListener.getErrors();
+            if (errors != null && errors.size() > 0) {
+                throw errors.get(0);   
+            }
+            else {
+                throw new ParserException(e);   
+            }
         }
     }
     
