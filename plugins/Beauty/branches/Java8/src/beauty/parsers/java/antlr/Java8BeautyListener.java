@@ -4537,5 +4537,7 @@ Parser methods follow.
 	    return sb.toString();
 	}
 	
-	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
+	@Override public void visitErrorNode(@NotNull ErrorNode node) { 
+	    System.out.println("+++++ error node: " + node.getText() + ", interval = " + node.getSourceInterval());
+	}
 }
