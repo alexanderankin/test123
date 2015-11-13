@@ -35,7 +35,7 @@
          <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file. Delegates to the included custom java beautifier to format java scriptlet blocks within an HTML file.  This does a pretty good job on JSP files, although it will choke on a few things, like EL code within style or script blocks.</li>
          <li>JSP: this is new for Beauty 0.5 and takes care of the shortcomings of the HTML beautifier for JSP files.  This beautifier handles cleaning up jsp files, including script and style blocks and will even beautify java code withing scriptlet blocks.
          <li>CSS: works very well.  The JSP beautifier delegates to this beautifier to clean up style blocks within JSP files.</li>
-         <li>Java: works very well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping per Sun's guidelines.</li>
+         <li>Java: works very well, supports Java 1.5 through 1.8. Formats closely to Sun's formatting standard, with a few options available in the plugin settings.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
          <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
          <li>Beanshell: Works very well.  It generally follows Sun's formatting standard for java files, although beanshell code is slightly different from java code, so there are some minor differences.</li>
@@ -337,7 +337,7 @@
          .
          <li>For each editing mode that your beautifier supports, add a line to your plugin properties file like this:
          <p>
-         mode.MODENAME.beauty.beautifier.NAME
+         mode.MODENAME.beauty.beautifier=NAME
          <p>
          where
          <code>
@@ -351,7 +351,7 @@
          <p>
          &nbsp;&nbsp;&nbsp;
          <code>
-            mode.lisp.beauty.beautifiers.lispy
+            mode.lisp.beauty.beautifier=lispy
          </code>
          <p>
          for your beautifier that supports the Lisp language.
@@ -370,7 +370,7 @@
       I'd like to give credit to these people whose work I built off of: 
       <p>
       <ul>
-      <li>Sreenivasa Viswanadha for the Java 1.5 and javacc grammars (javacc.dev.java.net)</li>
+      <li>Sreenivasa Viswanadha for the original Java 1.5 and javacc grammars (javacc.dev.java.net)</li>
       <li>Brian Goetz for the HTML grammar</li>
       <li>Patrick Niemeyer for the beanshell grammar (www.beanshell.org)</li>
       <li>Pieter from the PMD project for the jsp grammar (www.pmd.org)</li> 
