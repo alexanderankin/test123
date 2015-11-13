@@ -2554,7 +2554,7 @@ Parser methods follow.
 	}
 	@Override public void exitUnannClassType_lfno_unannClassOrInterfaceType(@NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String typeArgs = ctx.typeArguments() == null ? "" : " " + stack.pop();
+	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
 	    String identifier = stack.pop();
 	    sb.append(identifier).append(typeArgs);
 	    stack.push(sb.toString());
