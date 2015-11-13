@@ -18,11 +18,9 @@ public class Java8Beautifier extends Beautifier {
 
     
     public void init() {
-        /*
-        bracketStyle = jEdit.getIntegerProperty("beauty.java.bracketStyle", JavaParser.ATTACHED);
+        bracketStyle = jEdit.getIntegerProperty("beauty.java.bracketStyle", Java8BeautyListener.ATTACHED);
         breakElse = jEdit.getBooleanProperty("beauty.java.breakElse", false);
         padParens = jEdit.getBooleanProperty("beauty.java.padParens", false);
-        */
     }
     
     public String beautify( String text ) throws ParserException {
@@ -41,27 +39,25 @@ public class Java8Beautifier extends Beautifier {
             
             // for debugging
             String trace = System.getProperty("beauty.java8.trace");
-            javaParser.setTrace(true);
-            
-            // set the parser settings
-            /*
-            parser.setIndentWidth(getIndentWidth());
-            parser.setTabSize(getTabWidth());
-            parser.setLineSeparator(getLineSeparator());
-            parser.setBracketStyle(bracketStyle);
-            parser.setBreakElse(breakElse);
-            parser.setPadParens(padParens);
-            */
+            javaParser.setTrace("true".equals(trace));
             
             // add an error listener to the parser to capture any errors
             javaParser.removeErrorListeners();
             errorListener = new ErrorListener();
             javaParser.addErrorListener( errorListener );
 
-            // parse and beautify the buffer contents
             ParseTree tree = javaParser.compilationUnit();
             ParseTreeWalker walker = new ParseTreeWalker();
-            Java8BeautyListener listener = new Java8BeautyListener(16 * 1024, softTabs, tabWidth, tokens);
+            Java8BeautyListener listener = new Java8BeautyListener(text.length() + 2048, tokens);
+
+            // set the formatting settings
+            listener.setIndentWidth(getIndentWidth());
+            listener.setUseSoftTabs(getUseSoftTabs());
+            listener.setBracketStyle(bracketStyle);
+            listener.setBreakElse(breakElse);
+            listener.setPadParens(padParens);
+
+            // parse and beautify the buffer contents
             walker.walk( listener, tree );
 
             return listener.getText();
