@@ -31,17 +31,34 @@ public class Java8BeautyListener implements Java8Listener {
     // stack for holding intermediate formatted parts 
     private Deque<String> stack = new ArrayDeque<String>();
     
+    // constants for trimming strings
     public static final int START = 1;
     public static final int END = 2;
     public static final int BOTH = 3;
+    
+    // bracket styles
+    public static final int ATTACHED = 1;
+    public static final int BROKEN = 2;
+    
+    // format settings
+    private boolean softTabs = true;
+    private int tabWidth = 4;
+    private int bracketStyle = ATTACHED;
+    private boolean brokenBracket = false;
+    private boolean breakElse = false;
+    private boolean padParens = false;
     
     /**
      * @param initialSize Initial size of the output buffer.
      * @param softTabs If true, use spaces rather than '\t' for tabs.
      * @param tabWidth The number of spaces to use if softTabs.
      */
-    public Java8BeautyListener(int initialSize, boolean softTabs, int tabWidth, BufferedTokenStream tokenStream ) {
+    public Java8BeautyListener(int initialSize, BufferedTokenStream tokenStream ) {
         output = new StringBuilder(initialSize);
+        this.tokens = tokenStream;
+    }
+    
+    private void init() {
         if (softTabs) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < tabWidth; i++) {
@@ -52,23 +69,41 @@ public class Java8BeautyListener implements Java8Listener {
         else {
             tab = "\t";   
         }
-        this.tokens = tokenStream;
     }
     
-    public void printStack() {
-        printStack("");
+/*
+--------------------------------------------------------------------------------
+Formatting settings
+--------------------------------------------------------------------------------
+*/
+//{{{
+    public void setIndentWidth(int i) {
+        tabWidth = i;
+    }
+
+    public void setUseSoftTabs(boolean b) {
+        softTabs = b;
+    }
+            
+    public void setBracketStyle(int style) {
+        bracketStyle = style;
+        brokenBracket = BROKEN == style;
     }
     
-    // this is useful for debugging
-    public void printStack(String name) {
-        System.out.println("+++++ stack " + name + " +++++");
-        for (String item : stack) {
-            System.out.println("-------------------------------------");
-            System.out.println(item);    
-        }
-        System.out.println("+++++ end stack +++++");
+    public void setBreakElse(boolean b) {
+        breakElse = b;
     }
     
+    public void setPadParens(boolean pad) {
+        padParens = pad; 
+    }
+//}}}    
+/*
+--------------------------------------------------------------------------------
+Formatting methods.
+--------------------------------------------------------------------------------
+*/
+//{{{    
     /**
      * @return The formatted string for the file contents.    
      */
@@ -76,6 +111,9 @@ public class Java8BeautyListener implements Java8Listener {
         return output.toString();   
     }
     
+    /**
+     * @return A string with the current indent amount.   
+     */
     private String getIndent() {
         StringBuilder sb = new StringBuilder();    
         for ( int i = 0; i < tabCount; i++ ) {
@@ -84,7 +122,9 @@ public class Java8BeautyListener implements Java8Listener {
         return sb.toString();
     }
     
-    // Add tabCount tabs to the beginning of the given string builder.
+    /**
+     * Add tabCount tabs to the beginning of the given string builder.
+     */
     private void indent(StringBuilder sb) {
         if (sb == null) {
             sb = output;   
@@ -94,6 +134,9 @@ public class Java8BeautyListener implements Java8Listener {
         }
     }
     
+    /**
+     * Split the given string into lines and indent each line.    
+     */
     private String indent(String s) {
         StringBuilder sb = new StringBuilder();
         String[] lines = s.split("\n");
@@ -120,7 +163,7 @@ public class Java8BeautyListener implements Java8Listener {
     
     /**
      * Add blank lines to the end of the last item on the stack.  Note that all
-     * blank lines are first removed then exactly howMany are added.
+     * blank lines are first removed then exactly <code>howMany</code> are added.
      */
     private void addBlankLines(int howMany) {
         if (!stack.isEmpty()) {
@@ -138,6 +181,12 @@ public class Java8BeautyListener implements Java8Listener {
         }
     }
     
+    /**
+     * Remove blank lines from the ends of the given string.
+     * @param s The string to remove blank lines from.
+     * @param whichEnd Which end of the string to remove blank lines from, 
+     * one of START, END, or BOTH.
+     */
     private String removeBlankLines(String s, int whichEnd) {
         if (s == null || s.isEmpty()) {
             return s;    
@@ -167,7 +216,41 @@ public class Java8BeautyListener implements Java8Listener {
         return sb.toString();
     }
     
-    // StringBuilder doesn't have an "endsWith" method
+    private String padParen(String paren) {
+        return padParen(paren, " ");    
+    }
+    
+    /**
+     * Pads parenthesis so "(" becomes "( " and ")" becomes " )".
+     * @paren item The item immediately following or preceding the paren.
+     */
+    
+    private String padParen(String paren, String item) {
+        if (paren == null || paren.isEmpty() || !padParens || item == null || item.isEmpty()) {
+            return paren;    
+        }
+        StringBuilder sb = new StringBuilder(paren);
+        int index = sb.indexOf("(");
+        if (index > -1) {
+            sb.insert(index + 1, " ");
+        }
+        else {
+            index = sb.indexOf(")");
+            if (index > -1) {
+                sb.insert(index == 0 ? 0 : index - 1, " ");
+            }
+        }
+        return sb.toString();
+    }
+    
+    
+    
+    /**
+     * StringBuilder doesn't have an "endsWith" method.
+     * @param sb The string builder to test.
+     * @param s The string to test for.
+     * @return true if the string builder ends with <code>s</code>.
+     */
     public boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
@@ -179,11 +262,15 @@ public class Java8BeautyListener implements Java8Listener {
         return end.equals(s);
     }
     
-    // StringBuilder doesn't have a "trim" method. This trims whitespace from
-    // the end of the string builder. Whitespace on the front is not touched.
-    // There are two ways to use this, pass in a StringBuilder then use the same
-    // StringBuilder, it's end will have been trimmed, or pass in a StringBuilder
-    // and use the returned String.
+    /**
+     * StringBuilder doesn't have a "trim" method. This trims whitespace from
+     * the end of the string builder. Whitespace on the front is not touched.
+     * There are two ways to use this, pass in a StringBuilder then use the same
+     * StringBuilder, it's end will have been trimmed, or pass in a StringBuilder
+     * and use the returned String.
+     * @param sb The StringBuilder to trim.
+     * @return The trimmed string.
+     */
     public String trimEnd(StringBuilder sb) {
         if (sb == null || sb.length() == 0) {
             return "";
@@ -194,10 +281,24 @@ public class Java8BeautyListener implements Java8Listener {
         return sb.toString();
     }
     
+    /**
+     * Removes whitespace from the end of a string.
+     * @param s The string to trim.
+     * @return The trimmed string.
+     */
     public String trimEnd(String s) {
         return trimEnd(new StringBuilder(s));   
     }
     
+    /**
+     * StringBuilder doesn't have a "trim" method. This trims whitespace from
+     * the start of the string builder. Whitespace on the end is not touched.
+     * There are two ways to use this, pass in a StringBuilder then use the same
+     * StringBuilder, it's start will have been trimmed, or pass in a StringBuilder
+     * and use the returned String.
+     * @param sb The StringBuilder to trim.
+     * @return The trimmed string.
+     */
     public String trimFront(StringBuilder sb) {
         if (sb == null || sb.length() == 0) {
             return "";
@@ -208,6 +309,11 @@ public class Java8BeautyListener implements Java8Listener {
         return sb.toString();
     }
     
+    /**
+     * Removes whitespace from the start of a string.
+     * @param s The string to trim.
+     * @return The trimmed string.
+     */
     public String trimFront(String s) {
         return trimFront(new StringBuilder(s));    
     }
@@ -222,6 +328,7 @@ public class Java8BeautyListener implements Java8Listener {
      * @param howMany How many items to pop off of the stack and assemble into a string.
      * @param separator A string to be placed between each item.
      * @param howOften How often a separator should be inserted.
+     * @return A string with the items reversed and separated.
      */
     private String reverse(int howMany, String separator, int howOften) {
         StringBuilder sb = new StringBuilder();
@@ -237,10 +344,27 @@ public class Java8BeautyListener implements Java8Listener {
 	    return sb.toString();
     }
     
+    /**
+     * Pops 'howMany' items off of the stack, reverses the order, then
+     * assembles a string using 'separator' between the items. A separator is
+     * not appended to the end of the string, and the separator is inserted
+     * each item popped off of the stack.
+     * Given "a,b,c" on the stack, where each character is a separate string on the stack,
+     * calling <code>reverse(5, " ")</code> would return "a , b , c".
+     * @param howMany How many items to pop off of the stack and assemble into a string.
+     * @param separator A string to be placed between each item.
+     * @return A string with the items reversed and separated.
+     */
     private String reverse(int howMany, String separator) {
         return reverse(howMany, separator, 1);
     }
     
+    /**
+     * Pops 'howMany' items off of the stack, puts the items into a list, and reverses
+     * the list. 
+     * @param howMany How many items to pop off of the stack to add to the list.
+     * @return A list of stack items in reverse order.
+     */
     private List<String> reverse(int howMany) {
         List<String> list = new ArrayList<String>();
         for (int i = 0; i < howMany && !stack.isEmpty(); i++) {
@@ -248,6 +372,303 @@ public class Java8BeautyListener implements Java8Listener {
         }
         Collections.reverse(list);
         return list;
+    }
+    
+    /**
+     * All comments are handled here.    
+     */
+	private void processComments(TerminalNode node) {
+        Token token = node.getSymbol(); 
+        int tokenIndex = token.getTokenIndex();
+
+	    // check to the right of the current token for an end of line comment,
+	    // this handles both // and /* end of line comments. Only end of line
+	    // comments are handled in this section, and such comments are appended
+	    // to the end of the previous stack item. All other comments are handled
+	    // by looking to the left of the current token and are prepended to the
+	    // previous stack item.
+        List<Token> commentTokens = tokens.getHiddenTokensToRight(tokenIndex, Java8Lexer.COMMENTS);
+        if (commentTokens != null && commentTokens.size() > 0) {
+            // get the very next comment
+            Token nextCommentToken = commentTokens.get(0);
+            int commentIndex = nextCommentToken.getTokenIndex();
+            
+            // get the hiddent tokens between the current token and the next non-hidden token
+            List<Token> hiddenTokens = tokens.getHiddenTokensToRight(tokenIndex);
+            
+            // check if there is a line ender between the current token and the comment token
+            boolean hasLineEnder = false;
+            if (hiddenTokens != null && hiddenTokens.size() > 0) {
+                for (int i = 0; i < commentIndex - tokenIndex; i++) {
+                    Token t = hiddenTokens.get(i);
+                    String tokenText = t.getText();
+                    if (t.getChannel() == Java8Lexer.WHITESPACE &&
+                        (tokenText.indexOf("\n") > -1 || tokenText.indexOf("\r") > -1)) {
+                        hasLineEnder = true;
+                        break;
+                    }
+                }
+                if (!hasLineEnder) {
+                    // have 'token comment' now check for line ender after the comment
+                    hasLineEnder = false;
+                    for (int i = commentIndex - tokenIndex; i < hiddenTokens.size(); i++) {
+                        Token t = hiddenTokens.get(i);
+                        String tokenText = t.getText();
+                        if (t.getChannel() == Java8Lexer.WHITESPACE &&
+                            (tokenText.indexOf("\n") > -1 || tokenText.indexOf("\r") > -1)) {
+                            hasLineEnder = true;
+                            break;
+                        }
+                    }
+                    if (hasLineEnder) {
+                        StringBuilder item = new StringBuilder(stack.pop());
+                        String comment = nextCommentToken.getText();
+                        if (item.indexOf(comment) == -1) {
+                            item.append(tab).append(comment);
+                            stack.push(item.toString());
+                            return;
+                        }
+                    }
+                }
+            }
+	    }
+        
+	    // check to the left of the current token for line. regular, and doc comments
+        commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, Java8Lexer.COMMENTS);
+        if (commentTokens != null && commentTokens.size() > 0) {
+            // there could be multiple line comments
+            // like this comment is on two lines
+            Collections.reverse(commentTokens);
+            for (Token commentToken : commentTokens) {
+                if ( commentToken != null) {
+                    String comment = commentToken.getText();
+                    String current = stack.pop();
+                    String previous = stack.peek();
+                    stack.push(current);
+                    if (previous != null && previous.indexOf(comment) > -1) {
+                        // already have this comment added as an end of line comment
+                        // for the previous token
+                        break;        
+                    }
+                    switch(commentToken.getType()) {
+                        case Java8Lexer.LINE_COMMENT:
+                            comment = formatLineComment(comment);
+                            break;
+                        case Java8Lexer.COMMENT:
+                            // check if this is an in-line  or trailing comment, e.g.
+                            // something /star comment star/ more things or
+                            // something /star comment star/\n
+                            int commentTokenIndex = commentToken.getTokenIndex();
+                            boolean tokenOnLeft = true;
+                            boolean tokenOnRight = true;
+                            List<Token> wsTokens = tokens.getHiddenTokensToLeft(commentTokenIndex, Java8Lexer.WHITESPACE);
+                            if (wsTokens != null && wsTokens.size() > 0) {
+                                for (Token wsToken : wsTokens) {
+                                    String wsText = wsToken.getText();
+                                    if (wsText.indexOf("\n") > -1 || wsText.indexOf("\r") > -1) {
+                                        tokenOnLeft = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            wsTokens = tokens.getHiddenTokensToRight(commentTokenIndex, Java8Lexer.WHITESPACE);
+                            if (wsTokens != null && wsTokens.size() > 0) {
+                                for (Token wsToken : wsTokens) {
+                                    String wsText = wsToken.getText();
+                                    if (wsText.indexOf("\n") > -1 || wsText.indexOf("\r") > -1) {
+                                        tokenOnRight = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (tokenOnLeft && tokenOnRight) {
+                                comment += " "; 
+                            }
+                            else {
+                                comment = formatComment(comment);   
+                            }
+                            break;
+                        case Java8Lexer.DOC_COMMENT: 
+                            // TODO: About javadoc comments, this is from the Sun documentation at
+                            // http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html
+                            // A doc comment is written in HTML and must precede a class, field, constructor
+                            // or method declaration.
+                            // So -- should I only worry about doc comments in those places?
+                            comment = '\n'+ formatDocComment(comment);
+                            break;
+                    }
+                    if (stack.size() == 0) {
+                        stack.push(comment);
+                    }
+                    else {
+                        String last = stack.peek();
+                        if (last != null && last.indexOf(comment) == -1) {
+                            last = stack.pop();
+                            last = comment + last;
+                            stack.push(last);
+                        }
+                    }
+                }
+            }
+        }
+	}
+	
+	/**
+ 	 * Formats a line comment. Current rule is to ensure there is a space following the
+ 	 * slashes, so "//comment" becomes "// comment". Also handle the case where there
+ 	 * are more than 2 slashes the same way, so "////comment" becomes "//// comment".
+ 	 * @param comment An end of line comment.
+ 	 * @return The formatted comment.
+ 	 */
+	private String formatLineComment(String comment) {
+	    // ensure there is a space after the comment start. Handle the case
+	    // of multiple /, e.g. ////this is a comment
+	    // should look like    //// this is a comment
+	    String c = comment.trim();
+	    int slashCount = 0;
+	    for (int i = 0; i < c.length(); i++) {
+	        if (c.charAt(i) == '/') {
+	            ++ slashCount;    
+	        }
+	        else {
+	            break;    
+	        }
+	    }
+	    c = c.substring(slashCount).trim();
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 0; i < slashCount; i++) {
+	        sb.append('/');
+	    }
+	    sb.append(' ').append(c);
+	    c = sb.toString();
+	    return indent(c);
+	}
+	
+	/**
+ 	 * Formats a regular block comment. This method splits the 
+ 	 * given comment into lines, indents each line, and ensures there is a * at the
+ 	 * start of each line.
+ 	 * @param comment A block comment.
+ 	 * @return The formatted comment.
+ 	 */
+	private String formatComment(String comment) {
+	    if (comment == null || comment.isEmpty()) {
+	        return "";
+	    }
+        String[] lines = comment.split("\n");
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) {
+            line = line.trim();
+            if (line.startsWith("/*")) {
+                sb.append(line).append('\n');    
+            }
+            else if (line.startsWith("*")) {
+                sb.append(' ').append(line).append('\n');
+            }
+            else {
+                sb.append(" * ").append(line).append('\n');    
+            }
+        }
+        return sb.toString();
+	}
+	
+	/**
+	 * Notes from Sun's javadoc documentation:
+ 	 * Each line in the comment is indented to align with the code below the comment.
+ 	 * The first line contains the begin-comment delimiter ( /**).
+ 	 * Starting with Javadoc 1.4, the leading asterisks are optional.
+ 	 * Write the first sentence as a short summary of the method, as Javadoc automatically places it in the method summary table (and index).
+ 	 * Notice the inline tag {@link URL}, which converts to an HTML hyperlink pointing to the documentation for the URL class. This inline tag can be used anywhere that a comment can be written, such as in the text following block tags.
+ 	 * If you have more than one paragraph in the doc comment, separate the paragraphs with a <p> paragraph tag, as shown.
+ 	 * Insert a blank comment line between the description and the list of tags, as shown.
+ 	 * The first line that begins with an "@" character ends the description. There is only one description block per doc comment; you cannot continue the description following block tags.
+ 	 * The last line contains the end-comment delimiter. Note that unlike the begin-comment delimiter, the end-comment contains only a single asterisk.
+ 	 */
+	private String formatDocComment(String comment) {
+	    return formatComment(comment);
+	}
+	
+	/**
+ 	 * Pops <code>howMany</code> items from the stack. Assumes these items are modifiers
+ 	 * for a constructor, method, field, or class. Formats the modifiers. Annotations
+ 	 * are on a separate line above the other modifiers, remaining modifiers are separated
+ 	 * by spaces.
+ 	 * TODO: If two or more (distinct) class modifiers appear in a class declaration, then 
+ 	 * it is customary, though not required, that they appear in the order consistent with 
+ 	 * that shown in the grammar for the modifier. Sort the modifiers to follow this rule.
+ 	 * @param howMany The number of modifiers to pop off of the stack.
+ 	 * @return The formatted modifiers.
+ 	 */
+	private String formatModifiers(int howMany) {
+	    if (howMany <= 0) {
+	        return "";   
+	    }
+	    
+	    // gather the modifiers into a list, then reverse the list so they are
+	    // in the right order
+	    List<String> modifiers = reverse(howMany);
+        
+        // modifiers shouldn't be on multiple lines, but comments preceding the
+        // modifier may already be attached and can have multiple lines.
+        // Handle the multiple lines here.
+        StringBuilder sb = new StringBuilder();
+        for (String modifier : modifiers) {
+            modifier = modifier.trim();
+            String[] lines = modifier.split("\n");
+            if (lines.length == 1) {
+                // something like "public "
+                sb.append(modifier).append(' ');    
+                if (modifier.startsWith("@")) {
+                    sb.append('\n');   
+                }
+            }
+            else {
+                // multiple lines are likely comment lines
+                for (int i = 0; i < lines.length; i++) {
+                    String line = lines[i].trim();
+                    sb.append(line);
+                    // annotations should be on a separate line also, but they
+                    // should have already been handled above
+                    if (i < lines.length - 1 || line.startsWith("@")) {
+                        sb.append('\n');
+                    }
+                }
+                sb.append(' ');
+            }
+        }
+        
+        // next indent each line of the modifier
+        String indented = indent(sb.toString());
+        sb = new StringBuilder(indented);
+        if (sb.length() > 0) {
+            sb.append(' ');    
+        }
+	    if (sb.length() == 0) {
+	        indent(sb);   
+	    }
+	    return sb.toString();
+	}
+//}}}    
+    
+/*
+--------------------------------------------------------------------------------
+Testing and debugging methods.
+--------------------------------------------------------------------------------
+*/
+//{{{
+    // this is useful for debugging
+    private void printStack() {
+        printStack("");
+    }
+    
+    // this is useful for debugging
+    private void printStack(String name) {
+        System.out.println("+++++ stack " + name + " +++++");
+        for (String item : stack) {
+            System.out.println("-------------------------------------");
+            System.out.println(item);    
+        }
+        System.out.println("+++++ end stack " + name + " +++++");
     }
     
     // for testing, first arg is a java file to parse, optional second arg is
@@ -270,7 +691,9 @@ public class Java8BeautyListener implements Java8Listener {
             // parse and beautify the buffer contents
             ParseTree tree = javaParser.compilationUnit();
             ParseTreeWalker walker = new ParseTreeWalker();
-            Java8BeautyListener listener = new Java8BeautyListener(16 * 1024, true, 4, tokens);
+            Java8BeautyListener listener = new Java8BeautyListener(16 * 1024, tokens);
+            listener.setUseSoftTabs(true);
+            listener.setIndentWidth(4);
             walker.walk( listener, tree );
 
             System.out.println(listener.getText());
@@ -279,14 +702,14 @@ public class Java8BeautyListener implements Java8Listener {
             e.printStackTrace();
         }
     }
-    
+//}}}    
     
 /*
 --------------------------------------------------------------------------------
 Parser methods follow.
 --------------------------------------------------------------------------------
 */
-    
+//{{{    
 	@Override public void enterClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
 	    // FieldDeclaration
 	    // MethodDeclaration
@@ -350,7 +773,7 @@ Parser methods follow.
 	    if (!typeArguments.isEmpty()) {
 	        sb.append(typeArguments).append(' ');
 	    }
-	    sb.append(identifier).append(lparen).append(argumentList).append(rparen);
+	    sb.append(identifier).append(padParen(lparen, argumentList)).append(argumentList).append(padParen(rparen, argumentList));
 	    stack.push(sb.toString());
 	}
 
@@ -463,7 +886,7 @@ Parser methods follow.
 	    }
 	    
 	    // common ending
-	    sb.append(typeArgumentsOrDiamond).append(lparen).append(argumentList).append(rparen).append(classBody);
+	    sb.append(typeArgumentsOrDiamond).append(padParen(lparen, argumentList)).append(argumentList).append(padParen(rparen, argumentList)).append(classBody);
 	    stack.push(sb.toString());
 	}
 
@@ -582,9 +1005,9 @@ Parser methods follow.
 	    if (!typeParameters.isEmpty()) {
 	        sb.append(typeParameters).append(' ');    
 	    }
-	    sb.append(typeName).append(lparen);
+	    sb.append(typeName).append(padParen(lparen, formalParameters));
         sb.append(formalParameters);
-        sb.append(rparen);
+        sb.append(padParen(rparen, formalParameters));
         stack.push(sb.toString());
 	}
 
@@ -674,11 +1097,17 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String finally_ = "";
 	    if (ctx.finally_() != null) {
-	        finally_ = stack.pop();    
+	        finally_ = stack.pop(); 
+	        if (breakElse) {
+	            finally_ = '\n' + finally_;   
+	        }
 	    }
 	    String catches = "";
 	    if (ctx.catches() != null) {
-	        catches = stack.pop();   
+	        catches = stack.pop().trim();   
+	        if (breakElse) {
+	            catches = '\n' + catches;    
+	        }
 	    }
 	    String block = stack.pop();
 	    String resources = stack.pop();
@@ -961,7 +1390,7 @@ Parser methods follow.
 	    }
 	    addBlankLines(1);
 	    String lbrace = stack.pop();    // {
-	    sb.append(lbrace);
+	    sb.append(brokenBracket ? "\n" : "").append(lbrace);
 	    sb.append(body);
 	    --tabCount;
 	    rbrace = indent(rbrace);    // indent adds a \n
@@ -977,7 +1406,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) {
-	    // {ClassModifier} enum Identifier [Superinterfaces] EnumBody
+	    // classModifiers 'enum' Identifier superinterfaces? enumBody
 	}
 	@Override public void exitEnumDeclaration(@NotNull Java8Parser.EnumDeclarationContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -988,10 +1417,8 @@ Parser methods follow.
 	    }
 	    String identifier = stack.pop();
 	    String enum_ = stack.pop();
-	    if (ctx.classModifier() != null) {
-	        // TODO: use the formatModifiers method for these
-	        sb.append(reverse(ctx.classModifier().size(), " ")).append(' ');
-	    }
+	    String modifiers = stack.pop();
+	    sb.append(modifiers);
 	    sb.append(enum_).append(' ').append(identifier);
 	    if (!superInterfaces.isEmpty()) {
 	        sb.append(' ').append(superInterfaces).append(' ');    
@@ -1094,7 +1521,7 @@ Parser methods follow.
 	        String argList = ctx.argumentList() == null ? "" : stack.pop();
 	        String lparen = stack.pop();
 	        String name = stack.pop();
-	        sb.append(name).append(lparen).append(argList).append(rparen);    
+	        sb.append(name).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));    
 	    }
 	    else if (ctx.expressionName() != null || ctx.primary() != null) {
 	        String argList = ctx.argumentList() == null ? "" : stack.pop();
@@ -1103,7 +1530,7 @@ Parser methods follow.
 	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
 	        String dot = stack.pop();
 	        String name = stack.pop();
-	        sb.append(name).append(dot).append(typeArgs).append(' ').append(identifier).append(lparen).append(argList).append(rparen);
+	        sb.append(name).append(dot).append(typeArgs).append(' ').append(identifier).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));
 	    }
 	    else if (ctx.typeName() != null) {
 	        String argList = ctx.argumentList() == null ? "" : stack.pop();
@@ -1124,7 +1551,7 @@ Parser methods follow.
 	        if (!typeArgs.isEmpty()) {
 	            sb.append(typeArgs).append(' ');        
 	        }
-	        sb.append(identifier).append(lparen).append(argList).append(rparen);
+	        sb.append(identifier).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));
 	    }
 	    else {
 	        String argList = ctx.argumentList() == null ? "" : stack.pop();
@@ -1137,7 +1564,7 @@ Parser methods follow.
 	        if (!typeArgs.isEmpty()) {
 	            sb.append(typeArgs).append(' ');        
 	        }
-	        sb.append(identifier).append(lparen).append(argList).append(rparen);
+	        sb.append(identifier).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -1173,7 +1600,7 @@ Parser methods follow.
 	            list = stack.pop();
 	        }
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(list).append(rparen);
+	        sb.append(padParen(lparen, list)).append(list).append(padParen(rparen, list));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -1270,7 +1697,7 @@ Parser methods follow.
 	        String rparen = stack.pop();
 	        String expression = stack.pop();
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(expression).append(rparen);
+	        sb.append(padParen(lparen)).append(expression).append(padParen(rparen));
 	        stack.push(sb.toString());
 	        return;
 	    }
@@ -1333,8 +1760,7 @@ Parser methods follow.
 	    String identifier = stack.pop();
 	    String interface_ = stack.pop();
 	    if (ctx.interfaceModifier() != null) {
-	        // TODO: use the formatModifiers method for these
-	        sb.append(reverse(ctx.interfaceModifier().size(), " ")).append(' ');
+	        sb.append(formatModifiers(ctx.interfaceModifier().size()));
 	    }
 	    sb.append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
 	    stack.push(sb.toString());
@@ -1408,7 +1834,7 @@ Parser methods follow.
 	    }
 	    
 	    // common ending
-	    sb.append(typeArgumentsOrDiamond).append(lparen).append(argumentList).append(rparen).append(classBody);
+	    sb.append(typeArgumentsOrDiamond).append(padParen(lparen, argumentList)).append(argumentList).append(padParen(rparen, argumentList)).append(classBody);
 	    stack.push(sb.toString());
 	}
 
@@ -1422,7 +1848,7 @@ Parser methods follow.
 	    String params = ctx.formalParameterList() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
 	    String identifier = stack.pop();
-	    sb.append(identifier).append(lparen).append(params).append(rparen).append(dims);
+	    sb.append(identifier).append(padParen(lparen, params)).append(params).append(padParen(rparen, params)).append(dims);
 	    stack.push(sb.toString());
 	}
 
@@ -1570,7 +1996,6 @@ Parser methods follow.
 	        sb.append(typeargs);
 	    }
 	    stack.push(sb.toString());
-	    System.out.println("+++++ exit unannClassType >" + sb.toString() + "<");
 	}
 
 	@Override public void enterLambdaExpression(@NotNull Java8Parser.LambdaExpressionContext ctx) { 
@@ -1652,7 +2077,7 @@ Parser methods follow.
 	    stmt = trimEnd(stmt);
 	    if (!stmt.startsWith("{")) {
 	        ++tabCount;
-	        stmt = "{\n" + indent(stmt) + "}";
+	        stmt = (brokenBracket ? "\n" : "") + "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
 	    String rparen = stack.pop();
@@ -1666,7 +2091,7 @@ Parser methods follow.
 	    }
 	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(' ').append(lparen).append(vm).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(rparen).append(' ').append(stmt);
+	    sb.append(for_).append(' ').append(padParen(lparen)).append(vm).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(padParen(rparen)).append(' ').append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -1689,19 +2114,16 @@ Parser methods follow.
 	    sb.append(ifm).append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
 	    stack.push(sb.toString());
 	}
-
+	
+	/**
+ 	 * Main entry point.	
+ 	 */
 	@Override public void enterCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) {
 	    // [PackageDeclaration] {ImportDeclaration} {TypeDeclaration}
+	    init();    // initialize the formatting settings
 	}
 	@Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) {
-	    // TODO: remove this after debugging is complete
-	    printStack();
-	    System.out.println("=======================================================================================================================");
-	    
-	    // TODO: there is an extra blank item on the stack, need to figure out where it's coming from.
-	    // The next line is a temporary work-around.
-	    // -- it might be the EOF token
-	    stack.pop();
+	    stack.pop();    // EOF
 	    
 	    String typeDeclarations = "";
 	    if (ctx.typeDeclaration() != null && ctx.typeDeclaration().size() > 0) {
@@ -1753,7 +2175,7 @@ Parser methods follow.
 	    statement = trimEnd(statement);
 	    if (!statement.startsWith("{")) {
 	        ++tabCount;
-	        statement = "{\n" + indent(statement) + "}";
+	        statement = (brokenBracket ? "\n" : "") + "{\n" + indent(statement) + "}";
 	        --tabCount;
 	    }
 	    String rparen = stack.pop();
@@ -1767,7 +2189,7 @@ Parser methods follow.
 	    }
 	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(' ').append(lparen).append(modifiers).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(rparen).append(' ').append(statement);
+	    sb.append(for_).append(' ').append(padParen(lparen)).append(modifiers).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(padParen(rparen)).append(' ').append(statement);
 	    stack.push(sb.toString());
 	}
 
@@ -1904,7 +2326,7 @@ Parser methods follow.
 	    if (ctx.expressionName() != null || ctx.primary() != null) {
 	        String dot = stack.pop();
 	        String name = stack.pop();    // expression name or primary
-	        sb.append(name).append(dot).append(typeArgs).append(word).append(lparen).append(args).append(rparen).append(semi).append('\n');
+	        sb.append(name).append(dot).append(typeArgs).append(word).append(padParen(lparen, args)).append(args).append(padParen(rparen, args)).append(semi).append('\n');
 	    }
 	    else {
 	        // 1st and second choice
@@ -1912,7 +2334,7 @@ Parser methods follow.
 	        if (!typeArgs.isEmpty()) {
 	            sb.append(' ');    
 	        }
-	        sb.append(word).append(lparen).append(args).append(rparen).append(semi).append('\n');
+	        sb.append(word).append(padParen(lparen, args)).append(args).append(padParen(rparen, args)).append(semi).append('\n');
 	    }
 	    stack.push(sb.toString());
 	}
@@ -1970,7 +2392,7 @@ Parser methods follow.
 	        String rparen = stack.pop();
 	        String expression = stack.pop();
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(expression).append(rparen);
+	        sb.append(padParen(lparen)).append(expression).append(padParen(rparen));
 	        stack.push(sb.toString());
 	        return;
 	    }
@@ -2061,18 +2483,20 @@ Parser methods follow.
 	}
 	@Override public void exitIfThenStatement(@NotNull Java8Parser.IfThenStatementContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String stmt = stack.pop();
-	    stmt = trimEnd(stmt);
+	    String stmt = stack.pop().trim();
 	    if (!stmt.startsWith("{")) {
 	        ++tabCount;
 	        stmt = "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
+	    if (brokenBracket) {
+	        stmt = "\n" + stmt;    
+	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(lparen).append(expr).append(rparen).append(' ').append(stmt).append('\n');
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(stmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -2293,7 +2717,7 @@ Parser methods follow.
 	    stmt = trimEnd(stmt);
 	    if (!stmt.startsWith("{")) {
 	        ++tabCount;
-	        stmt = "{\n" + indent(stmt) + "}";
+	        stmt = (brokenBracket ? "\n" : "") + "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
 	    String rparen = stack.pop();
@@ -2304,7 +2728,7 @@ Parser methods follow.
 	    String init = ctx.forInit() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(' ').append(lparen).append(init).append(semi1).append(' ').append(expr).append(semi2).append(' ').append(update).append(rparen).append(' ').append(stmt);
+	    sb.append(for_).append(' ').append(padParen(lparen)).append(init).append(semi1).append(' ').append(expr).append(semi2).append(' ').append(update).append(padParen(rparen)).append(' ').append(stmt);
 
 	    stack.push(sb.toString());
 	}
@@ -2325,7 +2749,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String while_ = stack.pop();
-	    sb.append(while_).append(' ').append(lparen).append(expr).append(rparen);
+	    sb.append(while_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen));
 	    if (!";".equals(stmt)) {
 	        sb.append(' ');
 	    }
@@ -2401,7 +2825,7 @@ Parser methods follow.
 	    String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	    String new_ = stack.pop();
 	    String dot = stack.pop();
-	    sb.append(dot).append(new_).append(typeArgs).append(identifier).append(typeOrDiamond).append(lparen).append(argumentList).append(rparen).append(classBody);
+	    sb.append(dot).append(new_).append(typeArgs).append(identifier).append(typeOrDiamond).append(padParen(lparen, argumentList)).append(argumentList).append(padParen(rparen, argumentList)).append(classBody);
 	    stack.push(sb.toString());
 	}
 
@@ -2421,7 +2845,7 @@ Parser methods follow.
 	        group = reverse(ctx.switchBlockStatementGroup().size(), "");
 	    }
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append('\n').append(group).append(label).append(rbracket).append('\n');
+	    sb.append(brokenBracket ? "\n" : "").append(lbracket).append('\n').append(group).append(label).append(rbracket).append('\n');
 	    stack.push(sb.toString());
 	    --tabCount;
 	}
@@ -2513,7 +2937,7 @@ Parser methods follow.
 	        String rparen = stack.pop();
 	        String expr = stack.pop();
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(expr).append(rparen);
+	        sb.append(padParen(lparen)).append(expr).append(padParen(rparen));
 	        stack.push(sb.toString());
 	        return;
 	    }
@@ -2613,7 +3037,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String sync = stack.pop();
-	    sb.append(sync).append(' ').append(lparen).append(expr).append(rparen).append(block);
+	    sb.append(sync).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(block);
 	    stack.push(sb.toString());
 	}
 
@@ -2663,6 +3087,9 @@ Parser methods follow.
 	    String lbracket = stack.pop();
 	    rbracket = indent(rbracket);
 	    sb.insert(0, lbracket + '\n');
+	    if (brokenBracket) {
+	        sb.insert(0, "\n");    
+	    }
 	    trimEnd(sb);
 	    sb.append('\n').append(rbracket);
 	    stack.push(sb.toString());
@@ -2857,7 +3284,7 @@ Parser methods follow.
 	    String lparen = stack.pop();
 	    String name = stack.pop();
 	    String at = stack.pop();
-	    sb.append(at).append(name).append(lparen).append(list).append(rparen);
+	    sb.append(at).append(name).append(padParen(lparen, list)).append(list).append(padParen(rparen, list));
         stack.push(sb.toString());
 	}
 
@@ -2983,7 +3410,7 @@ Parser methods follow.
 	    String eci = ctx.explicitConstructorInvocation() == null ? "" : stack.pop();
 	    eci = eci.isEmpty() ? "" : indent(eci);
 	    String lbracket = stack.pop();
-	    sb.append(lbracket).append('\n').append(eci).append(bs).append('\n');
+	    sb.append(brokenBracket ? "\n" : "").append(lbracket).append('\n').append(eci).append(bs);
 	    --tabCount;
 	    String end = indent(rbracket);
 	    sb.append(end).append('\n');
@@ -3000,7 +3427,7 @@ Parser methods follow.
 	    String cfp = stack.pop();
 	    String lparen = stack.pop();
 	    String cat = stack.pop();
-	    sb.append(cat).append(' ').append(lparen).append(cfp).append(rparen).append(' ').append(block);
+	    sb.append(cat).append(' ').append(padParen(lparen)).append(cfp).append(padParen(rparen)).append(' ').append(block);
 	    stack.push(sb.toString());
 	}
 
@@ -3077,7 +3504,7 @@ Parser methods follow.
 	    String lparen = stack.pop();
 	    String name = stack.pop();
 	    String at = stack.pop();
-	    sb.append(at).append(name).append(lparen).append(ev).append(rparen);
+	    sb.append(at).append(name).append(padParen(lparen)).append(ev).append(padParen(rparen));
 	    stack.push(sb.toString());
 	}
 
@@ -3168,7 +3595,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String w = stack.pop();
-	    sb.append(w).append(' ').append(lparen).append(expr).append(rparen);
+	    sb.append(w).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen));
 	    if (!";".equals(stmt)) {
 	        sb.append(' ');
 	    }
@@ -3201,11 +3628,11 @@ Parser methods follow.
 	    statement = trimEnd(statement);
 	    if (!statement.startsWith("{")) {
 	        ++tabCount;
-	        statement = "{\n" + indent(statement) + "}";
+	        statement = (brokenBracket ? "\n" : "") + "{\n" + indent(statement) + "}";
 	        --tabCount;
 	    }
 	    String do_ = stack.pop();
-	    sb.append(do_).append(' ').append(statement).append(' ').append(while_).append(' ').append(lparen).append(expr).append(rparen).append(semi);
+	    sb.append(do_).append(' ').append(statement).append(breakElse ? '\n' : ' ').append(while_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(semi);
 	    stack.push(sb.toString());
 	}
 
@@ -3239,27 +3666,32 @@ Parser methods follow.
 	}
 	@Override public void exitIfThenElseStatement(@NotNull Java8Parser.IfThenElseStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String stmt = stack.pop();
-	    stmt = trimEnd(stmt);
+	    String stmt = stack.pop().trim();
 	    if (!stmt.startsWith("{") && !stmt.startsWith("if")) {
 	        ++tabCount;
-	        stmt = "{\n" + indent(stmt) + "}";
+	        stmt = (brokenBracket ? "\n" : "") + "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
+	    if (brokenBracket) {
+	        stmt = "\n" + stmt;    
+	    }
 	    String else_ = stack.pop();
-	    String sn = stack.pop();
+	    String sn = stack.pop().trim();
 	    if (!sn.startsWith("{")) {
 	        ++tabCount;
-	        sn = "{\n" + indent(sn) + "}";
+	        sn = (brokenBracket ? "\n" : "") + "{\n" + indent(sn) + "}";
 	        --tabCount;
+	    }
+	    if (brokenBracket) {
+	        sn = "\n" + sn;    
 	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(lparen).append(expr).append(rparen).append(' ').append(sn);
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(sn);
 	    trimEnd(sb);
-	    sb.append(' ').append(else_).append(' ').append(stmt).append('\n');
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(' ').append(stmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3375,7 +3807,7 @@ Parser methods follow.
 	        String rparen = stack.pop();
 	        String type = stack.pop();
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(type).append(rparen).append(expr);
+	        sb.append(padParen(lparen)).append(type).append(padParen(rparen)).append(expr);
 	    }
 	    else {
 	        // 2nd and 3rd choices can be handled the same
@@ -3387,11 +3819,11 @@ Parser methods follow.
 	        }
 	        String type = stack.pop();
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(type);
+	        sb.append(padParen(lparen)).append(type);
 	        if (!bounds.isEmpty()) {
 	            sb.append(' ').append(bounds);
 	        }
-	        sb.append(rparen);
+	        sb.append(padParen(rparen));
 	        sb.append(expr);
 	    }
 	    
@@ -3509,11 +3941,11 @@ Parser methods follow.
 	}
 	@Override public void exitResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String rp = stack.pop();
+	    String rparen = stack.pop();
 	    String semi = ctx.SEMI() == null ? "" : stack.pop();
 	    String list = stack.pop();
-	    String lp = stack.pop();
-	    sb.append(lp).append(list).append(semi).append(rp);
+	    String lparen = stack.pop();
+	    sb.append(padParen(lparen)).append(list).append(semi).append(padParen(rparen));
 	    stack.push(sb.toString());
 	}
 
@@ -3533,26 +3965,31 @@ Parser methods follow.
 	}
 	@Override public void exitIfThenElseStatementNoShortIf(@NotNull Java8Parser.IfThenElseStatementNoShortIfContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String elseStmt = stack.pop();
-	    elseStmt = trimEnd(elseStmt);
+	    String elseStmt = stack.pop().trim();
 	    if (!elseStmt.startsWith("{") && !elseStmt.startsWith("if")) {
 	        ++tabCount;
-	        elseStmt = "{\n" + indent(elseStmt) + "}";
+	        elseStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(elseStmt) + "}";
 	        --tabCount;
+	    }
+	    if (brokenBracket) {
+	        elseStmt = "\n" + elseStmt;    
 	    }
 	    String else_ = stack.pop();
-	    String ifStmt = stack.pop();
-	    ifStmt = trimEnd(ifStmt);
+	    String ifStmt = stack.pop().trim();
 	    if (!ifStmt.startsWith("{")) {
 	        ++tabCount;
-	        ifStmt = "{\n" + indent(ifStmt) + "}";
+	        ifStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(ifStmt) + "}";
+	        ifStmt = trimEnd(ifStmt);
 	        --tabCount;
 	    }
-	    String rp = stack.pop();
+	    if (brokenBracket) {
+	        ifStmt = "\n" + ifStmt;    
+	    }
+	    String rparen = stack.pop();
 	    String expr = stack.pop();
-	    String lp = stack.pop();
+	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(lp).append(expr).append(rp).append(ifStmt).append(' ').append(else_).append(' ').append(elseStmt).append('\n');
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(ifStmt).append(breakElse ? '\n' : ' ').append(else_).append(' ').append(elseStmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3637,11 +4074,18 @@ Parser methods follow.
 	    else if (ctx.finally_() != null) {
 	        // second option
 	        String finally_ = stack.pop();
+	        if (breakElse) {
+	            finally_ = '\n' + finally_;    
+	        }
 	        String catches = "";
 	        if (ctx.catches() != null) {
-	            catches = stack.pop();    
+	            catches = stack.pop().trim();
+	            if (breakElse) {
+	                catches = '\n' + catches;    
+	            }
 	        }
 	        String block = stack.pop();
+	        block = trimEnd(block);
 	        String try_ = stack.pop();
 	        sb.append(try_).append(' ').append(block).append(catches).append(finally_);
 	    }
@@ -3691,19 +4135,19 @@ Parser methods follow.
 	    statement = trimEnd(statement);
 	    if (!statement.startsWith("{")) {
 	        ++tabCount;
-	        statement = "{\n" + indent(statement) + "}";
+	        statement = (brokenBracket ? "\n" : "") + "{\n" + indent(statement) + "}";
 	        --tabCount;
 	    }
-	    String rp = stack.pop();
+	    String rparen = stack.pop();
 	    String forUpdate = ctx.forUpdate() == null ? "" : stack.pop();
 	    String semi2 = stack.pop();
 	    String expression = ctx.expression() == null ? "" : stack.pop();
 	    String semi1 = stack.pop();
 	    String forInit = ctx.forInit() == null ? "" : stack.pop();
-	    String lp = stack.pop();
+	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(' ').append(lp).append(forInit).append(semi1);
-	    sb.append(' ').append(expression).append(semi2).append(' ').append(forUpdate).append(rp).append(' ').append(statement);
+	    sb.append(for_).append(' ').append(padParen(lparen)).append(forInit).append(semi1);
+	    sb.append(' ').append(expression).append(semi2).append(' ').append(forUpdate).append(padParen(rparen)).append(' ').append(statement);
 	    stack.push(sb.toString());
 	}
 
@@ -3730,11 +4174,11 @@ Parser methods follow.
 	@Override public void exitSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String switchBlock = stack.pop();
-	    String rp = stack.pop();
+	    String rparen = stack.pop();
 	    String expression = stack.pop();
-	    String lp = stack.pop();
+	    String lparen = stack.pop();
 	    String switch_ = stack.pop();
-	    sb.append(switch_).append(' ').append(lp).append(expression).append(rp).append(' ').append(switchBlock);
+	    sb.append(switch_).append(' ').append(padParen(lparen)).append(expression).append(padParen(rparen)).append(' ').append(switchBlock);
 	    stack.push(sb.toString());
 	}
 
@@ -3841,10 +4285,10 @@ Parser methods follow.
 	    String body = ctx.classBody() == null ? "" : stack.pop();
 	    StringBuilder args = new StringBuilder();
 	    if (ctx.argumentList() != null) {
-	        String rp = stack.pop();
+	        String rparen = stack.pop();
 	        String list = stack.pop();
-	        String lp = stack.pop();
-	        args.append(lp).append(list).append(rp);
+	        String lparen = stack.pop();
+	        args.append(padParen(lparen, list)).append(list).append(padParen(rparen, list));
 	    }
 	    String identifier = stack.pop();
 	    if (ctx.enumConstantModifier() != null) {
@@ -3868,9 +4312,9 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    
 	    // common ending
-	    String rp = stack.pop();
+	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
-	    String lp = stack.pop();
+	    String lparen = stack.pop();
 	    
 	    // method name
 	    if (ctx.methodName() != null) {
@@ -3907,7 +4351,7 @@ Parser methods follow.
 	    }
 	    
 	    // common ending
-	    sb.append(lp).append(argumentList).append(rp);
+	    sb.append(padParen(lparen, argumentList)).append(argumentList).append(padParen(rparen, argumentList));
 	    stack.push(sb.toString());
 	}
 
@@ -4211,7 +4655,7 @@ Parser methods follow.
 	        String rparen = stack.pop();
 	        String expression = stack.pop();
 	        String lparen = stack.pop();
-	        sb.append(lparen).append(expression).append(rparen);
+	        sb.append(padParen(lparen)).append(expression).append(padParen(rparen));
 	        stack.push(sb.toString());
 	        return;
 	    }
@@ -4290,254 +4734,7 @@ Parser methods follow.
         processComments(node);
 	}
 	
-	private void processComments(TerminalNode node) {
-        Token token = node.getSymbol(); 
-        int tokenIndex = token.getTokenIndex();
-
-	    // check to the right of the current token for an end of line comment,
-	    // this handles both // and /* end of line comments. Only end of line
-	    // comments are handled in this section, and such comments are appended
-	    // to the end of the previous stack item. All other comments are handled
-	    // by looking to the left of the current token and are prepended to the
-	    // previous stack item.
-        List<Token> commentTokens = tokens.getHiddenTokensToRight(tokenIndex, Java8Lexer.COMMENTS);
-        if (commentTokens != null && commentTokens.size() > 0) {
-            // get the very next comment
-            Token nextCommentToken = commentTokens.get(0);
-            int commentIndex = nextCommentToken.getTokenIndex();
-            
-            // get the hiddent tokens between the current token and the next non-hidden token
-            List<Token> hiddenTokens = tokens.getHiddenTokensToRight(tokenIndex);
-            
-            // check if there is a line ender between the current token and the comment token
-            boolean hasLineEnder = false;
-            if (hiddenTokens != null && hiddenTokens.size() > 0) {
-                for (int i = 0; i < commentIndex - tokenIndex; i++) {
-                    Token t = hiddenTokens.get(i);
-                    String tokenText = t.getText();
-                    if (t.getChannel() == Java8Lexer.WHITESPACE &&
-                        (tokenText.indexOf("\n") > -1 || tokenText.indexOf("\r") > -1)) {
-                        hasLineEnder = true;
-                        break;
-                    }
-                }
-                if (!hasLineEnder) {
-                    // have 'token comment' now check for line ender after the comment
-                    hasLineEnder = false;
-                    for (int i = commentIndex - tokenIndex; i < hiddenTokens.size(); i++) {
-                        Token t = hiddenTokens.get(i);
-                        String tokenText = t.getText();
-                        if (t.getChannel() == Java8Lexer.WHITESPACE &&
-                            (tokenText.indexOf("\n") > -1 || tokenText.indexOf("\r") > -1)) {
-                            hasLineEnder = true;
-                            break;
-                        }
-                    }
-                    if (hasLineEnder) {
-                        StringBuilder item = new StringBuilder(stack.pop());
-                        String comment = nextCommentToken.getText();
-                        if (item.indexOf(comment) == -1) {
-                            item.append(tab).append(comment);
-                            stack.push(item.toString());
-                            return;
-                        }
-                    }
-                }
-            }
-	    }
-        
-	    // check to the left of the current token for line. regular, and doc comments
-        commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, Java8Lexer.COMMENTS);
-        if (commentTokens != null && commentTokens.size() > 0) {
-            // there could be multiple line comments
-            // like this comment is on two lines
-            Collections.reverse(commentTokens);
-            for (Token commentToken : commentTokens) {
-                if ( commentToken != null) {
-                    String comment = commentToken.getText();
-                    String current = stack.pop();
-                    String previous = stack.peek();
-                    stack.push(current);
-                    if (previous != null && previous.indexOf(comment) > -1) {
-                        // already have this comment added as an end of line comment
-                        // for the previous token
-                        break;        
-                    }
-                    switch(commentToken.getType()) {
-                        case Java8Lexer.LINE_COMMENT:
-                            comment = formatLineComment(comment);
-                            break;
-                        case Java8Lexer.COMMENT:
-                            // check if this is an in-line  or trailing comment, e.g.
-                            // something /star comment star/ more things or
-                            // something /star comment star/\n
-                            int commentTokenIndex = commentToken.getTokenIndex();
-                            boolean tokenOnLeft = true;
-                            boolean tokenOnRight = true;
-                            List<Token> wsTokens = tokens.getHiddenTokensToLeft(commentTokenIndex, Java8Lexer.WHITESPACE);
-                            if (wsTokens != null && wsTokens.size() > 0) {
-                                for (Token wsToken : wsTokens) {
-                                    String wsText = wsToken.getText();
-                                    if (wsText.indexOf("\n") > -1 || wsText.indexOf("\r") > -1) {
-                                        tokenOnLeft = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            wsTokens = tokens.getHiddenTokensToRight(commentTokenIndex, Java8Lexer.WHITESPACE);
-                            if (wsTokens != null && wsTokens.size() > 0) {
-                                for (Token wsToken : wsTokens) {
-                                    String wsText = wsToken.getText();
-                                    if (wsText.indexOf("\n") > -1 || wsText.indexOf("\r") > -1) {
-                                        tokenOnRight = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (tokenOnLeft && tokenOnRight) {
-                                comment += " "; 
-                            }
-                            else {
-                                comment = formatComment(comment);   
-                            }
-                            break;
-                        case Java8Lexer.DOC_COMMENT: 
-                            // TODO: About javadoc comments, this is from the Sun documentation at
-                            // http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html
-                            // A doc comment is written in HTML and must precede a class, field, constructor
-                            // or method declaration.
-                            // So -- should I only worry about doc comments in those places?
-                            comment = '\n'+ formatDocComment(comment);
-                            break;
-                    }
-                    if (stack.size() == 0) {
-                        stack.push(comment);
-                    }
-                    else {
-                        String last = stack.peek();
-                        if (last != null && last.indexOf(comment) == -1) {
-                            last = stack.pop();
-                            last = comment + last;
-                            stack.push(last);
-                        }
-                    }
-                }
-            }
-        }
-	}
-	
-	private String formatLineComment(String comment) {
-	    // ensure there is a space after the comment start. Handle the case
-	    // of multiple /, e.g. ////this is a comment
-	    // should look like    //// this is a comment
-	    String c = comment.trim();
-	    int slashCount = 0;
-	    for (int i = 0; i < c.length(); i++) {
-	        if (c.charAt(i) == '/') {
-	            ++ slashCount;    
-	        }
-	        else {
-	            break;    
-	        }
-	    }
-	    c = c.substring(slashCount).trim();
-	    StringBuilder sb = new StringBuilder();
-	    for (int i = 0; i < slashCount; i++) {
-	        sb.append('/');
-	    }
-	    sb.append(' ').append(c);
-	    c = sb.toString();
-	    return indent(c);
-	}
-	
-	private String formatComment(String comment) {
-	    if (comment == null || comment.isEmpty()) {
-	        return "";
-	    }
-        String[] lines = comment.split("\n");
-        StringBuilder sb = new StringBuilder();
-        for (String line : lines) {
-            line = line.trim();
-            if (line.startsWith("/*")) {
-                sb.append(line).append('\n');    
-            }
-            else if (line.startsWith("*")) {
-                sb.append(' ').append(line).append('\n');
-            }
-            else {
-                sb.append(" * ").append(line).append('\n');    
-            }
-        }
-        return sb.toString();
-	}
-	
-	/**
-	 * Notes from Sun's javadoc documentation:
- 	 * Each line in the comment is indented to align with the code below the comment.
- 	 * The first line contains the begin-comment delimiter ( /**).
- 	 * Starting with Javadoc 1.4, the leading asterisks are optional.
- 	 * Write the first sentence as a short summary of the method, as Javadoc automatically places it in the method summary table (and index).
- 	 * Notice the inline tag {@link URL}, which converts to an HTML hyperlink pointing to the documentation for the URL class. This inline tag can be used anywhere that a comment can be written, such as in the text following block tags.
- 	 * If you have more than one paragraph in the doc comment, separate the paragraphs with a <p> paragraph tag, as shown.
- 	 * Insert a blank comment line between the description and the list of tags, as shown.
- 	 * The first line that begins with an "@" character ends the description. There is only one description block per doc comment; you cannot continue the description following block tags.
- 	 * The last line contains the end-comment delimiter. Note that unlike the begin-comment delimiter, the end-comment contains only a single asterisk.
- 	 */
-	private String formatDocComment(String comment) {
-	    return formatComment(comment);
-	}
-	
-	private String formatModifiers(int howMany) {
-	    if (howMany <= 0) {
-	        return "";   
-	    }
-	    
-	    // gather the modifiers into a list, then reverse the list so they are
-	    // in the right order
-	    List<String> modifiers = reverse(howMany);
-        
-        // modifiers shouldn't be on multiple lines, but comments preceding the
-        // modifier may already be attached and can have multiple lines.
-        // Handle the multiple lines here.
-        StringBuilder sb = new StringBuilder();
-        for (String modifier : modifiers) {
-            modifier = modifier.trim();
-            String[] lines = modifier.split("\n");
-            if (lines.length == 1) {
-                // something like "public "
-                sb.append(modifier).append(' ');    
-                if (modifier.startsWith("@")) {
-                    sb.append('\n');   
-                }
-            }
-            else {
-                // multiple lines are likely comment lines
-                for (int i = 0; i < lines.length; i++) {
-                    String line = lines[i].trim();
-                    sb.append(line);
-                    // annotations should be on a separate line also, but they
-                    // should have already been handled above
-                    if (i < lines.length - 1 || line.startsWith("@")) {
-                        sb.append('\n');
-                    }
-                }
-                sb.append(' ');
-            }
-        }
-        
-        // next indent each line of the modifier
-        String indented = indent(sb.toString());
-        sb = new StringBuilder(indented);
-        if (sb.length() > 0) {
-            sb.append(' ');    
-        }
-	    if (sb.length() == 0) {
-	        indent(sb);   
-	    }
-	    return sb.toString();
-	}
-	
 	@Override public void visitErrorNode(@NotNull ErrorNode node) { 
-	    System.out.println("+++++ error node: " + node.getText() + ", interval = " + node.getSourceInterval());
 	}
+//}}}	
 }
