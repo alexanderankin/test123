@@ -45,7 +45,7 @@ public class Java8BeautyListener implements Java8Listener {
     private int tabWidth = 4;
     private int bracketStyle = ATTACHED;
     private boolean brokenBracket = false;
-    private boolean breakElse = false;
+    private boolean breakElse = true;
     private boolean padParens = false;
     
     /**
@@ -1098,16 +1098,12 @@ Parser methods follow.
 	    String finally_ = "";
 	    if (ctx.finally_() != null) {
 	        finally_ = stack.pop(); 
-	        if (breakElse) {
-	            finally_ = '\n' + finally_;   
-	        }
+            finally_ = (breakElse ? '\n' : ' ') + finally_;
 	    }
 	    String catches = "";
 	    if (ctx.catches() != null) {
 	        catches = stack.pop().trim();   
-	        if (breakElse) {
-	            catches = '\n' + catches;    
-	        }
+            catches = (breakElse ? '\n' : ' ') + catches;
 	    }
 	    String block = stack.pop();
 	    String resources = stack.pop();
@@ -4074,15 +4070,12 @@ Parser methods follow.
 	    else if (ctx.finally_() != null) {
 	        // second option
 	        String finally_ = stack.pop();
-	        if (breakElse) {
-	            finally_ = '\n' + finally_;    
-	        }
-	        String catches = "";
+            finally_ = (breakElse ? '\n' : ' ') + finally_;
+	        
+            String catches = "";
 	        if (ctx.catches() != null) {
 	            catches = stack.pop().trim();
-	            if (breakElse) {
-	                catches = '\n' + catches;    
-	            }
+	            catches = (breakElse ? "\n" : " ") + catches;
 	        }
 	        String block = stack.pop();
 	        block = trimEnd(block);

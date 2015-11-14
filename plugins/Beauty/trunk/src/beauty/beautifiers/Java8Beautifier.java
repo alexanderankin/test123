@@ -19,7 +19,7 @@ public class Java8Beautifier extends Beautifier {
     
     public void init() {
         bracketStyle = jEdit.getIntegerProperty("beauty.java.bracketStyle", Java8BeautyListener.ATTACHED);
-        breakElse = jEdit.getBooleanProperty("beauty.java.breakElse", false);
+        breakElse = jEdit.getBooleanProperty("beauty.java.breakElse", true);
         padParens = jEdit.getBooleanProperty("beauty.java.padParens", false);
     }
     

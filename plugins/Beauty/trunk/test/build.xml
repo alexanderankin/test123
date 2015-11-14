@@ -75,6 +75,7 @@
         <file name="CommonControls.jar"/>
         <file name="kappalayout.jar"/>
         <file name="antlr-4.4-complete.jar"/>
+        <file name="Antlr.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 

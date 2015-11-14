@@ -515,7 +515,7 @@ public class JavaBeautifierTest {
             sb.append( "        }\n" );
             sb.append( "    }\n" );
             sb.append( "}\n" );
-            Beautifier beautifier = new Java8Beautifier();
+            Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
             beautifier.setTabWidth(4 );
@@ -523,6 +523,7 @@ public class JavaBeautifierTest {
             beautifier.setUseSoftTabs( true );
             beautifier.setWrapMargin(80 );
             beautifier.setWrapMode( "none" );
+            beautifier.setBreakElse( true );
             String after = beautifier.beautify( sb.toString() );
             assertTrue( "returned text was null", after != null );
             assertTrue( "'try/catch' test failed:\nexpected:\n" + sb.toString() + "\nbut was:\n" + after, sb.toString().equals( after ) );
@@ -757,7 +758,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    //@Test
+    @Test
     public void setPadParens1() {
         try {
             StringBuilder before = new StringBuilder();
@@ -770,6 +771,7 @@ public class JavaBeautifierTest {
 
             StringBuilder answer = new StringBuilder();
             answer.append( "public class Test4 {\n" );
+            answer.append( "\n");
             answer.append( "    public method1() {\n" );
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println(\"some text\");\n" );
@@ -795,7 +797,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    //@Test
+    @Test
     public void setPadParens2() {
         try {
             StringBuilder before = new StringBuilder();
@@ -808,6 +810,7 @@ public class JavaBeautifierTest {
 
             StringBuilder answer = new StringBuilder();
             answer.append( "public class Test4 {\n" );
+            answer.append( "\n");
             answer.append( "    public method1() {\n" );
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println( \"some text\" );\n" );
