@@ -51,11 +51,8 @@ import java.util.*;
  * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
  * @author Dale Anson, some updates for this and that
  *
- * DONE: look at whitespace handling in the jsp beautifier and port the ideas
+ * TODO: look at whitespace handling in the jsp beautifier and port the ideas
  * here.  In particular, look at the special token handling and getSpecial(Token).
- * Current fix is to explicitly handle spacing in parser rules and not handle
- * whitespace in the tokenizer.
- *
  * TODO: look at javadoc stubs. This is a feature request from the mailing list.
  * The line by line parsing may make this difficult, but perhaps a post parsing
  * with a different parser (javasidekick maybe?) would be doable.
@@ -179,10 +176,6 @@ public class JavaParser
     private void writeln() {
         token_source.writeln();
     }
-    
-    private void writeln(int howMany) {
-        token_source.writeln(howMany);   
-    }
 
     public void setLineSeparator(String le) {
         lineSep = le;
@@ -207,10 +200,6 @@ public class JavaParser
     public void setPadParens(boolean pad) {
         padParens = pad; 
         token_source.setPadParens(pad);
-    }
-    
-    public Token getNextSpecialToken(Token t) {
-        return token_source.getNextSpecialToken(t);   
     }
 
    public JavaParser(String fileName)
@@ -361,7 +350,7 @@ TOKEN_MGR_DECLS :
     // add a token to the accumulator
     static void add(Token t) {
         if (t != null) {
-            add(t.image);
+            a.add(t);
         }
     }
 
@@ -626,17 +615,9 @@ TOKEN_MGR_DECLS :
     }
 
     static void writeln() {
-        writeln(1);
-    }
-    
-    static void writeln(int howMany) {
-        if (howMany < 1)
-            return;
         write();
         trimNL();
-        for (int i = 0; i < howMany; i++) {
-            outputBuffer.append(ls);   
-        }
+        outputBuffer.append(ls);
     }
 
     static int countWrapSep(String s) {
@@ -705,8 +686,6 @@ TOKEN_MGR_DECLS :
         return end.equals(s);
     }
     
-    // TODO: look at dbconsole for the box writing routine and adapt for javadoc
-    // and block comments
     static void writeJavadocComment(String s) {
         String[] lines = s.split(ls);
         
@@ -777,29 +756,7 @@ TOKEN_MGR_DECLS :
     
 
     // handle comments like this one
-    // @param t is always a special token
-    static void writeEndOfLineComment(Token t) {
-        String s = t.image;
-        // determine if this comment is at the end of a line by going back through
-        // the previous special tokens. If we hit a regular token before we
-        // get a line ender, then it goes on the same line as the last regular token.
-        // st will be null when it is a regular token
-        boolean onNewLine = false;
-        Token st = t.specialToken;
-        if (st != null) {
-            while(st != null) {
-                if (st.kind == JavaParserConstants.LINE_ENDERS ||
-                    st.kind == JavaParserConstants.BLANK_LINES ||
-                    st.kind == JavaParserConstants.SINGLE_LINE_COMMENT_END ||
-                    st.kind == JavaParserConstants.DOC_COMMENT_END ||
-                    st.kind == JavaParserConstants.BLOCK_COMMENT_END ) {
-                    onNewLine = true;
-                    break;
-                }
-                st = st.specialToken;
-            }
-        }
-        
+    static void writeEndOfLineComment(String s) {
         String line = s.trim();
         if (line.startsWith("//")) {
             java.util.regex.Pattern p = java.util.regex.Pattern.compile("(//+)(.*?)");
@@ -810,31 +767,12 @@ TOKEN_MGR_DECLS :
                 line = start + " " + line;
             }
         }
-        if (onNewLine) {
-            for (int j = 0; j < level; j++) {
-                line = indent + line;
-            }
-        }
-        else {
-            trimWhitespace();
-            line = indent + line;   
+        for (int j = 0; j < level; j++) {
+            line = indent + line;
         }
         outputBuffer.append(line).append(ls);
     }
 
-    public Token getNextSpecialToken(Token t) {
-        if (t == null) {
-            return null;   
-        }
-        t = t.next;
-        if (t == null) {
-            return null;   
-        }
-        Token st = t.specialToken;
-        while (st.specialToken != null) 
-            st = st.specialToken;
-        return st;
-    }
 }
 
 
@@ -851,51 +789,65 @@ SKIP :
 }
 
 
-// DONE: this is the wrong way to handle these. See the jsp parser for a better way to do this.
-// New approach -- skip all whitespace and blank lines and format them explicitly
-// in the parser rules.
+// TODO: this is the wrong way to handle these.  The TokenManager may be way
+// ahead of the parser, which can cause these tokens to be inserted in the
+// output in the wrong place.  See the jsp parser for a better way to do this.
 SPECIAL_TOKEN :
 {
   <LINE_ENDERS: ("\n"|"\r"|"\r\n")+ >
+  {
+    String s = matchedToken.image;
+    int n = 0;
+    int r = 0;
+    for (int i = 0; i < s.length(); i++) {
+        if (s.charAt(i) == 'n')
+            ++n;
+        else
+            ++r;
+    }
+    int cnt = Math.max(n, r);
+    cnt = Math.min(2, cnt);
+    if (cnt > 0) {
+        for ( ; cnt >= 0; cnt--)
+            add(ls);
+        write();
+    }
+  }
 | <BLANK_LINES: (" " | "\t")* ("\n"|"\r"|"\r\n")+ >
-| <SPACES: ([" "])+ >  
-| <TABS: (["\t"])+ >  
+  {
+    String b = matchedToken.image;
+    b = b.replaceAll(" ", "");
+    b = b.replaceAll("\t", "");
+    int bn = 0;
+    int br = 0;
+    for (int i = 0; i < b.length(); i++) {
+        if (b.charAt(i) == 'n')
+            ++bn;
+        else
+            ++br;
+    }
+    int bcnt = Math.max(bn, br);
+    bcnt = Math.min(2, bcnt);
+    if (bcnt > 0) {
+        for ( ; bcnt >= 0; bcnt--)
+            add(ls);
+        write();
+    }
+  }
+| <SPACES: ([" "])+ >  { add(matchedToken); }
+| <TABS: (["\t"])+ >  { for (int i = 0; i < matchedToken.image.length() * 8; i++) add(" "); }
 }
 
 
 /* COMMENTS */
-MORE :
-{
-  "//" : IN_SINGLE_LINE_COMMENT
-|
-  <"/**" ~["/"]> { input_stream.backup(1); } : IN_DOC_COMMENT
-|
-  "/*" : IN_BLOCK_COMMENT
-}
 
-<IN_SINGLE_LINE_COMMENT>
 SPECIAL_TOKEN :
 {
-  <SINGLE_LINE_COMMENT_END: "\n" | "\r" | "\r\n" > { writeEndOfLineComment(matchedToken); } : DEFAULT
+  <END_OF_LINE_COMMENT: "//"  (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeEndOfLineComment(matchedToken.image); }
+| <JAVADOC_COMMENT:     "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeJavadocComment(matchedToken.image); }
+| <BLOCK_COMMENT:       "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeBlockComment(matchedToken.image); }
 }
 
-<IN_DOC_COMMENT>
-SPECIAL_TOKEN :
-{
-  <DOC_COMMENT_END: "*/" > { writeJavadocComment(matchedToken.image); } : DEFAULT
-}
-
-<IN_BLOCK_COMMENT>
-SPECIAL_TOKEN :
-{
-  <BLOCK_COMMENT_END: "*/" > { writeBlockComment(matchedToken.image); } : DEFAULT
-}
-
-<IN_SINGLE_LINE_COMMENT,IN_DOC_COMMENT,IN_BLOCK_COMMENT>
-MORE :
-{
-  < ~[] >
-}
 
 /* RESERVED WORDS AND LITERALS */
 
@@ -1011,7 +963,6 @@ TOKEN :
       )*
       "\""
   >
-
 }
 
 /* IDENTIFIERS */
@@ -1114,8 +1065,6 @@ TOKEN :
 | < RSIGNEDSHIFTASSIGN: ">>=" >
 | < RUNSIGNEDSHIFTASSIGN: ">>>=" >
 | < ELLIPSIS: "..." >
-| < POINTER: "->" >
-| < DIAMOND: "<>" >
 }
 
 /* >'s need special attention due to generics syntax. */
@@ -1156,8 +1105,7 @@ TOKEN :
  * a block statement and much of the compilation unit will be lost. Not good.  
  */
 void CompilationUnit():
-{
-}
+{}
 {
     LOOKAHEAD(3)
     (
@@ -1172,18 +1120,16 @@ void CompilationUnit():
   <EOF>
 }
 
-
 void PackageDeclaration():
 {}
 {
-    [ Annotation(true) ]        // Java 8
-    t=<PACKAGE> { add("package "); } Name() ";" { add(";"); writeln(); }
+    t="package" { add(t); } Name() ";" { add(";"); write(); }
 }
 
 void ImportDeclaration():
 {}
 {
-  <IMPORT> { add("import "); } [ <STATIC> { add("static "); } ] Name() [ "." "*" { add(".*"); } ] ";" { add(";"); writeln(); }
+  "import" { add("import"); } [ "static" { add("static"); } ] Name() [ "." "*" { add(".*"); } ] ";" { add(";"); write(); }
 }
 
 /*
@@ -1201,29 +1147,29 @@ int Modifiers():
  (
   LOOKAHEAD(2)
   (
-       <PUBLIC> { modifiers |= ModifierSet.PUBLIC; }
-      |
-       <STATIC> { modifiers |= ModifierSet.STATIC; }
-      |
-       <PROTECTED> { modifiers |= ModifierSet.PROTECTED; }
-      |
-       <PRIVATE> { modifiers |= ModifierSet.PRIVATE; }
-      |
-       <FINAL> { modifiers |= ModifierSet.FINAL; }
-      |
-       <ABSTRACT> { modifiers |= ModifierSet.ABSTRACT; }
-      |
-       <SYNCHRONIZED> { modifiers |= ModifierSet.SYNCHRONIZED; }
-      |
-       <NATIVE> { modifiers |= ModifierSet.NATIVE; }
-      |
-       <TRANSIENT> { modifiers |= ModifierSet.TRANSIENT; }
-      |
-       <VOLATILE> { modifiers |= ModifierSet.VOLATILE; }
-      |
-       <STRICTFP> { modifiers |= ModifierSet.STRICTFP; }
-      |
-       Annotation(true)
+   "public" { modifiers |= ModifierSet.PUBLIC; }
+  |
+   "static" { modifiers |= ModifierSet.STATIC; }
+  |
+   "protected" { modifiers |= ModifierSet.PROTECTED; }
+  |
+   "private" { modifiers |= ModifierSet.PRIVATE; }
+  |
+   "final" { modifiers |= ModifierSet.FINAL; }
+  |
+   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+  |
+   "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
+  |
+   "native" { modifiers |= ModifierSet.NATIVE; }
+  |
+   "transient" { modifiers |= ModifierSet.TRANSIENT; }
+  |
+   "volatile" { modifiers |= ModifierSet.VOLATILE; }
+  |
+   "strictfp" { modifiers |= ModifierSet.STRICTFP; }
+  |
+   Annotation(true)
   )
  )*
     }
@@ -1244,11 +1190,10 @@ void TypeDeclaration():
    int modifiers;
 }
 {
-    ";" { add(";"); writeln(); }
+    ";" { add(";"); write(); }
 |
   modifiers = Modifiers()
   (
-     LOOKAHEAD(2)
      ClassOrInterfaceDeclaration(modifiers)
    |
      EnumDeclaration(modifiers)
@@ -1261,12 +1206,10 @@ void TypeDeclaration():
 void ClassOrInterfaceDeclaration(int modifiers):
 {
    boolean isInterface = false;
-   writeln(2);
    add(ModifierSet.toString(modifiers) + " ");
 }
 {
-    [ Annotation(true) ]      // Java 8
-  ( <CLASS> { add("class "); } | <INTERFACE> { add("interface ");  isInterface = true; } )
+  ( "class" { add("class"); } | "interface" { add("interface");  isInterface = true; } )
   t=<IDENTIFIER> { add(t); }
   [ TypeParameters() ]
   [ ExtendsList(isInterface) ]
@@ -1279,7 +1222,7 @@ void ExtendsList(boolean isInterface):
    boolean extendsMoreThanOne = false;
 }
 {
-   <EXTENDS> { add("extends "); } ClassOrInterfaceType()
+   "extends" { add("extends"); } ClassOrInterfaceType()
    ( "," { add(", "); } ClassOrInterfaceType() { extendsMoreThanOne = true; } )*
    {
       if (extendsMoreThanOne && !isInterface)
@@ -1290,7 +1233,7 @@ void ExtendsList(boolean isInterface):
 void ImplementsList(boolean isInterface):
 {}
 {
-   <IMPLEMENTS> { add("implements "); } ClassOrInterfaceType()
+   "implements" { add("implements"); } ClassOrInterfaceType()
    ( "," { add(", "); } ClassOrInterfaceType() )*
    {
       if (isInterface)
@@ -1304,7 +1247,7 @@ void EnumDeclaration(int modifiers):
 }
 {
 
-  <ENUM> { add("enum "); } t=<IDENTIFIER> { add(t); }
+  "enum" { add("enum"); } t=<IDENTIFIER> { add(t); }
   [ ImplementsList(false) ]
   EnumBody()
 }
@@ -1314,15 +1257,14 @@ void EnumBody():
 {
     "{" { addStartBracket(); }
    EnumConstant() ( "," { add(", "); } EnumConstant() )*
-   [ ";" { add(";"); writeln(); } ( ClassOrInterfaceBodyDeclaration(false) )* ]
+   [ ";" { add(";"); write(); } ( ClassOrInterfaceBodyDeclaration(false) )* ]
    "}" { addEndBracket(); write(); }
 }
 
 void EnumConstant():
 {}
 {
-    [ Annotation(true) ]     // Java 8
-    t=<IDENTIFIER> { add(t); } [ Arguments() ] [ ClassOrInterfaceBody(false) ]
+  t=<IDENTIFIER> { add(t); } [ Arguments() ] [ ClassOrInterfaceBody(false) ]
 }
 
 void TypeParameters():
@@ -1340,13 +1282,13 @@ void TypeParameter():
 void TypeBound():
 {}
 {
-    <EXTENDS> { add("extends "); } ClassOrInterfaceType() ( "&" { add(" & "); } ClassOrInterfaceType() )*
+    "extends" { add("extends"); } ClassOrInterfaceType() ( "&" { add("&"); } ClassOrInterfaceType() )*
 }
 
 void ClassOrInterfaceBody(boolean isInterface):
 {}
 {
-    "{" { addStartBracket(); writeln(); incLevel(); } ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}" { addEndBracket(); decLevel(); writeln(); }
+    "{" { addStartBracket(); write(); incLevel(); } ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}" { addEndBracket(); decLevel(); write(); }
 }
 
 void ClassOrInterfaceBodyDeclaration(boolean isInterface):
@@ -1369,7 +1311,7 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
     |
       EnumDeclaration(modifiers)
     |
-      LOOKAHEAD( [ TypeParameters() ] <IDENTIFIER> "(" )   
+      LOOKAHEAD( [ TypeParameters() ] <IDENTIFIER> "(" )
       ConstructorDeclaration(modifiers)
     |
       LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
@@ -1378,7 +1320,7 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface):
       MethodDeclaration(modifiers)
   )
 |
-  ";" { add(";"); writeln(); }
+  ";" { add(";"); write(); }
 }
 
 void FieldDeclaration(int modifiers):
@@ -1387,8 +1329,7 @@ void FieldDeclaration(int modifiers):
 }
 {
   // Modifiers are already matched in the caller
-  [ LOOKAHEAD(2) Annotation(true) ]        // Java 8
-  Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* ";" { add(";"); writeln(); }
+  Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* ";" { add(";"); write(); }
 }
 
 void VariableDeclarator():
@@ -1400,12 +1341,7 @@ void VariableDeclarator():
 void VariableDeclaratorId():
 {}
 {
-    [ Annotation(false) ]        // Java 8
-    t=<IDENTIFIER> { add(t); } 
-    ( 
-        [ Annotation(false) ]    // Java 8        
-        "[" "]" { trim(); add("[] "); } 
-    )*
+  t=<IDENTIFIER> { add(t); } ( "[" "]" { trim(); add("[] "); } )*
 }
 
 void VariableInitializer():
@@ -1416,44 +1352,24 @@ void VariableInitializer():
   Expression()
 }
 
-// DONE: try to capture line separators after commas.  Long lines of array initializers
+// TODO: try to capture line separators after commas.  Long lines of array initializers
 // are often split out by hand over several lines for readability.
 void ArrayInitializer():
 {}
 {
-    "{" { addStartBracket(); } 
-    [ 
-        VariableInitializer() 
-        ( 
-            LOOKAHEAD(2) t="," 
-            { 
-                add(", ");
-                Token st = getNextSpecialToken(t);
-                if (st != null && st.kind == JavaParserConstants.LINE_ENDERS) {
-                    writeln();
-                }
-            } 
-            VariableInitializer() 
-        )* 
-    ] 
-    [ "," { add(", "); } ] 
-    "}" { addEndBracket(); write(); }
+    "{" { addStartBracket(); } [ VariableInitializer() ( LOOKAHEAD(2) "," { add(", "); } VariableInitializer() )* ] [ "," { add(", "); } ] "}" { addEndBracket(); write(); }
 }
 
 void MethodDeclaration(int modifiers):
 {
-    // TODO: make it an option for how many blank lines should be before a method
-    writeln(2);
     add(ModifierSet.toString(modifiers) + " ");
 }
 {
-    // Modifiers already matched in the caller!
-    [ LOOKAHEAD(2) Annotation(true) ]        // Java 8
-    [ TypeParameters() ]
-    ResultType()
-    [ LOOKAHEAD(2) Annotation(false) ]    // Java 8
-    MethodDeclarator() [ <THROWS> { add("throws "); } NameList() ]
-    ( Block() | ";" { add(";"); writeln(); } )
+  // Modifiers already matched in the caller!
+  [ TypeParameters() ]
+  ResultType()
+  MethodDeclarator() [ "throws" { add("throws"); } NameList() ]
+  ( Block() | ";" { add(";"); write(); } )
 }
 
 void MethodDeclarator():
@@ -1467,28 +1383,13 @@ void FormalParameters():
     boolean added = false;
 }
 {
-    "(" { trimWhitespace(); trim(); add("( "); } 
-    [ 
-        FormalParameter() { added = true; } 
-        ( 
-            "," { add(", "); } 
-            FormalParameter() 
-        )* 
-    ] 
-    ")" { if (!added) trim(); add(" )"); }
+    "(" { trimWhitespace(); trim(); add("( "); } [ [Annotation(false)] FormalParameter() { added = true; } ( "," { add(", "); } [Annotation(false)] FormalParameter() )* ] ")" { if (!added) trim(); add(" )"); }
 }
 
 void FormalParameter():
 {}
 {
-    [ Annotation(false) ]
-    [ <FINAL> { add("final "); } ] 
-    Type() 
-    [ LOOKAHEAD(2) Annotation(false) ]     // Java 8
-    [ 
-        "..." { trim(); add("... "); } 
-    ] 
-    VariableDeclaratorId()
+  [ "final" { add("final "); } ] Type() [ "..." { trim(); add("..."); } ] VariableDeclaratorId()
 }
 
 void ConstructorDeclaration(int modifiers):
@@ -1496,11 +1397,9 @@ void ConstructorDeclaration(int modifiers):
     add(ModifierSet.toString(modifiers) + " ");
 }
 {
-    [ LOOKAHEAD(2) Annotation(false) ]     // Java 8
   [ TypeParameters() ]
-  t=<IDENTIFIER> { add(t); } FormalParameters() [ <THROWS> { add("throws "); } NameList() ]
+  t=<IDENTIFIER> { add(t); } FormalParameters() [ "throws" { add("throws"); } NameList() ]
   "{" { addStartBracket(); write(); incLevel();}
-    // TODO: change lookahead to a number to avoid consuming too many tokens
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
     ( BlockStatement() )*
   "}" { addEndBracket(); decLevel(); write(); }
@@ -1509,16 +1408,16 @@ void ConstructorDeclaration(int modifiers):
 void ExplicitConstructorInvocation():
 {}
 {
-  LOOKAHEAD(<THIS> Arguments() ";")
-  <THIS> { add("this"); } Arguments() ";" { add(";"); writeln(); }
+  LOOKAHEAD("this" Arguments() ";")
+  "this" { add("this"); } Arguments() ";" { add(";"); write(); }
 |
-  [ LOOKAHEAD(2) PrimaryExpression() "." ] <SUPER> { add("super"); } Arguments() ";" { add(";"); writeln(); }
+  [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" { add("super"); } Arguments() ";" { add(";"); write(); }
 }
 
 void Initializer():
 {}
 {
-  [ <STATIC> { add("static "); }] Block()
+  [ "static" { add("static "); }] Block()
 }
 
 
@@ -1545,17 +1444,15 @@ void ReferenceType():
 void ClassOrInterfaceType():
 {}
 {
-    [ Annotation(true) ]    // Java 8
-    t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2)  TypeArguments() ]
-    ( LOOKAHEAD(2) "." { trim(); add("."); } [ Annotation(false) ] t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2) TypeArguments() ] )*
+  t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2)  TypeArguments() ]
+  ( LOOKAHEAD(2) "." { trim(); add("."); } t=<IDENTIFIER> { add(t + " "); } [ LOOKAHEAD(2) TypeArguments() ] )*
 }
 
 void TypeArguments():
 {}
 {
     (
-        // Java 7 allows <>
-        <DIAMOND> { trim(); add("<>"); }
+        "<>" { trim(); add("<>"); }
     )
     |
     (
@@ -1574,33 +1471,32 @@ void TypeArgument():
 void WildcardBounds():
 {}
 {
-   <EXTENDS> { add("extends "); } ReferenceType()
+   "extends" { add("extends "); } ReferenceType()
  |
-   <SUPER> { add("super "); } ReferenceType()
+   "super" { add("super "); } ReferenceType()
 }
 
 
 void PrimitiveType():
 {}
 {
-    [ Annotation(false) ]    // Java 8
     (
-          t=<BOOLEAN>
-        |
-          t=<CHAR>
-        |
-          t=<BYTE>
-        |
-          t=<SHORT>
-        |
-          t=<INT>
-        |
-          t=<LONG>
-        |
-          t=<FLOAT>
-        |
-          t=<DOUBLE>
-    )
+  t="boolean"
+|
+  t="char"
+|
+  t="byte"
+|
+  t="short"
+|
+  t="int"
+|
+  t="long"
+|
+  t="float"
+|
+  t="double"
+  )
     {
         add(t + " ");
     }
@@ -1609,7 +1505,7 @@ void PrimitiveType():
 void ResultType():
 {}
 {
-  <VOID> { add("void "); }
+  "void" { add("void"); }
 |
   Type()
 }
@@ -1649,58 +1545,11 @@ void Expression():
  */
 {}
 {
+  ConditionalExpression()
+  [
     LOOKAHEAD(2)
-    LambdaExpression()      // Java 8
-    |
-    ConditionalExpression()
-    [
-        LOOKAHEAD(2)
-        AssignmentOperator() Expression()
-    ]
-}
-
-// Java 8
-void LambdaExpression():
-{
-}
-{
-    LambdaParameters() <POINTER> { add(" -> "); } LambdaBody()
-}
-
-// Java 8
-void LambdaParameters():
-{
-}
-{
-    t=<IDENTIFIER> { add(t); } 
-    |
-    LOOKAHEAD(2) 
-    <LPAREN> { add("("); } [FormalParameters()] <RPAREN> { add(")"); }
-    |
-    LOOKAHEAD(2) 
-    <LPAREN> { add("("); } InferredFormalParameterList() <RPAREN> { add(")"); }
-}
-
-// Java 8
-void InferredFormalParameterList():
-{
-}
-{
-    t=<IDENTIFIER> { add(t); }
-    (
-        <COMMA> { add(", "); } 
-        t=<IDENTIFIER> { add(t); }
-    )*
-}
-
-// Java 8
-void LambdaBody():
-{
-}
-{
-    Expression()
-    |
-    Block() 
+    AssignmentOperator() Expression()
+  ]
 }
 
 void AssignmentOperator():
@@ -1755,7 +1604,7 @@ void EqualityExpression():
 void InstanceOfExpression():
 {}
 {
-  RelationalExpression() [ <INSTANCEOF> { add(" instanceof "); } Type() ]
+  RelationalExpression() [ "instanceof" { add(" instanceof "); } Type() ]
 }
 
 void RelationalExpression():
@@ -1785,24 +1634,10 @@ void MultiplicativeExpression():
 void UnaryExpression():
 {}
 {
-    // DONE: need to check for line separator following "+" and preserve it.
+    // TODO: need to check for line separator following "+" and preserve it.
     // It is fairly common to break long strings into several lines concatenated
     // with +.  It's not good form, I know, but it is still done.
-  ( t="+" 
-    { 
-        add(" +");
-        Token st = getNextSpecialToken(t);
-        if (st != null && st.kind == JavaParserConstants.LINE_ENDERS) {
-            writeln();
-        }
-    } 
-    | 
-    "-" 
-    { 
-        add(" -"); 
-    } 
-  ) 
-  UnaryExpression()
+  ( "+" { add(" +"); } | "-" { add(" -"); } ) UnaryExpression()
 |
   PreIncrementExpression()
 |
@@ -1846,7 +1681,7 @@ void CastLookahead():
   LOOKAHEAD("(" Type() "[")
   "("  Type() "[" "]" { trim(); add("[] "); }
 |
-  "("  Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | <THIS> | <SUPER> | <NEW> | Literal() )
+  "("  Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
 }
 
 void PostfixExpression():
@@ -1881,23 +1716,23 @@ void PrimaryPrefix():
 {
   Literal()
 |
-  <THIS> { add("this"); }
+  "this" { add("this"); }
 |
-  <SUPER> "." { add("super."); } t=<IDENTIFIER> { add(t); }
+  "super" "." { add("super."); } t=<IDENTIFIER> { add(t); }
 |
   LOOKAHEAD( ClassOrInterfaceType() "." <IDENTIFIER> )
   ClassOrInterfaceType() "." { trimWhitespace(); add("."); } t=<IDENTIFIER> { add(t); }
 |
   // fix for 1561502
-  LOOKAHEAD( ClassOrInterfaceType() "." <SUPER> "." <IDENTIFIER> )
-  ClassOrInterfaceType()"." <SUPER> "." { trimWhitespace(); add(".super."); } t=<IDENTIFIER> { add(t); }
+  LOOKAHEAD( ClassOrInterfaceType() "." "super" "." <IDENTIFIER> )
+  ClassOrInterfaceType()"." "super" "." { trimWhitespace(); add(".super."); } t=<IDENTIFIER> { add(t); }
 |
   "(" { add("( "); } Expression() ")" { add(" )"); }
 |
   AllocationExpression()
 |
-  LOOKAHEAD( ResultType() "." <CLASS> )
-  ResultType() "." <CLASS> { trim(); add(".class"); }
+  LOOKAHEAD( ResultType() "." "class" )
+  ResultType() "." "class" { trim(); add(".class"); }
 |
   Name()
 }
@@ -1906,7 +1741,7 @@ void PrimarySuffix():
 {}
 {
   LOOKAHEAD(2)
-  "." <THIS> { add(".this"); }
+  "." "this" { add(".this"); }
 |
   LOOKAHEAD(2)
   "." { add("."); } AllocationExpression()
@@ -1940,15 +1775,15 @@ void Literal():
 void BooleanLiteral():
 {}
 {
-  <TRUE> { add("true"); }
+  "true" { add("true"); }
 |
-  <FALSE> { add("false"); }
+  "false" { add("false"); }
 }
 
 void NullLiteral():
 {}
 {
-  <NULL> { add("null"); }
+  "null" { add("null"); }
 }
 
 void Arguments():
@@ -1969,9 +1804,9 @@ void AllocationExpression():
 {}
 {
   LOOKAHEAD(2)
-  <NEW> { add("new "); } PrimitiveType() ArrayDimsAndInits()
+  "new" { add("new "); } PrimitiveType() ArrayDimsAndInits()
 |
-  <NEW> { add("new "); } ClassOrInterfaceType() [ TypeArguments() ]
+  "new" { add("new "); } ClassOrInterfaceType() [ TypeArguments() ]
     (
       ArrayDimsAndInits()
     |
@@ -2008,7 +1843,7 @@ void Statement():
 |
   EmptyStatement()
 |
-  StatementExpression() ";" { add(";"); writeln(); }
+  StatementExpression() ";" { add(";"); write(); }
 |
   SwitchStatement()
 |
@@ -2037,7 +1872,7 @@ void Statement():
 void AssertStatement():
 {}
 {
-    <ASSERT> { add("assert "); } Expression() [ ":" { add(":"); } Expression() ] ";" { add(";"); writeln(); }
+    "assert" { add("assert"); } Expression() [ ":" { add(":"); } Expression() ] ";" { add(";"); write(); }
 }
 
 void LabeledStatement():
@@ -2050,40 +1885,28 @@ void Block():
 {
 }
 {
-    "{" { trimWhitespace(); addStartBracket(); writeln(); incLevel(); }
+    "{" { trimWhitespace(); addStartBracket(); write(); incLevel(); }
         ( BlockStatement() )*
-    "}" { addEndBracket(); decLevel(); writeln(); }    // TODO: don't always want to do this, for example with an anonymous inner class
+    "}" { addEndBracket(); decLevel(); write(); }    // TODO: don't always want to do this, for example with an anonymous inner class
 }
 
 void BlockStatement():
 {}
 {
-    [LOOKAHEAD(2) Annotation(false) ]
-    (
-        LOOKAHEAD([ <FINAL> ] Type() <IDENTIFIER>)
-        LocalVariableDeclaration() ";" { add(";"); writeln(); }
-        |
-        LOOKAHEAD(3)
-        Statement()
-        |
-        ClassOrInterfaceDeclaration(0)
-    )
+  LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
+  LocalVariableDeclaration() ";" { add(";"); write(); }
+|
+  Statement()
+|
+  Annotation(false)
+|
+  ClassOrInterfaceDeclaration(0)
 }
 
 void LocalVariableDeclaration():
+{}
 {
-    int m = 0;
-}
-{
-  // old: [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* 
-  [LOOKAHEAD(2) Annotation(false)] 
-  m = Modifiers() {add(ModifierSet.toString(m) + " ");} 
-  Type() 
-  VariableDeclarator() 
-  ( 
-      "," { add(", "); } 
-      VariableDeclarator() 
-  )* 
+  [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )* 
 }
 
 void EmptyStatement():
@@ -2092,7 +1915,7 @@ void EmptyStatement():
   ";" 
   {
       // add(token_source.ls); add(token_source.ls);  write(); add(";"); write();
-      add(";" + lineSep);
+      add(";");
       write();
   }
 }
@@ -2122,7 +1945,7 @@ void StatementExpression():
 void SwitchStatement():
 {}
 {
-    <SWITCH> "(" { add("switch ( "); } Expression() ")" "{" { add(" ) "); addStartBracket(); write(); incLevel(); }
+    "switch" "(" { add("switch ( "); } Expression() ")" "{" { add(" ) "); addStartBracket(); write(); incLevel(); }
         ( SwitchLabel() { incLevel();} ( BlockStatement() )* { decLevel();} )*
     "}" { addEndBracket(); decLevel(); write(); }
 }
@@ -2130,9 +1953,9 @@ void SwitchStatement():
 void SwitchLabel():
 {}
 {
-<CASE> { add("case "); } Expression() ":" { add(":"); write(); }
+"case" { add("case "); } Expression() ":" { add(":"); write(); }
 |
-<_DEFAULT> ":" { add("default:"); write(); }
+"default" ":" { add("default:"); write(); }
 }
 
 void IfStatement():
@@ -2146,7 +1969,7 @@ void IfStatement():
     Token t;
 }
 {
-    <IF> "("
+    "if" "("
     {
         add("if ( ");
     }
@@ -2177,7 +2000,10 @@ void IfStatement():
     }
 
     [
-        LOOKAHEAD(1) t=<ELSE>
+        LOOKAHEAD(1) t="else"
+        // DONE: need to check for comment preceding the 'else', otherwise the
+        // 'else' gets appended to the end of the comment, which in the case of
+        // an END_OF_LINE_COMMENT is very bad.
         { 
             Token st = t.specialToken;
             Token ct = null;    // comment token
@@ -2190,6 +2016,12 @@ void IfStatement():
                     case JavaParserConstants.TABS:
                         st = st.specialToken;
                         continue;
+                    // check for comment
+                    case JavaParserConstants.END_OF_LINE_COMMENT:
+                    case JavaParserConstants.JAVADOC_COMMENT:
+                    case JavaParserConstants.BLOCK_COMMENT:
+                        ct = st;
+                        break;
                     default:
                         continue;
                 }
@@ -2238,7 +2070,7 @@ void WhileStatement():
     boolean no_block = false;
 }
 {
-    <WHILE> "(" { add("while ( "); } Expression() ")" { add(" )"); }
+    "while" "(" { add("while ( "); } Expression() ")" { add(" )"); }
     {
         // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
@@ -2264,13 +2096,13 @@ void WhileStatement():
 void DoStatement():
 {}
 {
-    <DO> 
+    "do" 
     { 
         add("do "); 
     } 
     Statement() 
     
-    <WHILE> "(" 
+    "while" "(" 
     { 
         trimWhitespace(); 
         if (breakElse) {
@@ -2286,7 +2118,7 @@ void DoStatement():
     Expression() 
     ")" ";" 
     { 
-        add(" );" + lineSep); 
+        add(" );"); 
         write(); 
     }
 }
@@ -2296,12 +2128,12 @@ void ForStatement():
     boolean no_block = false;
 }
 {
-  <FOR> "(" { add("for ( "); }
+  "for" "(" { add("for ( "); }
 
   (
       // DONE: allow optional "final" here, as in for(final myType : myList)
-      LOOKAHEAD([Annotation(false)][<FINAL>] Type() <IDENTIFIER> ":")
-      [LOOKAHEAD(2) Annotation(false)][ <FINAL> { add("final "); }] Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
+      LOOKAHEAD([ "final" ] Type() <IDENTIFIER> ":")
+      [ "final" { add("final "); }] Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
     |
     [ ForInit() ] ";" { add("; "); } [ Expression() ] ";" { add("; "); } [ ForUpdate() ]
   )
@@ -2332,7 +2164,7 @@ void ForStatement():
 void ForInit():
 {}
 {
-  LOOKAHEAD( [ <FINAL> ] Type() <IDENTIFIER> )
+  LOOKAHEAD( [ "final" ] Type() <IDENTIFIER> )
   LocalVariableDeclaration()
 |
   StatementExpressionList()
@@ -2353,31 +2185,31 @@ void ForUpdate():
 void BreakStatement():
 {}
 {
-  <BREAK> { add("break"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); writeln(); }
+  "break" { add("break"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); write(); }
 }
 
 void ContinueStatement():
 {}
 {
-  <CONTINUE> { add("continue"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); writeln(); }
+  "continue" { add("continue"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); write(); }
 }
 
 void ReturnStatement():
 {}
 {
-  <RETURN> { add("return "); } [ Expression() ] ";" { trim(); add(";"); writeln(); }
+  "return" { add("return "); } [ Expression() ] ";" { trim(); add(";"); write(); }
 }
 
 void ThrowStatement():
 {}
 {
-  <THROW> { add("throw"); } Expression() ";" { add(";"); writeln(); }
+  "throw" { add("throw"); } Expression() ";" { add(";"); write(); }
 }
 
 void SynchronizedStatement():
 {}
 {
-  <SYNCHRONIZED> "(" { add("synchronized ( "); } Expression() ")" { add(" )"); } Block()
+  "synchronized" "(" { add("synchronized ( "); } Expression() ")" { add(" )"); } Block()
 }
 
 void TryStatement():
@@ -2389,7 +2221,7 @@ void TryStatement():
     Token st;
 }
 {
-  <TRY> 
+  "try" 
   { 
     add("try "); 
   } 
@@ -2413,8 +2245,10 @@ void TryStatement():
   
   Block()
   
-  ( <CATCH> "(" 
+  ( "catch" "(" 
       { 
+          // DONE: check for comment preceding the 'catch'. See 'else' for how
+          // to handle this. Don't forget to deal with 'finally' also.
             st = t.specialToken;
             Token ct = null;    // comment token
             while (st != null && ct == null) {
@@ -2426,6 +2260,12 @@ void TryStatement():
                     case JavaParserConstants.TABS:
                         st = st.specialToken;
                         continue;
+                    // check for comment
+                    case JavaParserConstants.END_OF_LINE_COMMENT:
+                    case JavaParserConstants.JAVADOC_COMMENT:
+                    case JavaParserConstants.BLOCK_COMMENT:
+                        ct = st;
+                        break;
                     default:
                         continue;
                 }
@@ -2451,7 +2291,7 @@ void TryStatement():
       ")" { add(" ) "); } Block() )*
       
   [ 
-    <FINALLY> 
+    "finally" 
         { 
             st = t.specialToken;
             Token ct = null;    // comment token
@@ -2465,13 +2305,11 @@ void TryStatement():
                         st = st.specialToken;
                         continue;
                     // check for comment
-                    /*
                     case JavaParserConstants.END_OF_LINE_COMMENT:
                     case JavaParserConstants.JAVADOC_COMMENT:
                     case JavaParserConstants.BLOCK_COMMENT:
                         ct = st;
                         break;
-                    */
                     default:
                         continue;
                 }
@@ -2516,66 +2354,53 @@ void RSIGNEDSHIFT():
 /* Annotation syntax follows. */
 
 void Annotation(boolean addLineBreak):
+{}
 {
-}
-{
-    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-    NormalAnnotation(addLineBreak)
-    |
-    LOOKAHEAD( "@" Name() "(" )
-    SingleMemberAnnotation(addLineBreak) 
-    |
-    MarkerAnnotation(addLineBreak)
+   LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
+   NormalAnnotation()
+ |
+   LOOKAHEAD( "@" Name() "(" )
+   SingleMemberAnnotation(addLineBreak) 
+ |
+   MarkerAnnotation(addLineBreak) 
 }
 
-void NormalAnnotation(boolean addLineBreak):
+void NormalAnnotation():
+{}
 {
-}
-{
-   "@" { if (addLineBreak){ writeln();} add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" 
-   
-    { 
-        trimWhitespace(); 
-        trim(); 
-        add(" )");
-        if (addLineBreak)
-            writeln();
-        else
-            write();
-    }
+   "@" { add("@"); } Name() "(" { add("( "); } [ MemberValuePairs() ] ")" 
+   { 
+       trimWhitespace(); 
+       trim(); 
+       add(" )"); 
+       write();
+   }
 }
 
 void MarkerAnnotation(boolean addLineBreak):
+{}
 {
-}
-{
-    "@" 
-    { 
-        if (addLineBreak) { 
-            token_source.trimNL(); 
-            writeln(); 
-        }
-        add("@"); 
-    } 
-    Name() 
+    "@" { token_source.trimNL(); add("@"); } Name() 
     {
+        write();
         if (addLineBreak)
-            writeln();
-        else
-            write();
+        {
+            writeln();   
+        }
     }
 }
 
 void SingleMemberAnnotation(boolean addLineBreak):
+{}
 {
-}
-{
-  "@" { if (addLineBreak) writeln(); add("@"); } Name() "(" { add("( "); } MemberValue() ")" {add(")");}
+  "@" { add("@"); } Name() "(" { add("( "); } MemberValue() ")" 
   { 
-        if (addLineBreak)
-            writeln();
-        else
-            write();
+      add(" )"); 
+      write();
+      if (addLineBreak)
+      {
+          writeln();
+      }
   }
 }
 
@@ -2615,7 +2440,7 @@ void AnnotationTypeDeclaration(int modifiers):
     add(ModifierSet.toString(modifiers) + " ");
 }
 {
-  "@" <INTERFACE> { add("@interface"); } t=<IDENTIFIER> { add(t); } AnnotationTypeBody()
+  "@" "interface" { add("@interface"); } t=<IDENTIFIER> { add(t); } AnnotationTypeBody()
 }
 
 void AnnotationTypeBody():
@@ -2632,24 +2457,22 @@ void AnnotationTypeMemberDeclaration():
  modifiers = Modifiers()
  (
    LOOKAHEAD(Type() <IDENTIFIER> "(")
-   Type() t=<IDENTIFIER> { add(t); } "(" ")" { add("()"); } [ DefaultValue() ] ";" { add(";"); writeln(); }
+   Type() t=<IDENTIFIER> { add(t); } "(" ")" { add("()"); } [ DefaultValue() ] ";" { add(";"); write(); }
   |
-   LOOKAHEAD(3)
    ClassOrInterfaceDeclaration(modifiers)
   |
    EnumDeclaration(modifiers)
   |
-   LOOKAHEAD(2)
    AnnotationTypeDeclaration(modifiers)
   |
    FieldDeclaration(modifiers)
  )
  |
-   ( ";" { add(";"); writeln(); } )
+   ( ";" { add(";"); write(); } )
 }
 
 void DefaultValue():
 {}
 {
-  <_DEFAULT> { add("default"); } MemberValue()
+  "default" { add("default"); } MemberValue()
 }
