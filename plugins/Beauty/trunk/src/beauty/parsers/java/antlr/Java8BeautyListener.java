@@ -4,11 +4,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-import java.util.Deque;
-import java.util.ArrayDeque;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * This class provides an empty implementation of {@link Java8Listener},
@@ -47,6 +43,16 @@ public class Java8BeautyListener implements Java8Listener {
     private boolean brokenBracket = false;
     private boolean breakElse = true;
     private boolean padParens = false;
+    private int blankLinesBeforePackage = 0;            
+    private int blankLinesAfterPackage = 1;             
+    private int blankLinesAfterImports = 2;             
+    private boolean sortImports = true;                 
+    private boolean groupImports = true;                
+    private int blankLinesBetweenImportGroups = 1;      
+    private int blankLinesAfterClassDeclaration = 1;    
+    private int blankLinesBeforeMethods = 1;            
+    private boolean sortModifiers = true;               
+    private int collapseMultipleBlankLinesTo = 1;       // TODO: finish this
     
     /**
      * @param initialSize Initial size of the output buffer.
@@ -97,6 +103,47 @@ Formatting settings
     public void setPadParens(boolean pad) {
         padParens = pad; 
     }
+    
+    public void setBlankLinesBeforePackage(int lines) {
+        blankLinesBeforePackage = lines;    
+    }
+    
+    public void setBlankLinesAfterPackage(int lines) {
+        blankLinesAfterPackage = lines;
+    }
+    
+    public void setBlankLinesAfterImports(int lines) {
+        blankLinesAfterImports = lines;
+    }
+
+    public void setSortImports(boolean sort) {
+        sortImports = sort;
+    }
+    
+    public void setGroupImports(boolean group) {
+        groupImports = group;
+    }
+    
+    public void setBlankLinesBetweenImportGroups(int lines) {
+        blankLinesBetweenImportGroups = lines;
+    }
+    
+    public void setBlankLinesAfterClassDeclaration(int lines) {
+        blankLinesAfterClassDeclaration = lines;
+    }
+    
+    public void setBlankLinesBeforeMethods(int lines) {
+        blankLinesBeforeMethods = lines;
+    }
+    
+    public void setSortModifiers(boolean sort) {
+        sortModifiers = sort;
+    }
+    
+    public void setCollapseMultipleBlankLinesTo(int lines) {
+        collapseMultipleBlankLinesTo = lines;        
+    }
+    
 //}}}    
 /*
 --------------------------------------------------------------------------------
@@ -164,8 +211,10 @@ Formatting methods.
     /**
      * Add blank lines to the end of the last item on the stack.  Note that all
      * blank lines are first removed then exactly <code>howMany</code> are added.
+     * @return true if blank lines were added to the last item on the stack, false
+     * if there were no items on the stack.
      */
-    private void addBlankLines(int howMany) {
+    private boolean addBlankLines(int howMany) {
         if (!stack.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < howMany + 1; i++) {
@@ -178,7 +227,9 @@ Formatting methods.
                 last += '\n';    
             }
             stack.push(last);
+            return true;
         }
+        return false;
     }
     
     /**
@@ -212,6 +263,17 @@ Formatting methods.
                     sb.deleteCharAt(sb.length() - 1);
                 }
                 break;
+        }
+        return sb.toString();
+    }
+    
+    /**
+     * @return A string with the appropriate amount of blank lines.    
+     */
+    private String getBlankLines(int howMany) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < howMany; i++) {
+            sb.append('\n');    
         }
         return sb.toString();
     }
@@ -607,6 +669,9 @@ Formatting methods.
 	    // gather the modifiers into a list, then reverse the list so they are
 	    // in the right order
 	    List<String> modifiers = reverse(howMany);
+	    if (sortModifiers) {
+	        Collections.sort(modifiers, modifierComparator);    
+	    }
         
         // modifiers shouldn't be on multiple lines, but comments preceding the
         // modifier may already be attached and can have multiple lines.
@@ -648,6 +713,110 @@ Formatting methods.
 	    }
 	    return sb.toString();
 	}
+	
+	private static Comparator<String> modifierComparator = new Comparator<String>() {
+	    // From Java 8 language specification: "If two or more (distinct) class modifiers appear in a class declaration, 
+	    // then it is customary, though not required, that they appear in the order 
+	    // consistent with that shown above in the production for ClassModifier."
+	    // This list contains all possible modifiers in the correct order. Not all
+	    // modifiers are allowed for all constructs, but this method does not check
+	    // for illegal modifiers. The parser should flag an error in those cases.
+        private String modifiers = "public protected private abstract static final synchronized native strictfp transient volatile";
+        
+        @Override
+	    public int compare(String a, String b) {
+	        String a_ = a.trim();
+	        String b_ = b.trim();
+	        
+	        // comments may be included in the choices
+	        if (a_.startsWith("/") || a_.startsWith("*")) {
+	            return -1;    
+	        }
+	        if (b_.startsWith("/") || b_.startsWith("*")) {
+	            return 1;    
+	        }
+	        
+	        // annotations may be included in the choices
+	        if (a_.startsWith("@")) {
+	            return -1;   
+	        }
+	        if (b_.startsWith("@")) {
+	            return 1;   
+	        }
+	        
+	        return modifiers.indexOf(a_) - modifiers.indexOf(b_);
+	    }
+	};
+	
+	private String sortAndGroupImports(String imports) {
+	    if (sortImports == false && groupImports == false) {
+	        return imports;    
+	    }
+	    
+	    // sort imports
+	    ArrayList<String> importList = new ArrayList<String>();
+	    importList.addAll(Arrays.asList(imports.split("\n")));
+	    if (sortImports || groupImports) {
+	        // grouping imports requires sorting them first
+	        Collections.sort(importList, importComparator);            
+	    }
+	    for (int i = 0; i < importList.size(); i++) {
+	        importList.set(i, importList.get(i) + '\n');
+	    }
+	    
+	    // group imports
+	    if (groupImports) {
+	        String blankLines = getBlankLines(blankLinesBetweenImportGroups);
+            List<String> groups = new ArrayList<String>();
+            for (int i = 0; i < importList.size(); i++) {
+                String imp = importList.get(i);
+                if (i == 0) {
+                    groups.add(imp);
+                    continue;
+                }
+                String a = importList.get(i - 1);
+                String b = importList.get(i);
+                if (a.trim().length() > 0) {
+                    // remove 'import' and 'static'
+                    a = a.trim().replaceAll("\t", " ").substring(a.lastIndexOf(" "));
+                    if (a.indexOf(".") > -1) {
+                        a = a.substring(0, a.indexOf("."));    
+                    }
+                }
+                if (b.trim().length() > 0) {
+                    b = b.trim().replaceAll("\t", " ").substring(b.lastIndexOf(" "));
+                    if (b.indexOf(".") > -1) {
+                        b = b.substring(0, b.indexOf("."));    
+                    }
+                }
+                if (!a.equals(b)) {
+                    groups.add(blankLines);
+                }
+                groups.add(imp);
+            }
+            importList.clear();
+            importList.addAll(groups);
+	    }
+	    
+	    StringBuilder sb = new StringBuilder();
+	    for (String imp : importList) {
+	        sb.append(imp);    
+	    }
+	    
+	    return sb.toString();
+	}
+	
+	private static Comparator<String> importComparator = new Comparator<String>() {
+        
+        @Override
+	    public int compare(String a, String b) {
+	        String a_ = a.trim().replaceAll("\t", " ").substring(a.lastIndexOf(" "));
+	        String b_ = b.trim().replaceAll("\t", " ").substring(b.lastIndexOf(" "));
+	        return a_.compareTo(b_);
+	    }
+	};
+	
+	
 //}}}    
     
 /*
@@ -745,7 +914,7 @@ Parser methods follow.
 	    String identifier = stack.pop();
 	    String type = stack.pop();
 	    if (ctx.annotationTypeElementModifier() != null) {
-	        sb.append(reverse(ctx.annotationTypeElementModifier().size(), " ")).append(' ');
+	        sb.append(formatModifiers(ctx.annotationTypeElementModifier().size()));
 	    }
 	    sb.append(type).append(' ').append(identifier).append(lparen).append(rparen);
 	    if (!dims.isEmpty()) {
@@ -1654,14 +1823,11 @@ Parser methods follow.
 	    if (modifiers.isEmpty()) {
 	        indent(sb);    
 	    } else {
-	        modifiers += ' ';   
+	        modifiers = removeBlankLines(modifiers, START);  
 	    }
 	    sb.append(modifiers).append(cd).append(' ').append(throws_).append(body);
-	    String previous = stack.peek();
-	    if (previous != null && !previous.endsWith("\n")) {
-	        sb.insert(0, "\n");    
-	    }
-	    stack.push(sb.toString());
+        addBlankLines(blankLinesBeforeMethods);
+        stack.push(sb.toString());
 	}
 
 	@Override public void enterPrimaryNoNewArray_lfno_arrayAccess(@NotNull Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx) { 
@@ -1777,8 +1943,12 @@ Parser methods follow.
 	    }
 	    if (sb.length() == 0) {
 	        indent(sb);   
+	    } 
+	    else {
+	        trimEnd(sb);
+	        sb.append(' ');
 	    }
-	    trimEnd(sb);
+	    
         stack.push(sb.toString());
 	}
 	@Override public void enterConstructorModifier(@NotNull Java8Parser.ConstructorModifierContext ctx) {
@@ -2040,8 +2210,18 @@ Parser methods follow.
         String identifier = stack.pop();
         String classNode = stack.pop();
         String modifiers = stack.pop();
+        String previous = stack.peek();
+        String blankLinesBefore = getBlankLines(blankLinesBeforeMethods);
+        if (previous != null && !previous.endsWith(blankLinesBefore) && !previous.startsWith("import")) {
+            previous = stack.pop();
+            previous = removeBlankLines(previous, END) + blankLinesBefore;
+            stack.push(previous);
+        } 
+        else {
+            sb.append(blankLinesBefore);    
+        }
         modifiers += modifiers.isEmpty() ? "" : " ";
-        addBlankLines(1);
+        addBlankLines(blankLinesAfterClassDeclaration);
         sb.append(modifiers).append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
         stack.push(sb.toString());
 	}
@@ -2100,10 +2280,10 @@ Parser methods follow.
 	    String body = stack.pop();
 	    String identifier = stack.pop();
 	    String interface_ = stack.pop();
-	    String at = stack.pop();
+	    String at = stack.pop();                                                      
 	    String ifm = "";
 	    if (ctx.interfaceModifier() != null && ctx.interfaceModifier().size() > 0) {
-	        ifm = reverse(ctx.interfaceModifier().size(), " ") + ' ';
+	        ifm = formatModifiers(ctx.interfaceModifier().size());
 	        ifm = removeBlankLines(ifm, START);
 	    }
 	    addBlankLines(1);
@@ -2129,12 +2309,13 @@ Parser methods follow.
 	    String importDeclarations = "";
 	    if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
 	        importDeclarations = reverse(ctx.importDeclaration().size(), "");
-	        importDeclarations = removeBlankLines(importDeclarations, BOTH) + "\n\n";
+	        importDeclarations = sortAndGroupImports(importDeclarations);
+	        importDeclarations = removeBlankLines(importDeclarations, BOTH) + getBlankLines(blankLinesAfterImports + 1);
 	    }
 	    String packageDeclaration = "";
 	    if (ctx.packageDeclaration() != null) {
 	        packageDeclaration = stack.pop();
-	        packageDeclaration = removeBlankLines(packageDeclaration, BOTH) + "\n\n";
+	        packageDeclaration = getBlankLines(blankLinesBeforePackage) + removeBlankLines(packageDeclaration, BOTH) + getBlankLines(blankLinesAfterPackage);
 	    }
 	    
         output.append(packageDeclaration);
@@ -2221,7 +2402,7 @@ Parser methods follow.
 	    String typeBound = ctx.typeBound() == null ? "" : stack.pop();
 	    String identifier = stack.pop();
 	    if (ctx.typeParameterModifier() != null) {
-	        sb.append(reverse(ctx.typeParameterModifier().size(), " ")).append(' ');
+	        sb.append(formatModifiers(ctx.typeParameterModifier().size()));
 	    }
 	    sb.append(identifier);
 	    if (!typeBound.isEmpty()) {
@@ -2245,7 +2426,7 @@ Parser methods follow.
 	        modifiers = removeBlankLines(modifiers, START);    
 	    }
 	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
-	    addBlankLines(1);
+	    addBlankLines(blankLinesBeforeMethods);
 	    stack.push(sb.toString());
 	}
 
@@ -2765,7 +2946,7 @@ Parser methods follow.
 	    }
 	    String package_ = stack.pop();
 	    if (ctx.packageModifier() != null && !ctx.packageModifier().isEmpty()) {
-	        sb.append(reverse(ctx.packageModifier().size(), " ")).append(' ');
+	        sb.append(formatModifiers(ctx.packageModifier().size()));
 	    }
 	    sb.append(package_).append(' ').append(identifiers).append(semi);
 	    stack.push(sb.toString());
@@ -4531,7 +4712,7 @@ Parser methods follow.
 	    String methodBody = stack.pop();
 	    String methodHeader = stack.pop();
 	    if (ctx.interfaceMethodModifier() != null) {
-	        sb.append(reverse(ctx.interfaceMethodModifier().size(), " ")).append(' ');
+	        sb.append(formatModifiers(ctx.interfaceMethodModifier().size()));
 	    }
 	    sb.append(methodHeader).append(methodBody);
 	    stack.push(sb.toString());
