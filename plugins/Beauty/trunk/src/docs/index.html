@@ -1,4 +1,3 @@
-<DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">
 <html>
    <head>
       <title>
@@ -33,11 +32,11 @@
       There are several beautifiers/formatters included:
       <ul>
          <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file. Delegates to the included custom java beautifier to format java scriptlet blocks within an HTML file.  This does a pretty good job on JSP files, although it will choke on a few things, like EL code within style or script blocks.</li>
-         <li>JSP: this is new for Beauty 0.5 and takes care of the shortcomings of the HTML beautifier for JSP files.  This beautifier handles cleaning up jsp files, including script and style blocks and will even beautify java code withing scriptlet blocks.
+         <li>JSP: this is new for Beauty 0.5 and takes care of the shortcomings of the HTML beautifier for JSP files.  This beautifier handles cleaning up jsp files, including script and style blocks and will even beautify java code within scriptlet blocks.
          <li>CSS: works very well.  The JSP beautifier delegates to this beautifier to clean up style blocks within JSP files.</li>
          <li>Java: works very well, supports Java 1.5 through 1.7. Formats closely to Sun's formatting standard, with a few options available in the plugin settings.</li>
-         <li>Java8: works very well, supports Java 1.5 through 18. Like the Java formatter, formats closely to Sun's formatting standard, with the same options available in the plugin settings.
-         <strong>This parser is quite a bit slower than the original Java parser!</strong>
+         <li>Java8: works very well, supports all Java versions through 1.8. Like the Java formatter, formats closely to Sun's formatting standard, with the same options and some additional options available in the plugin settings.
+         <strong>This parser is quite a bit slower than the original Java parser!</strong> but for most Java files, you probably won't see a significant difference. You will definitely see it on large files. 
          </li> 
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
          <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
@@ -111,15 +110,17 @@
       <p>
       Similarly, this beautifier delegates to the custom beautifiers for java and javascript blocks within a JSP file, so you can make adjustments via the custom beautifier dialog in the plugin options.
       <p>
-      Just to clarify the Java beautifiers:  Assuming you have the AStyle plugin installed, you have 3 choices for Java beautification:
+      <strong>Java Beautifier</strong>
+      <p>
+      Just to clarify the Java beautifiers:  Assuming you have the AStyle plugin installed, you have 4 choices for Java beautification:
+      <p>
       <ul>
          <li><code>java:custom</code></li>
          <li><code>java:astyle</code></li>
          <li><code>java:beauty</code></li>
+         <li><code>java8:beauty</code></li>
       </ul>
-      For regular Java files, you'll want to use either <code>java:astyle</code> or <code>java:beauty</code>.  The <code>java:custom</code> beautifier is the one used by the JSP beautifier.  It does not beautify as well as either <code>java:astyle</code> or <code>java:beauty</code> but will accept the Java code commonly found in JSP scriptlets where the other two won't.
-      <p>
-      <strong>Java Beautifier</strong>
+      For regular Java files, you'll want to use either <code>java:astyle</code>, <code>java:beauty</code>, or <code>java8:beauty</code>.  The <code>java:custom</code> beautifier is the one used by the JSP beautifier.  It does not beautify as well as either <code>java:astyle</code> or <code>java:beauty</code> but will accept the Java code commonly found in JSP scriptlets where the other two won't.
       <p>
       An option pane was added for the Java beautifier in version 0.6.
       <p>
@@ -186,9 +187,37 @@
          <li>Whether or not to group imports.</li>
          <li>Number of blank lines between import groups.</li>
          <li>Number of blank lines after a class declaration.</li>
+         <li>Number of blank lines after a class body.</li>
          <li>Number of blank lines before constructors, methods, and inner classes.</li>
+         <li>Number of blank lines after constructors, emthods, and inner classes.</li>
          <li>Whether or not to sort modifiers.</li>
       </ul>
+      <p>
+      <div style="background-color: #3B3B3B">
+<pre><font color="#dcdccc">                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>before</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>package</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>declaration</em></font>
+<font color="#dddd66"><strong>package</strong></font> a.b.c;
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>after</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>package</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>declaration</em></font>
+<font color="#dddd66"><strong>import</strong></font> a.b.A;                               <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>sorted</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>and</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>grouped</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>imports</em></font>
+<font color="#dddd66"><strong>import</strong></font> a.b.C;
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>between</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>groups</em></font>
+<font color="#dddd66"><strong>import</strong></font> b.c.*;
+
+<font color="#dddd66"><strong>import</strong></font> java.util.ArrayList;
+<font color="#dddd66"><strong>import</strong></font> java.util.List;
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>after</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>imports</em></font>
+<font color="#dddd66"><strong>public</strong></font> <font color="#cccc66"><strong>class</strong></font> Demo <font color="#f0efd0">{</font>
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>after</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>class</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>declaration</em></font>
+    <font color="#dddd66"><strong>public</strong></font> <font color="#cccc66"><strong>int</strong></font> a <font color="#f0efd0">=</font> <font color="#8cd0d3">6</font>;
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>collapse</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>multiple</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font>
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>before</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>methods</em></font>
+    <font color="#dddd66"><strong>public</strong></font> <font color="#dddd66"><strong>static</strong></font> <font color="#dddd66"><strong>final</strong></font> String <font color="#efef8f"><strong>toString</strong></font><font color="#f0efd0">(</font><font color="#f0efd0">)</font> <font color="#f0efd0">{</font> <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>sort</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>modifiers</em></font>
+        <font color="#f0dfaf"><strong>return</strong></font> <font color="#cc9393">&quot;</font><font color="#cc9393">demo</font><font color="#cc9393">&quot;</font>;
+    <font color="#f0efd0">}</font>
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>after</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>methods</em></font>
+<font color="#f0efd0">}</font>
+                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>after</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>class</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>body</em></font>
+</font></pre>
+</div>      
       
       <p>
       <strong>Others</strong>
@@ -337,7 +366,7 @@
       <p>
       Adding a new beautifier/formatter is quite simple:
       <ol>
-         <li>Write a formatter that implements beauty.beautifiers.Beautifier. You'll need to implement only the
+         <li>Write a formatter that extends beauty.beautifiers.Beautifier. You'll need to implement only the
          <code>
             String beautify(String text)
          </code>
@@ -345,8 +374,8 @@
          <code>
             text
          </code>
-         parameter, and should return formatted text. The buffer contents will be replaced with this returned text.
-         <li>Create a simple plugin that contains this formatter.
+         parameter, and should return formatted text. The buffer contents will be replaced with this returned text.</li>
+         <li>Create a simple plugin that contains this formatter.</li>
          <li>Add a
          <code>
             services.xml
@@ -378,7 +407,7 @@
          <code>
             beauty.beautifiers.Beautifier
          </code>
-         .
+         .</li>
          <li>For each editing mode that your beautifier supports, add a line to your plugin properties file like this:
          <p>
          mode.MODENAME.beauty.beautifier=NAME
@@ -399,8 +428,20 @@
          </code>
          <p>
          for your beautifier that supports the Lisp language.
-         <li>Release your plugin.
+         <p>
+         It has become common practice for NAME to be in the format of mode:pluginname, for example, c++:astyle or java:beauty, meaning the C++ beautifier from the AStyle plugin and the Java beautifier from the Beauty plugin. In the above example, a better name might be lisp:lispy.</li>
+         <li>Release your plugin.</li>
       </ol>
+      
+      <p>
+      As of Beauty 0.9, Eric Le Lay has contributed OuterBeauty, which makes it very easy to integrate external beautifiers. For a real-world example, see <a href="https://sourceforge.net/u/kerik-sf/jsbeautifierbeauty/ci/master/tree/">Eric's js-beauty plugin</a>, which integrates the external js-beautifier application with Beauty to be able to beautify javascript from within jEdit.
+      <p>
+      The steps are very similar to those above:
+      <ol>
+         <li>Write a class that extends outerbeauty.OuterBeauty. Note that OuterBeauty extends beauty.beautifiers.Beautifier. In your class, you only need to implement the <code>getCommandLine()</code> method, which should return the program and parameters to run.</li>
+         <li>The remaining steps are exactly like steps 2, 3, 4, and 5 above.</li>
+      </ol>
+      
       <table summary="Credits" border="0" cellspacing="0" cellspacing="0" width="100%">
          <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
@@ -419,6 +460,8 @@
       <li>Patrick Niemeyer for the beanshell grammar (www.beanshell.org)</li>
       <li>Pieter from the PMD project for the jsp grammar (www.pmd.org)</li> 
       <li>The original CSS grammar came from W3C (www.w3c.org)</li>
+      <li>Terence Parr and Sam Harwell for the Java 8 grammar.</li>
+      <li>Eric Le Lay for OuterBeauty.</li>
       </ul>
    </body>
 </html>
