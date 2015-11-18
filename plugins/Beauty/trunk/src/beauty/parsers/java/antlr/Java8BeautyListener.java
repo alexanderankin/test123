@@ -7,9 +7,7 @@ import org.antlr.v4.runtime.tree.*;
 import java.util.*;
 
 /**
- * This class provides an empty implementation of {@link Java8Listener},
- * which can be extended to create a listener which only needs to handle a subset
- * of the available methods.
+ * Beautifier for Java 8 and below.
  */
 public class Java8BeautyListener implements Java8Listener {
     
@@ -66,6 +64,9 @@ public class Java8BeautyListener implements Java8Listener {
         this.tokens = tokenStream;
     }
     
+    /**
+     * Set up tabs.    
+     */
     private void init() {
         if (softTabs) {
             StringBuilder sb = new StringBuilder();
@@ -288,6 +289,10 @@ Formatting methods.
         return sb.toString();
     }
     
+    /**
+     * Pads parenthesis so "(" becomes "( " and ")" becomes " )".
+     * @paren item The item immediately following or preceding the paren.
+     */
     private String padParen(String paren) {
         return padParen(paren, " ");    
     }
@@ -296,7 +301,6 @@ Formatting methods.
      * Pads parenthesis so "(" becomes "( " and ")" becomes " )".
      * @paren item The item immediately following or preceding the paren.
      */
-    
     private String padParen(String paren, String item) {
         if (paren == null || paren.isEmpty() || !padParens || item == null || item.isEmpty()) {
             return paren;    
@@ -314,8 +318,6 @@ Formatting methods.
         }
         return sb.toString();
     }
-    
-    
     
     /**
      * StringBuilder doesn't have an "endsWith" method.
@@ -662,6 +664,9 @@ Formatting methods.
 	    return formatComment(comment);
 	}
 	
+	/**
+ 	 * Handles new line tokens preceding the <code>node</code>.	
+ 	 */
 	private void processWhitespace(TerminalNode node) {
         Token token = node.getSymbol();
         
@@ -757,6 +762,9 @@ Formatting methods.
 	    return sb.toString();
 	}
 	
+	/**
+ 	 * This is for sorting the modifiers.	
+ 	 */
 	private static Comparator<String> modifierComparator = new Comparator<String>() {
 	    // From Java 8 language specification: "If two or more (distinct) class modifiers 
 	    // appear in a class declaration, then it is customary, though not required, 
@@ -859,7 +867,6 @@ Formatting methods.
 	}
 	
 	private static Comparator<String> importComparator = new Comparator<String>() {
-        
 	    // No parameter checking here, this assumes the strings will be valid import
 	    // statements, not blank lines or null.
         @Override
@@ -870,6 +877,9 @@ Formatting methods.
 	    }
 	};
 	
+	/**
+ 	 * Removes all excess whitespace from each of the lines in <code>s</code>.	
+ 	 */
 	private String removeExcessWhitespace(String s) {
 	    String[] lines = s.split("\n");
 	    StringBuilder sb = new StringBuilder();
