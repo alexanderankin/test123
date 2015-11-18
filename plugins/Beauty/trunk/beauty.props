@@ -171,3 +171,5 @@ beauty.java8.Blank_Lines_After_Class_Declaration=Blank Lines After Class Declara
 beauty.java8.Blank_Lines_Before_Methods=Blank Lines Before Methods
 beauty.java8.Sort_Modifiers=Sort Modifiers
 beauty.java8.Collapse_Multiple_Blank_Lines_To=Collapse Multiple Blank Lines To
+beauty.java8.Blank_Lines_After_Class_Body=Blank Lines After Class Body
+beauty.java8.Blank_Lines_After_Methods=Blank Lines After Methods

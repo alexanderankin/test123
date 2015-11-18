@@ -121,6 +121,11 @@ public class Java8Lexer extends Lexer {
 		case 154: LINE_COMMENT_action((RuleContext)_localctx, actionIndex); break;
 		}
 	}
+	private void LINE_COMMENT_action(RuleContext _localctx, int actionIndex) {
+		switch (actionIndex) {
+		case 3: _channel = COMMENTS; break;
+		}
+	}
 	private void DOC_COMMENT_action(RuleContext _localctx, int actionIndex) {
 		switch (actionIndex) {
 		case 1: _channel = COMMENTS; break;
@@ -129,11 +134,6 @@ public class Java8Lexer extends Lexer {
 	private void WS_action(RuleContext _localctx, int actionIndex) {
 		switch (actionIndex) {
 		case 0: _channel = WHITESPACE; break;
-		}
-	}
-	private void LINE_COMMENT_action(RuleContext _localctx, int actionIndex) {
-		switch (actionIndex) {
-		case 3: _channel = COMMENTS; break;
 		}
 	}
 	private void COMMENT_action(RuleContext _localctx, int actionIndex) {

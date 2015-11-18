@@ -20,22 +20,32 @@ public class JavaBeautifierTest {
 
     @Before
     public void beforeTest() {
-        jEdit.getPlugin( BeautyPlugin.class.getName()  ).getPluginJAR() . activatePluginIfNecessary();
+        jEdit.getPlugin( BeautyPlugin.class.getName()  ).getPluginJAR().activatePluginIfNecessary();
     }
 
-    // @Test
+    @Test
     public void testCompilationUnit() {
         // basic test for package, import, and compilation unit
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append( "package test.more.whatever;\n" );
-            sb.append( "\n" );
-            sb.append( "import java.util.*;\n" );
-            sb.append( "\n" );
-            sb.append( "public class Test {\n" );
-            sb.append( "\n" );
-            sb.append( "\n" );
-            sb.append( "}\n" );
+            StringBuilder before = new StringBuilder();
+            before.append( "package test.more.whatever;\n" );
+            before.append( "\n" );
+            before.append( "import java.util.*;\n" );
+            before.append( "\n" );
+            before.append( "public class Test {\n" );
+            before.append( "\n" );
+            before.append( "\n" );
+            before.append( "}\n" );
+            StringBuilder answer = new StringBuilder();
+            answer.append( "package test.more.whatever;\n" );
+            answer.append( "\n" );
+            answer.append( "import java.util.*;\n" );
+            answer.append( "\n" );       // default is 2 lines after import statements
+            answer.append( "\n" );
+            answer.append( "public class Test {\n" );
+            answer.append( "\n" );
+            answer.append( "\n" );
+            answer.append( "}\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -44,9 +54,9 @@ public class JavaBeautifierTest {
             beautifier.setUseSoftTabs( true );
             beautifier.setWrapMargin( 80 );
             beautifier.setWrapMode( "none" );
-            String after = beautifier.beautify( sb.toString() );
+            String after = beautifier.beautify( before.toString() );
             assertTrue( "returned text was null", after != null );
-            assertTrue( "'compilation unit' test failed, expected\n>" + sb.toString() + "<\nbut was:\n>" + after + "<", sb.toString().equals( after )  );
+            assertTrue( "'compilation unit' test failed, expected\n>" + answer.toString() + "<\nbut was:\n>" + after + "<", answer.toString().equals( after )  );
         }
         catch ( Exception e ) {
             e.printStackTrace();
@@ -54,7 +64,43 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
+    public void testConstructor() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append( "public class Test4 {\n" );
+            before.append( "    public Test4() {\n" );
+            before.append( "        System.out.println();\n" );
+            before.append( "        System.out.println(\"some text\");\n" );
+            before.append( "    }\n" );
+            before.append( "}\n" );                                                       
+            StringBuilder answer = new StringBuilder();
+            answer.append( "public class Test4 {\n" );
+            answer.append( "\n" );
+            answer.append( "    public Test4() {\n" );
+            answer.append( "        System.out.println();\n" );
+            answer.append( "        System.out.println( \"some text\" );\n" );
+            answer.append( "    }\n" );
+            answer.append( "}\n" );
+            Java8Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            beautifier.setPadParens( true );
+            String after = beautifier.beautify( before.toString() );
+            assertTrue( "'padParens2' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
     public void testIf() {
         // test the various if constructs
         try {
@@ -99,7 +145,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testIf2() {
         // test that brackets are inserted in 'if' and 'else'
         try {
@@ -163,7 +209,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testFor() {
         // test the 'for' constructs
         try {
@@ -219,7 +265,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testWhile() {
         // test the 'while' constructs
         try {
@@ -267,7 +313,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testDoWhile() {
         // test the 'do/while' constructs
         try {
@@ -298,7 +344,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testSwitch() {
         // test the 'switch' construct
         try {
@@ -340,7 +386,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testComments() {
         // test the various comment constructs
         try {
@@ -423,7 +469,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testSingleLineComment() {
         try {
             StringBuilder before = new StringBuilder();
@@ -457,7 +503,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testSingleLineComment2() {
         try {
             StringBuilder before = new StringBuilder();
@@ -491,7 +537,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testTryCatch() {
         try {
             StringBuilder sb = new StringBuilder();
@@ -535,7 +581,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testTryWithResources() {
         try {
             StringBuilder sb = new StringBuilder();
@@ -575,7 +621,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testKeywordAndMethodPadding() {
         // keywords followed by a ( should have a space separating the keyword
         // and (.  Method names should not have a space between the name and
@@ -623,14 +669,14 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testAnnotations() {
         // test the various forms of annotations, including annotation type declarations
         try {
             StringBuilder sb = new StringBuilder();
             sb.append( "public class Test {\n" );
             sb.append( "\n" );
-            sb.append( "    // @Test\n" );
+            sb.append( "    @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
@@ -642,7 +688,7 @@ public class JavaBeautifierTest {
             sb.append( "    public void methodName() {\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
-            sb.append( "    // @Test\n" );
+            sb.append( "    @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
             sb.append( "}\n" );
@@ -678,14 +724,14 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testBlankLines() {
         // should be one blank line before each method
         try {
             StringBuilder sb = new StringBuilder();
             sb.append( "public class Test {\n" );
             sb.append( "\n" );
-            sb.append( "    // @Test\n" );
+            sb.append( "    @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
@@ -697,7 +743,7 @@ public class JavaBeautifierTest {
             sb.append( "    public void methodName() {\n" );
             sb.append( "    }\n" );
             sb.append( "\n" );
-            sb.append( "    // // @Test\n" );
+            sb.append( "    // @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
             sb.append( "}\n" );
@@ -719,7 +765,7 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testOperatorPadding() {
         try {
             StringBuilder before = new StringBuilder();
@@ -752,12 +798,12 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testPadParens1() {
         try {
             StringBuilder before = new StringBuilder();
             before.append( "public class Test4 {\n" );
-            before.append( "    public method1() {\n" );
+            before.append( "    public void method1() {\n" );
             before.append( "        System.out.println();\n" );
             before.append( "        System.out.println( \"some text\" );\n" );
             before.append( "    }\n" );
@@ -765,7 +811,7 @@ public class JavaBeautifierTest {
             StringBuilder answer = new StringBuilder();
             answer.append( "public class Test4 {\n" );
             answer.append( "\n" );
-            answer.append( "    public method1() {\n" );
+            answer.append( "    public void method1() {\n" );
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println(\"some text\");\n" );
             answer.append( "    }\n" );
@@ -788,12 +834,12 @@ public class JavaBeautifierTest {
         }
     }
 
-    // @Test
+    @Test
     public void testPadParens2() {
         try {
             StringBuilder before = new StringBuilder();
             before.append( "public class Test4 {\n" );
-            before.append( "    public method1() {\n" );
+            before.append( "    public void method1() {\n" );
             before.append( "        System.out.println();\n" );
             before.append( "        System.out.println(\"some text\");\n" );
             before.append( "    }\n" );
@@ -801,7 +847,7 @@ public class JavaBeautifierTest {
             StringBuilder answer = new StringBuilder();
             answer.append( "public class Test4 {\n" );
             answer.append( "\n" );
-            answer.append( "    public method1() {\n" );
+            answer.append( "    public void method1() {\n" );
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println( \"some text\" );\n" );
             answer.append( "    }\n" );
@@ -824,7 +870,7 @@ public class JavaBeautifierTest {
         }
     }
     
-    //@Test
+    @Test
     public void testSortModifiers() {
         try {
             StringBuilder before = new StringBuilder();
@@ -908,7 +954,7 @@ public class JavaBeautifierTest {
             answer.append( "\n" );
             answer.append( "import org.gjt.sp.jedit.*;\n" );
             answer.append( "import org.gjt.sp.jedit.msg.*;\n" );
-            answer.append( "\n" );
+            answer.append( "\n\n" );        // default is 2 blank lines after imports
             answer.append( "public class Test4 {\n" );
             answer.append( "\n" );
             answer.append( "    public static final void method1() {\n" );
@@ -928,6 +974,269 @@ public class JavaBeautifierTest {
             // default setting is to sort and group imports
             String after = beautifier.beautify( before.toString() );
             assertTrue( "'sortAndGroupImports' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+    
+    @Test
+    public void testGenericsAndInterfaces() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append( "public interface List <E> {\n" );
+            before.append( "    void add(E x);\n" );
+            before.append( "    Iterator<E> iterator();\n" );
+            before.append( "}\n" );
+            before.append( "public interface Iterator<E> {\n" );
+            before.append( "    E next();\n" );
+            before.append( "    boolean hasNext();\n" );
+            before.append( "}\n" );
+            before.append( "interface Collection<E> {\n" );
+            before.append( "    public <T> boolean containsAll(Collection<T> c);\n" );
+            before.append( "    public <T extends E> boolean addAll(Collection<T> c);\n" );
+            before.append( "    // Hey, type variables can have bounds too!\n" );
+            before.append( "}\n" );
+            before.append( "public class Test {\n" );
+            before.append( "    public void drawAll(List<? extends Shape> shapes) {\n" );
+            before.append( "        for (Shape s: shapes) {\n" );
+            before.append( "            s.draw(this);\n" );
+            before.append( "       }\n" );
+            before.append( "    }\n" );
+            before.append( "    int a = 6;\n" );
+            before.append( "    static <T> void fromArrayToCollection(T[] a, Collection<T> c) {\n" );
+            before.append( "        for (T o : a) {\n" );
+            before.append( "            c.add(o); // Correct\n" );
+            before.append( "        }\n" );
+            before.append( "    }\n" );
+            before.append( "    int b = 7;\n" );
+            before.append( "    Collection<EmpInfo>  emps = sqlUtility.select(EmpInfo.class, \"select * from emps\");\n" );
+            before.append( "    public static <T> Collection<T> select(Class<T> c, String sqlStatement) {\n" ); 
+            before.append( "    Collection<T> result = new ArrayList<T>();\n" );
+            before.append( "    // Run sql query using jdbc.\n" );
+            before.append( "    for (T r : result ) {\n" ); 
+            before.append( "    T item = c.newInstance();\n" ); 
+            before.append( "    result.add(item);\n" );
+            before.append( "    }\n" ); 
+            before.append( "    return result;\n" ); 
+            before.append( "    }\n" ); 
+            before.append( "}\n" );
+            StringBuilder answer = new StringBuilder();
+            answer.append( "public interface List<E> {\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    void add(E x);\n" ); 
+            answer.append( "    Iterator<E> iterator();\n" ); 
+            answer.append( "}\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "public interface Iterator<E> {\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    E next();\n" ); 
+            answer.append( "    boolean hasNext();\n" ); 
+            answer.append( "}\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "interface Collection<E> {\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    public <T> boolean containsAll(Collection<T> c);\n" ); 
+            answer.append( "    public <T extends E> boolean addAll(Collection<T> c);\n" ); 
+            answer.append( "    // Hey, type variables can have bounds too!\n" ); 
+            answer.append( "}\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "public class Test {\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    public void drawAll(List<? extends Shape> shapes) {\n" ); 
+            answer.append( "        for (Shape s : shapes) {\n" ); 
+            answer.append( "            s.draw(this);\n" ); 
+            answer.append( "        }\n" ); 
+            answer.append( "    }\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    int a = 6;\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    static <T> void fromArrayToCollection(T[] a, Collection<T> c) {\n" ); 
+            answer.append( "        for (T o : a) {\n" ); 
+            answer.append( "            c.add(o);    // Correct\n" ); 
+            answer.append( "        }\n" ); 
+            answer.append( "    }\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    int b = 7;\n" ); 
+            answer.append( "    Collection<EmpInfo> emps = sqlUtility.select(EmpInfo.class, \"select * from emps\");\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    public static <T> Collection<T> select(Class<T> c, String sqlStatement) {\n" ); 
+            answer.append( "        Collection<T> result = new ArrayList<T>();\n" ); 
+            answer.append( "        // Run sql query using jdbc.\n" ); 
+            answer.append( "        for (T r : result) {\n" ); 
+            answer.append( "            T item = c.newInstance();\n" ); 
+            answer.append( "            result.add(item);\n" ); 
+            answer.append( "        }\n" ); 
+            answer.append( "        return result;\n" ); 
+            answer.append( "    }\n" ); 
+            answer.append( "}\n" ); 
+            Java8Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            String after = beautifier.beautify( before.toString() );
+            assertTrue( "'genericsAndInterfaces' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+    
+    @Test
+    public void testLambdas() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append( "package a.b.c;\n" ); 
+            before.append( "\n" ); 
+            before.append( "import java.util.*;\n" ); 
+            before.append( "import java.util.function.Consumer;\n" ); 
+            before.append( "import static java.lang.Math;\n" ); 
+            before.append( "import static javax.swing.*;\n" ); 
+            before.append( "\n" ); 
+            before.append( "public abstract  class LambdaScopeTest {\n" ); 
+            before.append( "    int a;\n" ); 
+            before.append( "    public final static  int x = 0;\n" ); 
+            before.append( "    public  String s = \"hello\";\n" ); 
+            before.append( "    public  boolean b = true;\n" ); 
+            before.append( "    public  String n = null;\n" ); 
+            before.append( "    public  char c = 'c';\n" ); 
+            before.append( "    public  float f = 1.234;\n" ); 
+            before.append( "    public  String[] longArray = {\"apple\",\"banana\",\"carrot\",\"dill\",\"eggplant\"};\n" ); 
+            before.append( "\n" ); 
+            before.append( "    public LambdaScopeTest() {\n" ); 
+            before.append( "        System.out.println(\"x = \" + x);    // Statement A\n" ); 
+            before.append( "        System.out.println(\"+++++\");\n" ); 
+            before.append( "        System.out.println(\"y = \" + y);\n" ); 
+            before.append( "        System.out.println(\"this.x = \" + this.x);\n" ); 
+            before.append( "        System.out.println(\"LambdaScopeTest.this.x = \" + LambdaScopeTest.this.x);\n" ); 
+            before.append( "    }\n" ); 
+            before.append( "\n" ); 
+            before.append( "    class FirstLevel {\n" ); 
+            before.append( "        // this comment is after the curly bracked and before public int\n" ); 
+            before.append( "        public  int x = 1;\n" ); 
+            before.append( "        private void methodA() {\n" ); 
+            before.append( "            myConsumer.accept(x);\n" ); 
+            before.append( "            Object o = (Object)myConsumer.whatever();\n" ); 
+            before.append( "            return true;\n" ); 
+            before.append( "        }\n" ); 
+            before.append( "\n" ); 
+            before.append( "        void methodInFirstLevel(int x) {\n" ); 
+            before.append( "            // The following statement causes the compiler to generate\n" ); 
+            before.append( "            // the error \"local variables referenced from a lambda expression\n" ); 
+            before.append( "            // must be final or effectively final\" in statement A:\n" ); 
+            before.append( "            //\n" ); 
+            before.append( "            // x = 99;\n" ); 
+            before.append( "            Consumer <Integer> myConsumer = (y) -> {\n" ); 
+            before.append( "                System.out.println(\"x = \" + x);    // Statement B\n" ); 
+            before.append( "                System.out.println(\"y = \" + y);\n" ); 
+            before.append( "                System.out.println(\"this.x = \" + this.x);\n" ); 
+            before.append( "                System.out.println(\"LambdaScopeTest.this.x = \" + LambdaScopeTest.this.x);\n" ); 
+            before.append( "            };\n" ); 
+            before.append( "            myConsumer.accept(x);\n" ); 
+            before.append( "            Object o = (Object)myConsumer.whatever();\n" ); 
+            before.append( "        }\n" ); 
+            before.append( "    }\n" ); 
+            before.append( "\n" ); 
+            before.append( "    // main follows\n" ); 
+            before.append( "    public static void main(String... args) {\n" ); 
+            before.append( "        // this comment is after the curly bracked and before LambdaScopeTest\n" ); 
+            before.append( "        LambdaScopeTest st = new LambdaScopeTest();\n" ); 
+            before.append( "        // line 61\n" ); 
+            before.append( "        LambdaScopeTest .FirstLevel fl = st.newFirstLevel();\n" ); 
+            before.append( "        fl.methodInFirstLevel(23);\n" ); 
+            before.append( "    }\n" ); 
+            before.append( "}\n" ); 
+
+            StringBuilder answer = new StringBuilder();
+            answer.append( "package a.b.c;\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "import static java.lang.Math;\n" ); 
+            answer.append( "import java.util.*;\n" ); 
+            answer.append( "import java.util.function.Consumer;\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "import static javax.swing.*;\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "public abstract class LambdaScopeTest {\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    int a;\n" ); 
+            answer.append( "    public static final int x = 0;\n" ); 
+            answer.append( "    public String s = \"hello\";\n" ); 
+            answer.append( "    public boolean b = true;\n" ); 
+            answer.append( "    public String n = null;\n" ); 
+            answer.append( "    public char c = 'c';\n" ); 
+            answer.append( "    public float f = 1.234;\n" ); 
+            answer.append( "    public String[] longArray = {\"apple\", \"banana\", \"carrot\", \"dill\", \"eggplant\"};\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    public LambdaScopeTest() {\n" ); 
+            answer.append( "        System.out.println(\"x = \" + x);    // Statement A\n" ); 
+            answer.append( "        System.out.println(\"+++++\");\n" ); 
+            answer.append( "        System.out.println(\"y = \" + y);\n" ); 
+            answer.append( "        System.out.println(\"this.x = \" + this.x);\n" ); 
+            answer.append( "        System.out.println(\"LambdaScopeTest.this.x = \" + LambdaScopeTest.this.x);\n" ); 
+            answer.append( "    }\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    class FirstLevel {\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "        // this comment is after the curly bracked and before public int\n" ); 
+            answer.append( "        public int x = 1;\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "        private void methodA() {\n" ); 
+            answer.append( "            myConsumer.accept(x);\n" ); 
+            answer.append( "            Object o = (Object)myConsumer.whatever();\n" ); 
+            answer.append( "            return true;\n" ); 
+            answer.append( "        }\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "\n" );          
+            answer.append( "        void methodInFirstLevel(int x) {\n" ); 
+            answer.append( "            // The following statement causes the compiler to generate\n" ); 
+            answer.append( "            // the error \"local variables referenced from a lambda expression\n" ); 
+            answer.append( "            // must be final or effectively final\" in statement A:\n" ); 
+            answer.append( "            //\n" ); 
+            answer.append( "            // x = 99;\n" ); 
+            answer.append( "            Consumer<Integer> myConsumer = (y) -> {\n" ); 
+            answer.append( "                System.out.println(\"x = \" + x);    // Statement B\n" ); 
+            answer.append( "                System.out.println(\"y = \" + y);\n" ); 
+            answer.append( "                System.out.println(\"this.x = \" + this.x);\n" ); 
+            answer.append( "                System.out.println(\"LambdaScopeTest.this.x = \" + LambdaScopeTest.this.x);\n" ); 
+            answer.append( "            };\n" ); 
+            answer.append( "            myConsumer.accept(x);\n" ); 
+            answer.append( "            Object o = (Object)myConsumer.whatever();\n" ); 
+            answer.append( "        }\n" ); 
+            answer.append( "    }\n" ); 
+            answer.append( "\n" ); 
+            answer.append( "    // main follows\n" ); 
+            answer.append( "    public static void main(String... args) {\n" ); 
+            answer.append( "        // this comment is after the curly bracked and before LambdaScopeTest\n" ); 
+            answer.append( "        LambdaScopeTest st = new LambdaScopeTest();\n" ); 
+            answer.append( "        // line 61\n" ); 
+            answer.append( "        LambdaScopeTest.FirstLevel fl = st.newFirstLevel();\n" ); 
+            answer.append( "        fl.methodInFirstLevel(23);\n" ); 
+            answer.append( "    }\n" ); 
+            answer.append( "}\n" ); 
+
+
+            Java8Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            String after = beautifier.beautify( before.toString() );
+            assertTrue( "'lambdas' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
         }
         catch ( Exception e ) {
             e.printStackTrace();

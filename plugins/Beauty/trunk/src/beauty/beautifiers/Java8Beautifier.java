@@ -23,7 +23,9 @@ public class Java8Beautifier extends Beautifier {
     private boolean groupImports = true;
     private int blankLinesBetweenImportGroups = 1;
     private int blankLinesAfterClassDeclaration = 1;
+    private int blankLinesAfterClassBody = 2;
     private int blankLinesBeforeMethods = 1;
+    private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;
     private int collapseMultipleBlankLinesTo = 1;
 
@@ -39,7 +41,9 @@ public class Java8Beautifier extends Beautifier {
         groupImports = jEdit.getBooleanProperty("beauty.java8.groupImports", true);
         blankLinesBetweenImportGroups = jEdit.getIntegerProperty("beauty.java8.blankLinesBetweenImportGroups", 1);
         blankLinesAfterClassDeclaration = jEdit.getIntegerProperty("beauty.java8.blankLinesAfterClassDeclaration", 1);
+        blankLinesAfterClassBody = jEdit.getIntegerProperty("beauty.java8.blankLinesAfterClassBody", 2);
         blankLinesBeforeMethods = jEdit.getIntegerProperty("beauty.java8.blankLinesBeforeMethods", 1);
+        blankLinesAfterMethods = jEdit.getIntegerProperty("beauty.java8.blankLinesAfterMethods", 1);
         sortModifiers = jEdit.getBooleanProperty("beauty.java8.sortModifiers", true);
         collapseMultipleBlankLinesTo = jEdit.getIntegerProperty("beauty.java8.collapseMultipleBlankLinesTo", 1);
     }
@@ -84,7 +88,9 @@ public class Java8Beautifier extends Beautifier {
             listener.setGroupImports(groupImports);
             listener.setBlankLinesBetweenImportGroups(blankLinesBetweenImportGroups);
             listener.setBlankLinesAfterClassDeclaration(blankLinesAfterClassDeclaration);
+            listener.setBlankLinesAfterClassBody(blankLinesAfterClassBody);
             listener.setBlankLinesBeforeMethods(blankLinesBeforeMethods);
+            listener.setBlankLinesAfterMethods(blankLinesAfterMethods);
             listener.setSortModifiers(sortModifiers);
             listener.setCollapseMultipleBlankLinesTo(collapseMultipleBlankLinesTo);
 

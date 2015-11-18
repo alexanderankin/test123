@@ -49,10 +49,12 @@ public class Java8BeautyListener implements Java8Listener {
     private boolean sortImports = true;                 
     private boolean groupImports = true;                
     private int blankLinesBetweenImportGroups = 1;      
-    private int blankLinesAfterClassDeclaration = 1;    
-    private int blankLinesBeforeMethods = 1;            
+    private int blankLinesAfterClassDeclaration = 1; 
+    private int blankLinesAfterClassBody = 2;
+    private int blankLinesBeforeMethods = 1;  
+    private int blankLinesAfterMethods = 1;
     private boolean sortModifiers = true;               
-    private int collapseMultipleBlankLinesTo = 1;       // TODO: finish this
+    private int collapseMultipleBlankLinesTo = 2;       
     
     /**
      * @param initialSize Initial size of the output buffer.
@@ -132,8 +134,16 @@ Formatting settings
         blankLinesAfterClassDeclaration = lines;
     }
     
+    public void setBlankLinesAfterClassBody(int lines) {
+        blankLinesAfterClassBody = lines;
+    }
+    
     public void setBlankLinesBeforeMethods(int lines) {
         blankLinesBeforeMethods = lines;
+    }
+    
+    public void setBlankLinesAfterMethods(int lines) {
+        blankLinesAfterMethods = lines;
     }
     
     public void setSortModifiers(boolean sort) {
@@ -388,7 +398,8 @@ Formatting methods.
      * Given "a,b,c" on the stack, where each character is a separate string on the stack,
      * calling <code>reverse(5, " ", 2)</code> would return "a, b, c".
      * @param howMany How many items to pop off of the stack and assemble into a string.
-     * @param separator A string to be placed between each item.
+     * @param separator A string to be placed between each item. The separator is only
+     * added if the item does not already end with the separator.
      * @param howOften How often a separator should be inserted.
      * @return A string with the items reversed and separated.
      */
@@ -396,9 +407,10 @@ Formatting methods.
         StringBuilder sb = new StringBuilder();
 	    List<String> list = reverse(howMany);
         for (int i = 0; i < list.size(); i++) {
-            sb.append(list.get(i));
+            String item = list.get(i);
+            sb.append(item);
             if (i < list.size() - 1) {
-                if (howOften == 1 || i % howOften == 1) {
+                if ((howOften == 1 || i % howOften == 1) && !item.endsWith(separator)) {
                     sb.append(separator);    
                 }
             }
@@ -650,14 +662,45 @@ Formatting methods.
 	    return formatComment(comment);
 	}
 	
+	private void processWhitespace(TerminalNode node) {
+        Token token = node.getSymbol();
+        
+        int tokenIndex = token.getTokenIndex();
+        List<Token> wsTokens = tokens.getHiddenTokensToLeft(tokenIndex, Java8Lexer.WHITESPACE);
+        if (wsTokens != null && wsTokens.size() > 0) {
+            // count the number of new line tokens preceding this token
+            int nlCount = 0;
+            for (Token ws : wsTokens) {
+                String s = ws.getText();
+                for (int i = 0; i < s.length(); i++) {
+                    if (s.charAt(i) == '\n') {
+                        ++ nlCount;    
+                    }
+                }
+            }
+            
+            // add no more than collapseMultipleBlankLinesTo new lines to the
+            // front of the token
+            if (nlCount > 0) {
+                if (nlCount > collapseMultipleBlankLinesTo) {
+                    nlCount = collapseMultipleBlankLinesTo;    
+                }
+                String blankLines = getBlankLines(nlCount);
+                String last = stack.peek();
+                if (last != null) {
+                    last = stack.pop();
+                    last = blankLines + removeBlankLines(last, START);
+                    stack.push(last);
+                }
+            }
+        }
+	}
+	
 	/**
  	 * Pops <code>howMany</code> items from the stack. Assumes these items are modifiers
  	 * for a constructor, method, field, or class. Formats the modifiers. Annotations
  	 * are on a separate line above the other modifiers, remaining modifiers are separated
  	 * by spaces.
- 	 * TODO: If two or more (distinct) class modifiers appear in a class declaration, then 
- 	 * it is customary, though not required, that they appear in the order consistent with 
- 	 * that shown in the grammar for the modifier. Sort the modifiers to follow this rule.
  	 * @param howMany The number of modifiers to pop off of the stack.
  	 * @return The formatted modifiers.
  	 */
@@ -715,9 +758,10 @@ Formatting methods.
 	}
 	
 	private static Comparator<String> modifierComparator = new Comparator<String>() {
-	    // From Java 8 language specification: "If two or more (distinct) class modifiers appear in a class declaration, 
-	    // then it is customary, though not required, that they appear in the order 
-	    // consistent with that shown above in the production for ClassModifier."
+	    // From Java 8 language specification: "If two or more (distinct) class modifiers 
+	    // appear in a class declaration, then it is customary, though not required, 
+	    // that they appear in the order consistent with that shown above in the production 
+	    // for ClassModifier."
 	    // This list contains all possible modifiers in the correct order. Not all
 	    // modifiers are allowed for all constructs, but this method does not check
 	    // for illegal modifiers. The parser should flag an error in those cases.
@@ -756,6 +800,14 @@ Formatting methods.
 	    // sort imports
 	    ArrayList<String> importList = new ArrayList<String>();
 	    importList.addAll(Arrays.asList(imports.split("\n")));
+	    ListIterator<String> it = importList.listIterator();
+	    while(it.hasNext()) {
+	        String next = it.next();
+	        if (next == null || next.trim().isEmpty()) {
+	            it.remove();    
+	        }
+	    }
+	    
 	    if (sortImports || groupImports) {
 	        // grouping imports requires sorting them first
 	        Collections.sort(importList, importComparator);            
@@ -808,6 +860,8 @@ Formatting methods.
 	
 	private static Comparator<String> importComparator = new Comparator<String>() {
         
+	    // No parameter checking here, this assumes the strings will be valid import
+	    // statements, not blank lines or null.
         @Override
 	    public int compare(String a, String b) {
 	        String a_ = a.trim().replaceAll("\t", " ").substring(a.lastIndexOf(" "));
@@ -815,6 +869,20 @@ Formatting methods.
 	        return a_.compareTo(b_);
 	    }
 	};
+	
+	private String removeExcessWhitespace(String s) {
+	    String[] lines = s.split("\n");
+	    StringBuilder sb = new StringBuilder();
+	    int i = 0;
+	    for (String line : lines) {
+	        line = trimEnd(line);
+	        sb.append(line).append('\n');
+	    }
+	    if (!s.endsWith("\n")) {
+	        sb.deleteCharAt(sb.length() - 1);    
+	    }
+	    return sb.toString();
+	}
 	
 	
 //}}}    
@@ -887,7 +955,10 @@ Parser methods follow.
 	    // ;
 	}
 	@Override public void exitClassMemberDeclaration(@NotNull Java8Parser.ClassMemberDeclarationContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	    if (";".equals(stack.peek())) {
+	        String semi = stack.pop() + '\n';
+	        stack.push(semi);
+	    }
 	}
 
 	@Override public void enterStatementNoShortIf(@NotNull Java8Parser.StatementNoShortIfContext ctx) { 
@@ -923,7 +994,7 @@ Parser methods follow.
 	    if (!defaultValue.isEmpty()) {
 	        sb.append(' ').append(defaultValue);    
 	    }
-	    sb.append(semi).append('\n');
+	    sb.append(semi);
 	    stack.push(sb.toString());
 	}
 
@@ -958,16 +1029,17 @@ Parser methods follow.
 	}
 	@Override public void exitAnnotationTypeBody(@NotNull Java8Parser.AnnotationTypeBodyContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String rbrace = stack.pop();
+	    String rbrace = stack.pop().trim();
 	    String body = "";
 	    if (ctx.annotationTypeMemberDeclaration() != null && ctx.annotationTypeMemberDeclaration().size() > 0) {
 	        body = reverse(ctx.annotationTypeMemberDeclaration().size(), "");
 	        ++ tabCount;
 	        body = indent(body);
+	        body = trimEnd(body);
 	        -- tabCount;
 	    }
 	    String lbrace = stack.pop();
-	    sb.append(lbrace).append('\n').append(body).append(rbrace).append('\n');
+	    sb.append(lbrace).append(body).append('\n').append(rbrace);
 	    stack.push(sb.toString());
 	}
 
@@ -1028,7 +1100,7 @@ Parser methods follow.
 	@Override public void exitClassInstanceCreationExpression_lfno_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    
-	    String classBody = ctx.classBody() == null ? "" : stack.pop();
+	    String classBody = ctx.classBody() == null ? "" : stack.pop().trim();
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
@@ -1369,7 +1441,6 @@ Parser methods follow.
         //     )
         //     (	primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary '[' expression ']'
         //     )*
-        // ;
 	}
 	@Override public void exitArrayAccess_lf_primary(@NotNull Java8Parser.ArrayAccess_lf_primaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -1537,7 +1608,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterClassBody(@NotNull Java8Parser.ClassBodyContext ctx) {
-	    // { {ClassBodyDeclaration} }
+	    // '{' classBodyDeclaration* '}'
 	    ++tabCount;
 	}
 	@Override public void exitClassBody(@NotNull Java8Parser.ClassBodyContext ctx) {
@@ -1549,11 +1620,11 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String body = "";
 	    if (ctx.classBodyDeclaration() != null) {
-	        body = reverse(ctx.classBodyDeclaration().size(), "");
+	        body = reverse(ctx.classBodyDeclaration().size(), "\n");
 	        body = indent(body);
 	        body = removeBlankLines(body, BOTH);
 	    }
-	    addBlankLines(1);
+	    addBlankLines(blankLinesAfterClassDeclaration);    // added to lbrace
 	    String lbrace = stack.pop();    // {
 	    sb.append(brokenBracket ? "\n" : "").append(lbrace);
 	    sb.append(body);
@@ -1912,7 +1983,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
-	    // {InterfaceModifier} interface Identifier [TypeParameters] [ExtendsInterfaces] InterfaceBody	
+	    // interfaceModifiers 'interface' Identifier typeParameters? extendsInterfaces? interfaceBody	
 	}
 	@Override public void exitNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
@@ -1920,11 +1991,11 @@ Parser methods follow.
 	    String ifs = ctx.extendsInterfaces() == null ? "" : stack.pop();
 	    String params = ctx.typeParameters() == null ? "" : stack.pop() + ' ';
 	    String identifier = stack.pop();
-	    String interface_ = stack.pop();
-	    if (ctx.interfaceModifier() != null) {
-	        sb.append(formatModifiers(ctx.interfaceModifier().size()));
-	    }
-	    sb.append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
+	    String interface_ = stack.pop().trim();
+	    String modifiers = stack.pop();
+	    modifiers += modifiers.isEmpty() ? "" : " ";
+	    sb.append(modifiers).append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
+	    sb.append(getBlankLines(blankLinesAfterClassBody));
 	    stack.push(sb.toString());
 	}
 
@@ -2026,7 +2097,10 @@ Parser methods follow.
 	    // ;	
 	}
 	@Override public void exitAnnotationTypeMemberDeclaration(@NotNull Java8Parser.AnnotationTypeMemberDeclarationContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	    if (";".equals(stack.peek())) {
+	        String semi = stack.pop() + '\n';
+	        stack.push(semi);
+	    }
 	}
 
 	@Override public void enterPreDecrementExpression(@NotNull Java8Parser.PreDecrementExpressionContext ctx) {
@@ -2223,6 +2297,7 @@ Parser methods follow.
         modifiers += modifiers.isEmpty() ? "" : " ";
         addBlankLines(blankLinesAfterClassDeclaration);
         sb.append(modifiers).append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
+        sb.append(getBlankLines(blankLinesAfterClassBody));
         stack.push(sb.toString());
 	}
 
@@ -2277,17 +2352,19 @@ Parser methods follow.
 	}
 	@Override public void exitAnnotationTypeDeclaration(@NotNull Java8Parser.AnnotationTypeDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String body = stack.pop();
+	    String body = stack.pop().trim();
 	    String identifier = stack.pop();
 	    String interface_ = stack.pop();
-	    String at = stack.pop();                                                      
+	    String at = stack.pop().trim();                                                      
 	    String ifm = "";
 	    if (ctx.interfaceModifier() != null && ctx.interfaceModifier().size() > 0) {
-	        ifm = formatModifiers(ctx.interfaceModifier().size());
-	        ifm = removeBlankLines(ifm, START);
+	        ifm = formatModifiers(ctx.interfaceModifier().size()).trim();
 	    }
-	    addBlankLines(1);
-	    sb.append(ifm).append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
+	    addBlankLines(blankLinesBeforeMethods);
+	    if (!ifm.isEmpty()) {
+	        sb.append(ifm).append(' ');    
+	    }
+	    sb.append(at).append(interface_).append(' ').append(identifier).append(' ').append(body);
 	    stack.push(sb.toString());
 	}
 	
@@ -2305,17 +2382,20 @@ Parser methods follow.
 	    if (ctx.typeDeclaration() != null && ctx.typeDeclaration().size() > 0) {
 	        typeDeclarations = reverse(ctx.typeDeclaration().size(), "");
 	        typeDeclarations = removeBlankLines(typeDeclarations, BOTH) + '\n';
+	        typeDeclarations = removeExcessWhitespace(typeDeclarations);
 	    }
 	    String importDeclarations = "";
 	    if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
 	        importDeclarations = reverse(ctx.importDeclaration().size(), "");
 	        importDeclarations = sortAndGroupImports(importDeclarations);
-	        importDeclarations = removeBlankLines(importDeclarations, BOTH) + getBlankLines(blankLinesAfterImports + 1);
+	        importDeclarations = removeBlankLines(importDeclarations, BOTH);
+	        importDeclarations = removeExcessWhitespace(importDeclarations) + getBlankLines(blankLinesAfterImports + 1);
 	    }
 	    String packageDeclaration = "";
 	    if (ctx.packageDeclaration() != null) {
 	        packageDeclaration = stack.pop();
-	        packageDeclaration = getBlankLines(blankLinesBeforePackage) + removeBlankLines(packageDeclaration, BOTH) + getBlankLines(blankLinesAfterPackage);
+	        packageDeclaration = getBlankLines(blankLinesBeforePackage) + removeBlankLines(packageDeclaration, BOTH);
+	        packageDeclaration = removeExcessWhitespace(packageDeclaration) + getBlankLines(blankLinesAfterPackage + 1);
 	    }
 	    
         output.append(packageDeclaration);
@@ -2348,8 +2428,7 @@ Parser methods follow.
 	}
 	@Override public void exitEnhancedForStatement(@NotNull Java8Parser.EnhancedForStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String statement = stack.pop();
-	    statement = trimEnd(statement);
+	    String statement = stack.pop().trim();
 	    if (!statement.startsWith("{")) {
 	        ++tabCount;
 	        statement = (brokenBracket ? "\n" : "") + "{\n" + indent(statement) + "}";
@@ -2375,7 +2454,7 @@ Parser methods follow.
 	}
 	@Override public void exitSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String bs = stack.pop();
+	    String bs = stack.pop().trim();
 	    ++tabCount;
         bs = indent(bs);
 	    --tabCount;
@@ -2416,29 +2495,42 @@ Parser methods follow.
 	}
 	@Override public void exitMethodDeclaration(@NotNull Java8Parser.MethodDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-        String body = stack.pop();
+        String body = stack.pop().trim();
 	    String header = stack.pop();
-	    String modifiers = stack.pop();
+	    String modifiers = stack.pop().trim();
 	    if (modifiers.isEmpty()) {
 	        indent(sb);    
 	    }
 	    else {
 	        modifiers = removeBlankLines(modifiers, START);    
 	    }
-	    sb.append(modifiers).append(' ').append(header).append(' ').append(body);
 	    addBlankLines(blankLinesBeforeMethods);
+	    sb.append(modifiers).append(' ').append(header).append(' ').append(body).append(getBlankLines(blankLinesAfterMethods + 1));
 	    stack.push(sb.toString());
 	}
 
 	@Override public void enterInterfaceBody(@NotNull Java8Parser.InterfaceBodyContext ctx) { 
-	    // { {InterfaceMemberDeclaration} }	
+	    // '{' interfaceMemberDeclaration* '}'
+	    ++tabCount;
 	}
 	@Override public void exitInterfaceBody(@NotNull Java8Parser.InterfaceBodyContext ctx) { 
+	    String rbrace = stack.pop();    // }
+	    rbrace = removeBlankLines(rbrace, START);
 	    StringBuilder sb = new StringBuilder();
-	    String rbracket = stack.pop();
-	    String decl = ctx.interfaceMemberDeclaration() == null ? "" : stack.pop();
-	    String lbracket = stack.pop();
-	    sb.append(lbracket).append('\n').append(decl).append('\n').append(rbracket).append('\n');
+	    String body = "";
+	    if (ctx.interfaceMemberDeclaration() != null && ctx.interfaceMemberDeclaration().size() > 0) {
+	        body = reverse(ctx.interfaceMemberDeclaration().size(), "");
+	        body = indent(body);
+	        body = removeBlankLines(body, BOTH);
+	    }
+	    addBlankLines(blankLinesAfterClassDeclaration);    // added to lbrace
+	    String lbrace = stack.pop();    // {
+	    sb.append(brokenBracket ? "\n" : "").append(lbrace);
+	    sb.append(body);
+	    --tabCount;
+	    trimEnd(sb);
+	    rbrace = '\n' + indent(rbrace);    // indent adds a \n at end
+	    sb.append(rbrace);
 	    stack.push(sb.toString());
 	}
 
@@ -2447,7 +2539,10 @@ Parser methods follow.
 	    // ;
 	}
 	@Override public void exitMethodBody(@NotNull Java8Parser.MethodBodyContext ctx) {
-	    // nothing to do here, one of the choices should already be on the stack.
+	    if (";".equals(stack.peek())) {
+	        String semi = stack.pop() + '\n';
+	        stack.push(semi);
+	    }
 	}
 
 	@Override public void enterDims(@NotNull Java8Parser.DimsContext ctx) { 
@@ -2833,7 +2928,7 @@ Parser methods follow.
 	    sb.append('\n');
 	    String block = stack.pop();
 	    String static_ = stack.pop();
-	    sb.append(indent(static_)).append(' ').append(block);
+	    sb.append(indent(static_)).append(' ').append(block).append(getBlankLines(blankLinesAfterMethods + 1));
 	    stack.push(sb.toString());
 	}
 
@@ -2863,7 +2958,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String semi = stack.pop();
 	    String vdl = stack.pop();
-	    String type = stack.pop();
+	    String type = stack.pop().trim();
 	    String modifiers = stack.pop();
 	    if (modifiers.isEmpty()) {
 	        indent(sb);    
@@ -2915,7 +3010,7 @@ Parser methods follow.
 	}
 	@Override public void exitWhileStatement(@NotNull Java8Parser.WhileStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String stmt = stack.pop();
+	    String stmt = stack.pop().trim();
 	    stmt = trimEnd(stmt);
 	    if (!stmt.startsWith("{")) {
 	        ++tabCount;
@@ -2985,7 +3080,10 @@ Parser methods follow.
 	    // ;	
 	}
 	@Override public void exitInterfaceMemberDeclaration(@NotNull Java8Parser.InterfaceMemberDeclarationContext ctx) {
-	    // nothing to do here, one of the choices should already be on the stack.
+	    if (";".equals(stack.peek())) {
+	        String semi = stack.pop() + '\n';
+	        stack.push(semi);
+	    }
 	}
 
 	@Override public void enterClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
@@ -3012,7 +3110,7 @@ Parser methods follow.
 	}
 	@Override public void exitSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String rbracket = stack.pop();
+	    String rbracket = stack.pop().trim();
 	    String label = "";
 	    if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
 	        label = reverse(ctx.switchLabel().size(), " "); 
@@ -3056,7 +3154,7 @@ Parser methods follow.
 	@Override public void exitBlockStatements(@NotNull Java8Parser.BlockStatementsContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.blockStatement() != null) {
-	        sb.append(reverse(ctx.blockStatement().size(), "\n"));
+	        sb.append(reverse(ctx.blockStatement().size(), ""));
 	    }
 	    stack.push(sb.toString());
 	}
@@ -3263,12 +3361,12 @@ Parser methods follow.
 	    --tabCount;
 	    String lbracket = stack.pop();
 	    rbracket = indent(rbracket);
-	    sb.insert(0, lbracket + '\n');
+	    sb.insert(0, lbracket);
 	    if (brokenBracket) {
 	        sb.insert(0, "\n");    
 	    }
 	    trimEnd(sb);
-	    sb.append('\n').append(rbracket);
+	    sb.append(rbracket);
 	    stack.push(sb.toString());
 	}
 
@@ -3329,7 +3427,10 @@ Parser methods follow.
 	    // ; 
 	}
 	@Override public void exitEmptyStatement(@NotNull Java8Parser.EmptyStatementContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	    if (";".equals(stack.peek())) {
+	        String semi = stack.pop() + '\n';
+	        stack.push(semi);
+	    }
 	}
 
 	@Override public void enterPrimaryNoNewArray_lf_primary(@NotNull Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx) { 
@@ -3495,7 +3596,6 @@ Parser methods follow.
         //     )
         //     (	primaryNoNewArray_lf_primary
         //     )*
-        // ;
 	}
 	@Override public void exitPrimary(@NotNull Java8Parser.PrimaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -3581,16 +3681,16 @@ Parser methods follow.
 	}
 	@Override public void exitConstructorBody(@NotNull Java8Parser.ConstructorBodyContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String rbracket = stack.pop();
+	    String rbracket = stack.pop().trim();
 	    String bs = ctx.blockStatements() == null ? "" : stack.pop();
 	    bs = bs.isEmpty() ? "" : indent(bs);
 	    String eci = ctx.explicitConstructorInvocation() == null ? "" : stack.pop();
 	    eci = eci.isEmpty() ? "" : indent(eci);
 	    String lbracket = stack.pop();
-	    sb.append(brokenBracket ? "\n" : "").append(lbracket).append('\n').append(eci).append(bs);
+	    sb.append(brokenBracket ? "\n" : "").append(lbracket).append(eci).append(bs);
 	    --tabCount;
 	    String end = indent(rbracket);
-	    sb.append(end).append('\n');
+	    sb.append(end);
 	    stack.push(sb.toString());
 	}
 
@@ -3846,17 +3946,17 @@ Parser methods follow.
 	    String stmt = stack.pop().trim();
 	    if (!stmt.startsWith("{") && !stmt.startsWith("if")) {
 	        ++tabCount;
-	        stmt = (brokenBracket ? "\n" : "") + "{\n" + indent(stmt) + "}";
+	        stmt = "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
 	    if (brokenBracket) {
 	        stmt = "\n" + stmt;    
 	    }
-	    String else_ = stack.pop();
+	    String else_ = stack.pop().trim();
 	    String sn = stack.pop().trim();
 	    if (!sn.startsWith("{")) {
 	        ++tabCount;
-	        sn = (brokenBracket ? "\n" : "") + "{\n" + indent(sn) + "}";
+	        sn = "{\n" + indent(sn) + "}";
 	        --tabCount;
 	    }
 	    if (brokenBracket) {
@@ -4145,7 +4245,7 @@ Parser methods follow.
 	    String elseStmt = stack.pop().trim();
 	    if (!elseStmt.startsWith("{") && !elseStmt.startsWith("if")) {
 	        ++tabCount;
-	        elseStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(elseStmt) + "}";
+	        elseStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(elseStmt) + "}\n";
 	        --tabCount;
 	    }
 	    if (brokenBracket) {
@@ -4155,7 +4255,7 @@ Parser methods follow.
 	    String ifStmt = stack.pop().trim();
 	    if (!ifStmt.startsWith("{")) {
 	        ++tabCount;
-	        ifStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(ifStmt) + "}";
+	        ifStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(ifStmt) + "}\n";
 	        ifStmt = trimEnd(ifStmt);
 	        --tabCount;
 	    }
@@ -4177,6 +4277,22 @@ Parser methods follow.
 	    // nothing to do here, class type should already be on the stack.
 	}
 
+	@Override public void enterInterfaceModifiers(@NotNull Java8Parser.InterfaceModifiersContext ctx) { 
+	    // interfacemodifier*
+	}
+	
+	@Override public void exitInterfaceModifiers(@NotNull Java8Parser.InterfaceModifiersContext ctx) {
+	    StringBuilder sb = new StringBuilder();
+	    if (ctx.interfaceModifier() != null && ctx.interfaceModifier().size() > 0) {
+	        sb.append(formatModifiers(ctx.interfaceModifier().size()));
+	    }
+	    if (sb.length() == 0) {
+	        indent(sb);   
+	    }
+	    trimEnd(sb);
+        stack.push(sb.toString());
+	}
+	
 	@Override public void enterInterfaceModifier(@NotNull Java8Parser.InterfaceModifierContext ctx) {
 	    // (one of) Annotation public protected private 
 	    // abstract static strictfp	
@@ -4251,12 +4367,13 @@ Parser methods follow.
 	    else if (ctx.finally_() != null) {
 	        // second option
 	        String finally_ = stack.pop();
+	        finally_ = trimFront(finally_);
             finally_ = (breakElse ? '\n' : ' ') + finally_;
-	        
             String catches = "";
 	        if (ctx.catches() != null) {
 	            catches = stack.pop().trim();
 	            catches = (breakElse ? "\n" : " ") + catches;
+	            
 	        }
 	        String block = stack.pop();
 	        block = trimEnd(block);
@@ -4266,6 +4383,7 @@ Parser methods follow.
 	    else {
 	        // first option
 	        String catches = stack.pop();
+	        catches = trimFront(catches);
 	        String block = stack.pop();
 	        String try_ = stack.pop();
 	        sb.append(try_).append(' ').append(block).append(catches);
@@ -4331,7 +4449,10 @@ Parser methods follow.
 	    // ;
 	}
 	@Override public void exitTypeDeclaration(@NotNull Java8Parser.TypeDeclarationContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	    if (";".equals(stack.peek())) {
+	        String semi = stack.pop() + '\n';
+	        stack.push(semi);
+	    }
     }
 
 	@Override public void enterSquareBrackets(@NotNull Java8Parser.SquareBracketsContext ctx) { 
@@ -4422,7 +4543,7 @@ Parser methods follow.
             if (ctx.annotation() != null) {
                 annotations = reverse(ctx.annotation().size(), " ");
             }
-            String typeParameters = stack.pop();
+            String typeParameters = stack.pop().trim();
             sb.append(typeParameters).append(' ');
             sb.append(annotations);
         }
@@ -4705,14 +4826,16 @@ Parser methods follow.
 	}
 
 	@Override public void enterInterfaceMethodDeclaration(@NotNull Java8Parser.InterfaceMethodDeclarationContext ctx) {
-	    // {InterfaceMethodModifier} MethodHeader MethodBody	
+	    // interfaceMethodModifier* methodHeader methodBody	
 	}
 	@Override public void exitInterfaceMethodDeclaration(@NotNull Java8Parser.InterfaceMethodDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String methodBody = stack.pop();
-	    String methodHeader = stack.pop();
-	    if (ctx.interfaceMethodModifier() != null) {
+	    String methodHeader = stack.pop().trim();
+	    if (ctx.interfaceMethodModifier() != null && ctx.interfaceMethodModifier().size() > 0) {
 	        sb.append(formatModifiers(ctx.interfaceMethodModifier().size()));
+	        trimEnd(sb);
+	        sb.append(' ');
 	    }
 	    sb.append(methodHeader).append(methodBody);
 	    stack.push(sb.toString());
@@ -4744,7 +4867,7 @@ Parser methods follow.
 	        sb.append(case_.trim()).append(' ').append(expr);
 	    }
 	    else {
-	        String default_ = stack.pop();
+	        String default_ = stack.pop().trim();
 	        sb.append(default_);   
 	    }
 	    sb.append(colon);
@@ -4906,6 +5029,7 @@ Parser methods follow.
         String terminalText = node.getText();
         stack.push(terminalText);
         processComments(node);
+        processWhitespace(node);
 	}
 	
 	@Override public void visitErrorNode(@NotNull ErrorNode node) { 

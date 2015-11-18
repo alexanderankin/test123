@@ -16,7 +16,9 @@ public class Java8OptionPane extends JPanel {
     private NumberTextField blankLinesBetweenImportGroups;
     
     private NumberTextField blankLinesAfterClassDeclaration;
+    private NumberTextField blankLinesAfterClassBody;
     private NumberTextField blankLinesBeforeMethods;
+    private NumberTextField blankLinesAfterMethods;
     
     private JCheckBox sortModifiers;
     
@@ -55,9 +57,17 @@ public class Java8OptionPane extends JPanel {
         blankLinesAfterClassDeclaration = new NumberTextField(0, 100);
         blankLinesAfterClassDeclaration.setValue(jEdit.getIntegerProperty("beauty.java8.blankLinesAfterClassDeclaration", 1));
         
+        JLabel blankLinesAfterClassBodyLabel = new JLabel(jEdit.getProperty("beauty.java8.Blank_Lines_After_Class_Body", "Blank Lines After Class Body"));
+        blankLinesAfterClassBody = new NumberTextField(0, 100);
+        blankLinesAfterClassBody.setValue(jEdit.getIntegerProperty("beauty.java8.blankLinesAfterClassBody", 1));
+        
         JLabel blankLinesBeforeMethodsLabel = new JLabel(jEdit.getProperty("beauty.java8.Blank_Lines_Before_Methods", "Blank Lines Before Methods"));
         blankLinesBeforeMethods = new NumberTextField(0, 100);
         blankLinesBeforeMethods.setValue(jEdit.getIntegerProperty("beauty.java8.blankLinesBeforeMethods", 2));
+        
+        JLabel blankLinesAfterMethodsLabel = new JLabel(jEdit.getProperty("beauty.java8.Blank_Lines_After_Methods", "Blank Lines After Methods"));
+        blankLinesAfterMethods = new NumberTextField(0, 100);
+        blankLinesAfterMethods.setValue(jEdit.getIntegerProperty("beauty.java8.blankLinesAfterMethods", 2));
         
         sortModifiers = new JCheckBox(jEdit.getProperty("beauty.java8.Sort_Modifiers", "Sort Modifiers"));
         sortModifiers.setSelected(jEdit.getBooleanProperty("beauty.java8.sortModifiers", true));
@@ -79,11 +89,15 @@ public class Java8OptionPane extends JPanel {
         add( "1, 6, 1, 1, W, w, 3", blankLinesBetweenImportGroups );
         add( "0, 7, 1, 1, W, w, 3", blankLinesAfterClassDeclarationLabel );
         add( "1, 7, 1, 1, W, w, 3", blankLinesAfterClassDeclaration );
-        add( "0, 8, 1, 1, W, w, 3", blankLinesBeforeMethodsLabel );
-        add( "1, 8, 1, 1, W, w, 3", blankLinesBeforeMethods );
-        add( "0, 9, 1, 1, W, w, 3", sortModifiers );
-        add( "0, 10,1, 1, W, w, 3", collapseMultipleBlankLinesToLabel );
-        add( "1, 10,1, 1, W, w, 3", collapseMultipleBlankLinesTo );
+        add( "0, 8, 1, 1, W, w, 3", blankLinesAfterClassBodyLabel );
+        add( "1, 8, 1, 1, W, w, 3", blankLinesAfterClassBody );
+        add( "0, 9, 1, 1, W, w, 3", blankLinesBeforeMethodsLabel );
+        add( "1, 9, 1, 1, W, w, 3", blankLinesBeforeMethods );
+        add( "0, 10,1, 1, W, w, 3", blankLinesAfterMethodsLabel );
+        add( "1, 10,1, 1, W, w, 3", blankLinesAfterMethods );
+        add( "0, 11,1, 1, W, w, 3", sortModifiers );
+        add( "0, 12,1, 1, W, w, 3", collapseMultipleBlankLinesToLabel );
+        add( "1, 12,1, 1, W, w, 3", collapseMultipleBlankLinesTo );
     }
 
     public void _save() {
@@ -94,7 +108,9 @@ public class Java8OptionPane extends JPanel {
         jEdit.setBooleanProperty( "beauty.java8.groupImports", groupImports.isSelected(  ) );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesBetweenImportGroups", blankLinesBetweenImportGroups.getValue() );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterClassDeclaration", blankLinesAfterClassDeclaration.getValue() );
+        jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterClassBody", blankLinesAfterClassBody.getValue() );
         jEdit.setIntegerProperty( "beauty.java8.blankLinesBeforeMethods", blankLinesBeforeMethods.getValue() );
+        jEdit.setIntegerProperty( "beauty.java8.blankLinesAfterMethods", blankLinesAfterMethods.getValue() );
         jEdit.setBooleanProperty( "beauty.java8.sortModifiers", sortModifiers.isSelected());
         jEdit.setIntegerProperty( "beauty.java8.collapseMultipleBlankLinesTo", collapseMultipleBlankLinesTo.getValue());
     }
