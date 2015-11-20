@@ -1,16 +1,22 @@
+
 package beauty.options.java;
 
-import javax.swing.table.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import beauty.parsers.java.JavaParser;
+
+import ise.java.awt.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
-import beauty.parsers.java.JavaParser;
-import ise.java.awt.*;
+
 
 /**
 * An option pane to configure settings for the built-in Java beautifier.
@@ -22,26 +28,28 @@ public class JavaOptionPane extends JPanel {
     private int bracketStyle;
     private JCheckBox breakElse;
     private JCheckBox padParens;
-    public JavaOptionPane(  ) {
+
+    public JavaOptionPane() {
         super();
         bracketStyle = jEdit.getIntegerProperty( "beauty.java.bracketStyle", JavaParser.ATTACHED );
     }
 
     // called when this class is first accessed
-    public void _init(  ) {
-        installComponents(  );
+    public void _init() {
+        installComponents();
     }
 
     // create the user interface components and do the layout
-    private void installComponents(  ) {
-        setLayout( new KappaLayout(  ) );
+    private void installComponents() {
+        setLayout( new KappaLayout() );
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+
         // create the components
         JLabel description = new JLabel( "<html><b>" + jEdit.getProperty( "beauty.msg.Java_Options", "Java Options" ) );
         attachedBrackets = new JRadioButton( "<html>" + jEdit.getProperty( "beauty.msg.Use_attached_brackets,_e.g.", "Use attached brackets, e.g." ) + "<br> try {" );
         brokenBrackets = new JRadioButton( "<html>" + jEdit.getProperty( "beauty.msg.Use_broken_brackets,_e.g.", "Use broken brackets, e.g." ) + "<br>try<br>{" );
 
-        ButtonGroup bg = new ButtonGroup(  );
+        ButtonGroup bg = new ButtonGroup();
         bg.add( attachedBrackets );
         bg.add( brokenBrackets );
         breakElse = new JCheckBox( "<html>" + jEdit.getProperty( "beauty.msg.Break", "Break" ) + " 'else', 'catch', 'while', e.g.<br>}<br>else" );
@@ -59,18 +67,21 @@ public class JavaOptionPane extends JPanel {
                 breakElse.setSelected( true );
                 break;
         }
-        
+
+
         padParens = new JCheckBox( jEdit.getProperty( "beauty.msg.Pad_parenthesis,_e.g._", "Pad parenthesis, e.g. " ) + "if ( i == 1 ) versus if (i == 1)" );
         padParens.setSelected( jEdit.getBooleanProperty( "beauty.java.padParens", false ) );
-        ActionListener al = new ActionListener(  ){
+        ActionListener al = new ActionListener(){
 
             public void actionPerformed( ActionEvent ae ) {
-                if ( attachedBrackets.equals( ae.getSource(  ) ) ) {
+                if ( attachedBrackets.equals( ae.getSource() ) ) {
                     bracketStyle = JavaParser.ATTACHED;
-                } else if ( brokenBrackets.equals( ae.getSource(  ) ) ) {
+                }
+                else if ( brokenBrackets.equals( ae.getSource() ) ) {
                     bracketStyle = JavaParser.BROKEN;
                     breakElse.setSelected( true );
                 }
+
 
                 breakElse.setEnabled( bracketStyle == JavaParser.ATTACHED );
             }
@@ -84,9 +95,9 @@ public class JavaOptionPane extends JPanel {
         add( "0, 4, 1, 1, W, w, 3", padParens );
     }
 
-    public void _save(  ) {
+    public void _save() {
         jEdit.setIntegerProperty( "beauty.java.bracketStyle", bracketStyle );
-        jEdit.setBooleanProperty( "beauty.java.breakElse", breakElse.isSelected(  ) );
-        jEdit.setBooleanProperty( "beauty.java.padParens", padParens.isSelected(  ) );
+        jEdit.setBooleanProperty( "beauty.java.breakElse", breakElse.isSelected() );
+        jEdit.setBooleanProperty( "beauty.java.padParens", padParens.isSelected() );
     }
 }

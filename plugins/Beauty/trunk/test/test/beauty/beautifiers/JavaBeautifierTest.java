@@ -44,8 +44,7 @@ public class JavaBeautifierTest {
             answer.append( "\n" );
             answer.append( "public class Test {\n" );
             answer.append( "\n" );
-            answer.append( "\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -81,7 +80,7 @@ public class JavaBeautifierTest {
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println( \"some text\" );\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -126,7 +125,7 @@ public class JavaBeautifierTest {
             sb.append( "            x = 1;\n" );
             sb.append( "        }\n" );
             sb.append( "    }\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -190,7 +189,7 @@ public class JavaBeautifierTest {
             answer.append( "            x = 1;\n" );
             answer.append( "        }\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -246,7 +245,7 @@ public class JavaBeautifierTest {
             answer.append( "            print(s);\n" );
             answer.append( "        }\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -294,7 +293,7 @@ public class JavaBeautifierTest {
             answer.append( "            save(x);\n" );
             answer.append( "        }\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -325,7 +324,7 @@ public class JavaBeautifierTest {
             sb.append( "            x = 1;\n" );
             sb.append( "        } while (i < 10);\n" );
             sb.append( "    }\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -367,7 +366,7 @@ public class JavaBeautifierTest {
             sb.append( "                break;\n" );
             sb.append( "        }\n" );
             sb.append( "    }\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -387,10 +386,15 @@ public class JavaBeautifierTest {
     }
 
     @Test
-    public void testComments() {
+    public void testComments1() {
         // test the various comment constructs
         try {
             StringBuilder sb = new StringBuilder();
+            sb.append( "/**\n" );
+            sb.append( " * a javadoc comment\n" );
+            sb.append( " * @param condition The switch condition\n" );
+            sb.append( " * @return the condition\n" );
+            sb.append( " */\n" );
             sb.append( "public class Test {\n" );
             sb.append( "\n" );
             sb.append( "    /**\n" );
@@ -422,6 +426,8 @@ public class JavaBeautifierTest {
             sb.append( "        return condition;\n" );
             sb.append( "    }\n" );
             sb.append( "}\n" );
+            sb.append( "\n" );
+            sb.append( "// end of file comment\n");
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -432,13 +438,16 @@ public class JavaBeautifierTest {
             beautifier.setWrapMode( "none" );
             String after = beautifier.beautify( sb.toString() );
             assertTrue( "returned text was null", after != null );
-            assertTrue( "'comment' test failed:\nexpected:\n" + sb.toString() + "\nbut was:\n" + after, sb.toString().equals( after )  );
+            assertTrue( "'comment' test 1 failed:\nexpected:\n" + sb.toString() + "\nbut was:\n" + after, sb.toString().equals( after )  );
         }
         catch ( Exception e ) {
             e.printStackTrace();
             fail( e.getMessage() );
         }
-
+    }
+    
+    @Test
+    public void testComments2() {
         // test to allow single line comments with multiple slashes. It is a somewhat
         // common practice to use 3 or 4 slashes to indicate a temporary removal of
         // code or to mark a TODO.
@@ -451,7 +460,7 @@ public class JavaBeautifierTest {
             answer.append( "public class CommentTest {\n" );
             answer.append( "\n" );
             answer.append( "    //// a comment\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -462,7 +471,38 @@ public class JavaBeautifierTest {
             beautifier.setWrapMode( "none" );
             String after = beautifier.beautify( before.toString() );
             assertTrue( "returned text was null", after != null );
-            assertTrue( "'comment' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+            assertTrue( "'comment' test 2 failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testComments3() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append( "public class CommentTest {\n" );
+            before.append( "    int a = 6; // a comment\n" );
+            before.append( "    int b = 6;\n" );
+            before.append( "}\n" );
+            StringBuilder answer = new StringBuilder();
+            answer.append( "public class CommentTest {\n" );
+            answer.append( "\n" );
+            answer.append( "    int a = 6;    // a comment\n" );
+            answer.append( "    int b = 6;\n" );
+            answer.append( "}\n\n" );
+            Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            String after = beautifier.beautify( before.toString() );
+            assertTrue( "returned text was null", after != null );
+            assertTrue( "'comment' test 3 failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
         }
         catch ( Exception e ) {
             e.printStackTrace();
@@ -484,7 +524,7 @@ public class JavaBeautifierTest {
             answer.append( "    public int goodSwitch(int condition) {\n" );
             answer.append( "        // a single line comment\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -518,7 +558,7 @@ public class JavaBeautifierTest {
             answer.append( "    public int goodSwitch(int condition) {\n" );
             answer.append( "        // a single line comment\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -561,7 +601,7 @@ public class JavaBeautifierTest {
             sb.append( "            x = 1;\n" );
             sb.append( "        }\n" );
             sb.append( "    }\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -602,7 +642,7 @@ public class JavaBeautifierTest {
             sb.append( "            }\n" );
             sb.append( "        }\n" );
             sb.append( "    }\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -650,7 +690,7 @@ public class JavaBeautifierTest {
             answer.append( "        }\n" );
             answer.append( "        return (i > 10 ? 1 : -1);\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -705,7 +745,7 @@ public class JavaBeautifierTest {
             sb.append( "    String synopsis();\n" );
             sb.append( "    String engineer() default \"[unassigned]\";\n" );
             sb.append( "    String date() default \"[unimplemented]\";\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -746,7 +786,7 @@ public class JavaBeautifierTest {
             sb.append( "    // @Test\n" );
             sb.append( "    public int markerAnnotation(int condition) {\n" );
             sb.append( "    }\n" );
-            sb.append( "}\n" );
+            sb.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -780,7 +820,7 @@ public class JavaBeautifierTest {
             answer.append( "    int x = -1;\n" );
             answer.append( "    int y = i - j;\n" );
             answer.append( "    float z = +0.1;\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -815,7 +855,7 @@ public class JavaBeautifierTest {
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println(\"some text\");\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -851,7 +891,7 @@ public class JavaBeautifierTest {
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println( \"some text\" );\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -887,7 +927,7 @@ public class JavaBeautifierTest {
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println( \"some text\" );\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -961,7 +1001,7 @@ public class JavaBeautifierTest {
             answer.append( "        System.out.println();\n" );
             answer.append( "        System.out.println( \"some text\" );\n" );
             answer.append( "    }\n" );
-            answer.append( "}\n" );
+            answer.append( "}\n\n" );
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -1073,7 +1113,7 @@ public class JavaBeautifierTest {
             answer.append( "        }\n" ); 
             answer.append( "        return result;\n" ); 
             answer.append( "    }\n" ); 
-            answer.append( "}\n" ); 
+            answer.append( "}\n\n" ); 
             Java8Beautifier beautifier = new Java8Beautifier();
             beautifier.setEditMode( "java" );
             beautifier.setLineSeparator( "\n" );
@@ -1224,7 +1264,7 @@ public class JavaBeautifierTest {
             answer.append( "        LambdaScopeTest.FirstLevel fl = st.newFirstLevel();\n" ); 
             answer.append( "        fl.methodInFirstLevel(23);\n" ); 
             answer.append( "    }\n" ); 
-            answer.append( "}\n" ); 
+            answer.append( "}\n\n" ); 
 
 
             Java8Beautifier beautifier = new Java8Beautifier();
@@ -1243,5 +1283,77 @@ public class JavaBeautifierTest {
             fail( e.getMessage() );
         }
     }
-    
+  
+    @Test
+    public void testArraysAndDims() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append( "class Test {\n" ); 
+            before.append( "    void method1() {\n" ); 
+            before.append( "        int @NotNull[] a;\n" ); 
+            before.append( "        grid[l][t].textWidthPix = accTabstop;\n" ); 
+            before.append( "        grid[l][t] = new ETTabstop();\n" );
+            before.append( "        String sa[] = new String[2];\n" ); 
+            before.append( "        sa[0] = \"he\";\n" );  
+            before.append( "        sa[1] = \"llo\";\n" ); 
+            before.append( "        String[] sd = {\"apple\", \"banana\", \"carrot\", \"dill\", \"eggplant\"};\n" );   
+            before.append( "        String[] sb = {\n" ); 
+            before.append( "            \"e\", \"f\",\n" );  
+            before.append( "            \"g\", \"h\"\n" ); 
+            before.append( "        };\n" ); 
+            before.append( "        String[] sc = {\"a\", \"b\",\n" );  
+            before.append( "            \"c\", \"d\"};\n" ); 
+            before.append( "        System.out.println(sa[0] + sa[1]);\n" ); 	
+            before.append( "        Point a[] = { new Point(0,0), new Point(1,1) };\n" ); 
+            before.append( "        String[][] names = {{\"Mr. \", \"Mrs. \", \"Ms. \"},\n" );             
+            before.append( "        {\"Smith\", \"Jones\"}};\n" ); 
+            before.append( "    }\n" );                                                               
+            before.append( "}\n" ); 
+
+            StringBuilder answer = new StringBuilder();
+            answer.append( "class Test {\n" );
+            answer.append( "\n" );
+            answer.append( "\n" );
+            answer.append( "    void method1() {\n" );
+            answer.append( "        int @NotNull[] a;\n" );
+            answer.append( "        grid[l][t].textWidthPix = accTabstop;\n" );
+            answer.append( "        grid[l][t] = new ETTabstop();\n");
+            answer.append( "        String sa[] = new String [2];\n" );
+            answer.append( "        sa[0] = \"he\";\n" );
+            answer.append( "        sa[1] = \"llo\";\n" );
+            answer.append( "        String[] sd = {\"apple\", \"banana\", \"carrot\", \"dill\", \"eggplant\"};\n" );
+            answer.append( "        String[] sb = {\n" );
+            answer.append( "            \"e\", \"f\",\n" );
+            answer.append( "            \"g\", \"h\"\n" );
+            answer.append( "        };\n" );
+            answer.append( "        String[] sc = {\n" );
+            answer.append( "            \"a\", \"b\",\n" );
+            answer.append( "            \"c\", \"d\"\n" );
+            answer.append( "        };\n" );
+            answer.append( "        System.out.println(sa[0] + sa[1]);\n" );
+            answer.append( "        Point a[] = {new Point(0, 0), new Point(1, 1)};\n" );
+            answer.append( "        String[][] names = {\n" );
+            answer.append( "            {\"Mr. \", \"Mrs. \", \"Ms. \"},\n" );
+            answer.append( "            {\"Smith\", \"Jones\"}\n" );
+            answer.append( "        };\n" );
+            answer.append( "    }\n" );
+            answer.append( "}\n\n" );
+
+            Java8Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            String after = beautifier.beautify( before.toString() );
+            assertTrue( "'arrays and dims' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+                
 }

@@ -1593,6 +1593,7 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class WildcardBoundsContext extends ParserRuleContext {
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public ReferenceTypeContext referenceType() {
 			return getRuleContext(ReferenceTypeContext.class,0);
 		}
@@ -5738,6 +5739,7 @@ public class Java8Parser extends Parser {
 		public TypeArgumentsContext typeArguments() {
 			return getRuleContext(TypeArgumentsContext.class,0);
 		}
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public PrimaryContext primary() {
 			return getRuleContext(PrimaryContext.class,0);
 		}
@@ -12338,6 +12340,7 @@ public class Java8Parser extends Parser {
 
 	public static class FieldAccessContext extends ParserRuleContext {
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public TypeNameContext typeName() {
 			return getRuleContext(TypeNameContext.class,0);
 		}
@@ -12441,6 +12444,7 @@ public class Java8Parser extends Parser {
 	}
 
 	public static class FieldAccess_lfno_primaryContext extends ParserRuleContext {
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
 		public TypeNameContext typeName() {
 			return getRuleContext(TypeNameContext.class,0);
@@ -12755,6 +12759,7 @@ public class Java8Parser extends Parser {
 			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public MethodNameContext methodName() {
 			return getRuleContext(MethodNameContext.class,0);
 		}
@@ -13249,6 +13254,7 @@ public class Java8Parser extends Parser {
 			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public ArrayTypeContext arrayType() {
 			return getRuleContext(ArrayTypeContext.class,0);
 		}
@@ -13461,6 +13467,7 @@ public class Java8Parser extends Parser {
 			return getRuleContext(TypeArgumentsContext.class,0);
 		}
 		public TerminalNode Identifier() { return getToken(Java8Parser.Identifier, 0); }
+		public TerminalNode SUPER() { return getToken(Java8Parser.SUPER, 0); }
 		public ArrayTypeContext arrayType() {
 			return getRuleContext(ArrayTypeContext.class,0);
 		}
