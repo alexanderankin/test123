@@ -196,7 +196,7 @@ wildcard
 
 wildcardBounds
 	:	'extends' referenceType
-	|	'super' referenceType
+	|	SUPER referenceType
 	;
 
 /*
@@ -558,9 +558,9 @@ constructorBody
 
 explicitConstructorInvocation
 	:	typeArguments? 'this' '(' argumentList? ')' ';'
-	|	typeArguments? 'super' '(' argumentList? ')' ';'
-	|	expressionName '.' typeArguments? 'super' '(' argumentList? ')' ';'
-	|	primary '.' typeArguments? 'super' '(' argumentList? ')' ';'
+	|	typeArguments? SUPER '(' argumentList? ')' ';'
+	|	expressionName '.' typeArguments? SUPER '(' argumentList? ')' ';'
+	|	primary '.' typeArguments? SUPER '(' argumentList? ')' ';'
 	;
 
 enumDeclaration
@@ -1101,8 +1101,8 @@ typeArgumentsOrDiamond
 
 fieldAccess
 	:	primary '.' Identifier
-	|	'super' '.' Identifier
-	|	typeName '.' 'super' '.' Identifier
+	|	SUPER '.' Identifier
+	|	typeName '.' SUPER '.' Identifier
 	;
 
 fieldAccess_lf_primary
@@ -1110,8 +1110,8 @@ fieldAccess_lf_primary
 	;
 
 fieldAccess_lfno_primary
-	:	'super' '.' Identifier
-	|	typeName '.' 'super' '.' Identifier
+	:	SUPER '.' Identifier
+	|	typeName '.' SUPER '.' Identifier
 	;
 
 arrayAccess
@@ -1119,7 +1119,7 @@ arrayAccess
 		|	primaryNoNewArray_lfno_arrayAccess '[' expression ']'
 		)
 		(	primaryNoNewArray_lf_arrayAccess '[' expression ']'
-		)*
+		)*                                                           
 	;
 
 arrayAccess_lf_primary
@@ -1142,8 +1142,8 @@ methodInvocation
 	|	typeName '.' typeArguments? Identifier '(' argumentList? ')'
 	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
 	|	primary '.' typeArguments? Identifier '(' argumentList? ')'
-	|	'super' '.' typeArguments? Identifier '(' argumentList? ')'
-	|	typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'  
+	|	SUPER '.' typeArguments? Identifier '(' argumentList? ')'
+	|	typeName '.' SUPER '.' typeArguments? Identifier '(' argumentList? ')'  
 	;
 
 methodInvocation_lf_primary
@@ -1166,8 +1166,8 @@ methodReference
 	:	expressionName '::' typeArguments? Identifier
 	|	referenceType '::' typeArguments? Identifier
 	|	primary '::' typeArguments? Identifier
-	|	'super' '::' typeArguments? Identifier
-	|	typeName '.' 'super' '::' typeArguments? Identifier
+	|	SUPER '::' typeArguments? Identifier
+	|	typeName '.' SUPER '::' typeArguments? Identifier
 	|	classType '::' typeArguments? 'new'
 	|	arrayType '::' 'new'
 	;
@@ -1179,8 +1179,8 @@ methodReference_lf_primary
 methodReference_lfno_primary
 	:	expressionName '::' typeArguments? Identifier
 	|	referenceType '::' typeArguments? Identifier
-	|	'super' '::' typeArguments? Identifier
-	|	typeName '.' 'super' '::' typeArguments? Identifier
+	|	SUPER '::' typeArguments? Identifier
+	|	typeName '.' SUPER '::' typeArguments? Identifier
 	|	classType '::' typeArguments? 'new'
 	|	arrayType '::' 'new'
 	;
