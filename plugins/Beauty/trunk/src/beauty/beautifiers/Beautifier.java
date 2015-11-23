@@ -1,5 +1,6 @@
 package beauty.beautifiers;
 
+import beauty.BeautyThread;
 import beauty.parsers.ParserException;
 
 /**
@@ -26,6 +27,7 @@ public abstract class Beautifier {
     
     public static final String SERVICE_NAME = "beauty.beautifiers.Beautifier";
     
+    private BeautyThread runner = null;
     
     /**
      * Subclasses may override this method to initialize themselves. The jEdit
@@ -118,5 +120,15 @@ public abstract class Beautifier {
     
     public void setInitialIndentLevel(int level) {
         initialLevel = level;   
+    }
+    
+    public void setRunner(BeautyThread runner) {
+        this.runner = runner;    
+    }
+    
+    protected void setProgressMessage(String message) {
+        if (runner != null) {
+            runner.setDialogText(message);    
+        }
     }
 }

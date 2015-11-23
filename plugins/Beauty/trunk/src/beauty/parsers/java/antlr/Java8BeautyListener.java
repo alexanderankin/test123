@@ -221,6 +221,22 @@ Formatting methods.
         return sb.toString();
     }
     
+    /**
+     * Assumes the given string is already indented but needs one additional indentation.    
+     */
+    private String indentAgain(String s) {
+        StringBuilder sb = new StringBuilder();
+        String[] lines = s.split("\n");
+        for (String line : lines) {
+            line = tab + line;    
+            sb.append(line);
+            if (!line.endsWith("\n")) {
+                sb.append('\n');    
+            }
+        }
+        return sb.toString();
+    }
+    
     private String indentRBrace(String s) {
         s = s.trim();
         String start = s.substring(0, s.indexOf("}"));
@@ -818,29 +834,33 @@ Formatting methods.
 	    }
 	};
 	
-	private String sortAndGroupImports(String imports) {
+	private String sortAndGroupImports(List<String> importList) {
 	    if (sortImports == false && groupImports == false) {
-	        return imports;    
+	        StringBuilder sb = new StringBuilder();
+	        for (String imp : importList) {
+	            sb.append(imp);    
+	        }
+	        return sb.toString();    
 	    }
 	    
-	    // sort imports
-	    ArrayList<String> importList = new ArrayList<String>();
-	    importList.addAll(Arrays.asList(imports.split("\n")));
+	    // remove null items and blank strings
 	    ListIterator<String> it = importList.listIterator();
 	    while(it.hasNext()) {
 	        String next = it.next();
 	        if (next == null || next.trim().isEmpty()) {
 	            it.remove();    
 	        }
+	        it.set(next.trim() + '\n');
 	    }
 	    
+	    // sort imports
 	    if (sortImports || groupImports) {
 	        // grouping imports requires sorting them first
 	        Collections.sort(importList, importComparator);            
 	    }
-	    for (int i = 0; i < importList.size(); i++) {
-	        importList.set(i, importList.get(i) + '\n');
-	    }
+	    
+	    // remove duplicates but keep order
+	    importList = new ArrayList<String>(new LinkedHashSet<String>(importList));
 	    
 	    // group imports
 	    if (groupImports) {
@@ -852,20 +872,13 @@ Formatting methods.
                     groups.add(imp);
                     continue;
                 }
-                String a = importList.get(i - 1);
-                String b = importList.get(i);
-                if (a.trim().length() > 0) {
-                    // remove 'import' and 'static'
-                    a = a.trim().replaceAll("\t", " ").substring(a.lastIndexOf(" "));
-                    if (a.indexOf(".") > -1) {
-                        a = a.substring(0, a.indexOf("."));    
-                    }
+                String a = getImportName(importList.get(i - 1));
+                if (a.indexOf(".") > -1) {
+                    a = a.substring(0, a.indexOf("."));    
                 }
-                if (b.trim().length() > 0) {
-                    b = b.trim().replaceAll("\t", " ").substring(b.lastIndexOf(" "));
-                    if (b.indexOf(".") > -1) {
-                        b = b.substring(0, b.indexOf("."));    
-                    }
+                String b = getImportName(importList.get(i));
+                if (b.indexOf(".") > -1) {
+                    b = b.substring(0, b.indexOf("."));    
                 }
                 if (!a.equals(b)) {
                     groups.add(blankLines);
@@ -880,17 +893,31 @@ Formatting methods.
 	    for (String imp : importList) {
 	        sb.append(imp);    
 	    }
-	    
 	    return sb.toString();
 	}
 	
-	private static Comparator<String> importComparator = new Comparator<String>() {
-	    // No parameter checking here, this assumes the strings will be valid import
-	    // statements, not blank lines or null.
+	/**
+ 	 * Get just the name of the import in the import statement, e.g. given "import java.util.*;"
+ 	 * this method would return "java.util.*;". Note that there may be comments included
+ 	 * with <code>s</code>.
+ 	 */
+	private String getImportName(String s) {
+	    String[] lines = s.split("\n");
+	    // just check the last non-blank line
+	    for (int i = lines.length - 1; i >= 0; i--) {
+	        String line = lines[i].trim();
+	        if (line.startsWith("import ")) {
+	            return line.substring(line.lastIndexOf(" "));    
+	        }
+	    }
+	    return "";
+	}
+	
+	private Comparator<String> importComparator = new Comparator<String>() {
         @Override
 	    public int compare(String a, String b) {
-	        String a_ = a.trim().replaceAll("\t", " ").substring(a.lastIndexOf(" "));
-	        String b_ = b.trim().replaceAll("\t", " ").substring(b.lastIndexOf(" "));
+	        String a_ = getImportName(a);
+	        String b_ = getImportName(b);
 	        return a_.compareTo(b_);
 	    }
 	};
@@ -906,7 +933,7 @@ Formatting methods.
 	        line = trimEnd(line);
 	        sb.append(line).append('\n');
 	    }
-	    if (!s.endsWith("\n")) {
+	    while (endsWith(sb, "\n\n")) {
 	        sb.deleteCharAt(sb.length() - 1);    
 	    }
 	    return sb.toString();
@@ -944,6 +971,7 @@ Testing and debugging methods.
             return;
         try {
             // set up the parser
+            long startTime = System.currentTimeMillis();
             java.io.FileReader input = new java.io.FileReader(args[0]);
             ANTLRInputStream antlrInput = new ANTLRInputStream( input );
             Java8Lexer lexer = new Java8Lexer( antlrInput );
@@ -952,16 +980,40 @@ Testing and debugging methods.
             
             // for debugging
             javaParser.setTrace(args.length > 1 && "trace".equals(args[1]));
-
+            
             // parse and beautify the buffer contents
-            ParseTree tree = javaParser.compilationUnit();
-            ParseTreeWalker walker = new ParseTreeWalker();
             Java8BeautyListener listener = new Java8BeautyListener(16 * 1024, tokens);
             listener.setUseSoftTabs(true);
             listener.setIndentWidth(4);
+            ParseTreeWalker walker = new ParseTreeWalker();
+            ParseTree tree = null;
+            try {
+                javaParser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.SLL);
+                javaParser.removeErrorListeners();
+                javaParser.setErrorHandler(new BailErrorStrategy());
+                tree = javaParser.compilationUnit();
+            }
+            catch(org.antlr.v4.runtime.misc.ParseCancellationException ex) {
+                //ex.printStackTrace();
+                System.out.println("+++++ first pass: " + (System.currentTimeMillis() - startTime) + " ms");
+                System.out.println("+++++ Encountered possible syntax error, reparsing...");
+                tokens.reset(); // rewind input stream
+                javaParser.reset();
+                // back to standard listeners/handlers
+                javaParser.addErrorListener(ConsoleErrorListener.INSTANCE);
+                javaParser.setErrorHandler(new DefaultErrorStrategy());
+                // full now with full LL(*)
+                javaParser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.LL);
+                long parseTime = System.currentTimeMillis();
+                tree = javaParser.compilationUnit();        
+                System.out.println("+++++ second pass: " + (System.currentTimeMillis() - parseTime) + " ms");
+            }
             walker.walk( listener, tree );
 
             System.out.println(listener.getText());
+            
+            long elapsed = System.currentTimeMillis() - startTime;
+            System.out.println("+++++ elapsed time: " + elapsed + " ms");
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -1039,7 +1091,7 @@ Parser methods follow.
 	    String dot = stack.pop();
 	    sb.append(dot);
 	    if (!typeArguments.isEmpty()) {
-	        sb.append(typeArguments).append(' ');
+	        sb.append(typeArguments).append('%');
 	    }
 	    sb.append(identifier).append(padParen(lparen, argumentList)).append(argumentList).append(padParen(rparen, argumentList));
 	    stack.push(sb.toString());
@@ -1486,8 +1538,8 @@ Parser methods follow.
 	            String rsquare = stack.pop();
                 String expr = stack.pop();
                 String lsquare = stack.pop();
-                String pn = stack.pop();
-                sb.append(pn).append(lsquare).append(expr).append(rsquare).append(' ');
+                // primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary doesn't put anything on the stack
+                sb.append(lsquare).append(expr).append(rsquare).append(' ');
 	        }
 	    }
 	    String rsquare = stack.pop();
@@ -1778,39 +1830,40 @@ Parser methods follow.
 	    stack.push(sb.toString());
 	}
 	@Override public void enterMethodInvocation(@NotNull Java8Parser.MethodInvocationContext ctx) { 
-        // methodName '(' argumentList? ')'
-        // typeName '.' typeArguments? Identifier '(' argumentList? ')'
-        // expressionName '.' typeArguments? Identifier '(' argumentList? ')'
-        // primary '.' typeArguments? Identifier '(' argumentList? ')'
-        // 'super' '.' typeArguments? Identifier '(' argumentList? ')'
+        //                                         methodName '(' argumentList? ')'
+        //             typeName '.' typeArguments? Identifier '(' argumentList? ')'
+        //       expressionName '.' typeArguments? Identifier '(' argumentList? ')'
+        //              primary '.' typeArguments? Identifier '(' argumentList? ')'
+        //              'super' '.' typeArguments? Identifier '(' argumentList? ')'
         // typeName '.' 'super' '.' typeArguments? Identifier '(' argumentList? ')'  	    
 	}
 	@Override public void exitMethodInvocation(@NotNull Java8Parser.MethodInvocationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
+	    
+	    // common ending
 	    String rparen = stack.pop();
+        String argList = ctx.argumentList() == null ? "" : stack.pop();
+        String lparen = stack.pop();
+        StringBuilder ending = new StringBuilder();
+        ending.append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList)); 
+        
 	    if (ctx.methodName() != null) {
 	        // 1st choice
-	        String argList = ctx.argumentList() == null ? "" : stack.pop();
-	        String lparen = stack.pop();
 	        String name = stack.pop();
-	        sb.append(name).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));    
+	        sb.append(name).append(ending);   
 	    }
 	    else if (ctx.expressionName() != null || ctx.primary() != null) {
 	        // 3rd and 4th choices
-	        String argList = ctx.argumentList() == null ? "" : stack.pop();
-	        String lparen = stack.pop();
 	        String identifier = stack.pop();
-	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
+	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String dot = stack.pop();
 	        String name = stack.pop();
-	        sb.append(name).append(dot).append(typeArgs).append(' ').append(identifier).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));
+	        sb.append(name).append(dot).append(typeArgs).append(identifier).append(ending);
 	    }
 	    else if (ctx.typeName() != null) {
 	        // 2nd and 6th choices
-	        String argList = ctx.argumentList() == null ? "" : stack.pop();
-	        String lparen = stack.pop();
 	        String identifier = stack.pop();
-	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
+	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
             boolean hasSuper = ctx.SUPER() != null;
             String dot = stack.pop();
             String super_ = "";
@@ -1820,26 +1873,16 @@ Parser methods follow.
                 dot2 = stack.pop();
             }
             String typename = stack.pop();
-            sb.append(typename).append(dot2).append(super_).append(dot); 
-	        if (!typeArgs.isEmpty()) {
-	            sb.append(typeArgs).append(' ');        
-	        }
-	        sb.append(identifier).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));
+            sb.append(typename).append(dot2).append(super_).append(dot).append(typeArgs).append(identifier).append(ending);
 	    }
 	    else {
 	        // 5th choice
 	        // 'super' '.' typeArguments? Identifier '(' argumentList? ')'
-	        String argList = ctx.argumentList() == null ? "" : stack.pop();
-	        String lparen = stack.pop();
 	        String identifier = ctx.Identifier() == null ? "" : stack.pop();
-	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop();
+	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String dot = stack.pop();
 	        String super_ = stack.pop();
-	        sb.append(super_).append(dot);           
-	        if (!typeArgs.isEmpty()) {
-	            sb.append(typeArgs).append(' ');        
-	        }
-	        sb.append(identifier).append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList));
+	        sb.append(super_).append(dot).append(typeArgs).append(identifier).append(ending);
 	    }
 	    stack.push(sb.toString());
 	}
@@ -2236,7 +2279,7 @@ Parser methods follow.
 	            String rsquare = stack.pop();
 	            String expr = stack.pop();
 	            String lsquare = stack.pop();
-	            // primaryNoNewArray_lf_arrayAccess does nothing
+	            // primaryNoNewArray_lf_arrayAccess doesn't put anything on the stack
 	            sh.append(lsquare).append(expr).append(rsquare);
 	        }
 	    }
@@ -2347,7 +2390,7 @@ Parser methods follow.
 	@Override public void exitNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
         String body = stack.pop();
-        String superInterfaces = ctx.superinterfaces() == null ? "" : stack.pop();
+        String superInterfaces = ctx.superinterfaces() == null ? "" : stack.pop() + ' ';
         String superClass = ctx.superclass() == null ? "" : stack.pop() + ' ';
         String params = ctx.typeParameters() == null ? "" : stack.pop() + ' ';
         String identifier = stack.pop();
@@ -2449,6 +2492,8 @@ Parser methods follow.
 	}
 	@Override public void exitCompilationUnit(@NotNull Java8Parser.CompilationUnitContext ctx) {
 	    String end = stack.pop();    // EOF and maybe some comments
+	    end = end.replace("<EOF>", "");
+	    end = removeExcessWhitespace(end);
 	    
 	    String typeDeclarations = "";
 	    if (ctx.typeDeclaration() != null && ctx.typeDeclaration().size() > 0) {
@@ -2458,8 +2503,7 @@ Parser methods follow.
 	    }
 	    String importDeclarations = "";
 	    if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
-	        importDeclarations = reverse(ctx.importDeclaration().size(), "");
-	        importDeclarations = sortAndGroupImports(importDeclarations);
+	        importDeclarations = sortAndGroupImports(reverse(ctx.importDeclaration().size()));
 	        importDeclarations = removeBlankLines(importDeclarations, BOTH);
 	        importDeclarations = removeExcessWhitespace(importDeclarations) + getBlankLines(blankLinesAfterImports + 1);
 	    }
@@ -2473,7 +2517,7 @@ Parser methods follow.
         output.append(packageDeclaration);
         output.append(importDeclarations);
         output.append(typeDeclarations);
-        output.append(end.replace("<EOF>", ""));
+        output.append(end);
 	    // all done!
 	}
 
@@ -2524,14 +2568,16 @@ Parser methods follow.
 
 	@Override public void enterSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
 	    // switchLabels blockStatements
+	    ++ tabCount;
 	}
 	@Override public void exitSwitchBlockStatementGroup(@NotNull Java8Parser.SwitchBlockStatementGroupContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    String bs = stack.pop().trim();
-	    ++tabCount;
-        bs = indent(bs);
-	    --tabCount;
-	    String sl = stack.pop();
+	    String bs = ctx.blockStatements() == null ? "" : stack.pop();
+	    bs = removeBlankLines(bs, BOTH);
+	    bs = indent(bs);
+	    bs = indentAgain(bs);
+	    -- tabCount;
+	    String sl = ctx.switchLabels() == null ? "" : stack.pop();
 	    sb.append(sl).append(bs);
 	    stack.push(sb.toString());
 	}
@@ -2982,7 +3028,7 @@ Parser methods follow.
 	            String rsquare = stack.pop();
 	            String expr = stack.pop();
 	            String lsquare = stack.pop();
-	            // primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary does nothing
+	            // primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary doesn't put anything on the stack
 	            sh.append(lsquare).append(expr).append(rsquare);
 	        }
 	    }
@@ -3183,23 +3229,25 @@ Parser methods follow.
 
 	@Override public void enterSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
 	    // '{' switchBlockStatementGroup* switchLabel* '}'
-	    ++tabCount;
 	}
 	@Override public void exitSwitchBlock(@NotNull Java8Parser.SwitchBlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop().trim();
+	    ++ tabCount;
 	    String label = "";
 	    if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
-	        label = reverse(ctx.switchLabel().size(), " "); 
+	        label = reverse(ctx.switchLabel().size(), " ");
+	        label = indent(label);
 	    }
 	    String group = "";
 	    if (ctx.switchBlockStatementGroup() != null && ctx.switchBlockStatementGroup().size() > 0) {
 	        group = reverse(ctx.switchBlockStatementGroup().size(), "");
+	        group = indent(group);
 	    }
+	    -- tabCount;
 	    String lbracket = stack.pop();
 	    sb.append(brokenBracket ? "\n" : "").append(lbracket).append('\n').append(group).append(label).append(rbracket).append('\n');
 	    stack.push(sb.toString());
-	    --tabCount;
 	}
 
 	@Override public void enterForInit(@NotNull Java8Parser.ForInitContext ctx) { 
@@ -3674,7 +3722,7 @@ Parser methods follow.
 	}
 
 	@Override public void enterPrimary(@NotNull Java8Parser.PrimaryContext ctx) {
-        // :	(	primaryNoNewArray_lfno_primary
+        // 	   (	primaryNoNewArray_lfno_primary
         //     |	arrayCreationExpression
         //     )
         //     (	primaryNoNewArray_lf_primary
@@ -3683,10 +3731,8 @@ Parser methods follow.
 	@Override public void exitPrimary(@NotNull Java8Parser.PrimaryContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    StringBuilder lf_primary = new StringBuilder();
-	    if (ctx.primaryNoNewArray_lf_primary() != null) {
-            for (int i = 0; i < ctx.primaryNoNewArray_lf_primary().size(); i++) {
-                lf_primary.append(stack.pop()).append(' ');    
-            }
+	    if (ctx.primaryNoNewArray_lf_primary() != null && ctx.primaryNoNewArray_lf_primary().size() > 0) {
+	        lf_primary.append(reverse(ctx.primaryNoNewArray_lf_primary().size(), ""));
 	    }
 	    if (ctx.primaryNoNewArray_lfno_primary() != null || ctx.arrayCreationExpression() != null) {
 	        sb.append(stack.pop());    
@@ -3748,7 +3794,7 @@ Parser methods follow.
 	    // PackageOrTypeName . Identifier 
 	}
 	@Override public void exitTypeName(@NotNull Java8Parser.TypeNameContext ctx) {
-	    StringBuilder sb = new StringBuilder();
+	    StringBuilder sb = new StringBuilder();                                           
 	    String identifier = stack.pop();
 	    if (ctx.packageOrTypeName() != null) {
 	        String dot = stack.pop();
@@ -3818,10 +3864,9 @@ Parser methods follow.
 	@Override public void exitSwitchLabels(@NotNull Java8Parser.SwitchLabelsContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    if (ctx.switchLabel() != null && ctx.switchLabel().size() > 0) {
-	        sb.append(reverse(ctx.switchLabel().size(), " ")).append(' ');
+	        sb.append(reverse(ctx.switchLabel().size(), ""));
 	    }
-	    String indented = indent(sb.toString());
-	    stack.push(indented);
+	    stack.push(sb.toString());
 	}
 
 	@Override public void enterFormalParameter(@NotNull Java8Parser.FormalParameterContext ctx) {
@@ -4940,7 +4985,6 @@ Parser methods follow.
         // 'case' constantExpression ':'
         // 'case' enumConstantName ':'
         // 'default' ':' 
-        ++tabCount;
 	}
 	@Override public void exitSwitchLabel(@NotNull Java8Parser.SwitchLabelContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
@@ -4954,9 +4998,8 @@ Parser methods follow.
 	        String default_ = stack.pop().trim();
 	        sb.append(default_);   
 	    }
-	    sb.append(colon);
+	    sb.append(colon).append('\n');
 	    stack.push(sb.toString());
-	    --tabCount;
 	}
 
 	@Override public void enterMethodReference(@NotNull Java8Parser.MethodReferenceContext ctx) {
@@ -5093,12 +5136,11 @@ Parser methods follow.
 	    // continue [Identifier] ;
 	}
 	@Override public void exitContinueStatement(@NotNull Java8Parser.ContinueStatementContext ctx) {
-	    StringBuilder sb = new StringBuilder("continue");
-	    if (ctx.Identifier() != null) {
-	        sb.append(' ');
-	        sb.append(ctx.Identifier().getText());
-	    }
-	    sb.append(";\n");
+	    StringBuilder sb = new StringBuilder();
+	    String colon = stack.pop();
+	    String identifier = ctx.Identifier() == null ? "" : stack.pop();
+	    String continue_ = stack.pop();
+	    sb.append(continue_).append(identifier).append(colon).append("\n");
 	    stack.push(sb.toString());
 	}
 

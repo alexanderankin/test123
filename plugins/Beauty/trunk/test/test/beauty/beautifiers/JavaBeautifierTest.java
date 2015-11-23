@@ -1355,5 +1355,34 @@ public class JavaBeautifierTest {
             fail( e.getMessage() );
         }
     }
-                
+ 
+    @Test
+    public void testPrimary() {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "public class Test {\n" );
+            sb.append( "\n" );
+            sb.append( "    public static void main(String[] args) {\n" );
+            sb.append( "        caretPositions[i] = editPanes[i].getTextArea().getCaretPosition().getSize().getWidth();\n" );
+            sb.append( "    }\n" );
+            sb.append( "}\n\n" );
+            
+            Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            String after = beautifier.beautify( sb.toString() );
+            assertTrue( "returned text was null", after != null );
+            assertTrue( "'testPrimary' test failed:\nexpected:\n" + sb.toString() + "\nbut was:\n" + after, sb.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+    
 }

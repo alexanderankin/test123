@@ -228,22 +228,8 @@ public class BeautyPlugin extends EditPlugin {
             }
         }
 
-        // run the format routine synchronously on the AWT thread
-        if (SwingUtilities.isEventDispatchThread()) {
-            new BeautyThread(buffer, view, showErrorDialogs, beautifier).run();
-        } else {
-            try {
-                SwingUtilities.invokeAndWait(new BeautyThread(buffer, view, showErrorDialogs, beautifier));
-            } catch (Exception e) {
-                if (showErrorDialogs) {
-                    JOptionPane.showMessageDialog(view, e.getMessage(), "Beauty Error", JOptionPane.ERROR_MESSAGE);
-                    return ;
-                } else {
-                    Log.log(Log.NOTICE, BeautyPlugin.class, "buffer " + buffer.getName() + " not beautified.\n" + e.getMessage());
-                    return ;
-                }
-            }
-        }
+        // run the format routine
+        new BeautyThread(buffer, view, showErrorDialogs, beautifier).run();
     }
 
     public static void indentLines(View view) {
