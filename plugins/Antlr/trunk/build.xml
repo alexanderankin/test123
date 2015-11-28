@@ -31,12 +31,12 @@
    
    <!-- Add your plugin's specific dependencies here -->
    <path id="project.class.path">
-      <pathelement path="lib/antlr-4.4-complete.jar" />
+      <pathelement path="lib/antlr-4.5.1-complete.jar" />
    </path>
 	
 	<target name="build.prepare">
 		<mkdir dir="${build.dir}" />
-		<copy file="lib/antlr-4.4-complete.jar" todir="${install.dir}" />
+		<copy file="lib/antlr-4.5.1-complete.jar" todir="${install.dir}" />
 	</target>
    
 </project>
