@@ -54,6 +54,7 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
+import com.jcraft.jsch.ConfigRepository;
 
 import ftp.FtpVFS.FtpDirectoryEntry;
 //}}}
@@ -72,7 +73,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	private int keyAttempts = 0;
 	private String passphrase = null;
 	//}}}
-	
+
 	//{{{ ctor
 	public SFtpConnection(final ConnectionInfo info) throws IOException
 	{
@@ -81,6 +82,10 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			if (ConnectionManager.client == null)  {
 				ConnectionManager.client = new JSch();
 			}
+
+			ConfigRepository configRepository =
+				com.jcraft.jsch.OpenSSHConfig.parseFile(getUserConfigFile());
+			ConnectionManager.client.setConfigRepository(configRepository);
 			JSch.setLogger(new SftpLogger());
 			String settingsDirectory = jEdit.getSettingsDirectory();
 			if(settingsDirectory != null)
@@ -131,7 +136,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
 				session.setConfig("compression_level", "9");
 			}
-			
+
 			// Don't lock out user when exceeding bad password attempts on some servers
 			session.setConfig("MaxAuthTries", jEdit.getProperty("vfs.sftp.MaxAuthTries", "2"));	// (default was 6)
 
@@ -143,12 +148,20 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			sftp.setAgentForwarding(true);
 			home=sftp.getHome();
 			keyAttempts = 0;
-		} catch(Exception e) {			
+		} catch(Exception e) {
 			Log.log(Log.ERROR, this, e);
 			// Signal that the login failed
 			throw new IOException(e);
 		}
 	}//}}}
+
+
+	/** @return the desired location of the .ssh/config file to be used */
+	public static String getUserConfigFile() {
+		String defaultValue = MiscUtilities.constructPath(
+				System.getProperty("user.home"), ".ssh/config");
+		return jEdit.getProperty("ssh.config", defaultValue);
+	}
 
 	//{{{ listDirectory()
 	@SuppressWarnings("unchecked")
@@ -185,7 +198,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		try {
 			SftpATTRS attrs = sftp.stat(path);
 			String name = MiscUtilities.getFileName(path);
-			
+
 			returnValue = createDirectoryEntry(name, attrs);
 
 			returnValue.setPath(path);
@@ -194,7 +207,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		}
 		return returnValue;
 	}//}}}
-	
+
 	//{{{ removeFile()
 	boolean removeFile(String path) throws IOException
 	{
@@ -208,7 +221,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			return false;
 		}
 	}//}}}
-	
+
 	//{{{ removeDirectory()
 	boolean removeDirectory(String path) throws IOException
 	{
@@ -298,7 +311,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		session.disconnect();
 	}
 
-	
+
 	// private int symLinkDepth = 0; // not used now
 	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(String name, SftpATTRS attrs)
 	{
@@ -320,9 +333,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			//	int type, long length, boolean hidden, int permissions)
 		FtpVFS.FtpDirectoryEntry entry = new FtpVFS.FtpDirectoryEntry(
 			name, null, null, type, length, name.startsWith("."), permissions,null);
-		int mtime = attrs.getMTime();								
+		int mtime = attrs.getMTime();
 		if (mtime != 0) {
-			Date date= new Date(((long)mtime)*1000);						
+			Date date= new Date(((long)mtime)*1000);
 			String modTime = FileVFS.LocalFile.DATE_FORMAT.format(date);
 			entry.setModified(((long)mtime)*1000);
 			entry.setModifiedDate(modTime);
@@ -335,7 +348,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		return entry;
 	}
 
-	
+
 
 	public String getPassphrase()
 	{
@@ -356,7 +369,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		passphrase = ConnectionManager.getPassphrase(info.privateKey);
 		if (passphrase==null || keyAttempts != 0)
 		{
-		
+
 			GUIUtilities.hideSplashScreen();
 			PasswordDialog pd = new PasswordDialog(jEdit.getActiveView(),
 				jEdit.getProperty("login.privatekeypassword"), message);
@@ -365,7 +378,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 			passphrase = new String(pd.getPassword());
 			ConnectionManager.setPassphrase(info.privateKey,passphrase);
 		}
-		
+
 		keyAttempts++;
 		return true;
 	}
