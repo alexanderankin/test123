@@ -143,8 +143,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		// Allow empty passwords (Bug #1802173)
 		//else if (privateKeyField == null && passwordField.getPassword().length == 0)
 		//	return;
-		else if (passwordField.getPassword().length == 0 && privateKeyField != null && privateKeyField.getText().length() == 0)
-			return;
+		// else if (passwordField.getPassword().length == 0 && privateKeyField != null && privateKeyField.getText().length() == 0)
+		// 	return;
 		else
 		{
 			host = hostField.getText();
