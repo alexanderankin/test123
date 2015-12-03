@@ -31,4 +31,8 @@
     <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="html:XMLPlugin">
         xml.hyperlinks.HTMLHyperlinkSource.create();
     </SERVICE>
+	<SERVICE CLASS="org.jedit.migration.OneTimeMigrationService" NAME="xmlcache">
+	    new xml.CacheMigrationService();
+	</SERVICE>
+    
 </SERVICES>

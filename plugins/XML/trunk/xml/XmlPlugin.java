@@ -37,11 +37,16 @@ import static xml.Debug.*;
 
 public class XmlPlugin extends EBPlugin
 {
+
+	public static String getSettingsDirectory() {
+		return getPluginHome(XmlPlugin.class).toString();
+	}
+
 	//{{{ start() method
 	public void start()
 	{
 		if(DEBUG_JAXP)System.setProperty("jaxp.debug","1");
-	
+
 		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();
 
@@ -65,15 +70,15 @@ public class XmlPlugin extends EBPlugin
 		SchemaMappingManager.initGlobalSchemaMapping(view);
 		xml.cache.Cache.instance().start();
 
-		//{{{ schedule install of bundled templates if Templates is installed 
+		//{{{ schedule install of bundled templates if Templates is installed
 		EditPlugin templatesPlugin = jEdit.getPlugin("templates.TemplatesPlugin", false);
 		if(templatesPlugin == null){
-			Log.log(Log.MESSAGE,XmlPlugin.class,"Templates plugin is not installed, so templates won't be copied"); 
+			Log.log(Log.MESSAGE,XmlPlugin.class,"Templates plugin is not installed, so templates won't be copied");
 		}else{
 			Log.log(Log.DEBUG,XmlPlugin.class,"Will install template files");
 			ThreadUtilities.runInBackground(new Task(){
 					public String getLabel() { return "XML: install template files"; }
-					
+
 					@Override
 					public void _run(){
 						Log.log(Log.DEBUG,XmlPlugin.class,"Will install template files");
@@ -81,7 +86,7 @@ public class XmlPlugin extends EBPlugin
 					}
 			});
 		}//}}}
-		
+
 
 	} //}}}
 
@@ -104,7 +109,7 @@ public class XmlPlugin extends EBPlugin
 		Resolver.instance().save();
 
 		Resolver.instance().uninit();
-		
+
 		xml.translate.TrangTranslator.stop();
 		xml.cache.Cache.instance().stop();
 	} //}}}
