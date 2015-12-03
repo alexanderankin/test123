@@ -29,8 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
@@ -81,13 +79,12 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		try {
 			if (ConnectionManager.client == null)  {
 				ConnectionManager.client = new JSch();
+				ConfigRepository configRepository =
+					com.jcraft.jsch.OpenSSHConfig.parseFile(getUserConfigFile());
+				ConnectionManager.client.setConfigRepository(configRepository);
 			}
-
-			ConfigRepository configRepository =
-				com.jcraft.jsch.OpenSSHConfig.parseFile(getUserConfigFile());
-			ConnectionManager.client.setConfigRepository(configRepository);
 			JSch.setLogger(new SftpLogger());
-			String settingsDirectory = jEdit.getSettingsDirectory();
+			String settingsDirectory = FtpPlugin.getPluginHome(FtpPlugin.class).toString();
 			if(settingsDirectory != null)
 			{
 				String cacheDir    = MiscUtilities.constructPath(settingsDirectory, "cache");
@@ -117,8 +114,10 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				}
 			}
 			// }}}
-
-			session = ConnectionManager.client.getSession(info.user, info.host, info.port);
+			if (info.user.isEmpty()) 
+				session = ConnectionManager.client.getSession(info.host);
+			else 
+				session = ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (proxy != null)
 				session.setProxy(proxy);
 
@@ -168,7 +167,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
 		ArrayList<FtpDirectoryEntry> listing = new ArrayList<FtpDirectoryEntry>();
-		int count=0;
+		// int count=0;
 
 		try
 		{
@@ -177,7 +176,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				for(int ii=0; ii<vv.size(); ii++){
 					Object obj=vv.elementAt(ii);
 					if(obj instanceof com.jcraft.jsch.ChannelSftp.LsEntry){
-						count++;
+						//count++;
 						com.jcraft.jsch.ChannelSftp.LsEntry entry = (com.jcraft.jsch.ChannelSftp.LsEntry)obj;
 						listing.add(createDirectoryEntry(entry.getFilename(), entry.getAttrs()));
 					}
