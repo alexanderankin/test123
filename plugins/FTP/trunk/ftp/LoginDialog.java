@@ -178,7 +178,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 				//}
 				
 			}
-			if(host.length() == 0 || user.length() == 0)
+			if(host.length() == 0)
 			{
 				getToolkit().beep();
 				return;
