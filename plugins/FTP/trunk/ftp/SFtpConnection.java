@@ -82,21 +82,11 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				ConfigRepository configRepository =
 					com.jcraft.jsch.OpenSSHConfig.parseFile(getUserConfigFile());
 				ConnectionManager.client.setConfigRepository(configRepository);
+				String known_hosts = MiscUtilities.constructPath(getUserConfigDir(), "known_hosts");
+				ConnectionManager.client.setKnownHosts(known_hosts);
+
 			}
 			JSch.setLogger(new SftpLogger());
-			String settingsDirectory = FtpPlugin.getPluginHome(FtpPlugin.class).toString();
-			if(settingsDirectory != null)
-			{
-				String cacheDir    = MiscUtilities.constructPath(settingsDirectory, "cache");
-				String known_hosts = MiscUtilities.constructPath(cacheDir, "known_hosts");
-				try {
-					(new File(known_hosts)).createNewFile();
-					ConnectionManager.client.setKnownHosts(known_hosts);
-				} catch(IOException e) {
-					Log.log(Log.WARNING,ConnectionManager.class,
-						"Unable to create password file:"+known_hosts);
-				}
-			}
 
 			// {{{ Detect proxy settings if needed
 			Proxy proxy = null;
@@ -155,10 +145,13 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	}//}}}
 
 
+	public static String getUserConfigDir() {
+		return MiscUtilities.constructPath(System.getProperty("user.home"), ".ssh");
+	}
+	
 	/** @return the desired location of the .ssh/config file to be used */
 	public static String getUserConfigFile() {
-		String defaultValue = MiscUtilities.constructPath(
-				System.getProperty("user.home"), ".ssh/config");
+		String defaultValue = MiscUtilities.constructPath(getUserConfigDir(), "config");
 		return jEdit.getProperty("ssh.config", defaultValue);
 	}
 
@@ -168,7 +161,6 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	{
 		ArrayList<FtpDirectoryEntry> listing = new ArrayList<FtpDirectoryEntry>();
 		// int count=0;
-
 		try
 		{
 			Vector<com.jcraft.jsch.ChannelSftp.LsEntry> vv = sftp.ls(path);
