@@ -21,7 +21,7 @@ public class CacheMigrationService extends OneTimeMigrationService {
 
 	@Override
 	public void migrate() {
-		String dirsToMove[] = new String[] {"dtds", "cache", "import_schema"};
+		String dirsToMove[] = new String[] {"dtds", "cache", "import_schema", "relax_ng"};
 
 		for (String dir: dirsToMove) {
 			String oldDir = MiscUtilities.concatPath(jEdit.getSettingsDirectory(), dir);
@@ -31,7 +31,7 @@ public class CacheMigrationService extends OneTimeMigrationService {
 			File oldf = new File(oldDir);
 			if (!oldf.isDirectory()) continue;
 			boolean success = oldf.renameTo(nf);
-			Log.log (Log.DEBUG, this, "Rename " + oldDir + " to " + newDir + " success: " + success);			
+			Log.log (Log.DEBUG, this, "Rename " + oldDir + " to " + newDir + " success: " + success);
 		}
 	}
 }
