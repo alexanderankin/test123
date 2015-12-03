@@ -145,12 +145,13 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	}//}}}
 
 
-	public static String getUserConfigDir() {
+	/** @return the openssh user configuration directory */
+	static String getUserConfigDir() {
 		return MiscUtilities.constructPath(System.getProperty("user.home"), ".ssh");
 	}
 	
 	/** @return the desired location of the .ssh/config file to be used */
-	public static String getUserConfigFile() {
+	static String getUserConfigFile() {
 		String defaultValue = MiscUtilities.constructPath(getUserConfigDir(), "config");
 		return jEdit.getProperty("ssh.config", defaultValue);
 	}

@@ -22,20 +22,37 @@
 package ftp;
 
 //{{{ Imports
+import java.io.File;
+import java.io.IOException;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.Log;
 
 public class FtpPlugin extends EditPlugin
 {
 	//{{{ start() method
 	public void start()
 	{
-
+		if (jEdit.getSettingsDirectory() != null) {
+			String dir = SFtpConnection.getUserConfigDir();
+			File f= new File(dir);
+			if (!f.exists()) f.mkdir();
+			String knownhosts = MiscUtilities.constructPath(dir,  "known_hosts");
+			f = new File(knownhosts);
+			if (!f.exists()) try {
+				f.createNewFile();
+			}
+			catch (IOException ioe) {
+				Log.log(Log.ERROR, this, "Unable to create file: " + knownhosts, ioe);  
+			}
+		}
 	} //}}}
 	
 	//{{{ stop() method
