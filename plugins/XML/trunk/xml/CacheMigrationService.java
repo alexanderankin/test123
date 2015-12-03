@@ -2,6 +2,9 @@ package xml;
 
 import java.io.File;
 
+import java.util.Hashtable;
+import java.util.Properties;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -21,6 +24,23 @@ public class CacheMigrationService extends OneTimeMigrationService {
 
 	@Override
 	public void migrate() {
+		Hashtable<String, String> table = new Hashtable<String, String>();
+		Properties p = jEdit.getProperties();
+		for (Object ko : p.keySet()) {
+			String key = ko.toString();
+			if (key.startsWith("xml.cache")) {
+				String value = jEdit.getProperty(key);
+				String v2 = value.replaceFirst(jEdit.getSettingsDirectory(), XmlPlugin.getSettingsDirectory());
+				if (!value.equals(v2))
+					table.put(key, v2);
+			}
+		}
+		for (String k : table.keySet()) {
+			jEdit.unsetProperty(k);
+			jEdit.setProperty(k, table.get(k));
+			Log.log(Log.DEBUG, this, "Migrating property " + k + " to value: " + table.get(k));
+		}
+
 		String dirsToMove[] = new String[] {"dtds", "cache", "import_schema", "relax_ng"};
 
 		for (String dir: dirsToMove) {
@@ -33,5 +53,6 @@ public class CacheMigrationService extends OneTimeMigrationService {
 			boolean success = oldf.renameTo(nf);
 			Log.log (Log.DEBUG, this, "Rename " + oldDir + " to " + newDir + " success: " + success);
 		}
+
 	}
 }
