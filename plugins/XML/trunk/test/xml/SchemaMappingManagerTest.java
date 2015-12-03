@@ -46,19 +46,19 @@ import javax.swing.text.JTextComponent;
 */
 public class SchemaMappingManagerTest {
 	private static File testData;
-	
+
     @BeforeClass
     public static void setUpjEdit() throws IOException{
         TestUtils.beforeClass();
         testData = new File(System.getProperty("test_data")).getCanonicalFile();
         assertTrue(testData.exists());
     }
-    
+
     @AfterClass
     public static void tearDownjEdit() {
         TestUtils.afterClass();
     }
-    
+
     /**
     * test the dialog box with file paths
     *
@@ -68,27 +68,27 @@ public class SchemaMappingManagerTest {
 	{
 		SchemaMappingManager.ChooseSchemaDialog dialog = new SchemaMappingManager.ChooseSchemaDialog(view());
 		DialogFixture dialogF = new DialogFixture(robot(), dialog);
-		
+
 		File buf = new File(testData.getPath(),"relax_ng/actions.xml");
 		dialog.init(buf.toString(),null,true);
-		
+
 		dialogF.show();
 		dialogF.textBox("buffer_path").requireNotEditable();
 		dialogF.textBox("buffer_path").requireText(buf.toString());
-		
+
 		dialogF.textBox("path").requireEditable().requireText(MiscUtilities.getParentOfPath(buf.toString()));
 		dialogF.checkBox("relative").requireEnabled().requireNotSelected();
 		dialogF.textBox("relative_path").requireEnabled().requireText(new File(MiscUtilities.getParentOfPath(buf.toString())).toURI().toURL().toString());
-		
+
 		File schema = new File(testData.getPath(),"relax_ng/actions.rng");
-		
+
 		/* FAILS
 		// enter path by hand
 		replaceText(dialogF.textBox("path"), schema);
 		dialogF.textBox("path").pressAndReleaseKeys(new int[]{KeyEvent.VK_ENTER});
 		dialogF.textBox("relative_path").requireEditable().requireText(schema);
 		*/
-		
+
 		//choose in the VFS browser
 		dialogF.button("browse").click();
 		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
@@ -99,7 +99,7 @@ public class SchemaMappingManagerTest {
 		dialogF.textBox("path").requireText(schema.toString());
 		dialogF.textBox("relative_path").requireText(schema.toURI().toURL().toString());
 		assertEquals(schema.toURI().toURL().toString(),dialog.schemaURL.toString());
-		
+
 		//make the path relative
 		dialogF.checkBox("relative").click();
 		dialogF.textBox("relative_path").requireText(schema.getName());
@@ -108,44 +108,44 @@ public class SchemaMappingManagerTest {
 		dialogF.button(JButtonMatcher.withText("Cancel")).click();
 
 	}
-	
+
     /**
      * test setting the schema for a file
      */
 	@Test
 	public void testOnFile() throws java.net.MalformedURLException, IOException
 	{
-		File relax_ng = new File(jEdit.getSettingsDirectory(),"relax_ng");
+		File relax_ng = new File(XmlPlugin.getSettingsDirectory(),"relax_ng");
 		copyDirectory(
 				new File(testData.getPath(),"relax_ng"),
 				relax_ng);
-		
+
 		new File(relax_ng,"schemas.xml").delete();
-		
+
 		File buf = new File(relax_ng,"actions.xml");
-		
+
 		Buffer buffer = openFile(buf.getPath());
-		
-		
+
+
 		Thread t = new Thread(){
 			public void run()
 			{
 				action("xml-prompt-schema",1);
 			}
 		};
-		
+
 		t.start();
-		
+
 		DialogFixture dialogF = WindowFinder.findDialog(SchemaMappingManager.ChooseSchemaDialog.class).withTimeout(5000).using(robot());
-		
+
 		//choose in the VFS browser
 		dialogF.button("browse").click();
 		DialogFixture browseDialog = findDialogByTitle("File Browser - Open");
-		
+
 		browseDialog.table("file").selectCell(
 			browseDialog.table("file").cell("actions.rng"));
 		browseDialog.button("ok").click();
-		
+
 		MessageListener listen = new MessageListener();
 		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
 
@@ -153,15 +153,15 @@ public class SchemaMappingManagerTest {
 
 		// wait for end of parsing
 		listen.waitForMessage(10000);
-		
+
 		try{t.join();}catch(InterruptedException ie){}
-	
+
     	// XmlPlugin is not activated for some reason ??
 		action("sidekick.parser.xml-switch");
 		parseAndWait();
     	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
     	sidekick.close();
-		
+
 		assertThat(new File(relax_ng,"schemas.xml")).exists();
 
 		assertEquals(new File(relax_ng,"actions.rng").toURI().toURL().toString(),
@@ -174,31 +174,31 @@ public class SchemaMappingManagerTest {
 	@Test
 	public void testTypeIdOnFile() throws java.net.MalformedURLException, IOException
 	{
-		File import_schema = new File(jEdit.getSettingsDirectory(),"import_schema");
+		File import_schema = new File(XmlPlugin.getSettingsDirectory(),"import_schema");
 		copyDirectory(
 				new File(testData.getPath(),"import_schema/relax_ng"),
 				import_schema);
-		
+
 		new File(import_schema,"schemas.xml").delete();
-		
+
 		File buf = new File(import_schema,"test_multi_ns.rng");
-		
+
 		Buffer buffer = openFile(buf.getPath());
-		
-		
+
+
 		Thread t = new Thread(){
 			public void run()
 			{
 				action("xml-prompt-typeid",1);
 			}
 		};
-		
+
 		t.start();
-		
+
 		Pause.pause(1000);
-		
+
 		DialogFixture dialogF = findDialogByTitle("Choose a TypeID...");
-		
+
 		dialogF.comboBox().selectItem("RNG");
 
 		MessageListener listen = new MessageListener();
@@ -208,9 +208,9 @@ public class SchemaMappingManagerTest {
 
 		// wait for end of parsing
 		listen.waitForMessage(10000);
-		
+
 		try{t.join();}catch(InterruptedException ie){}
-		
+
 		assertThat(new File(import_schema,"schemas.xml")).exists();
 
 		String prop = buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP);
@@ -225,9 +225,9 @@ public class SchemaMappingManagerTest {
 	public void testTypeIdOnFileSchemaMDisabled() throws java.net.MalformedURLException, IOException
 	{
 		File relax_ng = new File(testData,"schema_mapping_disabled/locate.rng");
-		
+
 		Buffer buffer = openFile(relax_ng.getPath());
-		
+
 		MessageListener listen = new MessageListener();
 		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
 		action("sidekick-parse",1);
@@ -245,13 +245,13 @@ public class SchemaMappingManagerTest {
 				action("xml-prompt-typeid",1);
 			}
 		};
-		
+
 		t.start();
-		
+
 		Pause.pause(1000);
-		
+
 		DialogFixture dialogF = findDialogByTitle("Choose a TypeID...");
-		
+
 		dialogF.comboBox().selectItem("RNG");
 
 		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
@@ -260,18 +260,18 @@ public class SchemaMappingManagerTest {
 
 		// wait for end of parsing
 		listen.waitForMessage(10000);
-		
+
 		try{t.join();}catch(InterruptedException ie){}
-		
+
 		assertThat(new File(relax_ng.getParentFile(),"schemas.xml")).doesNotExist();
 
 		prop = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
 		assertNotNull(prop);
 		assertThat(prop.endsWith("XML.jar!/xml/dtds/relaxng.rng"));
-		
+
 		close(view(),buffer);
 	}
-	
+
     /**
      * setting the schema for a jar resource
      * It FAILS
@@ -281,30 +281,30 @@ public class SchemaMappingManagerTest {
 	{
 		URL buf = getClass().getClassLoader().getResource("xml/dtds/locate.rng");
 		Buffer buffer = openFile(buf.toString());
-		
-		
+
+
 		Thread t = new Thread(){
 			public void run()
 			{
 				action("xml-prompt-schema",1);
 			}
 		};
-		
+
 		t.start();
-		
+
 		final DialogFixture dialogF = WindowFinder.findDialog(SchemaMappingManager.ChooseSchemaDialog.class).withTimeout(5000).using(robot());
-		
+
 		final String schemaPath = getClass().getClassLoader().getResource("xml/dtds/relaxng.rng").toString();
-		
+
 		//choose in the VFS browser
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
 					dialogF.textBox("path").targetCastedTo(JTextComponent.class).setText(schemaPath);
 				}
 		});
-		
+
 		dialogF.checkBox("relative").click();
-		
+
 		dialogF.button(JButtonMatcher.withText("OK")).click();
 
 		MessageListener listen = new MessageListener();
@@ -314,10 +314,10 @@ public class SchemaMappingManagerTest {
 		// can't save the schemas.xml inside the jar, so an error is reported
 		jEditFrame().optionPane().okButton().click();
 		listen.waitForMessage(20000);
-		
+
 		try{t.join();}catch(InterruptedException ie){}
-		
-		
+
+
 		assertEquals(schemaPath,
 			buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP));
 		fail("should handle the error by saving to global schemas.xml !");
@@ -328,17 +328,17 @@ public class SchemaMappingManagerTest {
 		dest.createNewFile();
         VFS.copy(null,source.getPath(),dest.getPath(),view(),true);
 	}
-	
+
 	public static void copyDirectory(File sourceDir, File destDir) throws IOException
 	{
-		
+
 		if(!destDir.exists())
 		{
 			destDir.mkdir();
 		}
-		
+
 		File[] children = sourceDir.listFiles();
-		
+
 		for(File sourceChild : children)
 		{
 			String name = sourceChild.getName();
@@ -349,11 +349,11 @@ public class SchemaMappingManagerTest {
 			else {
 				copyFile(sourceChild, destChild);
 			}
-		}	
+		}
 	}
-	
+
 	public static boolean delete(File resource) throws IOException
-	{ 
+	{
 		if(resource.isDirectory())
 		{
 			File[] childFiles = resource.listFiles();
@@ -361,9 +361,9 @@ public class SchemaMappingManagerTest {
 			{
 				delete(child);
 			}
-			
+
 		}
 		return resource.delete();
 	}
-	
+
 }

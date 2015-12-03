@@ -228,7 +228,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 			{
 				resourceDir = MiscUtilities.constructPath(
-					jEdit.getSettingsDirectory(),"dtds");
+					XmlPlugin.getSettingsDirectory(),"dtds");
 
 			}
 
@@ -334,7 +334,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			return null;
 		}
 	}
-	
+
 	/**
 	 * wrapper arround an InputSource for DOM2 Load and Save,
 	 * needed to implement LSResourceResolver for javax.xml.validation.SchemaFactory.
@@ -344,25 +344,25 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	private static class InputSourceAsLSInput implements LSInput{
 		private InputSource is;
-		
+
 		InputSourceAsLSInput(InputSource is)
 		{
 			this.is = is;
 		}
-		
+
 		public String getBaseURI()
 		{
 			return null;
 		}
-		
+
 		public InputStream getByteStream(){
 			return is.getByteStream();
 		}
-		
+
 		public boolean getCertifiedText(){
 			return false;
 		}
-		
+
         public Reader getCharacterStream(){
         	return is.getCharacterStream();
         }
@@ -378,7 +378,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
         public String getSystemId(){
         	return is.getSystemId();
         }
-        
+
         /**
          * @throws UnsupportedOperationException no setter !
          */
@@ -444,7 +444,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
         }
 	}
 	// }}}
-	
+
 	// {{{ resolveEntity
 
 	/** implements SAX1 EntityResolver
@@ -468,15 +468,15 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		if(res == null)return null;
 		else return res[1];
 	}
-	
+
 	/**
-	 * systemId may be modified, for instance if resolving docbookx.dtd, 
+	 * systemId may be modified, for instance if resolving docbookx.dtd,
 	 * the systemId  will be the full jeditresource:XML.jar!.../docbookx.dtd
 	 * @return array [systemId to report, real systemId]
 	 */
 	public String[] resolveEntityToPathInternal(String name, String publicId, String current,
 		String systemId) throws java.io.IOException {
-		
+
 		if(publicId != null && publicId.length() == 0)
 			publicId = null;
 
@@ -499,14 +499,14 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		else
 			parent = null;
 
-		// try the catalog 
+		// try the catalog
 		if(publicId == null)
 			newSystemId = resolvePublicOrSystem(systemId,false);
 		else
 		{
 			newSystemId = resolvePublicOrSystem(publicId,true);
 			if(newSystemId == null && systemId != null){
-				//try the systemId as a backup 
+				//try the systemId as a backup
 				// calling again resolvePublicOrSystem in case
 				// the systemId is in cache
 				newSystemId = resolvePublicOrSystem(systemId,false);
@@ -526,7 +526,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				newSystemId = systemId;
 			else
 			{
-				
+
 				// systemId is absolute or no parent, use systemId
 				if(new File(systemId).isAbsolute() || parent == null)
 				{
@@ -542,7 +542,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 					// FIXME: apply this fix for over kinds of resources
 					systemId = newSystemId;
 				}
-				
+
 				// when resolving "../simple/actions.xsd" from test_data/schema_loader/actions.xml
 				// insert file:// at the begining
 				if(!MiscUtilities.isURL(newSystemId))
@@ -562,7 +562,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		// meaningful message to display to the user
 		if(newSystemId == null)
 			return null;
-		
+
 		// prevent the dialog from always poping-up when viewing
 		// https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk/test_data/dir%20with%20space/actions.xsd
 		String lastChance = resolvePublicOrSystemFromCache(newSystemId,false);
@@ -570,7 +570,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"was going to fetch it again !");
 			newSystemId = lastChance;
 		}
-		
+
 		return new String[]{systemId,newSystemId};
 	}
 
@@ -582,7 +582,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		if(sids == null)return null;
 		else return openEntity(name, publicId, current,sids[0],sids[1]);
 	}
-	
+
 	/** open an already resolved Entity.
 	  * Not public because the systemId may have to be changed (see result of resolveEntityToPathInternal)
 	  */
@@ -801,12 +801,12 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		loadedCatalogs = false;
 		load();
 	}
-	
+
 	private String resolvePublicOrSystemFromCache(String id, boolean isPublic){
 		Entry e = new Entry(isPublic ? Entry.PUBLIC : Entry.SYSTEM,id,null);
 		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"resolvePublicOrSystemFromCache("+id+")");
 		String uri = resourceCache.get(e);
-		
+
 		if(DEBUG_RESOLVER)
 		{
 			if(uri == IGNORE){
@@ -819,7 +819,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		}
 		return uri;
 	}
-	
+
 	// TODO: remove package access (for XMLPlugin)
 	String resolvePublicOrSystem(String id,boolean isPublic) throws IOException
 	{
@@ -841,7 +841,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	private static File copyToLocalFile(Object session, VFS vfs, String path)
 		throws IOException
 	{
-		if(jEdit.getSettingsDirectory() == null)
+		if(XmlPlugin.getSettingsDirectory() == null)
 			return null;
 
 		File _resourceDir = new File(resourceDir);
@@ -998,11 +998,11 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			newMode = ASK;
 		jEdit.setProperty(MODE, newMode);
 	}
-	
+
 	public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException
 	{
 		// not used in jEdit
 		return null;
 	}
-	
+
 }
