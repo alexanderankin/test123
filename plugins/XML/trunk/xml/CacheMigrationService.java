@@ -7,7 +7,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.jedit.migration.OneTimeMigrationService;
 
-/** Moves the password cache from a non-standard location (jEdit settings/cache)
+/** Moves the xml cache folders from a non-standard location (jEdit settings)
  *  into a proper place under getPluginHome().
  *
  * @author ezust
