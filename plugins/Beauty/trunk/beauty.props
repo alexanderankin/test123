@@ -11,7 +11,7 @@ plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 1.7
 plugin.beauty.BeautyPlugin.depend.1=jedit 05.03.99.00
 plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
-plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.5-opt
+plugin.beauty.BeautyPlugin.depend.3=plugin antlr.AntlrPlugin 4.5.1
 plugin.beauty.BeautyPlugin.usePluginHome=true
 
 plugin.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.

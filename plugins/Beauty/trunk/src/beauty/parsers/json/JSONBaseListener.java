@@ -1,9 +1,10 @@
-// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/json/JSON.g4 by ANTLR 4.4
+// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/json/JSON.g4 by ANTLR 4.x
 
     package beauty.parsers.json;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -14,18 +15,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class JSONBaseListener implements JSONListener {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArray(@NotNull JSONParser.ArrayContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArray(@NotNull JSONParser.ArrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -43,13 +32,13 @@ public class JSONBaseListener implements JSONListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterValue(@NotNull JSONParser.ValueContext ctx) { }
+	@Override public void enterObject(@NotNull JSONParser.ObjectContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitValue(@NotNull JSONParser.ValueContext ctx) { }
+	@Override public void exitObject(@NotNull JSONParser.ObjectContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,13 +56,25 @@ public class JSONBaseListener implements JSONListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterObject(@NotNull JSONParser.ObjectContext ctx) { }
+	@Override public void enterArray(@NotNull JSONParser.ArrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitObject(@NotNull JSONParser.ObjectContext ctx) { }
+	@Override public void exitArray(@NotNull JSONParser.ArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterValue(@NotNull JSONParser.ValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitValue(@NotNull JSONParser.ValueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

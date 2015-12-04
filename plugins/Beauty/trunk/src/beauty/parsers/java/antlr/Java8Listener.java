@@ -1,4 +1,4 @@
-// Generated from Java8.g4 by ANTLR 4.x
+// Generated from /home/danson/src/jedit/plugins/Beauty/src/beauty/parsers/java/antlr/Java8.g4 by ANTLR 4.x
 
 package beauty.parsers.java.antlr;
 
