@@ -2509,13 +2509,13 @@ Parser methods follow.
 	    if (ctx.importDeclaration() != null && ctx.importDeclaration().size() > 0) {
 	        importDeclarations = sortAndGroupImports(reverse(ctx.importDeclaration().size()));
 	        importDeclarations = removeBlankLines(importDeclarations, BOTH);
-	        importDeclarations = removeExcessWhitespace(importDeclarations) + getBlankLines(blankLinesAfterImports + 1);
+	        importDeclarations = removeExcessWhitespace(importDeclarations) + getBlankLines(blankLinesAfterImports);
 	    }
 	    String packageDeclaration = "";
 	    if (ctx.packageDeclaration() != null) {
 	        packageDeclaration = stack.pop();
 	        packageDeclaration = getBlankLines(blankLinesBeforePackage) + removeBlankLines(packageDeclaration, BOTH);
-	        packageDeclaration = removeExcessWhitespace(packageDeclaration) + getBlankLines(blankLinesAfterPackage + 1);
+	        packageDeclaration = removeExcessWhitespace(packageDeclaration) + getBlankLines(blankLinesAfterPackage);
 	    }
 	    
         output.append(packageDeclaration);
