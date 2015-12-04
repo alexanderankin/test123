@@ -6,12 +6,12 @@ plugin.sidekick.antlr4.AntlrSideKickPlugin.docs=docs/antlr.html
 plugin.sidekick.antlr4.AntlrSideKickPlugin.longdescription=description.html
 plugin.sidekick.antlr4.AntlrSideKickPlugin.name=AntlrSideKick
 plugin.sidekick.antlr4.AntlrSideKickPlugin.usePluginHome=false
-plugin.sidekick.antlr4.AntlrSideKickPlugin.version=4.5
+plugin.sidekick.antlr4.AntlrSideKickPlugin.version=4.5.1
 
 # Dependencies
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.0=jedit 05.02.01.00
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.1=jdk 1.7.0
-plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.2=plugin antlr.AntlrPlugin 4.5-opt
+plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.2=plugin antlr.AntlrPlugin 4.5.1
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.3=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.sidekick.antlr4.AntlrSideKickPlugin.depend.4=plugin sidekick.SideKickPlugin 1.7
 
