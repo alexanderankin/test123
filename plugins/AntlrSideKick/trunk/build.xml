@@ -33,7 +33,7 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
-		<pathelement location="${install.dir}/antlr-4.4-complete.jar"/>
+		<pathelement location="${install.dir}/antlr4-4.5-opt.jar"/>
 		<pathelement location="${install.dir}/EclipseIcons.jar"/>
 	</path>
    
