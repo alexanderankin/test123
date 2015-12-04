@@ -74,7 +74,7 @@
         <file name="Beauty.jar"/>
         <file name="CommonControls.jar"/>
         <file name="kappalayout.jar"/>
-        <file name="antlr-4.4-complete.jar"/>
+        <file name="antlr4-4.5-opt.jar"/>
         <file name="Antlr.jar"/>
     </filelist>
 

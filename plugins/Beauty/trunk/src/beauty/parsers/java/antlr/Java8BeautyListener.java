@@ -989,6 +989,7 @@ Testing and debugging methods.
             ParseTree tree = null;
             try {
                 javaParser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.SLL);
+                javaParser.getInterpreter().tail_call_preserves_sll = false;
                 javaParser.removeErrorListeners();
                 javaParser.setErrorHandler(new BailErrorStrategy());
                 tree = javaParser.compilationUnit();
@@ -1004,6 +1005,9 @@ Testing and debugging methods.
                 javaParser.setErrorHandler(new DefaultErrorStrategy());
                 // full now with full LL(*)
                 javaParser.getInterpreter().setPredictionMode(org.antlr.v4.runtime.atn.PredictionMode.LL);
+                javaParser.getInterpreter().tail_call_preserves_sll = false;
+                javaParser.getInterpreter().enable_global_context_dfa = true;
+                
                 long parseTime = System.currentTimeMillis();
                 tree = javaParser.compilationUnit();        
                 System.out.println("+++++ second pass: " + (System.currentTimeMillis() - parseTime) + " ms");
