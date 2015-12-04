@@ -211,6 +211,7 @@ public class BeautyThread implements Runnable {
     }
 
     private void showWaitDialog() {
+        // QUESTION: does the wait dialog need a "Close" button?
         if ( waitDialog == null ) {
             waitDialog = new JDialog( jEdit.getActiveView(), true );
             waitDialog.setUndecorated( true );
