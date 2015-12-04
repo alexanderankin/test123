@@ -102,7 +102,7 @@
         <pathelement location="${jedit.plugins.dir}/Hyperlinks.jar"/>
         <pathelement location="${jedit.plugins.dir}/Templates.jar"/>
         <pathelement location="${jedit.plugins.dir}/velocity-1.5.jar"/>
-		<pathelement location="${jedit.plugins.dir}/antlr-4.4-complete.jar"/>
+		<pathelement location="${jedit.plugins.dir}/antlr4-4.5-opt.jar"/>
         <pathelement location="."/>
     </path>
 
