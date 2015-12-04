@@ -64,7 +64,7 @@
 
          <!-- dependencies -->
          <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
-		 <pathelement location="${jedit.plugins.dir}/antlr-4.4-complete.jar"/>
+		 <pathelement location="${jedit.plugins.dir}/antlr4-4.5-opt.jar"/>
         </path>
     </target>
 
@@ -260,10 +260,13 @@
 
     <target name="run"
             description="Run the application."
-            depends="setClasspath, javacc, compile">
-        <java classname="beauty.JavaBeautyTest" fork="true">
+            depends="setClasspath, compile">
+        <java classname="beauty.parsers.java.antlr.Java8BeautyListener" fork="true">
             <classpath refid="classpathref"/>
-            <arg file="c:/temp/Testing.java"/>
+            <!--
+            <arg file="/home/danson/src/svnkit-1.8.5/src/src/svnkit-1.8.5/svnkit-test/src/main/java/org/tmatesoft/svn/core/test/PythonTests.java"/>
+            -->
+            <arg file="/home/danson/tmp/test/Annotations.java"/>
         </java>
     </target>
 

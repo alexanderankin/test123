@@ -98,6 +98,7 @@ public class Java8Beautifier extends Beautifier {
 
                 // first try the faster SSL(*) parsing strategy
                 javaParser.getInterpreter().setPredictionMode( PredictionMode.SLL );
+                javaParser.getInterpreter().tail_call_preserves_sll = false;
                 javaParser.removeErrorListeners();
                 javaParser.setErrorHandler( new BailErrorStrategy() );
                 tree = javaParser.compilationUnit();
@@ -116,6 +117,8 @@ public class Java8Beautifier extends Beautifier {
                 errorListener = new ErrorListener();
                 javaParser.addErrorListener( errorListener );
                 javaParser.setErrorHandler( new DefaultErrorStrategy() );
+                javaParser.getInterpreter().tail_call_preserves_sll = false;
+                javaParser.getInterpreter().enable_global_context_dfa = true;
 
                 // reparse with full LL(*)
                 javaParser.getInterpreter().setPredictionMode( PredictionMode.LL );
@@ -124,7 +127,7 @@ public class Java8Beautifier extends Beautifier {
             }
 
 
-            walker.walk( listener, tree );
+            walker.walk( listener, tree );      // and then a shot to the brain
             return listener.getText();
         }
         catch ( Exception e ) {
