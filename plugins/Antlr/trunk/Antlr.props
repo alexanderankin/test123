@@ -6,7 +6,7 @@ plugin.antlr.AntlrPlugin.docs=docs/antlr.html
 plugin.antlr.AntlrPlugin.longdescription=description.html
 plugin.antlr.AntlrPlugin.name=Antlr
 plugin.antlr.AntlrPlugin.usePluginHome=false
-plugin.antlr.AntlrPlugin.version=4.5-opt
+plugin.antlr.AntlrPlugin.version=4.5.1
 
 # Dependencies
 plugin.antlr.AntlrPlugin.depend.0=jedit 05.02.01.00
