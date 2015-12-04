@@ -1,10 +1,10 @@
-<?xml version="1.0" ?>
 <project name="Antlr" default="dist" basedir=".">
    <property file="build.properties" />
    <property file="../build.properties" />
    <property name="compiler.source" value="1.6" />
    <property name="compiler.target" value="1.6" />
    <property name="src.dir" value="src" />
+   <property name="antlr.jar" value="lib/antlr4-4.5-opt.jar"/>
    
    <!-- Documentation process
       none: if you supply your own html file as this template does.
@@ -31,13 +31,13 @@
    
    <!-- Add your plugin's specific dependencies here -->
    <path id="project.class.path">
-      <pathelement path="lib/antlr-4.5.1-complete.jar" />
+      <pathelement path="${antlr.jar}" />
    </path>
 	
 	<target name="build.prepare">
 		<mkdir dir="${build.dir}" />
-		<copy file="lib/antlr-4.5.1-complete.jar" todir="${install.dir}" />
+		<copy file="${antlr.jar}" todir="${install.dir}" />
 	</target>
    
 </project>
-<!-- ::mode=xml:noTabs=true:: -->
+<!-- ::mode=ant:noTabs=true:: -->
