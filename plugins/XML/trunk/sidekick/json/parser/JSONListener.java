@@ -1,7 +1,8 @@
-// Generated from /home/danson/src/jedit/plugins/XML/sidekick/json/parser/JSON.g4 by ANTLR 4.4
+// Generated from /home/danson/src/jedit/plugins/XML/sidekick/json/parser/JSON.g4 by ANTLR 4.x
 
     package sidekick.json.parser;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -10,16 +11,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link JSONParser}.
  */
 public interface JSONListener extends ParseTreeListener {
-	/**
-	 * Enter a parse tree produced by {@link JSONParser#pair}.
-	 * @param ctx the parse tree
-	 */
-	void enterPair(@NotNull JSONParser.PairContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link JSONParser#pair}.
-	 * @param ctx the parse tree
-	 */
-	void exitPair(@NotNull JSONParser.PairContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JSONParser#json}.
 	 * @param ctx the parse tree
@@ -31,16 +22,6 @@ public interface JSONListener extends ParseTreeListener {
 	 */
 	void exitJson(@NotNull JSONParser.JsonContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link JSONParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void enterValue(@NotNull JSONParser.ValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link JSONParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void exitValue(@NotNull JSONParser.ValueContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link JSONParser#object}.
 	 * @param ctx the parse tree
 	 */
@@ -51,6 +32,16 @@ public interface JSONListener extends ParseTreeListener {
 	 */
 	void exitObject(@NotNull JSONParser.ObjectContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link JSONParser#pair}.
+	 * @param ctx the parse tree
+	 */
+	void enterPair(@NotNull JSONParser.PairContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSONParser#pair}.
+	 * @param ctx the parse tree
+	 */
+	void exitPair(@NotNull JSONParser.PairContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link JSONParser#array}.
 	 * @param ctx the parse tree
 	 */
@@ -60,4 +51,14 @@ public interface JSONListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArray(@NotNull JSONParser.ArrayContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link JSONParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void enterValue(@NotNull JSONParser.ValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JSONParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void exitValue(@NotNull JSONParser.ValueContext ctx);
 }
