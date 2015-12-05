@@ -38,6 +38,7 @@ import static xml.Debug.*;
 public class XmlPlugin extends EBPlugin
 {
 
+	/** @return the location where xmlplugin settings files should be stored */
 	public static String getSettingsDirectory() {
 		return getPluginHome(XmlPlugin.class).toString();
 	}
