@@ -53,6 +53,7 @@ public class CacheMigrationService extends OneTimeMigrationService {
 			boolean success = oldf.renameTo(nf);
 			Log.log (Log.DEBUG, this, "Rename " + oldDir + " to " + newDir + " success: " + success);
 		}
+		jEdit.propertiesChanged();
 
 	}
 }

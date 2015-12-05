@@ -33,12 +33,12 @@
  <para>
   This version of the XML plugin for jEdit combines several plugins that are frequently used together in web development:
   <itemizedlist>
-  <listitem>The <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin for parsing HTML files by Dale Anson.</listitem>
-  <listitem>The <ulink url="docs/json.html">JSON Sidekick</ulink> plugin for parsing JSON files by Dale Anson.</listitem>
-  <listitem>The Ecmascript parser by Dale Anson. Use care with this one as there is a known bug that can occasionally cause a significant CPU spike.</listitem>
-  <listitem>The <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe.</listitem>
-  <listitem>The CSS SideKick by Jakub Roztočil, replaced by a CSS3 parser by Dale Anson.</listitem>
-  <listitem>The XmlIndenter plugin by Robert McKinnon for making XML files look nice.</listitem>
+  <listitem><para>The <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin for parsing HTML files by Dale Anson.</para></listitem>
+  <listitem><para>The <ulink url="docs/json.html">JSON Sidekick</ulink> plugin for parsing JSON files by Dale Anson.</para></listitem>
+  <listitem><para>The Ecmascript parser by Dale Anson. Use care with this one as there is a known bug that can occasionally cause a significant CPU spike.</para></listitem>
+  <listitem><para>The <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe.</para></listitem>
+  <listitem><para>The CSS SideKick by Jakub Roztočil, replaced by a CSS3 parser by Dale Anson.</para></listitem>
+  <listitem><para>The XmlIndenter plugin by Robert McKinnon for making XML files look nice.</para></listitem>
   </itemizedlist>
   This plugin provides six distinct Sidekick parsers (XML, CSS, HTML, Ecmascript, Javascript, and JSON) and four different completion services (Ant, CSS, HTML, XML), as well as services connecting to the Beauty plugin for beautifying XML, CSS, HTML, and JSON files, plus <ulink url="http://iso-relax.sourceforge.net/">ISO-RELAX</ulink> and <ulink url="http://code.google.com/p/jing-trang/">jing-trang</ulink>, for validation and translation of documents that use Relax-NG schemas.
  </para>

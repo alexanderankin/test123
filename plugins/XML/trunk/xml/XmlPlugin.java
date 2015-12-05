@@ -45,6 +45,9 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
+		CacheMigrationService cms = new CacheMigrationService();
+		cms.doMigration();
+
 		if(DEBUG_JAXP)System.setProperty("jaxp.debug","1");
 
 		Resolver.instance().init();
