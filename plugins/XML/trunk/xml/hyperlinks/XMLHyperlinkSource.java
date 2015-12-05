@@ -75,8 +75,8 @@ import xml.parser.javacc.XmlParser;
  *	<li>DocBook ulink (&lt;ulink url="..."&gt;)</li>
  * </ul>
  *
- * @todo	HTML attributes
- * @todo	HTML BASE tag (beware: it's in HTML/HEAD)
+ * TODO:	HTML attributes
+ * TODO:	HTML BASE tag (beware: it's in HTML/HEAD)
  *
  * @author Eric Le Lay
  * @version $Id$
@@ -187,7 +187,7 @@ public class XMLHyperlinkSource implements HyperlinkSource
 	 * @param	buffer	current buffer
 	 * @param	offset	offset where an hyperlink is required in current buffer
 	 * @param	data		sidekick tree for current buffer
-	 * @param	asset		element containing offset
+	 * @param	sideKickTag		element containing offset
 	 * @param	att		parsed attribute
 	 * @param	isHTML	we are dealing with an HTML buffer
 	 */

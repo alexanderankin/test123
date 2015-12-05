@@ -640,7 +640,7 @@ public class EditTagDialog extends EnhancedDialog
 	 * @param elementDecl			element to create tags for
 	 * @param namespaces			namespaces in scope (no need to redeclare them)
 	 * @param namespacesToInsert	namespaces needed but not declared (will be declared)
-	 * @param withEndOfTag			shall the '>' be appended at the end of open tag ?
+	 * @param withEndOfTag			shall the '&gt;' be appended at the end of open tag ?
 	 * @return	{openTag,closeTag}
 	 */
 	public static StringBuilder[] composeTag(XmlParsedData data, ElementDecl elementDecl, NamespaceBindings namespaces, NamespaceBindings namespacesToInsert, boolean withEndOfTag){

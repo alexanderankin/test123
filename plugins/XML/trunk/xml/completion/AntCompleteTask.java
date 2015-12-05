@@ -23,7 +23,7 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
  * tasks.
  * 
  * 
- * @ant.task category="xml"
+ * ant.task category="xml"
  */
 public class AntCompleteTask extends Task
 {

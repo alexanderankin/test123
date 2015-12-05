@@ -24,7 +24,7 @@ import sidekick.util.*;
  * Represents an HTML document as a sequence of elements.  The defined
  * element types are: Tag, EndTag, TagBlock (matched tag..end tag, with the
  * intervening elements), Comment, Text, Newline, and Annotation.
- * <p/>
+ * <p>
  * <P> The various element types are defined as nested classes within
  * HtmlDocument.
  * <p>

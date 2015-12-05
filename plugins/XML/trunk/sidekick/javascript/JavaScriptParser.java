@@ -40,8 +40,8 @@ import errorlist.*;
  * not able to correctly parse very irregular perl scripts
  *
  * @author     Martin Raspe
- * @created    March 3, 2005
- * @modified   $Date$ by $Author$
+ * created    March 3, 2005
+ * modified   $Date$ by $Author$
  * @version    $Revision$
  */
 public class JavaScriptParser extends SourceParser {

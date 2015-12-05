@@ -36,7 +36,7 @@ public class XmlTag extends Asset
 	public String idAttributeString;
 	public boolean empty;
 	public String namespace;
-	/** namespace -> prefix */
+	/** namespace -&gt; prefix */
 	public NamespaceBindings namespaceBindings;
 	private StringBuilder characters = new StringBuilder();
 	//}}}

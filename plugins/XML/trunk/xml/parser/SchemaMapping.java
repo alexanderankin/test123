@@ -298,7 +298,7 @@ public final class SchemaMapping
 	}
 
 	/**
-	 * prefix + localName -> typeId or URL
+	 * prefix + localName -&gt; typeId or URL
 	 */
 	public static class DocumentElementRule extends Rule
 	{
@@ -343,7 +343,7 @@ public final class SchemaMapping
 		}
 	}
 	
-	/** namespace -> typeId or URL */
+	/** namespace -&gt; typeId or URL */
 	public static class NamespaceRule extends Rule{
 		/** matched namespace */
 		private String namespace;
@@ -375,13 +375,13 @@ public final class SchemaMapping
 	}
 	
 	
-	/** URI pattern -> typeID or URL.
+	/** URI pattern -&gt; typeID or URL.
 	 * The pattern is in glob syntax :
 	 *  - star matches any sequence of character except slashes
 	 *  - dot really means a dot.
 	 * e.g. :
-	 *  *.rng -> relax NG schema
-	 *  *.xsd -> Schema for Schemas
+	 *  *.rng -&gt; relax NG schema
+	 *  *.xsd -&gt; Schema for Schemas
 	 */
 	public static class URIPatternRule extends Rule
 	{
@@ -439,15 +439,15 @@ public final class SchemaMapping
 		}
 	}
 
-	/** URI pattern -> related URL.
+	/** URI pattern -&gt; related URL.
 	 * The pattern is in glob syntax :
 	 *  - star matches any sequence of character except slashes
 	 *  - dot really means a dot.
 	 * Any text matched by * is inserted in place of the corresponding *
 	 * in the destination pattern
 	 * e.g. :
-	 *  *.xml -> *.xsd
-	 *  *.xml -> *.rng
+	 *  *.xml -&gt; *.xsd
+	 *  *.xml -&gt; *.rng
 	 */
 	public static class TransformURI extends Mapping
 	{
@@ -582,9 +582,9 @@ public final class SchemaMapping
 
 	
 	/**
-	 * URI -> typeId or URL.
+	 * URI -&gt; typeId or URL.
 	 * This form is useful to map one schema to one particular file.
-	 * e.g. : file:///tmp/myfile.xml  -> mycustomschema.xsd
+	 * e.g. : file:///tmp/myfile.xml  -&gt; mycustomschema.xsd
 	 */
 	public static class URIResourceRule extends Rule
 	{
@@ -692,7 +692,7 @@ public final class SchemaMapping
 	}
 	
 	/**
-	 * doctype -> typeID or URL.
+	 * doctype -&gt; typeID or URL.
 	 * not used yet.
 	 */
 	public static class DoctypeRule extends Rule{
