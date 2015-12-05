@@ -436,7 +436,7 @@ public class Comment extends Object {
 
     /**
      * Returns the comment body transforming &lt;plaintext&gt; blocks into
-     * &lt;pre&gt blocks and escaping all the &lt; and &gt; in there.
+     * &lt;pre&gt; blocks and escaping all the &lt; and &gt; in there.
      *
      * @return comment body
      */

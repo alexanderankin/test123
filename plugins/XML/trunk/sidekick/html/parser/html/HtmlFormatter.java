@@ -28,7 +28,7 @@ import java.util.Arrays;
  * consistent way).  In particular, HtmlScrubber should be invoked with the
  * TRIM_SPACES option to remove trailing spaces, which can confuse the
  * formatting algorithm.
- * <p/>
+ * <p>
  * <P>The right margin and indent increment can be specified as properties.
  * <p>danson: 
  * Modified for Beauty plugin for jEdit, added ability to handle jsps. Removed

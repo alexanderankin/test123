@@ -165,7 +165,7 @@ public class HTMLHyperlinkSource implements HyperlinkSource
 	 * @param	buffer	current buffer
 	 * @param	offset	offset where an hyperlink is required in current buffer
 	 * @param	data		sidekick tree for current buffer
-	 * @param	asset		element containing offset
+	 * @param	startTag		element containing offset
 	 * @param	att		parsed attribute
 	 */
 	public Hyperlink getHyperlinkForAttribute(

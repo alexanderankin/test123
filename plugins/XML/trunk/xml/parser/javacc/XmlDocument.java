@@ -28,7 +28,7 @@ import xml.NamespaceBindings;
  * Represents an XML document as a sequence of elements.  The defined
  * element types are: Tag, EndTag, TagBlock (matched tag..end tag, with the
  * intervening elements), Comment, Text, Newline, and Annotation.
- * <p/>
+ * <p>
  * <P> The various element types are defined as nested classes within
  * XmlDocument.
  * <p>
@@ -36,7 +36,7 @@ import xml.NamespaceBindings;
  * configuration settings, and so on.
  *
  * @author Brian Goetz, Quiotix
- * @see sidekick.html.parser.html.XmlVisitor
+ * @see sidekick.html.parser.html.HtmlVisitor
  */
 
 public class XmlDocument {
@@ -175,7 +175,7 @@ public class XmlDocument {
         public String tagEnd = ">";
         public boolean emptyTag = false;
     	public String namespace;
-    	/** namespace -> prefix */
+    	/** namespace -&gt; prefix */
     	public NamespaceBindings namespaceBindings;
 
         

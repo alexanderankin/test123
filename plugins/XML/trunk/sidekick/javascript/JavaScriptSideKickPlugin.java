@@ -26,8 +26,8 @@ package sidekick.javascript;
  * Description of the Class
  *
  * @author     Martin Raspe
- * @created    Nov 20, 2004
- * @modified   $Date$ by $Author$
+ * created    Nov 20, 2004
+ * modified   $Date$ by $Author$
  * @version    $Revision$
  */
  public class JavaScriptSideKickPlugin {

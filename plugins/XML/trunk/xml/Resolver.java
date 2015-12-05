@@ -79,7 +79,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 	/** Ask before downloading */
 	public static final String ASK = "ask";
-	/** Local files & catalogs only */
+	/** Local files and catalogs only */
 	public static final String LOCAL = "local";
 	/** Download without asking */
 	public static final String ALWAYS = "always";
