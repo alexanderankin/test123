@@ -184,7 +184,7 @@ public class DirectoryCache
 	{
 		urlToCacheFileHash = new Hashtable<String, String>();
 
-		String settingsDirectory = jEdit.getSettingsDirectory();
+		String settingsDirectory = FtpPlugin.getPluginHome(FtpPlugin.class).toString();
 		if(settingsDirectory == null)
 		{
 			Log.log(Log.WARNING,DirectoryCache.class,"-nosettings "

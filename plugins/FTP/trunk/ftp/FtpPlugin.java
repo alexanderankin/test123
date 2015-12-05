@@ -40,7 +40,7 @@ public class FtpPlugin extends EditPlugin
 	//{{{ start() method
 	public void start()
 	{
-		if (jEdit.getSettingsDirectory() != null) {
+		if (SFtpConnection.getUserConfigDir() != null) {
 			String dir = SFtpConnection.getUserConfigDir();
 			File f= new File(dir);
 			if (!f.exists()) f.mkdir();
@@ -50,15 +50,15 @@ public class FtpPlugin extends EditPlugin
 				f.createNewFile();
 			}
 			catch (IOException ioe) {
-				Log.log(Log.ERROR, this, "Unable to create file: " + knownhosts, ioe);  
+				Log.log(Log.ERROR, this, "Unable to create file: " + knownhosts, ioe);
 			}
 		}
 	} //}}}
-	
+
 	//{{{ stop() method
 	public void stop()
-	{	
-		ConnectionManager.cleanup();		
+	{
+		ConnectionManager.cleanup();
 
 	} //}}}
 
