@@ -263,10 +263,16 @@
             depends="setClasspath, compile">
         <java classname="beauty.parsers.java.antlr.Java8BeautyListener" fork="true">
             <classpath refid="classpathref"/>
-            <!--
-            <arg file="/home/danson/src/svnkit-1.8.5/src/src/svnkit-1.8.5/svnkit-test/src/main/java/org/tmatesoft/svn/core/test/PythonTests.java"/>
-            -->
-            <arg file="/home/danson/tmp/test/Annotations.java"/>
+            <arg file="/home/danson/tmp/test/ArraysAndDimsTest.java"/>
+        </java>
+    </target>
+
+    <target name="debug"
+            description="Run the application."
+            depends="setClasspath, compile">
+        <java classname="beauty.parsers.java.antlr.Java8BeautyListener" fork="true">
+            <classpath refid="classpathref"/>
+            <arg file="/home/danson/tmp/test/ArraysAndDimsTest.java"/>
         </java>
     </target>
 

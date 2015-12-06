@@ -1385,4 +1385,81 @@ public class JavaBeautifierTest {
         }
     }
     
+    @Test
+    public void testShift() {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "public class Cookie {\n" );
+            sb.append( "    public static String escape(String string) {\n" );
+            sb.append( "        Character.forDigit((char)((c >>> 4) & 0x0f));\n" );
+            sb.append( "    }\n" );
+            sb.append( "}\n" );
+            
+            StringBuilder answer = new StringBuilder();
+            answer.append( "public class Cookie {\n" );
+            answer.append( "\n" );
+            answer.append( "    public static String escape(String string) {\n" );
+            answer.append( "        Character.forDigit((char)((c >>> 4) & 0x0f));\n" );
+            answer.append( "    }\n" );
+            answer.append( "}\n" );
+            
+            Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            
+            String after = beautifier.beautify( sb.toString() );
+            
+            assertTrue( "returned text was null", after != null );
+            assertTrue( "'testShift' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+    
+    @Test
+    public void testTypeArgOrDiamond() {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "public class AnnotationEntryGen {\n" );
+            sb.append( "    private void toString() {\n" );
+            sb.append( "        List<ElementValuePairGen> out = new ArrayList<>();\n" );
+            sb.append( "    }\n" );
+            sb.append( "}\n" );
+            
+            StringBuilder answer = new StringBuilder();
+            answer.append( "public class AnnotationEntryGen {\n" );
+            answer.append( "\n" );
+            answer.append( "    private void toString() {\n" );
+            answer.append( "        List<ElementValuePairGen> out = new ArrayList<>();\n" );
+            answer.append( "    }\n" );
+            answer.append( "}\n" );
+            
+            Beautifier beautifier = new Java8Beautifier();
+            beautifier.setEditMode( "java" );
+            beautifier.setLineSeparator( "\n" );
+            beautifier.setTabWidth( 4 );
+            beautifier.setIndentWidth( 4 );
+            beautifier.setUseSoftTabs( true );
+            beautifier.setWrapMargin( 80 );
+            beautifier.setWrapMode( "none" );
+            
+            String after = beautifier.beautify( sb.toString() );
+            
+            assertTrue( "returned text was null", after != null );
+            assertTrue( "'testTypeArgOrDiamond' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals( after )  );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+    }
+    
+    
 }

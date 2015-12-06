@@ -1096,7 +1096,7 @@ classInstanceCreationExpression_lfno_primary
 
 typeArgumentsOrDiamond
 	:	typeArguments
-	|	'<' '>'
+	|	'<>'
 	;
 
 fieldAccess
@@ -1169,7 +1169,7 @@ methodReference
 	|	SUPER '::' typeArguments? Identifier
 	|	typeName '.' SUPER '::' typeArguments? Identifier
 	|	classType '::' typeArguments? 'new'
-	|	arrayType '::' 'new'
+	|	arrayType '::' 'new'                               
 	;
 
 methodReference_lf_primary
@@ -1335,9 +1335,9 @@ shiftExpression
 	;
 	
 shiftOperator
-    :   '<' '<'
-    |   '>' '>'
-    |   '>' '>' '>'
+    :   '<<'
+    |   '>>>'
+    |   '>>'  
     ;
 
 additiveExpression
