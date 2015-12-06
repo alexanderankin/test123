@@ -175,6 +175,7 @@ public class BeautyThread implements Runnable {
             }
             catch ( Exception e ) {
                 e.printStackTrace();
+                ex = e;
             }
 
             return "";
