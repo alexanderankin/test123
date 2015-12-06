@@ -1559,7 +1559,7 @@ Parser methods follow.
 	}
 	@Override public void exitInferredFormalParameterList(@NotNull Java8Parser.InferredFormalParameterListContext ctx) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(reverse(ctx.Identifier().size(), " ", 2));
+	    sb.append(reverse(ctx.Identifier().size() * 2 - 1, " ", 2));
 	    stack.push(sb.toString());
 	}
 
@@ -1644,7 +1644,6 @@ Parser methods follow.
 	}
 	@Override public void exitLiteral(@NotNull Java8Parser.LiteralContext ctx) { 
 	    // nothing to do here, one of the choices should already be on the stack.
-	    System.out.println("+++++ literal>" + stack.peek() + "<");
 	}
 
 	@Override public void enterResult(@NotNull Java8Parser.ResultContext ctx) {
@@ -1811,7 +1810,6 @@ Parser methods follow.
 	}
 	@Override public void exitVariableInitializer(@NotNull Java8Parser.VariableInitializerContext ctx) {
 	    // nothing to do here, one of the choices should already be on the stack.
-	    System.out.println("+++++ variable initializer>" + stack.peek() + "<");
 	}
 
 	@Override public void enterStaticImportOnDemandDeclaration(@NotNull Java8Parser.StaticImportOnDemandDeclarationContext ctx) { 
@@ -2092,7 +2090,7 @@ Parser methods follow.
 	@Override public void exitNormalInterfaceDeclaration(@NotNull Java8Parser.NormalInterfaceDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String body = stack.pop();
-	    String ifs = ctx.extendsInterfaces() == null ? "" : stack.pop();
+	    String ifs = ctx.extendsInterfaces() == null ? "" : stack.pop() + ' ';
 	    String params = ctx.typeParameters() == null ? "" : stack.pop() + ' ';
 	    String identifier = stack.pop();
 	    String interface_ = stack.pop().trim();
@@ -2101,7 +2099,7 @@ Parser methods follow.
 	        modifiers = stack.pop();
 	    }
 	    modifiers += modifiers.isEmpty() ? "" : " ";
-	    sb.append(modifiers).append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
+	    sb.append(modifiers).append(interface_).append(' ').append(identifier).append(' ').append(params).append(ifs).append(body);
 	    sb.append(getBlankLines(blankLinesAfterClassBody));
 	    stack.push(sb.toString());
 	}
@@ -2267,7 +2265,6 @@ Parser methods follow.
 	    }
 	    String lbracket = stack.pop();
 	    String[] lines = vil.split("\n");
-	    System.out.println("+++++ lines.length = " + lines.length);
 	    if (lines.length > 1) {
 	        ++ tabCount;
 	        vil = indent(vil);
@@ -3026,7 +3023,19 @@ Parser methods follow.
 	    if (ctx.resource() != null) {
 	        sb.append(reverse(ctx.resource().size() * 2 - 1, " ", 2));
 	    }
-	    stack.push(sb.toString());
+	    String resources = sb.toString();
+	    String[] lines = resources.split("\n");
+	    if (lines.length > 0) {
+	        StringBuilder r = new StringBuilder();
+	        for (String line : lines) {
+	            r.append(line.trim()).append("\n");    
+	        }
+	        resources = r.toString();
+	        ++tabCount;
+	        resources = indent(resources.trim());
+	        --tabCount;
+	    }
+	    stack.push(resources);
 	}
 
 	@Override public void enterArrayAccess_lfno_primary(@NotNull Java8Parser.ArrayAccess_lfno_primaryContext ctx) {
