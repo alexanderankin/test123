@@ -323,7 +323,7 @@ Formatting methods.
     
     /**
      * Pads parenthesis so "(" becomes "( " and ")" becomes " )".
-     * @paren item The item immediately following or preceding the paren.
+     * @param paren The paren to pad
      */
     private String padParen(String paren) {
         return padParen(paren, " ");    
@@ -331,7 +331,8 @@ Formatting methods.
     
     /**
      * Pads parenthesis so "(" becomes "( " and ")" becomes " )".
-     * @paren item The item immediately following or preceding the paren.
+     * @param paren The paren to pad
+     * @param item The item immediately following or preceding the paren.
      */
     private String padParen(String paren, String item) {
         if (paren == null || paren.isEmpty() || !padParens || item == null || item.isEmpty()) {
@@ -1378,7 +1379,7 @@ Parser methods follow.
 	        String dims = stack.pop();
 	        String type = stack.pop();
 	        String new_ = stack.pop();
-	        sb.append(new_).append(' ').append(type).append(' ').append(dims).append(' ').append(ai);
+	        sb.append(new_).append(' ').append(type).append(dims).append(' ').append(ai);
 	    }
 	    else {
 	        // first two choices    
@@ -1391,7 +1392,7 @@ Parser methods follow.
 	        String new_ = stack.pop();
 	        sb.append(new_).append(' ').append(type).append(' ').append(dimExprs);
 	        if (!dims.isEmpty()) {
-	            sb.append(' ').append(dims);    
+	            sb.append(dims);    
 	        }
 	    }
 	    stack.push(sb.toString());
@@ -2262,19 +2263,22 @@ Parser methods follow.
 	@Override public void exitArrayInitializer(@NotNull Java8Parser.ArrayInitializerContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop().trim();
-	    String vil = ctx.variableInitializerList() == null ? "" : stack.pop();
+	    String vil = ctx.variableInitializerList() == null ? "" : stack.pop().trim();
+	    System.out.println("+++++ vil>" + vil + "<");
 	    if (ctx.COMMA() != null) {
 	         stack.pop();    // TODO: keep this? I don't seen any reason to, it's just an extra comma.    
 	    }
 	    String lbracket = stack.pop();
 	    String[] lines = vil.split("\n");
 	    if (lines.length > 1) {
-	        ++ tabCount;
-	        vil = indent(vil);
-	        -- tabCount;
-	        if (!vil.startsWith("\n")) {
-	            vil = '\n' + vil;    
+	        StringBuilder vilIndented = new StringBuilder();
+	        ++tabCount;
+	        for (String line : lines) {
+	            vilIndented.append(indent(line));    
 	        }
+	        --tabCount;
+	        vil = '\n' + vilIndented.toString();
+	        System.out.println("+++++ vil after indenting>" + vil + "<");
 	    }
 	    sb.append(lbracket);
 	    sb.append(vil);
@@ -4768,6 +4772,10 @@ Parser methods follow.
 	    // common ending
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
+	    if (argumentList.indexOf("\n") > -1) {
+	        // double indent if argumentList spans more than one line
+	        argumentList = trimEnd(indentAgain(indentAgain(argumentList)));
+	    }
 	    String lparen = stack.pop();
 	    
 	    // method name

@@ -1343,7 +1343,7 @@ public class JavaBeautifierTest {
             before.append( "            \"e\", \"f\",\n" );
             before.append( "            \"g\", \"h\"\n" );
             before.append( "        };\n" );
-            before.append( "        String[] sc = {\"a\", \"b\",\n" );
+            before.append( "        String[] sc = new String []{\"a\", \"b\",\n" );
             before.append( "            \"c\", \"d\"};\n" );
             before.append( "        System.out.println(sa[0] + sa[1]);\n" );
             before.append( "        Point a[] = { new Point(0,0), new Point(1,1) };\n" );
@@ -1368,7 +1368,7 @@ public class JavaBeautifierTest {
             answer.append( "            \"e\", \"f\",\n" );
             answer.append( "            \"g\", \"h\"\n" );
             answer.append( "        };\n" );
-            answer.append( "        String[] sc = {\n" );
+            answer.append( "        String[] sc = new String[] {\n" );
             answer.append( "            \"a\", \"b\",\n" );
             answer.append( "            \"c\", \"d\"\n" );
             answer.append( "        };\n" );
