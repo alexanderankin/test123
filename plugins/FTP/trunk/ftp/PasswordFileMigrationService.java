@@ -26,7 +26,13 @@ public class PasswordFileMigrationService extends OneTimeMigrationService {
 		File nf = new File(newCacheFile);
 		if (nf.isFile()) return;
 		File oldf = new File(oldCacheFile);
-		if (!oldf.exists()) return;
+		if (!oldf.exists()) {
+			// Check if XMLPlugin already migrated the whole cache folder?
+			oldCacheFile = MiscUtilities.concatPath(jEdit.getSettingsDirectory(), "plugins/xml.XmlPlugin/cache/password-cache");
+			oldf = new File(oldCacheFile);
+			if (!oldf.exists()) 
+				return;
+		}
 		oldf.renameTo(nf);
 	}
 

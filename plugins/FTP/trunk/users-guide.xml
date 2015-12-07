@@ -259,9 +259,9 @@ change this value but it is there if you need it. </para></listitem>
     <listitem><para><emphasis role="bold">Version 1.3</emphasis>
       by Alan Ezust Requires Java 1.7, CommonControls 1.5, and jEdit 5.0
       <itemizedlist>
-       <listitem><para> Plugin Feature Request #355: <literal>~/.ssh/config</literal> file support. </para></listitem>
-       <listitem><para> Move <literal>password-cache</literal> under <literal>getPluginHome()</literal> </para> </listitem>
-       <listitem><para> Use standard location <literal>~/.ssh</literal> for <literal>known_hosts</literal> file </para></listitem>
+       <listitem><para> Plugin Feature Request #355: Support for <literal>~/.ssh/config</literal> files. </para></listitem>
+       <listitem><para> Move cache files under <literal>getPluginHome()</literal> </para> </listitem>
+       <listitem><para> Use standard location <literal>~/.ssh</literal> for <literal>known_hosts</literal> file. </para></listitem>
      </itemizedlist></para></listitem>
 
      <listitem><para><emphasis role="bold">Version 1.2</emphasis>
