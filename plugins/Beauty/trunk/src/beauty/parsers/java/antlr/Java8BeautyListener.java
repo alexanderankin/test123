@@ -2264,7 +2264,6 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop().trim();
 	    String vil = ctx.variableInitializerList() == null ? "" : stack.pop().trim();
-	    System.out.println("+++++ vil>" + vil + "<");
 	    if (ctx.COMMA() != null) {
 	         stack.pop();    // TODO: keep this? I don't seen any reason to, it's just an extra comma.    
 	    }
@@ -2278,7 +2277,6 @@ Parser methods follow.
 	        }
 	        --tabCount;
 	        vil = '\n' + vilIndented.toString();
-	        System.out.println("+++++ vil after indenting>" + vil + "<");
 	    }
 	    sb.append(lbracket);
 	    sb.append(vil);
