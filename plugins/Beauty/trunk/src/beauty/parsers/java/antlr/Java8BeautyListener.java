@@ -1442,6 +1442,9 @@ Parser methods follow.
 	    }
 	    String block = stack.pop();
 	    String resources = stack.pop();
+	    if (resources.indexOf("\n") > -1) {
+	        resources = trimFront(resources);    
+	    }
 	    String try_ = stack.pop();
 	    sb.append(try_).append(' ').append(resources).append(' ').append(block).append(catches).append(finally_);
 	    stack.push(sb.toString());
@@ -2099,7 +2102,7 @@ Parser methods follow.
 	        modifiers = stack.pop();
 	    }
 	    modifiers += modifiers.isEmpty() ? "" : " ";
-	    sb.append(modifiers).append(interface_).append(' ').append(identifier).append(' ').append(params).append(ifs).append(body);
+	    sb.append(modifiers).append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
 	    sb.append(getBlankLines(blankLinesAfterClassBody));
 	    stack.push(sb.toString());
 	}
@@ -3023,19 +3026,7 @@ Parser methods follow.
 	    if (ctx.resource() != null) {
 	        sb.append(reverse(ctx.resource().size() * 2 - 1, " ", 2));
 	    }
-	    String resources = sb.toString();
-	    String[] lines = resources.split("\n");
-	    if (lines.length > 0) {
-	        StringBuilder r = new StringBuilder();
-	        for (String line : lines) {
-	            r.append(line.trim()).append("\n");    
-	        }
-	        resources = r.toString();
-	        ++tabCount;
-	        resources = indent(resources.trim());
-	        --tabCount;
-	    }
-	    stack.push(resources);
+	    stack.push(sb.toString());
 	}
 
 	@Override public void enterArrayAccess_lfno_primary(@NotNull Java8Parser.ArrayAccess_lfno_primaryContext ctx) {
@@ -4332,10 +4323,10 @@ Parser methods follow.
 	}
 	@Override public void exitResource(@NotNull Java8Parser.ResourceContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
-	    String expr = stack.pop();
-	    String eq = stack.pop();
-	    String vdi = stack.pop();
-	    String type = stack.pop();
+	    String expr = stack.pop().trim();
+	    String eq = stack.pop().trim();
+	    String vdi = stack.pop().trim();
+	    String type = stack.pop().trim();
 	    if (ctx.variableModifier() != null && ctx.variableModifier().size() > 0) {
 	        sb.append(reverse(ctx.variableModifier().size(), " ")).append(' ');
 	    }
@@ -4373,10 +4364,25 @@ Parser methods follow.
 	@Override public void exitResourceSpecification(@NotNull Java8Parser.ResourceSpecificationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String rparen = stack.pop();
-	    String semi = ctx.SEMI() == null ? "" : stack.pop();    // TODO: any reason to keep the SEMI?
-	    String list = stack.pop();
+	    String semi = ctx.SEMI() == null ? "" : stack.pop();    
+	    String resources = stack.pop();
 	    String lparen = stack.pop();
-	    sb.append(padParen(lparen)).append(list).append(semi).append(padParen(rparen));
+	    if (resources.indexOf(";") > -1) {
+            resources = resources.replaceAll(";", ";\n");
+            String[] lines = resources.split("\n");
+	        StringBuilder r = new StringBuilder();
+	        for (String line : lines) {
+	            r.append(line.trim()).append("\n");    
+	        }
+	        resources = r.toString();
+	        ++tabCount;
+	        resources = trimEnd(indent(resources.trim()));
+	        --tabCount;
+    	    sb.append(lparen).append('\n').append(resources).append("\n").append(rparen);            
+	    }
+	    else {
+	        sb.append(padParen(lparen)).append(resources).append(semi).append(padParen(rparen));
+	    }
 	    stack.push(sb.toString());
 	}
 
