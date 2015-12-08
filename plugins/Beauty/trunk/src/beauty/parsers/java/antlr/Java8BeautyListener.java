@@ -2265,7 +2265,7 @@ Parser methods follow.
 	    String rbracket = stack.pop().trim();
 	    String vil = ctx.variableInitializerList() == null ? "" : stack.pop().trim();
 	    if (ctx.COMMA() != null) {
-	         stack.pop();    // TODO: keep this? I don't seen any reason to, it's just an extra comma.    
+	         stack.pop();    // TODO: keep this? there is no need for it.    
 	    }
 	    String lbracket = stack.pop();
 	    String[] lines = vil.split("\n");

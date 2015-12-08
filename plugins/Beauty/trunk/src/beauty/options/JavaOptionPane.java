@@ -19,8 +19,8 @@ public class JavaOptionPane extends AbstractOptionPane {
         javaOptionPane = new beauty.options.java.JavaOptionPane();
         java8OptionPane = new Java8OptionPane();
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab( "Java", javaOptionPane );
-        tabs.addTab( "Java 8", java8OptionPane );
+        tabs.addTab( jEdit.getProperty("beauty.java8.Brackets_and_Padding", "Brackets and Padding"), javaOptionPane );
+        tabs.addTab( jEdit.getProperty("beauty.java8.Blank_Lines", "Blank Lines"), java8OptionPane );
         add("0, 0, 1, 1, 0, wh, 6", tabs);
     }
 
