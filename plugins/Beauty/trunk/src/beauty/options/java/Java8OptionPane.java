@@ -1,3 +1,4 @@
+
 package beauty.options.java;
 
 import beauty.options.NumberTextField;
@@ -8,8 +9,8 @@ import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
 
-
 public class Java8OptionPane extends JPanel {
+
     private NumberTextField blankLinesBeforePackage;
     private NumberTextField blankLinesAfterPackage;
     private NumberTextField blankLinesAfterImports;
@@ -23,16 +24,13 @@ public class Java8OptionPane extends JPanel {
     private JCheckBox sortModifiers;
     private NumberTextField collapseMultipleBlankLinesTo;
 
-
     public Java8OptionPane() {
         super( new KappaLayout() );
-
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
     }
 
-
     public void _init() {
-        JLabel description = new JLabel( "<html><b>" + jEdit.getProperty( "beauty.msg.Java8_Options", "Java 8 Options" ) );
+        JLabel description = new JLabel( "<html><b>" + jEdit.getProperty( "beauty.java8.Blank_Lines", "Blank Lines" ) );
         JLabel blankLinesBeforePackageLabel = new JLabel( jEdit.getProperty( "beauty.java8.Blank_Lines_Before_Package", "Blank Lines Before Package" ) );
         blankLinesBeforePackage = new NumberTextField( 0, 100 );
         blankLinesBeforePackage.setValue( jEdit.getIntegerProperty( "beauty.java8.blankLinesBeforePackage", 0 ) );
@@ -101,7 +99,6 @@ public class Java8OptionPane extends JPanel {
         add( "0, 12,1, 1, W, w, 3", collapseMultipleBlankLinesToLabel );
         add( "1, 12,1, 1, W, w, 3", collapseMultipleBlankLinesTo );
     }
-
 
     public void _save() {
         jEdit.setIntegerProperty( "beauty.java8.blankLinesBeforePackage", blankLinesBeforePackage.getValue() );

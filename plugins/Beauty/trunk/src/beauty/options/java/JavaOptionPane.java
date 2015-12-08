@@ -45,7 +45,7 @@ public class JavaOptionPane extends JPanel {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // create the components
-        JLabel description = new JLabel( "<html><b>" + jEdit.getProperty( "beauty.msg.Java_Options", "Java Options" ) );
+        JLabel description = new JLabel( "<html><b>" + jEdit.getProperty( "beauty.java8.Brackets_and_Padding", "Brackets and Padding" ) );
         attachedBrackets = new JRadioButton( "<html>" + jEdit.getProperty( "beauty.msg.Use_attached_brackets,_e.g.", "Use attached brackets, e.g." ) + "<br> try {" );
         brokenBrackets = new JRadioButton( "<html>" + jEdit.getProperty( "beauty.msg.Use_broken_brackets,_e.g.", "Use broken brackets, e.g." ) + "<br>try<br>{" );
 

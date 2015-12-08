@@ -34,9 +34,7 @@
          <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file. Delegates to the included custom java beautifier to format java scriptlet blocks within an HTML file.  This does a pretty good job on JSP files, although it will choke on a few things, like EL code within style or script blocks.</li>
          <li>JSP: this is new for Beauty 0.5 and takes care of the shortcomings of the HTML beautifier for JSP files.  This beautifier handles cleaning up jsp files, including script and style blocks and will even beautify java code within scriptlet blocks.
          <li>CSS: works very well.  The JSP beautifier delegates to this beautifier to clean up style blocks within JSP files.</li>
-         <li>Java: works very well, supports Java 1.5 through 1.7. Formats closely to Sun's formatting standard, with a few options available in the plugin settings.</li>
-         <li>Java8: works very well, supports all Java versions through 1.8. Like the Java formatter, formats closely to Sun's formatting standard, with the same options and some additional options available in the plugin settings.
-         </li> 
+         <li>Java: works very well, supports all Java versions through 1.8. Formats closely to Sun's formatting standard, with some formatting options available in the plugin settings.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
          <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
          <li>Beanshell: Works very well.  It generally follows Sun's formatting standard for java files, although beanshell code is slightly different from java code, so there are some minor differences.</li>
@@ -111,15 +109,14 @@
       <p>
       <strong>Java Beautifier</strong>
       <p>
-      Just to clarify the Java beautifiers:  Assuming you have the AStyle plugin installed, you have 4 choices for Java beautification:
+      Just to clarify the Java beautifiers:  Assuming you have the AStyle plugin installed, you have 3 choices for Java beautification:
       <p>
       <ul>
          <li><code>java:custom</code></li>
          <li><code>java:astyle</code></li>
          <li><code>java:beauty</code></li>
-         <li><code>java8:beauty</code></li>
       </ul>
-      For regular Java files, you'll want to use either <code>java:astyle</code>, <code>java:beauty</code>, or <code>java8:beauty</code>.  The <code>java:custom</code> beautifier is the one used by the JSP beautifier.  It does not beautify as well as either <code>java:astyle</code> or <code>java:beauty</code> but will accept the Java code commonly found in JSP scriptlets where the other two won't.
+      For regular Java files, you'll want to use either <code>java:astyle</code> or <code>java:beauty</code>.  The <code>java:custom</code> beautifier is the one used by the JSP beautifier.  It does not beautify as well as either <code>java:astyle</code> or <code>java:beauty</code> but will accept the Java code commonly found in JSP scriptlets where the other two won't.
       <p>
       An option pane was added for the Java beautifier in version 0.6.
       <p>
@@ -176,22 +173,36 @@
       Also, padding parenthesis, so <code>if (i == 1)</code> versus 
       <code>if ( i == 1 )</code>
       <p>
-      <strong>Java 8 Beautifier</strong>
-      The Java 8 beautifier includes the options for the original Java beautifier plus these:
+      <strong>New Java Options in Beauty 0.9</strong>
+      The Java beautifier now includes new options for handling blank lines and sorting and grouping imports:
       <ul>
          <li>Number of blank lines before a package statement.</li>
          <li>Number of blank lines after a package statement.</li>
          <li>Number of blank lines after the import statements.</li>
-         <li>Whether or not to sort imports.</li>
-         <li>Whether or not to group imports.</li>
+         <li>Whether or not to sort imports. This will also remove duplicate import statements.</li>
+         <li>Whether or not to group imports. Grouping import statements also means they will be sorted.</li>
          <li>Number of blank lines between import groups.</li>
          <li>Number of blank lines after a class declaration.</li>
          <li>Number of blank lines after a class body.</li>
          <li>Number of blank lines before constructors, methods, and inner classes.</li>
-         <li>Number of blank lines after constructors, emthods, and inner classes.</li>
-         <li>Whether or not to sort modifiers.</li>
+         <li>Number of blank lines after constructors, methods, and inner classes.</li>
+         <li>Whether or not to sort modifiers. The Java Language Specification recommends, but does not enforce, this order for modifiers: 
+            <ul>
+               <li>public protected private</li>
+               <li>abstract</li>
+               <li>static</li>
+               <li>final</li>
+               <li>synchronized</li>
+               <li>native</li>
+               <li>strictfp</li>
+               <li>transient</li>
+               <li>volatile</li>
+             </ul>
+          </li>
       </ul>
       <p>
+      Here is an example of these settings:
+      <br/>
       <div style="background-color: #3B3B3B">
 <pre><font color="#dcdccc">                                            <font color="#7fb47f"><em>//</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>blank</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>lines</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>before</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>package</em></font><font color="#7fb47f"><em> </em></font><font color="#7fb47f"><em>declaration</em></font>
 <font color="#dddd66"><strong>package</strong></font> a.b.c;
