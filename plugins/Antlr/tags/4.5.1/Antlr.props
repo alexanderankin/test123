@@ -1,0 +1,14 @@
+# Basic Plugin Information
+plugin.antlr.AntlrPlugin.activate=defer
+plugin.antlr.AntlrPlugin.author=Dale Anson
+plugin.antlr.AntlrPlugin.description=A dependency plugin for the Antlr parser and runtime library. (http://www.antlr.org)
+plugin.antlr.AntlrPlugin.docs=docs/antlr.html
+plugin.antlr.AntlrPlugin.longdescription=description.html
+plugin.antlr.AntlrPlugin.name=Antlr
+plugin.antlr.AntlrPlugin.usePluginHome=false
+plugin.antlr.AntlrPlugin.version=4.5.1
+
+# Dependencies
+plugin.antlr.AntlrPlugin.depend.0=jedit 05.02.01.00
+plugin.antlr.AntlrPlugin.depend.1=jdk 1.7.0
+plugin.antlr.AntlrPlugin.jars=antlr4-4.5-opt.jar
