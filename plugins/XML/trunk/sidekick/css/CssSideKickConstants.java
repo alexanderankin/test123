@@ -21,7 +21,7 @@
 
 package sidekick.css;
 
-public class CssSideKickPlugin {
+public class CssSideKickConstants {
 	public static final String NAME = "csssidekick";
 	public static final String OPTION_PREFIX = "options.csssidekick.";
 	
