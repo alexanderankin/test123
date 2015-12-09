@@ -3304,6 +3304,8 @@ Parser methods follow.
 	    if (ctx.blockStatement() != null) {
 	        sb.append(reverse(ctx.blockStatement().size(), ""));
 	    }
+	    trimEnd(sb);
+	    sb.append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3502,18 +3504,29 @@ Parser methods follow.
 	@Override public void exitBlock(@NotNull Java8Parser.BlockContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String rbracket = stack.pop();
+	    while(rbracket.startsWith("\n")) {
+	        rbracket = rbracket.substring(1, rbracket.length());    
+	    }
 	    if (ctx.blockStatements() != null) {
 	        String stmt = indent(stack.pop());
+            if (!stmt.startsWith("\n")) {
+                stmt = "\n" + stmt;    
+            }
+            if (!stmt.endsWith("\n")) {
+                stmt += "\n";   
+            }
 	        sb.append(stmt);   
 	    }
 	    --tabCount;
 	    String lbracket = stack.pop();
-	    rbracket = indent(rbracket);
+	    rbracket = trimEnd(indent(rbracket));
 	    sb.insert(0, lbracket);
 	    if (brokenBracket) {
 	        sb.insert(0, "\n");    
 	    }
-	    trimEnd(sb);
+	    if (sb.charAt(sb.length() - 1) != '\n') {
+	        sb.append('\n');    
+	    }
 	    sb.append(rbracket);
 	    stack.push(sb.toString());
 	}
@@ -4545,6 +4558,7 @@ Parser methods follow.
 	        // first option
 	        String catches = stack.pop();
 	        catches = trimFront(catches);
+	        catches = (breakElse ? "\n" : " ") + catches;
 	        String block = stack.pop();
 	        String try_ = stack.pop();
 	        sb.append(try_).append(' ').append(block).append(catches);
@@ -4885,7 +4899,6 @@ Parser methods follow.
 	    // Statement
 	}
 	@Override public void exitBlockStatement(@NotNull Java8Parser.BlockStatementContext ctx) {
-	    // nothing to do here, one of the choices should already be on the stack,
 	}
 
 	@Override public void enterClassType_lf_classOrInterfaceType(@NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx) { 
