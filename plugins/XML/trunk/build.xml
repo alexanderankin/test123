@@ -120,7 +120,7 @@
     <target name="jar" depends="ant-complete, build"
        description="builds jar + ant-completion info" />
 
-    <target name="dist" depends="docs, jar"
+    <target name="dist" depends="clean, docs, jar"
        description="The whole shebang" />
 
     <target name="javacc" description="Runs javacc compiler on *.jj files.">
