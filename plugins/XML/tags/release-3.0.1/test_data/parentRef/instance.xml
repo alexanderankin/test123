@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<!-- valid file, demonstrating inclusion of grammars -->
+<doc>
+<p>Hello <em>world</em>.</p>
+
+<!--  XML Insert proposes p and table -->
+<table>
+<tr><td>cell nr <em>1</em></td></tr>
+<tr><td> <!-- XML Insert proposes <em> --></td></tr>
+</table>
+
+</doc>
+<!-- XML Insert proposes only doc -->
