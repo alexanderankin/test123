@@ -55,7 +55,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 
 	//{{{ readConfig() method
 	public static void readConfig() {
-		QUOTE = jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote");
+		QUOTE = jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "quote");
 	} //}}}
 
 	//{{{ insert() method
@@ -74,7 +74,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 
 
 		// If selected property, handle colon
-		if (selectedProperty && jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon")) {
+		if (selectedProperty && jEdit.getBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "colon")) {
 
 			String textAfter = buffer.getText(caret, buffer.getLength() - caret - 1);
 
@@ -83,7 +83,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 			// and if we haven't, move caret after colon
 			if (canAddColon(textAfter)) {
 				selected += ":";
-				if (jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon")) {
+				if (jEdit.getBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "space-after-colon")) {
 					selected += " ";
 				}
 			} else if (Pattern.compile("^\\s*:").matcher(textAfter).find()) {
@@ -157,7 +157,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 	private static boolean initialized;
 	/* private static String COMPLETION_CONFIG_FILE = jEdit.getSettingsDirectory() 
 													+ File.separator 
-													+ jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "completion-config"); */
+													+ jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "completion-config"); */
 	private static final String COMPLETION_CONFIG_FILE = "jeditresource:/XML.jar!/xml/completion/css-complete.xml";
 	
 	private static Pattern HAS_PROP_COLON = Pattern.compile("^[^;}]*:");

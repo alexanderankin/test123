@@ -149,7 +149,7 @@ public class CSS2SideKickParser extends SideKickParser implements EBComponent {
             // false, the file will parse, if set to true and there are
             // proprietary property names, then an error will be passed to
             // ErrorList.
-            parser.setProprietaryAsError( jEdit.getBooleanProperty( CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError" ) );
+            parser.setProprietaryAsError( jEdit.getBooleanProperty( CssSideKickConstants.OPTION_PREFIX + "showProprietaryAsError" ) );
 
             // parse the text
             CSSNode ss = parser.styleSheet();

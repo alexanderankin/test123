@@ -47,22 +47,22 @@ public class CssSideKickOptionPane extends AbstractOptionPane  {
     public void _init() {
         addSeparator("Formatting Options");
 
-        quote = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote.title"));
-        quote.setSelected(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote").equals("'"));
+        quote = new JCheckBox(jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "quote.title"));
+        quote.setSelected(jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "quote").equals("'"));
         addComponent(quote);
 
-        colon = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "colon.title"));
-        colon.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon"));
+        colon = new JCheckBox(jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "colon.title"));
+        colon.setSelected(jEdit.getBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "colon"));
         addComponent(colon);
 
-        spaceAfterColon = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon.title"));
-        spaceAfterColon.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon"));
+        spaceAfterColon = new JCheckBox(jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "space-after-colon.title"));
+        spaceAfterColon.setSelected(jEdit.getBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "space-after-colon"));
         addComponent(spaceAfterColon);
 
         addSeparator("Display Options");
 
-        showProprietaryAsError = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError.title"));
-        showProprietaryAsError.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError"));
+        showProprietaryAsError = new JCheckBox(jEdit.getProperty(CssSideKickConstants.OPTION_PREFIX + "showProprietaryAsError.title"));
+        showProprietaryAsError.setSelected(jEdit.getBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "showProprietaryAsError"));
         addComponent(showProprietaryAsError);
 
 
@@ -70,12 +70,12 @@ public class CssSideKickOptionPane extends AbstractOptionPane  {
 
     //{{{ _save() method
     public void _save() {
-        jEdit.setProperty(CssSideKickPlugin.OPTION_PREFIX + "quote", quote.isSelected()
+        jEdit.setProperty(CssSideKickConstants.OPTION_PREFIX + "quote", quote.isSelected()
                                         ? "'"
                                         : "\"");
-        jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon", colon.isSelected());
-        jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon", spaceAfterColon.isSelected());
-        jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError", showProprietaryAsError.isSelected());
+        jEdit.setBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "colon", colon.isSelected());
+        jEdit.setBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "space-after-colon", spaceAfterColon.isSelected());
+        jEdit.setBooleanProperty(CssSideKickConstants.OPTION_PREFIX + "showProprietaryAsError", showProprietaryAsError.isSelected());
         CssSideKickCompletion.readConfig();
     } //}}}
 
