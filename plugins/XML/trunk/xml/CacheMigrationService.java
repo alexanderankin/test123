@@ -23,7 +23,7 @@ public class CacheMigrationService extends OneTimeMigrationService {
 	}
 
 	@Override
-	void migrate() {
+	public void migrate() {
 		Hashtable<String, String> table = new Hashtable<String, String>();
 		Properties p = jEdit.getProperties();
 		for (Object ko : p.keySet()) {
