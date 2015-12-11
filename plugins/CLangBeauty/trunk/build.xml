@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="CLangBeauty" default="dist" basedir="."
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	>
+	<property file="CLangBeauty.props" />
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+
+
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="build"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+
+	<selector id="extraFiles">
+		<and>
+			<not> <filename name="${build.dir}/**"/></not>
+			<or>
+				<filename name="**/services.xml" />
+				<filename name="**/*.props" />
+			</or>
+		</and>
+	</selector>
+
+	<selector id="packageFiles">
+		<or>
+			<filename name="docs/CHANGES.txt" />
+			<filename name="resources/*.html" />
+			<filename name="resources/*.png" />
+			<filename name="resources/*.js" />
+		</or>
+	</selector>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+	</path>
+
+</project>
