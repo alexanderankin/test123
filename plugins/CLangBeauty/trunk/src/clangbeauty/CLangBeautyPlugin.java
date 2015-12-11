@@ -18,10 +18,8 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class CLangBeautyPlugin extends EditPlugin {
 
-	public static String CLANG_FORMAT_EXE_PROP = "clangbeauty.clang-format";
-
 	public static String getCLangFormatExe() {
-		return jEdit.getProperty( CLANG_FORMAT_EXE_PROP, "clang-format" );
+		return jEdit.getProperty( "clangbeauty.clang-format.exe", "clang-format" );
 	}
 }
 
