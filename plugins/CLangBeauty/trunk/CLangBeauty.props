@@ -22,9 +22,9 @@ beautyplugin.label=Beauty
 clangbeauty.clang-format.exe=/usr/bin/clang-format
 
 # modes
-mode.c.beauty.beautifier=clang-format
-mode.c++.beauty.beautifier=clang-format
-mode.objective-.beauty.beautifier=clang-format
+mode.c++.beauty.beautifier=c++\:clang-format
+mode.c.beauty.beautifier=c\:clang-format
+mode.objective-c.beauty.beautifier=objective-c\:clang-format
 
 # option pane
 plugin.clangbeauty.CLangBeautyPlugin.option-pane=clangbeauty
