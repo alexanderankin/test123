@@ -13,6 +13,8 @@ package clangbeauty;
 import java.util.Arrays;
 import java.util.List;
 
+import org.gjt.sp.jedit.jEdit;
+
 import outerbeauty.OuterBeautifier;
 
 /**
@@ -23,6 +25,6 @@ public class CLangBeautifier extends OuterBeautifier {
 	@Override
 	protected List<String> getCommandLine() {
 		String exe = CLangBeautyPlugin.getCLangFormatExe();
-		return Arrays.asList( exe, "-style=LLVM" );
+		return Arrays.asList( exe, "-style=" + jEdit.getProperty( "clangbeauty.style", "LLVM" ) );
 	}
 }
