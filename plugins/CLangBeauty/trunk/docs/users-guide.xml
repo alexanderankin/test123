@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+  <title>CLangBeauty plugin user's guide</title>
+
+ <articleinfo>
+ <authorgroup>
+  <author><firstname>Dale</firstname><surname>Anson</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+  <para>
+   The CLangBeauty plugin itself is released under the GNU General Public License.
+   A copy of the GPL can be found in the jEdit online help.
+  </para>
+ </legalnotice>
+</articleinfo>
+
+<section id="usage"><title>Usage</title>
+
+<para>This is a plugin providing <emphasis>Beauty</emphasis> beautifiers
+by running the external <command>clang-format</command>
+<ulink url="http://clang.llvm.org">http://clang.llvm.org</ulink>
+tool. <emphasis>The clang-format tool must be installed before using this plugin!</emphasis>
+Details for downloading and installing this tool can be found at 
+<ulink url="http://llvm.org/releases/download.html">http://llvm.org/releases/download.html</ulink>.
+The clang tools are available for Windows, Mac, Linux, and BSD</para>
+
+
+<para><command>clang-format</command> supports C, C++, and Objective-C.</para>
+
+<para>To activate clang-format from within jEdit:
+<orderedlist>
+	<listitem><para>
+	open the plugin options (<guimenu>Plugins</guimenu> / <guimenuitem>Plugin Options</guimenuitem>),
+	</para></listitem>
+	<listitem><para>
+	go to the <guimenuitem>Beauty</guimenuitem> > <guimenuitem>Modes</guimenuitem> pane,
+	</para></listitem>
+	<listitem><para>
+	choose <guilabel>clang-format</guilabel> for C, C++, and Objective-C modes.
+	</para></listitem>
+</orderedlist>
+</para>
+
+<para>Now, run <guimenu>Plugins</guimenu> > <guisubmenu>Beauty</guisubmenu> > <guimenuitem>Beautify Buffer</guimenuitem>.</para>
+
+<para>See the Beauty plugin documentation for addtional details for setting keyboard shortcuts.</para>
+
+</section>
+
+<section id="configuration"><title>Configuration</title>
+
+<para>This plugin is configured via the CLangBeauty option pane. Go to Plugins - Plugin Options - CLangBeauty to configure.</para>
+<para>The path to <command>clang-format</command> executable is set through
+the <code>clangbeauty.clang-format</code> property. This must be done for jEdit to be able to find the clang-format executable.
+</para>
+
+<para>You may select a style option for clang-format to use. The choices are LLVM, Google, Chromium, Mozilla, and WebKit. At this time,
+these are the only options available. 
+</para>
+
+</section>
+
+<appendix id="changes"><title>Change log</title>
+
+
+</appendix>
+
+</article>
+

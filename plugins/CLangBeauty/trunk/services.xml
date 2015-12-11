@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+  <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="c:clang-format">
+    new clangbeauty.CLangBeautifier();
+  </SERVICE>
+  <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="c++:clang-format">
+    new clangbeauty.CLangBeautifier();
+  </SERVICE>
+  <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="objective-c:clang-format">
+    new clangbeauty.CLangBeautifier();
+  </SERVICE>
+</SERVICES> 
