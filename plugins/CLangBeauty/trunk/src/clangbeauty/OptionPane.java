@@ -27,7 +27,7 @@ public class OptionPane extends AbstractOptionPane {
 
     protected void _init() {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
-        oldExePath = jEdit.getProperty( "clangbeauty.clang-format.exe", "" );
+        oldExePath = CLangBeautyPlugin.getCLangFormatExe();
 
         exePathField = new FileTextField( oldExePath, false );
         addComponent( jEdit.getProperty( "options.clangbeauty.clangformat.exe", "clang-format executable" ), exePathField );
@@ -42,7 +42,7 @@ public class OptionPane extends AbstractOptionPane {
     protected void _save() {
         String newPath = exePathField.getTextField().getText();
         if ( newPath != oldExePath ) {
-            jEdit.setProperty( "clangbeauty.clang-format.exe", newPath );
+            jEdit.setProperty( CLangBeautyPlugin.CLANG_FORMAT_EXE_PROP, newPath );
         }
 
 
