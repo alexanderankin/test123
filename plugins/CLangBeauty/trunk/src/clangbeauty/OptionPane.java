@@ -42,7 +42,7 @@ public class OptionPane extends AbstractOptionPane {
     protected void _save() {
         String newPath = exePathField.getTextField().getText();
         if ( newPath != oldExePath ) {
-            jEdit.setProperty( CLangBeautyPlugin.CLANG_FORMAT_EXE_PROP, newPath );
+            jEdit.setProperty( "clangbeauty.clang-format.exe", newPath );
         }
 
 
