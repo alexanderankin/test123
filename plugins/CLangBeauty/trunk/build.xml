@@ -5,6 +5,8 @@
 	<property file="CLangBeauty.props" />
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
+    <property name="compiler.target" value="1.7" />
+    <property name="compiler.source" value="1.7" />
 
 
 	<property name="src.dir" value="src"/>
