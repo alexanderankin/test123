@@ -25,6 +25,6 @@ public class CLangBeautifier extends OuterBeautifier {
 	@Override
 	protected List<String> getCommandLine() {
 		String exe = CLangBeautyPlugin.getCLangFormatExe();
-		return Arrays.asList( exe, "-style=" + jEdit.getProperty( "clangbeauty.style", "LLVM" ) );
+		return Arrays.asList( exe, "-style=" + jEdit.getProperty( "clangbeauty.styleOptions", "BasedOnStyle:LLVM" ) );
 	}
 }
