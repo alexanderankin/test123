@@ -21,6 +21,10 @@ beautyplugin.label=Beauty
 # exe default, this should be set in the plugin options
 clangbeauty.clang-format.exe=/usr/bin/clang-format
 
+# titles for DockableWindowManager
+clangbeauty.title=clang-format
+clangbeauty.label=clang-format
+
 # modes
 mode.c++.beauty.beautifier=c++\:clang-format
 mode.c.beauty.beautifier=c\:clang-format

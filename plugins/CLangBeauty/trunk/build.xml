@@ -21,6 +21,7 @@
 			<not> <filename name="${build.dir}/**"/></not>
 			<or>
 				<filename name="**/services.xml" />
+				<filename name="**/dockables.xml" />
 				<filename name="**/*.props" />
 			</or>
 		</and>
