@@ -9,7 +9,7 @@ import java.util.*;
 // TODO: if there are no options set yet, use the defaults from LLVM
 public class StyleOptions {
 
-    public static final String DEFAULT = "_default_";
+    public static final String DEFAULT = "AAAAA_default_";
     
     // <language, style options>
     private TreeMap<String, TreeMap<String, String>> options = new TreeMap<String, TreeMap<String, String>>();
@@ -101,6 +101,7 @@ public class StyleOptions {
         switch ( optionName ) {
             // numeric options
             case "AccessModifierOffset":
+            case "ColumnLimit":
             case "ContinuationIndentWidth":
             case "IndentWidth":
             case "MaxEmptyLinesToKeep":
@@ -150,43 +151,41 @@ public class StyleOptions {
             case "SpacesInContainerLiterals":
             case "SpacesInParentheses":
             case "SpacesInSquareBrackets":
-                return new String[] {"true", "false"};
+                return new String[] {"", "true", "false"};
             // String options
             case "AlignAfterOpenBracket":
-                return new String[] {"Align", "DontAlign", "AlwaysBreak"};
+                return new String[] {"", "Align", "DontAlign", "AlwaysBreak"};
             case "BasedOnStyle":
-                return new String[] {"LLVM", "Google", "Chromium", "Mozilla", "WebKit"};
+                return new String[] {"", "LLVM", "Google", "Chromium", "Mozilla", "WebKit"};
             case "AllowShortFunctionsOnASingleLine":
-                return new String[] {"None", "Empty", "Inline", "All"};
+                return new String[] {"", "None", "Empty", "Inline", "All"};
             case "AlwaysBreakAfterDefinitionReturnType":
-                return new String[] {"None", "All", "TopLevel"};
+                return new String[] {"", "None", "All", "TopLevel"};
             case "BraceWrapping":
                 return new String[] {
-                    "AfterClass", "AfterControlStatement", "AfterEnum",
+                    "", "AfterClass", "AfterControlStatement", "AfterEnum",
                     "AfterFunction", "AfterNamespace", "AfterObjCDeclaration", "AfterStruct",
                     "AfterUnion", "BeforeCatch", "BeforeElse", "IndentBraces"
                 };
             case "BreakBeforeBinaryOperators":
-                return new String[] {"None", "NonAssignment", "All"};
+                return new String[] {"", "None", "NonAssignment", "All"};
             case "BreakBeforeBraces":
                 return new String[] {
-                    "Attach", "Linux", "Mozilla", "Stroustrup",
+                    "", "Attach", "Linux", "Mozilla", "Stroustrup",
                     "Allman", "GNU", "WebKit", "Custom"
                 };
-            case "ColumnLimit":
-                return new String[] {"0", "72", "76", "80", "120"};
             case "Language":
-                return new String[] {"None", "Cpp", "Java", "Javascript", "Proto"};
+                return new String[] {"", "None", "Cpp", "Java", "JavaScript", "Proto"};
             case "NamespaceIndentation":
-                return new String[] {"None", "Inner", "All"};
+                return new String[] {"", "None", "Inner", "All"};
             case "PointerAlignment":
-                return new String[] {"Left", "Right", "Middle"};
+                return new String[] {"", "Left", "Right", "Middle"};
             case "SpaceBeforeParens":
-                return new String[] {"Never", "ControlStatements", "Always"};
+                return new String[] {"", "Never", "ControlStatements", "Always"};
             case "Standard":
-                return new String[] {"Cpp03", "Cpp11", "Auto"};
+                return new String[] {"", "Cpp03", "Cpp11", "Auto"};
             case "UseTab":
-                return new String[] {"Never", "ForIndentation", "Always"};
+                return new String[] {"", "Never", "ForIndentation", "Always"};
             // these options allow freeform strings
             case "CommentPragmas":
             case "ConstructorInitializerIndentWidth":
@@ -308,14 +307,19 @@ public class StyleOptions {
         for ( String language : options.keySet() ) {
             sb.append("---\n");
             TreeMap<String, String> languageOptions = options.get(language);
-            if (languageOptions.get("Language") != null) {
-                sb.append("Language: ").append(languageOptions.get("Language")).append('\n');    
+            String languageValue = languageOptions.get("Language");
+            if (languageValue != null && !languageValue.trim().isEmpty()) {
+                sb.append("Language: ").append(languageValue).append('\n');    
             }
             for (String key : languageOptions.keySet()) {
                 if ("Language".equals(key)) {
                     continue;    
                 }
-                sb.append( key ).append( ": " ).append( languageOptions.get( key ) ).append( '\n' );
+                String value = languageOptions.get(key);
+                if (value == null || value.isEmpty()) {
+                    continue;    
+                }
+                sb.append( key ).append( ": " ).append( value ).append( '\n' );
             }
         }
         sb.append("...");

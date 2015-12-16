@@ -25,11 +25,6 @@ clangbeauty.clang-format.exe=/usr/bin/clang-format
 clangbeauty.title=clang-format
 clangbeauty.label=clang-format
 
-# modes
-mode.c++.beauty.beautifier=c++\:clang-format
-mode.c.beauty.beautifier=c\:clang-format
-mode.objective-c.beauty.beautifier=objective-c\:clang-format
-
 # option pane
 plugin.clangbeauty.CLangBeautyPlugin.option-pane=clangbeauty
 options.clangbeauty.label=CLangBeauty
