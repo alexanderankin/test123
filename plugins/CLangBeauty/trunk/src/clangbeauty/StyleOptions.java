@@ -1,14 +1,32 @@
 
 package clangbeauty;
 
-import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
 
+// TODO: if there are no options set yet, use the defaults from LLVM
 public class StyleOptions {
 
-    private HashMap<String, String> options = new HashMap<String, String>();
+    public static final String DEFAULT = "_default_";
+    
+    // <language, style options>
+    private TreeMap<String, TreeMap<String, String>> options = new TreeMap<String, TreeMap<String, String>>();
+    
+    
+    public String[] getLanguageNames() {
+        String[] names = new String[options.size()];
+        int i = 0;
+        for (String name : options.keySet()) {
+            names[i++] = name;
+        }
+        return names;
+    }
 
     public String[] getOptionNames() {
         return new String[] {
+            "Language",
             "BasedOnStyle",
             "AccessModifierOffset",
             "AlignAfterOpenBracket",
@@ -49,7 +67,6 @@ public class StyleOptions {
             "IndentWidth",
             "IndentWrappedFunctionNames",
             "KeepEmptyLinesAtTheStartOfBlocks",
-            "Language",
             "MacroBlockBegin",
             "MacroBlockEnd",
             "MaxEmptyLinesToKeep",
@@ -96,7 +113,7 @@ public class StyleOptions {
             case "PenaltyReturnTypeOnItsOwnLine":
             case "SpacesBeforeTrailingComments":
             case "TabWidth":
-                return new String[] {"0", "1", "2", "4", "8"};
+                return new String[] {"-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8"};
             // boolean options
             case "AlignConsecutiveAssignments":
             case "AlignConsecutiveDeclarations":
@@ -144,11 +161,18 @@ public class StyleOptions {
             case "AlwaysBreakAfterDefinitionReturnType":
                 return new String[] {"None", "All", "TopLevel"};
             case "BraceWrapping":
-                return new String[] {"AfterClass", "AfterControlStatement", "AfterEnum", "AfterFunction", "AfterNamespace", "AfterObjCDeclaration", "AfterStruct", "AfterUnion", "BeforeCatch", "BeforeElse", "IndentBraces"};
+                return new String[] {
+                    "AfterClass", "AfterControlStatement", "AfterEnum",
+                    "AfterFunction", "AfterNamespace", "AfterObjCDeclaration", "AfterStruct",
+                    "AfterUnion", "BeforeCatch", "BeforeElse", "IndentBraces"
+                };
             case "BreakBeforeBinaryOperators":
                 return new String[] {"None", "NonAssignment", "All"};
             case "BreakBeforeBraces":
-                return new String[] {"Attach", "Linux", "Mozilla", "Stroustrup", "Allman", "GNU", "WebKit", "Custom"};
+                return new String[] {
+                    "Attach", "Linux", "Mozilla", "Stroustrup",
+                    "Allman", "GNU", "WebKit", "Custom"
+                };
             case "ColumnLimit":
                 return new String[] {"0", "72", "76", "80", "120"};
             case "Language":
@@ -174,42 +198,127 @@ public class StyleOptions {
                 return new String[] {};
         }
     }
-
+    
     /**
-     * @param savedOptions An option string, as produced by the <code>toString<code> method.
-     * The expectation is that this is a string that was saved in a jEdit property to be
-     * used again.
+     * .clang-format files use a simple YAML format, there is a section per language.
+     * Each section starts with "---" followed by the Language property, then followed
+     * by the properties for that language, then ends with "...". If there is no 
+     * Language property in the first section, then that first section is the default
+     * settings. Here is an example taken from http://clang.llvm.org/docs/ClangFormatStyleOptions.html:
+     * <pre>
+     * ---
+     * # We'll use defaults from the LLVM style, but with 4 columns indentation.
+     * BasedOnStyle: LLVM
+     * IndentWidth: 4
+     * ---
+     * Language: Cpp
+     * # Force pointers to the type for C++.
+     * DerivePointerAlignment: false
+     * PointerAlignment: Left
+     * ---
+     * Language: JavaScript
+     * # Use 100 columns for JS.
+     * ColumnLimit: 100
+     * ---
+     * Language: Proto
+     * # Don't format .proto files.
+     * DisableFormat: true
+     * ...
+     * </pre>
      */
-    public void setOptions( String savedOptions ) {
-        if ( savedOptions != null ) {
-            options = new HashMap<String, String>();
-            String[] pairs = savedOptions.split( "," );
-            for ( String pair : pairs ) {
-                String[] parts = pair.split( ":" );
-                options.put( parts[0].trim(), parts[1].trim() );
+    public void load( File clangFormatFile ) {
+        
+        if ( clangFormatFile == null || !clangFormatFile.exists() ) {
+            return;
+        }
+
+
+        options.clear();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(clangFormatFile));
+            List<TreeMap<String, String>> maps = new ArrayList<TreeMap<String, String>>();
+            TreeMap<String, String> currentMap = new TreeMap<String, String>();
+            maps.add(currentMap);
+            String line;
+            while((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) {
+                    continue;   
+                }
+                if (line.startsWith("---")) {
+                    // start of a new language section 
+                    currentMap = new TreeMap<String, String>();
+                    maps.add(currentMap);
+                    continue;
+                }
+                if (line.startsWith("#")) {
+                    continue;   // skip comments
+                }
+                if (line.startsWith("...")) {
+                    continue;    
+                }
+                int index = line.indexOf(':');
+                String key = line.substring(0, index);
+                String value = line.substring(index + 1).trim();
+                currentMap.put(key, value);
             }
+            for (TreeMap<String, String> map : maps) {
+                if (map.isEmpty()) {
+                    continue;   
+                }
+                String language = map.get("Language");
+                if (language == null) {
+                    language = DEFAULT;    
+                }
+                options.put(language, map);
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
         }
     }
 
-    public String setOption( String name, String value ) {
-        return options.put( name, value );
+    public String setOption( String language, String name, String value ) {
+        TreeMap<String, String> map = options.get(language);
+        if (map == null) {
+            map = new TreeMap<String, String>();
+            options.put(language, map);
+        }
+        return map.put(name, value);
     }
-
-    public String getOption( String optionName ) {
-        return options.get( optionName );
+    
+    /**
+     * @return The value for the given optionName for the given language or an empty
+     * string if either the language is not found or the optionName is not found.
+     */
+    public String getOption( String language, String optionName ) {
+        TreeMap<String, String> map = options.get(language);
+        if (map == null) {
+            return "";    
+        }
+        String value = map.get( optionName );
+        return value == null ? "" : value;
     }
 
     /**
-     * @return a string suitable to passing to the clang-format -style= parameter.
+     * @return a string suitable for saving as a .clang-format file
      */
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append('{');
-        for ( String key : options.keySet() ) {
-            sb.append( key ).append( ':' ).append( options.get( key ) ).append( ',' );
+        for ( String language : options.keySet() ) {
+            sb.append("---\n");
+            TreeMap<String, String> languageOptions = options.get(language);
+            if (languageOptions.get("Language") != null) {
+                sb.append("Language: ").append(languageOptions.get("Language")).append('\n');    
+            }
+            for (String key : languageOptions.keySet()) {
+                if ("Language".equals(key)) {
+                    continue;    
+                }
+                sb.append( key ).append( ": " ).append( languageOptions.get( key ) ).append( '\n' );
+            }
         }
-        sb.deleteCharAt( sb.length() - 1 );
-        sb.append('}');
+        sb.append("...");
         return sb.toString();
     }
 }
