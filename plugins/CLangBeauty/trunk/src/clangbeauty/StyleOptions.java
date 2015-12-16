@@ -113,7 +113,7 @@ public class StyleOptions {
             case "PenaltyReturnTypeOnItsOwnLine":
             case "SpacesBeforeTrailingComments":
             case "TabWidth":
-                return new String[] {"-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8"};
+                return new String[] {"-1"};
             // boolean options
             case "AlignConsecutiveAssignments":
             case "AlignConsecutiveDeclarations":

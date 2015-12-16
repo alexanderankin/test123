@@ -58,7 +58,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         fileLabel = new JLabel();
 
         JButton openButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.open", "Open" ) );
-        openButton.setToolTipText("Select a .clang-format file to load.");
+        openButton.setToolTipText( "Select a .clang-format file to load." );
         openButton.addActionListener(
         new ActionListener(){
 
@@ -68,7 +68,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
         );
         JButton saveButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.save", "Save" ) );
-        saveButton.setToolTipText("Select a directory to save the current configuration.");
+        saveButton.setToolTipText( "Select a directory to save the current configuration." );
         saveButton.addActionListener(
         new ActionListener(){
 
@@ -81,14 +81,14 @@ public class DockablePanel extends JPanel implements EBComponent {
         JScrollPane scroller = new JScrollPane( styleOptionsPanel );
 
         JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BorderLayout());
-        topPanel.add(fileLabel, BorderLayout.WEST);
-        
+        topPanel.setLayout( new BorderLayout() );
+        topPanel.add( fileLabel, BorderLayout.WEST );
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.add( openButton );
         buttonPanel.add( saveButton );
-        
-        topPanel.add(buttonPanel, BorderLayout.EAST);
+
+        topPanel.add( buttonPanel, BorderLayout.EAST );
         add( topPanel, BorderLayout.NORTH );
         add( scroller, BorderLayout.CENTER );
 
@@ -96,7 +96,7 @@ public class DockablePanel extends JPanel implements EBComponent {
     }
 
     private void loadStyleOptions( String path, boolean isAbsolute ) {
-        File file = isAbsolute ? new File(path) : findClangFormat( path );
+        File file = isAbsolute ? new File( path ) : findClangFormat( path );
         if ( file != null ) {
             fileLabel.setText( file.getPath() );
             styleOptions = new StyleOptions();
@@ -113,31 +113,42 @@ public class DockablePanel extends JPanel implements EBComponent {
         String[] languageNames = styleOptions.getLanguageNames();
         for ( final String language : languageNames ) {
             for ( final String name : optionNames ) {
+                styleOptionsPanel.add(new JLabel(name));
                 String[] optionChoices = styleOptions.getOptionChoices( name );
                 if ( optionChoices.length > 0 ) {
-                    JComboBox choices = new JComboBox( optionChoices );
-                    choices.addActionListener(
-                    new ActionListener(){
+                    if ( optionChoices.length == 1 && "-1".equals(optionChoices[0]) ) {
+                        // use a NumberTextField
+                        NumberTextField numberField = new NumberTextField();
+                        String value = styleOptions.getOption( language, name );
+                        int number = value == null ? 0 : Integer.parseInt(value);
+                        numberField.setValue(number);
+                        styleOptionsPanel.add(numberField);
+                    }
+                    else {
 
-                        public void actionPerformed( ActionEvent ae ) {
-                            JComboBox source = ( JComboBox )ae.getSource();
-                            styleOptions.setOption( language, name, ( String )source.getSelectedItem() );
+                        // otherwise, use a combo box
+                        JComboBox choices = new JComboBox( optionChoices );
+                        choices.addActionListener(
+                        new ActionListener(){
+
+                            public void actionPerformed( ActionEvent ae ) {
+                                JComboBox source = ( JComboBox )ae.getSource();
+                                styleOptions.setOption( language, name, ( String )source.getSelectedItem() );
+                            }
                         }
-                    }
-                    );
-                    String selected = styleOptions.getOption( language, name );
-                    System.out.println( "+++++ " + language + ":" + name + ":" + selected );
-                    if ( selected != null ) {
-                        choices.setSelectedItem( selected );
-                    }
+                        );
+                        String selected = styleOptions.getOption( language, name );
+                        if ( selected != null ) {
+                            choices.setSelectedItem( selected );
+                        }
 
 
-                    styleOptionsPanel.add( new JLabel( name ) );
-                    styleOptionsPanel.add( choices );
+                        styleOptionsPanel.add( choices );
+                    }
                 }
                 else {
+                    // use a plain text field
                     JTextField textField = new JTextField( styleOptions.getOption( language, name ) );
-                    styleOptionsPanel.add( new JLabel( name ) );
                     styleOptionsPanel.add( textField );
                 }
             }
@@ -174,14 +185,16 @@ public class DockablePanel extends JPanel implements EBComponent {
 
     private void save() {
         String path = fileLabel.getText();
-        if (path.startsWith("<")) {
-            path = jEdit.getActiveView().getEditPane().getBuffer().getPath();       
+        if ( path.startsWith( "<" ) ) {
+            path = jEdit.getActiveView().getEditPane().getBuffer().getPath();
         }
-        String parentDirectory = new File(path).getParent();
+
+        String parentDirectory = new File( path ).getParent();
         String[] files = GUIUtilities.showVFSFileDialog( jEdit.getActiveView(), parentDirectory, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
-        if (files == null) {
-            return;   
+        if ( files == null ) {
+            return;
         }
+
         String filename = new File( files[0], ".clang-format" ).getAbsolutePath();
 
         try {
@@ -194,24 +207,26 @@ public class DockablePanel extends JPanel implements EBComponent {
             JOptionPane.showMessageDialog( jEdit.getActiveView(), e.getMessage(), "Error saving file", JOptionPane.ERROR_MESSAGE );
         }
     }
-    
+
     private void open() {
         String path = fileLabel.getText();
-        if (path.startsWith("<")) {
-            path = jEdit.getActiveView().getEditPane().getBuffer().getPath();       
+        if ( path.startsWith( "<" ) ) {
+            path = jEdit.getActiveView().getEditPane().getBuffer().getPath();
         }
-        String parentDirectory = new File(path).getParent();
+
+        String parentDirectory = new File( path ).getParent();
         String[] files = GUIUtilities.showVFSFileDialog( jEdit.getActiveView(), parentDirectory, VFSBrowser.OPEN_DIALOG, false );
-        if (files == null) {
-            return;   
+        if ( files == null ) {
+            return;
         }
-        String filename = new File( files[0]).getAbsolutePath();
-        if (!filename.endsWith(".clang-format")) {
+
+        String filename = new File( files[0] ).getAbsolutePath();
+        if ( !filename.endsWith( ".clang-format" ) ) {
             JOptionPane.showMessageDialog( jEdit.getActiveView(), "File name must be '.clang-format'.", "Invalid file name", JOptionPane.ERROR_MESSAGE );
             return;
         }
 
-        loadStyleOptions(filename, true);
+
+        loadStyleOptions( filename, true );
     }
-    
 }
