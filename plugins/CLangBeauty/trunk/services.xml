@@ -10,4 +10,10 @@
   <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="objective-c:clang-format">
     new clangbeauty.CLangBeautifier();
   </SERVICE>
+  <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="java:clang-format">
+    new clangbeauty.CLangBeautifier();
+  </SERVICE>
+  <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="javascript:clang-format">
+    new clangbeauty.CLangBeautifier();
+  </SERVICE>
 </SERVICES> 
