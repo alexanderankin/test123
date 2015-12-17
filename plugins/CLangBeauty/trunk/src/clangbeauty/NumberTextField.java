@@ -126,10 +126,11 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
         }
 
         private boolean isNumeric( String string ) {
-            for ( char c : string.toCharArray() ) {
-                if ( ! Character.isDigit( c ) ) {
-                    return false;
-                }
+            try {
+                Integer.parseInt(string);
+            }
+            catch(NumberFormatException e) {
+                return false;
             }
             return true;
         }

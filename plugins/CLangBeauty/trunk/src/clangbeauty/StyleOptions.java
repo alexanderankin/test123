@@ -226,11 +226,9 @@ public class StyleOptions {
      * </pre>
      */
     public void load( File clangFormatFile ) {
-        
         if ( clangFormatFile == null || !clangFormatFile.exists() ) {
             return;
         }
-
 
         options.clear();
         try {
@@ -258,7 +256,7 @@ public class StyleOptions {
                 }
                 int index = line.indexOf(':');
                 String key = line.substring(0, index);
-                String value = line.substring(index + 1).trim();
+                String value = index + 1 < line.length() ? line.substring(index + 1).trim() : "";
                 currentMap.put(key, value);
             }
             for (TreeMap<String, String> map : maps) {
@@ -322,7 +320,7 @@ public class StyleOptions {
                 sb.append( key ).append( ": " ).append( value ).append( '\n' );
             }
         }
-        sb.append("...");
+        //sb.append("...\n");
         return sb.toString();
     }
 }
