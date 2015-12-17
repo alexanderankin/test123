@@ -9,6 +9,7 @@
  */
 package outerbeauty;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -37,7 +38,7 @@ import beauty.beautifiers.Beautifier;
  * <p>Standard error is logged.</p>
  **/
 public abstract class OuterBeautifier extends Beautifier {
-
+	
 	/**
 	 * Beauty plugin interface
 	 **/
@@ -64,6 +65,10 @@ public abstract class OuterBeautifier extends Beautifier {
 
 	protected void setEnvironment(Map<String, String> env) {
 		return;
+	}
+	
+	protected File getWorkingDirectory() {
+		return null;	
 	}
 
 	/**
@@ -106,6 +111,9 @@ public abstract class OuterBeautifier extends Beautifier {
 		List<String> cmdLine = getCommandLine();
 
 		ProcessBuilder builder = new ProcessBuilder(cmdLine);
+		if (getWorkingDirectory() != null) {
+			builder.directory(getWorkingDirectory());
+		}
 
 		Map<String, String> env = builder.environment();
 
