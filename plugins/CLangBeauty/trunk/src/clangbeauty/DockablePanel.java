@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -38,6 +40,8 @@ public class DockablePanel extends JPanel implements EBComponent {
     private JLabel fileLabel;
     private StyleOptions styleOptions = new StyleOptions();
     private JPanel styleOptionsPanel;
+    private File currentFile = null;
+    private long lastModified = 0l;
 
     public DockablePanel() {
         init();
@@ -48,9 +52,20 @@ public class DockablePanel extends JPanel implements EBComponent {
         if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate )message;
             if ( EditPaneUpdate.BUFFER_CHANGED.equals( epu.getWhat() ) ) {
+                File formatFile = findClangFormat( epu.getEditPane().getBuffer().getPath() );
+                if ( formatFile != null ) {
+                    if ( currentFile == null ) {
+                        currentFile = formatFile;
+                        lastModified = formatFile.lastModified();
+                    }
+                    else {
+                        if ( currentFile.equals( formatFile ) && lastModified == formatFile.lastModified() ) {
 
-                // TODO: look into improving performance here, this rebuilds the UI
-                // every time the user switches to a new buffer, which is probably overkill
+                            // file is already loaded, no need to reload
+                            return;
+                        }
+                    }
+                }
                 loadStyleOptions( epu.getEditPane().getBuffer().getPath(), false );
             }
         }
@@ -138,12 +153,12 @@ public class DockablePanel extends JPanel implements EBComponent {
                 subpanel.add( new JLabel( "" ) );
             }
             else {
-                subpanel.add( new JLabel( "<html><b>" +language + " Settings" ) );
+                subpanel.add( new JLabel( "<html><b>" + language + " Settings" ) );
                 subpanel.add( new JLabel( "" ) );
             }
             for ( final String name : optionNames ) {
                 subpanel.add( new JLabel( name ) );
-                
+
                 String[] optionChoices = styleOptions.getOptionChoices( name );
                 if ( optionChoices.length > 0 ) {
                     if ( optionChoices.length == 1 && "-1".equals( optionChoices[0] ) ) {
@@ -153,6 +168,29 @@ public class DockablePanel extends JPanel implements EBComponent {
                         String value = styleOptions.getOption( language, name );
                         int number = value == null || "".equals( value ) ? 0 : Integer.parseInt( value );
                         numberField.setValue( number );
+                        numberField.getDocument().addDocumentListener( new DocumentListener(){
+
+                            public void changedUpdate( DocumentEvent de ) {
+                                saveValue( de );
+                            }
+
+                            public void insertUpdate( DocumentEvent de ) {
+                                saveValue( de );
+                            }
+
+                            public void removeUpdate( DocumentEvent de ) {
+                                saveValue( de );
+                            }
+
+                            private void saveValue( DocumentEvent de ) {
+                                try {
+                                    styleOptions.setOption( language, name, de.getDocument().getText(0, de.getDocument().getLength()));
+                                }
+                                catch(Exception e) {
+                                    // ignored
+                                }
+                            }
+                        } );
                         subpanel.add( numberField );
                     }
                     else {
@@ -226,7 +264,6 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
 
         String filename = new File( files[0], ".clang-format" ).getAbsolutePath();
-
         try {
             String contents = styleOptions.toString();
             BufferedWriter writer = new BufferedWriter( new FileWriter( filename ) );

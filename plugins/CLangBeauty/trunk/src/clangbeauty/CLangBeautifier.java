@@ -10,6 +10,8 @@
  */
 package clangbeauty;
 
+import java.io.File;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +27,13 @@ public class CLangBeautifier extends OuterBeautifier {
 	@Override
 	protected List<String> getCommandLine() {
 		String exe = CLangBeautyPlugin.getCLangFormatExe();
-		return Arrays.asList( exe, "-style=" + jEdit.getProperty( "clangbeauty.styleOptions", "BasedOnStyle:LLVM" ) );
+		return Arrays.asList( exe, "-style=file");
+	}
+	
+	@Override
+	protected File getWorkingDirectory() {
+		String bufferPath = jEdit.getActiveView().getEditPane().getBuffer().getPath();
+		File file = new File(bufferPath);
+		return file.getParentFile(); 
 	}
 }
