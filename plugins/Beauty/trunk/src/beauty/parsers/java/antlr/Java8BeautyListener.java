@@ -2912,7 +2912,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(stmt).append('\n');
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -4131,7 +4131,7 @@ Parser methods follow.
 	    String if_ = stack.pop();
 	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(sn);
 	    trimEnd(sb);
-	    sb.append(breakElse ? '\n' : ' ').append(else_).append(' ').append(stmt).append('\n');
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(' ').append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -4441,7 +4441,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(ifStmt).append(breakElse ? '\n' : ' ').append(else_).append(' ').append(elseStmt).append('\n');
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(ifStmt).append(breakElse ? '\n' : ' ').append(else_).append(' ').append(elseStmt);
 	    stack.push(sb.toString());
 	}
 
@@ -5088,7 +5088,7 @@ Parser methods follow.
 	        String new_ = stack.pop();
 	        String colon = stack.pop();
 	        String type = stack.pop();
-	        sb.append(type).append(' ').append(colon).append(' ').append(' ').append(new_);    
+	        sb.append(type).append(' ').append(colon).append(' ').append(new_);    
 	    }
 	    else {
 	        String identifier = stack.pop();
