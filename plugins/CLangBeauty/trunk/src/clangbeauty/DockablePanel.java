@@ -2,25 +2,21 @@
 package clangbeauty;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -42,12 +38,18 @@ public class DockablePanel extends JPanel implements EBComponent {
     private JPanel styleOptionsPanel;
     private File currentFile = null;
     private long lastModified = 0l;
+    
+    private List<StylePanel> stylePanels = new ArrayList<StylePanel>();
 
     public DockablePanel() {
         init();
         EditBus.addToBus( this );
     }
-
+    
+    /**
+     * Listens for EditBus messages indicating the EditPane is showing a different
+     * buffer.
+     */
     public void handleMessage( EBMessage message ) {
         if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate )message;
@@ -71,12 +73,15 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
     }
 
+    // install and layout components this dockable panel
     protected void init() {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
         setLayout( new BorderLayout() );
 
         fileLabel = new JLabel();
 
+        // the 'open' button lets the user select a .clang-format file from any directory
+        // to load into this panel
         JButton openButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.open", "Open" ) );
         openButton.setToolTipText( "Select a .clang-format file to load." );
         openButton.addActionListener(
@@ -87,6 +92,9 @@ public class DockablePanel extends JPanel implements EBComponent {
             }
         }
         );
+        
+        // the 'save' button lets the user save the current settings as shown in this panel
+        // to a .clang-format file in any directory
         JButton saveButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.save", "Save" ) );
         saveButton.setToolTipText( "Select a directory to save the current configuration." );
         saveButton.addActionListener(
@@ -97,6 +105,8 @@ public class DockablePanel extends JPanel implements EBComponent {
             }
         }
         );
+        
+        // this is the main panel to hold the various option settings
         styleOptionsPanel = new JPanel();
         JScrollPane scroller = new JScrollPane( styleOptionsPanel );
 
@@ -142,84 +152,24 @@ public class DockablePanel extends JPanel implements EBComponent {
         styleOptionsPanel.removeAll();
         styleOptionsPanel.setLayout( new BoxLayout( styleOptionsPanel, BoxLayout.Y_AXIS ) );
 
-        // need a label and component per option name
-        String[] optionNames = styleOptions.getOptionNames();
-
-        for ( final String language : languageNames ) {
-            JPanel subpanel = new JPanel( new GridLayout( optionNames.length + 1, 2 ) );
-            subpanel.setBorder( BorderFactory.createEtchedBorder() );
+        // add a sub-panel per language
+        for ( int i = 0; i < languageNames.length; i++ ) {
+            String language = languageNames[i];
+            String title = "";
             if ( StyleOptions.DEFAULT.equals( language ) ) {
-                subpanel.add( new JLabel( "<html><b>Default settings" ) );
-                subpanel.add( new JLabel( "" ) );
+                title = "<html><b>Default settings";
             }
             else {
-                subpanel.add( new JLabel( "<html><b>" + language + " Settings" ) );
-                subpanel.add( new JLabel( "" ) );
+                title = "<html><b>" + language + " Settings";
             }
-            for ( final String name : optionNames ) {
-                subpanel.add( new JLabel( name ) );
-
-                String[] optionChoices = styleOptions.getOptionChoices( name );
-                if ( optionChoices.length > 0 ) {
-                    if ( optionChoices.length == 1 && "-1".equals( optionChoices[0] ) ) {
-
-                        // use a NumberTextField
-                        NumberTextField numberField = new NumberTextField();
-                        String value = styleOptions.getOption( language, name );
-                        int number = value == null || "".equals( value ) ? 0 : Integer.parseInt( value );
-                        numberField.setValue( number );
-                        numberField.getDocument().addDocumentListener( new DocumentListener(){
-
-                            public void changedUpdate( DocumentEvent de ) {
-                                saveValue( de );
-                            }
-
-                            public void insertUpdate( DocumentEvent de ) {
-                                saveValue( de );
-                            }
-
-                            public void removeUpdate( DocumentEvent de ) {
-                                saveValue( de );
-                            }
-
-                            private void saveValue( DocumentEvent de ) {
-                                try {
-                                    styleOptions.setOption( language, name, de.getDocument().getText(0, de.getDocument().getLength()));
-                                }
-                                catch(Exception e) {
-                                    // ignored
-                                }
-                            }
-                        } );
-                        subpanel.add( numberField );
-                    }
-                    else {
-
-                        // otherwise, use a combo box
-                        JComboBox choices = new JComboBox( optionChoices );
-                        choices.addActionListener(
-                        new ActionListener(){
-
-                            public void actionPerformed( ActionEvent ae ) {
-                                JComboBox source = ( JComboBox )ae.getSource();
-                                styleOptions.setOption( language, name, ( String )source.getSelectedItem() );
-                            }
-                        }
-                        );
-                        String selected = styleOptions.getOption( language, name );
-                        if ( selected != null ) {
-                            choices.setSelectedItem( selected );
-                        }
-
-                        subpanel.add( choices );
-                    }
-                }
-                else {
-
-                    // use a plain text field
-                    JTextField textField = new JTextField( styleOptions.getOption( language, name ) );
-                    subpanel.add( textField );
-                }
+            StylePanel subpanel;
+            if (stylePanels.size() <= i){ 
+                subpanel = new StylePanel(language, title, styleOptions);
+                stylePanels.add(subpanel);
+            }
+            else {
+                subpanel = stylePanels.get(i);
+                subpanel.load(language, title, styleOptions);
             }
             styleOptionsPanel.add( subpanel );
         }
@@ -250,7 +200,11 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
         return clangformat != null && clangformat.exists() ? clangformat : null;
     }
-
+    
+    /**
+     * Shows a VFSFileDialog to let the user select a directory in which to save the
+     * style settings. The file name is always '.clang-format'.
+     */
     private void save() {
         String path = fileLabel.getText();
         if ( path.startsWith( "<" ) ) {
@@ -274,7 +228,12 @@ public class DockablePanel extends JPanel implements EBComponent {
             JOptionPane.showMessageDialog( jEdit.getActiveView(), e.getMessage(), "Error saving file", JOptionPane.ERROR_MESSAGE );
         }
     }
-
+    
+    /**
+     * Shows a VFSFileDialog to allow the user to select a .clang-format file to load
+     * into this dockable panel.
+     * TODO: can the VFSFileDialog be set to show hidden files programatically?
+     */
     private void open() {
         String path = fileLabel.getText();
         if ( path.startsWith( "<" ) ) {
