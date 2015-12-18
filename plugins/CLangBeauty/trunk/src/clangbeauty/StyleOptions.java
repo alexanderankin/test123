@@ -6,10 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 
-// TODO: if there are no options set yet, use the defaults from LLVM
 public class StyleOptions {
 
-    public static final String DEFAULT = "AAAAA_default_";
+    public static final String DEFAULT = "AAAAA_default_";      // lots of A's so this sorts first
     
     // <language, style options>
     private TreeMap<String, TreeMap<String, String>> options = new TreeMap<String, TreeMap<String, String>>();
@@ -24,6 +23,7 @@ public class StyleOptions {
         return names;
     }
 
+    // these are all the names as of clang 3.8
     public String[] getOptionNames() {
         return new String[] {
             "Language",
@@ -96,7 +96,14 @@ public class StyleOptions {
             "UseTab"
         };
     }
-
+    
+    /**
+     * These are the values for each style option as of clang 3.8. These are used
+     * by DockablePanel to build the displayed choices
+     * @return A string array of valid choices for each option. An empty string array
+     * indicates the option allows a free-form text value, a string array containing
+     * only "-1" indicates the option allows a numeric value.
+     */
     public String[] getOptionChoices( String optionName ) {
         switch ( optionName ) {
             // numeric options
@@ -114,7 +121,7 @@ public class StyleOptions {
             case "PenaltyReturnTypeOnItsOwnLine":
             case "SpacesBeforeTrailingComments":
             case "TabWidth":
-                return new String[] {"-1"};
+                return new String[] {"-1"};     // indicates numeric field
             // boolean options
             case "AlignConsecutiveAssignments":
             case "AlignConsecutiveDeclarations":
@@ -201,7 +208,7 @@ public class StyleOptions {
     /**
      * .clang-format files use a simple YAML format, there is a section per language.
      * Each section starts with "---" followed by the Language property, then followed
-     * by the properties for that language, then ends with "...". If there is no 
+     * by the properties for that language, then optionally ends with "...". If there is no 
      * Language property in the first section, then that first section is the default
      * settings. Here is an example taken from http://clang.llvm.org/docs/ClangFormatStyleOptions.html:
      * <pre>
@@ -320,7 +327,7 @@ public class StyleOptions {
                 sb.append( key ).append( ": " ).append( value ).append( '\n' );
             }
         }
-        //sb.append("...\n");
+        sb.append("...\n");
         return sb.toString();
     }
 }
