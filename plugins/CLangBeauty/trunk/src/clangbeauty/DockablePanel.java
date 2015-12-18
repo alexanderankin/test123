@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 
 /**
  * Dockable panel for CLangBeauty plugin
@@ -38,14 +39,13 @@ public class DockablePanel extends JPanel implements EBComponent {
     private JPanel styleOptionsPanel;
     private File currentFile = null;
     private long lastModified = 0l;
-    
     private List<StylePanel> stylePanels = new ArrayList<StylePanel>();
 
     public DockablePanel() {
         init();
         EditBus.addToBus( this );
     }
-    
+
     /**
      * Listens for EditBus messages indicating the EditPane is showing a different
      * buffer.
@@ -83,7 +83,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         // the 'open' button lets the user select a .clang-format file from any directory
         // to load into this panel
         JButton openButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.open", "Open" ) );
-        openButton.setToolTipText( jEdit.getProperty("clangbeauty.Select_a_.clang-format_file_to_load.", "Select a .clang-format file to load.") );
+        openButton.setToolTipText( jEdit.getProperty( "clangbeauty.Select_a_.clang-format_file_to_load.", "Select a .clang-format file to load." ) );
         openButton.addActionListener(
         new ActionListener(){
 
@@ -92,11 +92,11 @@ public class DockablePanel extends JPanel implements EBComponent {
             }
         }
         );
-        
+
         // the 'save' button lets the user save the current settings as shown in this panel
         // to a .clang-format file in any directory
         JButton saveButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.save", "Save" ) );
-        saveButton.setToolTipText( jEdit.getProperty("clangbeauty.Select_a_directory_to_save_the_current_configuration.", "Select a directory to save the current configuration.") );
+        saveButton.setToolTipText( jEdit.getProperty( "clangbeauty.Select_a_directory_to_save_the_current_configuration.", "Select a directory to save the current configuration." ) );
         saveButton.addActionListener(
         new ActionListener(){
 
@@ -105,10 +105,11 @@ public class DockablePanel extends JPanel implements EBComponent {
             }
         }
         );
-        
+
         // this is the main panel to hold the various option settings
         styleOptionsPanel = new JPanel();
         JScrollPane scroller = new JScrollPane( styleOptionsPanel );
+        scroller.getVerticalScrollBar().setUnitIncrement( 24 );
 
         JPanel topPanel = new JPanel();
         topPanel.setLayout( new BorderLayout() );
@@ -141,13 +142,13 @@ public class DockablePanel extends JPanel implements EBComponent {
             styleOptions.load( file );
         }
         else {
-            fileLabel.setText( jEdit.getProperty("clangbeauty.<_.clang-format_not_found_>", "< .clang-format not found >") );
+            fileLabel.setText( jEdit.getProperty( "clangbeauty.<_.clang-format_not_found_>", "< .clang-format not found >" ) );
         }
 
         // need a panel to hold sub-panels per language name
         String[] languageNames = styleOptions.getLanguageNames();
         if ( languageNames.length > 1 ) {
-            fileLabel.setText( fileLabel.getText() + " (" + languageNames.length + " " + jEdit.getProperty("clangbeauty.languages", "languages") + ")" );
+            fileLabel.setText( fileLabel.getText() + " (" + languageNames.length + " " + jEdit.getProperty( "clangbeauty.languages", "languages" ) + ")" );
         }
         styleOptionsPanel.removeAll();
         styleOptionsPanel.setLayout( new BoxLayout( styleOptionsPanel, BoxLayout.Y_AXIS ) );
@@ -157,19 +158,19 @@ public class DockablePanel extends JPanel implements EBComponent {
             String language = languageNames[i];
             String title = "";
             if ( StyleOptions.DEFAULT.equals( language ) ) {
-                title = "<html><b>" + jEdit.getProperty("clangbeauty.Default_settings", "Default settings");
+                title = "<html><b>" + jEdit.getProperty( "clangbeauty.Default_settings", "Default settings" );
             }
             else {
-                title = "<html><b>" + language + " " + jEdit.getProperty("clangbeauty.Settings", "Settings");
+                title = "<html><b>" + language + " " + jEdit.getProperty( "clangbeauty.Settings", "Settings" );
             }
             StylePanel subpanel;
-            if (stylePanels.size() <= i){ 
-                subpanel = new StylePanel(language, title, styleOptions);
-                stylePanels.add(subpanel);
+            if ( stylePanels.size() <= i ) {
+                subpanel = new StylePanel( language, title, styleOptions );
+                stylePanels.add( subpanel );
             }
             else {
-                subpanel = stylePanels.get(i);
-                subpanel.load(language, title, styleOptions);
+                subpanel = stylePanels.get( i );
+                subpanel.load( language, title, styleOptions );
             }
             styleOptionsPanel.add( subpanel );
         }
@@ -200,7 +201,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
         return clangformat != null && clangformat.exists() ? clangformat : null;
     }
-    
+
     /**
      * Shows a VFSFileDialog to let the user select a directory in which to save the
      * style settings. The file name is always '.clang-format'.
@@ -225,30 +226,37 @@ public class DockablePanel extends JPanel implements EBComponent {
             writer.close();
         }
         catch ( Exception e ) {
-            JOptionPane.showMessageDialog( jEdit.getActiveView(), e.getMessage(), jEdit.getProperty("clangbeauty.Error_saving_file", "Error saving file"), JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( jEdit.getActiveView(), e.getMessage(), jEdit.getProperty( "clangbeauty.Error_saving_file", "Error saving file" ), JOptionPane.ERROR_MESSAGE );
         }
     }
-    
+
     /**
      * Shows a VFSFileDialog to allow the user to select a .clang-format file to load
      * into this dockable panel.
-     * TODO: can the VFSFileDialog be set to show hidden files programatically?
+     * DONE: can the VFSFileDialog be set to show hidden files programatically? Yes, it can.
      */
     private void open() {
-        String path = fileLabel.getText();
-        if ( path.startsWith( "<" ) ) {
-            path = jEdit.getActiveView().getEditPane().getBuffer().getPath();
+        String initialPath = fileLabel.getText();
+        if ( initialPath.startsWith( "<" ) ) {
+            initialPath = jEdit.getActiveView().getEditPane().getBuffer().getPath();
+        }
+        if (initialPath.endsWith(")")) {
+            initialPath = initialPath.substring(0, initialPath.lastIndexOf(" ("));        
         }
 
-        String parentDirectory = new File( path ).getParent();
-        String[] files = GUIUtilities.showVFSFileDialog( jEdit.getActiveView(), parentDirectory, VFSBrowser.OPEN_DIALOG, false );
+        // view, initial directory, open dialog type, no multiselect, no autoshow
+        VFSFileChooserDialog fileChooser = new VFSFileChooserDialog(jEdit.getActiveView(), initialPath, VFSBrowser.OPEN_DIALOG, false, false);
+        fileChooser.getBrowser().setShowHiddenFiles(true);
+        fileChooser.getBrowser().setFilenameFilter(".clang-format");
+        fileChooser.setVisible(true);
+        String[] files = fileChooser.getSelectedFiles();
         if ( files == null ) {
             return;
         }
 
         String filename = new File( files[0] ).getAbsolutePath();
         if ( !filename.endsWith( ".clang-format" ) ) {
-            JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty("clangbeauty.File_name_must_be", "File name must be") + " '.clang-format'.", jEdit.getProperty("clangbeauty.Invalid_file_name", "Invalid file name"), JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty( "clangbeauty.File_name_must_be", "File name must be" ) + " '.clang-format'.", jEdit.getProperty( "clangbeauty.Invalid_file_name", "Invalid file name" ), JOptionPane.ERROR_MESSAGE );
             return;
         }
 
