@@ -25,20 +25,31 @@
  </legalnotice>
 </articleinfo>
 
-<section id="usage"><title>Usage</title>
+<section id="intro"><title>Introduction</title>
+<para>This plugin provides the <command>clang-format</command> source code formatter 
+as a Beauty plugin beautifier by running the external <command>clang-format</command>
+tool.
+</para>
+<para><command>clang-format</command> supports C, C++, and Objective-C, and with the right settings
+can also format Java and Javascript.
+</para>
+</section>
 
-<para>This is a plugin providing <emphasis>Beauty</emphasis> beautifiers
-by running the external <command>clang-format</command>
-<ulink url="http://clang.llvm.org">http://clang.llvm.org</ulink>
-tool. <emphasis>The clang-format tool must be installed before using this plugin!</emphasis>
+
+<section id="setup"><title>Set Up</title>
+<para><emphasis>The clang-format tool must be installed before using this plugin!</emphasis>
 Details for downloading and installing this tool can be found at 
 <ulink url="http://llvm.org/releases/download.html">http://llvm.org/releases/download.html</ulink>.
 The clang tools are available for Windows, Mac, Linux, and BSD</para>
+</section>
 
+<section id="configuration">
+<title>Configuration</title>
 
-<para><command>clang-format</command> supports C, C++, and Objective-C.</para>
-
-<para>To activate clang-format from within jEdit:
+<para>The plugin is configured via the CLangBeauty option pane. Go to Plugins - Plugin Options - CLangBeauty 
+to select the <command>clang-format</command> executable.</para>
+<para>Next, configure the Beauty plugin to use the CLangBeauty plugin to format the appropriate
+file types:
 <orderedlist>
 	<listitem><para>
 	open the plugin options (<guimenu>Plugins</guimenu> / <guimenuitem>Plugin Options</guimenuitem>),
@@ -51,28 +62,51 @@ The clang tools are available for Windows, Mac, Linux, and BSD</para>
 	</para></listitem>
 </orderedlist>
 </para>
+<para>
+Additionally, CLangBeauty provides a dockable to allow viewing and setting formatting
+options. Due to the size of the dockable, it is best used as either a floating window or
+docked at the bottom.
+</para>
+</section>
 
-<para>Now, run <guimenu>Plugins</guimenu> > <guisubmenu>Beauty</guisubmenu> > <guimenuitem>Beautify Buffer</guimenuitem>.</para>
+<section id="usage"><title>Usage</title>
+
+<para>
+To format the current buffer, go to <guimenu>Plugins</guimenu> > <guisubmenu>Beauty</guisubmenu> > <guimenuitem>Beautify Buffer</guimenuitem>.
+</para>
 
 <para>See the Beauty plugin documentation for addtional details for setting keyboard shortcuts.</para>
 
+<para>
+The dockable displays all the options supported by clang-format. 
+</para>
+<para>
+The "Open" button allows choosing and loading a .clang-format file into the dockable window.
+All of the available settings are shown and can be edited and saved. The saved file is always
+named ".clang-format" and should be saved in a parent directory containg the files to format.
+</para>
+<para>
+The "Save" button allows saving the current formatting settings to a ".clang-format" file.
+You can choose the directory in which to save the file. Note that clang-format looks for 
+".clang-format" files in parent directories of the files it is to format.
+</para>
+<para>
+Using the "Open" and "Save" buttons makes it easy to open a .clang-format file for one project,
+edit it, then save it in another directory for another project.
+</para>
+<para>
+The dockable window also shows the path of the current .clang-format file in use for the
+current buffer, and indicates the number of languages that have settings in the .clang-format
+file. If there are multiple languages supported in the .clang-format file, there will be
+a section in the formatting settings for each language.
+</para>
 </section>
 
-<section id="configuration"><title>Configuration</title>
-
-<para>This plugin is configured via the CLangBeauty option pane. Go to Plugins - Plugin Options - CLangBeauty to configure.</para>
-<para>The path to <command>clang-format</command> executable is set through
-the <code>clangbeauty.clang-format</code> property. This must be done for jEdit to be able to find the clang-format executable.
-</para>
-
-<para>You may select a style option for clang-format to use. The choices are LLVM, Google, Chromium, Mozilla, and WebKit. At this time,
-these are the only options available. 
-</para>
-
-</section>
 
 <appendix id="changes"><title>Change log</title>
-
+<para>
+Version 0.1, initial release.
+</para>
 
 </appendix>
 
