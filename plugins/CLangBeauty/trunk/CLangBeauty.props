@@ -36,4 +36,13 @@ options.clangbeauty.label=CLangBeauty
 options.clangbeauty.code=new clangbeauty.OptionPane();
 
 options.clangbeauty.clangformat.exe=clang-format executable
-options.clangbeauty.style.label=Formatting style
+
+clangbeauty.Select_a_directory_to_save_the_current_configuration.=Select a directory to save the current configuration.
+clangbeauty.Select_a_.clang-format_file_to_load.=Select a .clang-format file to load.
+clangbeauty.<_.clang-format_not_found_>=< .clang-format not found >
+clangbeauty.languages=languages
+clangbeauty.Default_settings=Default settings
+clangbeauty.Settings=Settings
+clangbeauty.Error_saving_file=Error saving file
+clangbeauty.Invalid_file_name=Invalid file name
+clangbeauty.File_name_must_be=File name must be

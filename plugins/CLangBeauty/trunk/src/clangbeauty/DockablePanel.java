@@ -83,7 +83,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         // the 'open' button lets the user select a .clang-format file from any directory
         // to load into this panel
         JButton openButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.open", "Open" ) );
-        openButton.setToolTipText( "Select a .clang-format file to load." );
+        openButton.setToolTipText( jEdit.getProperty("clangbeauty.Select_a_.clang-format_file_to_load.", "Select a .clang-format file to load.") );
         openButton.addActionListener(
         new ActionListener(){
 
@@ -96,7 +96,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         // the 'save' button lets the user save the current settings as shown in this panel
         // to a .clang-format file in any directory
         JButton saveButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.save", "Save" ) );
-        saveButton.setToolTipText( "Select a directory to save the current configuration." );
+        saveButton.setToolTipText( jEdit.getProperty("clangbeauty.Select_a_directory_to_save_the_current_configuration.", "Select a directory to save the current configuration.") );
         saveButton.addActionListener(
         new ActionListener(){
 
@@ -141,13 +141,13 @@ public class DockablePanel extends JPanel implements EBComponent {
             styleOptions.load( file );
         }
         else {
-            fileLabel.setText( "< .clang-format not found >" );
+            fileLabel.setText( jEdit.getProperty("clangbeauty.<_.clang-format_not_found_>", "< .clang-format not found >") );
         }
 
         // need a panel to hold sub-panels per language name
         String[] languageNames = styleOptions.getLanguageNames();
         if ( languageNames.length > 1 ) {
-            fileLabel.setText( fileLabel.getText() + " (" + languageNames.length + " languages)" );
+            fileLabel.setText( fileLabel.getText() + " (" + languageNames.length + " " + jEdit.getProperty("clangbeauty.languages", "languages") + ")" );
         }
         styleOptionsPanel.removeAll();
         styleOptionsPanel.setLayout( new BoxLayout( styleOptionsPanel, BoxLayout.Y_AXIS ) );
@@ -157,10 +157,10 @@ public class DockablePanel extends JPanel implements EBComponent {
             String language = languageNames[i];
             String title = "";
             if ( StyleOptions.DEFAULT.equals( language ) ) {
-                title = "<html><b>Default settings";
+                title = "<html><b>" + jEdit.getProperty("clangbeauty.Default_settings", "Default settings");
             }
             else {
-                title = "<html><b>" + language + " Settings";
+                title = "<html><b>" + language + " " + jEdit.getProperty("clangbeauty.Settings", "Settings");
             }
             StylePanel subpanel;
             if (stylePanels.size() <= i){ 
@@ -225,7 +225,7 @@ public class DockablePanel extends JPanel implements EBComponent {
             writer.close();
         }
         catch ( Exception e ) {
-            JOptionPane.showMessageDialog( jEdit.getActiveView(), e.getMessage(), "Error saving file", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( jEdit.getActiveView(), e.getMessage(), jEdit.getProperty("clangbeauty.Error_saving_file", "Error saving file"), JOptionPane.ERROR_MESSAGE );
         }
     }
     
@@ -248,7 +248,7 @@ public class DockablePanel extends JPanel implements EBComponent {
 
         String filename = new File( files[0] ).getAbsolutePath();
         if ( !filename.endsWith( ".clang-format" ) ) {
-            JOptionPane.showMessageDialog( jEdit.getActiveView(), "File name must be '.clang-format'.", "Invalid file name", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty("clangbeauty.File_name_must_be", "File name must be") + " '.clang-format'.", jEdit.getProperty("clangbeauty.Invalid_file_name", "Invalid file name"), JOptionPane.ERROR_MESSAGE );
             return;
         }
 

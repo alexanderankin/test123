@@ -125,6 +125,7 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
             }
         }
 
+        // NOTE: modified from Navigator. The original did not allow negative numbers.
         private boolean isNumeric( String string ) {
             try {
                 Integer.parseInt(string);
