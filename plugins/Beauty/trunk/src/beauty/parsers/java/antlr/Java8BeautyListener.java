@@ -17,7 +17,7 @@ public class Java8BeautyListener implements Java8Listener {
     BufferedTokenStream tokens;
     
     // accumulate final output here
-    private StringBuilder output;
+    private StringBuilder output;       // NOPMD
     
     // for tabs, 'tabCount' is current tab level, 'tab' is the string to use
     // for a tab, either '\t' or some number of spaces
@@ -208,10 +208,10 @@ Formatting methods.
                 if (line.startsWith("*")) {
                     // assume it's a comment line
                     // TODO: verify this is always true
-                    line = indent + ' ' + line;
+                    line = new StringBuilder(indent).append(' ').append(line).toString();
                 }
                 else if (!"".equals(line)) {
-                    line = indent + line;
+                    line = new StringBuilder(indent).append(line).toString();
                 }
             }
             sb.append(line);
@@ -229,8 +229,7 @@ Formatting methods.
         StringBuilder sb = new StringBuilder();
         String[] lines = s.split("\n");
         for (String line : lines) {
-            line = tab + line;    
-            sb.append(line);
+            sb.append(tab).append(line);
             if (!line.endsWith("\n")) {
                 sb.append('\n');    
             }
@@ -240,8 +239,8 @@ Formatting methods.
     
     private String indentRBrace(String s) {
         s = s.trim();
-        String start = s.substring(0, s.indexOf("}"));
-        String rbrace = s.substring(s.indexOf("}"));
+        String start = s.substring(0, s.indexOf('}'));
+        String rbrace = s.substring(s.indexOf('}'));
         if (!start.isEmpty()) {
             ++ tabCount;
             start = indent(start);
@@ -265,10 +264,7 @@ Formatting methods.
             }
             String ending = sb.toString();
             String last = stack.pop();
-            last = removeBlankLines(last, END);
-            while (!last.endsWith(ending)) {
-                last += '\n';    
-            }
+            last = new StringBuilder(removeBlankLines(last, END)).append(ending).toString();
             stack.push(last);
             return true;
         }
@@ -445,7 +441,7 @@ Formatting methods.
             String item = list.get(i);
             sb.append(item);
             if (i < list.size() - 1) {
-                if ((howOften == 1 || i % howOften == 1) && !item.endsWith(separator)) {
+                if ((howOften == 1 || i % howOften == 1) && !item.endsWith(separator)) {    // NOPMD
                     sb.append(separator); 
                 }
             }
@@ -513,7 +509,7 @@ Formatting methods.
                     Token t = hiddenTokens.get(i);
                     String tokenText = t.getText();
                     if (t.getChannel() == Java8Lexer.WHITESPACE &&
-                        (tokenText.indexOf("\n") > -1 || tokenText.indexOf("\r") > -1)) {
+                        (tokenText.indexOf('\n') > -1 || tokenText.indexOf('\r') > -1)) {
                         hasLineEnder = true;
                         break;
                     }
@@ -525,7 +521,7 @@ Formatting methods.
                         Token t = hiddenTokens.get(i);
                         String tokenText = t.getText();
                         if (t.getChannel() == Java8Lexer.WHITESPACE &&
-                            (tokenText.indexOf("\n") > -1 || tokenText.indexOf("\r") > -1)) {
+                            (tokenText.indexOf('\n') > -1 || tokenText.indexOf('\r') > -1)) {
                             hasLineEnder = true;
                             break;
                         }
@@ -578,7 +574,7 @@ Formatting methods.
                             if (wsTokens != null && wsTokens.size() > 0) {
                                 for (Token wsToken : wsTokens) {
                                     String wsText = wsToken.getText();
-                                    if (wsText.indexOf("\n") > -1 || wsText.indexOf("\r") > -1) {
+                                    if (wsText.indexOf('\n') > -1 || wsText.indexOf('\r') > -1) {
                                         tokenOnLeft = false;
                                         break;
                                     }
@@ -588,14 +584,14 @@ Formatting methods.
                             if (wsTokens != null && wsTokens.size() > 0) {
                                 for (Token wsToken : wsTokens) {
                                     String wsText = wsToken.getText();
-                                    if (wsText.indexOf("\n") > -1 || wsText.indexOf("\r") > -1) {
+                                    if (wsText.indexOf('\n') > -1 || wsText.indexOf('\r') > -1) {
                                         tokenOnRight = false;
                                         break;
                                     }
                                 }
                             }
                             if (tokenOnLeft && tokenOnRight) {
-                                comment += " "; 
+                                comment += " ";     // NOPMD
                             }
                             else {
                                 comment = formatComment(comment);   
@@ -617,7 +613,7 @@ Formatting methods.
                         String last = stack.peek();
                         if (last != null && last.indexOf(comment) == -1) {
                             last = stack.pop();
-                            last = comment + last;
+                            last = new StringBuilder(comment).append(last).toString();
                             stack.push(last);
                         }
                     }
@@ -875,12 +871,12 @@ Formatting methods.
                     continue;
                 }
                 String a = getImportName(importList.get(i - 1));
-                if (a.indexOf(".") > -1) {
-                    a = a.substring(0, a.indexOf("."));    
+                if (a.indexOf('.') > -1) {
+                    a = a.substring(0, a.indexOf('.'));    
                 }
                 String b = getImportName(importList.get(i));
-                if (b.indexOf(".") > -1) {
-                    b = b.substring(0, b.indexOf("."));    
+                if (b.indexOf('.') > -1) {
+                    b = b.substring(0, b.indexOf('.'));    
                 }
                 if (!a.equals(b)) {
                     groups.add(blankLines);
@@ -909,7 +905,7 @@ Formatting methods.
 	    for (int i = lines.length - 1; i >= 0; i--) {
 	        String line = lines[i].trim();
 	        if (line.startsWith("import ")) {
-	            return line.substring(line.lastIndexOf(" "));    
+	            return line.substring(line.lastIndexOf(' '));    
 	        }
 	    }
 	    return "";
@@ -930,7 +926,6 @@ Formatting methods.
 	private String removeExcessWhitespace(String s) {
 	    String[] lines = s.split("\n");
 	    StringBuilder sb = new StringBuilder();
-	    int i = 0;
 	    for (String line : lines) {
 	        line = trimEnd(line);
 	        sb.append(line).append('\n');
@@ -951,7 +946,7 @@ Testing and debugging methods.
 */
 //{{{
     // this is useful for debugging
-    private void printStack() {
+    private void printStack() {         // NOPMD
         printStack("");
     }
     
@@ -1434,20 +1429,18 @@ Parser methods follow.
 	    String finally_ = "";
 	    if (ctx.finally_() != null) {
 	        finally_ = stack.pop(); 
-            finally_ = (breakElse ? '\n' : ' ') + finally_;
 	    }
 	    String catches = "";
 	    if (ctx.catches() != null) {
 	        catches = stack.pop().trim();   
-            catches = (breakElse ? '\n' : ' ') + catches;
 	    }
 	    String block = stack.pop();
 	    String resources = stack.pop();
-	    if (resources.indexOf("\n") > -1) {
+	    if (resources.indexOf('\n') > -1) {
 	        resources = trimFront(resources);    
 	    }
 	    String try_ = stack.pop();
-	    sb.append(try_).append(' ').append(resources).append(' ').append(block).append(catches).append(finally_);
+	    sb.append(try_).append(' ').append(resources).append(' ').append(block).append(breakElse ? '\n' : ' ').append(catches).append(breakElse ? '\n' : ' ').append(finally_);
 	    stack.push(sb.toString());
 	}
 
@@ -2102,8 +2095,7 @@ Parser methods follow.
 	    if (ctx.interfaceModifiers().interfaceModifier().size() > 0) {
 	        modifiers = stack.pop();
 	    }
-	    modifiers += modifiers.isEmpty() ? "" : " ";
-	    sb.append(modifiers).append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
+	    sb.append(modifiers).append(modifiers.isEmpty() ? "" : " ").append(interface_).append(' ').append(identifier).append(params).append(ifs).append(body);
 	    sb.append(getBlankLines(blankLinesAfterClassBody));
 	    stack.push(sb.toString());
 	}
@@ -2435,9 +2427,8 @@ Parser methods follow.
         else {
             sb.append(blankLinesBefore);    
         }
-        modifiers += modifiers.isEmpty() ? "" : " ";
         addBlankLines(blankLinesAfterClassDeclaration);
-        sb.append(modifiers).append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
+        sb.append(modifiers).append(modifiers.isEmpty() ? "" : " ").append(classNode).append(' ').append(identifier).append(' ').append(params).append(superClass).append(superInterfaces).append(body);
         sb.append(getBlankLines(blankLinesAfterClassBody));
         stack.push(sb.toString());
 	}
@@ -2905,14 +2896,11 @@ Parser methods follow.
 	        stmt = "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
-	    if (brokenBracket) {
-	        stmt = "\n" + stmt;    
-	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(stmt);
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket? '\n' : ' ').append(stmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -3510,12 +3498,12 @@ Parser methods follow.
 	    if (ctx.blockStatements() != null) {
 	        String stmt = indent(stack.pop());
             if (!stmt.startsWith("\n")) {
-                stmt = "\n" + stmt;    
+                sb.append('\n');
             }
+            sb.append(stmt);
             if (!stmt.endsWith("\n")) {
-                stmt += "\n";   
+                sb.append('\n');   
             }
-	        sb.append(stmt);   
 	    }
 	    --tabCount;
 	    String lbracket = stack.pop();
@@ -3625,9 +3613,19 @@ Parser methods follow.
 	@Override public void exitShiftExpression(@NotNull Java8Parser.ShiftExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String additiveExpression = stack.pop();
+	    printStack();
 	    if (ctx.shiftExpression() != null) {
-	         String shiftOperator = stack.pop();
-	         String shiftExpression = stack.pop();
+	        // 2 or 3 shift operator symbols on the stack, either "<" "<", or ">" ">" or ">" ">" ">"
+	        StringBuilder shiftOperator = new StringBuilder(stack.pop()).append(stack.pop());
+	         String rangle = stack.pop();
+	         String shiftExpression;
+	         if (">".equals(rangle)) {
+	             shiftOperator.append(rangle);
+	             shiftExpression = stack.pop();
+	         }
+	         else {
+	             shiftExpression = rangle;    
+	         }
 	         sb.append(shiftExpression).append(' ').append(shiftOperator).append(' ');
 	    }
 	    sb.append(additiveExpression);
@@ -4112,9 +4110,6 @@ Parser methods follow.
 	        stmt = "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
-	    if (brokenBracket) {
-	        stmt = "\n" + stmt;    
-	    }
 	    String else_ = stack.pop().trim();
 	    String sn = stack.pop().trim();
 	    if (!sn.startsWith("{")) {
@@ -4122,16 +4117,13 @@ Parser methods follow.
 	        sn = "{\n" + indent(sn) + "}";
 	        --tabCount;
 	    }
-	    if (brokenBracket) {
-	        sn = "\n" + sn;    
-	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(' ').append(sn);
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket ? '\n' : ' ').append(sn);
 	    trimEnd(sb);
-	    sb.append(breakElse ? '\n' : ' ').append(else_).append(' ').append(stmt);
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(stmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -4382,18 +4374,18 @@ Parser methods follow.
 	    String semi = ctx.SEMI() == null ? "" : stack.pop();    
 	    String resources = stack.pop();
 	    String lparen = stack.pop();
-	    if (resources.indexOf(";") > -1) {
+	    if (resources.indexOf(';') > -1) {
             resources = resources.replaceAll(";", ";\n");
             String[] lines = resources.split("\n");
 	        StringBuilder r = new StringBuilder();
 	        for (String line : lines) {
-	            r.append(line.trim()).append("\n");    
+	            r.append(line.trim()).append('\n');    
 	        }
 	        resources = r.toString();
 	        ++tabCount;
 	        resources = trimEnd(indent(resources.trim()));
 	        --tabCount;
-    	    sb.append(lparen).append('\n').append(resources).append("\n").append(rparen);            
+    	    sb.append(lparen).append('\n').append(resources).append('\n').append(rparen);            
 	    }
 	    else {
 	        sb.append(padParen(lparen)).append(resources).append(semi).append(padParen(rparen));
@@ -4423,9 +4415,6 @@ Parser methods follow.
 	        elseStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(elseStmt) + "}\n";
 	        --tabCount;
 	    }
-	    if (brokenBracket) {
-	        elseStmt = "\n" + elseStmt;    
-	    }
 	    String else_ = stack.pop();
 	    String ifStmt = stack.pop().trim();
 	    if (!ifStmt.startsWith("{")) {
@@ -4434,14 +4423,13 @@ Parser methods follow.
 	        ifStmt = trimEnd(ifStmt);
 	        --tabCount;
 	    }
-	    if (brokenBracket) {
-	        ifStmt = "\n" + ifStmt;    
-	    }
 	    String rparen = stack.pop();
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(ifStmt).append(breakElse ? '\n' : ' ').append(else_).append(' ').append(elseStmt);
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen));
+	    sb.append(brokenBracket ? '\n' : ' ').append(ifStmt);
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(elseStmt).append('\n');
 	    stack.push(sb.toString());
 	}
 
@@ -4542,26 +4530,22 @@ Parser methods follow.
 	        // second option
 	        String finally_ = stack.pop();
 	        finally_ = trimFront(finally_);
-            finally_ = (breakElse ? '\n' : ' ') + finally_;
             String catches = "";
 	        if (ctx.catches() != null) {
 	            catches = stack.pop().trim();
-	            catches = (breakElse ? "\n" : " ") + catches;
-	            
 	        }
 	        String block = stack.pop();
 	        block = trimEnd(block);
 	        String try_ = stack.pop();
-	        sb.append(try_).append(' ').append(block).append(catches).append(finally_);
+	        sb.append(try_).append(' ').append(block).append(breakElse ? '\n' : ' ').append(catches).append(breakElse ? '\n' : ' ').append(finally_);
 	    }
 	    else {
 	        // first option
 	        String catches = stack.pop();
 	        catches = trimFront(catches);
-	        catches = (breakElse ? "\n" : " ") + catches;
 	        String block = stack.pop();
 	        String try_ = stack.pop();
-	        sb.append(try_).append(' ').append(block).append(catches);
+	        sb.append(try_).append(' ').append(block).append(breakElse ? '\n' : ' ').append(catches);
 	    }
 	    stack.push(sb.toString());
 	}
@@ -4784,7 +4768,7 @@ Parser methods follow.
 	    // common ending
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
-	    if (argumentList.indexOf("\n") > -1) {
+	    if (argumentList.indexOf('\n') > -1) {
 	        // double indent if argumentList spans more than one line
 	        argumentList = trimEnd(indentAgain(indentAgain(argumentList)));
 	    }
@@ -4806,14 +4790,15 @@ Parser methods follow.
 	        // 2 type names
 	        String identifier = stack.pop();
 	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
-	        String dot = stack.pop();
+	        String dot1 = stack.pop();
+	        String dot2 = "";
 	        String super_ = "";
 	        if (ctx.SUPER() != null) {
 	            super_ = stack.pop();
-	            super_ = stack.pop() + super_;
+	            dot2 = stack.pop();
 	        }
 	        String typeName = stack.pop();
-	        sb.append(typeName).append(super_).append(dot).append(typeArgs).append(identifier);
+	        sb.append(typeName).append(dot2).append(super_).append(dot1).append(typeArgs).append(identifier);
 	    }
 	    else {
 	        // super
@@ -5189,7 +5174,7 @@ Parser methods follow.
 	    String semi = stack.pop();
 	    String identifier = ctx.Identifier() == null ? "" : stack.pop();
 	    String continue_ = stack.pop();
-	    sb.append(continue_).append(identifier).append(semi).append("\n");
+	    sb.append(continue_).append(identifier).append(semi).append('\n');
 	    stack.push(sb.toString());
 	}
 

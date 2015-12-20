@@ -52,6 +52,7 @@
 Total lexer+parser time 30844ms.
  */
 grammar Java8;
+
 @header {
 package beauty.parsers.java.antlr;
 }
@@ -1335,9 +1336,9 @@ shiftExpression
 	;
 	
 shiftOperator
-    :   '<<'
-    |   '>>>'
-    |   '>>'  
+    :   '<' '<'
+    |   '>' '>'  
+    |   '>' '>' '>'
     ;
 
 additiveExpression
