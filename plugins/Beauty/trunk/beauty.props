@@ -6,7 +6,7 @@
 plugin.beauty.BeautyPlugin.activate=defer
 plugin.beauty.BeautyPlugin.name=Beauty
 plugin.beauty.BeautyPlugin.author=Dale Anson
-plugin.beauty.BeautyPlugin.version=0.9
+plugin.beauty.BeautyPlugin.version=1.0
 plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 1.7
 plugin.beauty.BeautyPlugin.depend.1=jedit 05.03.99.00
