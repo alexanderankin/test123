@@ -2905,7 +2905,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket? '\n' : ' ').append(stmt).append('\n');
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket? '\n' : ' ').append(stmt).append(stmt.endsWith("\n") ? "" : "\n");
 	    stack.push(sb.toString());
 	}
 
@@ -4127,7 +4127,7 @@ Parser methods follow.
 	    String if_ = stack.pop();
 	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket ? '\n' : ' ').append(sn);
 	    trimEnd(sb);
-	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(stmt).append('\n');
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(stmt).append(stmt.endsWith("\n") ? "" : "\n");
 	    stack.push(sb.toString());
 	}
 
@@ -4416,7 +4416,7 @@ Parser methods follow.
 	    String elseStmt = stack.pop().trim();
 	    if (!elseStmt.startsWith("{") && !elseStmt.startsWith("if")) {
 	        ++tabCount;
-	        elseStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(elseStmt) + "}\n";
+	        elseStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(elseStmt) + "}";
 	        --tabCount;
 	    }
 	    String else_ = stack.pop();
@@ -4433,7 +4433,7 @@ Parser methods follow.
 	    String if_ = stack.pop();
 	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen));
 	    sb.append(brokenBracket ? '\n' : ' ').append(ifStmt);
-	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(elseStmt).append('\n');
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(elseStmt).append(elseStmt.endsWith("\n") ? "" : "\n");
 	    stack.push(sb.toString());
 	}
 
