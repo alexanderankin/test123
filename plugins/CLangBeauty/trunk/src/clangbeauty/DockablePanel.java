@@ -1,6 +1,7 @@
 
 package clangbeauty;
 
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,9 +24,10 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
+
 
 /**
  * Dockable panel for CLangBeauty plugin
@@ -41,10 +43,12 @@ public class DockablePanel extends JPanel implements EBComponent {
     private long lastModified = 0l;
     private List<StylePanel> stylePanels = new ArrayList<StylePanel>();
 
+
     public DockablePanel() {
         init();
         EditBus.addToBus( this );
     }
+
 
     /**
      * Listens for EditBus messages indicating the EditPane is showing a different
@@ -62,69 +66,61 @@ public class DockablePanel extends JPanel implements EBComponent {
                     }
                     else {
                         if ( currentFile.equals( formatFile ) && lastModified == formatFile.lastModified() ) {
-
                             // file is already loaded, no need to reload
                             return;
                         }
                     }
                 }
+
                 loadStyleOptions( epu.getEditPane().getBuffer().getPath(), false );
             }
         }
     }
 
+
     // install and layout components this dockable panel
     protected void init() {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
         setLayout( new BorderLayout() );
-
         fileLabel = new JLabel();
-
         // the 'open' button lets the user select a .clang-format file from any directory
         // to load into this panel
         JButton openButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.open", "Open" ) );
         openButton.setToolTipText( jEdit.getProperty( "clangbeauty.Select_a_.clang-format_file_to_load.", "Select a .clang-format file to load." ) );
-        openButton.addActionListener(
-        new ActionListener(){
+        openButton.addActionListener( new ActionListener(){
 
-            public void actionPerformed( ActionEvent ae ) {
-                DockablePanel.this.open();
+                public void actionPerformed( ActionEvent ae ) {
+                    DockablePanel.this.open();
+                }
             }
-        }
         );
-
         // the 'save' button lets the user save the current settings as shown in this panel
         // to a .clang-format file in any directory
         JButton saveButton = new JButton( jEdit.getProperty( "vfs.browser.dialog.save", "Save" ) );
         saveButton.setToolTipText( jEdit.getProperty( "clangbeauty.Select_a_directory_to_save_the_current_configuration.", "Select a directory to save the current configuration." ) );
-        saveButton.addActionListener(
-        new ActionListener(){
+        saveButton.addActionListener( new ActionListener(){
 
-            public void actionPerformed( ActionEvent ae ) {
-                DockablePanel.this.save();
+                public void actionPerformed( ActionEvent ae ) {
+                    DockablePanel.this.save();
+                }
             }
-        }
         );
-
         // this is the main panel to hold the various option settings
         styleOptionsPanel = new JPanel();
         JScrollPane scroller = new JScrollPane( styleOptionsPanel );
         scroller.getVerticalScrollBar().setUnitIncrement( 24 );
-
         JPanel topPanel = new JPanel();
         topPanel.setLayout( new BorderLayout() );
         topPanel.add( fileLabel, BorderLayout.WEST );
-
         JPanel buttonPanel = new JPanel();
         buttonPanel.add( openButton );
         buttonPanel.add( saveButton );
-
         topPanel.add( buttonPanel, BorderLayout.EAST );
         add( topPanel, BorderLayout.NORTH );
         add( scroller, BorderLayout.CENTER );
-
         loadStyleOptions( jEdit.getActiveView().getEditPane().getBuffer().getPath(), false );
     }
+
 
     /**
      * Loads the style options from either a parent directory of the given path or from an
@@ -150,9 +146,9 @@ public class DockablePanel extends JPanel implements EBComponent {
         if ( languageNames.length > 1 ) {
             fileLabel.setText( fileLabel.getText() + " (" + languageNames.length + " " + jEdit.getProperty( "clangbeauty.languages", "languages" ) + ")" );
         }
+
         styleOptionsPanel.removeAll();
         styleOptionsPanel.setLayout( new BoxLayout( styleOptionsPanel, BoxLayout.Y_AXIS ) );
-
         // add a sub-panel per language
         for ( int i = 0; i < languageNames.length; i++ ) {
             String language = languageNames[i];
@@ -163,6 +159,7 @@ public class DockablePanel extends JPanel implements EBComponent {
             else {
                 title = "<html><b>" + language + " " + jEdit.getProperty( "clangbeauty.Settings", "Settings" );
             }
+
             StylePanel subpanel;
             if ( stylePanels.size() <= i ) {
                 subpanel = new StylePanel( language, title, styleOptions );
@@ -172,11 +169,13 @@ public class DockablePanel extends JPanel implements EBComponent {
                 subpanel = stylePanels.get( i );
                 subpanel.load( language, title, styleOptions );
             }
+
             styleOptionsPanel.add( subpanel );
         }
         styleOptionsPanel.validate();
         validate();
     }
+
 
     /**
      * Searches in the directories above the directory containing the current buffer
@@ -201,6 +200,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
         return clangformat != null && clangformat.exists() ? clangformat : null;
     }
+
 
     /**
      * Shows a VFSFileDialog to let the user select a directory in which to save the
@@ -230,6 +230,7 @@ public class DockablePanel extends JPanel implements EBComponent {
         }
     }
 
+
     /**
      * Shows a VFSFileDialog to allow the user to select a .clang-format file to load
      * into this dockable panel.
@@ -240,15 +241,16 @@ public class DockablePanel extends JPanel implements EBComponent {
         if ( initialPath.startsWith( "<" ) ) {
             initialPath = jEdit.getActiveView().getEditPane().getBuffer().getPath();
         }
-        if (initialPath.endsWith(")")) {
-            initialPath = initialPath.substring(0, initialPath.lastIndexOf(" ("));        
+
+        if ( initialPath.endsWith( ")" ) ) {
+            initialPath = initialPath.substring( 0, initialPath.lastIndexOf( " (" ) );
         }
 
         // view, initial directory, open dialog type, no multiselect, no autoshow
-        VFSFileChooserDialog fileChooser = new VFSFileChooserDialog(jEdit.getActiveView(), initialPath, VFSBrowser.OPEN_DIALOG, false, false);
-        fileChooser.getBrowser().setShowHiddenFiles(true);
-        fileChooser.getBrowser().setFilenameFilter(".clang-format");
-        fileChooser.setVisible(true);
+        VFSFileChooserDialog fileChooser = new VFSFileChooserDialog( jEdit.getActiveView(), initialPath, VFSBrowser.OPEN_DIALOG, false, false );
+        fileChooser.getBrowser().setShowHiddenFiles( true );
+        fileChooser.getBrowser().setFilenameFilter( ".clang-format" );
+        fileChooser.setVisible( true );
         String[] files = fileChooser.getSelectedFiles();
         if ( files == null ) {
             return;
