@@ -1,27 +1,29 @@
 
 package clangbeauty;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 
+
 public class StyleOptions {
 
-    public static final String DEFAULT = "AAAAA_default_";      // lots of A's so this sorts first
-    
+    public static final String DEFAULT = "AAAAA_default_";    // lots of A's so this sorts first
     // <language, style options>
-    private TreeMap<String, TreeMap<String, String>> options = new TreeMap<String, TreeMap<String, String>>();
-    
-    
+    private TreeMap<String, TreeMap <String, String>> options = new TreeMap<String, TreeMap <String, String>>();
+
+
     public String[] getLanguageNames() {
-        String[] names = new String[options.size()];
+        String[] names = new String [options.size()];
         int i = 0;
-        for (String name : options.keySet()) {
+        for ( String name : options.keySet() ) {
             names[i++] = name;
         }
         return names;
     }
+
 
     // these are all the names as of clang 3.8
     public String[] getOptionNames() {
@@ -96,7 +98,8 @@ public class StyleOptions {
             "UseTab"
         };
     }
-    
+
+
     /**
      * These are the values for each style option as of clang 3.8. These are used
      * by DockablePanel to build the displayed choices
@@ -121,7 +124,7 @@ public class StyleOptions {
             case "PenaltyReturnTypeOnItsOwnLine":
             case "SpacesBeforeTrailingComments":
             case "TabWidth":
-                return new String[] {"-1"};     // indicates numeric field
+                return new String[] {"-1"};    // indicates numeric field
             // boolean options
             case "AlignConsecutiveAssignments":
             case "AlignConsecutiveDeclarations":
@@ -204,11 +207,12 @@ public class StyleOptions {
                 return new String[] {};
         }
     }
-    
+
+
     /**
      * .clang-format files use a simple YAML format, there is a section per language.
      * Each section starts with "---" followed by the Language property, then followed
-     * by the properties for that language, then optionally ends with "...". If there is no 
+     * by the properties for that language, then optionally ends with "...". If there is no
      * Language property in the first section, then that first section is the default
      * settings. Here is an example taken from http://clang.llvm.org/docs/ClangFormatStyleOptions.html:
      * <pre>
@@ -239,42 +243,48 @@ public class StyleOptions {
 
         options.clear();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(clangFormatFile));
-            List<TreeMap<String, String>> maps = new ArrayList<TreeMap<String, String>>();
+            BufferedReader reader = new BufferedReader( new FileReader( clangFormatFile ) );
+            List<TreeMap <String, String>> maps = new ArrayList<TreeMap <String, String>>();
             TreeMap<String, String> currentMap = new TreeMap<String, String>();
-            maps.add(currentMap);
+            maps.add( currentMap );
             String line;
-            while((line = reader.readLine()) != null) {
+            while ( ( line = reader.readLine() ) != null ) {
                 line = line.trim();
-                if (line.isEmpty()) {
-                    continue;   
-                }
-                if (line.startsWith("---")) {
-                    // start of a new language section 
-                    currentMap = new TreeMap<String, String>();
-                    maps.add(currentMap);
+                if ( line.isEmpty() ) {
                     continue;
                 }
-                if (line.startsWith("#")) {
-                    continue;   // skip comments
+
+                if ( line.startsWith( "---" ) ) {
+                    // start of a new language section
+                    currentMap = new TreeMap<String, String>();
+                    maps.add( currentMap );
+                    continue;
                 }
-                if (line.startsWith("...")) {
-                    continue;    
+
+                if ( line.startsWith( "#" ) ) {
+                    continue;    // skip comments
                 }
-                int index = line.indexOf(':');
-                String key = line.substring(0, index);
-                String value = index + 1 < line.length() ? line.substring(index + 1).trim() : "";
-                currentMap.put(key, value);
+
+                if ( line.startsWith( "..." ) ) {
+                    continue;
+                }
+
+                int index = line.indexOf( ':' );
+                String key = line.substring( 0, index );
+                String value = index + 1 < line.length() ? line.substring( index + 1 ).trim() : "";
+                currentMap.put( key, value );
             }
-            for (TreeMap<String, String> map : maps) {
-                if (map.isEmpty()) {
-                    continue;   
+            for ( TreeMap<String, String> map : maps ) {
+                if ( map.isEmpty() ) {
+                    continue;
                 }
-                String language = map.get("Language");
-                if (language == null) {
-                    language = DEFAULT;    
+
+                String language = map.get( "Language" );
+                if ( language == null ) {
+                    language = DEFAULT;
                 }
-                options.put(language, map);
+
+                options.put( language, map );
             }
         }
         catch ( Exception e ) {
@@ -282,27 +292,32 @@ public class StyleOptions {
         }
     }
 
+
     public String setOption( String language, String name, String value ) {
-        TreeMap<String, String> map = options.get(language);
-        if (map == null) {
+        TreeMap<String, String> map = options.get( language );
+        if ( map == null ) {
             map = new TreeMap<String, String>();
-            options.put(language, map);
+            options.put( language, map );
         }
-        return map.put(name, value);
+
+        return map.put( name, value );
     }
-    
+
+
     /**
      * @return The value for the given optionName for the given language or an empty
      * string if either the language is not found or the optionName is not found.
      */
     public String getOption( String language, String optionName ) {
-        TreeMap<String, String> map = options.get(language);
-        if (map == null) {
-            return "";    
+        TreeMap<String, String> map = options.get( language );
+        if ( map == null ) {
+            return "";
         }
+
         String value = map.get( optionName );
         return value == null ? "" : value;
     }
+
 
     /**
      * @return a string suitable for saving as a .clang-format file
@@ -310,24 +325,27 @@ public class StyleOptions {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for ( String language : options.keySet() ) {
-            sb.append("---\n");
-            TreeMap<String, String> languageOptions = options.get(language);
-            String languageValue = languageOptions.get("Language");
-            if (languageValue != null && !languageValue.trim().isEmpty()) {
-                sb.append("Language: ").append(languageValue).append('\n');    
+            sb.append( "---\n" );
+            TreeMap<String, String> languageOptions = options.get( language );
+            String languageValue = languageOptions.get( "Language" );
+            if ( languageValue != null && !languageValue.trim().isEmpty() ) {
+                sb.append( "Language: " ).append( languageValue ).append( '\n' );
             }
-            for (String key : languageOptions.keySet()) {
-                if ("Language".equals(key)) {
-                    continue;    
+
+            for ( String key : languageOptions.keySet() ) {
+                if ( "Language".equals( key ) ) {
+                    continue;
                 }
-                String value = languageOptions.get(key);
-                if (value == null || value.isEmpty()) {
-                    continue;    
+
+                String value = languageOptions.get( key );
+                if ( value == null || value.isEmpty() ) {
+                    continue;
                 }
+
                 sb.append( key ).append( ": " ).append( value ).append( '\n' );
             }
         }
-        sb.append("...\n");
+        sb.append( "...\n" );
         return sb.toString();
     }
 }
