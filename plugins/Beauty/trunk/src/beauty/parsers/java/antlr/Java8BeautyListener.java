@@ -1858,6 +1858,11 @@ Parser methods follow.
 	    // common ending
 	    String rparen = stack.pop();
         String argList = ctx.argumentList() == null ? "" : stack.pop();
+        if (argList.trim().startsWith("new") && argList.split("\n").length > 1) {
+            // anonymous inner classes need indented one more time
+            argList = indentAgain(argList);        
+        }
+        argList = argList.trim();
         String lparen = stack.pop();
         StringBuilder ending = new StringBuilder();
         ending.append(padParen(lparen, argList)).append(argList).append(padParen(rparen, argList)); 
@@ -2162,7 +2167,7 @@ Parser methods follow.
                 annotationIdentifiers.append(reverse(ctx.annotationIdentifier().size(), ""));
             }
             String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
-            String new_ = stack.pop();
+            String new_ = stack.pop().trim();
             sb.append(new_).append(' ').append(typeArguments).append(annotationIdentifiers.toString());
 	    }
 	    
@@ -3613,7 +3618,6 @@ Parser methods follow.
 	@Override public void exitShiftExpression(@NotNull Java8Parser.ShiftExpressionContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String additiveExpression = stack.pop();
-	    printStack();
 	    if (ctx.shiftExpression() != null) {
 	        // 2 or 3 shift operator symbols on the stack, either "<" "<", or ">" ">" or ">" ">" ">"
 	        StringBuilder shiftOperator = new StringBuilder(stack.pop()).append(stack.pop());
