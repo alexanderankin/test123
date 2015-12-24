@@ -73,7 +73,7 @@ public class BufferWatcher implements ClangBuilderListener
 				return;
 			}
 			
-			builder.add("-cc1");    
+			
 			builder.add("-fblocks");
 			builder.add("-fsyntax-only");
 			builder.add("-fno-caret-diagnostics");
