@@ -128,7 +128,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		
 		// builder.setCompletionPrefix(prefix);
 		
-		System.out.println(builder);
+		// System.out.println(builder);
 		final AtomicBoolean isClangBuilderAlive = new AtomicBoolean();
 		builder.setListener(new ClangBuilderListener()
 			{

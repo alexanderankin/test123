@@ -182,10 +182,12 @@ public class ClangBuilder
 					String [] cmdsArr = null;
 					if (System.getProperties().getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1)
 					{
-						cmdsArr = new String[]{"cmd", "/c", ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /b /i COMPLETION: " + prefix) };
+						cmdsArr = new String[]{ ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /I /B /C:\"COMPLETION: " + prefix + "\"")};
+						System.out.println(cmdsArr[0]);
 					}else
 					{
-						cmdsArr = new String[]{"/bin/sh", "-c", ClangBuilder.this.toString() + (prefix == null ?"" : "|grep -i \"COMPLETION: " + prefix + "\"")};
+						cmdsArr = new String[]{"/bin/sh", "-c", ClangBuilder.this.toString() + (prefix == null ?"" : "|grep -i \"^COMPLETION: " + prefix + "\"")};
+						System.out.println(cmdsArr[2]);
 					}
 					
 					
@@ -198,28 +200,40 @@ public class ClangBuilder
 					
 					final Process process = Runtime.getRuntime().exec(cmdsArr);
 					
-					BufferedReader readerStd = new BufferedReader(new InputStreamReader(process.getInputStream()));
-					String inputStd = readerStd.readLine();
-					
-					BufferedReader readerErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-					String inputErr = readerErr.readLine();
-					boolean flag = true;
-					while(flag)
+					new Thread()
 					{
-						flag = false;
-						if(inputErr!=null)
+						public void run()
 						{
-							listener.errorRecieved(inputErr);
-							inputErr = readerErr.readLine();
-							flag = true;
+							try
+							{
+								BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+								String input = reader.readLine();
+								while(input!=null)
+								{
+									System.out.println(input);
+									listener.errorRecieved(input);
+									input = reader.readLine();
+								}
+							}catch(IOException ex)
+							{
+								ex.printStackTrace();
+							}
 						}
-						
-						if(inputStd != null)
+					}.start();
+					
+					try
+					{
+						BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+						String input = reader.readLine();
+						while(input != null)
 						{
-							listener.outputRecieved(inputStd);
-							inputStd = readerStd.readLine();
-							flag = true;
+							System.out.println(input);
+							listener.outputRecieved(input);
+							input = reader.readLine();
 						}
+					}catch(IOException ex)
+					{
+						ex.printStackTrace();
 					}
 					
 					try
