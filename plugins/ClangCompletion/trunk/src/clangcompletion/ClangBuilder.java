@@ -182,8 +182,16 @@ public class ClangBuilder
 					String [] cmdsArr = null;
 					if (System.getProperties().getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1)
 					{
-						cmdsArr = new String[]{ ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /I /B /C:\"COMPLETION: " + prefix + "\"")};
-						System.out.println(cmdsArr[0]);
+						if(prefix == null)
+						{
+							cmdsArr = new String[cmds.size()];
+							cmds.toArray(cmdsArr);
+						}else
+						{
+							cmdsArr = new String[]{ ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /I /B /C:\"COMPLETION: " + prefix + "\"")};
+							System.out.println(cmdsArr[0]);
+						}
+						
 					}else
 					{
 						cmdsArr = new String[]{"/bin/sh", "-c", ClangBuilder.this.toString() + (prefix == null ?"" : "|grep -i \"^COMPLETION: " + prefix + "\"")};
