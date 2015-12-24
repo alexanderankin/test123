@@ -74,26 +74,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		column+=1;//clang counts col starts from 1
 		line += 1;
 		
-		String path = buffer.getPath();
-		if(buffer.isDirty())
-		{
-			buffer.autosave();
-			for(int i = 0; i < 10; i++)
-			{
-				try
-				{
-					Thread.sleep(50);
-				}catch(Exception ex)
-				{
-				}
-				
-				if(buffer.getAutosaveFile().exists())
-				{
-					path = buffer.getAutosaveFile().getPath();
-					break;
-				}
-			}
-		}
+		
 		
 		ClangBuilder builder = new ClangBuilder();
 		
@@ -103,9 +84,10 @@ public class ClangCompletionProvider implements CompletionProvider
 		builder.add("-fsyntax-only");
 		builder.add("-fno-caret-diagnostics");
 		builder.add("-fdiagnostics-print-source-range-info");
-		builder.add("-code-completion-at="+path+":"+line+":"+column);
-		builder.add(path);
-		
+		// builder.add("-code-completion-at="+path+":"+line+":"+column);
+		// builder.add("-code-completion-macros");
+		// builder.add(path);
+		builder.codeCompleteAt(buffer, line, column, prefix);
 		// setTarget should be here after adding code-completion-at for code completion
 		if(!builder.setTarget(buffer))
 		{
@@ -144,6 +126,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		//tryGeneratePth(project);
 		
+		// builder.setCompletionPrefix(prefix);
 		
 		System.out.println(builder);
 		final AtomicBoolean isClangBuilderAlive = new AtomicBoolean();
@@ -169,6 +152,9 @@ public class ClangCompletionProvider implements CompletionProvider
 		try
 		{
 			isClangBuilderAlive.set(true);
+			
+			
+			
 			builder.exec();
 			while(isClangBuilderAlive.get())
 			{
@@ -180,7 +166,7 @@ public class ClangCompletionProvider implements CompletionProvider
 		}
 		
 		
-		if(jEdit.getBooleanProperty("clangcompletion.show_macro", true))
+		/* if(jEdit.getBooleanProperty("clangcompletion.show_macro", true))
 		{
 			try 
 			{  
@@ -193,7 +179,7 @@ public class ClangCompletionProvider implements CompletionProvider
 			{  
 				e.printStackTrace();
 			}  
-		}
+		} */
 		
 		return codeCompletions;
 	}

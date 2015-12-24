@@ -8,6 +8,18 @@ public class ClangBuilder
 	
 	private ClangBuilderListener listener;
 	
+	private String prefix;
+	
+	private int codeCompleteAtPosition = -1;
+	
+	private int codeCompleteAtLine;
+	
+	private int codeCompleteAtColumn;
+	
+	private String path;
+	
+	private String pathAutoSave;
+	
 	public ClangBuilder()
 	{
 		cmds = new ArrayList<String>();
@@ -97,6 +109,23 @@ public class ClangBuilder
 		return cmd.toString();
 	}
 	
+	public void codeCompleteAt(Buffer buffer, int line, int column, String prefix)
+	{
+		 path = buffer.getPath();
+		 if(buffer.isDirty())
+		 {
+		 	 buffer.autosave();
+		 	 Thread.yield();
+			 pathAutoSave = buffer.getAutosaveFile().getPath();
+		 }
+		 
+		 codeCompleteAtPosition = cmds.size();
+		 codeCompleteAtLine = line;
+		 codeCompleteAtColumn = column;
+		 
+		 this.prefix = prefix;
+	}
+	
 	public boolean setTarget(Buffer buffer)
 	{
 		
@@ -132,35 +161,6 @@ public class ClangBuilder
 	
 	public void exec() throws IOException
 	{
-		String [] cmdsArr = new String[cmds.size()]; 
-		cmds.toArray(cmdsArr);
-		
-		if(listener == null)
-		{
-			Runtime.getRuntime().exec(cmdsArr);
-			return;
-		}
-		
-		final Process process = Runtime.getRuntime().exec(cmdsArr);
-		new Thread()
-		{
-			public void run()
-			{
-				try
-				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-					String input = reader.readLine();
-					while(input!=null)
-					{
-						listener.errorRecieved(input);
-						input = reader.readLine();
-					}
-				}catch(IOException ex)
-				{
-					ex.printStackTrace();
-				}
-			}
-		}.start();
 		
 		new Thread()
 		{
@@ -168,29 +168,77 @@ public class ClangBuilder
 			{
 				try
 				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-					String input = reader.readLine();
-					while(input != null)
+					if(codeCompleteAtPosition > 0)
 					{
-						listener.outputRecieved(input);
-						input = reader.readLine();
+						if(pathAutoSave != null && new File(pathAutoSave).exists())
+						{
+							path = pathAutoSave;
+						}
+						cmds.add(codeCompleteAtPosition, path);
+						cmds.add(codeCompleteAtPosition, "-code-completion-macros");
+						cmds.add(codeCompleteAtPosition, "-code-completion-at="+path+":"+codeCompleteAtLine+":"+codeCompleteAtColumn);
 					}
+						
+					String [] cmdsArr = null;
+					if (System.getProperties().getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1)
+					{
+						cmdsArr = new String[]{"cmd", "/c", ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /b /i COMPLETION: " + prefix) };
+					}else
+					{
+						cmdsArr = new String[]{"/bin/sh", "-c", ClangBuilder.this.toString() + (prefix == null ?"" : "|grep -i \"COMPLETION: " + prefix + "\"")};
+					}
+					
+					
+					
+					if(listener == null)
+					{
+						Runtime.getRuntime().exec(cmdsArr);
+						return;
+					}
+					
+					final Process process = Runtime.getRuntime().exec(cmdsArr);
+					
+					BufferedReader readerStd = new BufferedReader(new InputStreamReader(process.getInputStream()));
+					String inputStd = readerStd.readLine();
+					
+					BufferedReader readerErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+					String inputErr = readerErr.readLine();
+					boolean flag = true;
+					while(flag)
+					{
+						flag = false;
+						if(inputErr!=null)
+						{
+							listener.errorRecieved(inputErr);
+							inputErr = readerErr.readLine();
+							flag = true;
+						}
+						
+						if(inputStd != null)
+						{
+							listener.outputRecieved(inputStd);
+							inputStd = readerStd.readLine();
+							flag = true;
+						}
+					}
+					
+					try
+					{
+						process.waitFor();
+					}catch(InterruptedException ex)
+					{
+						ex.printStackTrace();
+					}finally
+					{
+						listener.exited();
+					}
+					
 				}catch(IOException ex)
 				{
 					ex.printStackTrace();
 				}
-				
-				try
-				{
-					process.waitFor();
-				}catch(InterruptedException ex)
-				{
-					ex.printStackTrace();
-				}finally
-				{
-					listener.exited();
-				}
 			}
 		}.start();
+		
 	}
 }

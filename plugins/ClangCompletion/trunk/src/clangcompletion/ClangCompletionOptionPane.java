@@ -14,7 +14,7 @@ public class ClangCompletionOptionPane extends AbstractOptionPane
 	
 	private JTextField clangPathTF;
 	private JCheckBox passBufferCheckBox;
-	private JCheckBox macroCheckBox;
+	// private JCheckBox macroCheckBox;
 	private JCheckBox objcppSupportCheckBox;
 	public ClangCompletionOptionPane()
 	{
@@ -29,10 +29,10 @@ public class ClangCompletionOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("clangcompletion.parse_buffer", true));
 		addComponent(passBufferCheckBox);
 		
-		macroCheckBox = new JCheckBox(
+		/* macroCheckBox = new JCheckBox(
 			"Show macros from CtagsInterface",
 			jEdit.getBooleanProperty("clangcompletion.show_macro", true));
-		addComponent(macroCheckBox);
+		addComponent(macroCheckBox); */
 		
 		objcppSupportCheckBox = new JCheckBox(
 			"Use ClangCompletion for objective-c++ (.mm)",
@@ -46,7 +46,7 @@ public class ClangCompletionOptionPane extends AbstractOptionPane
 	{
 		jEdit.setProperty("clangcompletion.clang_path", clangPathTF.getText());
 		jEdit.setBooleanProperty("clangcompletion.parse_buffer", passBufferCheckBox.isSelected());
-		jEdit.setBooleanProperty("clangcompletion.show_macro", macroCheckBox.isSelected());
+		// jEdit.setBooleanProperty("clangcompletion.show_macro", macroCheckBox.isSelected());
 		jEdit.setBooleanProperty("clangcompletion.support_objcpp", objcppSupportCheckBox.isSelected());
 	}
 }

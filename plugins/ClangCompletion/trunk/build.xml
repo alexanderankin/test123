@@ -17,8 +17,8 @@
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
 	<property name="build.support" value="../../build-support" />
-	<property name="install.dir" value="/Users/jywu/Library/jEdit/jars" />
-	<property name="jedit.install.dir" value="/Applications/jEdit.app/Contents/Resources/Java" />
+	<property name="install.dir" value="/Users/admin/Library/jEdit/jars" />
+	<property name="jedit.install.dir" value="/Applications/jEdit.app/Contents/Java" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
 	<!-- /mark:properties -->
 	<import file="${build.support}/plugin-build.xml" />
@@ -49,7 +49,7 @@
 	<pathelement path="${jedit.plugins.dir}/ErrorList.jar" />
 	<pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
 	<pathelement path="${jedit.plugins.dir}/SuperAbbrevs.jar"/>
-	<pathelement path="${jedit.plugins.dir}/CtagsInterface.jar"/>
+	<!-- <pathelement path="${jedit.plugins.dir}/CtagsInterface.jar"/> -->
 	<!-- /mark:plugins -->
 	</path>
 	
