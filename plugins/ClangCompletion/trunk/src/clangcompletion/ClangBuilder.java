@@ -218,7 +218,7 @@ public class ClangBuilder
 								String input = reader.readLine();
 								while(input!=null)
 								{
-									System.out.println(input);
+									// System.out.println(input);
 									listener.errorRecieved(input);
 									input = reader.readLine();
 								}
@@ -235,7 +235,7 @@ public class ClangBuilder
 						String input = reader.readLine();
 						while(input != null)
 						{
-							System.out.println(input);
+							// System.out.println(input);
 							listener.outputRecieved(input);
 							input = reader.readLine();
 						}

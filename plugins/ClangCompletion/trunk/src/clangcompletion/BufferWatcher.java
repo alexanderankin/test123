@@ -107,12 +107,7 @@ public class BufferWatcher implements ClangBuilderListener
 				builder.addDefinitions(properties.get(ProjectsOptionPane.DEFINITIONS));
 				builder.addArguments(properties.get(ProjectsOptionPane.ARGUMENTS));
 				
-				File filePth = Util.getPTHFileOfActiveProject();
-				if(filePth.exists())
-				{
-					builder.add("-include-pth");
-					builder.add(filePth.getPath() );
-				}				
+				
 			}
 			builder.setListener(this);
 			System.out.println(builder);
