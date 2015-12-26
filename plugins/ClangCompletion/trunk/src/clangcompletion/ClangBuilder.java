@@ -188,8 +188,8 @@ public class ClangBuilder
 							cmds.toArray(cmdsArr);
 						}else
 						{
-							cmdsArr = new String[]{ ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /I /B /C:\"COMPLETION: " + prefix + "\"")};
-							System.out.println(cmdsArr[0]);
+							cmdsArr = new String[]{ "cmd", "/c", ClangBuilder.this.toString() + (prefix == null ?"" : "|findstr /I /B /C:\"COMPLETION: " + prefix + "\"")};
+							System.out.println(cmdsArr[2]);
 						}
 						
 					}else
