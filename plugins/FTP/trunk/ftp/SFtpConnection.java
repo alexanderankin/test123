@@ -24,6 +24,7 @@
 package ftp;
 
 import java.awt.EventQueue;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -78,9 +79,12 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		try {
 			if (ConnectionManager.client == null)  {
 				ConnectionManager.client = new JSch();
-				ConfigRepository configRepository =
-					com.jcraft.jsch.OpenSSHConfig.parseFile(getUserConfigFile());
-				ConnectionManager.client.setConfigRepository(configRepository);
+				File configFile = new File(getUserConfigFile());
+				if (configFile.exists()) {
+					ConfigRepository configRepository =
+						com.jcraft.jsch.OpenSSHConfig.parseFile(getUserConfigFile());
+					ConnectionManager.client.setConfigRepository(configRepository);
+				}
 				String known_hosts = MiscUtilities.constructPath(getUserConfigDir(), "known_hosts");
 				ConnectionManager.client.setKnownHosts(known_hosts);
 
@@ -103,9 +107,9 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 				}
 			}
 			// }}}
-			if (info.user.isEmpty()) 
+			if (info.user.isEmpty())
 				session = ConnectionManager.client.getSession(info.host);
-			else 
+			else
 				session = ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (proxy != null)
 				session.setProxy(proxy);
@@ -148,7 +152,7 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 	static String getUserConfigDir() {
 		return MiscUtilities.constructPath(System.getProperty("user.home"), ".ssh");
 	}
-	
+
 	/** @return the desired location of the .ssh/config file to be used */
 	static String getUserConfigFile() {
 		String defaultValue = MiscUtilities.constructPath(getUserConfigDir(), "config");
