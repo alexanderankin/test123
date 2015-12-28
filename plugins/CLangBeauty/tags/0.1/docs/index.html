@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CLangFormat</title>
+    </head>
+
+    <body>
+      <div  style="background:#ccccff">
+        <h2>CLangFormat</h2>
+        <b>Author: Dale Anson</b><br/>
+        <b>Version: 0.1, 18 Dec 2015</b>
+      </div>
+        <p>This plugin provides the clang-format source code formatter as a 
+        Beauty plugin beautifier by running the external clang-format tool.
+        clang-format supports C, C++, and Objective-C, and with the right 
+        settings can also format Java and Javascript.</p>
+        
+        <p>
+        <a href="#setup">Set Up</a><br/>
+        <a href="#configuration">Configuration</a><br/>
+        <a href="#usage">Usage</a><br/>
+        <a href="#changes">Changes</a><br/>
+        <a href="#license">License</a><br/>
+        </p>
+        
+        <h3 id="setup" style="background:#7FB2FF">Set Up</h3>
+        <p>
+        <b>The clang-format tool must be installed before using this plugin!</b> 
+        </p>
+        <p>
+        Details for downloading and installing this tool can be found at 
+        <a href="http://llvm.org/releases/download.html">http://llvm.org/releases/download.html</a>. 
+        The clang tools are available for Windows, Mac, Linux, and BSD.
+        </p>
+        
+        <h3 id="configuration" style="background:#7FB2FF">Configuration</h3>
+        <p>
+         The plugin is configured via the CLangBeauty option pane. Go to 
+         Plugins - Plugin Options - CLangBeauty to select the clang-format executable.
+        </p>
+        <p>
+         Next, configure the Beauty plugin to use the CLangBeauty plugin to format the appropriate file types:
+        <ol>
+         <li>open the plugin options (Plugins / Plugin Options)</li>
+         <li>go to the Beauty > Modes pane</li>
+         <li>choose clang-format for C, C++, and Objective-C modes</li>
+         </ol>
+         </p>
+         <p>
+         Additionally, CLangBeauty provides a dockable panel to allow viewing and 
+         setting formatting options. Due to the size of the dockable, it is 
+         best used as either a floating window or docked at the bottom. Go to
+         Utilities - Global Options - Docking to set up the dockable panel.
+        </p>
+        
+       <h3 id="usage" style="background:#7FB2FF">Usage</h3>
+       <p>
+         To format the current buffer, go to Plugins > Beauty > Beautify Buffer.
+         </p>
+         <p>
+         See the Beauty plugin documentation for addtional details for setting 
+         keyboard shortcuts.
+         </p>
+         <p>
+         The dockable displays all the options supported by clang-format. The
+         values displayed are from the .clang-format file found for the current
+         buffer. The .clang-format file is found by starting with the path of
+         the current buffer then searching upwards through parent directories
+         until a .clang-format file is found. 
+         </p>
+         <p>
+         The "Open" button allows choosing and loading a .clang-format file 
+         into the dockable window. All of the available settings are shown 
+         and can be edited and saved. The saved file is always named ".clang-format" 
+         and should be saved in a parent directory containing the files to format.
+         </p>
+         <p>
+         The "Save" button allows saving the current formatting settings to a 
+         ".clang-format" file. You can choose the directory in which to save 
+         the file. Note that clang-format looks for ".clang-format" files in 
+         parent directories of the files it is to format, and will only use the
+         settings found in that file, which may not be what is currently displayed
+         in the dockable panel.
+         </p>
+         <p>
+         Using the "Open" and "Save" buttons makes it easy to open a .clang-format 
+         file for one project, edit it, then save it in another directory for 
+         another project.
+         </p>
+         <p>
+         The dockable window also shows the path of the current .clang-format 
+         file in use for the current buffer, and indicates the number of languages 
+         that have settings in the .clang-format file. If there are multiple 
+         languages supported in the .clang-format file, there will be a section 
+         in the formatting settings for each language.
+         </p>
+         
+        <h3 id="changes" style="background:#7FB2FF">Changes</h3>
+        <ul>
+         <li>Version 0.1, 28 Dec 2015, initial release.</li>
+        </ul>
+
+        <h3 id="license" style="background:#7FB2FF">License</h3>
+
+        <p>This plugin has a BSD license:</p>
+<pre>
+Copyright (c) 2015, Dale anson
+
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+    Neither the names of Kirill Grouchnikov nor the names of its contributors 
+    may be used to endorse or promote products derived from this software 
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE.     
+</pre>
+        <br />
+        <br />
+        So pretty much do what you want with it.
+    </body>
+</html>
