@@ -6,7 +6,8 @@ import javax.swing.JTabbedPane;
 import ise.java.awt.*;
 
 /**
- * An option pane to configure settings for the built-in Java beautifier.
+ * An option pane to configure settings for the built-in Java beautifier, loads
+ * the option panes in the 'java' subdirectory as tabs in this pane.
  */
 public class JavaOptionPane extends AbstractOptionPane {
 
