@@ -39,7 +39,7 @@ public class Java8BeautyListener implements Java8Listener {
     // format settings
     private boolean softTabs = true;
     private int tabWidth = 4;
-    private int bracketStyle = ATTACHED;        // TODO: implement this
+    private int bracketStyle = ATTACHED;        
     private boolean brokenBracket = false;
     private boolean breakElse = true;
     private boolean padParens = false;
@@ -2647,7 +2647,7 @@ Parser methods follow.
 	        indent(sb);   
 	    }
 	    addBlankLines(blankLinesBeforeMethods);
-	    sb.append(modifiers).append(' ').append(header).append(' ').append(body).append(getBlankLines(blankLinesAfterMethods + 1));
+	    sb.append(modifiers).append(' ').append(header).append(brokenBracket ? '\n' : ' ').append(body).append(getBlankLines(blankLinesAfterMethods + 1));
 	    stack.push(sb.toString());
 	}
 
