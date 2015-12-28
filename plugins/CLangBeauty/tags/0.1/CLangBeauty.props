@@ -1,0 +1,48 @@
+#name=value
+plugin.clangbeauty.CLangBeautyPlugin.name=CLangBeauty
+plugin.clangbeauty.CLangBeautyPlugin.author=Dale Anson
+plugin.clangbeauty.CLangBeautyPlugin.version=0.1
+plugin.clangbeauty.CLangBeautyPlugin.docs=docs/index.html
+
+plugin.clangbeauty.CLangBeautyPlugin.description=CLangBeauty runs clang-format
+plugin.clangbeauty.CLangBeautyPlugin.longdescription=description.html
+
+#external depencies
+plugin.clangbeauty.CLangBeautyPlugin.depend.0=jdk 1.6
+plugin.clangbeauty.CLangBeautyPlugin.depend.1=jedit 05.02.01.00
+plugin.clangbeauty.CLangBeautyPlugin.depend.2=plugin beauty.BeautyPlugin 1.0
+plugin.clangbeauty.CLangBeautyPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
+
+plugin.clangbeauty.CLangBeautyPlugin.activate=defer
+plugin.clangbeauty.CLangBeautyPlugin.usePluginHome=true
+
+beautyplugin.label=Beauty
+
+# exe default, this should be set in the plugin options
+clangbeauty.clang-format.exe=/usr/bin/clang-format
+
+# titles for DockableWindowManager
+clangbeauty.title=clang-format
+clangbeauty.label=clang-format
+
+# modes
+mode.c++.beauty.beautifier=c++\:clang-format
+mode.c.beauty.beautifier=c\:clang-format
+mode.objective-c.beauty.beautifier=objective-c\:clang-format
+
+# option pane
+plugin.clangbeauty.CLangBeautyPlugin.option-pane=clangbeauty
+options.clangbeauty.label=CLangBeauty
+options.clangbeauty.code=new clangbeauty.OptionPane();
+
+options.clangbeauty.clangformat.exe=clang-format executable
+
+clangbeauty.Select_a_directory_to_save_the_current_configuration.=Select a directory to save the current configuration.
+clangbeauty.Select_a_.clang-format_file_to_load.=Select a .clang-format file to load.
+clangbeauty.<_.clang-format_not_found_>=< .clang-format not found >
+clangbeauty.languages=languages
+clangbeauty.Default_settings=Default settings
+clangbeauty.Settings=Settings
+clangbeauty.Error_saving_file=Error saving file
+clangbeauty.Invalid_file_name=Invalid file name
+clangbeauty.File_name_must_be=File name must be
