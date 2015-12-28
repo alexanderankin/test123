@@ -2,7 +2,7 @@
 plugin.clangbeauty.CLangBeautyPlugin.name=CLangBeauty
 plugin.clangbeauty.CLangBeautyPlugin.author=Dale Anson
 plugin.clangbeauty.CLangBeautyPlugin.version=0.1
-plugin.clangbeauty.CLangBeautyPlugin.docs=index.html
+plugin.clangbeauty.CLangBeautyPlugin.docs=docs/index.html
 
 plugin.clangbeauty.CLangBeautyPlugin.description=CLangBeauty runs clang-format
 plugin.clangbeauty.CLangBeautyPlugin.longdescription=description.html
