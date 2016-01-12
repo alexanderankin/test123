@@ -79,6 +79,11 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 		try {
 			if (ConnectionManager.client == null)  {
 				ConnectionManager.client = new JSch();
+			}
+			String dir = SFtpConnection.getUserConfigDir();
+			if (dir != null) {
+				File f= new File(dir);
+				if (!f.exists()) f.mkdir();
 				File configFile = new File(getUserConfigFile());
 				if (configFile.exists()) {
 					ConfigRepository configRepository =
