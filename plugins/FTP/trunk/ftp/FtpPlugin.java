@@ -41,19 +41,6 @@ public class FtpPlugin extends EditPlugin
 	//{{{ start() method
 	public void start()
 	{
-		if (SFtpConnection.getUserConfigDir() != null) {
-			String dir = SFtpConnection.getUserConfigDir();
-			File f= new File(dir);
-			if (!f.exists()) f.mkdir();
-			String knownhosts = MiscUtilities.constructPath(dir,  "known_hosts");
-			f = new File(knownhosts);
-			if (!f.exists()) try {
-				f.createNewFile();
-			}
-			catch (IOException ioe) {
-				Log.log(Log.ERROR, this, "Unable to create file: " + knownhosts, ioe);
-			}
-		}
 	} //}}}
 
 	//{{{ stop() method
