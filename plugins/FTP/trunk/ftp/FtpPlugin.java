@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class FtpPlugin extends EditPlugin
 {

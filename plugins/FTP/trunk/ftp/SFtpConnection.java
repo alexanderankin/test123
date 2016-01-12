@@ -86,8 +86,11 @@ public class SFtpConnection extends Connection implements UserInfo, UIKeyboardIn
 					ConnectionManager.client.setConfigRepository(configRepository);
 				}
 				String known_hosts = MiscUtilities.constructPath(getUserConfigDir(), "known_hosts");
+				File knownHostsFile = new File(known_hosts);
+				if (!knownHostsFile.exists()) {
+					knownHostsFile.createNewFile();
+				}
 				ConnectionManager.client.setKnownHosts(known_hosts);
-
 			}
 			JSch.setLogger(new SftpLogger());
 
