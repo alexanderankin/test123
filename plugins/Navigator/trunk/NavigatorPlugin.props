@@ -12,7 +12,7 @@ plugin.ise.plugin.nav.NavigatorPlugin.description=Tracks position changes, \
     browser. Also provides a manual position stack with "Push" and "Pop" actions.
 
 # dependencies
-plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.6
+plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.7
 plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 05.03.01.00
 plugin.ise.plugin.nav.NavigatorPlugin.depend.2=plugin code2html.Code2HTMLPlugin 0.6
 plugin.ise.plugin.nav.NavigatorPlugin.depend.3=plugin CommonControlsPlugin 1.7.2
