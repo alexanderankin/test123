@@ -20,6 +20,8 @@
  */
 package gatchan.phpparser.parser;
 
+import gatchan.phpparser.PHPParserPlugin;
+import gatchan.phpparser.methodlist.PHPFunctionList;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -36,6 +38,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 {
 	private PHPParser phpParser;
 
+
 	public void testNew()
 	{
 
@@ -44,6 +47,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testParserSuccess()
 	{
+    PHPParserPlugin.phpFunctionList = new PHPFunctionList();
 		checkPHP("try {\n" + "}\n" + "catch (Exception $e) {\n" + "}");
 		checkPHP("$a = \"\\n\\n\";");
 		checkPHP("use N\\ett\\e;");
@@ -57,7 +61,6 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
 		checkHTML("<? if (true) : ?>coucou<? endif;?>");
 		checkHTML("<? if (true) : ?>coucou<? elseif (true) :?>coucou<? elseif (true) :?>coucou<? else :?>coucou<? endif;?>");
-		checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
 		checkHTML("<? foreach ($a as $b) : ?>coucou<? endforeach;?>");
 		checkHTML("<? for (;;) : ?>coucou<? endfor;?>");
 		checkPHP("fn()->toto;");

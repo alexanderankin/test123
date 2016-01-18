@@ -1,9 +1,9 @@
 /*
  * PHPParser.java - The PHP Parser
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2014 Matthieu Casanova
+ * Copyright (C) 2003, 2016 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -232,6 +232,7 @@ public class PHPParser
 	//{{{ htmlParserTester() methods
 	public void htmlParserTester(File fileName) throws FileNotFoundException, ParseException
 	{
+		
 		Reader stream = new FileReader(fileName);
 		if (jj_input_stream == null)
 		{
@@ -250,6 +251,7 @@ public class PHPParser
 
 	public void htmlParserTester(String strEval) throws ParseException
 	{
+		currentBuffer = strEval;
 		StringReader stream = new StringReader(strEval);
 		if (jj_input_stream == null)
 		{
@@ -561,9 +563,9 @@ MORE :
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <CLASSACCESS:		"->"> : PHPPARSING
+  <CLASSACCESS:			"->"> : PHPPARSING
 | <STATICCLASSACCESS:	"::"> : PHPPARSING
-| <ARRAYASSIGN:		"=>"> : PHPPARSING
+| <ARRAYASSIGN:			"=>"> : PHPPARSING
 }
 
 /* RESERVED WORDS AND LITERALS */
@@ -2303,7 +2305,7 @@ AbstractVariable VariableDeclaratorId():
 	var = Variable()
 	(
 		var = VariableSuffix(var)
-		)*
+	)*
 	{
 		return var;
 	}
@@ -2818,6 +2820,18 @@ Token constantIdentifier():
 	)
 	{
 		return constantIdentifier;
+	}
+} //}}}
+
+//{{{ constantIdentifierExpression() method
+Expression constantIdentifierExpression():
+{
+	Token constantIdentifier;
+}
+{
+	constantIdentifier = constantIdentifier()
+	{
+		return new ConstantIdentifier(constantIdentifier);
 	}
 } //}}}
 
@@ -3962,9 +3976,7 @@ Expression primaryExpression():
 }
 {
 	(
-		bitAndToken = <BIT_AND> expr = refPrimaryExpression(bitAndToken)
-	|
-		expr = refPrimaryExpression(null)
+		[ bitAndToken = <BIT_AND> ] expr = refPrimaryExpression(bitAndToken)
 	|
 		expr = cloning()
 	|
@@ -3979,7 +3991,7 @@ Expression primaryExpression():
 	}
 } //}}}
 
-//{{{ refPrimaryExpression(Token reference)
+//{{{ refPrimaryExpression()
 /**
  * @param bitAndToken it is the token with the &, it can be null if there is no
  * such token
@@ -3987,31 +3999,54 @@ Expression primaryExpression():
 Expression refPrimaryExpression(Token bitAndToken):
 {
 	Expression expr;
+}
+{
+	expr = prefix(bitAndToken)
+	//{{{ suffix*
+	(
+		expr = suffix(expr)
+	)* //}}}
+	{
+		return expr;
+	}
+} //}}}
+
+//{{{ prefix()
+/**
+ * @param bitAndToken it is the token with the &, it can be null if there is no
+ * such token
+ */
+Expression prefix(Token bitAndToken):
+{
+	Expression expr;
 	Token identifier;
 }
 {
+	//{{{ prefix
 	(
 		expr = instantiation(bitAndToken)
 	|
-		//{{{ prefix
-		(
-			identifier = constantIdentifier()
-			{
-				expr = new ConstantIdentifier(identifier);
-			}
-		|
-			identifier = <STATIC>
-			{
-				expr = new ConstantIdentifier(identifier);
-			}
-		|
-			expr = Variable()  //todo use the bitAndToken parameter ...
-		) //}}}
-		//{{{ suffix*
-		(
-			{
-				ArgumentList argumentList;
-			}
+		expr = constantIdentifierExpression()
+	|
+		identifier = <STATIC>
+		{
+			expr = new ConstantIdentifier(identifier);
+		}
+	|
+		expr = Variable()  //todo use the bitAndToken parameter ...
+	) //}}}
+	{
+		return expr;
+	}
+} //}}}
+
+//{{{ suffix() method
+Expression suffix(Expression expr):
+{
+	ArgumentList argumentList;
+}
+{
+	(
 			argumentList = arguments()
 			{
 				expr = new FunctionCall(expr, argumentList);
@@ -4022,8 +4057,6 @@ Expression refPrimaryExpression(Token bitAndToken):
 			expr = classAccess(expr)
 		|
 			expr = arrayDeclarator(expr)
-		)* //}}}
-
 	)
 	{
 		return expr;
@@ -4125,32 +4158,14 @@ Expression instantiation(Token reference):
 			token.beginLine,
 			newToken.next.beginColumn,
 			token.beginColumn)); //}}}
-
 	}
 	{
 		int start, beginLine, beginColumn;
-		if (reference == null)
-		{
-			start       = newToken.sourceStart;
-			beginLine   = newToken.beginLine;
-			beginColumn = newToken.beginColumn;
-		}
-		else
-		{
-			start       = reference.sourceStart;
-			beginLine   = reference.beginLine;
-			beginColumn = reference.beginColumn;
-		}
+		Token beginToken = reference == null ? newToken:reference;
+		start       = beginToken.sourceStart;
+		beginLine   = beginToken.beginLine;
+		beginColumn = beginToken.beginColumn;
 	}
-	[
-		{
-			ArgumentList args;
-		}
-		args = arguments()
-		{
-			expr = new FunctionCall(expr,args);
-		}
-	]
 	{
 		expr = new ClassInstantiation(expr,
 			reference != null,
