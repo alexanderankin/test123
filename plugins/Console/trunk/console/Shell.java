@@ -48,14 +48,14 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
         &lt;/SERVICE&gt;
 &lt;/SERVICES&gt;
 </pre>
-<p> To define a new Shell for your own plugin 
- *  extend from this class, and return an instance of it 
+<p> To define a new Shell for your own plugin
+ *  extend from this class, and return an instance of it
  *  from the beanshell code in services.xml.
- *  </p><p> 
+ *  </p><p>
  *  Because it is a service, it is a singleton instance, shared by all
  *  for all Views and Console instances, and created only once while the plugin
  *  is loaded.
- * 
+ *
 </p>
 <p>
  * @author Slava Pestov
@@ -89,25 +89,25 @@ public abstract class Shell
 	} //}}}
 
 	//{{{ handlesVFS()
-	/** A System Shell can override this method and use 
+	/** A System Shell can override this method and use
 		any criteria at all to decide
-	    whether this is a path that is preferred by this shell. 
-	    @param vfsPath the path to test if this shell handles 
+	    whether this is a path that is preferred by this shell.
+	    @param vfsPath the path to test if this shell handles
 	    @return true if this shell is preferred for handling a path that looks like vfsPath
 	*/
 	public boolean handlesVFS(String vfsPath) {
 		return false;
 	}//}}}
-	
+
 	//{{{ chDir()
 	/** A System Shell can override this method if it can respond to chDir messages
 		@param pathStr   vfs path to change directory
 	    @return true if the function did something, false if not.
-	*/	
+	*/
 	public boolean chDir(Console console, String pathStr) {
 		return false;
 	}// }}}
-	
+
 	//{{{ getShell() method
 	/**
 	 * Returns the Shell service singleton with the specified name
@@ -119,7 +119,7 @@ public abstract class Shell
 		// new API
 		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
-	
+
 	//{{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.
@@ -168,9 +168,9 @@ public abstract class Shell
 	 * derived classes.
 	 *
 	 * @param console The Console instance, to distinguish it from others when there are
-	 *   multiple View or Console instances. 
+	 *   multiple View or Console instances.
 	 * @param input optional string to feed into the command's Standard input
-	 * @param output Standard output - the destination to send output 
+	 * @param output Standard output - the destination to send output
 	 * @param error Standard error - the destionation to send error messages
 	 * @param command The command
 	 * @since Console 3.5
@@ -202,7 +202,7 @@ public abstract class Shell
 	 * Waits until any currently executing commands finish.
 	 * @return True if the most recent command exited successfully,
 	 * false otherwise
-	 * @param console the same Console instance that was passed to execute()	 
+	 * @param console the same Console instance that was passed to execute()
 	 */
 	public boolean waitFor(Console console)
 	{
@@ -220,7 +220,7 @@ public abstract class Shell
 
 	//{{{ detach() method
 	/**
-	 * Detaches the currently running process. Called when Ctrl-Z is typed from the console. 
+	 * Detaches the currently running process. Called when Ctrl-Z is typed from the console.
 	 * @param console the same Console instance that was passed to execute()
 	 */
 	public void detach(Console console)
@@ -272,12 +272,16 @@ public abstract class Shell
 		}
 		public void invoke(View view) {
 			Console c = ConsolePlugin.getConsole(view);
+			if (c == null) {
+				view.getDockableWindowManager().showDockableWindow("console");
+				c = ConsolePlugin.getConsole(view);
+			}
 			c.setShell(shellName);
 		}
 	}// }}}
 	// {{{ ToggleAction class
 	/** A ToggleAction is a ShellAction which also toggles the
-	    visibility of the Console. 
+	    visibility of the Console.
 	*/
 	public static class ToggleAction extends ShellAction {
 
@@ -309,13 +313,13 @@ public abstract class Shell
 		{
 			super("console.shell." + shellName + "-show", shellName);
 		}
-		
-		public String getLabel() 
+
+		public String getLabel()
 		{
 			return shellName;
 		}
-		
-		public String getCode() 
+
+		public String getCode()
 		{
 			return "new console.Shell.SwitchAction(\"" + shellName + "\").invoke(view)";
 		}
