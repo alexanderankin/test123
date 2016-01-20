@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- jEdit buffer-local properties: -->
-<!-- :maxLineLen=80:wrap=hard:indentSize=2:noTabs=true: -->
+<!-- :maxLineLen=80:wrap=hard:tabSize=2:indentSize=2:noTabs=true: -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
  <bookinfo>
@@ -121,11 +121,11 @@
 
  <itemizedlist>
  <listitem>
-	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before
-	 the command you type whenever a command is executed. Console itself does
-	 parse and preprocess your commands in its own way, but you have the option
-	 of having the commands subsequently evaluated by your native command line
-	 shell, which will in turn execute your command.
+   <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before
+   the command you type whenever a command is executed. Console itself does
+   parse and preprocess your commands in its own way, but you have the option
+   of having the commands subsequently evaluated by your native command line
+   shell, which will in turn execute your command.
      </para>
 
      <para> Console can choose a sensible os-specific shell prefix for you, by
@@ -143,18 +143,18 @@
   </listitem>
 
   <listitem>
-	  <para>
-		<emphasis>Merge stdout and stderr</emphasis> - this option will only
-		affect users of "make", where Console needs to merge the streams in
-		order to resolve pathnames of files of errors inbetween "make
-		entering..leaving" messages.
-	  </para>
+    <para>
+    <emphasis>Merge stdout and stderr</emphasis> - this option will only
+    affect users of "make", where Console needs to merge the streams in
+    order to resolve pathnames of files of errors inbetween "make
+    entering..leaving" messages.
+    </para>
   </listitem>
   <listitem><para><emphasis>Subshell extra PATH</emphasis> - This option
-		  prepends directories to the environment before spawning
-		  subprocesses. If you want your jedit console to be able to find some
-		  files in the path, add those directories here.
-	  </para></listitem>
+      prepends directories to the environment before spawning
+      subprocesses. If you want your jedit console to be able to find some
+      files in the path, add those directories here.
+    </para></listitem>
   <listitem><para><emphasis>Append extra dirs to PATH</emphasis> - if
         checked, append instead of prepend the extra directories.
   </para></listitem>
@@ -354,11 +354,11 @@ most often at the top of the list.
 </para>
 
   <para> Processes that read from standard input might work. You can press
-	<keycombo><keycap>Control</keycap>
+  <keycombo><keycap>Control</keycap>
     <keycap>D</keycap>
    </keycombo> to send an end-of-file. Note that since the plugin does not provide a pseudo-terminal, so some
-	programs, such as shells that use getline() or curses(), might not behave properly inside
-	a console window. </para>
+  programs, such as shells that use getline() or curses(), might not behave properly inside
+  a console window. </para>
 
   <section id="error-parsing">
    <title>Error parsing</title>
@@ -1143,7 +1143,7 @@ run this command in.</para>
      <listitem>
       <para>
        <literal>TO_BUFFER</literal> - If <quote>TRUE</quote>, the command output
-		will be shown in a new buffer.</para>
+    will be shown in a new buffer.</para>
      </listitem>
      <listitem>
       <para>
@@ -1151,9 +1151,9 @@ run this command in.</para>
 is <quote>TRUE</quote>, this parameter can be used to specify the edit mode
 of the new buffer. The default value is <quote>text</quote>.</para>
      </listitem>
-	 <listitem>
-	  <para>
-	   <literal>DIR</literal> - An optional BeanShell snippet that will be
+   <listitem>
+    <para>
+     <literal>DIR</literal> - An optional BeanShell snippet that will be
 evaluated to get the directory the command will be run in. For example,
 to make sure it runs in the same directory as the buffer, this can
 be set to <quote>buffer.getDirectory();</quote>.</para>
@@ -1299,7 +1299,7 @@ be set to <quote>buffer.getDirectory();</quote>.</para>
   </funcsynopsis>
   <para>
    Waits until the currently executing command finishes before returning.
-		</para>
+    </para>
 
   <funcsynopsis>
    <funcprototype>
@@ -1311,7 +1311,7 @@ be set to <quote>buffer.getDirectory();</quote>.</para>
   </funcsynopsis>
   <para>
    Clear's the console's output area.
-		</para>
+    </para>
 
   <funcsynopsis>
    <funcprototype>
@@ -1323,7 +1323,7 @@ be set to <quote>buffer.getDirectory();</quote>.</para>
   </funcsynopsis>
   <para>
    Returns the specified environment variable.
-		</para>
+    </para>
 
   <funcsynopsis>
    <funcprototype>
@@ -1337,7 +1337,7 @@ be set to <quote>buffer.getDirectory();</quote>.</para>
   </funcsynopsis>
   <para>
    Sets the specified environment variable to a new value.
-		</para>
+    </para>
 
   <para>
  If a command is run from the console while macro recording is in progress,
@@ -1349,31 +1349,55 @@ be set to <quote>buffer.getDirectory();</quote>.</para>
  <chapter id="svngit">
  <title> Using Console with svn or git </title>
 
- <para> When you commit via the command line versions of <literal>git</literal> or <literal>svn</literal>, the tool spawns an external editor for you to enter text with the commit log. The editor that is spawned can be specified by the <literal>VISUAL</literal> (for svn) or <literal>EDITOR</literal> (for git) environment variables. When the editor starts, you are editing a temporary file. When the editor sub-process exits, the commit tool retrieves the temporary file's contents. </para>
+ <para> When you commit via the command line versions of <literal>git</literal>
+ or <literal>svn</literal>, the tool spawns an external editor for you to enter
+ text with the commit log. The editor that is spawned can be specified by the
+ <literal>VISUAL</literal> (for svn) or <literal>EDITOR</literal> (for git)
+ environment variables. When the editor starts, you are editing a temporary
+ file. When the editor sub-process exits, the commit tool retrieves the
+ temporary file's contents. </para>
 
- <para> A batch file or shellscript that runs jEdit can be used as the <literal>VISUAL</literal> and <literal>EDITOR</literal> that is called by command line programs like <literal>git</literal> and <literal>svn</literal>, even when run from inside jEdit's Console plugin. Here are some command line options that you should consider passing jEdit when it is started by another program such as svn:
+ <para> A batch file or shellscript that runs jEdit can be used as the
+ <literal>VISUAL</literal> and <literal>EDITOR</literal> that is called by
+ command line programs like <literal>git</literal> and <literal>svn</literal>,
+ even when run from inside jEdit's Console plugin. Here are some command line
+ options that you should consider passing jEdit when it is started by another
+ program such as <literal>svn</literal>:
  </para>
 
  <itemizedlist>
- <listitem><para> <literal>-wait</literal> - waits until the buffer is closed before allowing the spawning process to 'exit' - this way you don't have to exit the main jEdit process when you are ready to commit. </para></listitem>
- <listitem><para> <literal>-noplugins</literal> - if this is a new view (jedit is not already running), don't load all the plugins. </para></listitem>
- <listitem><para> <literal>-norestore</literal> - don't restore the previously open files. </para></listitem>
- <listitem><para> <literal>-newplainview</literal> - open a new window (if jEdit is already running). Some people might prefer <literal>-reuseview</literal> here, depending on the expected behavior of your previous editor. </para></listitem>
+ <listitem><para> <literal>-wait</literal> - waits until the buffer is closed
+ before allowing the spawning process to 'exit' - this way you don't have to
+ exit the main jEdit process when you are ready to commit. </para></listitem>
+ <listitem><para> <literal>-noplugins</literal> - if this is a new view (jedit
+ is not already running), don't load all the plugins. </para></listitem>
+ <listitem><para> <literal>-norestore</literal> - don't restore the previously
+ open files. </para></listitem>
+ <listitem><para> <literal>-newplainview</literal> - open a new window (if jEdit
+ is already running). Some people might prefer <literal>-reuseview</literal>
+ here, depending on the expected behavior of your previous editor.
+ </para></listitem>
 </itemizedlist>
 
- <para> So I have a shell script called <literal>jeditcommit</literal> that looks like this: </para>
+ <para> So I have a shell script called <literal>jeditcommit</literal> that
+ looks like this: </para>
 <programlisting>
 exec java -jar "$JEDIT_HOME/jedit.jar" -wait -noplugins -reuseview -norestore $@
 </programlisting>
-<para> And I have a windows batch file called <literal>jeditcommit.bat</literal> that looks like this: </para>
+<para> And I have a windows batch file called <literal>jeditcommit.bat</literal>
+that looks like this: </para>
 <programlisting>
 javaw -jar "%JEDIT_HOME%\jedit.jar" -wait -norestore -noplugins -reuseview %*
 </programlisting>
 
-<para> I set my <literal>EDITOR</literal> and <literal>VISUAL</literal> to <literal>jeditcommit</literal>
-from my regular jEdit startup script, so it is used only from jEdit. </para>
+<para> I can set my <literal>EDITOR</literal> and <literal>VISUAL</literal> to
+<literal>jeditcommit</literal> from my regular jEdit startup script, so it is
+used always from inside jEdit. </para>
 
-<para> In summary, if your batch file includes these options, you use it as the <literal>EDITOR</literal> when you commit from the regular command line, or from jEdit's console, and svn will wait until you close the buffer before sending the log message and your changes to the repository.
+<para> In summary, if your batch file includes these options, you use it as the
+<literal>EDITOR</literal> when you commit from the regular command line, or from
+jEdit's console, and svn will wait until you close the buffer before sending the
+log message and your changes to the repository.
 </para>
 
 </chapter>
@@ -1382,21 +1406,18 @@ from my regular jEdit startup script, so it is used only from jEdit. </para>
  <chapter id="extending">
   <title>Extending the Console plugin</title>
 
-  <para>
-    To add a shell to the console, a plugin must specify that
-	it requires the Console plugin, and register a
- 	<ulink url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's <filename>services.xml</filename> file.
-</para>
+  <para> To add a shell to the console, a plugin must specify that it requires
+  the Console plugin, and register a <ulink
+  url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's
+  <filename>services.xml</filename> file. </para>
 
   <section id="specifying-dependencies">
    <title>Specifying dependencies</title>
 
-   <para>
-  In order to give the user a helpful error message if the Console
-  plugin is not installed, your plugin should specify dependency properties.
-  If your plugin's core class is named <classname>MyPlugin</classname>, the
-  corresponding dependencies might look like so:
- </para>
+   <para> In order to give the user a helpful error message if the Console
+   plugin is not installed, your plugin should specify dependency properties. If
+   your plugin's core class is named <classname>MyPlugin</classname>, the
+   corresponding dependencies might look like so: </para>
 
    <programlisting>plugin.MyPlugin.depend.0=jedit 04.02.99.00
 plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
@@ -1429,7 +1450,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      </para>
     </listitem>
    </orderedlist>
-   <para> The element itself should contain BeanShell code which creates a new instance of your <classname>Shell</classname>-derived class. Here is an example of how the SshConsole plugin registers a shell with Console:
+   <para> The element itself should contain BeanShell code which creates a new
+   instance of your <classname>Shell</classname>-derived class. Here is an
+   example of how the SshConsole plugin registers a shell with Console:
  </para>
 
    <programlisting>
@@ -1468,11 +1491,13 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     </listitem>
    </itemizedlist>
 
- <para>
-   A singleton <classname>Shell</classname> instance, shared by all <classname>View</classname>s and <classname>Console</classname>s is created by the <classname>Console</classname> once at the plugin load-time, for each <classname>Shell</classname> service found.
-   Most of the Shell methods have a first parameter which provides the <classname>Console</classname> instance, to distinguish between
-   multiple consoles. This class defines the following abstract methods, which your shell must override:
-</para>
+ <para> A singleton <classname>Shell</classname> instance, shared by all
+ <classname>View</classname>s and <classname>Console</classname>s is created by
+ the <classname>Console</classname> once at the plugin load-time, for each
+ <classname>Shell</classname> service found. Most of the Shell methods have a
+ first parameter which provides the <classname>Console</classname> instance, to
+ distinguish between multiple consoles. This class defines the following
+ abstract methods, which your shell must override: </para>
 
    <itemizedlist>
     <listitem>
@@ -1484,9 +1509,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
        </paramdef>
       </funcprototype>
      </funcsynopsis>
-     <para>
-   This method is invoked by the console when the user selects the shell in question. It should print a short informational message, outlining the main capabilities of the shell.
-  </para>
+     <para> This method is invoked by the console when the user selects the
+     shell in question. It should print a short informational message, outlining
+     the main capabilities of the shell. </para>
     </listitem>
     <listitem>
      <funcsynopsis>
@@ -1575,9 +1600,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
        </paramdef>
       </funcprototype>
      </funcsynopsis>
-   <para>
-   This method writes a string to the output instance in question. Note that not all outputs support color - those that don't just ignore the  <parameter>color</parameter> parameter.
-  </para>
+
+     <para> This method writes a string to the output instance in question. Note
+     that not all outputs support color - those that don't just ignore the
+     <parameter>color</parameter> parameter. </para>
+
     </listitem>
     <listitem>
      <funcsynopsis>
@@ -1609,27 +1636,34 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      console window's implementation of this method stops the little animation.
      </para>
 
-   </listitem>
-   </itemizedlist>
-   <para>
-   In your own plugin, it is normally not necessary to extend or instantiate <classname>Output</classname>s. Normally, plugins just use the instance passed to <function>Shell.exec()</function>. </para>
+   </listitem> </itemizedlist>
+
+   <para> In your own plugin, it is normally not necessary to extend or
+   instantiate <classname>Output</classname>s. Normally, plugins just use the
+   instance passed to <function>Shell.exec()</function>. </para>
 
    <bridgehead> Where does the Output come from? </bridgehead>
 
-   <para> The <classname>Console</classname> maintains a <varname>shellStateMap</varname>, a 1:1 mapping of shell names to <classname>Console.ShellState</classname> instances.  <classname>Console.ShellState</classname> is a concrete instance of <classname>Output</classname> which stores the Console's scrollback buffer. This is what gets passed to <function>exec()</function>. </para>
+   <para> The <classname>Console</classname> maintains a
+   <varname>shellStateMap</varname>, a 1:1 mapping of shell names to
+   <classname>Console.ShellState</classname> instances.
+   <classname>Console.ShellState</classname> is a concrete instance of
+   <classname>Output</classname> which stores the Console's scrollback buffer.
+   This is what gets passed to <function>exec()</function>. </para>
 
-   <para>
-   When you call <function>console.setShell(String name)</function>, the <varname>shellState</varname> for that shell is automatically created and set. If you need an Output instance for a specific shell, from another part of your plugin, you can call <function>console.getOutput()</function> immediately after <function>console.setShell()</function>.
-   </para>
+   <para> When you call <function>console.setShell(String name)</function>, the
+   <varname>shellState</varname> for that shell is automatically created and
+   set. If you need an Output instance for a specific shell, from another part
+   of your plugin, you can call <function>console.getOutput()</function>
+   immediately after <function>console.setShell()</function>. </para>
 
   </section>
 
   <section id="console-methods">
    <title>Useful methods in the Console class</title>
 
-   <para>
- The following methods in the <classname>Console</classname> class can be used to obtain some useful default colors you can use in output:
-</para>
+   <para> The following methods in the <classname>Console</classname> class can
+   be used to obtain some useful default colors you can use in output: </para>
 
    <itemizedlist>
     <listitem>
@@ -1666,14 +1700,17 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <section id="custom-error-parsing">
    <title>Custom shells and error parsing</title>
 
-   <para>
- Most plugin shells will need to report compiler errors and such. To do this, you will first need to create and register an <classname>ErrorSource</classname>;
- see the <application>ErrorList</application> plugin documentation for details. You will also need to add the errors to the error source at some stage. There are two ways of doing this:
-</para>
+   <para> Most plugin shells will need to report compiler errors and such. To do
+   this, you will first need to create and register an
+   <classname>ErrorSource</classname>; see the
+   <application>ErrorList</application> plugin documentation for details. You
+   will also need to add the errors to the error source at some stage. There are
+   two ways of doing this: </para>
 
    <itemizedlist>
     <listitem>
-     <para>Manually, by having the shell check for appropriate error conditions, and add errors as necessary.</para>
+     <para>Manually, by having the shell check for appropriate error conditions,
+     and add errors as necessary.</para>
     </listitem>
     <listitem>
     <para> What is #2? </para></listitem>
