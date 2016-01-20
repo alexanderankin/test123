@@ -116,7 +116,7 @@ public class ConsolePlugin extends EditPlugin
 		// systemCommandDirectory = MiscUtilities.constructPath(".",
 		// "commando");
 
-		// Normally plugins don't use this directory. 
+		// Normally plugins don't use this directory.
 		String settings = jEdit.getSettingsDirectory();
 		if (settings != null)
 		{
@@ -166,7 +166,7 @@ public class ConsolePlugin extends EditPlugin
 		allCommands.removeAllActions();
 		shellSwitchActions.removeAllActions();
 		getSystemShell().beforeStopping();
-		
+
 		// ??? Does this really get all the Console objects that are in memory?
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++) {
@@ -308,6 +308,7 @@ public class ConsolePlugin extends EditPlugin
 		jEdit.addActionSet(allCommands);
 		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded " + allCommands.size()
 				+ " Actions");
+		jEdit.propertiesChanged();
 
 	} // }}}
 
@@ -545,13 +546,13 @@ public class ConsolePlugin extends EditPlugin
 			if (cmd == null || cmd.trim() == "")
 				return;
 		}
-	
+
 		view.getDockableWindowManager().showDockableWindow("console");
 		final Console console = (Console) getConsole(view);
 		if (jEdit.getBooleanProperty("console.clearBeforeExecute"))
 			console.clear();
 		String runDir = project.getProperty("console.runDir");
-		if (runDir == null) runDir = project.getRootPath(); 
+		if (runDir == null) runDir = project.getRootPath();
 		console.chDir(runDir, true);
 		console.run(console.getShell(), console.getOutput(), cmd);
 	} // }}}
