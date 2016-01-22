@@ -297,8 +297,8 @@ public abstract class Shell
 		}
 		public void invoke(View view)
 		{
-			super.invoke(view);
 			jEdit.getAction("console-toggle").invoke(view);
+			super.invoke(view);
 		}
 
 
