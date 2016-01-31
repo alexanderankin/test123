@@ -52,7 +52,8 @@ import xml.completion.IDDecl;
 /**
  * ContentHandler, DeclHandler and LexicalHandler to construct CompletionInfo from the DTD declaration or
  * pull CompletionInfo from SchemaAutoLoader.
- * It also grabs IDs in parsed documents.  
+ * It also grabs IDs in parsed documents.
+ * It also detects HTML5 empty doctype declaration and throws an exception to trigger reparsing ignoring the DTD.
  **/
 class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements ContentHandler, DeclHandler, LexicalHandler
 {
@@ -92,6 +93,10 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	
 	/** store the xsd schema urls, if any */
 	List<String> xsdSchemaURLs;
+	
+	/** detect HTML5 empty <code>&lt;!DocType html></code> */
+	private boolean dtdHasContent = false;
+	private boolean dtdIsHTML = false;
 	// }}}
 	// {{{ Handler constructor
 	GrabIdsAndCompletionInfoHandler(XercesParserImpl xercesParserImpl, Buffer buffer, ErrorListErrorHandler errorHandler,
@@ -320,6 +325,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 			// DTD in the document itself, don't cache it as it will parsed again anyway
 			if(DEBUG_CACHE)Log.log(Log.DEBUG,GrabIdsAndCompletionInfoHandler.class,"DTD in the document, not caching");
 			dtdCompletionInfo = data.getNoNamespaceCompletionInfo();
+			dtdIsHTML = "html".equalsIgnoreCase(name);
 		}
 		else
 		{
@@ -356,9 +362,12 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	 * register the entities in XmlParsedData
 	 */
 	@Override
-	public void endDTD()
+	public void endDTD() throws SAXException
 	{
 		data.setCompletionInfo("", dtdCompletionInfo);
+		if(dtdIsHTML && !dtdHasContent){
+			throw new XercesParserImpl.DisableDTDValidationException();
+		}
 	}
 	//}}}
 	
@@ -366,6 +375,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	public void elementDecl(String name, String model)
 	{
 		if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"elementDecl("+name+","+model+")");
+		dtdHasContent = true;
 		ElementDecl element = data.getElementDecl(name,0);
 		if(element == null)
 		{
@@ -382,6 +392,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		String type, String valueDefault, String value)
 	{
 		if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"attributeDecl("+eName+","+aName+","+type+","+valueDefault+","+value+")");
+		dtdHasContent = true;
 		ElementDecl element = data.getElementDecl(eName,0);
 		if(element == null)
 		{
@@ -420,6 +431,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	public void internalEntityDecl(String name, String value)
 	{
 		if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"internalEntityDecl("+name+","+value+")");
+		dtdHasContent = true;
 		// this is a bit of a hack
 		if(name.startsWith("%"))
 			return;
@@ -433,6 +445,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		String systemId)
 	{
 		if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"externalEntityDecl("+name+","+publicId+","+systemId+")");
+		dtdHasContent = true;
 		if(name.startsWith("%"))
 			return;
 

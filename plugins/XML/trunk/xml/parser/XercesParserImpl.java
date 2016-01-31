@@ -103,182 +103,197 @@ public class XercesParserImpl extends XmlParser
 
 		XMLReader reader = null;
 		SchemaAutoLoader schemaLoader = null;
-		try
+		// to support html5 empty doctype, ignoreDTD and retry will be set in the DisableDTDValidationException handler
+		boolean ignoreDTD = false;
+		boolean retry;
+		// don't log the same error twice when reparsing to construct the sidekick tree
+		Exception errorParsing = null;
+		String rootDocument = buffer.getStringProperty("xml.root");
+
+		do
 		{
-			// One has to explicitely require the parser from XercesPlugin, otherwise
-			// one gets the crimson version bundled in the JRE and the rest fails
-			// miserably (see Plugin Bug #2950392)
-			// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
-			reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
-
-			// customize validation
-			reader.setFeature("http://xml.org/sax/features/validation",
-				buffer.getBooleanProperty("xml.validate"));
-			// to enable documents without schemas
-			reader.setFeature("http://apache.org/xml/features/validation/dynamic",
-				buffer.getBooleanProperty("xml.validate"));
-			// for Schema validation (eg in slackerdoc/index.xml
-			reader.setFeature("http://apache.org/xml/features/validation/schema",
-				buffer.getBooleanProperty("xml.validate"));
-			// for documents using dtd for entities and schemas for validation
-			if(buffer.getBooleanProperty("xml.validate.ignore-dtd"))
+			retry = false;
+			try
 			{
-				reader.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-					"http://www.w3.org/2001/XMLSchema");
-			}
+				// One has to explicitely require the parser from XercesPlugin, otherwise
+				// one gets the crimson version bundled in the JRE and the rest fails
+				// miserably (see Plugin Bug #2950392)
+				// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
+				reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
 
-			// turn on/off namespace support.
-			// For some legacy documents, namespaces must be disabled
-			reader.setFeature("http://xml.org/sax/features/namespaces",
-				!buffer.getBooleanProperty("xml.namespaces.disable"));
+				// customize validation
+				reader.setFeature("http://xml.org/sax/features/validation",
+					buffer.getBooleanProperty("xml.validate"));
+				// to enable documents without schemas
+				reader.setFeature("http://apache.org/xml/features/validation/dynamic",
+					buffer.getBooleanProperty("xml.validate"));
+				// for Schema validation (eg in slackerdoc/index.xml
+				reader.setFeature("http://apache.org/xml/features/validation/schema",
+					buffer.getBooleanProperty("xml.validate"));
+				// for documents using dtd for entities and schemas for validation
+				if(ignoreDTD || buffer.getBooleanProperty("xml.validate.ignore-dtd"))
+				{
+					reader.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+						"http://www.w3.org/2001/XMLSchema");
+				}
 
-			// always use EntityResolver2 so that built-in DTDs can be found
-			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
-				true);
+				// turn on/off namespace support.
+				// For some legacy documents, namespaces must be disabled
+				reader.setFeature("http://xml.org/sax/features/namespaces",
+					!buffer.getBooleanProperty("xml.namespaces.disable"));
 
-			// XInclude support
-			reader.setFeature("http://apache.org/xml/features/xinclude",
-				buffer.getBooleanProperty("xml.xinclude"));
-			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
-				buffer.getBooleanProperty("xml.xinclude.fixup-base-uris"));
+				// always use EntityResolver2 so that built-in DTDs can be found
+				reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
+					true);
 
-			//get access to the DTD
-			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
-			reader.setProperty("http://xml.org/sax/properties/lexical-handler",handler);
+				// XInclude support
+				reader.setFeature("http://apache.org/xml/features/xinclude",
+					buffer.getBooleanProperty("xml.xinclude"));
+				reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
+					buffer.getBooleanProperty("xml.xinclude.fixup-base-uris"));
 
-			schemaLoader = new SchemaAutoLoader(reader,mapping,buffer);
+				//get access to the DTD
+				if(!ignoreDTD)
+				{
+					reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+					reader.setProperty("http://xml.org/sax/properties/lexical-handler",handler);
+				}
+				schemaLoader = new SchemaAutoLoader(reader,mapping,buffer);
 
-			schemaLoader.setErrorHandler(errorHandler);
-			schemaLoader.setContentHandler(handler);
-			schemaLoader.setEntityResolver(resolver);
+				schemaLoader.setErrorHandler(errorHandler);
+				schemaLoader.setContentHandler(handler);
+				schemaLoader.setEntityResolver(resolver);
 
-			//get access to the RNG schema
-			handler.setSchemaAutoLoader(schemaLoader);
-			reader = schemaLoader;
+				//get access to the RNG schema
+				handler.setSchemaAutoLoader(schemaLoader);
+				reader = schemaLoader;
 
-			//schemas.xml are disabled
-			if(!SchemaMappingManager.isSchemaMappingEnabled(buffer)){
-				String schemaFromProp = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
-				if(schemaFromProp != null){
-					// the user has set the schema manually
-					String baseURI = xml.PathUtilities.pathToURL(buffer.getPath());
-					Log.log(Log.NOTICE, this,"forcing schema to {"+baseURI+","+schemaFromProp+"}");
-					// schemas URLs are resolved against the buffer
-					try
-					{
-						schemaLoader.forceSchema( baseURI,schemaFromProp);
-					}
-					catch(IOException ioe)
-					{
-						Log.log(Log.WARNING,this,"I/O error loading forced schema: "+ioe.getClass()+": "+ioe.getMessage());
-					}
-					catch(URISyntaxException e)
-					{
-						Log.log(Log.WARNING,this,"forced schema URL is invalid: "+e.getMessage());
+				//schemas.xml are disabled
+				if(!SchemaMappingManager.isSchemaMappingEnabled(buffer)){
+					String schemaFromProp = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
+					if(schemaFromProp != null){
+						// the user has set the schema manually
+						String baseURI = xml.PathUtilities.pathToURL(buffer.getPath());
+						Log.log(Log.NOTICE, this,"forcing schema to {"+baseURI+","+schemaFromProp+"}");
+						// schemas URLs are resolved against the buffer
+						try
+						{
+							schemaLoader.forceSchema( baseURI,schemaFromProp);
+						}
+						catch(IOException ioe)
+						{
+							Log.log(Log.WARNING,this,"I/O error loading forced schema: "+ioe.getClass()+": "+ioe.getMessage());
+						}
+						catch(URISyntaxException e)
+						{
+							Log.log(Log.WARNING,this,"forced schema URL is invalid: "+e.getMessage());
+						}
 					}
 				}
 			}
-		}
-		catch(SAXException se)
-		{
-			// not likely : messed jars or sthing
-			Log.log(Log.ERROR,this,"unexpected error preparing XML parser, please report",se);
-		}
-
-		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
-			buffer);
-		if(info != null)
-			data.setCompletionInfo("",info);
-
-		// don't log the same error twice when reparsing to construct the sidekick tree
-		Exception errorParsing = null;
-
-		InputSource source = new InputSource();
-
-		String rootDocument = buffer.getStringProperty("xml.root");
-		if(rootDocument != null)
-		{
-			Log.log(Log.NOTICE,this,"rootDocument specified; "
-				+ "parsing " + rootDocument);
-			rootDocument = MiscUtilities.constructPath(
-				MiscUtilities.getParentOfPath(buffer.getPath()), rootDocument);
-			// using an URL as systemId (see else block for details)
-			source.setSystemId(xml.PathUtilities.pathToURL(rootDocument));
-		}
-		else
-		{
-			source.setCharacterStream(new CharSequenceReader(text));
-			// must set the systemId to an URL and not a path
-			// otherwise, get errors when opening a DTD specified as a relative path
-			// somehow, xerces doesn't call File.toURI.toURL and the URL
-			// is incorrect : file://server/share instead of file://///server/share
-			// and the DTD can't be found
-			source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
-		}
-
-		try
-		{
-			reader.parse(source);
-		}
-		catch(StoppedException e) // interrupted parsing: don't parse a second time
-		{
-			errorParsing = e;
-		}
-		catch(IOExceptionWithLocation ioe)
-		{
-			// same as IOException, but with correct line number
-			String msg = "I/O error while parsing: "+ioe.getMessage()+", caused by "+ioe.getCause().getClass().getName()+": "+ioe.getCause().getMessage();
-			//Log.log(Log.WARNING,this,msg);
-			errorSource.addError(ErrorSource.ERROR, ioe.path, ioe.line, 0, 0,
-				msg);
-			errorParsing = ioe;
-		}
-		catch(IOException ioe)
-		{
-			// Log.log(Log.WARNING,this,"I/O error while parsing: "+ioe.getClass().getName()+": "+ioe.getMessage());
-			errorSource.addError(ErrorSource.ERROR, buffer.getPath(), 0, 0, 0,
-				ioe.getClass()+": "+ioe.getMessage());
-			errorParsing = ioe;
-		}
-		catch(SAXParseException spe)
-		{
-			// don't print it: already handled
-			errorParsing = spe;
-		}
-		catch(SAXException se)
-		{
-			String msg = "SAX exception while parsing";
-			Throwable t = se.getException();
-			if(msg != null){
-				msg+=": "+se.getMessage();
-			}
-			if(t!=null){
-				msg+=" caused by "+t;
-			}
-//			Log.log(Log.WARNING, this, msg);
-			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
-				0,0,0,msg);
-			errorParsing = se;
-		}
-		finally
-		{
-			//set this property for the xml-open-schema action to work
-			String url = null;
-
-			if(schemaLoader != null && schemaLoader.getSchemaURL()!=null)
+			catch(SAXException se)
 			{
-				url = schemaLoader.getSchemaURL();
-			}
-			else if(handler.xsdSchemaURLs != null && !handler.xsdSchemaURLs.isEmpty())
-			{
-				url = handler.xsdSchemaURLs.get(0);
+				// not likely : messed jars or sthing
+				Log.log(Log.ERROR,this,"unexpected error preparing XML parser, please report",se);
 			}
 
-			if(url !=null){
-				buffer.setStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP,
-					url);
+			CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
+				buffer);
+			if(info != null)
+				data.setCompletionInfo("",info);
+
+			InputSource source = new InputSource();
+
+			if(rootDocument != null)
+			{
+				Log.log(Log.NOTICE,this,"rootDocument specified; "
+					+ "parsing " + rootDocument);
+				rootDocument = MiscUtilities.constructPath(
+					MiscUtilities.getParentOfPath(buffer.getPath()), rootDocument);
+				// using an URL as systemId (see else block for details)
+				source.setSystemId(xml.PathUtilities.pathToURL(rootDocument));
 			}
-		}
+			else
+			{
+				source.setCharacterStream(new CharSequenceReader(text));
+				// must set the systemId to an URL and not a path
+				// otherwise, get errors when opening a DTD specified as a relative path
+				// somehow, xerces doesn't call File.toURI.toURL and the URL
+				// is incorrect : file://server/share instead of file://///server/share
+				// and the DTD can't be found
+				source.setSystemId(xml.PathUtilities.pathToURL(buffer.getPath()));
+			}
+
+			try
+			{
+				reader.parse(source);
+			}
+			catch(StoppedException e) // interrupted parsing: don't parse a second time
+			{
+				errorParsing = e;
+			}
+			catch(DisableDTDValidationException e)
+			{
+				ignoreDTD = true;
+				retry = true;
+				Log.log(Log.MESSAGE, XercesParserImpl.class, "Detected HTML5 Doctype, reparsing without DTD validation");
+			}
+			catch(IOExceptionWithLocation ioe)
+			{
+				// same as IOException, but with correct line number
+				String msg = "I/O error while parsing: "+ioe.getMessage()+", caused by "+ioe.getCause().getClass().getName()+": "+ioe.getCause().getMessage();
+				//Log.log(Log.WARNING,this,msg);
+				errorSource.addError(ErrorSource.ERROR, ioe.path, ioe.line, 0, 0,
+					msg);
+				errorParsing = ioe;
+			}
+			catch(IOException ioe)
+			{
+				// Log.log(Log.WARNING,this,"I/O error while parsing: "+ioe.getClass().getName()+": "+ioe.getMessage());
+				errorSource.addError(ErrorSource.ERROR, buffer.getPath(), 0, 0, 0,
+					ioe.getClass()+": "+ioe.getMessage());
+				errorParsing = ioe;
+			}
+			catch(SAXParseException spe)
+			{
+				// don't print it: already handled
+				errorParsing = spe;
+			}
+			catch(SAXException se)
+			{
+				String msg = "SAX exception while parsing";
+				Throwable t = se.getException();
+				if(msg != null){
+					msg+=": "+se.getMessage();
+				}
+				if(t!=null){
+					msg+=" caused by "+t;
+				}
+	//			Log.log(Log.WARNING, this, msg);
+				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
+					0,0,0,msg);
+				errorParsing = se;
+			}
+			finally
+			{
+				//set this property for the xml-open-schema action to work
+				String url = null;
+
+				if(schemaLoader != null && schemaLoader.getSchemaURL()!=null)
+				{
+					url = schemaLoader.getSchemaURL();
+				}
+				else if(handler.xsdSchemaURLs != null && !handler.xsdSchemaURLs.isEmpty())
+				{
+					url = handler.xsdSchemaURLs.get(0);
+				}
+
+				if(url !=null){
+					buffer.setStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP,
+						url);
+				}
+			}
+		} while(retry);
 		//}}}
 
 		// {{{ and parse again to get the SideKick tree (required to get the xi:include elements in the tree)
@@ -336,7 +351,7 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.ERROR,this,"error preparing to parse 2nd pass), please report !",se);
 			}
 
-			source = new InputSource();
+			InputSource source = new InputSource();
 
 			source.setCharacterStream(new CharSequenceReader(text));
 			// must set the systemId to an URL and not a path
@@ -461,6 +476,17 @@ public class XercesParserImpl extends XmlParser
 		StoppedException()
 		{
 			super("Parsing stopped");
+		}
+	} //}}}
+
+	//{{{ DisableDTDValidationException class
+	static class DisableDTDValidationException extends SAXException
+	{
+		private static final long serialVersionUID = 1L;
+
+		DisableDTDValidationException()
+		{
+			super("Turn off DTD validation");
 		}
 	} //}}}
 } // }}}
