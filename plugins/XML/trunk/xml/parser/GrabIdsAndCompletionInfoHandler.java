@@ -70,30 +70,30 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 
 	ErrorListErrorHandler errorHandler;
 	XmlParsedData data;
-	
+
 	/** used to access the type of attributes
 	 *  to know if they are IDs in case of XSD and RNG
 	 */
 	Stack<ElementDecl> elementDeclStack;
-	
+
 	Locator loc;
 	/** at root of document (no startElement() seen yet)*/
 	boolean root = true;
 	/** seen the buffer we're interested in */
 	boolean seenBuffer = false;
-	
+
 	/** used to retrieve CompletionInfos for different namespaces (RNG) */
 	SchemaAutoLoader schemaAutoLoader;
-	
+
 	/** used to register entities with the XmlParsedData at endDTD() */
 	CompletionInfo dtdCompletionInfo;
 
 	/** used to install the locator in the resolver */
 	private MyEntityResolver resolver;
-	
+
 	/** store the xsd schema urls, if any */
 	List<String> xsdSchemaURLs;
-	
+
 	/** detect HTML5 empty <code>&lt;!DocType html></code> */
 	private boolean dtdHasContent = false;
 	private boolean dtdIsHTML = false;
@@ -116,7 +116,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	void setSchemaAutoLoader(SchemaAutoLoader sal){
 		this.schemaAutoLoader = sal;
 	}
-	
+
 	//{{{ setDocumentLocator() method
 	public void setDocumentLocator(Locator locator)
 	{
@@ -130,7 +130,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		if(!root){
 			data.allNamespacesBindingsAtTop = false;
 		}
-		
+
 		// check for built-in completion info for this URI
 		// (eg, XSL, XSD, XHTML has this).
 		if(uri != null)
@@ -193,7 +193,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 
 		if(root){
 			// root element :
-			
+
 			// retrieve no-namespace CompletionInfo
 			if(schemaAutoLoader != null 
 				&& schemaAutoLoader.getCompletionInfo() != null
@@ -202,18 +202,18 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 				data.setCompletionInfo("",schemaAutoLoader.getCompletionInfo().get(""));
 				// TODO: what about no-namespace ?
 			}
-			
+
 			// retrieve schema grammar if available
 			String schemaLocation = attrs.getValue("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
 			String noNamespaceSchemaLocation = attrs.getValue("http://www.w3.org/2001/XMLSchema-instance", "noNamespaceSchemaLocation");
-			
+
 			try{
 
 				// there may be a better implementation in Xerces in XMLSchemaLoader
 				if(schemaLocation != null){
 					String[] nsLocationPairs = schemaLocation.split("\\s+");
 					if(nsLocationPairs.length % 2 == 0){
-						
+
 						for(int i=0;i<nsLocationPairs.length;i+=2){
 							String ns = nsLocationPairs[i];
 							String location = nsLocationPairs[i+1];
@@ -232,14 +232,14 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 						throw new SAXException("error setting completion info from "+noNamespaceSchemaLocation,e);
 					}
 				}
-			
+
 			} finally{
 
 				// unset root flag
 				root = false;
 			}
 		}
-		
+
 
 		String currentURI = xml.PathUtilities.urlToPath(loc.getSystemId());
 
@@ -248,9 +248,9 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 			Log.log(Log.WARNING,XercesParserImpl.class,"no location for "+qName);
 			return;
 		}
-		
+
 		ElementDecl cDecl = null;
-		
+
 		if(elementDeclStack.isEmpty()
 			|| elementDeclStack.peek() == null
 		   /* happens for DTD based elements */
@@ -264,7 +264,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 					i = schemaAutoLoader.getCompletionInfo().get(namespaceURI);
 				}
 			}
-			
+
 			if(i != null){
 				cDecl  = i.elementHash.get(lName);
 				if(cDecl == null){
@@ -276,7 +276,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 			cDecl = elementDeclStack.peek().elementHash.get(lName);
 		}
 		elementDeclStack.push(cDecl);
-		
+
 		// add all attributes with type "ID" to the ids vector
 		for(int i = 0; i < attrs.getLength(); i++)
 		{
@@ -297,7 +297,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		seenBuffer |= buffer.getPath().equals(currentURI);
 
 	} //}}}
-	
+
 	//{{{ endElement() method
 	public void endElement(String namespaceURI,
 		String sName, // simple name
@@ -311,7 +311,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 	} //}}}
 
 	//{{{ DTD related methods
-	
+
 	//{{{ startDTD() method
 	/**
 	 * cache CompletionInfo for DTD (doesn't work for composite DTDs if a part changes)
@@ -356,7 +356,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		}
 	}
 	//}}}
-	
+
 	//{{{ endDTD() method
 	/**
 	 * register the entities in XmlParsedData
@@ -370,7 +370,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		}
 	}
 	//}}}
-	
+
 	//{{{ elementDecl() method
 	public void elementDecl(String name, String model)
 	{
