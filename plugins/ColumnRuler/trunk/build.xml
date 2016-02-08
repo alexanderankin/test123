@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <project name="ColumnRuler" default="build" basedir=".">
         <property file="../build.properties" />
-        <property name="compiler.source"        value="1.6" />
-        <property name="compiler.target"        value="1.6" />
         <import file="${build.support}/plugin-build.xml" />
 
         <selector id="extraFiles">
@@ -13,6 +11,7 @@
                     <filename name="**/dockables.xml" />
                     <filename name="**/services.xml" />
                     <filename name="**/*.props" />
+                    <filename name="**/lang_*.properties" />
                     <filename name="**/LICENSE" />
                     <filename name="**/README" />
                     <!-- Added this to use docs/index.hmtl as userdocs -->
