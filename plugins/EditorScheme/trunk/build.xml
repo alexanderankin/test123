@@ -1,14 +1,8 @@
-<?xml version="1.0"?>
-
-<!--
-
- This build.xml file for building the EditorScheme plugin.
-
- It is based on the template build file for jEdit plugins.
-
--->
-
 <project name="EditorScheme" default="dist" basedir=".">
+<!--
+ This build.xml file for building the EditorScheme plugin.
+ It is based on the template build file for jEdit plugins.
+-->
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
@@ -67,6 +61,7 @@
 				<include name="dockables.xml"/>
 				<include name="**/*.jedit-scheme"/>
 				<include name="**/*.props"/>
+				<include name="**/lang_*.properties"/>
 				<include name="**/*.gif"/>
 				<include name="**/*.html"/>
 			</fileset>
