@@ -19,7 +19,7 @@
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
-    
+
     <!-- where plugin dependencies are -->
     <property name="jedit.plugins.dir" value="${install.dir}" />
 
@@ -54,7 +54,7 @@
             <available classname="ReloadPluginTask"/>
         </and>
     </condition>
-    
+
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
@@ -209,6 +209,7 @@
         <copy todir="${config.dir}">
             <fileset dir="${basedir}">
                 <include name="JavaSideKick.props"/>
+                <include name="lang_*.properties"/>
                 <include name="actions.xml"/>
                 <include name="services.xml"/>
             </fileset>
