@@ -2,7 +2,7 @@
 <!-- DO NOT change the name above. There is code that checks specifically for
 "Activator.jar". -->
 
-<!--   New plugins should not use this as a template, but instead customize 
+<!--   New plugins should not use this as a template, but instead customize
        a build.xml that reuses the standard ${build-support}/plugin-build.xml targets -->
 
 
@@ -47,7 +47,7 @@
 		source="1.6"
 		target="1.6"
 	>
-		
+
 	  <classpath refid="project.class.path"/>
 	</javac>
   </target>
@@ -73,6 +73,7 @@
 	<jar jarfile="${jar.name}-src.jar">
 	  <fileset dir=".">
 		<include name="**/*.props"/>
+	    <include name="lang_*.properties" />
 		<include name="**/*.gif"/>
 		<include name="docs/**" />
 		<include name="icons/*" />
