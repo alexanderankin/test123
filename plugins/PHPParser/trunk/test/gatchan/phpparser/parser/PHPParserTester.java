@@ -48,6 +48,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 	public void testParserSuccess()
 	{
     PHPParserPlugin.phpFunctionList = new PHPFunctionList();
+		checkPHP("$a = [1, 2, 3, 4];");
 		checkPHP("try {\n" + "}\n" + "catch (Exception $e) {\n" + "}");
 		checkPHP("$a = \"\\n\\n\";");
 		checkPHP("use N\\ett\\e;");
