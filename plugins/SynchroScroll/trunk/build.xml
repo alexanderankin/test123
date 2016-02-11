@@ -3,7 +3,7 @@
 <!--
 
 	This is the standard build.xml file for building plugins.
-	
+
 	The 'dist' target compiles the plugin, generates documentation, and creates
 	the JAR file.  Before running the 'dist' target, you will need to choose
 	whether to generate the documentation using one of these two targets:
@@ -21,14 +21,14 @@
 -->
 
 <project name="SynchroScroll" default="dist" basedir=".">
-	
+
     <property file="build.properties"/>
     <property file="../build.properties"/>
     <property file="${user.home}/.build.properties"/>
     <property file="${user.home}/build.properties"/>
-	
+
     <property name="jar.name" value="${ant.project.name}.jar"/>
-	
+
     <property name="jedit.install.dir" value="../.."/>
     <property name="src.dir" value="."/>
     <property name="install.dir" value=".."/>
@@ -36,7 +36,7 @@
     <property name="jedit.plugins.dir" value="${install.dir}" />
     <property name="compiler.source" value="1.5" />
     <property name="compiler.target" value="1.5" />
-	
+
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${src.dir}"/>
@@ -48,16 +48,16 @@
             <available classname="ReloadPluginTask"/>
         </and>
     </condition>
-	
+
     <target name="init">
         <mkdir dir="${build.dir}"/>
     </target>
-	
+
     <target name="compile" depends="init">
-        <javac  debug="on" 
-             deprecation="on" destdir="${build.dir}" 
-             source="${compiler.source}" 
-             srcdir="${src.dir}" 
+        <javac  debug="on"
+             deprecation="on" destdir="${build.dir}"
+             source="${compiler.source}"
+             srcdir="${src.dir}"
              target="${compiler.target}"
              bootclasspath="${compiler.bootclasspath}"
              extdirs="${compiler.extdirs}">
@@ -65,7 +65,7 @@
             <compilerarg value="-Xlint:unchecked"/>
         </javac>
     </target>
-	
+
     <!--
     <target name="dist" depends="clean,compile">
     -->
@@ -75,6 +75,7 @@
             <fileset dir="${build.dir}"/>
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
+                <include name="lang_*.properties"/>
                 <include name="**/*.props"/>
                 <include name="**/*.html"/>
             </fileset>
@@ -87,7 +88,7 @@
         <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
         <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
     </target>
-	
+
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
