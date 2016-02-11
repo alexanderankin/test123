@@ -44,6 +44,18 @@ public class ArrayVariableDeclaration extends Expression
 	 */
 	private Expression value;
 
+  /**
+   * Declaration of array variable with implicit index
+   * @param index the index
+   * @param value the value
+   */
+  public ArrayVariableDeclaration(int index, Expression value)
+  {
+    super(Type.UNKNOWN, value.sourceStart, value.sourceEnd, value.beginLine, value.endLine, value.beginColumn, value.endColumn);
+    this.key = new NumberLiteral(Type.INTEGER, index, value.sourceStart, value.sourceEnd, value.beginLine, value.endLine, value.beginColumn, value.endColumn);
+    this.value = value;
+  }
+
 	public ArrayVariableDeclaration(Expression key,
 					Expression value,
 					int sourceStart,

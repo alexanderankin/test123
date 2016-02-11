@@ -2304,6 +2304,7 @@ AbstractVariable VariableDeclaratorId():
 {
 	var = Variable()
 	(
+		LOOKAHEAD(2)
 		var = VariableSuffix(var)
 	)*
 	{
@@ -2447,34 +2448,38 @@ Variable Var():
 
 //{{{ Arrays
 
-//{{{ ArrayVariable()
+//{{{ ArrayVariable() method
 
-ArrayVariableDeclaration ArrayVariable() :
+ArrayVariableDeclaration ArrayVariable():
 {
-Expression expr,expr2;
-Token arrayAssignToken;
+	Expression expr;
+	Expression expr2;
+	Token arrayAssignToken;
 }
 {
-  expr = Expression()
-  [
-    arrayAssignToken = <ARRAYASSIGN> expr2 = Expression()
-    {
-      int sourceEnd,endLine,endColumn;
-      if (expr2 == null) {
-        sourceEnd = arrayAssignToken.sourceEnd;
-        endLine   = arrayAssignToken.endLine;
-        endColumn = arrayAssignToken.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-
-      return new ArrayVariableDeclaration(expr,expr2,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);}
-  ]
-  {
-    return new ArrayVariableDeclaration(expr,expr.getSourceEnd(),expr.getBeginLine(),expr.getEndLine(),expr.getBeginColumn(),expr.getEndColumn());
-  }
+	expr = Expression()
+	[
+		arrayAssignToken = <ARRAYASSIGN> expr2 = Expression()
+		{
+			int sourceEnd,endLine,endColumn;
+			if (expr2 == null) 
+			{
+				sourceEnd = arrayAssignToken.sourceEnd;
+				endLine   = arrayAssignToken.endLine;
+				endColumn = arrayAssignToken.endColumn;
+			} 
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			return new ArrayVariableDeclaration(expr,expr2,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+		}
+	]
+	{
+		return new ArrayVariableDeclaration(expr,expr.getSourceEnd(),expr.getBeginLine(),expr.getEndLine(),expr.getBeginColumn(),expr.getEndColumn());
+	}
 }
 
 //}}}
@@ -4226,18 +4231,47 @@ ArrayInitializer ArrayDeclarator():
 {
 	ArrayVariableDeclaration[] vars;
 	Token arrayToken;
+	Token lbracketToken;
+	Token rbracketToken;
+	Expression expr;
+	List<ArrayVariableDeclaration> varList = new ArrayList<ArrayVariableDeclaration>();
+	int i = 0;
 }
 {
-	arrayToken = <ARRAY> vars = ArrayInitializer()
-	{
-		return new ArrayInitializer(vars,
-			arrayToken.sourceStart,
-			token.sourceEnd,
-			arrayToken.beginLine,
-			token.endLine,
-			arrayToken.beginColumn,
-			token.endColumn);
-	}
+	(
+		arrayToken = <ARRAY> vars = ArrayInitializer()
+		{
+			return new ArrayInitializer(vars,
+				arrayToken.sourceStart,
+				token.sourceEnd,
+				arrayToken.beginLine,
+				token.endLine,
+				arrayToken.beginColumn,
+				token.endColumn);
+		}
+	|
+		lbracketToken = <LBRACKET> 
+			expr = Expression()
+			{
+				varList.add(new ArrayVariableDeclaration(i++,expr));
+			}
+			(
+				<COMMA> expr = Expression()
+				{
+					varList.add(new ArrayVariableDeclaration(i++,expr));
+				}
+			)* 
+		rbracketToken = <RBRACKET>
+		{
+			return new ArrayInitializer(varList.toArray(new ArrayVariableDeclaration[varList.size()]),
+				lbracketToken.sourceStart,
+				rbracketToken.sourceEnd,
+				lbracketToken.beginLine,
+				rbracketToken.endLine,
+				lbracketToken.beginColumn,
+				rbracketToken.endColumn);
+		}
+	)
 } //}}}
 
 //{{{ ClassIdentifier()

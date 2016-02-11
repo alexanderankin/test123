@@ -1,7 +1,6 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.Token;
-import gatchan.phpparser.parser.Token;
 import gatchan.phpparser.parser.PHPParser;
 
 /**
@@ -12,6 +11,12 @@ import gatchan.phpparser.parser.PHPParser;
 public class NumberLiteral extends Literal
 {
 	private final String source;
+
+  public NumberLiteral(Type type, int value, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn, int endColumn)
+  {
+    super(type, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    source = String.valueOf(value);
+  }
 
 	public NumberLiteral(Type type, Token token)
 	{
