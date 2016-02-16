@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2015 Matthieu Casanova
+ * Copyright © 2011-2016 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,34 +37,13 @@ import javax.annotation.Nullable;
 
 import com.kpouer.jedit.smartopen.indexer.FileProvider;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexNotFoundException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -89,17 +68,21 @@ public class FileIndex implements Closeable
 	private DirectoryReader reader;
 
 	private final DocumentFactory documentFactory;
-	private final IndexWriterConfig indexWriterConfig;
 
 	//{{{ FileIndex constructor
 	public FileIndex(@Nullable VPTProject project)
 	{
 		this.project = project;
 		directory = getDirectory();
-		indexWriterConfig = new IndexWriterConfig(Version.LUCENE_42, new StandardAnalyzer(Version.LUCENE_42));
-		indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		documentFactory = new DocumentFactory();
 	} //}}}
+
+  private IndexWriterConfig getIndexWriterConfig()
+  {
+    IndexWriterConfig indexWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
+    indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+    return indexWriterConfig;
+  }
 
 	private void initReader() throws IOException
 	{
@@ -145,8 +128,6 @@ public class FileIndex implements Closeable
 		if (s == null || s.isEmpty())
 			return Collections.emptyList();
 
-		SortField sortField = new SortField("frequency", SortField.Type.LONG,true);
-		Sort sort = new Sort(sortField);
 		List<String> l = new ArrayList<>();
 		try
 		{
@@ -183,7 +164,11 @@ public class FileIndex implements Closeable
 			if (reader == null)
 				initReader();
 			IndexSearcher searcher = new IndexSearcher(reader);
-			TopDocs search = searcher.search(query, 100, sort);
+
+      SortField sortField = new SortedNumericSortField("frequency", SortField.Type.LONG, true);
+      Sort sort = new Sort(sortField);
+
+      TopDocs search = searcher.search(query, 100, sort);
 			ScoreDoc[] scoreDocs = search.scoreDocs;
 			Set<String> fields = Collections.singleton("path");
 			for (ScoreDoc scoreDoc : scoreDocs)
@@ -234,7 +219,7 @@ public class FileIndex implements Closeable
 		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
 		{
-			try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
+			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
 				Collection<String> knownFiles;
 				if (append)
@@ -324,7 +309,7 @@ public class FileIndex implements Closeable
 
 		synchronized (LOCK)
 		{
-			try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
+			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
 				for (int i = 0; i < fileProvider.size(); i++)
 				{
@@ -357,7 +342,7 @@ public class FileIndex implements Closeable
 		Term term = new Term("path",path);
 		synchronized (LOCK)
 		{
-			try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
+			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
 				long frequency = getFrequency(path);
 				if (frequency == 0L)
@@ -396,7 +381,7 @@ public class FileIndex implements Closeable
 				File pluginHome = plugin.getPluginHome();
 				File index = new File(pluginHome, getIndexName());
 				index.mkdirs();
-				tempDirectory = FSDirectory.open(index);
+				tempDirectory = FSDirectory.open(index.toPath());
 			}
 			catch (IOException e)
 			{
@@ -416,7 +401,7 @@ public class FileIndex implements Closeable
 
 			synchronized (LOCK)
 			{
-				try(IndexWriter writer = new IndexWriter(directory, indexWriterConfig))
+				try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 				{
 					for (String path : existingFiles)
 					{
@@ -481,7 +466,7 @@ public class FileIndex implements Closeable
 
 	private static class DocumentFactory
 	{
-		private final LongField frequency;
+		private final NumericDocValuesField frequency;
 		private final StringField name_caps;
 		private final TextField name;
 		private final StringField path;
@@ -490,17 +475,17 @@ public class FileIndex implements Closeable
 
 		private DocumentFactory()
 		{
-			document = new Document();
 			path = new StringField("path", "", Field.Store.YES);
-			document.add(path);
-			name = new TextField("name", "", Field.Store.NO);
-			document.add(name);
-			name_caps = new StringField("name_caps", "", Field.Store.NO);
-			document.add(name_caps);
-			fileExtension = new StringField("extension", "", Field.Store.NO);
-			document.add(fileExtension);
-			frequency = new LongField("frequency", 1L, Field.Store.YES);
-			document.add(frequency);
+      name = new TextField("name", "", Field.Store.NO);
+      name_caps = new StringField("name_caps", "", Field.Store.NO);
+      fileExtension = new StringField("extension", "", Field.Store.NO);
+      frequency = new NumericDocValuesField("frequency", 1L);
+      document = new Document();
+      document.add(path);
+      document.add(name);
+      document.add(name_caps);
+      document.add(fileExtension);
+      document.add(frequency);
 		}
 
 		// createDocument() method
