@@ -40,14 +40,14 @@ public class FtpAddress {
 	 * @throws IllegalArgumentException - on invalid FTP address format
 	 */
 	public FtpAddress(String url) {
-		
+
 		if (url.startsWith(FtpVFS.FTP_PROTOCOL + "://"))
 			this.scheme = FtpVFS.FTP_PROTOCOL;
 		else if (url.startsWith(FtpVFS.SFTP_PROTOCOL + "://"))
 			this.scheme = FtpVFS.SFTP_PROTOCOL;
-		else 
+		else
 			throw new IllegalArgumentException("Unsupported URI scheme");
-		
+
 		// Parse path
 		String domainPart;
 		int pos = url.indexOf('/', this.scheme.length()+3);
@@ -58,8 +58,8 @@ public class FtpAddress {
 			this.setPath( url.substring(pos) );
 			domainPart = url.substring(this.scheme.length()+3, pos);
 		}
-		
-		
+
+
 		// Parse auth+domain part
 		pos = domainPart.lastIndexOf('@');
 		String authPart;
@@ -68,7 +68,7 @@ public class FtpAddress {
 		else {
 			authPart = domainPart.substring(0, pos);
 			domainPart = domainPart.substring(pos+1);
-			
+
 			// parse auth part
 			pos = authPart.indexOf(':');
 			if (pos == -1) {
@@ -77,9 +77,9 @@ public class FtpAddress {
 			} else {
 				this.user = authPart.substring(0, pos);
 				this.password = authPart.substring(pos+1);
-			}		
+			}
 		}
-		
+
 		// parse domain part
 		pos = domainPart.lastIndexOf(':');
 		if (pos == -1) {
@@ -93,13 +93,13 @@ public class FtpAddress {
 				throw new IllegalArgumentException("Invalid connection port: '"+domainPart.substring(pos+1)+"'", e);
 			}
 		}
-		
+
 		this.host = this.host.replace(" ", "");
-	} 
+	}
 
 	/**
 	 * FtpAddress constructor
-	 */ 
+	 */
 	public FtpAddress(boolean secure, String host, String user, String path) {
 		this.host = host.replace(" ", "");
 		this.user = user;
@@ -113,7 +113,7 @@ public class FtpAddress {
 		StringBuilder buf = new StringBuilder();
 		buf.append(this.scheme);
 		buf.append("://");
-		if(user != null)
+		if(user != null && !user.isEmpty())
 		{
 			buf.append(this.user);
 			buf.append('@');
@@ -137,22 +137,22 @@ public class FtpAddress {
 	public int getPort() {
 		return port;
 	}
-	
+
 	private int getDefaultPort() {
 		return this.scheme == FtpVFS.SFTP_PROTOCOL ? 22 : 21;
 	}
-	
+
 	public boolean isSecure() {
 		return this.scheme == FtpVFS.SFTP_PROTOCOL;
 	}
 
 	/**
-	 * Never returns null. 
+	 * Never returns null.
 	 */
 	public String getPath() {
 		return path;
 	}
-	
+
 	public void setPath(String path) {
 		this.path = path==null ? "" : path.trim();
 	}
@@ -164,5 +164,5 @@ public class FtpAddress {
 	public String getPassword() {
 		return password;
 	}
-	
+
 }
