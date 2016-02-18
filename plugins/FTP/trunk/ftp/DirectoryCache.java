@@ -53,7 +53,7 @@ public class DirectoryCache
 
 		synchronized(lock)
 		{
-			String path = (String)urlToCacheFileHash.get(url);
+			String path = urlToCacheFileHash.get(url);
 			if(path == null)
 				return null;
 			ObjectInputStream in = null;
@@ -126,10 +126,10 @@ public class DirectoryCache
 			Enumeration<String> e = urlToCacheFileHash.keys();
 			while(e.hasMoreElements())
 			{
-				String path = (String)e.nextElement();
+				String path = e.nextElement();
 				if(path.startsWith(url))
 				{
-					String cacheFile = (String)urlToCacheFileHash.remove(path);
+					String cacheFile = urlToCacheFileHash.remove(path);
 					Log.log(Log.DEBUG,DirectoryCache.class,"Deleting " + cacheFile);
 					new File(cacheFile).delete();
 				}
@@ -149,7 +149,7 @@ public class DirectoryCache
 			Enumeration<String> files = urlToCacheFileHash.elements();
 			while(files.hasMoreElements())
 			{
-				String path = (String)files.nextElement();
+				String path = files.nextElement();
 				Log.log(Log.DEBUG,DirectoryCache.class,"Deleting " + path);
 				new File(path).delete();
 			}
