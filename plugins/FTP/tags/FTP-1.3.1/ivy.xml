@@ -1,7 +1,0 @@
-<ivy-module version="2.0">
-    <info organisation="jedit-plugins" module="FTP"/>
-    <dependencies>
-      <dependency org="jedit-plugins" name="CommonControls" rev="1.5"/>
-      <dependency org="junit" name="junit" rev="4.10"/>
-    </dependencies>
-</ivy-module>
