@@ -19,6 +19,7 @@ package xml.parser;
 //{{{ Imports
 import org.xml.sax.SAXException;
 
+import com.thaiopensource.relaxng.jaxp.SchemaFactoryImpl;
 import com.thaiopensource.xml.sax.CountingErrorHandler;
 
 import org.xml.sax.InputSource;
@@ -84,6 +85,11 @@ public final class SchemaLoader
 		xsdFactory = new org.apache.xerces.jaxp.validation.XMLSchemaFactory();
 		rngFactory = new com.thaiopensource.relaxng.jaxp.XMLSyntaxSchemaFactory();
 		rncFactory = new com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory();
+		try{
+			rncFactory.setProperty(SchemaFactoryImpl.PROPERTY_DATATYPE_LIBRARY_FACTORY, ServicesDatatypeLibraryFactory.instance()); //new com.thaiopensource.datatype.DatatypeLibraryLoader());
+		}catch(SAXException e){
+			Log.log(Log.ERROR, SchemaLoader.class, "Unexpected exception setting rnc datatype factory", e);
+		}
 	}
 	
 	
@@ -225,5 +231,5 @@ public final class SchemaLoader
 		if(instance == null)instance = new SchemaLoader();
 		return instance;
 	}
-	
+
 }
