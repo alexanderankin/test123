@@ -274,6 +274,17 @@ public class XercesParserImpl extends XmlParser
 					0,0,0,msg);
 				errorParsing = se;
 			}
+			catch(RuntimeException re)
+			{
+				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
+						0,0,0,re.getMessage());
+				Log.log(Log.ERROR, XercesParserImpl.class, "RuntimeException parsing", re);
+			}
+			catch(Error e)
+			{
+				Log.log(Log.ERROR, XercesParserImpl.class, "Error parsing", e);
+				throw e;
+			}
 			finally
 			{
 				//set this property for the xml-open-schema action to work
