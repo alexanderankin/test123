@@ -122,6 +122,10 @@ public class BuffersOutputDirectory implements OutputDirectory
 		// no-op
 	}
 	
+	public void setLineLength(int lineLength){
+		Log.log(Log.DEBUG,BuffersOutputDirectory.class,"setLineLength("+lineLength+")");
+	}
+	
 	public String reference(String fromSourceUri, String toSourceUri) {
 		Log.log(Log.DEBUG,BuffersOutputDirectory.class,"reference("+fromSourceUri+","+toSourceUri+")");
 		Log.log(Log.DEBUG,BuffersOutputDirectory.class,"===>"+mapFilename(toSourceUri)+")");
