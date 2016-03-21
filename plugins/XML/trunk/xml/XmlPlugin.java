@@ -73,6 +73,7 @@ public class XmlPlugin extends EBPlugin
 
 		SchemaMappingManager.initGlobalSchemaMapping(view);
 		xml.cache.Cache.instance().start();
+		xml.parser.ServicesDatatypeLibraryFactory.instance().start();
 
 		//{{{ schedule install of bundled templates if Templates is installed
 		EditPlugin templatesPlugin = jEdit.getPlugin("templates.TemplatesPlugin", false);
@@ -116,6 +117,8 @@ public class XmlPlugin extends EBPlugin
 
 		xml.translate.TrangTranslator.stop();
 		xml.cache.Cache.instance().stop();
+		xml.parser.ServicesDatatypeLibraryFactory.instance().start();
+
 	} //}}}
 
 	//{{{ handleMessage() method

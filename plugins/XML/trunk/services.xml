@@ -31,4 +31,7 @@
     <SERVICE CLASS="gatchan.jedit.hyperlinks.HyperlinkSource" NAME="html:XMLPlugin">
         xml.hyperlinks.HTMLHyperlinkSource.create();
     </SERVICE>
+    <SERVICE CLASS="org.relaxng.datatype.DatatypeLibraryFactory" NAME="xsd-datatype-factory">
+        xml.parser.XSDDatatypeLibraryFactoryCreator.createXSDFactory();
+    </SERVICE>
 </SERVICES>
