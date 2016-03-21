@@ -135,14 +135,7 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		// (eg, XSL, XSD, XHTML has this).
 		if(uri != null)
 		{
-			CompletionInfo info = CompletionInfo
-				.getCompletionInfoForNamespace(uri);
-			if(info != null)
-			{
-				Log.log(Log.DEBUG,XercesParserImpl.class,"using built-in completion info for "+uri);
-				data.setCompletionInfo(uri,info);
-				return;
-			}
+			CompletionInfo info;
 			if(schemaAutoLoader != null 
 				&& schemaAutoLoader.getCompletionInfo() != null
 					&& schemaAutoLoader.getCompletionInfo().containsKey(uri))
@@ -150,6 +143,14 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 				info = schemaAutoLoader.getCompletionInfo().get(uri);
 				Log.log(Log.DEBUG,XercesParserImpl.class,"setting completionInfo for '"+prefix+"' : "+info.namespace+")");
 				if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,info);
+				data.setCompletionInfo(uri,info);
+				return;
+			}
+			info = CompletionInfo
+					.getCompletionInfoForNamespace(uri);
+			if(info != null)
+			{
+				Log.log(Log.DEBUG,XercesParserImpl.class,"using built-in completion info for "+uri);
 				data.setCompletionInfo(uri,info);
 			}
 		}
