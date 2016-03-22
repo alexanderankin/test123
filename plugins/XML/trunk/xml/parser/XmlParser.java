@@ -387,7 +387,7 @@ public abstract class XmlParser extends SideKickParser
 					}else{
 						ctx.wordStart = start+1; // +1 because start is index of '<' and we only want the tag name
 						int end = Math.min(start+100, buffer.getLineEndOffset(buffer.getLineOfOffset(start))); // assume tag name is less than 100 chars
-						word = buffer.getText(start+1,end).split("\\s")[0];
+						word = buffer.getText(start+1,end-start + 1).split("\\s")[0];
 					}
 				}
 			}else{
