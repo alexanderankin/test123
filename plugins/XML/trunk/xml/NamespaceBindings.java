@@ -25,17 +25,21 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class NamespaceBindings {
 	// namespace -> prefix
 	private HashMap<String,String> bindings;
+	private HashMap<String,String> prefixToNS;
 	
 	public NamespaceBindings(){
 		bindings = new HashMap<String,String>();
+		prefixToNS = new HashMap<String,String>();
 	}
 	
 	public NamespaceBindings(NamespaceBindings namespacesToInsert) {
 		bindings = new HashMap<String, String>(namespacesToInsert.bindings);
+		prefixToNS = new HashMap<String,String>(namespacesToInsert.prefixToNS);
 	}
 
 	public void put(String namespace, String prefix){
 		bindings.put(namespace, prefix);
+		prefixToNS.put(prefix, namespace);
 	}
 	
 	public String getPrefix(String namespace){
@@ -43,10 +47,11 @@ public class NamespaceBindings {
 	}
 	
 	public String getNamespace(String prefix){
-		for(Map.Entry<String,String> en: bindings.entrySet()){
-			if(en.getValue().equals(prefix))return en.getKey();
+		String ret = prefixToNS.get(prefix);
+		if(ret == null){
+			ret = "";
 		}
-		return "";
+		return ret;
 	}
 	
 	public boolean containsNamespace(String namespace){
@@ -54,7 +59,7 @@ public class NamespaceBindings {
 	}
 	
 	public boolean containsPrefix(String prefix){
-		return bindings.containsValue(prefix);
+		return prefixToNS.containsKey(prefix);
 	}
 
 	/**
@@ -74,6 +79,7 @@ public class NamespaceBindings {
 
 	public void putAll(NamespaceBindings namespaceBindings) {
 		bindings.putAll(namespaceBindings.bindings);
+		prefixToNS.putAll(namespaceBindings.prefixToNS);
 	}
 
 	public boolean isEmpty() {
