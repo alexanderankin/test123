@@ -56,7 +56,14 @@ public class XmlTagTest{
 
     @Test
     public void testSimple() throws SAXException, IOException{
-    	File xml = new File(testData,"simple/actions.xml");
+        PluginOptionsFixture options = pluginOptions();
+
+        options.optionPane("XML/XML","xml.general")
+               .comboBox("showAttributes").selectItem(0);
+
+		options.OK();
+
+		File xml = new File(testData,"simple/actions.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	
@@ -66,7 +73,7 @@ public class XmlTagTest{
     	
     	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
     	JTreeFixture sourceTree = sidekick.tree();
-    	
+
 		// inspect the tree
 		selectPath(sourceTree,"/ACTIONS");
 		selectPath(sourceTree,"/ACTIONS/ACTION/CODE");

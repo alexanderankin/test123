@@ -241,6 +241,7 @@ public class VFSFileTextFieldTest{
 		
 		assertEquals(xsd.getPath(),view().getBuffer().getPath());
 		
+		Pause.pause(500);
 		jEdit.closeBuffer(view(),view().getBuffer());
 		jEdit.closeBuffer(view(),view().getBuffer());
     }

@@ -114,7 +114,7 @@ public class AntXmlTagTest  {
 				assertEquals(targets[targets.length - count + i], sourceTree.valueAt(i));
 			}
 
-			sidekick.comboBox("sort").selectItem("Nom");
+			sidekick.comboBox("sort").selectItem("Name");
 			sourceTree.toggleRow(1);
 			
 			Pause.pause(1000);

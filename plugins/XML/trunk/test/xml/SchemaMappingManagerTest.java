@@ -52,6 +52,7 @@ public class SchemaMappingManagerTest {
         TestUtils.beforeClass();
         testData = new File(System.getProperty("test_data")).getCanonicalFile();
         assertTrue(testData.exists());
+		new File(XmlPlugin.getSettingsDirectory()).mkdirs();
     }
 
     @AfterClass

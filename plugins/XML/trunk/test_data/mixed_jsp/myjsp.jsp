@@ -7,20 +7,20 @@
 <head><title>Page JSP</title></head>
 <body>
 
-<%-- Déclaration d'une variable globale à la classe --%>
+<%-- DÃ©claration d'une variable globale Ã  la classe --%>
 <%! int nombreVisites = 0; %>
 
-<%-- Définition de code Java --%>
-<% //Il est possible d'écrire du code Java ici
+<%-- DÃ©finition de code Java --%>
+<% //Il est possible d'Ã©crire du code Java ici
     Date date = new Date();
-    // On peut incrémenter une variable globale pour compter le nombre
+    // On peut incrÃ©menter une variable globale pour compter le nombre
     // d'affichage, par exemple.
     nombreVisites++;
 %>
 <h1>Exemple de page JSP</h1>
 <%-- Impression de variables --%>
-<p>Au moment de l'exécution de ce script, nous sommes le <%= date %>.</p>
-<p>Cette page a été affichée <%= nombreVisites %> fois!</p>
+<p>Au moment de l'exÃ©cution de ce script, nous sommes le <%= date %>.</p>
+<p>Cette page a Ã©tÃ© affichÃ©e <%= nombreVisites %> fois!</p>
 </body>
 </html>
 
