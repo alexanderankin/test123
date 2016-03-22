@@ -468,9 +468,11 @@ public class SchemaToCompletion
 
 			String namespaceUri = nc.getNamespaceUri();
 			if(INHERIT.equals(namespaceUri)){
-				String def = urisDefaultNamespace.get(nc.getSourceLocation().getUri());
-				if(def != null){
-					namespaceUri = def;
+				if(nc.getSourceLocation() != null){
+					String def = urisDefaultNamespace.get(nc.getSourceLocation().getUri());
+					if(def != null){
+						namespaceUri = def;
+					}
 				}
 			}
 
