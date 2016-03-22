@@ -247,9 +247,13 @@ public class TrangTranslatorTest{
     	final File in = new File(testData,"rnc/actions.rnc");
      	final File out = new File(testData,"rnc/actions.dtd");
      	
-     	Buffer b = openFile(in.getPath());
+        final Buffer b = openFile(in.getPath());
     	
-    	b.insert(96," | \"MAYBE\"");
+        GuiActionRunner.execute(new GuiTask(){
+            protected void executeInEDT(){
+                b.insert(96," | \"MAYBE\"");
+            }
+        });
     	
      	ClickT clickT = new ClickT(Option.OK);
     	clickT.start();

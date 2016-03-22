@@ -29,9 +29,13 @@ import static xml.XMLTestUtils.openParseAndWait;
 import static xml.XMLTestUtils.parseAndWait;
 
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.SwingUtilities;
 
 import org.fest.assertions.ObjectArrayAssert;
 import org.fest.swing.cell.JListCellReader;
@@ -374,6 +378,10 @@ public class XmlPluginTest{
 		
     	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
 		
+		Pause.pause(1000);
+		errorlist.tree().selectRow(1);
+		// the line is deselected when I go to actions.xsd
+		Pause.pause(1000);
 		errorlist.tree().selectRow(1);
 		
     	action("sidekick-parse",1);
@@ -491,7 +499,7 @@ public class XmlPluginTest{
 		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 		insert.close();
 		
-		xml = new File(testData,"relax_ng/actions_valid.xml");
+		xml = new File(testData,"relax_ng/valid_actions.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	
@@ -703,12 +711,11 @@ public class XmlPluginTest{
 		errorlist.close();
 		
 		// inside comment
-		gotoPositionAndWait(320);
+		gotoPositionAndWait(731);
 		
-		// fails for the moment
 		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:comment");
 		
-		gotoPositionAndWait(391);
+		gotoPositionAndWait(802);
 		
 		// inside ipo:comment
 		assertThat(xmlListContents(insert.list("elements"))).isEmpty();

@@ -19,6 +19,8 @@ import static org.gjt.sp.jedit.testframework.TestUtils.view;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,10 +76,14 @@ public class BuffersOutputDirectoryTest{
 		
     	assertEquals(0,bod.getOutputCount());
     	
-    	OutputDirectory.Stream output = bod.open(in.getPath(),null);
+        final OutputDirectory.Stream output = bod.open(in.getPath(),null);
     	output.getWriter().write("HELLO, world");
     	output.getWriter().flush();
-    	output.getWriter().close();
+        GuiActionRunner.execute(new GuiTask(){
+            protected void executeInEDT() throws IOException{
+                output.getWriter().close();
+            }
+        });
     	
     	Buffer b = jEdit.getBuffer(out.getPath());
     	assertNotNull(b);

@@ -20,9 +20,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static xml.XMLTestUtils.openParseAndWait;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 
+import org.fest.swing.core.MouseButton;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JTreeFixture;
 import org.fest.swing.timing.Pause;
@@ -77,8 +79,11 @@ public class HtmlParserTest{
 		Pause.pause(2000);
 		
     	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
-    	errorlist.resizeWidthTo(1024);
-    	errorlist.tree().selectRow(1);
+        errorlist.moveTo(new Point(0, 0));
+        errorlist.moveToFront();
+        errorlist.resizeWidthTo(1024);
+		// this is bad, but the tree driver refuses to work for me ?!
+        errorlist.robot.click(new Point(70, 90), MouseButton.LEFT_BUTTON, 1);
     	assertEquals(";",area.getSelectedText());
     	assertEquals(2,area.getCaretLine());
     }

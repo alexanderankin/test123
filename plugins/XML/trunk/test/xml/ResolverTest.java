@@ -31,6 +31,7 @@ import java.io.StringReader;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
+import org.fest.swing.timing.Pause;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.testframework.TestUtils;
 import org.gjt.sp.jedit.testframework.TestUtils.ClickT;
@@ -65,7 +66,8 @@ public class ResolverTest{
     @Before
     public void init()
     {
-    	resolver = Resolver.instance();
+        resolver = Resolver.instance();
+        resolver.clearCache();
     }
     
     /** test the return value of resolveEntity()

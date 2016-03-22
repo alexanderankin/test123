@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.testframework.TestUtils;
 import org.gjt.sp.jedit.testframework.TestUtils.ClickT;
 import org.gjt.sp.jedit.testframework.TestUtils.Option;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 // }}}
@@ -58,6 +59,11 @@ public class CopyXPathTest{
         TestUtils.afterClass();
     }
     
+    @Before
+    public void clearRegister(){
+		Registers.clearRegister('$');
+    }
+
     /**
      * same namespace, no prefix : easy !
      */
@@ -208,7 +214,7 @@ public class CopyXPathTest{
 		
 		action("xml-copy-xpath");
 		
-		assertEquals("NULL",RegisterToString());
+		assertEquals("",RegisterToString());
 		
 		// go into the html
 		gotoPositionAndWait(117);
