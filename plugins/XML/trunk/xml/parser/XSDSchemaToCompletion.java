@@ -18,6 +18,7 @@ package xml.parser;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collections;
@@ -264,11 +265,11 @@ public class XSDSchemaToCompletion{
 	private static void xsAttributeToElementDecl(ElementDecl elementDecl,XSAttributeDeclaration decl, boolean required){
 				String attrName = decl.getName();
 				String attrNamespace = decl.getNamespace();
-				String value = decl.getConstraintValue();
+				String value = decl.getValueConstraintValue().getNormalizedValue();
 				XSSimpleTypeDefinition typeDef = decl.getTypeDefinition();
 				String type = typeDef.getName();
 				StringList valueStringList = typeDef.getLexicalEnumeration();
-				ArrayList<String> values = new ArrayList<String>();
+				TreeSet<String> values = new TreeSet<String>();
 				for (int j = 0; j < valueStringList.getLength(); j++) {
 				    values.add(valueStringList.item(j));
 				}

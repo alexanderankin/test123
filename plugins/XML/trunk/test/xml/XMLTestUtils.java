@@ -204,7 +204,8 @@ public class XMLTestUtils{
 		Component  completionC = TestUtils.robot().finder().find(
 			new ComponentMatcher(){
 				public boolean matches(Component c){
-					return c instanceof org.gjt.sp.jedit.gui.CompletionPopup;
+					return c instanceof org.gjt.sp.jedit.gui.CompletionPopup
+							&& c.isVisible();
 				}
 			});
 		

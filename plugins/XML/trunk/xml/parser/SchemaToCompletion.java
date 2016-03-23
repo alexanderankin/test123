@@ -327,7 +327,7 @@ public class SchemaToCompletion
 				attrs.add(new AttributeDecl(name.getLocalName(),
 					name.getNamespaceUri(),
 					value,
-					new ArrayList<String>(values.keySet()),
+					new TreeSet<String>(values.keySet()),
 					type,
 					required));
 			}

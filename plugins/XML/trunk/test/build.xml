@@ -45,6 +45,8 @@
 		<file name="resolver.jar"/>
 		<!-- Beauty -->
 		<file name="Beauty.jar"/>
+		<file name="Antlr.jar"/>
+		<file name="antlr4-4.5-opt.jar"/>
 		<!-- ErrorList -->
 		<file name="ErrorList.jar"/>
 		<!-- Sidekick -->
@@ -90,7 +92,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/XmlActionEntitiesChars.java"/>
+        <filename name="xml/CompletionTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
