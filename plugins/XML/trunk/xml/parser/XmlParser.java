@@ -34,7 +34,7 @@ import javax.swing.text.Segment;
 
 /**
  * This is the common base class for both HTML and XML Parsers.
- * It contains auto completion for closing element tags. 
+ * It contains auto completion for closing element tags.
  */
 public abstract class XmlParser extends SideKickParser
 {
@@ -42,6 +42,7 @@ public abstract class XmlParser extends SideKickParser
 	public static final int ELEMENT_COMPLETE = '<';
 	public static final int ENTITY_COMPLETE = '&';
 	public static final int ATTRIB_COMPLETE = ' ';
+	public static final int VALUE_COMPLETE = '=';
 
 	//{{{ XmlParser constructor
 	public XmlParser(String name)
@@ -93,7 +94,7 @@ public abstract class XmlParser extends SideKickParser
 	//{{{ deactivate() method
 	public void deactivate(EditPane editPane)
 	{
-		// don't bother to remember which one it was... 
+		// don't bother to remember which one it was...
 		editPane.getTextArea().removeStructureMatcher(highlight);
 		editPane.getTextArea().removeStructureMatcher(htmlHighlight);
 	} //}}}
@@ -161,11 +162,11 @@ public abstract class XmlParser extends SideKickParser
 			return null;
 
 		Buffer buffer = editPane.getBuffer();
-		
+
 		int lastchar = caret - 1;
 		int lastcharLine = buffer.getLineOfOffset(lastchar);
 		int lineStart = buffer.getLineStartOffset(lastcharLine);
-		
+
 		// get syntax tokens for the line of character before the caret
 		// ghk not sure if this duplicates jEdits syntax tokenization
 		// since this is per keystroke, performance is of some importance
@@ -174,18 +175,18 @@ public abstract class XmlParser extends SideKickParser
 		Token token = tokenHandler.getTokens();
 		// save last < opening a tag
 		Token openTag = null;
-		// save last 5 tokens : '<'  '/'  prefix  ':'  tagname
-		TokenRingBuffer lastTokens = new TokenRingBuffer(5);
+		// save last 6 tokens : 'ws' prefix  ':'  attrname = "
+		TokenRingBuffer lastTokens = new TokenRingBuffer(6);
 		while(token.id != Token.END)
 		{
 			int next = lineStart + token.length;
-			
+
 			lastTokens.write(token);
 
 			if (lineStart <= lastchar && next > lastchar)
 				break;
-			
-			
+
+
 			// save last <
 			if(token.length == 1
 					&& (token.id == Token.MARKUP || token.id == Token.KEYWORD2)
@@ -193,24 +194,24 @@ public abstract class XmlParser extends SideKickParser
 			{
 				openTag = token;
 			}
-			
+
 			lineStart = next;
 			token = token.next;
 		}
-		
+
 		// special case for completion at start of line:
 		// can't read whitespace followed by word to trigger attribute complete,
 		// so use rule context from line before.
 		// It's hard-coded for every supported mode.
 		lineStart = buffer.getLineStartOffset(buffer.getLineOfOffset(caret));
 		boolean caretIsAtLineStart = lineStart == caret;
-		
+
 		String modename = buffer.getMode().getName();
-		
+
 		lineStart = buffer.getLineStartOffset(lastcharLine);
 		lastTokens.mark();
 		Context ctx = new Context();
-		
+
 		if(caretIsAtLineStart){
 			String ruleSet = tokenHandler.getLineContext().rules.getName();
 			if("xml".equals(modename)){
@@ -245,7 +246,7 @@ public abstract class XmlParser extends SideKickParser
 				}
 			}
 		}else{
-			
+
 			// Taking the union of every mode is shorter.
 			// Then it would work for other modes reusing xml TAGS rules.
 			// see for instance javadoc in java file.
@@ -258,8 +259,10 @@ public abstract class XmlParser extends SideKickParser
 				byte[] COLON_TYPE = {Token.OPERATOR, Token.LABEL, Token.MARKUP};
 				byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3, Token.KEYWORD4, Token.OPERATOR, Token.FUNCTION, Token.MARKUP};
 				byte[] ENT_TYPE = {Token.LITERAL2};
+				byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
+
 				ctx = getMode(lastTokens, buffer, lineStart,
-						LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+						LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 			}else{
 				if("xml".equals(modename) || "xsl".equals(modename)){
 					byte[] LT_TYPE = {Token.MARKUP};
@@ -268,8 +271,9 @@ public abstract class XmlParser extends SideKickParser
 					byte[] COLON_TYPE = {Token.OPERATOR};
 					byte[] PREFIX_TYPE = {Token.LABEL};
 					byte[] ENT_TYPE = {Token.LITERAL2};
+					byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
 					ctx = getMode(lastTokens, buffer, lineStart,
-							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 				}
 				if(ctx.mode == -1 && "xsl".equals(modename)){
 					lastTokens.reset();
@@ -279,8 +283,9 @@ public abstract class XmlParser extends SideKickParser
 					byte[] COLON_TYPE = {Token.LABEL};
 					byte[] PREFIX_TYPE = {Token.LABEL};
 					byte[] ENT_TYPE = {Token.LITERAL2};
+					byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
 					ctx = getMode(lastTokens, buffer, lineStart,
-							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 				}
 				if(ctx.mode  == -1 && "ant".equals(modename)){
 					//note: last word can contain =
@@ -291,8 +296,9 @@ public abstract class XmlParser extends SideKickParser
 					byte[] COLON_TYPE = {Token.LABEL};
 					byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3, Token.KEYWORD4, Token.OPERATOR, Token.FUNCTION};
 					byte[] ENT_TYPE = {Token.LITERAL2};
+					byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
 					ctx = getMode(lastTokens, buffer, lineStart,
-							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 				}
 				if(ctx.mode == -1 && "html".equals(modename)){
 					byte[] LT_TYPE = {Token.MARKUP};
@@ -301,9 +307,10 @@ public abstract class XmlParser extends SideKickParser
 					byte[] COLON_TYPE = {Token.MARKUP};
 					byte[] PREFIX_TYPE = {Token.MARKUP, Token.KEYWORD1};
 					byte[] ENT_TYPE = {Token.LITERAL2};
+					byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
 					lastTokens.reset();
 					ctx = getMode(lastTokens, buffer, lineStart,
-							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 				}
 				if(ctx.mode == -1 && "maven".equals(modename)){
 					//note: last word can contain =
@@ -313,9 +320,10 @@ public abstract class XmlParser extends SideKickParser
 					byte[] COLON_TYPE = {Token.LABEL};
 					byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2, Token.KEYWORD3};
 					byte[] ENT_TYPE = {Token.LITERAL2};
+					byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
 					lastTokens.reset();
 					ctx = getMode(lastTokens, buffer, lineStart,
-							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 				}
 				if(ctx.mode == -1 && "tld".equals(modename)){
 					//note: last word can contain =
@@ -325,13 +333,14 @@ public abstract class XmlParser extends SideKickParser
 					byte[] COLON_TYPE = {Token.LABEL};
 					byte[] PREFIX_TYPE = {Token.LABEL, Token.KEYWORD1, Token.KEYWORD2};
 					byte[] ENT_TYPE = {Token.LITERAL2};
+					byte[] ATT_VALUE_TYPE = { Token.LITERAL1 };
 					lastTokens.reset();
 					ctx = getMode(lastTokens, buffer, lineStart,
-							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE); 
+							LT_TYPE, WS_TYPE, WORD_TYPE, COLON_TYPE, PREFIX_TYPE, ENT_TYPE, ATT_VALUE_TYPE);
 				}
 			}
 		}
-		
+
 		// fix for modes not highlighting entities in attribute values (see patch #3559971)
 		if(ctx.mode == -1){
 			int start = Math.max(lineStart, caret - 100);
@@ -344,7 +353,7 @@ public abstract class XmlParser extends SideKickParser
 
 		// comments and CDATA sections are not recognised using the syntax highlighting
 		// because this would be to complex to make them work inside element tag (another 5,6 cases)
-		// or within themselves (that is illegal, but useful when editing). 
+		// or within themselves (that is illegal, but useful when editing).
 		if(ctx.mode == -1){
 			int start = Math.max(lineStart, caret - 100);
 			Matcher m = commentCDATAP.matcher(buffer.getSegment(start, caret - start));
@@ -353,7 +362,7 @@ public abstract class XmlParser extends SideKickParser
 				ctx.wordStart = start + m.start(1);
 			}
 		}
-		
+
 		String closingTag = null;
 		String word;
 
@@ -361,8 +370,8 @@ public abstract class XmlParser extends SideKickParser
 		NamespaceBindings namespaces = data.getNamespaceBindings(caret);
 		NamespaceBindings namespacesToInsert = new NamespaceBindings();
 		NamespaceBindings localNamespacesToInsert = new NamespaceBindings();
-		
-		
+
+
 		if(ctx.mode != -1)
 		{
 			if(ctx.wordStart == -1){
@@ -443,7 +452,7 @@ public abstract class XmlParser extends SideKickParser
 						if(pre == null)
 						{
 							// handle using unknown prefix
-							// if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix 
+							// if users types "<mathml:" and mathml ns is undeclared use mathml:... as prefix
 							if(!"".equals(wordPrefix)
 									&& elementDecl.name.startsWith(wordWithoutPrefix))
 							{
@@ -451,7 +460,7 @@ public abstract class XmlParser extends SideKickParser
 								namespacesToInsert.put(elementNamespace, pre);
 								localNamespacesToInsert.put(elementNamespace, pre);
 								elementName = pre + ":" + elementDecl.name;
-								
+
 							}
 							else
 							{
@@ -473,7 +482,7 @@ public abstract class XmlParser extends SideKickParser
 							}
 						}
 					}
-					
+
 					if(elementName.startsWith(word)
 							|| (data.html && elementName.toLowerCase()
 							.startsWith(word.toLowerCase())))
@@ -494,7 +503,7 @@ public abstract class XmlParser extends SideKickParser
 					}
 				}
 			}
-			else if (ctx.mode == ATTRIB_COMPLETE) 
+			else if (ctx.mode == ATTRIB_COMPLETE)
 			{
 				// word contains element name
 				// prefix contains what was typed of the attribute
@@ -506,64 +515,11 @@ public abstract class XmlParser extends SideKickParser
 				if (decl != null)
 				{
 					completions = decl.attributes;
-					for (int i=0; i<completions.size(); ++i) 
+					for (int i=0; i<completions.size(); ++i)
 					{
 						AttributeDecl attrDecl = completions.get(i);
-						String attrName;
-						
-						// this code is very similar to ELEMENT_COMPLETE case
-						// difference is how we take into account xml namespace (always use xml: prefix)
-						if(attrDecl.namespace == null || "".equals(attrDecl.namespace))
-						{
-							attrName = attrDecl.name;
-						}
-						else
-						{
-							String pre = namespaces.getPrefix(attrDecl.namespace);
-							// for attributes, empty prefix means no namespace, not current default namespace, so generate...
-							if(pre == null || "".equals(pre))
-							{
-								pre = localNamespacesToInsert.getPrefix(attrDecl.namespace);
-							}
-							if(pre == null || "".equals(pre))
-							{
-								if(attrDecl.namespace.equals(NamespaceSupport.XMLNS))
-								{
-									attrName = "xml:"+attrDecl.name;
-								}
-								else
-								{
-									attrName = attrDecl.name;
-									// handle using unknown prefix
-									// if users types "xl:" and xlink ns is undeclared use xl as prefix (xl:href for instance)
-									if(!"".equals(wordPrefix) && !"xml".equals(wordPrefix)
-											&& attrName.startsWith(wordWithoutPrefix))
-									{
-										pre = wordPrefix;
-										namespacesToInsert.put(attrDecl.namespace, pre);
-										localNamespacesToInsert.put(attrDecl.namespace, pre);
-										attrName = pre + ":" + attrDecl.name;
-									}
-									else
-									{
-										// handle attribute in undeclared namespace and no prefix.
-										// Generate a new prefix.
-										// Store it locally, so that the declaration is not inserted when this completion is not chosen.
-										// If it's chosen, a prefix (maybe different) will be generated again
-										pre = NamespaceBindings.generatePrefix(namespaces, localNamespacesToInsert);
-										localNamespacesToInsert.put(attrDecl.namespace,pre);
-										attrName = pre + ":" + attrDecl.name;
-										// this can get cumbersome, if one types 'a' expecting to get 'someprefix:attribute' because
-										// attribute will not be proposed. On the other hand if we don't put the prefix, one cannot distinguish between
-										// ns1:attr and ns2:attr...
-									}
-								}
-							}
-							else
-							{
-								attrName = pre + ":" + attrDecl.name;
-							}
-						}
+						String attrName = getAttrName(attrDecl, wordPrefix, wordWithoutPrefix, namespaces, namespacesToInsert, localNamespacesToInsert);
+
 						if (attrName.startsWith(prefix))
 						{
 							allowedCompletions.add(new XmlListCellRenderer.WithLabel<AttributeDecl>(attrName,attrDecl));
@@ -581,6 +537,33 @@ public abstract class XmlParser extends SideKickParser
 						allowedCompletions.add(id);
 				}
 			} */
+			else if(ctx.mode == VALUE_COMPLETE)
+			{
+				String prefix = buffer.getText(ctx.attribStart, caret - ctx.attribStart);
+				prefix = prefix.substring(0, prefix.indexOf('=')).trim();
+				String wordWithoutPrefix = XmlParsedData.getElementLocalName(prefix);
+				String wordPrefix = XmlParsedData.getElementNamePrefix(prefix);
+				ElementDecl decl = data.getElementDecl(word,caret);
+				List<AttributeDecl> completions;
+				if (decl != null)
+				{
+					completions = decl.attributes;
+					for (int i=0; i<completions.size(); ++i)
+					{
+						AttributeDecl attrDecl = completions.get(i);
+
+						String attrName = getAttrName(attrDecl, wordPrefix, wordWithoutPrefix, namespaces, namespacesToInsert, localNamespacesToInsert);
+
+						if (attrName.equals(prefix))
+						{
+							for(String v: attrDecl.values){
+								allowedCompletions.add(new XmlListCellRenderer.WithLabel<String>(v,v));
+							}
+						}
+					}
+				}
+				word = "";
+			}
 		}
 		else
 			word = "";
@@ -589,25 +572,87 @@ public abstract class XmlParser extends SideKickParser
 			return null;
 		else
 			return new XmlCompletion(editPane.getView(),allowedCompletions, namespaces, namespacesToInsert, word,data,closingTag);
-	} //}}}
+	}
+
+	private String getAttrName(AttributeDecl attrDecl, String wordPrefix, String wordWithoutPrefix,
+			NamespaceBindings namespaces, NamespaceBindings namespacesToInsert,
+			NamespaceBindings localNamespacesToInsert){
+		String attrName;
+		// this code is very similar to ELEMENT_COMPLETE case
+		// difference is how we take into account xml namespace (always use xml: prefix)
+		if(attrDecl.namespace == null || "".equals(attrDecl.namespace))
+		{
+			attrName = attrDecl.name;
+		}
+		else
+		{
+			String pre = namespaces.getPrefix(attrDecl.namespace);
+			// for attributes, empty prefix means no namespace, not current default namespace, so generate...
+			if(pre == null || "".equals(pre))
+			{
+				pre = localNamespacesToInsert.getPrefix(attrDecl.namespace);
+			}
+			if(pre == null || "".equals(pre))
+			{
+				if(attrDecl.namespace.equals(NamespaceSupport.XMLNS))
+				{
+					attrName = "xml:"+attrDecl.name;
+				}
+				else
+				{
+					attrName = attrDecl.name;
+					// handle using unknown prefix
+					// if users types "xl:" and xlink ns is undeclared use xl as prefix (xl:href for instance)
+					if(!"".equals(wordPrefix) && !"xml".equals(wordPrefix)
+							&& attrName.startsWith(wordWithoutPrefix))
+					{
+						pre = wordPrefix;
+						namespacesToInsert.put(attrDecl.namespace, pre);
+						localNamespacesToInsert.put(attrDecl.namespace, pre);
+						attrName = pre + ":" + attrDecl.name;
+					}
+					else
+					{
+						// handle attribute in undeclared namespace and no prefix.
+						// Generate a new prefix.
+						// Store it locally, so that the declaration is not inserted when this completion is not chosen.
+						// If it's chosen, a prefix (maybe different) will be generated again
+						pre = NamespaceBindings.generatePrefix(namespaces, localNamespacesToInsert);
+						localNamespacesToInsert.put(attrDecl.namespace,pre);
+						attrName = pre + ":" + attrDecl.name;
+						// this can get cumbersome, if one types 'a' expecting to get 'someprefix:attribute' because
+						// attribute will not be proposed. On the other hand if we don't put the prefix, one cannot distinguish between
+						// ns1:attr and ns2:attr...
+					}
+				}
+			}
+			else
+			{
+				attrName = pre + ":" + attrDecl.name;
+			}
+		}
+		return attrName;
+	}
+	//}}}
 
 	private static class Context {
 		int mode = -1;
 		int wordStart = -1;
 		int attribStart = -1;
 	}
-	
+
 	private final char lt = '<';
 	private final char colon = ':';
 	private final char amp = '&';
 	private final char slash = '/';
+	private final Pattern quote = Pattern.compile("\"|'");
 	private final Pattern ws = Pattern.compile("\\s+");
 	private final Pattern wordP = Pattern.compile("[\\w-_]+(=[\"']?)?");// = to match attribute names in xsl mode where = is part of the name token
 	private final Pattern entP = Pattern.compile(".*&([\\w_-]*)$");
 	private final Pattern commentCDATAP = Pattern.compile(".*<((!-?-?)|(!\\[(C(D(A(T(A\\[?)?)?)?)?)?))");
 	private Context getMode(TokenRingBuffer lastTokens, Buffer buffer, int lineStart,
 				byte[] LT_TYPE, byte[] WS_TYPE, byte[] WORD_TYPE, byte[] COLON_TYPE, byte[] PREFIX_TYPE,
-				byte[] ENT_TYPE){
+				byte[] ENT_TYPE, byte[] ATT_VALUE_TYPE){
 		Context ctx = new Context();
 		if(!lastTokens.isEmpty()){
 			Token last = lastTokens.popLast();
@@ -718,11 +763,53 @@ public abstract class XmlParser extends SideKickParser
 						ctx.wordStart = lineStart+last.offset+last.length;
 					}
 				}
+			}else if(matches(last, ATT_VALUE_TYPE, img, quote)){
+				if(!lastTokens.isEmpty()){
+					last = lastTokens.popLast();
+					img = buffer.getSegment(lineStart+last.offset, last.length);
+					if(matches(last, WORD_TYPE, img, '=')){
+						if(!lastTokens.isEmpty()){
+							last = lastTokens.popLast();
+							img = buffer.getSegment(lineStart+last.offset, last.length);
+							if(matches(last,WORD_TYPE, img, wordP)){
+								if(!lastTokens.isEmpty()){
+									last = lastTokens.popLast();
+									img = buffer.getSegment(lineStart+last.offset, last.length);
+									if(matches(last,WS_TYPE,img, ws)){
+										ctx.mode = VALUE_COMPLETE;
+										ctx.attribStart = lineStart+last.offset+last.length;
+									}else if(matches(last, COLON_TYPE, img, colon)){
+										if(!lastTokens.isEmpty()){
+											last = lastTokens.popLast();
+											img = buffer.getSegment(lineStart+last.offset, last.length);
+											if(matches(last, PREFIX_TYPE, img, wordP)){
+												if(!lastTokens.isEmpty()){
+													last = lastTokens.popLast();
+													img = buffer.getSegment(lineStart+last.offset, last.length);
+													if(matches(last,WS_TYPE,img, ws)){
+														ctx.mode = VALUE_COMPLETE;
+														ctx.attribStart = lineStart+last.offset+last.length;
+													}
+												}else{
+													ctx.mode = VALUE_COMPLETE;
+													ctx.attribStart = lineStart;
+												}
+											}
+										}
+									}
+								}else{
+									ctx.mode = VALUE_COMPLETE;
+									ctx.attribStart = lineStart;
+								}
+							}
+						}
+					}
+				}
 			}
-		}	
+		}
 		return ctx;
 	}
-		
+
 	 private boolean matches(Token last, byte[] types, CharSequence img, char wanted) {
 		 if(last.length != 1)return false;
 		 boolean okType = false;
@@ -748,16 +835,6 @@ public abstract class XmlParser extends SideKickParser
 				 && wanted.matcher(img).matches();
 	}
 
-	private boolean isWord(CharSequence s) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private boolean isWS(CharSequence s) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	static class TokenRingBuffer {
 		private final Token[] tokens;
 		public final int size;
@@ -765,16 +842,16 @@ public abstract class XmlParser extends SideKickParser
 		private int end = 0;
 		private int savedStart = -1;
 		private int savedEnd = -1;
-		
+
 		public TokenRingBuffer(int size) {
 			this.size = size;
 			tokens = new Token[size+1];
 		}
-		
+
 		public boolean isEmpty(){
 			return start == end;
 		}
-		
+
 		public void write(Token t){
 			tokens[end] = t;
 			end = (end + 1 ) % tokens.length;
@@ -783,13 +860,13 @@ public abstract class XmlParser extends SideKickParser
 			}
 			savedStart = -1;
 		}
-		
+
 		public Token popFirst(){
 			Token ret = tokens[start];
 			start = (start + 1) % tokens.length;
 			return ret;
 		}
-		
+
 		public Token popLast(){
 			end = end -1;
 			if(end < 0){
@@ -797,12 +874,12 @@ public abstract class XmlParser extends SideKickParser
 			}
 			return tokens[end];
 		}
-		
+
 		public void mark(){
 			savedStart = start;
 			savedEnd = end;
 		}
-		
+
 		public boolean reset(){
 			if(savedStart == -1)return false;
 			else {
@@ -812,7 +889,7 @@ public abstract class XmlParser extends SideKickParser
 			}
 		}
 	}
-	
+
 	//{{{ Package-private members
 	boolean stopped;
 	//}}}

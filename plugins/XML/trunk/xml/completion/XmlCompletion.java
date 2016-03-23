@@ -220,6 +220,13 @@ public class XmlCompletion extends SideKickCompletion
 			insert = entity.name.substring(text.length()) + ";";
 			caret = 0;
 		}
+		else if(obj instanceof String)
+		{
+			String value = (String)obj;
+
+			insert = value.substring(text.length());
+			caret = 0;
+		}
 
 		else
 			throw new IllegalArgumentException("What's this? " + obj.getClass());

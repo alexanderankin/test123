@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
@@ -406,11 +407,11 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		if(element.getAttribute(aName) != null)
 			return;
 
-		ArrayList<String> values;
+		TreeSet<String> values;
 
 		if(type.startsWith("("))
 		{
-			values = new ArrayList<String>();
+			values = new TreeSet<String>();
 
 			StringTokenizer st = new StringTokenizer(
 				type.substring(1,type.length() - 1),"|");

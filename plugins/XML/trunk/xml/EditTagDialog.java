@@ -243,11 +243,11 @@ public class EditTagDialog extends EnhancedDialog
 			if(attr.required)
 				set = true;
 
-			ArrayList values;
+			TreeSet<String> values;
 			if(attr.type.equals("IDREF")
 				&& stringIDs.size() > 0)
 			{
-				values = stringIDs;
+				values = new TreeSet<String>(stringIDs);
 				if(value == null)
 					value = (String)stringIDs.get(0);
 			}
@@ -256,7 +256,7 @@ public class EditTagDialog extends EnhancedDialog
 				values = attr.values;
 				if(value == null && values != null
 					&& values.size() > 0)
-					value = (String)values.get(0);
+					value = (String)values.first();
 			}
 			
 			attributeModel.add(new Attribute(set,attrName,attr.namespace,
@@ -374,7 +374,7 @@ public class EditTagDialog extends EnhancedDialog
 
 		//{{{ Attribute constructor
 		Attribute(boolean set, String name, String namespace,
-			String value, ArrayList values,
+			String value, TreeSet<String> values,
 			String type, boolean required)
 		{
 			this.set = set;
@@ -389,12 +389,12 @@ public class EditTagDialog extends EnhancedDialog
 		static class Value
 		{
 			String value;
-			ArrayList values;
+			TreeSet<String> values;
 
-			Value(String value, ArrayList values)
+			Value(String value, TreeSet<String> values2)
 			{
 				this.value = value;
-				this.values = values;
+				this.values = values2;
 			}
 
 			public String toString()

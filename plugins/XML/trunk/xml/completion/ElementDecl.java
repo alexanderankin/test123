@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import org.gjt.sp.util.StandardUtilities;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -252,11 +253,11 @@ public class ElementDecl
 		public String name;
 		public String namespace;
 		public String value;
-		public ArrayList values;
+		public TreeSet<String> values;
 		public String type;
 		public boolean required;
 		
-		public AttributeDecl(String name, String namespace, String value, ArrayList<String> values,
+		public AttributeDecl(String name, String namespace, String value, TreeSet<String> values,
 			String type, boolean required)
 		{
 			this.name = name;
@@ -271,7 +272,7 @@ public class ElementDecl
 		{
 			return new AttributeDecl(name,
 				namespace,value,
-				(values == null ? null : new ArrayList(values)),
+				(values == null ? null : new TreeSet<String>(values)),
 				type,
 				required);
 		}

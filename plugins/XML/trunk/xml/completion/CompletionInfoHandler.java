@@ -116,11 +116,11 @@ public class CompletionInfoHandler extends DefaultHandler2
 			String value = attrs.getValue("value");
 			String type = attrs.getValue("type");
 
-			ArrayList values;
+			TreeSet<String> values;
 
 			if(type.startsWith("("))
 			{
-				values = new ArrayList();
+				values = new TreeSet<String>();
 
 				StringTokenizer st = new StringTokenizer(
 					type.substring(1,type.length() - 1),"|");
