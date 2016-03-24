@@ -1,0 +1,200 @@
+:encoding=UTF-8:maxLineLen=0:wrap=soft:folding=indent:noTabs=true:tabSize=4:
+XML Plugin Change log
+
+    Version 3.0.3 Requires jEdit 5.2, Java 1.7, XercesPlugin 2.9.1, ErrorList 2.3, SideKick 1.8, BeautyPlugin 0.9, CommonControls 1.7.4, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.5.1
+        Work-around HTML5 empty DOCTYPE (PB #1830 - Eric Le Lay)
+        Pluggable RelaxNG datatypes
+        XHTML5 schemas compatibility
+        limited attribute value completion
+
+    Version 3.0.2 Requires jEdit 5.2, Java 1.7, XercesPlugin 2.9.1, ErrorList 2.3, SideKick 1.8, BeautyPlugin 0.9, CommonControls 1.7.4, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.5.1
+        Fix PB #1831 XML plugin not catering for backslash
+
+    Version 3.0.1 Requires jEdit 5.2, Java 1.7, XercesPlugin 2.9.1, ErrorList 2.3, SideKick 1.8, BeautyPlugin 0.9, CommonControls 1.7.4, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.5.1
+        fix PB #1825 XML - schema error is silently ignored
+        Move cached files under getPluginHome()
+
+    Version 3.0 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.4
+        Added new sidekick for json files. (Dale Anson)
+        Plugin patch #147: Convert ascii entities (Character References) into chars in Entities to Characters action (Jarek Czekalski)
+        CSS: better handling of @media queries
+        CSS: bug #1784, css code completion is too slow
+        XML: bug #1633 XML debugging output "quote is not closed"
+        documentation updates, code refactoring
+
+    Version 2.8.7 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
+        Fix #3614106: XML plugin: Missing Hyperlinks to xref linkend= elements (Alan Ezust, Eric Le Lay)
+        Fix pb #1763: XML Plugin unexpected asset type (Matthieu Casanova, Eric Le Lay)
+        Fix pb #1775 XML javacc parser prints out lots of crap to stdout (Alan
+        Ezust, Eric Le Lay)
+
+    Version 2.8.5
+        Fix #3533666: Attribute completion after self-closed tag (Alan Ezust, Eric Le Lay)
+        Fix #3566344: XML: some errors go to stdout instead of errorlist when using
+        xml:root and a reference from root to current buffer is missing (Eric Le Lay)
+        Fix completion in tld and maven files. Add maven schema built-in (Eric Le Lay).
+        If there is one XSD schema binding in the file, it is accessible via xml-open-schema action. For multiple XSD schema bindings (like one schema per namespace), which is perfectly legal, only the first schema is opened.
+
+    Version 2.8.3-jedit-5.0 Requires jEdit 5.0, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.3, BeautyPlugin 0.7.0, CommonControls 1.5, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
+        Updated html completion to support HTML 5. (#3446700 - Dale Anson)
+        Updated css completion to support same keywords as css mode for CSS 3.
+        (Dale Anson)
+        Fix "XML Plugin and Docbook 5 - no completion", bundle docbook5 schema
+        (#3483934 - Eric Le Lay).
+        EditTag dialog and XML Insert are namespace aware (Eric Le Lay).
+        Revert matching tag highlighting to SidekickTagHighlight for HTML (Eric Le Lay).
+        Fix "XML: "Insert Closing Tag when Opening Tag is Typed" broken" (a
+        jEdit 5 issue) (plugin bug #3480254 - Eric Le Lay)
+
+    Version 2.8.1 Requires jEdit 4.4, Java 1.6, XercesPlugin 2.9.1, ErrorList 1.9, SideKick 1.2, BeautyPlugin 0.7.0, CommonControls 1.3, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), and Templates 4.1.2 (Optional)
+
+        Fix issue with recursing XSD complex types, as in the schema for NAnt (#3216494 - Eric Le Lay)
+        Fix issue with an extra closing bracket being recorded in macros (#857802 - Eric Le Lay)
+        Hyperlink support for XML and HTML buffers (feat. req. #3257914 - Eric Le Lay)
+        Fix Sidekick Edit Tag dialog does not get keyboard focus (Mac) (#3389424 - Eric Le Lay).
+        Fix XMLPlugin doesn't find DTD upon second parse (#3393297 - Eric Le Lay).
+        Bundle templates for common documents (html, xsl, etc) (Eric Le Lay).
+
+    Version 2.8.0 Requires jEdit 4.3 final, Java 1.5, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+
+        Added ability to sort attributes per file type, for example, when opening an Ant build file, the 'name' attribute for properties and targets will be displayed first. (Dale Anson)
+        Added the ability for a tag to be renamed based on child tags. For example, the tld files that define jsp tags do not have attributes for the 'tag' and 'function' elements. The name of the tag or function is contained in a child element named 'name', so this change renames the nodes visible in the SideKick tree to show the original element name plus the value of the child element, so 'tag' becomes 'tag: somename', which makes this SideKick much more useful for this kind of file. (Dale Anson)
+        Added a dependency on the new EclipseIconsPlugin. These icons are used when displaying Ant and TLD files.
+        Added a "hack" to better identify Ant build files.
+        Added caching of schemas and completion info in memory. It can't be turned off. It retains cached objects until :
+            all requiring buffers are closed;
+            the file is opened in jEdit;
+            the file is closed in jEdit;
+            the file is modified in jEdit.
+        Completion Info is available from XSD schemas declared via schemas.xml. It is also available if the instance document is malformed (bug #2810050 - Eric Le Lay).
+        Fixed bugs related to SFTP (bug #3009485 - Eric Le Lay). VFS should be fully supported, now.
+        Suppress error message from Resolver (cannot find CatalogManager.properties) (bug #1090658 - Eric Le Lay)
+        Fix NPE in XmlParsedData (bug #3053499 - Matthieu Casanova)
+        XML Insert and the completion popup show a preview of entity values (feature request #1591422 - Eric Le Lay).
+        Fix various URISyntaxExceptions (plugin patch #3148178 - Kazutoshi Satoda)
+
+    Version 2.7.0 Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+
+        Translate an RNG,RNC schema or a sample XML to a RNC,RNG,DTD or XSD (Eric Le Lay - #1465879)
+        Split/Join tag doesn't remove namespace bindings, ignores '>' in attributes and preserves entities in attributes (Eric Le Lay)
+        XML Insert and completion are namespace aware (Eric Le Lay)
+        Fixed a bug that prevented para content from being suggested by XML Insert or completion in docbook (bug #3002849 - Eric Le Lay)
+
+    Version 2.6.1 Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+
+        Fix troubles loading the XML parser. (Eric Le Lay - #2950392, #2969809)
+        Fix minor glitches in path to URL conversion (Eric Le Lay)
+
+    Version 2.6 Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+        Updated CSS Sidekick to support CSS3. (Dale Anson)
+
+    Version 2.5 Requires jEdit 4.3pre16, Java 1.5, ErrorList 1.4.2, SideKick 0.7.7, BeautyPlugin 0.2.1 and XercesPlugin 2.9.0.
+        Improved XML Completion (Greg Knittl - #2801814, 2809253)
+        New XercesParerImpl to replaces old XmlParserImpl, uses updated Xerces API (Eric Le Lay)
+        New Resolver uses updated Catalog API and replaces old CatalogManager (Eric Le Lay)
+        XInclude support (Eric Le Lay)
+        Validation support with Relax-NG (RNG) schemas. (Eric Le Lay)
+        Copy XPath of element under caret. (Eric Le Lay)
+        bundled DTDs : update Docbook 4.2 to 4.4
+
+    Version 2.0.8 Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        Added the DTDGenerator module by Michael Kay and a corresponding action to generate a DTD from an instance document. (Martin Raspe)
+
+    Version 2.0.7 Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        From HTML sidekick, delegates to Ecmascript only when ecmascript is the preferred parser for the javascript edit mode. (Dale Anson)
+
+    Version 2.0.6 Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        Added completion info for exslt files (Jakub Roztocil)
+        2 new actions: select Element or Code Block, and Select Between Tags (Jakub Roztocil)
+        Un-broke characters to entities (1579232) and error highlighting (1597017) (Alan Ezust)
+
+    Version 2.0.5 Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        XML plugin now includes EcmascriptSideKick (initial release) and a new CSS2SideKick, both based on javacc parsers. The HtmlSideKick now uses both the CSS2SideKick and the EcmascriptSideKick to parse in-line <style> and <script> blocks in html code. (Dale Anson)
+        Bugfix to get highlighting to work with refactored classes in jEdit 4.3pre7. (1594103)
+        Fixes to HTML completion (sf.net bug#1579232)
+
+    Version 2.0.3 Requires jEdit 4.3pre5, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        Fixed bug with error messages from files in samba shares. (Alan Ezust)
+        Merged XmlIndenter plugin with XML plugin.
+
+    Version 2.0 Requires jEdit 4.3pre5, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        XML plugin now includes HtmlSideKick 0.5, JavaScriptSideKick 0.4, and CssSideKick (initial release).
+
+    Version 1.0 Requires jEdit 4.3pre5, Java 1.4, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+        Match tag also matches brackets. (ezust)
+        Added separate caching option for CatalogManager, clarified some of the options. (ezust)
+        Error messages from files in the catalog manager are now being reported from the correct local pathname. (ezust)
+        Added option to popup (or not) edit tag dialog after completion. (ezust)
+        Bug # 1511997 - Abstract elements defined in xsd (e.g. list.class, para.class from docbook xsd) are now handled properly in completions and element lists. (ezust)
+        Patch # 1511588 - Fixed xml insert (will69/ezust).
+        XSD completion info fixes #1511612 (will69)
+        Removed registration of SAXParserFactory. This should help avoid clashing with other plugins that use SAXParserFactory.
+        Removed use of gnu.regexp in favor of java.util.regex. (ezust)
+
+    Version 0.18 Requires jedit 4.3pre3, Java 1.4, ErrorList 1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
+        Debugged goto matching tag action. Deselects current selection before doing its thing. (Alan Ezust)
+        Some refactoring to help HtmlSideKick with completion. (Alan Ezust)
+
+    Version 0.17 Requires jedit 4.3pre3, Java 1.4, ErrorList 1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
+        Attribute completion works now. (Alan Ezust)
+
+    Version 0.16 Requires jedit 4.3pre3, Java 1.4, ErrorList 1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
+        Generates ant completion xml as part of build process (Ben Burgess)
+        Removed Xerces from this plugin and added a dependency on XercesPlugin 2.8.0. (ezust)
+        Removed htmlparser from this plugin, since the HtmlSideKick does a better job of parsing HTML. (ezust)
+
+    Version 0.15 Patched for jEdit43pre2, still requires ErrorList plugin 1.3.1, SideKick 0.3 and Xerces 2.6 or later.
+        Tested with Xerces 2.7.1
+
+    Version 0.14 requires jEdit 4.2pre9, SideKick plugin 0.3, and ErrorList plugin 1.3.1.
+        The XML Insert window does not let you insert tags in the middle of existing tags (Jason Rosenberg).
+        XML:FO completion (Lars Trieloff).
+        Updated to Xerces 2.6.2.
+
+    Version 0.13 requires jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.
+        We now use the HTML parser from htmlparser.sf.net instead of the extremely moronic Swing HTML parser (Will Sargent).
+        JHTML completion (Will Sargent).
+        The element completion code now tries to preserve case when editing HTML files.
+        Changing a catalog from within jEdit will automatically reload it.
+        Validation was only working for schemas, not DTDs.
+        Fixed NullPointerException when closing Plugin Options dialog box.
+        Macros can now be recorded while the XML plugin's completion features are enabled.
+        Updated Ant build.xml completion to match ANt 1.6 beta 2.
+        Now includes DocBook V4.2 XML DTD.
+
+    Version 0.12 requires jEdit 4.2pre3, SideKick plugin 0.3, and ErrorList plugin 1.3.
+
+        Updated for jEdit 4.2 plugin API.
+        Updated to use SideKick 0.3 code completion improvements.
+        Includes the new Apache XML commons catalog resolver code instead of the outdated com.arbortext.catalog package. This brings improved support for OASIS and XML catalogs.
+        Now uses jEdit 4.2 structure matching API to paint tag highlight, so you will see a tag scope indicator in the gutter just like with brackets.
+
+    Version 0.11.1 requires jEdit 4.1pre11, SideKick plugin 0.2, and ErrorList plugin 1.2.
+
+        Fatal errors now stop parsing. This fixes an infinite loop with a malformed DTD.
+        Validation would still be performed, even if the option was switched off.
+        Fixed a problem where the structure tree would be empty on Windows.
+        Added an option to insert a space before the "/>" in stand-alone tags. In other words, instead of completing like so:
+            <xref linkend="foo"/>
+        You get this:
+            <xref linkend="foo" />
+
+        XML Insert window was rather counter-intuitive with regards to inserting closing tags. Now it always inserts a closing tag, no matter what.
+
+    Version 0.11 requires jEdit 4.1pre11, SideKick plugin 0.1, and ErrorList plugin 1.2.
+
+        The XML plugin now relies on the new SideKick plugin to present the structure view. The main user-visible change is that a number of commands have moved to the SideKick plugin, which is now a required dependency. Other plugins can make use of SideKick to present a structure tree along and code completion popups.
+        Improved handling of external entities; if an external entity is opened in a buffer, the contents of the buffer are parsed instead of the entity file on disk.
+        Also, external entities can specify an xml.root buffer-local property pointing to the top-level file that includes them; this causes the parser to always parse the top-level file (which eventually parses the entity), instead of the entity itself. This allows code completion and validation to be performed using the <!DOCTYPE> specified in the top-level file.
+        Schema completion popups now only show the elements that can be inserted at the caret position.
+        Schema completion with namespaces did not always work.
+        Schema completion lists did not contain elements declared inside complex types.
+        Schemas containing <xsd:import> should be handled better.
+        If completion popups were disabled, the plugin would beep when < or & was pressed, very annoying.
+        The option to insert a closing tag as soon as an opening tag was typed was broken.
+        Attempting to fix problem with some JVMs where a Backspace in the completion popup would delete two characters.
+        Fixed stack overflow with some XML schemas (like DocBook).
+        Clear DTD Cache command now named Clear Resource Cache. It deletes downloaded files now, instead of just removing references to them from the cache map.
+        Closing the Global Options dialog box with an XML file open would cause problems with the resource cache.
+        XHTML files could be mis-detected as HTML, instead of XML.
+        Xerces 2.3.0 now included.

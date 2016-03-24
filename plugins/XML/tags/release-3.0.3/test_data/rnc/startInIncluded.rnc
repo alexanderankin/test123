@@ -1,0 +1,5 @@
+default namespace = "urn:hello"
+
+include "included.rnc"
+
+start = root.elem
