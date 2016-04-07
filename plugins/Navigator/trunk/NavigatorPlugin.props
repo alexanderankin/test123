@@ -21,29 +21,40 @@ plugin.ise.plugin.nav.NavigatorPlugin.depend.3=plugin CommonControlsPlugin 1.7.2
 # docs
 plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
 
-#option pane settings
+#option pane settings and labels
 plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
 options.navigator.label=Navigator
 options.navigator.code=new ise.plugin.nav.OptionPanel();
 
 navigator.options.separator1.label=Navigator
-navigator.options.separator2.label=Scope
-navigator.options.separator3.label=Configuration Options
+navigator.gotoLine.label=Go to line...
+navigator.useNavigatorGoToLine.label=Use Navigator's 'Go to line' dialog
 
+navigator.options.separator2.label=Scope
+navigator.options.viewScope.label=View scope
+navigator.options.editPaneScope.label=EditPane scope
+
+navigator.options.separator3.label=Configuration Options
+navigator.options.showPath.label=Show path
+navigator.options.showLineNumber.label=Show line number
+navigator.options.showCaretOffset=Show caret offset
+navigator.options.showOnToolbar.label=Show Navigator on toolbar
 navigator.options.groupByFile.label=Group history items by file
 navigator.options.groupByLine.label=Group history items by line
-
 navigator.options.showLineText.label=Show line text in history list
 navigator.options.showLineTextSyntax.label=Show syntax highlighting in history list
 navigator.options.showStripes.label=Show stripes in history list
 
-navigator.options.showOnToolbar.label=Show Navigator on toolbar
 navigator.options.listSize.label=Visible rows in history list
 navigator.options.maxStackSize.label=Maximum history size:
 
 # title for DockableWindowManager
 Navigator.title=Navigator
 Navigator.label=Navigator
+
+# dockable settings and labels
+navigator.options.groupBy.label=Group by:
+navigator.options.scope.label=Scope:
 
 #----------------
 # menu settings
@@ -63,9 +74,6 @@ navigator.menu.label=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backFile navigator.backList navigator.forward navigator.forwardFile navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable - navigator-push-position navigator-pop-position navigator-goto-top-position navigator-swap-caret-and-top
 
 #navigator.toolbar
-
-# the next three items are the labels to add to a submenu on
-# the plugins menu for this plugin.
 navigator.back.label=Back
 navigator.back.icon=ArrowL.png
 
@@ -93,8 +101,6 @@ navigator.toggleGroupByLine.label=Toggle group by line
 
 navigator.combinedList.label=Show combined list
 
-navigator.gotoLine.label=Go to line...
-navigator.useNavigatorGoToLine.label=Use Navigator's 'Go to line' dialog
 
 navigator.options.label=Options
 

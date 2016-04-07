@@ -71,18 +71,18 @@ public class Dockable extends JPanel implements ChangeListener, EBComponent {
         // create top panel components...
 
         // group by file
-        JLabel groupByLabel = new JLabel("Group by:");
-        groupByFile = new JCheckBox(jEdit.getProperty("navigator.options.groupByFile.label"));
+        JLabel groupByLabel = new JLabel(jEdit.getProperty("navigator.options.groupBy.label", "Group by:"));
+        groupByFile = new JCheckBox(jEdit.getProperty("navigator.options.groupByFile.label", "Group history items by file"));
         groupByFile.setName("groupByFile");
         groupByFile.setSelected(NavigatorPlugin.groupByFile());
 
         // group by line
-        groupByLine = new JCheckBox(jEdit.getProperty("navigator.options.groupByLine.label"));
+        groupByLine = new JCheckBox(jEdit.getProperty("navigator.options.groupByLine.label", "Group history items by line"));
         groupByLine.setName("groupByLine");
         groupByLine.setSelected(NavigatorPlugin.groupByLine());
 
         // navigator scope
-        JLabel scopeLabel = new JLabel("Scope:");
+        JLabel scopeLabel = new JLabel(jEdit.getProperty("navigator.options.scope.label", "Scope:"));
         viewScope = new JRadioButton(jEdit.getProperty("navigator.viewScope.label", "View scope"));
         viewScope.setName("viewScope");
         editPaneScope = new JRadioButton(jEdit.getProperty("navigator.editPaneScope.label", "EditPane scope"));

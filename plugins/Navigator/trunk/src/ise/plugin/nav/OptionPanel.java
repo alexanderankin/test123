@@ -80,9 +80,9 @@ public class OptionPanel extends AbstractOptionPane {
 
         // navigator scope
         addSeparator( "navigator.options.separator2.label");
-        viewScope = new JRadioButton( jEdit.getProperty( "navigator.viewScope.label", "View scope" ) );
+        viewScope = new JRadioButton( jEdit.getProperty( "navigator.options.viewScope.label", "View scope" ) );
         viewScope.setName( "viewScope" );
-        JRadioButton editPaneScope = new JRadioButton( jEdit.getProperty( "navigator.editPaneScope.label", "EditPane scope" ) );
+        JRadioButton editPaneScope = new JRadioButton( jEdit.getProperty( "navigator.options.editPaneScope.label", "EditPane scope" ) );
         editPaneScope.setName( "editPaneScope" );
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add( viewScope );
@@ -97,15 +97,15 @@ public class OptionPanel extends AbstractOptionPane {
 
         addSeparator( "navigator.options.separator3.label" );
         
-        showPath = new JCheckBox("Show path");
+        showPath = new JCheckBox(jEdit.getProperty("navigator.options.showPath.label", "Show path"));
         showPath.setSelected(jEdit.getBooleanProperty("navigator.showPath", true));
         addComponent(showPath);
         
-        showLineNumber = new JCheckBox("Show line number");
+        showLineNumber = new JCheckBox(jEdit.getProperty("navigator.options.showLineNumber.label", "Show line number"));
         showLineNumber.setSelected(jEdit.getBooleanProperty("navigator.showLineNumber", true));
         addComponent(showLineNumber);
         
-        showCaretOffset = new JCheckBox("Show caret offset");
+        showCaretOffset = new JCheckBox(jEdit.getProperty("navigator.options.showCaretOffset", "Show caret offset"));
         showCaretOffset.setSelected(jEdit.getBooleanProperty("navigator.showCaretOffset", true));
         addComponent(showCaretOffset);
 
@@ -154,7 +154,7 @@ public class OptionPanel extends AbstractOptionPane {
         listSize.setName( "listSize" );
         listSize.setMinValue( 1 );
         listSize.setValue( jEdit.getIntegerProperty( "listSize", 10 ) );
-        addComponent( jEdit.getProperty( "navigator.listSize.label", "Visible rows in history list:" ), listSize );
+        addComponent( jEdit.getProperty( "navigator.options.listSize.label", "Visible rows in history list:" ), listSize );
 
         // max stack size
         addComponent( Box.createVerticalStrut( 11 ) );
@@ -162,7 +162,7 @@ public class OptionPanel extends AbstractOptionPane {
         maxStackSize.setName( "maxStackSize" );
         maxStackSize.setMinValue( 1 );
         maxStackSize.setValue( jEdit.getIntegerProperty( "maxStackSize", 512 ) );
-        addComponent( jEdit.getProperty( "navigator.maxStackSize.label", "Maximum history size:" ), maxStackSize );
+        addComponent( jEdit.getProperty( "navigator.options.maxStackSize.label", "Maximum history size:" ), maxStackSize );
     }
 
     private void installListeners() {
