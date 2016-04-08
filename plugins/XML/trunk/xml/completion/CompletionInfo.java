@@ -273,6 +273,13 @@ public class CompletionInfo
 	private static HashMap<String, Object> completionInfoNamespaces;
 	private static Object lock;
 
+  public static void stop()
+  {
+    globs = null;
+    completionInfoResources = null;
+    completionInfoNamespaces = null;
+  }
+
 	//{{{ Class initializer
 	static
 	{
