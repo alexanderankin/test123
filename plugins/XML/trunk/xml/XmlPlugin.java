@@ -30,6 +30,7 @@ import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.util.Task;
 
 import sidekick.SideKickPlugin;
+import xml.completion.CompletionInfo;
 import xml.parser.*;
 
 import static xml.Debug.*;
@@ -51,7 +52,6 @@ public class XmlPlugin extends EBPlugin
 
 		if(DEBUG_JAXP)System.setProperty("jaxp.debug","1");
 
-		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();
 
 		XmlActions.propertiesChanged();
@@ -117,8 +117,8 @@ public class XmlPlugin extends EBPlugin
 
 		xml.translate.TrangTranslator.stop();
 		xml.cache.Cache.instance().stop();
-		xml.parser.ServicesDatatypeLibraryFactory.instance().start();
-
+		xml.parser.ServicesDatatypeLibraryFactory.instance().stop();
+    CompletionInfo.stop();
 	} //}}}
 
 	//{{{ handleMessage() method

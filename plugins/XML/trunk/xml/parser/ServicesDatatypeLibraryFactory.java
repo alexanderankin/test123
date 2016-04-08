@@ -89,8 +89,10 @@ public class ServicesDatatypeLibraryFactory implements DatatypeLibraryFactory {
 	 * clear, remove from EditBus, forget singleton
 	 */
 	public void stop(){
-    	factories.clear();
-    	libraries.clear();
+    INSTANCE = null;
+		EditBus.removeFromBus(this);
+		factories.clear();
+		libraries.clear();
 	}
 	
 	@EBHandler
@@ -100,10 +102,10 @@ public class ServicesDatatypeLibraryFactory implements DatatypeLibraryFactory {
 				loadFactories();
 		}
 	}
-	
+
 	public static ServicesDatatypeLibraryFactory instance(){
 		return INSTANCE;
 	}
 
-	private static final ServicesDatatypeLibraryFactory INSTANCE = new ServicesDatatypeLibraryFactory();
+	private static ServicesDatatypeLibraryFactory INSTANCE = new ServicesDatatypeLibraryFactory();
 }
