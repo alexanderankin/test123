@@ -962,6 +962,10 @@ public class ErrorList extends JPanel implements DefaultFocusComponent
 	//{{{ _openFile() method
 	private void _openFile(String vfsPath) {
 		try {
+			if (MiscUtilities.isURL(vfsPath) && vfsPath.startsWith("http")) {
+				jEdit.openFile(view,vfsPath);
+				return;
+			}
 			VFS vfs = VFSManager.getVFSForPath(vfsPath);
 			VFSFile file = vfs._getFile(null, vfsPath, null);
 			if (file == null || file.getLength() == 0) {
