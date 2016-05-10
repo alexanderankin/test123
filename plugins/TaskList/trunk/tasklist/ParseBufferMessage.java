@@ -62,4 +62,13 @@ public class ParseBufferMessage extends EBMessage {
     public Object getWhat() {
         return what;
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder("ParseBufferMessage[buffer: ");
+        sb.append(buffer == null ? "null" : buffer.getPath());
+        sb.append(", what: ");
+        sb.append(what == null ? "null" : what);
+        sb.append(']');
+        return sb.toString();
+    }
 }
