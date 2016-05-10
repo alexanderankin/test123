@@ -104,8 +104,8 @@ public class TaskList extends JPanel implements EBComponent {
         refreshButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
-                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_PROJECT ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, view.getBuffer(), ParseBufferMessage.DO_PARSE_ALL ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, view.getBuffer(), ParseBufferMessage.DO_PARSE_PROJECT ) );
                 }
             }
         );
@@ -160,7 +160,7 @@ public class TaskList extends JPanel implements EBComponent {
                             }
                         }
                     }
-                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.APPLY_FILTER ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, view.getBuffer(), ParseBufferMessage.APPLY_FILTER ) );
                 }
             };
 
@@ -176,7 +176,7 @@ public class TaskList extends JPanel implements EBComponent {
                             type.setActive( mi.isSelected() );
                         }
                     }
-                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.APPLY_FILTER ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, view.getBuffer(), ParseBufferMessage.APPLY_FILTER ) );
                 }
             };
 
