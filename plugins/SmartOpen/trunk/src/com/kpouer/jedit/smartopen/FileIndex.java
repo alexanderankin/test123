@@ -45,7 +45,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Bits;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
@@ -141,10 +140,10 @@ public class FileIndex implements Closeable
 					builder.append(split[i]).append('*');
 				}
 			}
-			Query queryCaps = new WildcardQuery(new Term("name_caps", builder.toString()));
+			Query queryCaps = new WildcardQuery(new Term(DocumentFactory.FIELD_NAME_CAPS, builder.toString()));
 			queryCaps.setBoost(10.0F);
 			s = s.toLowerCase();
-			Query queryNoCaps = new WildcardQuery(new Term("name", '*' + s + '*'));
+			Query queryNoCaps = new WildcardQuery(new Term(DocumentFactory.FIELD_NAME, '*' + s + '*'));
 
 			BooleanQuery nameQuery = new BooleanQuery();
 			nameQuery.add(queryCaps, BooleanClause.Occur.SHOULD);
@@ -159,22 +158,22 @@ public class FileIndex implements Closeable
 			{
 				query = new BooleanQuery();
 				query.add(nameQuery, BooleanClause.Occur.MUST);
-				query.add(new TermQuery(new Term("extension", extension.toLowerCase())), BooleanClause.Occur.MUST);
+				query.add(new TermQuery(new Term(DocumentFactory.FIELD_EXTENSION, extension.toLowerCase())), BooleanClause.Occur.MUST);
 			}
 			if (reader == null)
 				initReader();
 			IndexSearcher searcher = new IndexSearcher(reader);
 
-      SortField sortField = new SortedNumericSortField("frequency", SortField.Type.LONG, true);
-      Sort sort = new Sort(sortField);
+            SortField sortField = new SortedNumericSortField(DocumentFactory.FIELD_FREQUENCY, SortField.Type.LONG, true);
+            Sort sort = new Sort(sortField);
 
-      TopDocs search = searcher.search(query, 100, sort);
+            TopDocs search = searcher.search(query, 100, sort);
 			ScoreDoc[] scoreDocs = search.scoreDocs;
-			Set<String> fields = Collections.singleton("path");
+			Set<String> fields = Collections.singleton(DocumentFactory.FIELD_PATH);
 			for (ScoreDoc scoreDoc : scoreDocs)
 			{
 				Document doc = searcher.doc(scoreDoc.doc, fields);
-				String path = doc.get("path");
+				String path = doc.get(DocumentFactory.FIELD_PATH);
 				l.add(path);
 			}
 		}
@@ -253,7 +252,7 @@ public class FileIndex implements Closeable
 				}
 				for (String remainingFile : knownFiles)
 				{
-					writer.deleteDocuments(new Term("path", remainingFile));
+					writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, remainingFile));
 				}
 			}
 			catch (IOException e)
@@ -286,14 +285,14 @@ public class FileIndex implements Closeable
 		}
 		if (reader != null)
 		{
-			Set<String> fields = Collections.singleton("path");
+			Set<String> fields = Collections.singleton(DocumentFactory.FIELD_PATH);
 			Bits liveDocs = MultiFields.getLiveDocs(reader);
 			for (int i = 0; i < reader.maxDoc(); i++)
 			{
 				if (liveDocs == null || liveDocs.get(i))
 				{
 					Document doc = reader.document(i, fields);
-					String path = doc.get("path");
+					String path = doc.get(DocumentFactory.FIELD_PATH);
 					knownFiles.add(path);
 				}
 			}
@@ -316,7 +315,7 @@ public class FileIndex implements Closeable
 					String path = fileProvider.next();
 					observer.setValue(i);
 					observer.setStatus(path);
-					writer.deleteDocuments(new Term("path", path));
+					writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, path));
 				}
 			}
 			catch (IOException e)
@@ -339,7 +338,7 @@ public class FileIndex implements Closeable
 	//{{{ updateFrequency() method
 	public void updateFrequency(String path)
 	{
-		Term term = new Term("path",path);
+		Term term = new Term(DocumentFactory.FIELD_PATH,path);
 		synchronized (LOCK)
 		{
 			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
@@ -405,7 +404,7 @@ public class FileIndex implements Closeable
 				{
 					for (String path : existingFiles)
 					{
-						Term term = new Term("path", path);
+						Term term = new Term(DocumentFactory.FIELD_PATH, path);
 						writer.deleteDocuments(term);
 						writer.addDocument(documentFactory.createDocument(path, 1L));
 					}
@@ -440,7 +439,7 @@ public class FileIndex implements Closeable
 		private FrequencySearch(IndexReader reader)
 		{
 			searcher = new IndexSearcher(reader);
-			frequencyField = Collections.singleton("frequency");
+			frequencyField = Collections.singleton(DocumentFactory.FIELD_FREQUENCY_STORED);
 		}
 
 		public long getFrequency(String path) throws IOException
@@ -448,12 +447,12 @@ public class FileIndex implements Closeable
 			long frequency = 0L;
 			try
 			{
-				TopDocs search = searcher.search(new TermQuery(new Term("path", path)),1);
+				TopDocs search = searcher.search(new TermQuery(new Term(DocumentFactory.FIELD_PATH, path)),1);
 				if (search.scoreDocs.length == 1)
 				{
 					Document doc = searcher.doc(search.scoreDocs[0].doc, frequencyField);
-					IndexableField frequencyField = doc.getField("frequency");
-					frequency = frequencyField.numericValue().longValue();
+					IndexableField frequencyField = doc.getField(DocumentFactory.FIELD_FREQUENCY_STORED);
+                    frequency = frequencyField.numericValue().longValue();
 				}
 			}
 			catch(IndexNotFoundException infe)
@@ -464,43 +463,4 @@ public class FileIndex implements Closeable
 		}
 	}
 
-	private static class DocumentFactory
-	{
-		private final NumericDocValuesField frequency;
-		private final StringField name_caps;
-		private final TextField name;
-		private final StringField path;
-		private final Document document;
-		private final StringField fileExtension;
-
-		private DocumentFactory()
-		{
-			path = new StringField("path", "", Field.Store.YES);
-      name = new TextField("name", "", Field.Store.NO);
-      name_caps = new StringField("name_caps", "", Field.Store.NO);
-      fileExtension = new StringField("extension", "", Field.Store.NO);
-      frequency = new NumericDocValuesField("frequency", 1L);
-      document = new Document();
-      document.add(path);
-      document.add(name);
-      document.add(name_caps);
-      document.add(fileExtension);
-      document.add(frequency);
-		}
-
-		// createDocument() method
-		public Document createDocument(String path, long frequency)
-		{
-			String fileName = MiscUtilities.getFileName(path);
-			this.path.setStringValue(path);
-			name.setStringValue(fileName);
-			name_caps.setStringValue(fileName);
-			String extension = MiscUtilities.getFileExtension(path).toLowerCase();
-			if (extension.startsWith("."))
-				extension = extension.substring(1);
-			fileExtension.setStringValue(extension);
-			this.frequency.setLongValue(frequency);
-			return document;
-		} //}}}
-	}
 }
