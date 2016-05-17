@@ -50,6 +50,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
     private JCheckBox useFont;
     private JCheckBox allowBeep = null;
     private JCheckBox useAuditoryCues;
+    private boolean changed = false;
 
     public LookAndFeelOptionPane() {
         super( "lookandfeel" );
@@ -92,32 +93,35 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
         lookAndFeels.setSelectedIndex( idx < 0 ? 0 : idx );
         itemStateChanged( null );
         lookAndFeels.addItemListener( this );
-
+        changed = false;
     }
 
     public void _save() {
-        try {
-            if ( configComponent != null ) {
-                configComponent.save();
-            }
-            jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
-            jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
-            if ( allowBeep != null ) {
-                System.setProperty( "allowBeep", allowBeep.isSelected() ? "true" : "false" );
-            }
-            jEdit.setBooleanProperty( "lookandfeel.useAuditoryCues", useAuditoryCues.isSelected() );
-            if ( useAuditoryCues.isSelected() ) {
-                UIManager.put( "AuditoryCues.playList", UIManager.get( "AuditoryCues.allAuditoryCues" ) );
-            } else {
-                UIManager.put( "AuditoryCues.playList", null );
-            }
-            LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
-            if ( installer != null ) {
-                LookAndFeelPlugin.installLookAndFeel( installer );
-            }
-        } catch ( Exception e ) {
-            Log.log( Log.ERROR, this, e );
-            GUIUtilities.error( this, "lookandfeel.error.installer", null );
+		if ( configComponent != null ) {
+			configComponent.save();
+		}
+    	if (changed) {
+			try {
+				jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
+				jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
+				if ( allowBeep != null ) {
+					System.setProperty( "allowBeep", allowBeep.isSelected() ? "true" : "false" );
+				}
+				jEdit.setBooleanProperty( "lookandfeel.useAuditoryCues", useAuditoryCues.isSelected() );
+				if ( useAuditoryCues.isSelected() ) {
+					UIManager.put( "AuditoryCues.playList", UIManager.get( "AuditoryCues.allAuditoryCues" ) );
+				} else {
+					UIManager.put( "AuditoryCues.playList", null );
+				}
+				LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
+				if ( installer != null ) {
+					LookAndFeelPlugin.installLookAndFeel( installer );
+				}
+			} catch ( Exception e ) {
+				Log.log( Log.ERROR, this, e );
+				GUIUtilities.error( this, "lookandfeel.error.installer", null );
+			}
+			changed = false;
         }
     }
 
@@ -140,6 +144,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane implements ItemLis
             invalidate();
             revalidate();
             repaint();
+            changed = true;
         } catch ( Exception e ) {
             Log.log( Log.ERROR, this, e );
             GUIUtilities.error( this, "lookandfeel.error.installer", null );

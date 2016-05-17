@@ -1,5 +1,11 @@
 CHANGELOG for LookAndFeel plugin
 ================================
+
+Version 1.9
+-----------
+* Don't change look and feel from options pane unless the user has actually
+changed the look and feel selection in the dropdown.
+
 Version 1.8
 -----------
 * Added system look and feels so those can also be selected directly from this
