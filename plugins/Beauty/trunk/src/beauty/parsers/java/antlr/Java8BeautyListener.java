@@ -9,7 +9,8 @@ import java.util.*;
 
 /**
  * Beautifier for Java 8 and below.
- * 
+ * TODO: the ending folding markers that jEdit recognizes, // }}} are treated as comments
+ *   and associated with the next token rather than the previous
  */
 public class Java8BeautyListener implements Java8Listener {
     
@@ -1183,6 +1184,9 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    // common ending
 	    String classBody = ctx.classBody() == null ? "" : stack.pop().trim();
+	    if (!classBody.isEmpty() && brokenBracket && classBody.startsWith("{")) {
+	        classBody = new StringBuilder("\n").append(classBody).toString();
+	    }
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
@@ -1691,6 +1695,10 @@ Parser methods follow.
 	@Override public void exitFinally_(@NotNull Java8Parser.Finally_Context ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String block = stack.pop();
+	    block = trimFront(block);
+        if (bracketStyle == BROKEN) {
+            block = new StringBuilder("\n").append(block).toString();
+        }
 	    String finally_ = stack.pop();
 	    sb.append(finally_).append(' ').append(block);
 	    stack.push(sb.toString());
@@ -2146,6 +2154,9 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    
 	    String classBody = ctx.classBody() == null ? "" : stack.pop();
+	    if (!classBody.isEmpty() && brokenBracket && classBody.startsWith("{")) {
+	        classBody = new StringBuilder("\n").append(classBody).toString();
+	    }
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
@@ -2410,8 +2421,9 @@ Parser methods follow.
 	@Override public void exitNormalClassDeclaration(@NotNull Java8Parser.NormalClassDeclarationContext ctx) {
 	    StringBuilder sb = new StringBuilder();
         String body = stack.pop();
-        if (bracketStyle == ATTACHED) {
-            body = trimFront(body);
+        body = trimFront(body);
+        if (bracketStyle == BROKEN) {
+            body = new StringBuilder("\n").append(body).toString();
         }
         String superInterfaces = ctx.superinterfaces() == null ? "" : stack.pop() + ' ';
         String superClass = ctx.superclass() == null ? "" : stack.pop() + ' ';
@@ -2465,8 +2477,11 @@ Parser methods follow.
 	    stmt = trimEnd(stmt);
 	    if (!stmt.startsWith("{")) {
 	        ++tabCount;
-	        stmt = (brokenBracket ? "\n" : "") + "{\n" + indent(stmt) + "}";
+	        stmt = "{\n" + indent(stmt) + "}";
 	        --tabCount;
+	    }
+	    if (brokenBracket) {
+	        stmt = new StringBuilder("\n").append(stmt).toString();    
 	    }
 	    String rparen = stack.pop();
 	    String expression = stack.pop();
@@ -2570,8 +2585,11 @@ Parser methods follow.
 	    String statement = stack.pop().trim();
 	    if (!statement.startsWith("{")) {
 	        ++tabCount;
-	        statement = (brokenBracket ? "\n" : "") + "{\n" + indent(statement) + "}";
+	        statement = "{\n" + indent(statement) + "}";
 	        --tabCount;
+	    }
+	    if (brokenBracket) {
+	         statement = new StringBuilder("\n").append(statement).toString();
 	    }
 	    String rparen = stack.pop();
 	    String expression = stack.pop();
@@ -3128,6 +3146,9 @@ Parser methods follow.
 	        stmt = (brokenBracket ? "\n" : "") + "{\n" + indent(stmt) + "}";
 	        --tabCount;
 	    }
+	    if (brokenBracket) {
+	        stmt = new StringBuilder("\n").append(stmt).toString();    
+	    }
 	    String rparen = stack.pop();
 	    String update = ctx.forUpdate() == null ? "" : stack.pop();
 	    String semi2 = stack.pop();
@@ -3228,6 +3249,9 @@ Parser methods follow.
 	@Override public void exitClassInstanceCreationExpression_lf_primary(@NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String classBody = ctx.classBody() == null ? "" : stack.pop();
+	    if (!classBody.isEmpty() && brokenBracket && classBody.startsWith("{")) {
+	        classBody = new StringBuilder("\n").append(classBody).toString();
+	    }
 	    String rparen = stack.pop();
 	    String argumentList = ctx.argumentList() == null ? "" : stack.pop();
 	    String lparen = stack.pop();
@@ -3866,6 +3890,10 @@ Parser methods follow.
 	@Override public void exitCatchClause(@NotNull Java8Parser.CatchClauseContext ctx) { 
 	    StringBuilder sb = new StringBuilder();
 	    String block = stack.pop();
+	    block = trimFront(block);
+        if (bracketStyle == BROKEN) {
+            block = new StringBuilder("\n").append(block).toString();
+        }
 	    String rparen = stack.pop();
 	    String cfp = stack.pop();
 	    String lparen = stack.pop();
@@ -4539,7 +4567,10 @@ Parser methods follow.
 	            catches = stack.pop().trim();
 	        }
 	        String block = stack.pop();
-	        block = trimEnd(block);
+	        block = block.trim();
+            if (bracketStyle == BROKEN) {
+                block = new StringBuilder("\n").append(block).toString();
+            }
 	        String try_ = stack.pop();
 	        sb.append(try_).append(' ').append(block).append(breakElse ? '\n' : ' ').append(catches).append(breakElse ? '\n' : ' ').append(finally_);
 	    }
@@ -4590,8 +4621,11 @@ Parser methods follow.
 	    statement = trimEnd(statement);
 	    if (!statement.startsWith("{")) {
 	        ++tabCount;
-	        statement = (brokenBracket ? "\n" : "") + "{\n" + indent(statement) + "}";
+	        statement = "{\n" + indent(statement) + "}";
 	        --tabCount;
+	    }
+	    if (brokenBracket) {
+	        statement = new StringBuilder("\n").append(statement).toString();   
 	    }
 	    String rparen = stack.pop();
 	    String forUpdate = ctx.forUpdate() == null ? "" : stack.pop();
