@@ -25,7 +25,7 @@ public class HtmlHyperLink extends HyperLink{
 	
 	@Override
 	public String getLinkText( String text, String url, String formattedText ){
-		StringBuffer buf = new StringBuffer( ) ;
+		StringBuffer buf = new StringBuffer( 32 ) ;
 		buf.append( "<a href=\"").append( url )
 			.append( "\">")
 			.append( formattedText )
