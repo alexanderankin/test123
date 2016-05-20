@@ -1,3 +1,4 @@
+
 /*
  * Code2HTMLPlugin.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
@@ -18,14 +19,10 @@
  */
 package code2html;
 
-import java.util.Vector;
+
+import java.awt.Color;
 
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.jEdit;
-
-import org.gjt.sp.util.Log;
 
 
 /**
@@ -35,6 +32,7 @@ import org.gjt.sp.util.Log;
  * @version    0.5
  */
 public class Code2HTMLPlugin extends EditPlugin {
+
     /**
      *  Code2HTMLPlugin Constructor
      */
@@ -46,13 +44,16 @@ public class Code2HTMLPlugin extends EditPlugin {
     /**
      *  Start the plugin
      */
-    public void start() { }
+    public void start() {
+    }
 
 
     /**
      *  Stop the plugin
      */
-    public void stop() { }
+    public void stop() {
+    }
+
 
     /*
      *public void createMenuItems(Vector menuItems) {
@@ -62,5 +63,40 @@ public class Code2HTMLPlugin extends EditPlugin {
      *dialog.addOptionPane(new Code2HTMLOptionPane());
      *}
      */
-}
 
+    /**
+     * Assumes a 6 or 8 digit hex value preceded by a # for a color value,
+     * for example, #ffdcdcc or #f0f0f0
+     * @return the corresponding Color, minus any alpha value
+     */
+    public static Color decode( String colorString ) {
+        if ( colorString == null || colorString.length() == 0 || colorString.charAt( 0 ) != '#' ) {
+            throw new IllegalArgumentException( "Invalid color string: " + colorString );
+        }
+        colorString = colorString.substring(1);     // remove leading #
+        try
+        {
+            if ( colorString.length() == 6 ) {
+                colorString = new StringBuilder("ff").append(colorString).toString();
+            }
+            //int alpha = Integer.parseInt( colorString.substring( 0, 2 ), 16 );
+            int red = Integer.parseInt( colorString.substring( 2, 4 ), 16 );
+            int green = Integer.parseInt( colorString.substring( 4, 6 ), 16 );
+            int blue = Integer.parseInt( colorString.substring( 6, 8 ), 16 );
+            Color color = new Color( red, green, blue );
+            return color;
+        }
+        catch ( NumberFormatException nf ) {
+            throw new IllegalArgumentException( "Invalid color string: " + colorString );
+        }
+    }
+    
+	/**
+	 * Converts a color object to its hex value, minus any alpha value. The returned
+	 * value is prefixed with `#', for example `#ff0088'.
+	 */
+    public static String encode(Color color) {
+		String colString = Integer.toHexString(color.getRGB());
+		return "#" + colString.substring(2);
+    }
+}
