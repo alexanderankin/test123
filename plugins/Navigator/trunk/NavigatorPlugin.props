@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
-plugin.ise.plugin.nav.NavigatorPlugin.version=2.6
+plugin.ise.plugin.nav.NavigatorPlugin.version=2.7
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=Tracks position changes, \
     and provides "Back" and "Forward" actions similar to a web \
@@ -14,8 +14,8 @@ plugin.ise.plugin.nav.NavigatorPlugin.description=Tracks position changes, \
 # dependencies
 plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.7
 plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 05.03.01.00
-plugin.ise.plugin.nav.NavigatorPlugin.depend.2=plugin code2html.Code2HTMLPlugin 0.6
-plugin.ise.plugin.nav.NavigatorPlugin.depend.3=plugin CommonControlsPlugin 1.7.2
+plugin.ise.plugin.nav.NavigatorPlugin.depend.2=plugin code2html.Code2HTMLPlugin 0.7
+plugin.ise.plugin.nav.NavigatorPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
 
 
 # docs
