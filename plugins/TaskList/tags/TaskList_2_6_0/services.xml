@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+
+    <!-- adds the context menu item to Project Viewer context menu -->
+    <SERVICE CLASS="projectviewer.action.Action" NAME="Find Tasks">
+        new tasklist.TaskListPVAction();
+    </SERVICE>
+
+    <!-- adds an option pane to the project viewer properties dialog -->
+    <SERVICE CLASS="projectviewer.config.OptionsService" NAME="TaskList">
+        new tasklist.PVOptionsService();
+    </SERVICE>
+
+ </SERVICES>
+
