@@ -1,0 +1,52 @@
+plugin.code2html.Code2HTMLPlugin.name=Code2HTML
+plugin.code2html.Code2HTMLPlugin.author=Andre Kaplan
+plugin.code2html.Code2HTMLPlugin.version=0.7
+plugin.code2html.Code2HTMLPlugin.docs=users-guide.html
+plugin.code2html.Code2HTMLPlugin.activate=startup
+plugin.code2html.Code2HTMLPlugin.description=Convert a buffer to html with syntax highlighting.
+
+plugin.code2html.Code2HTMLPlugin.depend.0=jdk 1.7
+plugin.code2html.Code2HTMLPlugin.depend.1=jedit 05.03.01.00
+
+# Menu label
+code2html.label=Code2HTML
+
+#Menu
+plugin.code2html.Code2HTMLPlugin.menu=	code2html.htmlcss.current-buffer code2html.htmlcss.current-selection code2html.htmlcss.content-buffer code2html.htmlcss.content-selection code2html.htmlcss.style - code2html.html.current-buffer code2html.html.current-selection code2html.html.content-buffer code2html.html.content-selection - code2html.latex.current-buffer code2html.latex.current-selection code2html.latex.style code2html.latex.content-buffer code2html.latex.content-selection
+
+# Menu action labels
+code2html.html.current-buffer.label=HTMLize current buffer
+code2html.html.current-selection.label=HTMLize current selection
+code2html.html.content-buffer.label=HTML current buffer (only content)
+code2html.html.content-selection.label=HTML current selection (only content)
+
+code2html.htmlcss.current-buffer.label=HTMLize current buffer using CSS
+code2html.htmlcss.current-selection.label=HTMLize current selection using CSS
+code2html.htmlcss.style.label=CSS style definitions
+code2html.htmlcss.content-buffer.label=HTML current buffer using CSS (only content)
+code2html.htmlcss.content-selection.label=HTML current selection (only content)
+
+code2html.latex.current-buffer.label=Latex current buffer
+code2html.latex.current-selection.label=Latex current selection
+code2html.latex.style.label=Latex style definitions
+code2html.latex.content-buffer.label=Latex current buffer (only content)
+code2html.latex.content-selection.label=Latex current selection (only content)
+
+# Option Pane labels
+options.code2html.label=Code2HTML
+options.code2html.use-css=Use CSS
+options.code2html.show-gutter=Show gutter
+options.code2html.wrap=Wrap at column (0 for no wrapping):
+
+# Option Pane values
+code2html.use-css=true
+code2html.show-gutter=true
+code2html.wrap=0
+
+#-----------------------
+# option pane settings
+#-----------------------
+plugin.code2html.Code2HTMLPlugin.option-pane=code2html
+options.code2html.label=Code2HTML
+options.code2html.code=new code2html.Code2HTMLOptionPane();
+
