@@ -36,7 +36,13 @@ public class ConsoleBeanShell extends Shell
 	//{{{ ConsoleBeanShell constructor
 	public ConsoleBeanShell()
 	{
-		super("BeanShell");
+		this("BeanShell");
+	} //}}}
+	
+	//{{{ ConsoleBeanShell constructor
+	public ConsoleBeanShell(String name)
+	{
+		super(name);	
 	} //}}}
 
 	//{{{ printInfoMessage() method
@@ -96,7 +102,7 @@ public class ConsoleBeanShell extends Shell
 				ns.setVariable("console",null);
 				ns.setVariable("output",null);
 			}
-			catch(UtilEvalError e)
+			catch(UtilEvalError e)	// NOPMD
 			{
 			}
 		}

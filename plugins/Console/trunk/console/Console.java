@@ -29,14 +29,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +60,6 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
-import console.SystemShell.ConsoleState;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import org.gjt.sp.util.StandardUtilities;
@@ -128,7 +128,8 @@ implements EBComponent, DefaultFocusComponent
 		}
 
 		Shell s = Shell.getShell(defShell);
-		if (s == null) s = Shell.getShell("System");
+		if (s == null) 
+			s = Shell.getShell("System");
 		setShell(s);
 		load();
 		propertiesChanged();
@@ -197,7 +198,8 @@ implements EBComponent, DefaultFocusComponent
 	public Shell setShell(String shellStr)
 	{
 		Shell shell = Shell.getShell(shellStr);
-		if (shell == null) throw new RuntimeException("Unknown Shell: " + shellStr);
+		if (shell == null) 
+			return null;
 		return setShell(shell);
 	} //}}}
 
@@ -764,7 +766,10 @@ implements EBComponent, DefaultFocusComponent
 	{
 		String[] shells = Shell.getShellNames();
 		Arrays.sort(shells,new StandardUtilities.StringCompare<String>(true));
-		shellCombo.setModel(new DefaultComboBoxModel(shells));
+		String[] shellsPlusNew = new String[shells.length + 1];
+		System.arraycopy(shells, 0, shellsPlusNew, 0, shells.length);
+		shellsPlusNew[shells.length] = jEdit.getProperty("console.newshell.newShell", "New Shell...");
+		shellCombo.setModel(new DefaultComboBoxModel(shellsPlusNew));
 		shellCombo.setMaximumSize(shellCombo.getPreferredSize());
 	} //}}}
 
@@ -786,6 +791,7 @@ implements EBComponent, DefaultFocusComponent
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
+		updateShellList();
 		
 	} //}}}
 	
@@ -1158,8 +1164,37 @@ implements EBComponent, DefaultFocusComponent
 		{
 			Object source = evt.getSource();
 
-			if(source == shellCombo)
+			if(source == shellCombo) {
+				int index = shellCombo.getSelectedIndex();
+				if (index == shellCombo.getItemCount() - 1) {
+					// "New Shell..." is always the last item in the combobox
+					// and is selected
+					
+					// need a popup to ask what kind of shell
+					NewShellDialog dialog = new NewShellDialog();
+					dialog.show();
+					String name = dialog.getShellName();
+					String code;
+					switch(dialog.getShellType())
+					{
+						case "BeanShell":
+							code = "new console.ConsoleBeanShell(\"" + name + "\");";
+							break;
+						case "System":
+						default:
+							code = "new console.SystemShell(\"" + name + "\");";
+							break;
+					}
+					
+					// create a new system shell service
+					ServiceManager.registerService(Shell.SERVICE, name, code, null);
+					updateShellList();
+					shellCombo.setSelectedItem(name);
+					jEdit.setProperty("console.userShells", jEdit.getProperty("console.userShells", "") + ',' + name);
+					jEdit.setProperty("console.userShells." + name + ".code", code);
+				}
 				setShell((String)shellCombo.getSelectedItem());
+			}
 			else if(source == runAgain)
 				runLastCommand();
 			else if(source == stop)
@@ -1233,6 +1268,89 @@ implements EBComponent, DefaultFocusComponent
 			currentShell.detach(Console.this);
 		}
 	} //}}}
+	
+	class NewShellDialog extends JDialog 
+	{
+		JComboBox<String> shellNames;
+		JTextField shellName;
+		
+		public NewShellDialog() {
+			super(jEdit.getActiveView(), jEdit.getProperty("console.newshell.createNewShell", "Create New Shell"), true);
+			/*
+			It would be nice to be able to list all existing shell names, but
+			the ServiceManager does not expose the code used to create the
+			other shells. The only code known, then, is the code to create a 
+			new System shell or new BeanShell shell, so these choices are 
+			hard coded here. Note that the shell names "BeanShell" and "System"
+			are also hard coded into their respective constructors, so no need
+			to load these names from properties.
+			*/
+			shellNames = new JComboBox<String>(new String[]{"System", "BeanShell"});
+			shellName = new JTextField();
+			JButton okButton = new JButton(jEdit.getProperty("common.ok"));
+			okButton.addActionListener( 
+				new ActionListener() {
+					public void actionPerformed( ActionEvent ae ) {
+						String newName = NewShellDialog.this.getShellName();
+						String[] existingNames = Shell.getShellNames();
+						for (String name : existingNames) {
+							if (newName.equals(name)) {
+								JOptionPane.showMessageDialog(NewShellDialog.this, "A shell named " + name + " already exists.", "Shell already exists", JOptionPane.WARNING_MESSAGE);
+								return;
+							}
+						}
+			        	NewShellDialog.this.setVisible(false);
+			        	NewShellDialog.this.dispose();
+					}
+				}
+			);
+			JButton cancelButton = new JButton(jEdit.getProperty("common.cancel"));
+			cancelButton.addActionListener( 
+				new ActionListener() {
+					public void actionPerformed( ActionEvent ae ) {
+						NewShellDialog.this.setVisible(false);
+						NewShellDialog.this.dispose();
+					}
+				}
+			);
+			GUIUtilities.makeSameSize(okButton, cancelButton);
+			JPanel panel = new JPanel(new BorderLayout());
+			panel.setBorder(BorderFactory.createEmptyBorder(11, 11, 12, 12));
+			AbstractOptionPane dialogPanel = new AbstractOptionPane(jEdit.getProperty("console.newshell.createNewShell", "Create New Shell"));
+			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			
+			dialogPanel.addComponent(jEdit.getProperty("console.newshell.selectShellType", "Select Shell Type:"), shellNames);
+			dialogPanel.addComponent(jEdit.getProperty("console.newshell.shellName", "Enter Shell Name:"), shellName);
+			
+			buttonPanel.add(okButton);
+			buttonPanel.add(cancelButton);
+			
+			panel.add(dialogPanel, BorderLayout.CENTER);
+			panel.add(buttonPanel, BorderLayout.SOUTH);
+			setContentPane(panel);
+			
+			// pack and center on view
+			pack();
+			Rectangle v = jEdit.getActiveView().getBounds();
+			Dimension size = getSize();
+			int x = v.x + ( v.width - size.width ) / 2;
+			if ( x < 0 )
+			 x = 0;
+			int y = v.y + ( v.height - size.height ) / 2;
+			if ( y < 0 )
+			 y = 0;
+			setLocation( x, y );
+		}
+		
+		public String getShellType() {
+			return (String)shellNames.getSelectedItem();
+		}
+		
+		public String getShellName() {
+			return shellName.getText();
+		}
+	}
+	
 	// }}}
 	private static final long serialVersionUID = -9185531673809120587L;
 } // }}}

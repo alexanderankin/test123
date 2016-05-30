@@ -24,6 +24,9 @@ package console;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.util.StringList;
+
+import java.util.Collections;
 
 
 // {{{ Shell class
@@ -85,7 +88,18 @@ public abstract class Shell
 	 */
 	public static String[] getShellNames()
 	{
-		return ServiceManager.getServiceNames(SERVICE);
+		StringList shellNames = new StringList(ServiceManager.getServiceNames(SERVICE));
+		StringList optOut = StringList.split(jEdit.getProperty("console.userShells.optOut", ""), "[,]");
+		StringList shells = new StringList();
+		for (String name : shellNames)
+		{
+			if (name != null && !name.isEmpty() && !optOut.contains(name))
+			{
+				shells.add(name);
+			}
+		}
+		Collections.sort(shells);
+		return shells.toArray();
 	} //}}}
 
 	//{{{ handlesVFS()
@@ -117,7 +131,9 @@ public abstract class Shell
 	public static Shell getShell(String name)
 	{
 		// new API
-		return (Shell)ServiceManager.getService(SERVICE,name);
+		if (name == null || name.isEmpty())
+			return null;
+		return (Shell)ServiceManager.getService(SERVICE, name);
 	} //}}}
 
 	//{{{ openConsole() method
@@ -246,6 +262,15 @@ public abstract class Shell
 	public String getName()
 	{
 		return name;
+	} //}}}
+
+	//{{{ setName() method
+	/**
+	 * Sets the name of the shell.
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
 	} //}}}
 
 	//{{{ toString() method

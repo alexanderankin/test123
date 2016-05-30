@@ -83,7 +83,21 @@ public class ConsolePlugin extends EditPlugin
 	// {{{ getSystemShell() method
 	public static SystemShell getSystemShell()
 	{
-		return (SystemShell) ServiceManager.getService("console.Shell", "System");
+		try 
+		{
+			Console console = getConsole(jEdit.getActiveView());
+			if (console != null)
+			{
+				Shell shell = console.getShell();
+				if (shell instanceof SystemShell)
+					return (SystemShell)shell;
+			}
+			return (SystemShell) ServiceManager.getService(Shell.SERVICE, "System");
+		}
+		catch(Exception e) 
+		{
+			return null;
+		}
 	} // }}}
 
 	// {{{ getShellSwitchActions()
@@ -134,6 +148,21 @@ public class ConsolePlugin extends EditPlugin
 		rescanCommands();
 		CommandoToolBar.init();
 		EditBus.addToBus(this);
+		
+		// load user-created shells
+		String userShells = jEdit.getProperty("console.userShells", "");
+		if (!userShells.isEmpty()) 
+		{
+			String[] shellNames = userShells.split("[,]");
+			StringList optOut = StringList.split(jEdit.getProperty("console.userShells.optOut", ""), "[,]");
+			for (String name : shellNames)
+			{
+				if (name == null || name.isEmpty() || optOut.contains(name))
+					continue;
+				String code = jEdit.getProperty("console.userShells." + name + ".code");
+				ServiceManager.registerService(Shell.SERVICE, name, code, null);	
+			}
+		}
 
 	} // }}}
 
@@ -165,7 +194,9 @@ public class ConsolePlugin extends EditPlugin
 		jEdit.removeActionSet(shellSwitchActions);
 		allCommands.removeAllActions();
 		shellSwitchActions.removeAllActions();
-		getSystemShell().beforeStopping();
+		SystemShell systemShell = getSystemShell();
+		if (systemShell != null)
+			systemShell.beforeStopping();
 
 		// ??? Does this really get all the Console objects that are in memory?
 		View[] views = jEdit.getViews();
@@ -434,6 +465,8 @@ public class ConsolePlugin extends EditPlugin
 
 	// {{{ getConsole() static method
 	static public Console getConsole(View v) {
+		if (v == null)
+			return null;
 		DockableWindowManager dwm = v.getDockableWindowManager();
 		return (Console) dwm.getDockable("console");
 	}
@@ -543,7 +576,7 @@ public class ConsolePlugin extends EditPlugin
 			projectviewer.PVActions.editProject(project, "pv.commands");
 
 			cmd = project.getProperty("console." + prop);
-			if (cmd == null || cmd.trim() == "")
+			if (cmd == null || cmd.trim().isEmpty())
 				return;
 		}
 
