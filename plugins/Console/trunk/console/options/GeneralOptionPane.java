@@ -25,12 +25,15 @@ package console.options;
 
 //{{{ Imports
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.event.*;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -40,16 +43,21 @@ import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.event.*;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.FontSelector;
 import org.gjt.sp.util.StandardUtilities.StringCompare;
+import org.gjt.sp.jedit.gui.PingPongList;
 import org.gjt.sp.util.StringList;
 import org.gjt.sp.jedit.gui.HistoryModel ;
+import org.gjt.sp.jedit.ServiceManager;
 
 import console.Shell;
 import console.gui.Label;
@@ -63,6 +71,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private FontSelector font;
 	private JComboBox encoding;
 	private JComboBox defaultShell;
+	private PingPongList<String> pingPongList;
+	private JButton deleteSelectedButton;
 	private JButton bgColor;
 	private JButton plainColor;
 	private JButton caretColor;
@@ -85,21 +95,56 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-
-		StringList sl = new StringList(Shell.getShellNames());
-		int idx = sl.indexOf("System");
-		if (idx != 0) {
-			String other = sl.get(0);
-			sl.set(idx, other);
-			sl.set(0, "System");
-		}
-		sl.add(jEdit.getProperty("options.last-selected"));
-		defaultShell = new JComboBox(sl.toArray());
-		String ds = jEdit.getProperty("console.shell.default", "System");
-		defaultShell.setSelectedItem(ds);
+		defaultShell = new JComboBox();
+		reloadDefaultList();
 		addComponent(jEdit.getProperty("options.console.general.defaultshell", "Default Shell:"),
 			defaultShell);
 
+		StringList userShells = StringList.split(jEdit.getProperty("console.userShells", ""), "[,]");
+		StringList activeShells = new StringList();
+		StringList inactiveShells = StringList.split(jEdit.getProperty("console.userShells.optOut", ""), "[,]");
+		for ( String name : userShells ) 
+		{
+			if (!inactiveShells.contains(name))
+			{
+				activeShells.add(name);
+			}
+		}
+		pingPongList = new PingPongList<String>( inactiveShells, activeShells );
+		pingPongList.setLeftTitle( "Available User Shells" );
+		pingPongList.setRightTitle( "Active User Shells" );
+		pingPongList.setLeftTooltip( "Drag to the right to make active" );
+		pingPongList.setRightTooltip( "Drag to the left to make inactive" );
+		pingPongList.addLeftListSelectionListener(new LeftListSelectionListener());
+		pingPongList.addRightListSelectionListener(new RightListSelectionListener());
+		deleteSelectedButton = new JButton( "Delete Selected");	
+		deleteSelectedButton.setEnabled(true);
+		pingPongList.addButton( deleteSelectedButton );
+		deleteSelectedButton.addActionListener( new ActionListener(){
+
+				public void actionPerformed( ActionEvent ae )
+				{
+					List<String> names = pingPongList.getRightSelectedValues();
+					StringBuilder sb = new StringBuilder(128);
+					sb.append("Delete these shells?").append('\n');
+					for (String name : names) 
+					{
+						sb.append(name).append('\n');	
+					}
+					int answer = JOptionPane.showConfirmDialog(jEdit.getActiveView(), sb.toString(), "Confirm Shell Delete", JOptionPane.WARNING_MESSAGE );
+					if (answer == JOptionPane.YES_OPTION) {
+						for (String name : names)
+						{
+							ServiceManager.unregisterService(Shell.SERVICE, name);
+						}
+						reloadLists();
+						reloadDefaultList();
+					}
+				}
+			}
+		);
+		addComponent( pingPongList, GridBagConstraints.BOTH );
+		
 		showWelcomeMessage = new JCheckBox();
 		showWelcomeMessage.setText(jEdit.getProperty("options.console.general.welcome"));
 		showWelcomeMessage.setSelected(jEdit.getBooleanProperty("console.shell.info.toggle"));
@@ -237,6 +282,30 @@ public class GeneralOptionPane extends AbstractOptionPane
 
  		jEdit.setProperty("ansi-escape.behaviour", String.valueOf( ansiBehaviour.getSelectedIndex() ) );
  		jEdit.setProperty("ansi-escape.mode"     , String.valueOf( ansiMode.getSelectedIndex() ) );
+ 		
+ 		// register/unregister shells with ServiceManager
+ 		Iterator<String> iter = pingPongList.getLeftDataIterator();
+ 		StringBuilder sb = new StringBuilder();
+ 		while(iter.hasNext())
+ 		{
+ 			String name = iter.next();
+ 			ServiceManager.unregisterService(Shell.SERVICE, name);
+ 			sb.append(name).append(',');
+ 		}
+ 		jEdit.unsetProperty("console.userShells.optOut");
+ 		jEdit.setProperty("console.userShells.optOut", sb.toString());
+ 		
+ 		sb = new StringBuilder();
+ 		iter = pingPongList.getRightDataIterator();
+ 		while(iter.hasNext())
+ 		{
+ 			String name = iter.next();
+ 			String code = jEdit.getProperty("console.userShells." + name + ".code");
+ 			ServiceManager.registerService(Shell.SERVICE, name, code, null);
+ 			sb.append(name).append(',');
+ 		}
+ 		jEdit.unsetProperty("console.userShells");
+ 		jEdit.setProperty("console.userShells", sb.toString());
 	}
 	//}}}
 
@@ -261,5 +330,75 @@ public class GeneralOptionPane extends AbstractOptionPane
 		b.setRequestFocusEnabled(false);
 		return b;
 	} //}}}
+	
+	//{{{ reloadLists() method
+	private void reloadLists()
+	{
+		// load the ping pong lists
+		StringList allShells = new StringList(ServiceManager.getServiceNames(Shell.SERVICE));
+		StringList availableShells = new StringList();
+		StringList selectedShells = new StringList(Shell.getShellNames());
+		for ( String name : allShells ) 
+		{
+			if (!selectedShells.contains(name))
+			{
+				availableShells.add(name);
+			}
+		}
+		pingPongList.setLeftData( availableShells );
+		pingPongList.setRightData( selectedShells );
+	} //}}}
+	
+	// reload the default shell combo box
+	private void reloadDefaultList() 
+	{
+		StringList sl = new StringList(Shell.getShellNames());
+		int idx = sl.indexOf("System");
+		if (idx != 0) {
+			String other = sl.get(0);
+			sl.set(idx, other);
+			sl.set(0, "System");
+		}
+		sl.add(jEdit.getProperty("options.last-selected"));
+		
+		defaultShell.setModel( new DefaultComboBoxModel<String>( sl.toArray() ) );
+		String ds = jEdit.getProperty("console.shell.default", "System");
+		defaultShell.setSelectedItem(ds);
+	}
+	
+	class LeftListSelectionListener implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent e) 
+		{
+			HashSet<String> names = new HashSet<String>(pingPongList.getLeftSelectedValues());
+			for (String name : names) 
+			{
+				ServiceManager.unregisterService(Shell.SERVICE, name);	
+				String optOut = jEdit.getProperty("console.userShells.optOut", "");
+				StringList out = StringList.split(optOut, "[,]");
+				out.add(name);
+				jEdit.setProperty("console.userShells.optOut", out.join(out, ","));
+			}
+			reloadDefaultList();
+		}
+	}
+	
+	class RightListSelectionListener implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent e) 
+		{
+			HashSet<String> names = new HashSet<String>(pingPongList.getRightSelectedValues());
+			for (String name : names)
+			{
+				String code = jEdit.getProperty("console.userShells." + name + ".code");
+				ServiceManager.registerService(Shell.SERVICE, name, code, null);
+				String optOut = jEdit.getProperty("console.userShells.optOut", "");
+				StringList out = StringList.split(optOut, "[,]");
+				out.remove(name);
+				jEdit.setProperty("console.userShells.optOut", out.join(out, ","));
+ 			}
+ 			reloadDefaultList();
+		}
+	}
 	
 }

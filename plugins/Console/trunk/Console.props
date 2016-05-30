@@ -12,7 +12,7 @@ plugin.console.ConsolePlugin.author=Slava Pestov (former), Alan Ezust, Artem Bry
 
 # see jEdit.getBuild() to understand the numbering scheme.
 plugin.console.ConsolePlugin.depend.0=jedit 05.00.99.00
-plugin.console.ConsolePlugin.depend.1=jdk 1.6
+plugin.console.ConsolePlugin.depend.1=jdk 1.7
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 2.1
 plugin.console.ConsolePlugin.depend.3=optional plugin CommonControlsPlugin 1.7.1
 plugin.console.ConsolePlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.5.0
@@ -291,6 +291,12 @@ console.shell.error.working-dir=Current working directory does not exist: {0}\n\
 console.shell.exited=Process {0} exited with code {1}
 
 console.shell.runInDir={0}> {1}
+
+### New Shell dialog
+console.newshell.newShell=New Shell...
+console.newshell.createNewShell=Create New Shell
+console.newshell.selectShellType=Select Shell Type:
+console.newshell.shellName=Enter Shell Name:
 
 ### BeanShell
 

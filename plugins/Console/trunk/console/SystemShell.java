@@ -87,7 +87,12 @@ public class SystemShell extends Shell implements TaskListener
 	// {{{ SystemShell constructor
 	public SystemShell()
 	{
-		super("System");
+		this("System");
+	}
+	
+	public SystemShell(String name)
+	{
+		super(name);
 		lineSep = System.getProperty("line.separator");
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
 		userHome = System.getProperty("user.home");
@@ -1033,7 +1038,7 @@ public class SystemShell extends Shell implements TaskListener
 				if (directoriesOnly && !matchFile.isDirectory())
 					continue;
 
-				match.append(typedDirName + filenames[i]);
+				match.append(typedDirName).append(filenames[i]);
 				
 				// Add a separator at the end if it's a
 				// directory
