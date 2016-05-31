@@ -51,9 +51,9 @@
     <property file="${basedir}/../build.properties" />
     <property file="${user.home}/.build.properties" />
     <property file="${user.home}/build.properties" />
-    
-    <!-- {{{ load properties from *.props, to find out which version the plugin 
-             is at. Defines 2 properties: 
+
+    <!-- {{{ load properties from *.props, to find out which version the plugin
+             is at. Defines 2 properties:
               - plugin.class: to resolve other plugin class dependent properties
               - plugin.version: for users-guide.xsl to add version automatically
     -->
@@ -65,23 +65,23 @@
             echot.setMessage(msg);
             echot.perform();
         }
-        
+
         var filter = new java.io.FileFilter({accept: function(pathname) {
             return pathname.getName().endsWith(".props");
         }});
-        
+
         basedir = project.getProperties().get("basedir");
         var props = new java.io.File(basedir).listFiles(filter);
         if(props.length == 0)echo("no *.props file found in "+basedir);
-        
+
         /* load every *.props file found in basedir (hopefully only one) */
         for(i=0;i<props.length;i++){
             readprops = project.createTask("property");
             readprops.setFile(props[i]);
             readprops.perform();
-            
+
         }
-        
+
         /* look in all properties for plugin.xxx.name */
         for(it=project.getProperties().entrySet().iterator();it.hasNext();)
         {
@@ -92,9 +92,9 @@
 
                 /* define plugin.class: it may prove useful for other tasks */
                 pluginclass = vKey.substring(7,vKey.lastIndexOf(".name"));
-                
+
                 java.lang.System.out.println("plugin class: " + pluginclass);
-                
+
                 setpluginclass = project.createTask("property");
                 setpluginclass.setName("plugin.class");
                 setpluginclass.setValue(pluginclass);
@@ -102,12 +102,12 @@
 
                 /* define plugin.version: it's what we wanted, after all */
                 pluginversion = project.getProperties().get("plugin."+pluginclass+".version")
-                
+
                 setpluginversion = project.createTask("property");
                 setpluginversion.setName("plugin.version");
                 setpluginversion.setValue(pluginversion);
                 setpluginversion.perform();
-                
+
                 break;
            }
         }
@@ -116,7 +116,7 @@
         echo("plugin.version is "+project.getProperties().get("plugin.version"));
     ]]> </script>
     <!-- }}} -->
-    
+
     <!-- <echo>plugin-build java.home=${java.home}</echo> -->
     <!-- where to find jEdit and plugins    -->
     <property name="sourceforge.user.name"
@@ -147,8 +147,8 @@
     <property name="compiler.deprecation"   value="off" />
     <property name="compiler.verbose"       value="off" />
     <property name="compiler.nowarn"        value="off" />
-    <property name="compiler.target"        value="1.6" />
-    <property name="compiler.source"        value="1.6" />
+    <property name="compiler.target"        value="1.7" />
+    <property name="compiler.source"        value="1.7" />
     <property name="compiler.listfiles"     value="no" />
     <property name="compiler.fork"          value="no" />
     <property name="compiler.bootclasspath" value="${java.home}/lib/rt.jar"/>
@@ -280,8 +280,8 @@
     <!-- This selector defines other files that should be packaged
          in the plugin's jar file; by default it contains actions.xml,
          dockables.xml, services.xml, any files ending in ".props",
-         "LICENSE" and "README". The context is "${basedir}". 
-         Normally, plugins do not override this but instead define a "packageFiles" 
+         "LICENSE" and "README". The context is "${basedir}".
+         Normally, plugins do not override this but instead define a "packageFiles"
          selector. -->
     <selector id="extraFiles">
         <and>
