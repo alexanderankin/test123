@@ -1,0 +1,481 @@
+<!-- :indentSize=2:noTabs=true: -->
+<html>
+<head>
+<title>Common Controls user's guide</title>
+<style>
+h3 {
+   background-color: rgb(127, 178, 255);
+   color: white;
+   align: center;
+}
+</style>
+</head>
+<body>
+<div style="background-color: #CCCCFF">
+<h2>Common Controls User's Guide</h2>
+Author: Sergey V. Udaltsov<br>
+Copyright: 2000-2016<br>
+</div>
+<h3>Legal Notice</h3>
+      <p>Permission is granted to copy, distribute and/or
+      modify this document under the terms of the GNU Free
+      Documentation License, Version 1.1 or any later version
+      published by the Free Software Foundation; with no
+      &quot;Invariant Sections&quot;, &quot;Front-Cover Texts&quot;
+      or &quot;Back-Cover Texts&quot;, each as defined in the license. 
+      A copy of the license can be found in the file
+      <tt>COPYING.DOC.txt</tt> included with jEdit.</p>
+
+      
+<hr/>
+
+<div id="tableOfContents"><br>
+<strong>Table of Contents</strong><br>
+<br>
+<a href="#description">Description of controls</a><br>
+<a href="#JMouseComboBox">JMouseComboBox</a><br>
+<a href="#Kappalayout">Kappalayout</a><br>
+<a href="#VFSPathFileList">VFSPathFileList</a><br>
+<a href="#PopupList">PopupList</a><br>
+<a href="#OkCancelButtons">OkCancelButtons</a><br>
+<a href="#EasyOptionPane">EasyOptionPane</a><br>
+<a href="#FileTextField">FileTextField</a><br>
+<a href="#Blame">Blame</a><br>
+<a href="#AtomicOutputStream">AtomicOutputStream</a><br>
+<a href="#WorkerThreadPool">WorkerThreadPool</a><br>
+<a href="#DoubleJList">DoubleJList</a><br>
+
+</div>
+    <h3> Introduction </h3>
+    <p>The plugin provides a set of common controls which
+    can be useful for development of various jEdit plugins. 
+    Some of them are old and deprecated because they have been
+    replaced by newer/better classes in jEdit or the Java API.
+    </p>
+
+<a name="description"></a>
+  <div id="descriptions">
+    <h3>Description of controls</h3>
+
+    <p>
+    These are the classes are documented here. To see a complete list of all classes
+    in CommonControls, refer to the source or the <a href="../javadoc/index.html">javadoc documentation</a>.
+    </p>
+    <div id="HelpfulJTable">
+      <h3>HelpfulJTable</h3>
+
+      <p>
+        <strong>Author: Dirk Moebius</strong>
+      </p>
+
+      <p>An extension of the default Swing JTable, that passes
+      action key events, displays tooltips and autoresizes columns.</p>
+
+      <p>In detail, the following features are provided:</p>
+
+      <ul>
+        <li>
+          <p>Fires an <i>ActionEvent</i>, if
+          <strong>Enter</strong>, <strong>Tab</strong>
+          or <strong>Shift-Tab</strong> is pressed.</p>
+
+          <p>Therefore, <i>addActionListener(ActionListener)</i>
+          and <i>removeActionListener(ActionListener)</i>
+          methods are provided.</p>
+        </li>
+
+        <li>
+          <p>Displays tooltips for partially visible text entries.</p>
+
+          <p>To use this feature, you must use a 
+          <i>TableCellRenderer</i> that implements the methods
+          <i>getToolTipText()</i> and/or
+          <i>getToolTipText(MouseEvent)</i>,
+          otherwise you won't see any tooltips.</p>
+        </li>
+
+        <li>
+          <p>utoresizes all columns to the length of its
+          longest content string.</p>
+          
+          <p>As a drawback, this <i>HelpfulJTable</i>
+          can only be used to with a String cell renderer,
+          nothing complicated as a JList. (Complex components may
+          be used a CellEditor, however).</p>
+        </li>
+      </ul>
+
+      <p>Only the default constructor of <i>JTable</i>
+      is provided. Please use <i>setModel(TableModel)</i>
+      to set another model.</p>
+    </div>
+
+    <a name="JMouseComboBox"></a>
+    <div id="JMouseComboBox">
+      <h3>JMouseComboBox</h3>
+
+      <p>
+      <strong>Author: Dirk Moebius</strong>
+      </p>
+
+      <p>This is a combo-box that allows listeners to be
+      informed of mouse entered and mouse exited events.</p>
+
+      <p>Note that other mouse events besides MOUSE_ENTERED
+      and MOUSE_EXITED still do <strong>not</strong>
+      get delivered. This is because sending a MOUSE_PRESSED,
+      MOUSE_CLICKED or MOUSE_RELEASED event would cause the combo
+      box popup to be hidden immediately after it has been shown,
+      resulting in that it would not be shown at all.</p>
+
+      <p>This class was created as a fix/workaround for Swing
+      bug #4144505.</p>
+    </div>
+
+    <a name="Kappalayout"></a>
+    <div id="Kappalayout">
+      <h3>Kappa and Lambda layout managers</h3>
+
+      <p>
+        <strong>Author: Dale Anson</strong>
+      </p>
+      <p>
+        <strong>URL:</strong>
+        <p>
+          <a href="http://kappalayout.sourceforge.net/">http://kappalayout.sourceforge.net/</a>
+        </p>
+      </p>
+
+      <p>Advanced layout managers.</p>
+    </div>
+
+    <a name="VFSPathFileList"></a>
+    <div id="VFSPathFileList">
+      <h3>VFSPathFileList</h3>
+
+      <p>
+        <strong>Author: Matthieu Casanova</strong>
+      </p>
+
+      <p>Nice panel for composing some path ($PATH or $CLASSPATH).
+      Improved version of PathBuilder. </p>
+      
+    </div>
+
+    <a name="PopupList"></a>
+    <div id="PopupList">
+      <h3>PopupList</h3>
+
+      <p>
+        <strong>Author: Calvin Yu</strong>
+      </p>
+
+      <p>The control is a generic popup component that displays a list of items.</p>
+
+      <p>Here's a list of potential uses for it:</p>
+
+      <ul>
+        <li>
+          <p>Pop up a list of Templates to apply;</p>
+        </li>
+
+        <li>
+          <p>Pop up a list of dockables to switch between, much like the fast views concept in Eclipse;</p>
+        </li>
+
+        <li>
+          <p>Pop up a list of open buffers (yet another buffer switching mechanism);</p>
+        </li>
+
+        <li>
+          <p>Pop up list of auto-completions.</p>
+        </li>
+      </ul>
+    </div>
+    
+    <a name="OkCancelButtons"></a>
+    <div id="OkCancelButtons">
+      <h3>OkCancelButtons</h3>
+
+      <p>
+        <strong>Author: Marcelo Vanzin</strong>
+      </p>
+
+      <p>A panel with two buttons that tie to an instance of
+      jEdit's EnhancedDialog and provide a GUI for the ok() and
+      cancel() methods (aside from the regular enter/esc key
+      bindings). The button label are configurable (defaults to
+      OK and Cancel).</p>
+    </div>
+
+    <a name="EasyOptionPane"></a>
+    <div id="EasyOptionPane">
+      <h3>EasyOptionPane</h3>
+
+      <p>
+        <strong>Author: Marcelo Vanzin</strong>
+      </p>
+
+      <p>An implementation of jEdit's AbstractOptionPane that is
+      easily configurable by using strings to define the component.
+      Loading and saving of configuration data is handled automatically
+      for the user of the class.</p>
+    </div>
+
+    <a name="FileTextField"></a>
+    <div id="FileTextField">
+      <h3>FileTextField</h3>
+
+      <p>
+        <strong>Author: Marcelo Vanzin</strong>
+        </p>
+      </p>
+
+      <p>A text field with an "attached" button that opens up a  File Chooser
+      so the user can pick up a file or directory.</p>
+    </div>
+
+    <a name="Blame"></a>
+    <div id="Blame">
+      <h3>Blame component</h3>
+
+      <p>
+        <strong>Author: Dale Anson</strong>
+      </p>
+
+      <p>This component shows the "blame" panel on the right side of the text area. This
+      is used by the SVN Plugin and the Git Plugin.</p>
+      <p><a href="docs/blame.html">See details here.</a></p>
+    </div>
+
+    <a name="AtomicOutputStream"></a>
+    <div id="AtomicOutputStream">
+      <h3>AtomicOutputStream</h3>
+
+      <p>
+        <strong>Author: Marcelo Vanzin</strong>
+      </p>
+
+      <p>An output stream that uses a temporary file to write the
+      data, and only overwrites the target file at close time.</p>
+    </div>
+
+    <a name="WorkerThreadPool"></a>
+    <div id="WorkerThreadPool">
+      <h3>WorkerThreadPool</h3>
+
+      <p>
+        <strong>Author: Marcelo Vanzin</strong>
+      </p>
+
+      <p>A thread pool for executing non-GUI related tasks in a separate
+      thread, avoiding blocking the GUI.</p>
+
+      <p>The pool working by adding "requests", which are instances of
+      java.lang.Runnable, which are then picked up by the running worker
+      threads and executed asynchronously. By adding a collection of
+      requests instead of a single request the user forces the pool to
+      create enough threads to handle all the requests simultaneouslty,
+      so that tasks that need this functionality (such as reading from
+      forked processes) can be easily run using this mechanism.</p>
+
+      <p>Normally plugins use the "single request" add method, which
+      means that only one worker thread will be created. The caller
+      can force new threads to be created by first calling the class's
+      "ensureCapacity(int)" method, which will guarantee that at least
+      the number of requested worker threads are running.</p>
+
+      <p>This is a simplified version of Java 5's ThreadPoolExecutor,
+      and also provides a simplified version of the "Future" class
+      (called "WorkRequest"). Callers can use the WorkRequest instances
+      returned by the pool to control when the requests are finished.</p>
+
+    </div>
+    
+    <a name="DoubleJList"></a>
+    <div id="DoubleJList">
+      <h3>DoubleJList component</h3>
+
+      <p>
+        <strong>Author: Dale Anson</strong>
+      </p>
+
+      <p>This component shows two JLists with buttons to move items between the
+      lists. Lots of customization is available.</p>
+      <p><a href="doublejlist.html">See details here.</a></p>
+      <p></p>
+    </div>
+
+  <div id="changelog">
+    <h3>Change log</h3>
+
+    <ul>
+
+    <li>
+        <p>
+            <strong>Version 1.7.5</strong>
+        </p>
+        <p>Added DoubleJList.</p>
+      </li>
+    <li>
+        <p>
+            <strong>Version 1.7.3</strong>
+            
+        </p>
+        <p> German Language Update </p>
+        <p> Enhanced FileTextField with setEnabled() and setToolTip() </p>
+      </li>
+
+      <li>
+        <p>
+            <strong>Version 1.7</strong>
+            
+        </p>
+        <p>Fix #3615050 SmartOpen only lets me type one letter on MacOS L&amp;F. </p>
+        <p>Added the Blame component.</p>
+      </li>
+      
+      <li>
+        <p>
+            <strong>Version 1.1</strong>
+            
+        </p>
+
+        <p>Added CloseableTabbedPane, a Java 5 version of a Java 6 feature
+        added to JTabbedPane.</p>
+      </li>
+      
+      <li>
+        <p>
+            <strong>Version 1.0</strong>
+            
+        </p>
+
+        <p>Added a Java 5 version of SwingWorker.</p>
+      </li>
+      
+      <li>
+        <p>
+            <strong>Version 0.9.4</strong>
+
+            
+        </p>
+
+        <p>Add a few new classes: EasyOptionPane, FileTextField,
+        ModalJFileChooser and AtomicOutputStream.</p>
+      </li>
+
+      <li>
+        <p>
+            <strong>Version 0.9.2</strong>
+
+            
+        </p>
+
+        <p>Small change to pathbuilder so it uses <literal>File.getPath()</literal> instead of <literal>getCanonicalPath()</literal> filenames returned from the file browser. </p>
+      </li>
+
+
+      <li>
+        <p>
+            <strong>Version 0.9.0</strong>
+
+            
+        </p>
+
+        <p>Adds a worker thread pool, fixes jEdit 4.3 compatibility
+        for PopupList.</p>
+      </li>
+
+      <li>
+        <p>
+            <strong>Version 0.8.1</strong>
+
+            
+        </p>
+
+        <p>Uses deferred loading with jEdit 4.2.</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.8</strong>
+
+          
+        </p>
+
+        <p>Some fixes and improvements in<a href="#HelpfulJTable">HelpfulJTable</a>. Now it can use the width of the headers in autoresize mode. Also, autoresizing does not exclude manual resizing any more.</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.7</strong>
+
+          
+        </p>
+
+        <p>The version of <a href="#Kappalayout">Kappa and Lambda layout managers</a> is updated.</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.6</strong>
+
+          
+        </p>
+
+        <p>More stuff in <a href="#PopupList">PopupList</a>.</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.5</strong>
+
+          
+        </p>
+
+        <p>Some additions to <a href="#PopupList">PopupList</a>.</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.4</strong>
+
+          
+        </p>
+
+        <p><a href="#PopupList">PopupList</a> added</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.3</strong>
+
+          
+        </p>
+
+        <p><a href="#Kappalayout">Kappa and Lambda layout managers</a> added</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.2</strong>
+
+          
+        </p>
+
+        <p><a href="#PathBuilder">PathBuilder</a> package added</p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Version 0.1</strong>
+
+          
+        </p>
+
+        <p>First release.</p>
+      </li>
+    </ul>
+  </div>
+</article>

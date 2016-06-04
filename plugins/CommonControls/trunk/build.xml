@@ -12,9 +12,8 @@
     <property name="javadoc.packagenames" value="common.*, ise.*" />
     <property name="plugin.dependencies" value="" />
     <property name="dist.target" value="dist.complete" />
-    <property name="user-doc.xml" value="${basedir}/docs/users-guide.xml" />
-	<property name="compiler.source" value="1.6" />
-	<property name="compiler.target" value="1.6" />
+	<property name="compiler.source" value="1.7" />
+	<property name="compiler.target" value="1.7" />
 
     <import file="${build.support}/plugin-build.xml" />
 
@@ -48,6 +47,7 @@
             <filename name="**/*.html"/>
             <filename name="**/*.gif"/>
             <filename name="**/*.png"/>
+            <filename name="**/*.css"/>
         </or>
     </selector>
 

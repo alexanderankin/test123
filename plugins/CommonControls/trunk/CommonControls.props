@@ -4,15 +4,15 @@ plugin.CommonControlsPlugin.activate=defer
 
 plugin.CommonControlsPlugin.name=Common Controls
 plugin.CommonControlsPlugin.author=Sergey V. Udaltsov, Dale Anson, Marcelo Vanzin, Matthieu Casanova
-plugin.CommonControlsPlugin.version=1.7.4
-plugin.CommonControlsPlugin.docs=index.html
+plugin.CommonControlsPlugin.version=1.7.5
+plugin.CommonControlsPlugin.docs=docs/users-guide.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 plugin.CommonControlsPlugin.description=Shared GUI Code
 plugin.CommonControlsPlugin.longdescription=description.html
 plugin.CommonControlsPlugin.usePluginHome=true
 
-plugin.CommonControlsPlugin.depend.0=jedit 05.02.01.00
-plugin.CommonControlsPlugin.depend.1=jdk 1.6.0
+plugin.CommonControlsPlugin.depend.0=jedit 05.03.00.00
+plugin.CommonControlsPlugin.depend.1=jdk 1.7.0
 
 common.gui.error=Error
 
@@ -28,3 +28,11 @@ common.gui.filetextfield.file_not_found=The selected file cannot be opened.
 
 common.gui.Close_blame=Close Blame
 
+# Double JList
+common.gui.dlist.Add=Add
+common.gui.dlist.Delete=Delete
+common.gui.dlist.moveLeft.tooltip=Move selected items from right to left
+common.gui.dlist.moveRight.tooltip=Move selected items from left to right
+common.gui.dlist.deleteOneItem=Delete this item?
+common.gui.dlist.deleteSeveralItems=Delete these items?
+common.gui.dlist.confirmDelete=Confirm Delete
