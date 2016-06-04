@@ -57,8 +57,11 @@ import org.gjt.sp.jedit.ServiceManager;
 
 import common.gui.DoubleJList;
 
+import console.Console;
 import console.Shell;
 import console.gui.Label;
+import console.gui.NewShellDialog;
+
 //}}}
 
 public class GeneralOptionPane extends AbstractOptionPane
@@ -110,10 +113,41 @@ public class GeneralOptionPane extends AbstractOptionPane
 		dlist = new DoubleJList<String>();
 		dlist.setLeftListData(inactiveShells.toArray());
 		dlist.setRightListData(activeShells.toArray());
-		dlist.setLeftLabel( "Available User Shells" );
-		dlist.setRightLabel( "Active User Shells" );
-		dlist.setLeftToolTipText( "Right click to delete selected items" );
-		dlist.setRightToolTipText( "Right click to delete selected items" );
+		dlist.setLeftLabel( jEdit.getProperty("options.console.general.availableUserShells", "Available User Shells") );
+		dlist.setRightLabel( jEdit.getProperty("options.console.general.activeUserShells", "Active User Shells") );
+		dlist.setLeftToolTipText( jEdit.getProperty("options.console.general.listToolTip", "Right click to delete selected items") );
+		dlist.setRightToolTipText( jEdit.getProperty("options.console.general.listToolTip", "Right click to delete selected items") );
+		dlist.setShowAdd(true);
+		dlist.addAddListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent evt)
+				{
+					// need a popup to ask what kind of shell
+					NewShellDialog dialog = new NewShellDialog();
+					dialog.show();
+					String name = dialog.getShellName();
+					String code;
+					switch(dialog.getShellType())
+					{
+						case "BeanShell":
+							code = "new console.ConsoleBeanShell(\"" + name + "\");";
+							break;
+						case "System":
+						default:
+							code = "new console.SystemShell(\"" + name + "\");";
+							break;
+					}
+					
+					// create a new shell service
+					ServiceManager.registerService(Shell.SERVICE, name, code, null);
+					jEdit.setProperty("console.userShells", jEdit.getProperty("console.userShells", "") + ',' + name);
+					jEdit.setProperty("console.userShells." + name + ".code", code);
+
+					reloadLists();
+					reloadDefaultList();
+				}
+			}
+		);
 		dlist.setShowDelete(true);
 		dlist.addDeleteListener( new ActionListener(){
 

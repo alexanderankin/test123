@@ -3,12 +3,12 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=5.2.0
+plugin.console.ConsolePlugin.version=5.3.0
 
 # jEdit 4.4 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
 plugin.console.ConsolePlugin.docs=index.html
-plugin.console.ConsolePlugin.author=Slava Pestov (former), Alan Ezust, Artem Bryantsev
+plugin.console.ConsolePlugin.author=Slava Pestov (former), Alan Ezust, Artem Bryantsev, Dale Anson
 
 # see jEdit.getBuild() to understand the numbering scheme.
 plugin.console.ConsolePlugin.depend.0=jedit 05.00.99.00
@@ -98,6 +98,13 @@ options.last-selected=Last Selected
 options.console.general.changedir.nodeselect=On tree node select (PV or FSB), cd to node dir
 options.console.general.changedir.pvchange=On Project change, cd to project root dir
 options.console.general.changedir.followTextArea=When TextArea buffer dir changes, cd to it
+
+# user shells messages
+options.console.general.availableUserShells=Available User Shells
+options.console.general.activeUserShells=Active User Shells
+options.console.general.listToolTip=Right click to delete selected items
+console.userShells.shellExistsMsg=A shell named {0} already exists.
+console.userShells.shellExistsTitle=Shell Already Exists
 
 options.console.shell.system.wrapBrackets=Wrap round brackets around argument lists in Windows shells
 
