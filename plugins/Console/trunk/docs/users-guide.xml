@@ -13,7 +13,7 @@
 
   <copyright>
    <year>1999</year>
-   <year>2014</year>
+   <year>2016</year>
   </copyright>
 
   <legalnotice>
@@ -103,6 +103,10 @@
   <para> Here, you can set general options that apply to all shells, such as
   default shell, showing the welcome message, character encoding to use,
   scrollback buffer size, colors to use, etc. </para>
+  
+  <para>You can also add new shells (called "User Shells") and manage whether
+  the individual user shells are active or not, or completely delete the
+  previously created user shells.</para>
 
   <para> In addition, you can choose to parse, ignore, or strip out the ANSI
   escape sequences that cause color changes in the console. </para>
@@ -252,7 +256,9 @@ most often at the top of the list.
  which runs commands in jEdit's BeanShell interpreter. Some plugins add
  their own shells; for example, the <application>SshConsole</application>
  plugin adds a shell for running shell commands remotely over <command>ssh</command>.
- without leaving jEdit.
+ without leaving jEdit. You can also create new System and BeanShell shells from
+ the dropdown, so it is possible to have multiple System and BeanShell shells
+ active at once. 
  </para>
 
  <para>
