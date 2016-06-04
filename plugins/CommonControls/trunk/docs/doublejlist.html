@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>DoubleJList</title>
+</head>
+<body>
+<h2>DoubleJList</h2>
+<img src="doublejlist.png"/>
+<p>
+The DoubleJList is a highly customizable component that provides two lists with buttons to move selected items between the lists, plus a popup menu to allow adding and deleting items from the lists.
+</p>
+<p>
+Features:
+<ul>
+<li>List are generic, so any sort of item can be listed. The only restriction is the items must implement Comparable. This is so the lists can be sorted.</li>
+<li>Titles and tooltips can be set independently on the lists.</li>
+<li>Automatic sorting of the lists.</li>
+<li>Any number of action listeners can be added to the buttons to perform additional operations on moving items.</li>
+<li>Any number of list selection listeners can be added to the lists to perform additional operations when the list selection changes.</li>
+<li>Popup menu is optional. It has built-in "Add" and "Delete" items that can be hidden or shown as desired.</li>
+<li>Custom cell renderers can be set for each list independently.</li>
+</ul>
+</p>
+<p>
+Basic usage is to create a new DoubleJList, call the various "set" methods,
+then call the "init" method. 
+</p>
+<p>
+The "Delete" item can be shown on the popup by calling the <code>setShowDelete</code> method. The "Delete" item has a default action that prompts the user for confirmation of the delete and will set the "canDelete" value appropriately. Other action listeners added to the "Delete" item should call the <code>canDelete</code> method before performing any action.
+</p>
+<p>
+Additional items may be added to the popup menu by calling the <code>addMenuItem</code> method. 
+</p>
+<p>
+Here's a concrete example from the Console plugin:
+<div style="background-color:#3f3f3f">
+<pre><font color="#dcdccc">        dlist <font style="rgba(240,239,208,0);">=</font> <font style="rgba(240,223,175,0);"><strong>new</strong></font> DoubleJList<font style="rgba(240,239,208,0);">&lt;</font>String<font style="rgba(240,239,208,0);">&gt;</font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setLeftListData</strong></font><font style="rgba(240,239,208,0);">(</font>inactiveShells.<font style="rgba(239,239,143,0);"><strong>toArray</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font><font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setRightListData</strong></font><font style="rgba(240,239,208,0);">(</font>activeShells.<font style="rgba(239,239,143,0);"><strong>toArray</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font><font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setLeftLabel</strong></font><font style="rgba(240,239,208,0);">(</font> <font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(204,147,147,0);">Available</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">User</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">Shells</font><font style="rgba(204,147,147,0);">&quot;</font> <font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setRightLabel</strong></font><font style="rgba(240,239,208,0);">(</font> <font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(204,147,147,0);">Active</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">User</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">Shells</font><font style="rgba(204,147,147,0);">&quot;</font> <font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setLeftToolTipText</strong></font><font style="rgba(240,239,208,0);">(</font> <font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(204,147,147,0);">Right</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">click</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">to</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">delete</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">selected</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">items</font><font style="rgba(204,147,147,0);">&quot;</font> <font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setRightToolTipText</strong></font><font style="rgba(240,239,208,0);">(</font> <font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(204,147,147,0);">Right</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">click</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">to</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">delete</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">selected</font><font style="rgba(204,147,147,0);"> </font><font style="rgba(204,147,147,0);">items</font><font style="rgba(204,147,147,0);">&quot;</font> <font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>setShowDelete</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(220,163,163,0);"><strong>true</strong></font><font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>addDeleteListener</strong></font><font style="rgba(240,239,208,0);">(</font> <font style="rgba(240,223,175,0);"><strong>new</strong></font> <font style="rgba(239,239,143,0);"><strong>ActionListener</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font><font style="rgba(240,239,208,0);">{</font>
+
+                <font style="rgba(221,221,102,0);"><strong>public</strong></font> <font style="rgba(204,204,102,0);"><strong>void</strong></font> <font style="rgba(239,239,143,0);"><strong>actionPerformed</strong></font><font style="rgba(240,239,208,0);">(</font> ActionEvent ae <font style="rgba(240,239,208,0);">)</font>
+                <font style="rgba(240,239,208,0);">{</font>
+                    <font style="rgba(240,223,175,0);"><strong>if</strong></font> <font style="rgba(240,239,208,0);">(</font>dlist.<font style="rgba(239,239,143,0);"><strong>canDelete</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font><font style="rgba(240,239,208,0);">)</font> <font style="rgba(240,239,208,0);">{</font>
+                        List<font style="rgba(240,239,208,0);">&lt;</font>String<font style="rgba(240,239,208,0);">&gt;</font> names <font style="rgba(240,239,208,0);">=</font> dlist.<font style="rgba(239,239,143,0);"><strong>getDeleteSelectedValues</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font>;
+                        <font style="rgba(240,223,175,0);"><strong>for</strong></font> <font style="rgba(240,239,208,0);">(</font>String name : names<font style="rgba(240,239,208,0);">)</font>
+                        <font style="rgba(240,239,208,0);">{</font>
+                            ServiceManager.<font style="rgba(239,239,143,0);"><strong>unregisterService</strong></font><font style="rgba(240,239,208,0);">(</font>Shell.SERVICE, name<font style="rgba(240,239,208,0);">)</font>;
+                            jEdit.<font style="rgba(239,239,143,0);"><strong>unsetProperty</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(204,147,147,0);">console</font><font style="rgba(204,147,147,0);">.</font><font style="rgba(204,147,147,0);">userShells</font><font style="rgba(204,147,147,0);">.</font><font style="rgba(204,147,147,0);">&quot;</font> <font style="rgba(240,239,208,0);">+</font> name <font style="rgba(240,239,208,0);">+</font> <font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(204,147,147,0);">.</font><font style="rgba(204,147,147,0);">code</font><font style="rgba(204,147,147,0);">&quot;</font><font style="rgba(240,239,208,0);">)</font>;
+                        <font style="rgba(240,239,208,0);">}</font>
+                        <font style="rgba(239,239,143,0);"><strong>reloadLists</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font>;
+                        <font style="rgba(239,239,143,0);"><strong>reloadDefaultList</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font>;
+                    <font style="rgba(240,239,208,0);">}</font>
+                <font style="rgba(240,239,208,0);">}</font>
+            <font style="rgba(240,239,208,0);">}</font>
+        <font style="rgba(240,239,208,0);">)</font>;
+        dlist.<font style="rgba(239,239,143,0);"><strong>init</strong></font><font style="rgba(240,239,208,0);">(</font><font style="rgba(240,239,208,0);">)</font>;
+        <font style="rgba(239,239,143,0);"><strong>addComponent</strong></font><font style="rgba(240,239,208,0);">(</font> dlist, GridBagConstraints.NONE <font style="rgba(240,239,208,0);">)</font>;
+        
+</font></pre>
+</div>
+</p>
+<p>
+<a href="../javadoc/common/gui/DoubleJList.html">The full javadoc for DoubleJList is here</a>.
+</p>
+
+</body>
+</html>
