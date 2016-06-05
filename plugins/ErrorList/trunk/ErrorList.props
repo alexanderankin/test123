@@ -76,6 +76,10 @@ error-list.status.many-error-many-warning={0} errors, {1} warnings
 error-list.status.one-error-many-warning={0} error, {1} warnings
 error-list.status.many-error-one-warning={0} errors, {1} warning
 error-list.status.one-error-one-warning={0} error, {1} warning
+error-list.addTab=Add Tab
+error-list.tabName=Enter tab name
+error-list.close=Close
+error-list.closeAll=Close All
 
 # Settings
 error-list.showOnError=true

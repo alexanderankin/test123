@@ -98,7 +98,7 @@ public class ErrorListPlugin extends EditPlugin
 			if (showOnError && (jEdit.getActiveView() != null) &&
 				(! isErrorFiltered(error)))
 			{
-				showErrorList(jEdit.getActiveView());
+				showErrorList(message, jEdit.getActiveView());
 			}
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
@@ -128,7 +128,7 @@ public class ErrorListPlugin extends EditPlugin
 			if ((what == ErrorSourceUpdate.ERROR_SOURCE_ADDED) &&
 				showOnError && (jEdit.getActiveView() != null) && doErrorsExist())
 			{
-				showErrorList(jEdit.getActiveView());
+				showErrorList(message, jEdit.getActiveView());
 			}
 		}
 	} //}}}
@@ -342,7 +342,7 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ showErrorList() method
-	private void showErrorList(View view)
+	private void showErrorList(ErrorSourceUpdate message, View view)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
 		dwm.addDockableWindow("error-list");
