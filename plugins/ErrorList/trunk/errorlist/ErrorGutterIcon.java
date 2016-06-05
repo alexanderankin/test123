@@ -60,7 +60,7 @@ public class ErrorGutterIcon extends TextAreaExtension {
 
 		int line = textArea.getLineOfOffset(offset);
 
-		StringBuffer errMsg = new StringBuffer();
+		StringBuffer errMsg = new StringBuffer(128);
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] lineErrors =
@@ -114,7 +114,7 @@ public class ErrorGutterIcon extends TextAreaExtension {
 				}
 			}
 			JEditTextArea textArea = editPane.getTextArea();
-			ImageIcon icon = isError ? ErrorList.ERROR_ICON : ErrorList.WARNING_ICON;
+			ImageIcon icon = isError ? ErrorListPanel.ERROR_ICON : ErrorListPanel.WARNING_ICON;
 			// Center the icon in the gutter line
 			int lineHeight = textArea.getPainter().getFontMetrics().getHeight();
 			Point iconPos = new Point(

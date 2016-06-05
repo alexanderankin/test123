@@ -23,6 +23,8 @@
 package errorlist;
 
 //{{{ Imports
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 
@@ -33,7 +35,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-public class ErrorListOptionPane extends AbstractOptionPane
+public class ErrorListOptionPane extends AbstractOptionPane implements ActionListener
 {
 	//{{{ ErrorListOptionPane constructor
 	public ErrorListOptionPane()
@@ -49,25 +51,32 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			"options.error-list.showOnError")));
 		showOnError.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.showOnError"));
+		showOnError.addActionListener(this);
 
 		addComponent(autoCloseOnNoErrors = new JCheckBox(jEdit.getProperty(
 			"options.error-list.autoCloseOnNoErrors")));
+		autoCloseOnNoErrors.addActionListener(this);
 		addComponent(autoRefocusTextArea = new JCheckBox(jEdit.getProperty(
 			"options.error-list.autoRefocusTextArea")));
+		autoRefocusTextArea.addActionListener(this);
 		autoCloseOnNoErrors.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.autoCloseOnNoErrors"));
+		autoCloseOnNoErrors.addActionListener(this);
 		autoRefocusTextArea.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.autoRefocusTextArea"));
+		autoRefocusTextArea.addActionListener(this);
 		
 		addComponent(showErrorOverview = new JCheckBox(jEdit.getProperty(
 			"options.error-list.showErrorOverview")));
 		showErrorOverview.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.showErrorOverview"));
+		showErrorOverview.addActionListener(this);
 
 		addComponent(showUnderlines = new JCheckBox(jEdit.getProperty(
 			"options.error-list.showUnderlines")));
 		showUnderlines.setSelected(jEdit.getBooleanProperty(
 			ErrorListPlugin.SHOW_UNDERLINES));
+		showUnderlines.addActionListener(this);
 
 		JPanel underLineStylePanel = new JPanel();
 		underLineStylePanel.add(underLineStyle = new JRadioButton("underline"));
@@ -84,24 +93,31 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			underLineStyle.setSelected(true);
 		}
 		addComponent(underLineStylePanel);
+		underLineStyle.addActionListener(this);
+		squiggleLineStyle.addActionListener(this);
 
 		addComponent(showIconsInGutter = new JCheckBox(jEdit.getProperty("options.error-list.gutterIcons")));
 		showIconsInGutter.setSelected(jEdit.getBooleanProperty(
 			ErrorListPlugin.SHOW_ICONS_IN_GUTTER));
+		showIconsInGutter.addActionListener(this);
 		
 		addComponent(jEdit.getProperty("options.error-list.warningColor"),
 			warningColor = new ColorWellButton(jEdit.getColorProperty(
 			"error-list.warningColor")));
+		warningColor.addActionListener(this);
 
 		addComponent(jEdit.getProperty("options.error-list.errorColor"),
 			errorColor = new ColorWellButton(jEdit.getColorProperty(
 			"error-list.errorColor")));
+		errorColor.addActionListener(this);
 
 		boolean inclusion = jEdit.getBooleanProperty(ErrorListPlugin.IS_INCLUSION_FILTER);
 		isInclusionFilter = new JRadioButton(jEdit.getProperty(
 			"options.error-list.isInclusionFilter"), inclusion);
+		isInclusionFilter.addActionListener(this);
 		isExclusionFilter = new JRadioButton(jEdit.getProperty(
 			"options.error-list.isExclusionFilter"), (! inclusion));
+		isExclusionFilter.addActionListener(this);
 		ButtonGroup group = new ButtonGroup();
 		group.add(isInclusionFilter);
 		group.add(isExclusionFilter);
@@ -113,6 +129,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		filterPane.add(isExclusionFilter);
 		filenameFilter = new JTextField(jEdit.getProperty(
 			ErrorListPlugin.FILENAME_FILTER));
+		filenameFilter.addActionListener(this);
 		filterPane.add(filenameFilter);
 		addComponent(filterPane, GridBagConstraints.HORIZONTAL);
 	} //}}}
@@ -121,31 +138,40 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	@Override
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("error-list.showOnError",showOnError
-			.getModel().isSelected());
-		jEdit.setBooleanProperty("error-list.showErrorOverview",
-			showErrorOverview.getModel().isSelected());
-		jEdit.setBooleanProperty("error-list.autoCloseOnNoErrors",
-			autoCloseOnNoErrors.getModel().isSelected());
-		jEdit.setBooleanProperty("error-list.autoRefocusTextArea",
-			autoRefocusTextArea.getModel().isSelected());
-		jEdit.setColorProperty("error-list.warningColor",
-			warningColor.getSelectedColor());
-		jEdit.setColorProperty("error-list.errorColor",
-			errorColor.getSelectedColor());
-		jEdit.setBooleanProperty(ErrorListPlugin.IS_INCLUSION_FILTER,
-			isInclusionFilter.isSelected());
-		jEdit.setProperty(ErrorListPlugin.FILENAME_FILTER,
-			filenameFilter.getText());
-		jEdit.setBooleanProperty(ErrorListPlugin.SHOW_UNDERLINES,
-			showUnderlines.isSelected());
-		jEdit.setBooleanProperty(ErrorListPlugin.SHOW_ICONS_IN_GUTTER,
-			showIconsInGutter.isSelected());
-		if (squiggleLineStyle.isSelected())
-			jEdit.setProperty("error-list.underlineStyle", "squiggle");
-		else
-			jEdit.setProperty("error-list.underlineStyle", "underline");
+		if (changed) 
+		{
+			jEdit.setBooleanProperty("error-list.showOnError",showOnError
+				.getModel().isSelected());
+			jEdit.setBooleanProperty("error-list.showErrorOverview",
+				showErrorOverview.getModel().isSelected());
+			jEdit.setBooleanProperty("error-list.autoCloseOnNoErrors",
+				autoCloseOnNoErrors.getModel().isSelected());
+			jEdit.setBooleanProperty("error-list.autoRefocusTextArea",
+				autoRefocusTextArea.getModel().isSelected());
+			jEdit.setColorProperty("error-list.warningColor",
+				warningColor.getSelectedColor());
+			jEdit.setColorProperty("error-list.errorColor",
+				errorColor.getSelectedColor());
+			jEdit.setBooleanProperty(ErrorListPlugin.IS_INCLUSION_FILTER,
+				isInclusionFilter.isSelected());
+			jEdit.setProperty(ErrorListPlugin.FILENAME_FILTER,
+				filenameFilter.getText());
+			jEdit.setBooleanProperty(ErrorListPlugin.SHOW_UNDERLINES,
+				showUnderlines.isSelected());
+			jEdit.setBooleanProperty(ErrorListPlugin.SHOW_ICONS_IN_GUTTER,
+				showIconsInGutter.isSelected());
+			if (squiggleLineStyle.isSelected())
+				jEdit.setProperty("error-list.underlineStyle", "squiggle");
+			else
+				jEdit.setProperty("error-list.underlineStyle", "underline");
+		}
+		changed = false;
 	} //}}}
+	
+	public void actionPerformed(ActionEvent ae) 
+	{
+		changed = true;	
+	}
 
 	//{{{ Private members
 	private JCheckBox showOnError;
@@ -161,5 +187,6 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	private JCheckBox showIconsInGutter;
 	private JRadioButton underLineStyle;
 	private JRadioButton squiggleLineStyle;
+	private boolean changed = false;
 	//}}}
 }
