@@ -1,5 +1,5 @@
 # Plugin properties
-plugin.console.ssh.SshConsolePlugin.activate=defer
+plugin.console.ssh.SshConsolePlugin.activate=startup
 plugin.console.ssh.SshConsolePlugin.name=SshConsole
 plugin.console.ssh.SshConsolePlugin.author=Alan Ezust
 plugin.console.ssh.SshConsolePlugin.version=1.0.7
@@ -21,3 +21,5 @@ plugin.console.ssh.SshConsolePlugin.option-pane=sshconsole
 options.sshconsole.label=SshConsole
 options.sshconsole.code=new console.ssh.OptionPane()
 options.sshconsole.xforward=Enable X11 forwarding
+options.sshconsole.showtasks=Show ssh connections in Task Manager
+sshconsole.showtasks=true
