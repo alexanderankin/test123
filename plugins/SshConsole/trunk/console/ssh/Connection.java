@@ -49,7 +49,7 @@ import ftp.PasswordDialog;
 // {{{ Connection class
 /** An ssh remote shell connection.
  *
- *  This class is based on the SFtpConnection.java class in the FTP plugin. 
+ *  This class is based on the SFtpConnection.java class in the FTP plugin.
  *  @author ezust
  *  @version $Id$
  */
@@ -67,7 +67,7 @@ public class Connection implements UserInfo {
 	StreamThread stout;
 	Console console;
 	private int keyAttempts = 0;
-	
+
 	private int SESSION_TIMEOUT = 60000;
 	private int CHANNEL_TIMEOUT = 10000;
 	// }}}
@@ -97,7 +97,7 @@ public class Connection implements UserInfo {
 			PipedOutputStream pos = new PipedOutputStream();
 			PipedInputStream pis = new PipedInputStream(pos);
 			channel.setOutputStream(pos);
-			
+
 			stout = new StreamThread(console,
 									 pis,
 									 console.getOutput(),
@@ -106,8 +106,13 @@ public class Connection implements UserInfo {
 			stout.setStatus("ssh " + info.toString());
 			console.startAnimation();
 			inUse = true;
-			ThreadUtilities.runInBackground(stout);
-			
+			if (jEdit.getBooleanProperty("sshconsole.showtasks")) {
+				ThreadUtilities.runInBackground(stout);
+			}
+			else {
+				stout.start();
+			}
+
 			pos = new PipedOutputStream();
 			pis = new PipedInputStream(pos);
 
@@ -140,19 +145,19 @@ public class Connection implements UserInfo {
 			ThreadUtilities.runInBackground(stout);
 		}
 	}// }}}
-	
+
 	// {{{ inUse() method
 	public boolean inUse()
 	{
 		return inUse;
 	} // }}}
-	
+
 	// {{{ checkIfOpen() method
 	boolean checkIfOpen() throws IOException
 	{
 		return channel.isConnected();
 	} // }}}
-	
+
 	// {{{ logout() method
 	void logout() throws IOException
 	{
@@ -163,25 +168,25 @@ public class Connection implements UserInfo {
 		session.disconnect();
 		inUse = false;
 	} // }}}
-	
+
 	// {{{ getPassphrase() method
 	public String getPassphrase()
 	{
 		return passphrase;
 	} // }}}
-	
+
 	// {{{ getPassword() method
 	public String getPassword()
 	{
 		return info.password;
 	} // }}}
-	
+
 	// {{{ promptPassword() method
 	public boolean promptPassword(String message)
 	{
 		return true;
 	} // }}}
-	
+
 	// {{{ promptPassphrase() method
 	public boolean promptPassphrase(String message)
 	{
@@ -199,7 +204,7 @@ public class Connection implements UserInfo {
 		keyAttempts++;
 		return true;
 	} // }}}
-	
+
 	// {{{ promptYesNo()
 	public boolean promptYesNo(final String message)
 	{
@@ -232,16 +237,16 @@ public class Connection implements UserInfo {
 		}
 		catch (InvocationTargetException e)
 		{
-			Log.log(Log.ERROR, this, e); 
+			Log.log(Log.ERROR, this, e);
 		}
 		return ret[0]==0;
-	
+
 	} // }}}
-	
+
 	// {{{ showMessage() method
 	public void showMessage(String message)
 	{
 		JOptionPane.showMessageDialog(console.getView(), message);
 	} // }}}
-	
+
 } // }}}
