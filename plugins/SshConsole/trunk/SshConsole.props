@@ -2,7 +2,7 @@
 plugin.console.ssh.SshConsolePlugin.activate=startup
 plugin.console.ssh.SshConsolePlugin.name=SshConsole
 plugin.console.ssh.SshConsolePlugin.author=Alan Ezust
-plugin.console.ssh.SshConsolePlugin.version=1.0.7
+plugin.console.ssh.SshConsolePlugin.version=1.0.8
 plugin.console.ssh.SshConsolePlugin.docs=index.html
 plugin.console.ssh.SshConsolePlugin.description=Allows you to issue compile commands remotely via ssh in the same location as the sftp:// file you are editing, and parses their output for errors in ErrorList.
 plugin.console.ssh.SshConsolePlugin.depend.0=jdk 1.6
