@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011 Matthieu Casanova
+ * Copyright © 2011-2016 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,30 +21,24 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 /**
  * @author Matthieu Casanova
  */
 public class FileArrayProvider implements FileProvider
 {
 	private final String[] fileArray;
-	private int index;
 
 	public FileArrayProvider(String[] files)
 	{
 		fileArray = files;
 	}
 
-	@Override
-	public String next()
-	{
-		if (index >= fileArray.length)
-			return null;
-		return fileArray[index++];
-	}
-
-	@Override
-	public int size()
-	{
-		return fileArray.length;
-	}
+    @Override
+    public Stream<String> stream()
+    {
+        return Arrays.stream(fileArray);
+    }
 }

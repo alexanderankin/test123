@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -204,17 +205,16 @@ public class FileIndex implements Closeable
 	//{{{ addFiles() method
 	public void addFiles(FileProvider fileProvider, ProgressObserver observer)
 	{
-		addFiles(fileProvider, observer, false);
+		addFiles(fileProvider, false);
 	}
 	/**
 	 * Index files.
-	 * @param fileProvider the file provider to index
-	 * @param observer the progress observer
-	 */
-	public void addFiles(FileProvider fileProvider, ProgressObserver observer, boolean append)
+     * @param fileProvider the file provider to index
+     */
+	public void addFiles(FileProvider fileProvider, boolean append)
 	{
+        long added = 0;
 		long start = System.currentTimeMillis();
-		observer.setMaximum(fileProvider.size());
 		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
 		{
@@ -226,34 +226,48 @@ public class FileIndex implements Closeable
 					knownFiles = Collections.emptyList();
 				}
 				else
-					knownFiles = getExistingFiles();
+					knownFiles = Collections.synchronizedCollection(getExistingFiles());
 
-				for (int i = 0; i < fileProvider.size(); i++)
-				{
-					String path = fileProvider.next();
-
-					observer.setValue(i);
-					if (i % 10 == 0)
-						observer.setStatus(path);
-
-					if (!exclude.matcher(path).matches())
-					{
-						if (knownFiles.contains(path))
-						{
-							knownFiles.remove(path);
-						}
-						else
-						{
-							writer.addDocument(documentFactory.createDocument(path, 1));
-						}
-					}
-
+                fileProvider.stream().parallel().filter(path -> exclude.matcher(path).matches()).map(new Function<String, Void>()
+                {
+                    @Override
+                    public Void apply(String path)
+                    {
+                        if (knownFiles.contains(path))
+                            knownFiles.remove(path);
+                        else
+                        {
+                            try
+                            {
+                                writer.addDocument(documentFactory.createDocument(path, 1));
+                            }
+                            catch (IOException e1)
+                            {
+                                Log.log(Log.ERROR, this, e1);
+                            }
+                        }
+                        return null;
+                    }
+                });
 					// iterate over documents that are still here but are not part of the project anymore
-				}
-				for (String remainingFile : knownFiles)
-				{
-					writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, remainingFile));
-				}
+//				}
+
+                added = knownFiles.stream().parallel().map(new Function<String, Void>()
+                {
+                    @Override
+                    public Void apply(String remainingFile)
+                    {
+                        try
+                        {
+                            writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, remainingFile));
+                        }
+                        catch (IOException e)
+                        {
+                            Log.log(Log.ERROR, this, e);
+                        }
+                        return null;
+                    }
+                }).count();
 			}
 			catch (IOException e)
 			{
@@ -269,7 +283,7 @@ public class FileIndex implements Closeable
 			Log.log(Log.ERROR, this, e);
 		}
 		long end = System.currentTimeMillis();
-		Log.log(Log.MESSAGE, this, "Added " + fileProvider.size()+" files in "+(end - start) + "ms");
+		Log.log(Log.MESSAGE, this, "Added " + added + " files in "+(end - start) + "ms");
 	} //}}}
 
 	private Collection<String> getExistingFiles() throws IOException
@@ -303,20 +317,29 @@ public class FileIndex implements Closeable
 	//{{{ removeFiles() method
 	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
 	{
+        long removed = 0;
 		long start = System.currentTimeMillis();
-		observer.setMaximum(fileProvider.size());
-
 		synchronized (LOCK)
 		{
 			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
-				for (int i = 0; i < fileProvider.size(); i++)
-				{
-					String path = fileProvider.next();
-					observer.setValue(i);
-					observer.setStatus(path);
-					writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, path));
-				}
+                removed = fileProvider.stream().parallel().map(new Function<String, Void>()
+                {
+                    @Override
+                    public Void apply(String path)
+                    {
+                        observer.setStatus(path);
+                        try
+                        {
+                            writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, path));
+                        }
+                        catch (IOException e)
+                        {
+                            Log.log(Log.ERROR, this, e);
+                        }
+                        return null;
+                    }
+                }).count();
 			}
 			catch (IOException e)
 			{
@@ -332,7 +355,7 @@ public class FileIndex implements Closeable
 			Log.log(Log.ERROR, this, e);
 		}
 		long end = System.currentTimeMillis();
-		Log.log(Log.MESSAGE, this, "Removed " + fileProvider.size()+" files in "+(end - start) + "ms");
+		Log.log(Log.MESSAGE, this, "Removed " + removed + " files in "+(end - start) + "ms");
 	} //}}}
 
 	//{{{ updateFrequency() method
