@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright © 2011-2015 Matthieu Casanova
+ * Copyright © 2011-2016 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,12 @@
 
 package com.kpouer.jedit.smartopen.indexer;
 
+import java.util.stream.Stream;
+
 /**
  * @author Matthieu Casanova
  */
 public interface FileProvider
 {
-	String next();
-
-	int size();
+    Stream<String> stream();
 }
