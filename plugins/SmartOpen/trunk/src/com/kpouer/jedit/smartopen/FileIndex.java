@@ -228,7 +228,7 @@ public class FileIndex implements Closeable
 				else
 					knownFiles = Collections.synchronizedCollection(getExistingFiles());
 
-                fileProvider.stream().parallel().filter(path -> exclude.matcher(path).matches()).map(new Function<String, Void>()
+                added = fileProvider.stream().parallel().filter(path -> !exclude.matcher(path).matches()).map(new Function<String, Void>()
                 {
                     @Override
                     public Void apply(String path)
@@ -248,11 +248,10 @@ public class FileIndex implements Closeable
                         }
                         return null;
                     }
-                });
-					// iterate over documents that are still here but are not part of the project anymore
-//				}
+                }).count();
 
-                added = knownFiles.stream().parallel().map(new Function<String, Void>()
+                // iterate over documents that are still here but are not part of the project anymore
+                knownFiles.stream().parallel().map(new Function<String, Void>()
                 {
                     @Override
                     public Void apply(String remainingFile)
