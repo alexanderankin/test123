@@ -4,10 +4,10 @@
 
 <SERVICES>
 	<SERVICE CLASS="console.Shell" NAME="System">
-		new console.SystemShell();
+		new console.SystemShell("System");
 	</SERVICE>
 	<SERVICE CLASS="console.Shell" NAME="BeanShell">
-		new console.ConsoleBeanShell();
+		new console.ConsoleBeanShell("BeanShell");
 	</SERVICE>
 	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="Console">
         new console.ProjectCommandOptionsService();

@@ -243,8 +243,8 @@ most often at the top of the list.
  </para>
 
   <para>
- The console window consists of a popup for choosing the current
- <firstterm>shell</firstterm>, a series of icon buttons, and a shell
+ The console window consists of a dropdown for choosing the current
+ <firstterm>shell</firstterm> or creating a new shell, a series of icon buttons, and a shell
  input/output area that occupies the remaining space of the window.
  </para>
 
