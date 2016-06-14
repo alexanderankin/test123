@@ -13,7 +13,9 @@ import javax.swing.text.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.util.StringList;
 
+import console.ConsolePlugin;
 import console.Shell;
 
 public class NewShellDialog extends JDialog {
@@ -33,23 +35,75 @@ public class NewShellDialog extends JDialog {
          * are also hard coded into their respective constructors, so no need
          * to load these names from properties.
          */
-        shellNames = new JComboBox<String>( new String[] {"System", "BeanShell"} );
+        shellNames = new JComboBox<String>( Shell.getBaseShellNames());//new String[] {"System", "BeanShell"} );
         shellName = new JTextField();
         JButton okButton = new JButton( jEdit.getProperty( "common.ok" ) );
         okButton.addActionListener( new ActionListener(){
 
                 public void actionPerformed( ActionEvent ae ) {
+                    // check the name, it must not be empty, must not already exist,
+                    // and cannot contain a comma
                     String newName = getShellName();
+                    if (newName == null || newName.isEmpty()) {
+                        JOptionPane.showMessageDialog(NewShellDialog.this, 
+                            jEdit.getProperty("console.newshell.emptyName.msg", "Name must not be empty."), 
+                            jEdit.getProperty("console.newshell.emptyName.title", "Missing Name"), 
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (newName.indexOf(',') > -1) {
+                        JOptionPane.showMessageDialog(NewShellDialog.this, 
+                            jEdit.getProperty("console.newshell.hasComma.msg", "Name must not contain a comma."), 
+                            jEdit.getProperty("console.newshell.hasComma.title", "Illegal Name"), 
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     String[] existingNames = Shell.getShellNames();
                     for ( String name : existingNames ) {
                         if ( newName.equals( name ) ) {
                             JOptionPane.showMessageDialog( NewShellDialog.this,
-                            jEdit.getProperty( "console.userShells.shellExistsMsg", new String[] {name} ),
-                            jEdit.getProperty( "console.userShells.shellExistsTitle", "Shell already exists" ),
-                            JOptionPane.WARNING_MESSAGE );
+                                jEdit.getProperty( "console.newshell.shellExists.msg", new String[] {name} ),
+                                jEdit.getProperty( "console.newshell.shellExists.title", "Shell already exists" ),
+                                JOptionPane.ERROR_MESSAGE );
                             return;
                         }
                     }
+                    
+                    // create the shell
+					String name = getShellName();
+					String type = getShellType();
+					if (name == null || type == null)
+						return;
+					String code = ConsolePlugin.getBaseShellCode(type);
+					if (code == null) {
+						ConsolePlugin.getBaseShellPluginJAR(type).activatePlugin();
+						ConsolePlugin.loadBaseShells();
+						code = ConsolePlugin.getBaseShellCode(type);
+						if (code == null) {
+							JOptionPane.showMessageDialog(NewShellDialog.this,
+							    jEdit.getProperty("console.newshell.unableToCreateShell.msg", new String[] {name} ),
+							    jEdit.getProperty("console.newshell.unableToCreateShell.title", "Unable to create shell"),
+							    JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+					}
+					// possibly replace the name in the beanshell code, 
+					// e.g. change: new javascriptshell.JavaScriptShell("JavaScript");
+					// to:          new javascriptshell.JavaScriptShell("name");
+					if (code.indexOf('\"') > 0) {
+						code = code.replaceAll("\".*?\"", '\"' + name + '\"');		
+					}
+					
+					// create a new shell service
+					ServiceManager.registerService(Shell.SERVICE, name, code, ConsolePlugin.getBaseShellPluginJAR(type));
+					Shell shell = (Shell)ServiceManager.getService(Shell.SERVICE, name);
+					shell.setName(name);
+					shell.setIsUserShell(true);
+					StringList userShells = StringList.split(jEdit.getProperty("console.userShells"), ",");
+					userShells.add(name);
+					jEdit.setProperty("console.userShells", userShells.join(","));
+					jEdit.setProperty("console.userShells." + name + ".code", code);
+                    
                     setVisible( false );
                     dispose();
                 }

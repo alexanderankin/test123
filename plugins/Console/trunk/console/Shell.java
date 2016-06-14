@@ -72,6 +72,7 @@ public abstract class Shell
 //	/** @deprecated list of shells defined in the old API */
 //	private static Vector<Shell> shells = new Vector<Shell>();
 	private String name;
+	private boolean isUserShell = false;
 	//}}}
 
 	//{{{ Shell constructor
@@ -101,6 +102,42 @@ public abstract class Shell
 		Collections.sort(shells);
 		return shells.toArray();
 	} //}}}
+	
+	public static String[] getBaseShellNames() {
+		StringList shellNames = new StringList(ServiceManager.getServiceNames(SERVICE));
+		StringList optOut = StringList.split(jEdit.getProperty("console.userShells.optOut", ""), "[,]");
+		StringList shells = new StringList();
+		for (String name : shellNames)
+		{
+			if (name != null && !name.isEmpty() && !optOut.contains(name))
+			{
+				Shell shell = Shell.getShell(name);
+				if (!shell.isUserShell()) {
+					shells.add(name);
+				}
+			}
+		}
+		Collections.sort(shells);
+		return shells.toArray();
+	}
+	
+	public static String[] getUserShellNames() {
+		StringList shellNames = new StringList(ServiceManager.getServiceNames(SERVICE));
+		StringList optOut = StringList.split(jEdit.getProperty("console.userShells.optOut", ""), "[,]");
+		StringList shells = new StringList();
+		for (String name : shellNames)
+		{
+			if (name != null && !name.isEmpty() && !optOut.contains(name))
+			{
+				Shell shell = Shell.getShell(name);
+				if (shell.isUserShell()) {
+					shells.add(name);
+				}
+			}
+		}
+		Collections.sort(shells);
+		return shells.toArray();
+	}
 
 	//{{{ handlesVFS()
 	/** A System Shell can override this method and use
@@ -135,7 +172,15 @@ public abstract class Shell
 			return null;
 		return (Shell)ServiceManager.getService(SERVICE, name);
 	} //}}}
-
+	
+	public boolean isUserShell() {
+		return isUserShell;	
+	}
+	
+	public void setIsUserShell(boolean b) {
+		isUserShell = b;	
+	}
+	
 	//{{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.

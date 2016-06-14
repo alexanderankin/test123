@@ -29,10 +29,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,6 +57,7 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -101,7 +100,7 @@ implements EBComponent, DefaultFocusComponent
 	private ShellState shellState;
 
 	// The selector of shells
-	private JComboBox shellCombo;
+	private JComboBox<String> shellCombo;
 
 	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
@@ -624,7 +623,7 @@ implements EBComponent, DefaultFocusComponent
 	{
 		Box box = new Box(BoxLayout.X_AXIS);
 
-		shellCombo = new JComboBox();
+		shellCombo = new JComboBox<String>();
 		updateShellList();
 		shellCombo.addActionListener(new ActionHandler());
 		shellCombo.setRequestFocusEnabled(false);
@@ -767,13 +766,14 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ updateShellList() method
 	private void updateShellList()
 	{
+		String selected = (String)shellCombo.getSelectedItem();
 		String[] shells = Shell.getShellNames();
-		Arrays.sort(shells,new StandardUtilities.StringCompare<String>(true));
 		String[] shellsPlusNew = new String[shells.length + 1];
 		System.arraycopy(shells, 0, shellsPlusNew, 0, shells.length);
 		shellsPlusNew[shells.length] = jEdit.getProperty("console.newshell.newShell", "New Shell...");
 		shellCombo.setModel(new DefaultComboBoxModel(shellsPlusNew));
 		shellCombo.setMaximumSize(shellCombo.getPreferredSize());
+		shellCombo.setSelectedItem(selected);
 	} //}}}
 
 	//{{{ propertiesChanged() method
@@ -1173,30 +1173,18 @@ implements EBComponent, DefaultFocusComponent
 					// "New Shell..." is always the last item in the combobox
 					// and is selected
 					
-					// need a popup to ask what kind of shell
+					// show a dialog to ask what kind of shell
 					NewShellDialog dialog = new NewShellDialog();
 					dialog.show();
 					String name = dialog.getShellName();
-					String code;
-					switch(dialog.getShellType())
-					{
-						case "BeanShell":
-							code = "new console.ConsoleBeanShell(\"" + name + "\");";
-							break;
-						case "System":
-						default:
-							code = "new console.SystemShell(\"" + name + "\");";
-							break;
-					}
-					
-					// create a new system shell service
-					ServiceManager.registerService(Shell.SERVICE, name, code, null);
 					updateShellList();
 					shellCombo.setSelectedItem(name);
-					jEdit.setProperty("console.userShells", jEdit.getProperty("console.userShells", "") + ',' + name);
-					jEdit.setProperty("console.userShells." + name + ".code", code);
 				}
-				setShell((String)shellCombo.getSelectedItem());
+				String selected = (String)shellCombo.getSelectedItem();
+				if (selected != null && selected.indexOf('(') > 0) {
+					selected = selected.substring(0, selected.indexOf('(')).trim();	
+				}
+				setShell(selected);
 			}
 			else if(source == runAgain)
 				runLastCommand();

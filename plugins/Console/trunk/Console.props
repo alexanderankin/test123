@@ -103,8 +103,6 @@ options.console.general.changedir.followTextArea=When TextArea buffer dir change
 options.console.general.availableUserShells=Available User Shells
 options.console.general.activeUserShells=Active User Shells
 options.console.general.listToolTip=Right click to delete selected items
-console.userShells.shellExistsMsg=A shell named {0} already exists.
-console.userShells.shellExistsTitle=Shell Already Exists
 
 options.console.shell.system.wrapBrackets=Wrap round brackets around argument lists in Windows shells
 
@@ -304,6 +302,14 @@ console.newshell.newShell=New Shell...
 console.newshell.createNewShell=Create New Shell
 console.newshell.selectShellType=Select Shell Type:
 console.newshell.shellName=Enter Shell Name:
+console.newshell.shellExists.msg=A shell named {0} already exists.
+console.newshell.shellExists.title=Shell Already Exists
+console.newshell.unableToCreateShell.msg=No code available to create shell {0}.
+console.newshell.unableToCreateShell.title=Unable to create shell
+console.newshell.emptyName.msg=Name must not be empty.
+console.newshell.emptyName.title=Missing Name
+console.newshell.hasComma.msg=Name may not contain a comma.
+console.newshell.hasComma.title=Illegal Name
 
 ### BeanShell
 

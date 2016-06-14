@@ -6,7 +6,8 @@ $Date$
     Version 5.3.0  Requires jEdit 5.0, Java 1.7, ErrorList 2.1, CommonControls 1.7.5, and ProjectViewer 3.5 (optional).
       [Dale Anson] 
          Feature request #159, multiple tabs for System shell. No tabs, actually, just
-         change shells from the existing drop down, also allow multiple BeanShell shells. 
+         change shells from the existing drop down, also allow multiple shells from any
+         existing shell. 
       
     Version 5.1.5  Requires jEdit 5.0, Java 1.6, ErrorList 2.1, CommonControls 1.7, and ProjectViewer 3.5 (optional).
       [Alan Ezust]

@@ -29,10 +29,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
@@ -41,6 +45,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
+import org.gjt.sp.jedit.msg.EditorStarted;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
@@ -68,6 +73,7 @@ public class ConsolePlugin extends EditPlugin
 	private static ActionSet allCommands;
 	private static ActionSet shellSwitchActions;
 	static CommandoToolBar toolBar = null;
+	private static Map<String, ShellDescriptor> baseShells;
 	// }}}
 
 	// {{{ static final Members
@@ -149,7 +155,132 @@ public class ConsolePlugin extends EditPlugin
 		CommandoToolBar.init();
 		EditBus.addToBus(this);
 		
+
+	} // }}}
+	
+	// {{{ loadShells() method
+	// load the base shells (that is, those proviced via the service mechanism)
+	// and the shells created by the user
+	private void loadShells() {
+		// get details of base shells, that is, shells that are provided by either
+		// this plugin or other plugins, not user shells, which are loaded next.
+		loadBaseShells();
+		
 		// load user-created shells
+		loadUserShells();
+	} // }}}
+	
+	// {{{ loadBaseShells() method
+	// Here's a crappy hack -- ServiceManager doesn't expose its list of 
+	// service details, so this bit of awesomeness breaks in and gets it anyway.
+	public static void loadBaseShells() {
+		baseShells = new HashMap<String, ShellDescriptor>();
+		try {
+			Class sm = Class.forName("org.gjt.sp.jedit.ServiceManager");
+			Field f = sm.getDeclaredField("serviceMap");
+			f.setAccessible(true);
+			Map smMap = (Map)f.get(null);
+			for (Object o : smMap.values()) {
+				Field field = o.getClass().getDeclaredField("clazz");
+				field.setAccessible(true);
+				String clazz = (String)field.get(o);
+				// there are lots of services, only want those that are shells
+				if (!"console.Shell".equals(clazz))
+					continue;
+				ConsolePlugin.ShellDescriptor d = new ConsolePlugin.ShellDescriptor();
+				field = o.getClass().getDeclaredField("name");
+				field.setAccessible(true);
+				d.name = (String)field.get(o);
+				field = o.getClass().getDeclaredField("code");
+				field.setAccessible(true);
+				// code will be null only if the plugin providing the service
+				// is not yet activated. 
+				d.code = (String)field.get(o);
+				if (d.code != null)
+					d.code = d.code.trim();
+				// might need the plugin jar later to force the plugin to 
+				// activate
+				field = o.getClass().getDeclaredField("plugin");
+				field.setAccessible(true);
+				d.plugin = (PluginJAR)field.get(o);
+				baseShells.put(d.name, d);
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	} // }}}
+	
+	// {{{ getBaseShellNames() method
+	public static String[] getBaseShellNames() {
+		ArrayList<String> names = new ArrayList<String>(baseShells.keySet());
+		return names.toArray(new String[names.size()]);
+	} // }}}
+	
+	// {{{ getBaseShellCode() method
+	/**
+	 * @param name The name of the shell to get the constructor code for.
+ 	 * @return The beanshell code that creates the shell. This may return null in
+ 	 * the case that the plugin providing the shell is not yet activated.
+ 	 */
+	public static String getBaseShellCode(String name) {
+		if (name == null)
+			return null;
+		ShellDescriptor d = baseShells.get(name);
+		if (d == null)
+			return null;
+		return d.code;	
+	} // }}}
+	
+	// {{{ getBaseShellPluginJAR() method
+	/**
+ 	 * @param name The shell service name.	
+ 	 * @return The PluginJAR that provides a shell service.	
+ 	 */
+	public static PluginJAR getBaseShellPluginJAR(String name) {
+		if (name == null)
+			return null;
+		ShellDescriptor d = baseShells.get(name);
+		if (d == null)
+			return null;
+		return d.plugin;	
+	} // }}}
+	
+	// {{{ ShellDescriptor class
+	/**
+ 	 * More or less the same as the Descriptor class from ServiceManager, this
+ 	 * keeps track of shell creation details.
+ 	 */
+	public static class ShellDescriptor {
+		public String name = "";
+		public String code = "";
+		public PluginJAR plugin;
+		
+		public String toString() {
+			return new StringBuilder(name).append(", ").append(code).append(", ").append(plugin).toString();	
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return 31 * name.hashCode() + code.hashCode();
+		}
+
+		public boolean equals(Object o)
+		{
+			if(o instanceof ShellDescriptor)
+			{
+				ShellDescriptor d = (ShellDescriptor)o;
+				return d.name.equals(name)
+					&& d.code.equals(code);
+			}
+			else
+				return false;
+		}
+	} // }}}
+	
+	// {{{ loadUserShells() method
+	private void loadUserShells() {
 		String userShells = jEdit.getProperty("console.userShells", "");
 		if (!userShells.isEmpty()) 
 		{
@@ -160,10 +291,28 @@ public class ConsolePlugin extends EditPlugin
 				if (name == null || name.isEmpty() || optOut.contains(name))
 					continue;
 				String code = jEdit.getProperty("console.userShells." + name + ".code");
-				ServiceManager.registerService(Shell.SERVICE, name, code, null);	
+				ServiceManager.registerService(Shell.SERVICE, name, code, null);
+				Shell shell = (Shell)ServiceManager.getService(Shell.SERVICE, name);
+				shell.setIsUserShell(true);
+				shell.setName(name);
 			}
 		}
-
+	} // }}}
+	
+	// {{{ getAllShells() method
+	private List<Shell> getAllShells() {
+		List<Shell> shells = new ArrayList<Shell>();
+		String[] shellNames = Shell.getShellNames();
+		if (shellNames != null && shellNames.length > 0) 
+		{
+			for (String name : shellNames)
+			{
+				if (name == null || name.isEmpty())
+					continue;
+				shells.add(Shell.getShell(name));
+			}
+		}
+		return shells;
 	} // }}}
 
 	// {{{ parseLine()
@@ -194,9 +343,14 @@ public class ConsolePlugin extends EditPlugin
 		jEdit.removeActionSet(shellSwitchActions);
 		allCommands.removeAllActions();
 		shellSwitchActions.removeAllActions();
-		SystemShell systemShell = getSystemShell();
-		if (systemShell != null)
-			systemShell.beforeStopping();
+		// since there can now be multiple system shells, need to find them
+		// all and call beforeStopping on each one.
+		List<Shell> allShells = getAllShells();
+		for (Shell shell : allShells) {
+			if (shell instanceof SystemShell) {
+				((SystemShell)shell).beforeStopping();	
+			}
+		}
 
 		// ??? Does this really get all the Console objects that are in memory?
 		View[] views = jEdit.getViews();
@@ -232,8 +386,41 @@ public class ConsolePlugin extends EditPlugin
 	public void handlePluginUpdate(PluginUpdate msg)
 	{
 		rescanShells();
+		
+		if (PluginUpdate.REMOVED.equals(msg.getWhat())) {
+			if (baseShells != null) { 
+				PluginJAR plugin = msg.getPluginJAR();
+				if (plugin == null) {
+					return;	
+				}
+				List<String> removed = new ArrayList<String>();
+				for (String name : baseShells.keySet()) {
+					ShellDescriptor d = baseShells.get(name);
+					if (d != null && plugin.equals(d.plugin)) {
+						removed.add(name);
+					}
+				}
+				StringList userShells = new StringList(Shell.getUserShellNames());
+				StringList optOut = StringList.split(jEdit.getProperty("console.userShells.optOut", ""), "[,]");
+				for (String name : removed) {
+					baseShells.remove(name);
+					userShells.remove(name);
+					optOut.remove(name);
+					ServiceManager.unregisterService(Shell.SERVICE, name);
+					jEdit.unsetProperty("console.userShells." + name + ".code");
+				}
+				jEdit.setProperty("console.userShells", userShells.join(","));
+				jEdit.setProperty("console.userShells.optOut", optOut.join(","));
+			}
+		}
+		
 	}
 	// }}}
+	
+	@EBHandler
+	public void handleEditorStarted(EditorStarted msg) {
+		loadShells();	
+	}
 
 	// {{{ getConsoleSettingsDirectory() method
 	public static String getConsoleSettingsDirectory()

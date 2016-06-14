@@ -32,6 +32,7 @@ import java.awt.event.*;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -44,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ListModel;
 import javax.swing.event.*;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -57,7 +59,6 @@ import org.gjt.sp.jedit.ServiceManager;
 
 import common.gui.DoubleJList;
 
-import console.Console;
 import console.Shell;
 import console.gui.Label;
 import console.gui.NewShellDialog;
@@ -122,26 +123,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 			new ActionListener() {
 				public void actionPerformed(ActionEvent evt)
 				{
-					// need a popup to ask what kind of shell
+					// show a dialog to ask what kind of shell
 					NewShellDialog dialog = new NewShellDialog();
 					dialog.show();
-					String name = dialog.getShellName();
-					String code;
-					switch(dialog.getShellType())
-					{
-						case "BeanShell":
-							code = "new console.ConsoleBeanShell(\"" + name + "\");";
-							break;
-						case "System":
-						default:
-							code = "new console.SystemShell(\"" + name + "\");";
-							break;
-					}
-					
-					// create a new shell service
-					ServiceManager.registerService(Shell.SERVICE, name, code, null);
-					jEdit.setProperty("console.userShells", jEdit.getProperty("console.userShells", "") + ',' + name);
-					jEdit.setProperty("console.userShells." + name + ".code", code);
 
 					reloadLists();
 					reloadDefaultList();
@@ -166,6 +150,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 				}
 			}
 		);
+		dlist.addLeftListDataListener(leftDataListener);
+		dlist.addRightListDataListener(rightDataListener);
 		dlist.init();
 		addComponent( dlist, GridBagConstraints.NONE );
 		
@@ -306,27 +292,6 @@ public class GeneralOptionPane extends AbstractOptionPane
  		jEdit.setProperty("ansi-escape.behaviour", String.valueOf( ansiBehaviour.getSelectedIndex() ) );
  		jEdit.setProperty("ansi-escape.mode"     , String.valueOf( ansiMode.getSelectedIndex() ) );
  		
- 		// register/unregister shells with ServiceManager
- 		List<String> data = dlist.getLeftValuesList();
- 		StringBuilder sb = new StringBuilder();
- 		for (String name : data)
- 		{
- 			ServiceManager.unregisterService(Shell.SERVICE, name);
- 			sb.append(name).append(',');
- 		}
- 		jEdit.unsetProperty("console.userShells.optOut");
- 		jEdit.setProperty("console.userShells.optOut", sb.toString());
- 		
- 		sb = new StringBuilder();
- 		data = dlist.getRightValuesList();
- 		for (String name : data)
- 		{
- 			String code = jEdit.getProperty("console.userShells." + name + ".code");
- 			ServiceManager.registerService(Shell.SERVICE, name, code, null);
- 			sb.append(name).append(',');
- 		}
- 		jEdit.unsetProperty("console.userShells");
- 		jEdit.setProperty("console.userShells", sb.toString());
 	}
 	//}}}
 
@@ -356,14 +321,24 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private void reloadLists()
 	{
 		// load the ping pong lists
-		StringList allShells = new StringList(ServiceManager.getServiceNames(Shell.SERVICE));
-		allShells.remove("System");
-		allShells.remove("BeanShell");
+		StringList allUserShells = new StringList(ServiceManager.getServiceNames(Shell.SERVICE));
+		ListIterator<String> it = allUserShells.listIterator();
+		while (it.hasNext()) {
+			String name = it.next(); 
+			if (!Shell.getShell(name).isUserShell()) {
+				it.remove();	
+			}
+		}
 		StringList availableShells = new StringList();
 		StringList selectedShells = new StringList(Shell.getShellNames());
-		selectedShells.remove("System");
-		selectedShells.remove("BeanShell");
-		for ( String name : allShells ) 
+		it = selectedShells.listIterator();
+		while (it.hasNext()) {
+			String name = it.next();
+			if (!Shell.getShell(name).isUserShell()) {
+				it.remove();	
+			}
+		}
+		for ( String name : allUserShells ) 
 		{
 			if (!selectedShells.contains(name))
 			{
@@ -389,6 +364,85 @@ public class GeneralOptionPane extends AbstractOptionPane
 		defaultShell.setModel( new DefaultComboBoxModel<String>( sl.toArray() ) );
 		String ds = jEdit.getProperty("console.shell.default", "System");
 		defaultShell.setSelectedItem(ds);
+	}
+	
+	// unregister any shell added to the left list, update the optOut property
+	private ListDataListener leftDataListener = new ListDataListener(){
+		public void contentsChanged(ListDataEvent e) {
+			// do nothing	
+		}
+		
+		public void intervalAdded(ListDataEvent e) {
+			ListModel<String> model = (ListModel<String>)e.getSource();
+			int start = e.getIndex0();
+			int end = e.getIndex1();
+			
+			// unregister the shell
+			for (int i = start; i <= end; i++) {
+				String name = model.getElementAt(i);
+				ServiceManager.unregisterService(Shell.SERVICE, name);
+			}
+			
+			resetOptOut();
+			reloadDefaultList();
+		}
+		
+		public void intervalRemoved(ListDataEvent e) {
+			resetOptOut();
+			reloadDefaultList();
+		}
+		
+	};
+
+	// register any shell added to the list
+	private ListDataListener rightDataListener = new ListDataListener(){
+		public void contentsChanged(ListDataEvent e) {
+			// do nothing
+		}
+		
+		public void intervalAdded(ListDataEvent e) {
+			ListModel<String> model = (ListModel<String>)e.getSource();
+			int start = e.getIndex0();
+			int end = e.getIndex1();
+			
+			for (int i = start; i <= end; i++) {
+				String name = model.getElementAt(i);
+				String code = jEdit.getProperty("console.userShells." + name + ".code");
+				ServiceManager.registerService(Shell.SERVICE, name, code, null);
+			}
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < model.getSize(); i++)
+			{
+				String name = model.getElementAt(i);
+				sb.append(name);
+				if (i < model.getSize() - 1) {
+					sb.append(',');	
+				}
+			}
+			jEdit.unsetProperty("console.userShells");
+			jEdit.setProperty("console.userShells", sb.toString());
+			resetOptOut();
+			reloadDefaultList();
+		}
+		
+		public void intervalRemoved(ListDataEvent e) {
+		}
+	};
+	
+	// resets the optOut property to the values in the left list
+	private void resetOptOut() {
+		List<String> data = dlist.getLeftValuesList(); 
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < data.size(); i++)
+		{
+			String name = data.get(i);
+			sb.append(name);
+			if (i < data.size() - 1) {
+				sb.append(',');	
+			}
+		}
+		jEdit.unsetProperty("console.userShells.optOut");
+		jEdit.setProperty("console.userShells.optOut", sb.toString());
 	}
 	
 }
