@@ -197,7 +197,8 @@ public class DoubleJList <E extends Comparable> extends JPanel {
      * @param listener The listener.
      */
     public void addLeftListSelectionListener( ListSelectionListener listener ) {
-        leftList.addListSelectionListener( listener );
+        if (listener != null)
+            leftList.addListSelectionListener( listener );
     }
 
 
@@ -206,9 +207,27 @@ public class DoubleJList <E extends Comparable> extends JPanel {
      * @param listener The listener.
      */
     public void addRightListSelectionListener( ListSelectionListener listener ) {
-        rightList.addListSelectionListener( listener );
+        if (listener != null)
+            rightList.addListSelectionListener( listener );
+    }
+    
+    /**
+     * Add a list data listener to the left JList.
+     * @param listener The listener.
+     */
+    public void addLeftListDataListener(ListDataListener listener) {
+        if (listener != null)
+            leftList.getModel().addListDataListener(listener);
     }
 
+    /**
+     * Add a list data listener to the right JList.
+     * @param listener The listener.
+     */
+    public void addRightListDataListener(ListDataListener listener) {
+        if (listener != null)
+            rightList.getModel().addListDataListener(listener);
+    }
 
     /**
      * Set a tooltip for the left JList. Default tool tip says, "Right click for
