@@ -8,7 +8,7 @@ plugin.clangbeauty.CLangBeautyPlugin.description=CLangBeauty runs clang-format
 plugin.clangbeauty.CLangBeautyPlugin.longdescription=description.html
 
 #external depencies
-plugin.clangbeauty.CLangBeautyPlugin.depend.0=jdk 1.6
+plugin.clangbeauty.CLangBeautyPlugin.depend.0=jdk 1.7
 plugin.clangbeauty.CLangBeautyPlugin.depend.1=jedit 05.02.01.00
 plugin.clangbeauty.CLangBeautyPlugin.depend.2=plugin beauty.BeautyPlugin 1.0
 plugin.clangbeauty.CLangBeautyPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
