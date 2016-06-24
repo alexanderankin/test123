@@ -59,9 +59,19 @@
   List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> displays the error
   list window.
  </para>
+ 
+ <para>
+ The ErrorList uses a tabbed panel for showing errors. Initially, there is just one tab
+ titled "ErrorList" and all errors/warning messages are directed there. Addtional tabs can 
+ be created by right clicking on any tab, selecting "Add tab", and giving the new tab a 
+ name. All subsequent errors are directed to the current active tab in ErrorList. This 
+ makes it possible to have compiler errors shown in one tab and PMD errors shown in another.
+ <emphasis>To reiterate, all errors and warnings are directed to the current
+ tab!</emphasis>
+ </para>
 
  <para>
-  Errors are shown in a tree control, with each branch being a file, and each
+  Within each tab, errors are shown in a tree control, with each branch being a file, and each
   leaf an error. Clicking on a file will open that file; clicking on an error
   will open the file containing the error and move the caret to its location.
  </para>
