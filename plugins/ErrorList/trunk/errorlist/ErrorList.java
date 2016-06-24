@@ -31,7 +31,6 @@ package errorlist;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -46,13 +45,11 @@ public class ErrorList extends JPanel {
 
     private JTabbedPane tabs;
     private View view;
-    private HashMap<ErrorSource, ErrorListPanel> sourcePanelMap;
 
 
     public ErrorList( View view ) {
         super( new BorderLayout() );
         this.view = view;
-        sourcePanelMap = new HashMap<ErrorSource, ErrorListPanel>();
         tabs = new JTabbedPane();
         ErrorListPanel panel = new ErrorListPanel( ErrorList.this.view );
         panel.setIsActive( true );
@@ -246,4 +243,56 @@ public class ErrorList extends JPanel {
             panel.unload();
         }
     }
+    
+    // {{{actions, see actions.xml
+    //{{{ collapseAll() method
+	/**
+	 * Collapse All the nodes on the ErrorList.
+	 */
+	public void collapseAll()
+	{
+        getSelectedPanel().collapseAll();
+	} //}}}
+
+	//{{{ expandAll() method
+	/**
+	 * Recursively expand all the nodes on the ErrorList.
+	 */
+	public void expandAll()
+	{
+	    getSelectedPanel().expandAll();
+	} //}}}
+
+	//{{{ copySelectedNodeToClipboard() method
+	public void copySelectedNodeToClipboard()
+	{
+	    getSelectedPanel().copySelectedNodeToClipboard();
+	} //}}}
+
+
+	//{{{ copyAllNodesToClipboard() method
+	public void copyAllNodesToClipboard()
+	{
+	    getSelectedPanel().copyAllNodesToClipboard();
+	} //}}}
+
+	//{{{ toggleErrors() method
+	public void toggleErrors()
+	{
+	    getSelectedPanel().toggleErrors();
+	} //}}}
+
+	//{{{ toggleWarnings() method
+	public void toggleWarnings()
+	{
+	    getSelectedPanel().toggleWarnings();
+	} //}}}
+	//}}}
+
+	private ErrorListPanel getSelectedPanel()
+	{
+        int selectedIndex = tabs.getSelectedIndex();
+        JScrollPane scrollPane = ( JScrollPane )tabs.getComponentAt( selectedIndex );
+        return ( ErrorListPanel )scrollPane.getViewport().getView();
+	}
 }
