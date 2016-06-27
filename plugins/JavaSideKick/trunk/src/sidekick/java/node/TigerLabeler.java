@@ -597,7 +597,7 @@ public class TigerLabeler {
                         sb.append("implements ");
                         break;
                     case TigerNode.MODULE:
-                        sb.append("module");
+                        sb.append("module ");
                         break;
                 }
             }
