@@ -394,6 +394,14 @@ TOKEN :
 | < VOID: "void" >
 | < VOLATILE: "volatile" >
 | < WHILE: "while" >
+// for Java 9 modules
+| < WITH: "with">
+| < USES: "uses">
+| < MODULE: "module">
+| < EXPORTS: "exports">
+| < REQUIRES: "requires">
+| < PROVIDES: "provides">
+| < TO: "to">
 }
 
 /* JAVACC RESERVED WORDS: These are the only tokens in JavaCC but not in Java */
@@ -1177,7 +1185,9 @@ CUNode CompilationUnit(int tab_size):
 {
     try {
       (
-          
+         a = ModuleDeclaration() {cuNode.addChild(a);}
+         |
+         ( 
            [ LOOKAHEAD(2) packageNode=PackageDeclaration() ]
            ( in=ImportDeclaration() { importNode.addChild(in); } )*
 
@@ -1187,6 +1197,7 @@ CUNode CompilationUnit(int tab_size):
              a=TypeDeclaration()
              { cuNode.addChild(a); }
            )*
+         )
        )
     }
     catch(ParseException pe) {
@@ -1304,6 +1315,109 @@ ImportNode ImportDeclaration():
         in.setStartLocation(l);
         in.setEndLocation(getEndLocation(et));
         return in;
+    }
+}
+
+/*
+Modules were added in Java 9
+
+CompilationUnit:
+  [PackageDeclaration] {ImportDeclaration} {TypeDeclaration}
+  ModuleDeclaration
+
+ModuleDeclaration:
+  module ModuleName { {ModuleStatement} }
+
+ModuleName:
+  Identifier
+  ModuleName . Identifier
+
+ModuleStatement:
+  requires [public] ModuleName ;
+  exports PackageName [to ModuleName {, ModuleName}] ;
+  uses TypeName ;
+  provides TypeName with TypeName ;
+*/
+TigerNode ModuleDeclaration():
+{
+    Token m = null; 
+    NameNode name = null;
+    Token st = null;
+    Token et = null;
+    ModuleNode parent = null;
+    TigerNode child = null;
+}
+{
+    try {
+        m = <MODULE> name = ModuleName() {parent = new ModuleNode(name.getFullyQualifiedTypeName());} 
+        st = "{" 
+        ( child = ModuleStatement() { parent.addChild(child); })*
+        et = "}"
+    }
+    catch(ParseException pe) {
+        et = error_skipto(pe, SEMICOLON, RBRACE);
+        et = et == null ? st : et;
+    }
+    {
+        parent.setStartLocation(getLocation(m) );
+        parent.setEndLocation(getLocation(et));
+        return parent;
+    }
+}
+
+NameNode ModuleName():
+{
+    NameNode n = null;
+}
+{
+    try {
+        n = Name()       
+    }
+    catch(ParseException e) {
+        //e.printStackTrace();
+    }
+    {
+        return n;   
+    }
+}
+
+/*
+ModuleStatement:
+  requires [public] ModuleName ;
+  exports PackageName [to ModuleName {, ModuleName}] ;
+  uses TypeName ;
+  provides TypeName with TypeName ;
+*/
+TigerNode ModuleStatement():
+{
+    Token first = null;
+    Token second = null;
+    Token end = null;
+    NameNode m = null;
+    NameNode name = null;
+    StringBuilder sb = new StringBuilder();
+    Type type1 = null;
+    Type type2 = null;
+}
+{
+    try {
+        first = <REQUIRES> {sb.append(first.image);} [second = <PUBLIC> {sb.append(' ').append(second.image);}] m = ModuleName() {sb.append(' ').append(m.getFullyQualifiedTypeName());} end = ";"
+        |
+        first = <EXPORTS> {sb.append(first.image);} name = Name() {sb.append(' ').append(name.getFullyQualifiedTypeName());} [second = <TO> { sb.append(' ').append(second.image).append(' ');} m = ModuleName(){sb.append(m.getFullyQualifiedTypeName());} ("," {sb.append(',');} m = ModuleName(){sb.append(m.getFullyQualifiedTypeName());})*] end = ";"
+        |
+        first = <USES> {sb.append(first.image);} type1 = Type() {sb.append(' ').append(type1.toString());} end = ";"
+        |
+        first = <PROVIDES> {sb.append(first.image);} type1 = Type() {sb.append(' ').append(type1.toString());} second = <WITH> {sb.append(' ').append(second.image);} type2 = Type() {sb.append(' ').append(type2.toString());} end = ";"
+    }
+    catch(ParseException e) {
+        e.printStackTrace();
+    }
+    {
+        TigerNode node = new TigerNode(sb.toString());
+        node.setStartLocation(getLocation(first));
+        node.setEndLocation(getLocation(end));
+        node.setVisible(true);
+        return node;
     }
 }
 
@@ -3845,6 +3959,7 @@ BlockNode ForStatement():
     }
 }
 
+// TODO: what is this? It doesn't appear to be called from anywhere.
 void VariableModifier() :
 {}
 {
