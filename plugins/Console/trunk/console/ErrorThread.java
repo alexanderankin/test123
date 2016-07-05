@@ -3,7 +3,7 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2012 contributors 
+ * Copyright (C) 2012 contributors
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ import org.gjt.sp.util.Log;
 /**
  * @deprecated
  * Thread for handing error output of running subprocesses.
- * Write data to a Console's ErrorOutput. 
+ * Write data to a Console's ErrorOutput.
  */
 
 //{{{ ErrorThread class
@@ -48,7 +48,7 @@ public class ErrorThread extends OutputThread
 	private boolean aborted;
 	private Color errorColor;
 	//}}}
-	
+
 	//{{{ ErrorThread constructor
 	ErrorThread(ConsoleProcess process, InputStream in, Color errorColor)
 	{
@@ -56,7 +56,7 @@ public class ErrorThread extends OutputThread
 		this.in = in;
 		this.errorColor = errorColor;
 	} //}}}
-	
+
 	//{{{ run() method
 	public void run()
 	{
@@ -71,7 +71,7 @@ public class ErrorThread extends OutputThread
 		}
 
 		Output output = process.getErrorOutput();
-		StringBuilder lineBuffer = new StringBuilder(100); 
+		StringBuilder lineBuffer = new StringBuilder(100);
 		try
 		{
 			char[] input = new char[1024];
@@ -90,10 +90,10 @@ public class ErrorThread extends OutputThread
 					}
 					break;
 				}
-				
+
 				output.print( errorColor, lineBuffer.append(input, 0, read).toString() );
 				lineBuffer.setLength(0);
-				
+
 				Thread.sleep(10);
 			}
 		}
@@ -103,7 +103,7 @@ public class ErrorThread extends OutputThread
 			{
 				if ( process.isForeground() )
 					Log.log(Log.ERROR, e, e);
-				
+
 				Console console = process.getConsole();
 				Output error = process.getErrorOutput();
 				if (console != null)
@@ -127,7 +127,7 @@ public class ErrorThread extends OutputThread
 			process.threadDone();
 		}
 	} //}}}
-	
+
 	//{{{ abort() method
 	void abort()
 	{
@@ -135,3 +135,4 @@ public class ErrorThread extends OutputThread
 		interrupt();
 	} //}}}
 } //}}}
+
