@@ -45,6 +45,7 @@ import org.tmatesoft.svn.core.SVNException;
 
 
 import ise.plugin.svn.data.PropertyData;
+import ise.plugin.svn.SVNPlugin;
 
 /**
  * Gets properties for a file or directory.  Can recurse to get properties for
@@ -85,7 +86,7 @@ public class Property {
             if ( data.getUsername() != null ) {
                 // use default svn config options
                 ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-                clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+                clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword() ) );
             }
             else {
                 clientManager = SVNClientManager.newInstance();

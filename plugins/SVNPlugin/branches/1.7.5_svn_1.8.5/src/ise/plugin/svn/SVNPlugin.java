@@ -86,12 +86,11 @@ public class SVNPlugin extends EBPlugin {
             return storageDir;   
         }
         try {
-            File homeDir = SVNPlugin.getPluginHomeDir();
-            if (homeDir == null) {
-                return null;   
-            }
+            // attempt to use the subversion default settings directory
+            File homeDir = new File(System.getProperty("user.home"));
             storageDir = new File(homeDir, ".subversion");
-            if (!storageDir.exists()) {
+            if ( !storageDir.exists() ) {
+                // if the default directory doesn't exist, create it
                 storageDir.mkdir();   
             }
             return storageDir;
