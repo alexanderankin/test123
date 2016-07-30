@@ -401,7 +401,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         }
         
         private void adjustRadioButtons() {
-                SVNRevision newRevision = controller.getModel().getRevision();
+                final SVNRevision newRevision = controller.getModel().getRevision();
                 if ( controller.getModel().getShowHead() && SVNRevision.HEAD.equals( newRevision ) ) {
                     head_rb.setSelected( true );
                 }
@@ -419,12 +419,17 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                     date_spinner.setValue( newRevision.getDate() );
                 }
                 else {
-                    long number = newRevision.getNumber();
-                    if ( number == -1 ) {
-                        number = 0;
-                    }
-                    revision_number_rb.setSelected( true );
-                    revision_number.setText( String.valueOf( number ) );
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            long number = newRevision.getNumber();
+                            if ( number == -1 ) {
+                                number = 0;
+                            }
+                            revision_number_rb.setSelected( true );
+                            revision_number.setEnabled( true );
+                            revision_number.setText( String.valueOf( number ) );
+                        }
+                    });
                 }
                 repaint();
         }

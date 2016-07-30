@@ -115,7 +115,7 @@ public class OutputPanel extends JPanel {
                     close_all_mi.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
-                                for (int i = 1; i < tabs.getTabCount(); ) {
+                                for (int i = 1; i < tabs.getTabCount(); ) {         // TODO: how does this work? Need i++ ! -- no, it works because the tabs shift left to the 1 position
                                     Component comp = tabs.getComponentAt(i);
                                     tabs.remove( comp );
                                     comp = null;
