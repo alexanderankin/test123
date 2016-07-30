@@ -51,6 +51,7 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 
 import ise.plugin.svn.data.MergeData;
 import ise.plugin.svn.data.MergeResults;
+import ise.plugin.svn.SVNPlugin;
 
 
 import org.gjt.sp.jedit.jEdit;
@@ -80,7 +81,7 @@ public class Merge {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword()) );
 
         // get a diff client
         SVNDiffClient client = clientManager.getDiffClient();
