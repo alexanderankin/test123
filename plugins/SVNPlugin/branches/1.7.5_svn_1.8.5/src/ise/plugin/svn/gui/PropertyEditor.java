@@ -130,9 +130,9 @@ public class PropertyEditor extends JDialog {
     private JRadioButton fileButton;
     private JRadioButton textButton;
     private JTextArea textValue;
-    private JList listValue;
+    private JList<String> listValue;
     private JPanel valueEntryArea;
-    private JComboBox propChooser;
+    private JComboBox<String> propChooser;
     private JCheckBox recursiveCheckbox;
     private JButton okButton;
     private JButton cancelButton;
@@ -192,7 +192,7 @@ public class PropertyEditor extends JDialog {
         // property name chooser, fill with the appropriate file or directory
         // property names
         JLabel prop_name_label = new JLabel( jEdit.getProperty( "ips.Property_name>", "Property name:" ) );
-        propChooser = new JComboBox( isDirectory ? dirPropNames : filePropNames );
+        propChooser = new JComboBox<String>( isDirectory ? dirPropNames : filePropNames );
         propChooser.setEditable( true );
 
         // value entry panel, text entry or from file -- depending on the selected
@@ -232,7 +232,7 @@ public class PropertyEditor extends JDialog {
 
         // this list is used for keywords, eol-style, and boolean values.  The
         // list model is changed as appropriate.
-        listValue = new JList();
+        listValue = new JList<String>();
         listValue.setVisibleRowCount( 8 );
         JPanel listValue_panel = new JPanel( new BorderLayout() );
         listValue_panel.add( new JScrollPane( listValue ), BorderLayout.CENTER );
@@ -322,11 +322,10 @@ public class PropertyEditor extends JDialog {
         listValue.addListSelectionListener(
             new ListSelectionListener() {
                 public void valueChanged( ListSelectionEvent lse ) {
-                    JList list = ( JList ) lse.getSource();
-                    Object[] values = list.getSelectedValues();
-                    StringBuffer sb = new StringBuffer();
-                    for ( int i = 0; i < values.length; i++ ) {
-                        sb.append( values[ i ].toString() ).append( ' ' );
+                    List<String> values = listValue.getSelectedValuesList();
+                    StringBuilder sb = new StringBuilder();
+                    for ( String value : values ) {
+                        sb.append( value ).append( ' ' );
                     }
                     textValue.setText( sb.toString().trim() );
                 }

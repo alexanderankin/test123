@@ -216,6 +216,7 @@ ips.This_only_removes_this_repository_from_the_browser,_it_does_not_delete_any_f
 ips.Confirm_Remove=Confirm Remove
 ips.Refresh=Refresh tree or selected node
 ips.SVN_Browser=SVN Browser
+ips.select_name=-- Select --
 
 # for Checkout dialog
 ips.URL_is_required.=URL is required.
@@ -531,6 +532,10 @@ ips.Done.=Done.
 ips.Use_SVN_entries=Use SVN entries
 ips.Import_files_in_under_SVN_version_control_only.=Import files in under SVN version control only.
 
+# for button tab component
+ips.Close_this_tab=Close this tab
+
+# other stuff
 ips.Apr=Apr
 ips.Aug=Aug
 ips.Browse_Repository=Browse Repository
