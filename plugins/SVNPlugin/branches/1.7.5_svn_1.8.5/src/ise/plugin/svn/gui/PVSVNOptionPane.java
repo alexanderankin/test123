@@ -73,7 +73,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private JLabel password_label;
     private JPasswordField password;
     private JLabel fileformat_label;
-    private JComboBox fileformat;
+    private JComboBox<String> fileformat;
     private JCheckBox autoImport;
 
     private int wcVersion = -1;
@@ -116,7 +116,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         // subversion file format
         fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
         int current_wc_format = getWCVersion();
-        fileformat = new JComboBox( wcToArray( current_wc_format ) );
+        fileformat = new JComboBox<String>( wcToArray( current_wc_format ) );
         fileformat.setEditable( false );
         fileformat.setSelectedIndex( 0 );
         fileformat.addActionListener( new ActionListener() {
@@ -230,7 +230,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                         if ( get() ) {
                             out.println( jEdit.getProperty( "ips.Completed_converting_working_copy_format_to_", "Completed converting working copy format to " ) + new_wc_format + "." );
                         }
-                    } catch ( Exception e ) {
+                    } catch ( Exception e ) {   // NOPMD
                     }
                     out.close();
                 }

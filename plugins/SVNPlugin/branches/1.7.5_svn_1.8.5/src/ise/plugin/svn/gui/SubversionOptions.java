@@ -46,7 +46,7 @@ public class SubversionOptions implements OptionPane {
     private JPanel panel = null;
     private JCheckBox useTsvnTemplate = null;
     private JSpinner maxLogs = null;
-    private JComboBox fileformat;
+    private JComboBox<String> fileformat;
 
     public SubversionOptions( ) { }
 
@@ -73,7 +73,7 @@ public class SubversionOptions implements OptionPane {
         JLabel maxLogsLabel = new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) );
 
         JLabel fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7", "1.8"} );
+        fileformat = new JComboBox<String>( new String[] {"1.3", "1.4", "1.5", "1.6", "1.7", "1.8"} );
         fileformat.setEditable( false );
         String wc_item;
         int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_16 );
