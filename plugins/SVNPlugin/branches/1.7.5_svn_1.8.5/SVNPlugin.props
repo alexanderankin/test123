@@ -15,10 +15,10 @@ plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 # dependencies
 plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.7.0
 plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 05.02.01.00
-plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.5.2
+plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.5.3
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.3.0
-plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.2
+plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.3
 plugin.ise.plugin.svn.SVNPlugin.depend.6=plugin jnaplugin.JNAPlugin 3.5.2
 plugin.ise.plugin.svn.SVNPlugin.jars=antlr-runtime-3.4.jar jsch.agentproxy.connector-factory-0.0.7.jar jsch.agentproxy.core-0.0.7.jar jsch.agentproxy.pageant-0.0.7.jar jsch.agentproxy.sshagent-0.0.7.jar jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar jsch.agentproxy.usocket-jna-0.0.7.jar jsch.agentproxy.usocket-nc-0.0.7.jar sequence-library-1.0.3.jar sqljet-1.1.10.jar svnkit-1.8.12.jar svnkit-cli-1.8.12.jar trilead-ssh2-1.0.0-build220.jar 
 
