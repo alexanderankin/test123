@@ -245,13 +245,6 @@
         <delete dir="${build.dir}"/>
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${build.dir}"/>
-
-        <!--
-        <delete file="${install.dir}/ganymed.jar"/>
-        <delete file="${install.dir}/svnkit-cli.jar"/>
-        <delete file="${install.dir}/svnkit.jar"/>
-        <delete file="${install.dir}/svnkit-javahl.jar"/>
-        -->
     </target>
 
    <!-- ========================================================================
