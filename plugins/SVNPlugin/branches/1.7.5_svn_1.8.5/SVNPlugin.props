@@ -50,7 +50,23 @@ plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
 plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser
 subversion.label=SVN Console
 
-svn.diff-against-base.label=Diff against base revision
+# action labels
+svn.action.add.label=Add
+svn.action.blame.label=Blame
+svn.action.cleanup.label=Clean Up
+svn.action.commit.label=Commit
+svn.action.delete.label=Delete
+svn.action.diff-against-base.label=Diff against base revision
+svn.action.export.label=Export
+svn.action.ignore.label=Ignore
+svn.action.info.label=Info
+svn.action.lock.label=Lock
+svn.action.log.label=Log
+svn.action.revert.label=Revert
+svn.action.status.label=Status
+svn.action.unlock.label=Unlock
+svn.action.update.label=Update
+
 
 # subversion commands for ProjectViewer popup menu
 ise.plugin.svn.action.label.1=Status
