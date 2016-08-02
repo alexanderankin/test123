@@ -151,7 +151,7 @@ public class SVNData implements Serializable {
         return password == null || password.length() == 0 ? null : password;
     }
 
-    public String getDecryptedPassword() {
+    public char[] getDecryptedPassword() {
         return PasswordHandler.decryptPassword( password );
     }
 

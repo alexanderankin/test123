@@ -100,7 +100,7 @@ public class AddRepositoryDialog extends JDialog {
 
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
-        String password_value = data != null ? data.getDecryptedPassword() : "";
+        String password_value = data != null ? new String(data.getDecryptedPassword()) : "";
         password = new JPasswordField( password_value, 30 );
         password.setName("repository password");
         

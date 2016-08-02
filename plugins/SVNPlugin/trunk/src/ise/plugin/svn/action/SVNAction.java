@@ -122,7 +122,7 @@ public abstract class SVNAction implements ActionListener {
     /**
      * Returns the value of decrypted password.
      */
-    protected String getDecryptedPassword() {
+    protected char[] getDecryptedPassword() {
         return PasswordHandler.decryptPassword(password);
     }
 
