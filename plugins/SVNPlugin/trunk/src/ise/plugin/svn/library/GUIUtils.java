@@ -225,8 +225,8 @@ public class GUIUtils {
    public static void showPopupMenu( javax.swing.JPopupMenu popup, Component comp,
          int x, int y ) {
       Point p = getBestAnchorPoint( comp, x, y );
-      popup.show( comp, p.x, p.y );
-      popup.show(comp, x, y);
+      popup.show( comp, p.x, p.y );     
+      //popup.show(comp, x, y);       // DONE: why this line? I think it should be removed.
    }
 
 

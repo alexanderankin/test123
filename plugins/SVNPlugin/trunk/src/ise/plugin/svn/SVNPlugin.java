@@ -86,14 +86,29 @@ public class SVNPlugin extends EBPlugin {
             return storageDir;   
         }
         try {
+            // check if there is a existing svn settings directory in plugin home,
+            // if there is, use it, although this shouldn't be necessary. This 
+            // should only be the case if the user does not have regular svn 
+            // installed, however, there is also a backward compatibility issue
+            // in that this is where settings were stored for several years.
             File homeDir = SVNPlugin.getPluginHomeDir();
             if (homeDir == null) {
                 return null;   
             }
             storageDir = new File(homeDir, ".subversion");
+            
+            // if there isn't svn settings dir in plugin home and there is a
+            // default ~/.subversion directory, use it.
             if (!storageDir.exists()) {
-                storageDir.mkdir();   
+                // attempt to use the subversion default settings directory
+                homeDir = new File(System.getProperty("user.home"));
+                storageDir = new File(homeDir, ".subversion");
+                if ( !storageDir.exists() ) {
+                    // if the default directory doesn't exist, create it
+                    storageDir.mkdir();   
+                }
             }
+            
             return storageDir;
         }
         catch ( Exception ignored ) {

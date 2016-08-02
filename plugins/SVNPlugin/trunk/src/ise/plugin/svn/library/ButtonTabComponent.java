@@ -37,6 +37,8 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.gjt.sp.jedit.jEdit;
+
 /**
  * Component to be used as tabComponent;
  * Contains a JLabel to show the text and 
@@ -79,7 +81,7 @@ public class ButtonTabComponent extends JPanel {
         public TabButton() {
             int size = 17;
             setPreferredSize(new Dimension(size, size));
-            setToolTipText("Close this tab");
+            setToolTipText(jEdit.getProperty("ips.Close_this_tab", "Close this tab") );   
             //Make the button looks the same for all Laf's
             setUI(new BasicButtonUI());
             //Make it transparent

@@ -6,21 +6,21 @@
 plugin.ise.plugin.svn.SVNPlugin.activate=defer
 plugin.ise.plugin.svn.SVNPlugin.name=SVNPlugin
 plugin.ise.plugin.svn.SVNPlugin.author=Dale Anson
-plugin.ise.plugin.svn.SVNPlugin.version=1.7.5
+plugin.ise.plugin.svn.SVNPlugin.version=1.8.12
 plugin.ise.plugin.svn.SVNPlugin.description=Subversion plugin
 
 # docs
 plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 
 # dependencies
-plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.6.0
-plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.05.99.00
-plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.4.4
-plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.7.1
+plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.7.0
+plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 05.02.01.00
+plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.5.3
+plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.7.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.3.0
-plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.1
-plugin.ise.plugin.svn.SVNPlugin.depend.6=plugin jnaplugin.JNAPlugin 3.2.4
-plugin.ise.plugin.svn.SVNPlugin.jars=antlr-runtime-3.4.jar sequence-library-1.0.2.jar sqljet-1.1.7.jar svnkit-1.7.9.jar svnkit-cli-1.7.9.jar trilead-ssh2-1.0.0-build216.jar
+plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.6.3
+plugin.ise.plugin.svn.SVNPlugin.depend.6=plugin jnaplugin.JNAPlugin 3.5.2
+plugin.ise.plugin.svn.SVNPlugin.jars=antlr-runtime-3.4.jar jsch.agentproxy.connector-factory-0.0.7.jar jsch.agentproxy.core-0.0.7.jar jsch.agentproxy.pageant-0.0.7.jar jsch.agentproxy.sshagent-0.0.7.jar jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar jsch.agentproxy.usocket-jna-0.0.7.jar jsch.agentproxy.usocket-nc-0.0.7.jar sequence-library-1.0.3.jar sqljet-1.1.10.jar svnkit-1.8.12.jar svnkit-cli-1.8.12.jar trilead-ssh2-1.0.0-build220.jar 
 
 # titles for DockableWindowManager
 subversion.title=SVN
@@ -50,7 +50,23 @@ plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
 plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser
 subversion.label=SVN Console
 
-svn.diff-against-base.label=Diff against base revision
+# action labels
+svn.action.add.label=Add
+svn.action.blame.label=Blame
+svn.action.cleanup.label=Clean Up
+svn.action.commit.label=Commit
+svn.action.delete.label=Delete
+svn.action.diff-against-base.label=Diff against base revision
+svn.action.export.label=Export
+svn.action.ignore.label=Ignore
+svn.action.info.label=Info
+svn.action.lock.label=Lock
+svn.action.log.label=Log
+svn.action.revert.label=Revert
+svn.action.status.label=Status
+svn.action.unlock.label=Unlock
+svn.action.update.label=Update
+
 
 # subversion commands for ProjectViewer popup menu
 ise.plugin.svn.action.label.1=Status
@@ -216,6 +232,7 @@ ips.This_only_removes_this_repository_from_the_browser,_it_does_not_delete_any_f
 ips.Confirm_Remove=Confirm Remove
 ips.Refresh=Refresh tree or selected node
 ips.SVN_Browser=SVN Browser
+ips.select_name=-- Select --
 
 # for Checkout dialog
 ips.URL_is_required.=URL is required.
@@ -531,6 +548,10 @@ ips.Done.=Done.
 ips.Use_SVN_entries=Use SVN entries
 ips.Import_files_in_under_SVN_version_control_only.=Import files in under SVN version control only.
 
+# for button tab component
+ips.Close_this_tab=Close this tab
+
+# other stuff
 ips.Apr=Apr
 ips.Aug=Aug
 ips.Browse_Repository=Browse Repository
@@ -648,5 +669,5 @@ ips.Unable_to_stop_conversion_of_working_file_format.=Unable to stop conversion 
 ips.Completed_converting_working_copy_format_to_=Completed converting working copy format to 
 ips.Converting=Converting
 ips.Caution!_It_will_not_be_possible_to_convert_to_an_older_working_copy_format.\n\nConvert_anyway?\n\n=Caution! It will not be possible to convert to an older working copy format.\n\nConvert anyway?\n\n
-ips.Converting_to_1.7_working_format=Converting to 1.7 working format
+ips.Converting_to_1.7_working_format=Upgrading working file format
 ips.Automatically_import_added_files_and_remove_deleted_files_from_ProjectViewer=Automatically import added files and remove deleted files from ProjectViewer

@@ -60,7 +60,7 @@ public class ExportDialog extends JDialog {
     private JCheckBox recursive_cb = null;
     private RevisionSelectionPanel revision_panel = null;
     private RevisionSelectionPanel peg_revision_panel = null;
-    private JComboBox eol = null;
+    private JComboBox<String> eol = null;
     private JCheckBox force = null;
     private boolean canceled = false;
 
@@ -154,7 +154,7 @@ public class ExportDialog extends JDialog {
                 }
                                           );
 
-        eol = new JComboBox( new String[] {"native", "CRLF (Windows)", "LF (Unix)", "CR (Old Mac)"} );
+        eol = new JComboBox<String>( new String[] {"native", "CRLF (Windows)", "LF (Unix)", "CR (Old Mac)"} );
         eol.setEditable( false );
         eol.setSelectedItem( "native" );
 

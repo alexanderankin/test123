@@ -76,5 +76,24 @@ public class RepositoryData extends CheckoutData {
     public void setName( String name ) {
         this.name = name;
     }
+    
+    public int hashCode() {
+        if (getURL() != null)
+            return getURL().hashCode();
+        if (getName() != null)
+            return getName().hashCode();
+        return 0;
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof RepositoryData))
+            return false;
+        RepositoryData rd = (RepositoryData)o;
+        if (rd.getURL() != null && getURL() != null)
+            return rd.getURL().equals(getURL());
+        if (rd.getName() != null & getName() != null)
+            return rd.getName().equals(getName());
+        return false;
+    }
 
 }

@@ -41,6 +41,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.UpdateData;
+import ise.plugin.svn.SVNPlugin;
 
 
 public class Update {
@@ -77,7 +78,7 @@ public class Update {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword()) );
 
         // get a commit client
         SVNUpdateClient client = clientManager.getUpdateClient();
