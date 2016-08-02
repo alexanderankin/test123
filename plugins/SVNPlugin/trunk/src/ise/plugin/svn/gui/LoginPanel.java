@@ -64,7 +64,7 @@ public class LoginPanel extends JPanel {
 
         // possible username and password values
         u = u == null ? "" : u;
-        p = PasswordHandler.decryptPassword(p);
+        p = new String(PasswordHandler.decryptPassword(p));
 
         // username field
         JLabel username_label = new JLabel( jEdit.getProperty("ips.Username>", "Username:") );

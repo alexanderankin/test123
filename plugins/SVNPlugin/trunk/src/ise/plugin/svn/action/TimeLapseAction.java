@@ -195,7 +195,7 @@ public class TimeLapseAction extends SVNAction {
             SVNURL svnUrl;
             if ( new File( filePathOrUrl ).exists() ) {
                 SVNKit.setupLibrary();
-                SVNClientManager clientManager = SVNClientManager.newInstance( SVNWCUtil.createDefaultOptions( true ), data.getUsername(), data.getDecryptedPassword() );
+                SVNClientManager clientManager = SVNClientManager.newInstance( SVNWCUtil.createDefaultOptions( true ), data.getUsername(), new String(data.getDecryptedPassword()) );
                 svnUrl = clientManager.getWCClient().doInfo( new File( filePathOrUrl ), SVNRevision.WORKING ).getURL();
                 clientManager.dispose();
             }

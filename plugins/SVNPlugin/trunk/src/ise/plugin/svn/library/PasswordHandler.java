@@ -142,7 +142,7 @@ public class PasswordHandler {
         }
     }
 
-    public static String decryptPassword( String pwd ) {
+    public static char[] decryptPassword( String pwd ) {
         String password = pwd;
         if ( password != null && password.length() > 0 ) {
             try {
@@ -153,7 +153,7 @@ public class PasswordHandler {
                 password = "";
             }
         }
-        return password;
+        return password != null ? password.toCharArray() : null;
     }
 
     public static String encryptPassword( String pwd ) {

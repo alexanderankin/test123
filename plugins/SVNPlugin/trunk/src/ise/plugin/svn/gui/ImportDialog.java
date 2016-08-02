@@ -189,7 +189,7 @@ public class ImportDialog extends JDialog {
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( SVNAction.PREFIX + project_name + ".password" );
-        pwd = PasswordHandler.decryptPassword( pwd );
+        pwd = new String(PasswordHandler.decryptPassword( pwd ));
         password = new JPasswordField( pwd, 30 );
 
         // buttons

@@ -110,7 +110,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         // password field
         password_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( PVHelper.PREFIX + projectName + ".password" );
-        pwd = PasswordHandler.decryptPassword( pwd );
+        pwd = new String(PasswordHandler.decryptPassword( pwd ));
         password = new JPasswordField( pwd, 30 );
 
         // subversion file format
