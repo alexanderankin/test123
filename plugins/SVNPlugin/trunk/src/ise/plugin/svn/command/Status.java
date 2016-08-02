@@ -43,6 +43,7 @@ import org.tmatesoft.svn.core.wc.SVNStatus;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
+import ise.plugin.svn.SVNPlugin;
 
 public class Status {
     
@@ -102,7 +103,7 @@ public class Status {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), cd.getDecryptedPassword() ) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( SVNPlugin.getSvnStorageDir(), cd.getUsername(), cd.getDecryptedPassword() ) );
 
         // get a client
         SVNStatusClient client = clientManager.getStatusClient();

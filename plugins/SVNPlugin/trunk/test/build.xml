@@ -68,22 +68,22 @@
     need to be copied -->
     <property name="copyPluginJars" value=""/>
     
+    <property name="lib.dir" location="../lib"/>
+    
     <!-- full list of all jar files necessary to let jEdit load and run
     the plugin.  All of these files will be copied to the jedit_settings/jar
     directory. -->
-    <filelist id="plugin.jars" dir="${install.dir}">
-        <file name="JNAPlugin.jar"/>
-        <file name="jna.jar"/>
-        <file name="svnkit-cli.jar"/>
-        <file name="svnkit.jar"/>
-        <file name="trilead.jar"/>
-        <file name="SVNPlugin.jar"/>
-        <file name="JDiffPlugin.jar"/>
-        <file name="ProjectViewer.jar"/>
-        <file name="CommonControls.jar"/>
-        <file name="kappalayout.jar"/>
-        <file name="InfoViewer.jar"/>
-    </filelist>
+    <fileset id="plugin.jars" dir="${install.dir}">
+        <include name="JNAPlugin.jar"/>
+        <include name="jna.jar"/>
+        <include name="SVNPlugin.jar"/>
+        <include name="JDiffPlugin.jar"/>
+        <include name="ProjectViewer.jar"/>
+        <include name="CommonControls.jar"/>
+        <include name="kappalayout.jar"/>
+        <include name="InfoViewer.jar"/>
+        <present targetdir="$lib.dir"/>
+    </fileset>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
     unit tests.  This should include all the jars listed in the plugin.jars 
@@ -91,7 +91,7 @@
     <path id="project.class.path">
         <pathelement path="project.test.classes.dir"/>
         <path>
-            <filelist refid="plugin.jars"/>
+            <fileset refid="plugin.jars"/>
         </path>
     </path>
 

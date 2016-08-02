@@ -22,7 +22,7 @@
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
     <mkdir dir="${src.dir}"/>
-    
+
     <!-- java source and target version for compile -->
     <property name="target" value="1.6"/>
 
@@ -206,6 +206,7 @@
             <fileset dir="${basedir}">
                 <include name="SVNPlugin.props"/>
                 <include name="dockables.xml"/>
+                <include name="lang_*.properties"/>
                 <include name="actions.xml"/>
                 <include name="services.xml"/>
             </fileset>
@@ -244,13 +245,6 @@
         <delete dir="${build.dir}"/>
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${build.dir}"/>
-
-        <!--
-        <delete file="${install.dir}/ganymed.jar"/>
-        <delete file="${install.dir}/svnkit-cli.jar"/>
-        <delete file="${install.dir}/svnkit.jar"/>
-        <delete file="${install.dir}/svnkit-javahl.jar"/>
-        -->
     </target>
 
    <!-- ========================================================================

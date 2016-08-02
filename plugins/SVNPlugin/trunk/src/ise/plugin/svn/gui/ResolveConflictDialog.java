@@ -251,6 +251,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
      * Do a manual merge via JDiff.
      * TODO: there are threading issues here.  The 'Keep this file' buttons don't work as expected,
      * the resolve command doesn't seem to get run, and the view doesn't necessarily unsplit.
+     * Do all this in a SwingWorker rather than nested runnables and invokelaters.
      */
     private void doManualMerge() {
         try {

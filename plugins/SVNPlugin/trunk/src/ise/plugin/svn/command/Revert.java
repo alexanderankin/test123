@@ -42,6 +42,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
+import ise.plugin.svn.SVNPlugin;
 
 
 public class Revert {
@@ -75,7 +76,7 @@ public class Revert {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(cd.getUsername(), cd.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), cd.getUsername(), cd.getDecryptedPassword()) );
 
         // get a commit client
         SVNWCClient client = clientManager.getWCClient();
