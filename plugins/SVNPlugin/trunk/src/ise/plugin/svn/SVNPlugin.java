@@ -92,10 +92,9 @@ public class SVNPlugin extends EBPlugin {
             // installed, however, there is also a backward compatibility issue
             // in that this is where settings were stored for several years.
             File homeDir = SVNPlugin.getPluginHomeDir();
-            if (homeDir == null) {
-                return null;   
+            if (homeDir != null) {
+                storageDir = new File(homeDir, ".subversion");
             }
-            storageDir = new File(homeDir, ".subversion");
             
             // if there isn't svn settings dir in plugin home and there is a
             // default ~/.subversion directory, use it.
