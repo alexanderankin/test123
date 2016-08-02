@@ -171,7 +171,7 @@ public class RepositoryComboBox extends JComboBox <RepositoryData> {
             RepositoryData rd = propertyMap.get(key);
             String comp_url = rd.getURL();
             if ( url.equals( comp_url ) || url.startsWith( comp_url ) || comp_url.startsWith( url ) ) {
-                super.setSelectedItem( entry.getKey() );
+                super.setSelectedItem( key );
                 return;
             }
         }
