@@ -44,6 +44,6 @@ public class IndexProjectTask extends Task
 	public void _run()
 	{
 		FileProvider projectFileList = new ProjectFileList(itemFinder.getProject());
-		itemFinder.addFiles(projectFileList, this);
+		itemFinder.addFiles(projectFileList);
 	} //}}}
 }

@@ -67,23 +67,25 @@ public class FileIndex implements Closeable
 
 	private DirectoryReader reader;
 
-	private final DocumentFactory documentFactory;
+	private ThreadLocal<DocumentFactory> documentFactoryThreadLocal;
 
 	//{{{ FileIndex constructor
 	public FileIndex(@Nullable VPTProject project)
 	{
 		this.project = project;
 		directory = getDirectory();
-		documentFactory = new DocumentFactory();
+		documentFactoryThreadLocal = ThreadLocal.withInitial(DocumentFactory::new);
 	} //}}}
 
-  private IndexWriterConfig getIndexWriterConfig()
-  {
-    IndexWriterConfig indexWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
-    indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-    return indexWriterConfig;
-  }
+	//{{{ getIndexWriterConfig() method
+	private IndexWriterConfig getIndexWriterConfig()
+	{
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
+		indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		return indexWriterConfig;
+	} //}}}
 
+	//{{{ initReader() method
 	private void initReader() throws IOException
 	{
 		synchronized (LOCK)
@@ -100,14 +102,15 @@ public class FileIndex implements Closeable
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ close() method
 	@Override
 	public void close()
 	{
 		IOUtilities.closeQuietly (reader);
 		reader = null;
-	}
+	} //}}}
 
 	@Nullable
 	public VPTProject getProject()
@@ -165,10 +168,10 @@ public class FileIndex implements Closeable
 				initReader();
 			IndexSearcher searcher = new IndexSearcher(reader);
 
-            SortField sortField = new SortedNumericSortField(DocumentFactory.FIELD_FREQUENCY, SortField.Type.LONG, true);
-            Sort sort = new Sort(sortField);
+			SortField sortField = new SortedNumericSortField(DocumentFactory.FIELD_FREQUENCY, SortField.Type.LONG, true);
+			Sort sort = new Sort(sortField);
 
-            TopDocs search = searcher.search(query, 100, sort);
+			TopDocs search = searcher.search(query, 100, sort);
 			ScoreDoc[] scoreDocs = search.scoreDocs;
 			Set<String> fields = Collections.singleton(DocumentFactory.FIELD_PATH);
 			for (ScoreDoc scoreDoc : scoreDocs)
@@ -202,18 +205,19 @@ public class FileIndex implements Closeable
 		return new FrequencySearch(reader).getFrequency(path);
 	} //}}}
 
-	//{{{ addFiles() method
-	public void addFiles(FileProvider fileProvider, ProgressObserver observer)
+	//{{{ addFiles() methods
+	public void addFiles(FileProvider fileProvider)
 	{
 		addFiles(fileProvider, false);
 	}
+
 	/**
 	 * Index files.
-     * @param fileProvider the file provider to index
-     */
+	 * @param fileProvider the file provider to index
+	 */
 	public void addFiles(FileProvider fileProvider, boolean append)
 	{
-        long added = 0;
+		long added = 0;
 		long start = System.currentTimeMillis();
 		Pattern exclude = SmartOpenOptionPane.globToPattern(jEdit.getProperty("options.smartopen.ExcludeGlobs"));
 		synchronized (LOCK)
@@ -221,52 +225,34 @@ public class FileIndex implements Closeable
 			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
 				Collection<String> knownFiles;
-				if (append)
+				knownFiles = append ? Collections.emptyList() : Collections.synchronizedCollection(getExistingFiles());
+
+				added = fileProvider.stream().parallel()
+						.filter(path -> !exclude.matcher(path).matches())
+						.map(new Function<String, Void>()
 				{
-					knownFiles = Collections.emptyList();
-				}
-				else
-					knownFiles = Collections.synchronizedCollection(getExistingFiles());
+					@Override
+					public Void apply(String path)
+					{
+						if (knownFiles.contains(path))
+							knownFiles.remove(path);
+						else
+							addDocument(writer, path);
+						return null;
+					}
+				}).count();
 
-                added = fileProvider.stream().parallel().filter(path -> !exclude.matcher(path).matches()).map(new Function<String, Void>()
-                {
-                    @Override
-                    public Void apply(String path)
-                    {
-                        if (knownFiles.contains(path))
-                            knownFiles.remove(path);
-                        else
-                        {
-                            try
-                            {
-                                writer.addDocument(documentFactory.createDocument(path, 1));
-                            }
-                            catch (IOException e1)
-                            {
-                                Log.log(Log.ERROR, this, e1);
-                            }
-                        }
-                        return null;
-                    }
-                }).count();
-
-                // iterate over documents that are still here but are not part of the project anymore
-                knownFiles.stream().parallel().map(new Function<String, Void>()
-                {
-                    @Override
-                    public Void apply(String remainingFile)
-                    {
-                        try
-                        {
-                            writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, remainingFile));
-                        }
-                        catch (IOException e)
-                        {
-                            Log.log(Log.ERROR, this, e);
-                        }
-                        return null;
-                    }
-                }).count();
+				// iterate over documents that are still here but are not part of the project anymore
+				knownFiles.stream().parallel()
+						.map(new Function<String, Void>()
+				{
+					@Override
+					public Void apply(String remainingFile)
+					{
+						deleteDocument(writer, remainingFile);
+						return null;
+					}
+				}).count();
 			}
 			catch (IOException e)
 			{
@@ -285,6 +271,48 @@ public class FileIndex implements Closeable
 		Log.log(Log.MESSAGE, this, "Added " + added + " files in "+(end - start) + "ms");
 	} //}}}
 
+	//{{{ addDocument() method
+	private void addDocument(IndexWriter writer, String path)
+	{
+		try
+		{
+			writer.addDocument(documentFactoryThreadLocal.get().createDocument(path, 1));
+		}
+		catch (IOException e1)
+		{
+			Log.log(Log.ERROR, this, e1);
+		}
+	} //}}}
+
+	//{{{ deleteDocument() method
+	private void deleteDocument(IndexWriter writer, String path)
+	{
+		try
+		{
+			writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, path));
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+	} //}}}
+
+	//{{{ deleteDocument() method
+	private void updateDocument(IndexWriter writer, String path, long frequency)
+	{
+		try
+		{
+			Term term = new Term(DocumentFactory.FIELD_PATH, path);
+			writer.deleteDocuments(term);
+			writer.addDocument(documentFactoryThreadLocal.get().createDocument(path, frequency));
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+	} //}}}
+
+	//{{{ getExistingFiles() method
 	private Collection<String> getExistingFiles() throws IOException
 	{
 		Collection<String> knownFiles = new HashSet<>(10000);
@@ -311,34 +339,28 @@ public class FileIndex implements Closeable
 			}
 		}
 		return knownFiles;
-	}
+	} //}}}
 
 	//{{{ removeFiles() method
 	public void removeFiles(FileProvider fileProvider, ProgressObserver observer)
 	{
-        long removed = 0;
+		long removed = 0;
 		long start = System.currentTimeMillis();
 		synchronized (LOCK)
 		{
-			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
+			try (IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 			{
-                removed = fileProvider.stream().parallel().map(new Function<String, Void>()
-                {
-                    @Override
-                    public Void apply(String path)
-                    {
-                        observer.setStatus(path);
-                        try
-                        {
-                            writer.deleteDocuments(new Term(DocumentFactory.FIELD_PATH, path));
-                        }
-                        catch (IOException e)
-                        {
-                            Log.log(Log.ERROR, this, e);
-                        }
-                        return null;
-                    }
-                }).count();
+				removed = fileProvider.stream().parallel()
+						.map(new Function<String, Void>()
+				{
+					@Override
+					public Void apply(String path)
+					{
+						observer.setStatus(path);
+						deleteDocument(writer, path);
+						return null;
+					}
+				}).count();
 			}
 			catch (IOException e)
 			{
@@ -360,7 +382,7 @@ public class FileIndex implements Closeable
 	//{{{ updateFrequency() method
 	public void updateFrequency(String path)
 	{
-		Term term = new Term(DocumentFactory.FIELD_PATH,path);
+
 		synchronized (LOCK)
 		{
 			try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
@@ -368,8 +390,7 @@ public class FileIndex implements Closeable
 				long frequency = getFrequency(path);
 				if (frequency == 0L)
 					return;
-				writer.deleteDocuments(term);
-				writer.addDocument(documentFactory.createDocument(path, frequency + 1L));
+				updateDocument(writer, path, frequency + 1L);
 			}
 			catch (Exception e)
 			{
@@ -413,6 +434,7 @@ public class FileIndex implements Closeable
 		return tempDirectory;
 	} //}}}
 
+	//{{{ resetFrequency() method
 	public void resetFrequency()
 	{
 		long start = System.currentTimeMillis();
@@ -425,15 +447,7 @@ public class FileIndex implements Closeable
 				try(IndexWriter writer = new IndexWriter(directory, getIndexWriterConfig()))
 				{
 					for (String path : existingFiles)
-					{
-						Term term = new Term(DocumentFactory.FIELD_PATH, path);
-						writer.deleteDocuments(term);
-						writer.addDocument(documentFactory.createDocument(path, 1L));
-					}
-				}
-				catch (Exception e)
-				{
-					Log.log(Log.ERROR, this, e);
+						updateDocument(writer, path, 1L);
 				}
 				try
 				{
@@ -451,8 +465,9 @@ public class FileIndex implements Closeable
 		}
 		long end = System.currentTimeMillis();
 		Log.log(Log.MESSAGE, this, "Frequency cache resetted in "+(end - start) + "ms");
-	}
+	} //}}}
 
+	//{{{ FrequencySearch class
 	private static class FrequencySearch
 	{
 		private final IndexSearcher searcher;
@@ -474,7 +489,7 @@ public class FileIndex implements Closeable
 				{
 					Document doc = searcher.doc(search.scoreDocs[0].doc, frequencyField);
 					IndexableField frequencyField = doc.getField(DocumentFactory.FIELD_FREQUENCY_STORED);
-                    frequency = frequencyField.numericValue().longValue();
+					frequency = frequencyField.numericValue().longValue();
 				}
 			}
 			catch(IndexNotFoundException infe)
@@ -483,6 +498,5 @@ public class FileIndex implements Closeable
 			}
 			return frequency;
 		}
-	}
-
+	} //}}}
 }
