@@ -23,6 +23,7 @@ package org.gjt.sp.jedit.testframework;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -59,6 +60,9 @@ public class JEditRunner extends BlockJUnit4ClassRunner {
 			
 			@Override
 			public void evaluate() throws Throwable {
+				// for every plugin that stomachs it!
+				// FailOnThreadViolationRepaintManager.install();		
+				
 				// starts a new jEdit instance
 				TestUtils.setupNewjEdit();
 				TestUtils.tearDownExistingjEdit();
