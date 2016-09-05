@@ -1,5 +1,5 @@
 
-<project name="jEditTestFramework" default="compileFramework" basedir=".">
+<project name="jEditTestFramework" default="compileFramework" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
 
     <description>
     This is the build file for the jEdit unit test framework based on Fest. This
@@ -46,7 +46,6 @@
     See build.properties.examples for possible configuration options for your 
     system.
     </description>
-
 
     <!-- load properties from a file.  This allows for overriding properties
     set below. -->
@@ -119,11 +118,9 @@
         <fileset dir="${test.framework.home}/lib">
             <include name="**/*.jar"/>
         </fileset>
-        <!-- enable emma.properties to be found -->
-        <pathelement path="${test.framework.home}/lib"/>
         <!-- need this for fluent assertions -->
-	<pathelement location="${hamcrest.jar}" />
-	<pathelement location="${junit.jar}" />
+    <pathelement location="${hamcrest.jar}" />
+    <pathelement location="${junit.jar}" />
     </path>
 
     <!-- framework class path, include FEST libraries, and jedit.jar -->
@@ -175,13 +172,19 @@
     </selector>
     -->
     
+    <!-- Code coverage using jacoco
+         http://www.eclemma.org/jacoco/trunk/doc/ant.html
+     -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${test.framework.home}/lib/jacocoant-0.7.7.jar"/>
+    </taskdef>
     
     <!-- =======================================================================
     Target: -buildjEdit
     Calls "clean-all" and "build" in the main jEdit build file.
     ======================================================================== -->
     <target name="-buildjEdit" description="Build jEdit, prerequisite for tests." unless="dont_-buildjEdit">
-    	<echo message="test.jedit.src=${test.jedit.src}"/>
+        <echo message="test.jedit.src=${test.jedit.src}"/>
         <ant antfile="${test.jedit.src}/build.xml" dir="${test.jedit.src}" target="clean-all" inheritall="false"/>
         <ant antfile="${test.jedit.src}/build.xml" dir="${test.jedit.src}" target="build" inheritall="false"/>
     </target>
@@ -197,10 +200,10 @@
             <classpath refid="framework.class.path"/>
         </javac>
         <javadoc sourcepath="${test.framework.src.dir}" destdir="${test.framework.javadoc.dir}" source="1.5"
-        		use="true" windowtitle="jEdit Test Framework API">
-        	<link href="http://fest.easytesting.org/swing/apidocs/"/>
-        	<link href="http://fest.easytesting.org/assert/apidocs/"/>
-        	<link href="http://junit.sourceforge.net/javadoc/"/>
+                use="true" windowtitle="jEdit Test Framework API">
+            <link href="http://fest.easytesting.org/swing/apidocs/"/>
+            <link href="http://fest.easytesting.org/assert/apidocs/"/>
+            <link href="http://junit.sourceforge.net/javadoc/"/>
             <classpath>
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hamcrest.jar}" />
@@ -208,7 +211,10 @@
             </classpath>
         </javadoc>
     </target>
-    
+   
+    <!-- default compatibility values -->
+    <property name="compiler.source" value="1.8"/>
+    <property name="compiler.target" value="1.8"/>
     
     <!-- =======================================================================
     Target: -compileTests
@@ -226,7 +232,7 @@
     
         <echo>project.test.src.dir = ${project.test.src.dir}</echo>
         <echo>project.test.classes.dir = ${project.test.classes.dir}</echo>
-        <javac srcdir="${project.test.src.dir}" destdir="${project.test.classes.dir}" debug="true" source="1.5" target="1.5" includeantruntime="false">
+        <javac srcdir="${project.test.src.dir}" destdir="${project.test.classes.dir}" debug="true" source="${compiler.source}" target="${compiler.target}" includeantruntime="false">
             <selector refid="projectFiles"/>
             <classpath refid="framework.class.path"/>
             <classpath refid="project.class.path"/>
@@ -238,43 +244,43 @@
     Target: test
     Runs all tests as specified in the junit.testcases selector.
     ======================================================================== -->
-    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -instrument, -compileTests, -copyResources">
+    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -copyPluginJars, -compileTests, -copyResources">
         <echo message="Running tests..."/>
 
         <mkdir dir="${test.output}"/>
         
         <!-- clean old test results -->
         <delete failonerror="false" file="${basedir}/coverage.ec"/>
-        
-        <junit printsummary="${junit.printsummary}" haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}" fork="yes">
-         	<!-- no matter what I try, this is ignored : always get coverage.ec in basedir
-         	     I gave up and merge it in the -report target
-         	<jvmarg value="-Demma.coverage.out.file=${test.output}/coverage.emma"/> -->
-            <sysproperty key="test-jedit.settings" path="${test.jedit.settings.dir}"/>
-            <sysproperty key="test-tests.dir" path="tests"/>
-            <sysproperty key="jedit.home" path="${test.jedit.home}"/>
-            <sysproperty key="LOG_FILE" path="${test.log.file}"/>
-            <syspropertyset refid="project.test.sysproperties"/>
+        <delete failonerror="false" file="${basedir}/jacoco.exec"/>
 
-            <classpath>
-                <pathelement location="${junit.jar}" />
-                <pathelement location="${hamcrest.jar}" />
-                <path refid="framework.class.path"/>
-                <!-- use the instrumented jar file, not the original one !! -->
-                <path>
-                    <fileset dir="${test.jedit.settings.dir}/jars" includes="*.jar"/>
-                </path>
-                <pathelement path="${project.test.classes.dir}"/>
-            </classpath>
-
-            <batchtest todir="${test.output}">
-                <fileset dir="${project.test.src.dir}">
-                    <selector refid="junit.testcases"/>
-                </fileset>
-            </batchtest>
-            <formatter type="brief" usefile="${junit.usefile}"/>
-            <formatter type="xml" usefile="yes"/>
-        </junit>
+        <jacoco:coverage destfile="${basedir}/jacoco.exec" enabled="${jacoco.enabled}">
+            <junit printsummary="${junit.printsummary}" haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}" filtertrace="true" enableTestListenerEvents="true" fork="yes">
+                <sysproperty key="test-jedit.settings" path="${test.jedit.settings.dir}"/>
+                <sysproperty key="test-tests.dir" path="tests"/>
+                <sysproperty key="jedit.home" path="${test.jedit.home}"/>
+                <sysproperty key="LOG_FILE" path="${test.log.file}"/>
+                <syspropertyset refid="project.test.sysproperties"/>
+    
+                <classpath>
+                    <pathelement location="${junit.jar}" />
+                    <pathelement location="${hamcrest.jar}" />
+                    <path refid="framework.class.path"/>
+                    <!-- use the instrumented jar file, not the original one !! -->
+                    <path>
+                        <fileset dir="${test.jedit.settings.dir}/jars" includes="*.jar"/>
+                    </path>
+                    <pathelement path="${project.test.classes.dir}"/>
+                </classpath>
+    
+                <batchtest todir="${test.output}">
+                    <fileset dir="${project.test.src.dir}">
+                        <selector refid="junit.testcases"/>
+                    </fileset>
+                </batchtest>
+                <formatter type="brief" usefile="${junit.usefile}"/>
+                <formatter type="xml" usefile="yes"/>
+            </junit>
+        </jacoco:coverage>
         <echo>after junit</echo>
         <antcall target="-report"/>
     </target>
@@ -408,73 +414,40 @@
     </target>
     
     
-    <path id="emma.lib" >
-    	<pathelement location="${test.framework.home}/lib/emma.jar" />
-    	<pathelement location="${test.framework.home}/lib/emma_ant.jar" />
-    	<!-- for the emma.properties file -->
-    	<pathelement location="${test.framework.home}/lib" />
-    </path>
-
-    <taskdef resource="emma_ant.properties" classpathref="emma.lib" />
-    
     <!-- directory where to find the project file to instrument.
-    	 Should only be overloaded for jedit tests.
-    	 Don't forget to set project.toinstrument.jar, however.
+         Should only be overloaded for jedit tests.
+         Don't forget to set project.toinstrument.jar, however.
       -->
     <property name="project.toinstrument.dir" value="${test.jedit.jars}" />
-    
-    <!-- what classes to include in the code coverage. Accept all classes by default.
-    	 The filter is on class names (no .class suffix please).
-    	 You can use a specific filter, like value='xml.Resolver*', to go with
-    	 a single test case.
-      -->
-    <property name="emma.filter" value="*" />
-
 
 
     <!-- define this property in order to get code coverage :
-         <property name="emma.enabled" value="true"/>  
+         <property name="jacoco.enabled" value="true"/>  
      -->   
 
     <!-- define this property in order to get a nice html report in the end :
          <property name="junit-report.enabled" value="true"/>  
      -->   
 
-   <!-- =======================================================================
-    Target: -instrument
-    Instruments project classes
-    ======================================================================== -->
-    <target name="-instrument" depends="-copyPluginJars"  if="emma.enabled">
-    	
-        <!-- clean old instrumentation metadata -->
-        <delete failonerror="false" file="${basedir}/metadata.em"/>
-		
-        <emma enabled="true">
-			<instr
-				metadatafile="${basedir}/metadata.em"  
-				mode="overwrite"
-			>
-				<instrpath path="${project.toinstrument.dir}/${project.toinstrument.jar}"/>
-				<filter includes="${emma.filter}"/>
-			</instr>
-		 </emma> 
-	</target>  
-       
-    <!-- =======================================================================
-    Target: -report.emma
-    Generate an HTML report from the test cases
-    ======================================================================== -->
-     <target name="-report.emma"  if="emma.enabled">  
-        <emma>  
-         <report sourcepath="${project.src.dir}" >  
-              <fileset dir="${basedir}" >  
-                 <include name="metadata.em" />  
-                 <include name="coverage.ec" />  
-              </fileset>  
-              <html outfile="${test.output}/coverage.html" />  
-           </report>  
-        </emma>  
-     </target>  
+     <target name="-report.jacoco" if="jacoco.enabled">
+        <jacoco:report>
+             <executiondata>
+                <file file="${basedir}/jacoco.exec"/>
+            </executiondata>
+
+             <structure name="${project.toinstrument.jar}">
+                 <classfiles>
+                    <filelist dir="${project.toinstrument.dir}" files="${project.toinstrument.jar}" />
+                 </classfiles>
+                 <sourcefiles encoding="UTF-8">
+                     <fileset dir="${project.src.dir}"/>
+                 </sourcefiles>
+             </structure>
+
+             <html destdir="${basedir}/coverage_report"/>
+
+         </jacoco:report>
+    </target>
     
     <!-- =======================================================================
     Target: -report.junit
@@ -483,14 +456,14 @@
     ======================================================================== -->
      <target name="-report.junit"  if="junit-report.enabled">  
         <junitreport todir="${test.output}">
-	  <fileset dir="${test.output}">
-	    <include name="TEST-*.xml"/>
-	  </fileset>
-	  <report format="frames" todir="${test.output}"/>
-	</junitreport>
+      <fileset dir="${test.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.output}"/>
+    </junitreport>
      </target>  
      
-     <target name="-report" depends="-report.junit,-report.emma">
+     <target name="-report" depends="-report.junit,-report.jacoco">
      </target>
 </project>
 
