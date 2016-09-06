@@ -26,6 +26,10 @@ package org.gjt.sp.jedit.testframework;
 //{{{ Imports
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -489,6 +493,27 @@ public class TestUtils {
 		safelyClose(fis2);
 		return match;
 	}
+
+	/**
+	 * Get text file contents (for comparison with expected text).
+	 * @param file	path to the file to load
+	 * @param encoding	encoding to use to read file
+	 * @return	textual content of file
+	 * @see #compareFiles(String, String) for binary file comparison
+	 * @throws IOException on read error, file not found, etc.
+	 */
+	public static String loadFile(String file, String encoding) throws IOException
+	{
+	     Path path = FileSystems.getDefault().getPath("logs", "access.log");
+	     BufferedReader reader = Files.newBufferedReader(path, Charset.forName(encoding));
+	     StringBuilder sb = new StringBuilder();
+	     char[] buf = new char[4096];
+	     for(int cnt = reader.read(buf); cnt >= 0; cnt = reader.read(buf)){
+	    	 sb.append(buf, 0, cnt);
+	     }
+	     reader.close();
+	     return sb.toString();
+     }
 	
 	/** buttons in an OptionPane */
     public static enum Option{YES,NO,OK,CANCEL}
