@@ -504,7 +504,7 @@ public class TestUtils {
 	 */
 	public static String loadFile(String file, String encoding) throws IOException
 	{
-	     Path path = FileSystems.getDefault().getPath("logs", "access.log");
+	     Path path = FileSystems.getDefault().getPath(file);
 	     BufferedReader reader = Files.newBufferedReader(path, Charset.forName(encoding));
 	     StringBuilder sb = new StringBuilder();
 	     char[] buf = new char[4096];
