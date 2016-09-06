@@ -19,7 +19,7 @@
     <property name="user-doc.xml" location = "users-guide.xml"/>
 
     <property name="javadoc.packagenames"	value="com.fooware.net.*" />
-    <property name="jsch.jar" location="${basedir}/lib/jsch-0.1.53.jar" />
+    <property name="jsch.jar" location="${basedir}/lib/jsch-0.1.54.jar" />
 
     <property name="jzlib.jar" location="${basedir}/lib/jzlib-1.1.2.jar" />
 
