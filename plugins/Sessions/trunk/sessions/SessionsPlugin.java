@@ -128,11 +128,17 @@ public class SessionsPlugin extends EBPlugin
 			ViewUpdate vu = (ViewUpdate) message;
 			if (vu.getWhat() == ViewUpdate.CREATED)
 			{
+				if (jEdit.getBooleanProperty("restore"))
+					{
+					SessionManager.getInstance().restore();
+					}
+				
 				if(jEdit.getBooleanProperty("sessions.switcher.showToolBar", false))
 					addSessionSwitcher(vu.getView());
 			}
 			else if (vu.getWhat() == ViewUpdate.CLOSED)
 			{
+				SessionManager.getInstance().removeFromCurrentSessions(vu.getView());
 				viewSessionSwitchers.remove(vu.getView());
 			}
 		}
@@ -209,10 +215,15 @@ public class SessionsPlugin extends EBPlugin
 	{
 		// call SessionManager to save the current session
 		SessionManager mgr = SessionManager.getInstance();
-		if (!mgr.autosaveCurrentSession(eemsg.getView()))
+		View vw = eemsg.getView();
+		if (!mgr.autosaveCurrentSession(vw))
 		{
 			// User doesn't want to close jEdit
 			eemsg.cancelExit();
+		}
+		else
+		{
+			mgr.saveAllOtherSessions(vw);
 		}
 	}
 

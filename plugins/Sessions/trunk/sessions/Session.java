@@ -217,8 +217,8 @@ public class Session implements Cloneable
 
 
 	/**
-	 * Returns a <code>java.util.Enumeration</code> containing 
-	 * <code>java.io.File</code> objects corresponding to the files 
+	 * Returns a <code>java.util.Enumeration</code> containing
+	 * <code>java.io.File</code> objects corresponding to the files
 	 * managed by this <code>Session</code> object.
 	 */
 	public Collection getAllFiles()
@@ -228,8 +228,8 @@ public class Session implements Cloneable
 
 
 	/**
-	 * Returns a <code>java.util.Enumeration</code> containing 
-	 * <code>String</code> objects corresponding to the names of the files 
+	 * Returns a <code>java.util.Enumeration</code> containing
+	 * <code>String</code> objects corresponding to the names of the files
 	 * managed by this <code>Session</code> object.
 	 */
 	public Collection getAllFilenames()
@@ -253,7 +253,6 @@ public class Session implements Cloneable
 		return open(view, true);
 	}
 
-
 	/**
 	 * Loads and optionally opens the session.
 	 * The session is loaded from the XML file in the sessions repository,
@@ -272,7 +271,7 @@ public class Session implements Cloneable
 			updateTitle(view);
 			return true;
 		}
-		
+
 		try
 		{
 			loadXML();
@@ -313,14 +312,14 @@ public class Session implements Cloneable
 		return true;
 	}
 
-	
-	
+
+
 	/**
 	 * Put the session name in the jEdit title bar
 	 */
 	void updateTitle(View view)
 	{
-		
+
 		if ( jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true) )
 		{
 			String userTitle;
@@ -328,7 +327,7 @@ public class Session implements Cloneable
 			{
 				userTitle = jEdit.getProperty("sessions.titlebar.startbracket") +
 					jEdit.getProperty("sessions.titlebar.prefix") + getName() +
-					jEdit.getProperty("sessions.titlebar.endbracket");	
+					jEdit.getProperty("sessions.titlebar.endbracket");
 			}
 			else
 			{
@@ -338,7 +337,7 @@ public class Session implements Cloneable
 			view.setUserTitle(userTitle);
 		}
 	}
-	
+
 
 	/**
 	 * Saves the session.
@@ -357,7 +356,7 @@ public class Session implements Cloneable
 		// the current list of open jEdit buffers, but this behavior could be
 		// changed in the future...
 		sessionFiles.clear();
-		for(Buffer buffer: view.getBuffers()) 
+		for(Buffer buffer: view.getBuffers())
 			if(!buffer.isUntitled())
 				addFile(buffer.getPath(), buffer.getStringProperty(Buffer.ENCODING));
 
@@ -375,26 +374,26 @@ public class Session implements Cloneable
 		updateTitle(view);
 		return true;
 	}
-	
+
 	/**
 	 * Has the the list of opened files changed?
 	 *
 	 * @return <code>true</code> if the file list has not changed
-	 *   since the previous load/update, 
+	 *   since the previous load/update,
 	 *   <code>false</code> if some file(s) have been opened/closed
 	 */
 	public boolean hasFileListChanged(View view)
 	{
 		Vector currentFiles = new Vector();
-		
+
 		for(Buffer buffer: view.getBuffers())
 			if(!buffer.isUntitled())
 				currentFiles.addElement(buffer.getPath());
-		
+
 		Vector allFiles = new Vector(sessionFiles.values());
 		if (allFiles.equals(currentFiles))
 			return false;
-		
+
 		return true;
 	}
 
