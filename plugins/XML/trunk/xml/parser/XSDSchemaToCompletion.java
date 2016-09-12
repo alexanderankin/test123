@@ -265,7 +265,7 @@ public class XSDSchemaToCompletion{
 	private static void xsAttributeToElementDecl(ElementDecl elementDecl,XSAttributeDeclaration decl, boolean required){
 				String attrName = decl.getName();
 				String attrNamespace = decl.getNamespace();
-				String value = decl.getValueConstraintValue().getNormalizedValue();
+				String value = decl.getValueConstraintValue() == null ? "" : decl.getValueConstraintValue().getNormalizedValue();
 				XSSimpleTypeDefinition typeDef = decl.getTypeDefinition();
 				String type = typeDef.getName();
 				StringList valueStringList = typeDef.getLexicalEnumeration();
