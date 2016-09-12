@@ -63,7 +63,8 @@ public class ErrorListErrorHandler implements ErrorHandler
 		}else{
 			path = PathUtilities.urlToPath(systemId);
 		}
-		errorSource.addError(type,path,line,0,col,exception.getMessage());
+		String msg = exception.getMessage() == null ? exception.toString() : exception.getMessage();
+		errorSource.addError(type, path, line, 0, col, msg);
 	}// }}}
 	
 	//{{{ error() method

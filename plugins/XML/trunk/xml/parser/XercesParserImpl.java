@@ -263,7 +263,7 @@ public class XercesParserImpl extends XmlParser
 			{
 				String msg = "SAX exception while parsing";
 				Throwable t = se.getException();
-				if(msg != null){
+				if(se.getMessage() != null){
 					msg+=": "+se.getMessage();
 				}
 				if(t!=null){
@@ -276,8 +276,9 @@ public class XercesParserImpl extends XmlParser
 			}
 			catch(RuntimeException re)
 			{
+				String msg = re.getMessage() == null ? re.toString() : re.getMessage();
 				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
-						0,0,0,re.getMessage());
+						0,0,0,msg);
 				Log.log(Log.ERROR, XercesParserImpl.class, "RuntimeException parsing", re);
 			}
 			catch(Error e)
@@ -401,7 +402,7 @@ public class XercesParserImpl extends XmlParser
 				{
 					String msg = "SAX exception while parsing (constructing sidekick tree)";
 					Throwable t = se.getException();
-					if(msg != null){
+					if(se.getMessage() != null){
 						msg+=": "+se.getMessage();
 					}
 					if(t!=null){
