@@ -1,3 +1,7 @@
+Version 1.7
+- Applied [plugin-patches:#180] Patch for saving/restoring sessions in the session plugin
+  (Edward Diener)
+
 Version 1.6.2
 - Applied [Plugin Patches #165]: Sessions plugin discards buffer order (Kevin Leblanc)
 

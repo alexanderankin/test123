@@ -29,7 +29,10 @@ import java.awt.Component;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -77,6 +80,7 @@ public class SessionManager implements EBComponent
 	private static SessionManager instance;
 
 	private Session blankSession;
+	private TreeMap<String, StringList> sessionFiles = new TreeMap<String, StringList>();
 	
 	/** Returns the singleton SessionManager instance */
 	public static SessionManager getInstance()
@@ -114,22 +118,156 @@ public class SessionManager implements EBComponent
 	}
 	
 	/** Restore the session state of all views, since the last time the sessions were saved. */
-	void restore() {
+	void restore() 
+		{
 		String s = jEdit.getProperty(SESSION_PROPERTY, "none");
 		StringList sessionList = StringList.split(s, ",");
-		int viewIndex = 0;		
-		for (View view: jEdit.getViews()) {
-			if (sessionList.size() <= viewIndex) break;
-			
-			String sessionName = sessionList.get(viewIndex);
-			viewIndex += 1;
-			if (sessionName.equals("none")) 			
-				continue;
-			Session session = new Session(sessionName);
-			session.open(view);
-			if (jEdit.getBufferSetManager().getScope() == BufferSet.Scope.global) break;
+		int sls = sessionList.size();
+		View[] views = jEdit.getViews();
+		int views_length = views.length;
+		if (sls == 1 && views_length == 1 && jEdit.isStartupDone())
+			{
+			String sn = sessionList.get(0);
+			if (!sn.equals("none") && !sessionHasView(sn))
+				{
+					
+				Session session = new Session(sn);
+				
+				currentSessions.put(views[0], session);
+				session.open(views[0]);
+				}
+			}
+		else
+			{
+			for (int viewIndex = 0; viewIndex < views_length; viewIndex++)
+				{
+				for (String sn : sessionList)
+					{
+					if (!sn.equals("none") && !sessionHasView(sn))
+						{
+						
+						Session session = new Session(sn);
+						
+						if (sessionFilesMatchView(session,views[viewIndex]))
+							{
+							currentSessions.put(views[viewIndex], session);
+							if ((jEdit.getBufferSetManager().getScope() != BufferSet.Scope.global) || (viewIndex == 0))
+								{
+								session.open(views[viewIndex]);
+								}
+							break;
+							}
+						}
+					}
+				}
+			}
 		}
-	}
+		
+  	private static StringList getViewFiles(View vw)
+  		{
+			
+  		StringList ret = new StringList();
+			
+  		for(Buffer buffer: vw.getBuffers()) 
+  			{
+  			if(!buffer.isUntitled())
+  				{
+  				ret.add(buffer.getPath());
+  				}
+  			}
+  		return ret;
+  		}
+
+  	private StringList getSessionFiles(Session session)
+  		{
+  		if (sessionFiles.containsKey(session.getName()))
+  			{
+  			return sessionFiles.get(session.getName());
+  			}
+  		else
+  			{
+				
+			StringList ret = getSessionFilesFromSession(session);
+			
+			sessionFiles.put(session.getName(),ret);
+			return ret;
+  			}
+  		}
+  		
+  	private static StringList getSessionFilesFromSession(Session session)
+  		{
+			
+  		StringList ret = new StringList();
+			
+		try
+			{
+			session.loadXML();
+			}
+		catch (Exception e)
+			{
+			}
+
+		Iterator iFiles = session.getAllFilenames().iterator();
+		
+		while (iFiles.hasNext())
+			{
+			ret.add((String)iFiles.next());
+			}
+  		return ret;
+  		}
+  		
+  	private boolean sessionHasView(String sn)
+  		{
+  		for (HashMap.Entry<View,Session> pair : currentSessions.entrySet())
+  			{
+  			if (pair.getValue().getName().equals(sn))
+  				{
+  				return true;
+  				}
+  			}
+  		return false;
+  		}
+
+  	private boolean sessionFilesMatchView(Session session,View vw)
+  		{
+  			
+  		StringList vwf = getViewFiles(vw);
+  		StringList snf = getSessionFiles(session);
+  		
+  		int csize = vwf.size();
+  		
+  		if (csize != snf.size())
+  			{
+  			return false;
+  			}
+  		
+  		Collections.sort(vwf);
+  		Collections.sort(snf);
+  		
+  		for (int i = 0; i < csize; ++i)
+  			{
+  				
+			String vn = vwf.get(i);
+  			String sn = snf.get(i);
+  			
+  			String nvn = vn.replace('\\','/');
+  			String nsn = sn.replace('\\','/');
+  			
+  			if (!nvn.equalsIgnoreCase(nsn))
+  				{
+  				return false;
+  				}
+  			}
+  		return true;
+  		}
+  		
+	public void removeFromCurrentSessions(View vw)
+		{
+		if (getSession(vw) != blankSession)
+			{
+			currentSessions.remove(vw);
+			}
+		}
 	
 	
 
@@ -245,6 +383,34 @@ public class SessionManager implements EBComponent
 	}
 
 
+	public void saveAllOtherSessions(View view)
+		{
+		if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
+			{
+			for (HashMap.Entry<View,Session> pair : currentSessions.entrySet())
+				{
+					
+				View vw = pair.getKey();
+					
+				if (vw != view)
+					{
+						
+					Session sess = pair.getValue();
+					
+					if (sess.hasFileListChanged(vw))
+						{
+						sess.save(vw);
+						}
+					}
+				}
+			}
+		}
+	
+	public void saveCurrentSession(View view)
+		{
+		saveCurrentSession(view,false);
+		}
+	
 	/**
 	 * Save current session. NOTE: developers should not call this method directly. Instead, 
 	 * either the #saveCurrentSession(View) or #autosaveCurrentSession method should be 
