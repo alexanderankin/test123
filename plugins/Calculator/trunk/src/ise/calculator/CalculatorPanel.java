@@ -164,7 +164,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         add(main, BorderLayout.CENTER);
 
         float_mode.doClick();
-        x_register.requestFocus();
+        x_register.requestFocusInWindow();
         x_register.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent fe) {
                 if (fe.getOppositeComponent() == null) {
@@ -172,7 +172,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 }
                 Container c = SwingUtilities.getAncestorNamed("CalculatorPanel", fe.getOppositeComponent());
                 if (c != null) {
-                    x_register.requestFocus();
+                    x_register.requestFocusInWindow();
                 }
             }
         } );
@@ -958,7 +958,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 y_register.setText(x_register.getText());
                 x_register.setText(last_x_value);
                 x_register.selectAll();
-                x_register.requestFocus();
+                x_register.requestFocusInWindow();
             }
         }
        );
@@ -1059,7 +1059,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 z_register.setText(y_register.getText());
                 y_register.setText(x_register.getText());
                 x_register.selectAll();
-                x_register.requestFocus();
+                x_register.requestFocusInWindow();
             }
         }
        );
@@ -1183,7 +1183,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             try {
                 last_x_value = x_register.getText();
                 x_register.setText(answer);
-                x_register.requestFocus();
+                x_register.requestFocusInWindow();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -1264,7 +1264,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             try {
                 last_x_value = x_register.getText();
                 x_register.setText(answer);
-                x_register.requestFocus();
+                x_register.requestFocusInWindow();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -1359,7 +1359,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 y_register.setText(z_register.getText());
                 z_register.setText(t_register.getText());
                 t_register.setText("");
-                x_register.requestFocus();
+                x_register.requestFocusInWindow();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -1452,7 +1452,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             } catch (Exception e) {
                 x_register.setText(previous);
             }
-            x_register.requestFocus();
+            x_register.requestFocusInWindow();
         }
     };
 }
