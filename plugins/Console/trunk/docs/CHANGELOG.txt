@@ -10,6 +10,8 @@ $Date$
          existing shell.
       [Alan Ezust]
         Fix Plugin Bug#1835 SshConsole: toggle ssh shortcut doesn't work at first
+      [Makarius]
+        Plugin-patches:#173 Proper ColorWell for plugin options
 
 
     Version 5.1.4  Requires jEdit 5.0, Java 1.6, ErrorList 2.1, CommonControls 1.7, and ProjectViewer 3.5 (optional).
