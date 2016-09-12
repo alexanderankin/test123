@@ -72,7 +72,7 @@ public class NumberPanel extends JPanel {
             catch (Exception e) {
                 x_register.setText(previous);
             }
-            x_register.requestFocus();
+            x_register.requestFocusInWindow();
         }
     } ;
 
