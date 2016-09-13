@@ -640,7 +640,19 @@ public class DefaultErrorSource extends ErrorSource
 
 				String message1 = e1.getErrorMessage();
 				String message2 = e2.getErrorMessage();
-				int message_sign = message1.compareTo(message2);
+				int message_sign;
+				if(message1 == null)
+				{
+					message_sign = message2 == null ? 0 : -1;
+				}
+				else if(message2 == null)
+				{
+					message_sign = 1;
+				}
+				else
+				{
+					message_sign = message1.compareTo(message2);
+				}
 				if (message_sign != 0) return message_sign;
 
 				return 0;
