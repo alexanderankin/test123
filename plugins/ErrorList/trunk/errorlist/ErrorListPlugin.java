@@ -158,7 +158,7 @@ public class ErrorListPlugin extends EditPlugin
 
 	//{{{ handlePropertiesChanged() method
 	@EBHandler
-	public void handlePropertiesChanged(EBMessage message)
+	public void handlePropertiesChanged(PropertiesChanged message)
 	{
 		propertiesChanged();
 	} //}}}

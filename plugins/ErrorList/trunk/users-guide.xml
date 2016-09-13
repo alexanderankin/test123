@@ -509,11 +509,13 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
-  <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 1.6, and jEdit
+  <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 1.7, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
   <listitem><para> Plugin Patch #182: ErrorList Avoid NPE on Error with null message (Eric
  Le Lay) </para></listitem>
+ <listitem><para> Plugin Patch #183: Handle Properties Changed message properly (Eric Le Lay)
+ </para></listitem>
   <listitem><para> Fixed plugin-bug #1812: ErrorList: Copy all to clipboard doesn't.
   </para></listitem>
  </itemizedlist>
