@@ -851,6 +851,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		// Need to put this "copy from one stream to another"
 		// into a common method some day, since other parts
 		// of jEdit need it too...
+		// VFS.copy() doesn't work because it fails with UrlVFS
 		BufferedInputStream in = new BufferedInputStream(
 			vfs._createInputStream(session,path,false,null));
 
