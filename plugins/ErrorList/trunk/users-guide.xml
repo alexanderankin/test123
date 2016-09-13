@@ -59,12 +59,12 @@
   List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> displays the error
   list window.
  </para>
- 
+
  <para>
  The ErrorList uses a tabbed panel for showing errors. Initially, there is just one tab
- titled "ErrorList" and all errors/warning messages are directed there. Addtional tabs can 
- be created by right clicking on any tab, selecting "Add tab", and giving the new tab a 
- name. All subsequent errors are directed to the current active tab in ErrorList. This 
+ titled "ErrorList" and all errors/warning messages are directed there. Addtional tabs can
+ be created by right clicking on any tab, selecting "Add tab", and giving the new tab a
+ name. All subsequent errors are directed to the current active tab in ErrorList. This
  makes it possible to have compiler errors shown in one tab and PMD errors shown in another.
  <emphasis>To reiterate, all errors and warnings are directed to the current
  tab!</emphasis>
@@ -512,6 +512,8 @@ errorSource.addError(new ErrorSource.DefaultError(
   <listitem><formalpara><title>Version 2.4</title> <para> Requires Java 1.6, and jEdit
  5.0 </para></formalpara>
  <itemizedlist>
+  <listitem><para> Plugin Patch #182: ErrorList Avoid NPE on Error with null message (Eric
+ Le Lay) </para></listitem>
   <listitem><para> Fixed plugin-bug #1812: ErrorList: Copy all to clipboard doesn't.
   </para></listitem>
  </itemizedlist>
