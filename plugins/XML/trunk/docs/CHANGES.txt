@@ -1,6 +1,9 @@
 :encoding=UTF-8:maxLineLen=0:wrap=soft:folding=indent:noTabs=true:tabSize=4:
 XML Plugin Change log
 
+    Version 3.0.5 Requires jEdit 5.2, Java 1.7, XercesPlugin 2.9.1, ErrorList 2.3, SideKick 1.8, BeautyPlugin 0.9, CommonControls 1.7.4, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.5.1
+        Fix #4020 XML with entity and xml schema produces error and breaks jEdit UI (Eric Le Lay)
+
     Version 3.0.4 Requires jEdit 5.2, Java 1.7, XercesPlugin 2.9.1, ErrorList 2.3, SideKick 1.8, BeautyPlugin 0.9, CommonControls 1.7.4, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.5.1
         Fix some objects not correctly unloaded when unloading the plugin (Matthieu Casanova)
 
