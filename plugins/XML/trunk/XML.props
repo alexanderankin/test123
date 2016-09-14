@@ -112,6 +112,7 @@ options.xml.general.label=XML
 options.xml.general.code=new xml.options.GeneralOptionPane();
 options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
 options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.validate.ignore-dtd=Don't use DTD for validation
 options.xml.general.network-mode=Downloading DTDs and schemas:
 
 options.xml.general.validate-separator=Validate

@@ -41,6 +41,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	
 	private JCheckBox popupEditorComplete;
 	private JCheckBox validate;
+	private JCheckBox validateIgnoreDTD;
 	private JCheckBox enableSchemaMapping;
 	private JComboBox showAttributes;
 	private JCheckBox closeCompleteOpen;
@@ -78,6 +79,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
 		validate.setName("validate");
 		
+		addComponent(validateIgnoreDTD = new JCheckBox(jEdit.getProperty(
+				"options.xml.general.validate.ignore-dtd")));
+		validateIgnoreDTD.setSelected(jEdit.getBooleanProperty("buffer.xml.validate.ignore-dtd"));
+		validateIgnoreDTD.setName("validate.ignore-dtd");
+
 		String prefix = "options." + Resolver.NETWORK_PROPS + ".";
 		String[] comboLabels = new String[Resolver.MODES.length];
 		for (int i=0; i<comboLabels.length; ++i) {
@@ -175,6 +181,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("xml.tageditor.popupOnComplete", popupEditorComplete.isSelected());
 		
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("buffer.xml.validate.ignore-dtd",validateIgnoreDTD.isSelected());
 		Resolver.setNetworkMode(Resolver.MODES[network.getSelectedIndex()]);
 		Resolver.setUsingCache(cache.isSelected());
 		jEdit.setBooleanProperty(xml.SchemaMappingManager.ENABLE_SCHEMA_MAPPING_PROP,
