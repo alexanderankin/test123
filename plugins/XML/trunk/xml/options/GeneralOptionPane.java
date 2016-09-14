@@ -19,6 +19,7 @@ package xml.options;
 import java.util.Arrays;
 
 import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JCheckBox;
@@ -71,16 +72,16 @@ public class GeneralOptionPane extends AbstractOptionPane
 		String text = jEdit.getProperty("options.sidekick.general.info");
 		info.setText(text);
 		info.setEditable(false);
-		addComponent(jEdit.getProperty("options.note", "NOTE: "), info);
+		addComponent(info, GridBagConstraints.HORIZONTAL);
 		
 		addSeparator("options.xml.general.validate-separator");
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.validate")));
+			"options.xml.general.validate")), GridBagConstraints.HORIZONTAL);
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
 		validate.setName("validate");
 		
 		addComponent(validateIgnoreDTD = new JCheckBox(jEdit.getProperty(
-				"options.xml.general.validate.ignore-dtd")));
+				"options.xml.general.validate.ignore-dtd")), GridBagConstraints.HORIZONTAL);
 		validateIgnoreDTD.setSelected(jEdit.getBooleanProperty("buffer.xml.validate.ignore-dtd"));
 		validateIgnoreDTD.setName("validate.ignore-dtd");
 
@@ -102,7 +103,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(cache);
 		
 		addComponent(enableSchemaMapping = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.enable-schema-mapping")));
+			"options.xml.general.enable-schema-mapping")), GridBagConstraints.HORIZONTAL);
 		enableSchemaMapping.setSelected(jEdit.getBooleanProperty(xml.SchemaMappingManager.ENABLE_SCHEMA_MAPPING_PROP));
 		enableSchemaMapping.setName("enable-schema-mapping");
 		enableSchemaMapping.setToolTipText(jEdit.getProperty(
@@ -131,30 +132,30 @@ public class GeneralOptionPane extends AbstractOptionPane
 		closeComplete.setToolTipText(jEdit.getProperty(
 				"options.xml.general.close-complete.tooltip" ));
 		closeComplete.setName("closeComplete");
-		addComponent(closeComplete);
+		addComponent(closeComplete, GridBagConstraints.HORIZONTAL);
 
 		closeCompleteOpen = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.close-complete-open"));
 		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete-open"));
 		closeCompleteOpen.setName("closeCompleteOpen");
-		addComponent(closeCompleteOpen);
+		addComponent(closeCompleteOpen, GridBagConstraints.HORIZONTAL);
 		
 		addComponent(standaloneExtraSpace = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.standalone-extra-space")));
+			"options.xml.general.standalone-extra-space")), GridBagConstraints.HORIZONTAL);
 		standaloneExtraSpace.setSelected(jEdit.getBooleanProperty(
 			"xml.standalone-extra-space"));
 		standaloneExtraSpace.setName("standaloneExtraSpace");
 
 		addComponent(popupEditorComplete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.tageditor.popupOnCompletion")));
+			"options.xml.general.tageditor.popupOnCompletion")), GridBagConstraints.HORIZONTAL);
 		popupEditorComplete.setSelected(jEdit.getBooleanProperty("xml.tageditor.popupOnComplete", true));
 		popupEditorComplete.setName("popupEditorComplete");
 		
 		addSeparator("options.xml.general.xinclude-separator");
 		
 		addComponent(xinclude = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.xinclude")));
+			"options.xml.general.xinclude")), GridBagConstraints.HORIZONTAL);
 		xinclude.setSelected(jEdit.getBooleanProperty(
 			"buffer.xml.xinclude"));
 		xinclude.setName("xinclude");
@@ -167,7 +168,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 			}
 		});
 		addComponent(xincludeBaseURI = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.xinclude-xmlbase")));
+			"options.xml.general.xinclude-xmlbase")), GridBagConstraints.HORIZONTAL);
 		xincludeBaseURI.setSelected(jEdit.getBooleanProperty(
 			"buffer.xml.xinclude.fixup-base-uris"));
 		xincludeBaseURI.setToolTipText(jEdit.getProperty(
