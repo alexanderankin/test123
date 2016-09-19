@@ -1,5 +1,5 @@
 /*
- * ErrorList.java - Error list window
+ * ErrorListPanel.java - Error list window
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -293,9 +293,9 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	{
 		// Whenever Errorlist "gets" focus, it sends the focus back to the textarea.
 		if (jEdit.getBooleanProperty("error-list.autoRefocusTextArea"))
-			view.getTextArea().requestFocus();
+			view.getTextArea().requestFocusInWindow();
 		else
-			errorTree.requestFocus();
+			errorTree.requestFocusInWindow();
 	} //}}}
 
 	//{{{ focus() method
@@ -305,7 +305,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	 */
 	public void focus()
 	{
-		errorTree.requestFocus();
+		errorTree.requestFocusInWindow();
 	} //}}}
 
 
@@ -368,7 +368,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	{
 		if(errorRoot.getChildCount() == 0)
 		{
-			getToolkit().beep();
+			UIManager.getLookAndFeel().provideErrorFeedback(null);
 			return;
 		}
 
@@ -393,7 +393,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				int index = errorRoot.getIndex(node);
 				if(index == errorRoot.getChildCount() - 1)
 				{
-					getToolkit().beep();
+					UIManager.getLookAndFeel().provideErrorFeedback(null);
 					return;
 				}
 				else
@@ -420,7 +420,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	{
 		if(errorRoot.getChildCount() == 0)
 		{
-			getToolkit().beep();
+			UIManager.getLookAndFeel().provideErrorFeedback(null);
 			return;
 		}
 
@@ -448,7 +448,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				int index = errorRoot.getIndex(node);
 				if(index == 0)
 				{
-					getToolkit().beep();
+					UIManager.getLookAndFeel().provideErrorFeedback(null);
 					return;
 				}
 				else
@@ -476,7 +476,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	{
 		if(errorRoot.getChildCount() == 0)
 		{
-			getToolkit().beep();
+			UIManager.getLookAndFeel().provideErrorFeedback(null);
 			return;
 		}
 
@@ -511,7 +511,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 					index = errorRoot.getIndex(parent);
 					if(index == errorRoot.getChildCount() - 1)
 					{
-						getToolkit().beep();
+						UIManager.getLookAndFeel().provideErrorFeedback(null);
 						return;
 					}
 					else
@@ -546,7 +546,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	{
 		if(errorRoot.getChildCount() == 0)
 		{
-			getToolkit().beep();
+			UIManager.getLookAndFeel().provideErrorFeedback(null);
 			return;
 		}
 
@@ -573,7 +573,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				int index = errorRoot.getIndex(node);
 				if(index == 0)
 				{
-					getToolkit().beep();
+					UIManager.getLookAndFeel().provideErrorFeedback(null);
 					return;
 				}
 				else
@@ -594,7 +594,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 					index = errorRoot.getIndex(parent);
 					if(index == 0)
 					{
-						getToolkit().beep();
+						UIManager.getLookAndFeel().provideErrorFeedback(null);
 						return;
 					}
 					else
@@ -1355,7 +1355,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				{
 					public void run()
 					{
-						errorTree.requestFocus();
+						errorTree.requestFocusInWindow();
 					}
 				});
 
@@ -1369,7 +1369,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				// removeSelectedNode() should be here.
 				// Now just consume the event so prevent
 				// VK_DELETE passed to the text area.
-				getToolkit().beep();
+				UIManager.getLookAndFeel().provideErrorFeedback(null);
 				evt.consume();
 				break;
 			default:
