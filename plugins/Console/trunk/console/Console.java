@@ -130,7 +130,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 
 		Shell s = Shell.getShell(defShell);
-		if (s == null) 
+		if (s == null)
 			s = Shell.getShell("System");
 		setShell(s);
 		load();
@@ -143,7 +143,7 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ focusOnDefaultComponent() method
 	public void focusOnDefaultComponent()
 	{
-		text.requestFocus();
+		text.requestFocusInWindow();
 	} //}}}
 
 	//{{{ load() method
@@ -200,7 +200,7 @@ implements EBComponent, DefaultFocusComponent
 	public Shell setShell(String shellStr)
 	{
 		Shell shell = Shell.getShell(shellStr);
-		if (shell == null) 
+		if (shell == null)
 			return null;
 		return setShell(shell);
 	} //}}}
@@ -322,7 +322,7 @@ implements EBComponent, DefaultFocusComponent
 		else
 			run(getShell(),null, getOutput(), null, history.getItem(0));
 	} //}}}
-	
+
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
@@ -333,21 +333,21 @@ implements EBComponent, DefaultFocusComponent
 				if (dwu.getDockable().equals("console"))
 					scrollToBottom();
 		}
-		
-		// Check for editpane directory-change events. 
+
+		// Check for editpane directory-change events.
 		String dir = "";
 		try {
 			dir = view.getEditPane().getBuffer().getDirectory();
 		}
 		catch (NullPointerException npe) {}
-		// SshConsole always follows textPane. 
+		// SshConsole always follows textPane.
 		if ( !dir.isEmpty() && (dir.startsWith("sftp://") ||
 			 jEdit.getBooleanProperty("console.changedir.followTextArea"))) {
 			boolean chdir=false;
 			if (msg instanceof EditPaneUpdate) {
 				EditPaneUpdate epu = (EditPaneUpdate)msg;
 				if ( (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-					&& epu.getEditPane().getView() == view) 
+					&& epu.getEditPane().getView() == view)
 						chdir = true;
 			}
 			if (msg instanceof BufferUpdate) {
@@ -362,7 +362,7 @@ implements EBComponent, DefaultFocusComponent
 			}
 			if (chdir) chDir(dir);
 		}
-		
+
 		if(msg instanceof PluginUpdate)
 			handlePluginUpdate((PluginUpdate)msg);
 		else if (msg instanceof VFSPathSelected)
@@ -578,7 +578,7 @@ implements EBComponent, DefaultFocusComponent
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
 		{
-			if(output instanceof BufferOutput)				
+			if(output instanceof BufferOutput)
 			{
 				error = state;
 				recorder.record("runCommandToBuffer(view,\""
@@ -795,14 +795,14 @@ implements EBComponent, DefaultFocusComponent
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
 		updateShellList();
-		
+
 	} //}}}
-	
+
 	//{{{ chDir() methods
 	/** Changes the directory of the current Console.
-	 * @param path to change to. 
+	 * @param path to change to.
 	 * @param selectShell if true, will first select a Shell that returns true from handlesVFS(path)
-	 * @return true if it did something. 
+	 * @return true if it did something.
 	 */
 	public boolean chDir(String path, boolean selectShell) {
 		if (!isVisible()) return false;
@@ -823,20 +823,20 @@ implements EBComponent, DefaultFocusComponent
 	static public String shellForVFS(String path) {
 		for (String name: Shell.getShellNames()) {
 			Shell s = Shell.getShell(name);
-			if (s.handlesVFS(path)) 
+			if (s.handlesVFS(path))
 				return name;
 		}
 		return "System";
 	}
 	//}}}
-	
+
 	// {{{ handleNodeSelected()
 	public void handleNodeSelected(VFSPathSelected msg) {
 //		Log.log(Log.WARNING, this, "VFSPathSelected: " + msg.getPath());
-		if (view != msg.getView()) return;		
+		if (view != msg.getView()) return;
 		String path = msg.getPath();
 		// don't chdir to a filename
-		if (!msg.isDirectory()) 
+		if (!msg.isDirectory())
 			path = MiscUtilities.getParentOfPath(path);
 		if (jEdit.getBooleanProperty("console.changedir.nodeselect"))
 			chDir(path);
@@ -942,13 +942,13 @@ implements EBComponent, DefaultFocusComponent
 			currentShell.printPrompt(this,shellState);
 			cmdStart = text.getDocument().getLength();
 			getOutput().writeAttrs(null,input);
-			
+
 			int lengthLimit = jEdit.getIntegerProperty("console.outputLimit", LengthFilter.DEFAULT_LIMIT);
 			if (cmdStart + input.length() > lengthLimit)
 			{
-				cmdStart = lengthLimit - input.length() + 1; 
+				cmdStart = lengthLimit - input.length() + 1;
 			}
-			
+
 			text.setInputStart(cmdStart);
 			text.setCaretPosition(cmdStart + offset);
 		}
@@ -980,7 +980,7 @@ implements EBComponent, DefaultFocusComponent
 		{
 			return scrollback;
 		} //}}}
-		
+
 		//{{{ constructor
 		public ShellState(Shell shell)
 		{
@@ -1154,7 +1154,7 @@ implements EBComponent, DefaultFocusComponent
 		{
 			Console console = (Console)GUIUtilities.getComponentParent(
 				(Component)evt.getSource(),Console.class);
-			
+
 			console.run(console.getShell(), null, console.getOutput(),
 					null, command);
 		}
@@ -1172,7 +1172,7 @@ implements EBComponent, DefaultFocusComponent
 				if (index == shellCombo.getItemCount() - 1) {
 					// "New Shell..." is always the last item in the combobox
 					// and is selected
-					
+
 					// show a dialog to ask what kind of shell
 					NewShellDialog dialog = new NewShellDialog();
 					dialog.show();
@@ -1182,7 +1182,7 @@ implements EBComponent, DefaultFocusComponent
 				}
 				String selected = (String)shellCombo.getSelectedItem();
 				if (selected != null && selected.indexOf('(') > 0) {
-					selected = selected.substring(0, selected.indexOf('(')).trim();	
+					selected = selected.substring(0, selected.indexOf('(')).trim();
 				}
 				setShell(selected);
 			}
@@ -1208,7 +1208,7 @@ implements EBComponent, DefaultFocusComponent
 			String input = view.getTextArea().getSelectedText();
 			Output output = shellState;
 			boolean printInput = false;
-			
+
 			if(source == run)
 				printInput = true;
 			else if(source == toBuffer)
@@ -1225,7 +1225,7 @@ implements EBComponent, DefaultFocusComponent
 	{
 		public void actionPerformed(ActionEvent evt) {
 			String cmd = text.getInput();
-			
+
 			Output output = new BufferOutput(Console.this, BufferOutput.guessMode(cmd));
 			run(getShell(), null, output, shellState, cmd, false);
 		}
@@ -1259,8 +1259,8 @@ implements EBComponent, DefaultFocusComponent
 			currentShell.detach(Console.this);
 		}
 	} //}}}
-	
-	
+
+
 	// }}}
 	private static final long serialVersionUID = -9185531673809120587L;
 } // }}}
