@@ -2178,8 +2178,8 @@ Parser methods follow.
                 annotationIdentifiers.append(reverse(ctx.annotationIdentifier().size(), ""));
             }
             String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
-            String new_ = stack.pop().trim();
-            sb.append(new_).append(' ').append(typeArguments).append(annotationIdentifiers.toString());
+            String new_ = stack.pop();
+            sb.append(trimEnd(new_)).append(' ').append(typeArguments).append(annotationIdentifiers.toString());
 	    }
 	    
 	    // common ending
@@ -3282,7 +3282,7 @@ Parser methods follow.
 	        group = indent(group);
 	    }
 	    -- tabCount;
-	    String lbracket = stack.pop();
+	    String lbracket = stack.pop().trim();
 	    sb.append(brokenBracket ? "\n" : "").append(lbracket).append('\n').append(group).append(label).append(rbracket).append('\n');
 	    stack.push(sb.toString());
 	}
@@ -4666,7 +4666,7 @@ Parser methods follow.
 	@Override public void exitSwitchStatement(@NotNull Java8Parser.SwitchStatementContext ctx) {
 	    StringBuilder sb = new StringBuilder();
 	    String switchBlock = stack.pop();
-	    String rparen = stack.pop();
+	    String rparen = stack.pop().trim();
 	    String expression = stack.pop();
 	    String lparen = stack.pop();
 	    String switch_ = stack.pop();
