@@ -26,7 +26,7 @@ public class ErrorListener extends BaseErrorListener {
             length = endOffset - startOffset;
         }
 
-        ParserException pe = new ParserException( msg, line - 1, charPositionInLine, length );
+        ParserException pe = new ParserException( msg, line, charPositionInLine, length );
         errors.add( pe );
     }
 }
