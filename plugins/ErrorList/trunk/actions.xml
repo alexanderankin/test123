@@ -11,28 +11,28 @@
 		<CODE>
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").nextError();
-			textArea.requestFocus();
+			textArea.requestFocusInWindow();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-previous-error">
 		<CODE>
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").previousError();
-			textArea.requestFocus();
+			textArea.requestFocusInWindow();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-next-error-file">
 		<CODE>
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").nextErrorFile();
-			textArea.requestFocus();
+			textArea.requestFocusInWindow();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-previous-error-file">
 		<CODE>
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").prevErrorFile();
-			textArea.requestFocus();
+			textArea.requestFocusInWindow();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-clear">
