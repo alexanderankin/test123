@@ -109,11 +109,11 @@ public class SideKickActions
 		EditPane editPane = view.getEditPane();
 		Buffer buffer = editPane.getBuffer();
 		Mode bufferMode = buffer.getMode();
-		
+
 		// check if user wants completion for this mode
 		if (!jEdit.getBooleanProperty("mode." + bufferMode.getName() + ".sidekick.completion", false))
 			return;
-		
+
 		JEditTextArea textArea = editPane.getTextArea();
 
 		SideKickParser parser = SideKickPlugin
@@ -217,7 +217,7 @@ public class SideKickActions
 			public void run()
 			{
 				textArea.scrollToCaret(true);
-				textArea.requestFocus();
+				textArea.requestFocusInWindow();
 			}
 		});
 	} //}}}
@@ -297,8 +297,8 @@ public class SideKickActions
 		{
 			DefaultMutableTreeNode parent = (DefaultMutableTreeNode)
 				node.getParent();
-			if (parent != null) 
-			{				
+			if (parent != null)
+			{
 				for(int i = 0; i < parent.getChildCount(); i++)
 				{
 					if(node == parent.getChildAt(i))
@@ -366,7 +366,7 @@ public class SideKickActions
 					{
 						IAsset nextAsset = (IAsset)((DefaultMutableTreeNode)
 							node.getChildAt(i + 1)).getUserObject();
-						int offset = nextAsset.getStart().getOffset() >= textArea.getBufferLength() ? 
+						int offset = nextAsset.getStart().getOffset() >= textArea.getBufferLength() ?
 							textArea.getBufferLength() - 1 :
 							nextAsset.getStart().getOffset();
 						textArea.setCaretPosition(offset);
@@ -397,30 +397,30 @@ public class SideKickActions
 	} //}}}
 
 	// {{{ SideKickAction class
-	abstract public static class SideKickAction extends EditAction 
+	abstract public static class SideKickAction extends EditAction
 	{
 		protected String parserName;
-		protected SideKickAction(String actionName, String parserName) 
+		protected SideKickAction(String actionName, String parserName)
 		{
 			super(actionName, new Object[] {parserName} );
 			this.parserName = parserName;
 		}
-		
+
 	}// }}}
 
 	// {{{ ToggleParser class
 	/** An action which will always activate the SideKick parser,
 	 *  alternately selecting the default parser, and then the
 	 *  selected one, allowing you to toggle between say, Outline
-	 *  and Java parsers, XML and HTML, or Python and Jython parsers. 
+	 *  and Java parsers, XML and HTML, or Python and Jython parsers.
 	 */
-	public static class ToggleParser extends SideKickAction 
+	public static class ToggleParser extends SideKickAction
 	{
-		public String getLabel() 
+		public String getLabel()
 		{
 			return parserName + " (Toggle)";
 		}
-		public ToggleParser(String parserName) 
+		public ToggleParser(String parserName)
 		{
 			super("sidekick.parser." + parserName + "-toggle", parserName);
 			this.parserName =parserName;
@@ -430,8 +430,8 @@ public class SideKickActions
 		}
 		public void invoke(View view)
 		{
-			
-			
+
+
 		}
 	} //}}}
 

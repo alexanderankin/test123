@@ -64,9 +64,9 @@ import sidekick.SideKickTree;
  * @created    Oct 15, 2005
  * @modified   $Id$
  * @version    $Revision$
- 
+
  * The Structure Browser dockable. Extends the SideKick structure browser,
- * adding a popup menu for marker setting and enhanced keyboard handling 
+ * adding a popup menu for marker setting and enhanced keyboard handling
  * It replaces the SideKickTree dockable if desired.
  */
 public class SourceTree extends SideKickTree {
@@ -169,7 +169,7 @@ public class SourceTree extends SideKickTree {
         else if (( _code == KeyEvent.VK_ESCAPE || _code == KeyEvent.VK_CANCEL ) &&
                  !evt.isConsumed())
         {
-            view.getTextArea().requestFocus();
+            view.getTextArea().requestFocusInWindow();
         }
     } //}}}
 
@@ -177,7 +177,7 @@ public class SourceTree extends SideKickTree {
         //{{{ handleMouse() method
         if ( GUIUtilities.isPopupTrigger( evt ) ) {
             GUIUtilities.showPopupMenu( getComponentPopupMenu(), evt.getComponent(), evt.getX(), evt.getY() );
-            view.getTextArea().requestFocus();
+            view.getTextArea().requestFocusInWindow();
         }
     } //}}}
 
@@ -272,7 +272,7 @@ public class SourceTree extends SideKickTree {
         	}
     		sb.append(line);
         }
-       
+
         private String getToolTipText(DefaultMutableTreeNode node, IAsset asset) {
             //{{{ -getToolTipText(DefaultMutableTreeNode, IAsset): String
         	StringBuffer sb = new StringBuffer("<html><body>");
@@ -302,7 +302,7 @@ public class SourceTree extends SideKickTree {
         	sb.append("</body></html>");
         	return sb.toString();
         } //}}}
-        
+
         public void paintComponent( Graphics g ) {
             //{{{ +paintComponent(Graphics) : void
             // inspired from ProjectViewer plugin

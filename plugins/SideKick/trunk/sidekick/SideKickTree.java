@@ -97,7 +97,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
         // {{{ Instance variables
         private RolloverButton parseBtn;
-        
+
         private Icon parseIcon;
         private Icon stopIcon;
 
@@ -144,16 +144,16 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 filterBox.setFloatable(false);
 
                 parseIcon = GUIUtilities.loadIcon("Parse.png");
-		stopIcon = GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.stop.icon"));                
+		stopIcon = GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.stop.icon"));
                 parseBtn = new RolloverButton(parseIcon);
-                
+
                 parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
                 parseBtn.setMargin(new Insets(0,0,0,0));
                 parseBtn.setRequestFocusEnabled(false);
                 parseBtn.setEnabled(true);
                 ActionListener ah = new ActionHandler();
                 parseBtn.addActionListener(ah);
-                
+
                 RolloverButton propsBtn = new RolloverButton(GUIUtilities.loadIcon("ButtonProperties.png"));
                 propsBtn.setToolTipText(jEdit.getProperty("sidekick-tree.mode-options"));
                 propsBtn.addActionListener(new SideKickProperties());
@@ -291,9 +291,9 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         	{
                         		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
                         		parseBtn.setIcon(stopIcon);
-                        		
+
                         	}
-                        	else 
+                        	else
                         	{
                         		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
                         		parseBtn.setIcon(parseIcon);
@@ -628,7 +628,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         String name = currentParser.getName();
                         if (name == null)
                         {
-                        	name = SideKickPlugin.DEFAULT;	
+                        	name = SideKickPlugin.DEFAULT;
                         }
                         parserCombo.setSelectedItem(name);
                 }
@@ -776,12 +776,12 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 {
                         super(model);
                 }
-                
-		public Enumeration<TreePath> getExpandedDescendants(TreePath parent) 
+
+		public Enumeration<TreePath> getExpandedDescendants(TreePath parent)
 		{
 			return null;
 		}
-		
+
                 protected void processMouseEvent(MouseEvent evt)
                 {
                         switch (evt.getID() )
@@ -968,7 +968,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                         if (evt.getSource() == parseBtn || evt.getSource() == parserCombo)
                         {
-                        	if (evt.getSource() == parseBtn) 
+                        	if (evt.getSource() == parseBtn)
                         	{
                         		SwingUtilities.invokeLater(new Runnable()
 						{
@@ -978,7 +978,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 								parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
 
 							}
-						});	
+						});
                         	}
                                 level = 0;
                                 Object usermode = b.getProperty("usermode");
@@ -1346,7 +1346,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                                                 }
                                                                 textArea.setCaretPosition(asset.getStart().getOffset());
                                                                 selectPath(path);
-                                                                textArea.requestFocus();
+                                                                textArea.requestFocusInWindow();
                                                         }
                                                 }
                                         }
