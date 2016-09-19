@@ -30,7 +30,6 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.Enumeration;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.*;
 
@@ -42,7 +41,7 @@ public class SaveDialog extends EnhancedDialog
 		super(view,jEdit.getProperty("session.savedialog.title"),true);
 
 		this.view = view;
-		
+
 		boolean somethingHasChanged = false;
 
 		JPanel content = new JPanel(new BorderLayout(12,12));
@@ -53,7 +52,7 @@ public class SaveDialog extends EnhancedDialog
 		iconBox.add(new JLabel(UIManager.getIcon("OptionPane.warningIcon")));
 		iconBox.add(Box.createGlue());
 		content.add(BorderLayout.WEST,iconBox);
-		
+
 		//***
 
 		JPanel pn_label = new JPanel(new GridLayout(2,1));
@@ -65,11 +64,11 @@ public class SaveDialog extends EnhancedDialog
 		JLabel lb_question = new JLabel(jEdit.getProperty("session.savedialog.question"));
 		label.setBorder(new EmptyBorder(0,0,6,0));
 		pn_label.add(lb_question);
-		
+
 		content.add(BorderLayout.NORTH, pn_label);
-		
+
 		// ***
-		
+
 		JPanel centerPanel = new JPanel(new BorderLayout());
 		JPanel openedPanel = new JPanel(new BorderLayout());
 		JPanel closedPanel = new JPanel(new BorderLayout());
@@ -77,19 +76,19 @@ public class SaveDialog extends EnhancedDialog
 		openedBufferList = new JList(openedBufferModel = new DefaultListModel());
 		openedBufferList.setVisibleRowCount(7);
 		openedBufferList.setEnabled(false);
-		
+
 		closedBufferList = new JList(closedBufferModel = new DefaultListModel());
 		closedBufferList.setVisibleRowCount(7);
 		closedBufferList.setEnabled(false);
-		
+
 		openedPanel.add(BorderLayout.NORTH, new JLabel(jEdit.getProperty("session.savedialog.added")));
 		closedPanel.add(BorderLayout.NORTH, new JLabel(jEdit.getProperty("session.savedialog.removed")));
-		
+
 		Session currentSession = SessionManager.getInstance().getSession(view);
-		
-		Buffer[] buffers = jEdit.getBuffers();
+
+		Buffer[] buffers = view.getBuffers();
 		Vector newFiles = new Vector(buffers.length);
-		
+
 		for(int i = 0; i < buffers.length; i++)
 		{
 			Buffer buffer = buffers[i];
@@ -98,12 +97,12 @@ public class SaveDialog extends EnhancedDialog
 				openedBufferModel.addElement(buffer.getPath());
 				somethingHasChanged = true;
 			}
-			
+
 			newFiles.add(buffer.getPath());
 		}
-		
+
 		Iterator oldFiles = currentSession.getAllFilenames().iterator();
-		
+
 		while (oldFiles.hasNext())
 		{
 			String oneFilename = (String)oldFiles.next();
@@ -116,13 +115,13 @@ public class SaveDialog extends EnhancedDialog
 
 		openedPanel.add(BorderLayout.CENTER, new JScrollPane(openedBufferList));
 		closedPanel.add(BorderLayout.CENTER, new JScrollPane(closedBufferList));
-		
+
 		centerPanel.add(BorderLayout.NORTH, openedPanel);
 		centerPanel.add(BorderLayout.CENTER, new JLabel(" "));
 		centerPanel.add(BorderLayout.SOUTH, closedPanel);
 
 		content.add(BorderLayout.CENTER, centerPanel);
-		
+
 		//***
 
 		ActionHandler actionListener = new ActionHandler();
@@ -148,12 +147,12 @@ public class SaveDialog extends EnhancedDialog
 		// Display confirmation dialog only if something has changed
 		if (somethingHasChanged)
 			setVisible(true);
-	} 
-	
+	}
+
 	public boolean isOK()
 	{
 		return ok;
-	} 
+	}
 
 	public void ok()
 	{
@@ -167,7 +166,7 @@ public class SaveDialog extends EnhancedDialog
 		ok = true;
 		dispose();
 	}
-	
+
 	public void cancel()
 	{
 		ok = false;
@@ -199,6 +198,6 @@ public class SaveDialog extends EnhancedDialog
 				cancel();
 			}
 		}
-	} 
+	}
 
 }
