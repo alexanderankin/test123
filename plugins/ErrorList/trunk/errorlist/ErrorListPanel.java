@@ -111,8 +111,10 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	private HashSet<Error> errors;
 	private List<Integer> filteredTypes;
 	private Map<Integer, JToggleButton> toggleButtons;
+	private JButton multi;
 	private PopupMenu popupMenu;
 	private boolean isActive = false;
+	private boolean multiStatus = jEdit.getBooleanProperty("error-list-multi.selected", false);
 		// }}}
 
 	//{{{ ErrorList constructor
@@ -122,7 +124,38 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 
 		setLayout(new BorderLayout());
 
-		errors = new HashSet<Error>();
+		errors = new HashSet<Error>()
+		{
+			// overriding 'add' since Error is an interface and doesn't 
+			// necessarily implement a good 'equals'
+			public boolean add(Error error)
+			{
+				if (!contains(error)) 
+				{
+					return super.add(error);
+				}
+				return false;
+			}
+			
+			private boolean contains(Error newError)
+			{
+				Iterator<Error> iter = iterator();
+				while(iter.hasNext())
+				{
+					Error error = iter.next();
+					String errorMessage = error.getErrorMessage();
+					String errorBufferPath = error.getBuffer().getPath();
+					String newErrorMessage = newError.getErrorMessage();
+					String newErrorBufferPath = newError.getBuffer().getPath();
+					if (errorMessage.equalsIgnoreCase(newErrorMessage) &&
+						errorBufferPath.equalsIgnoreCase(newErrorBufferPath))
+					{
+						return true;	
+					}
+				}
+				return false;
+			}
+		};
 		filteredTypes = new ArrayList<Integer>();
 		initFilteredTypes();
 
@@ -135,8 +168,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		JToggleButton toggleBtn = new JToggleButton(ERROR_ICON, true);
 		toggleBtn.setSelected(! filteredTypes.contains(Integer.valueOf(
 			ErrorSource.ERROR)));
-		toggleBtn.setToolTipText(jEdit.getProperty(
-			"error-list-toggle-errors.label"));
+		toggleBtn.setToolTipText(jEdit.getProperty("error-list-toggle-errors.label"));
 		toggleBtn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-toggle-errors"));
@@ -149,8 +181,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		toggleBtn = new JToggleButton(WARNING_ICON, true);
 		toggleBtn.setSelected(! filteredTypes.contains(Integer.valueOf(
 				ErrorSource.WARNING)));
-		toggleBtn.setToolTipText(jEdit.getProperty(
-			"error-list-toggle-warnings.label"));
+		toggleBtn.setToolTipText(jEdit.getProperty("error-list-toggle-warnings.label"));
 		toggleBtn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-toggle-warnings"));
@@ -158,41 +189,35 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		toggleButtons.put(Integer.valueOf(ErrorSource.WARNING), toggleBtn);
 		toolBar.add(Box.createGlue());
 
-		JButton btn = new RolloverButton(GUIUtilities.loadIcon(
-			"PreviousFile.png"));
-		btn.setToolTipText(jEdit.getProperty(
-			"error-list-previous-error-file.label"));
+		JButton btn = new RolloverButton(GUIUtilities.loadIcon("PreviousFile.png"));
+		btn.setToolTipText(jEdit.getProperty("error-list-previous-error-file.label"));
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-previous-error-file"));
 		toolBar.add(btn);
 
 		btn = new RolloverButton(GUIUtilities.loadIcon("NextFile.png"));
-		btn.setToolTipText(jEdit.getProperty(
-			"error-list-next-error-file.label"));
+		btn.setToolTipText(jEdit.getProperty("error-list-next-error-file.label"));
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-next-error-file"));
 		toolBar.add(btn);
 
 		btn = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
-		btn.setToolTipText(jEdit.getProperty(
-			"error-list-previous-error.label"));
+		btn.setToolTipText(jEdit.getProperty("error-list-previous-error.label"));
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-previous-error"));
 		toolBar.add(btn);
 
 		btn = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
-		btn.setToolTipText(jEdit.getProperty(
-			"error-list-next-error.label"));
+		btn.setToolTipText(jEdit.getProperty("error-list-next-error.label"));
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-next-error"));
 		toolBar.add(btn);
 
-		btn = new RolloverButton(GUIUtilities.loadIcon(
-				"Plus.png"));
+		btn = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
 		btn.setToolTipText(jEdit.getProperty(
 			"error-list-expand-all.label"));
 		btn.addActionListener(new EditAction.Wrapper(
@@ -200,10 +225,8 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 			"error-list-expand-all"));
 		toolBar.add(btn);
 
-		btn = new RolloverButton(GUIUtilities.loadIcon(
-			"Minus.png"));
-		btn.setToolTipText(jEdit.getProperty(
-			"error-list-collapse-all.label"));
+		btn = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
+		btn.setToolTipText(jEdit.getProperty("error-list-collapse-all.label"));
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-collapse-all"));
@@ -211,15 +234,39 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 
 		toolBar.add(Box.createHorizontalStrut(6));
 
-		btn = new RolloverButton(GUIUtilities.loadIcon(
-			"Clear.png"));
+		btn = new RolloverButton(GUIUtilities.loadIcon("Clear.png"));
 		btn.setToolTipText(jEdit.getProperty(
 			"error-list-clear.label"));
 		btn.addActionListener(new EditAction.Wrapper(
 			jEdit.getActionContext(),
 			"error-list-clear"));
+		btn.addActionListener( 
+			new ActionListener() 
+			{
+				public void actionPerformed( ActionEvent ae ) 
+				{
+		         	errors.clear();  
+		         	updateList();
+				}
+			}
+		);
 		toolBar.add(btn);
 
+		multi = new RolloverButton();
+		multi.setToolTipText(jEdit.getProperty("error-list-multi.label"));
+		multi.addActionListener( 
+			new ActionListener() 
+			{
+				public void actionPerformed( ActionEvent ae ) 
+				{
+					multiStatus = !multiStatus;
+					updateMultiStatus();
+				}
+			}
+		);
+		multi.setSelected(multiStatus);
+		toolBar.add(multi);
+		
 		toolBar.add(Box.createHorizontalStrut(6));
 
 		add(BorderLayout.NORTH,toolBar);
@@ -261,6 +308,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		JScrollPane scroller = new JScrollPane(errorTree);
 		scroller.setPreferredSize(new Dimension(640,200));
 		add(BorderLayout.CENTER,scroller);
+		updateMultiStatus();
 		updateStatus();
 
 		popupMenu = new PopupMenu(new ActionHandler(this));
@@ -268,6 +316,16 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		load();
 	} //}}}
 
+	//{{{ updateMultiStatus() method
+	private void updateMultiStatus()
+	{
+		if(multiStatus)
+			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.multiple.icon")));
+		else
+			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.single.icon")));
+		jEdit.setBooleanProperty("error-list-multi.selected", multiStatus);
+	} //}}}
+	
 	//{{{ load() method
 	public void load()
 	{
@@ -344,6 +402,34 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 			errorTree.collapsePath(new TreePath(collapsePath));
 		}
 	} //}}}
+	
+	public void removeSelection()
+	{
+		TreePath[] selected = errorTree.getSelectionPaths();
+		for (TreePath path : selected)
+		{
+			DefaultMutableTreeNode selectedNode = ((DefaultMutableTreeNode)path.getLastPathComponent());
+			Object userObject = selectedNode.getUserObject();
+			if (userObject instanceof String)
+			{
+				// file node is selected, children are error nodes, remove them
+				// from the error set
+				Enumeration children = selectedNode.children();
+				while(children.hasMoreElements())
+				{
+					DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)children.nextElement();
+					Error error = (Error)errorNode.getUserObject();
+					errors.remove(error);
+				}
+			}
+			else if (userObject instanceof Error)
+			{
+				// error node is selected
+				errors.remove((Error)userObject);	
+			}
+		}
+		updateList();
+	}
 
 
 	//{{{ initFilteredTypes() method
@@ -666,7 +752,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		}
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
-			addError(message.getError(),false);
+			addError(message.getError(), false);
 			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
@@ -677,12 +763,16 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
 			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
 		{
-			removeErrorSource(message.getErrorSource());
+			if (!multiStatus)
+			{
+				removeErrorSource(message.getErrorSource());
+			}
 			updateStatus();
 		}
 	} //}}}
 
 	//{{{ addErrorSource() method
+	// TODO: source isn't used, remove it? 
 	private void addErrorSource(ErrorSource source,
 								ErrorSource.Error[] errors)
 	{
@@ -691,7 +781,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 
 		for(int j = 0; j < errors.length; j++)
 		{
-			addError(errors[j],true);
+			addError(errors[j], true);
 		}
 
 		errorModel.reload(errorRoot);
@@ -872,47 +962,44 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	//}}}
 
 	//{{{ addErrorToTree() method
-	private void addErrorToTree(ErrorSource.Error error,
-		boolean init)
+	private void addErrorToTree(ErrorSource.Error error, boolean init)
 	{
 		Log.log(Log.DEBUG,ErrorList.class,"Adding Error Line#" + (error.getLineNumber()+1)
 				+ " Start#" + (error.getStartOffset()+1)  + " Error Message:" + error.getErrorMessage());
 		String[] extras = error.getExtraMessages();
-		final DefaultMutableTreeNode newNode
-			= new DefaultMutableTreeNode(error,extras.length > 0);
+		final DefaultMutableTreeNode errorNode = new DefaultMutableTreeNode(error, extras.length > 0);
 		for(int j = 0; j < extras.length; j++)
-			newNode.add(new DefaultMutableTreeNode(
-				new Extra(extras[j]),false));
+		{
+			errorNode.add(new DefaultMutableTreeNode(new Extra(extras[j]), false));
+		}
 
 		String path = error.getFilePath();
 
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-				errorRoot.getChildAt(i);
+			final DefaultMutableTreeNode fileNode = (DefaultMutableTreeNode)errorRoot.getChildAt(i);
 
-			String nodePath = (String)node.getUserObject();
+			String nodePath = (String)fileNode.getUserObject();
 			if(nodePath.equals(path))
 			{
-				node.add(newNode);
+				if (!contains(fileNode, errorNode))
+				{
+					fileNode.add(errorNode);
+				}
 
 				if(!init)
 				{
-					errorModel.reload(node);
-
-					errorTree.expandPath(new TreePath(
-						new TreeNode[] { errorRoot,
-						node, newNode }));
+					errorModel.reload(fileNode);
+					errorTree.expandPath(new TreePath(new TreeNode[] { errorRoot, fileNode, errorNode }));
 				}
-
 				return;
 			}
 		}
 
 		// no node for this file exists yet, so add a new one
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
-		node.add(newNode);
-		errorRoot.add(node);
+		DefaultMutableTreeNode fileNode = new DefaultMutableTreeNode(path, true);
+		fileNode.add(errorNode);
+		errorRoot.add(fileNode);
 		errorModel.reload(errorRoot);
 
 		if(!init)
@@ -925,6 +1012,22 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 			}
 		}
 	} //}}}
+	
+	private boolean contains(DefaultMutableTreeNode fileNode, DefaultMutableTreeNode errorNode)
+	{
+		Enumeration children = fileNode.children();
+		while(children.hasMoreElements())
+		{
+			DefaultMutableTreeNode child = (DefaultMutableTreeNode)children.nextElement();
+			String childErrorMessage = ((ErrorSource.Error)child.getUserObject()).getErrorMessage();
+			String errorNodeMessage = ((ErrorSource.Error)errorNode.getUserObject()).getErrorMessage();
+			if (childErrorMessage != null && childErrorMessage.equalsIgnoreCase(errorNodeMessage))
+			{
+				return true;	
+			}
+		}
+		return false;
+	}
 
 	//{{{ removeError() method
 	private void removeError(ErrorSource.Error error)
@@ -1324,18 +1427,23 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
-			if (SwingUtilities.isRightMouseButton(evt)) {
-
+			int shiftMask = MouseEvent.SHIFT_DOWN_MASK | MouseEvent.BUTTON1_DOWN_MASK;
+			int controlMask = MouseEvent.CTRL_DOWN_MASK;
+			int modifiers = evt.getModifiersEx();
+			if ((modifiers & (shiftMask | controlMask)) == modifiers) {
+				// doing selection
+				return;
+			}
+			else if (SwingUtilities.isRightMouseButton(evt)) 
+			{
 				popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 				popupMenu.enableSelectOne(!errorTree.isSelectionEmpty());
-
 			} else {
 				TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
 				if(path == null)
 					return;
 				errorTree.setSelectionPath(path);
-				openNode((DefaultMutableTreeNode)
-					path.getLastPathComponent());
+				openNode((DefaultMutableTreeNode)path.getLastPathComponent());
 			}
 		}
 	} //}}}
@@ -1408,6 +1516,10 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 			} else if (jEdit.getProperty("error-list.collapse-all").equals(item.getText())) {
 
 				collapseAll();
+				
+			} else if (jEdit.getProperty("error-list.remove").equals(item.getText())) {
+				
+				removeSelection();
 
 			} else {
 
@@ -1425,6 +1537,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		JMenuItem selectAll;
 		JMenuItem expandAll;
 		JMenuItem collapseAll;
+		JMenuItem remove;
 
 		public PopupMenu(ActionListener listener)
 		{
@@ -1439,12 +1552,16 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 
 			collapseAll = new JMenuItem(jEdit.getProperty("error-list.collapse-all"));
 			collapseAll.addActionListener(listener);
+			
+			remove = new JMenuItem(jEdit.getProperty("error-list.remove"));
+			remove.addActionListener(listener);
 
 			add(selectOne);
 			add(selectAll);
 			addSeparator();
 			add(expandAll);
 			add(collapseAll);
+			add(remove);
 		}
 
 		public void enableSelectOne(boolean enabled)

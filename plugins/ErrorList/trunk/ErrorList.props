@@ -47,6 +47,8 @@ error-list-copy-selected-error.label=Copy Selected Error to Clipboard
 error-list-copy-all-errors.label=Copy All Errors to Clipboard
 error-list-expand-all.label=Expand All
 error-list-collapse-all.label=Collapse All
+error-list-multi.label=Toggle multiple results
+error-list.remove=Remove selected
 
 error-list.copy-all-to-clipboard=Copy all to clipboard
 error-list.expand-all=Expand All
