@@ -143,18 +143,76 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				while(iter.hasNext())
 				{
 					Error error = iter.next();
-					String errorMessage = error.getErrorMessage();
-					String errorBufferPath = error.getBuffer().getPath();
-					String newErrorMessage = newError.getErrorMessage();
-					String newErrorBufferPath = newError.getBuffer().getPath();
-					if (errorMessage.equalsIgnoreCase(newErrorMessage) &&
-						errorBufferPath.equalsIgnoreCase(newErrorBufferPath))
-					{
-						return true;	
-					}
+					if (error.getErrorType() != newError.getErrorType())
+						continue;
+					if (error.getLineNumber() != newError.getLineNumber())
+						continue;
+					if (error.getStartOffset() != newError.getStartOffset())
+						continue;
+					if (error.getEndOffset() != newError.getEndOffset())
+						continue;
+					if (!equals(error.getErrorMessage(), newError.getErrorMessage()))
+						continue;
+					if (!equals(error.getFilePath(), newError.getFilePath()))
+						continue;
+					if (!equals(error.getFileName(), newError.getFileName()))
+						continue;
+					if (!equals(error.getErrorMessage(), newError.getErrorMessage()))
+						continue;
+					if (!equals(error.getBuffer(), newError.getBuffer()))
+						continue;
+					if (!equals(error.getErrorSource(), newError.getErrorSource()))
+						continue;
+					return true;	
 				}
 				return false;
 			}
+			
+			private boolean equals(String a, String b)
+			{
+				if (a == null && b == null)
+					return true;
+				if (a != null && b == null)
+					return false;
+				if (a == null && b != null)
+					return false;
+				return a.equalsIgnoreCase(b);
+			}
+			
+			private boolean equals(Buffer a, Buffer b)
+			{
+				if (a == null && b == null)
+					return true;
+				if (a != null && b == null)
+					return false;
+				if (a == null && b != null)
+					return false;
+				String pathA = a.getPath();
+				String pathB = b.getPath();
+				if (pathA == null && pathB == null)
+					return true;
+				if (pathA != null && pathB == null)
+					return false;
+				return pathA.equalsIgnoreCase(pathB);
+			}
+			
+			private boolean equals(ErrorSource a, ErrorSource b)
+			{
+				if (a == null && b == null)
+					return true;
+				if (a != null && b == null)
+					return false;
+				if (a == null && b != null)
+					return false;
+				String nameA = a.getName();
+				String nameB = b.getName();
+				if (nameA == null && nameB == null)
+					return true;
+				if (nameA != null && nameB == null)
+					return false;
+				return nameA.equalsIgnoreCase(nameB);
+			}
+			
 		};
 		filteredTypes = new ArrayList<Integer>();
 		initFilteredTypes();
@@ -253,7 +311,6 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		toolBar.add(btn);
 
 		multi = new RolloverButton();
-		multi.setToolTipText(jEdit.getProperty("error-list-multi.label"));
 		multi.addActionListener( 
 			new ActionListener() 
 			{
@@ -286,18 +343,6 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		errorTree.setRootVisible(false);
 		errorTree.setShowsRootHandles(true);
 
-		/*
-		ErrorSource[] sources = ErrorSource.getErrorSources();
-
-		for(int i = 0; i < sources.length; i++)
-		{
-			ErrorSource source = sources[i];
-			if ((sources[i].getView() == null)
-				|| (view == sources[i].getView()))
-				addErrorSource(source, source.getAllErrors());
-		}
-		*/
-
 		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
@@ -320,9 +365,15 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	private void updateMultiStatus()
 	{
 		if(multiStatus)
+		{
 			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.multiple.icon")));
+			multi.setToolTipText(jEdit.getProperty("error-list-multi-on.label"));
+		}
 		else
+		{
 			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.single.icon")));
+			multi.setToolTipText(jEdit.getProperty("error-list-multi-off.label"));
+		}
 		jEdit.setBooleanProperty("error-list-multi.selected", multiStatus);
 	} //}}}
 	
@@ -406,6 +457,8 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	public void removeSelection()
 	{
 		TreePath[] selected = errorTree.getSelectionPaths();
+		if (selected == null)
+			return;
 		for (TreePath path : selected)
 		{
 			DefaultMutableTreeNode selectedNode = ((DefaultMutableTreeNode)path.getLastPathComponent());
@@ -1430,7 +1483,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 			int shiftMask = MouseEvent.SHIFT_DOWN_MASK | MouseEvent.BUTTON1_DOWN_MASK;
 			int controlMask = MouseEvent.CTRL_DOWN_MASK;
 			int modifiers = evt.getModifiersEx();
-			if ((modifiers & (shiftMask | controlMask)) == modifiers) {
+			if (modifiers > 0 && (modifiers & (shiftMask | controlMask)) == modifiers) {
 				// doing selection
 				return;
 			}
