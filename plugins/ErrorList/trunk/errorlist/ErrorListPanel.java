@@ -373,6 +373,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		{
 			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.single.icon")));
 			multi.setToolTipText(jEdit.getProperty("error-list-multi-off.label"));
+			removeAllButLast();
 		}
 		jEdit.setBooleanProperty("error-list-multi.selected", multiStatus);
 	} //}}}
@@ -480,6 +481,47 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 				// error node is selected
 				errors.remove((Error)userObject);	
 			}
+		}
+		updateList();
+	}
+	
+	private void removeAllButLast()
+	{
+		if (errorRoot.getChildCount() == 0)
+		{
+			return;	
+		}
+		DefaultMutableTreeNode lastFileNode = (DefaultMutableTreeNode)errorRoot.getLastChild();
+		if (lastFileNode == null)
+		{
+			return;
+		}
+		Enumeration fileNodes = errorRoot.children();
+		while(fileNodes.hasMoreElements())
+		{
+			DefaultMutableTreeNode fileNode = (DefaultMutableTreeNode)fileNodes.nextElement();
+			if (fileNode.equals(lastFileNode))
+			{
+				break;	
+			}
+			Object userObject = fileNode.getUserObject();
+			if (userObject instanceof String)
+			{
+				// file node
+				Enumeration errorNodes = fileNode.children();
+				while(errorNodes.hasMoreElements())
+				{
+					DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)errorNodes.nextElement();
+					Error error = (Error)errorNode.getUserObject();
+					errors.remove(error);
+				}
+			}
+			else if (userObject instanceof Error)
+			{
+				// error node
+				errors.remove((Error)userObject);	
+			}
+			
 		}
 		updateList();
 	}
