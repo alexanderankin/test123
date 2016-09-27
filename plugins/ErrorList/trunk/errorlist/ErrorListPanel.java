@@ -115,6 +115,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 	private PopupMenu popupMenu;
 	private boolean isActive = false;
 	private boolean multiStatus = jEdit.getBooleanProperty("error-list-multi.selected", false);
+	private ErrorSource currentSource = null;
 		// }}}
 
 	//{{{ ErrorList constructor
@@ -491,6 +492,28 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		{
 			return;	
 		}
+		
+		// if there is a current error source set, it should be the one that sent
+		// the last errors, so remove all errors not from this source
+		if (currentSource != null)
+		{
+			HashSet<Error> toRemove = new HashSet<Error>();
+			for (Error error : errors)
+			{
+				if (!currentSource.equals(error.getErrorSource()))
+				{
+					toRemove.add(error);
+				}
+			}
+			for (Error error: toRemove)
+			{
+				errors.remove(error);	
+			}
+			updateList();
+			return;
+		}
+		
+		// otherwise, just keep the last node in the tree
 		DefaultMutableTreeNode lastFileNode = (DefaultMutableTreeNode)errorRoot.getLastChild();
 		if (lastFileNode == null)
 		{
@@ -843,17 +866,23 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		{
 			addErrorSource(message.getErrorSource(),
 						   message.getErrors());
-			updateStatus();
+			updateList();
 		}
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
+			ErrorSource errorSource = message.getErrorSource();
+			if (errorSource != null && !errorSource.equals(currentSource) && !multiStatus)
+			{
+				errors.clear();
+			}
+			currentSource = errorSource;
 			addError(message.getError(), false);
-			updateStatus();
+			updateList();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
 			removeError(message.getError());
-			updateStatus();
+			updateList();
 		}
 		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
 			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
@@ -862,7 +891,7 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 			{
 				removeErrorSource(message.getErrorSource());
 			}
-			updateStatus();
+			updateList();
 		}
 	} //}}}
 
@@ -874,6 +903,11 @@ public class ErrorListPanel extends JPanel implements DefaultFocusComponent
 		if(errors == null || errors.length == 0)
 			return;
 
+		if (!multiStatus)
+		{
+			this.errors.clear();	
+		}
+		currentSource = source;
 		for(int j = 0; j < errors.length; j++)
 		{
 			addError(errors[j], true);
