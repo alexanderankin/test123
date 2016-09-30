@@ -86,7 +86,7 @@ public class ParserOptionPane extends AbstractOptionPane
 			public int compare(Object a, Object b) {
 				a = a == null ? "" : a;
 				b = b == null ? "" : b;
-				return a.toString().compareToIgnoreCase(b.toString());   
+				return a.toString().compareToIgnoreCase(b.toString());
 			}
 		} );
 		ParserCellRenderer comboBox = new ParserCellRenderer(parserList);
@@ -145,7 +145,7 @@ class MyTableModel extends AbstractTableModel
 		for(Mode mode : modes)
 		{
 			Entry entry = new Entry(mode.getName());
-			entry.completion = jEdit.getBooleanProperty("mode." + mode.getName() + ".sidekick.completion", false);
+			entry.completion = jEdit.getBooleanProperty("mode." + mode.getName() + ".sidekick.completion", true);
 			this.modes.add(entry);
 		}
 		Collections.sort(this.modes);
@@ -254,14 +254,14 @@ class MyTableModel extends AbstractTableModel
 		String mode;
 		String parser = null;
 		boolean completion = false;
-		
+
 		Entry(String mode)
 		{
 			this.mode = mode;
 			parser = jEdit.getProperty("mode."+ this.mode + ".sidekick.parser");
-			completion = jEdit.getBooleanProperty("mode." + this.mode + ".sidekick.completion", false);
+			completion = jEdit.getBooleanProperty("mode." + this.mode + ".sidekick.completion", true);
 		}
-		
+
 		void save()
 		{
 			if (parser == SideKickPlugin.DEFAULT)
@@ -270,9 +270,9 @@ class MyTableModel extends AbstractTableModel
 				jEdit.setProperty("mode." + mode + ".sidekick.parser",parser);
 			jEdit.setBooleanProperty("mode." + mode + ".sidekick.completion", completion);
 		}
-		
+
 		public int compareTo(Object a) {
-			return this.mode.compareToIgnoreCase(((Entry)a).mode);	
+			return this.mode.compareToIgnoreCase(((Entry)a).mode);
 		}
 	} //}}}
 

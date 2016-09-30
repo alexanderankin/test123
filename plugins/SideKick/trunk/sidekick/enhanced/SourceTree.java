@@ -1,7 +1,7 @@
 /*
 * SourceTree.java
 * :folding=explicit:collapseFolds=1:
-*
+* :tabSize=4:indentSize=4:noTabs=false:*
 * Copyright (C) 2005-2011 by Martin Raspe, Dale Anson, Shlomy Reinstein
 * (hertzhaft@biblhertz.it)
 *
