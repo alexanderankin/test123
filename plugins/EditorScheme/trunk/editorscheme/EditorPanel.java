@@ -2,6 +2,7 @@ package editorscheme;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigInteger;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -64,7 +65,12 @@ public class EditorPanel extends JPanel implements ActionListener {
                         sb.setStyle(style);
                         button.addChangeListener(new StyleButtonListener(name));
                     } else if (colorString != null && colorString.length() > 0) {
-                        int colorValue = Integer.decode(colorString);
+                        if (colorString.startsWith("#"))
+                            colorString = colorString.substring(1);
+                        if (colorString.length() == 6) 
+                            colorString = "ff" + colorString;    
+                        BigInteger bi = new BigInteger(colorString, 16);
+                        int colorValue = bi.intValue();
                         Color color = new Color(colorValue);
                         ColorWellButton cwb = (ColorWellButton) button;
                         cwb.setSelectedColor(color);
@@ -131,7 +137,12 @@ public class EditorPanel extends JPanel implements ActionListener {
                         button.addChangeListener(new StyleButtonListener(name));
                     }
                 } else if (colorString != null && colorString.length() > 0) {
-                    colorValue = Integer.decode(colorString);
+                    if (colorString.startsWith("#"))
+                        colorString = colorString.substring(1);
+                    if (colorString.length() == 6) 
+                        colorString = "ff" + colorString;    
+                    BigInteger bi = new BigInteger(colorString, 16);
+                    colorValue = bi.intValue();
                     Color color = new Color(colorValue);
                     button = new ColorWellButton(color);
                     if (! scheme.getReadOnly()) {
