@@ -158,6 +158,14 @@ the Sourceforge Bug Tracker at
         <title>Change log</title>
         <itemizedlist>
             <listitem>
+                <para>Version 1.8, Dale Anson. Requires jEdit 4.5, Java 1.5</para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Added support for color with alpha value.</para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem>
                 <para>Version 1.7, Matthieu Casanova. Requires jEdit 4.5, Java 1.5</para>
                 <itemizedlist>
                     <listitem>

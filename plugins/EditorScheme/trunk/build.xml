@@ -45,6 +45,8 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includeJavaRuntime="yes"
+			debug="true"
+			debuglevel="lines,vars,source"
 		>
 			<compilerarg value="-Xlint:unchecked"/>
 			<classpath refid="project.class.path"/>
