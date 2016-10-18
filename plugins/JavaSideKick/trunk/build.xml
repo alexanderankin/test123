@@ -74,7 +74,7 @@
 		 <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
          <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
          <pathelement location="${jedit.plugins.dir}/Classpath.jar"/>
-         <pathelement location="${jedit.plugins.dir}/antlr-4.4-complete.jar"/>
+         <pathelement location="${jedit.plugins.dir}/antlr4-4.5-opt.jar"/>
       </path>
    </target>
 
@@ -126,6 +126,7 @@
   </target>
 
    <target name="javacc" depends="javacc_clean" description="Run javacc">
+      <echo>${javacc}</echo>
       <available file="${javacc}" property="javacc.present"/>
       <fail unless="javacc.present" message="Javacc not found."/>
 

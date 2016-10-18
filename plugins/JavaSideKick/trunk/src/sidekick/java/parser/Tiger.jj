@@ -127,6 +127,20 @@ public class TigerParser
         jj_ntk = -1;
    }
 
+  public static void main(String[] args) throws ParseException {
+      if (args.length == 0) {
+        return;
+      }
+      try {
+        String filename = args[0];
+        TigerParser parser = new TigerParser(new java.io.FileReader(filename));
+        parser.CompilationUnit(4).toString();
+      }
+      catch(Exception e) {
+          e.printStackTrace();
+      }
+    System.exit(0);
+  }
 
     /**
      * @return the accumulated counts of classes, interfaces, methods, and fields.
@@ -222,7 +236,7 @@ public class TigerParser
    }
 
    public int getTabSize() {
-        return jj_input_stream.getTabSize(0);
+        return jj_input_stream.getTabSize();
    }
 
   /*
@@ -3619,7 +3633,7 @@ TigerNode BlockStatement():
              )
     }
     catch(ParseException pe) {
-        //error_skipto(pe, SEMICOLON, RBRACE);
+        error_skipto(pe, SEMICOLON, RBRACE);
         throw pe;
     }
     {

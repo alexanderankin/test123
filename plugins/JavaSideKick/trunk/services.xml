@@ -3,7 +3,7 @@
 
 <SERVICES>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="java">
-        sidekick.java.JavaSideKickPlugin.createParser(sidekick.java.JavaParser.JAVA_PARSER);        
+        sidekick.java.JavaSideKickPlugin.createParser(sidekick.java.JavaParser.JAVA_PARSER);
 	</SERVICE>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="javacc">
 		sidekick.java.JavaSideKickPlugin.createParser(sidekick.java.JavaParser.JAVACC_PARSER);
