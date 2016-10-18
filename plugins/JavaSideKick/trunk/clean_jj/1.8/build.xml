@@ -97,7 +97,7 @@
     <target
         name="NestedGenericClasses">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="NestedGenericClasseserror">
             <classpath
@@ -118,7 +118,7 @@
     <target
         name="Imports">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="Importserror">
             <classpath
@@ -139,7 +139,7 @@
     <target
         name="ColoredPoint">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="ColoredPointerror">
             <classpath
@@ -158,9 +158,10 @@
     </target>
 
     <target
-        name="GUITest">
+        name="GUITest"
+        depends="setClasspath">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="guitesterror">
             <classpath
@@ -181,7 +182,7 @@
     <target
         name="Move">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="Moveerror">
             <classpath
@@ -202,7 +203,7 @@
     <target
         name="Point">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="Pointerror">
             <classpath
@@ -223,7 +224,7 @@
     <target
         name="RawTypes">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="RawTypeserror">
             <classpath
@@ -244,7 +245,7 @@
     <target
         name="RawTypes2">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="RawTypes2error">
             <classpath
@@ -265,7 +266,7 @@
     <target
         name="RawTypesAndInheritance">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="RawTypesAndInheritanceerror">
             <classpath
@@ -286,7 +287,7 @@
     <target
         name="MembersOfATypeVariable">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="membersofatypevariableerror">
             <classpath
@@ -307,7 +308,7 @@
     <target
         name="TestConstructor">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="TestConstructorerror">
             <classpath
@@ -328,7 +329,7 @@
     <target
         name="TestObjectCreation">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="TestObjectCreationerror">
             <classpath
@@ -349,7 +350,7 @@
     <target
         name="UnboundedWildcards">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="UnboundedWildcardserror">
             <classpath
@@ -370,7 +371,7 @@
     <target
         name="UsageOfAType">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="UsageOfATypeerror">
             <classpath
@@ -391,7 +392,7 @@
     <target
         name="StringLiterals">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="StringLiteralserror">
             <classpath
@@ -412,7 +413,7 @@
     <target
         name="IntegerOperations">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="IntegerOperationserror">
             <classpath
@@ -433,7 +434,7 @@
     <target
         name="FloatingPointOperations">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="FloatingPointOperationserror">
             <classpath
@@ -454,7 +455,7 @@
     <target
         name="Conversions">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="Conversionserror">
             <classpath
@@ -475,7 +476,7 @@
     <target
         name="Chapter6">
         <java
-            classname="TigerParser"
+            classname="JavaParser"
             fork="true"
             resultproperty="Chapter6error">
             <classpath
@@ -512,7 +513,7 @@
             executable="${javacc}"
             resultproperty="javaccerror">
             <arg
-                value="${parser.src.dir}/Tiger.jj"/>
+                value="${parser.src.dir}/java18_clean.jj"/>
         </exec>
         <fail
             message="javacc failed: ${javaccerror}">
@@ -534,11 +535,11 @@
             <fileset
                 dir="${parser.src.dir}">
                 <include
-                    name="TigerParser.java"/>
+                    name="JavaParser.java"/>
                 <include
-                    name="TigerParserTokenManager.java"/>
+                    name="JavaParserTokenManager.java"/>
                 <include
-                    name="TigerParserConstants.java"/>
+                    name="JavaParserConstants.java"/>
                 <include
                     name="*CharStream*.java"/>
                 <include

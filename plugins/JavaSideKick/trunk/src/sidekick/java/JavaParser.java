@@ -42,6 +42,10 @@ import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.Range;
 
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+import sidekick.java.parser.antlr.*;
+
 public class JavaParser extends SideKickParser implements EBComponent {
 
     // {{{ Private members
@@ -56,6 +60,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // {{{ Static members
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
+    public static final int JAVA_8_PARSER = 3;
     public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
     // }}}
 
@@ -78,7 +83,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 parser_type = JAVACC_PARSER;
                 break;
             default:
-                parser_type = JAVA_PARSER;
+                boolean useAntlrParser = jEdit.getBooleanProperty("sidekick.java.useAntlrParser", false);
+                parser_type = useAntlrParser ? JAVA_8_PARSER : JAVA_PARSER;
         }
     }    // }}}
 
@@ -115,6 +121,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
             EditBus.send( new SideKickUpdate( currentView ) );
         }
     }    // }}}
+    
+    public int getParserType() {
+        return parser_type;   
+    }
 
     // {{{ parse() : SideKickParsedData
     /**
@@ -133,6 +143,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
+        ///
+        boolean useAntlrParser = jEdit.getBooleanProperty("sidekick.java.useAntlrParser", false);
+        if (parser_type != JAVACC_PARSER) {
+            parser_type = useAntlrParser ? JAVA_8_PARSER : JAVA_PARSER;   
+        }
+        ///
+        
         Reader input = null;
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
@@ -163,11 +180,38 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit.setResults( tigerParser.getResults() );
                     errorList = tigerParser.getErrors();
                     break;
+                case JAVA_8_PARSER:
+                    // use the Antlr parser for java files
+                    // set up the Antlr parser to read the buffer
+                    input = new StringReader( contents );
+                    ANTLRInputStream antlrInput = new ANTLRInputStream( input );
+                    Java8Lexer lexer = new Java8Lexer( antlrInput );
+                    CommonTokenStream tokens = new CommonTokenStream( lexer );
+                    Java8Parser java8Parser = new Java8Parser( tokens );
+        
+                    // add an error listener to the parser to capture any errors
+                    java8Parser.removeErrorListeners();
+                    ErrorListener errorListener = new ErrorListener();
+                    java8Parser.addErrorListener( errorListener );
+        
+                    // parse the buffer contents
+                    ParseTree tree = java8Parser.compilationUnit();
+                    ParseTreeWalker walker = new ParseTreeWalker();
+                    Java8SideKickListener listener = new Java8SideKickListener();
+                    walker.walk( listener, tree );
+        
+                    // build the tree
+                    compilationUnit = listener.getCompilationUnit();
+                    root.setUserObject( compilationUnit );
+                    //addChildren(root, buffer);
+                    break;
                 default:
-                    TigerParser java8parser = new TigerParser( input );
-                    compilationUnit = java8parser.getJavaRootNode( tab_size );
-                    compilationUnit.setResults( java8parser.getResults() );
-                    errorList = java8parser.getErrors();
+                    // use the javacc parser for java files
+                    // TODO: remove this when the antlr parser is complete
+                    TigerParser parser = new TigerParser( input );
+                    compilationUnit = parser.getJavaRootNode( tab_size );
+                    compilationUnit.setResults( parser.getResults() );
+                    errorList = parser.getErrors();
             }
             if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
                 System.out.println( compilationUnit.dump() );
