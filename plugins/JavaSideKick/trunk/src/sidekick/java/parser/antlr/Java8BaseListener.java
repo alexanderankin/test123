@@ -1,4 +1,4 @@
-// Generated from /home/danson/src/jedit/plugins/Java8SideKick/src/sidekick/java/parser/antlr/Java8.g4 by ANTLR 4.x
+// Generated from /home/danson/src/jedit/plugins/JavaSideKick/src/sidekick/java/parser/antlr/Java8.g4 by ANTLR 4.x
 
 package sidekick.java.parser.antlr;
 

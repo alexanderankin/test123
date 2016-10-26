@@ -143,7 +143,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        ///
+        System.out.println("+++++ javasidekick parse");
+        /// TODO: remove this when the Antlr parser is complete
         boolean useAntlrParser = jEdit.getBooleanProperty("sidekick.java.useAntlrParser", false);
         if (parser_type != JAVACC_PARSER) {
             parser_type = useAntlrParser ? JAVA_8_PARSER : JAVA_PARSER;   
@@ -183,6 +184,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 case JAVA_8_PARSER:
                     // use the Antlr parser for java files
                     // set up the Antlr parser to read the buffer
+                    System.out.println("+++++ using java 8 parser");
                     input = new StringReader( contents );
                     ANTLRInputStream antlrInput = new ANTLRInputStream( input );
                     Java8Lexer lexer = new Java8Lexer( antlrInput );
@@ -195,15 +197,17 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     java8Parser.addErrorListener( errorListener );
         
                     // parse the buffer contents
+                    System.out.println("+++++ parse the buffer contents");
                     ParseTree tree = java8Parser.compilationUnit();
                     ParseTreeWalker walker = new ParseTreeWalker();
                     Java8SideKickListener listener = new Java8SideKickListener();
                     walker.walk( listener, tree );
         
                     // build the tree
+                    System.out.println("+++++ build the tree");
                     compilationUnit = listener.getCompilationUnit();
-                    root.setUserObject( compilationUnit );
-                    //addChildren(root, buffer);
+                    compilationUnit.setResults( listener.getResults() );
+                    errorList = listener.getErrors();
                     break;
                 default:
                     // use the javacc parser for java files
