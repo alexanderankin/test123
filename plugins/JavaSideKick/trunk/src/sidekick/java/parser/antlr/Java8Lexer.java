@@ -1,4 +1,4 @@
-// Generated from /home/danson/src/jedit/plugins/Java8SideKick/src/sidekick/java/parser/antlr/Java8.g4 by ANTLR 4.x
+// Generated from /home/danson/src/jedit/plugins/JavaSideKick/src/sidekick/java/parser/antlr/Java8.g4 by ANTLR 4.x
 
 package sidekick.java.parser.antlr;
 
@@ -132,10 +132,6 @@ public class Java8Lexer extends Lexer {
 	}
 
 
-	    public static final int WHITESPACE = 1;
-	    public static final int COMMENTS = 2;
-
-
 	public Java8Lexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN);
@@ -153,51 +149,6 @@ public class Java8Lexer extends Lexer {
 	@Override
 	public String[] getModeNames() { return modeNames; }
 
-	@Override
-	public void action(RuleContext _localctx, int ruleIndex, int actionIndex) {
-		switch (ruleIndex) {
-		case 152:
-			WS_action(_localctx, actionIndex);
-			break;
-		case 153:
-			DOC_COMMENT_action(_localctx, actionIndex);
-			break;
-		case 154:
-			COMMENT_action(_localctx, actionIndex);
-			break;
-		case 155:
-			LINE_COMMENT_action(_localctx, actionIndex);
-			break;
-		}
-	}
-	private void WS_action(RuleContext _localctx, int actionIndex) {
-		switch (actionIndex) {
-		case 0:
-			_channel = WHITESPACE;
-			break;
-		}
-	}
-	private void DOC_COMMENT_action(RuleContext _localctx, int actionIndex) {
-		switch (actionIndex) {
-		case 1:
-			_channel = COMMENTS;
-			break;
-		}
-	}
-	private void COMMENT_action(RuleContext _localctx, int actionIndex) {
-		switch (actionIndex) {
-		case 2:
-			_channel = COMMENTS;
-			break;
-		}
-	}
-	private void LINE_COMMENT_action(RuleContext _localctx, int actionIndex) {
-		switch (actionIndex) {
-		case 3:
-			_channel = COMMENTS;
-			break;
-		}
-	}
 	@Override
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
@@ -619,20 +570,20 @@ public class Java8Lexer extends Lexer {
 		"\7,\2\2\u043d\u043e\7,\2\2\u043e\u0442\3\2\2\2\u043f\u0441\13\2\2\2\u0440"+
 		"\u043f\3\2\2\2\u0441\u0444\3\2\2\2\u0442\u0443\3\2\2\2\u0442\u0440\3\2"+
 		"\2\2\u0443\u0445\3\2\2\2\u0444\u0442\3\2\2\2\u0445\u0446\7,\2\2\u0446"+
-		"\u0447\7\61\2\2\u0447\u0448\3\2\2\2\u0448\u0449\b\u009b\3\2\u0449\u0136"+
+		"\u0447\7\61\2\2\u0447\u0448\3\2\2\2\u0448\u0449\b\u009b\2\2\u0449\u0136"+
 		"\3\2\2\2\u044a\u044b\7\61\2\2\u044b\u044c\7,\2\2\u044c\u0450\3\2\2\2\u044d"+
 		"\u044f\13\2\2\2\u044e\u044d\3\2\2\2\u044f\u0452\3\2\2\2\u0450\u0451\3"+
 		"\2\2\2\u0450\u044e\3\2\2\2\u0451\u0453\3\2\2\2\u0452\u0450\3\2\2\2\u0453"+
 		"\u0454\7,\2\2\u0454\u0455\7\61\2\2\u0455\u0456\3\2\2\2\u0456\u0457\b\u009c"+
-		"\4\2\u0457\u0138\3\2\2\2\u0458\u0459\7\61\2\2\u0459\u045a\7\61\2\2\u045a"+
+		"\2\2\u0457\u0138\3\2\2\2\u0458\u0459\7\61\2\2\u0459\u045a\7\61\2\2\u045a"+
 		"\u045e\3\2\2\2\u045b\u045d\n\27\2\2\u045c\u045b\3\2\2\2\u045d\u0460\3"+
 		"\2\2\2\u045e\u045c\3\2\2\2\u045e\u045f\3\2\2\2\u045f\u0461\3\2\2\2\u0460"+
-		"\u045e\3\2\2\2\u0461\u0462\b\u009d\5\2\u0462\u013a\3\2\2\29\2\u0298\u029c"+
+		"\u045e\3\2\2\2\u0461\u0462\b\u009d\2\2\u0462\u013a\3\2\2\29\2\u0298\u029c"+
 		"\u02a0\u02a4\u02a8\u02af\u02b4\u02b6\u02ba\u02bd\u02c1\u02c8\u02cc\u02d1"+
 		"\u02d9\u02dc\u02e3\u02e7\u02eb\u02f1\u02f4\u02fb\u02ff\u0307\u030a\u0311"+
 		"\u0315\u0319\u031e\u0321\u0324\u0329\u032c\u0331\u0336\u033e\u0349\u034d"+
 		"\u0352\u0356\u0366\u0370\u0376\u037d\u0381\u0387\u0394\u041b\u0424\u042c"+
-		"\u0437\u0442\u0450\u045e\6\3\u009a\2\3\u009b\3\3\u009c\4\3\u009d\5";
+		"\u0437\u0442\u0450\u045e\3\b\2\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

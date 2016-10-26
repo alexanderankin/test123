@@ -11,11 +11,10 @@ public class GeneralOptionPane extends AbstractOptionPane {
     private JCheckBox ignoreDirtyBuffers;
     private JCheckBox parseOnCodeComplete;
     private JCheckBox importPackage;
-    private JCheckBox useAntlrParser;
+    private JCheckBox useAntlrParser;   // TODO: remove this and references below when the antlr parser is complete
 
     public GeneralOptionPane() {
         super( "sidekick.java.general" );
-        System.out.println("+++++ in java 8 general options");
     }
 
     protected void _init() {

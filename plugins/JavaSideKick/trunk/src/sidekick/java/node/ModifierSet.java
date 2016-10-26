@@ -196,6 +196,54 @@ public final class ModifierSet {
         }
         return sb.toString().trim();
     }
+    
+    public static int getModifiers(String... modifiers) {
+        int modifier = 0;
+        for (String m : modifiers) {
+            switch(m) {
+            case "public":
+                modifier += PUBLIC;
+                break;
+            case "private":
+                modifier += PRIVATE;
+                break;
+            case "protected":
+                modifier += PROTECTED;
+                break;
+            case "static":
+                modifier += STATIC;
+                break;
+            case "final":
+                modifier += FINAL;
+                break;
+            case "synchronized":
+                modifier += SYNCHRONIZED;
+                break;
+            case "volatile":
+                modifier += VOLATILE;
+                break;
+            case "transient":
+                modifier += TRANSIENT;
+                break;
+            case "native":
+                modifier += NATIVE;
+                break;
+            case "abstract":
+                modifier += ABSTRACT;
+                break;
+            case "strictfp":
+                modifier += STRICTFP;
+                break;
+            case "annotation":
+                modifier += ANNOTATION;
+                break;
+            case "default":
+                modifier += DEFAULT;
+                break;
+            }
+        }
+        return modifier;
+    }
 }
 
 

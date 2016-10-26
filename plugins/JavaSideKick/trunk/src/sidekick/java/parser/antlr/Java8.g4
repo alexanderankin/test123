@@ -68,11 +68,6 @@ grammar Java8;
 package sidekick.java.parser.antlr;
 }
 
-@lexer::members {
-    public static final int WHITESPACE = 1;
-    public static final int COMMENTS = 2;
-}
-
 /*
  * Productions from §3 (Lexical Structure)
  */
@@ -1845,17 +1840,17 @@ ELLIPSIS : '...';
 // Whitespace and comments
 //
 
-WS  :  [ \t\r\n\u000C]+ -> channel(WHITESPACE)
+WS  :  [ \t\r\n\u000C]+ -> skip
     ;
 
 DOC_COMMENT
-    : '/**' .*? '*/' -> channel(COMMENTS)
+    : '/**' .*? '*/' -> skip
     ;
     
 COMMENT
-    :   '/*' .*? '*/' -> channel(COMMENTS)
+    :   '/*' .*? '*/' -> skip
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> channel(COMMENTS)
+    :   '//' ~[\r\n]* -> skip
     ;
