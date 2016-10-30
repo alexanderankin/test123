@@ -184,12 +184,16 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 case JAVA_8_PARSER:
                     // use the Antlr parser for java files
                     // set up the Antlr parser to read the buffer
-                    System.out.println("+++++ using java 8 parser");
                     input = new StringReader( contents );
                     ANTLRInputStream antlrInput = new ANTLRInputStream( input );
                     Java8Lexer lexer = new Java8Lexer( antlrInput );
                     CommonTokenStream tokens = new CommonTokenStream( lexer );
                     Java8Parser java8Parser = new Java8Parser( tokens );
+                    
+                    // for debugging, set "javasidekick.useTrace" to "true" as a
+                    // jEdit property to turn on antlr parser trace. This can be 
+                    // very verbose and grind jEdit to a halt.
+                    java8Parser.setTrace("true".equals( jEdit.getProperty( "javasidekick.useTrace" ) ));
         
                     // add an error listener to the parser to capture any errors
                     java8Parser.removeErrorListeners();
@@ -217,6 +221,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit.setResults( parser.getResults() );
                     errorList = parser.getErrors();
             }
+            
+            // for debugging, set "javasidekick.dump" to "true" as a jEdit
+            // property. This will print out the CUNode and children.
             if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
                 System.out.println( compilationUnit.dump() );
             }

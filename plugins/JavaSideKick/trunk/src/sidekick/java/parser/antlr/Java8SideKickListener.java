@@ -16,7 +16,24 @@ import sidekick.util.Location;
 
 public class Java8SideKickListener extends Java8BaseListener {
 
-    Deque<TigerNode> stack = new ArrayDeque<TigerNode>();
+    Deque<TigerNode> stack = new ArrayDeque<TigerNode>(){
+
+        /*
+         * public TigerNode pop() {
+         * TigerNode tn = super.pop();
+         * System.out.println("+++++ pop: " + tn);
+         * return tn;
+         *
+         *
+         *
+    }
+     *
+     * public void push(TigerNode tn) {
+     * System.out.println("+++++ push: " + tn);
+     * super.push(tn);
+     * }
+     */
+    };
     private CUNode cuNode;
     private Results results;
     private List<sidekick.java.node.ErrorNode> exceptions = new ArrayList<sidekick.java.node.ErrorNode>();
@@ -94,6 +111,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitPrimitiveType( @NotNull Java8Parser.PrimitiveTypeContext ctx ) {
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+
+        if ( ctx.numericType() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.annotation() != null ) {
+            for ( int i = 0; i < ctx.annotation().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -124,11 +158,6 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
-    @Override
-    public void enterClassOrInterfaceType( @NotNull Java8Parser.ClassOrInterfaceTypeContext ctx ) {
-    }
-
-
     /**
      * classOrInterfaceType
      * 	:	(	classType_lfno_classOrInterfaceType
@@ -141,11 +170,25 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitClassOrInterfaceType( @NotNull Java8Parser.ClassOrInterfaceTypeContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        int size = 0;
+        if ( ctx.interfaceType_lf_classOrInterfaceType() != null ) {
+            size = ctx.interfaceType_lf_classOrInterfaceType().size();
+        }
 
 
-    @Override
-    public void enterClassType( @NotNull Java8Parser.ClassTypeContext ctx ) {
+        if ( ctx.classType_lf_classOrInterfaceType() != null ) {
+            size += ctx.classType_lf_classOrInterfaceType().size();
+        }
+
+
+        for ( int i = 0; i < size; i++ ) {
+            parent.addChild( stack.pop() );
+        }
+        parent.addChild( stack.pop() );    // classType_lfno_classOrInterfaceType or interfaceType_lfno_classOrInterfaceType
+        stack.push( parent );
     }
 
 
@@ -157,11 +200,21 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitClassType( @NotNull Java8Parser.ClassTypeContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.typeArguments() != null ) {
+            parent.addChild( stack.pop() );
+        }
 
 
-    @Override
-    public void enterClassType_lf_classOrInterfaceType( @NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx ) {
+        parent.addChild( stack.pop() );    // annotationIdentifier
+        if ( ctx.classOrInterfaceType() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -172,11 +225,17 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitClassType_lf_classOrInterfaceType( @NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.typeArguments() != null ) {
+            parent.addChild( stack.pop() );
+        }
 
 
-    @Override
-    public void enterClassType_lfno_classOrInterfaceType( @NotNull Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx ) {
+        parent.addChild( stack.pop() );
+
+        stack.push( parent );
     }
 
 
@@ -187,11 +246,17 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitClassType_lfno_classOrInterfaceType( @NotNull Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.typeArguments() != null ) {
+            parent.addChild( stack.pop() );
+        }
 
 
-    @Override
-    public void enterArrayType( @NotNull Java8Parser.ArrayTypeContext ctx ) {
+        parent.addChild( stack.pop() );
+
+        stack.push( parent );
     }
 
 
@@ -204,11 +269,17 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitArrayType( @NotNull Java8Parser.ArrayTypeContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.dims() != null ) {
+            parent.addChild( stack.pop() );
+        }
 
 
-    @Override
-    public void enterDims( @NotNull Java8Parser.DimsContext ctx ) {
+        parent.addChild( stack.pop() );
+
+        stack.push( parent );
     }
 
 
@@ -219,11 +290,17 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitDims( @NotNull Java8Parser.DimsContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.annotationDim() != null ) {
+            for ( int i = 0; i < ctx.annotationDim().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
 
 
-    @Override
-    public void enterTypeParameter( @NotNull Java8Parser.TypeParameterContext ctx ) {
+        stack.push( parent );
     }
 
 
@@ -235,11 +312,30 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitTypeParameter( @NotNull Java8Parser.TypeParameterContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.typeBound() != null ) {
+            parent.addChild( stack.pop() );
+        }
 
 
-    @Override
-    public void enterTypeBound( @NotNull Java8Parser.TypeBoundContext ctx ) {
+        if ( ctx.Identifier() != null ) {
+            TigerNode child = new TigerNode( ctx.Identifier().getSymbol().getText() );
+            setStartLocation( child, ctx.Identifier().getSymbol() );
+            setEndLocation( child, ctx.Identifier().getSymbol() );
+            parent.addChild( child );
+        }
+
+
+        if ( ctx.typeParameterModifier() != null ) {
+            for ( int i = 0; i < ctx.typeParameterModifier().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -251,41 +347,19 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitTypeBound( @NotNull Java8Parser.TypeBoundContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.additionalBound() != null ) {
+            for ( int i = 0; i < ctx.additionalBound().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
 
 
-    @Override
-    public void enterAdditionalBound( @NotNull Java8Parser.AdditionalBoundContext ctx ) {
-    }
+        parent.addChild( stack.pop() );    // typeVariable or classOrInterfaceType
 
-
-    /**
-     * additionalBound
-     * 	:	'&' interfaceType
-     * 	;
-     */
-    @Override
-    public void exitAdditionalBound( @NotNull Java8Parser.AdditionalBoundContext ctx ) {
-    }
-
-
-    @Override
-    public void enterTypeArguments( @NotNull Java8Parser.TypeArgumentsContext ctx ) {
-    }
-
-
-    /**
-     * typeArguments
-     * 	:	'<' typeArgumentList '>'
-     * 	;
-     */
-    @Override
-    public void exitTypeArguments( @NotNull Java8Parser.TypeArgumentsContext ctx ) {
-    }
-
-
-    @Override
-    public void enterTypeArgumentList( @NotNull Java8Parser.TypeArgumentListContext ctx ) {
+        stack.push( parent );
     }
 
 
@@ -296,11 +370,17 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitTypeArgumentList( @NotNull Java8Parser.TypeArgumentListContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.typeArgument() != null ) {
+            for ( int i = 0; i < ctx.typeArgument().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
 
 
-    @Override
-    public void enterWildcard( @NotNull Java8Parser.WildcardContext ctx ) {
+        stack.push( parent );
     }
 
 
@@ -311,11 +391,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitWildcard( @NotNull Java8Parser.WildcardContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+
+        if ( ctx.wildcardBounds() != null ) {
+            parent.addChild( stack.pop() );
+        }
 
 
-    @Override
-    public void enterWildcardBounds( @NotNull Java8Parser.WildcardBoundsContext ctx ) {
+        if ( ctx.annotation() != null ) {
+            for ( int i = 0; i < ctx.annotation().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -327,16 +419,22 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitWildcardBounds( @NotNull Java8Parser.WildcardBoundsContext ctx ) {
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+
+        if ( ctx.referenceType() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
     /* =============================================================================
      * Productions from §6 (Names)
      */
-    @Override
-    public void enterTypeName( @NotNull Java8Parser.TypeNameContext ctx ) {
-    }
-
 
     /**
      * typeName
@@ -346,11 +444,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitTypeName( @NotNull Java8Parser.TypeNameContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.Identifier() != null ) {
+            TigerNode child = new TigerNode( ctx.Identifier().getSymbol().getText() );
+            setStartLocation( child, ctx.Identifier().getSymbol() );
+            setEndLocation( child, ctx.Identifier().getSymbol() );
+            parent.addChild( child );
+        }
 
 
-    @Override
-    public void enterPackageOrTypeName( @NotNull Java8Parser.PackageOrTypeNameContext ctx ) {
+        if ( ctx.packageOrTypeName() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -362,11 +472,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitPackageOrTypeName( @NotNull Java8Parser.PackageOrTypeNameContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.Identifier() != null ) {
+            TigerNode child = new TigerNode( ctx.Identifier().getSymbol().getText() );
+            setStartLocation( child, ctx.Identifier().getSymbol() );
+            setEndLocation( child, ctx.Identifier().getSymbol() );
+            parent.addChild( child );
+        }
 
 
-    @Override
-    public void enterExpressionName( @NotNull Java8Parser.ExpressionNameContext ctx ) {
+        if ( ctx.packageOrTypeName() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -378,11 +500,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitExpressionName( @NotNull Java8Parser.ExpressionNameContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.Identifier() != null ) {
+            TigerNode child = new TigerNode( ctx.Identifier().getSymbol().getText() );
+            setStartLocation( child, ctx.Identifier().getSymbol() );
+            setEndLocation( child, ctx.Identifier().getSymbol() );
+            parent.addChild( child );
+        }
 
 
-    @Override
-    public void enterMethodName( @NotNull Java8Parser.MethodNameContext ctx ) {
+        if ( ctx.ambiguousName() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -393,11 +527,18 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitMethodName( @NotNull Java8Parser.MethodNameContext ctx ) {
-    }
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.Identifier() != null ) {
+            TigerNode child = new TigerNode( ctx.Identifier().getSymbol().getText() );
+            setStartLocation( child, ctx.Identifier().getSymbol() );
+            setEndLocation( child, ctx.Identifier().getSymbol() );
+            parent.addChild( child );
+        }
 
 
-    @Override
-    public void enterAmbiguousName( @NotNull Java8Parser.AmbiguousNameContext ctx ) {
+        stack.push( parent );
     }
 
 
@@ -409,6 +550,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitAmbiguousName( @NotNull Java8Parser.AmbiguousNameContext ctx ) {
+        TigerNode parent = new TigerNode( ctx.getText() );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.Identifier() != null ) {
+            TigerNode child = new TigerNode( ctx.Identifier().getSymbol().getText() );
+            setStartLocation( child, ctx.Identifier().getSymbol() );
+            setEndLocation( child, ctx.Identifier().getSymbol() );
+            parent.addChild( child );
+        }
+
+
+        if ( ctx.ambiguousName() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -417,7 +575,6 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void enterCompilationUnit( @NotNull Java8Parser.CompilationUnitContext ctx ) {
-        cuNode = new CUNode();
         System.out.println( "+++++ enterCompilationUnit" );
     }
 
@@ -429,32 +586,40 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitCompilationUnit( @NotNull Java8Parser.CompilationUnitContext ctx ) {
-        System.out.println( "+++++ exitCompilation start" );
-        TigerNode parent = new TigerNode( ctx.getText() );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
-        if ( ctx.typeDeclaration() != null ) {
-            for ( int i = 0; i < ctx.typeDeclaration().size(); i++ ) {
-                parent.addChild( stack.pop() );
+        try {
+            System.out.println( "+++++ exitCompilation start" );
+            System.out.println( "+++++ stack.size = " + stack.size() );
+            cuNode = new CUNode();
+            setStartLocation( cuNode, ctx );
+            setEndLocation( cuNode, ctx );
+            if ( ctx.typeDeclaration() != null ) {
+                System.out.println( "+++++ # of type declarations = " + ctx.typeDeclaration().size() );
+                for ( int i = 0; i < ctx.typeDeclaration().size(); i++ ) {
+                    cuNode.addChild( stack.pop() );
+                }
+            }
+
+
+            if ( ctx.importDeclaration() != null ) {
+                ImportNode importNode = new ImportNode( "Imports" );
+                System.out.println( "+++++ # of import declarations = " + ctx.importDeclaration().size() );
+                for ( int i = 0; i < ctx.importDeclaration().size(); i++ ) {
+                    importNode.addChild( stack.pop() );
+                }
+                cuNode.setImportNode( importNode );
+            }
+
+
+            if ( ctx.packageDeclaration() != null ) {
+                cuNode.setPackage( stack.pop() );
             }
         }
-
-
-        if ( ctx.importDeclaration() != null ) {
-            ImportNode importNode = new ImportNode( "Imports" );
-            for ( int i = 0; i < ctx.importDeclaration().size(); i++ ) {
-                importNode.addChild( stack.pop() );
-            }
-            cuNode.setImportNode( importNode );
+        catch ( Exception e ) {
+            e.printStackTrace();
         }
-
-
-        if ( ctx.packageDeclaration() != null ) {
-            cuNode.setPackage( stack.pop() );
-        }
-
 
         System.out.println( "+++++ exitCompilationUnit end" );
+        System.out.println( "+++++ dump:\n" + cuNode.dump() );
     }
 
 
@@ -465,28 +630,31 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitPackageDeclaration( @NotNull Java8Parser.PackageDeclarationContext ctx ) {
-        TigerNode parent = new TigerNode( ctx.getText() );
+        TigerNode parent = new TigerNode();
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
         if ( ctx.Identifier() != null ) {
+            StringBuilder sb = new StringBuilder();
             for ( int i = 0; i < ctx.Identifier().size(); i++ ) {
-                TigerNode child = new TigerNode( ctx.Identifier(i).getSymbol().getText() );
-                setStartLocation( child, ctx.Identifier(i).getSymbol() );
-                setEndLocation( child, ctx.Identifier(i).getSymbol() );
-                parent.addChild( child );
+                sb.append( ctx.Identifier( i ).getSymbol().getText() );
+                if ( i < ctx.Identifier().size() - 1 ) {
+                    sb.append( '.' );
+                }
             }
+            parent.setName( sb.toString() );
         }
 
 
-        // packageModifiers are annotations only
+        // packageModifier is 0 or 1 annotation only
         if ( ctx.packageModifier() != null ) {
             for ( int i = 0; i < ctx.packageModifier().size(); i++ ) {
-                parent.addChild( stack.pop() );
+                parent.addAnnotation( ( AnnotationNode )stack.pop() );
             }
         }
 
 
         stack.push( parent );
+        System.out.println( "+++++ packageDeclaration: " + parent.getName() );
     }
 
 
@@ -500,12 +668,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new ImportNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        if ( ctx.typeName() != null ) {
-            parent.addChild( stack.pop() );
-        }
-
+        TigerNode tn = stack.pop();
+        parent.setName( tn.getName() );
 
         stack.push( parent );
+        System.out.println( "+++++ exitSingleTypeImportDeclaration: " + parent );
     }
 
 
@@ -519,12 +686,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new ImportNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        if ( ctx.packageOrTypeName() != null ) {
-            parent.addChild( stack.pop() );
-        }
-
+        TigerNode tn = stack.pop();
+        parent.setName( tn.getName() + ".*" );
 
         stack.push( parent );
+        System.out.println( "+++++ exitTypeImportOnDemandDeclaration: " + parent );
     }
 
 
@@ -538,20 +704,12 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new ImportNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        if ( ctx.Identifier() != null ) {
-            TigerNode child = new TigerNode( ctx.Identifier().getText() );
-            setStartLocation( child, ctx.Identifier().getSymbol() );
-            setEndLocation( child, ctx.Identifier().getSymbol() );
-            parent.addChild( child );
-        }
-
-
-        if ( ctx.typeName() != null ) {
-            parent.addChild( stack.pop() );
-        }
-
+        String id = ctx.Identifier().getText();
+        TigerNode tn = stack.pop();
+        parent.setName( tn.getName() + '.' + id );
 
         stack.push( parent );
+        System.out.println( "+++++ exitSingleStaticImportDeclaration: " + parent );
     }
 
 
@@ -565,12 +723,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new ImportNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        if ( ctx.typeName() != null ) {
-            parent.addChild( stack.pop() );
-        }
-
+        TigerNode tn = stack.pop();
+        parent.setName( tn.getName() + ".*" );
 
         stack.push( parent );
+        System.out.println( "+++++ exitStaticImportOnDemandDeclaration: " + parent );
     }
 
 
@@ -823,7 +980,6 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new TigerNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        int size = 0;
         if ( ctx.annotation() != null ) {
             parent.addChild( stack.pop() );
         }
@@ -921,7 +1077,6 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new TigerNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        int size = 0;
         if ( ctx.numericType() != null ) {
             parent.addChild( stack.pop() );
         }
@@ -1109,7 +1264,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitMethodDeclaration( @NotNull Java8Parser.MethodDeclarationContext ctx ) {
-        TigerNode parent = new TigerNode( "method" );
+        TigerNode parent = new MethodNode();
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
         if ( ctx.methodBody() != null ) {
@@ -1203,6 +1358,13 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         if ( ctx.result() != null ) {
             parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.annotation() != null ) {
+            for ( int i = 0; i < ctx.annotation().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
         }
 
 
@@ -1381,7 +1543,7 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new TigerNode( ctx.getText() );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        if ( ctx.unannType() != null ) {
+        if ( ctx.formalParameter() != null ) {
             parent.addChild( stack.pop() );
         }
         else {
@@ -1495,6 +1657,30 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitConstructorDeclaration( @NotNull Java8Parser.ConstructorDeclarationContext ctx ) {
+        TigerNode parent = new TigerNode( "constructor" );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.constructorBody() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.throws_() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.constructorDeclarator() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.constructorModifiers() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -1631,14 +1817,6 @@ public class Java8SideKickListener extends Java8BaseListener {
         setEndLocation( parent, ctx );
         if ( ctx.argumentList() != null ) {
             parent.addChild( stack.pop() );
-        }
-
-
-        if ( ctx.SUPER() != null ) {
-            TigerNode child = new TigerNode( "super" );
-            setStartLocation( child, ctx.SUPER().getSymbol() );
-            setEndLocation( child, ctx.SUPER().getSymbol() );
-            parent.addChild( child );
         }
 
 
@@ -2234,16 +2412,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitNormalAnnotation( @NotNull Java8Parser.NormalAnnotationContext ctx ) {
-        TigerNode parent = new TigerNode( ctx.getText() );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
+        TigerNode parent = null;
+        TigerNode evp = null;
         if ( ctx.elementValuePairList() != null ) {
-            parent.addChild( stack.pop() );
+            evp = stack.pop();
         }
 
 
         if ( ctx.typeName() != null ) {
-            parent.addChild( stack.pop() );
+            TigerNode tn = stack.pop();
+            parent = new AnnotationNode( tn.getName() );
+            setStartLocation( parent, ctx );
+            setEndLocation( parent, ctx );
+        }
+
+
+        if ( parent != null ) {
+            parent.addChildren( evp.getChildren() );
         }
 
 
@@ -2327,11 +2512,12 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitMarkerAnnotation( @NotNull Java8Parser.MarkerAnnotationContext ctx ) {
-        TigerNode parent = new TigerNode( ctx.getText() );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
+        TigerNode parent = null;
         if ( ctx.typeName() != null ) {
-            parent.addChild( stack.pop() );
+            TigerNode tn = stack.pop();
+            parent = new AnnotationNode( tn.getName() );
+            setStartLocation( parent, ctx );
+            setEndLocation( parent, ctx );
         }
 
 
@@ -2346,16 +2532,23 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitSingleElementAnnotation( @NotNull Java8Parser.SingleElementAnnotationContext ctx ) {
-        TigerNode parent = new TigerNode( ctx.getText() );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
+        TigerNode parent = null;
+        TigerNode ev = null;
         if ( ctx.elementValue() != null ) {
-            parent.addChild( stack.pop() );
+            ev = stack.pop();
         }
 
 
         if ( ctx.typeName() != null ) {
-            parent.addChild( stack.pop() );
+            TigerNode tn = stack.pop();
+            parent = new AnnotationNode( tn.getName() );
+            setStartLocation( parent, ctx );
+            setEndLocation( parent, ctx );
+        }
+
+
+        if ( parent != null ) {
+            parent.addChild( ev );
         }
 
 
@@ -3370,13 +3563,48 @@ public class Java8SideKickListener extends Java8BaseListener {
     /**
      * classInstanceCreationExpression
      * 	:	'new' typeArguments? annotationIdentifier ('.' annotationIdentifier)* typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
-     * 	|	expressionName '.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
-     * 	|	primary '.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
+     * 	|	expressionName '.' 'new' typeArguments?          annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
+     * 	|	primary        '.' 'new' typeArguments?          annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
      * 	;
      */
     @Override
     public void exitClassInstanceCreationExpression( @NotNull Java8Parser.ClassInstanceCreationExpressionContext ctx ) {
-        // TODO: finish this!
+        TigerNode parent = new TigerNode( "classInstanceCreationExpression" );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.classBody() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.argumentList() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.typeArgumentsOrDiamond() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.annotationIdentifier() != null ) {
+            for ( int i = 0; i < ctx.annotationIdentifier().size(); i++ ) {
+                parent.addChild( stack.pop() );
+            }
+        }
+
+
+        if ( ctx.typeArguments() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.expressionName() != null || ctx.primary() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -3387,37 +3615,78 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitClassInstanceCreationExpression_lf_primary( @NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx ) {
-        // TODO: finish this!
+        TigerNode parent = new TigerNode( "classInstanceCreationExpression_lf_primary" );
+        setStartLocation( parent, ctx );
+        setEndLocation( parent, ctx );
+        if ( ctx.classBody() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.argumentList() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.typeArgumentsOrDiamond() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.annotationIdentifier() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.typeArguments() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        stack.push( parent );
     }
 
 
     /**
      * classInstanceCreationExpression_lfno_primary
      * 	:	'new' typeArguments? annotationIdentifier ('.' annotationIdentifier)* typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
-     * 	|	expressionName '.' 'new' typeArguments? annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
+     * 	|	expressionName '.' 'new' typeArguments?          annotationIdentifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
      * 	;
      */
     @Override
     public void exitClassInstanceCreationExpression_lfno_primary( @NotNull Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx ) {
-        // TODO: finish this!
-    }
-
-
-    /**
-     * typeArgumentsOrDiamond
-     * 	:	typeArguments
-     * 	|	'<>'
-     * 	;
-     */
-    @Override
-    public void exitTypeArgumentsOrDiamond( @NotNull Java8Parser.TypeArgumentsOrDiamondContext ctx ) {
-        TigerNode parent = new TigerNode( ctx.getText() );
+        TigerNode parent = new TigerNode( "classInstanceCreationExpression" );
         setStartLocation( parent, ctx );
         setEndLocation( parent, ctx );
-        if ( ctx.typeArguments() != null ) {
-            for ( int i = 0; i < ctx.typeArguments().typeArgumentList().typeArgument().size(); i++ ) {
+        if ( ctx.classBody() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.argumentList() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.typeArgumentsOrDiamond() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.annotationIdentifier() != null ) {
+            for ( int i = 0; i < ctx.annotationIdentifier().size(); i++ ) {
                 parent.addChild( stack.pop() );
             }
+        }
+
+
+        if ( ctx.typeArguments() != null ) {
+            parent.addChild( stack.pop() );
+        }
+
+
+        if ( ctx.expressionName() != null ) {
+            parent.addChild( stack.pop() );
         }
 
 
@@ -3441,14 +3710,6 @@ public class Java8SideKickListener extends Java8BaseListener {
             TigerNode child = new TigerNode( ctx.Identifier().getText() );
             setStartLocation( child, ctx.Identifier().getSymbol() );
             setEndLocation( child, ctx.Identifier().getSymbol() );
-            parent.addChild( child );
-        }
-
-
-        if ( ctx.SUPER() != null ) {
-            TigerNode child = new TigerNode( "super" );
-            setStartLocation( child, ctx.SUPER().getSymbol() );
-            setEndLocation( child, ctx.SUPER().getSymbol() );
             parent.addChild( child );
         }
 
@@ -3493,14 +3754,6 @@ public class Java8SideKickListener extends Java8BaseListener {
             TigerNode child = new TigerNode( ctx.Identifier().getText() );
             setStartLocation( child, ctx.Identifier().getSymbol() );
             setEndLocation( child, ctx.Identifier().getSymbol() );
-            parent.addChild( child );
-        }
-
-
-        if ( ctx.SUPER() != null ) {
-            TigerNode child = new TigerNode( "super" );
-            setStartLocation( child, ctx.SUPER().getSymbol() );
-            setEndLocation( child, ctx.SUPER().getSymbol() );
             parent.addChild( child );
         }
 
@@ -3602,11 +3855,11 @@ public class Java8SideKickListener extends Java8BaseListener {
 
     /**
      * methodInvocation
-     * 	:	methodName '(' argumentList? ')'
-     * 	|	typeName '.' typeArguments? Identifier '(' argumentList? ')'
-     * 	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
-     * 	|	primary '.' typeArguments? Identifier '(' argumentList? ')'
-     * 	|	SUPER '.' typeArguments? Identifier '(' argumentList? ')'
+     * 	:	methodName                                       '(' argumentList? ')'
+     * 	|	typeName '.'           typeArguments? Identifier '(' argumentList? ')'
+     * 	|	expressionName '.'     typeArguments? Identifier '(' argumentList? ')'
+     * 	|	primary '.'            typeArguments? Identifier '(' argumentList? ')'
+     * 	|	SUPER '.'              typeArguments? Identifier '(' argumentList? ')'
      * 	|	typeName '.' SUPER '.' typeArguments? Identifier '(' argumentList? ')'
      * 	;
      */
@@ -3629,21 +3882,11 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         if ( ctx.typeArguments() != null ) {
-            for ( int i = 0; i < ctx.typeArguments().typeArgumentList().typeArgument().size(); i++ ) {
-                parent.addChild( stack.pop() );
-            }
+            parent.addChild( stack.pop() );
         }
 
 
-        if ( ctx.SUPER() != null ) {
-            TigerNode child = new TigerNode( "super" );
-            setStartLocation( child, ctx.SUPER().getSymbol() );
-            setEndLocation( child, ctx.SUPER().getSymbol() );
-            parent.addChild( child );
-        }
-
-
-        if ( ctx.methodName() != null || ctx.typeName() != null || ctx.expressionName() != null || ctx.primary() != null ) {
+        if ( ctx.SUPER() == null ) {
             parent.addChild( stack.pop() );    // methodName, typeName, etc
         }
 
@@ -3676,9 +3919,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         if ( ctx.typeArguments() != null ) {
-            for ( int i = 0; i < ctx.typeArguments().typeArgumentList().typeArgument().size(); i++ ) {
-                parent.addChild( stack.pop() );
-            }
+            parent.addChild( stack.pop() );
         }
 
 
@@ -3688,10 +3929,10 @@ public class Java8SideKickListener extends Java8BaseListener {
 
     /**
      * methodInvocation_lfno_primary
-     * 	:	methodName '(' argumentList? ')'
-     * 	|	typeName '.' typeArguments? Identifier '(' argumentList? ')'
-     * 	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
-     * 	|	SUPER '.' typeArguments? Identifier '(' argumentList? ')'
+     * 	:	methodName                                       '(' argumentList? ')'
+     * 	|	typeName '.'           typeArguments? Identifier '(' argumentList? ')'
+     * 	|	expressionName '.'     typeArguments? Identifier '(' argumentList? ')'
+     * 	|	SUPER '.'              typeArguments? Identifier '(' argumentList? ')'
      * 	|	typeName '.' SUPER '.' typeArguments? Identifier '(' argumentList? ')'
      * 	;
      */
@@ -3720,13 +3961,7 @@ public class Java8SideKickListener extends Java8BaseListener {
         }
 
 
-        if ( ctx.SUPER() != null ) {
-            TigerNode child = new TigerNode( "super" );
-            setStartLocation( child, ctx.SUPER().getSymbol() );
-            setEndLocation( child, ctx.SUPER().getSymbol() );
-            parent.addChild( child );
-        }
-        else {
+        if ( ctx.SUPER() == null ) {
             parent.addChild( stack.pop() );    // methodName, typeName, etc
         }
 
@@ -3758,13 +3993,13 @@ public class Java8SideKickListener extends Java8BaseListener {
 
     /**
      * methodReference
-     * 	:	expressionName '::' typeArguments? Identifier
-     * 	|	referenceType '::' typeArguments? Identifier
-     * 	|	primary '::' typeArguments? Identifier
-     * 	|	SUPER '::' typeArguments? Identifier
+     * 	:	expressionName     '::' typeArguments? Identifier
+     * 	|	referenceType      '::' typeArguments? Identifier
+     * 	|	primary            '::' typeArguments? Identifier
+     * 	|	SUPER              '::' typeArguments? Identifier
      * 	|	typeName '.' SUPER '::' typeArguments? Identifier
-     * 	|	classType '::' typeArguments? 'new'
-     * 	|	arrayType '::' 'new'
+     * 	|	classType          '::' typeArguments? 'new'
+     * 	|	arrayType          '::' 'new'
      * 	;
      */
     @Override
@@ -3787,13 +4022,7 @@ public class Java8SideKickListener extends Java8BaseListener {
         }
 
 
-        if ( ctx.SUPER() != null ) {
-            TigerNode child = new TigerNode( "super" );
-            setStartLocation( child, ctx.SUPER().getSymbol() );
-            setEndLocation( child, ctx.SUPER().getSymbol() );
-            parent.addChild( child );
-        }
-        else {
+        if ( ctx.SUPER() == null ) {
             parent.addChild( stack.pop() );    // expressonName, referenceType, etc
         }
 
@@ -3821,9 +4050,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         if ( ctx.typeArguments() != null ) {
-            for ( int i = 0; i < ctx.typeArguments().typeArgumentList().typeArgument().size(); i++ ) {
-                parent.addChild( stack.pop() );
-            }
+            parent.addChild( stack.pop() );
         }
 
 
@@ -3833,12 +4060,12 @@ public class Java8SideKickListener extends Java8BaseListener {
 
     /**
      * methodReference_lfno_primary
-     * 	:	expressionName '::' typeArguments? Identifier
-     * 	|	referenceType '::' typeArguments? Identifier
-     * 	|	SUPER '::' typeArguments? Identifier
+     * 	:	expressionName     '::' typeArguments? Identifier
+     * 	|	referenceType      '::' typeArguments? Identifier
+     * 	|	SUPER              '::' typeArguments? Identifier
      * 	|	typeName '.' SUPER '::' typeArguments? Identifier
-     * 	|	classType '::' typeArguments? 'new'
-     * 	|	arrayType '::' 'new'
+     * 	|	classType          '::' typeArguments? 'new'
+     * 	|	arrayType          '::' 'new'
      * 	;
      */
     @Override
@@ -3897,10 +4124,6 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         parent.addChild( stack.pop() );    // primitiveType or classOrInterfaceType
-        TigerNode newNode = new TigerNode( "new" );    // TODO: do I care about this?
-        setStartLocation( newNode, ctx );
-        newNode.setEndLocation( new Location( ctx.getStart().getLine(), ctx.getStart().getStartIndex() + 3 ) );    // "new" is 3 letters long
-        parent.addChild( newNode );
         stack.push( parent );
     }
 
@@ -3962,16 +4185,18 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitLambdaExpression( @NotNull Java8Parser.LambdaExpressionContext ctx ) {
-        TigerNode body = null;
+        TigerNode parent = new TigerNode( "lambdaExpression" );
         if ( ctx.lambdaBody() != null ) {
-            body = stack.pop();
+            parent.addChild( stack.pop() );
         }
 
 
-        if ( ctx.lambdaParameters() != null && body != null ) {
-            TigerNode parent = stack.peek();
-            parent.addChild( body );
+        if ( ctx.lambdaParameters() != null ) {
+            parent.addChild( stack.pop() );
         }
+
+
+        stack.push( parent );
     }
 
 
@@ -3990,14 +4215,10 @@ public class Java8SideKickListener extends Java8BaseListener {
         if ( ctx.inferredFormalParameterList() != null ) {
             parent.addChild( stack.pop() );
         }
-
-
-        if ( ctx.formalParameterList() != null ) {
+        else if ( ctx.formalParameterList() != null ) {
             parent.addChild( stack.pop() );
         }
-
-
-        if ( ctx.Identifier() != null ) {
+        else if ( ctx.Identifier() != null ) {
             TerminalNode id = ctx.Identifier();
             TigerNode child = new TigerNode( id.getText() );
             setStartLocation( child, id.getSymbol() );
@@ -4017,20 +4238,18 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitInferredFormalParameterList( @NotNull Java8Parser.InferredFormalParameterListContext ctx ) {
-        TigerNode parent = new TigerNode( ctx.getText() );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
         if ( ctx.Identifier() != null ) {
+            TigerNode parent = new TigerNode( ctx.getText() );
+            setStartLocation( parent, ctx );
+            setEndLocation( parent, ctx );
             for ( TerminalNode id : ctx.Identifier() ) {
                 TigerNode child = new TigerNode( id.getText() );
                 setStartLocation( child, id.getSymbol() );
                 setEndLocation( child, id.getSymbol() );
                 parent.addChild( child );
             }
+            stack.push( parent );
         }
-
-
-        stack.push( parent );
     }
 
 
@@ -4048,9 +4267,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         setEndLocation( parent, ctx );
         if ( ctx.conditionalExpression() != null || ctx.lambdaExpression() != null ) {
             parent.addChild( stack.pop() );
-            if ( ctx.expression() != null ) {
-                parent.addChild( stack.pop() );
-            }
+        }
+
+
+        if ( ctx.expression() != null ) {
+            parent.addChild( stack.pop() );
         }
 
 
@@ -4391,14 +4612,6 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         stack.push( parent );
-    }
-
-
-    /**
-     * Pushes a node onto the stack, the node will not allow children.
-     */
-    @Override
-    public void visitTerminal( @NotNull TerminalNode node ) {
     }
 
 
