@@ -326,6 +326,10 @@ public class TigerNode extends Asset implements SideKickElement {
     public int getChildCount() {
         return children == null ? 0 : children.size();
     }
+    
+    public boolean hasChildren() {
+        return children == null ? false : children.size() > 0;   
+    }
 
     public TigerNode getChildAt( int index ) {
         if ( children == null )
