@@ -56,7 +56,8 @@ public class ClassNode extends TigerNode {
         return typeParams == null ? "" : typeParams;
     }
 
-
+    // list is a list of Types
+    // why is this a list? Java doesn't have multiple inheritance.
     public void setExtendsList( List list ) {
         if ( list == null )
             return ;
@@ -66,6 +67,7 @@ public class ClassNode extends TigerNode {
         }
     }
 
+    // list is a list of Types
     public void setImplementsList( List list ) {
         if ( list == null )
             return ;
