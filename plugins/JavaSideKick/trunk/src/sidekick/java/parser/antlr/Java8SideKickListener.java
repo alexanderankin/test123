@@ -82,6 +82,12 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
+    private void setLocations( TigerNode tn, ParserRuleContext ctx ) {
+        setStartLocation( tn, ctx );
+        setEndLocation( tn, ctx );
+    }
+
+
     @Override
     public void exitLiteral( @NotNull Java8Parser.LiteralContext ctx ) {
     }
@@ -245,13 +251,10 @@ public class Java8SideKickListener extends Java8BaseListener {
     @Override
     public void exitCompilationUnit( @NotNull Java8Parser.CompilationUnitContext ctx ) {
         try {
-            System.out.println( "+++++ exitCompilation start" );
-            System.out.println( "+++++ stack.size = " + stack.size() );
             cuNode = new CUNode();
-            setStartLocation( cuNode, ctx );
-            setEndLocation( cuNode, ctx );
+            setLocations( cuNode, ctx );
+
             if ( ctx.typeDeclaration() != null ) {
-                System.out.println( "+++++ # of type declarations = " + ctx.typeDeclaration().size() );
                 for ( int i = 0; i < ctx.typeDeclaration().size(); i++ ) {
                     cuNode.addChild( stack.pop() );
                 }
@@ -260,7 +263,6 @@ public class Java8SideKickListener extends Java8BaseListener {
 
             if ( ctx.importDeclaration() != null ) {
                 ImportNode importNode = new ImportNode( "Imports" );
-                System.out.println( "+++++ # of import declarations = " + ctx.importDeclaration().size() );
                 for ( int i = 0; i < ctx.importDeclaration().size(); i++ ) {
                     importNode.addChild( stack.pop() );
                 }
@@ -275,17 +277,14 @@ public class Java8SideKickListener extends Java8BaseListener {
         catch ( Exception e ) {
             e.printStackTrace();
         }
-
-        System.out.println( "+++++ exitCompilationUnit end" );
-        System.out.println( "+++++ dump:\n" + cuNode.dump() );
     }
 
 
     @Override
     public void exitPackageDeclaration( @NotNull Java8Parser.PackageDeclarationContext ctx ) {
         TigerNode parent = new TigerNode();
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
+        setLocations( parent, ctx );
+
         if ( ctx.Identifier() != null ) {
             StringBuilder sb = new StringBuilder();
             for ( int i = 0; i < ctx.Identifier().size(); i++ ) {
@@ -307,7 +306,6 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         stack.push( parent );
-        System.out.println( "+++++ exit packageDeclaration: " + parent.getName() );
     }
 
 
@@ -319,10 +317,9 @@ public class Java8SideKickListener extends Java8BaseListener {
     @Override
     public void exitImportDeclaration( @NotNull Java8Parser.ImportDeclarationContext ctx ) {
         TigerNode parent = new ImportNode( ctx.getText().substring( "import".length() ) );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
+        setLocations( parent, ctx );
+
         stack.push( parent );
-        System.out.println( "+++++ exitImportDeclaration" );
     }
 
 
@@ -363,62 +360,241 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitNormalClassDeclaration( @NotNull Java8Parser.NormalClassDeclarationContext ctx ) {
-        System.out.println( "+++++ normal class declaration" );
-        TigerNode parent = new ClassNode( ctx.Identifier().getText() );
-        setStartLocation( parent, ctx );
-        setEndLocation( parent, ctx );
-        stack.push( parent );
+        System.out.println( "+++++ normalClassDeclaration: " + ctx.Identifier().getText() );
+        ClassNode parent = new ClassNode( ctx.Identifier().getText() );
+        setLocations( parent, ctx );
 
+        // modifiers
+        int size = ctx.classModifiers().classModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = ctx.classModifiers().classModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+        parent.setModifiers( modifiers );
+
+        // superclasses
+        if ( ctx.superclass() != null ) {
+            Java8Parser.SuperclassContext superClassContext = ctx.superclass();
+            Java8Parser.ClassTypeContext classTypeContext = superClassContext.classType();
+            Type superClassType = new Type( classTypeContext.getText() );
+            setLocations( superClassType, classTypeContext );
+            List<Type> superTypes = new ArrayList<Type>();
+            superTypes.add( superClassType );
+            parent.setExtendsList( superTypes );
+        }
+
+
+        // superinterfaces
+        if ( ctx.superinterfaces() != null ) {
+            Java8Parser.SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
+            Java8Parser.InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
+            List<Java8Parser.InterfaceTypeContext> interfaceTypeContexts = ( List <Java8Parser.InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
+            List<Type> interfaceTypes = new ArrayList<Type>();
+            for ( Java8Parser.InterfaceTypeContext itc : interfaceTypeContexts ) {
+                Type type = new Type( itc.getText() );
+                setLocations( type, itc );
+                interfaceTypes.add( type );
+            }
+            parent.setImplementsList( interfaceTypes );
+        }
+
+
+        // add the children of this class. Only need the fields and methods here,
+        // the inner classes and interface declarations are handled elsewhere
         Java8Parser.ClassBodyContext classBodyContext = ctx.classBody();
         List<Java8Parser.ClassBodyDeclarationContext> declarations = ( List <Java8Parser.ClassBodyDeclarationContext> )classBodyContext.classBodyDeclaration();
         for ( Java8Parser.ClassBodyDeclarationContext declaration : declarations ) {
             if ( declaration.classMemberDeclaration() != null ) {
                 Java8Parser.ClassMemberDeclarationContext dctx = declaration.classMemberDeclaration();
                 if ( dctx.fieldDeclaration() != null ) {
-                    Java8Parser.FieldDeclarationContext fieldCtx = dctx.fieldDeclaration();
-                    
-                    // type
-                    Type type = new Type(fieldCtx.unannType().getText());
-                    
-                    // modifiers
-                    int size = fieldCtx.fieldModifiers().fieldModifier().size();
-                    String[] modifierNames = new String[size];
-                    for (int i = 0; i < size; i++) {
-                        modifierNames[i] = fieldCtx.fieldModifiers().fieldModifier(i).getText();  
-                    }
-                    int modifiers = ModifierSet.getModifiers(modifierNames);
-                    
-                    // variable declarations
-                    size = fieldCtx.variableDeclaratorList().variableDeclarator().size();
-                    for (int i = 0; i < size; i++) {
-                        Java8Parser.VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator(i);
-                        TigerNode tn = new FieldNode( vdc.variableDeclaratorId().getText(), modifiers, type );
-                        setStartLocation( tn, vdc );
-                        setEndLocation( tn, vdc );
-                        parent.addChild( tn );
-                    }
+                    processFieldDeclaration( parent, dctx );
                 }
-                else if ( dctx.methodDeclaration() != null ) {
-                    TigerNode tn = new MethodNode();
-                    tn.setName( dctx.methodDeclaration().getText() );
-                    setStartLocation( tn, dctx );
-                    setEndLocation( tn, dctx );
-                    parent.addChild( tn );
+
+                if ( dctx.methodDeclaration() != null ) {
+                    processMethodDeclaration( parent, dctx );
                 }
-                else if ( dctx.classDeclaration() != null ) {
-                    TigerNode tn = new ClassNode( dctx.classDeclaration().getText() );
-                    setStartLocation( tn, dctx );
-                    setEndLocation( tn, dctx );
-                    parent.addChild( tn );
+
+                if ( dctx.classDeclaration() != null ) {
+                    parent.addChild( stack.pop() );
                 }
-                else if ( dctx.interfaceDeclaration() != null ) {
-                    TigerNode tn = new InterfaceNode( dctx.interfaceDeclaration().getText() );
-                    setStartLocation( tn, dctx );
-                    setEndLocation( tn, dctx );
-                    parent.addChild( tn );
+
+                if ( dctx.interfaceDeclaration() != null ) {
+                    parent.addChild( stack.pop() );
                 }
             }
         }
+        stack.push( parent );
+    }
+
+
+    private void processFieldDeclaration( TigerNode parent, Java8Parser.ClassMemberDeclarationContext dctx ) {
+        Java8Parser.FieldDeclarationContext fieldCtx = dctx.fieldDeclaration();
+
+        // type
+        Type type = new Type( fieldCtx.unannType().getText() );
+
+        // modifiers
+        int size = fieldCtx.fieldModifiers().fieldModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = fieldCtx.fieldModifiers().fieldModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+
+        // variable declarations, make a field node per variable
+        size = fieldCtx.variableDeclaratorList().variableDeclarator().size();
+        for ( int i = 0; i < size; i++ ) {
+            Java8Parser.VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator( i );
+            TigerNode tn = new FieldNode( vdc.variableDeclaratorId().getText(), modifiers, type );
+            setLocations( tn, vdc );
+
+            parent.addChild( tn );
+        }
+    }
+
+
+    private void processMethodDeclaration( TigerNode parent, Java8Parser.ClassMemberDeclarationContext dctx ) {
+        MethodNode methodNode = new MethodNode();
+
+        Java8Parser.MethodDeclarationContext methodDeclarationContext = dctx.methodDeclaration();
+        setLocations( methodNode, methodDeclarationContext );
+
+        // modifiers
+        Java8Parser.MethodModifiersContext methodModifierContext = methodDeclarationContext.methodModifiers();
+        int size = methodModifierContext.methodModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = methodModifierContext.methodModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+        methodNode.setModifiers( modifiers );
+
+        // method node constructor:
+        // public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
+        Java8Parser.MethodHeaderContext methodHeaderContext = methodDeclarationContext.methodHeader();
+
+        // return type
+        Java8Parser.ResultContext rc = methodHeaderContext.result();
+        if ( rc != null && rc.unannType() != null ) {
+            Type returnType = new Type( rc.unannType().getText() );
+            setLocations( returnType, rc );
+            methodNode.setReturnType( returnType );
+        }
+
+
+        // method name
+        Java8Parser.MethodDeclaratorContext methodDeclaratorContext = methodHeaderContext.methodDeclarator();
+        String name = methodDeclaratorContext.Identifier().getText();
+        methodNode.setName( name );
+
+        // parameters
+        // TODO: receiver parameter
+        Java8Parser.FormalParameterListContext formalParameterListContext = methodDeclaratorContext.formalParameterList();
+        if ( formalParameterListContext != null ) {
+            Java8Parser.FormalParametersContext formalParametersContext = formalParameterListContext.formalParameters();
+
+            if ( formalParametersContext != null ) {
+
+                List<Java8Parser.FormalParameterContext> params = ( List <Java8Parser.FormalParameterContext> )formalParametersContext.formalParameter();
+                if ( params != null ) {
+                    for ( Java8Parser.FormalParameterContext param : params ) {
+                        Parameter parameterNode = new Parameter();
+                        setLocations( parameterNode, param );
+                        Type type = new Type( param.unannType().getText() );
+                        parameterNode.setType( type );
+                        parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+
+                        // modifiers
+                        size = param.variableModifier().size();
+                        modifierNames = new String [size] ;
+                        for ( int i = 0; i < size; i++ ) {
+                            modifierNames[i] = param.variableModifier( i ).getText();
+                        }
+                        modifiers = ModifierSet.getModifiers( modifierNames );
+                        parameterNode.setModifiers( modifiers );
+                        methodNode.addFormalParameter( parameterNode );
+                    }
+                }
+            }
+        }
+
+
+        // last formal parameter
+        if ( formalParameterListContext != null ) {
+            Java8Parser.LastFormalParameterContext lastFormalParameterContext = formalParameterListContext.lastFormalParameter();
+            if ( lastFormalParameterContext != null ) {
+                Parameter parameterNode = new Parameter();
+                setLocations( parameterNode, lastFormalParameterContext );
+                if ( lastFormalParameterContext.unannType() != null ) {
+                    Type type = new Type( lastFormalParameterContext.unannType().getText() );
+                    parameterNode.setType( type );
+                }
+
+
+                if ( lastFormalParameterContext.variableDeclaratorId() != null ) {
+                    parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().Identifier().getText() );
+                }
+
+
+                if ( lastFormalParameterContext.variableModifier() != null ) {
+                    size = lastFormalParameterContext.variableModifier().size();
+                    modifierNames = new String [size] ;
+                    for ( int i = 0; i < size; i++ ) {
+                        modifierNames[i] = lastFormalParameterContext.variableModifier( i ).getText();
+                    }
+                    modifiers = ModifierSet.getModifiers( modifierNames );
+                    parameterNode.setModifiers( modifiers );
+                }
+
+
+                methodNode.addFormalParameter( parameterNode );
+            }
+        }
+
+
+        // throws
+        Java8Parser.Throws_Context throwsContext = methodHeaderContext.throws_();
+        if ( throwsContext != null ) {
+            List<Java8Parser.ExceptionTypeContext> exceptionTypeContext = ( List <Java8Parser.ExceptionTypeContext> )throwsContext.exceptionTypeList().exceptionType();
+            List<TigerNode> exceptionList = new ArrayList<TigerNode>();
+            for ( Java8Parser.ExceptionTypeContext e : exceptionTypeContext ) {
+                TigerNode tn = new TigerNode( e.getText() );
+                setLocations( tn, e );
+                exceptionList.add( tn );
+            }
+            methodNode.setThrows( exceptionList );
+        }
+
+
+        // type parameters
+        if ( methodHeaderContext.typeParameters() != null ) {
+            List<Java8Parser.TypeParameterContext> typeParameterContexts = ( List <Java8Parser.TypeParameterContext> )methodHeaderContext.typeParameters().typeParameterList().typeParameter();
+            StringBuilder sb = new StringBuilder( "<" );
+            for ( Java8Parser.TypeParameterContext typeParam : typeParameterContexts ) {
+                sb.append( typeParam.Identifier().getText() ).append( ',' );
+            }
+            if ( sb.length() > 1 ) {
+                sb.deleteCharAt( sb.length() - 1 );
+            }
+
+
+            methodNode.setTypeParams( sb.toString() + ">" );
+        }
+
+
+        // annotations
+        List<Java8Parser.AnnotationContext> annotationContexts = ( List <Java8Parser.AnnotationContext> )methodHeaderContext.annotation();
+        if ( annotationContexts != null ) {
+            for ( Java8Parser.AnnotationContext ann : annotationContexts ) {
+                AnnotationNode annotationNode = new AnnotationNode( ann.getText() );
+                setLocations( annotationNode, ann );
+                methodNode.addAnnotation( annotationNode );
+            }
+        }
+
+
+        parent.addChild( methodNode );
     }
 
 
@@ -692,8 +868,85 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
+    /**
+     * enumDeclaration
+     * 	:	classModifiers 'enum' Identifier superinterfaces? enumBody
+     * 	;
+     */
     @Override
     public void exitEnumDeclaration( @NotNull Java8Parser.EnumDeclarationContext ctx ) {
+
+        // modifiers
+        int size = ctx.classModifiers().classModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = ctx.classModifiers().classModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+
+        EnumNode parent = new EnumNode( ctx.Identifier().getText(), modifiers );
+        setLocations( parent, ctx );
+
+        // superinterfaces
+        if ( ctx.superinterfaces() != null ) {
+            Java8Parser.SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
+            Java8Parser.InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
+            List<Java8Parser.InterfaceTypeContext> interfaceTypeContexts = ( List <Java8Parser.InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
+            for ( Java8Parser.InterfaceTypeContext itc : interfaceTypeContexts ) {
+                Type type = new Type( itc.getText() );
+                setLocations( type, itc );
+                parent.addChild( type );
+            }
+        }
+
+
+        // enumBody
+        // :	'{' enumConstantList? COMMA? enumBodyDeclarations? '}'
+        // ;
+        // add the children of this class. Only need the fields and methods here,
+        // the inner classes and interface declarations are handled elsewhere
+        Java8Parser.EnumBodyContext enumBodyContext = ctx.enumBody();
+        if ( enumBodyContext.enumConstantList() != null ) {
+            Java8Parser.EnumConstantListContext enumConstantListContext = enumBodyContext.enumConstantList();
+            List<Java8Parser.EnumConstantContext> constants = ( List <Java8Parser.EnumConstantContext> )enumConstantListContext.enumConstant();
+            for ( Java8Parser.EnumConstantContext constant : constants ) {
+                TigerNode tn = new TigerNode( constant.getText() );
+                setLocations( tn, constant );
+                parent.addChild( tn );
+            }
+        }
+
+
+        if ( enumBodyContext.enumBodyDeclarations() != null ) {
+
+            // add the children of this class. Only need the fields and methods here,
+            // the inner classes and interface declarations are handled elsewhere
+            Java8Parser.EnumBodyDeclarationsContext enumBodyDeclarationsContext = enumBodyContext.enumBodyDeclarations();
+            List<Java8Parser.ClassBodyDeclarationContext> declarations = ( List <Java8Parser.ClassBodyDeclarationContext> )enumBodyDeclarationsContext.classBodyDeclaration();
+            for ( Java8Parser.ClassBodyDeclarationContext declaration : declarations ) {
+                if ( declaration.classMemberDeclaration() != null ) {
+                    Java8Parser.ClassMemberDeclarationContext dctx = declaration.classMemberDeclaration();
+                    if ( dctx.fieldDeclaration() != null ) {
+                        processFieldDeclaration( parent, dctx );
+                    }
+
+                    if ( dctx.methodDeclaration() != null ) {
+                        processMethodDeclaration( parent, dctx );
+                    }
+
+                    if ( dctx.classDeclaration() != null ) {
+                        parent.addChild( stack.pop() );
+                    }
+
+                    if ( dctx.interfaceDeclaration() != null ) {
+                        parent.addChild( stack.pop() );
+                    }
+                }
+            }
+        }
+
+
+        stack.push( parent );
     }
 
 
@@ -722,13 +975,151 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
+    /**
+     * interfaceDeclaration
+     * 	:	normalInterfaceDeclaration
+     * 	|	annotationTypeDeclaration
+     * 	;
+     */
     @Override
     public void exitInterfaceDeclaration( @NotNull Java8Parser.InterfaceDeclarationContext ctx ) {
     }
 
 
+    /**
+     * normalInterfaceDeclaration
+     * 	:	interfaceModifiers 'interface' Identifier typeParameters? extendsInterfaces? interfaceBody
+     * 	;
+     */
     @Override
     public void exitNormalInterfaceDeclaration( @NotNull Java8Parser.NormalInterfaceDeclarationContext ctx ) {
+
+        // modifiers
+        Java8Parser.InterfaceModifiersContext imc = ctx.interfaceModifiers();
+        int size = imc.interfaceModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = imc.interfaceModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+        InterfaceNode parent = new InterfaceNode( ctx.Identifier().getText(), modifiers );
+        setLocations( parent, ctx );
+
+        // typeParameters
+        Java8Parser.TypeParametersContext typeParametersContext = ctx.typeParameters();
+        Java8Parser.TypeParameterListContext typeListContext = typeParametersContext.typeParameterList();
+        List<Java8Parser.TypeParameterContext> tpc = ( List <Java8Parser.TypeParameterContext> )typeListContext.typeParameter();
+        StringBuilder sb = new StringBuilder( "<" );
+        for ( Java8Parser.TypeParameterContext t : tpc ) {
+            sb.append( t.Identifier().getText() ).append( ',' );
+        }
+        if ( sb.length() > 1 ) {
+            sb.deleteCharAt( sb.length() - 1 );
+        }
+
+
+        parent.setTypeParams( sb.toString() + ">" );
+
+        // extendsInterfaces
+        Java8Parser.ExtendsInterfacesContext eic = ctx.extendsInterfaces();
+        Java8Parser.InterfaceTypeListContext itlc = eic.interfaceTypeList();
+        List<Java8Parser.InterfaceTypeContext> itc = ( List <Java8Parser.InterfaceTypeContext> )itlc.interfaceType();
+        List<Type> extendsTypes = new ArrayList<Type>();
+        for ( Java8Parser.InterfaceTypeContext i : itc ) {
+            Type it = new Type( i.getText() );
+            setLocations( it, i );
+            extendsTypes.add( it );
+        }
+        parent.setExtendsList( extendsTypes );
+
+        // interfaceBody
+        Java8Parser.InterfaceBodyContext ibc = ctx.interfaceBody();
+        List<Java8Parser.InterfaceMemberDeclarationContext> imdc = ( List <Java8Parser.InterfaceMemberDeclarationContext> )ibc.interfaceMemberDeclaration();
+        for ( Java8Parser.InterfaceMemberDeclarationContext i : imdc ) {
+            if ( i.constantDeclaration() != null ) {
+                processConstantDeclaration( parent, i.constantDeclaration() );
+            }
+
+
+            if ( i.interfaceMethodDeclaration() != null ) {
+                processInterfaceMethodDeclaration( parent, i );
+            }
+
+
+            if ( i.classDeclaration() != null ) {
+                parent.addChild( stack.pop() );
+            }
+
+
+            if ( i.interfaceDeclaration() != null ) {
+                parent.addChild( stack.pop() );
+            }
+        }
+    }
+
+
+    /**
+     * constantDeclaration
+     * 	:	constantModifier* unannType variableDeclaratorList ';'
+     * 	;
+     */
+    private void processConstantDeclaration( TigerNode parent, Java8Parser.ConstantDeclarationContext ctx ) {
+
+        // modifiers
+        List<AnnotationNode> annotations = new ArrayList<AnnotationNode>();
+        List<String> modifierNames = new ArrayList<String>();
+        if ( ctx.constantModifier() != null ) {
+            List<Java8Parser.ConstantModifierContext> cmc = ( List <Java8Parser.ConstantModifierContext> )ctx.constantModifier();
+            for ( Java8Parser.ConstantModifierContext c : cmc ) {
+                if ( c.annotation() != null ) {
+                    AnnotationNode an = new AnnotationNode( c.annotation().getText() );
+                    setLocations( an, c.annotation() );
+                }
+                else {
+                    modifierNames.add( c.getText() );
+                }
+            }
+        }
+
+
+        int modifiers = ModifierSet.getModifiers( modifierNames.toArray( new String [0]  ) );
+
+        // type
+        Type type = null;
+        if ( ctx.unannType() != null ) {
+            type = new Type( ctx.unannType().getText() );
+            setLocations( type, ctx );
+        }
+
+
+        // variable declarators
+        if ( ctx.variableDeclaratorList() != null ) {
+            Java8Parser.VariableDeclaratorListContext vdlc = ctx.variableDeclaratorList();
+            List<Java8Parser.VariableDeclaratorContext> vList = ( List <Java8Parser.VariableDeclaratorContext> )vdlc.variableDeclarator();
+            for ( Java8Parser.VariableDeclaratorContext v : vList ) {
+                VariableDeclarator vd = new VariableDeclarator( v.getText() );
+                setLocations( vd, ctx );
+                vd.setModifiers( modifiers );
+                if ( type != null ) {
+                    vd.setType( type );
+                }
+
+
+                if ( annotations.size() > 0 ) {
+                    vd.addAnnotations( annotations );
+                }
+
+
+                parent.addChild( vd );
+            }
+        }
+
+
+        stack.push( parent );
+    }
+
+
+    private void processInterfaceMethodDeclaration( TigerNode parent, Java8Parser.InterfaceMemberDeclarationContext ctx ) {
     }
 
 
@@ -777,8 +1168,34 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
+    /**
+     * annotationTypeDeclaration
+     * 	:	interfaceModifier* '@' 'interface' Identifier annotationTypeBody
+     * 	;
+     */
     @Override
     public void exitAnnotationTypeDeclaration( @NotNull Java8Parser.AnnotationTypeDeclarationContext ctx ) {
+
+        // modifiers
+        int size = ctx.interfaceModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = ctx.interfaceModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+        AnnotationTypeNode parent = new AnnotationTypeNode( ctx.Identifier().getText(), modifiers );
+        setLocations( parent, ctx );
+
+        // body contents
+        Java8Parser.AnnotationTypeBodyContext annotationTypeBodyContext = ctx.annotationTypeBody();
+        List<Java8Parser.AnnotationTypeMemberDeclarationContext> atmdc = ( List <Java8Parser.AnnotationTypeMemberDeclarationContext> )annotationTypeBodyContext.annotationTypeMemberDeclaration();
+        for ( Java8Parser.AnnotationTypeMemberDeclarationContext a : atmdc ) {
+            TigerNode tn = new TigerNode( a.getText() );
+            setLocations( tn, a );
+            parent.addChild( tn );
+        }
+
+        stack.push( parent );
     }
 
 
@@ -1466,4 +1883,3 @@ public class Java8SideKickListener extends Java8BaseListener {
     public void visitErrorNode( @NotNull ErrorNode node ) {
     }
 }
-
