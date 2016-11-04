@@ -47,13 +47,13 @@ public class ParserException extends Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(super.getMessage());
         if (line > -1) {
-            sb.append("\nLine: ").append(line);   
+            sb.append(", Line: ").append(line);   
         }
         if (column > -1) {
-            sb.append("\nColumn: ").append(column);   
+            sb.append(", Column: ").append(column);   
         }
         if (length > -1) {
-            sb.append("\nLength: ").append(length);   
+            sb.append(", Length: ").append(length);   
         }
         return sb.toString();
     }
