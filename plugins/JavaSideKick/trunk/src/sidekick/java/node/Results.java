@@ -33,7 +33,7 @@ package sidekick.java.node;
  * of the number of classed, interfaces, methods, and fields that the parser
  * found.
  */
-public class Results {
+public class Results { 
     // Parse Counters
     private int classCount = 0;
     private int interfaceCount = 0;

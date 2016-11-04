@@ -143,7 +143,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        System.out.println("+++++ javasidekick parse");
         /// TODO: remove this when the Antlr parser is complete
         boolean useAntlrParser = jEdit.getBooleanProperty("sidekick.java.useAntlrParser", false);
         if (parser_type != JAVACC_PARSER) {
@@ -201,17 +200,22 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     java8Parser.addErrorListener( errorListener );
         
                     // parse the buffer contents
-                    System.out.println("+++++ parse the buffer contents");
                     ParseTree tree = java8Parser.compilationUnit();
                     ParseTreeWalker walker = new ParseTreeWalker();
                     Java8SideKickListener listener = new Java8SideKickListener();
                     walker.walk( listener, tree );
         
                     // build the tree
-                    System.out.println("+++++ build the tree");
                     compilationUnit = listener.getCompilationUnit();
                     compilationUnit.setResults( listener.getResults() );
-                    errorList = listener.getErrors();
+                    
+                    // convert the errors, if any
+                    List<ParserException> parserExceptions = errorListener.getErrors();
+                    errorList = new ArrayList<sidekick.java.node.ErrorNode>();
+                    for (ParserException pe : parserExceptions) {
+                        sidekick.java.node.ErrorNode errorNode = new sidekick.java.node.ErrorNode(pe);
+                        errorList.add(errorNode);
+                    }
                     break;
                 default:
                     // use the javacc parser for java files
@@ -299,10 +303,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
             for ( Iterator it = errorList.iterator(); it.hasNext(); ) {
                 sidekick.java.node.ErrorNode en = ( sidekick.java.node.ErrorNode ) it.next();
                 Exception e = en.getException();
-                ParseException pe = null;
                 Range range = new Range();
                 if ( e instanceof ParseException ) {
-                    pe = ( ParseException ) e;
+                    ParseException pe = ( ParseException ) e;
+                    range = getExceptionLocation( pe );
+                }
+                else if (e instanceof ParserException) {
+                    ParserException pe = (ParserException) e;
                     range = getExceptionLocation( pe );
                 }
                 // This is a fix for hard tabs
@@ -419,6 +426,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
             return new Range();
         }
     }    // }}}
+    
+    private Range getExceptionLocation( ParserException pe) {
+        Location start = new Location(pe.getLineNumber(), pe.getColumn());
+        Location end = new Location(pe.getLineNumber(), pe.getColumn() + pe.getLength());
+        return new Range(start, end);
+    }
+    
+    
 
     // {{{ canShow(TigerNode) : boolean
     // single place to check the filter settings, that is, check to see if it

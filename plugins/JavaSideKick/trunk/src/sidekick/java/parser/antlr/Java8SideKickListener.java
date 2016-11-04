@@ -13,28 +13,18 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import sidekick.java.node.*;
 import sidekick.util.Location;
 
+import static sidekick.java.parser.antlr.Java8Parser.*;
+
 
 public class Java8SideKickListener extends Java8BaseListener {
 
     Deque<TigerNode> stack = new ArrayDeque<TigerNode>();
     private CUNode cuNode;
-    private Results results;
-    private List<sidekick.java.node.ErrorNode> exceptions = new ArrayList<sidekick.java.node.ErrorNode>();
+    private Results results = new Results();
 
 
     public CUNode getCompilationUnit() {
         return cuNode;
-    }
-
-
-    public List<sidekick.java.node.ErrorNode> getErrors() {
-        return exceptions;
-    }
-
-
-    private void addException( ParserException pe ) {
-        sidekick.java.node.ErrorNode en = new sidekick.java.node.ErrorNode( pe );
-        exceptions.add( en );
     }
 
 
@@ -89,167 +79,167 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
     @Override
-    public void exitLiteral( @NotNull Java8Parser.LiteralContext ctx ) {
+    public void exitLiteral( @NotNull LiteralContext ctx ) {
     }
 
 
     @Override
-    public void exitType( @NotNull Java8Parser.TypeContext ctx ) {
+    public void exitType( @NotNull TypeContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimitiveType( @NotNull Java8Parser.PrimitiveTypeContext ctx ) {
+    public void exitPrimitiveType( @NotNull PrimitiveTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitNumericType( @NotNull Java8Parser.NumericTypeContext ctx ) {
+    public void exitNumericType( @NotNull NumericTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitIntegralType( @NotNull Java8Parser.IntegralTypeContext ctx ) {
+    public void exitIntegralType( @NotNull IntegralTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitFloatingPointType( @NotNull Java8Parser.FloatingPointTypeContext ctx ) {
+    public void exitFloatingPointType( @NotNull FloatingPointTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitReferenceType( @NotNull Java8Parser.ReferenceTypeContext ctx ) {
+    public void exitReferenceType( @NotNull ReferenceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitClassOrInterfaceType( @NotNull Java8Parser.ClassOrInterfaceTypeContext ctx ) {
+    public void exitClassOrInterfaceType( @NotNull ClassOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitClassType( @NotNull Java8Parser.ClassTypeContext ctx ) {
+    public void exitClassType( @NotNull ClassTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitClassType_lf_classOrInterfaceType( @NotNull Java8Parser.ClassType_lf_classOrInterfaceTypeContext ctx ) {
+    public void exitClassType_lf_classOrInterfaceType( @NotNull ClassType_lf_classOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitClassType_lfno_classOrInterfaceType( @NotNull Java8Parser.ClassType_lfno_classOrInterfaceTypeContext ctx ) {
+    public void exitClassType_lfno_classOrInterfaceType( @NotNull ClassType_lfno_classOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceType( @NotNull Java8Parser.InterfaceTypeContext ctx ) {
+    public void exitInterfaceType( @NotNull InterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceType_lf_classOrInterfaceType( @NotNull Java8Parser.InterfaceType_lf_classOrInterfaceTypeContext ctx ) {
+    public void exitInterfaceType_lf_classOrInterfaceType( @NotNull InterfaceType_lf_classOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceType_lfno_classOrInterfaceType( @NotNull Java8Parser.InterfaceType_lfno_classOrInterfaceTypeContext ctx ) {
+    public void exitInterfaceType_lfno_classOrInterfaceType( @NotNull InterfaceType_lfno_classOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeVariable( @NotNull Java8Parser.TypeVariableContext ctx ) {
+    public void exitTypeVariable( @NotNull TypeVariableContext ctx ) {
     }
 
 
     @Override
-    public void exitArrayType( @NotNull Java8Parser.ArrayTypeContext ctx ) {
+    public void exitArrayType( @NotNull ArrayTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitDims( @NotNull Java8Parser.DimsContext ctx ) {
+    public void exitDims( @NotNull DimsContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeParameter( @NotNull Java8Parser.TypeParameterContext ctx ) {
+    public void exitTypeParameter( @NotNull TypeParameterContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeParameterModifier( @NotNull Java8Parser.TypeParameterModifierContext ctx ) {
+    public void exitTypeParameterModifier( @NotNull TypeParameterModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeBound( @NotNull Java8Parser.TypeBoundContext ctx ) {
+    public void exitTypeBound( @NotNull TypeBoundContext ctx ) {
     }
 
 
     @Override
-    public void exitAdditionalBound( @NotNull Java8Parser.AdditionalBoundContext ctx ) {
+    public void exitAdditionalBound( @NotNull AdditionalBoundContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeArguments( @NotNull Java8Parser.TypeArgumentsContext ctx ) {
+    public void exitTypeArguments( @NotNull TypeArgumentsContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeArgumentList( @NotNull Java8Parser.TypeArgumentListContext ctx ) {
+    public void exitTypeArgumentList( @NotNull TypeArgumentListContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeArgument( @NotNull Java8Parser.TypeArgumentContext ctx ) {
+    public void exitTypeArgument( @NotNull TypeArgumentContext ctx ) {
     }
 
 
     @Override
-    public void exitWildcard( @NotNull Java8Parser.WildcardContext ctx ) {
+    public void exitWildcard( @NotNull WildcardContext ctx ) {
     }
 
 
     @Override
-    public void exitWildcardBounds( @NotNull Java8Parser.WildcardBoundsContext ctx ) {
+    public void exitWildcardBounds( @NotNull WildcardBoundsContext ctx ) {
     }
 
 
     @Override
-    public void exitPackageName( @NotNull Java8Parser.PackageNameContext ctx ) {
+    public void exitPackageName( @NotNull PackageNameContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeName( @NotNull Java8Parser.TypeNameContext ctx ) {
+    public void exitTypeName( @NotNull TypeNameContext ctx ) {
     }
 
 
     @Override
-    public void exitPackageOrTypeName( @NotNull Java8Parser.PackageOrTypeNameContext ctx ) {
+    public void exitPackageOrTypeName( @NotNull PackageOrTypeNameContext ctx ) {
     }
 
 
     @Override
-    public void exitExpressionName( @NotNull Java8Parser.ExpressionNameContext ctx ) {
+    public void exitExpressionName( @NotNull ExpressionNameContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodName( @NotNull Java8Parser.MethodNameContext ctx ) {
+    public void exitMethodName( @NotNull MethodNameContext ctx ) {
     }
 
 
     @Override
-    public void exitAmbiguousName( @NotNull Java8Parser.AmbiguousNameContext ctx ) {
+    public void exitAmbiguousName( @NotNull AmbiguousNameContext ctx ) {
     }
 
 
     @Override
-    public void exitCompilationUnit( @NotNull Java8Parser.CompilationUnitContext ctx ) {
+    public void exitCompilationUnit( @NotNull CompilationUnitContext ctx ) {
         try {
             cuNode = new CUNode();
             setLocations( cuNode, ctx );
@@ -281,7 +271,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
     @Override
-    public void exitPackageDeclaration( @NotNull Java8Parser.PackageDeclarationContext ctx ) {
+    public void exitPackageDeclaration( @NotNull PackageDeclarationContext ctx ) {
         TigerNode parent = new TigerNode();
         setLocations( parent, ctx );
 
@@ -310,12 +300,12 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
     @Override
-    public void exitPackageModifier( @NotNull Java8Parser.PackageModifierContext ctx ) {
+    public void exitPackageModifier( @NotNull PackageModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitImportDeclaration( @NotNull Java8Parser.ImportDeclarationContext ctx ) {
+    public void exitImportDeclaration( @NotNull ImportDeclarationContext ctx ) {
         TigerNode parent = new ImportNode( ctx.getText().substring( "import".length() ) );
         setLocations( parent, ctx );
 
@@ -324,32 +314,32 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
     @Override
-    public void exitSingleTypeImportDeclaration( @NotNull Java8Parser.SingleTypeImportDeclarationContext ctx ) {
+    public void exitSingleTypeImportDeclaration( @NotNull SingleTypeImportDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeImportOnDemandDeclaration( @NotNull Java8Parser.TypeImportOnDemandDeclarationContext ctx ) {
+    public void exitTypeImportOnDemandDeclaration( @NotNull TypeImportOnDemandDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitSingleStaticImportDeclaration( @NotNull Java8Parser.SingleStaticImportDeclarationContext ctx ) {
+    public void exitSingleStaticImportDeclaration( @NotNull SingleStaticImportDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitStaticImportOnDemandDeclaration( @NotNull Java8Parser.StaticImportOnDemandDeclarationContext ctx ) {
+    public void exitStaticImportOnDemandDeclaration( @NotNull StaticImportOnDemandDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeDeclaration( @NotNull Java8Parser.TypeDeclarationContext ctx ) {
+    public void exitTypeDeclaration( @NotNull TypeDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitClassDeclaration( @NotNull Java8Parser.ClassDeclarationContext ctx ) {
+    public void exitClassDeclaration( @NotNull ClassDeclarationContext ctx ) {
     }
 
 
@@ -359,8 +349,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override
-    public void exitNormalClassDeclaration( @NotNull Java8Parser.NormalClassDeclarationContext ctx ) {
-        System.out.println( "+++++ normalClassDeclaration: " + ctx.Identifier().getText() );
+    public void exitNormalClassDeclaration( @NotNull NormalClassDeclarationContext ctx ) {
         ClassNode parent = new ClassNode( ctx.Identifier().getText() );
         setLocations( parent, ctx );
 
@@ -375,8 +364,8 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // superclasses
         if ( ctx.superclass() != null ) {
-            Java8Parser.SuperclassContext superClassContext = ctx.superclass();
-            Java8Parser.ClassTypeContext classTypeContext = superClassContext.classType();
+            SuperclassContext superClassContext = ctx.superclass();
+            ClassTypeContext classTypeContext = superClassContext.classType();
             Type superClassType = new Type( classTypeContext.getText() );
             setLocations( superClassType, classTypeContext );
             List<Type> superTypes = new ArrayList<Type>();
@@ -387,11 +376,11 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // superinterfaces
         if ( ctx.superinterfaces() != null ) {
-            Java8Parser.SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
-            Java8Parser.InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
-            List<Java8Parser.InterfaceTypeContext> interfaceTypeContexts = ( List <Java8Parser.InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
+            SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
+            InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
+            List<InterfaceTypeContext> interfaceTypeContexts = ( List <InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
             List<Type> interfaceTypes = new ArrayList<Type>();
-            for ( Java8Parser.InterfaceTypeContext itc : interfaceTypeContexts ) {
+            for ( InterfaceTypeContext itc : interfaceTypeContexts ) {
                 Type type = new Type( itc.getText() );
                 setLocations( type, itc );
                 interfaceTypes.add( type );
@@ -402,34 +391,38 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // add the children of this class. Only need the fields and methods here,
         // the inner classes and interface declarations are handled elsewhere
-        Java8Parser.ClassBodyContext classBodyContext = ctx.classBody();
-        List<Java8Parser.ClassBodyDeclarationContext> declarations = ( List <Java8Parser.ClassBodyDeclarationContext> )classBodyContext.classBodyDeclaration();
-        for ( Java8Parser.ClassBodyDeclarationContext declaration : declarations ) {
+        ClassBodyContext classBodyContext = ctx.classBody();
+        List<ClassBodyDeclarationContext> declarations = ( List <ClassBodyDeclarationContext> )classBodyContext.classBodyDeclaration();
+        for ( ClassBodyDeclarationContext declaration : declarations ) {
             if ( declaration.classMemberDeclaration() != null ) {
-                Java8Parser.ClassMemberDeclarationContext dctx = declaration.classMemberDeclaration();
+                ClassMemberDeclarationContext dctx = declaration.classMemberDeclaration();
                 if ( dctx.fieldDeclaration() != null ) {
                     processFieldDeclaration( parent, dctx );
                 }
+
 
                 if ( dctx.methodDeclaration() != null ) {
                     processMethodDeclaration( parent, dctx );
                 }
 
+
                 if ( dctx.classDeclaration() != null ) {
                     parent.addChild( stack.pop() );
                 }
+
 
                 if ( dctx.interfaceDeclaration() != null ) {
                     parent.addChild( stack.pop() );
                 }
             }
         }
+        results.incClassCount();
         stack.push( parent );
     }
 
 
-    private void processFieldDeclaration( TigerNode parent, Java8Parser.ClassMemberDeclarationContext dctx ) {
-        Java8Parser.FieldDeclarationContext fieldCtx = dctx.fieldDeclaration();
+    private void processFieldDeclaration( TigerNode parent, ClassMemberDeclarationContext dctx ) {
+        FieldDeclarationContext fieldCtx = dctx.fieldDeclaration();
 
         // type
         Type type = new Type( fieldCtx.unannType().getText() );
@@ -445,23 +438,23 @@ public class Java8SideKickListener extends Java8BaseListener {
         // variable declarations, make a field node per variable
         size = fieldCtx.variableDeclaratorList().variableDeclarator().size();
         for ( int i = 0; i < size; i++ ) {
-            Java8Parser.VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator( i );
+            VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator( i );
             TigerNode tn = new FieldNode( vdc.variableDeclaratorId().getText(), modifiers, type );
             setLocations( tn, vdc );
-
+            results.incReferenceFieldCount();
             parent.addChild( tn );
         }
     }
 
 
-    private void processMethodDeclaration( TigerNode parent, Java8Parser.ClassMemberDeclarationContext dctx ) {
+    private void processMethodDeclaration( TigerNode parent, ClassMemberDeclarationContext dctx ) {
         MethodNode methodNode = new MethodNode();
 
-        Java8Parser.MethodDeclarationContext methodDeclarationContext = dctx.methodDeclaration();
+        MethodDeclarationContext methodDeclarationContext = dctx.methodDeclaration();
         setLocations( methodNode, methodDeclarationContext );
 
         // modifiers
-        Java8Parser.MethodModifiersContext methodModifierContext = methodDeclarationContext.methodModifiers();
+        MethodModifiersContext methodModifierContext = methodDeclarationContext.methodModifiers();
         int size = methodModifierContext.methodModifier().size();
         String[] modifierNames = new String [size];
         for ( int i = 0; i < size; i++ ) {
@@ -472,33 +465,42 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // method node constructor:
         // public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
-        Java8Parser.MethodHeaderContext methodHeaderContext = methodDeclarationContext.methodHeader();
+        MethodHeaderContext methodHeaderContext = methodDeclarationContext.methodHeader();
 
         // return type
-        Java8Parser.ResultContext rc = methodHeaderContext.result();
-        if ( rc != null && rc.unannType() != null ) {
-            Type returnType = new Type( rc.unannType().getText() );
-            setLocations( returnType, rc );
-            methodNode.setReturnType( returnType );
+        ResultContext rc = methodHeaderContext.result();
+        if ( rc != null ) {
+
+            // method return type is a type or void
+            if ( rc.unannType() != null ) {
+                Type returnType = new Type( rc.unannType().getText() );
+                setLocations( returnType, rc );
+                methodNode.setReturnType( returnType );
+            }
+            else {
+                Type returnType = new Type( "void" );
+                setLocations( returnType, rc );
+                methodNode.setReturnType( returnType );
+            }
         }
 
 
         // method name
-        Java8Parser.MethodDeclaratorContext methodDeclaratorContext = methodHeaderContext.methodDeclarator();
+        MethodDeclaratorContext methodDeclaratorContext = methodHeaderContext.methodDeclarator();
         String name = methodDeclaratorContext.Identifier().getText();
         methodNode.setName( name );
 
         // parameters
         // TODO: receiver parameter
-        Java8Parser.FormalParameterListContext formalParameterListContext = methodDeclaratorContext.formalParameterList();
+        FormalParameterListContext formalParameterListContext = methodDeclaratorContext.formalParameterList();
         if ( formalParameterListContext != null ) {
-            Java8Parser.FormalParametersContext formalParametersContext = formalParameterListContext.formalParameters();
+            FormalParametersContext formalParametersContext = formalParameterListContext.formalParameters();
 
             if ( formalParametersContext != null ) {
 
-                List<Java8Parser.FormalParameterContext> params = ( List <Java8Parser.FormalParameterContext> )formalParametersContext.formalParameter();
+                List<FormalParameterContext> params = ( List <FormalParameterContext> )formalParametersContext.formalParameter();
                 if ( params != null ) {
-                    for ( Java8Parser.FormalParameterContext param : params ) {
+                    for ( FormalParameterContext param : params ) {
                         Parameter parameterNode = new Parameter();
                         setLocations( parameterNode, param );
                         Type type = new Type( param.unannType().getText() );
@@ -522,31 +524,47 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // last formal parameter
         if ( formalParameterListContext != null ) {
-            Java8Parser.LastFormalParameterContext lastFormalParameterContext = formalParameterListContext.lastFormalParameter();
+            LastFormalParameterContext lastFormalParameterContext = formalParameterListContext.lastFormalParameter();
             if ( lastFormalParameterContext != null ) {
                 Parameter parameterNode = new Parameter();
                 setLocations( parameterNode, lastFormalParameterContext );
-                if ( lastFormalParameterContext.unannType() != null ) {
-                    Type type = new Type( lastFormalParameterContext.unannType().getText() );
+                if ( lastFormalParameterContext.formalParameter() != null ) {
+                    FormalParameterContext param = lastFormalParameterContext.formalParameter();
+                    Type type = new Type( param.unannType().getText() );
                     parameterNode.setType( type );
-                }
+                    parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
 
-
-                if ( lastFormalParameterContext.variableDeclaratorId() != null ) {
-                    parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().Identifier().getText() );
-                }
-
-
-                if ( lastFormalParameterContext.variableModifier() != null ) {
-                    size = lastFormalParameterContext.variableModifier().size();
+                    // modifiers
+                    size = param.variableModifier().size();
                     modifierNames = new String [size] ;
                     for ( int i = 0; i < size; i++ ) {
-                        modifierNames[i] = lastFormalParameterContext.variableModifier( i ).getText();
+                        modifierNames[i] = param.variableModifier( i ).getText();
                     }
                     modifiers = ModifierSet.getModifiers( modifierNames );
                     parameterNode.setModifiers( modifiers );
                 }
+                else {
+                    if ( lastFormalParameterContext.unannType() != null ) {
+                        Type type = new Type( lastFormalParameterContext.unannType().getText() );
+                        parameterNode.setType( type );
+                    }
 
+
+                    if ( lastFormalParameterContext.variableDeclaratorId() != null ) {
+                        parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().Identifier().getText() );
+                    }
+
+
+                    if ( lastFormalParameterContext.variableModifier() != null ) {
+                        size = lastFormalParameterContext.variableModifier().size();
+                        modifierNames = new String [size] ;
+                        for ( int i = 0; i < size; i++ ) {
+                            modifierNames[i] = lastFormalParameterContext.variableModifier( i ).getText();
+                        }
+                        modifiers = ModifierSet.getModifiers( modifierNames );
+                        parameterNode.setModifiers( modifiers );
+                    }
+                }
 
                 methodNode.addFormalParameter( parameterNode );
             }
@@ -554,11 +572,11 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         // throws
-        Java8Parser.Throws_Context throwsContext = methodHeaderContext.throws_();
+        Throws_Context throwsContext = methodHeaderContext.throws_();
         if ( throwsContext != null ) {
-            List<Java8Parser.ExceptionTypeContext> exceptionTypeContext = ( List <Java8Parser.ExceptionTypeContext> )throwsContext.exceptionTypeList().exceptionType();
+            List<ExceptionTypeContext> exceptionTypeContext = ( List <ExceptionTypeContext> )throwsContext.exceptionTypeList().exceptionType();
             List<TigerNode> exceptionList = new ArrayList<TigerNode>();
-            for ( Java8Parser.ExceptionTypeContext e : exceptionTypeContext ) {
+            for ( ExceptionTypeContext e : exceptionTypeContext ) {
                 TigerNode tn = new TigerNode( e.getText() );
                 setLocations( tn, e );
                 exceptionList.add( tn );
@@ -569,9 +587,9 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // type parameters
         if ( methodHeaderContext.typeParameters() != null ) {
-            List<Java8Parser.TypeParameterContext> typeParameterContexts = ( List <Java8Parser.TypeParameterContext> )methodHeaderContext.typeParameters().typeParameterList().typeParameter();
+            List<TypeParameterContext> typeParameterContexts = ( List <TypeParameterContext> )methodHeaderContext.typeParameters().typeParameterList().typeParameter();
             StringBuilder sb = new StringBuilder( "<" );
-            for ( Java8Parser.TypeParameterContext typeParam : typeParameterContexts ) {
+            for ( TypeParameterContext typeParam : typeParameterContexts ) {
                 sb.append( typeParam.Identifier().getText() ).append( ',' );
             }
             if ( sb.length() > 1 ) {
@@ -584,9 +602,9 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         // annotations
-        List<Java8Parser.AnnotationContext> annotationContexts = ( List <Java8Parser.AnnotationContext> )methodHeaderContext.annotation();
+        List<AnnotationContext> annotationContexts = ( List <AnnotationContext> )methodHeaderContext.annotation();
         if ( annotationContexts != null ) {
-            for ( Java8Parser.AnnotationContext ann : annotationContexts ) {
+            for ( AnnotationContext ann : annotationContexts ) {
                 AnnotationNode annotationNode = new AnnotationNode( ann.getText() );
                 setLocations( annotationNode, ann );
                 methodNode.addAnnotation( annotationNode );
@@ -594,277 +612,284 @@ public class Java8SideKickListener extends Java8BaseListener {
         }
 
 
+        results.incMethodCount();
         parent.addChild( methodNode );
     }
 
 
     @Override
-    public void exitClassModifiers( @NotNull Java8Parser.ClassModifiersContext ctx ) {
+    public void exitClassModifiers( @NotNull ClassModifiersContext ctx ) {
     }
 
 
     @Override
-    public void exitClassModifier( @NotNull Java8Parser.ClassModifierContext ctx ) {
+    public void exitClassModifier( @NotNull ClassModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeParameters( @NotNull Java8Parser.TypeParametersContext ctx ) {
+    public void exitTypeParameters( @NotNull TypeParametersContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeParameterList( @NotNull Java8Parser.TypeParameterListContext ctx ) {
+    public void exitTypeParameterList( @NotNull TypeParameterListContext ctx ) {
     }
 
 
     @Override
-    public void exitSuperclass( @NotNull Java8Parser.SuperclassContext ctx ) {
+    public void exitSuperclass( @NotNull SuperclassContext ctx ) {
     }
 
 
     @Override
-    public void exitSuperinterfaces( @NotNull Java8Parser.SuperinterfacesContext ctx ) {
+    public void exitSuperinterfaces( @NotNull SuperinterfacesContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceTypeList( @NotNull Java8Parser.InterfaceTypeListContext ctx ) {
+    public void exitInterfaceTypeList( @NotNull InterfaceTypeListContext ctx ) {
     }
 
 
     @Override
-    public void exitClassBody( @NotNull Java8Parser.ClassBodyContext ctx ) {
+    public void exitClassBody( @NotNull ClassBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitClassBodyDeclaration( @NotNull Java8Parser.ClassBodyDeclarationContext ctx ) {
+    public void exitClassBodyDeclaration( @NotNull ClassBodyDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitClassMemberDeclaration( @NotNull Java8Parser.ClassMemberDeclarationContext ctx ) {
+    public void exitClassMemberDeclaration( @NotNull ClassMemberDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitFieldDeclaration( @NotNull Java8Parser.FieldDeclarationContext ctx ) {
+    public void exitFieldDeclaration( @NotNull FieldDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitFieldModifiers( @NotNull Java8Parser.FieldModifiersContext ctx ) {
+    public void exitFieldModifiers( @NotNull FieldModifiersContext ctx ) {
     }
 
 
     @Override
-    public void exitFieldModifier( @NotNull Java8Parser.FieldModifierContext ctx ) {
+    public void exitFieldModifier( @NotNull FieldModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitVariableDeclaratorList( @NotNull Java8Parser.VariableDeclaratorListContext ctx ) {
+    public void exitVariableDeclaratorList( @NotNull VariableDeclaratorListContext ctx ) {
     }
 
 
     @Override
-    public void exitVariableDeclarator( @NotNull Java8Parser.VariableDeclaratorContext ctx ) {
+    public void exitVariableDeclarator( @NotNull VariableDeclaratorContext ctx ) {
     }
 
 
     @Override
-    public void exitVariableDeclaratorId( @NotNull Java8Parser.VariableDeclaratorIdContext ctx ) {
+    public void exitVariableDeclaratorId( @NotNull VariableDeclaratorIdContext ctx ) {
     }
 
 
     @Override
-    public void exitVariableInitializer( @NotNull Java8Parser.VariableInitializerContext ctx ) {
+    public void exitVariableInitializer( @NotNull VariableInitializerContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannType( @NotNull Java8Parser.UnannTypeContext ctx ) {
+    public void exitUnannType( @NotNull UnannTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannPrimitiveType( @NotNull Java8Parser.UnannPrimitiveTypeContext ctx ) {
+    public void exitUnannPrimitiveType( @NotNull UnannPrimitiveTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannReferenceType( @NotNull Java8Parser.UnannReferenceTypeContext ctx ) {
+    public void exitUnannReferenceType( @NotNull UnannReferenceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannClassOrInterfaceType( @NotNull Java8Parser.UnannClassOrInterfaceTypeContext ctx ) {
+    public void exitUnannClassOrInterfaceType( @NotNull UnannClassOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannClassType( @NotNull Java8Parser.UnannClassTypeContext ctx ) {
+    public void exitUnannClassType( @NotNull UnannClassTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannClassType_lf_unannClassOrInterfaceType( @NotNull Java8Parser.UnannClassType_lf_unannClassOrInterfaceTypeContext ctx ) {
+    public void exitUnannClassType_lf_unannClassOrInterfaceType( @NotNull UnannClassType_lf_unannClassOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannClassType_lfno_unannClassOrInterfaceType( @NotNull Java8Parser.UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx ) {
+    public void exitUnannClassType_lfno_unannClassOrInterfaceType( @NotNull UnannClassType_lfno_unannClassOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannInterfaceType( @NotNull Java8Parser.UnannInterfaceTypeContext ctx ) {
+    public void exitUnannInterfaceType( @NotNull UnannInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannInterfaceType_lf_unannClassOrInterfaceType( @NotNull Java8Parser.UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx ) {
+    public void exitUnannInterfaceType_lf_unannClassOrInterfaceType( @NotNull UnannInterfaceType_lf_unannClassOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType( @NotNull Java8Parser.UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx ) {
+    public void exitUnannInterfaceType_lfno_unannClassOrInterfaceType( @NotNull UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannTypeVariable( @NotNull Java8Parser.UnannTypeVariableContext ctx ) {
+    public void exitUnannTypeVariable( @NotNull UnannTypeVariableContext ctx ) {
     }
 
 
     @Override
-    public void exitUnannArrayType( @NotNull Java8Parser.UnannArrayTypeContext ctx ) {
+    public void exitUnannArrayType( @NotNull UnannArrayTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodDeclaration( @NotNull Java8Parser.MethodDeclarationContext ctx ) {
+    public void exitMethodDeclaration( @NotNull MethodDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodModifiers( @NotNull Java8Parser.MethodModifiersContext ctx ) {
+    public void exitMethodModifiers( @NotNull MethodModifiersContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodModifier( @NotNull Java8Parser.MethodModifierContext ctx ) {
+    public void exitMethodModifier( @NotNull MethodModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodHeader( @NotNull Java8Parser.MethodHeaderContext ctx ) {
+    public void exitMethodHeader( @NotNull MethodHeaderContext ctx ) {
     }
 
 
     @Override
-    public void exitResult( @NotNull Java8Parser.ResultContext ctx ) {
+    public void exitResult( @NotNull ResultContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodDeclarator( @NotNull Java8Parser.MethodDeclaratorContext ctx ) {
+    public void exitMethodDeclarator( @NotNull MethodDeclaratorContext ctx ) {
     }
 
 
     @Override
-    public void exitFormalParameterList( @NotNull Java8Parser.FormalParameterListContext ctx ) {
+    public void exitFormalParameterList( @NotNull FormalParameterListContext ctx ) {
     }
 
 
     @Override
-    public void exitFormalParameters( @NotNull Java8Parser.FormalParametersContext ctx ) {
+    public void exitFormalParameters( @NotNull FormalParametersContext ctx ) {
     }
 
 
     @Override
-    public void exitFormalParameter( @NotNull Java8Parser.FormalParameterContext ctx ) {
+    public void exitFormalParameter( @NotNull FormalParameterContext ctx ) {
     }
 
 
     @Override
-    public void exitVariableModifier( @NotNull Java8Parser.VariableModifierContext ctx ) {
+    public void exitVariableModifier( @NotNull VariableModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitLastFormalParameter( @NotNull Java8Parser.LastFormalParameterContext ctx ) {
+    public void exitLastFormalParameter( @NotNull LastFormalParameterContext ctx ) {
     }
 
 
     @Override
-    public void exitReceiverParameter( @NotNull Java8Parser.ReceiverParameterContext ctx ) {
+    public void exitReceiverParameter( @NotNull ReceiverParameterContext ctx ) {
     }
 
 
     @Override
-    public void exitThrows_( @NotNull Java8Parser.Throws_Context ctx ) {
+    public void exitThrows_( @NotNull Throws_Context ctx ) {
     }
 
 
     @Override
-    public void exitExceptionTypeList( @NotNull Java8Parser.ExceptionTypeListContext ctx ) {
+    public void exitExceptionTypeList( @NotNull ExceptionTypeListContext ctx ) {
     }
 
 
     @Override
-    public void exitExceptionType( @NotNull Java8Parser.ExceptionTypeContext ctx ) {
+    public void exitExceptionType( @NotNull ExceptionTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodBody( @NotNull Java8Parser.MethodBodyContext ctx ) {
+    public void exitMethodBody( @NotNull MethodBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitInstanceInitializer( @NotNull Java8Parser.InstanceInitializerContext ctx ) {
+    public void exitInstanceInitializer( @NotNull InstanceInitializerContext ctx ) {
     }
 
 
     @Override
-    public void exitStaticInitializer( @NotNull Java8Parser.StaticInitializerContext ctx ) {
+    public void exitStaticInitializer( @NotNull StaticInitializerContext ctx ) {
+    }
+
+
+    /**
+     * constructorDeclaration
+     * 	:	constructorModifiers constructorDeclarator throws_? constructorBody
+     * 	;
+     * TODO: fill this in
+     */
+    @Override
+    public void exitConstructorDeclaration( @NotNull ConstructorDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitConstructorDeclaration( @NotNull Java8Parser.ConstructorDeclarationContext ctx ) {
+    public void exitConstructorModifiers( @NotNull ConstructorModifiersContext ctx ) {
     }
 
 
     @Override
-    public void exitConstructorModifiers( @NotNull Java8Parser.ConstructorModifiersContext ctx ) {
+    public void exitConstructorModifier( @NotNull ConstructorModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitConstructorModifier( @NotNull Java8Parser.ConstructorModifierContext ctx ) {
+    public void exitConstructorDeclarator( @NotNull ConstructorDeclaratorContext ctx ) {
     }
 
 
     @Override
-    public void exitConstructorDeclarator( @NotNull Java8Parser.ConstructorDeclaratorContext ctx ) {
+    public void exitSimpleTypeName( @NotNull SimpleTypeNameContext ctx ) {
     }
 
 
     @Override
-    public void exitSimpleTypeName( @NotNull Java8Parser.SimpleTypeNameContext ctx ) {
+    public void exitConstructorBody( @NotNull ConstructorBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitConstructorBody( @NotNull Java8Parser.ConstructorBodyContext ctx ) {
-    }
-
-
-    @Override
-    public void exitExplicitConstructorInvocation( @NotNull Java8Parser.ExplicitConstructorInvocationContext ctx ) {
+    public void exitExplicitConstructorInvocation( @NotNull ExplicitConstructorInvocationContext ctx ) {
     }
 
 
@@ -874,7 +899,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override
-    public void exitEnumDeclaration( @NotNull Java8Parser.EnumDeclarationContext ctx ) {
+    public void exitEnumDeclaration( @NotNull EnumDeclarationContext ctx ) {
 
         // modifiers
         int size = ctx.classModifiers().classModifier().size();
@@ -889,10 +914,10 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // superinterfaces
         if ( ctx.superinterfaces() != null ) {
-            Java8Parser.SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
-            Java8Parser.InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
-            List<Java8Parser.InterfaceTypeContext> interfaceTypeContexts = ( List <Java8Parser.InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
-            for ( Java8Parser.InterfaceTypeContext itc : interfaceTypeContexts ) {
+            SuperinterfacesContext superInterfacesContext = ctx.superinterfaces();
+            InterfaceTypeListContext interfaceTypeListContext = superInterfacesContext.interfaceTypeList();
+            List<InterfaceTypeContext> interfaceTypeContexts = ( List <InterfaceTypeContext> )interfaceTypeListContext.interfaceType();
+            for ( InterfaceTypeContext itc : interfaceTypeContexts ) {
                 Type type = new Type( itc.getText() );
                 setLocations( type, itc );
                 parent.addChild( type );
@@ -905,11 +930,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         // ;
         // add the children of this class. Only need the fields and methods here,
         // the inner classes and interface declarations are handled elsewhere
-        Java8Parser.EnumBodyContext enumBodyContext = ctx.enumBody();
+        EnumBodyContext enumBodyContext = ctx.enumBody();
         if ( enumBodyContext.enumConstantList() != null ) {
-            Java8Parser.EnumConstantListContext enumConstantListContext = enumBodyContext.enumConstantList();
-            List<Java8Parser.EnumConstantContext> constants = ( List <Java8Parser.EnumConstantContext> )enumConstantListContext.enumConstant();
-            for ( Java8Parser.EnumConstantContext constant : constants ) {
+            EnumConstantListContext enumConstantListContext = enumBodyContext.enumConstantList();
+            List<EnumConstantContext> constants = ( List <EnumConstantContext> )enumConstantListContext.enumConstant();
+            for ( EnumConstantContext constant : constants ) {
                 TigerNode tn = new TigerNode( constant.getText() );
                 setLocations( tn, constant );
                 parent.addChild( tn );
@@ -921,22 +946,25 @@ public class Java8SideKickListener extends Java8BaseListener {
 
             // add the children of this class. Only need the fields and methods here,
             // the inner classes and interface declarations are handled elsewhere
-            Java8Parser.EnumBodyDeclarationsContext enumBodyDeclarationsContext = enumBodyContext.enumBodyDeclarations();
-            List<Java8Parser.ClassBodyDeclarationContext> declarations = ( List <Java8Parser.ClassBodyDeclarationContext> )enumBodyDeclarationsContext.classBodyDeclaration();
-            for ( Java8Parser.ClassBodyDeclarationContext declaration : declarations ) {
+            EnumBodyDeclarationsContext enumBodyDeclarationsContext = enumBodyContext.enumBodyDeclarations();
+            List<ClassBodyDeclarationContext> declarations = ( List <ClassBodyDeclarationContext> )enumBodyDeclarationsContext.classBodyDeclaration();
+            for ( ClassBodyDeclarationContext declaration : declarations ) {
                 if ( declaration.classMemberDeclaration() != null ) {
-                    Java8Parser.ClassMemberDeclarationContext dctx = declaration.classMemberDeclaration();
+                    ClassMemberDeclarationContext dctx = declaration.classMemberDeclaration();
                     if ( dctx.fieldDeclaration() != null ) {
                         processFieldDeclaration( parent, dctx );
                     }
+
 
                     if ( dctx.methodDeclaration() != null ) {
                         processMethodDeclaration( parent, dctx );
                     }
 
+
                     if ( dctx.classDeclaration() != null ) {
                         parent.addChild( stack.pop() );
                     }
+
 
                     if ( dctx.interfaceDeclaration() != null ) {
                         parent.addChild( stack.pop() );
@@ -951,27 +979,27 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
     @Override
-    public void exitEnumBody( @NotNull Java8Parser.EnumBodyContext ctx ) {
+    public void exitEnumBody( @NotNull EnumBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitEnumConstantList( @NotNull Java8Parser.EnumConstantListContext ctx ) {
+    public void exitEnumConstantList( @NotNull EnumConstantListContext ctx ) {
     }
 
 
     @Override
-    public void exitEnumConstant( @NotNull Java8Parser.EnumConstantContext ctx ) {
+    public void exitEnumConstant( @NotNull EnumConstantContext ctx ) {
     }
 
 
     @Override
-    public void exitEnumConstantModifier( @NotNull Java8Parser.EnumConstantModifierContext ctx ) {
+    public void exitEnumConstantModifier( @NotNull EnumConstantModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitEnumBodyDeclarations( @NotNull Java8Parser.EnumBodyDeclarationsContext ctx ) {
+    public void exitEnumBodyDeclarations( @NotNull EnumBodyDeclarationsContext ctx ) {
     }
 
 
@@ -982,7 +1010,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override
-    public void exitInterfaceDeclaration( @NotNull Java8Parser.InterfaceDeclarationContext ctx ) {
+    public void exitInterfaceDeclaration( @NotNull InterfaceDeclarationContext ctx ) {
     }
 
 
@@ -992,10 +1020,10 @@ public class Java8SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override
-    public void exitNormalInterfaceDeclaration( @NotNull Java8Parser.NormalInterfaceDeclarationContext ctx ) {
+    public void exitNormalInterfaceDeclaration( @NotNull NormalInterfaceDeclarationContext ctx ) {
 
         // modifiers
-        Java8Parser.InterfaceModifiersContext imc = ctx.interfaceModifiers();
+        InterfaceModifiersContext imc = ctx.interfaceModifiers();
         int size = imc.interfaceModifier().size();
         String[] modifierNames = new String [size];
         for ( int i = 0; i < size; i++ ) {
@@ -1006,11 +1034,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         setLocations( parent, ctx );
 
         // typeParameters
-        Java8Parser.TypeParametersContext typeParametersContext = ctx.typeParameters();
-        Java8Parser.TypeParameterListContext typeListContext = typeParametersContext.typeParameterList();
-        List<Java8Parser.TypeParameterContext> tpc = ( List <Java8Parser.TypeParameterContext> )typeListContext.typeParameter();
+        TypeParametersContext typeParametersContext = ctx.typeParameters();
+        TypeParameterListContext typeListContext = typeParametersContext.typeParameterList();
+        List<TypeParameterContext> tpc = ( List <TypeParameterContext> )typeListContext.typeParameter();
         StringBuilder sb = new StringBuilder( "<" );
-        for ( Java8Parser.TypeParameterContext t : tpc ) {
+        for ( TypeParameterContext t : tpc ) {
             sb.append( t.Identifier().getText() ).append( ',' );
         }
         if ( sb.length() > 1 ) {
@@ -1021,11 +1049,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         parent.setTypeParams( sb.toString() + ">" );
 
         // extendsInterfaces
-        Java8Parser.ExtendsInterfacesContext eic = ctx.extendsInterfaces();
-        Java8Parser.InterfaceTypeListContext itlc = eic.interfaceTypeList();
-        List<Java8Parser.InterfaceTypeContext> itc = ( List <Java8Parser.InterfaceTypeContext> )itlc.interfaceType();
+        ExtendsInterfacesContext eic = ctx.extendsInterfaces();
+        InterfaceTypeListContext itlc = eic.interfaceTypeList();
+        List<InterfaceTypeContext> itc = ( List <InterfaceTypeContext> )itlc.interfaceType();
         List<Type> extendsTypes = new ArrayList<Type>();
-        for ( Java8Parser.InterfaceTypeContext i : itc ) {
+        for ( InterfaceTypeContext i : itc ) {
             Type it = new Type( i.getText() );
             setLocations( it, i );
             extendsTypes.add( it );
@@ -1033,9 +1061,9 @@ public class Java8SideKickListener extends Java8BaseListener {
         parent.setExtendsList( extendsTypes );
 
         // interfaceBody
-        Java8Parser.InterfaceBodyContext ibc = ctx.interfaceBody();
-        List<Java8Parser.InterfaceMemberDeclarationContext> imdc = ( List <Java8Parser.InterfaceMemberDeclarationContext> )ibc.interfaceMemberDeclaration();
-        for ( Java8Parser.InterfaceMemberDeclarationContext i : imdc ) {
+        InterfaceBodyContext ibc = ctx.interfaceBody();
+        List<InterfaceMemberDeclarationContext> imdc = ( List <InterfaceMemberDeclarationContext> )ibc.interfaceMemberDeclaration();
+        for ( InterfaceMemberDeclarationContext i : imdc ) {
             if ( i.constantDeclaration() != null ) {
                 processConstantDeclaration( parent, i.constantDeclaration() );
             }
@@ -1055,6 +1083,9 @@ public class Java8SideKickListener extends Java8BaseListener {
                 parent.addChild( stack.pop() );
             }
         }
+
+        results.incInterfaceCount();
+        stack.push( parent );
     }
 
 
@@ -1063,14 +1094,14 @@ public class Java8SideKickListener extends Java8BaseListener {
      * 	:	constantModifier* unannType variableDeclaratorList ';'
      * 	;
      */
-    private void processConstantDeclaration( TigerNode parent, Java8Parser.ConstantDeclarationContext ctx ) {
+    private void processConstantDeclaration( TigerNode parent, ConstantDeclarationContext ctx ) {
 
         // modifiers
         List<AnnotationNode> annotations = new ArrayList<AnnotationNode>();
         List<String> modifierNames = new ArrayList<String>();
         if ( ctx.constantModifier() != null ) {
-            List<Java8Parser.ConstantModifierContext> cmc = ( List <Java8Parser.ConstantModifierContext> )ctx.constantModifier();
-            for ( Java8Parser.ConstantModifierContext c : cmc ) {
+            List<ConstantModifierContext> cmc = ( List <ConstantModifierContext> )ctx.constantModifier();
+            for ( ConstantModifierContext c : cmc ) {
                 if ( c.annotation() != null ) {
                     AnnotationNode an = new AnnotationNode( c.annotation().getText() );
                     setLocations( an, c.annotation() );
@@ -1094,9 +1125,9 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // variable declarators
         if ( ctx.variableDeclaratorList() != null ) {
-            Java8Parser.VariableDeclaratorListContext vdlc = ctx.variableDeclaratorList();
-            List<Java8Parser.VariableDeclaratorContext> vList = ( List <Java8Parser.VariableDeclaratorContext> )vdlc.variableDeclarator();
-            for ( Java8Parser.VariableDeclaratorContext v : vList ) {
+            VariableDeclaratorListContext vdlc = ctx.variableDeclaratorList();
+            List<VariableDeclaratorContext> vList = ( List <VariableDeclaratorContext> )vdlc.variableDeclarator();
+            for ( VariableDeclaratorContext v : vList ) {
                 VariableDeclarator vd = new VariableDeclarator( v.getText() );
                 setLocations( vd, ctx );
                 vd.setModifiers( modifiers );
@@ -1119,52 +1150,53 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
-    private void processInterfaceMethodDeclaration( TigerNode parent, Java8Parser.InterfaceMemberDeclarationContext ctx ) {
+    // TODO: finish this
+    private void processInterfaceMethodDeclaration( TigerNode parent, InterfaceMemberDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceModifiers( @NotNull Java8Parser.InterfaceModifiersContext ctx ) {
+    public void exitInterfaceModifiers( @NotNull InterfaceModifiersContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceModifier( @NotNull Java8Parser.InterfaceModifierContext ctx ) {
+    public void exitInterfaceModifier( @NotNull InterfaceModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitExtendsInterfaces( @NotNull Java8Parser.ExtendsInterfacesContext ctx ) {
+    public void exitExtendsInterfaces( @NotNull ExtendsInterfacesContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceBody( @NotNull Java8Parser.InterfaceBodyContext ctx ) {
+    public void exitInterfaceBody( @NotNull InterfaceBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceMemberDeclaration( @NotNull Java8Parser.InterfaceMemberDeclarationContext ctx ) {
+    public void exitInterfaceMemberDeclaration( @NotNull InterfaceMemberDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitConstantDeclaration( @NotNull Java8Parser.ConstantDeclarationContext ctx ) {
+    public void exitConstantDeclaration( @NotNull ConstantDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitConstantModifier( @NotNull Java8Parser.ConstantModifierContext ctx ) {
+    public void exitConstantModifier( @NotNull ConstantModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceMethodDeclaration( @NotNull Java8Parser.InterfaceMethodDeclarationContext ctx ) {
+    public void exitInterfaceMethodDeclaration( @NotNull InterfaceMethodDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitInterfaceMethodModifier( @NotNull Java8Parser.InterfaceMethodModifierContext ctx ) {
+    public void exitInterfaceMethodModifier( @NotNull InterfaceMethodModifierContext ctx ) {
     }
 
 
@@ -1174,7 +1206,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      * 	;
      */
     @Override
-    public void exitAnnotationTypeDeclaration( @NotNull Java8Parser.AnnotationTypeDeclarationContext ctx ) {
+    public void exitAnnotationTypeDeclaration( @NotNull AnnotationTypeDeclarationContext ctx ) {
 
         // modifiers
         int size = ctx.interfaceModifier().size();
@@ -1187,9 +1219,9 @@ public class Java8SideKickListener extends Java8BaseListener {
         setLocations( parent, ctx );
 
         // body contents
-        Java8Parser.AnnotationTypeBodyContext annotationTypeBodyContext = ctx.annotationTypeBody();
-        List<Java8Parser.AnnotationTypeMemberDeclarationContext> atmdc = ( List <Java8Parser.AnnotationTypeMemberDeclarationContext> )annotationTypeBodyContext.annotationTypeMemberDeclaration();
-        for ( Java8Parser.AnnotationTypeMemberDeclarationContext a : atmdc ) {
+        AnnotationTypeBodyContext annotationTypeBodyContext = ctx.annotationTypeBody();
+        List<AnnotationTypeMemberDeclarationContext> atmdc = ( List <AnnotationTypeMemberDeclarationContext> )annotationTypeBodyContext.annotationTypeMemberDeclaration();
+        for ( AnnotationTypeMemberDeclarationContext a : atmdc ) {
             TigerNode tn = new TigerNode( a.getText() );
             setLocations( tn, a );
             parent.addChild( tn );
@@ -1200,672 +1232,672 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
     @Override
-    public void exitAnnotationTypeBody( @NotNull Java8Parser.AnnotationTypeBodyContext ctx ) {
+    public void exitAnnotationTypeBody( @NotNull AnnotationTypeBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitAnnotationTypeMemberDeclaration( @NotNull Java8Parser.AnnotationTypeMemberDeclarationContext ctx ) {
+    public void exitAnnotationTypeMemberDeclaration( @NotNull AnnotationTypeMemberDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitAnnotationTypeElementDeclaration( @NotNull Java8Parser.AnnotationTypeElementDeclarationContext ctx ) {
+    public void exitAnnotationTypeElementDeclaration( @NotNull AnnotationTypeElementDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitAnnotationTypeElementModifier( @NotNull Java8Parser.AnnotationTypeElementModifierContext ctx ) {
+    public void exitAnnotationTypeElementModifier( @NotNull AnnotationTypeElementModifierContext ctx ) {
     }
 
 
     @Override
-    public void exitDefaultValue( @NotNull Java8Parser.DefaultValueContext ctx ) {
+    public void exitDefaultValue( @NotNull DefaultValueContext ctx ) {
     }
 
 
     @Override
-    public void exitAnnotation( @NotNull Java8Parser.AnnotationContext ctx ) {
+    public void exitAnnotation( @NotNull AnnotationContext ctx ) {
     }
 
 
     @Override
-    public void exitAnnotationIdentifier( @NotNull Java8Parser.AnnotationIdentifierContext ctx ) {
+    public void exitAnnotationIdentifier( @NotNull AnnotationIdentifierContext ctx ) {
     }
 
 
     @Override
-    public void exitAnnotationDim( @NotNull Java8Parser.AnnotationDimContext ctx ) {
+    public void exitAnnotationDim( @NotNull AnnotationDimContext ctx ) {
     }
 
 
     @Override
-    public void exitNormalAnnotation( @NotNull Java8Parser.NormalAnnotationContext ctx ) {
+    public void exitNormalAnnotation( @NotNull NormalAnnotationContext ctx ) {
     }
 
 
     @Override
-    public void exitElementValuePairList( @NotNull Java8Parser.ElementValuePairListContext ctx ) {
+    public void exitElementValuePairList( @NotNull ElementValuePairListContext ctx ) {
     }
 
 
     @Override
-    public void exitElementValuePair( @NotNull Java8Parser.ElementValuePairContext ctx ) {
+    public void exitElementValuePair( @NotNull ElementValuePairContext ctx ) {
     }
 
 
     @Override
-    public void exitElementValue( @NotNull Java8Parser.ElementValueContext ctx ) {
+    public void exitElementValue( @NotNull ElementValueContext ctx ) {
     }
 
 
     @Override
-    public void exitElementValueArrayInitializer( @NotNull Java8Parser.ElementValueArrayInitializerContext ctx ) {
+    public void exitElementValueArrayInitializer( @NotNull ElementValueArrayInitializerContext ctx ) {
     }
 
 
     @Override
-    public void exitElementValueList( @NotNull Java8Parser.ElementValueListContext ctx ) {
+    public void exitElementValueList( @NotNull ElementValueListContext ctx ) {
     }
 
 
     @Override
-    public void exitMarkerAnnotation( @NotNull Java8Parser.MarkerAnnotationContext ctx ) {
+    public void exitMarkerAnnotation( @NotNull MarkerAnnotationContext ctx ) {
     }
 
 
     @Override
-    public void exitSingleElementAnnotation( @NotNull Java8Parser.SingleElementAnnotationContext ctx ) {
+    public void exitSingleElementAnnotation( @NotNull SingleElementAnnotationContext ctx ) {
     }
 
 
     @Override
-    public void exitArrayInitializer( @NotNull Java8Parser.ArrayInitializerContext ctx ) {
+    public void exitArrayInitializer( @NotNull ArrayInitializerContext ctx ) {
     }
 
 
     @Override
-    public void exitVariableInitializerList( @NotNull Java8Parser.VariableInitializerListContext ctx ) {
+    public void exitVariableInitializerList( @NotNull VariableInitializerListContext ctx ) {
     }
 
 
     @Override
-    public void exitBlock( @NotNull Java8Parser.BlockContext ctx ) {
+    public void exitBlock( @NotNull BlockContext ctx ) {
     }
 
 
     @Override
-    public void exitBlockStatements( @NotNull Java8Parser.BlockStatementsContext ctx ) {
+    public void exitBlockStatements( @NotNull BlockStatementsContext ctx ) {
     }
 
 
     @Override
-    public void exitBlockStatement( @NotNull Java8Parser.BlockStatementContext ctx ) {
+    public void exitBlockStatement( @NotNull BlockStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitLocalVariableDeclarationStatement( @NotNull Java8Parser.LocalVariableDeclarationStatementContext ctx ) {
+    public void exitLocalVariableDeclarationStatement( @NotNull LocalVariableDeclarationStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitLocalVariableDeclaration( @NotNull Java8Parser.LocalVariableDeclarationContext ctx ) {
+    public void exitLocalVariableDeclaration( @NotNull LocalVariableDeclarationContext ctx ) {
     }
 
 
     @Override
-    public void exitStatement( @NotNull Java8Parser.StatementContext ctx ) {
+    public void exitStatement( @NotNull StatementContext ctx ) {
     }
 
 
     @Override
-    public void exitStatementNoShortIf( @NotNull Java8Parser.StatementNoShortIfContext ctx ) {
+    public void exitStatementNoShortIf( @NotNull StatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitStatementWithoutTrailingSubstatement( @NotNull Java8Parser.StatementWithoutTrailingSubstatementContext ctx ) {
+    public void exitStatementWithoutTrailingSubstatement( @NotNull StatementWithoutTrailingSubstatementContext ctx ) {
     }
 
 
     @Override
-    public void exitEmptyStatement( @NotNull Java8Parser.EmptyStatementContext ctx ) {
+    public void exitEmptyStatement( @NotNull EmptyStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitLabeledStatement( @NotNull Java8Parser.LabeledStatementContext ctx ) {
+    public void exitLabeledStatement( @NotNull LabeledStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitLabeledStatementNoShortIf( @NotNull Java8Parser.LabeledStatementNoShortIfContext ctx ) {
+    public void exitLabeledStatementNoShortIf( @NotNull LabeledStatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitExpressionStatement( @NotNull Java8Parser.ExpressionStatementContext ctx ) {
+    public void exitExpressionStatement( @NotNull ExpressionStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitStatementExpression( @NotNull Java8Parser.StatementExpressionContext ctx ) {
+    public void exitStatementExpression( @NotNull StatementExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitIfThenStatement( @NotNull Java8Parser.IfThenStatementContext ctx ) {
+    public void exitIfThenStatement( @NotNull IfThenStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitIfThenElseStatement( @NotNull Java8Parser.IfThenElseStatementContext ctx ) {
+    public void exitIfThenElseStatement( @NotNull IfThenElseStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitIfThenElseStatementNoShortIf( @NotNull Java8Parser.IfThenElseStatementNoShortIfContext ctx ) {
+    public void exitIfThenElseStatementNoShortIf( @NotNull IfThenElseStatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitAssertStatement( @NotNull Java8Parser.AssertStatementContext ctx ) {
+    public void exitAssertStatement( @NotNull AssertStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitSwitchStatement( @NotNull Java8Parser.SwitchStatementContext ctx ) {
+    public void exitSwitchStatement( @NotNull SwitchStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitSwitchBlock( @NotNull Java8Parser.SwitchBlockContext ctx ) {
+    public void exitSwitchBlock( @NotNull SwitchBlockContext ctx ) {
     }
 
 
     @Override
-    public void exitSwitchBlockStatementGroup( @NotNull Java8Parser.SwitchBlockStatementGroupContext ctx ) {
+    public void exitSwitchBlockStatementGroup( @NotNull SwitchBlockStatementGroupContext ctx ) {
     }
 
 
     @Override
-    public void exitSwitchLabels( @NotNull Java8Parser.SwitchLabelsContext ctx ) {
+    public void exitSwitchLabels( @NotNull SwitchLabelsContext ctx ) {
     }
 
 
     @Override
-    public void exitSwitchLabel( @NotNull Java8Parser.SwitchLabelContext ctx ) {
+    public void exitSwitchLabel( @NotNull SwitchLabelContext ctx ) {
     }
 
 
     @Override
-    public void exitEnumConstantName( @NotNull Java8Parser.EnumConstantNameContext ctx ) {
+    public void exitEnumConstantName( @NotNull EnumConstantNameContext ctx ) {
     }
 
 
     @Override
-    public void exitWhileStatement( @NotNull Java8Parser.WhileStatementContext ctx ) {
+    public void exitWhileStatement( @NotNull WhileStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitWhileStatementNoShortIf( @NotNull Java8Parser.WhileStatementNoShortIfContext ctx ) {
+    public void exitWhileStatementNoShortIf( @NotNull WhileStatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitDoStatement( @NotNull Java8Parser.DoStatementContext ctx ) {
+    public void exitDoStatement( @NotNull DoStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitForStatement( @NotNull Java8Parser.ForStatementContext ctx ) {
+    public void exitForStatement( @NotNull ForStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitForStatementNoShortIf( @NotNull Java8Parser.ForStatementNoShortIfContext ctx ) {
+    public void exitForStatementNoShortIf( @NotNull ForStatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitBasicForStatement( @NotNull Java8Parser.BasicForStatementContext ctx ) {
+    public void exitBasicForStatement( @NotNull BasicForStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitBasicForStatementNoShortIf( @NotNull Java8Parser.BasicForStatementNoShortIfContext ctx ) {
+    public void exitBasicForStatementNoShortIf( @NotNull BasicForStatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitForInit( @NotNull Java8Parser.ForInitContext ctx ) {
+    public void exitForInit( @NotNull ForInitContext ctx ) {
     }
 
 
     @Override
-    public void exitForUpdate( @NotNull Java8Parser.ForUpdateContext ctx ) {
+    public void exitForUpdate( @NotNull ForUpdateContext ctx ) {
     }
 
 
     @Override
-    public void exitStatementExpressionList( @NotNull Java8Parser.StatementExpressionListContext ctx ) {
+    public void exitStatementExpressionList( @NotNull StatementExpressionListContext ctx ) {
     }
 
 
     @Override
-    public void exitEnhancedForStatement( @NotNull Java8Parser.EnhancedForStatementContext ctx ) {
+    public void exitEnhancedForStatement( @NotNull EnhancedForStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitEnhancedForStatementNoShortIf( @NotNull Java8Parser.EnhancedForStatementNoShortIfContext ctx ) {
+    public void exitEnhancedForStatementNoShortIf( @NotNull EnhancedForStatementNoShortIfContext ctx ) {
     }
 
 
     @Override
-    public void exitBreakStatement( @NotNull Java8Parser.BreakStatementContext ctx ) {
+    public void exitBreakStatement( @NotNull BreakStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitContinueStatement( @NotNull Java8Parser.ContinueStatementContext ctx ) {
+    public void exitContinueStatement( @NotNull ContinueStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitReturnStatement( @NotNull Java8Parser.ReturnStatementContext ctx ) {
+    public void exitReturnStatement( @NotNull ReturnStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitThrowStatement( @NotNull Java8Parser.ThrowStatementContext ctx ) {
+    public void exitThrowStatement( @NotNull ThrowStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitSynchronizedStatement( @NotNull Java8Parser.SynchronizedStatementContext ctx ) {
+    public void exitSynchronizedStatement( @NotNull SynchronizedStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitTryStatement( @NotNull Java8Parser.TryStatementContext ctx ) {
+    public void exitTryStatement( @NotNull TryStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitCatches( @NotNull Java8Parser.CatchesContext ctx ) {
+    public void exitCatches( @NotNull CatchesContext ctx ) {
     }
 
 
     @Override
-    public void exitCatchClause( @NotNull Java8Parser.CatchClauseContext ctx ) {
+    public void exitCatchClause( @NotNull CatchClauseContext ctx ) {
     }
 
 
     @Override
-    public void exitCatchFormalParameter( @NotNull Java8Parser.CatchFormalParameterContext ctx ) {
+    public void exitCatchFormalParameter( @NotNull CatchFormalParameterContext ctx ) {
     }
 
 
     @Override
-    public void exitCatchType( @NotNull Java8Parser.CatchTypeContext ctx ) {
+    public void exitCatchType( @NotNull CatchTypeContext ctx ) {
     }
 
 
     @Override
-    public void exitFinally_( @NotNull Java8Parser.Finally_Context ctx ) {
+    public void exitFinally_( @NotNull Finally_Context ctx ) {
     }
 
 
     @Override
-    public void exitTryWithResourcesStatement( @NotNull Java8Parser.TryWithResourcesStatementContext ctx ) {
+    public void exitTryWithResourcesStatement( @NotNull TryWithResourcesStatementContext ctx ) {
     }
 
 
     @Override
-    public void exitResourceSpecification( @NotNull Java8Parser.ResourceSpecificationContext ctx ) {
+    public void exitResourceSpecification( @NotNull ResourceSpecificationContext ctx ) {
     }
 
 
     @Override
-    public void exitResourceList( @NotNull Java8Parser.ResourceListContext ctx ) {
+    public void exitResourceList( @NotNull ResourceListContext ctx ) {
     }
 
 
     @Override
-    public void exitResource( @NotNull Java8Parser.ResourceContext ctx ) {
+    public void exitResource( @NotNull ResourceContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimary( @NotNull Java8Parser.PrimaryContext ctx ) {
+    public void exitPrimary( @NotNull PrimaryContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray( @NotNull Java8Parser.PrimaryNoNewArrayContext ctx ) {
+    public void exitPrimaryNoNewArray( @NotNull PrimaryNoNewArrayContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lf_arrayAccess( @NotNull Java8Parser.PrimaryNoNewArray_lf_arrayAccessContext ctx ) {
+    public void exitPrimaryNoNewArray_lf_arrayAccess( @NotNull PrimaryNoNewArray_lf_arrayAccessContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lfno_arrayAccess( @NotNull Java8Parser.PrimaryNoNewArray_lfno_arrayAccessContext ctx ) {
+    public void exitPrimaryNoNewArray_lfno_arrayAccess( @NotNull PrimaryNoNewArray_lfno_arrayAccessContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lf_primary( @NotNull Java8Parser.PrimaryNoNewArray_lf_primaryContext ctx ) {
+    public void exitPrimaryNoNewArray_lf_primary( @NotNull PrimaryNoNewArray_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary( @NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx ) {
+    public void exitPrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary( @NotNull PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary( @NotNull Java8Parser.PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx ) {
+    public void exitPrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary( @NotNull PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lfno_primary( @NotNull Java8Parser.PrimaryNoNewArray_lfno_primaryContext ctx ) {
+    public void exitPrimaryNoNewArray_lfno_primary( @NotNull PrimaryNoNewArray_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary( @NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx ) {
+    public void exitPrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary( @NotNull PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary( @NotNull Java8Parser.PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx ) {
+    public void exitPrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary( @NotNull PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitClassInstanceCreationExpression( @NotNull Java8Parser.ClassInstanceCreationExpressionContext ctx ) {
+    public void exitClassInstanceCreationExpression( @NotNull ClassInstanceCreationExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitClassInstanceCreationExpression_lf_primary( @NotNull Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx ) {
+    public void exitClassInstanceCreationExpression_lf_primary( @NotNull ClassInstanceCreationExpression_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitClassInstanceCreationExpression_lfno_primary( @NotNull Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx ) {
+    public void exitClassInstanceCreationExpression_lfno_primary( @NotNull ClassInstanceCreationExpression_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitTypeArgumentsOrDiamond( @NotNull Java8Parser.TypeArgumentsOrDiamondContext ctx ) {
+    public void exitTypeArgumentsOrDiamond( @NotNull TypeArgumentsOrDiamondContext ctx ) {
     }
 
 
     @Override
-    public void exitFieldAccess( @NotNull Java8Parser.FieldAccessContext ctx ) {
+    public void exitFieldAccess( @NotNull FieldAccessContext ctx ) {
     }
 
 
     @Override
-    public void exitFieldAccess_lf_primary( @NotNull Java8Parser.FieldAccess_lf_primaryContext ctx ) {
+    public void exitFieldAccess_lf_primary( @NotNull FieldAccess_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitFieldAccess_lfno_primary( @NotNull Java8Parser.FieldAccess_lfno_primaryContext ctx ) {
+    public void exitFieldAccess_lfno_primary( @NotNull FieldAccess_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitArrayAccess( @NotNull Java8Parser.ArrayAccessContext ctx ) {
+    public void exitArrayAccess( @NotNull ArrayAccessContext ctx ) {
     }
 
 
     @Override
-    public void exitArrayAccess_lf_primary( @NotNull Java8Parser.ArrayAccess_lf_primaryContext ctx ) {
+    public void exitArrayAccess_lf_primary( @NotNull ArrayAccess_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitArrayAccess_lfno_primary( @NotNull Java8Parser.ArrayAccess_lfno_primaryContext ctx ) {
+    public void exitArrayAccess_lfno_primary( @NotNull ArrayAccess_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodInvocation( @NotNull Java8Parser.MethodInvocationContext ctx ) {
+    public void exitMethodInvocation( @NotNull MethodInvocationContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodInvocation_lf_primary( @NotNull Java8Parser.MethodInvocation_lf_primaryContext ctx ) {
+    public void exitMethodInvocation_lf_primary( @NotNull MethodInvocation_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodInvocation_lfno_primary( @NotNull Java8Parser.MethodInvocation_lfno_primaryContext ctx ) {
+    public void exitMethodInvocation_lfno_primary( @NotNull MethodInvocation_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitArgumentList( @NotNull Java8Parser.ArgumentListContext ctx ) {
+    public void exitArgumentList( @NotNull ArgumentListContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodReference( @NotNull Java8Parser.MethodReferenceContext ctx ) {
+    public void exitMethodReference( @NotNull MethodReferenceContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodReference_lf_primary( @NotNull Java8Parser.MethodReference_lf_primaryContext ctx ) {
+    public void exitMethodReference_lf_primary( @NotNull MethodReference_lf_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitMethodReference_lfno_primary( @NotNull Java8Parser.MethodReference_lfno_primaryContext ctx ) {
+    public void exitMethodReference_lfno_primary( @NotNull MethodReference_lfno_primaryContext ctx ) {
     }
 
 
     @Override
-    public void exitArrayCreationExpression( @NotNull Java8Parser.ArrayCreationExpressionContext ctx ) {
+    public void exitArrayCreationExpression( @NotNull ArrayCreationExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitDimExprs( @NotNull Java8Parser.DimExprsContext ctx ) {
+    public void exitDimExprs( @NotNull DimExprsContext ctx ) {
     }
 
 
     @Override
-    public void exitDimExpr( @NotNull Java8Parser.DimExprContext ctx ) {
+    public void exitDimExpr( @NotNull DimExprContext ctx ) {
     }
 
 
     @Override
-    public void exitConstantExpression( @NotNull Java8Parser.ConstantExpressionContext ctx ) {
+    public void exitConstantExpression( @NotNull ConstantExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitExpression( @NotNull Java8Parser.ExpressionContext ctx ) {
+    public void exitExpression( @NotNull ExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitLambdaExpression( @NotNull Java8Parser.LambdaExpressionContext ctx ) {
+    public void exitLambdaExpression( @NotNull LambdaExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitLambdaParameters( @NotNull Java8Parser.LambdaParametersContext ctx ) {
+    public void exitLambdaParameters( @NotNull LambdaParametersContext ctx ) {
     }
 
 
     @Override
-    public void exitInferredFormalParameterList( @NotNull Java8Parser.InferredFormalParameterListContext ctx ) {
+    public void exitInferredFormalParameterList( @NotNull InferredFormalParameterListContext ctx ) {
     }
 
 
     @Override
-    public void exitLambdaBody( @NotNull Java8Parser.LambdaBodyContext ctx ) {
+    public void exitLambdaBody( @NotNull LambdaBodyContext ctx ) {
     }
 
 
     @Override
-    public void exitAssignmentExpression( @NotNull Java8Parser.AssignmentExpressionContext ctx ) {
+    public void exitAssignmentExpression( @NotNull AssignmentExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitAssignment( @NotNull Java8Parser.AssignmentContext ctx ) {
+    public void exitAssignment( @NotNull AssignmentContext ctx ) {
     }
 
 
     @Override
-    public void exitLeftHandSide( @NotNull Java8Parser.LeftHandSideContext ctx ) {
+    public void exitLeftHandSide( @NotNull LeftHandSideContext ctx ) {
     }
 
 
     @Override
-    public void exitAssignmentOperator( @NotNull Java8Parser.AssignmentOperatorContext ctx ) {
+    public void exitAssignmentOperator( @NotNull AssignmentOperatorContext ctx ) {
     }
 
 
     @Override
-    public void exitAdditiveOperator( @NotNull Java8Parser.AdditiveOperatorContext ctx ) {
+    public void exitAdditiveOperator( @NotNull AdditiveOperatorContext ctx ) {
     }
 
 
     @Override
-    public void exitRelationalOperator( @NotNull Java8Parser.RelationalOperatorContext ctx ) {
+    public void exitRelationalOperator( @NotNull RelationalOperatorContext ctx ) {
     }
 
 
     @Override
-    public void exitMultiplicativeOperator( @NotNull Java8Parser.MultiplicativeOperatorContext ctx ) {
+    public void exitMultiplicativeOperator( @NotNull MultiplicativeOperatorContext ctx ) {
     }
 
 
     @Override
-    public void exitSquareBrackets( @NotNull Java8Parser.SquareBracketsContext ctx ) {
+    public void exitSquareBrackets( @NotNull SquareBracketsContext ctx ) {
     }
 
 
     @Override
-    public void exitConditionalExpression( @NotNull Java8Parser.ConditionalExpressionContext ctx ) {
+    public void exitConditionalExpression( @NotNull ConditionalExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitConditionalOrExpression( @NotNull Java8Parser.ConditionalOrExpressionContext ctx ) {
+    public void exitConditionalOrExpression( @NotNull ConditionalOrExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitConditionalAndExpression( @NotNull Java8Parser.ConditionalAndExpressionContext ctx ) {
+    public void exitConditionalAndExpression( @NotNull ConditionalAndExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitInclusiveOrExpression( @NotNull Java8Parser.InclusiveOrExpressionContext ctx ) {
+    public void exitInclusiveOrExpression( @NotNull InclusiveOrExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitExclusiveOrExpression( @NotNull Java8Parser.ExclusiveOrExpressionContext ctx ) {
+    public void exitExclusiveOrExpression( @NotNull ExclusiveOrExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitAndExpression( @NotNull Java8Parser.AndExpressionContext ctx ) {
+    public void exitAndExpression( @NotNull AndExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitEqualityExpression( @NotNull Java8Parser.EqualityExpressionContext ctx ) {
+    public void exitEqualityExpression( @NotNull EqualityExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitRelationalExpression( @NotNull Java8Parser.RelationalExpressionContext ctx ) {
+    public void exitRelationalExpression( @NotNull RelationalExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitShiftExpression( @NotNull Java8Parser.ShiftExpressionContext ctx ) {
+    public void exitShiftExpression( @NotNull ShiftExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitShiftOperator( @NotNull Java8Parser.ShiftOperatorContext ctx ) {
+    public void exitShiftOperator( @NotNull ShiftOperatorContext ctx ) {
     }
 
 
     @Override
-    public void exitAdditiveExpression( @NotNull Java8Parser.AdditiveExpressionContext ctx ) {
+    public void exitAdditiveExpression( @NotNull AdditiveExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitMultiplicativeExpression( @NotNull Java8Parser.MultiplicativeExpressionContext ctx ) {
+    public void exitMultiplicativeExpression( @NotNull MultiplicativeExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitUnaryExpression( @NotNull Java8Parser.UnaryExpressionContext ctx ) {
+    public void exitUnaryExpression( @NotNull UnaryExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitPreIncrementExpression( @NotNull Java8Parser.PreIncrementExpressionContext ctx ) {
+    public void exitPreIncrementExpression( @NotNull PreIncrementExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitPreDecrementExpression( @NotNull Java8Parser.PreDecrementExpressionContext ctx ) {
+    public void exitPreDecrementExpression( @NotNull PreDecrementExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitUnaryExpressionNotPlusMinus( @NotNull Java8Parser.UnaryExpressionNotPlusMinusContext ctx ) {
+    public void exitUnaryExpressionNotPlusMinus( @NotNull UnaryExpressionNotPlusMinusContext ctx ) {
     }
 
 
     @Override
-    public void exitPostfixExpression( @NotNull Java8Parser.PostfixExpressionContext ctx ) {
+    public void exitPostfixExpression( @NotNull PostfixExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitPostIncrementExpression( @NotNull Java8Parser.PostIncrementExpressionContext ctx ) {
+    public void exitPostIncrementExpression( @NotNull PostIncrementExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitPostIncrementExpression_lf_postfixExpression( @NotNull Java8Parser.PostIncrementExpression_lf_postfixExpressionContext ctx ) {
+    public void exitPostIncrementExpression_lf_postfixExpression( @NotNull PostIncrementExpression_lf_postfixExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitPostDecrementExpression( @NotNull Java8Parser.PostDecrementExpressionContext ctx ) {
+    public void exitPostDecrementExpression( @NotNull PostDecrementExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitPostDecrementExpression_lf_postfixExpression( @NotNull Java8Parser.PostDecrementExpression_lf_postfixExpressionContext ctx ) {
+    public void exitPostDecrementExpression_lf_postfixExpression( @NotNull PostDecrementExpression_lf_postfixExpressionContext ctx ) {
     }
 
 
     @Override
-    public void exitCastExpression( @NotNull Java8Parser.CastExpressionContext ctx ) {
+    public void exitCastExpression( @NotNull CastExpressionContext ctx ) {
     }
 
 
