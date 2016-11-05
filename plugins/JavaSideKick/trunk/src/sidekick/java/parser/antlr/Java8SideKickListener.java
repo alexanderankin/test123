@@ -11,9 +11,8 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sidekick.java.node.*;
-import sidekick.util.Location;
-
 import static sidekick.java.parser.antlr.Java8Parser.*;
+import sidekick.util.Location;
 
 
 public class Java8SideKickListener extends Java8BaseListener {
@@ -402,7 +401,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
                 if ( dctx.methodDeclaration() != null ) {
-                    processMethodDeclaration( parent, dctx );
+                    processMethodDeclaration( parent, dctx.methodDeclaration() );
                 }
 
 
@@ -415,84 +414,56 @@ public class Java8SideKickListener extends Java8BaseListener {
                     parent.addChild( stack.pop() );
                 }
             }
+            else if ( declaration.constructorDeclaration() != null ) {
+                processConstructorDeclaration( parent, declaration.constructorDeclaration() );
+            }
         }
         results.incClassCount();
         stack.push( parent );
     }
 
 
-    private void processFieldDeclaration( TigerNode parent, ClassMemberDeclarationContext dctx ) {
-        FieldDeclarationContext fieldCtx = dctx.fieldDeclaration();
+    private void processConstructorDeclaration( TigerNode parent, ConstructorDeclarationContext ctx ) {
+        ConstructorNode constructorNode = new ConstructorNode();
 
-        // type
-        Type type = new Type( fieldCtx.unannType().getText() );
-
-        // modifiers
-        int size = fieldCtx.fieldModifiers().fieldModifier().size();
-        String[] modifierNames = new String [size];
-        for ( int i = 0; i < size; i++ ) {
-            modifierNames[i] = fieldCtx.fieldModifiers().fieldModifier( i ).getText();
-        }
-        int modifiers = ModifierSet.getModifiers( modifierNames );
-
-        // variable declarations, make a field node per variable
-        size = fieldCtx.variableDeclaratorList().variableDeclarator().size();
-        for ( int i = 0; i < size; i++ ) {
-            VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator( i );
-            TigerNode tn = new FieldNode( vdc.variableDeclaratorId().getText(), modifiers, type );
-            setLocations( tn, vdc );
-            results.incReferenceFieldCount();
-            parent.addChild( tn );
-        }
-    }
-
-
-    private void processMethodDeclaration( TigerNode parent, ClassMemberDeclarationContext dctx ) {
-        MethodNode methodNode = new MethodNode();
-
-        MethodDeclarationContext methodDeclarationContext = dctx.methodDeclaration();
-        setLocations( methodNode, methodDeclarationContext );
+        setLocations( constructorNode, ctx );
 
         // modifiers
-        MethodModifiersContext methodModifierContext = methodDeclarationContext.methodModifiers();
-        int size = methodModifierContext.methodModifier().size();
+        int modifiers = 0;
+        ConstructorModifiersContext constructorModifierContext = ctx.constructorModifiers();
+        int size = constructorModifierContext.constructorModifier().size();
         String[] modifierNames = new String [size];
         for ( int i = 0; i < size; i++ ) {
-            modifierNames[i] = methodModifierContext.methodModifier( i ).getText();
+            modifierNames[i] = constructorModifierContext.constructorModifier( i ).getText();
         }
-        int modifiers = ModifierSet.getModifiers( modifierNames );
-        methodNode.setModifiers( modifiers );
+        modifiers = ModifierSet.getModifiers( modifierNames );
+        constructorNode.setModifiers( modifiers );
 
-        // method node constructor:
-        // public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
-        MethodHeaderContext methodHeaderContext = methodDeclarationContext.methodHeader();
+        ConstructorDeclaratorContext constructorDeclaratorContext = ctx.constructorDeclarator();
 
-        // return type
-        ResultContext rc = methodHeaderContext.result();
-        if ( rc != null ) {
+        // constructor name
+        String name = constructorDeclaratorContext.simpleTypeName().getText();
+        constructorNode.setName( name );
 
-            // method return type is a type or void
-            if ( rc.unannType() != null ) {
-                Type returnType = new Type( rc.unannType().getText() );
-                setLocations( returnType, rc );
-                methodNode.setReturnType( returnType );
+        // type parameters
+        if ( constructorDeclaratorContext.typeParameters() != null ) {
+            List<TypeParameterContext> typeParameterContexts = ( List <TypeParameterContext> )constructorDeclaratorContext.typeParameters().typeParameterList().typeParameter();
+            StringBuilder sb = new StringBuilder( "<" );
+            for ( TypeParameterContext typeParam : typeParameterContexts ) {
+                sb.append( typeParam.Identifier().getText() ).append( ',' );
             }
-            else {
-                Type returnType = new Type( "void" );
-                setLocations( returnType, rc );
-                methodNode.setReturnType( returnType );
+            if ( sb.length() > 1 ) {
+                sb.deleteCharAt( sb.length() - 1 );
             }
+
+
+            constructorNode.setTypeParams( sb.toString() + ">" );
         }
 
-
-        // method name
-        MethodDeclaratorContext methodDeclaratorContext = methodHeaderContext.methodDeclarator();
-        String name = methodDeclaratorContext.Identifier().getText();
-        methodNode.setName( name );
 
         // parameters
         // TODO: receiver parameter
-        FormalParameterListContext formalParameterListContext = methodDeclaratorContext.formalParameterList();
+        FormalParameterListContext formalParameterListContext = constructorDeclaratorContext.formalParameterList();
         if ( formalParameterListContext != null ) {
             FormalParametersContext formalParametersContext = formalParameterListContext.formalParameters();
 
@@ -515,7 +486,7 @@ public class Java8SideKickListener extends Java8BaseListener {
                         }
                         modifiers = ModifierSet.getModifiers( modifierNames );
                         parameterNode.setModifiers( modifiers );
-                        methodNode.addFormalParameter( parameterNode );
+                        constructorNode.addFormalParameter( parameterNode );
                     }
                 }
             }
@@ -565,6 +536,192 @@ public class Java8SideKickListener extends Java8BaseListener {
                         parameterNode.setModifiers( modifiers );
                     }
                 }
+
+
+                constructorNode.addFormalParameter( parameterNode );
+            }
+        }
+
+
+        // throws
+        Throws_Context throwsContext = ctx.throws_();
+        if ( throwsContext != null ) {
+            List<ExceptionTypeContext> exceptionTypeContext = ( List <ExceptionTypeContext> )throwsContext.exceptionTypeList().exceptionType();
+            List<TigerNode> exceptionList = new ArrayList<TigerNode>();
+            for ( ExceptionTypeContext e : exceptionTypeContext ) {
+                TigerNode tn = new TigerNode( e.getText() );
+                setLocations( tn, e );
+                exceptionList.add( tn );
+            }
+            constructorNode.setThrows( exceptionList );
+        }
+
+
+        results.incMethodCount();
+        parent.addChild( constructorNode );
+    }
+
+
+    private void processFieldDeclaration( TigerNode parent, ClassMemberDeclarationContext dctx ) {
+        FieldDeclarationContext fieldCtx = dctx.fieldDeclaration();
+
+        // type
+        Type type = new Type( fieldCtx.unannType().getText() );
+
+        // modifiers
+        int size = fieldCtx.fieldModifiers().fieldModifier().size();
+        String[] modifierNames = new String [size];
+        for ( int i = 0; i < size; i++ ) {
+            modifierNames[i] = fieldCtx.fieldModifiers().fieldModifier( i ).getText();
+        }
+        int modifiers = ModifierSet.getModifiers( modifierNames );
+
+        // variable declarations, make a field node per variable
+        size = fieldCtx.variableDeclaratorList().variableDeclarator().size();
+        for ( int i = 0; i < size; i++ ) {
+            VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator( i );
+            TigerNode tn = new FieldNode( vdc.variableDeclaratorId().getText(), modifiers, type );
+            setLocations( tn, vdc );
+            results.incReferenceFieldCount();
+            parent.addChild( tn );
+        }
+    }
+
+
+    private void processMethodDeclaration( TigerNode parent, ParserRuleContext ctx ) {
+        boolean methodCtx = ctx instanceof MethodDeclarationContext ? true : false;
+
+        MethodNode methodNode = new MethodNode();
+
+        setLocations( methodNode, ctx );
+
+        // modifiers
+        int modifiers = 0;
+        if ( methodCtx ) {
+            MethodModifiersContext methodModifierContext = ( ( MethodDeclarationContext )ctx ).methodModifiers();
+            int size = methodModifierContext.methodModifier().size();
+            String[] modifierNames = new String [size];
+            for ( int i = 0; i < size; i++ ) {
+                modifierNames[i] = methodModifierContext.methodModifier( i ).getText();
+            }
+            modifiers = ModifierSet.getModifiers( modifierNames );
+            methodNode.setModifiers( modifiers );
+        }
+        else {
+            List<InterfaceMethodModifierContext> modifierContexts = ( List <InterfaceMethodModifierContext> )( ( InterfaceMethodDeclarationContext )ctx ).interfaceMethodModifier();
+            int size = modifierContexts.size();
+            String[] modifierNames = new String [size];
+            for ( int i = 0; i < size; i++ ) {
+                modifierNames[i] = ( ( InterfaceMethodDeclarationContext )ctx ).interfaceMethodModifier( i ).getText();
+            }
+            modifiers = ModifierSet.getModifiers( modifierNames );
+            methodNode.setModifiers( modifiers );
+        }
+
+
+        // method node constructor:
+        // public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
+        MethodHeaderContext methodHeaderContext = methodCtx ? ( ( MethodDeclarationContext )ctx ).methodHeader() : ( ( InterfaceMethodDeclarationContext )ctx ).methodHeader();
+
+        // return type
+        ResultContext rc = methodHeaderContext.result();
+        if ( rc != null ) {
+
+            // method return type is a type or void
+            if ( rc.unannType() != null ) {
+                Type returnType = new Type( rc.unannType().getText() );
+                setLocations( returnType, rc );
+                methodNode.setReturnType( returnType );
+            }
+            else {
+                Type returnType = new Type( "void" );
+                setLocations( returnType, rc );
+                methodNode.setReturnType( returnType );
+            }
+        }
+
+
+        // method name
+        MethodDeclaratorContext methodDeclaratorContext = methodHeaderContext.methodDeclarator();
+        String name = methodDeclaratorContext.Identifier().getText();
+        methodNode.setName( name );
+
+        // parameters
+        // TODO: receiver parameter
+        FormalParameterListContext formalParameterListContext = methodDeclaratorContext.formalParameterList();
+        if ( formalParameterListContext != null ) {
+            FormalParametersContext formalParametersContext = formalParameterListContext.formalParameters();
+
+            if ( formalParametersContext != null ) {
+
+                List<FormalParameterContext> params = ( List <FormalParameterContext> )formalParametersContext.formalParameter();
+                if ( params != null ) {
+                    for ( FormalParameterContext param : params ) {
+                        Parameter parameterNode = new Parameter();
+                        setLocations( parameterNode, param );
+                        Type type = new Type( param.unannType().getText() );
+                        parameterNode.setType( type );
+                        parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+
+                        // modifiers
+                        int size = param.variableModifier().size();
+                        String[] modifierNames = new String [size];
+                        for ( int i = 0; i < size; i++ ) {
+                            modifierNames[i] = param.variableModifier( i ).getText();
+                        }
+                        modifiers = ModifierSet.getModifiers( modifierNames );
+                        parameterNode.setModifiers( modifiers );
+                        methodNode.addFormalParameter( parameterNode );
+                    }
+                }
+            }
+        }
+
+
+        // last formal parameter
+        if ( formalParameterListContext != null ) {
+            LastFormalParameterContext lastFormalParameterContext = formalParameterListContext.lastFormalParameter();
+            if ( lastFormalParameterContext != null ) {
+                Parameter parameterNode = new Parameter();
+                setLocations( parameterNode, lastFormalParameterContext );
+                if ( lastFormalParameterContext.formalParameter() != null ) {
+                    FormalParameterContext param = lastFormalParameterContext.formalParameter();
+                    Type type = new Type( param.unannType().getText() );
+                    parameterNode.setType( type );
+                    parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+
+                    // modifiers
+                    int size = param.variableModifier().size();
+                    String[] modifierNames = new String [size];
+                    for ( int i = 0; i < size; i++ ) {
+                        modifierNames[i] = param.variableModifier( i ).getText();
+                    }
+                    modifiers = ModifierSet.getModifiers( modifierNames );
+                    parameterNode.setModifiers( modifiers );
+                }
+                else {
+                    if ( lastFormalParameterContext.unannType() != null ) {
+                        Type type = new Type( lastFormalParameterContext.unannType().getText() );
+                        parameterNode.setType( type );
+                    }
+
+
+                    if ( lastFormalParameterContext.variableDeclaratorId() != null ) {
+                        parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().Identifier().getText() );
+                    }
+
+
+                    if ( lastFormalParameterContext.variableModifier() != null ) {
+                        int size = lastFormalParameterContext.variableModifier().size();
+                        String[] modifierNames = new String [size];
+                        for ( int i = 0; i < size; i++ ) {
+                            modifierNames[i] = lastFormalParameterContext.variableModifier( i ).getText();
+                        }
+                        modifiers = ModifierSet.getModifiers( modifierNames );
+                        parameterNode.setModifiers( modifiers );
+                    }
+                }
+
 
                 methodNode.addFormalParameter( parameterNode );
             }
@@ -852,12 +1009,6 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
-    /**
-     * constructorDeclaration
-     * 	:	constructorModifiers constructorDeclarator throws_? constructorBody
-     * 	;
-     * TODO: fill this in
-     */
     @Override
     public void exitConstructorDeclaration( @NotNull ConstructorDeclarationContext ctx ) {
     }
@@ -957,7 +1108,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
                     if ( dctx.methodDeclaration() != null ) {
-                        processMethodDeclaration( parent, dctx );
+                        processMethodDeclaration( parent, dctx.methodDeclaration() );
                     }
 
 
@@ -1070,7 +1221,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
             if ( i.interfaceMethodDeclaration() != null ) {
-                processInterfaceMethodDeclaration( parent, i );
+                processMethodDeclaration( parent, i.interfaceMethodDeclaration() );
             }
 
 
@@ -1147,11 +1298,6 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
         stack.push( parent );
-    }
-
-
-    // TODO: finish this
-    private void processInterfaceMethodDeclaration( TigerNode parent, InterfaceMemberDeclarationContext ctx ) {
     }
 
 
