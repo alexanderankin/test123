@@ -44,6 +44,7 @@ public class Java8BeautyListener implements Java8Listener {
     private boolean brokenBracket = false;
     private boolean breakElse = true;
     private boolean padParens = false;
+    private boolean padOperators = true;
     private int blankLinesBeforePackage = 0;            
     private int blankLinesAfterPackage = 1;             
     private int blankLinesAfterImports = 2;             
@@ -109,6 +110,10 @@ Formatting settings
     
     public void setPadParens(boolean pad) {
         padParens = pad; 
+    }
+    
+    public void setPadOperators(boolean pad) {
+        padOperators = pad;   
     }
     
     public void setBlankLinesBeforePackage(int lines) {
@@ -936,6 +941,17 @@ Formatting methods.
 	    }
 	    return sb.toString();
 	}
+
+	// puts a space before and after the given operator
+	private String padOperator(String operator) {
+	    operator = operator.trim();
+	    if (padOperators) {
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(' ').append(operator).append(' ');
+	        operator = sb.toString();
+	    }
+	    return operator;
+	}
 	
 	
 //}}}    
@@ -1128,8 +1144,9 @@ Parser methods follow.
 
 	@Override public void enterRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { }
 	
-	@Override public void exitRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	@Override public void exitRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) {
+	    stack.pop();
+	    stack.push(padOperator(ctx.getText()));
 	}
 	
 	@Override public void enterConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
@@ -1162,8 +1179,9 @@ Parser methods follow.
         // |   '>>>'
         // |   '>>'  
  	}
-	@Override public void exitShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	@Override public void exitShiftOperator(@NotNull Java8Parser.ShiftOperatorContext ctx) {
+	    //stack.pop();
+	    //stack.push(padOperator(ctx.getText()));
 	}
 	
 	@Override public void enterClassBodyDeclaration(@NotNull Java8Parser.ClassBodyDeclarationContext ctx) {
@@ -1681,10 +1699,11 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String vi = ctx.variableInitializer() == null ? "" : stack.pop();
 	    String equal = ctx.variableInitializer() == null ? "" : stack.pop();
+	    equal = padOperator(equal);
 	    String vd = stack.pop();
 	    sb.append(vd);
 	    if (!vi.isEmpty()) {
-	        sb.append(' ').append(equal).append(' ').append(vi);    
+	        sb.append(equal).append(vi);    
 	    }
 	    stack.push(sb.toString());
 	}
@@ -2229,8 +2248,9 @@ Parser methods follow.
 	@Override public void enterMultiplicativeOperator(@NotNull Java8Parser.MultiplicativeOperatorContext ctx) { 
 	    // one of: * / %
 	}
-	@Override public void exitMultiplicativeOperator(@NotNull Java8Parser.MultiplicativeOperatorContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	@Override public void exitMultiplicativeOperator(@NotNull Java8Parser.MultiplicativeOperatorContext ctx) {
+	    stack.pop();
+	    stack.push(padOperator(ctx.getText()));
 	}
 	
 	@Override public void enterVariableInitializerList(@NotNull Java8Parser.VariableInitializerListContext ctx) {
@@ -2594,6 +2614,7 @@ Parser methods follow.
 	    String rparen = stack.pop();
 	    String expression = stack.pop();
 	    String colon = stack.pop();
+	    colon = padOperator(colon);
 	    String vdi = stack.pop();
 	    String type = stack.pop();
 	    String modifiers = "";
@@ -2602,7 +2623,7 @@ Parser methods follow.
 	    }
 	    String lparen = stack.pop();
 	    String for_ = stack.pop();
-	    sb.append(for_).append(' ').append(padParen(lparen)).append(modifiers).append(type).append(' ').append(vdi).append(' ').append(colon).append(' ').append(expression).append(padParen(rparen)).append(' ').append(statement);
+	    sb.append(for_).append(' ').append(padParen(lparen)).append(modifiers).append(type).append(' ').append(vdi).append(colon).append(expression).append(padParen(rparen)).append(' ').append(statement);
 	    stack.push(sb.toString());
 	}
 
@@ -2657,15 +2678,22 @@ Parser methods follow.
         String body = stack.pop().trim();
 	    String header = stack.pop();
 	    String modifiers = "";
+	    boolean isAbstract = false;
 	    if (ctx.methodModifiers().methodModifier().size() > 0) {
             modifiers = stack.pop().trim();
-            modifiers = removeBlankLines(modifiers, START);    
+            modifiers = removeBlankLines(modifiers, START);
+            isAbstract = modifiers.indexOf("abstract") > -1;
 	    }
 	    else {
 	        indent(sb);   
 	    }
 	    addBlankLines(blankLinesBeforeMethods);
-	    sb.append(modifiers).append(' ').append(header).append(brokenBracket ? '\n' : ' ').append(body).append(getBlankLines(blankLinesAfterMethods + 1));
+	    sb.append(modifiers).append(' ').append(header);
+	    if (!isAbstract) {
+	        sb.append(brokenBracket ? '\n' : ' ');
+	    }
+	    sb.append(body);
+	    sb.append(getBlankLines(blankLinesAfterMethods + 1));
 	    stack.push(sb.toString());
 	}
 
@@ -3499,8 +3527,9 @@ Parser methods follow.
         // :   '+'
         // |   '-'
 	}
-	@Override public void exitAdditiveOperator(@NotNull Java8Parser.AdditiveOperatorContext ctx) { 
-	    // nothing to do here, one of the choices should already be on the stack.
+	@Override public void exitAdditiveOperator(@NotNull Java8Parser.AdditiveOperatorContext ctx) {
+	    stack.pop();
+	    stack.push(padOperator(ctx.getText()));
 	}
 
 	@Override public void enterSuperclass(@NotNull Java8Parser.SuperclassContext ctx) { 
@@ -3643,18 +3672,20 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String additiveExpression = stack.pop();
 	    if (ctx.shiftExpression() != null) {
-	        // 2 or 3 shift operator symbols on the stack, either "<" "<", or ">" ">" or ">" ">" ">"
-	        StringBuilder shiftOperator = new StringBuilder(stack.pop()).append(stack.pop());
-	         String rangle = stack.pop();
-	         String shiftExpression;
-	         if (">".equals(rangle)) {
-	             shiftOperator.append(rangle);
-	             shiftExpression = stack.pop();
-	         }
-	         else {
-	             shiftExpression = rangle;    
-	         }
-	         sb.append(shiftExpression).append(' ').append(shiftOperator).append(' ');
+            // 2 or 3 shift operator symbols on the stack, either "<" "<", or ">" ">" or ">" ">" ">"
+            StringBuilder shiftOperator = new StringBuilder(stack.pop()).append(stack.pop());
+            String so = "";
+            String rangle = stack.pop();
+            String shiftExpression;
+            if (">".equals(rangle)) {
+                shiftOperator.append(rangle);
+                shiftExpression = stack.pop();
+            }
+            else {
+                shiftExpression = rangle;    
+            }
+            so = padOperator(shiftOperator.toString());
+            sb.append(shiftExpression).append(so);
 	    }
 	    sb.append(additiveExpression);
 	    stack.push(sb.toString());
@@ -3735,8 +3766,9 @@ Parser methods follow.
 	    String re = stack.pop();
 	    if (ctx.equalityExpression() != null) {
 	        String operator = stack.pop();
+	        operator = padOperator(operator);
 	        String ee = stack.pop();
-	        sb.append(ee).append(' ').append(operator).append(' ');
+	        sb.append(ee).append(operator);
 	    }
 	    sb.append(re);
 	    stack.push(sb.toString());
@@ -4163,7 +4195,8 @@ Parser methods follow.
 	    // (one of) =  *=  /=  %=  +=  -=  <<=  >>=  >>>=  &=  ^=  |=
 	}
 	@Override public void exitAssignmentOperator(@NotNull Java8Parser.AssignmentOperatorContext ctx) {
-	    // nothing to do here, one of the choices should already be on the stack.
+	    stack.pop();
+	    stack.push(padOperator(ctx.getText()));
 	}
 
 	@Override public void enterLabeledStatementNoShortIf(@NotNull Java8Parser.LabeledStatementNoShortIfContext ctx) { 
@@ -4566,20 +4599,28 @@ Parser methods follow.
 	        if (ctx.catches() != null) {
 	            catches = stack.pop().trim();
 	        }
-	        String block = stack.pop();
-	        block = block.trim();
+	        String block = stack.pop().trim();
             if (bracketStyle == BROKEN) {
                 block = new StringBuilder("\n").append(block).toString();
             }
 	        String try_ = stack.pop();
+	        if (!try_.startsWith("\n")) {
+	            try_ = new StringBuilder("\n").append(try_).toString();
+	        }
 	        sb.append(try_).append(' ').append(block).append(breakElse ? '\n' : ' ').append(catches).append(breakElse ? '\n' : ' ').append(finally_);
 	    }
 	    else {
 	        // first option
 	        String catches = stack.pop();
 	        catches = trimFront(catches);
-	        String block = stack.pop();
+	        String block = stack.pop().trim();
+            if (bracketStyle == BROKEN) {
+                block = new StringBuilder("\n").append(block).toString();
+            }
 	        String try_ = stack.pop();
+	        if (!try_.startsWith("\n")) {
+	            try_ = new StringBuilder("\n").append(try_).toString();
+	        }
 	        sb.append(try_).append(' ').append(block).append(breakElse ? '\n' : ' ').append(catches);
 	    }
 	    stack.push(sb.toString());
@@ -4963,7 +5004,7 @@ Parser methods follow.
 	    String expression = stack.pop();
 	    String operator = stack.pop();
 	    String lhs = stack.pop();
-	    sb.append(lhs).append(' ').append(operator).append(' ').append(expression);
+	    sb.append(lhs).append(operator).append(expression);
 	    stack.push(sb.toString());
 	}
 

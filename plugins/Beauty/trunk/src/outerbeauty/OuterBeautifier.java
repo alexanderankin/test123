@@ -1,3 +1,4 @@
+
 /*
  * OuterBeautifier.java - Beautifier calling an external program
  * :tabSize=4:indentSize=4:noTabs=false:
@@ -8,6 +9,9 @@
  * The OuterBeauty plugin is licensed under the GNU General Public License.
  */
 package outerbeauty;
+
+
+import beauty.beautifiers.Beautifier;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +28,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
-import beauty.beautifiers.Beautifier;
 
 /**
  * Base class for beautifiers using external programs.
@@ -38,17 +41,20 @@ import beauty.beautifiers.Beautifier;
  * <p>Standard error is logged.</p>
  **/
 public abstract class OuterBeautifier extends Beautifier {
-	
+
 	/**
 	 * Beauty plugin interface
 	 **/
 	@Override
-	public String beautify(String text) {
-		if(isTempFileRequired()){
-			throw new UnsupportedOperationException("only supports piping atm");
+	public String beautify( String text ) {
+		if ( isTempFileRequired() ) {
+			throw new UnsupportedOperationException( "only supports piping atm" );
 		}
-		return runBeautifier(text);
+
+
+		return runBeautifier( text );
 	}
+
 
 	/**
 	 * the external beautifier to run.
@@ -63,13 +69,16 @@ public abstract class OuterBeautifier extends Beautifier {
 	 **/
 	protected abstract List<String> getCommandLine();
 
-	protected void setEnvironment(Map<String, String> env) {
+
+	protected void setEnvironment( Map<String, String> env ) {
 		return;
 	}
-	
+
+
 	protected File getWorkingDirectory() {
-		return null;	
+		return null;
 	}
+
 
 	/**
 	 * Unimplemented.
@@ -82,6 +91,7 @@ public abstract class OuterBeautifier extends Beautifier {
 		return false;
 	}
 
+
 	/**
 	 * text to beautify is sent as UTF-8 by default.
 	 * Override this method if the external program
@@ -90,11 +100,13 @@ public abstract class OuterBeautifier extends Beautifier {
 	 */
 	protected Charset getCharset() {
 		try {
-			return Charset.forName("UTF-8");
-		} catch (UnsupportedCharsetException e) {
-			throw new AssertionError("UTF-8 should be available", e);
+			return Charset.forName( "UTF-8" );
+		}
+		catch ( UnsupportedCharsetException e ) {
+			throw new AssertionError( "UTF-8 should be available", e );
 		}
 	}
+
 
 	/**
 	 * beautify text using external program.
@@ -107,32 +119,34 @@ public abstract class OuterBeautifier extends Beautifier {
 	 * @param text text to format
 	 * @return formatted text or null on error
 	 */
-	protected String runBeautifier(String text){
+	protected String runBeautifier( String text ) {
 		List<String> cmdLine = getCommandLine();
 
-		ProcessBuilder builder = new ProcessBuilder(cmdLine);
-		if (getWorkingDirectory() != null) {
-			builder.directory(getWorkingDirectory());
+		ProcessBuilder builder = new ProcessBuilder( cmdLine );
+		if ( getWorkingDirectory() != null ) {
+			builder.directory( getWorkingDirectory() );
 		}
+
 
 		Map<String, String> env = builder.environment();
 
-		setEnvironment(env);
+		setEnvironment( env );
 
 		Process p = null;
 		try {
 			p = builder.start();
-		} catch (IOException e) {
-			reportError("Error launching external beautifier", e,
-					null, null);
+		}
+		catch ( IOException e ) {
+			reportError( "Error launching external beautifier", e,
+			null, null );
 			return null;
 		}
 
 		Charset charset = getCharset();
 
-		Outputter toProcess = new Outputter(new OutputStreamWriter(p.getOutputStream(), charset), text);
-		InputExhauster fromProcess = new InputExhauster(new InputStreamReader(p.getInputStream(), charset), text.length());
-		InputExhauster errorsProcess = new InputExhauster(new InputStreamReader(p.getErrorStream(), charset), 0);
+		Outputter toProcess = new Outputter( new OutputStreamWriter( p.getOutputStream(), charset ), text );
+		InputExhauster fromProcess = new InputExhauster( new InputStreamReader( p.getInputStream(), charset ), text.length() );
+		InputExhauster errorsProcess = new InputExhauster( new InputStreamReader( p.getErrorStream(), charset ), 0 );
 
 		fromProcess.start();
 		errorsProcess.start();
@@ -144,49 +158,60 @@ public abstract class OuterBeautifier extends Beautifier {
 			toProcess.join();
 			fromProcess.join();
 			errorsProcess.join();
-		} catch (InterruptedException e) {
-			reportError("Interrupted waiting for external beautifier", e,
-					fromProcess, errorsProcess);
+		}
+		catch ( InterruptedException e ) {
+			reportError( "Interrupted waiting for external beautifier", e,
+			fromProcess, errorsProcess );
 			return null;
 		}
-		if(ret != 0){
-			reportError("external beautifier non-zero exit code: "+ret, null,
-					fromProcess, errorsProcess);
+		if ( ret != 0 ) {
+			reportError( "external beautifier non-zero exit code: "  +  ret, null,
+			fromProcess, errorsProcess );
 			return null;
-		}else if(toProcess.error != null){
-			reportError("couldn't send all the text to external beautifier", toProcess.error,
-					fromProcess, errorsProcess);
-			return null;
-		}else if(fromProcess.error != null){
-			reportError("couldn't read all the text from external beautifier", fromProcess.error,
-					fromProcess, errorsProcess);
-			return null;
-		}else if(errorsProcess.error != null){
-			reportError("couldn't read all the errors from external beautifier", errorsProcess.error,
-					fromProcess, errorsProcess);
-			return null;
-		}else if(errorsProcess.buffer.length()>0){
-			Log.log(Log.WARNING, "external beautifier outputs error",
-					errorsProcess.buffer.toString());
 		}
+		else if ( toProcess.error != null ) {
+			reportError( "couldn't send all the text to external beautifier", toProcess.error,
+			fromProcess, errorsProcess );
+			return null;
+		}
+		else if ( fromProcess.error != null ) {
+			reportError( "couldn't read all the text from external beautifier", fromProcess.error,
+			fromProcess, errorsProcess );
+			return null;
+		}
+		else if ( errorsProcess.error != null ) {
+			reportError( "couldn't read all the errors from external beautifier", errorsProcess.error,
+			fromProcess, errorsProcess );
+			return null;
+		}
+		else if ( errorsProcess.buffer.length()  >  0 ) {
+			Log.log( Log.WARNING, "external beautifier outputs error",
+			errorsProcess.buffer.toString() );
+		}
+
 
 		return fromProcess.buffer.toString();
 	}
 
-	protected void reportError(String message, Throwable cause,
-			InputExhauster fromProcess, InputExhauster errorsProcess){
 
-		Log.log(Log.ERROR, OuterBeautifier.class, message, cause);
-		if(fromProcess!=null){
-			Log.log(Log.ERROR, OuterBeautifier.class,
-					"external beautifier output:\n"+ fromProcess.buffer.toString());
+	protected void reportError( String message, Throwable cause,
+	InputExhauster fromProcess, InputExhauster errorsProcess ) {
+
+		Log.log( Log.ERROR, OuterBeautifier.class, message, cause );
+		if ( fromProcess != null ) {
+			Log.log( Log.ERROR, OuterBeautifier.class, "external beautifier output:\n"  +  fromProcess.buffer.toString() );
 		}
-		if(errorsProcess != null){
-			Log.log(Log.ERROR, OuterBeautifier.class,
-					"external beautifier error:\n" + errorsProcess.buffer.toString());
+
+
+		if ( errorsProcess != null ) {
+			Log.log( Log.ERROR, OuterBeautifier.class, "external beautifier error:\n"  +  errorsProcess.buffer.toString() );
 		}
-		jEdit.getActiveView().getStatus().setMessage("Error beautifying. See Activity log.");
+
+
+		jEdit.getActiveView().getStatus().setMessage( "Error beautifying. See Activity log." );
 	}
+
+
 
 	/**
 	 * reads fully from provided input and stores in buffer.
@@ -195,30 +220,39 @@ public abstract class OuterBeautifier extends Beautifier {
 	 * class : it stores everything in memory.
 	 **/
 	protected static class InputExhauster extends Thread {
+
 		private Reader in;
 		private StringBuilder buffer;
 		private IOException error;
 
-		InputExhauster(Reader in, int expectedLength) {
-			buffer = (expectedLength > 0) ? new StringBuilder(expectedLength) : new StringBuilder();
+
+
+
+		InputExhauster( Reader in, int expectedLength ) {
+			buffer = ( expectedLength  >  0 ) ? new StringBuilder( expectedLength ) : new StringBuilder();
 			this.in = in;
 		}
 
+
 		public void run() {
-			char[] buf = new char[4096];
+			char[] buf = new char [4096];
 			int read;
+
 			try {
-				while ((read = in.read(buf)) != -1) {
-					if (read > 0) {
-						buffer.append(buf, 0, read);
+				while ( ( read = in.read( buf ) ) !=  - 1 ) {
+					if ( read  >  0 ) {
+						buffer.append( buf, 0, read );
 					}
 				}
-			} catch (IOException e) {
+			}
+			catch ( IOException e ) {
 				error = e;
 			}
-			IOUtilities.closeQuietly(in);
+			IOUtilities.closeQuietly( in );
 		}
 	}
+
+
 
 	/**
 	 * writes text to output and exits.
@@ -226,22 +260,28 @@ public abstract class OuterBeautifier extends Beautifier {
 	 * Should it feed the external beautifier smaller pieces?
 	 **/
 	protected static class Outputter extends Thread {
+
 		private Writer out;
 		private String toWrite;
 		private IOException error;
 
-		Outputter(Writer out, String toWrite) {
+
+
+
+		Outputter( Writer out, String toWrite ) {
 			this.out = out;
 			this.toWrite = toWrite;
 		}
 
+
 		public void run() {
 			try {
-				out.write(toWrite);
-			} catch (IOException e) {
+				out.write( toWrite );
+			}
+			catch ( IOException e ) {
 				error = e;
 			}
-			IOUtilities.closeQuietly(out);
+			IOUtilities.closeQuietly( out );
 		}
 	}
 }

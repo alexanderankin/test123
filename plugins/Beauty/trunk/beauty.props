@@ -156,6 +156,7 @@ beauty.msg.Use_attached_brackets,_e.g.=Use attached brackets, e.g.
 beauty.msg.Use_broken_brackets,_e.g.=Use broken brackets, e.g.
 beauty.msg.Break=Break
 beauty.msg.Pad_parenthesis,_e.g._=Pad parenthesis, e.g. 
+beauty.msg.Pad_operators,_e.g._=Pad operators, e.g.
 beauty.msg.JSP_Options=JSP Options
 beauty.msg.Pad_tag_slash_end_(/>)=Pad tag slash end (/>)
 beauty.msg.Pad_tag_end_(>)=Pad tag end (>)

@@ -28,6 +28,7 @@ public class JavaOptionPane extends JPanel {
     private int bracketStyle;
     private JCheckBox breakElse;
     private JCheckBox padParens;
+    private JCheckBox padOperators;
 
     public JavaOptionPane() {
         super();
@@ -68,9 +69,13 @@ public class JavaOptionPane extends JPanel {
                 break;
         }
 
-
+        // default both of these padding parameters to true, since no one likes scrunchy, unreadable code.
         padParens = new JCheckBox( jEdit.getProperty( "beauty.msg.Pad_parenthesis,_e.g._", "Pad parenthesis, e.g. " ) + "if ( i == 1 ) versus if (i == 1)" );
-        padParens.setSelected( jEdit.getBooleanProperty( "beauty.java.padParens", false ) );
+        padParens.setSelected( jEdit.getBooleanProperty( "beauty.java.padParens", true ) );
+
+        padOperators = new JCheckBox( jEdit.getProperty( "beauty.msg.Pad_operators,_e.g._", "Pad operators, e.g. " ) + "if (i==1) versus if (i == 1)" );
+        padOperators.setSelected( jEdit.getBooleanProperty( "beauty.java.padOperators", true ) );
+        
         ActionListener al = new ActionListener(){
 
             public void actionPerformed( ActionEvent ae ) {
@@ -93,11 +98,13 @@ public class JavaOptionPane extends JPanel {
         add( "0, 2, 1, 1, W, w, 3", brokenBrackets );
         add( "0, 3, 1, 1, W, w, 3", breakElse );
         add( "0, 4, 1, 1, W, w, 3", padParens );
+        add( "0, 5, 1, 1, W, w, 3", padOperators );
     }
 
     public void _save() {
         jEdit.setIntegerProperty( "beauty.java.bracketStyle", bracketStyle );
         jEdit.setBooleanProperty( "beauty.java.breakElse", breakElse.isSelected() );
         jEdit.setBooleanProperty( "beauty.java.padParens", padParens.isSelected() );
+        jEdit.setBooleanProperty( "beauty.java.padOperators", padOperators.isSelected() );
     }
 }

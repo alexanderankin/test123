@@ -14,7 +14,6 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.*;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -23,6 +22,7 @@ public class Java8Beautifier extends Beautifier {
     private int bracketStyle = 1;    // JavaParser.ATTACHED;
     private boolean breakElse = false;
     private boolean padParens = false;
+    private boolean padOperators = false;
     private int blankLinesBeforePackage = 0;
     private int blankLinesAfterPackage = 1;
     private int blankLinesAfterImports = 2;
@@ -40,6 +40,7 @@ public class Java8Beautifier extends Beautifier {
         bracketStyle = jEdit.getIntegerProperty( "beauty.java.bracketStyle", Java8BeautyListener.ATTACHED );
         breakElse = jEdit.getBooleanProperty( "beauty.java.breakElse", true );
         padParens = jEdit.getBooleanProperty( "beauty.java.padParens", false );
+        padOperators = jEdit.getBooleanProperty( "beauty.java.padOperators", false );
         blankLinesBeforePackage = jEdit.getIntegerProperty( "beauty.java8.blankLinesBeforePackage", 0 );
         blankLinesAfterPackage = jEdit.getIntegerProperty( "beauty.java8.blankLinesAfterPackage", 1 );
         blankLinesAfterImports = jEdit.getIntegerProperty( "beauty.java8.blankLinesAfterImports", 2 );
@@ -78,6 +79,7 @@ public class Java8Beautifier extends Beautifier {
             listener.setBracketStyle( bracketStyle );
             listener.setBreakElse( breakElse );
             listener.setPadParens( padParens );
+            listener.setPadOperators( padOperators );
             listener.setBlankLinesBeforePackage( blankLinesBeforePackage );
             listener.setBlankLinesAfterPackage( blankLinesAfterPackage );
             listener.setBlankLinesAfterImports( blankLinesAfterImports );
@@ -122,7 +124,7 @@ public class Java8Beautifier extends Beautifier {
 
                 // reparse with full LL(*)
                 javaParser.getInterpreter().setPredictionMode( PredictionMode.LL );
-                long parseTime = System.currentTimeMillis();
+                //long parseTime = System.currentTimeMillis();
                 tree = javaParser.compilationUnit();
             }
 
