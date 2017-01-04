@@ -36,8 +36,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import org.gjt.sp.util.Log;
 
 class ModeConfigPanel {
+
 	private static final Logger L=Logger.getLogger(ModeConfigPanel.class.getName());
 	//static { L.setLevel(Level.ALL); }
 
@@ -47,7 +49,8 @@ class ModeConfigPanel {
 	final JCheckBox useIgnoreLineRegexCB=new JCheckBox("Ignore lines matching regex:");
 	final JTextField ignoreLineRegexTF=new JTextField(12);
 	final JCheckBox showStripOn0IndentCB=new JCheckBox("Show indentation-guide on left edge");
-	final JCheckBox drawThinStripesCB=new JCheckBox("Draw thin stripes");
+	final JCheckBox drawThinStripesCB=new JCheckBox("Thinner stripes by factor:");
+	final JTextField drawThinStripesFactorTF=new JTextField(4);
 	final JCheckBox useThinStripesPixelSizeCB=new JCheckBox("Use always 1 pixel");
 	private final StripConfigsTable stripConfigsTable=new StripConfigsTable();
 	private final JPanel tablePanel=new JPanel(new BorderLayout());
@@ -64,71 +67,79 @@ class ModeConfigPanel {
 
 		Box box=new Box(BoxLayout.Y_AXIS);
 		enabledCB.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent ev) {
-						if(modeConfig!=null)
-							modeConfig.setEnabled(enabledCB.isSelected());
-						updateView();
-					}
-				}
-															 );
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				if(modeConfig!=null)
+					modeConfig.setEnabled(enabledCB.isSelected());
+				updateView();
+			}
+		}
+								   );
 		box.add(enabledCB);
 		Box p=new Box(BoxLayout.X_AXIS);
 		p.setAlignmentX(0);
-		useIgnoreLineRegexCB.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent ev){
-						boolean useIgnoreLineRegex=useIgnoreLineRegexCB.isSelected();
-						if(modeConfig!=null)
-							modeConfig.setUseIgnoreLineRegex(useIgnoreLineRegex);
-						updateView();
-						if(useIgnoreLineRegex){
-							if(ignoreLineRegexTF.getText().trim().length()==0){
-								ignoreLineRegexTF.setText("\\s*\\S\\s*$");
-								ignoreLineRegexTF.selectAll();
-							}
-							ignoreLineRegexTF.requestFocus();
-						}
+		useIgnoreLineRegexCB.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				boolean useIgnoreLineRegex=useIgnoreLineRegexCB.isSelected();
+				if(modeConfig!=null)
+					modeConfig.setUseIgnoreLineRegex(useIgnoreLineRegex);
+				updateView();
+				if(useIgnoreLineRegex) {
+					if(ignoreLineRegexTF.getText().trim().length()==0) {
+						ignoreLineRegexTF.setText("\\s*\\S\\s*$");
+						ignoreLineRegexTF.selectAll();
 					}
-				});
+					ignoreLineRegexTF.requestFocus();
+				}
+			}
+		});
 		p.add(useIgnoreLineRegexCB);
-		ignoreLineRegexTF.addFocusListener(new FocusAdapter(){
-					@Override
-					public void focusLost(FocusEvent ev){
-						updateModeConfigIgnoreLineRegex();
-						updateView();
-					}
-				});
+		ignoreLineRegexTF.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent ev) {
+				updateModeConfigIgnoreLineRegex();
+				updateView();
+			}
+		});
 		p.add(ignoreLineRegexTF);
 		box.add(p);
-		showStripOn0IndentCB.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent ev){
-						if(modeConfig!=null)
-							modeConfig.setShowStripOn0Indent(showStripOn0IndentCB.isSelected());
-						updateView();
-					}
-				});
+		showStripOn0IndentCB.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				if(modeConfig!=null)
+					modeConfig.setShowStripOn0Indent(showStripOn0IndentCB.isSelected());
+				updateView();
+			}
+		});
 		box.add(showStripOn0IndentCB);
 		p=new Box(BoxLayout.X_AXIS);
 		p.setAlignmentX(0);
-		drawThinStripesCB.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent ev){
-						if(modeConfig!=null)
-							modeConfig.setDrawThinStripes(drawThinStripesCB.isSelected());
-						updateView();
-					}
-				});
+		drawThinStripesCB.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				if(modeConfig!=null)
+					modeConfig.setDrawThinStripes(drawThinStripesCB.isSelected());
+				updateView();
+			}
+		});
 		p.add(drawThinStripesCB);
-		useThinStripesPixelSizeCB.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent ev){
-						if(modeConfig!=null)
-							modeConfig.setUseThinStripesPixelSize(useThinStripesPixelSizeCB.isSelected());
-						updateView();
-					}
-				});
+		drawThinStripesFactorTF.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent ev) {
+				updateModeConfigDrawThinStripesFactor();
+				updateView();
+			}
+		});
+		p.add(drawThinStripesFactorTF);
+		useThinStripesPixelSizeCB.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				if(modeConfig!=null)
+					modeConfig.setUseThinStripesPixelSize(useThinStripesPixelSizeCB.isSelected());
+				updateView();
+			}
+		});
 		p.add(useThinStripesPixelSizeCB);
 		box.add(p);
 		panel.add(box, BorderLayout.NORTH);
@@ -142,9 +153,19 @@ class ModeConfigPanel {
 		updateView();
 	}
 
-	private void updateModeConfigIgnoreLineRegex(){
+	private void updateModeConfigIgnoreLineRegex() {
 		if(modeConfig!=null)
 			modeConfig.ignoreLineRegex.setValue(ignoreLineRegexTF.getText());
+	}
+
+	private void updateModeConfigDrawThinStripesFactor() {
+		if(modeConfig!=null) {
+			String factorS=drawThinStripesFactorTF.getText();
+			try {
+				float newFactor=Float.valueOf(factorS);
+				modeConfig.setDrawThinStripesFactor(newFactor);
+			} catch(NumberFormatException ex) {	}
+		}
 	}
 
 	private void updateView() {
@@ -156,8 +177,8 @@ class ModeConfigPanel {
 			ignoreLineRegexTF.setText(modeConfig.ignoreLineRegex.getValue());
 			showStripOn0IndentCB.setSelected(modeConfig.getShowStripOn0Indent());
 			drawThinStripesCB.setSelected(modeConfig.getDrawThinStripes());
+			drawThinStripesFactorTF.setText(Float.toString(modeConfig.getDrawThinStripesFactor()));
 			useThinStripesPixelSizeCB.setSelected(modeConfig.getUseThinStripesPixelSize());
-			useThinStripesPixelSizeCB.setVisible(drawThinStripesCB.isSelected());
 			stripConfigsOpPanel.panel.setVisible(
 				modeConfig!=modeConfig.config.defaultModeConfig);
 		}
@@ -165,7 +186,8 @@ class ModeConfigPanel {
 		ignoreLineRegexTF.setEnabled(enabledCB.isSelected() && useIgnoreLineRegexCB.isSelected());
 		showStripOn0IndentCB.setEnabled(enabledCB.isSelected());
 		drawThinStripesCB.setEnabled(enabledCB.isSelected());
-		useThinStripesPixelSizeCB.setEnabled(enabledCB.isSelected());
+		drawThinStripesFactorTF.setEnabled(enabledCB.isSelected() && drawThinStripesCB.isSelected() && !useThinStripesPixelSizeCB.isSelected());
+		useThinStripesPixelSizeCB.setEnabled(enabledCB.isSelected() && drawThinStripesCB.isSelected());
 		setEnabledStripConfigs(enabledCB.isSelected());
 	}
 
@@ -174,7 +196,7 @@ class ModeConfigPanel {
 		stripConfigsOpPanel.setEnabled(enabled);
 	}
 
-	void save(){
+	void save() {
 		updateModeConfigIgnoreLineRegex();
 		stripConfigsTable.save();
 	}
