@@ -108,7 +108,8 @@ final class TextAreaExt
 			if(modeConfig.getUseThinStripesPixelSize())
 				thinBarStroke=new BasicStroke( 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 			else{
-				float thinBarStrokeWidth=barStroke.getLineWidth()/2.3f;
+				float factor=modeConfig.getDrawThinStripesFactor();
+				float thinBarStrokeWidth=barStroke.getLineWidth()*factor;
 				if(thinBarStrokeWidth<1)
 					thinBarStrokeWidth=1;
 				thinBarStroke=new BasicStroke( thinBarStrokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);

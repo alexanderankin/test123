@@ -28,7 +28,9 @@ import java.util.Properties;
 import javax.swing.text.Segment;
 
 public final class ModeConfig {
+
 	public static final int MAX_STRIP_CONFIGS=25;
+	public static final float DEFAULT_DRAW_THIN_STRIPES_FACTOR=0.6f;
 	public final Config config;
 	public final String name;
 	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
@@ -38,6 +40,7 @@ public final class ModeConfig {
 	public final Regex ignoreLineRegex=new Regex();
 	private boolean showStripOn0Indent;
 	private boolean drawThinStripes;
+	private float drawThinStripesFactor=DEFAULT_DRAW_THIN_STRIPES_FACTOR;
 	private boolean useThinStripesPixelSize=false;
 
 	ModeConfig(Config config, String name) {
@@ -59,19 +62,19 @@ public final class ModeConfig {
 		return useIgnoreLineRegex;
 	}
 
-	public void setUseIgnoreLineRegex(boolean useIgnoreLineRegex){
+	public void setUseIgnoreLineRegex(boolean useIgnoreLineRegex) {
 		this.useIgnoreLineRegex=useIgnoreLineRegex;
 	}
 
-	public boolean getShowStripOn0Indent(){
+	public boolean getShowStripOn0Indent() {
 		return showStripOn0Indent;
 	}
 
-	public void setShowStripOn0Indent(boolean showStripOn0Indent){
+	public void setShowStripOn0Indent(boolean showStripOn0Indent) {
 		this.showStripOn0Indent=showStripOn0Indent;
 	}
 
-	public void setDrawThinStripes(boolean drawThinStripes){
+	public void setDrawThinStripes(boolean drawThinStripes) {
 		this.drawThinStripes=drawThinStripes;
 	}
 
@@ -79,7 +82,15 @@ public final class ModeConfig {
 		return drawThinStripes;
 	}
 
-	public void setUseThinStripesPixelSize(boolean useThinStripesPixelSize){
+	public float getDrawThinStripesFactor() {
+		return drawThinStripesFactor;
+	}
+
+	public void setDrawThinStripesFactor(float v) {
+		this.drawThinStripesFactor=v;
+	}
+
+	public void setUseThinStripesPixelSize(boolean useThinStripesPixelSize) {
 		this.useThinStripesPixelSize=useThinStripesPixelSize;
 	}
 
@@ -89,7 +100,7 @@ public final class ModeConfig {
 
 	public StripConfig addStripConfig() {
 		if((config.defaultModeConfig==this && !stripConfigs.isEmpty())
-			 || stripConfigs.size()==MAX_STRIP_CONFIGS)
+				|| stripConfigs.size()==MAX_STRIP_CONFIGS)
 			return null;
 		StripConfig stripConfig=new StripConfig();
 		stripConfigs.add(stripConfig);
@@ -132,14 +143,18 @@ public final class ModeConfig {
 		StringBuilder sb=new StringBuilder();
 		ps.clear();
 		ps.setProperty(getPropertyName(sb, "enabled"), String.valueOf(enabled));
-		if(useIgnoreLineRegex){
+		if(useIgnoreLineRegex) {
 			String ignoreLineRegexValue=ignoreLineRegex.getValue();
 			if(ignoreLineRegexValue!=null && ignoreLineRegexValue.length()>0)
 				ps.setProperty(getPropertyName(sb, "ignoreLineRegex"), ignoreLineRegexValue);
-		}else
+		} else
 			ps.remove(getPropertyName(sb, "ignoreLineRegex"));
 		ps.setProperty(getPropertyName(sb, "showStripOn0Indent"), String.valueOf(showStripOn0Indent));
 		ps.setProperty(getPropertyName(sb, "drawThinStripes"), String.valueOf(drawThinStripes));
+		if(drawThinStripesFactor!=DEFAULT_DRAW_THIN_STRIPES_FACTOR)
+			ps.setProperty(getPropertyName(sb, "drawThinStripesFactor"), String.valueOf(drawThinStripesFactor));
+		else
+			ps.remove(getPropertyName(sb, "drawThinStripesFactor"));
 		ps.setProperty(getPropertyName(sb, "useThinStripesPixelSize"), String.valueOf(useThinStripesPixelSize));
 		for(int i=0, size=stripConfigs.size(); i<size && i<MAX_STRIP_CONFIGS; i++) {
 			stripConfigs.get(i).store(ps, this, sb, i);
@@ -166,26 +181,34 @@ public final class ModeConfig {
 			StringBuilder sb=new StringBuilder();
 			if(this!=config.defaultModeConfig)
 				setEnabled(Boolean.valueOf(
-										 ps.getProperty(getPropertyName(sb, "enabled"))
-									 ));
+							   ps.getProperty(getPropertyName(sb, "enabled"))
+						   ));
 			setShowStripOn0Indent(Boolean.valueOf(
-						ps.getProperty(getPropertyName(sb, "showStripOn0Indent"))
-					));
+									  ps.getProperty(getPropertyName(sb, "showStripOn0Indent"))
+								  ));
 			setDrawThinStripes(Boolean.valueOf(
-						ps.getProperty(getPropertyName(sb, "drawThinStripes"))
-					));
+								   ps.getProperty(getPropertyName(sb, "drawThinStripes"))
+							   ));
+			String drawThinStripesFactorValue=ps.getProperty(getPropertyName(sb, "drawThinStripesFactor"));
+			if(drawThinStripesFactorValue!=null) {
+				try {
+					setDrawThinStripesFactor(Float.valueOf(
+												 drawThinStripesFactorValue
+											 ));
+				}	catch(NumberFormatException ex) {}
+			}
 			setUseThinStripesPixelSize(Boolean.valueOf(
-						ps.getProperty(getPropertyName(sb, "useThinStripesPixelSize"))
-					));
+										   ps.getProperty(getPropertyName(sb, "useThinStripesPixelSize"))
+									   ));
 			//v support deprecated feature 'bigLines' with its ignoreLineRegexValue equivalent:
 			String ignoreLineRegexValue=null;
 			if(Boolean.valueOf(
-					 ps.getProperty(getPropertyName(sb, "bigLines"))))
+						ps.getProperty(getPropertyName(sb, "bigLines"))))
 				ignoreLineRegexValue="\\s*\\S\\s*$";
 			//^
 			if(ignoreLineRegexValue==null)
 				ignoreLineRegexValue=ps.getProperty(getPropertyName(sb, "ignoreLineRegex"));
-			if(ignoreLineRegexValue!=null){
+			if(ignoreLineRegexValue!=null) {
 				useIgnoreLineRegex=true;
 				ignoreLineRegex.setValue(ignoreLineRegexValue);
 			}
