@@ -1,10 +1,11 @@
 CHANGES file for Templates plugin.
 
-Version 5.0.0 (30-DEC-2016)
+Version 5.0.0 (05-JAN-2017)
 =============================
 CHANGES:
 - updated Velocity version from 1.5 to 1.7
 - updated dependencies as a result of the Velocity update (now requires jEdit 5.2.0, JRE 1.7, JakartaCommons plugin 0.9). Note that the Apache Commons Lang library in the JakartaCommons plugin was updated from version 2 to 3 in JakartaCommons 0.9. The new Commons Lang changed the package naming from "org.apache.commons.lang" to "org.apache.commons.lang3" which caused problems  with Velocity 1.5.
+- fixed problem with "Templates.browse-templates" action (bug #1319 in Plugin Bugs tracker)
 
 Version 4.1.2 (xx-xxx-200x)
 =============================

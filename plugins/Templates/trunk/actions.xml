@@ -28,7 +28,7 @@
 			mgr = view.getDockableWindowManager();
 			mgr.showDockableWindow(VFSBrowser.NAME);
 			mgr.getDockable(VFSBrowser.NAME)
-				.setDirectory(templates.TemplatesPlugin.getVelocityResourcePath());
+				.setDirectory(templates.TemplatesPlugin.getTemplateDir());
 		</CODE>
 	</ACTION>
 </ACTIONS>
