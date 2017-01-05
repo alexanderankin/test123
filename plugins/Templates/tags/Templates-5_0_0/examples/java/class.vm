@@ -1,0 +1,14 @@
+## template=Java class
+#prompt ( "Package:" $packageName "com.manheim." )
+#prompt ( "Class Description:" $classDescription )
+#prompt ( "Class Name:" $className )
+package ${packageName};
+
+/**
+ * ${classDescription}.
+ */
+public class ${className}
+{
+${_jeditTab}
+#caret ()
+}
