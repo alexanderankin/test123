@@ -77,7 +77,7 @@
 	<property name="build.dir" value="build"/>
 	<property name="docs.dir" value="docs"/>
 
-	<property name="velocity.jar" value="${src.lib}/velocity-1.5.jar"/>
+	<property name="velocity.jar" value="${src.lib}/velocity-1.7.jar"/>
 	<property name="oro.jar" value="${src.lib}/oro-2.8.jar"/>
 	<!-- }}} -->
 
