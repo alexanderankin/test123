@@ -74,6 +74,8 @@ public class XmlTagTest{
     	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
     	JTreeFixture sourceTree = sidekick.tree();
 
+		Pause.pause(1000);
+
 		// inspect the tree
 		selectPath(sourceTree,"/ACTIONS");
 		selectPath(sourceTree,"/ACTIONS/ACTION/CODE");
