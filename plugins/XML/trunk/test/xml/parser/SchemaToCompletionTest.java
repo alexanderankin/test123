@@ -129,4 +129,17 @@ public class SchemaToCompletionTest{
 		AttributeDecl inline = e.attributeHash.get("inline");
 		assertTrue(inline.required);
     }
+
+    @Test
+	public void testIndextermClass(){
+		java.net.URL docbook5 = xml.XmlPlugin.class.getClassLoader().getResource("xml/dtds/docbook5.rnc");
+
+		Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null, docbook5.toString(), null, null);
+		assertTrue(rng.containsKey("http://docbook.org/ns/docbook"));
+		CompletionInfo info = rng.get("http://docbook.org/ns/docbook");
+		assertThat(info.elementHash.keySet()).contains("chapter");
+		ElementDecl it = info.elementHash.get("chapter").elementHash.get("indexterm");
+		assertTrue(it.attributeHash.containsKey("class"));
+		assertThat(it.getAttribute("class").values).containsOnly("startofrange", "singular", "endofrange");
+	}
 }
