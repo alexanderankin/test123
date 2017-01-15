@@ -118,7 +118,7 @@ public class XmlPlugin extends EBPlugin
 		xml.translate.TrangTranslator.stop();
 		xml.cache.Cache.instance().stop();
 		xml.parser.ServicesDatatypeLibraryFactory.instance().stop();
-    CompletionInfo.stop();
+		CompletionInfo.stop();
 	} //}}}
 
 	//{{{ handleMessage() method
