@@ -713,7 +713,16 @@ public class SchemaToCompletion
 				if(myParent!=null)
 				{
 					myParent.content.add(name.getLocalName());
-					myParent.elementHash.put(name.getLocalName(),me);
+					if(myParent.elementHash.containsKey(name.getLocalName()))
+					{
+						ElementDecl other = myParent.elementHash.get(name.getLocalName());
+						other.merge(me);
+						res.remove(res.size()-1);
+					}
+					else
+					{
+						myParent.elementHash.put(name.getLocalName(),me);
+					}
 				}
 			}
 			if(myParent!=null){
@@ -1149,6 +1158,11 @@ public class SchemaToCompletion
 			super(null,"_:"+ref.getName()+"_"+(i++),null);
 			this.ref = ref;
 			this.required = required;
+		}
+
+		@Override
+		public void merge(ElementDecl other) {
+			throw new UnsupportedOperationException("merge define with another ElementDecl");
 		}
 
 		public String toString(){

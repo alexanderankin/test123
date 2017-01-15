@@ -29,6 +29,7 @@ import org.gjt.sp.util.StandardUtilities;
 import org.xml.sax.helpers.NamespaceSupport;
 
 import xml.NamespaceBindings;
+import xml.completion.ElementDecl.AttributeDecl;
 
 public class ElementDecl
 {
@@ -201,6 +202,67 @@ public class ElementDecl
 
 		return buf.toString();
 	} //}}}
+
+	public void merge(ElementDecl other)
+	{
+		for(AttributeDecl a: other.attributes) {
+			boolean add = true;
+			if(attributeHash.containsKey(a.name))
+			{
+				AttributeDecl d = attributeHash.get(a.name);
+				d.required &= a.required;
+				if(d.type == null)
+				{
+					d.type = a.type;
+				}
+				if(d.value == null)
+				{
+					d.value = a.value;
+				}
+				else
+				{
+					d.values.add(a.value);
+					d.values.add(d.value);
+				}
+				d.values.addAll(a.values);
+				// if d is not in attributes, it must be added! 
+				for(AttributeDecl ad: attributes){
+					if(ad == d) {
+						add = false;
+					}
+				}
+				a = d;
+			}
+			else
+			{
+				attributeHash.put(a.name, a);
+			}
+
+			if(add)
+			{
+				for(int i = 0; add && i < attributes.size(); i++)
+				{
+					AttributeDecl attr = (AttributeDecl)attributes.get(i);
+					if(attr.name.compareTo(a.name) > 0)
+					{
+						attributes.add(i, a);
+						add = false;
+					}
+				}
+				if(add)
+				{
+					attributes.add(a);
+				}
+			}
+		}
+		for(ElementDecl ed: other.elementHash.values()) {
+			if(elementHash.containsKey(ed.name)){
+				elementHash.get(ed.name).merge(ed);
+			}
+		}
+		this.any |= other.any;
+		this.empty &= other.empty;
+	}
 
 	//{{{ toString() method
 	public String toString()

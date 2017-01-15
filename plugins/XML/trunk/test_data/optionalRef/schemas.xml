@@ -1,3 +1,4 @@
 <?xml version="1.0" ?>
 <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-<uri resource="file:/Users/elelay/temp/client2/jEdit/relax-ng/test_data/optionalRef/instance.xml" uri="schema.rng"/><include rules="file:/Users/elelay/Library/jEdit/plugins/xml.XmlPlugin/schemas.xml" /></locatingRules>
+	<uri resource="instance.xml" uri="schema.rng"/>
+</locatingRules>
