@@ -19,10 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import beauty.beautifiers.Beautifier;
-import beauty.beautifiers.CSSBeautifier;
-import beauty.beautifiers.DefaultBeautifier;
-import beauty.parsers.ParserException;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * HtmlFormatter is a Visitor which traverses an HtmlDocument, dumping the
@@ -180,7 +177,7 @@ public class HtmlFormatter extends HtmlVisitor {
                     }
  
                     // format the string with the appropriate beautifier
-                    Beautifier beautifier;
+                    ///Beautifier beautifier;
                     String formatted = sb.toString();
                     /*
                     if ("SCRIPT".equals(tagName.toUpperCase())) {
@@ -281,9 +278,7 @@ public class HtmlFormatter extends HtmlVisitor {
 
         out.print(t.tagStart + (t.tagName == null ? "" : t.tagName));
         hanging = t.tagName == null ? 0 : t.tagName.length() + 1;
-        // TODO: make this a user option
-        ///boolean splitAttrs = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
-        boolean splitAttrs = false;
+        boolean splitAttrs = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
         if (splitAttrs) {
             out.setLeftMargin(out.getLeftMargin() + indentSize);
             out.print(lineSeparator);
@@ -401,7 +396,7 @@ class MarginWriter {
     protected int curPosition;
     protected int leftMargin;
     protected int rightMargin;
-    StringBuilder sb = null;
+    StringBuilder sb = null;        // NOPMD
     protected char[] spaces = new char[256];
     protected String lineSeparator = System.getProperty("line.separator");
 

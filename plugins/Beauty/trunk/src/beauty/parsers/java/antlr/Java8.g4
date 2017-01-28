@@ -32,7 +32,7 @@
  * A Java 8 grammar for ANTLR 4 derived from the Java Language Specification
  * chapter 19.
  *
- * NOTE: This grammar results in a generated parser that is much slower
+ * Note: This grammar results in a generated parser that is much slower
  *       than the Java 7 grammar in the grammars-v4/java directory. This
  *     one is, however, extremely close to the spec.
  *
@@ -1845,6 +1845,11 @@ COMMENT
     :   '/*' .*? '*/' -> channel(COMMENTS)
     ;
 
+JEDIT_FOLD_MARKER
+    :   '//' [ ]* '}}}' -> channel(COMMENTS)
+    ;
+
 LINE_COMMENT
     :   '//' ~[\r\n]* -> channel(COMMENTS)
     ;
+    

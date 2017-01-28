@@ -29,7 +29,7 @@ public class Java8Parser extends Parser {
 		ADD_ASSIGN=93, SUB_ASSIGN=94, MUL_ASSIGN=95, DIV_ASSIGN=96, AND_ASSIGN=97, 
 		OR_ASSIGN=98, XOR_ASSIGN=99, MOD_ASSIGN=100, LSHIFT_ASSIGN=101, RSHIFT_ASSIGN=102, 
 		URSHIFT_ASSIGN=103, Identifier=104, AT=105, ELLIPSIS=106, WS=107, DOC_COMMENT=108, 
-		COMMENT=109, LINE_COMMENT=110;
+		COMMENT=109, JEDIT_FOLD_MARKER=110, LINE_COMMENT=111;
 	public static final int
 		RULE_literal = 0, RULE_type = 1, RULE_primitiveType = 2, RULE_numericType = 3, 
 		RULE_integralType = 4, RULE_floatingPointType = 5, RULE_referenceType = 6, 
@@ -226,7 +226,7 @@ public class Java8Parser extends Parser {
 		"ADD_ASSIGN", "SUB_ASSIGN", "MUL_ASSIGN", "DIV_ASSIGN", "AND_ASSIGN", 
 		"OR_ASSIGN", "XOR_ASSIGN", "MOD_ASSIGN", "LSHIFT_ASSIGN", "RSHIFT_ASSIGN", 
 		"URSHIFT_ASSIGN", "Identifier", "AT", "ELLIPSIS", "WS", "DOC_COMMENT", 
-		"COMMENT", "LINE_COMMENT"
+		"COMMENT", "JEDIT_FOLD_MARKER", "LINE_COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -17751,7 +17751,7 @@ public class Java8Parser extends Parser {
 
 	private static final int _serializedATNSegments = 2;
 	private static final String _serializedATNSegment0 =
-		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\3p\u0b07\4\2\t\2\4"+
+		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\3q\u0b07\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
