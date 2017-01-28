@@ -492,6 +492,9 @@ Formatting methods.
         Token token = node.getSymbol(); 
         int tokenIndex = token.getTokenIndex();
 
+        // ...
+        // End of Line Comments
+        // ...
 	    // check to the right of the current token for an end of line comment,
 	    // this handles both // and /* end of line comments. Only end of line
 	    // comments are handled in this section, and such comments are appended
@@ -548,6 +551,9 @@ Formatting methods.
             }
 	    }
         
+	    // ...
+	    // Line, Regular, and Doc Comments, and jEdit fold markers
+	    // ...
 	    // check to the left of the current token for line. regular, and doc comments
         commentTokens = tokens.getHiddenTokensToLeft(tokenIndex, Java8Lexer.COMMENTS);
         if (commentTokens != null && commentTokens.size() > 0) {
@@ -560,15 +566,26 @@ Formatting methods.
                     String current = stack.pop();
                     String previous = stack.peek();
                     stack.push(current);
-                    if (previous != null && previous.indexOf(comment) > -1) {
+                    if (previous != null && previous.indexOf(comment) > -1 && previous.indexOf(comment.trim()) > -1) {
                         // already have this comment added as an end of line comment
                         // for the previous token
-                        break;        
+                        continue;        
                     }
                     switch(commentToken.getType()) {
                         case Java8Lexer.LINE_COMMENT:
                             comment = formatLineComment(comment);
                             break;
+                        case Java8Lexer.JEDIT_FOLD_MARKER:
+                            comment = formatJEditFoldMarkerComment(comment);
+                            current = stack.pop();
+                            previous = stack.peek();
+                            if (previous != null && previous.indexOf(comment) == -1) {
+                                previous = stack.pop();
+                                previous = new StringBuilder(trimEnd(previous)).append(comment).toString();
+                                stack.push(previous);
+                            }
+                            stack.push(current);
+                            continue;
                         case Java8Lexer.COMMENT:
                             // check if this is an in-line  or trailing comment, e.g.
                             // something /star comment star/ more things or
@@ -657,6 +674,39 @@ Formatting methods.
 	    sb.append(' ').append(c);
 	    c = sb.toString();
 	    return indent(c);
+	}
+	
+	/**
+ 	 * Formats a jEdit fold marker, // }}}. Current rule is to ensure there is a space following the
+ 	 * slashes, so "//}}}" becomes "// }}}". Also handle the case where there
+ 	 * are more than 2 slashes the same way, so "////}}}" becomes "//// }}}".
+ 	 * @param comment A jEdit fold marker.
+ 	 * @return The formatted fold marker.
+ 	 */
+	private String formatJEditFoldMarkerComment(String comment) {
+	    // ensure there is a space after the comment start. Handle the case
+	    // of multiple /, e.g. ////}}}
+	    // should look like    //// }}}
+	    String c = comment.trim();
+	    int slashCount = 0;
+	    for (int i = 0; i < c.length(); i++) {
+	        if (c.charAt(i) == '/') {
+	            ++ slashCount;    
+	        }
+	        else {
+	            break;    
+	        }
+	    }
+	    c = c.substring(slashCount).trim();
+	    StringBuilder sb = new StringBuilder();
+	    sb.append('\n');
+	    for (int i = 0; i < slashCount; i++) {
+	        sb.append('/');
+	    }
+	    sb.append(' ').append(c).append('\n');
+	    c = sb.toString();
+	    c = indent(c);
+	    return c;
 	}
 	
 	/**
