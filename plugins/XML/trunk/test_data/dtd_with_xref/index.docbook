@@ -5,11 +5,14 @@
 
     <!ENTITY book-tutorials SYSTEM "book_tutorials.docbook">
     <!ENTITY book-refguide SYSTEM "book_refguide.docbook">
+    <!ENTITY java "<trademark>Java</trademark>">
+
 ]>
 
 <book> <title> Test Book with DTD entities </title>
 
-<para> This has an xref linkend= from one file to the other.  </para>
+<para> This has an xref linkend= from one file to the other.
+It also has a reference to the programming language &java; </para>
 
  &book-tutorials;
  &book-refguide;
