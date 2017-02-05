@@ -1,0 +1,7 @@
+<chapter id="refguide">
+<!-- :xml.root=index.docbook: -->
+<title> Refguide </title>
+<para> This is the reference guide. To see tutorials, go to
+go to <xref linkend="tutorials"/>
+</para>
+</chapter>
