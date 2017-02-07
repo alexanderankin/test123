@@ -1,5 +1,5 @@
 <chapter id="refguide">
-<!-- :xml.root=index.docbook: -->
+<!-- :xml.root=book_index.docbook: -->
 <title> Refguide </title>
 <para> This is the reference guide. And it also uses an entity reference defined in the
 internal DTD subset: &java;
