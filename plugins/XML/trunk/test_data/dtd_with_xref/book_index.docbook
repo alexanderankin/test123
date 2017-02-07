@@ -8,12 +8,11 @@
     <!ENTITY java "<trademark>Java</trademark>">
 
 ]>
-
 <book> <title> Test Book with DTD entities </title>
-
+<preface> <title> Preface </title>
 <para> This has an xref linkend= from one file to the other.
 It also has a reference to the programming language &java; </para>
-
+</preface>
  &book-tutorials;
  &book-refguide;
 
