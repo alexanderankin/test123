@@ -1,9 +1,0 @@
-<chapter id="refguide">
-<!-- :xml.root=book_index.docbook: -->
-<title> Refguide </title>
-<para> This is the reference guide. And it also uses an entity reference defined in the
-internal DTD subset: &java;
-For some reason, the entity reference breaks parsing and xref navigation.
-To see tutorials, go to go to <xref linkend="tutorials"/>
-</para>
-</chapter>
