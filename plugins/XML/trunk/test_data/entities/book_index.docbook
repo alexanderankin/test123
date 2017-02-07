@@ -12,6 +12,9 @@
 <preface> <title> Preface </title>
 <para> This has an xref linkend= from one file to the other.
 It also has a reference to the programming language &java; </para>
+<para> In addition, there is an <xref linkend="tutorials"/>
+here where hyperlinks work. </para>
+
 </preface>
  &book-tutorials;
  &book-refguide;
