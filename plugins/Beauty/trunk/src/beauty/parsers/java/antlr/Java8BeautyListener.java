@@ -1194,9 +1194,19 @@ Parser methods follow.
 
 	@Override public void enterRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) { }
 	
+	/**
+ 	 * relationalOperator
+ 	 *     :   '<'
+ 	 *     |   '>'
+ 	 *     |   '<='
+ 	 *     |   '>='
+ 	 *     |   'instanceof'
+ 	 *     ;
+ 	 */
 	@Override public void exitRelationalOperator(@NotNull Java8Parser.RelationalOperatorContext ctx) {
-	    stack.pop();
-	    stack.push(padOperator(ctx.getText()));
+	    // now doing the padding in exitRelationalExpression
+	    //stack.pop();
+	    //stack.push(padOperator(ctx.getText()));
 	}
 	
 	@Override public void enterConstantModifier(@NotNull Java8Parser.ConstantModifierContext ctx) {
@@ -1308,7 +1318,7 @@ Parser methods follow.
 	    StringBuilder sb = new StringBuilder();
 	    String expression = stack.pop();
 	    if (ctx.additiveOperator() != null) {
-	        String operator = stack.pop();
+	        String operator = stack.pop().trim();
 	        sb.append(operator);
 	    }
 	    sb.append(expression);
@@ -1559,7 +1569,7 @@ Parser methods follow.
 	        // one of the last two choices
 	        String additiveOperator = stack.pop();
 	        String additiveExpression = stack.pop().trim();
-	        sb.append(additiveExpression).append(' ').append(additiveOperator).append(' ');
+	        sb.append(additiveExpression).append(padOperator(additiveOperator));
 	        multiplicativeExpression = multiplicativeExpression.trim();
 	    }
 	    sb.append(multiplicativeExpression);
@@ -1582,7 +1592,7 @@ Parser methods follow.
 	    if (ctx.relationalOperator() != null) {
 	        operator = stack.pop();
 	        relationalExpression = stack.pop();
-	        sb.append(relationalExpression).append(' ').append(operator).append(' ');
+	        sb.append(relationalExpression).append(padOperator(operator));
 	    }
 	    sb.append(shiftExpression);
 	    stack.push(sb.toString());
@@ -3001,7 +3011,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    String lparen = stack.pop();
 	    String if_ = stack.pop();
-	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket? '\n' : ' ').append(stmt).append(stmt.endsWith("\n") ? "" : "\n");
+	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket? '\n' : ' ').append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -4237,7 +4247,7 @@ Parser methods follow.
 	    String if_ = stack.pop();
 	    sb.append(if_).append(' ').append(padParen(lparen)).append(expr).append(padParen(rparen)).append(brokenBracket ? '\n' : ' ').append(sn);
 	    trimEnd(sb);
-	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(stmt).append(stmt.endsWith("\n") ? "" : "\n");
+	    sb.append(breakElse ? '\n' : ' ').append(else_).append(brokenBracket ? '\n' : ' ').append(stmt);
 	    stack.push(sb.toString());
 	}
 
@@ -4534,7 +4544,7 @@ Parser methods follow.
 	    String ifStmt = stack.pop().trim();
 	    if (!ifStmt.startsWith("{")) {
 	        ++tabCount;
-	        ifStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(ifStmt) + "}\n";
+	        ifStmt = (brokenBracket ? "\n" : "") + "{\n" + indent(ifStmt) + "}";
 	        ifStmt = trimEnd(ifStmt);
 	        --tabCount;
 	    }
