@@ -1172,7 +1172,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitNormalInterfaceDeclaration( @NotNull NormalInterfaceDeclarationContext ctx ) {
-
+        
         // modifiers
         InterfaceModifiersContext imc = ctx.interfaceModifiers();
         int size = imc.interfaceModifier().size();
@@ -1186,30 +1186,35 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // typeParameters
         TypeParametersContext typeParametersContext = ctx.typeParameters();
-        TypeParameterListContext typeListContext = typeParametersContext.typeParameterList();
-        List<TypeParameterContext> tpc = ( List <TypeParameterContext> )typeListContext.typeParameter();
-        StringBuilder sb = new StringBuilder( "<" );
-        for ( TypeParameterContext t : tpc ) {
-            sb.append( t.Identifier().getText() ).append( ',' );
-        }
-        if ( sb.length() > 1 ) {
-            sb.deleteCharAt( sb.length() - 1 );
-        }
+        if (typeParametersContext != null) {
+            TypeParameterListContext typeListContext = typeParametersContext.typeParameterList();
+            List<TypeParameterContext> tpc = ( List <TypeParameterContext> )typeListContext.typeParameter();
+            StringBuilder sb = new StringBuilder( "<" );
+            for ( TypeParameterContext t : tpc ) {
+                sb.append( t.Identifier().getText() ).append( ',' );
+            }
+            if ( sb.length() > 1 ) {
+                sb.deleteCharAt( sb.length() - 1 );
+            }
 
-
-        parent.setTypeParams( sb.toString() + ">" );
+            parent.setTypeParams( sb.toString() + ">" );
+        }
 
         // extendsInterfaces
         ExtendsInterfacesContext eic = ctx.extendsInterfaces();
-        InterfaceTypeListContext itlc = eic.interfaceTypeList();
-        List<InterfaceTypeContext> itc = ( List <InterfaceTypeContext> )itlc.interfaceType();
-        List<Type> extendsTypes = new ArrayList<Type>();
-        for ( InterfaceTypeContext i : itc ) {
-            Type it = new Type( i.getText() );
-            setLocations( it, i );
-            extendsTypes.add( it );
+        if (eic != null) {
+            InterfaceTypeListContext itlc = eic.interfaceTypeList();
+            if (itlc != null) {
+                List<InterfaceTypeContext> itc = ( List <InterfaceTypeContext> )itlc.interfaceType();
+                List<Type> extendsTypes = new ArrayList<Type>();
+                for ( InterfaceTypeContext i : itc ) {
+                    Type it = new Type( i.getText() );
+                    setLocations( it, i );
+                    extendsTypes.add( it );
+                }
+                parent.setExtendsList( extendsTypes );
+            }
         }
-        parent.setExtendsList( extendsTypes );
 
         // interfaceBody
         InterfaceBodyContext ibc = ctx.interfaceBody();
