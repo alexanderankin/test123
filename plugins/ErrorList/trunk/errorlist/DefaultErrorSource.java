@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.*;
 //}}}
 
 /** A concrete implementation of ErrorSource that is suitable for Plugins to use/extend.
- *
+ * TODO: add an 'equals' method here and in DefaultError
  * @author Slava Pestov
  */
 public class DefaultErrorSource extends ErrorSource
@@ -270,6 +270,31 @@ public class DefaultErrorSource extends ErrorSource
 	{
 		return getClass().getName() + "[" + name + "]";
 	} //}}}
+	
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof DefaultErrorSource))
+			return false;
+		DefaultErrorSource other = (DefaultErrorSource)o;
+		if (getView() != null && !getView().equals(other.getView()))
+			return false;
+		if (getName() != null && !getName().equals(other.getName()))
+			return false;
+		if (getErrorCount() != other.getErrorCount())
+			return false;
+		return true;
+	}
+	
+	public int hashCode()
+	{
+		int hc = 0;
+		if (getView() != null)
+			hc += getView().hashCode();
+		if (getName() != null)
+			hc += getName().hashCode();
+		hc += getErrorCount() * 13;
+		return hc;
+	}
 
 	//{{{ handleBufferMessage() method
 	@EBHandler
@@ -333,6 +358,7 @@ public class DefaultErrorSource extends ErrorSource
 	//{{{ DefaultError class
 	/**
 	 * An error.
+	 * TODO: add an 'equals' method
 	 */
 	public static class DefaultError implements ErrorSource.Error
 	{
@@ -514,6 +540,43 @@ public class DefaultErrorSource extends ErrorSource
 			return getFileName() + ":" + (getLineNumber() + 1)
 				+ ":" + getErrorMessage();
 		} //}}}
+		
+		public boolean equals(Object o)
+		{
+			if (!(o instanceof DefaultError))
+			{
+				return false;	
+			}
+			DefaultError other = (DefaultError)o;
+			if (getBuffer() != null && !getBuffer().equals(other.getBuffer()))
+				return false;
+			if (getEndOffset() != other.getEndOffset())
+				return false;
+			if (getStartOffset() != other.getStartOffset())
+				return false;
+			if (getLineNumber() != other.getLineNumber())
+				return false;
+			if (getFileName() != null && !getFileName().equals(other.getFileName()))
+				return false;
+			if (getFilePath() != null && !getFilePath().equals(other.getFilePath()))
+				return false;
+			return true;
+		}
+		
+		public int hashCode()
+		{
+			int hc = 0;
+			if (getBuffer() != null)
+				hc += getBuffer().hashCode();
+			hc += getEndOffset() * 19;
+			hc += getStartOffset() * 23;
+			hc += getLineNumber() * 29;
+			if (getFileName() != null)
+				hc += getFileName().hashCode();
+			if (getFilePath() != null)
+				hc += getFilePath().hashCode();
+			return hc;
+		}
 
 		//{{{ Package-private members
 		DefaultError next;

@@ -342,6 +342,7 @@ public class ErrorListPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ showErrorList() method
+	// TODO: parameter 'message' is not used, remove it
 	private void showErrorList(ErrorSourceUpdate message, View view)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
