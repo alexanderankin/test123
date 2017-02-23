@@ -15,6 +15,7 @@
        a checkout of the build-support project:
        svn co https://jedit.svn.sourceforge.net/svnroot/jedit/build-support/trunk
   -->	
+    <property name="includeantruntime" value="false"/>
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 	<property name="build.support" value="../../build-support" />

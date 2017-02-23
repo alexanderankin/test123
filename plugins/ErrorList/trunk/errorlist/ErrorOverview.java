@@ -158,7 +158,7 @@ public class ErrorOverview extends JPanel
 	} //}}}
 
 	//{{{ Private members
-	private static final int WIDTH = 10;
+	private static final int WIDTH = 10;	// TODO: this isn't used, remove it
 	private static final int HILITE_HEIGHT = 2;
 	private EditPane editPane;
 

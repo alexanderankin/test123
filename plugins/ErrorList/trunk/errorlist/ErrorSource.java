@@ -196,6 +196,50 @@ public abstract class ErrorSource
 		int startLineIndex, int endLineIndex);
 	//}}}
 
+    public boolean equals( Object obj )
+    {
+    	if (!(obj instanceof ErrorSource)) {
+    		return false;		
+    	}
+    	ErrorSource a = this;
+    	ErrorSource b = (ErrorSource)obj;
+    	
+        if ( a == null && b == null )
+        {
+            return true;
+        }
+
+        if ( a != null && b == null )
+        {
+            return false;
+        }
+
+        if ( a == null && b != null )
+        {
+            return false;
+        }
+
+        String nameA = a.getName();
+        String nameB = b.getName();
+        if ( nameA == null && nameB == null )
+        {
+            return true;
+        }
+
+        if ( nameA != null && nameB == null )
+        {
+            return false;
+        }
+
+        return nameA.equalsIgnoreCase( nameB );
+    }
+    
+    public int hashCode()
+    {
+    	return getView().hashCode() + getName().hashCode();	
+    }
+    
+
 	//{{{ Private members
 
 	// unregistered error sources do not fire events.
