@@ -438,8 +438,11 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		if(name.startsWith("%"))
 			return;
 
+		String source = loc == null ? null : loc.getSystemId();
+		int line = loc == null ? 0 : loc.getLineNumber();
+		int col = loc == null ? 0 : loc.getColumnNumber();
 		data.getNoNamespaceCompletionInfo()
-			.addEntity(EntityDecl.INTERNAL,name,value);
+			.addEntity(EntityDecl.INTERNAL,name,value, source, line, col);
 	} //}}}
 
 	//{{{ externalEntityDecl() method
@@ -451,9 +454,12 @@ class GrabIdsAndCompletionInfoHandler extends DefaultHandler2 implements Content
 		if(name.startsWith("%"))
 			return;
 
+		String source = loc == null ? null : loc.getSystemId();
+		int line = loc == null ? 0 : loc.getLineNumber();
+		int col = loc == null ? 0 : loc.getColumnNumber();
 		data.getNoNamespaceCompletionInfo()
 			.addEntity(EntityDecl.EXTERNAL,name,
-			publicId,systemId);
+			publicId,systemId, source, line, col);
 	} //}}}
 	//}}}
 

@@ -38,6 +38,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
+import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.util.Log;
 
 import sidekick.IAsset;
@@ -46,6 +48,7 @@ import xml.CharSequenceReader;
 import xml.Resolver;
 import xml.XmlParsedData;
 import xml.completion.ElementDecl;
+import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
 import xml.hyperlinks.HTMLHyperlinkSource.IsHyperLink;
 import xml.parser.XmlTag;
@@ -96,6 +99,51 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		XmlParsedData data = XmlParsedData.getParsedData(view, false);
 		if(data==null)return null;
 		
+		int lineNum = buffer.getLineOfOffset(offset);
+		int start = buffer.getLineStartOffset(lineNum);
+		int next = start;
+
+		DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+		buffer.markTokens(lineNum, tokenHandler);
+		Token token = tokenHandler.getTokens();
+
+		while(token.id != Token.END)
+		{
+			next = start + token.length;
+			if (start <= offset && next > offset)
+				break;
+			start = next;
+			token = token.next;
+		}
+		if (token.id == Token.LITERAL2)
+		{
+			String ref = buffer.getText(start-1, token.length+2);
+			if(ref.matches("^&(.+);$"))
+			{
+				ref = ref.substring(1, ref.length()-1);
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "entity reference " + ref);
+				
+				for(EntityDecl decl: data.entities)
+				{
+					if(ref.equals(decl.name))
+					{
+						String href = "";
+						int gotoLine = 0;
+						int gotoCol = 0;
+						if(decl.systemId != null){
+							href = decl.systemId;
+							return new jEditOpenFileHyperlink(start, next, lineNum, href);
+						} else if(decl.value != null && decl.source != null){
+							href = decl.source;
+							gotoLine = decl.line > 0 ? decl.line - 1 : 0;
+							gotoCol = decl.col > 0 ? decl.col - 1 : 0;
+							return new jEditOpenFileAndGotoHyperlink(start, next, lineNum, href, gotoLine, gotoCol);
+						}
+					}
+				}
+			}
+		}
+
 		IAsset asset = data.getAssetAtOffset(offset);
 		if(asset == null){
 			Log.log(Log.DEBUG, XMLHyperlinkSource.class,"no Sidekick asset here");

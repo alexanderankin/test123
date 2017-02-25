@@ -93,9 +93,12 @@ public class CompletionInfoHandler extends DefaultHandler2
 		else if(sName.equals("entity"))
 		{
 			addEntity(new EntityDecl(
-				EntityDecl.INTERNAL,
-				attrs.getValue("name"),
-				attrs.getValue("value")));
+					EntityDecl.INTERNAL,
+					attrs.getValue("name"),
+					attrs.getValue("value"),
+					(loc == null ? null : loc.getSystemId()),
+					(loc == null ? 0 : loc.getLineNumber()),
+					(loc == null ? 0 : loc.getColumnNumber())));
 		}
 		else if(sName.equals("element"))
 		{

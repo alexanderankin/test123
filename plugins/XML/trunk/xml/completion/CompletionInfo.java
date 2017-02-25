@@ -54,11 +54,11 @@ public class CompletionInfo
 			new ArrayList<EntityDecl>(), new HashMap(),
 			new ArrayList());
 
-		addEntity(EntityDecl.INTERNAL,"lt","<");
-		addEntity(EntityDecl.INTERNAL,"gt",">");
-		addEntity(EntityDecl.INTERNAL,"amp","&");
-		addEntity(EntityDecl.INTERNAL,"quot","\"");
-		addEntity(EntityDecl.INTERNAL,"apos","'");  
+		addEntity(EntityDecl.INTERNAL,"lt","<", null, 0, 0);
+		addEntity(EntityDecl.INTERNAL,"gt",">", null, 0, 0);
+		addEntity(EntityDecl.INTERNAL,"amp","&", null, 0, 0);
+		addEntity(EntityDecl.INTERNAL,"quot","\"", null, 0, 0);
+		addEntity(EntityDecl.INTERNAL,"apos","'", null, 0, 0);
 	} //}}}
 
 	//{{{ CompletionInfo constructor
@@ -75,15 +75,15 @@ public class CompletionInfo
 	} //}}}
 
 	//{{{ addEntity() method
-	public void addEntity(int type, String name, String value)
+	public void addEntity(int type, String name, String value, String source, int line, int col)
 	{
-		addEntity(new EntityDecl(type,name,value));
+		addEntity(new EntityDecl(type,name,value, source, line, col));
 	} //}}}
 
 	//{{{ addEntity() method
-	public void addEntity(int type, String name, String publicId, String systemId)
+	public void addEntity(int type, String name, String publicId, String systemId, String source, int line, int col)
 	{
-		addEntity(new EntityDecl(type,name,publicId,systemId));
+		addEntity(new EntityDecl(type,name,publicId,systemId, source, line, col));
 	} //}}}
 
 	//{{{ addEntity() method

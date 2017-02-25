@@ -15,7 +15,6 @@
 
 package xml.completion;
 
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.StandardUtilities;
 
 import java.util.Comparator;
@@ -31,22 +30,31 @@ public class EntityDecl
 	public String value;
 	public String publicId;
 	public String systemId;
+	public String source;
+	public int line;
+	public int col;
 
 	//{{{ EntityDecl constructor
-	public EntityDecl(int type, String name, String value)
+	public EntityDecl(int type, String name, String value, String source, int line, int col)
 	{
 		this.type = type;
 		this.name = name;
 		this.value = value;
+		this.source = source;
+		this.line = line;
+		this.col = col;
 	} //}}}
 
 	//{{{ EntityDecl constructor
-	public EntityDecl(int type, String name, String publicId, String systemId)
+	public EntityDecl(int type, String name, String publicId, String systemId, String source, int line, int col)
 	{
 		this.type = type;
 		this.name = name;
 		this.publicId = publicId;
 		this.systemId = systemId;
+		this.source = source;
+		this.line = line;
+		this.col = col;
 	} //}}}
 
 	//{{{ toString() method
