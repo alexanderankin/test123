@@ -294,6 +294,7 @@ class EntityMgrFixerConfiguration extends XIncludeAwareParserConfiguration {
 	 * XMLEntityManager. fInExternalSubset is what requires subclassing.
 	 **/
 	private static class MyEntityManager extends XMLEntityManager {
+		private boolean resetOnce = false;
 
 		private void copyEntitiesFromDTD(DTDGrammar grammar) {
 
@@ -322,6 +323,16 @@ class EntityMgrFixerConfiguration extends XIncludeAwareParserConfiguration {
 				}
 			}
 			fInExternalSubset = false;
+		}
+
+		@Override
+		public void reset()
+		{
+			if(!resetOnce)
+			{
+				resetOnce = true;
+				super.reset();
+			}
 		}
 	}
 
