@@ -161,6 +161,10 @@ public class XmlPlugin extends EBPlugin
 
 	public static boolean isDelegated(TextArea textArea) {
 		JEditBuffer buffer = textArea.getBuffer();
+		if(buffer.isLoading())
+		{
+			return false;
+		}
 		ParserRuleSet rules = buffer.getRuleSetAtOffset(
 			textArea.getCaretPosition());
 
