@@ -109,6 +109,7 @@ public class XercesParserImpl extends XmlParser
 		// don't log the same error twice when reparsing to construct the sidekick tree
 		Exception errorParsing = null;
 		String rootDocument = buffer.getStringProperty("xml.root");
+		EntityMgrFixerConfiguration emConfiguration = null;
 
 		do
 		{
@@ -119,7 +120,8 @@ public class XercesParserImpl extends XmlParser
 				// one gets the crimson version bundled in the JRE and the rest fails
 				// miserably (see Plugin Bug #2950392)
 				// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
-				reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
+				emConfiguration = new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer));
+				reader = new org.apache.xerces.parsers.SAXParser(emConfiguration);
 
 				// customize validation
 				reader.setFeature("http://xml.org/sax/features/validation",
@@ -328,7 +330,13 @@ public class XercesParserImpl extends XmlParser
 				// one gets the crimson version bundled in the JRE and the rest fails
 				// miserably (see Plugin Bug #2950392)
 				// using EntityMgrFixerConfiguration until XERCESJ-1205 is fixed (see Plugin bug #3393297)
-				reader = new org.apache.xerces.parsers.SAXParser(new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer)));
+				if(rootDocument == null)
+				{
+					emConfiguration = new EntityMgrFixerConfiguration(null, new CachedGrammarPool(buffer));
+					// reuse emConfiguration to accept entity references in sub-document with no DTD
+					// (PB PB #1872 XML: entity references in child documents break tree parsing)
+				}
+				reader = new org.apache.xerces.parsers.SAXParser(emConfiguration);
 
 				// no validation: it has already been done once
 				reader.setFeature("http://xml.org/sax/features/validation",false);
