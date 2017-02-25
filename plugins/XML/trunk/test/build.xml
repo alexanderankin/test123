@@ -91,8 +91,9 @@
     </selector>
 
     <!-- this selector holds just one test.  This is optional. -->
+    <property name="current-test" value="xml/CompletionTest.java" />
     <selector id="testcases.current">
-        <filename name="xml/CompletionTest.java"/>
+	    <filename name="${current-test}"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
