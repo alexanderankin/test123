@@ -390,9 +390,6 @@ public class XercesParserImpl extends XmlParser
 					Log.log(Log.ERROR,this,"I/O error upon snd reparse :"+e.getClass()+": "+e.getMessage());
 				}
 			}
-			catch(SAXParseException se) // NOPMD: got it in the first parse or, if buffer not parsed because of xml.root, caught by ErrorListErrorHandler
-			{
-			}
 			catch(SAXException se)
 			{
 				// don't repeat yourself
