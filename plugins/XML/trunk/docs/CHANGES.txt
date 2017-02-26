@@ -6,6 +6,8 @@ XML Plugin Change log
         PFR #378 Checkbox to disable DTD validation on global basis (Eric Le Lay)
         Fix #1869 XML Plugin missing values in indexterm class attribute dropdown (Eric Le Lay)
         Fix PB #1872 XML: entity references in child documents break tree parsing and xref linkend= navigation (Eric Le Lay)
+        PFR #381 XML + Hyperlinks + &entity; &references; (Eric Le Lay)
+
 
     Version 3.0.4 Requires jEdit 5.2, Java 1.7, XercesPlugin 2.9.1, ErrorList 2.3, SideKick 1.8, BeautyPlugin 0.9, CommonControls 1.7.4, EclipseIcons 1.0, Hyperlinks 1.1.0 (Optional), Templates 4.1.2 (Optional), AntlrPlugin 4.5.1
         Fix some objects not correctly unloaded when unloading the plugin (Matthieu Casanova)

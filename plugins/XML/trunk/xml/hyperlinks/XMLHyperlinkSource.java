@@ -86,6 +86,8 @@ import xml.parser.javacc.XmlParser;
  */
 public class XMLHyperlinkSource implements HyperlinkSource
 {
+	private static final Pattern ENTITY_P = Pattern.compile(".+<!ENTITY\\s+[^\\s]+\\s+(?:SYSTEM|(?:PUBLIC\\s+\"[^\"]+\"))\\s+\"([^\"]+)\"$", Pattern.DOTALL);
+	private static final Pattern ENTITY_REF_P = Pattern.compile("^&(.+);$");
 	/**
 	 * Returns the hyperlink for the given offset.
 	 * returns an hyperlink as soon as pointer enters the attribute's value
@@ -98,7 +100,10 @@ public class XMLHyperlinkSource implements HyperlinkSource
 		View view = jEdit.getActiveView();
 		XmlParsedData data = XmlParsedData.getParsedData(view, false);
 		if(data==null)return null;
+		return getHyperlink(buffer, offset, data);
+	}
 		
+	public Hyperlink getHyperlink(Buffer buffer, int offset, XmlParsedData data){
 		int lineNum = buffer.getLineOfOffset(offset);
 		int start = buffer.getLineStartOffset(lineNum);
 		int next = start;
@@ -115,10 +120,10 @@ public class XMLHyperlinkSource implements HyperlinkSource
 			start = next;
 			token = token.next;
 		}
-		if (token.id == Token.LITERAL2)
+		if(token.id == Token.LITERAL2)
 		{
 			String ref = buffer.getText(start-1, token.length+2);
-			if(ref.matches("^&(.+);$"))
+			if(ENTITY_REF_P.matcher(ref).matches())
 			{
 				ref = ref.substring(1, ref.length()-1);
 				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "entity reference " + ref);
@@ -141,6 +146,20 @@ public class XMLHyperlinkSource implements HyperlinkSource
 						}
 					}
 				}
+			}
+		}
+		else if(token.id == Token.LITERAL1
+				&& token.next != null && token.next.id == Token.LITERAL1
+				&& token.next.next != null && token.next.next.id == Token.KEYWORD2)
+		{
+			int reasonableStart = Math.max(0, start - 1000);
+			String txt = buffer.getText(reasonableStart, next + 1 - reasonableStart);
+			Matcher m = ENTITY_P.matcher(txt);
+			if(m.matches())
+			{
+				String href = m.group(1);
+				if(DEBUG_HYPERLINKS)Log.log(Log.DEBUG, XMLHyperlinkSource.class, "system entity " + href);
+				return new jEditOpenFileHyperlink(start, next, lineNum, href);
 			}
 		}
 

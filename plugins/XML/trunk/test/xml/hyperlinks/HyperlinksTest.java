@@ -52,7 +52,7 @@ import org.junit.Test;
 
 public class HyperlinksTest {
 	
-		private static File testData;
+	private static File testData;
 	
     @BeforeClass
     public static void setUpjEdit() throws IOException{
