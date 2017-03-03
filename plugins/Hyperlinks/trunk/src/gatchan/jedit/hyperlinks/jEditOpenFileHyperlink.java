@@ -33,16 +33,23 @@ import org.gjt.sp.jedit.msg.PositionChanging;
  */
 public class jEditOpenFileHyperlink extends AbstractHyperlink
 {
-	private final String path;
+	public final String path;
 	public jEditOpenFileHyperlink(int start, int end, int line, String url)
 	{
 		super(start, end, line, url);
 		path = url;
 	}
 
+	@Override
 	public void click(View view)
 	{
 		EditBus.send(new PositionChanging(view.getTextArea()));
 		jEdit.openFile(view, path);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "jEditOpenFileHyperlink["+path+"]";
 	}
 }
