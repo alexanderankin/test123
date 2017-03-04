@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+
+<purchaseReport
+  xmlns="http://www.example.com/Report"
+  	xmlns:ipo="http://www.example.com/IPO"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  >
+  <!-- this one is wrong, and XML Insert doesn't propose it -->
+  <ipo:comment></ipo:comment>
+  <!--  that one is correct : -->
+  <!-- here you have a chance to try undeclared namespaces in element completion:
+       you should  be proposed ns0:aforeign, ns1:astranger2, ns1:astranger and ns2:inreport if you type ' ' after comment.
+       If you choose one, the other namespaces declarations will not be insterted (this is correct).
+       And if you type 'a:' you will be proposed a:foreign, a:stranger, a:starnger2, a:inreport.
+    -->
+  <comment>
+  		<!-- the completion information is here -->
+  		<ipo:comment>erjrj
+		<!-- no completion information here : only string content -->
+		</ipo:comment>
+  </comment>
+  <!-- here you have a chance to try undeclared namespaces in element completion:
+       you should  be proposed ns1:foreign and ns0:stranger if you type '<'.
+       If you choose one, the other namespaces declarations will not be insterted (this is correct),
+       either when using the EditTagDialog, or not.
+       And if you type '<a:' you will be proposed a:foreign and a:stranger
+    -->
+</purchaseReport>
