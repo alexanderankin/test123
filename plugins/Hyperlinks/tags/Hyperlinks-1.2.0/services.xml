@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+	<SERVICE NAME="url" CLASS="gatchan.jedit.hyperlinks.HyperlinkSource">
+		new gatchan.jedit.hyperlinks.url.URLHyperlinkSource();
+	</SERVICE>
+
+	<SERVICE NAME="C:include" CLASS="gatchan.jedit.hyperlinks.HyperlinkSource">
+		new gatchan.jedit.hyperlinks.include_c.IncludeHyperlinkSource();
+	</SERVICE>
+</SERVICES>
+
+
+

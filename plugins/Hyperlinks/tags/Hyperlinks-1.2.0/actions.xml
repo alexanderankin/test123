@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="reload-hyperlinks-xml">
+		<CODE>
+			hp = jEdit.getPlugin("gatchan.jedit.hyperlinks.HyperlinksPlugin");
+			hp.reloadConfigurableHyperlinkSources();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="open-hyperlinks-xml">
+		<CODE>
+		  hp = jEdit.getPlugin("gatchan.jedit.hyperlinks.HyperlinksPlugin");
+			file = new File(hp.getPluginHome(), "hyperlinks.xml");
+			jEdit.openFile(view, file.toString());
+		</CODE>
+	</ACTION>
+</ACTIONS>
