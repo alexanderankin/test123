@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Matthieu Casanova">
+  <title>Hyperlinks Plugin</title>
+</head>
+<body>
+<table border="0" cellspacing="0" width="100%" bgcolor="#ccccff">
+    <tr>
+      <td valign="top" style="font-weight:bold;font-size:x-large">Hyperlinks</td>
+      <td align="right" valign="top" style="font-size:small">
+      <span style="font-weight:bold">Version 1.2.0 (Mar 04, 2017)</span><br>
+      Matthieu Casanova &lt;chocolat.mou@gmail.com&gt;&nbsp;</td>
+    </tr>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="3" width="100%" bgcolor="#EEEEFF"
+ summary="Introduction">
+  <tbody>
+    <tr align="center">
+      <td style="font-weight:bold;font-size:large">Introduction</td>
+    </tr>
+  </tbody>
+</table>
+<p>This plugin will highlight hyperlinks when pressing "control" and moving the mouse on an
+hyperlink in the buffer. By default it will work with http hyperlinks but other plugins
+can provide their own links.</p>
+
+<h2>History</h2>
+<ul>
+  <li>1.2.0 (Mar 04, 2017)</li>
+	<ul>
+		<li>Added support for configurable hyperlinks via XML (Patrick Eibl)</li>
+		<li>API change: public <code>jEditOpenFileHyperlink.path</code>, <code>jEditOpenFileAndGotoHyperlink</code>  (Eric Le Lay)</li>
+	</ul>
+	<li>1.1.1 (Aug 27, 2012)</li>
+	<ul>
+		<li>The cursor on hyperlinks is now a Hand cursor</li>
+		<li>Added support for #include "header.h" hyperlinks in C,C++ and objective-C</li>
+	</ul>
+  <li>1.1.0 (Jun 20, 2011)</li>
+  <ul>
+    <li>Fixed compatibility with latest jEdit</li>
+    <li>Fixed a bug when the buffer is changing</li>
+    <li>Added ability to use several hyperlinks sources to a buffer</li>
+  </ul>
+  <li>1.0.2 (Jan 26, 2009)</li>
+  <ul>
+    <li>Fixed plugin unload</li>
+  </ul>
+  <li>1.0.1 (Jan 23, 2009)</li>
+  <ul>
+    <li>Fixed hyperlink highlight that sometimes was not disappearing</li>
+  </ul>
+  <li>1.0.0 (Sep 23, 2007)</li>
+  <ul>
+    <li>Initial release</li>
+  </ul>
+</ul>
+<h2>Feedback</h2>
+<p>Please report bugs to the bug jEdit's plugin tracker on sourceforge.net</p>
+<br/>
+<br/>
+
+<table border="0" cellspacing="0" cellpadding="3" width="100%" bgcolor="#EEEEFF"
+ summary="Specifying Custom Hyperlinks with XML">
+  <tbody>
+    <tr align="center">
+      <td style="font-weight:bold;font-size:large">Specifying Custom Hyperlinks with XML</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Hyperlinks now includes a way for users to specify their own hyperlink 
+styles with an XML configuration file, instead of needing to write their own plugin. 
+Here are some potential uses for this plugin:
+</p>
+<ul>
+  <li>Hyperlink identifiers in source code to their definitions</li>
+  <li>Hyperlink specific file paths to open in a new buffer</li>
+  <li>Hyperlink to another part of large file using a line number</li>
+  <li>Hyperlink URLs such that they open with an external browser</li>
+</ul>
+
+<p>The XML configuration file is located inside the plugin home directory, and
+is named hyperlinks.xml. Choosing "Open hyperlinks.xml" from the Hyperlinks menu 
+will allow you to edit it, and "Reload hyperlinks.xml" will
+cause the plugin to reload all hyperlink sources in the file.</p>
+<p>Note that to activate your custom hyperlinks, they need to be selected
+in the Hyperlinks plugin options</p>
+
+ <p>The hyperlinks.xml has the following preamble and root element:</p>
+    <pre>&lt;?xml version="1.0"?&gt;
+
+&lt;!DOCTYPE HYPERLINKSOURCES SYSTEM "hyperlinks.dtd"&gt;
+
+&lt;HYPERLINKSOURCES&gt;
+    ...
+&lt;/HYPERLINKSOURCES&gt;</pre>
+
+ <h2>The HYPERLINKSOURCE element</h2>
+   <p>A <tt>HYPERLINKSOURCE</tt> element defines a single hyperlink
+   source to the Hyperlinks plugin. It requires a <tt>NAME</tt>
+   attribute, and contains one or more <tt>HYPERLINK</tt> elements.
+   The hyperlink source will attempt to match the hyperlink types in the order
+   that they appear in this file.</p>
+   <pre>
+&lt;HYPERLINKSOURCE NAME="Go to Line"&gt;
+    ...
+&lt;/HYPERLINKSOURCE&gt;</pre>
+
+ <h2>The HYPERLINK element</h2>
+   <p>The <tt>HYPERLINK</tt> element has no attributes, and
+   contains exactly one each of a <tt>REGEX</tt> element and a 
+   <tt>CODE</tt> element, and an optional <tt>TOOLTIP</tt> element. Neither <tt>REGEX</tt> nor
+   <tt>CODE</tt> has attributes. </p>
+ <h2>The REGEX element</h2>
+   <p><tt>REGEX</tt> is the
+   regular expression for what the hyperlink will look like.</p>
+ <h2>The CODE element</h2>
+   <p><tt>CODE</tt> contains the BeanShell code that will be executed when that hyperlink is
+   clicked. The variables <tt>_0-_9</tt> contain the groups matched by the regular 
+   expression (<tt>_0</tt> contains the full match). The variable <tt>matcher</tt> 
+   contains the java.util.regex.Matcher object for the given regular expression. 
+   See the Matcher API for more details.</p>
+ <h2>The TOOLTIP element</h2>
+   <p><tt>TOOLTIP</tt> contains BeanShell code whose return value is used as the 
+   tooltip text when hovering over a hyperlink. It also has access to the <tt>matcher</tt>
+   and <tt>_0-_9</tt> variables. For a static string, simply enclose it in quotes.</p>
+ <h2>Example</h2>
+   <p>Here is an
+   example hyperlink source that will underline <tt>line:231</tt> and jump to
+   that line when clicked.</p>
+   <pre>
+&lt;HYPERLINKSOURCE NAME="Go to Line"&gt;
+  &lt;HYPERLINK&gt;
+    &lt;REGEX&gt;line:(\d+)&lt;/REGEX&gt;
+    &lt;CODE&gt;
+      lineNumber = Integer.parseInt(_1) - 1;
+      textArea.setCaretPosition(textArea.getLineStartOffset(lineNumber));
+    &lt;/CODE&gt;
+    &lt;TOOLTIP&gt;"Go to line " + _1&lt;/TOOLTIP&gt;
+  &lt;/HYPERLINK&gt;
+&lt;/HYPERLINKSOURCE&gt;</pre>
+
+</body>
+</html>
