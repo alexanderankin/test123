@@ -11,7 +11,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
     private JCheckBox ignoreDirtyBuffers;
     private JCheckBox parseOnCodeComplete;
     private JCheckBox importPackage;
-    //private JCheckBox useAntlrParser;   // TODO: remove this and references below when the antlr parser is complete
+    //private JCheckBox useAntlrParser;   // DONE: remove this and references below when the antlr parser is complete
 
     public GeneralOptionPane() {
         super( "sidekick.java.general" );
