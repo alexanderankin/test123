@@ -11,7 +11,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
     private JCheckBox ignoreDirtyBuffers;
     private JCheckBox parseOnCodeComplete;
     private JCheckBox importPackage;
-    private JCheckBox useAntlrParser;   // TODO: remove this and references below when the antlr parser is complete
+    //private JCheckBox useAntlrParser;   // TODO: remove this and references below when the antlr parser is complete
 
     public GeneralOptionPane() {
         super( "sidekick.java.general" );
@@ -33,7 +33,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
         ignoreDirtyBuffers = new JCheckBox( jEdit.getProperty( "options.sidekick.java.ignoreDirtyBuffers", "Ignore dirty buffers" ) );
         parseOnCodeComplete = new JCheckBox( jEdit.getProperty( "options.sidekick.java.parseOnComplete", "Parse buffer on code completion" ) );
         importPackage = new JCheckBox( jEdit.getProperty( "options.sidekick.java.importPackage", "Insert import statement on package completion" ) );
-        useAntlrParser = new JCheckBox( "Use Antlr parser" );
+        //useAntlrParser = new JCheckBox( "Use Antlr parser" );   
         JPanel errorPanel = new JPanel();
         errorPanel.setLayout( new BoxLayout( errorPanel, BoxLayout.X_AXIS ) );
         errorPanel.add( showErrorsInErrorList );
@@ -42,7 +42,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
         addComponent( errorPanel );
         addComponent( parseOnCodeComplete );
         addComponent( importPackage );
-        addComponent( useAntlrParser );
+        //addComponent( useAntlrParser );
     }
 
     /**
@@ -53,7 +53,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
         ignoreDirtyBuffers.setSelected( jEdit.getBooleanProperty( "sidekick.java.ignoreDirtyBuffers", true ) );
         parseOnCodeComplete.setSelected( jEdit.getBooleanProperty( "sidekick.java.parseOnComplete", true ) );
         importPackage.setSelected( jEdit.getBooleanProperty( "sidekick.java.importPackage", false ) );
-        useAntlrParser.setSelected( jEdit.getBooleanProperty( "sidekick.java.useAntlrParser", false ) );
+        //useAntlrParser.setSelected( jEdit.getBooleanProperty( "sidekick.java.useAntlrParser", false ) );
     }
 
     protected void _save() {
@@ -61,6 +61,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty( "sidekick.java.ignoreDirtyBuffers", ignoreDirtyBuffers.isSelected() );
         jEdit.setBooleanProperty( "sidekick.java.parseOnComplete", parseOnCodeComplete.isSelected() );
         jEdit.setBooleanProperty( "sidekick.java.importPackage", importPackage.isSelected() );
-        jEdit.setBooleanProperty( "sidekick.java.useAntlrParser", useAntlrParser.isSelected() );
+        //jEdit.setBooleanProperty( "sidekick.java.useAntlrParser", useAntlrParser.isSelected() );
     }
 }

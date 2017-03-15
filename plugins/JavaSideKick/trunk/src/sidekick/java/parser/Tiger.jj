@@ -1,4 +1,10 @@
-
+/*
+This is deprecated for parsing java code, but still used for javacc files, 
+I'm using the Antlr parser for java files now rather than this one as this
+became too hard to adjust to Java 8 and later. The Antlr parser is a little
+slower, but is much easier to maintain and supports Java 8+. 
+TODO: write an antlr parser to parse javacc .jj and .jjt files
+*/
 /*
 Per Sreenivasa Viswanadha (as posted on the javacc user mailing list), the
 original java 1.5 grammar is licensed under the BSD license, so this modified

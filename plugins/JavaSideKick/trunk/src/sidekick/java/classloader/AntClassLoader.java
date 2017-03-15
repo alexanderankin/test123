@@ -1,20 +1,22 @@
+
 /*
-* Copyright  2000-2004 The Apache Software Foundation
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*
-*/
+ * Copyright  2000-2004 The Apache Software Foundation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
 package sidekick.java.classloader;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,9 +32,10 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.gjt.sp.util.Log;
+
 import sidekick.java.util.*;
 
-import org.gjt.sp.util.Log;
 
 /**
  * danson:  I needed a classloader, so I borrowed this one from Ant since it
@@ -53,6 +56,7 @@ public class AntClassLoader extends ClassLoader {
 
     private static final FileUtils FILE_UTILS = FileUtils.newFileUtils();
 
+
     /**
      * An enumeration of all resources of a given name found within the
      * classpath of this class loader. This enumeration is used by the
@@ -63,22 +67,23 @@ public class AntClassLoader extends ClassLoader {
      * @see java.lang.ClassLoader#getResources(String)
      */
     private class ResourceEnumeration implements Enumeration {
+
         /**
          * The name of the resource being searched for.
          */
         private String resourceName;
-
         /**
          * The index of the next classpath element to search.
          */
         private int pathElementsIndex;
-
         /**
          * The URL of the next resource to return in the enumeration. If this
          * field is <code>null</code> then the enumeration has been completed,
          * i.e., there are no more elements to return.
          */
         private URL nextResource;
+
+
 
         /**
          * Constructs a new enumeration of resources of the given name found
@@ -123,13 +128,13 @@ public class AntClassLoader extends ClassLoader {
         private void findNextResource() {
             URL url = null;
             while ( ( pathElementsIndex < pathComponents.size() )
-                    && ( url == null ) ) {
+            && ( url == null ) ) {
                 try {
                     File pathComponent = pathComponents.get( pathElementsIndex );
                     url = getResourceURL( pathComponent, this.resourceName );
                     pathElementsIndex++;
                 }
-                catch ( Exception e ) {     // NOPMD
+                catch ( Exception e ) {    // NOPMD
                     // ignore path elements which are not valid relative to the
                     // project
                 }
@@ -137,49 +142,41 @@ public class AntClassLoader extends ClassLoader {
             this.nextResource = url;
         }
     }
-    
+
     /**
-     * Controls whether debugging output is visible.    
+     * Controls whether debugging output is visible.
      */
     private static boolean debug = false;
-
     /**
      * The size of buffers to be used in this classloader.
      */
     private static final int BUFFER_SIZE = 8192;
-    
     /**
      * Number of array elements in a test array of strings
      */
     private static final int NUMBER_OF_STRINGS = 256;
-
     /**
      * The components of the classpath that the classloader searches
      * for classes.
      */
     private List<File> pathComponents = new ArrayList<File>();
-
-
     /**
      * Indicates whether the parent class loader should be
      * consulted before trying to load with this class loader.
      */
     private boolean parentFirst = true;
-
     /**
      * These are the package roots that are to be loaded by the parent class
      * loader regardless of whether the parent class loader is being searched
      * first or not.
      */
     private List<String> systemPackages = new ArrayList<String>();
-
     /**
      * These are the package roots that are to be loaded by this class loader
      * regardless of whether the parent class loader is being searched first
      * or not.
      */
     private List<String> loaderPackages = new ArrayList<String>();
-
     /**
      * Whether or not this classloader will ignore the base
      * classloader if it can't find a class.
@@ -187,34 +184,28 @@ public class AntClassLoader extends ClassLoader {
      * @see #setIsolated(boolean)
      */
     private boolean ignoreBase = false;
-
     /**
      * The parent class loader, if one is given or can be determined.
      */
     private ClassLoader parent = null;
-
     /**
      * A hashtable of zip files opened by the classloader (File to ZipFile).
      */
     private HashMap<File, ZipFile> zipFiles = new HashMap<File, ZipFile>();
-
     /**
      * The context loader saved when setting the thread's current
      * context loader.
      */
     private ClassLoader savedContextLoader = null;
-    
     /**
      * Whether or not the context loader is currently saved.
      */
     private boolean isContextLoaderSaved = false;
-
     /**
      * Reflection method reference for getProtectionDomain;
      * used to avoid 1.1-compatibility problems.
      */
     private static Method getProtectionDomain = null;
-
     /**
      * Reflection method reference for defineClassProtectionDomain;
      * used to avoid 1.1-compatibility problems.
@@ -222,23 +213,25 @@ public class AntClassLoader extends ClassLoader {
     private static Method defineClassProtectionDomain = null;
 
 
+
     // Set up the reflection-based Java2 methods if possible
-    static {
+    static
+
+
+    {
         try {
-            getProtectionDomain
-            = Class.class.getMethod( "getProtectionDomain", new Class[ 0 ] );
-            Class protectionDomain
-            = Class.forName( "java.security.ProtectionDomain" );
-            Class[] args = new Class[] {String.class, byte[].class,
-                    Integer.TYPE, Integer.TYPE, protectionDomain};
-            defineClassProtectionDomain
-            = ClassLoader.class.getDeclaredMethod( "defineClass", args );
+            getProtectionDomain = Class.class.getMethod( "getProtectionDomain", new Class [0]  );
+            Class protectionDomain = Class.forName( "java.security.ProtectionDomain" );
+            Class[] args = new Class[] {
+                String.class, byte[].class,
+                Integer.TYPE, Integer.TYPE, protectionDomain
+            };
+            defineClassProtectionDomain = ClassLoader.class.getDeclaredMethod( "defineClass", args );
         }
-        catch ( Exception e ) {     // NOPMD
+        catch ( Exception e ) {    // NOPMD
             // ignore failure to get access to 1.2+ methods
         }
     }
-
 
     /**
      * Create an Ant Class Loader
@@ -276,14 +269,13 @@ public class AntClassLoader extends ClassLoader {
      *                    load the a class through this loader.
      */
     public AntClassLoader( ClassLoader parent, Path classpath,
-            boolean parentFirst ) {
+    boolean parentFirst ) {
         this( classpath, true );
         if ( parent != null ) {
             setParent( parent );
         }
         setParentFirst( parentFirst );
     }
-
 
     /**
      * Creates a classloader using the classpath given.
@@ -364,7 +356,6 @@ public class AntClassLoader extends ClassLoader {
         this.parentFirst = parentFirst;
     }
 
-
     /**
      * Logs a message through the project object if one has been provided.
      *
@@ -372,7 +363,7 @@ public class AntClassLoader extends ClassLoader {
      */
     protected void log( String message ) {
         if ( message == null ) {
-            return ;
+            return;
         }
         if ( debug ) {
             Log.log( Log.DEBUG, this, message );
@@ -385,7 +376,7 @@ public class AntClassLoader extends ClassLoader {
      */
     public void setThreadContextLoader() {
         if ( isContextLoaderSaved ) {
-            throw new RuntimeException( "Context loader has not been reset" );      // NOPMD
+            throw new RuntimeException( "Context loader has not been reset" );    // NOPMD
         }
         if ( LoaderUtils.isContextLoaderAvailable() ) {
             savedContextLoader = LoaderUtils.getContextClassLoader();
@@ -400,13 +391,12 @@ public class AntClassLoader extends ClassLoader {
      */
     public void resetThreadContextLoader() {
         if ( LoaderUtils.isContextLoaderAvailable()
-                && isContextLoaderSaved ) {
+        && isContextLoaderSaved ) {
             LoaderUtils.setContextClassLoader( savedContextLoader );
             savedContextLoader = null;
             isContextLoaderSaved = false;
         }
     }
-
 
     /**
      * Adds an element to the classpath to be searched.
@@ -430,7 +420,7 @@ public class AntClassLoader extends ClassLoader {
      */
     public void addPathFile( File pathComponent ) {
         if ( pathComponent == null || isInPath( pathComponent ) ) {
-            return ;
+            return;
         }
         pathComponents.add( pathComponent );
     }
@@ -443,11 +433,11 @@ public class AntClassLoader extends ClassLoader {
      */
     public String getClasspath() {
         StringBuffer sb = new StringBuffer();
-        
-        for (File path : pathComponents) {
-            sb.append(path.getAbsolutePath()).append( File.pathSeparatorChar ); 
+
+        for ( File path : pathComponents ) {
+            sb.append( path.getAbsolutePath() ).append( File.pathSeparatorChar );
         }
-        return sb.toString().substring(0, sb.length() - 1);
+        return sb.toString().substring( 0, sb.length() - 1 );
     }
 
     /**
@@ -473,22 +463,23 @@ public class AntClassLoader extends ClassLoader {
      * @deprecated use Class.forName with initialize=true instead.
      */
     public static void initializeClass( Class theClass ) {
+
         // ***HACK*** We ask the VM to create an instance
         // by voluntarily providing illegal arguments to force
         // the VM to run the class' static initializer, while
         // at the same time not running a valid constructor.
-
         final Constructor[] cons = theClass.getDeclaredConstructors();
-        //At least one constructor is guaranteed to be there, but check anyway.
+
+        // At least one constructor is guaranteed to be there, but check anyway.
         if ( cons != null ) {
-            if ( cons.length > 0 && cons[ 0 ] != null ) {               // NOPMD
-                final String[] strs = new String[ NUMBER_OF_STRINGS ];
+            if ( cons.length > 0 && cons[0] != null ) {    // NOPMD
+                final String[] strs = new String [NUMBER_OF_STRINGS];
                 try {
-                    cons[ 0 ].newInstance( strs );
+                    cons[0].newInstance( strs );
                     // Expecting an exception to be thrown by this call:
                     // IllegalArgumentException: wrong number of Arguments
                 }
-                catch ( Throwable t ) {     // NOPMD
+                catch ( Throwable t ) {    // NOPMD
                     // Ignore - we are interested only in the side
                     // effect - that of getting the static initializers
                     // invoked.  As we do not want to call a valid
@@ -516,8 +507,7 @@ public class AntClassLoader extends ClassLoader {
      *                    Should not be <code>null</code>.
      */
     public void addSystemPackageRoot( String packageRoot ) {
-        systemPackages.add( packageRoot
-                + ( packageRoot.endsWith( "." ) ? "" : "." ) );
+        systemPackages.add( packageRoot + ( packageRoot.endsWith( "." ) ? "" : "." ) );
     }
 
     /**
@@ -530,8 +520,7 @@ public class AntClassLoader extends ClassLoader {
      *                    Should not be <code>null</code>.
      */
     public void addLoaderPackageRoot( String packageRoot ) {
-        loaderPackages.add( packageRoot
-                + ( packageRoot.endsWith( "." ) ? "" : "." ) );
+        loaderPackages.add( packageRoot + ( packageRoot.endsWith( "." ) ? "" : "." ) );
     }
 
     /**
@@ -606,30 +595,24 @@ public class AntClassLoader extends ClassLoader {
         if ( isParentFirst( name ) ) {
             resourceStream = loadBaseResource( name );
             if ( resourceStream != null ) {
-                log( "ResourceStream for " + name
-                     + " loaded from parent loader" );
-
+                log( "ResourceStream for " + name + " loaded from parent loader" );
             }
             else {
                 resourceStream = loadResource( name );
                 if ( resourceStream != null ) {
-                    log( "ResourceStream for " + name
-                         + " loaded from ant loader" );
+                    log( "ResourceStream for " + name + " loaded from ant loader" );
                 }
             }
         }
         else {
             resourceStream = loadResource( name );
             if ( resourceStream != null ) {
-                log( "ResourceStream for " + name
-                     + " loaded from ant loader" );
-
+                log( "ResourceStream for " + name + " loaded from ant loader" );
             }
             else {
                 resourceStream = loadBaseResource( name );
                 if ( resourceStream != null ) {
-                    log( "ResourceStream for " + name
-                         + " loaded from parent loader" );
+                    log( "ResourceStream for " + name + " loaded from parent loader" );
                 }
             }
         }
@@ -651,12 +634,13 @@ public class AntClassLoader extends ClassLoader {
      *         the resource cannot be found on the loader's classpath.
      */
     private InputStream loadResource( String name ) {
+
         // we need to search the components of the path to see if we can
         // find the class we want.
-        for (File file : pathComponents) {
-            InputStream stream = getResourceStream( file, name);
-            if (stream != null) {
-                return stream;   
+        for ( File file : pathComponents ) {
+            InputStream stream = getResourceStream( file, name );
+            if ( stream != null ) {
+                return stream;
             }
         }
         return null;
@@ -706,8 +690,9 @@ public class AntClassLoader extends ClassLoader {
                 }
             }
             else {
+
                 // is the zip file in the cache
-                ZipFile zipFile = ( ZipFile ) zipFiles.get( file );
+                ZipFile zipFile = ( ZipFile )zipFiles.get( file );
                 if ( zipFile == null ) {
                     zipFile = new ZipFile( file );
                     zipFiles.put( file, zipFile );
@@ -719,9 +704,7 @@ public class AntClassLoader extends ClassLoader {
             }
         }
         catch ( Exception e ) {
-            log( "Ignoring Exception " + e.getClass().getName()
-                 + ": " + e.getMessage() + " reading resource " + resourceName
-                 + " from " + file );
+            log( "Ignoring Exception " + e.getClass().getName() + ": " + e.getMessage() + " reading resource " + resourceName + " from " + file );
         }
 
         return null;
@@ -740,23 +723,22 @@ public class AntClassLoader extends ClassLoader {
      *         resource before this one is.
      */
     private boolean isParentFirst( String resourceName ) {
+
         // default to the global setting and then see
         // if this class belongs to a package which has been
         // designated to use a specific loader first
         // (this one or the parent one)
-
         // XXX - shouldn't this always return false in isolated mode?
-
         boolean useParentFirst = parentFirst;
 
-        for (String packageName : systemPackages) {
+        for ( String packageName : systemPackages ) {
             if ( resourceName.startsWith( packageName ) ) {
                 useParentFirst = true;
                 break;
             }
         }
 
-        for (String packageName : loaderPackages) {
+        for ( String packageName : loaderPackages ) {
             if ( resourceName.startsWith( packageName ) ) {
                 useParentFirst = false;
                 break;
@@ -779,6 +761,7 @@ public class AntClassLoader extends ClassLoader {
      *         adequate privileges to get the resource.
      */
     public URL getResource( String name ) {
+
         // we need to search the components of the path to see if
         // we can find the class we want.
         URL url = null;
@@ -790,23 +773,23 @@ public class AntClassLoader extends ClassLoader {
             log( "Resource " + name + " loaded from parent loader" );
         }
         else {
+
             // try to load from this loader if the parent either didn't find
             // it or wasn't consulted.
-            for (File file : pathComponents) {
-                url = getResourceURL( file, name );   
+            for ( File file : pathComponents ) {
+                url = getResourceURL( file, name );
                 if ( url != null ) {
-                    log( "Resource " + name
-                         + " loaded from ant loader" );
+                    log( "Resource " + name + " loaded from ant loader" );
                     break;
                 }
             }
         }
 
         if ( url == null && !isParentFirst( name ) ) {
-            // this loader was first but it didn't find it - try the parent
 
+            // this loader was first but it didn't find it - try the parent
             url = ( parent == null ) ? super.getResource( name )
-                  : parent.getResource( name );
+            : parent.getResource( name );
             if ( url != null ) {
                 log( "Resource " + name + " loaded from parent loader" );
             }
@@ -832,19 +815,23 @@ public class AntClassLoader extends ClassLoader {
         Enumeration /*<URL>*/ mine = new ResourceEnumeration( name );
         Enumeration /*<URL>*/ base;
         if ( parent != null && parent != getParent() ) {
+
             // Delegate to the parent:
             base = parent.getResources( name );
             // Note: could cause overlaps in case ClassLoader.this.parent has matches.
         }
         else {
+
             // ClassLoader.this.parent is already delegated to from ClassLoader.getResources, no need:
             base = new CollectionUtils.EmptyEnumeration();
         }
         if ( isParentFirst( name ) ) {
+
             // Normal case.
             return CollectionUtils.append( base, mine );
         }
         else {
+
             // Inverted.
             return CollectionUtils.append( mine, base );
         }
@@ -881,7 +868,7 @@ public class AntClassLoader extends ClassLoader {
                 }
             }
             else {
-                ZipFile zipFile = ( ZipFile ) zipFiles.get( file );
+                ZipFile zipFile = ( ZipFile )zipFiles.get( file );
                 if ( zipFile == null ) {
                     zipFile = new ZipFile( file );
                     zipFiles.put( file, zipFile );
@@ -890,8 +877,7 @@ public class AntClassLoader extends ClassLoader {
                 ZipEntry entry = zipFile.getEntry( resourceName );
                 if ( entry != null ) {
                     try {
-                        return new URL( "jar:" + FILE_UTILS.getFileURL( file )
-                                + "!/" + entry );
+                        return new URL( "jar:" + FILE_UTILS.getFileURL( file ) + "!/" + entry );
                     }
                     catch ( MalformedURLException ex ) {
                         return null;
@@ -928,10 +914,10 @@ public class AntClassLoader extends ClassLoader {
      */
     protected synchronized Class loadClass( String classname, boolean resolve )
     throws ClassNotFoundException {
+
         // 'sync' is needed - otherwise 2 threads can load the same class
         // twice, resulting in LinkageError: duplicated class definition.
         // findLoadedClass avoids that, but without sync it won't work.
-
         Class theClass = findLoadedClass( classname );
         if ( theClass != null ) {
             return theClass;
@@ -940,13 +926,11 @@ public class AntClassLoader extends ClassLoader {
         if ( isParentFirst( classname ) ) {
             try {
                 theClass = findBaseClass( classname );
-                log( "Class " + classname + " loaded from parent loader "
-                     + "(parentFirst)" );
+                log( "Class " + classname + " loaded from parent loader " + "(parentFirst)" );
             }
             catch ( ClassNotFoundException cnfe ) {
                 theClass = findClass( classname );
-                log( "Class " + classname + " loaded from ant loader "
-                     + "(parentFirst)" );
+                log( "Class " + classname + " loaded from ant loader " + "(parentFirst)" );
             }
         }
         else {
@@ -997,30 +981,31 @@ public class AntClassLoader extends ClassLoader {
      * @throws IOException if the class data cannot be read.
      */
     protected Class defineClassFromData( File container, byte[] classData,
-            String classname ) throws IOException {
+    String classname ) throws IOException {
+
         // Simply put:
         // defineClass(classname, classData, 0, classData.length,
-        //             Project.class.getProtectionDomain());
+        // Project.class.getProtectionDomain());
         // Made more elaborate to be 1.1-safe.
         if ( defineClassProtectionDomain != null ) {
             try {
-                Object domain
-                = getProtectionDomain.invoke( AntClassLoader.class, new Object[ 0 ] );
-                Object[] args
-                = new Object[] {classname, classData, new Integer( 0 ),
-                        new Integer( classData.length ), domain};
-                return ( Class ) defineClassProtectionDomain.invoke( this, args );
+                Object domain = getProtectionDomain.invoke( AntClassLoader.class, new Object [0]  );
+                Object[] args = new Object[] {
+                    classname, classData, new Integer( 0 ),
+                    new Integer( classData.length ), domain
+                };
+                return ( Class )defineClassProtectionDomain.invoke( this, args );
             }
             catch ( InvocationTargetException ite ) {
                 Throwable t = ite.getTargetException();
                 if ( t instanceof ClassFormatError ) {
-                    throw ( ClassFormatError ) t;
+                    throw ( ClassFormatError )t;
                 }
                 else if ( t instanceof NoClassDefFoundError ) {
-                    throw ( NoClassDefFoundError ) t;
+                    throw ( NoClassDefFoundError )t;
                 }
                 else if ( t instanceof SecurityException ) {
-                    throw ( SecurityException ) t;
+                    throw ( SecurityException )t;
                 }
                 else {
                     throw new IOException( t.toString() );
@@ -1052,11 +1037,11 @@ public class AntClassLoader extends ClassLoader {
      * reading the class from the stream.
      */
     private Class getClassFromStream( InputStream stream, String classname,
-            File container )
+    File container )
     throws IOException, SecurityException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int bytesRead = -1;
-        byte[] buffer = new byte[ BUFFER_SIZE ];
+        byte[] buffer = new byte [BUFFER_SIZE];
 
         while ( ( bytesRead = stream.read( buffer, 0, BUFFER_SIZE ) ) != -1 ) {
             baos.write( buffer, 0, bytesRead );
@@ -1089,14 +1074,13 @@ public class AntClassLoader extends ClassLoader {
      * @return true if the file is in the class path
      */
     public boolean isInPath( File component ) {
-        for (File file : pathComponents) {
-            if (file.equals(component)) {
-                return true;   
+        for ( File file : pathComponents ) {
+            if ( file.equals( component ) ) {
+                return true;
             }
         }
         return false;
     }
-
 
     /**
      * Finds a class on the given classpath.
@@ -1111,33 +1095,33 @@ public class AntClassLoader extends ClassLoader {
      */
     private Class findClassInComponents( String name )
     throws ClassNotFoundException {
+
         // we need to search the components of the path to see if
         // we can find the class we want.
         InputStream stream = null;
         String classFilename = getClassFilename( name );
         try {
-            for (File pathComponent : pathComponents) {
+            for ( File pathComponent : pathComponents ) {
                 try {
                     stream = getResourceStream( pathComponent, classFilename );
                     if ( stream != null ) {
-                        log( "Loaded from " + pathComponent + " "
-                             + classFilename );
+                        log( "Loaded from " + pathComponent + " " + classFilename );
                         return getClassFromStream( stream, name, pathComponent );
                     }
                 }
                 catch ( SecurityException se ) {
-                    log( "Security exception reading component " + pathComponent +
-                         " (reason: " + se.getMessage() + ")" );
+                    log( "Security exception reading component " + pathComponent + " (reason: " + se.getMessage() + ")" );
                 }
                 catch ( IOException ioe ) {
+
                     // ioe.printStackTrace();
-                    log( "Exception reading component " + pathComponent
-                         + " (reason: " + ioe.getMessage() + ")" );
+                    log( "Exception reading component " + pathComponent + " (reason: " + ioe.getMessage() + ")" );
                 }
             }
 
             throw new ClassNotFoundException( name );
         }
+
         finally {
             try {
                 if ( stream != null ) {
@@ -1179,7 +1163,7 @@ public class AntClassLoader extends ClassLoader {
      * files are closed.
      */
     public synchronized void cleanup() {
-        for ( ZipFile zipFile : zipFiles.values()) {
+        for ( ZipFile zipFile : zipFiles.values() ) {
             try {
                 zipFile.close();
             }
@@ -1189,5 +1173,4 @@ public class AntClassLoader extends ClassLoader {
         }
         zipFiles = new HashMap<File, ZipFile>();
     }
-
 }
