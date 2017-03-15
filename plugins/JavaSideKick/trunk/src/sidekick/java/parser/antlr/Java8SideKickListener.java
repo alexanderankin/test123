@@ -46,7 +46,7 @@ public class Java8SideKickListener extends Java8BaseListener {
     // return a Location representing the end of the rule context
     private Location getEndLocation( ParserRuleContext ctx ) {
         int line = ctx.getStop().getLine();
-        int col = ctx.getStop().getCharPositionInLine();
+        int col = ctx.getStop().getCharPositionInLine() + ctx.getStop().getText().length();
         return new Location( line, col );
     }
 
