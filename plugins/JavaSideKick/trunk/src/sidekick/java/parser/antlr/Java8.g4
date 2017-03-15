@@ -34,7 +34,11 @@
  *
  * NOTE: This grammar results in a generated parser that is much slower
  *       than the Java 7 grammar in the grammars-v4/java directory. This
- *     one is, however, extremely close to the spec.
+ *     one is, however, extremely close to the spec, and it runs fast enough
+ *     (on most files) when using the optimized Antlr found in antlr4-4.5-opt.jar.
+ *     Large file parsing is still somewhat slow, although I'm testing on a 6
+ *     year old laptop with an i3 processor. More modern machines should not 
+ *     notice much of a slowdown at all.
  *
  * You can test with
  *

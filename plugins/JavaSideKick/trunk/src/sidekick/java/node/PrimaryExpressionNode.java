@@ -30,7 +30,8 @@ package sidekick.java.node;
 
 /** an extension of TigerNode for a primary expression.  This covers constructs
 like SwingUtilities.invokeLater.  The "SwingUtilities" part is the primary
-expression.  XXX TODO: parameters to static methods (e.g. parameters to "invokeLater")
+expression.   
+TODO: parameters to static methods (e.g. parameters to "invokeLater")
 in the primary expression are not being parsed and should be. */
 public class PrimaryExpressionNode extends TigerNode {
 
