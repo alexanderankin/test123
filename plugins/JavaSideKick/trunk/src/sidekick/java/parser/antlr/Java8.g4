@@ -64,6 +64,46 @@ https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4
 
 I've made some modifications for the Beauty plugin that I've kept for JavaSideKick.
 Mostly the modifications have to do with handling multiple annotations and modifiers.
+
+TODO: update for Java 9, modules are the biggest change, plus some smaller changes,
+see below.
+
+For modules, see JSR-000376, (http://download.oracle.com/otndocs/jcp/java_platform_module_system-0_1-edr-spec/index.html)
+As of 9 Jan 2017 the grammar for modules is:
+
+CompilationUnit:
+  [PackageDeclaration] {ImportDeclaration} {TypeDeclaration}
+  {ImportDeclaration} ModuleDeclaration
+
+ModuleDeclaration:
+  {Annotation} [open] module Identifier {. Identifier} { {ModuleStatement} }
+
+ModuleStatement:
+  requires {RequiresModifier} ModuleName ;
+  exports PackageName [to ModuleName {, ModuleName}] ;
+  opens PackageName [to ModuleName {, ModuleName}] ;
+  uses TypeName ;
+  provides TypeName with TypeName {, TypeName} ;
+
+RequiresModifier: one of
+  transitive static
+
+ModuleName:
+  Identifier
+  ModuleName . Identifier
+
+'open', 'module', 'requires', 'transitive', 'exports', 'opens', 'to', 'uses', 'provides', and 'with' 
+are restricted keywords (i.e. they are keywords solely where they appear as terminals 
+in ModuleDeclaration, and are identifiers everywhere else).
+  
+More concise try-with-resources statements, see https://docs.oracle.com/javase/9/language/toc.htm#JSLAN-GUID-B06D7006-D9F4-42F8-AD21-BF861747EDCF
+Also some small changes are listed on that page:
+- Allow @SafeVargs on private instance methods.
+- Allow effectively-final variables to be used as resources in the try-with-resources statement.
+- Allow diamond with anonymous classes if the argument type of the inferred type is denotable.
+- Complete the removal, begun in Java SE 8, of underscore from the set of legal identifier names.
+- Add support for private interface methods.
+
 */
  
 grammar Java8;
