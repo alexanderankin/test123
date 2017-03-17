@@ -28,6 +28,11 @@
  */
 package imageviewer.components;
 
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
 
 import imageviewer.*;
 
@@ -36,6 +41,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -51,12 +57,10 @@ public class ImageViewport extends JScrollPane {
     private float zoomWidth;
     private float zoomHeight;
 
-
     public ImageViewport( ImageViewer parent ) {
         imageViewer = parent;
         installViewport();
     }
-
 
     private void installViewport() {
         imageLabel = new JLabel();
@@ -66,18 +70,16 @@ public class ImageViewport extends JScrollPane {
         update();
     }
 
-
     public JLabel getImageLabel() {
         return imageLabel;
     }
 
-
     public Image getImage() {
         return image;
     }
-    
-    public void setImage(Image image) {
-        this.image = (BufferedImage)image;
+
+    public void setImage( Image image ) {
+        this.image = ( BufferedImage )image;
         Icon icon = new ImageIcon( image );
         int width = icon.getIconWidth();
         int height = icon.getIconHeight();
@@ -85,22 +87,21 @@ public class ImageViewport extends JScrollPane {
         imageLabel.setSize( width, height );
         update();
     }
-    
+
     public void update() {
-        getViewport().setView(imageLabel);  
-    }
-    
-    public Dimension getOriginalSize() {
-        Dimension dim = new Dimension();
-        dim.setSize(originalWidth, originalHeight);
-        return dim;    
-    }
-    
-    public Dimension getCurrentSize() {
-        Icon icon = imageLabel.getIcon();
-        return new Dimension(icon.getIconWidth(), icon.getIconHeight());
+        getViewport().setView( imageLabel );
     }
 
+    public Dimension getOriginalSize() {
+        Dimension dim = new Dimension();
+        dim.setSize( originalWidth, originalHeight );
+        return dim;
+    }
+
+    public Dimension getCurrentSize() {
+        Icon icon = imageLabel.getIcon();
+        return new Dimension( icon.getIconWidth(), icon.getIconHeight() );
+    }
 
     /**
      * Display the image in this ImageViewer.
@@ -110,7 +111,6 @@ public class ImageViewport extends JScrollPane {
         showImage( filename, false );
     }
 
-
     /**
      * Display the image in this ImageViewer.
      * @param filename the name of the image file to display.
@@ -118,15 +118,14 @@ public class ImageViewport extends JScrollPane {
      */
     public void showImage( String filename, boolean reload ) {
         if ( !reload && filename.equals( imageViewer.getImageDataPanel().getFilename() ) ) {
+
             // already showing this image
             return;
         }
 
-
         if ( ImageViewer.isValidFilename( filename ) ) {
             image = null;
-            try
-            {
+            try {
                 image = ImageIO.read( new File( filename ) );
             }
             catch ( Exception e ) {
@@ -146,16 +145,49 @@ public class ImageViewport extends JScrollPane {
             float viewportHeight = ( float )viewportRect.getHeight();
             if ( originalHeight > viewportHeight ) {
                 zoomHeight = viewportHeight;
-                zoomWidth = originalWidth *= viewportHeight / originalHeight;
+                zoomWidth = originalWidth *= viewportHeight  /  originalHeight;
                 originalWidth = zoomWidth;
                 originalHeight = zoomHeight;
                 imageViewer.zoom( zoomWidth, zoomHeight );
             }
 
-
             imageLabel.invalidate();
             imageLabel.validate();
             imageViewer.refresh();
+
+            try {
+                Metadata metadata = ImageMetadataReader.readMetadata( new File( filename ) );
+
+                print( metadata );
+            }
+            catch ( ImageProcessingException e ) {
+                // handle exception
+            } catch ( IOException e ) {
+                // handle exception
+            }
+        }
+    }
+
+    private static void print( Metadata metadata ) {
+        System.out.println( "-------------------------------------" );
+
+        // Iterate over the data and print to System.out
+        // A Metadata object contains multiple Directory objects
+        //
+        for ( Directory directory : metadata.getDirectories() ) {
+
+            // Each Directory stores values in Tag objects
+            //
+            for ( Tag tag : directory.getTags() ) {
+                System.out.println( tag );
+            }
+
+            // Each Directory may also contain error messages
+            if ( directory.hasErrors() ) {
+                for ( String error : directory.getErrors() ) {
+                    System.err.println( "ERROR: " + error );
+                }
+            }
         }
     }
 }
