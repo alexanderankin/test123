@@ -248,7 +248,8 @@ public class ImageViewer extends JPanel {
     }
 
     /**
-     * @return true if the filename, regardless of case, ends with .jpg, .gif, or .png.
+     * @return true if the filename, regardless of case, ends with .jpg, .jpeg, .gif, or .png.
+     * TODO: java 9 supports TIFF
      */
     public static boolean isValidFilename( String filename ) {
         if ( filename == null ) {
@@ -279,8 +280,8 @@ public class ImageViewer extends JPanel {
      */
     public void zoomIn() {
         Dimension dim = imageViewport.getCurrentSize();
-        float width = new Float( dim.getWidth() ).floatValue()  *  1.1f;
-        float height = new Float( dim.getHeight() ).floatValue()  *  1.1f;
+        float width = new Float( dim.getWidth() ).floatValue() * 1.1f;
+        float height = new Float( dim.getHeight() ).floatValue() * 1.1f;
         zoom( width, height );
     }
 
@@ -289,8 +290,8 @@ public class ImageViewer extends JPanel {
      */
     public void zoomOut() {
         Dimension dim = imageViewport.getCurrentSize();
-        float width = new Float( dim.getWidth() ).floatValue()  *  0.9f;
-        float height = new Float( dim.getHeight() ).floatValue()  *  0.9f;
+        float width = new Float( dim.getWidth() ).floatValue() * 0.9f;
+        float height = new Float( dim.getHeight() ).floatValue() * 0.9f;
         if ( width < 1.0 || height < 1.0 ) {
             return;
         }
@@ -358,6 +359,9 @@ public class ImageViewer extends JPanel {
      * This is not a general rotate routine.  The transformations assume 90 degree
      * rotations.
      * @param degrees Rotation in degrees.  Only 90 degrees seems to work well.
+     * TODO: this is no longer working correctly, rotating a 600 x 400 image
+     * should show it at 400 x 600, but instead the image is rotated but still
+     * 600 x 400, so the image is stretched and squashed.
      */
     protected Image rotate( double degrees ) {
         Image image = imageViewport.getImage();
@@ -378,7 +382,7 @@ public class ImageViewer extends JPanel {
         AffineTransform at = new AffineTransform();
 
         // rotate around image center
-        at.rotate( amount, sourceBI.getWidth()  /  2.0, sourceBI.getHeight()  /  2.0 );
+        at.rotate( amount, sourceBI.getWidth() / 2.0, sourceBI.getHeight() / 2.0 );
 
         // translate to make sure the rotation doesn't cut off any image data
         AffineTransform translationTransform = findTranslation( at, sourceBI );

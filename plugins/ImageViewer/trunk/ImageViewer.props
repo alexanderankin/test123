@@ -28,9 +28,12 @@ imageviewer.zoomin=Zoom In
 imageviewer.rotateCW=Rotate clockwise
 imageviewer.rotateCCW=Rotate counter-clockwise
 imageviewer.showimage.label=View Image
+imageviewer.info=Image information
 
 # for plugin menu
+# TODO: the plugin menu isn't showing in the menu bar
 imageviewer.label=Show Image Viewer
+plugin.imageviewer.ImageViewerPlugin.menu.label=ImageViewer
 plugin.imageviewer.ImageViewerPlugin.menu=\
     imageviewer - \
     imageviewer.clear-action \
