@@ -1,5 +1,10 @@
 Editing notes:
 
+**** Not sure I want to do this, the original intent of ImageViewer is just to
+be able to quickly look at images. Better might be to add an option to open the
+image in another app like gimp or photoshop. Maybe take a look at ProjectViewer
+and its 'Open in Desktop' option.
+
 Want to add 2 editing features:
 1. resize original
 2. crop original
@@ -86,3 +91,25 @@ Image
    zoom
    properties
    center
+   
+   
+Classes:
+ImageViewer:
+   - set up UI
+      - toolbar
+      - menu
+      - data field
+      - image label
+      - viewport
+      
+      
+ImageViewer
+   - installComponents
+   - installListeners
+   - getImageViewer
+   - getToolbar
+   - getDataLabel
+   - getViewport
+   - getImageComponent (getViewport().getView());
+   
+   

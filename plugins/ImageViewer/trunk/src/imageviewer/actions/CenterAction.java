@@ -26,27 +26,41 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package imageviewer;
+package imageviewer.actions;
 
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import javax.swing.JViewport;
+import imageviewer.ImageViewer;
 
-/**
- * A mouse adapter that also listens to motion and wheel events. I added this
- * because Java 1.5 doesn't have such a thing and I'd inadvertently used the
- * Java 1.6 version of MouseAdapter, which means this plugin wouldn't have
- * ran on Java 1.5.  This provides Java 1.5 compatibility.
- * TODO: Java 7 has been out for some time, jEdit now requires at least Java 6, 
- * so this can be removed and use the newer java.awt.event.MouseAdapter.
- */
-public abstract class MMouseAdapter extends MouseAdapter implements MouseMotionListener, MouseWheelListener {
+public class CenterAction extends MouseAdapter {
     
-    public void mouseDragged( MouseEvent me ) {}
+    private final ImageViewer imageViewer;
     
-    public void mouseMoved( MouseEvent me ) {}
+    public CenterAction(ImageViewer imageViewer) {
+        this.imageViewer = imageViewer;    
+    }
+    
+    public void mouseClicked(MouseEvent me) {
+        center(me.getPoint());   
+    }
+    
+    // TODO: this is supposed to center the image in the viewport on the mouse pointer,
+    // but it doesn't take into account the location of the image label inside the viewport,
+    // sok this isn't doing what it's supposed to do.
+    private void center( Point p ) {
+        JViewport viewport = imageViewer.getViewport();
+        
+        int cx = viewport.getWidth() / 2;
+        int cy = viewport.getHeight() / 2;
 
-    public void mouseWheelMoved( MouseWheelEvent me ) {}
+        int dx = p.x - cx;
+        int dy = p.y - cy;
+
+        Point current = viewport.getViewPosition();
+        Point to = new Point( current.x + dx, current.y + dy );
+        viewport.setViewPosition( to );
+    }
+    
 }

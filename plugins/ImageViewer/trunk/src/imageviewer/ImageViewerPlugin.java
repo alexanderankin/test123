@@ -49,6 +49,8 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 
+import imageviewer.actions.*;
+
 public class ImageViewerPlugin extends EBPlugin {
     public static final String NAME = "imageviewer";
 
@@ -374,7 +376,8 @@ public class ImageViewerPlugin extends EBPlugin {
             public void run() {
                 ImageViewer imageViewer = viewMap.get( view );
                 if ( imageViewer != null ) {
-                    imageViewer.clear();
+                    ClearAction clearAction = new ClearAction(imageViewer);
+                    clearAction.actionPerformed(null);
                 }
             }
         }
