@@ -63,6 +63,7 @@ public class ImageViewer extends JPanel {
     private String filename;
     private ImageViewport imageViewport;
     private ImageDataPanel dataPanel;
+    private ImageMetaDataPanel metadataPanel;
     private JButton zoomIn;
     private JButton zoomOut;
     private JButton rotateCCW;
@@ -70,14 +71,13 @@ public class ImageViewer extends JPanel {
     private JButton reload;
     private JButton clear;
     private JButton copy;
+    private JToggleButton info;
     public static final double CW90 = 90.0;
-
 
     public ImageViewer() {
         installComponents();
         installListeners();
     }
-
 
     // create and layout the components
     private void installComponents() {
@@ -111,6 +111,10 @@ public class ImageViewer extends JPanel {
         reload = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
         reload.setToolTipText( jEdit.getProperty( "imageviewer.reload", "Reload" ) );
 
+        info = new JToggleButton( GUIUtilities.loadIcon( "22x22/apps/help-browser.png" ) );
+        info.setToolTipText( jEdit.getProperty( "imageviewer.info", "Image information" ) );
+        info.setSelected( false );
+
         // create toolbar
         JToolBar buttonPanel = new JToolBar();
         buttonPanel.setFloatable( false );
@@ -121,6 +125,7 @@ public class ImageViewer extends JPanel {
         buttonPanel.add( rotateCCW );
         buttonPanel.add( rotateCW );
         buttonPanel.add( reload );
+        buttonPanel.add( info );
 
         // inner panel for the filename and image size
         dataPanel = new ImageDataPanel();
@@ -132,8 +137,12 @@ public class ImageViewer extends JPanel {
 
         // add the toolbar panel
         add( toolbar, BorderLayout.NORTH );
-    }
 
+        // metadata panel
+        metadataPanel = new ImageMetaDataPanel();
+        metadataPanel.setVisible( false );
+        add( metadataPanel, BorderLayout.EAST );
+    }
 
     // add any listeners necessary for the installed components
     private void installListeners() {
@@ -187,6 +196,15 @@ public class ImageViewer extends JPanel {
             }
         );
 
+        info.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    metadataPanel.setVisible( !metadataPanel.isVisible() );
+                    refresh();
+                }
+            }
+        );
+
         getViewport().addMouseMotionListener( mouseAdapter );
         getViewport().addMouseListener( mouseAdapter );
         getViewport().addMouseWheelListener( mouseAdapter );
@@ -202,21 +220,17 @@ public class ImageViewer extends JPanel {
         );
     }
 
-
     public JViewport getViewport() {
         return imageViewport.getViewport();
     }
-
 
     public JLabel getImageLabel() {
         return imageViewport.getImageLabel();
     }
 
-
     public ImageDataPanel getImageDataPanel() {
         return dataPanel;
     }
-
 
     /**
      * Display the image in this ImageViewer.
@@ -225,14 +239,13 @@ public class ImageViewer extends JPanel {
     public void showImage( String filename ) {
         this.filename = filename;
         imageViewport.showImage( filename );
+        metadataPanel.setFilename( filename );
     }
-
 
     public void refresh() {
         invalidate();
         validate();
     }
-
 
     /**
      * @return true if the filename, regardless of case, ends with .jpg, .gif, or .png.
@@ -242,11 +255,9 @@ public class ImageViewer extends JPanel {
             return false;
         }
 
-
         String name = filename.toLowerCase();
         return name.endsWith( ".jpg" ) || name.endsWith( ".jpeg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
     }
-
 
     /**
      * Action to copy the image to the system clipboard.
@@ -256,7 +267,6 @@ public class ImageViewer extends JPanel {
         ImageSelection.copyImageToClipboard( image );
     }
 
-
     /**
      * Action to reload the current image from disk.
      */
@@ -264,33 +274,29 @@ public class ImageViewer extends JPanel {
         imageViewport.showImage( filename, true );
     }
 
-
     /**
      * Action to zoom in 10%.
      */
     public void zoomIn() {
         Dimension dim = imageViewport.getCurrentSize();
-        float width = new Float( dim.getWidth() ).floatValue() * 1.1f;
-        float height = new Float( dim.getHeight() ).floatValue() * 1.1f;
+        float width = new Float( dim.getWidth() ).floatValue()  *  1.1f;
+        float height = new Float( dim.getHeight() ).floatValue()  *  1.1f;
         zoom( width, height );
     }
-
 
     /**
      * Action to zoom out 10%.
      */
     public void zoomOut() {
         Dimension dim = imageViewport.getCurrentSize();
-        float width = new Float( dim.getWidth() ).floatValue() * 0.9f;
-        float height = new Float( dim.getHeight() ).floatValue() * 0.9f;
+        float width = new Float( dim.getWidth() ).floatValue()  *  0.9f;
+        float height = new Float( dim.getHeight() ).floatValue()  *  0.9f;
         if ( width < 1.0 || height < 1.0 ) {
             return;
         }
 
-
         zoom( width, height );
     }
-
 
     /**
      * Zoom an image to the given width and height and refresh the display.
@@ -309,7 +315,6 @@ public class ImageViewer extends JPanel {
             refresh();
         }
     }
-
 
     /**
      * Resizes an image to the given width and height.
@@ -330,7 +335,6 @@ public class ImageViewer extends JPanel {
         return resizedImage;
     }
 
-
     protected void rotateCCW() {
 
         // TODO: figure out why I can't rotate counter-clockwise.  It seems like
@@ -341,16 +345,14 @@ public class ImageViewer extends JPanel {
         rotateCW();
     }
 
-
     protected void rotateCW() {
         Dimension d = imageViewport.getCurrentSize();
         Image rotatedImage = rotate( CW90 );
-        imageViewport.setImage(rotatedImage);
-        zoom( new Float(d.getWidth()).floatValue(), new Float(d.getHeight()).floatValue() );
+        imageViewport.setImage( rotatedImage );
+        zoom( new Float( d.getWidth() ).floatValue(), new Float( d.getHeight() ).floatValue() );
         imageViewport.update();
         refresh();
     }
-
 
     /**
      * This is not a general rotate routine.  The transformations assume 90 degree
@@ -368,7 +370,7 @@ public class ImageViewer extends JPanel {
         catch ( InterruptedException ie ) {
         }
 
-        BufferedImage sourceBI = new BufferedImage( image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB );
+        BufferedImage sourceBI = new BufferedImage( image.getWidth( null ), image.getHeight( null ), BufferedImage.TYPE_INT_ARGB );
 
         Graphics2D g = ( Graphics2D )sourceBI.getGraphics();
         g.drawImage( image, 0, 0, null );
@@ -376,7 +378,7 @@ public class ImageViewer extends JPanel {
         AffineTransform at = new AffineTransform();
 
         // rotate around image center
-        at.rotate( amount, sourceBI.getWidth() / 2.0, sourceBI.getHeight() / 2.0 );
+        at.rotate( amount, sourceBI.getWidth()  /  2.0, sourceBI.getHeight()  /  2.0 );
 
         // translate to make sure the rotation doesn't cut off any image data
         AffineTransform translationTransform = findTranslation( at, sourceBI );
@@ -386,7 +388,6 @@ public class ImageViewer extends JPanel {
         BufferedImageOp bio = new AffineTransformOp( at, AffineTransformOp.TYPE_BILINEAR );
         return bio.filter( sourceBI, null );
     }
-
 
     // find proper translations to keep rotated image correctly displayed
     private AffineTransform findTranslation( AffineTransform at, BufferedImage bi ) {
@@ -404,7 +405,6 @@ public class ImageViewer extends JPanel {
         tat.translate( -xtrans, -ytrans );
         return tat;
     }
-
 
     /**
      * All this is used for is to make the rotate clockwise icon into a
@@ -433,7 +433,6 @@ public class ImageViewer extends JPanel {
         Cursor oldCursor = null;
         CenterAction centerAction = new CenterAction( ImageViewer.this );
 
-
         /**
          * Moves the view port in the parent ImageViewer.
          */
@@ -442,7 +441,6 @@ public class ImageViewer extends JPanel {
                 previous = me.getPoint();
                 return;
             }
-
 
             Point now = me.getPoint();
             int dx = previous.x - now.x;
@@ -453,7 +451,6 @@ public class ImageViewer extends JPanel {
             previous = now;
         }
 
-
         /**
          * Centers the image in the parent ImageViewer.
          */
@@ -463,12 +460,10 @@ public class ImageViewer extends JPanel {
             ImageViewer.this.getImageLabel().setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) );
         }
 
-
         public void mouseReleased( MouseEvent me ) {
             previous = null;
             ImageViewer.this.getImageLabel().setCursor( oldCursor != null ? oldCursor : Cursor.getDefaultCursor() );
         }
-
 
         /**
          * Center image on mouse pointer.
@@ -478,7 +473,6 @@ public class ImageViewer extends JPanel {
                 centerAction.mouseClicked( me );
             }
         }
-
 
         /**
          * Zoom in or out.
