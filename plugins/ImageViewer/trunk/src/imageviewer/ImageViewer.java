@@ -1,32 +1,36 @@
+
 /*
-Copyright (c) 2009, Dale Anson
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
-* Neither the name of the author nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ * Copyright (c) 2009, Dale Anson
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * Neither the name of the author nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package imageviewer;
+
+
+import imageviewer.actions.*;
+import imageviewer.components.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -42,9 +46,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.text.*;
 import java.util.*;
+
 import javax.swing.*;
-import org.gjt.sp.jedit.jEdit;
+
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+
 
 /**
  * A simple image viewer.  Provides scrolling and zooming, and that's it. The
@@ -52,13 +59,10 @@ import org.gjt.sp.jedit.GUIUtilities;
  * Zoom out stops at 2 x 2 pixels.
  */
 public class ImageViewer extends JPanel {
+
     private String filename;
-    private JLabel imageLabel;
-    private JLabel filenameLabel;
-    private JLabel imagesizeLabel;
-    private JViewport viewport;
-    private JPanel toolbar;
-    private JToolBar buttonPanel;
+    private ImageViewport imageViewport;
+    private ImageDataPanel dataPanel;
     private JButton zoomIn;
     private JButton zoomOut;
     private JButton rotateCCW;
@@ -66,37 +70,23 @@ public class ImageViewer extends JPanel {
     private JButton reload;
     private JButton clear;
     private JButton copy;
-    private float originalWidth = 0.0f;
-    private float originalHeight = 0.0f;
-    private float zoomWidth = 0.0f;
-    private float zoomHeight = 0.0f;
-
-    private Image image = null;
-
     public static final double CW90 = 90.0;
+
 
     public ImageViewer() {
         installComponents();
         installListeners();
     }
 
+
     // create and layout the components
     private void installComponents() {
-        setBorder( BorderFactory.createEmptyBorder(0, 6, 6, 6 ) );
+        setBorder( BorderFactory.createEmptyBorder( 0, 6, 6, 6 ) );
         setLayout( new BorderLayout() );
 
-        // use a JLabel to actually display the image
-        imageLabel = new JLabel();
-        imageLabel.setVerticalTextPosition( JLabel.BOTTOM );
-        imageLabel.setHorizontalTextPosition( JLabel.CENTER );
-        imageLabel.setHorizontalAlignment( JLabel.CENTER );
-        JScrollPane scroller = new JScrollPane( imageLabel );
-        viewport = scroller.getViewport();
-        add( scroller, BorderLayout.CENTER );
-
-        // use another JLabel to show the name of the file being shown
-        filenameLabel = new JLabel();
-        imagesizeLabel = new JLabel();
+        // create and add image view port
+        imageViewport = new ImageViewport( this );
+        add( imageViewport, BorderLayout.CENTER );
 
         // set up the buttons
         clear = new JButton( GUIUtilities.loadIcon( "22x22/actions/edit-clear.png" ) );
@@ -111,7 +101,7 @@ public class ImageViewer extends JPanel {
         zoomOut = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-out.png" ) );
         zoomOut.setToolTipText( jEdit.getProperty( "imageviewer.zoomout", "Zoom Out" ) );
 
-        ImageIcon cwRotateIcon = ( ImageIcon ) GUIUtilities.loadIcon( "22x22/actions/edit-redo.png" );
+        ImageIcon cwRotateIcon = ( ImageIcon )GUIUtilities.loadIcon( "22x22/actions/edit-redo.png" );
         ImageIcon ccwRotateIcon = new ImageIcon( mirror( cwRotateIcon.getImage() ) );
         rotateCCW = new JButton( ccwRotateIcon );
         rotateCCW.setToolTipText( jEdit.getProperty( "imageviewer.rotateCCW", "Rotate counter-clockwise" ) );
@@ -122,7 +112,7 @@ public class ImageViewer extends JPanel {
         reload.setToolTipText( jEdit.getProperty( "imageviewer.reload", "Reload" ) );
 
         // create toolbar
-        buttonPanel = new JToolBar();
+        JToolBar buttonPanel = new JToolBar();
         buttonPanel.setFloatable( false );
         buttonPanel.add( clear );
         buttonPanel.add( copy );
@@ -133,12 +123,10 @@ public class ImageViewer extends JPanel {
         buttonPanel.add( reload );
 
         // inner panel for the filename and image size
-        JPanel dataPanel = new JPanel( new GridLayout(2, 1 ) );
-        dataPanel.add( filenameLabel );
-        dataPanel.add( imagesizeLabel );
+        dataPanel = new ImageDataPanel();
 
         // create a panel for the toolbar
-        toolbar = new JPanel( new BorderLayout() );
+        JPanel toolbar = new JPanel( new BorderLayout() );
         toolbar.add( dataPanel, BorderLayout.CENTER );
         toolbar.add( buttonPanel, BorderLayout.EAST );
 
@@ -146,187 +134,105 @@ public class ImageViewer extends JPanel {
         add( toolbar, BorderLayout.NORTH );
     }
 
+
     // add any listeners necessary for the installed components
     private void installListeners() {
-        clear.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                clear();
-            }
-        }
-        );
+        clear.addActionListener( new ClearAction( ImageViewer.this ) );
 
-        copy.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                copy();
-            }
-        }
-        );
+        copy.addActionListener( new ActionListener(){
 
-        zoomIn.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                zoomIn();
-            }
-        }
-        );
-
-        zoomOut.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                zoomOut();
-            }
-        }
-        );
-
-        rotateCCW.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                rotateCCW();
-            }
-        }
-        );
-
-        rotateCW.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                rotateCW();
-            }
-        }
-        );
-
-        reload.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                reload();
-            }
-        }
-        );
-
-        viewport.addMouseMotionListener( mouseAdapter );
-        viewport.addMouseListener( mouseAdapter );
-        viewport.addMouseWheelListener( mouseAdapter );
-
-        addComponentListener( new ComponentAdapter() {
-            public void componentResized( ComponentEvent ce ) {
-                if ( ce.getComponent().equals( ImageViewer.this ) ) {
-                    filenameLabel.setText( compressFilename( filename ) );
+                public void actionPerformed( ActionEvent ae ) {
+                    copy();
                 }
             }
-        }
+        );
+
+        zoomIn.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    zoomIn();
+                }
+            }
+        );
+
+        zoomOut.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    zoomOut();
+                }
+            }
+        );
+
+        rotateCCW.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    rotateCCW();
+                }
+            }
+        );
+
+        rotateCW.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    rotateCW();
+                }
+            }
+        );
+
+        reload.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    reload();
+                }
+            }
+        );
+
+        getViewport().addMouseMotionListener( mouseAdapter );
+        getViewport().addMouseListener( mouseAdapter );
+        getViewport().addMouseWheelListener( mouseAdapter );
+
+        addComponentListener( new ComponentAdapter(){
+
+                public void componentResized( ComponentEvent ce ) {
+                    if ( ce.getComponent().equals( ImageViewer.this ) ) {
+                        dataPanel.setFilename( filename );
+                    }
+                }
+            }
         );
     }
 
-    protected JViewport getViewport() {
-        return viewport;
+
+    public JViewport getViewport() {
+        return imageViewport.getViewport();
     }
 
-    protected JLabel getImageLabel() {
-        return imageLabel;
+
+    public JLabel getImageLabel() {
+        return imageViewport.getImageLabel();
     }
 
-    /*
-     * MouseWheel zooms in/out.
-     * Mouse drag moves viewport.
-     * Double click centers point clicked.
-    */
-    MMouseAdapter mouseAdapter = new MMouseAdapter() {
-        Point previous = null;
-        Cursor oldCursor = null;
 
-        /**
-         * Moves the view port in the parent ImageViewer.
-         */
-        public void mouseDragged( MouseEvent me ) {
-            if ( previous == null ) {
-                previous = me.getPoint();
-                return;
-            }
-            Point now = me.getPoint();
-            int dx = previous.x - now.x;
-            int dy = previous.y - now.y;
-            Point current = ImageViewer.this.viewport.getViewPosition();
-            Point to = new Point( current.x + dx, current.y + dy );
-            ImageViewer.this.viewport.setViewPosition( to );
-            previous = now;
-        }
+    public ImageDataPanel getImageDataPanel() {
+        return dataPanel;
+    }
 
-        /**
-         * Centers the image in the parent ImageViewer.
-         */
-        public void mousePressed( MouseEvent me ) {
-            previous = me.getPoint();
-            oldCursor = ImageViewer.this.imageLabel.getCursor();
-            ImageViewer.this.imageLabel.setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) );
-        }
-
-        public void mouseReleased( MouseEvent me ) {
-            previous = null;
-            ImageViewer.this.imageLabel.setCursor( oldCursor != null ? oldCursor : Cursor.getDefaultCursor() );
-        }
-
-        /**
-         * Center image on mouse pointer.
-         */
-        public void mouseClicked( MouseEvent me ) {
-            if ( me.getClickCount() == 2 ) {
-                ImageViewer.this.center( me.getPoint() );
-            }
-        }
-
-        /**
-         * Zoom in or out.
-         */
-        public void mouseWheelMoved( MouseWheelEvent me ) {
-            if ( me.getWheelRotation() < 0 ) {
-                ImageViewer.this.zoomIn();
-            } else {
-                ImageViewer.this.zoomOut();
-            }
-        }
-    };
 
     /**
      * Display the image in this ImageViewer.
      * @param filename the name of the image file to display.
      */
     public void showImage( String filename ) {
-        showImage( filename, false );
-    }
-
-    /**
-     * Display the image in this ImageViewer.
-     * @param filename the name of the image file to display.
-     * @param reload reload the image from disk.
-     */
-    public void showImage( String filename, boolean reload ) {
-        if ( ! reload && filename.equals( filenameLabel.getText() ) ) {
-            // already showing this image
-            return;
-        }
         this.filename = filename;
-        if ( isValidFilename( filename ) ) {
-            image = Toolkit.getDefaultToolkit().createImage( filename );
-            ImageIcon icon = new ImageIcon( image );
-            originalWidth = ( float ) icon.getIconWidth();
-            originalHeight = ( float ) icon.getIconHeight();
-            zoomWidth = originalWidth;
-            zoomHeight = originalHeight;
-            imageLabel.setIcon( icon );
-            imageLabel.setSize( ( int ) originalWidth, ( int ) originalHeight );
-            filenameLabel.setText( compressFilename( filename ) );
-            imagesizeLabel.setText( ( int ) originalWidth + "x" + ( int ) originalHeight );
-            Rectangle viewportRect = viewport.getViewRect();
-            float viewportHeight = ( float ) viewportRect.getHeight();
-            if ( originalHeight > viewportHeight ) {
-                zoomHeight = viewportHeight;
-                zoomWidth = originalWidth *= viewportHeight / originalHeight;
-                originalWidth = zoomWidth;
-                originalHeight = zoomHeight;
-                zoom( zoomWidth, zoomHeight );
-            }
-            refresh();
-        }
+        imageViewport.showImage( filename );
     }
 
-    protected void refresh() {
+
+    public void refresh() {
         invalidate();
         validate();
     }
+
 
     /**
      * @return true if the filename, regardless of case, ends with .jpg, .gif, or .png.
@@ -335,81 +241,75 @@ public class ImageViewer extends JPanel {
         if ( filename == null ) {
             return false;
         }
+
+
         String name = filename.toLowerCase();
         return name.endsWith( ".jpg" ) || name.endsWith( ".jpeg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
     }
 
-    protected void center( Point p ) {
-        int cx = viewport.getWidth() / 2;
-        int cy = viewport.getHeight() / 2;
-
-        int dx = p.x - cx;
-        int dy = p.y - cy;
-
-        Point current = viewport.getViewPosition();
-        Point to = new Point( current.x + dx, current.y + dy );
-        viewport.setViewPosition( to );
-    }
-
-    /**
-     * Action to clear the ImageViewer.
-     */
-    public void clear() {
-        imageLabel.setIcon( null );
-        ImageViewer.this.refresh();
-    }
 
     /**
      * Action to copy the image to the system clipboard.
      */
     public void copy() {
+        Image image = imageViewport.getImage();
         ImageSelection.copyImageToClipboard( image );
     }
+
 
     /**
      * Action to reload the current image from disk.
      */
     public void reload() {
-        showImage( filename, true );
+        imageViewport.showImage( filename, true );
     }
+
 
     /**
      * Action to zoom in 10%.
      */
     public void zoomIn() {
-        float width = zoomWidth * 1.1f;
-        float height = zoomHeight * 1.1f;
+        Dimension dim = imageViewport.getCurrentSize();
+        float width = new Float( dim.getWidth() ).floatValue() * 1.1f;
+        float height = new Float( dim.getHeight() ).floatValue() * 1.1f;
         zoom( width, height );
     }
+
 
     /**
      * Action to zoom out 10%.
      */
     public void zoomOut() {
-        float width = zoomWidth * 0.9f;
-        float height = zoomHeight * 0.9f;
+        Dimension dim = imageViewport.getCurrentSize();
+        float width = new Float( dim.getWidth() ).floatValue() * 0.9f;
+        float height = new Float( dim.getHeight() ).floatValue() * 0.9f;
         if ( width < 1.0 || height < 1.0 ) {
             return;
         }
+
+
         zoom( width, height );
     }
+
 
     /**
      * Zoom an image to the given width and height and refresh the display.
      * @param width the desired width
      * @param height the desired height
      */
-    protected void zoom( float width, float height ) {
-        zoomWidth = width;
-        zoomHeight = height;
+    public void zoom( float width, float height ) {
         if ( width > 0 && height > 0 ) {
-            Image zoomImage = getScaledImage( image, ( int ) width, ( int ) height );
+            Image image = imageViewport.getImage();
+            Image zoomImage = getScaledImage( image, ( int )width, ( int )height );
             ImageIcon icon = new ImageIcon( zoomImage );
+            JLabel imageLabel = getImageLabel();
             imageLabel.setIcon( icon );
-            imageLabel.setSize( ( int ) width, ( int ) height );
+            imageLabel.setSize( ( int )width, ( int )height );
+            imageViewport.update();
             refresh();
         }
     }
+
 
     /**
      * Resizes an image to the given width and height.
@@ -430,7 +330,9 @@ public class ImageViewer extends JPanel {
         return resizedImage;
     }
 
+
     protected void rotateCCW() {
+
         // TODO: figure out why I can't rotate counter-clockwise.  It seems like
         // the rotation value has to be less than pi and greater than 0.
         // Three clockwise rotations works the same, though.
@@ -439,15 +341,16 @@ public class ImageViewer extends JPanel {
         rotateCW();
     }
 
+
     protected void rotateCW() {
+        Dimension d = imageViewport.getCurrentSize();
         Image rotatedImage = rotate( CW90 );
-        ImageIcon icon = new ImageIcon( rotatedImage );
-        imageLabel.setIcon( icon );
-        imageLabel.setSize( rotatedImage.getWidth( null ), rotatedImage.getHeight( null ) );
-        image = rotatedImage;
-        zoom( zoomHeight, zoomWidth );
+        imageViewport.setImage(rotatedImage);
+        zoom( new Float(d.getWidth()).floatValue(), new Float(d.getHeight()).floatValue() );
+        imageViewport.update();
         refresh();
     }
+
 
     /**
      * This is not a general rotate routine.  The transformations assume 90 degree
@@ -455,17 +358,19 @@ public class ImageViewer extends JPanel {
      * @param degrees Rotation in degrees.  Only 90 degrees seems to work well.
      */
     protected Image rotate( double degrees ) {
+        Image image = imageViewport.getImage();
         double amount = Math.toRadians( degrees );
         MediaTracker mt = new MediaTracker( this );
         mt.addImage( image, 0 );
         try {
-            mt.waitForID(0 );
-        } catch ( InterruptedException ie ) {
+            mt.waitForID( 0 );
+        }
+        catch ( InterruptedException ie ) {
         }
 
-        BufferedImage sourceBI = new BufferedImage( image.getWidth( null ), image.getHeight( null ), BufferedImage.TYPE_INT_ARGB );
+        BufferedImage sourceBI = new BufferedImage( image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB );
 
-        Graphics2D g = ( Graphics2D ) sourceBI.getGraphics();
+        Graphics2D g = ( Graphics2D )sourceBI.getGraphics();
         g.drawImage( image, 0, 0, null );
 
         AffineTransform at = new AffineTransform();
@@ -482,11 +387,12 @@ public class ImageViewer extends JPanel {
         return bio.filter( sourceBI, null );
     }
 
+
     // find proper translations to keep rotated image correctly displayed
     private AffineTransform findTranslation( AffineTransform at, BufferedImage bi ) {
         Point2D p2din, p2dout;
 
-        p2din = new Point2D.Double(0.0, 0.0 );
+        p2din = new Point2D.Double( 0.0, 0.0 );
         p2dout = at.transform( p2din, null );
         double ytrans = p2dout.getY();
 
@@ -495,9 +401,10 @@ public class ImageViewer extends JPanel {
         double xtrans = p2dout.getX();
 
         AffineTransform tat = new AffineTransform();
-        tat.translate( - xtrans, - ytrans );
+        tat.translate( -xtrans, -ytrans );
         return tat;
     }
+
 
     /**
      * All this is used for is to make the rotate clockwise icon into a
@@ -517,61 +424,72 @@ public class ImageViewer extends JPanel {
         return bufferedImage;
     }
 
-    /**
-     * Takes a long filename and converts it to a smaller string with portions removed
-     * from the middle so the filename fits in a display area of a certain width.  For
-     * example, given a name like "/home/username/mypictures/myfamilypictures/awesomegrouphug.jpg",
-     * this method might return "/home/username/.../awesomegrouphug.jpg".  The filename
-     * itself will never be removed.
-     * @param filename The filename to compress, if necessary, with an ellipsis in the middle.
-     */
-    private String compressFilename( String filename ) {
-        if ( filename == null ) {
-            return "";
-        }
-        int width = toolbar.getWidth() - buttonPanel.getWidth() - 6;
-        FontMetrics fm = getGraphics().getFontMetrics();
-        if ( fm == null ) {
-            return filename;
-        }
-        int stringWidth = fm.stringWidth( filename );
-        if ( stringWidth <= width ) {
-            return filename;
-        }
+    // MouseWheel zooms in/out.
+    // Mouse drag moves viewport.
+    // Double click centers point clicked.
+    MMouseAdapter mouseAdapter = new MMouseAdapter(){
 
-        BreakIterator bi = BreakIterator.getWordInstance();
-        bi.setText( filename );
-        java.util.List<String> parts = new ArrayList<String>();
-        int start = bi.first();
-        for ( int end = bi.next(); end != BreakIterator.DONE; start = end, end = bi.next() ) {
-            parts.add( filename.substring( start, end ) );
-        }
+        Point previous = null;
+        Cursor oldCursor = null;
+        CenterAction centerAction = new CenterAction( ImageViewer.this );
 
-        int middle = parts.size() / 2;
-        java.util.List<String> startList = new ArrayList<String>( parts.subList(0, middle ) );
-        java.util.List<String> endList = new ArrayList<String>( parts.subList( middle, parts.size() ) );
-        String beginning = listToString( startList );
-        String ending = listToString( endList );
 
-        String combined = beginning + "..." + ending;
-        while ( fm.stringWidth( combined ) > width ) {
-            if ( beginning.length() >= ending.length() || endList.size() == 1 ) {
-                startList.remove( startList.size() - 1 );
-                beginning = listToString( startList );
-            } else {
-                endList.remove(0 );
-                ending = listToString( endList );
+        /**
+         * Moves the view port in the parent ImageViewer.
+         */
+        public void mouseDragged( MouseEvent me ) {
+            if ( previous == null ) {
+                previous = me.getPoint();
+                return;
             }
-            combined = beginning + "..." + ending;
-        }
-        return combined;
-    }
 
-    private String listToString( java.util.List<String> list ) {
-        StringBuilder sb = new StringBuilder();
-        for ( String part : list ) {
-            sb.append( part );
+
+            Point now = me.getPoint();
+            int dx = previous.x - now.x;
+            int dy = previous.y - now.y;
+            Point current = ImageViewer.this.getViewport().getViewPosition();
+            Point to = new Point( current.x + dx, current.y + dy );
+            ImageViewer.this.getViewport().setViewPosition( to );
+            previous = now;
         }
-        return sb.toString();
-    }
+
+
+        /**
+         * Centers the image in the parent ImageViewer.
+         */
+        public void mousePressed( MouseEvent me ) {
+            previous = me.getPoint();
+            oldCursor = ImageViewer.this.getImageLabel().getCursor();
+            ImageViewer.this.getImageLabel().setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) );
+        }
+
+
+        public void mouseReleased( MouseEvent me ) {
+            previous = null;
+            ImageViewer.this.getImageLabel().setCursor( oldCursor != null ? oldCursor : Cursor.getDefaultCursor() );
+        }
+
+
+        /**
+         * Center image on mouse pointer.
+         */
+        public void mouseClicked( MouseEvent me ) {
+            if ( me.getClickCount() == 2 ) {
+                centerAction.mouseClicked( me );
+            }
+        }
+
+
+        /**
+         * Zoom in or out.
+         */
+        public void mouseWheelMoved( MouseWheelEvent me ) {
+            if ( me.getWheelRotation() > 0 ) {
+                ImageViewer.this.zoomIn();
+            }
+            else {
+                ImageViewer.this.zoomOut();
+            }
+        }
+    };
 }

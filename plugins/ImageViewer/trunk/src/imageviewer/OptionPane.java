@@ -40,11 +40,8 @@ import org.gjt.sp.jedit.jEdit;
 public class OptionPane extends AbstractOptionPane {
 
     private JCheckBox vfsMouseOver = null;
-    //    private JCheckBox ifVfsVisible = null;
     private JCheckBox pvMouseOver = null;
-    //    private JCheckBox ifPvVisible = null;
     private JRadioButton mouseOver = null;
-    private JRadioButton mouseClick = null;
 
     public OptionPane() {
         this( "imageviewer" );
@@ -77,7 +74,7 @@ public class OptionPane extends AbstractOptionPane {
         JLabel rbLabel = new JLabel( jEdit.getProperty( "imageviewer.mouseoption.label", "Display images on:" ) );
         mouseOver = new JRadioButton( jEdit.getProperty( "imageviewer.mouseover.label", "Mouse over" ) );
         mouseOver.setSelected( jEdit.getBooleanProperty( "imageviewer.mouseover" ) );
-        mouseClick = new JRadioButton( jEdit.getProperty( "imageviewer.mouseclick.label", "Mouse click" ) );
+        JRadioButton mouseClick = new JRadioButton( jEdit.getProperty( "imageviewer.mouseclick.label", "Mouse click" ) );
         mouseClick.setSelected( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) );
         rbPanel.add( rbLabel );
         rbPanel.add( mouseOver );
