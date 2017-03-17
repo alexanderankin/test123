@@ -2041,7 +2041,7 @@ Parser methods follow.
 	    if (ctx.conditionalAndExpression() != null) {
 	        String and = stack.pop();
 	        String cae = stack.pop();
-	        sb.append(cae).append(' ').append(and).append(' ');
+	        sb.append(cae).append(padOperator(and));
 	    }
 	    sb.append(ioe);
 	    stack.push(sb.toString());
@@ -2058,7 +2058,7 @@ Parser methods follow.
 	    if (ctx.multiplicativeExpression() != null) {
 	        String operator = stack.pop();
 	        String me = stack.pop();
-	        sb.append(me).append(' ').append(operator).append(' ');
+	        sb.append(me).append(padOperator(operator));
 	    }
 	    sb.append(ue);
 	    stack.push(sb.toString());
@@ -2469,7 +2469,7 @@ Parser methods follow.
 	    String lb = stack.pop();
 	    String pointer = stack.pop();
 	    String lp = stack.pop();
-	    sb.append(lp).append(' ').append(pointer).append(' ').append(lb);
+	    sb.append(lp).append(padOperator(pointer)).append(lb);
 	    stack.push(sb.toString());
 	}
 
@@ -3051,7 +3051,7 @@ Parser methods follow.
 	    if (ctx.andExpression() != null) {
 	        String ampersand = stack.pop();
 	        String andExpression = stack.pop();
-	        sb.append(andExpression).append(' ').append(ampersand).append(' ');
+	        sb.append(andExpression).append(padOperator(ampersand));
 	    }
 	    sb.append(equalityExpression);
 	    stack.push(sb.toString());
@@ -3188,7 +3188,7 @@ Parser methods follow.
 	        String expr = stack.pop();
 	        String q = stack.pop();
 	        String coe = stack.pop();
-	        sb.append(coe).append(' ').append(q).append(' ').append(expr).append(' ').append(colon).append(' ').append(last);
+	        sb.append(coe).append(padOperator(q)).append(expr).append(padOperator(colon)).append(last);
 	        stack.push(sb.toString());
 	    }
 	}
@@ -4299,7 +4299,7 @@ Parser methods follow.
 	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String colon = stack.pop();
 	        String expr = stack.pop();
-	        sb.append(expr).append(' ').append(colon).append(' ').append(typeArgs).append(identifier);
+	        sb.append(expr).append(padOperator(colon)).append(typeArgs).append(identifier);
 	    }
 	    else if (ctx.typeName() != null) {
 	        String identifier = stack.pop();
@@ -4308,27 +4308,27 @@ Parser methods follow.
 	        String sup = stack.pop();
 	        String dot = stack.pop();
 	        String name = stack.pop();
-	        sb.append(name).append(dot).append(sup).append(' ').append(colon).append(' ').append(typeArgs).append(identifier);
+	        sb.append(name).append(dot).append(sup).append(padOperator(colon)).append(typeArgs).append(identifier);
 	    }
 	    else if (ctx.classType() != null) {
 	        String n = stack.pop();
 	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String colon = stack.pop();
 	        String type = stack.pop();
-	        sb.append(type).append(' ').append(colon).append(' ').append(typeArgs).append(n);
+	        sb.append(type).append(padOperator(colon)).append(typeArgs).append(n);
 	    }
 	    else if (ctx.arrayType() != null) {
 	        String n = stack.pop();
 	        String colon = stack.pop();
 	        String type = stack.pop();
-	        sb.append(type).append(' ').append(colon).append(' ').append(n);
+	        sb.append(type).append(padOperator(colon)).append(n);
 	    }
 	    else {
 	        String identifier = stack.pop();
 	        String typeArgs = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String colon = stack.pop();
 	        String sup = stack.pop();
-	        sb.append(sup).append(' ').append(colon).append(' ').append(typeArgs).append(identifier);
+	        sb.append(sup).append(padOperator(colon)).append(typeArgs).append(identifier);
 	    }
 	    stack.push(sb.toString());
 	}
@@ -4396,7 +4396,7 @@ Parser methods follow.
 	    String expr = stack.pop();
 	    if (ctx.conditionalOrExpression() != null) {
 	        String or = stack.pop();
-	        sb.append(stack.pop()).append(' ').append(or).append(' ');    
+	        sb.append(stack.pop()).append(padOperator(or));    
 	    }
 	    sb.append(expr);
 	    stack.push(sb.toString());
@@ -4417,7 +4417,7 @@ Parser methods follow.
 	    String value = stack.pop();
 	    String eq = stack.pop();
 	    String identifier = stack.pop();
-	    sb.append(identifier).append(' ').append(eq).append(' ').append(value);
+	    sb.append(identifier).append(padOperator(eq)).append(value);
 	    stack.push(sb.toString());
 	}
 
@@ -4476,7 +4476,7 @@ Parser methods follow.
 	    String expr = stack.pop();
         if (ctx.inclusiveOrExpression() != null) {
             String or = stack.pop();
-            sb.append(stack.pop()).append(' ').append(or).append(' ');            
+            sb.append(stack.pop()).append(padOperator(or));            
         }
         sb.append(expr);
 	    stack.push(sb.toString());
@@ -4597,7 +4597,7 @@ Parser methods follow.
 	    String expr = stack.pop();
         if (ctx.exclusiveOrExpression() != null) {
             String hat = stack.pop();
-            sb.append(stack.pop()).append(' ').append(hat).append(' ');            
+            sb.append(stack.pop()).append(padOperator(hat));            
         }
         sb.append(expr);
 	    stack.push(sb.toString());
@@ -4786,7 +4786,7 @@ Parser methods follow.
 	    if (ctx.annotation() != null) {
 	        annotations = reverse(ctx.annotation().size(), " ");
 	    }
-	    sb.append(annotations).append(q).append(wildcardBounds);
+	    sb.append(annotations).append(padOperator(q)).append(wildcardBounds);
 	    stack.push(sb.toString());
 	}
 
@@ -5191,7 +5191,7 @@ Parser methods follow.
 	        String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String colon = stack.pop();
 	        String expressionName = stack.pop();
-	        sb.append(expressionName).append(' ').append(colon).append(' ').append(typeArguments).append(identifier);
+	        sb.append(expressionName).append(padOperator(colon)).append(typeArguments).append(identifier);
 	    }
 	    else if (ctx.typeName() != null) {
 	        String identifier = stack.pop();
@@ -5199,27 +5199,27 @@ Parser methods follow.
 	        String colon = stack.pop();
             String super_ = stack.pop();	        
 	        String typeName = stack.pop();
-	        sb.append(typeName).append(super_).append(' ').append(colon).append(' ').append(typeArguments).append(' ').append(identifier);    
+	        sb.append(typeName).append(super_).append(padOperator(colon)).append(typeArguments).append(' ').append(identifier);    
 	    }
 	    else if (ctx.classType() != null) {
 	        String new_ = stack.pop();
 	        String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String colon = stack.pop();
 	        String type = stack.pop();
-	        sb.append(type).append(' ').append(colon).append(' ').append(typeArguments).append(' ').append(new_);    
+	        sb.append(type).append(padOperator(colon)).append(typeArguments).append(' ').append(new_);    
 	    }
 	    else if (ctx.arrayType() != null) {
 	        String new_ = stack.pop();
 	        String colon = stack.pop();
 	        String type = stack.pop();
-	        sb.append(type).append(' ').append(colon).append(' ').append(new_);    
+	        sb.append(type).append(padOperator(colon)).append(new_);    
 	    }
 	    else {
 	        String identifier = stack.pop();
 	        String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
 	        String colon = stack.pop();
             String super_ = stack.pop();	        
-	        sb.append(super_).append(' ').append(colon).append(' ').append(typeArguments).append(' ').append(identifier);    
+	        sb.append(super_).append(padOperator(colon)).append(typeArguments).append(' ').append(identifier);    
 	    }
 	    stack.push(sb.toString());
 	}
