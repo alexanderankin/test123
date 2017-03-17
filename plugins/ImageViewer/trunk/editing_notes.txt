@@ -5,6 +5,9 @@ be able to quickly look at images. Better might be to add an option to open the
 image in another app like gimp or photoshop. Maybe take a look at ProjectViewer
 and its 'Open in Desktop' option.
 
+Image metadata library is from
+https://github.com/drewnoakes/metadata-extractor
+
 Want to add 2 editing features:
 1. resize original
 2. crop original

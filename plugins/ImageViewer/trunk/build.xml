@@ -3,7 +3,7 @@
 
     <!-- read build.props to override properties set below -->
     <property file="build.properties"/>
-    <property file="../../build.properties"/>
+    <property file="../build.properties"/>
     <property name="compiler.target" value="1.5"/>
     <property name="compiler.source" value="1.5"/>
 
@@ -40,6 +40,10 @@
       included in the finished jar file. -->
     <property name="classes.dir" location="classes" />
 
+    <!-- library directory, location for third party jars -->
+    <property name="lib.dir" location="lib"/>
+    <mkdir dir="${lib.dir}"/>
+
     <condition property="can.reload.plugins">
         <and>
             <available classname="org.gjt.sp.jedit.jEdit"/>
@@ -56,11 +60,16 @@
          <pathelement location="${classes.dir}" />
          <pathelement path="${java.class.path}"/>
 
+         <!-- library jars -->
+         <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+         </fileset>
+         
          <!-- required for jEdit plugin -->
          <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
-            <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+         <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
       </path>
    </target>
 
@@ -79,6 +88,7 @@
                target="${compiler.target}"
                bootclasspath="${compiler.bootclasspath}"
                extdirs="$(compiler.extdirs}"
+               includeAntRuntime="${includeAntRuntime}"
                >
             <classpath refid="classpathref" />
         </javac>
@@ -128,6 +138,13 @@
             </fileset>
         </jar>
 
+        <!-- copy library jars -->
+        <copy todir="${install.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+        
         <antcall target="reload"/>
 
     </target>
