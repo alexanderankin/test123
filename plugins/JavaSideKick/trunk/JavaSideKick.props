@@ -15,7 +15,7 @@ plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
 
 # dependencies
 plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.7.0
-plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 05.00.99.00
+plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 05.04.00.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 2.3
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 1.8
 plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.7.4
