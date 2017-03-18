@@ -48,7 +48,7 @@ public class CenterAction extends MouseAdapter {
     
     // TODO: this is supposed to center the image in the viewport on the mouse pointer,
     // but it doesn't take into account the location of the image label inside the viewport,
-    // sok this isn't doing what it's supposed to do.
+    // so this isn't doing what it's supposed to do.
     private void center( Point p ) {
         JViewport viewport = imageViewer.getViewport();
         
