@@ -350,7 +350,8 @@ public class ImageViewer extends JPanel {
         Dimension d = imageViewport.getCurrentSize();
         Image rotatedImage = rotate( CW90 );
         imageViewport.setImage( rotatedImage );
-        zoom( new Float( d.getWidth() ).floatValue(), new Float( d.getHeight() ).floatValue() );
+        // on rotating, the width becomes the height and vice versa
+        zoom( new Float( d.getHeight() ).floatValue(), new Float( d.getWidth() ).floatValue() );
         imageViewport.update();
         refresh();
     }
@@ -359,9 +360,6 @@ public class ImageViewer extends JPanel {
      * This is not a general rotate routine.  The transformations assume 90 degree
      * rotations.
      * @param degrees Rotation in degrees.  Only 90 degrees seems to work well.
-     * TODO: this is no longer working correctly, rotating a 600 x 400 image
-     * should show it at 400 x 600, but instead the image is rotated but still
-     * 600 x 400, so the image is stretched and squashed.
      */
     protected Image rotate( double degrees ) {
         Image image = imageViewport.getImage();
@@ -378,16 +376,16 @@ public class ImageViewer extends JPanel {
 
         Graphics2D g = ( Graphics2D )sourceBI.getGraphics();
         g.drawImage( image, 0, 0, null );
-
+        
         AffineTransform at = new AffineTransform();
-
+        
         // rotate around image center
         at.rotate( amount, sourceBI.getWidth() / 2.0, sourceBI.getHeight() / 2.0 );
-
+        
         // translate to make sure the rotation doesn't cut off any image data
         AffineTransform translationTransform = findTranslation( at, sourceBI );
         at.preConcatenate( translationTransform );
-
+        
         // instantiate and apply affine transformation filter
         BufferedImageOp bio = new AffineTransformOp( at, AffineTransformOp.TYPE_BILINEAR );
         return bio.filter( sourceBI, null );
