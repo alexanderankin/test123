@@ -480,7 +480,7 @@ public class ImageViewer extends JPanel {
          * Zoom in or out.
          */
         public void mouseWheelMoved( MouseWheelEvent me ) {
-            if ( me.getWheelRotation() > 0 ) {
+            if ( me.getWheelRotation() < 0 ) {
                 ImageViewer.this.zoomIn();
             }
             else {
