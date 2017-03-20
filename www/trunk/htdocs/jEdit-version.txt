@@ -1,8 +1,8 @@
-.version 5.3.0
-.build 05.03.99.00
-.stablebuild 05.03.99.00
+.version 5.4.0
+.build 05.04.99.00
+.stablebuild 05.04.99.00
 
 There is currently no development version
 
-The current stable version is 5.3.0. You can find a list of major
-changes since 5.2 at www.jedit.org/CHANGES53.txt
+The current stable version is 5.4.0. You can find a list of major
+changes since 5.3 at www.jedit.org/CHANGES54.txt

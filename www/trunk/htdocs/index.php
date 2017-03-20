@@ -20,7 +20,7 @@
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr align="center" valign="middle" bgcolor="#DDDDDD">
     <td colspan="7" nowrap="nowrap"><center>
-      <p class="header_text">Last Site Update: 22 October 2015 | <?php /* * /?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php/**/?>Stable Version: <a class="header_text" href="CHANGES53.txt">5.3.0</a></p>
+      <p class="header_text">Last Site Update: 18 March 2017 | <?php /* * /?>Latest Version: <a class="header_text" href="CHANGES52.txt">5.2pre1</a> | <?php/**/?>Stable Version: <a class="header_text" href="CHANGES54.txt">5.4.0</a></p>
     </center></td>
   </tr>
   <tr bgcolor="#666666">
