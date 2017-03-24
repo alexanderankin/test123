@@ -4,7 +4,7 @@
 
 plugin.imageviewer.ImageViewerPlugin.name=Image Viewer
 plugin.imageviewer.ImageViewerPlugin.author=Dale Anson
-plugin.imageviewer.ImageViewerPlugin.version=1.3
+plugin.imageviewer.ImageViewerPlugin.version=1.4
 plugin.imageviewer.ImageViewerPlugin.activate=startup
 plugin.imageviewer.ImageViewerPlugin.description=Displays image files when selected from ProjectViewer or File Browser.
 
@@ -20,16 +20,6 @@ plugin.imageviewer.ImageViewerPlugin.docs=index.html
 # titles for DockableWindowManager
 imageviewer.title=Image Viewer
 
-# labels
-imageviewer.clear=Clear
-imageviewer.copy=Copy
-imageviewer.zoomout=Zoom Out
-imageviewer.zoomin=Zoom In
-imageviewer.rotateCW=Rotate clockwise
-imageviewer.rotateCCW=Rotate counter-clockwise
-imageviewer.showimage.label=View Image
-imageviewer.info=Image information
-
 # for plugin menu
 # DONE: the plugin menu isn't showing in the menu bar
 imageviewer.label=Show Image Viewer
@@ -42,8 +32,11 @@ plugin.imageviewer.ImageViewerPlugin.menu=\
     imageviewer.zoomin-action \
     imageviewer.zoomout-action \
     imageviewer.rotateCCW-action \
-    imageviewer.rotateCW-action
+    imageviewer.rotateCW-action \
+    imageviewer.info-action \
+    imageviewer.open-desktop-action
     
+# labels
 imageviewer.clear-action.label=Clear
 imageviewer.copy-action.label=Copy
 imageviewer.reload-action.label=Reload
@@ -51,6 +44,8 @@ imageviewer.zoomin-action.label=Zoom In
 imageviewer.zoomout-action.label=Zoom Out
 imageviewer.rotateCCW-action.label=Rotate counter-clockwise
 imageviewer.rotateCW-action.label=Rotate clockwise
+imageviewer.info-action.label=Image information
+imageviewer.open-desktop-action.label=Open in Desktop
 
 # for File System Browser
 plugin.imageviewer.ImageViewerPlugin.browser-menu=imageviewer.showimage

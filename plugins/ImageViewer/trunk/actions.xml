@@ -37,4 +37,14 @@
             imageviewer.ImageViewerPlugin.rotateCW(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="imageviewer.info-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.info(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.open-desktop-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.openInDesktop(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>
