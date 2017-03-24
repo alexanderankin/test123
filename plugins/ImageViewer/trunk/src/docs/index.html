@@ -9,21 +9,29 @@ Author: Dale Anson
 <br/>
 <br/>
 <h2>Introduction</h2>
-A simple image viewer.  This image viewer lets you view images from ProjectViewer
+<p>A simple image viewer.  This image viewer lets you view images from ProjectViewer
 or from the File System Browser in a dockable window.  Zoom in and zoom out, and
 rotate clockwise and counter-clockwise are the only features.  There are no 
-editing capabilities.
+editing capabilities, although there is an "Open in Desktop" button that will open
+the image in the application associated via the system desktop.
+</p>
 <p>
 At this time, only .gif, .jpg, and .png files are supported as these are
 the file types supported internally by Java. </p>
 
 <h2>Usage</h2>
-<p>To use, first make sure the ImageViewer dockable is visible. It can be 
+<p>
+To use, first make sure the ImageViewer dockable is visible. It can be 
 selected from the Plugin - ImageViewer menu item. </p>
-<p> Next, right click on an image file in ProjectViewer and select the 
+<p> 
+Next, right click on an image file in ProjectViewer and select the 
 "View Image" item. </p>
 <p>
 Or, in the File System Browser, click on Plugins, Image Viewer, View Image. 
+</p>
+<p>
+See below for instructions on option settings to make selecting an image even
+easier.
 </p>
 
 <p>
@@ -37,8 +45,11 @@ In the ImageViewer itself, there is a toolbar with these buttons: </p>
 <li>Rotate clockwise - rotate 90 degrees.</li>
 <li>Rotate counter-clockwise - rotate -90 degrees</li>
 <li>Reload - reload the image and restore it to its original size.</li>
+<li>Info - show any Exif, IPTC, XMP, ICC, and other metadata from the image</li>
+<li>Open in Desktop - open the image in the application associated via the system desktop</li>
 </ul>
-
+<p>
+These items are also found on the Plugins - Image Viewer menu.
 <p>
 <b><i>A word of caution:</i></b> Zooming in is unrestricted by the plugin, but
 is likely restricted by your physical RAM.  It is quite easy to open a large
@@ -74,6 +85,20 @@ image from a long list of images, but you may find that too distracting and
 might prefer to click on individual image files to display them.</p>
 
 <h2> Changes </h2>
+<p>
+<b>Version 1.4</b>
+<ul>
+<li>Fixed rotate clockwise and counter-clockwise so the image isn't distorted.</li>
+<li>Added "Info" button to display any Exif, IPTC, XMP, ICC, and other metadata.</li>
+<li>Added "Open in Desktop" button to open the image with the application
+associated via the sytem desktop.</li>
+<li>Fixed the plugin menu so that it actually shows.</li>
+<li>Reversed direction on mouse wheel so zoom works like Google Maps (personally,
+I think this is backwards, pulling the wheel toward you should pull the image
+toward you, making it bigger, not the other way around, but I'll go along with
+this for the sake of consistency.)</li>
+</ul>
+
 <p>
 <b>Version 1.3</b>
 <ul>
