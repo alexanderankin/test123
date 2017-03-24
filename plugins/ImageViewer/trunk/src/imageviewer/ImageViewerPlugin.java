@@ -456,4 +456,27 @@ public class ImageViewerPlugin extends EBPlugin {
         );
     }
 
+    public static void imageInfo( final View view ) {
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.info();
+                }
+            }
+        }
+        );
+    }
+    
+    public static void openInDesktop( final View view ) {
+        SwingUtilities.invokeLater ( new Runnable() {
+            public void run() {
+                ImageViewer imageViewer = viewMap.get( view );
+                if ( imageViewer != null ) {
+                    imageViewer.openInDesktop();
+                }
+            }
+        }
+        );
+    }
 }

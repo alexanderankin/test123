@@ -91,35 +91,33 @@ public class ImageViewer extends JPanel {
 
         // set up the buttons
         clear = new JButton( GUIUtilities.loadIcon( "22x22/actions/edit-clear.png" ) );
-        clear.setToolTipText( jEdit.getProperty( "imageviewer.clear", "Clear" ) );
+        clear.setToolTipText( jEdit.getProperty( "imageviewer.clear-action.label", "Clear" ) );
 
         copy = new JButton( GUIUtilities.loadIcon( "22x22/actions/edit-copy.png" ) );
-        copy.setToolTipText( jEdit.getProperty( "imageviewer.copy", "Copy" ) );
+        copy.setToolTipText( jEdit.getProperty( "imageviewer.copy-action.label", "Copy" ) );
 
         zoomIn = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-in.png" ) );
-        zoomIn.setToolTipText( jEdit.getProperty( "imageviewer.zoomin", "Zoom In" ) );
+        zoomIn.setToolTipText( jEdit.getProperty( "imageviewer.zoomin-action.label", "Zoom In" ) );
 
         zoomOut = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-out.png" ) );
-        zoomOut.setToolTipText( jEdit.getProperty( "imageviewer.zoomout", "Zoom Out" ) );
+        zoomOut.setToolTipText( jEdit.getProperty( "imageviewer.zoomout-action.label", "Zoom Out" ) );
 
         ImageIcon cwRotateIcon = ( ImageIcon )GUIUtilities.loadIcon( "22x22/actions/edit-redo.png" );
         ImageIcon ccwRotateIcon = new ImageIcon( mirror( cwRotateIcon.getImage() ) );
         rotateCCW = new JButton( ccwRotateIcon );
-        rotateCCW.setToolTipText( jEdit.getProperty( "imageviewer.rotateCCW", "Rotate counter-clockwise" ) );
+        rotateCCW.setToolTipText( jEdit.getProperty( "imageviewer.rotateCCW-action.label", "Rotate counter-clockwise" ) );
         rotateCW = new JButton( cwRotateIcon );
-        rotateCW.setToolTipText( jEdit.getProperty( "imageviewer.rotateCW", "Rotate clockwise" ) );
+        rotateCW.setToolTipText( jEdit.getProperty( "imageviewer.rotateCW-action.label", "Rotate clockwise" ) );
 
         reload = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
         reload.setToolTipText( jEdit.getProperty( "imageviewer.reload", "Reload" ) );
 
         info = new JToggleButton( GUIUtilities.loadIcon( "22x22/apps/help-browser.png" ) );
-        info.setToolTipText( jEdit.getProperty( "imageviewer.info", "Image information" ) );
+        info.setToolTipText( jEdit.getProperty( "imageviewer.info-action.label", "Image information" ) );
         info.setSelected( false );
         
         openInDesktop = new JButton(GUIUtilities.loadIcon("22x22/actions/document-open.png"));
-        StringBuilder label = new StringBuilder(jEdit.getProperty("vfs.browser.open-desktop.label"));
-        label = label.deleteCharAt(label.indexOf("$"));
-        openInDesktop.setToolTipText( label.toString() );
+        openInDesktop.setToolTipText( jEdit.getProperty( "imageviewer.open-desktop-action.label", "Open in Desktop" ) );
 
         // create toolbar
         JToolBar buttonPanel = new JToolBar();
@@ -206,8 +204,7 @@ public class ImageViewer extends JPanel {
         info.addActionListener( new ActionListener(){
 
                 public void actionPerformed( ActionEvent ae ) {
-                    metadataPanel.setVisible( !metadataPanel.isVisible() );
-                    refresh();
+                    info();
                 }
             }
         );
@@ -215,7 +212,7 @@ public class ImageViewer extends JPanel {
         openInDesktop.addActionListener( new ActionListener(){
 
                 public void actionPerformed( ActionEvent ae ) {
-                    MiscUtilities.openInDesktop(filename);
+                    openInDesktop();
                 }
             }
         );
@@ -377,6 +374,15 @@ public class ImageViewer extends JPanel {
         zoom( new Float( d.getHeight() ).floatValue(), new Float( d.getWidth() ).floatValue() );
         imageViewport.update();
         refresh();
+    }
+    
+    protected void info() {
+        metadataPanel.setVisible( !metadataPanel.isVisible() );
+        refresh();
+    }
+    
+    protected void openInDesktop() {
+        MiscUtilities.openInDesktop(filename);
     }
 
     /**
