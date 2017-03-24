@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="imageviewer.clear-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.clear(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.copy-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.copy(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.reload-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.reload(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.zoomin-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.zoomIn(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.zoomout-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.zoomOut(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.rotateCCW-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.rotateCCW(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.rotateCW-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.rotateCW(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.info-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.info(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="imageviewer.open-desktop-action">
+        <CODE>
+            imageviewer.ImageViewerPlugin.openInDesktop(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>

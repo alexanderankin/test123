@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="imageviewer.showimage">
+		<CODE>imageviewer.ImageViewerPlugin.showImage(view, browser);</CODE>
+	</ACTION>
+</ACTIONS>
