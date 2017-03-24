@@ -1,0 +1,64 @@
+#-----------------------------------
+# Properties for ImageViewer Plugin
+#-----------------------------------
+
+plugin.imageviewer.ImageViewerPlugin.name=Image Viewer
+plugin.imageviewer.ImageViewerPlugin.author=Dale Anson
+plugin.imageviewer.ImageViewerPlugin.version=1.4
+plugin.imageviewer.ImageViewerPlugin.activate=startup
+plugin.imageviewer.ImageViewerPlugin.description=Displays image files when selected from ProjectViewer or File Browser.
+
+# dependencies
+plugin.imageviewer.ImageViewerPlugin.depend.0=jdk 1.7
+plugin.imageviewer.ImageViewerPlugin.depend.1=jedit 05.04.00.00
+plugin.imageviewer.ImageViewerPlugin.depend.2=optional plugin projectviewer.ProjectPlugin 3.5.3
+plugin.imageviewer.ImageViewerPlugin.jars=metadata-extractor-2.10.1.jar xmpcore-5.1.2.jar
+
+# docs
+plugin.imageviewer.ImageViewerPlugin.docs=index.html
+
+# titles for DockableWindowManager
+imageviewer.title=Image Viewer
+
+# for plugin menu
+# DONE: the plugin menu isn't showing in the menu bar
+imageviewer.label=Show Image Viewer
+plugin.imageviewer.ImageViewerPlugin.menu.label=ImageViewer
+plugin.imageviewer.ImageViewerPlugin.menu=\
+    imageviewer - \
+    imageviewer.clear-action \
+    imageviewer.copy-action \
+    imageviewer.reload-action \
+    imageviewer.zoomin-action \
+    imageviewer.zoomout-action \
+    imageviewer.rotateCCW-action \
+    imageviewer.rotateCW-action \
+    imageviewer.info-action \
+    imageviewer.open-desktop-action
+    
+# labels
+imageviewer.clear-action.label=Clear
+imageviewer.copy-action.label=Copy
+imageviewer.reload-action.label=Reload
+imageviewer.zoomin-action.label=Zoom In
+imageviewer.zoomout-action.label=Zoom Out
+imageviewer.rotateCCW-action.label=Rotate counter-clockwise
+imageviewer.rotateCW-action.label=Rotate clockwise
+imageviewer.info-action.label=Image information
+imageviewer.open-desktop-action.label=Open in Desktop
+
+# for File System Browser
+plugin.imageviewer.ImageViewerPlugin.browser-menu=imageviewer.showimage
+
+# for option pane
+plugin.imageviewer.ImageViewerPlugin.option-pane=imageviewer
+options.imageviewer.label=Image Viewer
+options.imageviewer.code=new imageviewer.OptionPane();
+imageviewer.allowVFSMouseOver.label=Show images on mouse over/click in File System Browser
+imageviewer.allowPVMouseOver.label=Show images on mouse over/click in ProjectViewer
+imageviewer.mouseoption.label=Display images on:
+imageviewer.mouseover.label=Mouse over
+imageviewer.mouseclick.label=Mouse click
+
+# for PV 2.1.3.7
+plugin.projectviewer.imageviewer.ImageViewerPlugin.context-menu-actions=imageviewer.ImageViewerPVAction
