@@ -51,7 +51,7 @@ import javax.swing.*;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-
+import org.gjt.sp.jedit.MiscUtilities;
 
 /**
  * A simple image viewer.  Provides scrolling and zooming, and that's it. The
@@ -72,6 +72,7 @@ public class ImageViewer extends JPanel {
     private JButton clear;
     private JButton copy;
     private JToggleButton info;
+    private JButton openInDesktop;
     public static final double CW90 = 90.0;
 
     public ImageViewer() {
@@ -114,6 +115,11 @@ public class ImageViewer extends JPanel {
         info = new JToggleButton( GUIUtilities.loadIcon( "22x22/apps/help-browser.png" ) );
         info.setToolTipText( jEdit.getProperty( "imageviewer.info", "Image information" ) );
         info.setSelected( false );
+        
+        openInDesktop = new JButton(GUIUtilities.loadIcon("22x22/actions/document-open.png"));
+        StringBuilder label = new StringBuilder(jEdit.getProperty("vfs.browser.open-desktop.label"));
+        label = label.deleteCharAt(label.indexOf("$"));
+        openInDesktop.setToolTipText( label.toString() );
 
         // create toolbar
         JToolBar buttonPanel = new JToolBar();
@@ -126,6 +132,7 @@ public class ImageViewer extends JPanel {
         buttonPanel.add( rotateCW );
         buttonPanel.add( reload );
         buttonPanel.add( info );
+        buttonPanel.add( openInDesktop );
 
         // inner panel for the filename and image size
         dataPanel = new ImageDataPanel();
@@ -201,6 +208,14 @@ public class ImageViewer extends JPanel {
                 public void actionPerformed( ActionEvent ae ) {
                     metadataPanel.setVisible( !metadataPanel.isVisible() );
                     refresh();
+                }
+            }
+        );
+
+        openInDesktop.addActionListener( new ActionListener(){
+
+                public void actionPerformed( ActionEvent ae ) {
+                    MiscUtilities.openInDesktop(filename);
                 }
             }
         );
@@ -341,9 +356,17 @@ public class ImageViewer extends JPanel {
         // TODO: figure out why I can't rotate counter-clockwise.  It seems like
         // the rotation value has to be less than pi and greater than 0.
         // Three clockwise rotations works the same, though.
-        rotateCW();
-        rotateCW();
-        rotateCW();
+        Dimension d = imageViewport.getCurrentSize();
+        Image rotatedImage = rotate( CW90 );
+        imageViewport.setImage( rotatedImage );
+        rotatedImage = rotate( CW90 );
+        imageViewport.setImage( rotatedImage );
+        rotatedImage = rotate( CW90 );
+        imageViewport.setImage( rotatedImage );
+        // on rotating, the width becomes the height and vice versa
+        zoom( new Float( d.getHeight() ).floatValue(), new Float( d.getWidth() ).floatValue() );
+        imageViewport.update();
+        refresh();
     }
 
     protected void rotateCW() {
@@ -363,32 +386,24 @@ public class ImageViewer extends JPanel {
      */
     protected Image rotate( double degrees ) {
         Image image = imageViewport.getImage();
-        double amount = Math.toRadians( degrees );
-        MediaTracker mt = new MediaTracker( this );
-        mt.addImage( image, 0 );
-        try {
-            mt.waitForID( 0 );
-        }
-        catch ( InterruptedException ie ) {
-        }
+        double radians = Math.toRadians( degrees );
 
-        BufferedImage sourceBI = new BufferedImage( image.getWidth( null ), image.getHeight( null ), BufferedImage.TYPE_INT_ARGB );
-
-        Graphics2D g = ( Graphics2D )sourceBI.getGraphics();
+        // copy the image into a new image to be rotated
+        BufferedImage rotatedImage = new BufferedImage( image.getWidth( null ), image.getHeight( null ), BufferedImage.TYPE_INT_ARGB );
+        Graphics2D g = ( Graphics2D )rotatedImage.getGraphics();
         g.drawImage( image, 0, 0, null );
         
-        AffineTransform at = new AffineTransform();
-        
         // rotate around image center
-        at.rotate( amount, sourceBI.getWidth() / 2.0, sourceBI.getHeight() / 2.0 );
+        AffineTransform at = new AffineTransform();
+        at.rotate( radians, rotatedImage.getWidth() / 2.0, rotatedImage.getHeight() / 2.0 );
         
         // translate to make sure the rotation doesn't cut off any image data
-        AffineTransform translationTransform = findTranslation( at, sourceBI );
+        AffineTransform translationTransform = findTranslation( at, rotatedImage );
         at.preConcatenate( translationTransform );
         
         // instantiate and apply affine transformation filter
         BufferedImageOp bio = new AffineTransformOp( at, AffineTransformOp.TYPE_BILINEAR );
-        return bio.filter( sourceBI, null );
+        return bio.filter( rotatedImage, null );
     }
 
     // find proper translations to keep rotated image correctly displayed
