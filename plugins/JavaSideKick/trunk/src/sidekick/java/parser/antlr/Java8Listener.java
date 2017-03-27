@@ -422,6 +422,46 @@ public interface Java8Listener extends ParseTreeListener {
 	 */
 	void exitTypeDeclaration(@NotNull Java8Parser.TypeDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link Java8Parser#moduleDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterModuleDeclaration(@NotNull Java8Parser.ModuleDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#moduleDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitModuleDeclaration(@NotNull Java8Parser.ModuleDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Java8Parser#moduleStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterModuleStatement(@NotNull Java8Parser.ModuleStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#moduleStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitModuleStatement(@NotNull Java8Parser.ModuleStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Java8Parser#requiresModifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterRequiresModifier(@NotNull Java8Parser.RequiresModifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#requiresModifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitRequiresModifier(@NotNull Java8Parser.RequiresModifierContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Java8Parser#moduleName}.
+	 * @param ctx the parse tree
+	 */
+	void enterModuleName(@NotNull Java8Parser.ModuleNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#moduleName}.
+	 * @param ctx the parse tree
+	 */
+	void exitModuleName(@NotNull Java8Parser.ModuleNameContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link Java8Parser#classDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -1841,6 +1881,16 @@ public interface Java8Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitResource(@NotNull Java8Parser.ResourceContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Java8Parser#variableAccess}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableAccess(@NotNull Java8Parser.VariableAccessContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#variableAccess}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableAccess(@NotNull Java8Parser.VariableAccessContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link Java8Parser#primary}.
 	 * @param ctx the parse tree
