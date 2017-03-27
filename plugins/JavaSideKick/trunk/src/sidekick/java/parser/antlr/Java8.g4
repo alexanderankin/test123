@@ -56,7 +56,7 @@
 Total lexer+parser time 30844ms.
  */
  
-/*
+/* -----------------------------------------------------------------------------
 danson, 17 Oct 2016
 
 I downloaded this from:
@@ -65,8 +65,16 @@ https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4
 I've made some modifications for the Beauty plugin that I've kept for JavaSideKick.
 Mostly the modifications have to do with handling multiple annotations and modifiers.
 
+--------------------------------------------------------------------------------
+
 TODO: update for Java 9, modules are the biggest change, plus some smaller changes,
 see below.
+DONE: modules
+
+*** probably need a separate parser for module-info files. Probably need a separate
+parser for package-info files also (see more below)
+-- Nope, adding the module-info grammar to this parser works fine, see the update 
+to compilationUnit below. 
 
 For modules, see JSR-000376, (http://download.oracle.com/otndocs/jcp/java_platform_module_system-0_1-edr-spec/index.html)
 As of 9 Jan 2017 the grammar for modules is:
@@ -95,14 +103,25 @@ ModuleName:
 'open', 'module', 'requires', 'transitive', 'exports', 'opens', 'to', 'uses', 'provides', and 'with' 
 are restricted keywords (i.e. they are keywords solely where they appear as terminals 
 in ModuleDeclaration, and are identifiers everywhere else).
+
+Of course, comments are allowed everywhere java comments are allowed.
   
+Other new features in Java 9:
 More concise try-with-resources statements, see https://docs.oracle.com/javase/9/language/toc.htm#JSLAN-GUID-B06D7006-D9F4-42F8-AD21-BF861747EDCF
 Also some small changes are listed on that page:
-- Allow @SafeVargs on private instance methods.
-- Allow effectively-final variables to be used as resources in the try-with-resources statement.
-- Allow diamond with anonymous classes if the argument type of the inferred type is denotable.
-- Complete the removal, begun in Java SE 8, of underscore from the set of legal identifier names.
-- Add support for private interface methods.
+done - Allow @SafeVargs on private instance methods.  (no changes needed to this parser)
+done - Allow effectively-final variables to be used as resources in the try-with-resources statement. (danson, done)
+done - Allow diamond with anonymous classes if the argument type of the inferred type is denotable. (danson, no changes needed to this parser)
+done - Complete the removal, begun in Java SE 8, of underscore from the set of legal identifier names. (this means using "_" as an identifer, it's still okay as 
+part of an identifier, like MAX_INT, but not just _ by itself. (danson, no changes needed to this parser)
+done - Add support for private interface methods. (danson, done, see 'interfaceMethodModifier')
+
+*** For package-info.java files, the grammar appears to be like this:
+{Annotation} PackageName
+
+Of course, comments, in particular, javadoc, is allowed. I need to find an official
+language specification for package-info files, but right now JavaSideKick reports errors and
+won't parse either module-info nor package-info files.
 
 */
  
@@ -288,7 +307,9 @@ ambiguousName
  */
 
 compilationUnit
-	:	packageDeclaration? importDeclaration* typeDeclaration* EOF
+	:   packageDeclaration EOF    // danson, added for java 9 to parse package-info.java files, although this has been around since java 5
+	|	packageDeclaration? importDeclaration* typeDeclaration* EOF
+	|   importDeclaration* moduleDeclaration EOF    // danson, added for java 9, to parse module-info.java files
 	;
 
 packageDeclaration
@@ -328,6 +349,32 @@ typeDeclaration
 	|	';'
 	;
 
+/*
+ * danson, Java 9 module-info.java grammar
+ */
+moduleDeclaration
+    :   annotation* OPEN? 'module' Identifier ('.' Identifier)* '{' moduleStatement* '}'
+    ;
+    
+moduleStatement
+    :   'requires' requiresModifier* moduleName ';'
+    |   'exports' packageName ('to' moduleName (',' moduleName)*)? ';'
+    |   'opens' packageName ('to' moduleName (',' moduleName)*)? ';'
+    |   'uses' typeName ';'
+    |   'provides' typeName 'with' typeName (',' typeName)* ';'
+    ;
+    
+requiresModifier
+    :   'transitive'
+    |   'static'
+    ;
+ 
+moduleName
+    :   Identifier
+    |   moduleName '.' Identifier
+    ;
+    
+    
 /*
  * Productions from §8 (Classes)
  */
@@ -699,6 +746,7 @@ interfaceMethodDeclaration
 interfaceMethodModifier
 	:	annotation
 	|	'public'
+    |   'private'       // danson, java 9 allows private interface methods 	
 	|	'abstract'
 	|	'default'
 	|	'static'
@@ -1033,7 +1081,13 @@ resourceList
 
 resource
 	:	variableModifier* unannType variableDeclaratorId '=' expression
+	|   variableAccess    // danson, java 9
 	;
+	
+variableAccess
+    :   expressionName
+    |   fieldAccess
+    ;
 
 /*
  * Productions from §15 (Expressions)
@@ -1288,9 +1342,16 @@ assignment
 	:	leftHandSide assignmentOperator expression
 	;
 
+/* java 8	
 leftHandSide
 	:	expressionName
 	|	fieldAccess
+	|	arrayAccess
+	;
+*/	
+// danson, java 9
+leftHandSide
+	:	variableAccess    // this includes expressionName and fieldAccess
 	|	arrayAccess
 	;
 
@@ -1512,6 +1573,18 @@ TRY : 'try';
 VOID : 'void';
 VOLATILE : 'volatile';
 WHILE : 'while';
+
+// module-info keywords
+OPEN : 'open';
+MODULE : 'module';
+REQUIRES : 'requires';
+TRANSITIVE : 'transitive';
+EXPORTS : 'exports';
+OPENS : 'opens';
+TO : 'to';
+USES : 'uses';
+PROVIDES : 'provides';
+WITH : 'with';
 
 // §3.10.1 Integer Literals
 

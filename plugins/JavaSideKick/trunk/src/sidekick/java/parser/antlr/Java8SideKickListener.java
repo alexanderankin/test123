@@ -288,7 +288,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // packageModifier is 0 or 1 annotation only
         if ( ctx.packageModifier() != null ) {
-            for ( int i = 0; i < ctx.packageModifier().size(); i++ ) {
+            for ( int i = 0; i < ctx.packageModifier().size() && stack.size() > 0; i++ ) {
                 parent.addAnnotation( ( AnnotationNode )stack.pop() );
             }
         }
@@ -337,6 +337,12 @@ public class Java8SideKickListener extends Java8BaseListener {
     }
 
 
+	@Override public void exitModuleDeclaration(@NotNull Java8Parser.ModuleDeclarationContext ctx) { }
+	@Override public void exitModuleStatement(@NotNull Java8Parser.ModuleStatementContext ctx) { }
+	@Override public void exitRequiresModifier(@NotNull Java8Parser.RequiresModifierContext ctx) { }
+	@Override public void enterModuleName(@NotNull Java8Parser.ModuleNameContext ctx) { }
+	@Override public void exitModuleName(@NotNull Java8Parser.ModuleNameContext ctx) { }
+	
     @Override
     public void exitClassDeclaration( @NotNull ClassDeclarationContext ctx ) {
     }
