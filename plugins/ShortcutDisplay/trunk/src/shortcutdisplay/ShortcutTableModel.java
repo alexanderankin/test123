@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.*;
 import shortcutdisplay.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.input.AbstractInputHandler;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
@@ -84,10 +85,10 @@ class ShortcutTableModel extends AbstractTableModel
 	public static ArrayList parseShortcuts(Map bindings, ShortcutTableModel model)
 	{
 		ArrayList ret = new ArrayList();
-		String prefix = (String) bindings.get(DefaultInputHandler.PREFIX_STR);
+		String prefix = (String) bindings.get(AbstractInputHandler.PREFIX_STR);
 		if (prefix == null)
 		{
-			throw new NullPointerException("Incorrectly built Map.  There should be a binding in here stored under " + DefaultInputHandler.PREFIX_STR);
+			throw new NullPointerException("Incorrectly built Map.  There should be a binding in here stored under " + AbstractInputHandler.PREFIX_STR);
 		}
 		Set keys = bindings.keySet();
 		Iterator iter = keys.iterator();
@@ -112,7 +113,7 @@ class ShortcutTableModel extends AbstractTableModel
                     val = (String)value;
                 }
                 else val = ea.getLabel().replaceAll("\\$","");
-				if (!key.equals(DefaultInputHandler.PREFIX_STR))
+				if (!key.equals(AbstractInputHandler.PREFIX_STR))
 				{
 					ret.add(new Shortcut(val, prefix + " " + key));
 				}
