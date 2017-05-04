@@ -274,11 +274,11 @@ public class Java8SideKickListener extends Java8BaseListener {
         TigerNode parent = new TigerNode();
         setLocations( parent, ctx );
 
-        if ( ctx.Identifier() != null ) {
+        if ( ctx.identifier() != null ) {
             StringBuilder sb = new StringBuilder();
-            for ( int i = 0; i < ctx.Identifier().size(); i++ ) {
-                sb.append( ctx.Identifier( i ).getSymbol().getText() );
-                if ( i < ctx.Identifier().size() - 1 ) {
+            for ( int i = 0; i < ctx.identifier().size(); i++ ) {
+                sb.append( ctx.identifier( i ).Identifier().getSymbol().getText() );
+                if ( i < ctx.identifier().size() - 1 ) {
                     sb.append( '.' );
                 }
             }
@@ -355,7 +355,7 @@ public class Java8SideKickListener extends Java8BaseListener {
      */
     @Override
     public void exitNormalClassDeclaration( @NotNull NormalClassDeclarationContext ctx ) {
-        ClassNode parent = new ClassNode( ctx.Identifier().getText() );
+        ClassNode parent = new ClassNode( ctx.identifier().getText() );
         setLocations( parent, ctx );
 
         // modifiers
@@ -456,7 +456,7 @@ public class Java8SideKickListener extends Java8BaseListener {
             List<TypeParameterContext> typeParameterContexts = ( List <TypeParameterContext> )constructorDeclaratorContext.typeParameters().typeParameterList().typeParameter();
             StringBuilder sb = new StringBuilder( "<" );
             for ( TypeParameterContext typeParam : typeParameterContexts ) {
-                sb.append( typeParam.Identifier().getText() ).append( ',' );
+                sb.append( typeParam.identifier().getText() ).append( ',' );
             }
             if ( sb.length() > 1 ) {
                 sb.deleteCharAt( sb.length() - 1 );
@@ -482,7 +482,7 @@ public class Java8SideKickListener extends Java8BaseListener {
                         setLocations( parameterNode, param );
                         Type type = new Type( param.unannType().getText() );
                         parameterNode.setType( type );
-                        parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+                        parameterNode.setName( param.variableDeclaratorId().identifier().getText() );
 
                         // modifiers
                         size = param.variableModifier().size();
@@ -509,7 +509,7 @@ public class Java8SideKickListener extends Java8BaseListener {
                     FormalParameterContext param = lastFormalParameterContext.formalParameter();
                     Type type = new Type( param.unannType().getText() );
                     parameterNode.setType( type );
-                    parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+                    parameterNode.setName( param.variableDeclaratorId().identifier().getText() );
 
                     // modifiers
                     size = param.variableModifier().size();
@@ -528,7 +528,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
                     if ( lastFormalParameterContext.variableDeclaratorId() != null ) {
-                        parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().Identifier().getText() );
+                        parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().identifier().getText() );
                     }
 
 
@@ -649,7 +649,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
         // method name
         MethodDeclaratorContext methodDeclaratorContext = methodHeaderContext.methodDeclarator();
-        String name = methodDeclaratorContext.Identifier().getText();
+        String name = methodDeclaratorContext.identifier().getText();
         methodNode.setName( name );
 
         // parameters
@@ -667,7 +667,7 @@ public class Java8SideKickListener extends Java8BaseListener {
                         setLocations( parameterNode, param );
                         Type type = new Type( param.unannType().getText() );
                         parameterNode.setType( type );
-                        parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+                        parameterNode.setName( param.variableDeclaratorId().identifier().getText() );
 
                         // modifiers
                         int size = param.variableModifier().size();
@@ -694,7 +694,7 @@ public class Java8SideKickListener extends Java8BaseListener {
                     FormalParameterContext param = lastFormalParameterContext.formalParameter();
                     Type type = new Type( param.unannType().getText() );
                     parameterNode.setType( type );
-                    parameterNode.setName( param.variableDeclaratorId().Identifier().getText() );
+                    parameterNode.setName( param.variableDeclaratorId().identifier().getText() );
 
                     // modifiers
                     int size = param.variableModifier().size();
@@ -713,7 +713,7 @@ public class Java8SideKickListener extends Java8BaseListener {
 
 
                     if ( lastFormalParameterContext.variableDeclaratorId() != null ) {
-                        parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().Identifier().getText() );
+                        parameterNode.setName( lastFormalParameterContext.variableDeclaratorId().identifier().getText() );
                     }
 
 
@@ -753,7 +753,7 @@ public class Java8SideKickListener extends Java8BaseListener {
             List<TypeParameterContext> typeParameterContexts = ( List <TypeParameterContext> )methodHeaderContext.typeParameters().typeParameterList().typeParameter();
             StringBuilder sb = new StringBuilder( "<" );
             for ( TypeParameterContext typeParam : typeParameterContexts ) {
-                sb.append( typeParam.Identifier().getText() ).append( ',' );
+                sb.append( typeParam.identifier().getText() ).append( ',' );
             }
             if ( sb.length() > 1 ) {
                 sb.deleteCharAt( sb.length() - 1 );
@@ -1066,7 +1066,7 @@ public class Java8SideKickListener extends Java8BaseListener {
         }
         int modifiers = ModifierSet.getModifiers( modifierNames );
 
-        EnumNode parent = new EnumNode( ctx.Identifier().getText(), modifiers );
+        EnumNode parent = new EnumNode( ctx.identifier().getText(), modifiers );
         setLocations( parent, ctx );
 
         // superinterfaces
@@ -1187,7 +1187,7 @@ public class Java8SideKickListener extends Java8BaseListener {
             modifierNames[i] = imc.interfaceModifier( i ).getText();
         }
         int modifiers = ModifierSet.getModifiers( modifierNames );
-        InterfaceNode parent = new InterfaceNode( ctx.Identifier().getText(), modifiers );
+        InterfaceNode parent = new InterfaceNode( ctx.identifier().getText(), modifiers );
         setLocations( parent, ctx );
 
         // typeParameters
@@ -1197,7 +1197,7 @@ public class Java8SideKickListener extends Java8BaseListener {
             List<TypeParameterContext> tpc = ( List <TypeParameterContext> )typeListContext.typeParameter();
             StringBuilder sb = new StringBuilder( "<" );
             for ( TypeParameterContext t : tpc ) {
-                sb.append( t.Identifier().getText() ).append( ',' );
+                sb.append( t.identifier().getText() ).append( ',' );
             }
             if ( sb.length() > 1 ) {
                 sb.deleteCharAt( sb.length() - 1 );
@@ -1372,7 +1372,7 @@ public class Java8SideKickListener extends Java8BaseListener {
             modifierNames[i] = ctx.interfaceModifier( i ).getText();
         }
         int modifiers = ModifierSet.getModifiers( modifierNames );
-        AnnotationTypeNode parent = new AnnotationTypeNode( ctx.Identifier().getText(), modifiers );
+        AnnotationTypeNode parent = new AnnotationTypeNode( ctx.identifier().getText(), modifiers );
         setLocations( parent, ctx );
 
         // body contents

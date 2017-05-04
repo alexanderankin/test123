@@ -120,8 +120,7 @@ done - Add support for private interface methods. (danson, done, see 'interfaceM
 {Annotation} PackageName
 
 Of course, comments, in particular, javadoc, is allowed. I need to find an official
-language specification for package-info files, but right now JavaSideKick reports errors and
-won't parse either module-info nor package-info files.
+language specification for package-info files, but right now JavaSideKick won't parse package-info files.
 
 */
  
@@ -130,6 +129,21 @@ grammar Java8;
 @header {
 package sidekick.java.parser.antlr;
 }
+
+// danson, added this so module-info keywords can be used as Identifiers elsewhere
+identifier
+    : Identifier
+    | 'open'
+    | 'module'
+    | 'requires'
+    | 'transitive'
+    | 'exports'
+    | 'opens'
+    | 'to'
+    | 'uses'
+    | 'provides'
+    | 'with'
+    ;
 
 /*
  * Productions from §3 (Lexical Structure)
@@ -231,7 +245,7 @@ dims
 	;
 
 typeParameter
-	:	typeParameterModifier* Identifier typeBound?
+	:	typeParameterModifier* identifier typeBound?
 	;
 
 typeParameterModifier
@@ -274,32 +288,32 @@ wildcardBounds
  */
 
 packageName
-	:	Identifier
-	|	packageName '.' Identifier
+	:	identifier
+	|	packageName '.' identifier
 	;
 
 typeName
-	:	Identifier
-	|	packageOrTypeName '.' Identifier
+	:	identifier
+	|	packageOrTypeName '.' identifier
 	;
 
 packageOrTypeName
-	:	Identifier
-	|	packageOrTypeName '.' Identifier
+	:	identifier
+	|	packageOrTypeName '.' identifier
 	;
 
 expressionName
-	:	Identifier
-	|	ambiguousName '.' Identifier
+	:	identifier
+	|	ambiguousName '.' identifier
 	;
 
 methodName
-	:	Identifier
+	:	identifier
 	;
 
 ambiguousName
-	:	Identifier
-	|	ambiguousName '.' Identifier
+	:	identifier
+	|	ambiguousName '.' identifier
 	;
 
 /*
@@ -313,7 +327,7 @@ compilationUnit
 	;
 
 packageDeclaration
-	:	packageModifier* 'package' Identifier ('.' Identifier)* ';'
+	:	packageModifier* 'package' identifier ('.' identifier)* ';'
 	;
 
 packageModifier
@@ -336,7 +350,7 @@ typeImportOnDemandDeclaration
 	;
 
 singleStaticImportDeclaration
-	:	'import' 'static' typeName '.' Identifier ';'
+	:	'import' 'static' typeName '.' identifier ';'
 	;
 
 staticImportOnDemandDeclaration
@@ -353,7 +367,7 @@ typeDeclaration
  * danson, Java 9 module-info.java grammar
  */
 moduleDeclaration
-    :   annotation* OPEN? 'module' Identifier ('.' Identifier)* '{' moduleStatement* '}'
+    :   annotation* 'open'? 'module' Identifier ('.' Identifier)* '{' moduleStatement* '}'
     ;
     
 moduleStatement
@@ -385,7 +399,7 @@ classDeclaration
 	;
 
 normalClassDeclaration
-	:	classModifiers 'class' Identifier typeParameters? superclass? superinterfaces? classBody
+	:	classModifiers 'class' identifier typeParameters? superclass? superinterfaces? classBody
 	;
 	
 classModifiers
@@ -470,7 +484,7 @@ variableDeclarator
 	;
 
 variableDeclaratorId
-	:	Identifier dims?
+	:	identifier dims?
 	;
 
 variableInitializer
@@ -504,7 +518,7 @@ unannClassOrInterfaceType
 	;
 
 unannClassType
-	:	Identifier typeArguments?
+	:	identifier typeArguments?
 	|	unannClassOrInterfaceType '.' annotationIdentifier typeArguments?
 	;
 
@@ -513,7 +527,7 @@ unannClassType_lf_unannClassOrInterfaceType
 	;
 
 unannClassType_lfno_unannClassOrInterfaceType
-	:	Identifier typeArguments?
+	:	identifier typeArguments?
 	;
 
 unannInterfaceType
@@ -529,7 +543,7 @@ unannInterfaceType_lfno_unannClassOrInterfaceType
 	;
 
 unannTypeVariable
-	:	Identifier
+	:	identifier
 	;
 
 unannArrayType
@@ -570,7 +584,7 @@ result
 	;
 
 methodDeclarator
-	:	Identifier '(' formalParameterList? ')' dims?
+	:	identifier '(' formalParameterList? ')' dims?
 	;
 
 formalParameterList
@@ -598,7 +612,7 @@ lastFormalParameter
 	;
 
 receiverParameter
-	:	annotation* unannType (Identifier '.')? 'this'
+	:	annotation* unannType (identifier '.')? 'this'
 	;
 
 throws_
@@ -647,7 +661,7 @@ constructorDeclarator
 	;
 
 simpleTypeName
-	:	Identifier
+	:	identifier
 	;
 
 constructorBody
@@ -662,7 +676,7 @@ explicitConstructorInvocation
 	;
 
 enumDeclaration
-	:	classModifiers 'enum' Identifier superinterfaces? enumBody
+	:	classModifiers 'enum' identifier superinterfaces? enumBody
 	;
 
 enumBody
@@ -674,7 +688,7 @@ enumConstantList
 	;
 
 enumConstant
-	:	enumConstantModifier* Identifier ('(' argumentList? ')')? classBody?
+	:	enumConstantModifier* identifier ('(' argumentList? ')')? classBody?
 	;
 
 enumConstantModifier
@@ -695,7 +709,7 @@ interfaceDeclaration
 	;
 
 normalInterfaceDeclaration
-	:	interfaceModifiers 'interface' Identifier typeParameters? extendsInterfaces? interfaceBody
+	:	interfaceModifiers 'interface' identifier typeParameters? extendsInterfaces? interfaceBody
 	;
 	
 interfaceModifiers
@@ -754,7 +768,7 @@ interfaceMethodModifier
 	;
 
 annotationTypeDeclaration
-	:	interfaceModifier* '@' 'interface' Identifier annotationTypeBody
+	:	interfaceModifier* '@' 'interface' identifier annotationTypeBody
 	;
 
 annotationTypeBody
@@ -770,7 +784,7 @@ annotationTypeMemberDeclaration
 	;
 
 annotationTypeElementDeclaration
-	:	annotationTypeElementModifier* unannType Identifier '(' ')' dims? defaultValue? ';'
+	:	annotationTypeElementModifier* unannType identifier '(' ')' dims? defaultValue? ';'
 	;
 
 annotationTypeElementModifier
@@ -790,7 +804,7 @@ annotation
 	;
 
 annotationIdentifier
-    :   annotation* Identifier
+    :   annotation* identifier
     ;
 	
 annotationDim
@@ -806,7 +820,7 @@ elementValuePairList
 	;
 
 elementValuePair
-	:	Identifier '=' elementValue
+	:	identifier '=' elementValue
 	;
 
 elementValue
@@ -906,11 +920,11 @@ emptyStatement
 	;
 
 labeledStatement
-	:	Identifier ':' statement
+	:	identifier ':' statement
 	;
 
 labeledStatementNoShortIf
-	:	Identifier ':' statementNoShortIf
+	:	identifier ':' statementNoShortIf
 	;
 
 expressionStatement
@@ -967,7 +981,7 @@ switchLabel
 	;
 
 enumConstantName
-	:	Identifier
+	:	identifier
 	;
 
 whileStatement
@@ -1022,11 +1036,11 @@ enhancedForStatementNoShortIf
 	;
 
 breakStatement
-	:	'break' Identifier? ';'
+	:	'break' identifier? ';'
 	;
 
 continueStatement
-	:	'continue' Identifier? ';'
+	:	'continue' identifier? ';'
 	;
 
 returnStatement
@@ -1205,18 +1219,18 @@ typeArgumentsOrDiamond
 	;
 
 fieldAccess
-	:	primary '.' Identifier
-	|	SUPER '.' Identifier
-	|	typeName '.' SUPER '.' Identifier
+	:	primary '.' identifier
+	|	SUPER '.' identifier
+	|	typeName '.' SUPER '.' identifier
 	;
 
 fieldAccess_lf_primary
-	:	'.' Identifier
+	:	'.' identifier
 	;
 
 fieldAccess_lfno_primary
-	:	SUPER '.' Identifier
-	|	typeName '.' SUPER '.' Identifier
+	:	SUPER '.' identifier
+	|	typeName '.' SUPER '.' identifier
 	;
 
 arrayAccess
@@ -1244,23 +1258,23 @@ arrayAccess_lfno_primary
 
 methodInvocation
 	:	methodName '(' argumentList? ')'
-	|	typeName '.' typeArguments? Identifier '(' argumentList? ')'
-	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
-	|	primary '.' typeArguments? Identifier '(' argumentList? ')'
-	|	SUPER '.' typeArguments? Identifier '(' argumentList? ')'
-	|	typeName '.' SUPER '.' typeArguments? Identifier '(' argumentList? ')'  
+	|	typeName '.' typeArguments? identifier '(' argumentList? ')'
+	|	expressionName '.' typeArguments? identifier '(' argumentList? ')'
+	|	primary '.' typeArguments? identifier '(' argumentList? ')'
+	|	SUPER '.' typeArguments? identifier '(' argumentList? ')'
+	|	typeName '.' SUPER '.' typeArguments? identifier '(' argumentList? ')'  
 	;
 
 methodInvocation_lf_primary
-	:	'.' typeArguments? Identifier '(' argumentList? ')'
+	:	'.' typeArguments? identifier '(' argumentList? ')'
 	;
 
 methodInvocation_lfno_primary
 	:	methodName '(' argumentList? ')'
-	|	typeName '.' typeArguments? Identifier '(' argumentList? ')'
-	|	expressionName '.' typeArguments? Identifier '(' argumentList? ')'
-	|	SUPER '.' typeArguments? Identifier '(' argumentList? ')'
-	|	typeName '.' SUPER '.' typeArguments? Identifier '(' argumentList? ')'
+	|	typeName '.' typeArguments? identifier '(' argumentList? ')'
+	|	expressionName '.' typeArguments? identifier '(' argumentList? ')'
+	|	SUPER '.' typeArguments? identifier '(' argumentList? ')'
+	|	typeName '.' SUPER '.' typeArguments? identifier '(' argumentList? ')'
 	;
 
 argumentList
@@ -1268,24 +1282,24 @@ argumentList
 	;
 
 methodReference
-	:	expressionName '::' typeArguments? Identifier
-	|	referenceType '::' typeArguments? Identifier
-	|	primary '::' typeArguments? Identifier
-	|	SUPER '::' typeArguments? Identifier
-	|	typeName '.' SUPER '::' typeArguments? Identifier
+	:	expressionName '::' typeArguments? identifier
+	|	referenceType '::' typeArguments? identifier
+	|	primary '::' typeArguments? identifier
+	|	SUPER '::' typeArguments? identifier
+	|	typeName '.' SUPER '::' typeArguments? identifier
 	|	classType '::' typeArguments? 'new'
 	|	arrayType '::' 'new'                               
 	;
 
 methodReference_lf_primary
-	:	'::' typeArguments? Identifier
+	:	'::' typeArguments? identifier
 	;
 
 methodReference_lfno_primary
-	:	expressionName '::' typeArguments? Identifier
-	|	referenceType '::' typeArguments? Identifier
-	|	SUPER '::' typeArguments? Identifier
-	|	typeName '.' SUPER '::' typeArguments? Identifier
+	:	expressionName '::' typeArguments? identifier
+	|	referenceType '::' typeArguments? identifier
+	|	SUPER '::' typeArguments? identifier
+	|	typeName '.' SUPER '::' typeArguments? identifier
 	|	classType '::' typeArguments? 'new'
 	|	arrayType '::' 'new'
 	;
@@ -1319,13 +1333,13 @@ lambdaExpression
 	;
 
 lambdaParameters
-	:	Identifier
+	:	identifier
 	|	'(' formalParameterList? ')'
 	|	'(' inferredFormalParameterList ')'
 	;
 
 inferredFormalParameterList
-	:	Identifier (',' Identifier)*
+	:	identifier (',' identifier)*
 	;
 
 lambdaBody
@@ -1575,16 +1589,16 @@ VOLATILE : 'volatile';
 WHILE : 'while';
 
 // module-info keywords
-OPEN : 'open';
-MODULE : 'module';
-REQUIRES : 'requires';
-TRANSITIVE : 'transitive';
-EXPORTS : 'exports';
-OPENS : 'opens';
-TO : 'to';
-USES : 'uses';
-PROVIDES : 'provides';
-WITH : 'with';
+//OPEN : 'open';
+//MODULE : 'module';
+//REQUIRES : 'requires';
+//TRANSITIVE : 'transitive';
+//EXPORTS : 'exports';
+//OPENS : 'opens';
+//TO : 'to';
+//USES : 'uses';
+//PROVIDES : 'provides';
+//WITH : 'with';
 
 // §3.10.1 Integer Literals
 

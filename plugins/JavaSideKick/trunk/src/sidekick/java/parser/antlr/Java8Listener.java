@@ -12,6 +12,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface Java8Listener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link Java8Parser#identifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdentifier(@NotNull Java8Parser.IdentifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Java8Parser#identifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdentifier(@NotNull Java8Parser.IdentifierContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link Java8Parser#literal}.
 	 * @param ctx the parse tree
 	 */
