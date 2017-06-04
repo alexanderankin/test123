@@ -1,4 +1,4 @@
-// Generated from XQueryLexer.g4 by ANTLR 4.4
+// Generated from XQueryLexer.g4 by ANTLR 4.x
 package sidekick.xquery.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -9,13 +9,7 @@ import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class XQueryLexer extends Lexer {
-	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
-
-	protected static final DFA[] _decisionToDFA;
-	protected static final PredictionContextCache _sharedContextCache =
-		new PredictionContextCache();
 	public static final int
 		IntegerLiteral=1, DecimalLiteral=2, DoubleLiteral=3, PredefinedEntityRef=4, 
 		CharRef=5, Quot=6, Apos=7, COMMENT=8, XMLDECL=9, PI=10, CDATA=11, PRAGMA=12, 
@@ -47,25 +41,6 @@ public class XQueryLexer extends Lexer {
 		"DEFAULT_MODE"
 	};
 
-	public static final String[] tokenNames = {
-		"'\\u0000'", "'\\u0001'", "'\\u0002'", "'\\u0003'", "'\\u0004'", "'\\u0005'", 
-		"'\\u0006'", "'\\u0007'", "'\b'", "'\t'", "'\n'", "'\\u000B'", "'\f'", 
-		"'\r'", "'\\u000E'", "'\\u000F'", "'\\u0010'", "'\\u0011'", "'\\u0012'", 
-		"'\\u0013'", "'\\u0014'", "'\\u0015'", "'\\u0016'", "'\\u0017'", "'\\u0018'", 
-		"'\\u0019'", "'\\u001A'", "'\\u001B'", "'\\u001C'", "'\\u001D'", "'\\u001E'", 
-		"'\\u001F'", "' '", "'!'", "'\"'", "'#'", "'$'", "'%'", "'&'", "'''", 
-		"'('", "')'", "'*'", "'+'", "','", "'-'", "'.'", "'/'", "'0'", "'1'", 
-		"'2'", "'3'", "'4'", "'5'", "'6'", "'7'", "'8'", "'9'", "':'", "';'", 
-		"'<'", "'='", "'>'", "'?'", "'@'", "'A'", "'B'", "'C'", "'D'", "'E'", 
-		"'F'", "'G'", "'H'", "'I'", "'J'", "'K'", "'L'", "'M'", "'N'", "'O'", 
-		"'P'", "'Q'", "'R'", "'S'", "'T'", "'U'", "'V'", "'W'", "'X'", "'Y'", 
-		"'Z'", "'['", "'\\'", "']'", "'^'", "'_'", "'`'", "'a'", "'b'", "'c'", 
-		"'d'", "'e'", "'f'", "'g'", "'h'", "'i'", "'j'", "'k'", "'l'", "'m'", 
-		"'n'", "'o'", "'p'", "'q'", "'r'", "'s'", "'t'", "'u'", "'v'", "'w'", 
-		"'x'", "'y'", "'z'", "'{'", "'|'", "'}'", "'~'", "'\\u007F'", "'\\u0080'", 
-		"'\\u0081'", "'\\u0082'", "'\\u0083'", "'\\u0084'", "'\\u0085'", "'\\u0086'", 
-		"'\\u0087'", "'\\u0088'", "'\\u0089'", "'\\u008A'", "'\\u008B'", "'\\u008C'"
-	};
 	public static final String[] ruleNames = {
 		"IntegerLiteral", "DecimalLiteral", "DoubleLiteral", "Digits", "PredefinedEntityRef", 
 		"CharRef", "Quot", "Apos", "COMMENT", "XMLDECL", "PI", "CDATA", "PRAGMA", 
@@ -93,17 +68,95 @@ public class XQueryLexer extends Lexer {
 		"NCName", "NameStartChar", "NameChar", "XQComment", "ContentChar"
 	};
 
+	private static final String[] _LITERAL_NAMES = {
+		null, null, null, null, null, null, "'\"'", "'''", null, null, null, null, 
+		null, null, "'='", "'!='", "'('", "')'", "'['", "']'", "'{'", "'}'", "'*'", 
+		"'+'", "'-'", "','", "'.'", "'..'", "':'", "':='", "';'", "'/'", "'//'", 
+		"'|'", "'<'", "'>'", "'?'", "'@'", "'$'", "'ancestor'", "'ancestor-or-self'", 
+		"'and'", "'as'", "'ascending'", "'at'", "'attribute'", "'base-uri'", "'boundary-space'", 
+		"'by'", "'case'", "'cast'", "'castable'", "'child'", "'collation'", "'comment'", 
+		"'construction'", "'copy-namespaces'", "'declare'", "'default'", "'descendant'", 
+		"'descendant-or-self'", "'descending'", "'div'", "'document'", "'document-node'", 
+		"'element'", "'else'", "'empty'", "'empty-sequence'", "'encoding'", "'eq'", 
+		"'every'", "'except'", "'external'", "'following'", "'following-sibling'", 
+		"'for'", "'function'", "'ge'", "'greatest'", "'gt'", "'idiv'", "'if'", 
+		"'import'", "'in'", "'inherit'", "'instance'", "'intersect'", "'is'", 
+		"'item'", "'lax'", "'le'", "'least'", "'let'", "'lt'", "'mod'", "'module'", 
+		"'namespace'", "'ne'", "'no-inherit'", "'no-preserve'", "'node'", "'of'", 
+		"'option'", "'or'", "'order'", "'ordered'", "'ordering'", "'parent'", 
+		"'preceding'", "'preceding-sibling'", "'preserve'", "'processing-instruction'", 
+		"'return'", "'satisfies'", "'schema'", "'schema-attribute'", "'schema-element'", 
+		"'self'", "'some'", "'stable'", "'strict'", "'strip'", "'text'", "'then'", 
+		"'to'", "'treat'", "'typeswitch'", "'union'", "'unordered'", "'validate'", 
+		"'variable'", "'version'", "'where'", "'xquery'"
+	};
+	private static final String[] _SYMBOLIC_NAMES = {
+		null, "IntegerLiteral", "DecimalLiteral", "DoubleLiteral", "PredefinedEntityRef", 
+		"CharRef", "Quot", "Apos", "COMMENT", "XMLDECL", "PI", "CDATA", "PRAGMA", 
+		"WS", "EQUAL", "NOT_EQUAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET", 
+		"LBRACE", "RBRACE", "STAR", "PLUS", "MINUS", "COMMA", "DOT", "DDOT", "COLON", 
+		"COLON_EQ", "SEMICOLON", "SLASH", "DSLASH", "VBAR", "LANGLE", "RANGLE", 
+		"QUESTION", "AT", "DOLLAR", "KW_ANCESTOR", "KW_ANCESTOR_OR_SELF", "KW_AND", 
+		"KW_AS", "KW_ASCENDING", "KW_AT", "KW_ATTRIBUTE", "KW_BASE_URI", "KW_BOUNDARY_SPACE", 
+		"KW_BY", "KW_CASE", "KW_CAST", "KW_CASTABLE", "KW_CHILD", "KW_COLLATION", 
+		"KW_COMMENT", "KW_CONSTRUCTION", "KW_COPY_NS", "KW_DECLARE", "KW_DEFAULT", 
+		"KW_DESCENDANT", "KW_DESCENDANT_OR_SELF", "KW_DESCENDING", "KW_DIV", "KW_DOCUMENT", 
+		"KW_DOCUMENT_NODE", "KW_ELEMENT", "KW_ELSE", "KW_EMPTY", "KW_EMPTY_SEQUENCE", 
+		"KW_ENCODING", "KW_EQ", "KW_EVERY", "KW_EXCEPT", "KW_EXTERNAL", "KW_FOLLOWING", 
+		"KW_FOLLOWING_SIBLING", "KW_FOR", "KW_FUNCTION", "KW_GE", "KW_GREATEST", 
+		"KW_GT", "KW_IDIV", "KW_IF", "KW_IMPORT", "KW_IN", "KW_INHERIT", "KW_INSTANCE", 
+		"KW_INTERSECT", "KW_IS", "KW_ITEM", "KW_LAX", "KW_LE", "KW_LEAST", "KW_LET", 
+		"KW_LT", "KW_MOD", "KW_MODULE", "KW_NAMESPACE", "KW_NE", "KW_NO_INHERIT", 
+		"KW_NO_PRESERVE", "KW_NODE", "KW_OF", "KW_OPTION", "KW_OR", "KW_ORDER", 
+		"KW_ORDERED", "KW_ORDERING", "KW_PARENT", "KW_PRECEDING", "KW_PRECEDING_SIBLING", 
+		"KW_PRESERVE", "KW_PI", "KW_RETURN", "KW_SATISFIES", "KW_SCHEMA", "KW_SCHEMA_ATTR", 
+		"KW_SCHEMA_ELEM", "KW_SELF", "KW_SOME", "KW_STABLE", "KW_STRICT", "KW_STRIP", 
+		"KW_TEXT", "KW_THEN", "KW_TO", "KW_TREAT", "KW_TYPESWITCH", "KW_UNION", 
+		"KW_UNORDERED", "KW_VALIDATE", "KW_VARIABLE", "KW_VERSION", "KW_WHERE", 
+		"KW_XQUERY", "FullQName", "NCNameWithLocalWildcard", "NCNameWithPrefixWildcard", 
+		"NCName", "XQComment", "ContentChar"
+	};
+	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+	/**
+	 * @deprecated Use {@link #VOCABULARY} instead.
+	 */
+	@Deprecated
+	public static final String[] tokenNames;
+	static {
+		tokenNames = new String[_SYMBOLIC_NAMES.length];
+		for (int i = 0; i < tokenNames.length; i++) {
+			tokenNames[i] = VOCABULARY.getLiteralName(i);
+			if (tokenNames[i] == null) {
+				tokenNames[i] = VOCABULARY.getSymbolicName(i);
+			}
+
+			if (tokenNames[i] == null) {
+				tokenNames[i] = "<INVALID>";
+			}
+		}
+	}
+
+	@Override
+	@Deprecated
+	public String[] getTokenNames() {
+		return tokenNames;
+	}
+
+	@Override
+	@NotNull
+	public Vocabulary getVocabulary() {
+		return VOCABULARY;
+	}
+
 
 	public XQueryLexer(CharStream input) {
 		super(input);
-		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+		_interp = new LexerATNSimulator(this,_ATN);
 	}
 
 	@Override
 	public String getGrammarFileName() { return "XQueryLexer.g4"; }
-
-	@Override
-	public String[] getTokenNames() { return tokenNames; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -114,11 +167,8 @@ public class XQueryLexer extends Lexer {
 	@Override
 	public String[] getModeNames() { return modeNames; }
 
-	@Override
-	public ATN getATN() { return _ATN; }
-
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\2\u008e\u053d\b\1\4"+
+		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\2\u008e\u053d\b\1\4"+
 		"\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n"+
 		"\4\13\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22"+
 		"\t\22\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31"+
@@ -200,36 +250,40 @@ public class XQueryLexer extends Lexer {
 		"\u008f\3\u008f\3\u008f\3\u008f\3\u008f\3\u008f\7\u008f\u052e\n\u008f\f"+
 		"\u008f\16\u008f\u0531\13\u008f\3\u008f\6\u008f\u0534\n\u008f\r\u008f\16"+
 		"\u008f\u0535\3\u008f\3\u008f\3\u008f\3\u008f\3\u0090\3\u0090\6\u0190\u01a0"+
-		"\u01b5\u01cc\2\u0091\3\3\5\4\7\5\t\2\13\6\r\7\17\b\21\t\23\n\25\13\27"+
-		"\f\31\r\33\16\35\17\37\20!\21#\22%\23\'\24)\25+\26-\27/\30\61\31\63\32"+
-		"\65\33\67\349\35;\36=\37? A!C\"E#G$I%K&M\'O(Q)S*U+W,Y-[.]/_\60a\61c\62"+
-		"e\63g\64i\65k\66m\67o8q9s:u;w<y={>}?\177@\u0081A\u0083B\u0085C\u0087D"+
-		"\u0089E\u008bF\u008dG\u008fH\u0091I\u0093J\u0095K\u0097L\u0099M\u009b"+
-		"N\u009dO\u009fP\u00a1Q\u00a3R\u00a5S\u00a7T\u00a9U\u00abV\u00adW\u00af"+
-		"X\u00b1Y\u00b3Z\u00b5[\u00b7\\\u00b9]\u00bb^\u00bd_\u00bf`\u00c1a\u00c3"+
-		"b\u00c5c\u00c7d\u00c9e\u00cbf\u00cdg\u00cfh\u00d1i\u00d3j\u00d5k\u00d7"+
-		"l\u00d9m\u00dbn\u00ddo\u00dfp\u00e1q\u00e3r\u00e5s\u00e7t\u00e9u\u00eb"+
-		"v\u00edw\u00efx\u00f1y\u00f3z\u00f5{\u00f7|\u00f9}\u00fb~\u00fd\177\u00ff"+
-		"\u0080\u0101\u0081\u0103\u0082\u0105\u0083\u0107\u0084\u0109\u0085\u010b"+
-		"\u0086\u010d\u0087\u010f\u0088\u0111\u0089\u0113\u008a\u0115\u008b\u0117"+
-		"\u008c\u0119\2\u011b\2\u011d\u008d\u011f\u008e\3\2\21\3\2\62;\4\2GGgg"+
-		"\4\2--//\5\2\62;CHch\3\2//\4\2ZZzz\4\2OOoo\4\2NNnn\5\2\13\f\17\17\"\""+
-		"\20\2C\\aac|\u00c2\u00d8\u00da\u00f8\u00fa\u0301\u0372\u037f\u0381\u2001"+
-		"\u200e\u200f\u2072\u2191\u2c02\u2ff1\u3003\ud801\uf902\ufdd1\ufdf2\uffff"+
-		"\7\2/\60\62;\u00b9\u00b9\u0302\u0371\u2041\u2042\3\2<<\3\2++\4\2**<<\7"+
-		"\2$$()>>}}\177\177\u055a\2\3\3\2\2\2\2\5\3\2\2\2\2\7\3\2\2\2\2\13\3\2"+
-		"\2\2\2\r\3\2\2\2\2\17\3\2\2\2\2\21\3\2\2\2\2\23\3\2\2\2\2\25\3\2\2\2\2"+
-		"\27\3\2\2\2\2\31\3\2\2\2\2\33\3\2\2\2\2\35\3\2\2\2\2\37\3\2\2\2\2!\3\2"+
-		"\2\2\2#\3\2\2\2\2%\3\2\2\2\2\'\3\2\2\2\2)\3\2\2\2\2+\3\2\2\2\2-\3\2\2"+
-		"\2\2/\3\2\2\2\2\61\3\2\2\2\2\63\3\2\2\2\2\65\3\2\2\2\2\67\3\2\2\2\29\3"+
-		"\2\2\2\2;\3\2\2\2\2=\3\2\2\2\2?\3\2\2\2\2A\3\2\2\2\2C\3\2\2\2\2E\3\2\2"+
-		"\2\2G\3\2\2\2\2I\3\2\2\2\2K\3\2\2\2\2M\3\2\2\2\2O\3\2\2\2\2Q\3\2\2\2\2"+
-		"S\3\2\2\2\2U\3\2\2\2\2W\3\2\2\2\2Y\3\2\2\2\2[\3\2\2\2\2]\3\2\2\2\2_\3"+
-		"\2\2\2\2a\3\2\2\2\2c\3\2\2\2\2e\3\2\2\2\2g\3\2\2\2\2i\3\2\2\2\2k\3\2\2"+
-		"\2\2m\3\2\2\2\2o\3\2\2\2\2q\3\2\2\2\2s\3\2\2\2\2u\3\2\2\2\2w\3\2\2\2\2"+
-		"y\3\2\2\2\2{\3\2\2\2\2}\3\2\2\2\2\177\3\2\2\2\2\u0081\3\2\2\2\2\u0083"+
-		"\3\2\2\2\2\u0085\3\2\2\2\2\u0087\3\2\2\2\2\u0089\3\2\2\2\2\u008b\3\2\2"+
-		"\2\2\u008d\3\2\2\2\2\u008f\3\2\2\2\2\u0091\3\2\2\2\2\u0093\3\2\2\2\2\u0095"+
+		"\u01b5\u01cc\2\2\u0091\3\2\3\5\2\4\7\2\5\t\2\2\13\2\6\r\2\7\17\2\b\21"+
+		"\2\t\23\2\n\25\2\13\27\2\f\31\2\r\33\2\16\35\2\17\37\2\20!\2\21#\2\22"+
+		"%\2\23\'\2\24)\2\25+\2\26-\2\27/\2\30\61\2\31\63\2\32\65\2\33\67\2\34"+
+		"9\2\35;\2\36=\2\37?\2 A\2!C\2\"E\2#G\2$I\2%K\2&M\2\'O\2(Q\2)S\2*U\2+W"+
+		"\2,Y\2-[\2.]\2/_\2\60a\2\61c\2\62e\2\63g\2\64i\2\65k\2\66m\2\67o\28q\2"+
+		"9s\2:u\2;w\2<y\2={\2>}\2?\177\2@\u0081\2A\u0083\2B\u0085\2C\u0087\2D\u0089"+
+		"\2E\u008b\2F\u008d\2G\u008f\2H\u0091\2I\u0093\2J\u0095\2K\u0097\2L\u0099"+
+		"\2M\u009b\2N\u009d\2O\u009f\2P\u00a1\2Q\u00a3\2R\u00a5\2S\u00a7\2T\u00a9"+
+		"\2U\u00ab\2V\u00ad\2W\u00af\2X\u00b1\2Y\u00b3\2Z\u00b5\2[\u00b7\2\\\u00b9"+
+		"\2]\u00bb\2^\u00bd\2_\u00bf\2`\u00c1\2a\u00c3\2b\u00c5\2c\u00c7\2d\u00c9"+
+		"\2e\u00cb\2f\u00cd\2g\u00cf\2h\u00d1\2i\u00d3\2j\u00d5\2k\u00d7\2l\u00d9"+
+		"\2m\u00db\2n\u00dd\2o\u00df\2p\u00e1\2q\u00e3\2r\u00e5\2s\u00e7\2t\u00e9"+
+		"\2u\u00eb\2v\u00ed\2w\u00ef\2x\u00f1\2y\u00f3\2z\u00f5\2{\u00f7\2|\u00f9"+
+		"\2}\u00fb\2~\u00fd\2\177\u00ff\2\u0080\u0101\2\u0081\u0103\2\u0082\u0105"+
+		"\2\u0083\u0107\2\u0084\u0109\2\u0085\u010b\2\u0086\u010d\2\u0087\u010f"+
+		"\2\u0088\u0111\2\u0089\u0113\2\u008a\u0115\2\u008b\u0117\2\u008c\u0119"+
+		"\2\2\u011b\2\2\u011d\2\u008d\u011f\2\u008e\3\2\21\3\2\62;\4\2GGgg\4\2"+
+		"--//\5\2\62;CHch\3\2//\4\2ZZzz\4\2OOoo\4\2NNnn\5\2\13\f\17\17\"\"\20\2"+
+		"C\\aac|\u00c2\u00d8\u00da\u00f8\u00fa\u0301\u0372\u037f\u0381\u2001\u200e"+
+		"\u200f\u2072\u2191\u2c02\u2ff1\u3003\ud801\uf902\ufdd1\ufdf2\uffff\7\2"+
+		"/\60\62;\u00b9\u00b9\u0302\u0371\u2041\u2042\3\2<<\3\2++\4\2**<<\7\2$"+
+		"$()>>}}\177\177\u055a\2\3\3\2\2\2\2\5\3\2\2\2\2\7\3\2\2\2\2\13\3\2\2\2"+
+		"\2\r\3\2\2\2\2\17\3\2\2\2\2\21\3\2\2\2\2\23\3\2\2\2\2\25\3\2\2\2\2\27"+
+		"\3\2\2\2\2\31\3\2\2\2\2\33\3\2\2\2\2\35\3\2\2\2\2\37\3\2\2\2\2!\3\2\2"+
+		"\2\2#\3\2\2\2\2%\3\2\2\2\2\'\3\2\2\2\2)\3\2\2\2\2+\3\2\2\2\2-\3\2\2\2"+
+		"\2/\3\2\2\2\2\61\3\2\2\2\2\63\3\2\2\2\2\65\3\2\2\2\2\67\3\2\2\2\29\3\2"+
+		"\2\2\2;\3\2\2\2\2=\3\2\2\2\2?\3\2\2\2\2A\3\2\2\2\2C\3\2\2\2\2E\3\2\2\2"+
+		"\2G\3\2\2\2\2I\3\2\2\2\2K\3\2\2\2\2M\3\2\2\2\2O\3\2\2\2\2Q\3\2\2\2\2S"+
+		"\3\2\2\2\2U\3\2\2\2\2W\3\2\2\2\2Y\3\2\2\2\2[\3\2\2\2\2]\3\2\2\2\2_\3\2"+
+		"\2\2\2a\3\2\2\2\2c\3\2\2\2\2e\3\2\2\2\2g\3\2\2\2\2i\3\2\2\2\2k\3\2\2\2"+
+		"\2m\3\2\2\2\2o\3\2\2\2\2q\3\2\2\2\2s\3\2\2\2\2u\3\2\2\2\2w\3\2\2\2\2y"+
+		"\3\2\2\2\2{\3\2\2\2\2}\3\2\2\2\2\177\3\2\2\2\2\u0081\3\2\2\2\2\u0083\3"+
+		"\2\2\2\2\u0085\3\2\2\2\2\u0087\3\2\2\2\2\u0089\3\2\2\2\2\u008b\3\2\2\2"+
+		"\2\u008d\3\2\2\2\2\u008f\3\2\2\2\2\u0091\3\2\2\2\2\u0093\3\2\2\2\2\u0095"+
 		"\3\2\2\2\2\u0097\3\2\2\2\2\u0099\3\2\2\2\2\u009b\3\2\2\2\2\u009d\3\2\2"+
 		"\2\2\u009f\3\2\2\2\2\u00a1\3\2\2\2\2\u00a3\3\2\2\2\2\u00a5\3\2\2\2\2\u00a7"+
 		"\3\2\2\2\2\u00a9\3\2\2\2\2\u00ab\3\2\2\2\2\u00ad\3\2\2\2\2\u00af\3\2\2"+
@@ -582,9 +636,5 @@ public class XQueryLexer extends Lexer {
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
-		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
-		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
-			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
-		}
 	}
 }

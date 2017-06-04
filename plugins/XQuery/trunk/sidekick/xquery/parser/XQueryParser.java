@@ -1,5 +1,6 @@
-// Generated from XQueryParser.g4 by ANTLR 4.4
+// Generated from XQueryParser.g4 by ANTLR 4.x
 package sidekick.xquery.parser;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -9,13 +10,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class XQueryParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
-
-	protected static final DFA[] _decisionToDFA;
-	protected static final PredictionContextCache _sharedContextCache =
-		new PredictionContextCache();
 	public static final int
 		KW_EMPTY=67, KW_DOCUMENT_NODE=64, CDATA=11, STAR=22, Apos=7, LANGLE=34, 
 		KW_ENCODING=69, KW_VALIDATE=130, KW_DEFAULT=58, KW_ELEMENT=65, KW_EMPTY_SEQUENCE=68, 
@@ -43,30 +38,6 @@ public class XQueryParser extends Parser {
 		KW_NAMESPACE=97, KW_BOUNDARY_SPACE=47, KW_AS=42, KW_AT=44, KW_PRECEDING_SIBLING=110, 
 		KW_COMMENT=54, KW_OF=102, KW_DESCENDING=61, IntegerLiteral=1, KW_DECLARE=57, 
 		KW_GE=78, NCNameWithLocalWildcard=136;
-	public static final String[] tokenNames = {
-		"<INVALID>", "IntegerLiteral", "DecimalLiteral", "DoubleLiteral", "PredefinedEntityRef", 
-		"CharRef", "'\"'", "'''", "COMMENT", "XMLDECL", "PI", "CDATA", "PRAGMA", 
-		"WS", "'='", "'!='", "'('", "')'", "'['", "']'", "'{'", "'}'", "'*'", 
-		"'+'", "'-'", "','", "'.'", "'..'", "':'", "':='", "';'", "'/'", "'//'", 
-		"'|'", "'<'", "'>'", "'?'", "'@'", "'$'", "'ancestor'", "'ancestor-or-self'", 
-		"'and'", "'as'", "'ascending'", "'at'", "'attribute'", "'base-uri'", "'boundary-space'", 
-		"'by'", "'case'", "'cast'", "'castable'", "'child'", "'collation'", "'comment'", 
-		"'construction'", "'copy-namespaces'", "'declare'", "'default'", "'descendant'", 
-		"'descendant-or-self'", "'descending'", "'div'", "'document'", "'document-node'", 
-		"'element'", "'else'", "'empty'", "'empty-sequence'", "'encoding'", "'eq'", 
-		"'every'", "'except'", "'external'", "'following'", "'following-sibling'", 
-		"'for'", "'function'", "'ge'", "'greatest'", "'gt'", "'idiv'", "'if'", 
-		"'import'", "'in'", "'inherit'", "'instance'", "'intersect'", "'is'", 
-		"'item'", "'lax'", "'le'", "'least'", "'let'", "'lt'", "'mod'", "'module'", 
-		"'namespace'", "'ne'", "'no-inherit'", "'no-preserve'", "'node'", "'of'", 
-		"'option'", "'or'", "'order'", "'ordered'", "'ordering'", "'parent'", 
-		"'preceding'", "'preceding-sibling'", "'preserve'", "'processing-instruction'", 
-		"'return'", "'satisfies'", "'schema'", "'schema-attribute'", "'schema-element'", 
-		"'self'", "'some'", "'stable'", "'strict'", "'strip'", "'text'", "'then'", 
-		"'to'", "'treat'", "'typeswitch'", "'union'", "'unordered'", "'validate'", 
-		"'variable'", "'version'", "'where'", "'xquery'", "FullQName", "NCNameWithLocalWildcard", 
-		"NCNameWithPrefixWildcard", "NCName", "XQComment", "ContentChar"
-	};
 	public static final int
 		RULE_module = 0, RULE_versionDecl = 1, RULE_mainModule = 2, RULE_libraryModule = 3, 
 		RULE_moduleDecl = 4, RULE_prolog = 5, RULE_defaultNamespaceDecl = 6, RULE_setter = 7, 
@@ -109,11 +80,89 @@ public class XQueryParser extends Parser {
 		"stringLiteral", "noQuotesNoBracesNoAmpNoLAng"
 	};
 
-	@Override
-	public String getGrammarFileName() { return "XQueryParser.g4"; }
+	private static final String[] _LITERAL_NAMES = {
+		null, null, null, null, null, null, "'\"'", "'''", null, null, null, null, 
+		null, null, "'='", "'!='", "'('", "')'", "'['", "']'", "'{'", "'}'", "'*'", 
+		"'+'", "'-'", "','", "'.'", "'..'", "':'", "':='", "';'", "'/'", "'//'", 
+		"'|'", "'<'", "'>'", "'?'", "'@'", "'$'", "'ancestor'", "'ancestor-or-self'", 
+		"'and'", "'as'", "'ascending'", "'at'", "'attribute'", "'base-uri'", "'boundary-space'", 
+		"'by'", "'case'", "'cast'", "'castable'", "'child'", "'collation'", "'comment'", 
+		"'construction'", "'copy-namespaces'", "'declare'", "'default'", "'descendant'", 
+		"'descendant-or-self'", "'descending'", "'div'", "'document'", "'document-node'", 
+		"'element'", "'else'", "'empty'", "'empty-sequence'", "'encoding'", "'eq'", 
+		"'every'", "'except'", "'external'", "'following'", "'following-sibling'", 
+		"'for'", "'function'", "'ge'", "'greatest'", "'gt'", "'idiv'", "'if'", 
+		"'import'", "'in'", "'inherit'", "'instance'", "'intersect'", "'is'", 
+		"'item'", "'lax'", "'le'", "'least'", "'let'", "'lt'", "'mod'", "'module'", 
+		"'namespace'", "'ne'", "'no-inherit'", "'no-preserve'", "'node'", "'of'", 
+		"'option'", "'or'", "'order'", "'ordered'", "'ordering'", "'parent'", 
+		"'preceding'", "'preceding-sibling'", "'preserve'", "'processing-instruction'", 
+		"'return'", "'satisfies'", "'schema'", "'schema-attribute'", "'schema-element'", 
+		"'self'", "'some'", "'stable'", "'strict'", "'strip'", "'text'", "'then'", 
+		"'to'", "'treat'", "'typeswitch'", "'union'", "'unordered'", "'validate'", 
+		"'variable'", "'version'", "'where'", "'xquery'"
+	};
+	private static final String[] _SYMBOLIC_NAMES = {
+		null, "IntegerLiteral", "DecimalLiteral", "DoubleLiteral", "PredefinedEntityRef", 
+		"CharRef", "Quot", "Apos", "COMMENT", "XMLDECL", "PI", "CDATA", "PRAGMA", 
+		"WS", "EQUAL", "NOT_EQUAL", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET", 
+		"LBRACE", "RBRACE", "STAR", "PLUS", "MINUS", "COMMA", "DOT", "DDOT", "COLON", 
+		"COLON_EQ", "SEMICOLON", "SLASH", "DSLASH", "VBAR", "LANGLE", "RANGLE", 
+		"QUESTION", "AT", "DOLLAR", "KW_ANCESTOR", "KW_ANCESTOR_OR_SELF", "KW_AND", 
+		"KW_AS", "KW_ASCENDING", "KW_AT", "KW_ATTRIBUTE", "KW_BASE_URI", "KW_BOUNDARY_SPACE", 
+		"KW_BY", "KW_CASE", "KW_CAST", "KW_CASTABLE", "KW_CHILD", "KW_COLLATION", 
+		"KW_COMMENT", "KW_CONSTRUCTION", "KW_COPY_NS", "KW_DECLARE", "KW_DEFAULT", 
+		"KW_DESCENDANT", "KW_DESCENDANT_OR_SELF", "KW_DESCENDING", "KW_DIV", "KW_DOCUMENT", 
+		"KW_DOCUMENT_NODE", "KW_ELEMENT", "KW_ELSE", "KW_EMPTY", "KW_EMPTY_SEQUENCE", 
+		"KW_ENCODING", "KW_EQ", "KW_EVERY", "KW_EXCEPT", "KW_EXTERNAL", "KW_FOLLOWING", 
+		"KW_FOLLOWING_SIBLING", "KW_FOR", "KW_FUNCTION", "KW_GE", "KW_GREATEST", 
+		"KW_GT", "KW_IDIV", "KW_IF", "KW_IMPORT", "KW_IN", "KW_INHERIT", "KW_INSTANCE", 
+		"KW_INTERSECT", "KW_IS", "KW_ITEM", "KW_LAX", "KW_LE", "KW_LEAST", "KW_LET", 
+		"KW_LT", "KW_MOD", "KW_MODULE", "KW_NAMESPACE", "KW_NE", "KW_NO_INHERIT", 
+		"KW_NO_PRESERVE", "KW_NODE", "KW_OF", "KW_OPTION", "KW_OR", "KW_ORDER", 
+		"KW_ORDERED", "KW_ORDERING", "KW_PARENT", "KW_PRECEDING", "KW_PRECEDING_SIBLING", 
+		"KW_PRESERVE", "KW_PI", "KW_RETURN", "KW_SATISFIES", "KW_SCHEMA", "KW_SCHEMA_ATTR", 
+		"KW_SCHEMA_ELEM", "KW_SELF", "KW_SOME", "KW_STABLE", "KW_STRICT", "KW_STRIP", 
+		"KW_TEXT", "KW_THEN", "KW_TO", "KW_TREAT", "KW_TYPESWITCH", "KW_UNION", 
+		"KW_UNORDERED", "KW_VALIDATE", "KW_VARIABLE", "KW_VERSION", "KW_WHERE", 
+		"KW_XQUERY", "FullQName", "NCNameWithLocalWildcard", "NCNameWithPrefixWildcard", 
+		"NCName", "XQComment", "ContentChar"
+	};
+	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+	/**
+	 * @deprecated Use {@link #VOCABULARY} instead.
+	 */
+	@Deprecated
+	public static final String[] tokenNames;
+	static {
+		tokenNames = new String[_SYMBOLIC_NAMES.length];
+		for (int i = 0; i < tokenNames.length; i++) {
+			tokenNames[i] = VOCABULARY.getLiteralName(i);
+			if (tokenNames[i] == null) {
+				tokenNames[i] = VOCABULARY.getSymbolicName(i);
+			}
+
+			if (tokenNames[i] == null) {
+				tokenNames[i] = "<INVALID>";
+			}
+		}
+	}
 
 	@Override
-	public String[] getTokenNames() { return tokenNames; }
+	@Deprecated
+	public String[] getTokenNames() {
+		return tokenNames;
+	}
+
+	@Override
+	@NotNull
+	public Vocabulary getVocabulary() {
+		return VOCABULARY;
+	}
+
+	@Override
+	public String getGrammarFileName() { return "XQueryParser.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -121,19 +170,16 @@ public class XQueryParser extends Parser {
 	@Override
 	public String getSerializedATN() { return _serializedATN; }
 
-	@Override
-	public ATN getATN() { return _ATN; }
-
 	public XQueryParser(TokenStream input) {
 		super(input);
-		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+		_interp = new ParserATNSimulator(this,_ATN);
 	}
 	public static class ModuleContext extends ParserRuleContext {
-		public MainModuleContext mainModule() {
-			return getRuleContext(MainModuleContext.class,0);
-		}
 		public LibraryModuleContext libraryModule() {
 			return getRuleContext(LibraryModuleContext.class,0);
+		}
+		public MainModuleContext mainModule() {
+			return getRuleContext(MainModuleContext.class,0);
 		}
 		public VersionDeclContext versionDecl() {
 			return getRuleContext(VersionDeclContext.class,0);
@@ -152,6 +198,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ModuleContext module() throws RecognitionException {
 		ModuleContext _localctx = new ModuleContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_module);
@@ -162,7 +209,8 @@ public class XQueryParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
 			case 1:
 				{
-				setState(150); versionDecl();
+				setState(150);
+				versionDecl();
 				}
 				break;
 			}
@@ -170,12 +218,14 @@ public class XQueryParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
-				setState(153); libraryModule();
+				setState(153);
+				libraryModule();
 				}
 				break;
 			case 2:
 				{
-				setState(154); mainModule();
+				setState(154);
+				mainModule();
 				}
 				break;
 			}
@@ -195,11 +245,11 @@ public class XQueryParser extends Parser {
 	public static class VersionDeclContext extends ParserRuleContext {
 		public StringLiteralContext version;
 		public StringLiteralContext encoding;
+		public List<? extends StringLiteralContext> stringLiteral() {
+			return getRuleContexts(StringLiteralContext.class);
+		}
 		public StringLiteralContext stringLiteral(int i) {
 			return getRuleContext(StringLiteralContext.class,i);
-		}
-		public List<StringLiteralContext> stringLiteral() {
-			return getRuleContexts(StringLiteralContext.class);
 		}
 		public VersionDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -215,6 +265,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final VersionDeclContext versionDecl() throws RecognitionException {
 		VersionDeclContext _localctx = new VersionDeclContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_versionDecl);
@@ -222,19 +273,25 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(157); match(KW_XQUERY);
-			setState(158); match(KW_VERSION);
-			setState(159); ((VersionDeclContext)_localctx).version = stringLiteral();
+			setState(157);
+			match(KW_XQUERY);
+			setState(158);
+			match(KW_VERSION);
+			setState(159);
+			_localctx.version = stringLiteral();
 			setState(162);
 			_la = _input.LA(1);
 			if (_la==KW_ENCODING) {
 				{
-				setState(160); match(KW_ENCODING);
-				setState(161); ((VersionDeclContext)_localctx).encoding = stringLiteral();
+				setState(160);
+				match(KW_ENCODING);
+				setState(161);
+				_localctx.encoding = stringLiteral();
 				}
 			}
 
-			setState(164); match(SEMICOLON);
+			setState(164);
+			match(SEMICOLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -249,11 +306,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class MainModuleContext extends ParserRuleContext {
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
 		public PrologContext prolog() {
 			return getRuleContext(PrologContext.class,0);
+		}
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public MainModuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -269,14 +326,17 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final MainModuleContext mainModule() throws RecognitionException {
 		MainModuleContext _localctx = new MainModuleContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_mainModule);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(166); prolog();
-			setState(167); expr();
+			setState(166);
+			prolog();
+			setState(167);
+			expr();
 			}
 		}
 		catch (RecognitionException re) {
@@ -291,11 +351,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class LibraryModuleContext extends ParserRuleContext {
-		public PrologContext prolog() {
-			return getRuleContext(PrologContext.class,0);
-		}
 		public ModuleDeclContext moduleDecl() {
 			return getRuleContext(ModuleDeclContext.class,0);
+		}
+		public PrologContext prolog() {
+			return getRuleContext(PrologContext.class,0);
 		}
 		public LibraryModuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -311,14 +371,17 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final LibraryModuleContext libraryModule() throws RecognitionException {
 		LibraryModuleContext _localctx = new LibraryModuleContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_libraryModule);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(169); moduleDecl();
-			setState(170); prolog();
+			setState(169);
+			moduleDecl();
+			setState(170);
+			prolog();
 			}
 		}
 		catch (RecognitionException re) {
@@ -335,11 +398,11 @@ public class XQueryParser extends Parser {
 	public static class ModuleDeclContext extends ParserRuleContext {
 		public NcNameContext prefix;
 		public StringLiteralContext uri;
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
 		public NcNameContext ncName() {
 			return getRuleContext(NcNameContext.class,0);
+		}
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
 		}
 		public ModuleDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -355,18 +418,25 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ModuleDeclContext moduleDecl() throws RecognitionException {
 		ModuleDeclContext _localctx = new ModuleDeclContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_moduleDecl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(172); match(KW_MODULE);
-			setState(173); match(KW_NAMESPACE);
-			setState(174); ((ModuleDeclContext)_localctx).prefix = ncName();
-			setState(175); match(EQUAL);
-			setState(176); ((ModuleDeclContext)_localctx).uri = stringLiteral();
-			setState(177); match(SEMICOLON);
+			setState(172);
+			match(KW_MODULE);
+			setState(173);
+			match(KW_NAMESPACE);
+			setState(174);
+			_localctx.prefix = ncName();
+			setState(175);
+			match(EQUAL);
+			setState(176);
+			_localctx.uri = stringLiteral();
+			setState(177);
+			match(SEMICOLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -381,53 +451,53 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class PrologContext extends ParserRuleContext {
-		public List<SchemaImportContext> schemaImport() {
-			return getRuleContexts(SchemaImportContext.class);
-		}
-		public NamespaceDeclContext namespaceDecl(int i) {
-			return getRuleContext(NamespaceDeclContext.class,i);
-		}
-		public VarDeclContext varDecl(int i) {
-			return getRuleContext(VarDeclContext.class,i);
-		}
-		public SchemaImportContext schemaImport(int i) {
-			return getRuleContext(SchemaImportContext.class,i);
-		}
-		public SetterContext setter(int i) {
-			return getRuleContext(SetterContext.class,i);
-		}
-		public ModuleImportContext moduleImport(int i) {
-			return getRuleContext(ModuleImportContext.class,i);
-		}
-		public List<DefaultNamespaceDeclContext> defaultNamespaceDecl() {
+		public List<? extends DefaultNamespaceDeclContext> defaultNamespaceDecl() {
 			return getRuleContexts(DefaultNamespaceDeclContext.class);
-		}
-		public OptionDeclContext optionDecl(int i) {
-			return getRuleContext(OptionDeclContext.class,i);
-		}
-		public List<OptionDeclContext> optionDecl() {
-			return getRuleContexts(OptionDeclContext.class);
-		}
-		public FunctionDeclContext functionDecl(int i) {
-			return getRuleContext(FunctionDeclContext.class,i);
-		}
-		public List<VarDeclContext> varDecl() {
-			return getRuleContexts(VarDeclContext.class);
-		}
-		public List<NamespaceDeclContext> namespaceDecl() {
-			return getRuleContexts(NamespaceDeclContext.class);
-		}
-		public List<FunctionDeclContext> functionDecl() {
-			return getRuleContexts(FunctionDeclContext.class);
 		}
 		public DefaultNamespaceDeclContext defaultNamespaceDecl(int i) {
 			return getRuleContext(DefaultNamespaceDeclContext.class,i);
 		}
-		public List<SetterContext> setter() {
+		public List<? extends SetterContext> setter() {
 			return getRuleContexts(SetterContext.class);
 		}
-		public List<ModuleImportContext> moduleImport() {
+		public SetterContext setter(int i) {
+			return getRuleContext(SetterContext.class,i);
+		}
+		public List<? extends NamespaceDeclContext> namespaceDecl() {
+			return getRuleContexts(NamespaceDeclContext.class);
+		}
+		public NamespaceDeclContext namespaceDecl(int i) {
+			return getRuleContext(NamespaceDeclContext.class,i);
+		}
+		public List<? extends SchemaImportContext> schemaImport() {
+			return getRuleContexts(SchemaImportContext.class);
+		}
+		public SchemaImportContext schemaImport(int i) {
+			return getRuleContext(SchemaImportContext.class,i);
+		}
+		public List<? extends ModuleImportContext> moduleImport() {
 			return getRuleContexts(ModuleImportContext.class);
+		}
+		public ModuleImportContext moduleImport(int i) {
+			return getRuleContext(ModuleImportContext.class,i);
+		}
+		public List<? extends VarDeclContext> varDecl() {
+			return getRuleContexts(VarDeclContext.class);
+		}
+		public VarDeclContext varDecl(int i) {
+			return getRuleContext(VarDeclContext.class,i);
+		}
+		public List<? extends FunctionDeclContext> functionDecl() {
+			return getRuleContexts(FunctionDeclContext.class);
+		}
+		public FunctionDeclContext functionDecl(int i) {
+			return getRuleContext(FunctionDeclContext.class,i);
+		}
+		public List<? extends OptionDeclContext> optionDecl() {
+			return getRuleContexts(OptionDeclContext.class);
+		}
+		public OptionDeclContext optionDecl(int i) {
+			return getRuleContext(OptionDeclContext.class,i);
 		}
 		public PrologContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -443,6 +513,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final PrologContext prolog() throws RecognitionException {
 		PrologContext _localctx = new PrologContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_prolog);
@@ -461,31 +532,37 @@ public class XQueryParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 					case 1:
 						{
-						setState(179); defaultNamespaceDecl();
+						setState(179);
+						defaultNamespaceDecl();
 						}
 						break;
 					case 2:
 						{
-						setState(180); setter();
+						setState(180);
+						setter();
 						}
 						break;
 					case 3:
 						{
-						setState(181); namespaceDecl();
+						setState(181);
+						namespaceDecl();
 						}
 						break;
 					case 4:
 						{
-						setState(182); schemaImport();
+						setState(182);
+						schemaImport();
 						}
 						break;
 					case 5:
 						{
-						setState(183); moduleImport();
+						setState(183);
+						moduleImport();
 						}
 						break;
 					}
-					setState(186); match(SEMICOLON);
+					setState(186);
+					match(SEMICOLON);
 					}
 					} 
 				}
@@ -504,21 +581,25 @@ public class XQueryParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
 					case 1:
 						{
-						setState(193); varDecl();
+						setState(193);
+						varDecl();
 						}
 						break;
 					case 2:
 						{
-						setState(194); functionDecl();
+						setState(194);
+						functionDecl();
 						}
 						break;
 					case 3:
 						{
-						setState(195); optionDecl();
+						setState(195);
+						optionDecl();
 						}
 						break;
 					}
-					setState(198); match(SEMICOLON);
+					setState(198);
+					match(SEMICOLON);
 					}
 					} 
 				}
@@ -559,6 +640,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DefaultNamespaceDeclContext defaultNamespaceDecl() throws RecognitionException {
 		DefaultNamespaceDeclContext _localctx = new DefaultNamespaceDeclContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_defaultNamespaceDecl);
@@ -566,17 +648,22 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(205); match(KW_DECLARE);
-			setState(206); match(KW_DEFAULT);
+			setState(205);
+			match(KW_DECLARE);
+			setState(206);
+			match(KW_DEFAULT);
 			setState(207);
-			((DefaultNamespaceDeclContext)_localctx).type = _input.LT(1);
+			_localctx.type = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==KW_ELEMENT || _la==KW_FUNCTION) ) {
-				((DefaultNamespaceDeclContext)_localctx).type = (Token)_errHandler.recoverInline(this);
+				_localctx.type = _errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
-			setState(208); match(KW_NAMESPACE);
-			setState(209); ((DefaultNamespaceDeclContext)_localctx).uri = stringLiteral();
+			setState(208);
+			match(KW_NAMESPACE);
+			setState(209);
+			_localctx.uri = stringLiteral();
 			}
 		}
 		catch (RecognitionException re) {
@@ -601,44 +688,6 @@ public class XQueryParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class OrderingModeDeclContext extends SetterContext {
-		public Token type;
-		public OrderingModeDeclContext(SetterContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterOrderingModeDecl(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitOrderingModeDecl(this);
-		}
-	}
-	public static class ConstructionDeclContext extends SetterContext {
-		public Token type;
-		public ConstructionDeclContext(SetterContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterConstructionDecl(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitConstructionDecl(this);
-		}
-	}
-	public static class DefaultCollationDeclContext extends SetterContext {
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
-		public DefaultCollationDeclContext(SetterContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterDefaultCollationDecl(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitDefaultCollationDecl(this);
-		}
-	}
 	public static class CopyNamespacesDeclContext extends SetterContext {
 		public Token preserve;
 		public Token inherit;
@@ -650,20 +699,6 @@ public class XQueryParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitCopyNamespacesDecl(this);
-		}
-	}
-	public static class BaseURIDeclContext extends SetterContext {
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
-		public BaseURIDeclContext(SetterContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterBaseURIDecl(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitBaseURIDecl(this);
 		}
 	}
 	public static class BoundaryDeclContext extends SetterContext {
@@ -690,7 +725,60 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitEmptyOrderDecl(this);
 		}
 	}
+	public static class ConstructionDeclContext extends SetterContext {
+		public Token type;
+		public ConstructionDeclContext(SetterContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterConstructionDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitConstructionDecl(this);
+		}
+	}
+	public static class OrderingModeDeclContext extends SetterContext {
+		public Token type;
+		public OrderingModeDeclContext(SetterContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterOrderingModeDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitOrderingModeDecl(this);
+		}
+	}
+	public static class BaseURIDeclContext extends SetterContext {
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
+		}
+		public BaseURIDeclContext(SetterContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterBaseURIDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitBaseURIDecl(this);
+		}
+	}
+	public static class DefaultCollationDeclContext extends SetterContext {
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
+		}
+		public DefaultCollationDeclContext(SetterContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterDefaultCollationDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitDefaultCollationDecl(this);
+		}
+	}
 
+	@RuleVersion(0)
 	public final SetterContext setter() throws RecognitionException {
 		SetterContext _localctx = new SetterContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_setter);
@@ -702,104 +790,130 @@ public class XQueryParser extends Parser {
 				_localctx = new BoundaryDeclContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(211); match(KW_DECLARE);
-				setState(212); match(KW_BOUNDARY_SPACE);
+				setState(211);
+				match(KW_DECLARE);
+				setState(212);
+				match(KW_BOUNDARY_SPACE);
 				setState(213);
 				((BoundaryDeclContext)_localctx).type = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_PRESERVE || _la==KW_STRIP) ) {
-					((BoundaryDeclContext)_localctx).type = (Token)_errHandler.recoverInline(this);
+					((BoundaryDeclContext)_localctx).type = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			case 2:
 				_localctx = new DefaultCollationDeclContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(214); match(KW_DECLARE);
-				setState(215); match(KW_DEFAULT);
-				setState(216); match(KW_COLLATION);
-				setState(217); stringLiteral();
+				setState(214);
+				match(KW_DECLARE);
+				setState(215);
+				match(KW_DEFAULT);
+				setState(216);
+				match(KW_COLLATION);
+				setState(217);
+				stringLiteral();
 				}
 				break;
 			case 3:
 				_localctx = new BaseURIDeclContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(218); match(KW_DECLARE);
-				setState(219); match(KW_BASE_URI);
-				setState(220); stringLiteral();
+				setState(218);
+				match(KW_DECLARE);
+				setState(219);
+				match(KW_BASE_URI);
+				setState(220);
+				stringLiteral();
 				}
 				break;
 			case 4:
 				_localctx = new ConstructionDeclContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(221); match(KW_DECLARE);
-				setState(222); match(KW_CONSTRUCTION);
+				setState(221);
+				match(KW_DECLARE);
+				setState(222);
+				match(KW_CONSTRUCTION);
 				setState(223);
 				((ConstructionDeclContext)_localctx).type = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_PRESERVE || _la==KW_STRIP) ) {
-					((ConstructionDeclContext)_localctx).type = (Token)_errHandler.recoverInline(this);
+					((ConstructionDeclContext)_localctx).type = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			case 5:
 				_localctx = new OrderingModeDeclContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(224); match(KW_DECLARE);
-				setState(225); match(KW_ORDERING);
+				setState(224);
+				match(KW_DECLARE);
+				setState(225);
+				match(KW_ORDERING);
 				setState(226);
 				((OrderingModeDeclContext)_localctx).type = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_ORDERED || _la==KW_UNORDERED) ) {
-					((OrderingModeDeclContext)_localctx).type = (Token)_errHandler.recoverInline(this);
+					((OrderingModeDeclContext)_localctx).type = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			case 6:
 				_localctx = new EmptyOrderDeclContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(227); match(KW_DECLARE);
-				setState(228); match(KW_DEFAULT);
-				setState(229); match(KW_ORDER);
-				setState(230); match(KW_EMPTY);
+				setState(227);
+				match(KW_DECLARE);
+				setState(228);
+				match(KW_DEFAULT);
+				setState(229);
+				match(KW_ORDER);
+				setState(230);
+				match(KW_EMPTY);
 				setState(231);
 				((EmptyOrderDeclContext)_localctx).type = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_GREATEST || _la==KW_LEAST) ) {
-					((EmptyOrderDeclContext)_localctx).type = (Token)_errHandler.recoverInline(this);
+					((EmptyOrderDeclContext)_localctx).type = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			case 7:
 				_localctx = new CopyNamespacesDeclContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(232); match(KW_DECLARE);
-				setState(233); match(KW_COPY_NS);
+				setState(232);
+				match(KW_DECLARE);
+				setState(233);
+				match(KW_COPY_NS);
 				setState(234);
 				((CopyNamespacesDeclContext)_localctx).preserve = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_NO_PRESERVE || _la==KW_PRESERVE) ) {
-					((CopyNamespacesDeclContext)_localctx).preserve = (Token)_errHandler.recoverInline(this);
+					((CopyNamespacesDeclContext)_localctx).preserve = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
-				setState(235); match(COMMA);
+				setState(235);
+				match(COMMA);
 				setState(236);
 				((CopyNamespacesDeclContext)_localctx).inherit = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_INHERIT || _la==KW_NO_INHERIT) ) {
-					((CopyNamespacesDeclContext)_localctx).inherit = (Token)_errHandler.recoverInline(this);
+					((CopyNamespacesDeclContext)_localctx).inherit = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			}
@@ -818,11 +932,11 @@ public class XQueryParser extends Parser {
 	public static class NamespaceDeclContext extends ParserRuleContext {
 		public NcNameContext prefix;
 		public StringLiteralContext uri;
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
 		public NcNameContext ncName() {
 			return getRuleContext(NcNameContext.class,0);
+		}
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
 		}
 		public NamespaceDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -838,17 +952,23 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final NamespaceDeclContext namespaceDecl() throws RecognitionException {
 		NamespaceDeclContext _localctx = new NamespaceDeclContext(_ctx, getState());
 		enterRule(_localctx, 16, RULE_namespaceDecl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(239); match(KW_DECLARE);
-			setState(240); match(KW_NAMESPACE);
-			setState(241); ((NamespaceDeclContext)_localctx).prefix = ncName();
-			setState(242); match(EQUAL);
-			setState(243); ((NamespaceDeclContext)_localctx).uri = stringLiteral();
+			setState(239);
+			match(KW_DECLARE);
+			setState(240);
+			match(KW_NAMESPACE);
+			setState(241);
+			_localctx.prefix = ncName();
+			setState(242);
+			match(EQUAL);
+			setState(243);
+			_localctx.uri = stringLiteral();
 			}
 		}
 		catch (RecognitionException re) {
@@ -867,11 +987,11 @@ public class XQueryParser extends Parser {
 		public StringLiteralContext nsURI;
 		public StringLiteralContext stringLiteral;
 		public List<StringLiteralContext> locations = new ArrayList<StringLiteralContext>();
+		public List<? extends StringLiteralContext> stringLiteral() {
+			return getRuleContexts(StringLiteralContext.class);
+		}
 		public StringLiteralContext stringLiteral(int i) {
 			return getRuleContext(StringLiteralContext.class,i);
-		}
-		public List<StringLiteralContext> stringLiteral() {
-			return getRuleContexts(StringLiteralContext.class);
 		}
 		public NcNameContext ncName() {
 			return getRuleContext(NcNameContext.class,0);
@@ -890,6 +1010,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final SchemaImportContext schemaImport() throws RecognitionException {
 		SchemaImportContext _localctx = new SchemaImportContext(_ctx, getState());
 		enterRule(_localctx, 18, RULE_schemaImport);
@@ -897,22 +1018,30 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(245); match(KW_IMPORT);
-			setState(246); match(KW_SCHEMA);
+			setState(245);
+			match(KW_IMPORT);
+			setState(246);
+			match(KW_SCHEMA);
 			setState(254);
 			switch (_input.LA(1)) {
 			case KW_NAMESPACE:
 				{
-				setState(247); match(KW_NAMESPACE);
-				setState(248); ((SchemaImportContext)_localctx).prefix = ncName();
-				setState(249); match(EQUAL);
+				setState(247);
+				match(KW_NAMESPACE);
+				setState(248);
+				_localctx.prefix = ncName();
+				setState(249);
+				match(EQUAL);
 				}
 				break;
 			case KW_DEFAULT:
 				{
-				setState(251); match(KW_DEFAULT);
-				setState(252); match(KW_ELEMENT);
-				setState(253); match(KW_NAMESPACE);
+				setState(251);
+				match(KW_DEFAULT);
+				setState(252);
+				match(KW_ELEMENT);
+				setState(253);
+				match(KW_NAMESPACE);
 				}
 				break;
 			case Quot:
@@ -921,23 +1050,28 @@ public class XQueryParser extends Parser {
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(256); ((SchemaImportContext)_localctx).nsURI = stringLiteral();
+			setState(256);
+			_localctx.nsURI = stringLiteral();
 			setState(266);
 			_la = _input.LA(1);
 			if (_la==KW_AT) {
 				{
-				setState(257); match(KW_AT);
-				setState(258); ((SchemaImportContext)_localctx).stringLiteral = stringLiteral();
-				((SchemaImportContext)_localctx).locations.add(((SchemaImportContext)_localctx).stringLiteral);
+				setState(257);
+				match(KW_AT);
+				setState(258);
+				_localctx.stringLiteral = stringLiteral();
+				_localctx.locations.add(_localctx.stringLiteral);
 				setState(263);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(259); match(COMMA);
-					setState(260); ((SchemaImportContext)_localctx).stringLiteral = stringLiteral();
-					((SchemaImportContext)_localctx).locations.add(((SchemaImportContext)_localctx).stringLiteral);
+					setState(259);
+					match(COMMA);
+					setState(260);
+					_localctx.stringLiteral = stringLiteral();
+					_localctx.locations.add(_localctx.stringLiteral);
 					}
 					}
 					setState(265);
@@ -965,11 +1099,11 @@ public class XQueryParser extends Parser {
 		public StringLiteralContext nsURI;
 		public StringLiteralContext stringLiteral;
 		public List<StringLiteralContext> locations = new ArrayList<StringLiteralContext>();
+		public List<? extends StringLiteralContext> stringLiteral() {
+			return getRuleContexts(StringLiteralContext.class);
+		}
 		public StringLiteralContext stringLiteral(int i) {
 			return getRuleContext(StringLiteralContext.class,i);
-		}
-		public List<StringLiteralContext> stringLiteral() {
-			return getRuleContexts(StringLiteralContext.class);
 		}
 		public NcNameContext ncName() {
 			return getRuleContext(NcNameContext.class,0);
@@ -988,6 +1122,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ModuleImportContext moduleImport() throws RecognitionException {
 		ModuleImportContext _localctx = new ModuleImportContext(_ctx, getState());
 		enterRule(_localctx, 20, RULE_moduleImport);
@@ -995,35 +1130,45 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(268); match(KW_IMPORT);
-			setState(269); match(KW_MODULE);
+			setState(268);
+			match(KW_IMPORT);
+			setState(269);
+			match(KW_MODULE);
 			setState(274);
 			_la = _input.LA(1);
 			if (_la==KW_NAMESPACE) {
 				{
-				setState(270); match(KW_NAMESPACE);
-				setState(271); ((ModuleImportContext)_localctx).prefix = ncName();
-				setState(272); match(EQUAL);
+				setState(270);
+				match(KW_NAMESPACE);
+				setState(271);
+				_localctx.prefix = ncName();
+				setState(272);
+				match(EQUAL);
 				}
 			}
 
-			setState(276); ((ModuleImportContext)_localctx).nsURI = stringLiteral();
+			setState(276);
+			_localctx.nsURI = stringLiteral();
 			setState(286);
 			_la = _input.LA(1);
 			if (_la==KW_AT) {
 				{
-				setState(277); match(KW_AT);
-				setState(278); ((ModuleImportContext)_localctx).stringLiteral = stringLiteral();
-				((ModuleImportContext)_localctx).locations.add(((ModuleImportContext)_localctx).stringLiteral);
+				setState(277);
+				match(KW_AT);
+				setState(278);
+				_localctx.stringLiteral = stringLiteral();
+				_localctx.locations.add(_localctx.stringLiteral);
 				setState(283);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(279); match(COMMA);
-					setState(280); ((ModuleImportContext)_localctx).stringLiteral = stringLiteral();
-					((ModuleImportContext)_localctx).locations.add(((ModuleImportContext)_localctx).stringLiteral);
+					setState(279);
+					match(COMMA);
+					setState(280);
+					_localctx.stringLiteral = stringLiteral();
+					_localctx.locations.add(_localctx.stringLiteral);
 					}
 					}
 					setState(285);
@@ -1053,11 +1198,11 @@ public class XQueryParser extends Parser {
 		public QNameContext qName() {
 			return getRuleContext(QNameContext.class,0);
 		}
-		public TypeDeclarationContext typeDeclaration() {
-			return getRuleContext(TypeDeclarationContext.class,0);
-		}
 		public ExprSingleContext exprSingle() {
 			return getRuleContext(ExprSingleContext.class,0);
+		}
+		public TypeDeclarationContext typeDeclaration() {
+			return getRuleContext(TypeDeclarationContext.class,0);
 		}
 		public VarDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1073,6 +1218,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final VarDeclContext varDecl() throws RecognitionException {
 		VarDeclContext _localctx = new VarDeclContext(_ctx, getState());
 		enterRule(_localctx, 22, RULE_varDecl);
@@ -1080,15 +1226,20 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(288); match(KW_DECLARE);
-			setState(289); match(KW_VARIABLE);
-			setState(290); match(DOLLAR);
-			setState(291); ((VarDeclContext)_localctx).name = qName();
+			setState(288);
+			match(KW_DECLARE);
+			setState(289);
+			match(KW_VARIABLE);
+			setState(290);
+			match(DOLLAR);
+			setState(291);
+			_localctx.name = qName();
 			setState(293);
 			_la = _input.LA(1);
 			if (_la==KW_AS) {
 				{
-				setState(292); ((VarDeclContext)_localctx).type = typeDeclaration();
+				setState(292);
+				_localctx.type = typeDeclaration();
 				}
 			}
 
@@ -1096,13 +1247,16 @@ public class XQueryParser extends Parser {
 			switch (_input.LA(1)) {
 			case COLON_EQ:
 				{
-				setState(295); match(COLON_EQ);
-				setState(296); ((VarDeclContext)_localctx).value = exprSingle();
+				setState(295);
+				match(COLON_EQ);
+				setState(296);
+				_localctx.value = exprSingle();
 				}
 				break;
 			case KW_EXTERNAL:
 				{
-				setState(297); match(KW_EXTERNAL);
+				setState(297);
+				match(KW_EXTERNAL);
 				}
 				break;
 			default:
@@ -1127,20 +1281,20 @@ public class XQueryParser extends Parser {
 		public List<ParamContext> params = new ArrayList<ParamContext>();
 		public SequenceTypeContext type;
 		public ExprContext body;
-		public SequenceTypeContext sequenceType() {
-			return getRuleContext(SequenceTypeContext.class,0);
-		}
 		public QNameContext qName() {
 			return getRuleContext(QNameContext.class,0);
 		}
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public List<ParamContext> param() {
+		public List<? extends ParamContext> param() {
 			return getRuleContexts(ParamContext.class);
 		}
 		public ParamContext param(int i) {
 			return getRuleContext(ParamContext.class,i);
+		}
+		public SequenceTypeContext sequenceType() {
+			return getRuleContext(SequenceTypeContext.class,0);
 		}
 		public FunctionDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1156,6 +1310,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final FunctionDeclContext functionDecl() throws RecognitionException {
 		FunctionDeclContext _localctx = new FunctionDeclContext(_ctx, getState());
 		enterRule(_localctx, 24, RULE_functionDecl);
@@ -1163,25 +1318,32 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(300); match(KW_DECLARE);
-			setState(301); match(KW_FUNCTION);
-			setState(302); ((FunctionDeclContext)_localctx).name = qName();
-			setState(303); match(LPAREN);
+			setState(300);
+			match(KW_DECLARE);
+			setState(301);
+			match(KW_FUNCTION);
+			setState(302);
+			_localctx.name = qName();
+			setState(303);
+			match(LPAREN);
 			setState(312);
 			_la = _input.LA(1);
 			if (_la==DOLLAR) {
 				{
-				setState(304); ((FunctionDeclContext)_localctx).param = param();
-				((FunctionDeclContext)_localctx).params.add(((FunctionDeclContext)_localctx).param);
+				setState(304);
+				_localctx.param = param();
+				_localctx.params.add(_localctx.param);
 				setState(309);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(305); match(COMMA);
-					setState(306); ((FunctionDeclContext)_localctx).param = param();
-					((FunctionDeclContext)_localctx).params.add(((FunctionDeclContext)_localctx).param);
+					setState(305);
+					match(COMMA);
+					setState(306);
+					_localctx.param = param();
+					_localctx.params.add(_localctx.param);
 					}
 					}
 					setState(311);
@@ -1191,13 +1353,16 @@ public class XQueryParser extends Parser {
 				}
 			}
 
-			setState(314); match(RPAREN);
+			setState(314);
+			match(RPAREN);
 			setState(317);
 			_la = _input.LA(1);
 			if (_la==KW_AS) {
 				{
-				setState(315); match(KW_AS);
-				setState(316); ((FunctionDeclContext)_localctx).type = sequenceType();
+				setState(315);
+				match(KW_AS);
+				setState(316);
+				_localctx.type = sequenceType();
 				}
 			}
 
@@ -1205,14 +1370,18 @@ public class XQueryParser extends Parser {
 			switch (_input.LA(1)) {
 			case LBRACE:
 				{
-				setState(319); match(LBRACE);
-				setState(320); ((FunctionDeclContext)_localctx).body = expr();
-				setState(321); match(RBRACE);
+				setState(319);
+				match(LBRACE);
+				setState(320);
+				_localctx.body = expr();
+				setState(321);
+				match(RBRACE);
 				}
 				break;
 			case KW_EXTERNAL:
 				{
-				setState(323); match(KW_EXTERNAL);
+				setState(323);
+				match(KW_EXTERNAL);
 				}
 				break;
 			default:
@@ -1254,16 +1423,21 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final OptionDeclContext optionDecl() throws RecognitionException {
 		OptionDeclContext _localctx = new OptionDeclContext(_ctx, getState());
 		enterRule(_localctx, 26, RULE_optionDecl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(326); match(KW_DECLARE);
-			setState(327); match(KW_OPTION);
-			setState(328); ((OptionDeclContext)_localctx).name = qName();
-			setState(329); ((OptionDeclContext)_localctx).value = stringLiteral();
+			setState(326);
+			match(KW_DECLARE);
+			setState(327);
+			match(KW_OPTION);
+			setState(328);
+			_localctx.name = qName();
+			setState(329);
+			_localctx.value = stringLiteral();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1300,6 +1474,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ParamContext param() throws RecognitionException {
 		ParamContext _localctx = new ParamContext(_ctx, getState());
 		enterRule(_localctx, 28, RULE_param);
@@ -1307,13 +1482,16 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(331); match(DOLLAR);
-			setState(332); ((ParamContext)_localctx).name = qName();
+			setState(331);
+			match(DOLLAR);
+			setState(332);
+			_localctx.name = qName();
 			setState(334);
 			_la = _input.LA(1);
 			if (_la==KW_AS) {
 				{
-				setState(333); ((ParamContext)_localctx).type = typeDeclaration();
+				setState(333);
+				_localctx.type = typeDeclaration();
 				}
 			}
 
@@ -1331,11 +1509,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class ExprContext extends ParserRuleContext {
+		public List<? extends ExprSingleContext> exprSingle() {
+			return getRuleContexts(ExprSingleContext.class);
+		}
 		public ExprSingleContext exprSingle(int i) {
 			return getRuleContext(ExprSingleContext.class,i);
-		}
-		public List<ExprSingleContext> exprSingle() {
-			return getRuleContexts(ExprSingleContext.class);
 		}
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1351,6 +1529,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ExprContext expr() throws RecognitionException {
 		ExprContext _localctx = new ExprContext(_ctx, getState());
 		enterRule(_localctx, 30, RULE_expr);
@@ -1358,15 +1537,18 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(336); exprSingle();
+			setState(336);
+			exprSingle();
 			setState(341);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(337); match(COMMA);
-				setState(338); exprSingle();
+				setState(337);
+				match(COMMA);
+				setState(338);
+				exprSingle();
 				}
 				}
 				setState(343);
@@ -1387,20 +1569,20 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class ExprSingleContext extends ParserRuleContext {
+		public FlworExprContext flworExpr() {
+			return getRuleContext(FlworExprContext.class,0);
+		}
+		public QuantifiedExprContext quantifiedExpr() {
+			return getRuleContext(QuantifiedExprContext.class,0);
+		}
+		public TypeswitchExprContext typeswitchExpr() {
+			return getRuleContext(TypeswitchExprContext.class,0);
+		}
 		public IfExprContext ifExpr() {
 			return getRuleContext(IfExprContext.class,0);
 		}
 		public OrExprContext orExpr() {
 			return getRuleContext(OrExprContext.class,0);
-		}
-		public QuantifiedExprContext quantifiedExpr() {
-			return getRuleContext(QuantifiedExprContext.class,0);
-		}
-		public FlworExprContext flworExpr() {
-			return getRuleContext(FlworExprContext.class,0);
-		}
-		public TypeswitchExprContext typeswitchExpr() {
-			return getRuleContext(TypeswitchExprContext.class,0);
 		}
 		public ExprSingleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1416,6 +1598,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ExprSingleContext exprSingle() throws RecognitionException {
 		ExprSingleContext _localctx = new ExprSingleContext(_ctx, getState());
 		enterRule(_localctx, 32, RULE_exprSingle);
@@ -1425,31 +1608,36 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(344); flworExpr();
+				setState(344);
+				flworExpr();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(345); quantifiedExpr();
+				setState(345);
+				quantifiedExpr();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(346); typeswitchExpr();
+				setState(346);
+				typeswitchExpr();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(347); ifExpr();
+				setState(347);
+				ifExpr();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(348); orExpr(0);
+				setState(348);
+				orExpr(0);
 				}
 				break;
 			}
@@ -1468,26 +1656,26 @@ public class XQueryParser extends Parser {
 	public static class FlworExprContext extends ParserRuleContext {
 		public ExprSingleContext whereExpr;
 		public ExprSingleContext returnExpr;
-		public OrderByClauseContext orderByClause() {
-			return getRuleContext(OrderByClauseContext.class,0);
-		}
-		public List<ForClauseContext> forClause() {
-			return getRuleContexts(ForClauseContext.class);
+		public List<? extends ExprSingleContext> exprSingle() {
+			return getRuleContexts(ExprSingleContext.class);
 		}
 		public ExprSingleContext exprSingle(int i) {
 			return getRuleContext(ExprSingleContext.class,i);
 		}
-		public List<LetClauseContext> letClause() {
+		public List<? extends ForClauseContext> forClause() {
+			return getRuleContexts(ForClauseContext.class);
+		}
+		public ForClauseContext forClause(int i) {
+			return getRuleContext(ForClauseContext.class,i);
+		}
+		public List<? extends LetClauseContext> letClause() {
 			return getRuleContexts(LetClauseContext.class);
 		}
 		public LetClauseContext letClause(int i) {
 			return getRuleContext(LetClauseContext.class,i);
 		}
-		public List<ExprSingleContext> exprSingle() {
-			return getRuleContexts(ExprSingleContext.class);
-		}
-		public ForClauseContext forClause(int i) {
-			return getRuleContext(ForClauseContext.class,i);
+		public OrderByClauseContext orderByClause() {
+			return getRuleContext(OrderByClauseContext.class,0);
 		}
 		public FlworExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1503,6 +1691,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final FlworExprContext flworExpr() throws RecognitionException {
 		FlworExprContext _localctx = new FlworExprContext(_ctx, getState());
 		enterRule(_localctx, 34, RULE_flworExpr);
@@ -1519,12 +1708,14 @@ public class XQueryParser extends Parser {
 				switch (_input.LA(1)) {
 				case KW_FOR:
 					{
-					setState(351); forClause();
+					setState(351);
+					forClause();
 					}
 					break;
 				case KW_LET:
 					{
-					setState(352); letClause();
+					setState(352);
+					letClause();
 					}
 					break;
 				default:
@@ -1539,8 +1730,10 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==KW_WHERE) {
 				{
-				setState(357); match(KW_WHERE);
-				setState(358); ((FlworExprContext)_localctx).whereExpr = exprSingle();
+				setState(357);
+				match(KW_WHERE);
+				setState(358);
+				_localctx.whereExpr = exprSingle();
 				}
 			}
 
@@ -1548,12 +1741,15 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==KW_ORDER || _la==KW_STABLE) {
 				{
-				setState(361); orderByClause();
+				setState(361);
+				orderByClause();
 				}
 			}
 
-			setState(364); match(KW_RETURN);
-			setState(365); ((FlworExprContext)_localctx).returnExpr = exprSingle();
+			setState(364);
+			match(KW_RETURN);
+			setState(365);
+			_localctx.returnExpr = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1570,11 +1766,11 @@ public class XQueryParser extends Parser {
 	public static class ForClauseContext extends ParserRuleContext {
 		public ForVarContext forVar;
 		public List<ForVarContext> vars = new ArrayList<ForVarContext>();
+		public List<? extends ForVarContext> forVar() {
+			return getRuleContexts(ForVarContext.class);
+		}
 		public ForVarContext forVar(int i) {
 			return getRuleContext(ForVarContext.class,i);
-		}
-		public List<ForVarContext> forVar() {
-			return getRuleContexts(ForVarContext.class);
 		}
 		public ForClauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1590,6 +1786,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ForClauseContext forClause() throws RecognitionException {
 		ForClauseContext _localctx = new ForClauseContext(_ctx, getState());
 		enterRule(_localctx, 36, RULE_forClause);
@@ -1597,18 +1794,22 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(367); match(KW_FOR);
-			setState(368); ((ForClauseContext)_localctx).forVar = forVar();
-			((ForClauseContext)_localctx).vars.add(((ForClauseContext)_localctx).forVar);
+			setState(367);
+			match(KW_FOR);
+			setState(368);
+			_localctx.forVar = forVar();
+			_localctx.vars.add(_localctx.forVar);
 			setState(373);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(369); match(COMMA);
-				setState(370); ((ForClauseContext)_localctx).forVar = forVar();
-				((ForClauseContext)_localctx).vars.add(((ForClauseContext)_localctx).forVar);
+				setState(369);
+				match(COMMA);
+				setState(370);
+				_localctx.forVar = forVar();
+				_localctx.vars.add(_localctx.forVar);
 				}
 				}
 				setState(375);
@@ -1633,17 +1834,17 @@ public class XQueryParser extends Parser {
 		public TypeDeclarationContext type;
 		public QNameContext pvar;
 		public ExprSingleContext in;
-		public List<QNameContext> qName() {
+		public List<? extends QNameContext> qName() {
 			return getRuleContexts(QNameContext.class);
-		}
-		public TypeDeclarationContext typeDeclaration() {
-			return getRuleContext(TypeDeclarationContext.class,0);
 		}
 		public QNameContext qName(int i) {
 			return getRuleContext(QNameContext.class,i);
 		}
 		public ExprSingleContext exprSingle() {
 			return getRuleContext(ExprSingleContext.class,0);
+		}
+		public TypeDeclarationContext typeDeclaration() {
+			return getRuleContext(TypeDeclarationContext.class,0);
 		}
 		public ForVarContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1659,6 +1860,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ForVarContext forVar() throws RecognitionException {
 		ForVarContext _localctx = new ForVarContext(_ctx, getState());
 		enterRule(_localctx, 38, RULE_forVar);
@@ -1666,13 +1868,16 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(376); match(DOLLAR);
-			setState(377); ((ForVarContext)_localctx).name = qName();
+			setState(376);
+			match(DOLLAR);
+			setState(377);
+			_localctx.name = qName();
 			setState(379);
 			_la = _input.LA(1);
 			if (_la==KW_AS) {
 				{
-				setState(378); ((ForVarContext)_localctx).type = typeDeclaration();
+				setState(378);
+				_localctx.type = typeDeclaration();
 				}
 			}
 
@@ -1680,14 +1885,19 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==KW_AT) {
 				{
-				setState(381); match(KW_AT);
-				setState(382); match(DOLLAR);
-				setState(383); ((ForVarContext)_localctx).pvar = qName();
+				setState(381);
+				match(KW_AT);
+				setState(382);
+				match(DOLLAR);
+				setState(383);
+				_localctx.pvar = qName();
 				}
 			}
 
-			setState(386); match(KW_IN);
-			setState(387); ((ForVarContext)_localctx).in = exprSingle();
+			setState(386);
+			match(KW_IN);
+			setState(387);
+			_localctx.in = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1704,11 +1914,11 @@ public class XQueryParser extends Parser {
 	public static class LetClauseContext extends ParserRuleContext {
 		public LetVarContext letVar;
 		public List<LetVarContext> vars = new ArrayList<LetVarContext>();
+		public List<? extends LetVarContext> letVar() {
+			return getRuleContexts(LetVarContext.class);
+		}
 		public LetVarContext letVar(int i) {
 			return getRuleContext(LetVarContext.class,i);
-		}
-		public List<LetVarContext> letVar() {
-			return getRuleContexts(LetVarContext.class);
 		}
 		public LetClauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1724,6 +1934,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final LetClauseContext letClause() throws RecognitionException {
 		LetClauseContext _localctx = new LetClauseContext(_ctx, getState());
 		enterRule(_localctx, 40, RULE_letClause);
@@ -1731,18 +1942,22 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(389); match(KW_LET);
-			setState(390); ((LetClauseContext)_localctx).letVar = letVar();
-			((LetClauseContext)_localctx).vars.add(((LetClauseContext)_localctx).letVar);
+			setState(389);
+			match(KW_LET);
+			setState(390);
+			_localctx.letVar = letVar();
+			_localctx.vars.add(_localctx.letVar);
 			setState(395);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(391); match(COMMA);
-				setState(392); ((LetClauseContext)_localctx).letVar = letVar();
-				((LetClauseContext)_localctx).vars.add(((LetClauseContext)_localctx).letVar);
+				setState(391);
+				match(COMMA);
+				setState(392);
+				_localctx.letVar = letVar();
+				_localctx.vars.add(_localctx.letVar);
 				}
 				}
 				setState(397);
@@ -1769,11 +1984,11 @@ public class XQueryParser extends Parser {
 		public QNameContext qName() {
 			return getRuleContext(QNameContext.class,0);
 		}
-		public TypeDeclarationContext typeDeclaration() {
-			return getRuleContext(TypeDeclarationContext.class,0);
-		}
 		public ExprSingleContext exprSingle() {
 			return getRuleContext(ExprSingleContext.class,0);
+		}
+		public TypeDeclarationContext typeDeclaration() {
+			return getRuleContext(TypeDeclarationContext.class,0);
 		}
 		public LetVarContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1789,6 +2004,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final LetVarContext letVar() throws RecognitionException {
 		LetVarContext _localctx = new LetVarContext(_ctx, getState());
 		enterRule(_localctx, 42, RULE_letVar);
@@ -1796,18 +2012,23 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(398); match(DOLLAR);
-			setState(399); ((LetVarContext)_localctx).name = qName();
+			setState(398);
+			match(DOLLAR);
+			setState(399);
+			_localctx.name = qName();
 			setState(401);
 			_la = _input.LA(1);
 			if (_la==KW_AS) {
 				{
-				setState(400); ((LetVarContext)_localctx).type = typeDeclaration();
+				setState(400);
+				_localctx.type = typeDeclaration();
 				}
 			}
 
-			setState(403); match(COLON_EQ);
-			setState(404); ((LetVarContext)_localctx).value = exprSingle();
+			setState(403);
+			match(COLON_EQ);
+			setState(404);
+			_localctx.value = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1824,11 +2045,11 @@ public class XQueryParser extends Parser {
 	public static class OrderByClauseContext extends ParserRuleContext {
 		public OrderSpecContext orderSpec;
 		public List<OrderSpecContext> specs = new ArrayList<OrderSpecContext>();
+		public List<? extends OrderSpecContext> orderSpec() {
+			return getRuleContexts(OrderSpecContext.class);
+		}
 		public OrderSpecContext orderSpec(int i) {
 			return getRuleContext(OrderSpecContext.class,i);
-		}
-		public List<OrderSpecContext> orderSpec() {
-			return getRuleContexts(OrderSpecContext.class);
 		}
 		public OrderByClauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1844,6 +2065,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final OrderByClauseContext orderByClause() throws RecognitionException {
 		OrderByClauseContext _localctx = new OrderByClauseContext(_ctx, getState());
 		enterRule(_localctx, 44, RULE_orderByClause);
@@ -1855,23 +2077,29 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==KW_STABLE) {
 				{
-				setState(406); match(KW_STABLE);
+				setState(406);
+				match(KW_STABLE);
 				}
 			}
 
-			setState(409); match(KW_ORDER);
-			setState(410); match(KW_BY);
-			setState(411); ((OrderByClauseContext)_localctx).orderSpec = orderSpec();
-			((OrderByClauseContext)_localctx).specs.add(((OrderByClauseContext)_localctx).orderSpec);
+			setState(409);
+			match(KW_ORDER);
+			setState(410);
+			match(KW_BY);
+			setState(411);
+			_localctx.orderSpec = orderSpec();
+			_localctx.specs.add(_localctx.orderSpec);
 			setState(416);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(412); match(COMMA);
-				setState(413); ((OrderByClauseContext)_localctx).orderSpec = orderSpec();
-				((OrderByClauseContext)_localctx).specs.add(((OrderByClauseContext)_localctx).orderSpec);
+				setState(412);
+				match(COMMA);
+				setState(413);
+				_localctx.orderSpec = orderSpec();
+				_localctx.specs.add(_localctx.orderSpec);
 				}
 				}
 				setState(418);
@@ -1896,11 +2124,11 @@ public class XQueryParser extends Parser {
 		public Token order;
 		public Token empty;
 		public StringLiteralContext collation;
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
 		public ExprSingleContext exprSingle() {
 			return getRuleContext(ExprSingleContext.class,0);
+		}
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
 		}
 		public OrderSpecContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1916,6 +2144,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final OrderSpecContext orderSpec() throws RecognitionException {
 		OrderSpecContext _localctx = new OrderSpecContext(_ctx, getState());
 		enterRule(_localctx, 46, RULE_orderSpec);
@@ -1923,18 +2152,20 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(419); ((OrderSpecContext)_localctx).value = exprSingle();
+			setState(419);
+			_localctx.value = exprSingle();
 			setState(421);
 			_la = _input.LA(1);
 			if (_la==KW_ASCENDING || _la==KW_DESCENDING) {
 				{
 				setState(420);
-				((OrderSpecContext)_localctx).order = _input.LT(1);
+				_localctx.order = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_ASCENDING || _la==KW_DESCENDING) ) {
-					((OrderSpecContext)_localctx).order = (Token)_errHandler.recoverInline(this);
+					_localctx.order = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 			}
 
@@ -1942,14 +2173,16 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==KW_EMPTY) {
 				{
-				setState(423); match(KW_EMPTY);
+				setState(423);
+				match(KW_EMPTY);
 				setState(424);
-				((OrderSpecContext)_localctx).empty = _input.LT(1);
+				_localctx.empty = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==KW_GREATEST || _la==KW_LEAST) ) {
-					((OrderSpecContext)_localctx).empty = (Token)_errHandler.recoverInline(this);
+					_localctx.empty = _errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 			}
 
@@ -1957,8 +2190,10 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==KW_COLLATION) {
 				{
-				setState(427); match(KW_COLLATION);
-				setState(428); ((OrderSpecContext)_localctx).collation = stringLiteral();
+				setState(427);
+				match(KW_COLLATION);
+				setState(428);
+				_localctx.collation = stringLiteral();
 				}
 			}
 
@@ -1980,11 +2215,11 @@ public class XQueryParser extends Parser {
 		public QuantifiedVarContext quantifiedVar;
 		public List<QuantifiedVarContext> vars = new ArrayList<QuantifiedVarContext>();
 		public ExprSingleContext value;
+		public List<? extends QuantifiedVarContext> quantifiedVar() {
+			return getRuleContexts(QuantifiedVarContext.class);
+		}
 		public QuantifiedVarContext quantifiedVar(int i) {
 			return getRuleContext(QuantifiedVarContext.class,i);
-		}
-		public List<QuantifiedVarContext> quantifiedVar() {
-			return getRuleContexts(QuantifiedVarContext.class);
 		}
 		public ExprSingleContext exprSingle() {
 			return getRuleContext(ExprSingleContext.class,0);
@@ -2003,6 +2238,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final QuantifiedExprContext quantifiedExpr() throws RecognitionException {
 		QuantifiedExprContext _localctx = new QuantifiedExprContext(_ctx, getState());
 		enterRule(_localctx, 48, RULE_quantifiedExpr);
@@ -2011,31 +2247,37 @@ public class XQueryParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(431);
-			((QuantifiedExprContext)_localctx).quantifier = _input.LT(1);
+			_localctx.quantifier = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==KW_EVERY || _la==KW_SOME) ) {
-				((QuantifiedExprContext)_localctx).quantifier = (Token)_errHandler.recoverInline(this);
+				_localctx.quantifier = _errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
-			setState(432); ((QuantifiedExprContext)_localctx).quantifiedVar = quantifiedVar();
-			((QuantifiedExprContext)_localctx).vars.add(((QuantifiedExprContext)_localctx).quantifiedVar);
+			setState(432);
+			_localctx.quantifiedVar = quantifiedVar();
+			_localctx.vars.add(_localctx.quantifiedVar);
 			setState(437);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(433); match(COMMA);
-				setState(434); ((QuantifiedExprContext)_localctx).quantifiedVar = quantifiedVar();
-				((QuantifiedExprContext)_localctx).vars.add(((QuantifiedExprContext)_localctx).quantifiedVar);
+				setState(433);
+				match(COMMA);
+				setState(434);
+				_localctx.quantifiedVar = quantifiedVar();
+				_localctx.vars.add(_localctx.quantifiedVar);
 				}
 				}
 				setState(439);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(440); match(KW_SATISFIES);
-			setState(441); ((QuantifiedExprContext)_localctx).value = exprSingle();
+			setState(440);
+			match(KW_SATISFIES);
+			setState(441);
+			_localctx.value = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2052,14 +2294,14 @@ public class XQueryParser extends Parser {
 	public static class QuantifiedVarContext extends ParserRuleContext {
 		public QNameContext name;
 		public TypeDeclarationContext type;
+		public ExprSingleContext exprSingle() {
+			return getRuleContext(ExprSingleContext.class,0);
+		}
 		public QNameContext qName() {
 			return getRuleContext(QNameContext.class,0);
 		}
 		public TypeDeclarationContext typeDeclaration() {
 			return getRuleContext(TypeDeclarationContext.class,0);
-		}
-		public ExprSingleContext exprSingle() {
-			return getRuleContext(ExprSingleContext.class,0);
 		}
 		public QuantifiedVarContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2075,6 +2317,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final QuantifiedVarContext quantifiedVar() throws RecognitionException {
 		QuantifiedVarContext _localctx = new QuantifiedVarContext(_ctx, getState());
 		enterRule(_localctx, 50, RULE_quantifiedVar);
@@ -2082,18 +2325,23 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(443); match(DOLLAR);
-			setState(444); ((QuantifiedVarContext)_localctx).name = qName();
+			setState(443);
+			match(DOLLAR);
+			setState(444);
+			_localctx.name = qName();
 			setState(446);
 			_la = _input.LA(1);
 			if (_la==KW_AS) {
 				{
-				setState(445); ((QuantifiedVarContext)_localctx).type = typeDeclaration();
+				setState(445);
+				_localctx.type = typeDeclaration();
 				}
 			}
 
-			setState(448); match(KW_IN);
-			setState(449); exprSingle();
+			setState(448);
+			match(KW_IN);
+			setState(449);
+			exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2112,20 +2360,20 @@ public class XQueryParser extends Parser {
 		public CaseClauseContext clauses;
 		public QNameContext var;
 		public ExprSingleContext returnExpr;
-		public QNameContext qName() {
-			return getRuleContext(QNameContext.class,0);
-		}
-		public List<CaseClauseContext> caseClause() {
-			return getRuleContexts(CaseClauseContext.class);
-		}
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
+		}
+		public ExprSingleContext exprSingle() {
+			return getRuleContext(ExprSingleContext.class,0);
+		}
+		public List<? extends CaseClauseContext> caseClause() {
+			return getRuleContexts(CaseClauseContext.class);
 		}
 		public CaseClauseContext caseClause(int i) {
 			return getRuleContext(CaseClauseContext.class,i);
 		}
-		public ExprSingleContext exprSingle() {
-			return getRuleContext(ExprSingleContext.class,0);
+		public QNameContext qName() {
+			return getRuleContext(QNameContext.class,0);
 		}
 		public TypeswitchExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2141,6 +2389,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final TypeswitchExprContext typeswitchExpr() throws RecognitionException {
 		TypeswitchExprContext _localctx = new TypeswitchExprContext(_ctx, getState());
 		enterRule(_localctx, 52, RULE_typeswitchExpr);
@@ -2148,35 +2397,45 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(451); match(KW_TYPESWITCH);
-			setState(452); match(LPAREN);
-			setState(453); ((TypeswitchExprContext)_localctx).switchExpr = expr();
-			setState(454); match(RPAREN);
+			setState(451);
+			match(KW_TYPESWITCH);
+			setState(452);
+			match(LPAREN);
+			setState(453);
+			_localctx.switchExpr = expr();
+			setState(454);
+			match(RPAREN);
 			setState(456); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(455); ((TypeswitchExprContext)_localctx).clauses = caseClause();
+				setState(455);
+				_localctx.clauses = caseClause();
 				}
 				}
 				setState(458); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==KW_CASE );
-			setState(460); match(KW_DEFAULT);
+			setState(460);
+			match(KW_DEFAULT);
 			setState(463);
 			_la = _input.LA(1);
 			if (_la==DOLLAR) {
 				{
-				setState(461); match(DOLLAR);
-				setState(462); ((TypeswitchExprContext)_localctx).var = qName();
+				setState(461);
+				match(DOLLAR);
+				setState(462);
+				_localctx.var = qName();
 				}
 			}
 
-			setState(465); match(KW_RETURN);
-			setState(466); ((TypeswitchExprContext)_localctx).returnExpr = exprSingle();
+			setState(465);
+			match(KW_RETURN);
+			setState(466);
+			_localctx.returnExpr = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2194,14 +2453,14 @@ public class XQueryParser extends Parser {
 		public QNameContext var;
 		public SequenceTypeContext type;
 		public ExprSingleContext returnExpr;
-		public QNameContext qName() {
-			return getRuleContext(QNameContext.class,0);
-		}
 		public SequenceTypeContext sequenceType() {
 			return getRuleContext(SequenceTypeContext.class,0);
 		}
 		public ExprSingleContext exprSingle() {
 			return getRuleContext(ExprSingleContext.class,0);
+		}
+		public QNameContext qName() {
+			return getRuleContext(QNameContext.class,0);
 		}
 		public CaseClauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2217,6 +2476,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final CaseClauseContext caseClause() throws RecognitionException {
 		CaseClauseContext _localctx = new CaseClauseContext(_ctx, getState());
 		enterRule(_localctx, 54, RULE_caseClause);
@@ -2224,20 +2484,27 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(468); match(KW_CASE);
+			setState(468);
+			match(KW_CASE);
 			setState(473);
 			_la = _input.LA(1);
 			if (_la==DOLLAR) {
 				{
-				setState(469); match(DOLLAR);
-				setState(470); ((CaseClauseContext)_localctx).var = qName();
-				setState(471); match(KW_AS);
+				setState(469);
+				match(DOLLAR);
+				setState(470);
+				_localctx.var = qName();
+				setState(471);
+				match(KW_AS);
 				}
 			}
 
-			setState(475); ((CaseClauseContext)_localctx).type = sequenceType();
-			setState(476); match(KW_RETURN);
-			setState(477); ((CaseClauseContext)_localctx).returnExpr = exprSingle();
+			setState(475);
+			_localctx.type = sequenceType();
+			setState(476);
+			match(KW_RETURN);
+			setState(477);
+			_localctx.returnExpr = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2255,14 +2522,14 @@ public class XQueryParser extends Parser {
 		public ExprContext conditionExpr;
 		public ExprSingleContext thenExpr;
 		public ExprSingleContext elseExpr;
-		public ExprSingleContext exprSingle(int i) {
-			return getRuleContext(ExprSingleContext.class,i);
-		}
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public List<ExprSingleContext> exprSingle() {
+		public List<? extends ExprSingleContext> exprSingle() {
 			return getRuleContexts(ExprSingleContext.class);
+		}
+		public ExprSingleContext exprSingle(int i) {
+			return getRuleContext(ExprSingleContext.class,i);
 		}
 		public IfExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2278,20 +2545,29 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final IfExprContext ifExpr() throws RecognitionException {
 		IfExprContext _localctx = new IfExprContext(_ctx, getState());
 		enterRule(_localctx, 56, RULE_ifExpr);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(479); match(KW_IF);
-			setState(480); match(LPAREN);
-			setState(481); ((IfExprContext)_localctx).conditionExpr = expr();
-			setState(482); match(RPAREN);
-			setState(483); match(KW_THEN);
-			setState(484); ((IfExprContext)_localctx).thenExpr = exprSingle();
-			setState(485); match(KW_ELSE);
-			setState(486); ((IfExprContext)_localctx).elseExpr = exprSingle();
+			setState(479);
+			match(KW_IF);
+			setState(480);
+			match(LPAREN);
+			setState(481);
+			_localctx.conditionExpr = expr();
+			setState(482);
+			match(RPAREN);
+			setState(483);
+			match(KW_THEN);
+			setState(484);
+			_localctx.thenExpr = exprSingle();
+			setState(485);
+			match(KW_ELSE);
+			setState(486);
+			_localctx.elseExpr = exprSingle();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2316,6 +2592,143 @@ public class XQueryParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class AddContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public OrExprContext r;
+		public List<? extends OrExprContext> orExpr() {
+			return getRuleContexts(OrExprContext.class);
+		}
+		public OrExprContext orExpr(int i) {
+			return getRuleContext(OrExprContext.class,i);
+		}
+		public AddContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAdd(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAdd(this);
+		}
+	}
+	public static class TreatContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public SequenceTypeContext r;
+		public OrExprContext orExpr() {
+			return getRuleContext(OrExprContext.class,0);
+		}
+		public SequenceTypeContext sequenceType() {
+			return getRuleContext(SequenceTypeContext.class,0);
+		}
+		public TreatContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterTreat(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitTreat(this);
+		}
+	}
+	public static class ExtensionContext extends OrExprContext {
+		public List<? extends TerminalNode> PRAGMA() { return getTokens(XQueryParser.PRAGMA); }
+		public TerminalNode PRAGMA(int i) {
+			return getToken(XQueryParser.PRAGMA, i);
+		}
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ExtensionContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterExtension(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitExtension(this);
+		}
+	}
+	public static class MultContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public OrExprContext r;
+		public List<? extends OrExprContext> orExpr() {
+			return getRuleContexts(OrExprContext.class);
+		}
+		public OrExprContext orExpr(int i) {
+			return getRuleContext(OrExprContext.class,i);
+		}
+		public MultContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterMult(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitMult(this);
+		}
+	}
+	public static class ComparisonContext extends OrExprContext {
+		public OrExprContext l;
+		public OrExprContext r;
+		public List<? extends OrExprContext> orExpr() {
+			return getRuleContexts(OrExprContext.class);
+		}
+		public OrExprContext orExpr(int i) {
+			return getRuleContext(OrExprContext.class,i);
+		}
+		public ComparisonContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterComparison(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitComparison(this);
+		}
+	}
+	public static class OrContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public OrExprContext r;
+		public List<? extends OrExprContext> orExpr() {
+			return getRuleContexts(OrExprContext.class);
+		}
+		public OrExprContext orExpr(int i) {
+			return getRuleContext(OrExprContext.class,i);
+		}
+		public OrContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterOr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitOr(this);
+		}
+	}
+	public static class IntersectContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public OrExprContext r;
+		public List<? extends OrExprContext> orExpr() {
+			return getRuleContexts(OrExprContext.class);
+		}
+		public OrExprContext orExpr(int i) {
+			return getRuleContext(OrExprContext.class,i);
+		}
+		public IntersectContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterIntersect(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitIntersect(this);
+		}
+	}
 	public static class CastableContext extends OrExprContext {
 		public OrExprContext l;
 		public Token op;
@@ -2336,45 +2749,11 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitCastable(this);
 		}
 	}
-	public static class RootedPathContext extends OrExprContext {
-		public RelativePathExprContext relativePathExpr() {
-			return getRuleContext(RelativePathExprContext.class,0);
-		}
-		public RootedPathContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterRootedPath(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitRootedPath(this);
-		}
-	}
-	public static class MultContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
-			return getRuleContexts(OrExprContext.class);
-		}
-		public OrExprContext orExpr(int i) {
-			return getRuleContext(OrExprContext.class,i);
-		}
-		public MultContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterMult(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitMult(this);
-		}
-	}
 	public static class RangeContext extends OrExprContext {
 		public OrExprContext l;
 		public Token op;
 		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
+		public List<? extends OrExprContext> orExpr() {
 			return getRuleContexts(OrExprContext.class);
 		}
 		public OrExprContext orExpr(int i) {
@@ -2390,132 +2769,18 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitRange(this);
 		}
 	}
-	public static class OrContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
-			return getRuleContexts(OrExprContext.class);
-		}
-		public OrExprContext orExpr(int i) {
-			return getRuleContext(OrExprContext.class,i);
-		}
-		public OrContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterOr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitOr(this);
-		}
-	}
-	public static class InstanceOfContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public SequenceTypeContext r;
-		public SequenceTypeContext sequenceType() {
-			return getRuleContext(SequenceTypeContext.class,0);
-		}
-		public OrExprContext orExpr() {
-			return getRuleContext(OrExprContext.class,0);
-		}
-		public InstanceOfContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterInstanceOf(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitInstanceOf(this);
-		}
-	}
-	public static class AddContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
-			return getRuleContexts(OrExprContext.class);
-		}
-		public OrExprContext orExpr(int i) {
-			return getRuleContext(OrExprContext.class,i);
-		}
-		public AddContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAdd(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAdd(this);
-		}
-	}
-	public static class RelativeContext extends OrExprContext {
+	public static class AllDescPathContext extends OrExprContext {
 		public RelativePathExprContext relativePathExpr() {
 			return getRuleContext(RelativePathExprContext.class,0);
 		}
-		public RelativeContext(OrExprContext ctx) { copyFrom(ctx); }
+		public AllDescPathContext(OrExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterRelative(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAllDescPath(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitRelative(this);
-		}
-	}
-	public static class ValidateContext extends OrExprContext {
-		public Token vMode;
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public ValidateContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterValidate(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitValidate(this);
-		}
-	}
-	public static class ComparisonContext extends OrExprContext {
-		public OrExprContext l;
-		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
-			return getRuleContexts(OrExprContext.class);
-		}
-		public OrExprContext orExpr(int i) {
-			return getRuleContext(OrExprContext.class,i);
-		}
-		public ComparisonContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterComparison(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitComparison(this);
-		}
-	}
-	public static class AndContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
-			return getRuleContexts(OrExprContext.class);
-		}
-		public OrExprContext orExpr(int i) {
-			return getRuleContext(OrExprContext.class,i);
-		}
-		public AndContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAnd(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAnd(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAllDescPath(this);
 		}
 	}
 	public static class UnaryContext extends OrExprContext {
@@ -2532,22 +2797,59 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitUnary(this);
 		}
 	}
-	public static class ExtensionContext extends OrExprContext {
-		public List<TerminalNode> PRAGMA() { return getTokens(XQueryParser.PRAGMA); }
-		public TerminalNode PRAGMA(int i) {
-			return getToken(XQueryParser.PRAGMA, i);
+	public static class UnionContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public OrExprContext r;
+		public List<? extends OrExprContext> orExpr() {
+			return getRuleContexts(OrExprContext.class);
 		}
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
+		public OrExprContext orExpr(int i) {
+			return getRuleContext(OrExprContext.class,i);
 		}
-		public ExtensionContext(OrExprContext ctx) { copyFrom(ctx); }
+		public TerminalNode KW_UNION() { return getToken(XQueryParser.KW_UNION, 0); }
+		public UnionContext(OrExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterExtension(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterUnion(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitExtension(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitUnion(this);
+		}
+	}
+	public static class InstanceOfContext extends OrExprContext {
+		public OrExprContext l;
+		public Token op;
+		public SequenceTypeContext r;
+		public OrExprContext orExpr() {
+			return getRuleContext(OrExprContext.class,0);
+		}
+		public SequenceTypeContext sequenceType() {
+			return getRuleContext(SequenceTypeContext.class,0);
+		}
+		public InstanceOfContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterInstanceOf(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitInstanceOf(this);
+		}
+	}
+	public static class RootedPathContext extends OrExprContext {
+		public RelativePathExprContext relativePathExpr() {
+			return getRuleContext(RelativePathExprContext.class,0);
+		}
+		public RootedPathContext(OrExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterRootedPath(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitRootedPath(this);
 		}
 	}
 	public static class CastContext extends OrExprContext {
@@ -2568,82 +2870,57 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitCast(this);
 		}
 	}
-	public static class IntersectContext extends OrExprContext {
+	public static class AndContext extends OrExprContext {
 		public OrExprContext l;
 		public Token op;
 		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
+		public List<? extends OrExprContext> orExpr() {
 			return getRuleContexts(OrExprContext.class);
 		}
 		public OrExprContext orExpr(int i) {
 			return getRuleContext(OrExprContext.class,i);
 		}
-		public IntersectContext(OrExprContext ctx) { copyFrom(ctx); }
+		public AndContext(OrExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterIntersect(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAnd(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitIntersect(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAnd(this);
 		}
 	}
-	public static class UnionContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public OrExprContext r;
-		public List<OrExprContext> orExpr() {
-			return getRuleContexts(OrExprContext.class);
+	public static class ValidateContext extends OrExprContext {
+		public Token vMode;
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
-		public OrExprContext orExpr(int i) {
-			return getRuleContext(OrExprContext.class,i);
-		}
-		public TerminalNode KW_UNION() { return getToken(XQueryParser.KW_UNION, 0); }
-		public UnionContext(OrExprContext ctx) { copyFrom(ctx); }
+		public ValidateContext(OrExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterUnion(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterValidate(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitUnion(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitValidate(this);
 		}
 	}
-	public static class AllDescPathContext extends OrExprContext {
+	public static class RelativeContext extends OrExprContext {
 		public RelativePathExprContext relativePathExpr() {
 			return getRuleContext(RelativePathExprContext.class,0);
 		}
-		public AllDescPathContext(OrExprContext ctx) { copyFrom(ctx); }
+		public RelativeContext(OrExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAllDescPath(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterRelative(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAllDescPath(this);
-		}
-	}
-	public static class TreatContext extends OrExprContext {
-		public OrExprContext l;
-		public Token op;
-		public SequenceTypeContext r;
-		public SequenceTypeContext sequenceType() {
-			return getRuleContext(SequenceTypeContext.class,0);
-		}
-		public OrExprContext orExpr() {
-			return getRuleContext(OrExprContext.class,0);
-		}
-		public TreatContext(OrExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterTreat(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitTreat(this);
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitRelative(this);
 		}
 	}
 
+	@RuleVersion(0)
 	public final OrExprContext orExpr() throws RecognitionException {
 		return orExpr(0);
 	}
@@ -2672,9 +2949,11 @@ public class XQueryParser extends Parser {
 				_la = _input.LA(1);
 				if ( !(_la==PLUS || _la==MINUS) ) {
 				_errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
-				setState(490); orExpr(18);
+				setState(490);
+				orExpr(18);
 				}
 				break;
 			case 2:
@@ -2682,7 +2961,8 @@ public class XQueryParser extends Parser {
 				_localctx = new ValidateContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(491); match(KW_VALIDATE);
+				setState(491);
+				match(KW_VALIDATE);
 				setState(493);
 				_la = _input.LA(1);
 				if (_la==KW_LAX || _la==KW_STRICT) {
@@ -2691,15 +2971,19 @@ public class XQueryParser extends Parser {
 					((ValidateContext)_localctx).vMode = _input.LT(1);
 					_la = _input.LA(1);
 					if ( !(_la==KW_LAX || _la==KW_STRICT) ) {
-						((ValidateContext)_localctx).vMode = (Token)_errHandler.recoverInline(this);
+						((ValidateContext)_localctx).vMode = _errHandler.recoverInline(this);
+					} else {
+						consume();
 					}
-					consume();
 					}
 				}
 
-				setState(495); match(LBRACE);
-				setState(496); expr();
-				setState(497); match(RBRACE);
+				setState(495);
+				match(LBRACE);
+				setState(496);
+				expr();
+				setState(497);
+				match(RBRACE);
 				}
 				break;
 			case 3:
@@ -2713,23 +2997,27 @@ public class XQueryParser extends Parser {
 				do {
 					{
 					{
-					setState(499); match(PRAGMA);
+					setState(499);
+					match(PRAGMA);
 					}
 					}
 					setState(502); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==PRAGMA );
-				setState(504); match(LBRACE);
+				setState(504);
+				match(LBRACE);
 				setState(506);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << Quot) | (1L << Apos) | (1L << COMMENT) | (1L << PI) | (1L << PRAGMA) | (1L << LPAREN) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << DOT) | (1L << DDOT) | (1L << SLASH) | (1L << DSLASH) | (1L << LANGLE) | (1L << AT) | (1L << DOLLAR) | (1L << KW_ANCESTOR) | (1L << KW_ANCESTOR_OR_SELF) | (1L << KW_AND) | (1L << KW_AS) | (1L << KW_ASCENDING) | (1L << KW_AT) | (1L << KW_ATTRIBUTE) | (1L << KW_BASE_URI) | (1L << KW_BOUNDARY_SPACE) | (1L << KW_BY) | (1L << KW_CASE) | (1L << KW_CAST) | (1L << KW_CASTABLE) | (1L << KW_CHILD) | (1L << KW_COLLATION) | (1L << KW_COMMENT) | (1L << KW_CONSTRUCTION) | (1L << KW_COPY_NS) | (1L << KW_DECLARE) | (1L << KW_DEFAULT) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF) | (1L << KW_DESCENDING) | (1L << KW_DIV) | (1L << KW_DOCUMENT))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_ELSE - 64)) | (1L << (KW_EMPTY - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_ENCODING - 64)) | (1L << (KW_EQ - 64)) | (1L << (KW_EVERY - 64)) | (1L << (KW_EXCEPT - 64)) | (1L << (KW_EXTERNAL - 64)) | (1L << (KW_FOLLOWING - 64)) | (1L << (KW_FOLLOWING_SIBLING - 64)) | (1L << (KW_FOR - 64)) | (1L << (KW_FUNCTION - 64)) | (1L << (KW_GE - 64)) | (1L << (KW_GREATEST - 64)) | (1L << (KW_GT - 64)) | (1L << (KW_IDIV - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_IMPORT - 64)) | (1L << (KW_IN - 64)) | (1L << (KW_INHERIT - 64)) | (1L << (KW_INSTANCE - 64)) | (1L << (KW_INTERSECT - 64)) | (1L << (KW_IS - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_LAX - 64)) | (1L << (KW_LE - 64)) | (1L << (KW_LEAST - 64)) | (1L << (KW_LET - 64)) | (1L << (KW_LT - 64)) | (1L << (KW_MOD - 64)) | (1L << (KW_MODULE - 64)) | (1L << (KW_NAMESPACE - 64)) | (1L << (KW_NE - 64)) | (1L << (KW_NO_INHERIT - 64)) | (1L << (KW_NO_PRESERVE - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_OF - 64)) | (1L << (KW_OPTION - 64)) | (1L << (KW_OR - 64)) | (1L << (KW_ORDER - 64)) | (1L << (KW_ORDERED - 64)) | (1L << (KW_ORDERING - 64)) | (1L << (KW_PARENT - 64)) | (1L << (KW_PRECEDING - 64)) | (1L << (KW_PRECEDING_SIBLING - 64)) | (1L << (KW_PRESERVE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_RETURN - 64)) | (1L << (KW_SATISFIES - 64)) | (1L << (KW_SCHEMA - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_SELF - 64)) | (1L << (KW_SOME - 64)) | (1L << (KW_STABLE - 64)) | (1L << (KW_STRICT - 64)) | (1L << (KW_STRIP - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_THEN - 64)) | (1L << (KW_TO - 64)) | (1L << (KW_TREAT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (KW_UNION - 128)) | (1L << (KW_UNORDERED - 128)) | (1L << (KW_VALIDATE - 128)) | (1L << (KW_VARIABLE - 128)) | (1L << (KW_VERSION - 128)) | (1L << (KW_WHERE - 128)) | (1L << (KW_XQUERY - 128)) | (1L << (FullQName - 128)) | (1L << (NCNameWithLocalWildcard - 128)) | (1L << (NCNameWithPrefixWildcard - 128)) | (1L << (NCName - 128)))) != 0)) {
 					{
-					setState(505); expr();
+					setState(505);
+					expr();
 					}
 				}
 
-				setState(508); match(RBRACE);
+				setState(508);
+				match(RBRACE);
 				}
 				break;
 			case 4:
@@ -2737,12 +3025,14 @@ public class XQueryParser extends Parser {
 				_localctx = new RootedPathContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(509); match(SLASH);
+				setState(509);
+				match(SLASH);
 				setState(511);
 				switch ( getInterpreter().adaptivePredict(_input,45,_ctx) ) {
 				case 1:
 					{
-					setState(510); relativePathExpr();
+					setState(510);
+					relativePathExpr();
 					}
 					break;
 				}
@@ -2753,8 +3043,10 @@ public class XQueryParser extends Parser {
 				_localctx = new AllDescPathContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(513); match(DSLASH);
-				setState(514); relativePathExpr();
+				setState(513);
+				match(DSLASH);
+				setState(514);
+				relativePathExpr();
 				}
 				break;
 			case 6:
@@ -2762,7 +3054,8 @@ public class XQueryParser extends Parser {
 				_localctx = new RelativeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(515); relativePathExpr();
+				setState(515);
+				relativePathExpr();
 				}
 				break;
 			}
@@ -2788,10 +3081,12 @@ public class XQueryParser extends Parser {
 						((IntersectContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==KW_EXCEPT || _la==KW_INTERSECT) ) {
-							((IntersectContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((IntersectContext)_localctx).op = _errHandler.recoverInline(this);
+						} else {
+							consume();
 						}
-						consume();
-						setState(520); ((IntersectContext)_localctx).r = orExpr(14);
+						setState(520);
+						((IntersectContext)_localctx).r = orExpr(14);
 						}
 						break;
 					case 2:
@@ -2805,10 +3100,12 @@ public class XQueryParser extends Parser {
 						((UnionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==VBAR || _la==KW_UNION) ) {
-							((UnionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((UnionContext)_localctx).op = _errHandler.recoverInline(this);
+						} else {
+							consume();
 						}
-						consume();
-						setState(523); ((UnionContext)_localctx).r = orExpr(13);
+						setState(523);
+						((UnionContext)_localctx).r = orExpr(13);
 						}
 						break;
 					case 3:
@@ -2822,10 +3119,12 @@ public class XQueryParser extends Parser {
 						((MultContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==STAR || _la==KW_DIV || _la==KW_IDIV || _la==KW_MOD) ) {
-							((MultContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((MultContext)_localctx).op = _errHandler.recoverInline(this);
+						} else {
+							consume();
 						}
-						consume();
-						setState(526); ((MultContext)_localctx).r = orExpr(12);
+						setState(526);
+						((MultContext)_localctx).r = orExpr(12);
 						}
 						break;
 					case 4:
@@ -2839,10 +3138,12 @@ public class XQueryParser extends Parser {
 						((AddContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==PLUS || _la==MINUS) ) {
-							((AddContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((AddContext)_localctx).op = _errHandler.recoverInline(this);
+						} else {
+							consume();
 						}
-						consume();
-						setState(529); ((AddContext)_localctx).r = orExpr(11);
+						setState(529);
+						((AddContext)_localctx).r = orExpr(11);
 						}
 						break;
 					case 5:
@@ -2852,8 +3153,10 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(530);
 						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
-						setState(531); ((RangeContext)_localctx).op = match(KW_TO);
-						setState(532); ((RangeContext)_localctx).r = orExpr(10);
+						setState(531);
+						((RangeContext)_localctx).op = match(KW_TO);
+						setState(532);
+						((RangeContext)_localctx).r = orExpr(10);
 						}
 						break;
 					case 6:
@@ -2867,85 +3170,105 @@ public class XQueryParser extends Parser {
 						switch ( getInterpreter().adaptivePredict(_input,47,_ctx) ) {
 						case 1:
 							{
-							setState(534); match(KW_EQ);
+							setState(534);
+							match(KW_EQ);
 							}
 							break;
 						case 2:
 							{
-							setState(535); match(KW_NE);
+							setState(535);
+							match(KW_NE);
 							}
 							break;
 						case 3:
 							{
-							setState(536); match(KW_LT);
+							setState(536);
+							match(KW_LT);
 							}
 							break;
 						case 4:
 							{
-							setState(537); match(KW_LE);
+							setState(537);
+							match(KW_LE);
 							}
 							break;
 						case 5:
 							{
-							setState(538); match(KW_GT);
+							setState(538);
+							match(KW_GT);
 							}
 							break;
 						case 6:
 							{
-							setState(539); match(KW_GE);
+							setState(539);
+							match(KW_GE);
 							}
 							break;
 						case 7:
 							{
-							setState(540); match(EQUAL);
+							setState(540);
+							match(EQUAL);
 							}
 							break;
 						case 8:
 							{
-							setState(541); match(NOT_EQUAL);
+							setState(541);
+							match(NOT_EQUAL);
 							}
 							break;
 						case 9:
 							{
-							setState(542); match(LANGLE);
+							setState(542);
+							match(LANGLE);
 							}
 							break;
 						case 10:
 							{
-							setState(543); match(LANGLE);
-							setState(544); match(EQUAL);
+							setState(543);
+							match(LANGLE);
+							setState(544);
+							match(EQUAL);
 							}
 							break;
 						case 11:
 							{
-							setState(545); match(RANGLE);
+							setState(545);
+							match(RANGLE);
 							}
 							break;
 						case 12:
 							{
-							setState(546); match(RANGLE);
-							setState(547); match(EQUAL);
+							setState(546);
+							match(RANGLE);
+							setState(547);
+							match(EQUAL);
 							}
 							break;
 						case 13:
 							{
-							setState(548); match(KW_IS);
+							setState(548);
+							match(KW_IS);
 							}
 							break;
 						case 14:
 							{
-							setState(549); match(LANGLE);
-							setState(550); match(LANGLE);
+							setState(549);
+							match(LANGLE);
+							setState(550);
+							match(LANGLE);
 							}
 							break;
 						case 15:
 							{
-							setState(551); match(RANGLE);
-							setState(552); match(RANGLE);
+							setState(551);
+							match(RANGLE);
+							setState(552);
+							match(RANGLE);
 							}
 							break;
 						}
-						setState(555); ((ComparisonContext)_localctx).r = orExpr(9);
+						setState(555);
+						((ComparisonContext)_localctx).r = orExpr(9);
 						}
 						break;
 					case 7:
@@ -2955,8 +3278,10 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(556);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(557); ((AndContext)_localctx).op = match(KW_AND);
-						setState(558); ((AndContext)_localctx).r = orExpr(8);
+						setState(557);
+						((AndContext)_localctx).op = match(KW_AND);
+						setState(558);
+						((AndContext)_localctx).r = orExpr(8);
 						}
 						break;
 					case 8:
@@ -2966,8 +3291,10 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(559);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(560); ((OrContext)_localctx).op = match(KW_OR);
-						setState(561); ((OrContext)_localctx).r = orExpr(7);
+						setState(560);
+						((OrContext)_localctx).op = match(KW_OR);
+						setState(561);
+						((OrContext)_localctx).r = orExpr(7);
 						}
 						break;
 					case 9:
@@ -2976,9 +3303,12 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(562);
 						if (!(precpred(_ctx, 17))) throw new FailedPredicateException(this, "precpred(_ctx, 17)");
-						setState(563); ((CastContext)_localctx).op = match(KW_CAST);
-						setState(564); match(KW_AS);
-						setState(565); singleType();
+						setState(563);
+						((CastContext)_localctx).op = match(KW_CAST);
+						setState(564);
+						match(KW_AS);
+						setState(565);
+						singleType();
 						}
 						break;
 					case 10:
@@ -2988,9 +3318,12 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(566);
 						if (!(precpred(_ctx, 16))) throw new FailedPredicateException(this, "precpred(_ctx, 16)");
-						setState(567); ((CastableContext)_localctx).op = match(KW_CASTABLE);
-						setState(568); match(KW_AS);
-						setState(569); ((CastableContext)_localctx).r = singleType();
+						setState(567);
+						((CastableContext)_localctx).op = match(KW_CASTABLE);
+						setState(568);
+						match(KW_AS);
+						setState(569);
+						((CastableContext)_localctx).r = singleType();
 						}
 						break;
 					case 11:
@@ -3000,9 +3333,12 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(570);
 						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
-						setState(571); ((TreatContext)_localctx).op = match(KW_TREAT);
-						setState(572); match(KW_AS);
-						setState(573); ((TreatContext)_localctx).r = sequenceType();
+						setState(571);
+						((TreatContext)_localctx).op = match(KW_TREAT);
+						setState(572);
+						match(KW_AS);
+						setState(573);
+						((TreatContext)_localctx).r = sequenceType();
 						}
 						break;
 					case 12:
@@ -3012,9 +3348,12 @@ public class XQueryParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_orExpr);
 						setState(574);
 						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
-						setState(575); ((InstanceOfContext)_localctx).op = match(KW_INSTANCE);
-						setState(576); match(KW_OF);
-						setState(577); ((InstanceOfContext)_localctx).r = sequenceType();
+						setState(575);
+						((InstanceOfContext)_localctx).op = match(KW_INSTANCE);
+						setState(576);
+						match(KW_OF);
+						setState(577);
+						((InstanceOfContext)_localctx).r = sequenceType();
 						}
 						break;
 					}
@@ -3048,17 +3387,70 @@ public class XQueryParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class UnorderedContext extends PrimaryExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public UnorderedContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterUnordered(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitUnordered(this);
+		}
+	}
+	public static class OrderedContext extends PrimaryExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public OrderedContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterOrdered(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitOrdered(this);
+		}
+	}
+	public static class ParenContext extends PrimaryExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ParenContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterParen(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitParen(this);
+		}
+	}
+	public static class CurrentContext extends PrimaryExprContext {
+		public CurrentContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterCurrent(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitCurrent(this);
+		}
+	}
 	public static class FuncallContext extends PrimaryExprContext {
 		public ExprSingleContext exprSingle;
 		public List<ExprSingleContext> args = new ArrayList<ExprSingleContext>();
-		public ExprSingleContext exprSingle(int i) {
-			return getRuleContext(ExprSingleContext.class,i);
-		}
 		public FunctionNameContext functionName() {
 			return getRuleContext(FunctionNameContext.class,0);
 		}
-		public List<ExprSingleContext> exprSingle() {
+		public List<? extends ExprSingleContext> exprSingle() {
 			return getRuleContexts(ExprSingleContext.class);
+		}
+		public ExprSingleContext exprSingle(int i) {
+			return getRuleContext(ExprSingleContext.class,i);
 		}
 		public FuncallContext(PrimaryExprContext ctx) { copyFrom(ctx); }
 		@Override
@@ -3068,6 +3460,46 @@ public class XQueryParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitFuncall(this);
+		}
+	}
+	public static class StringContext extends PrimaryExprContext {
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
+		}
+		public StringContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterString(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitString(this);
+		}
+	}
+	public static class DoubleContext extends PrimaryExprContext {
+		public TerminalNode DoubleLiteral() { return getToken(XQueryParser.DoubleLiteral, 0); }
+		public DoubleContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterDouble(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitDouble(this);
+		}
+	}
+	public static class VarContext extends PrimaryExprContext {
+		public QNameContext qName() {
+			return getRuleContext(QNameContext.class,0);
+		}
+		public VarContext(PrimaryExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterVar(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitVar(this);
 		}
 	}
 	public static class CtorContext extends PrimaryExprContext {
@@ -3096,99 +3528,6 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitInteger(this);
 		}
 	}
-	public static class OrderedContext extends PrimaryExprContext {
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public OrderedContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterOrdered(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitOrdered(this);
-		}
-	}
-	public static class VarContext extends PrimaryExprContext {
-		public QNameContext qName() {
-			return getRuleContext(QNameContext.class,0);
-		}
-		public VarContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterVar(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitVar(this);
-		}
-	}
-	public static class StringContext extends PrimaryExprContext {
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
-		public StringContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterString(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitString(this);
-		}
-	}
-	public static class CurrentContext extends PrimaryExprContext {
-		public CurrentContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterCurrent(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitCurrent(this);
-		}
-	}
-	public static class ParenContext extends PrimaryExprContext {
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public ParenContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterParen(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitParen(this);
-		}
-	}
-	public static class DoubleContext extends PrimaryExprContext {
-		public TerminalNode DoubleLiteral() { return getToken(XQueryParser.DoubleLiteral, 0); }
-		public DoubleContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterDouble(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitDouble(this);
-		}
-	}
-	public static class UnorderedContext extends PrimaryExprContext {
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public UnorderedContext(PrimaryExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterUnordered(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitUnordered(this);
-		}
-	}
 	public static class DecimalContext extends PrimaryExprContext {
 		public TerminalNode DecimalLiteral() { return getToken(XQueryParser.DecimalLiteral, 0); }
 		public DecimalContext(PrimaryExprContext ctx) { copyFrom(ctx); }
@@ -3202,6 +3541,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final PrimaryExprContext primaryExpr() throws RecognitionException {
 		PrimaryExprContext _localctx = new PrimaryExprContext(_ctx, getState());
 		enterRule(_localctx, 60, RULE_primaryExpr);
@@ -3213,72 +3553,85 @@ public class XQueryParser extends Parser {
 				_localctx = new IntegerContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(583); match(IntegerLiteral);
+				setState(583);
+				match(IntegerLiteral);
 				}
 				break;
 			case 2:
 				_localctx = new DecimalContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(584); match(DecimalLiteral);
+				setState(584);
+				match(DecimalLiteral);
 				}
 				break;
 			case 3:
 				_localctx = new DoubleContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(585); match(DoubleLiteral);
+				setState(585);
+				match(DoubleLiteral);
 				}
 				break;
 			case 4:
 				_localctx = new StringContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(586); stringLiteral();
+				setState(586);
+				stringLiteral();
 				}
 				break;
 			case 5:
 				_localctx = new VarContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(587); match(DOLLAR);
-				setState(588); qName();
+				setState(587);
+				match(DOLLAR);
+				setState(588);
+				qName();
 				}
 				break;
 			case 6:
 				_localctx = new ParenContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(589); match(LPAREN);
+				setState(589);
+				match(LPAREN);
 				setState(591);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << Quot) | (1L << Apos) | (1L << COMMENT) | (1L << PI) | (1L << PRAGMA) | (1L << LPAREN) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << DOT) | (1L << DDOT) | (1L << SLASH) | (1L << DSLASH) | (1L << LANGLE) | (1L << AT) | (1L << DOLLAR) | (1L << KW_ANCESTOR) | (1L << KW_ANCESTOR_OR_SELF) | (1L << KW_AND) | (1L << KW_AS) | (1L << KW_ASCENDING) | (1L << KW_AT) | (1L << KW_ATTRIBUTE) | (1L << KW_BASE_URI) | (1L << KW_BOUNDARY_SPACE) | (1L << KW_BY) | (1L << KW_CASE) | (1L << KW_CAST) | (1L << KW_CASTABLE) | (1L << KW_CHILD) | (1L << KW_COLLATION) | (1L << KW_COMMENT) | (1L << KW_CONSTRUCTION) | (1L << KW_COPY_NS) | (1L << KW_DECLARE) | (1L << KW_DEFAULT) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF) | (1L << KW_DESCENDING) | (1L << KW_DIV) | (1L << KW_DOCUMENT))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_ELSE - 64)) | (1L << (KW_EMPTY - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_ENCODING - 64)) | (1L << (KW_EQ - 64)) | (1L << (KW_EVERY - 64)) | (1L << (KW_EXCEPT - 64)) | (1L << (KW_EXTERNAL - 64)) | (1L << (KW_FOLLOWING - 64)) | (1L << (KW_FOLLOWING_SIBLING - 64)) | (1L << (KW_FOR - 64)) | (1L << (KW_FUNCTION - 64)) | (1L << (KW_GE - 64)) | (1L << (KW_GREATEST - 64)) | (1L << (KW_GT - 64)) | (1L << (KW_IDIV - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_IMPORT - 64)) | (1L << (KW_IN - 64)) | (1L << (KW_INHERIT - 64)) | (1L << (KW_INSTANCE - 64)) | (1L << (KW_INTERSECT - 64)) | (1L << (KW_IS - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_LAX - 64)) | (1L << (KW_LE - 64)) | (1L << (KW_LEAST - 64)) | (1L << (KW_LET - 64)) | (1L << (KW_LT - 64)) | (1L << (KW_MOD - 64)) | (1L << (KW_MODULE - 64)) | (1L << (KW_NAMESPACE - 64)) | (1L << (KW_NE - 64)) | (1L << (KW_NO_INHERIT - 64)) | (1L << (KW_NO_PRESERVE - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_OF - 64)) | (1L << (KW_OPTION - 64)) | (1L << (KW_OR - 64)) | (1L << (KW_ORDER - 64)) | (1L << (KW_ORDERED - 64)) | (1L << (KW_ORDERING - 64)) | (1L << (KW_PARENT - 64)) | (1L << (KW_PRECEDING - 64)) | (1L << (KW_PRECEDING_SIBLING - 64)) | (1L << (KW_PRESERVE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_RETURN - 64)) | (1L << (KW_SATISFIES - 64)) | (1L << (KW_SCHEMA - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_SELF - 64)) | (1L << (KW_SOME - 64)) | (1L << (KW_STABLE - 64)) | (1L << (KW_STRICT - 64)) | (1L << (KW_STRIP - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_THEN - 64)) | (1L << (KW_TO - 64)) | (1L << (KW_TREAT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (KW_UNION - 128)) | (1L << (KW_UNORDERED - 128)) | (1L << (KW_VALIDATE - 128)) | (1L << (KW_VARIABLE - 128)) | (1L << (KW_VERSION - 128)) | (1L << (KW_WHERE - 128)) | (1L << (KW_XQUERY - 128)) | (1L << (FullQName - 128)) | (1L << (NCNameWithLocalWildcard - 128)) | (1L << (NCNameWithPrefixWildcard - 128)) | (1L << (NCName - 128)))) != 0)) {
 					{
-					setState(590); expr();
+					setState(590);
+					expr();
 					}
 				}
 
-				setState(593); match(RPAREN);
+				setState(593);
+				match(RPAREN);
 				}
 				break;
 			case 7:
 				_localctx = new CurrentContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(594); match(DOT);
+				setState(594);
+				match(DOT);
 				}
 				break;
 			case 8:
 				_localctx = new FuncallContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(595); functionName();
-				setState(596); match(LPAREN);
+				setState(595);
+				functionName();
+				setState(596);
+				match(LPAREN);
 				setState(605);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << Quot) | (1L << Apos) | (1L << COMMENT) | (1L << PI) | (1L << PRAGMA) | (1L << LPAREN) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << DOT) | (1L << DDOT) | (1L << SLASH) | (1L << DSLASH) | (1L << LANGLE) | (1L << AT) | (1L << DOLLAR) | (1L << KW_ANCESTOR) | (1L << KW_ANCESTOR_OR_SELF) | (1L << KW_AND) | (1L << KW_AS) | (1L << KW_ASCENDING) | (1L << KW_AT) | (1L << KW_ATTRIBUTE) | (1L << KW_BASE_URI) | (1L << KW_BOUNDARY_SPACE) | (1L << KW_BY) | (1L << KW_CASE) | (1L << KW_CAST) | (1L << KW_CASTABLE) | (1L << KW_CHILD) | (1L << KW_COLLATION) | (1L << KW_COMMENT) | (1L << KW_CONSTRUCTION) | (1L << KW_COPY_NS) | (1L << KW_DECLARE) | (1L << KW_DEFAULT) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF) | (1L << KW_DESCENDING) | (1L << KW_DIV) | (1L << KW_DOCUMENT))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_ELSE - 64)) | (1L << (KW_EMPTY - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_ENCODING - 64)) | (1L << (KW_EQ - 64)) | (1L << (KW_EVERY - 64)) | (1L << (KW_EXCEPT - 64)) | (1L << (KW_EXTERNAL - 64)) | (1L << (KW_FOLLOWING - 64)) | (1L << (KW_FOLLOWING_SIBLING - 64)) | (1L << (KW_FOR - 64)) | (1L << (KW_FUNCTION - 64)) | (1L << (KW_GE - 64)) | (1L << (KW_GREATEST - 64)) | (1L << (KW_GT - 64)) | (1L << (KW_IDIV - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_IMPORT - 64)) | (1L << (KW_IN - 64)) | (1L << (KW_INHERIT - 64)) | (1L << (KW_INSTANCE - 64)) | (1L << (KW_INTERSECT - 64)) | (1L << (KW_IS - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_LAX - 64)) | (1L << (KW_LE - 64)) | (1L << (KW_LEAST - 64)) | (1L << (KW_LET - 64)) | (1L << (KW_LT - 64)) | (1L << (KW_MOD - 64)) | (1L << (KW_MODULE - 64)) | (1L << (KW_NAMESPACE - 64)) | (1L << (KW_NE - 64)) | (1L << (KW_NO_INHERIT - 64)) | (1L << (KW_NO_PRESERVE - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_OF - 64)) | (1L << (KW_OPTION - 64)) | (1L << (KW_OR - 64)) | (1L << (KW_ORDER - 64)) | (1L << (KW_ORDERED - 64)) | (1L << (KW_ORDERING - 64)) | (1L << (KW_PARENT - 64)) | (1L << (KW_PRECEDING - 64)) | (1L << (KW_PRECEDING_SIBLING - 64)) | (1L << (KW_PRESERVE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_RETURN - 64)) | (1L << (KW_SATISFIES - 64)) | (1L << (KW_SCHEMA - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_SELF - 64)) | (1L << (KW_SOME - 64)) | (1L << (KW_STABLE - 64)) | (1L << (KW_STRICT - 64)) | (1L << (KW_STRIP - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_THEN - 64)) | (1L << (KW_TO - 64)) | (1L << (KW_TREAT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (KW_UNION - 128)) | (1L << (KW_UNORDERED - 128)) | (1L << (KW_VALIDATE - 128)) | (1L << (KW_VARIABLE - 128)) | (1L << (KW_VERSION - 128)) | (1L << (KW_WHERE - 128)) | (1L << (KW_XQUERY - 128)) | (1L << (FullQName - 128)) | (1L << (NCNameWithLocalWildcard - 128)) | (1L << (NCNameWithPrefixWildcard - 128)) | (1L << (NCName - 128)))) != 0)) {
 					{
-					setState(597); ((FuncallContext)_localctx).exprSingle = exprSingle();
+					setState(597);
+					((FuncallContext)_localctx).exprSingle = exprSingle();
 					((FuncallContext)_localctx).args.add(((FuncallContext)_localctx).exprSingle);
 					setState(602);
 					_errHandler.sync(this);
@@ -3286,8 +3639,10 @@ public class XQueryParser extends Parser {
 					while (_la==COMMA) {
 						{
 						{
-						setState(598); match(COMMA);
-						setState(599); ((FuncallContext)_localctx).exprSingle = exprSingle();
+						setState(598);
+						match(COMMA);
+						setState(599);
+						((FuncallContext)_localctx).exprSingle = exprSingle();
 						((FuncallContext)_localctx).args.add(((FuncallContext)_localctx).exprSingle);
 						}
 						}
@@ -3298,34 +3653,44 @@ public class XQueryParser extends Parser {
 					}
 				}
 
-				setState(607); match(RPAREN);
+				setState(607);
+				match(RPAREN);
 				}
 				break;
 			case 9:
 				_localctx = new OrderedContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
-				setState(609); match(KW_ORDERED);
-				setState(610); match(LBRACE);
-				setState(611); expr();
-				setState(612); match(RBRACE);
+				setState(609);
+				match(KW_ORDERED);
+				setState(610);
+				match(LBRACE);
+				setState(611);
+				expr();
+				setState(612);
+				match(RBRACE);
 				}
 				break;
 			case 10:
 				_localctx = new UnorderedContext(_localctx);
 				enterOuterAlt(_localctx, 10);
 				{
-				setState(614); match(KW_UNORDERED);
-				setState(615); match(LBRACE);
-				setState(616); expr();
-				setState(617); match(RBRACE);
+				setState(614);
+				match(KW_UNORDERED);
+				setState(615);
+				match(LBRACE);
+				setState(616);
+				expr();
+				setState(617);
+				match(RBRACE);
 				}
 				break;
 			case 11:
 				_localctx = new CtorContext(_localctx);
 				enterOuterAlt(_localctx, 11);
 				{
-				setState(619); constructor();
+				setState(619);
+				constructor();
 				}
 				break;
 			}
@@ -3343,11 +3708,11 @@ public class XQueryParser extends Parser {
 
 	public static class RelativePathExprContext extends ParserRuleContext {
 		public Token sep;
+		public List<? extends StepExprContext> stepExpr() {
+			return getRuleContexts(StepExprContext.class);
+		}
 		public StepExprContext stepExpr(int i) {
 			return getRuleContext(StepExprContext.class,i);
-		}
-		public List<StepExprContext> stepExpr() {
-			return getRuleContexts(StepExprContext.class);
 		}
 		public RelativePathExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3363,6 +3728,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final RelativePathExprContext relativePathExpr() throws RecognitionException {
 		RelativePathExprContext _localctx = new RelativePathExprContext(_ctx, getState());
 		enterRule(_localctx, 62, RULE_relativePathExpr);
@@ -3371,7 +3737,8 @@ public class XQueryParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(622); stepExpr();
+			setState(622);
+			stepExpr();
 			setState(627);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,54,_ctx);
@@ -3380,13 +3747,15 @@ public class XQueryParser extends Parser {
 					{
 					{
 					setState(623);
-					((RelativePathExprContext)_localctx).sep = _input.LT(1);
+					_localctx.sep = _input.LT(1);
 					_la = _input.LA(1);
 					if ( !(_la==SLASH || _la==DSLASH) ) {
-						((RelativePathExprContext)_localctx).sep = (Token)_errHandler.recoverInline(this);
+						_localctx.sep = _errHandler.recoverInline(this);
+					} else {
+						consume();
 					}
-					consume();
-					setState(624); stepExpr();
+					setState(624);
+					stepExpr();
 					}
 					} 
 				}
@@ -3408,11 +3777,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class StepExprContext extends ParserRuleContext {
-		public FilterExprContext filterExpr() {
-			return getRuleContext(FilterExprContext.class,0);
-		}
 		public AxisStepContext axisStep() {
 			return getRuleContext(AxisStepContext.class,0);
+		}
+		public FilterExprContext filterExpr() {
+			return getRuleContext(FilterExprContext.class,0);
 		}
 		public StepExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3428,6 +3797,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final StepExprContext stepExpr() throws RecognitionException {
 		StepExprContext _localctx = new StepExprContext(_ctx, getState());
 		enterRule(_localctx, 64, RULE_stepExpr);
@@ -3437,13 +3807,15 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(630); axisStep();
+				setState(630);
+				axisStep();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(631); filterExpr();
+				setState(631);
+				filterExpr();
 				}
 				break;
 			}
@@ -3483,6 +3855,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final AxisStepContext axisStep() throws RecognitionException {
 		AxisStepContext _localctx = new AxisStepContext(_ctx, getState());
 		enterRule(_localctx, 66, RULE_axisStep);
@@ -3493,16 +3866,19 @@ public class XQueryParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,56,_ctx) ) {
 			case 1:
 				{
-				setState(634); reverseStep();
+				setState(634);
+				reverseStep();
 				}
 				break;
 			case 2:
 				{
-				setState(635); forwardStep();
+				setState(635);
+				forwardStep();
 				}
 				break;
 			}
-			setState(638); predicateList();
+			setState(638);
+			predicateList();
 			}
 		}
 		catch (RecognitionException re) {
@@ -3540,6 +3916,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ForwardStepContext forwardStep() throws RecognitionException {
 		ForwardStepContext _localctx = new ForwardStepContext(_ctx, getState());
 		enterRule(_localctx, 68, RULE_forwardStep);
@@ -3549,14 +3926,17 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(640); forwardAxis();
-				setState(641); nodeTest();
+				setState(640);
+				forwardAxis();
+				setState(641);
+				nodeTest();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(643); abbrevForwardStep();
+				setState(643);
+				abbrevForwardStep();
 				}
 				break;
 			}
@@ -3587,6 +3967,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ForwardAxisContext forwardAxis() throws RecognitionException {
 		ForwardAxisContext _localctx = new ForwardAxisContext(_ctx, getState());
 		enterRule(_localctx, 70, RULE_forwardAxis);
@@ -3598,10 +3979,13 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << KW_ATTRIBUTE) | (1L << KW_CHILD) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF))) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & ((1L << (KW_FOLLOWING - 74)) | (1L << (KW_FOLLOWING_SIBLING - 74)) | (1L << (KW_SELF - 74)))) != 0)) ) {
 			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
-			setState(647); match(COLON);
-			setState(648); match(COLON);
+			setState(647);
+			match(COLON);
+			setState(648);
+			match(COLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3633,6 +4017,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final AbbrevForwardStepContext abbrevForwardStep() throws RecognitionException {
 		AbbrevForwardStepContext _localctx = new AbbrevForwardStepContext(_ctx, getState());
 		enterRule(_localctx, 72, RULE_abbrevForwardStep);
@@ -3644,11 +4029,13 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==AT) {
 				{
-				setState(650); match(AT);
+				setState(650);
+				match(AT);
 				}
 			}
 
-			setState(653); nodeTest();
+			setState(653);
+			nodeTest();
 			}
 		}
 		catch (RecognitionException re) {
@@ -3666,11 +4053,11 @@ public class XQueryParser extends Parser {
 		public ReverseAxisContext reverseAxis() {
 			return getRuleContext(ReverseAxisContext.class,0);
 		}
-		public AbbrevReverseStepContext abbrevReverseStep() {
-			return getRuleContext(AbbrevReverseStepContext.class,0);
-		}
 		public NodeTestContext nodeTest() {
 			return getRuleContext(NodeTestContext.class,0);
+		}
+		public AbbrevReverseStepContext abbrevReverseStep() {
+			return getRuleContext(AbbrevReverseStepContext.class,0);
 		}
 		public ReverseStepContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3686,6 +4073,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ReverseStepContext reverseStep() throws RecognitionException {
 		ReverseStepContext _localctx = new ReverseStepContext(_ctx, getState());
 		enterRule(_localctx, 74, RULE_reverseStep);
@@ -3699,14 +4087,17 @@ public class XQueryParser extends Parser {
 			case KW_PRECEDING_SIBLING:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(655); reverseAxis();
-				setState(656); nodeTest();
+				setState(655);
+				reverseAxis();
+				setState(656);
+				nodeTest();
 				}
 				break;
 			case DDOT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(658); abbrevReverseStep();
+				setState(658);
+				abbrevReverseStep();
 				}
 				break;
 			default:
@@ -3739,6 +4130,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ReverseAxisContext reverseAxis() throws RecognitionException {
 		ReverseAxisContext _localctx = new ReverseAxisContext(_ctx, getState());
 		enterRule(_localctx, 76, RULE_reverseAxis);
@@ -3750,10 +4142,13 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if ( !(_la==KW_ANCESTOR || _la==KW_ANCESTOR_OR_SELF || ((((_la - 108)) & ~0x3f) == 0 && ((1L << (_la - 108)) & ((1L << (KW_PARENT - 108)) | (1L << (KW_PRECEDING - 108)) | (1L << (KW_PRECEDING_SIBLING - 108)))) != 0)) ) {
 			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
-			setState(662); match(COLON);
-			setState(663); match(COLON);
+			setState(662);
+			match(COLON);
+			setState(663);
+			match(COLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3782,13 +4177,15 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final AbbrevReverseStepContext abbrevReverseStep() throws RecognitionException {
 		AbbrevReverseStepContext _localctx = new AbbrevReverseStepContext(_ctx, getState());
 		enterRule(_localctx, 78, RULE_abbrevReverseStep);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(665); match(DDOT);
+			setState(665);
+			match(DDOT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3823,6 +4220,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final NodeTestContext nodeTest() throws RecognitionException {
 		NodeTestContext _localctx = new NodeTestContext(_ctx, getState());
 		enterRule(_localctx, 80, RULE_nodeTest);
@@ -3832,13 +4230,15 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(667); nameTest();
+				setState(667);
+				nameTest();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(668); kindTest();
+				setState(668);
+				kindTest();
 				}
 				break;
 			}
@@ -3890,18 +4290,6 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitExactMatch(this);
 		}
 	}
-	public static class AllWithNSContext extends NameTestContext {
-		public TerminalNode NCNameWithLocalWildcard() { return getToken(XQueryParser.NCNameWithLocalWildcard, 0); }
-		public AllWithNSContext(NameTestContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAllWithNS(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAllWithNS(this);
-		}
-	}
 	public static class AllWithLocalContext extends NameTestContext {
 		public TerminalNode NCNameWithPrefixWildcard() { return getToken(XQueryParser.NCNameWithPrefixWildcard, 0); }
 		public AllWithLocalContext(NameTestContext ctx) { copyFrom(ctx); }
@@ -3914,7 +4302,20 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAllWithLocal(this);
 		}
 	}
+	public static class AllWithNSContext extends NameTestContext {
+		public TerminalNode NCNameWithLocalWildcard() { return getToken(XQueryParser.NCNameWithLocalWildcard, 0); }
+		public AllWithNSContext(NameTestContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterAllWithNS(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitAllWithNS(this);
+		}
+	}
 
+	@RuleVersion(0)
 	public final NameTestContext nameTest() throws RecognitionException {
 		NameTestContext _localctx = new NameTestContext(_ctx, getState());
 		enterRule(_localctx, 82, RULE_nameTest);
@@ -4022,28 +4423,32 @@ public class XQueryParser extends Parser {
 				_localctx = new ExactMatchContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(671); qName();
+				setState(671);
+				qName();
 				}
 				break;
 			case STAR:
 				_localctx = new AllNamesContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(672); match(STAR);
+				setState(672);
+				match(STAR);
 				}
 				break;
 			case NCNameWithLocalWildcard:
 				_localctx = new AllWithNSContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(673); match(NCNameWithLocalWildcard);
+				setState(673);
+				match(NCNameWithLocalWildcard);
 				}
 				break;
 			case NCNameWithPrefixWildcard:
 				_localctx = new AllWithLocalContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(674); match(NCNameWithPrefixWildcard);
+				setState(674);
+				match(NCNameWithPrefixWildcard);
 				}
 				break;
 			default:
@@ -4082,14 +4487,17 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final FilterExprContext filterExpr() throws RecognitionException {
 		FilterExprContext _localctx = new FilterExprContext(_ctx, getState());
 		enterRule(_localctx, 84, RULE_filterExpr);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(677); primaryExpr();
-			setState(678); predicateList();
+			setState(677);
+			primaryExpr();
+			setState(678);
+			predicateList();
 			}
 		}
 		catch (RecognitionException re) {
@@ -4106,7 +4514,7 @@ public class XQueryParser extends Parser {
 	public static class PredicateListContext extends ParserRuleContext {
 		public ExprContext expr;
 		public List<ExprContext> predicates = new ArrayList<ExprContext>();
-		public List<ExprContext> expr() {
+		public List<? extends ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
@@ -4126,6 +4534,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final PredicateListContext predicateList() throws RecognitionException {
 		PredicateListContext _localctx = new PredicateListContext(_ctx, getState());
 		enterRule(_localctx, 86, RULE_predicateList);
@@ -4140,10 +4549,13 @@ public class XQueryParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(680); match(LBRACKET);
-					setState(681); ((PredicateListContext)_localctx).expr = expr();
-					((PredicateListContext)_localctx).predicates.add(((PredicateListContext)_localctx).expr);
-					setState(682); match(RBRACKET);
+					setState(680);
+					match(LBRACKET);
+					setState(681);
+					_localctx.expr = expr();
+					_localctx.predicates.add(_localctx.expr);
+					setState(682);
+					match(RBRACKET);
 					}
 					} 
 				}
@@ -4165,11 +4577,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class ConstructorContext extends ParserRuleContext {
-		public ComputedConstructorContext computedConstructor() {
-			return getRuleContext(ComputedConstructorContext.class,0);
-		}
 		public DirectConstructorContext directConstructor() {
 			return getRuleContext(DirectConstructorContext.class,0);
+		}
+		public ComputedConstructorContext computedConstructor() {
+			return getRuleContext(ComputedConstructorContext.class,0);
 		}
 		public ConstructorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4185,6 +4597,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ConstructorContext constructor() throws RecognitionException {
 		ConstructorContext _localctx = new ConstructorContext(_ctx, getState());
 		enterRule(_localctx, 88, RULE_constructor);
@@ -4196,7 +4609,8 @@ public class XQueryParser extends Parser {
 			case LANGLE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(689); directConstructor();
+				setState(689);
+				directConstructor();
 				}
 				break;
 			case KW_ATTRIBUTE:
@@ -4207,7 +4621,8 @@ public class XQueryParser extends Parser {
 			case KW_TEXT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(690); computedConstructor();
+				setState(690);
+				computedConstructor();
 				}
 				break;
 			default:
@@ -4226,14 +4641,14 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class DirectConstructorContext extends ParserRuleContext {
-		public TerminalNode PI() { return getToken(XQueryParser.PI, 0); }
 		public DirElemConstructorOpenCloseContext dirElemConstructorOpenClose() {
 			return getRuleContext(DirElemConstructorOpenCloseContext.class,0);
 		}
-		public TerminalNode COMMENT() { return getToken(XQueryParser.COMMENT, 0); }
 		public DirElemConstructorSingleTagContext dirElemConstructorSingleTag() {
 			return getRuleContext(DirElemConstructorSingleTagContext.class,0);
 		}
+		public TerminalNode COMMENT() { return getToken(XQueryParser.COMMENT, 0); }
+		public TerminalNode PI() { return getToken(XQueryParser.PI, 0); }
 		public DirectConstructorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -4248,6 +4663,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DirectConstructorContext directConstructor() throws RecognitionException {
 		DirectConstructorContext _localctx = new DirectConstructorContext(_ctx, getState());
 		enterRule(_localctx, 90, RULE_directConstructor);
@@ -4258,13 +4674,15 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(693); dirElemConstructorOpenClose();
+				setState(693);
+				dirElemConstructorOpenClose();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(694); dirElemConstructorSingleTag();
+				setState(694);
+				dirElemConstructorSingleTag();
 				}
 				break;
 			case 3:
@@ -4274,8 +4692,9 @@ public class XQueryParser extends Parser {
 				_la = _input.LA(1);
 				if ( !(_la==COMMENT || _la==PI) ) {
 				_errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			}
@@ -4297,20 +4716,20 @@ public class XQueryParser extends Parser {
 		public Token startClose;
 		public Token slashClose;
 		public QNameContext closeName;
-		public List<QNameContext> qName() {
+		public DirAttributeListContext dirAttributeList() {
+			return getRuleContext(DirAttributeListContext.class,0);
+		}
+		public List<? extends QNameContext> qName() {
 			return getRuleContexts(QNameContext.class);
 		}
 		public QNameContext qName(int i) {
 			return getRuleContext(QNameContext.class,i);
 		}
-		public DirAttributeListContext dirAttributeList() {
-			return getRuleContext(DirAttributeListContext.class,0);
+		public List<? extends DirElemContentContext> dirElemContent() {
+			return getRuleContexts(DirElemContentContext.class);
 		}
 		public DirElemContentContext dirElemContent(int i) {
 			return getRuleContext(DirElemContentContext.class,i);
-		}
-		public List<DirElemContentContext> dirElemContent() {
-			return getRuleContexts(DirElemContentContext.class);
 		}
 		public DirElemConstructorOpenCloseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4326,6 +4745,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DirElemConstructorOpenCloseContext dirElemConstructorOpenClose() throws RecognitionException {
 		DirElemConstructorOpenCloseContext _localctx = new DirElemConstructorOpenCloseContext(_ctx, getState());
 		enterRule(_localctx, 92, RULE_dirElemConstructorOpenClose);
@@ -4333,10 +4753,14 @@ public class XQueryParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(698); match(LANGLE);
-			setState(699); ((DirElemConstructorOpenCloseContext)_localctx).openName = qName();
-			setState(700); dirAttributeList();
-			setState(701); ((DirElemConstructorOpenCloseContext)_localctx).endOpen = match(RANGLE);
+			setState(698);
+			match(LANGLE);
+			setState(699);
+			_localctx.openName = qName();
+			setState(700);
+			dirAttributeList();
+			setState(701);
+			_localctx.endOpen = match(RANGLE);
 			setState(705);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,65,_ctx);
@@ -4344,7 +4768,8 @@ public class XQueryParser extends Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(702); dirElemContent();
+					setState(702);
+					dirElemContent();
 					}
 					} 
 				}
@@ -4352,10 +4777,14 @@ public class XQueryParser extends Parser {
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,65,_ctx);
 			}
-			setState(708); ((DirElemConstructorOpenCloseContext)_localctx).startClose = match(LANGLE);
-			setState(709); ((DirElemConstructorOpenCloseContext)_localctx).slashClose = match(SLASH);
-			setState(710); ((DirElemConstructorOpenCloseContext)_localctx).closeName = qName();
-			setState(711); match(RANGLE);
+			setState(708);
+			_localctx.startClose = match(LANGLE);
+			setState(709);
+			_localctx.slashClose = match(SLASH);
+			setState(710);
+			_localctx.closeName = qName();
+			setState(711);
+			match(RANGLE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -4372,11 +4801,11 @@ public class XQueryParser extends Parser {
 	public static class DirElemConstructorSingleTagContext extends ParserRuleContext {
 		public QNameContext openName;
 		public Token slashClose;
-		public QNameContext qName() {
-			return getRuleContext(QNameContext.class,0);
-		}
 		public DirAttributeListContext dirAttributeList() {
 			return getRuleContext(DirAttributeListContext.class,0);
+		}
+		public QNameContext qName() {
+			return getRuleContext(QNameContext.class,0);
 		}
 		public DirElemConstructorSingleTagContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -4392,17 +4821,23 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DirElemConstructorSingleTagContext dirElemConstructorSingleTag() throws RecognitionException {
 		DirElemConstructorSingleTagContext _localctx = new DirElemConstructorSingleTagContext(_ctx, getState());
 		enterRule(_localctx, 94, RULE_dirElemConstructorSingleTag);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(713); match(LANGLE);
-			setState(714); ((DirElemConstructorSingleTagContext)_localctx).openName = qName();
-			setState(715); dirAttributeList();
-			setState(716); ((DirElemConstructorSingleTagContext)_localctx).slashClose = match(SLASH);
-			setState(717); match(RANGLE);
+			setState(713);
+			match(LANGLE);
+			setState(714);
+			_localctx.openName = qName();
+			setState(715);
+			dirAttributeList();
+			setState(716);
+			_localctx.slashClose = match(SLASH);
+			setState(717);
+			match(RANGLE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -4417,14 +4852,14 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class DirAttributeListContext extends ParserRuleContext {
-		public List<QNameContext> qName() {
+		public List<? extends QNameContext> qName() {
 			return getRuleContexts(QNameContext.class);
-		}
-		public List<DirAttributeValueContext> dirAttributeValue() {
-			return getRuleContexts(DirAttributeValueContext.class);
 		}
 		public QNameContext qName(int i) {
 			return getRuleContext(QNameContext.class,i);
+		}
+		public List<? extends DirAttributeValueContext> dirAttributeValue() {
+			return getRuleContexts(DirAttributeValueContext.class);
 		}
 		public DirAttributeValueContext dirAttributeValue(int i) {
 			return getRuleContext(DirAttributeValueContext.class,i);
@@ -4443,6 +4878,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DirAttributeListContext dirAttributeList() throws RecognitionException {
 		DirAttributeListContext _localctx = new DirAttributeListContext(_ctx, getState());
 		enterRule(_localctx, 96, RULE_dirAttributeList);
@@ -4456,9 +4892,12 @@ public class XQueryParser extends Parser {
 			while (((((_la - 39)) & ~0x3f) == 0 && ((1L << (_la - 39)) & ((1L << (KW_ANCESTOR - 39)) | (1L << (KW_ANCESTOR_OR_SELF - 39)) | (1L << (KW_AND - 39)) | (1L << (KW_AS - 39)) | (1L << (KW_ASCENDING - 39)) | (1L << (KW_AT - 39)) | (1L << (KW_ATTRIBUTE - 39)) | (1L << (KW_BASE_URI - 39)) | (1L << (KW_BOUNDARY_SPACE - 39)) | (1L << (KW_BY - 39)) | (1L << (KW_CASE - 39)) | (1L << (KW_CAST - 39)) | (1L << (KW_CASTABLE - 39)) | (1L << (KW_CHILD - 39)) | (1L << (KW_COLLATION - 39)) | (1L << (KW_COMMENT - 39)) | (1L << (KW_CONSTRUCTION - 39)) | (1L << (KW_COPY_NS - 39)) | (1L << (KW_DECLARE - 39)) | (1L << (KW_DEFAULT - 39)) | (1L << (KW_DESCENDANT - 39)) | (1L << (KW_DESCENDANT_OR_SELF - 39)) | (1L << (KW_DESCENDING - 39)) | (1L << (KW_DIV - 39)) | (1L << (KW_DOCUMENT - 39)) | (1L << (KW_DOCUMENT_NODE - 39)) | (1L << (KW_ELEMENT - 39)) | (1L << (KW_ELSE - 39)) | (1L << (KW_EMPTY - 39)) | (1L << (KW_EMPTY_SEQUENCE - 39)) | (1L << (KW_ENCODING - 39)) | (1L << (KW_EQ - 39)) | (1L << (KW_EVERY - 39)) | (1L << (KW_EXCEPT - 39)) | (1L << (KW_EXTERNAL - 39)) | (1L << (KW_FOLLOWING - 39)) | (1L << (KW_FOLLOWING_SIBLING - 39)) | (1L << (KW_FOR - 39)) | (1L << (KW_FUNCTION - 39)) | (1L << (KW_GE - 39)) | (1L << (KW_GREATEST - 39)) | (1L << (KW_GT - 39)) | (1L << (KW_IDIV - 39)) | (1L << (KW_IF - 39)) | (1L << (KW_IMPORT - 39)) | (1L << (KW_IN - 39)) | (1L << (KW_INHERIT - 39)) | (1L << (KW_INSTANCE - 39)) | (1L << (KW_INTERSECT - 39)) | (1L << (KW_IS - 39)) | (1L << (KW_ITEM - 39)) | (1L << (KW_LAX - 39)) | (1L << (KW_LE - 39)) | (1L << (KW_LEAST - 39)) | (1L << (KW_LET - 39)) | (1L << (KW_LT - 39)) | (1L << (KW_MOD - 39)) | (1L << (KW_MODULE - 39)) | (1L << (KW_NAMESPACE - 39)) | (1L << (KW_NE - 39)) | (1L << (KW_NO_INHERIT - 39)) | (1L << (KW_NO_PRESERVE - 39)) | (1L << (KW_NODE - 39)) | (1L << (KW_OF - 39)))) != 0) || ((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & ((1L << (KW_OPTION - 103)) | (1L << (KW_OR - 103)) | (1L << (KW_ORDER - 103)) | (1L << (KW_ORDERED - 103)) | (1L << (KW_ORDERING - 103)) | (1L << (KW_PARENT - 103)) | (1L << (KW_PRECEDING - 103)) | (1L << (KW_PRECEDING_SIBLING - 103)) | (1L << (KW_PRESERVE - 103)) | (1L << (KW_PI - 103)) | (1L << (KW_RETURN - 103)) | (1L << (KW_SATISFIES - 103)) | (1L << (KW_SCHEMA - 103)) | (1L << (KW_SCHEMA_ATTR - 103)) | (1L << (KW_SCHEMA_ELEM - 103)) | (1L << (KW_SELF - 103)) | (1L << (KW_SOME - 103)) | (1L << (KW_STABLE - 103)) | (1L << (KW_STRICT - 103)) | (1L << (KW_STRIP - 103)) | (1L << (KW_TEXT - 103)) | (1L << (KW_THEN - 103)) | (1L << (KW_TO - 103)) | (1L << (KW_TREAT - 103)) | (1L << (KW_TYPESWITCH - 103)) | (1L << (KW_UNION - 103)) | (1L << (KW_UNORDERED - 103)) | (1L << (KW_VALIDATE - 103)) | (1L << (KW_VARIABLE - 103)) | (1L << (KW_VERSION - 103)) | (1L << (KW_WHERE - 103)) | (1L << (KW_XQUERY - 103)) | (1L << (FullQName - 103)) | (1L << (NCName - 103)))) != 0)) {
 				{
 				{
-				setState(719); qName();
-				setState(720); match(EQUAL);
-				setState(721); dirAttributeValue();
+				setState(719);
+				qName();
+				setState(720);
+				match(EQUAL);
+				setState(721);
+				dirAttributeValue();
 				}
 				}
 				setState(727);
@@ -4479,23 +4918,23 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class DirAttributeValueContext extends ParserRuleContext {
-		public TerminalNode Apos(int i) {
-			return getToken(XQueryParser.Apos, i);
-		}
-		public List<CommonContentContext> commonContent() {
+		public List<? extends CommonContentContext> commonContent() {
 			return getRuleContexts(CommonContentContext.class);
 		}
 		public CommonContentContext commonContent(int i) {
 			return getRuleContext(CommonContentContext.class,i);
 		}
+		public List<? extends TerminalNode> Apos() { return getTokens(XQueryParser.Apos); }
+		public TerminalNode Apos(int i) {
+			return getToken(XQueryParser.Apos, i);
+		}
+		public List<? extends NoQuotesNoBracesNoAmpNoLAngContext> noQuotesNoBracesNoAmpNoLAng() {
+			return getRuleContexts(NoQuotesNoBracesNoAmpNoLAngContext.class);
+		}
 		public NoQuotesNoBracesNoAmpNoLAngContext noQuotesNoBracesNoAmpNoLAng(int i) {
 			return getRuleContext(NoQuotesNoBracesNoAmpNoLAngContext.class,i);
 		}
-		public List<NoQuotesNoBracesNoAmpNoLAngContext> noQuotesNoBracesNoAmpNoLAng() {
-			return getRuleContexts(NoQuotesNoBracesNoAmpNoLAngContext.class);
-		}
-		public List<TerminalNode> Apos() { return getTokens(XQueryParser.Apos); }
-		public List<TerminalNode> Quot() { return getTokens(XQueryParser.Quot); }
+		public List<? extends TerminalNode> Quot() { return getTokens(XQueryParser.Quot); }
 		public TerminalNode Quot(int i) {
 			return getToken(XQueryParser.Quot, i);
 		}
@@ -4513,6 +4952,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DirAttributeValueContext dirAttributeValue() throws RecognitionException {
 		DirAttributeValueContext _localctx = new DirAttributeValueContext(_ctx, getState());
 		enterRule(_localctx, 98, RULE_dirAttributeValue);
@@ -4523,7 +4963,8 @@ public class XQueryParser extends Parser {
 			case Quot:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(728); match(Quot);
+				setState(728);
+				match(Quot);
 				setState(736);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,68,_ctx);
@@ -4537,18 +4978,22 @@ public class XQueryParser extends Parser {
 						case LBRACE:
 						case RBRACE:
 							{
-							setState(729); commonContent();
+							setState(729);
+							commonContent();
 							}
 							break;
 						case Quot:
 							{
-							setState(730); match(Quot);
-							setState(731); match(Quot);
+							setState(730);
+							match(Quot);
+							setState(731);
+							match(Quot);
 							}
 							break;
 						case Apos:
 							{
-							setState(732); match(Apos);
+							setState(732);
+							match(Apos);
 							}
 							break;
 						case IntegerLiteral:
@@ -4679,7 +5124,8 @@ public class XQueryParser extends Parser {
 						case NCName:
 						case ContentChar:
 							{
-							setState(733); noQuotesNoBracesNoAmpNoLAng();
+							setState(733);
+							noQuotesNoBracesNoAmpNoLAng();
 							}
 							break;
 						default:
@@ -4691,13 +5137,15 @@ public class XQueryParser extends Parser {
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,68,_ctx);
 				}
-				setState(739); match(Quot);
+				setState(739);
+				match(Quot);
 				}
 				break;
 			case Apos:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(740); match(Apos);
+				setState(740);
+				match(Apos);
 				setState(748);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,70,_ctx);
@@ -4711,18 +5159,22 @@ public class XQueryParser extends Parser {
 						case LBRACE:
 						case RBRACE:
 							{
-							setState(741); commonContent();
+							setState(741);
+							commonContent();
 							}
 							break;
 						case Apos:
 							{
-							setState(742); match(Apos);
-							setState(743); match(Apos);
+							setState(742);
+							match(Apos);
+							setState(743);
+							match(Apos);
 							}
 							break;
 						case Quot:
 							{
-							setState(744); match(Quot);
+							setState(744);
+							match(Quot);
 							}
 							break;
 						case IntegerLiteral:
@@ -4853,7 +5305,8 @@ public class XQueryParser extends Parser {
 						case NCName:
 						case ContentChar:
 							{
-							setState(745); noQuotesNoBracesNoAmpNoLAng();
+							setState(745);
+							noQuotesNoBracesNoAmpNoLAng();
 							}
 							break;
 						default:
@@ -4865,7 +5318,8 @@ public class XQueryParser extends Parser {
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,70,_ctx);
 				}
-				setState(751); match(Apos);
+				setState(751);
+				match(Apos);
 				}
 				break;
 			default:
@@ -4884,18 +5338,18 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class DirElemContentContext extends ParserRuleContext {
-		public TerminalNode CDATA() { return getToken(XQueryParser.CDATA, 0); }
-		public CommonContentContext commonContent() {
-			return getRuleContext(CommonContentContext.class,0);
-		}
-		public NoQuotesNoBracesNoAmpNoLAngContext noQuotesNoBracesNoAmpNoLAng() {
-			return getRuleContext(NoQuotesNoBracesNoAmpNoLAngContext.class,0);
-		}
 		public DirectConstructorContext directConstructor() {
 			return getRuleContext(DirectConstructorContext.class,0);
 		}
-		public TerminalNode Apos() { return getToken(XQueryParser.Apos, 0); }
+		public CommonContentContext commonContent() {
+			return getRuleContext(CommonContentContext.class,0);
+		}
+		public TerminalNode CDATA() { return getToken(XQueryParser.CDATA, 0); }
 		public TerminalNode Quot() { return getToken(XQueryParser.Quot, 0); }
+		public TerminalNode Apos() { return getToken(XQueryParser.Apos, 0); }
+		public NoQuotesNoBracesNoAmpNoLAngContext noQuotesNoBracesNoAmpNoLAng() {
+			return getRuleContext(NoQuotesNoBracesNoAmpNoLAngContext.class,0);
+		}
 		public DirElemContentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -4910,6 +5364,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DirElemContentContext dirElemContent() throws RecognitionException {
 		DirElemContentContext _localctx = new DirElemContentContext(_ctx, getState());
 		enterRule(_localctx, 100, RULE_dirElemContent);
@@ -4921,7 +5376,8 @@ public class XQueryParser extends Parser {
 			case LANGLE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(754); directConstructor();
+				setState(754);
+				directConstructor();
 				}
 				break;
 			case PredefinedEntityRef:
@@ -4930,25 +5386,29 @@ public class XQueryParser extends Parser {
 			case RBRACE:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(755); commonContent();
+				setState(755);
+				commonContent();
 				}
 				break;
 			case CDATA:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(756); match(CDATA);
+				setState(756);
+				match(CDATA);
 				}
 				break;
 			case Quot:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(757); match(Quot);
+				setState(757);
+				match(Quot);
 				}
 				break;
 			case Apos:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(758); match(Apos);
+				setState(758);
+				match(Apos);
 				}
 				break;
 			case IntegerLiteral:
@@ -5080,7 +5540,8 @@ public class XQueryParser extends Parser {
 			case ContentChar:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(759); noQuotesNoBracesNoAmpNoLAng();
+				setState(759);
+				noQuotesNoBracesNoAmpNoLAng();
 				}
 				break;
 			default:
@@ -5099,11 +5560,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class CommonContentContext extends ParserRuleContext {
+		public TerminalNode PredefinedEntityRef() { return getToken(XQueryParser.PredefinedEntityRef, 0); }
+		public TerminalNode CharRef() { return getToken(XQueryParser.CharRef, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode CharRef() { return getToken(XQueryParser.CharRef, 0); }
-		public TerminalNode PredefinedEntityRef() { return getToken(XQueryParser.PredefinedEntityRef, 0); }
 		public CommonContentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -5118,6 +5579,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final CommonContentContext commonContent() throws RecognitionException {
 		CommonContentContext _localctx = new CommonContentContext(_ctx, getState());
 		enterRule(_localctx, 102, RULE_commonContent);
@@ -5132,30 +5594,38 @@ public class XQueryParser extends Parser {
 				_la = _input.LA(1);
 				if ( !(_la==PredefinedEntityRef || _la==CharRef) ) {
 				_errHandler.recoverInline(this);
+				} else {
+					consume();
 				}
-				consume();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(763); match(LBRACE);
-				setState(764); match(LBRACE);
+				setState(763);
+				match(LBRACE);
+				setState(764);
+				match(LBRACE);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(765); match(RBRACE);
-				setState(766); match(RBRACE);
+				setState(765);
+				match(RBRACE);
+				setState(766);
+				match(RBRACE);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(767); match(LBRACE);
-				setState(768); expr();
-				setState(769); match(RBRACE);
+				setState(767);
+				match(LBRACE);
+				setState(768);
+				expr();
+				setState(769);
+				match(RBRACE);
 				}
 				break;
 			}
@@ -5182,20 +5652,6 @@ public class XQueryParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class TextConstructorContext extends ComputedConstructorContext {
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public TextConstructorContext(ComputedConstructorContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterTextConstructor(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitTextConstructor(this);
-		}
-	}
 	public static class DocConstructorContext extends ComputedConstructorContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -5210,29 +5666,6 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitDocConstructor(this);
 		}
 	}
-	public static class PiConstructorContext extends ComputedConstructorContext {
-		public NcNameContext piName;
-		public ExprContext piExpr;
-		public ExprContext contentExpr;
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public NcNameContext ncName() {
-			return getRuleContext(NcNameContext.class,0);
-		}
-		public PiConstructorContext(ComputedConstructorContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterPiConstructor(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitPiConstructor(this);
-		}
-	}
 	public static class AttrConstructorContext extends ComputedConstructorContext {
 		public QNameContext attrName;
 		public ExprContext attrExpr;
@@ -5240,7 +5673,7 @@ public class XQueryParser extends Parser {
 		public QNameContext qName() {
 			return getRuleContext(QNameContext.class,0);
 		}
-		public List<ExprContext> expr() {
+		public List<? extends ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
@@ -5263,7 +5696,7 @@ public class XQueryParser extends Parser {
 		public QNameContext qName() {
 			return getRuleContext(QNameContext.class,0);
 		}
-		public List<ExprContext> expr() {
+		public List<? extends ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
@@ -5293,7 +5726,45 @@ public class XQueryParser extends Parser {
 			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitCommentConstructor(this);
 		}
 	}
+	public static class PiConstructorContext extends ComputedConstructorContext {
+		public NcNameContext piName;
+		public ExprContext piExpr;
+		public ExprContext contentExpr;
+		public NcNameContext ncName() {
+			return getRuleContext(NcNameContext.class,0);
+		}
+		public List<? extends ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public PiConstructorContext(ComputedConstructorContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterPiConstructor(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitPiConstructor(this);
+		}
+	}
+	public static class TextConstructorContext extends ComputedConstructorContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public TextConstructorContext(ComputedConstructorContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).enterTextConstructor(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof XQueryParserListener ) ((XQueryParserListener)listener).exitTextConstructor(this);
+		}
+	}
 
+	@RuleVersion(0)
 	public final ComputedConstructorContext computedConstructor() throws RecognitionException {
 		ComputedConstructorContext _localctx = new ComputedConstructorContext(_ctx, getState());
 		enterRule(_localctx, 104, RULE_computedConstructor);
@@ -5305,17 +5776,22 @@ public class XQueryParser extends Parser {
 				_localctx = new DocConstructorContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(773); match(KW_DOCUMENT);
-				setState(774); match(LBRACE);
-				setState(775); expr();
-				setState(776); match(RBRACE);
+				setState(773);
+				match(KW_DOCUMENT);
+				setState(774);
+				match(LBRACE);
+				setState(775);
+				expr();
+				setState(776);
+				match(RBRACE);
 				}
 				break;
 			case KW_ELEMENT:
 				_localctx = new ElementConstructorContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(778); match(KW_ELEMENT);
+				setState(778);
+				match(KW_ELEMENT);
 				setState(784);
 				switch (_input.LA(1)) {
 				case KW_ANCESTOR:
@@ -5417,36 +5893,44 @@ public class XQueryParser extends Parser {
 				case FullQName:
 				case NCName:
 					{
-					setState(779); ((ElementConstructorContext)_localctx).elementName = qName();
+					setState(779);
+					((ElementConstructorContext)_localctx).elementName = qName();
 					}
 					break;
 				case LBRACE:
 					{
-					setState(780); match(LBRACE);
-					setState(781); ((ElementConstructorContext)_localctx).elementExpr = expr();
-					setState(782); match(RBRACE);
+					setState(780);
+					match(LBRACE);
+					setState(781);
+					((ElementConstructorContext)_localctx).elementExpr = expr();
+					setState(782);
+					match(RBRACE);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(786); match(LBRACE);
+				setState(786);
+				match(LBRACE);
 				setState(788);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << Quot) | (1L << Apos) | (1L << COMMENT) | (1L << PI) | (1L << PRAGMA) | (1L << LPAREN) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << DOT) | (1L << DDOT) | (1L << SLASH) | (1L << DSLASH) | (1L << LANGLE) | (1L << AT) | (1L << DOLLAR) | (1L << KW_ANCESTOR) | (1L << KW_ANCESTOR_OR_SELF) | (1L << KW_AND) | (1L << KW_AS) | (1L << KW_ASCENDING) | (1L << KW_AT) | (1L << KW_ATTRIBUTE) | (1L << KW_BASE_URI) | (1L << KW_BOUNDARY_SPACE) | (1L << KW_BY) | (1L << KW_CASE) | (1L << KW_CAST) | (1L << KW_CASTABLE) | (1L << KW_CHILD) | (1L << KW_COLLATION) | (1L << KW_COMMENT) | (1L << KW_CONSTRUCTION) | (1L << KW_COPY_NS) | (1L << KW_DECLARE) | (1L << KW_DEFAULT) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF) | (1L << KW_DESCENDING) | (1L << KW_DIV) | (1L << KW_DOCUMENT))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_ELSE - 64)) | (1L << (KW_EMPTY - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_ENCODING - 64)) | (1L << (KW_EQ - 64)) | (1L << (KW_EVERY - 64)) | (1L << (KW_EXCEPT - 64)) | (1L << (KW_EXTERNAL - 64)) | (1L << (KW_FOLLOWING - 64)) | (1L << (KW_FOLLOWING_SIBLING - 64)) | (1L << (KW_FOR - 64)) | (1L << (KW_FUNCTION - 64)) | (1L << (KW_GE - 64)) | (1L << (KW_GREATEST - 64)) | (1L << (KW_GT - 64)) | (1L << (KW_IDIV - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_IMPORT - 64)) | (1L << (KW_IN - 64)) | (1L << (KW_INHERIT - 64)) | (1L << (KW_INSTANCE - 64)) | (1L << (KW_INTERSECT - 64)) | (1L << (KW_IS - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_LAX - 64)) | (1L << (KW_LE - 64)) | (1L << (KW_LEAST - 64)) | (1L << (KW_LET - 64)) | (1L << (KW_LT - 64)) | (1L << (KW_MOD - 64)) | (1L << (KW_MODULE - 64)) | (1L << (KW_NAMESPACE - 64)) | (1L << (KW_NE - 64)) | (1L << (KW_NO_INHERIT - 64)) | (1L << (KW_NO_PRESERVE - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_OF - 64)) | (1L << (KW_OPTION - 64)) | (1L << (KW_OR - 64)) | (1L << (KW_ORDER - 64)) | (1L << (KW_ORDERED - 64)) | (1L << (KW_ORDERING - 64)) | (1L << (KW_PARENT - 64)) | (1L << (KW_PRECEDING - 64)) | (1L << (KW_PRECEDING_SIBLING - 64)) | (1L << (KW_PRESERVE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_RETURN - 64)) | (1L << (KW_SATISFIES - 64)) | (1L << (KW_SCHEMA - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_SELF - 64)) | (1L << (KW_SOME - 64)) | (1L << (KW_STABLE - 64)) | (1L << (KW_STRICT - 64)) | (1L << (KW_STRIP - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_THEN - 64)) | (1L << (KW_TO - 64)) | (1L << (KW_TREAT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (KW_UNION - 128)) | (1L << (KW_UNORDERED - 128)) | (1L << (KW_VALIDATE - 128)) | (1L << (KW_VARIABLE - 128)) | (1L << (KW_VERSION - 128)) | (1L << (KW_WHERE - 128)) | (1L << (KW_XQUERY - 128)) | (1L << (FullQName - 128)) | (1L << (NCNameWithLocalWildcard - 128)) | (1L << (NCNameWithPrefixWildcard - 128)) | (1L << (NCName - 128)))) != 0)) {
 					{
-					setState(787); ((ElementConstructorContext)_localctx).contentExpr = expr();
+					setState(787);
+					((ElementConstructorContext)_localctx).contentExpr = expr();
 					}
 				}
 
-				setState(790); match(RBRACE);
+				setState(790);
+				match(RBRACE);
 				}
 				break;
 			case KW_ATTRIBUTE:
 				_localctx = new AttrConstructorContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(792); match(KW_ATTRIBUTE);
+				setState(792);
+				match(KW_ATTRIBUTE);
 				setState(798);
 				switch (_input.LA(1)) {
 				case KW_ANCESTOR:
@@ -5548,58 +6032,74 @@ public class XQueryParser extends Parser {
 				case FullQName:
 				case NCName:
 					{
-					setState(793); ((AttrConstructorContext)_localctx).attrName = qName();
+					setState(793);
+					((AttrConstructorContext)_localctx).attrName = qName();
 					}
 					break;
 				case LBRACE:
 					{
 					{
-					setState(794); match(LBRACE);
-					setState(795); ((AttrConstructorContext)_localctx).attrExpr = expr();
-					setState(796); match(RBRACE);
+					setState(794);
+					match(LBRACE);
+					setState(795);
+					((AttrConstructorContext)_localctx).attrExpr = expr();
+					setState(796);
+					match(RBRACE);
 					}
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(800); match(LBRACE);
+				setState(800);
+				match(LBRACE);
 				setState(802);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << Quot) | (1L << Apos) | (1L << COMMENT) | (1L << PI) | (1L << PRAGMA) | (1L << LPAREN) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << DOT) | (1L << DDOT) | (1L << SLASH) | (1L << DSLASH) | (1L << LANGLE) | (1L << AT) | (1L << DOLLAR) | (1L << KW_ANCESTOR) | (1L << KW_ANCESTOR_OR_SELF) | (1L << KW_AND) | (1L << KW_AS) | (1L << KW_ASCENDING) | (1L << KW_AT) | (1L << KW_ATTRIBUTE) | (1L << KW_BASE_URI) | (1L << KW_BOUNDARY_SPACE) | (1L << KW_BY) | (1L << KW_CASE) | (1L << KW_CAST) | (1L << KW_CASTABLE) | (1L << KW_CHILD) | (1L << KW_COLLATION) | (1L << KW_COMMENT) | (1L << KW_CONSTRUCTION) | (1L << KW_COPY_NS) | (1L << KW_DECLARE) | (1L << KW_DEFAULT) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF) | (1L << KW_DESCENDING) | (1L << KW_DIV) | (1L << KW_DOCUMENT))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_ELSE - 64)) | (1L << (KW_EMPTY - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_ENCODING - 64)) | (1L << (KW_EQ - 64)) | (1L << (KW_EVERY - 64)) | (1L << (KW_EXCEPT - 64)) | (1L << (KW_EXTERNAL - 64)) | (1L << (KW_FOLLOWING - 64)) | (1L << (KW_FOLLOWING_SIBLING - 64)) | (1L << (KW_FOR - 64)) | (1L << (KW_FUNCTION - 64)) | (1L << (KW_GE - 64)) | (1L << (KW_GREATEST - 64)) | (1L << (KW_GT - 64)) | (1L << (KW_IDIV - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_IMPORT - 64)) | (1L << (KW_IN - 64)) | (1L << (KW_INHERIT - 64)) | (1L << (KW_INSTANCE - 64)) | (1L << (KW_INTERSECT - 64)) | (1L << (KW_IS - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_LAX - 64)) | (1L << (KW_LE - 64)) | (1L << (KW_LEAST - 64)) | (1L << (KW_LET - 64)) | (1L << (KW_LT - 64)) | (1L << (KW_MOD - 64)) | (1L << (KW_MODULE - 64)) | (1L << (KW_NAMESPACE - 64)) | (1L << (KW_NE - 64)) | (1L << (KW_NO_INHERIT - 64)) | (1L << (KW_NO_PRESERVE - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_OF - 64)) | (1L << (KW_OPTION - 64)) | (1L << (KW_OR - 64)) | (1L << (KW_ORDER - 64)) | (1L << (KW_ORDERED - 64)) | (1L << (KW_ORDERING - 64)) | (1L << (KW_PARENT - 64)) | (1L << (KW_PRECEDING - 64)) | (1L << (KW_PRECEDING_SIBLING - 64)) | (1L << (KW_PRESERVE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_RETURN - 64)) | (1L << (KW_SATISFIES - 64)) | (1L << (KW_SCHEMA - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_SELF - 64)) | (1L << (KW_SOME - 64)) | (1L << (KW_STABLE - 64)) | (1L << (KW_STRICT - 64)) | (1L << (KW_STRIP - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_THEN - 64)) | (1L << (KW_TO - 64)) | (1L << (KW_TREAT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (KW_UNION - 128)) | (1L << (KW_UNORDERED - 128)) | (1L << (KW_VALIDATE - 128)) | (1L << (KW_VARIABLE - 128)) | (1L << (KW_VERSION - 128)) | (1L << (KW_WHERE - 128)) | (1L << (KW_XQUERY - 128)) | (1L << (FullQName - 128)) | (1L << (NCNameWithLocalWildcard - 128)) | (1L << (NCNameWithPrefixWildcard - 128)) | (1L << (NCName - 128)))) != 0)) {
 					{
-					setState(801); ((AttrConstructorContext)_localctx).contentExpr = expr();
+					setState(801);
+					((AttrConstructorContext)_localctx).contentExpr = expr();
 					}
 				}
 
-				setState(804); match(RBRACE);
+				setState(804);
+				match(RBRACE);
 				}
 				break;
 			case KW_TEXT:
 				_localctx = new TextConstructorContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(806); match(KW_TEXT);
-				setState(807); match(LBRACE);
-				setState(808); expr();
-				setState(809); match(RBRACE);
+				setState(806);
+				match(KW_TEXT);
+				setState(807);
+				match(LBRACE);
+				setState(808);
+				expr();
+				setState(809);
+				match(RBRACE);
 				}
 				break;
 			case KW_COMMENT:
 				_localctx = new CommentConstructorContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(811); match(KW_COMMENT);
-				setState(812); match(LBRACE);
-				setState(813); expr();
-				setState(814); match(RBRACE);
+				setState(811);
+				match(KW_COMMENT);
+				setState(812);
+				match(LBRACE);
+				setState(813);
+				expr();
+				setState(814);
+				match(RBRACE);
 				}
 				break;
 			case KW_PI:
 				_localctx = new PiConstructorContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(816); match(KW_PI);
+				setState(816);
+				match(KW_PI);
 				setState(822);
 				switch (_input.LA(1)) {
 				case KW_ANCESTOR:
@@ -5700,29 +6200,36 @@ public class XQueryParser extends Parser {
 				case KW_XQUERY:
 				case NCName:
 					{
-					setState(817); ((PiConstructorContext)_localctx).piName = ncName();
+					setState(817);
+					((PiConstructorContext)_localctx).piName = ncName();
 					}
 					break;
 				case LBRACE:
 					{
-					setState(818); match(LBRACE);
-					setState(819); ((PiConstructorContext)_localctx).piExpr = expr();
-					setState(820); match(RBRACE);
+					setState(818);
+					match(LBRACE);
+					setState(819);
+					((PiConstructorContext)_localctx).piExpr = expr();
+					setState(820);
+					match(RBRACE);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(824); match(LBRACE);
+				setState(824);
+				match(LBRACE);
 				setState(826);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << Quot) | (1L << Apos) | (1L << COMMENT) | (1L << PI) | (1L << PRAGMA) | (1L << LPAREN) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << DOT) | (1L << DDOT) | (1L << SLASH) | (1L << DSLASH) | (1L << LANGLE) | (1L << AT) | (1L << DOLLAR) | (1L << KW_ANCESTOR) | (1L << KW_ANCESTOR_OR_SELF) | (1L << KW_AND) | (1L << KW_AS) | (1L << KW_ASCENDING) | (1L << KW_AT) | (1L << KW_ATTRIBUTE) | (1L << KW_BASE_URI) | (1L << KW_BOUNDARY_SPACE) | (1L << KW_BY) | (1L << KW_CASE) | (1L << KW_CAST) | (1L << KW_CASTABLE) | (1L << KW_CHILD) | (1L << KW_COLLATION) | (1L << KW_COMMENT) | (1L << KW_CONSTRUCTION) | (1L << KW_COPY_NS) | (1L << KW_DECLARE) | (1L << KW_DEFAULT) | (1L << KW_DESCENDANT) | (1L << KW_DESCENDANT_OR_SELF) | (1L << KW_DESCENDING) | (1L << KW_DIV) | (1L << KW_DOCUMENT))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_ELSE - 64)) | (1L << (KW_EMPTY - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_ENCODING - 64)) | (1L << (KW_EQ - 64)) | (1L << (KW_EVERY - 64)) | (1L << (KW_EXCEPT - 64)) | (1L << (KW_EXTERNAL - 64)) | (1L << (KW_FOLLOWING - 64)) | (1L << (KW_FOLLOWING_SIBLING - 64)) | (1L << (KW_FOR - 64)) | (1L << (KW_FUNCTION - 64)) | (1L << (KW_GE - 64)) | (1L << (KW_GREATEST - 64)) | (1L << (KW_GT - 64)) | (1L << (KW_IDIV - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_IMPORT - 64)) | (1L << (KW_IN - 64)) | (1L << (KW_INHERIT - 64)) | (1L << (KW_INSTANCE - 64)) | (1L << (KW_INTERSECT - 64)) | (1L << (KW_IS - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_LAX - 64)) | (1L << (KW_LE - 64)) | (1L << (KW_LEAST - 64)) | (1L << (KW_LET - 64)) | (1L << (KW_LT - 64)) | (1L << (KW_MOD - 64)) | (1L << (KW_MODULE - 64)) | (1L << (KW_NAMESPACE - 64)) | (1L << (KW_NE - 64)) | (1L << (KW_NO_INHERIT - 64)) | (1L << (KW_NO_PRESERVE - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_OF - 64)) | (1L << (KW_OPTION - 64)) | (1L << (KW_OR - 64)) | (1L << (KW_ORDER - 64)) | (1L << (KW_ORDERED - 64)) | (1L << (KW_ORDERING - 64)) | (1L << (KW_PARENT - 64)) | (1L << (KW_PRECEDING - 64)) | (1L << (KW_PRECEDING_SIBLING - 64)) | (1L << (KW_PRESERVE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_RETURN - 64)) | (1L << (KW_SATISFIES - 64)) | (1L << (KW_SCHEMA - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_SELF - 64)) | (1L << (KW_SOME - 64)) | (1L << (KW_STABLE - 64)) | (1L << (KW_STRICT - 64)) | (1L << (KW_STRIP - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_THEN - 64)) | (1L << (KW_TO - 64)) | (1L << (KW_TREAT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (KW_UNION - 128)) | (1L << (KW_UNORDERED - 128)) | (1L << (KW_VALIDATE - 128)) | (1L << (KW_VARIABLE - 128)) | (1L << (KW_VERSION - 128)) | (1L << (KW_WHERE - 128)) | (1L << (KW_XQUERY - 128)) | (1L << (FullQName - 128)) | (1L << (NCNameWithLocalWildcard - 128)) | (1L << (NCNameWithPrefixWildcard - 128)) | (1L << (NCName - 128)))) != 0)) {
 					{
-					setState(825); ((PiConstructorContext)_localctx).contentExpr = expr();
+					setState(825);
+					((PiConstructorContext)_localctx).contentExpr = expr();
 					}
 				}
 
-				setState(828); match(RBRACE);
+				setState(828);
+				match(RBRACE);
 				}
 				break;
 			default:
@@ -5758,18 +6265,21 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final SingleTypeContext singleType() throws RecognitionException {
 		SingleTypeContext _localctx = new SingleTypeContext(_ctx, getState());
 		enterRule(_localctx, 106, RULE_singleType);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(832); qName();
+			setState(832);
+			qName();
 			setState(834);
 			switch ( getInterpreter().adaptivePredict(_input,81,_ctx) ) {
 			case 1:
 				{
-				setState(833); match(QUESTION);
+				setState(833);
+				match(QUESTION);
 				}
 				break;
 			}
@@ -5804,14 +6314,17 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final TypeDeclarationContext typeDeclaration() throws RecognitionException {
 		TypeDeclarationContext _localctx = new TypeDeclarationContext(_ctx, getState());
 		enterRule(_localctx, 108, RULE_typeDeclaration);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(836); match(KW_AS);
-			setState(837); sequenceType();
+			setState(836);
+			match(KW_AS);
+			setState(837);
+			sequenceType();
 			}
 		}
 		catch (RecognitionException re) {
@@ -5844,6 +6357,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final SequenceTypeContext sequenceType() throws RecognitionException {
 		SequenceTypeContext _localctx = new SequenceTypeContext(_ctx, getState());
 		enterRule(_localctx, 110, RULE_sequenceType);
@@ -5854,26 +6368,31 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(839); match(KW_EMPTY_SEQUENCE);
-				setState(840); match(LPAREN);
-				setState(841); match(RPAREN);
+				setState(839);
+				match(KW_EMPTY_SEQUENCE);
+				setState(840);
+				match(LPAREN);
+				setState(841);
+				match(RPAREN);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(842); itemType();
+				setState(842);
+				itemType();
 				setState(844);
 				switch ( getInterpreter().adaptivePredict(_input,82,_ctx) ) {
 				case 1:
 					{
 					setState(843);
-					((SequenceTypeContext)_localctx).occurrence = _input.LT(1);
+					_localctx.occurrence = _input.LT(1);
 					_la = _input.LA(1);
 					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STAR) | (1L << PLUS) | (1L << QUESTION))) != 0)) ) {
-						((SequenceTypeContext)_localctx).occurrence = (Token)_errHandler.recoverInline(this);
+						_localctx.occurrence = _errHandler.recoverInline(this);
+					} else {
+						consume();
 					}
-					consume();
 					}
 					break;
 				}
@@ -5893,11 +6412,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class ItemTypeContext extends ParserRuleContext {
-		public QNameContext qName() {
-			return getRuleContext(QNameContext.class,0);
-		}
 		public KindTestContext kindTest() {
 			return getRuleContext(KindTestContext.class,0);
+		}
+		public QNameContext qName() {
+			return getRuleContext(QNameContext.class,0);
 		}
 		public ItemTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5913,6 +6432,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ItemTypeContext itemType() throws RecognitionException {
 		ItemTypeContext _localctx = new ItemTypeContext(_ctx, getState());
 		enterRule(_localctx, 112, RULE_itemType);
@@ -5922,21 +6442,26 @@ public class XQueryParser extends Parser {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(848); kindTest();
+				setState(848);
+				kindTest();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(849); match(KW_ITEM);
-				setState(850); match(LPAREN);
-				setState(851); match(RPAREN);
+				setState(849);
+				match(KW_ITEM);
+				setState(850);
+				match(LPAREN);
+				setState(851);
+				match(RPAREN);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(852); qName();
+				setState(852);
+				qName();
 				}
 				break;
 			}
@@ -5953,32 +6478,32 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class KindTestContext extends ParserRuleContext {
-		public AnyKindTestContext anyKindTest() {
-			return getRuleContext(AnyKindTestContext.class,0);
-		}
 		public DocumentTestContext documentTest() {
 			return getRuleContext(DocumentTestContext.class,0);
-		}
-		public CommentTestContext commentTest() {
-			return getRuleContext(CommentTestContext.class,0);
-		}
-		public SchemaElementTestContext schemaElementTest() {
-			return getRuleContext(SchemaElementTestContext.class,0);
 		}
 		public ElementTestContext elementTest() {
 			return getRuleContext(ElementTestContext.class,0);
 		}
-		public SchemaAttributeTestContext schemaAttributeTest() {
-			return getRuleContext(SchemaAttributeTestContext.class,0);
-		}
 		public AttributeTestContext attributeTest() {
 			return getRuleContext(AttributeTestContext.class,0);
+		}
+		public SchemaElementTestContext schemaElementTest() {
+			return getRuleContext(SchemaElementTestContext.class,0);
+		}
+		public SchemaAttributeTestContext schemaAttributeTest() {
+			return getRuleContext(SchemaAttributeTestContext.class,0);
 		}
 		public PiTestContext piTest() {
 			return getRuleContext(PiTestContext.class,0);
 		}
+		public CommentTestContext commentTest() {
+			return getRuleContext(CommentTestContext.class,0);
+		}
 		public TextTestContext textTest() {
 			return getRuleContext(TextTestContext.class,0);
+		}
+		public AnyKindTestContext anyKindTest() {
+			return getRuleContext(AnyKindTestContext.class,0);
 		}
 		public KindTestContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -5994,6 +6519,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final KindTestContext kindTest() throws RecognitionException {
 		KindTestContext _localctx = new KindTestContext(_ctx, getState());
 		enterRule(_localctx, 114, RULE_kindTest);
@@ -6003,55 +6529,64 @@ public class XQueryParser extends Parser {
 			case KW_DOCUMENT_NODE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(855); documentTest();
+				setState(855);
+				documentTest();
 				}
 				break;
 			case KW_ELEMENT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(856); elementTest();
+				setState(856);
+				elementTest();
 				}
 				break;
 			case KW_ATTRIBUTE:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(857); attributeTest();
+				setState(857);
+				attributeTest();
 				}
 				break;
 			case KW_SCHEMA_ELEM:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(858); schemaElementTest();
+				setState(858);
+				schemaElementTest();
 				}
 				break;
 			case KW_SCHEMA_ATTR:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(859); schemaAttributeTest();
+				setState(859);
+				schemaAttributeTest();
 				}
 				break;
 			case KW_PI:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(860); piTest();
+				setState(860);
+				piTest();
 				}
 				break;
 			case KW_COMMENT:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(861); commentTest();
+				setState(861);
+				commentTest();
 				}
 				break;
 			case KW_TEXT:
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(862); textTest();
+				setState(862);
+				textTest();
 				}
 				break;
 			case KW_NODE:
 				enterOuterAlt(_localctx, 9);
 				{
-				setState(863); anyKindTest();
+				setState(863);
+				anyKindTest();
 				}
 				break;
 			default:
@@ -6070,11 +6605,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class DocumentTestContext extends ParserRuleContext {
-		public SchemaElementTestContext schemaElementTest() {
-			return getRuleContext(SchemaElementTestContext.class,0);
-		}
 		public ElementTestContext elementTest() {
 			return getRuleContext(ElementTestContext.class,0);
+		}
+		public SchemaElementTestContext schemaElementTest() {
+			return getRuleContext(SchemaElementTestContext.class,0);
 		}
 		public DocumentTestContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6090,24 +6625,29 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final DocumentTestContext documentTest() throws RecognitionException {
 		DocumentTestContext _localctx = new DocumentTestContext(_ctx, getState());
 		enterRule(_localctx, 116, RULE_documentTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(866); match(KW_DOCUMENT_NODE);
-			setState(867); match(LPAREN);
+			setState(866);
+			match(KW_DOCUMENT_NODE);
+			setState(867);
+			match(LPAREN);
 			setState(870);
 			switch (_input.LA(1)) {
 			case KW_ELEMENT:
 				{
-				setState(868); elementTest();
+				setState(868);
+				elementTest();
 				}
 				break;
 			case KW_SCHEMA_ELEM:
 				{
-				setState(869); schemaElementTest();
+				setState(869);
+				schemaElementTest();
 				}
 				break;
 			case RPAREN:
@@ -6115,7 +6655,8 @@ public class XQueryParser extends Parser {
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(872); match(RPAREN);
+			setState(872);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6134,7 +6675,7 @@ public class XQueryParser extends Parser {
 		public Token wildcard;
 		public QNameContext type;
 		public Token optional;
-		public List<QNameContext> qName() {
+		public List<? extends QNameContext> qName() {
 			return getRuleContexts(QNameContext.class);
 		}
 		public QNameContext qName(int i) {
@@ -6154,6 +6695,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final ElementTestContext elementTest() throws RecognitionException {
 		ElementTestContext _localctx = new ElementTestContext(_ctx, getState());
 		enterRule(_localctx, 118, RULE_elementTest);
@@ -6161,8 +6703,10 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(874); match(KW_ELEMENT);
-			setState(875); match(LPAREN);
+			setState(874);
+			match(KW_ELEMENT);
+			setState(875);
+			match(LPAREN);
 			setState(887);
 			_la = _input.LA(1);
 			if (((((_la - 22)) & ~0x3f) == 0 && ((1L << (_la - 22)) & ((1L << (STAR - 22)) | (1L << (KW_ANCESTOR - 22)) | (1L << (KW_ANCESTOR_OR_SELF - 22)) | (1L << (KW_AND - 22)) | (1L << (KW_AS - 22)) | (1L << (KW_ASCENDING - 22)) | (1L << (KW_AT - 22)) | (1L << (KW_ATTRIBUTE - 22)) | (1L << (KW_BASE_URI - 22)) | (1L << (KW_BOUNDARY_SPACE - 22)) | (1L << (KW_BY - 22)) | (1L << (KW_CASE - 22)) | (1L << (KW_CAST - 22)) | (1L << (KW_CASTABLE - 22)) | (1L << (KW_CHILD - 22)) | (1L << (KW_COLLATION - 22)) | (1L << (KW_COMMENT - 22)) | (1L << (KW_CONSTRUCTION - 22)) | (1L << (KW_COPY_NS - 22)) | (1L << (KW_DECLARE - 22)) | (1L << (KW_DEFAULT - 22)) | (1L << (KW_DESCENDANT - 22)) | (1L << (KW_DESCENDANT_OR_SELF - 22)) | (1L << (KW_DESCENDING - 22)) | (1L << (KW_DIV - 22)) | (1L << (KW_DOCUMENT - 22)) | (1L << (KW_DOCUMENT_NODE - 22)) | (1L << (KW_ELEMENT - 22)) | (1L << (KW_ELSE - 22)) | (1L << (KW_EMPTY - 22)) | (1L << (KW_EMPTY_SEQUENCE - 22)) | (1L << (KW_ENCODING - 22)) | (1L << (KW_EQ - 22)) | (1L << (KW_EVERY - 22)) | (1L << (KW_EXCEPT - 22)) | (1L << (KW_EXTERNAL - 22)) | (1L << (KW_FOLLOWING - 22)) | (1L << (KW_FOLLOWING_SIBLING - 22)) | (1L << (KW_FOR - 22)) | (1L << (KW_FUNCTION - 22)) | (1L << (KW_GE - 22)) | (1L << (KW_GREATEST - 22)) | (1L << (KW_GT - 22)) | (1L << (KW_IDIV - 22)) | (1L << (KW_IF - 22)) | (1L << (KW_IMPORT - 22)) | (1L << (KW_IN - 22)) | (1L << (KW_INHERIT - 22)))) != 0) || ((((_la - 86)) & ~0x3f) == 0 && ((1L << (_la - 86)) & ((1L << (KW_INSTANCE - 86)) | (1L << (KW_INTERSECT - 86)) | (1L << (KW_IS - 86)) | (1L << (KW_ITEM - 86)) | (1L << (KW_LAX - 86)) | (1L << (KW_LE - 86)) | (1L << (KW_LEAST - 86)) | (1L << (KW_LET - 86)) | (1L << (KW_LT - 86)) | (1L << (KW_MOD - 86)) | (1L << (KW_MODULE - 86)) | (1L << (KW_NAMESPACE - 86)) | (1L << (KW_NE - 86)) | (1L << (KW_NO_INHERIT - 86)) | (1L << (KW_NO_PRESERVE - 86)) | (1L << (KW_NODE - 86)) | (1L << (KW_OF - 86)) | (1L << (KW_OPTION - 86)) | (1L << (KW_OR - 86)) | (1L << (KW_ORDER - 86)) | (1L << (KW_ORDERED - 86)) | (1L << (KW_ORDERING - 86)) | (1L << (KW_PARENT - 86)) | (1L << (KW_PRECEDING - 86)) | (1L << (KW_PRECEDING_SIBLING - 86)) | (1L << (KW_PRESERVE - 86)) | (1L << (KW_PI - 86)) | (1L << (KW_RETURN - 86)) | (1L << (KW_SATISFIES - 86)) | (1L << (KW_SCHEMA - 86)) | (1L << (KW_SCHEMA_ATTR - 86)) | (1L << (KW_SCHEMA_ELEM - 86)) | (1L << (KW_SELF - 86)) | (1L << (KW_SOME - 86)) | (1L << (KW_STABLE - 86)) | (1L << (KW_STRICT - 86)) | (1L << (KW_STRIP - 86)) | (1L << (KW_TEXT - 86)) | (1L << (KW_THEN - 86)) | (1L << (KW_TO - 86)) | (1L << (KW_TREAT - 86)) | (1L << (KW_TYPESWITCH - 86)) | (1L << (KW_UNION - 86)) | (1L << (KW_UNORDERED - 86)) | (1L << (KW_VALIDATE - 86)) | (1L << (KW_VARIABLE - 86)) | (1L << (KW_VERSION - 86)) | (1L << (KW_WHERE - 86)) | (1L << (KW_XQUERY - 86)) | (1L << (FullQName - 86)) | (1L << (NCName - 86)))) != 0)) {
@@ -6268,12 +6812,14 @@ public class XQueryParser extends Parser {
 				case FullQName:
 				case NCName:
 					{
-					setState(876); ((ElementTestContext)_localctx).name = qName();
+					setState(876);
+					_localctx.name = qName();
 					}
 					break;
 				case STAR:
 					{
-					setState(877); ((ElementTestContext)_localctx).wildcard = match(STAR);
+					setState(877);
+					_localctx.wildcard = match(STAR);
 					}
 					break;
 				default:
@@ -6283,13 +6829,16 @@ public class XQueryParser extends Parser {
 				_la = _input.LA(1);
 				if (_la==COMMA) {
 					{
-					setState(880); match(COMMA);
-					setState(881); ((ElementTestContext)_localctx).type = qName();
+					setState(880);
+					match(COMMA);
+					setState(881);
+					_localctx.type = qName();
 					setState(883);
 					_la = _input.LA(1);
 					if (_la==QUESTION) {
 						{
-						setState(882); ((ElementTestContext)_localctx).optional = match(QUESTION);
+						setState(882);
+						_localctx.optional = match(QUESTION);
 						}
 					}
 
@@ -6299,7 +6848,8 @@ public class XQueryParser extends Parser {
 				}
 			}
 
-			setState(889); match(RPAREN);
+			setState(889);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6317,7 +6867,7 @@ public class XQueryParser extends Parser {
 		public QNameContext name;
 		public Token wildcard;
 		public QNameContext type;
-		public List<QNameContext> qName() {
+		public List<? extends QNameContext> qName() {
 			return getRuleContexts(QNameContext.class);
 		}
 		public QNameContext qName(int i) {
@@ -6337,6 +6887,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final AttributeTestContext attributeTest() throws RecognitionException {
 		AttributeTestContext _localctx = new AttributeTestContext(_ctx, getState());
 		enterRule(_localctx, 120, RULE_attributeTest);
@@ -6344,8 +6895,10 @@ public class XQueryParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(891); match(KW_ATTRIBUTE);
-			setState(892); match(LPAREN);
+			setState(891);
+			match(KW_ATTRIBUTE);
+			setState(892);
+			match(LPAREN);
 			setState(901);
 			_la = _input.LA(1);
 			if (((((_la - 22)) & ~0x3f) == 0 && ((1L << (_la - 22)) & ((1L << (STAR - 22)) | (1L << (KW_ANCESTOR - 22)) | (1L << (KW_ANCESTOR_OR_SELF - 22)) | (1L << (KW_AND - 22)) | (1L << (KW_AS - 22)) | (1L << (KW_ASCENDING - 22)) | (1L << (KW_AT - 22)) | (1L << (KW_ATTRIBUTE - 22)) | (1L << (KW_BASE_URI - 22)) | (1L << (KW_BOUNDARY_SPACE - 22)) | (1L << (KW_BY - 22)) | (1L << (KW_CASE - 22)) | (1L << (KW_CAST - 22)) | (1L << (KW_CASTABLE - 22)) | (1L << (KW_CHILD - 22)) | (1L << (KW_COLLATION - 22)) | (1L << (KW_COMMENT - 22)) | (1L << (KW_CONSTRUCTION - 22)) | (1L << (KW_COPY_NS - 22)) | (1L << (KW_DECLARE - 22)) | (1L << (KW_DEFAULT - 22)) | (1L << (KW_DESCENDANT - 22)) | (1L << (KW_DESCENDANT_OR_SELF - 22)) | (1L << (KW_DESCENDING - 22)) | (1L << (KW_DIV - 22)) | (1L << (KW_DOCUMENT - 22)) | (1L << (KW_DOCUMENT_NODE - 22)) | (1L << (KW_ELEMENT - 22)) | (1L << (KW_ELSE - 22)) | (1L << (KW_EMPTY - 22)) | (1L << (KW_EMPTY_SEQUENCE - 22)) | (1L << (KW_ENCODING - 22)) | (1L << (KW_EQ - 22)) | (1L << (KW_EVERY - 22)) | (1L << (KW_EXCEPT - 22)) | (1L << (KW_EXTERNAL - 22)) | (1L << (KW_FOLLOWING - 22)) | (1L << (KW_FOLLOWING_SIBLING - 22)) | (1L << (KW_FOR - 22)) | (1L << (KW_FUNCTION - 22)) | (1L << (KW_GE - 22)) | (1L << (KW_GREATEST - 22)) | (1L << (KW_GT - 22)) | (1L << (KW_IDIV - 22)) | (1L << (KW_IF - 22)) | (1L << (KW_IMPORT - 22)) | (1L << (KW_IN - 22)) | (1L << (KW_INHERIT - 22)))) != 0) || ((((_la - 86)) & ~0x3f) == 0 && ((1L << (_la - 86)) & ((1L << (KW_INSTANCE - 86)) | (1L << (KW_INTERSECT - 86)) | (1L << (KW_IS - 86)) | (1L << (KW_ITEM - 86)) | (1L << (KW_LAX - 86)) | (1L << (KW_LE - 86)) | (1L << (KW_LEAST - 86)) | (1L << (KW_LET - 86)) | (1L << (KW_LT - 86)) | (1L << (KW_MOD - 86)) | (1L << (KW_MODULE - 86)) | (1L << (KW_NAMESPACE - 86)) | (1L << (KW_NE - 86)) | (1L << (KW_NO_INHERIT - 86)) | (1L << (KW_NO_PRESERVE - 86)) | (1L << (KW_NODE - 86)) | (1L << (KW_OF - 86)) | (1L << (KW_OPTION - 86)) | (1L << (KW_OR - 86)) | (1L << (KW_ORDER - 86)) | (1L << (KW_ORDERED - 86)) | (1L << (KW_ORDERING - 86)) | (1L << (KW_PARENT - 86)) | (1L << (KW_PRECEDING - 86)) | (1L << (KW_PRECEDING_SIBLING - 86)) | (1L << (KW_PRESERVE - 86)) | (1L << (KW_PI - 86)) | (1L << (KW_RETURN - 86)) | (1L << (KW_SATISFIES - 86)) | (1L << (KW_SCHEMA - 86)) | (1L << (KW_SCHEMA_ATTR - 86)) | (1L << (KW_SCHEMA_ELEM - 86)) | (1L << (KW_SELF - 86)) | (1L << (KW_SOME - 86)) | (1L << (KW_STABLE - 86)) | (1L << (KW_STRICT - 86)) | (1L << (KW_STRIP - 86)) | (1L << (KW_TEXT - 86)) | (1L << (KW_THEN - 86)) | (1L << (KW_TO - 86)) | (1L << (KW_TREAT - 86)) | (1L << (KW_TYPESWITCH - 86)) | (1L << (KW_UNION - 86)) | (1L << (KW_UNORDERED - 86)) | (1L << (KW_VALIDATE - 86)) | (1L << (KW_VARIABLE - 86)) | (1L << (KW_VERSION - 86)) | (1L << (KW_WHERE - 86)) | (1L << (KW_XQUERY - 86)) | (1L << (FullQName - 86)) | (1L << (NCName - 86)))) != 0)) {
@@ -6451,12 +7004,14 @@ public class XQueryParser extends Parser {
 				case FullQName:
 				case NCName:
 					{
-					setState(893); ((AttributeTestContext)_localctx).name = qName();
+					setState(893);
+					_localctx.name = qName();
 					}
 					break;
 				case STAR:
 					{
-					setState(894); ((AttributeTestContext)_localctx).wildcard = match(STAR);
+					setState(894);
+					_localctx.wildcard = match(STAR);
 					}
 					break;
 				default:
@@ -6466,15 +7021,18 @@ public class XQueryParser extends Parser {
 				_la = _input.LA(1);
 				if (_la==COMMA) {
 					{
-					setState(897); match(COMMA);
-					setState(898); ((AttributeTestContext)_localctx).type = qName();
+					setState(897);
+					match(COMMA);
+					setState(898);
+					_localctx.type = qName();
 					}
 				}
 
 				}
 			}
 
-			setState(903); match(RPAREN);
+			setState(903);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6506,16 +7064,21 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final SchemaElementTestContext schemaElementTest() throws RecognitionException {
 		SchemaElementTestContext _localctx = new SchemaElementTestContext(_ctx, getState());
 		enterRule(_localctx, 122, RULE_schemaElementTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(905); match(KW_SCHEMA_ELEM);
-			setState(906); match(LPAREN);
-			setState(907); qName();
-			setState(908); match(RPAREN);
+			setState(905);
+			match(KW_SCHEMA_ELEM);
+			setState(906);
+			match(LPAREN);
+			setState(907);
+			qName();
+			setState(908);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6547,16 +7110,21 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final SchemaAttributeTestContext schemaAttributeTest() throws RecognitionException {
 		SchemaAttributeTestContext _localctx = new SchemaAttributeTestContext(_ctx, getState());
 		enterRule(_localctx, 124, RULE_schemaAttributeTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(910); match(KW_SCHEMA_ATTR);
-			setState(911); match(LPAREN);
-			setState(912); qName();
-			setState(913); match(RPAREN);
+			setState(910);
+			match(KW_SCHEMA_ATTR);
+			setState(911);
+			match(LPAREN);
+			setState(912);
+			qName();
+			setState(913);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6571,11 +7139,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class PiTestContext extends ParserRuleContext {
-		public StringLiteralContext stringLiteral() {
-			return getRuleContext(StringLiteralContext.class,0);
-		}
 		public NcNameContext ncName() {
 			return getRuleContext(NcNameContext.class,0);
+		}
+		public StringLiteralContext stringLiteral() {
+			return getRuleContext(StringLiteralContext.class,0);
 		}
 		public PiTestContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -6591,14 +7159,17 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final PiTestContext piTest() throws RecognitionException {
 		PiTestContext _localctx = new PiTestContext(_ctx, getState());
 		enterRule(_localctx, 126, RULE_piTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(915); match(KW_PI);
-			setState(916); match(LPAREN);
+			setState(915);
+			match(KW_PI);
+			setState(916);
+			match(LPAREN);
 			setState(919);
 			switch (_input.LA(1)) {
 			case KW_ANCESTOR:
@@ -6699,13 +7270,15 @@ public class XQueryParser extends Parser {
 			case KW_XQUERY:
 			case NCName:
 				{
-				setState(917); ncName();
+				setState(917);
+				ncName();
 				}
 				break;
 			case Quot:
 			case Apos:
 				{
-				setState(918); stringLiteral();
+				setState(918);
+				stringLiteral();
 				}
 				break;
 			case RPAREN:
@@ -6713,7 +7286,8 @@ public class XQueryParser extends Parser {
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(921); match(RPAREN);
+			setState(921);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6742,15 +7316,19 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final CommentTestContext commentTest() throws RecognitionException {
 		CommentTestContext _localctx = new CommentTestContext(_ctx, getState());
 		enterRule(_localctx, 128, RULE_commentTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(923); match(KW_COMMENT);
-			setState(924); match(LPAREN);
-			setState(925); match(RPAREN);
+			setState(923);
+			match(KW_COMMENT);
+			setState(924);
+			match(LPAREN);
+			setState(925);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6779,15 +7357,19 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final TextTestContext textTest() throws RecognitionException {
 		TextTestContext _localctx = new TextTestContext(_ctx, getState());
 		enterRule(_localctx, 130, RULE_textTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(927); match(KW_TEXT);
-			setState(928); match(LPAREN);
-			setState(929); match(RPAREN);
+			setState(927);
+			match(KW_TEXT);
+			setState(928);
+			match(LPAREN);
+			setState(929);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6816,15 +7398,19 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final AnyKindTestContext anyKindTest() throws RecognitionException {
 		AnyKindTestContext _localctx = new AnyKindTestContext(_ctx, getState());
 		enterRule(_localctx, 132, RULE_anyKindTest);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(931); match(KW_NODE);
-			setState(932); match(LPAREN);
-			setState(933); match(RPAREN);
+			setState(931);
+			match(KW_NODE);
+			setState(932);
+			match(LPAREN);
+			setState(933);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -6857,6 +7443,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final QNameContext qName() throws RecognitionException {
 		QNameContext _localctx = new QNameContext(_ctx, getState());
 		enterRule(_localctx, 134, RULE_qName);
@@ -6866,7 +7453,8 @@ public class XQueryParser extends Parser {
 			case FullQName:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(935); match(FullQName);
+				setState(935);
+				match(FullQName);
 				}
 				break;
 			case KW_ANCESTOR:
@@ -6968,7 +7556,8 @@ public class XQueryParser extends Parser {
 			case NCName:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(936); ncName();
+				setState(936);
+				ncName();
 				}
 				break;
 			default:
@@ -6987,10 +7576,10 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class NcNameContext extends ParserRuleContext {
+		public TerminalNode NCName() { return getToken(XQueryParser.NCName, 0); }
 		public KeywordContext keyword() {
 			return getRuleContext(KeywordContext.class,0);
 		}
-		public TerminalNode NCName() { return getToken(XQueryParser.NCName, 0); }
 		public NcNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -7005,6 +7594,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final NcNameContext ncName() throws RecognitionException {
 		NcNameContext _localctx = new NcNameContext(_ctx, getState());
 		enterRule(_localctx, 136, RULE_ncName);
@@ -7014,7 +7604,8 @@ public class XQueryParser extends Parser {
 			case NCName:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(939); match(NCName);
+				setState(939);
+				match(NCName);
 				}
 				break;
 			case KW_ANCESTOR:
@@ -7115,7 +7706,8 @@ public class XQueryParser extends Parser {
 			case KW_XQUERY:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(940); keyword();
+				setState(940);
+				keyword();
 				}
 				break;
 			default:
@@ -7153,6 +7745,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final FunctionNameContext functionName() throws RecognitionException {
 		FunctionNameContext _localctx = new FunctionNameContext(_ctx, getState());
 		enterRule(_localctx, 138, RULE_functionName);
@@ -7162,13 +7755,15 @@ public class XQueryParser extends Parser {
 			case FullQName:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(943); match(FullQName);
+				setState(943);
+				match(FullQName);
 				}
 				break;
 			case NCName:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(944); match(NCName);
+				setState(944);
+				match(NCName);
 				}
 				break;
 			case KW_ANCESTOR:
@@ -7256,7 +7851,8 @@ public class XQueryParser extends Parser {
 			case KW_XQUERY:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(945); keywordOKForFunction();
+				setState(945);
+				keywordOKForFunction();
 				}
 				break;
 			default:
@@ -7275,11 +7871,11 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class KeywordContext extends ParserRuleContext {
-		public KeywordNotOKForFunctionContext keywordNotOKForFunction() {
-			return getRuleContext(KeywordNotOKForFunctionContext.class,0);
-		}
 		public KeywordOKForFunctionContext keywordOKForFunction() {
 			return getRuleContext(KeywordOKForFunctionContext.class,0);
+		}
+		public KeywordNotOKForFunctionContext keywordNotOKForFunction() {
+			return getRuleContext(KeywordNotOKForFunctionContext.class,0);
 		}
 		public KeywordContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7295,6 +7891,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final KeywordContext keyword() throws RecognitionException {
 		KeywordContext _localctx = new KeywordContext(_ctx, getState());
 		enterRule(_localctx, 140, RULE_keyword);
@@ -7386,7 +7983,8 @@ public class XQueryParser extends Parser {
 			case KW_XQUERY:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(948); keywordOKForFunction();
+				setState(948);
+				keywordOKForFunction();
 				}
 				break;
 			case KW_ATTRIBUTE:
@@ -7404,7 +8002,8 @@ public class XQueryParser extends Parser {
 			case KW_TYPESWITCH:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(949); keywordNotOKForFunction();
+				setState(949);
+				keywordNotOKForFunction();
 				}
 				break;
 			default:
@@ -7423,19 +8022,19 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class KeywordNotOKForFunctionContext extends ParserRuleContext {
-		public TerminalNode KW_TEXT() { return getToken(XQueryParser.KW_TEXT, 0); }
 		public TerminalNode KW_ATTRIBUTE() { return getToken(XQueryParser.KW_ATTRIBUTE, 0); }
-		public TerminalNode KW_NODE() { return getToken(XQueryParser.KW_NODE, 0); }
-		public TerminalNode KW_SCHEMA_ELEM() { return getToken(XQueryParser.KW_SCHEMA_ELEM, 0); }
-		public TerminalNode KW_PI() { return getToken(XQueryParser.KW_PI, 0); }
-		public TerminalNode KW_IF() { return getToken(XQueryParser.KW_IF, 0); }
-		public TerminalNode KW_ELEMENT() { return getToken(XQueryParser.KW_ELEMENT, 0); }
-		public TerminalNode KW_DOCUMENT_NODE() { return getToken(XQueryParser.KW_DOCUMENT_NODE, 0); }
 		public TerminalNode KW_COMMENT() { return getToken(XQueryParser.KW_COMMENT, 0); }
+		public TerminalNode KW_DOCUMENT_NODE() { return getToken(XQueryParser.KW_DOCUMENT_NODE, 0); }
+		public TerminalNode KW_ELEMENT() { return getToken(XQueryParser.KW_ELEMENT, 0); }
 		public TerminalNode KW_EMPTY_SEQUENCE() { return getToken(XQueryParser.KW_EMPTY_SEQUENCE, 0); }
-		public TerminalNode KW_TYPESWITCH() { return getToken(XQueryParser.KW_TYPESWITCH, 0); }
+		public TerminalNode KW_IF() { return getToken(XQueryParser.KW_IF, 0); }
 		public TerminalNode KW_ITEM() { return getToken(XQueryParser.KW_ITEM, 0); }
+		public TerminalNode KW_NODE() { return getToken(XQueryParser.KW_NODE, 0); }
+		public TerminalNode KW_PI() { return getToken(XQueryParser.KW_PI, 0); }
 		public TerminalNode KW_SCHEMA_ATTR() { return getToken(XQueryParser.KW_SCHEMA_ATTR, 0); }
+		public TerminalNode KW_SCHEMA_ELEM() { return getToken(XQueryParser.KW_SCHEMA_ELEM, 0); }
+		public TerminalNode KW_TEXT() { return getToken(XQueryParser.KW_TEXT, 0); }
+		public TerminalNode KW_TYPESWITCH() { return getToken(XQueryParser.KW_TYPESWITCH, 0); }
 		public KeywordNotOKForFunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -7450,6 +8049,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final KeywordNotOKForFunctionContext keywordNotOKForFunction() throws RecognitionException {
 		KeywordNotOKForFunctionContext _localctx = new KeywordNotOKForFunctionContext(_ctx, getState());
 		enterRule(_localctx, 142, RULE_keywordNotOKForFunction);
@@ -7461,8 +8061,9 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if ( !(_la==KW_ATTRIBUTE || _la==KW_COMMENT || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (KW_DOCUMENT_NODE - 64)) | (1L << (KW_ELEMENT - 64)) | (1L << (KW_EMPTY_SEQUENCE - 64)) | (1L << (KW_IF - 64)) | (1L << (KW_ITEM - 64)) | (1L << (KW_NODE - 64)) | (1L << (KW_PI - 64)) | (1L << (KW_SCHEMA_ATTR - 64)) | (1L << (KW_SCHEMA_ELEM - 64)) | (1L << (KW_TEXT - 64)) | (1L << (KW_TYPESWITCH - 64)))) != 0)) ) {
 			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
 			}
 		}
 		catch (RecognitionException re) {
@@ -7477,89 +8078,89 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class KeywordOKForFunctionContext extends ParserRuleContext {
-		public TerminalNode KW_COLLATION() { return getToken(XQueryParser.KW_COLLATION, 0); }
-		public TerminalNode KW_INSTANCE() { return getToken(XQueryParser.KW_INSTANCE, 0); }
-		public TerminalNode KW_AT() { return getToken(XQueryParser.KW_AT, 0); }
-		public TerminalNode KW_PRECEDING() { return getToken(XQueryParser.KW_PRECEDING, 0); }
-		public TerminalNode KW_MOD() { return getToken(XQueryParser.KW_MOD, 0); }
-		public TerminalNode KW_EQ() { return getToken(XQueryParser.KW_EQ, 0); }
-		public TerminalNode KW_MODULE() { return getToken(XQueryParser.KW_MODULE, 0); }
-		public TerminalNode KW_LET() { return getToken(XQueryParser.KW_LET, 0); }
+		public TerminalNode KW_ANCESTOR() { return getToken(XQueryParser.KW_ANCESTOR, 0); }
 		public TerminalNode KW_ANCESTOR_OR_SELF() { return getToken(XQueryParser.KW_ANCESTOR_OR_SELF, 0); }
-		public TerminalNode KW_VARIABLE() { return getToken(XQueryParser.KW_VARIABLE, 0); }
+		public TerminalNode KW_AND() { return getToken(XQueryParser.KW_AND, 0); }
+		public TerminalNode KW_AS() { return getToken(XQueryParser.KW_AS, 0); }
+		public TerminalNode KW_ASCENDING() { return getToken(XQueryParser.KW_ASCENDING, 0); }
+		public TerminalNode KW_AT() { return getToken(XQueryParser.KW_AT, 0); }
+		public TerminalNode KW_BASE_URI() { return getToken(XQueryParser.KW_BASE_URI, 0); }
+		public TerminalNode KW_BOUNDARY_SPACE() { return getToken(XQueryParser.KW_BOUNDARY_SPACE, 0); }
+		public TerminalNode KW_BY() { return getToken(XQueryParser.KW_BY, 0); }
+		public TerminalNode KW_CASE() { return getToken(XQueryParser.KW_CASE, 0); }
+		public TerminalNode KW_CAST() { return getToken(XQueryParser.KW_CAST, 0); }
+		public TerminalNode KW_CASTABLE() { return getToken(XQueryParser.KW_CASTABLE, 0); }
+		public TerminalNode KW_CHILD() { return getToken(XQueryParser.KW_CHILD, 0); }
+		public TerminalNode KW_COLLATION() { return getToken(XQueryParser.KW_COLLATION, 0); }
+		public TerminalNode KW_CONSTRUCTION() { return getToken(XQueryParser.KW_CONSTRUCTION, 0); }
+		public TerminalNode KW_COPY_NS() { return getToken(XQueryParser.KW_COPY_NS, 0); }
+		public TerminalNode KW_DECLARE() { return getToken(XQueryParser.KW_DECLARE, 0); }
+		public TerminalNode KW_DEFAULT() { return getToken(XQueryParser.KW_DEFAULT, 0); }
+		public TerminalNode KW_DESCENDANT() { return getToken(XQueryParser.KW_DESCENDANT, 0); }
+		public TerminalNode KW_DESCENDANT_OR_SELF() { return getToken(XQueryParser.KW_DESCENDANT_OR_SELF, 0); }
+		public TerminalNode KW_DESCENDING() { return getToken(XQueryParser.KW_DESCENDING, 0); }
+		public TerminalNode KW_DIV() { return getToken(XQueryParser.KW_DIV, 0); }
+		public TerminalNode KW_DOCUMENT() { return getToken(XQueryParser.KW_DOCUMENT, 0); }
+		public TerminalNode KW_ELSE() { return getToken(XQueryParser.KW_ELSE, 0); }
+		public TerminalNode KW_EMPTY() { return getToken(XQueryParser.KW_EMPTY, 0); }
+		public TerminalNode KW_ENCODING() { return getToken(XQueryParser.KW_ENCODING, 0); }
+		public TerminalNode KW_EQ() { return getToken(XQueryParser.KW_EQ, 0); }
+		public TerminalNode KW_EVERY() { return getToken(XQueryParser.KW_EVERY, 0); }
+		public TerminalNode KW_EXCEPT() { return getToken(XQueryParser.KW_EXCEPT, 0); }
+		public TerminalNode KW_EXTERNAL() { return getToken(XQueryParser.KW_EXTERNAL, 0); }
+		public TerminalNode KW_FOLLOWING() { return getToken(XQueryParser.KW_FOLLOWING, 0); }
+		public TerminalNode KW_FOLLOWING_SIBLING() { return getToken(XQueryParser.KW_FOLLOWING_SIBLING, 0); }
+		public TerminalNode KW_FOR() { return getToken(XQueryParser.KW_FOR, 0); }
+		public TerminalNode KW_FUNCTION() { return getToken(XQueryParser.KW_FUNCTION, 0); }
+		public TerminalNode KW_GE() { return getToken(XQueryParser.KW_GE, 0); }
+		public TerminalNode KW_GREATEST() { return getToken(XQueryParser.KW_GREATEST, 0); }
+		public TerminalNode KW_GT() { return getToken(XQueryParser.KW_GT, 0); }
+		public TerminalNode KW_IDIV() { return getToken(XQueryParser.KW_IDIV, 0); }
+		public TerminalNode KW_IMPORT() { return getToken(XQueryParser.KW_IMPORT, 0); }
+		public TerminalNode KW_IN() { return getToken(XQueryParser.KW_IN, 0); }
+		public TerminalNode KW_INHERIT() { return getToken(XQueryParser.KW_INHERIT, 0); }
+		public TerminalNode KW_INSTANCE() { return getToken(XQueryParser.KW_INSTANCE, 0); }
+		public TerminalNode KW_INTERSECT() { return getToken(XQueryParser.KW_INTERSECT, 0); }
+		public TerminalNode KW_IS() { return getToken(XQueryParser.KW_IS, 0); }
+		public TerminalNode KW_LAX() { return getToken(XQueryParser.KW_LAX, 0); }
 		public TerminalNode KW_LE() { return getToken(XQueryParser.KW_LE, 0); }
-		public TerminalNode KW_OR() { return getToken(XQueryParser.KW_OR, 0); }
+		public TerminalNode KW_LEAST() { return getToken(XQueryParser.KW_LEAST, 0); }
+		public TerminalNode KW_LET() { return getToken(XQueryParser.KW_LET, 0); }
+		public TerminalNode KW_LT() { return getToken(XQueryParser.KW_LT, 0); }
+		public TerminalNode KW_MOD() { return getToken(XQueryParser.KW_MOD, 0); }
+		public TerminalNode KW_MODULE() { return getToken(XQueryParser.KW_MODULE, 0); }
+		public TerminalNode KW_NAMESPACE() { return getToken(XQueryParser.KW_NAMESPACE, 0); }
 		public TerminalNode KW_NE() { return getToken(XQueryParser.KW_NE, 0); }
 		public TerminalNode KW_NO_INHERIT() { return getToken(XQueryParser.KW_NO_INHERIT, 0); }
-		public TerminalNode KW_STRICT() { return getToken(XQueryParser.KW_STRICT, 0); }
-		public TerminalNode KW_UNION() { return getToken(XQueryParser.KW_UNION, 0); }
-		public TerminalNode KW_ORDER() { return getToken(XQueryParser.KW_ORDER, 0); }
-		public TerminalNode KW_DIV() { return getToken(XQueryParser.KW_DIV, 0); }
-		public TerminalNode KW_UNORDERED() { return getToken(XQueryParser.KW_UNORDERED, 0); }
-		public TerminalNode KW_DEFAULT() { return getToken(XQueryParser.KW_DEFAULT, 0); }
-		public TerminalNode KW_ORDERING() { return getToken(XQueryParser.KW_ORDERING, 0); }
-		public TerminalNode KW_PRESERVE() { return getToken(XQueryParser.KW_PRESERVE, 0); }
-		public TerminalNode KW_VALIDATE() { return getToken(XQueryParser.KW_VALIDATE, 0); }
-		public TerminalNode KW_SELF() { return getToken(XQueryParser.KW_SELF, 0); }
-		public TerminalNode KW_IN() { return getToken(XQueryParser.KW_IN, 0); }
-		public TerminalNode KW_EXTERNAL() { return getToken(XQueryParser.KW_EXTERNAL, 0); }
-		public TerminalNode KW_SOME() { return getToken(XQueryParser.KW_SOME, 0); }
-		public TerminalNode KW_AND() { return getToken(XQueryParser.KW_AND, 0); }
-		public TerminalNode KW_PARENT() { return getToken(XQueryParser.KW_PARENT, 0); }
-		public TerminalNode KW_BOUNDARY_SPACE() { return getToken(XQueryParser.KW_BOUNDARY_SPACE, 0); }
-		public TerminalNode KW_PRECEDING_SIBLING() { return getToken(XQueryParser.KW_PRECEDING_SIBLING, 0); }
-		public TerminalNode KW_WHERE() { return getToken(XQueryParser.KW_WHERE, 0); }
-		public TerminalNode KW_STABLE() { return getToken(XQueryParser.KW_STABLE, 0); }
-		public TerminalNode KW_CAST() { return getToken(XQueryParser.KW_CAST, 0); }
-		public TerminalNode KW_NAMESPACE() { return getToken(XQueryParser.KW_NAMESPACE, 0); }
-		public TerminalNode KW_DESCENDANT_OR_SELF() { return getToken(XQueryParser.KW_DESCENDANT_OR_SELF, 0); }
-		public TerminalNode KW_RETURN() { return getToken(XQueryParser.KW_RETURN, 0); }
-		public TerminalNode KW_ANCESTOR() { return getToken(XQueryParser.KW_ANCESTOR, 0); }
-		public TerminalNode KW_CASE() { return getToken(XQueryParser.KW_CASE, 0); }
-		public TerminalNode KW_ASCENDING() { return getToken(XQueryParser.KW_ASCENDING, 0); }
-		public TerminalNode KW_COPY_NS() { return getToken(XQueryParser.KW_COPY_NS, 0); }
-		public TerminalNode KW_IMPORT() { return getToken(XQueryParser.KW_IMPORT, 0); }
-		public TerminalNode KW_DESCENDING() { return getToken(XQueryParser.KW_DESCENDING, 0); }
-		public TerminalNode KW_INHERIT() { return getToken(XQueryParser.KW_INHERIT, 0); }
-		public TerminalNode KW_INTERSECT() { return getToken(XQueryParser.KW_INTERSECT, 0); }
-		public TerminalNode KW_GT() { return getToken(XQueryParser.KW_GT, 0); }
 		public TerminalNode KW_NO_PRESERVE() { return getToken(XQueryParser.KW_NO_PRESERVE, 0); }
 		public TerminalNode KW_OF() { return getToken(XQueryParser.KW_OF, 0); }
-		public TerminalNode KW_LEAST() { return getToken(XQueryParser.KW_LEAST, 0); }
-		public TerminalNode KW_IDIV() { return getToken(XQueryParser.KW_IDIV, 0); }
-		public TerminalNode KW_AS() { return getToken(XQueryParser.KW_AS, 0); }
-		public TerminalNode KW_GE() { return getToken(XQueryParser.KW_GE, 0); }
-		public TerminalNode KW_EMPTY() { return getToken(XQueryParser.KW_EMPTY, 0); }
-		public TerminalNode KW_SATISFIES() { return getToken(XQueryParser.KW_SATISFIES, 0); }
-		public TerminalNode KW_THEN() { return getToken(XQueryParser.KW_THEN, 0); }
-		public TerminalNode KW_EVERY() { return getToken(XQueryParser.KW_EVERY, 0); }
-		public TerminalNode KW_DOCUMENT() { return getToken(XQueryParser.KW_DOCUMENT, 0); }
 		public TerminalNode KW_OPTION() { return getToken(XQueryParser.KW_OPTION, 0); }
-		public TerminalNode KW_BY() { return getToken(XQueryParser.KW_BY, 0); }
-		public TerminalNode KW_IS() { return getToken(XQueryParser.KW_IS, 0); }
-		public TerminalNode KW_LT() { return getToken(XQueryParser.KW_LT, 0); }
-		public TerminalNode KW_DESCENDANT() { return getToken(XQueryParser.KW_DESCENDANT, 0); }
-		public TerminalNode KW_LAX() { return getToken(XQueryParser.KW_LAX, 0); }
-		public TerminalNode KW_TREAT() { return getToken(XQueryParser.KW_TREAT, 0); }
-		public TerminalNode KW_CASTABLE() { return getToken(XQueryParser.KW_CASTABLE, 0); }
+		public TerminalNode KW_OR() { return getToken(XQueryParser.KW_OR, 0); }
+		public TerminalNode KW_ORDER() { return getToken(XQueryParser.KW_ORDER, 0); }
 		public TerminalNode KW_ORDERED() { return getToken(XQueryParser.KW_ORDERED, 0); }
-		public TerminalNode KW_TO() { return getToken(XQueryParser.KW_TO, 0); }
+		public TerminalNode KW_ORDERING() { return getToken(XQueryParser.KW_ORDERING, 0); }
+		public TerminalNode KW_PARENT() { return getToken(XQueryParser.KW_PARENT, 0); }
+		public TerminalNode KW_PRECEDING() { return getToken(XQueryParser.KW_PRECEDING, 0); }
+		public TerminalNode KW_PRECEDING_SIBLING() { return getToken(XQueryParser.KW_PRECEDING_SIBLING, 0); }
+		public TerminalNode KW_PRESERVE() { return getToken(XQueryParser.KW_PRESERVE, 0); }
+		public TerminalNode KW_RETURN() { return getToken(XQueryParser.KW_RETURN, 0); }
+		public TerminalNode KW_SATISFIES() { return getToken(XQueryParser.KW_SATISFIES, 0); }
 		public TerminalNode KW_SCHEMA() { return getToken(XQueryParser.KW_SCHEMA, 0); }
-		public TerminalNode KW_DECLARE() { return getToken(XQueryParser.KW_DECLARE, 0); }
-		public TerminalNode KW_BASE_URI() { return getToken(XQueryParser.KW_BASE_URI, 0); }
-		public TerminalNode KW_GREATEST() { return getToken(XQueryParser.KW_GREATEST, 0); }
-		public TerminalNode KW_CHILD() { return getToken(XQueryParser.KW_CHILD, 0); }
-		public TerminalNode KW_ELSE() { return getToken(XQueryParser.KW_ELSE, 0); }
-		public TerminalNode KW_EXCEPT() { return getToken(XQueryParser.KW_EXCEPT, 0); }
-		public TerminalNode KW_FOLLOWING_SIBLING() { return getToken(XQueryParser.KW_FOLLOWING_SIBLING, 0); }
+		public TerminalNode KW_SELF() { return getToken(XQueryParser.KW_SELF, 0); }
+		public TerminalNode KW_SOME() { return getToken(XQueryParser.KW_SOME, 0); }
+		public TerminalNode KW_STABLE() { return getToken(XQueryParser.KW_STABLE, 0); }
+		public TerminalNode KW_STRICT() { return getToken(XQueryParser.KW_STRICT, 0); }
 		public TerminalNode KW_STRIP() { return getToken(XQueryParser.KW_STRIP, 0); }
-		public TerminalNode KW_FOR() { return getToken(XQueryParser.KW_FOR, 0); }
-		public TerminalNode KW_CONSTRUCTION() { return getToken(XQueryParser.KW_CONSTRUCTION, 0); }
-		public TerminalNode KW_FOLLOWING() { return getToken(XQueryParser.KW_FOLLOWING, 0); }
+		public TerminalNode KW_THEN() { return getToken(XQueryParser.KW_THEN, 0); }
+		public TerminalNode KW_TO() { return getToken(XQueryParser.KW_TO, 0); }
+		public TerminalNode KW_TREAT() { return getToken(XQueryParser.KW_TREAT, 0); }
+		public TerminalNode KW_UNION() { return getToken(XQueryParser.KW_UNION, 0); }
+		public TerminalNode KW_UNORDERED() { return getToken(XQueryParser.KW_UNORDERED, 0); }
+		public TerminalNode KW_VALIDATE() { return getToken(XQueryParser.KW_VALIDATE, 0); }
+		public TerminalNode KW_VARIABLE() { return getToken(XQueryParser.KW_VARIABLE, 0); }
 		public TerminalNode KW_VERSION() { return getToken(XQueryParser.KW_VERSION, 0); }
+		public TerminalNode KW_WHERE() { return getToken(XQueryParser.KW_WHERE, 0); }
 		public TerminalNode KW_XQUERY() { return getToken(XQueryParser.KW_XQUERY, 0); }
-		public TerminalNode KW_FUNCTION() { return getToken(XQueryParser.KW_FUNCTION, 0); }
-		public TerminalNode KW_ENCODING() { return getToken(XQueryParser.KW_ENCODING, 0); }
 		public KeywordOKForFunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -7574,6 +8175,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final KeywordOKForFunctionContext keywordOKForFunction() throws RecognitionException {
 		KeywordOKForFunctionContext _localctx = new KeywordOKForFunctionContext(_ctx, getState());
 		enterRule(_localctx, 144, RULE_keywordOKForFunction);
@@ -7585,8 +8187,9 @@ public class XQueryParser extends Parser {
 			_la = _input.LA(1);
 			if ( !(((((_la - 39)) & ~0x3f) == 0 && ((1L << (_la - 39)) & ((1L << (KW_ANCESTOR - 39)) | (1L << (KW_ANCESTOR_OR_SELF - 39)) | (1L << (KW_AND - 39)) | (1L << (KW_AS - 39)) | (1L << (KW_ASCENDING - 39)) | (1L << (KW_AT - 39)) | (1L << (KW_BASE_URI - 39)) | (1L << (KW_BOUNDARY_SPACE - 39)) | (1L << (KW_BY - 39)) | (1L << (KW_CASE - 39)) | (1L << (KW_CAST - 39)) | (1L << (KW_CASTABLE - 39)) | (1L << (KW_CHILD - 39)) | (1L << (KW_COLLATION - 39)) | (1L << (KW_CONSTRUCTION - 39)) | (1L << (KW_COPY_NS - 39)) | (1L << (KW_DECLARE - 39)) | (1L << (KW_DEFAULT - 39)) | (1L << (KW_DESCENDANT - 39)) | (1L << (KW_DESCENDANT_OR_SELF - 39)) | (1L << (KW_DESCENDING - 39)) | (1L << (KW_DIV - 39)) | (1L << (KW_DOCUMENT - 39)) | (1L << (KW_ELSE - 39)) | (1L << (KW_EMPTY - 39)) | (1L << (KW_ENCODING - 39)) | (1L << (KW_EQ - 39)) | (1L << (KW_EVERY - 39)) | (1L << (KW_EXCEPT - 39)) | (1L << (KW_EXTERNAL - 39)) | (1L << (KW_FOLLOWING - 39)) | (1L << (KW_FOLLOWING_SIBLING - 39)) | (1L << (KW_FOR - 39)) | (1L << (KW_FUNCTION - 39)) | (1L << (KW_GE - 39)) | (1L << (KW_GREATEST - 39)) | (1L << (KW_GT - 39)) | (1L << (KW_IDIV - 39)) | (1L << (KW_IMPORT - 39)) | (1L << (KW_IN - 39)) | (1L << (KW_INHERIT - 39)) | (1L << (KW_INSTANCE - 39)) | (1L << (KW_INTERSECT - 39)) | (1L << (KW_IS - 39)) | (1L << (KW_LAX - 39)) | (1L << (KW_LE - 39)) | (1L << (KW_LEAST - 39)) | (1L << (KW_LET - 39)) | (1L << (KW_LT - 39)) | (1L << (KW_MOD - 39)) | (1L << (KW_MODULE - 39)) | (1L << (KW_NAMESPACE - 39)) | (1L << (KW_NE - 39)) | (1L << (KW_NO_INHERIT - 39)) | (1L << (KW_NO_PRESERVE - 39)) | (1L << (KW_OF - 39)))) != 0) || ((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & ((1L << (KW_OPTION - 103)) | (1L << (KW_OR - 103)) | (1L << (KW_ORDER - 103)) | (1L << (KW_ORDERED - 103)) | (1L << (KW_ORDERING - 103)) | (1L << (KW_PARENT - 103)) | (1L << (KW_PRECEDING - 103)) | (1L << (KW_PRECEDING_SIBLING - 103)) | (1L << (KW_PRESERVE - 103)) | (1L << (KW_RETURN - 103)) | (1L << (KW_SATISFIES - 103)) | (1L << (KW_SCHEMA - 103)) | (1L << (KW_SELF - 103)) | (1L << (KW_SOME - 103)) | (1L << (KW_STABLE - 103)) | (1L << (KW_STRICT - 103)) | (1L << (KW_STRIP - 103)) | (1L << (KW_THEN - 103)) | (1L << (KW_TO - 103)) | (1L << (KW_TREAT - 103)) | (1L << (KW_UNION - 103)) | (1L << (KW_UNORDERED - 103)) | (1L << (KW_VALIDATE - 103)) | (1L << (KW_VARIABLE - 103)) | (1L << (KW_VERSION - 103)) | (1L << (KW_WHERE - 103)) | (1L << (KW_XQUERY - 103)))) != 0)) ) {
 			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
 			}
 		}
 		catch (RecognitionException re) {
@@ -7601,39 +8204,39 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class StringLiteralContext extends ParserRuleContext {
-		public TerminalNode Apos(int i) {
-			return getToken(XQueryParser.Apos, i);
-		}
-		public List<TerminalNode> LBRACE() { return getTokens(XQueryParser.LBRACE); }
-		public TerminalNode RBRACE(int i) {
-			return getToken(XQueryParser.RBRACE, i);
-		}
-		public TerminalNode CharRef(int i) {
-			return getToken(XQueryParser.CharRef, i);
-		}
-		public TerminalNode LANGLE(int i) {
-			return getToken(XQueryParser.LANGLE, i);
-		}
-		public List<TerminalNode> PredefinedEntityRef() { return getTokens(XQueryParser.PredefinedEntityRef); }
-		public List<TerminalNode> LANGLE() { return getTokens(XQueryParser.LANGLE); }
-		public List<TerminalNode> RBRACE() { return getTokens(XQueryParser.RBRACE); }
-		public List<TerminalNode> Quot() { return getTokens(XQueryParser.Quot); }
-		public TerminalNode Quot(int i) {
-			return getToken(XQueryParser.Quot, i);
-		}
+		public List<? extends TerminalNode> PredefinedEntityRef() { return getTokens(XQueryParser.PredefinedEntityRef); }
 		public TerminalNode PredefinedEntityRef(int i) {
 			return getToken(XQueryParser.PredefinedEntityRef, i);
 		}
-		public List<TerminalNode> CharRef() { return getTokens(XQueryParser.CharRef); }
+		public List<? extends TerminalNode> CharRef() { return getTokens(XQueryParser.CharRef); }
+		public TerminalNode CharRef(int i) {
+			return getToken(XQueryParser.CharRef, i);
+		}
+		public List<? extends TerminalNode> Apos() { return getTokens(XQueryParser.Apos); }
+		public TerminalNode Apos(int i) {
+			return getToken(XQueryParser.Apos, i);
+		}
+		public List<? extends TerminalNode> LBRACE() { return getTokens(XQueryParser.LBRACE); }
+		public TerminalNode LBRACE(int i) {
+			return getToken(XQueryParser.LBRACE, i);
+		}
+		public List<? extends TerminalNode> RBRACE() { return getTokens(XQueryParser.RBRACE); }
+		public TerminalNode RBRACE(int i) {
+			return getToken(XQueryParser.RBRACE, i);
+		}
+		public List<? extends TerminalNode> LANGLE() { return getTokens(XQueryParser.LANGLE); }
+		public TerminalNode LANGLE(int i) {
+			return getToken(XQueryParser.LANGLE, i);
+		}
+		public List<? extends NoQuotesNoBracesNoAmpNoLAngContext> noQuotesNoBracesNoAmpNoLAng() {
+			return getRuleContexts(NoQuotesNoBracesNoAmpNoLAngContext.class);
+		}
 		public NoQuotesNoBracesNoAmpNoLAngContext noQuotesNoBracesNoAmpNoLAng(int i) {
 			return getRuleContext(NoQuotesNoBracesNoAmpNoLAngContext.class,i);
 		}
-		public List<NoQuotesNoBracesNoAmpNoLAngContext> noQuotesNoBracesNoAmpNoLAng() {
-			return getRuleContexts(NoQuotesNoBracesNoAmpNoLAngContext.class);
-		}
-		public List<TerminalNode> Apos() { return getTokens(XQueryParser.Apos); }
-		public TerminalNode LBRACE(int i) {
-			return getToken(XQueryParser.LBRACE, i);
+		public List<? extends TerminalNode> Quot() { return getTokens(XQueryParser.Quot); }
+		public TerminalNode Quot(int i) {
+			return getToken(XQueryParser.Quot, i);
 		}
 		public StringLiteralContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -7649,6 +8252,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final StringLiteralContext stringLiteral() throws RecognitionException {
 		StringLiteralContext _localctx = new StringLiteralContext(_ctx, getState());
 		enterRule(_localctx, 146, RULE_stringLiteral);
@@ -7659,7 +8263,8 @@ public class XQueryParser extends Parser {
 			case Quot:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(956); match(Quot);
+				setState(956);
+				match(Quot);
 				setState(968);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,100,_ctx);
@@ -7670,38 +8275,46 @@ public class XQueryParser extends Parser {
 						switch (_input.LA(1)) {
 						case Quot:
 							{
-							setState(957); match(Quot);
-							setState(958); match(Quot);
+							setState(957);
+							match(Quot);
+							setState(958);
+							match(Quot);
 							}
 							break;
 						case PredefinedEntityRef:
 							{
-							setState(959); match(PredefinedEntityRef);
+							setState(959);
+							match(PredefinedEntityRef);
 							}
 							break;
 						case CharRef:
 							{
-							setState(960); match(CharRef);
+							setState(960);
+							match(CharRef);
 							}
 							break;
 						case Apos:
 							{
-							setState(961); match(Apos);
+							setState(961);
+							match(Apos);
 							}
 							break;
 						case LBRACE:
 							{
-							setState(962); match(LBRACE);
+							setState(962);
+							match(LBRACE);
 							}
 							break;
 						case RBRACE:
 							{
-							setState(963); match(RBRACE);
+							setState(963);
+							match(RBRACE);
 							}
 							break;
 						case LANGLE:
 							{
-							setState(964); match(LANGLE);
+							setState(964);
+							match(LANGLE);
 							}
 							break;
 						case IntegerLiteral:
@@ -7832,7 +8445,8 @@ public class XQueryParser extends Parser {
 						case NCName:
 						case ContentChar:
 							{
-							setState(965); noQuotesNoBracesNoAmpNoLAng();
+							setState(965);
+							noQuotesNoBracesNoAmpNoLAng();
 							}
 							break;
 						default:
@@ -7844,13 +8458,15 @@ public class XQueryParser extends Parser {
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,100,_ctx);
 				}
-				setState(971); match(Quot);
+				setState(971);
+				match(Quot);
 				}
 				break;
 			case Apos:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(972); match(Apos);
+				setState(972);
+				match(Apos);
 				setState(984);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,102,_ctx);
@@ -7861,38 +8477,46 @@ public class XQueryParser extends Parser {
 						switch (_input.LA(1)) {
 						case Apos:
 							{
-							setState(973); match(Apos);
-							setState(974); match(Apos);
+							setState(973);
+							match(Apos);
+							setState(974);
+							match(Apos);
 							}
 							break;
 						case PredefinedEntityRef:
 							{
-							setState(975); match(PredefinedEntityRef);
+							setState(975);
+							match(PredefinedEntityRef);
 							}
 							break;
 						case CharRef:
 							{
-							setState(976); match(CharRef);
+							setState(976);
+							match(CharRef);
 							}
 							break;
 						case Quot:
 							{
-							setState(977); match(Quot);
+							setState(977);
+							match(Quot);
 							}
 							break;
 						case LBRACE:
 							{
-							setState(978); match(LBRACE);
+							setState(978);
+							match(LBRACE);
 							}
 							break;
 						case RBRACE:
 							{
-							setState(979); match(RBRACE);
+							setState(979);
+							match(RBRACE);
 							}
 							break;
 						case LANGLE:
 							{
-							setState(980); match(LANGLE);
+							setState(980);
+							match(LANGLE);
 							}
 							break;
 						case IntegerLiteral:
@@ -8023,7 +8647,8 @@ public class XQueryParser extends Parser {
 						case NCName:
 						case ContentChar:
 							{
-							setState(981); noQuotesNoBracesNoAmpNoLAng();
+							setState(981);
+							noQuotesNoBracesNoAmpNoLAng();
 							}
 							break;
 						default:
@@ -8035,7 +8660,8 @@ public class XQueryParser extends Parser {
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,102,_ctx);
 				}
-				setState(987); match(Apos);
+				setState(987);
+				match(Apos);
 				}
 				break;
 			default:
@@ -8054,136 +8680,136 @@ public class XQueryParser extends Parser {
 	}
 
 	public static class NoQuotesNoBracesNoAmpNoLAngContext extends ParserRuleContext {
-		public List<TerminalNode> COLON_EQ() { return getTokens(XQueryParser.COLON_EQ); }
-		public TerminalNode DOLLAR(int i) {
-			return getToken(XQueryParser.DOLLAR, i);
-		}
-		public List<TerminalNode> QUESTION() { return getTokens(XQueryParser.QUESTION); }
-		public TerminalNode RANGLE(int i) {
-			return getToken(XQueryParser.RANGLE, i);
-		}
-		public TerminalNode SEMICOLON(int i) {
-			return getToken(XQueryParser.SEMICOLON, i);
-		}
-		public List<KeywordContext> keyword() {
+		public List<? extends KeywordContext> keyword() {
 			return getRuleContexts(KeywordContext.class);
-		}
-		public TerminalNode DDOT(int i) {
-			return getToken(XQueryParser.DDOT, i);
-		}
-		public TerminalNode NCNameWithLocalWildcard(int i) {
-			return getToken(XQueryParser.NCNameWithLocalWildcard, i);
-		}
-		public List<TerminalNode> DOLLAR() { return getTokens(XQueryParser.DOLLAR); }
-		public TerminalNode LBRACKET(int i) {
-			return getToken(XQueryParser.LBRACKET, i);
-		}
-		public List<TerminalNode> NOT_EQUAL() { return getTokens(XQueryParser.NOT_EQUAL); }
-		public List<TerminalNode> RBRACKET() { return getTokens(XQueryParser.RBRACKET); }
-		public TerminalNode NCNameWithPrefixWildcard(int i) {
-			return getToken(XQueryParser.NCNameWithPrefixWildcard, i);
-		}
-		public List<TerminalNode> DoubleLiteral() { return getTokens(XQueryParser.DoubleLiteral); }
-		public TerminalNode EQUAL(int i) {
-			return getToken(XQueryParser.EQUAL, i);
-		}
-		public List<TerminalNode> DecimalLiteral() { return getTokens(XQueryParser.DecimalLiteral); }
-		public TerminalNode STAR(int i) {
-			return getToken(XQueryParser.STAR, i);
-		}
-		public List<TerminalNode> DDOT() { return getTokens(XQueryParser.DDOT); }
-		public TerminalNode RPAREN(int i) {
-			return getToken(XQueryParser.RPAREN, i);
-		}
-		public TerminalNode IntegerLiteral(int i) {
-			return getToken(XQueryParser.IntegerLiteral, i);
-		}
-		public TerminalNode VBAR(int i) {
-			return getToken(XQueryParser.VBAR, i);
-		}
-		public TerminalNode NCName(int i) {
-			return getToken(XQueryParser.NCName, i);
-		}
-		public List<TerminalNode> EQUAL() { return getTokens(XQueryParser.EQUAL); }
-		public List<TerminalNode> AT() { return getTokens(XQueryParser.AT); }
-		public List<TerminalNode> LPAREN() { return getTokens(XQueryParser.LPAREN); }
-		public TerminalNode NOT_EQUAL(int i) {
-			return getToken(XQueryParser.NOT_EQUAL, i);
-		}
-		public TerminalNode DOT(int i) {
-			return getToken(XQueryParser.DOT, i);
-		}
-		public TerminalNode PLUS(int i) {
-			return getToken(XQueryParser.PLUS, i);
-		}
-		public TerminalNode MINUS(int i) {
-			return getToken(XQueryParser.MINUS, i);
-		}
-		public TerminalNode AT(int i) {
-			return getToken(XQueryParser.AT, i);
-		}
-		public List<TerminalNode> DOT() { return getTokens(XQueryParser.DOT); }
-		public TerminalNode QUESTION(int i) {
-			return getToken(XQueryParser.QUESTION, i);
-		}
-		public TerminalNode FullQName(int i) {
-			return getToken(XQueryParser.FullQName, i);
-		}
-		public TerminalNode DSLASH(int i) {
-			return getToken(XQueryParser.DSLASH, i);
-		}
-		public List<TerminalNode> IntegerLiteral() { return getTokens(XQueryParser.IntegerLiteral); }
-		public List<TerminalNode> NCNameWithPrefixWildcard() { return getTokens(XQueryParser.NCNameWithPrefixWildcard); }
-		public List<TerminalNode> COLON() { return getTokens(XQueryParser.COLON); }
-		public List<TerminalNode> FullQName() { return getTokens(XQueryParser.FullQName); }
-		public List<TerminalNode> NCNameWithLocalWildcard() { return getTokens(XQueryParser.NCNameWithLocalWildcard); }
-		public List<TerminalNode> STAR() { return getTokens(XQueryParser.STAR); }
-		public List<TerminalNode> VBAR() { return getTokens(XQueryParser.VBAR); }
-		public List<TerminalNode> PRAGMA() { return getTokens(XQueryParser.PRAGMA); }
-		public TerminalNode SLASH(int i) {
-			return getToken(XQueryParser.SLASH, i);
-		}
-		public List<TerminalNode> NCName() { return getTokens(XQueryParser.NCName); }
-		public TerminalNode DecimalLiteral(int i) {
-			return getToken(XQueryParser.DecimalLiteral, i);
-		}
-		public List<TerminalNode> ContentChar() { return getTokens(XQueryParser.ContentChar); }
-		public TerminalNode COLON(int i) {
-			return getToken(XQueryParser.COLON, i);
-		}
-		public List<TerminalNode> PLUS() { return getTokens(XQueryParser.PLUS); }
-		public TerminalNode RBRACKET(int i) {
-			return getToken(XQueryParser.RBRACKET, i);
-		}
-		public List<TerminalNode> SEMICOLON() { return getTokens(XQueryParser.SEMICOLON); }
-		public TerminalNode PRAGMA(int i) {
-			return getToken(XQueryParser.PRAGMA, i);
-		}
-		public List<TerminalNode> MINUS() { return getTokens(XQueryParser.MINUS); }
-		public TerminalNode ContentChar(int i) {
-			return getToken(XQueryParser.ContentChar, i);
-		}
-		public List<TerminalNode> LBRACKET() { return getTokens(XQueryParser.LBRACKET); }
-		public TerminalNode COMMA(int i) {
-			return getToken(XQueryParser.COMMA, i);
-		}
-		public List<TerminalNode> RANGLE() { return getTokens(XQueryParser.RANGLE); }
-		public TerminalNode LPAREN(int i) {
-			return getToken(XQueryParser.LPAREN, i);
 		}
 		public KeywordContext keyword(int i) {
 			return getRuleContext(KeywordContext.class,i);
 		}
-		public List<TerminalNode> DSLASH() { return getTokens(XQueryParser.DSLASH); }
-		public List<TerminalNode> COMMA() { return getTokens(XQueryParser.COMMA); }
-		public List<TerminalNode> RPAREN() { return getTokens(XQueryParser.RPAREN); }
+		public List<? extends TerminalNode> IntegerLiteral() { return getTokens(XQueryParser.IntegerLiteral); }
+		public TerminalNode IntegerLiteral(int i) {
+			return getToken(XQueryParser.IntegerLiteral, i);
+		}
+		public List<? extends TerminalNode> DecimalLiteral() { return getTokens(XQueryParser.DecimalLiteral); }
+		public TerminalNode DecimalLiteral(int i) {
+			return getToken(XQueryParser.DecimalLiteral, i);
+		}
+		public List<? extends TerminalNode> DoubleLiteral() { return getTokens(XQueryParser.DoubleLiteral); }
 		public TerminalNode DoubleLiteral(int i) {
 			return getToken(XQueryParser.DoubleLiteral, i);
 		}
+		public List<? extends TerminalNode> PRAGMA() { return getTokens(XQueryParser.PRAGMA); }
+		public TerminalNode PRAGMA(int i) {
+			return getToken(XQueryParser.PRAGMA, i);
+		}
+		public List<? extends TerminalNode> EQUAL() { return getTokens(XQueryParser.EQUAL); }
+		public TerminalNode EQUAL(int i) {
+			return getToken(XQueryParser.EQUAL, i);
+		}
+		public List<? extends TerminalNode> NOT_EQUAL() { return getTokens(XQueryParser.NOT_EQUAL); }
+		public TerminalNode NOT_EQUAL(int i) {
+			return getToken(XQueryParser.NOT_EQUAL, i);
+		}
+		public List<? extends TerminalNode> LPAREN() { return getTokens(XQueryParser.LPAREN); }
+		public TerminalNode LPAREN(int i) {
+			return getToken(XQueryParser.LPAREN, i);
+		}
+		public List<? extends TerminalNode> RPAREN() { return getTokens(XQueryParser.RPAREN); }
+		public TerminalNode RPAREN(int i) {
+			return getToken(XQueryParser.RPAREN, i);
+		}
+		public List<? extends TerminalNode> LBRACKET() { return getTokens(XQueryParser.LBRACKET); }
+		public TerminalNode LBRACKET(int i) {
+			return getToken(XQueryParser.LBRACKET, i);
+		}
+		public List<? extends TerminalNode> RBRACKET() { return getTokens(XQueryParser.RBRACKET); }
+		public TerminalNode RBRACKET(int i) {
+			return getToken(XQueryParser.RBRACKET, i);
+		}
+		public List<? extends TerminalNode> STAR() { return getTokens(XQueryParser.STAR); }
+		public TerminalNode STAR(int i) {
+			return getToken(XQueryParser.STAR, i);
+		}
+		public List<? extends TerminalNode> PLUS() { return getTokens(XQueryParser.PLUS); }
+		public TerminalNode PLUS(int i) {
+			return getToken(XQueryParser.PLUS, i);
+		}
+		public List<? extends TerminalNode> MINUS() { return getTokens(XQueryParser.MINUS); }
+		public TerminalNode MINUS(int i) {
+			return getToken(XQueryParser.MINUS, i);
+		}
+		public List<? extends TerminalNode> COMMA() { return getTokens(XQueryParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(XQueryParser.COMMA, i);
+		}
+		public List<? extends TerminalNode> DOT() { return getTokens(XQueryParser.DOT); }
+		public TerminalNode DOT(int i) {
+			return getToken(XQueryParser.DOT, i);
+		}
+		public List<? extends TerminalNode> DDOT() { return getTokens(XQueryParser.DDOT); }
+		public TerminalNode DDOT(int i) {
+			return getToken(XQueryParser.DDOT, i);
+		}
+		public List<? extends TerminalNode> COLON() { return getTokens(XQueryParser.COLON); }
+		public TerminalNode COLON(int i) {
+			return getToken(XQueryParser.COLON, i);
+		}
+		public List<? extends TerminalNode> COLON_EQ() { return getTokens(XQueryParser.COLON_EQ); }
 		public TerminalNode COLON_EQ(int i) {
 			return getToken(XQueryParser.COLON_EQ, i);
 		}
-		public List<TerminalNode> SLASH() { return getTokens(XQueryParser.SLASH); }
+		public List<? extends TerminalNode> SEMICOLON() { return getTokens(XQueryParser.SEMICOLON); }
+		public TerminalNode SEMICOLON(int i) {
+			return getToken(XQueryParser.SEMICOLON, i);
+		}
+		public List<? extends TerminalNode> SLASH() { return getTokens(XQueryParser.SLASH); }
+		public TerminalNode SLASH(int i) {
+			return getToken(XQueryParser.SLASH, i);
+		}
+		public List<? extends TerminalNode> DSLASH() { return getTokens(XQueryParser.DSLASH); }
+		public TerminalNode DSLASH(int i) {
+			return getToken(XQueryParser.DSLASH, i);
+		}
+		public List<? extends TerminalNode> VBAR() { return getTokens(XQueryParser.VBAR); }
+		public TerminalNode VBAR(int i) {
+			return getToken(XQueryParser.VBAR, i);
+		}
+		public List<? extends TerminalNode> RANGLE() { return getTokens(XQueryParser.RANGLE); }
+		public TerminalNode RANGLE(int i) {
+			return getToken(XQueryParser.RANGLE, i);
+		}
+		public List<? extends TerminalNode> QUESTION() { return getTokens(XQueryParser.QUESTION); }
+		public TerminalNode QUESTION(int i) {
+			return getToken(XQueryParser.QUESTION, i);
+		}
+		public List<? extends TerminalNode> AT() { return getTokens(XQueryParser.AT); }
+		public TerminalNode AT(int i) {
+			return getToken(XQueryParser.AT, i);
+		}
+		public List<? extends TerminalNode> DOLLAR() { return getTokens(XQueryParser.DOLLAR); }
+		public TerminalNode DOLLAR(int i) {
+			return getToken(XQueryParser.DOLLAR, i);
+		}
+		public List<? extends TerminalNode> FullQName() { return getTokens(XQueryParser.FullQName); }
+		public TerminalNode FullQName(int i) {
+			return getToken(XQueryParser.FullQName, i);
+		}
+		public List<? extends TerminalNode> NCNameWithLocalWildcard() { return getTokens(XQueryParser.NCNameWithLocalWildcard); }
+		public TerminalNode NCNameWithLocalWildcard(int i) {
+			return getToken(XQueryParser.NCNameWithLocalWildcard, i);
+		}
+		public List<? extends TerminalNode> NCNameWithPrefixWildcard() { return getTokens(XQueryParser.NCNameWithPrefixWildcard); }
+		public TerminalNode NCNameWithPrefixWildcard(int i) {
+			return getToken(XQueryParser.NCNameWithPrefixWildcard, i);
+		}
+		public List<? extends TerminalNode> NCName() { return getTokens(XQueryParser.NCName); }
+		public TerminalNode NCName(int i) {
+			return getToken(XQueryParser.NCName, i);
+		}
+		public List<? extends TerminalNode> ContentChar() { return getTokens(XQueryParser.ContentChar); }
+		public TerminalNode ContentChar(int i) {
+			return getToken(XQueryParser.ContentChar, i);
+		}
 		public NoQuotesNoBracesNoAmpNoLAngContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -8198,6 +8824,7 @@ public class XQueryParser extends Parser {
 		}
 	}
 
+	@RuleVersion(0)
 	public final NoQuotesNoBracesNoAmpNoLAngContext noQuotesNoBracesNoAmpNoLAng() throws RecognitionException {
 		NoQuotesNoBracesNoAmpNoLAngContext _localctx = new NoQuotesNoBracesNoAmpNoLAngContext(_ctx, getState());
 		enterRule(_localctx, 148, RULE_noQuotesNoBracesNoAmpNoLAng);
@@ -8312,7 +8939,8 @@ public class XQueryParser extends Parser {
 					case KW_WHERE:
 					case KW_XQUERY:
 						{
-						setState(990); keyword();
+						setState(990);
+						keyword();
 						}
 						break;
 					case IntegerLiteral:
@@ -8351,8 +8979,9 @@ public class XQueryParser extends Parser {
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << DecimalLiteral) | (1L << DoubleLiteral) | (1L << PRAGMA) | (1L << EQUAL) | (1L << NOT_EQUAL) | (1L << LPAREN) | (1L << RPAREN) | (1L << LBRACKET) | (1L << RBRACKET) | (1L << STAR) | (1L << PLUS) | (1L << MINUS) | (1L << COMMA) | (1L << DOT) | (1L << DDOT) | (1L << COLON) | (1L << COLON_EQ) | (1L << SEMICOLON) | (1L << SLASH) | (1L << DSLASH) | (1L << VBAR) | (1L << RANGLE) | (1L << QUESTION) | (1L << AT) | (1L << DOLLAR))) != 0) || ((((_la - 135)) & ~0x3f) == 0 && ((1L << (_la - 135)) & ((1L << (FullQName - 135)) | (1L << (NCNameWithLocalWildcard - 135)) | (1L << (NCNameWithPrefixWildcard - 135)) | (1L << (NCName - 135)) | (1L << (ContentChar - 135)))) != 0)) ) {
 						_errHandler.recoverInline(this);
+						} else {
+							consume();
 						}
-						consume();
 						}
 						break;
 					default:
@@ -8382,30 +9011,43 @@ public class XQueryParser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 29: return orExpr_sempred((OrExprContext)_localctx, predIndex);
+		case 29:
+			return orExpr_sempred((OrExprContext)_localctx, predIndex);
 		}
 		return true;
 	}
 	private boolean orExpr_sempred(OrExprContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return precpred(_ctx, 13);
-		case 1: return precpred(_ctx, 12);
-		case 2: return precpred(_ctx, 11);
-		case 3: return precpred(_ctx, 10);
-		case 4: return precpred(_ctx, 9);
-		case 5: return precpred(_ctx, 8);
-		case 6: return precpred(_ctx, 7);
-		case 7: return precpred(_ctx, 6);
-		case 8: return precpred(_ctx, 17);
-		case 9: return precpred(_ctx, 16);
-		case 10: return precpred(_ctx, 15);
-		case 11: return precpred(_ctx, 14);
+		case 0:
+			return precpred(_ctx, 13);
+		case 1:
+			return precpred(_ctx, 12);
+		case 2:
+			return precpred(_ctx, 11);
+		case 3:
+			return precpred(_ctx, 10);
+		case 4:
+			return precpred(_ctx, 9);
+		case 5:
+			return precpred(_ctx, 8);
+		case 6:
+			return precpred(_ctx, 7);
+		case 7:
+			return precpred(_ctx, 6);
+		case 8:
+			return precpred(_ctx, 17);
+		case 9:
+			return precpred(_ctx, 16);
+		case 10:
+			return precpred(_ctx, 15);
+		case 11:
+			return precpred(_ctx, 14);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\u008e\u03e7\4\2\t"+
+		"\3\uaf6f\u8320\u479d\ub75c\u4880\u1605\u191c\uab37\3\u008e\u03e7\4\2\t"+
 		"\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -8476,19 +9118,21 @@ public class XQueryParser extends Parser {
 		"\nF\3G\3G\3G\5G\u03b5\nG\3H\3H\5H\u03b9\nH\3I\3I\3J\3J\3K\3K\3K\3K\3K"+
 		"\3K\3K\3K\3K\3K\7K\u03c9\nK\fK\16K\u03cc\13K\3K\3K\3K\3K\3K\3K\3K\3K\3"+
 		"K\3K\3K\7K\u03d9\nK\fK\16K\u03dc\13K\3K\5K\u03df\nK\3L\3L\6L\u03e3\nL"+
-		"\rL\16L\u03e4\3L\2\3<M\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,"+
-		".\60\62\64\668:<>@BDFHJLNPRTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086"+
-		"\u0088\u008a\u008c\u008e\u0090\u0092\u0094\u0096\2\30\4\2CCOO\4\2qq||"+
-		"\4\2ll\u0083\u0083\4\2QQ^^\4\2ffqq\4\2WWee\4\2--??\4\2IIyy\3\2\31\32\4"+
-		"\2\\\\{{\4\2JJYY\4\2##\u0082\u0082\6\2\30\30@@SSaa\3\2!\"\7\2//\66\66"+
-		"=>LMxx\4\2)*np\4\2\n\n\f\f\3\2\6\7\4\2\30\31&&\r\2//88BCFFTT[[ggrrvw}"+
-		"}\u0081\u0081\16\2).\60\679ADEGSUZ\\fhqsux|~\u0080\u0082\u0088\t\2\3\5"+
-		"\16\16\20\25\30#%(\u0089\u008c\u008e\u008e\u045e\2\u0099\3\2\2\2\4\u009f"+
-		"\3\2\2\2\6\u00a8\3\2\2\2\b\u00ab\3\2\2\2\n\u00ae\3\2\2\2\f\u00c0\3\2\2"+
-		"\2\16\u00cf\3\2\2\2\20\u00ef\3\2\2\2\22\u00f1\3\2\2\2\24\u00f7\3\2\2\2"+
-		"\26\u010e\3\2\2\2\30\u0122\3\2\2\2\32\u012e\3\2\2\2\34\u0148\3\2\2\2\36"+
-		"\u014d\3\2\2\2 \u0152\3\2\2\2\"\u015f\3\2\2\2$\u0163\3\2\2\2&\u0171\3"+
-		"\2\2\2(\u017a\3\2\2\2*\u0187\3\2\2\2,\u0190\3\2\2\2.\u0199\3\2\2\2\60"+
+		"\rL\16L\u03e4\3L\2\2\3<M\2\2\4\2\6\2\b\2\n\2\f\2\16\2\20\2\22\2\24\2\26"+
+		"\2\30\2\32\2\34\2\36\2 \2\"\2$\2&\2(\2*\2,\2.\2\60\2\62\2\64\2\66\28\2"+
+		":\2<\2>\2@\2B\2D\2F\2H\2J\2L\2N\2P\2R\2T\2V\2X\2Z\2\\\2^\2`\2b\2d\2f\2"+
+		"h\2j\2l\2n\2p\2r\2t\2v\2x\2z\2|\2~\2\u0080\2\u0082\2\u0084\2\u0086\2\u0088"+
+		"\2\u008a\2\u008c\2\u008e\2\u0090\2\u0092\2\u0094\2\u0096\2\2\30\4\2CC"+
+		"OO\4\2qq||\4\2ll\u0083\u0083\4\2QQ^^\4\2ffqq\4\2WWee\4\2--??\4\2IIyy\3"+
+		"\2\31\32\4\2\\\\{{\4\2JJYY\4\2##\u0082\u0082\6\2\30\30@@SSaa\3\2!\"\7"+
+		"\2//\66\66=>LMxx\4\2)*np\4\2\n\n\f\f\3\2\6\7\4\2\30\31&&\r\2//88BCFFT"+
+		"T[[ggrrvw}}\u0081\u0081\16\2).\60\679ADEGSUZ\\fhqsux|~\u0080\u0082\u0088"+
+		"\t\2\3\5\16\16\20\25\30#%(\u0089\u008c\u008e\u008e\u045e\2\u0099\3\2\2"+
+		"\2\4\u009f\3\2\2\2\6\u00a8\3\2\2\2\b\u00ab\3\2\2\2\n\u00ae\3\2\2\2\f\u00c0"+
+		"\3\2\2\2\16\u00cf\3\2\2\2\20\u00ef\3\2\2\2\22\u00f1\3\2\2\2\24\u00f7\3"+
+		"\2\2\2\26\u010e\3\2\2\2\30\u0122\3\2\2\2\32\u012e\3\2\2\2\34\u0148\3\2"+
+		"\2\2\36\u014d\3\2\2\2 \u0152\3\2\2\2\"\u015f\3\2\2\2$\u0163\3\2\2\2&\u0171"+
+		"\3\2\2\2(\u017a\3\2\2\2*\u0187\3\2\2\2,\u0190\3\2\2\2.\u0199\3\2\2\2\60"+
 		"\u01a5\3\2\2\2\62\u01b1\3\2\2\2\64\u01bd\3\2\2\2\66\u01c5\3\2\2\28\u01d6"+
 		"\3\2\2\2:\u01e1\3\2\2\2<\u0206\3\2\2\2>\u026e\3\2\2\2@\u0270\3\2\2\2B"+
 		"\u027a\3\2\2\2D\u027e\3\2\2\2F\u0286\3\2\2\2H\u0288\3\2\2\2J\u028d\3\2"+
@@ -8807,9 +9451,5 @@ public class XQueryParser extends Parser {
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
-		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
-		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
-			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
-		}
 	}
 }

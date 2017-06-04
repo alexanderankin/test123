@@ -2,13 +2,13 @@
 plugin.xquery.XQueryPlugin.activate=defer
 plugin.xquery.XQueryPlugin.name=XQuery Plugin
 plugin.xquery.XQueryPlugin.author=Wim le Page, Pieter Wellens
-plugin.xquery.XQueryPlugin.version=1.1.0
+plugin.xquery.XQueryPlugin.version=1.2.0
 plugin.xquery.XQueryPlugin.docs=index.html
-plugin.xquery.XQueryPlugin.depend.0=jdk 1.6
-plugin.xquery.XQueryPlugin.depend.1=jedit 05.02.99.00
+plugin.xquery.XQueryPlugin.depend.0=jdk 1.7
+plugin.xquery.XQueryPlugin.depend.1=jedit 05.03.99.00
 plugin.xquery.XQueryPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.xquery.XQueryPlugin.depend.3=plugin infoviewer.InfoViewerPlugin 1.6
-plugin.xquery.XQueryPlugin.depend.4=plugin antlr.AntlrPlugin 4.4
+plugin.xquery.XQueryPlugin.depend.4=plugin antlr.AntlrPlugin 4.5.1
 plugin.xquery.XQueryPlugin.depend.5=plugin sidekick.SideKickPlugin 1.7
 plugin.xquery.XQueryPlugin.depend.6=plugin eclipseicons.EclipseIconsPlugin 1.0
 plugin.xquery.XQueryPlugin.description=The XQuery plugin provides features for querying XML documents, setting options for output, performance monitoring and other XQuery processor specific variables.
