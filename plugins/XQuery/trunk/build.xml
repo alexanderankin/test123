@@ -37,7 +37,7 @@
     <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     <pathelement location="${jedit.plugins.dir}/XmlIndenter.jar"/>
     <pathelement location="${jedit.plugins.dir}/InfoViewer.jar"/>
-	<pathelement location="${jedit.plugins.dir}/antlr-4.4-complete.jar"/>
+	<pathelement location="${jedit.plugins.dir}/antlr4-4.5-opt.jar"/>
     <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
     <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
   </path>

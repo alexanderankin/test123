@@ -375,6 +375,18 @@
   <appendix id="changelog">
     <title>Change log</title>
     <section>
+	    <title>Changes from 1.1.0 to 1.2.0</title>
+	    <para>
+	      <itemizedlist>
+		<listitem>
+		  <para>Upgraded Sidekick to use latest version of Antlr.</para>
+		</listitem>
+	     </itemizedlist>
+	    </para>
+    </section> 
+
+
+    <section>
 	    <title>Changes from 1.0.0 to 1.1.0</title>
 	    <para>
 	      <itemizedlist>

@@ -1,6 +1,8 @@
 package sidekick.xquery.parser;
 
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.Nullable;
 
 import java.util.*;
 
@@ -12,10 +14,11 @@ public class SideKickErrorListener extends BaseErrorListener {
 
     public List<ParseError> getErrors() {
         return errors;
+        
     }
 
     @Override
-    public void syntaxError( Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e ) {
+	public <T extends Token> void syntaxError(@NotNull Recognizer<T, ?> recognizer, @Nullable T offendingSymbol, int line, int charPositionInLine, @NotNull String msg, @Nullable RecognitionException e) {
         int length = 0;
         if ( e != null && e.getOffendingToken() != null ) {
             int startOffset = e.getOffendingToken().getStartIndex();
