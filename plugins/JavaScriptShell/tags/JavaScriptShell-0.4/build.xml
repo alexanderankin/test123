@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="JavaScriptShell" default="build" basedir=".">
+
+    <description>
+    	builds the JavaScroptShell plugin using the required build-support plugin-build.xml
+    </description>
+
+	<property file="build.properties" />
+	<property file="../build.properties" />
+
+	<property name="javadoc.packagenames"	value="javascriptshell.*" />
+	<property name="compiler.source"		value="1.6" />
+	<property name="compiler.target" 		value="1.6" />
+
+	<property name="docs-proc.target"       value="none" />
+	
+	<property name="jedit.plugins.dir"      value="${install.dir}" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+    <!-- Extra files that get put into the jar file, above and beyond
+         the default set (which always includes actions,dockables,services.xml,
+         *.props, etc -->
+
+    <selector id="packageFiles">
+	  <or>
+		<filename name="javascriptshell/js/*.*" />
+		<filename name="docs/*.html" />
+	  </or>
+    </selector>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}/Console.jar"/>
+	</path>
+
+</project>
