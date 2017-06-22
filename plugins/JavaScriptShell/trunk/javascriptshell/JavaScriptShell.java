@@ -1,6 +1,7 @@
 /*
  * JavaScriptShell.java
  *
+ * Copyright (c) 2017 Zigmantas Kryzius <zigmas.kr@gmail.com>
  * Copyright (c) 2009 Robert Ledger <robert@pytrash.co.uk>
  * Copyright (c) 2007 Jakub Roztocil <jakub@webkitchen.cz>
  *
@@ -16,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA     02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
 package javascriptshell;
@@ -37,6 +38,10 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.TextAreaDialog;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
+
+import java.awt.Color;
+import jdk.nashorn.api.scripting.*;
+
 //}}}
 
 //{{{ class JavaScriptShell
@@ -64,13 +69,17 @@ public class JavaScriptShell extends Shell {
 	/** Initialze the JavaScriptShell object.  */
 	public static void init() {
 
-		if (engine == null) {
+		ScriptEngineManager scriptManager  = new ScriptEngineManager();
+		//Log.log(Log.DEBUG, JavaScriptShell.class, "JavaScript: scriptManager: " + scriptManager.toString());
+		scriptManager.registerEngineExtension("js", new NashornScriptEngineFactory());
+		engine = scriptManager.getEngineByExtension("js");
 
-			ScriptEngineManager  manager  = new ScriptEngineManager();
-			engine = manager.getEngineByName("JavaScript");
+		if (!(engine == null)) {
+			Log.log(Log.DEBUG, JavaScriptShell.class, "Nashorn scripting engine: " + engine.toString());
 			engine.setBindings(new SimpleBindings(), ScriptContext.ENGINE_SCOPE);
-
 			engine.put("engine", engine);
+		} else {
+			Log.log(Log.ERROR, JavaScriptShell.class, "Nashorn scripting engine: null");
 		}
 	}//}}}
 
@@ -150,7 +159,9 @@ public class JavaScriptShell extends Shell {
 	public void printPrompt(Console console, Output output) {
 
 		String  prompt  = "\n" + jEdit.getProperty("javascriptshell.prompt", "JavaScript");
-		output.writeAttrs(ConsolePane.colorAttributes(console.getInfoColor()), prompt);
+		//output.writeAttrs(ConsolePane.colorAttributes(console.getInfoColor()), prompt);
+		// blue color is to mark that this console is not a 'true' Nashorn console
+		output.writeAttrs(ConsolePane.colorAttributes(Color.blue), prompt);
 		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), " ");
 	}//}}}
 
@@ -184,7 +195,7 @@ public class JavaScriptShell extends Shell {
 	 * @param output   The console Output object to which output should be directed.
 	 * @param console  The console from which the command was invoked!
 	 */
-	 private static void setGlobals(View view,  Output output, Console console) {
+	 private static void setGlobals(View view, Output output, Console console) {
 
 		Buffer buffer = null;
 
