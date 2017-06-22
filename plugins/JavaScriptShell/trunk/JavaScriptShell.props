@@ -8,7 +8,7 @@ plugin.javascriptshell.JavaScriptShellPlugin.docs=docs/index.html
 plugin.javascriptshell.JavaScriptShellPlugin.activate=startup
 plugin.javascriptshell.JavaScriptShellPlugin.depend.0=jedit 05.03.00.00
 plugin.javascriptshell.JavaScriptShellPlugin.depend.1=jdk 1.8
-plugin.javascriptshell.JavaScriptShellPlugin.depend.2=plugin console.ConsolePlugin 4.3.3
+plugin.javascriptshell.JavaScriptShellPlugin.depend.2=plugin console.ConsolePlugin 5.1.4
 
 macro-handler.javascript.label=JavaScript
 macro-handler.javascript.glob=*.js
