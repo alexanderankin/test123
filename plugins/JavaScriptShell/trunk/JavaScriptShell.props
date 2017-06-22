@@ -3,11 +3,11 @@ plugin.javascriptshell.JavaScriptShellPlugin.author=Jakub Roztocil, Robert Ledge
 plugin.javascriptshell.JavaScriptShellPlugin.description=\
         Provides an interactive JavaScript console and allows macros \
         and startup scripts to be written in JavaScript.
-plugin.javascriptshell.JavaScriptShellPlugin.version=0.3
+plugin.javascriptshell.JavaScriptShellPlugin.version=0.4
 plugin.javascriptshell.JavaScriptShellPlugin.docs=docs/index.html
 plugin.javascriptshell.JavaScriptShellPlugin.activate=startup
-plugin.javascriptshell.JavaScriptShellPlugin.depend.0=jedit 04.03.07.00
-plugin.javascriptshell.JavaScriptShellPlugin.depend.1=jdk 1.6
+plugin.javascriptshell.JavaScriptShellPlugin.depend.0=jedit 05.03.00.00
+plugin.javascriptshell.JavaScriptShellPlugin.depend.1=jdk 1.8
 plugin.javascriptshell.JavaScriptShellPlugin.depend.2=plugin console.ConsolePlugin 4.3.3
 
 macro-handler.javascript.label=JavaScript
@@ -21,9 +21,9 @@ console.shell.JavaScript-show.label=JavaScript Shell
 ### JavaScriptShell
 
 javascriptshell.info.toggle=true
-javascriptshell.info=Welcome to jEdit's JavaScriptShell interpreter.\
+javascriptshell.info=Welcome to jEdit's JavaScriptShell interpreter (Nashorn).\
 	\n\
-	Remember to put the sample startup.js into your .jedit/startup folder.\
+	Remember to put the sample startup.js into your .jedit/startup folder.
 
 javascriptshell.prompt=JavaScript>
 
@@ -34,7 +34,7 @@ javascript-error.message=A JavaScript error occurred.
 javascriptshell.evaluate-selection.label=Evaluate selection in JavaScript
 javascriptshell.evaluate-buffer.label=Evaluate buffer in JavaScript
 
-plugin.javascriptshell.JavaScriptShellPlugin.menu=console.shell.JavaScript-show \
+plugin.javascriptshell.JavaScriptShellPlugin.menu=console.shell.JavaScript-show - \
 	javascriptshell.evaluate-selection \
 	javascriptshell.evaluate-buffer
 

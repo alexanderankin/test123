@@ -15,7 +15,7 @@
 <p>
 <b>Home</b> |
 <a href="ScriptingJava.html">Scripting Java</a> |
-<a href="startup.js.html">startup.js</a> | 
+<a href="startup.js.html">startup.js</a> |
 <a href="SwingApplication.js.html">SwingApplication.js</a>
 </p><hr>
 </center>
@@ -31,14 +31,16 @@
 	<p>A feature of JavaScriptShell is that it uses the JVM's built-in JavaScript engine
 	as provided by Java 1.6. No external libraries are required.</p>
 
-	<p> This means that like the Beanshell Console shell, the JavaScriptShell 
+	<p> This means that like the Beanshell Console shell, the JavaScriptShell
 	is also a debugging tool, that allows you to introspect (and interact with)
 	the objects that are currently in use by jEdit itself. </p>
-	
+
 	<p>A major addition to v0.3 is that the <code>print</code>
 	and <code>printnl</code> now work. In the interactive shell the output appears
 	in the console as one would expect. In script and macro mode the output is included
 	with the return value.</p>
+
+	<p>In v0.4 of the plugin, jdk.nashorn.api.scripting.* is used.</p>
 
 	<blockquote>
 
@@ -46,13 +48,13 @@
 
 		<blockquote>
 			<p>Type the following into an empty buffer and select the text<p>
-			
+
 			<blockquote>
 
 				<pre>for (var i=0; i&lt;10; i++) print(i + ', '); 10</pre>
-				
+
 			</blockquote>
-			
+
 			<p>Now select the "Plugins->JavaScriptShell->Evaluate selection in Javascript"
 			menu item. The text will be replaced with the following result.
 
