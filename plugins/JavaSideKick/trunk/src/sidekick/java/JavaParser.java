@@ -502,7 +502,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         }
     }    // }}}
 
-    // {{{ nodeSorter : Comparator<TigerNode>
     private Comparator<TigerNode> nodeSorter = new Comparator<TigerNode>() {
         /**
          * Compares a TigerNode to another TigerNode for sorting.
@@ -536,26 +535,23 @@ public class JavaParser extends SideKickParser implements EBComponent {
             int comp = my_ordinal.compareTo( other_ordinal );
             return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
         }
-    };    // }}}
+    }; 
 
-    // {{{ supportsCompletion() : boolean
     /**
      * @return true, this parser does support code completion
      */
     public boolean supportsCompletion() {
         return true;
-    }    // }}}
+    }  
 
-    // {{{ complete(EditPane, int) : SideKickCompletion
     public SideKickCompletion complete( EditPane editPane, int caret ) {
         if ( completionFinder == null ) {
             completionFinder = new JavaCompletionFinder();
         }
         return completionFinder.complete( editPane, caret );
-    }    // }}}
+    }  
 
-    // {{{ getPanel() : JPanel
     public JPanel getPanel() {
         return new JavaModeToolBar( this );
-    }    // }}}
+    }  
 }
