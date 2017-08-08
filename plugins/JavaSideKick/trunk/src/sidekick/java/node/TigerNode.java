@@ -288,7 +288,7 @@ public class TigerNode extends Asset implements SideKickElement {
             children.add( child );
         }
         else {
-            System.out.println("+++++ Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
+            //System.out.println("+++++ Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
             Log.log(Log.DEBUG, this, "Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
         }
     }

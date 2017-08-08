@@ -586,10 +586,16 @@ public class Java8SideKickListener extends Java8BaseListener {
         size = fieldCtx.variableDeclaratorList().variableDeclarator().size();
         for ( int i = 0; i < size; i++ ) {
             VariableDeclaratorContext vdc = fieldCtx.variableDeclaratorList().variableDeclarator( i );
-            TigerNode tn = new FieldNode( vdc.variableDeclaratorId().getText(), modifiers, type );
-            setLocations( tn, vdc );
+            VariableDeclarator name = new VariableDeclarator(vdc.variableDeclaratorId().getText());
+            FieldNode fn = new FieldNode( name.getName(), modifiers, type );
+            fn.addChild(name);
+            setLocations( fn, vdc );
+            if (fn.isPrimitive())
+              results.incPrimitiveFieldCount();
+            else
+              results.incReferenceFieldCount();
             results.incReferenceFieldCount();
-            parent.addChild( tn );
+            parent.addChild( fn );
         }
     }
 
