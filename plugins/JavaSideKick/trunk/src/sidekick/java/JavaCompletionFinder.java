@@ -628,13 +628,15 @@ public class JavaCompletionFinder {
 			// If we're in a method, check its parameters
 			if (tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD) {
 				List params = ( ( Parameterizable ) tn ).getFormalParams();
-				for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
-					Parameter param = ( Parameter ) jt.next();
-					if ( param.getName().startsWith( word ) ) {
-						choices.add( new JavaCompletionCandidate(
-							param.getName(),
-							TigerLabeler.getFieldIcon() ));
-					}
+				if (params != null) {
+                    for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
+                        Parameter param = ( Parameter ) jt.next();
+                        if ( param.getName().startsWith( word ) ) {
+                            choices.add( new JavaCompletionCandidate(
+                                param.getName(),
+                                TigerLabeler.getFieldIcon() ));
+                        }
+                    }
 				}
 			}
 			
@@ -918,11 +920,13 @@ public class JavaCompletionFinder {
 			// check parameters to constructors and methods
 			if ( tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD ) {
 				List params = ( ( Parameterizable ) tn ).getFormalParams();
-				for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
-					Parameter param = ( Parameter ) jt.next();  // Parameter is a subclass of FieldNode
-					if ( param.getName().startsWith( name ) ) {
-						return param;
-					}
+				if (params != null) {
+                    for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
+                        Parameter param = ( Parameter ) jt.next();  // Parameter is a subclass of FieldNode
+                        if ( param.getName().startsWith( name ) ) {
+                            return param;
+                        }
+                    }
 				}
 			}
 

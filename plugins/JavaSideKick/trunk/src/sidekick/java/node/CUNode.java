@@ -79,10 +79,12 @@ public class CUNode extends TigerNode {
         if ( importNode == null ) {
             return list;
         }
-        for ( TigerNode in : importNode.getChildren() ) {
-            list.add( in.getName() );
+        if (importNode.hasChildren()) {
+            for ( TigerNode in : importNode.getChildren() ) {
+                list.add( in.getName() );
+            }
+            Collections.sort( list );
         }
-        Collections.sort( list );
         return list;
     }
     
