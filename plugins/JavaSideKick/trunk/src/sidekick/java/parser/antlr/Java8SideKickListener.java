@@ -14,7 +14,10 @@ import sidekick.java.node.*;
 import static sidekick.java.parser.antlr.Java8Parser.*;
 import sidekick.util.Location;
 
-
+// TODO: need to add better tree building, especially inside methods so that
+// local variable declarations, inner classes, and so on are part of the tree.
+// Might need to remove the 'process*' methods and fill in the various 'exit*'
+// methods to properly fill in the tree.
 public class Java8SideKickListener extends Java8BaseListener {
 
     Deque<TigerNode> stack = new ArrayDeque<TigerNode>();
