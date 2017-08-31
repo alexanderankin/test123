@@ -2252,13 +2252,13 @@ Parser methods follow.
 	    }
 	    else {
             // 'new' choice
-            StringBuilder annotationIdentifiers = new StringBuilder();
+            String annotationIdentifiers = "";
             if (ctx.annotationIdentifier() != null && ctx.annotationIdentifier().size() > 0) {
-                annotationIdentifiers.append(reverse(ctx.annotationIdentifier().size(), ""));
+                annotationIdentifiers = reverse(ctx.annotationIdentifier().size() * 2 - 1, "");
             }
             String typeArguments = ctx.typeArguments() == null ? "" : stack.pop() + ' ';
             String new_ = stack.pop();
-            sb.append(trimEnd(new_)).append(' ').append(typeArguments).append(annotationIdentifiers.toString());
+            sb.append(trimEnd(new_)).append(' ').append(typeArguments).append(annotationIdentifiers);
 	    }
 	    
 	    // common ending
