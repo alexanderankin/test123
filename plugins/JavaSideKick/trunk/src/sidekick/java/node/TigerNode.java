@@ -314,6 +314,14 @@ public class TigerNode extends Asset implements SideKickElement {
             addChild( child );
         }
     }
+    
+    public void addChildren(TigerNode... list) {
+        if ( children == null )
+            children = new ArrayList<TigerNode>();
+        for (TigerNode kid : list) {
+            addChild(kid);   
+        }
+    }
 
     /**
      * @return the child nodes of this node, may be null.  Nodes will be sorted
