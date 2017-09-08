@@ -708,6 +708,15 @@ interfaceDeclaration
 	|	annotationTypeDeclaration
 	;
 
+/*	
+danson, this appears to be incorrect, it should be
+
+normalInterfaceDeclaration
+	:	interfaceModifier* 'interface' identifier typeParameters? extendsInterfaces? interfaceBody
+	;
+
+There is no need for interfaceModifiers.	
+*/
 normalInterfaceDeclaration
 	:	interfaceModifiers 'interface' identifier typeParameters? extendsInterfaces? interfaceBody
 	;

@@ -203,12 +203,26 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     // parse the buffer contents
                     ParseTree tree = java8Parser.compilationUnit();
                     ParseTreeWalker walker = new ParseTreeWalker();
-                    Java8SideKickListener listener = new Java8SideKickListener();
-                    walker.walk( listener, tree );
+                    
+                    // temporary property to be able to switch between Java 8 parser
+                    // and Java 9 parser while Java 9 parser is work in progress
+                    if ("true".equals(jEdit.getProperty("javasidekick.useJava9"))) {
+                        Java9SideKickListener listener = new Java9SideKickListener();
+                        walker.walk( listener, tree );
+                        
+                        // build the tree
+                        compilationUnit = listener.getCompilationUnit();
+                        compilationUnit.setResults( listener.getResults() );
+                    }
+                    else {
+                        Java8SideKickListener listener = new Java8SideKickListener();
+                        walker.walk( listener, tree );
+                        
+                        // build the tree
+                        compilationUnit = listener.getCompilationUnit();
+                        compilationUnit.setResults( listener.getResults() );
+                    }
         
-                    // build the tree
-                    compilationUnit = listener.getCompilationUnit();
-                    compilationUnit.setResults( listener.getResults() );
                     
                     // convert the errors, if any
                     List<ParserException> parserExceptions = errorListener.getErrors();
